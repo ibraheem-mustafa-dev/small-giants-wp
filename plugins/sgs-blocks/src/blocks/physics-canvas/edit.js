@@ -87,6 +87,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					},
 				] }
 			/>
+
+			{ /* Background renders in the STYLES tab, not Settings (standardised
+			     2026-08-16, Bean-ruled). Same shared panel, same tab, on every
+			     wrapper block — it used to land in Settings here and in Styles on
+			     cta-section/hero, so the client found it in a different place
+			     depending on which block they had selected. Appearance sits with
+			     colour, which D621/D622 already placed in Styles. */ }
+			<InspectorControls group="styles">
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+			</InspectorControls>
+
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Physics', 'sgs-blocks' ) }
@@ -303,7 +314,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     on top) so it cannot intercept pointer events on the physics
 				     bodies — verified against class-sgs-container-wrapper.php's
 				     wrapper markup order before wiring this in. */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
 				     box-shadow CSS string built by ShadowControl), resolved by

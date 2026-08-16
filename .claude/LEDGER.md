@@ -20,7 +20,8 @@ Bean caught personally (search suggestions dead because a subagent invented a Wo
 `wc_get_price_html()`, that doesn't exist). Both fixed and re-verified live. Full incident record:
 `decisions.md` D641.
 
-**Track 2 — Wrapper decomposition step 6 (D638) CLOSED, step 7 fully designed and unblocked.**
+**Track 2 — Wrapper decomposition step 6 (D638) CLOSED, and step 7 (D639) is now BUILT too —
+the LAST step of the initiative. 7 of 7 done.**
 3 build agents wired the `background` extension onto all 7 direct-panel blocks (container,
 cta-section, trust-bar, hero, site-header, site-footer, physics-canvas — the last of these gaining
 a background capability it never had before). A real bug (a shared `resolve_kind()` helper that
@@ -106,15 +107,20 @@ NEW colour attribute lands in the background-family bucket and gets gradient sup
 Isolated worktree each — builders 1-3 touch the same two shared files. `/qc` mandatory before merge.
 Full detail: `decisions.md` D636 + addendum.
 
-**Step 7 — remaining wrapper capabilities (shape dividers last).** No design blocker — all three
-designs locked by Bean. Read `decisions.md` D637 + both addenda and
-`specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2 before building. Same orchestration lesson as step 6:
-shared-file work (gate script, DB column, new component) stays single-owner; per-block wiring
-parallelises across isolated worktrees.
+**Step 7 — BUILT (D639), merged into this branch, NOT yet live-verified.** Shipped: the
+`gridItems`-requires-`layout` precondition gate; `ScaleAxisControl` + the shape-divider px
+`Height` → linked X/Y `%` `Scale` replacement across 6 blocks (SVG-`<pattern>` tiling, byte-
+identical at the 100% default); `BackgroundPanel` standardised into the **Styles** tab on all 7
+wrapper blocks (this closes the "separate small design gate" that used to sit here). Two NEW
+prebuild gates, both wired in the same commit that built them.
 
-**Separate small design gate, still outstanding:** `sgs/container`'s Background panel renders in
-Settings; `sgs/hero`'s renders in Styles — a real placement inconsistency found during step 6's
-live verification (D626's own table says Background belongs in Styles for all blocks).
+⛔ **Two of D637's "fully locked" premises were FALSE against the code, and a third was found by
+the closing council** — the `gridAreas` half was therefore RETIRED rather than built (flag, panel
+and an interim DB column all deleted; the flag had no consumer and needed none). Do NOT rebuild
+from §F.2's original text — read D639's close-out first.
+
+**Still outstanding for step 7:** deploy + live editor verification (the divider Size control at
+both axes above/below 100%, and the Background tab move), then it is fully closed.
 
 ### Carried, low priority
 
@@ -182,7 +188,7 @@ live verification (D626's own table says Background belongs in Styles for all bl
 | Track 1 execution plan (archived, executed) | `.claude/plans/archive/2026-08-16-colour-gaps-parallel-plan.md` |
 | Gradient scope + architecture (council, storage, icon correction) | `decisions.md` D636 + addendum |
 | Track 2 close-out — full detail, bug found, live verification, review findings | `decisions.md` D638 |
-| Step 7 design — ALL THREE fully locked, no blocker | `decisions.md` D637 + its two later addenda + `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2 |
+| Step 7 — BUILT + what its design got wrong | `decisions.md` **D639** (incl. the /qc-council close-out) · `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2 build-status box |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Control-type contract (colour §1, gradient field 8) | `.claude/plans/spec-35-control-type-contract.md` |
 | Wrapper decomposition — full 7-step history | `~/.claude/plans/go-read-the-track-encapsulated-hare.md` + `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |

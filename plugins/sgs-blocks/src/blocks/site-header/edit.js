@@ -482,6 +482,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	return (
 		<>
+			{ /* Background renders in the STYLES tab, not Settings (standardised
+			     2026-08-16, Bean-ruled). Same shared panel, same tab, on every
+			     wrapper block — it used to land in Settings here and in Styles on
+			     cta-section/hero, so the client found it in a different place
+			     depending on which block they had selected. Appearance sits with
+			     colour, which D621/D622 already placed in Styles. */ }
+			<InspectorControls group="styles">
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+			</InspectorControls>
+
 			<InspectorControls>
 				{ contrastNotice && (
 					<Notice
@@ -684,65 +694,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					{ /* Background/overlay panel — same shared component + default
-					     attrNames used by sgs/container, sgs/cta-section and sgs/hero
-					     (ContainerWrapperControls.js's BackgroundPanel, which wraps
-					     GradientOverlayControl). site-header declares the identical
-					     backgroundOverlayColour, overlayGradient, overlayGradientAngle,
-					     overlayGradientFrom and overlayGradientTo attrs
-					     (block.json:216,356-368) but had no
-					     control mounted — inspector-scan rule 21-render-without-control. */ }
-					<ToolsPanelItem
-						label={ __( 'Background', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! attributes.backgroundImage?.url ||
-							!! attributes.backgroundImageTablet?.url ||
-							!! attributes.backgroundImageMobile?.url ||
-							!! attributes.bgVideo?.url ||
-							!! attributes.bgVideoTablet?.url ||
-							!! attributes.bgVideoMobile?.url ||
-							!! attributes.bgSvgContent ||
-							!! attributes.backgroundOverlayColour ||
-							!! attributes.overlayGradient ||
-							( attributes.backgroundAttachment ?? 'scroll' ) !== 'scroll' ||
-							( attributes.backgroundPosition ?? 'center center' ) !== 'center center' ||
-							( attributes.backgroundRepeat ?? 'no-repeat' ) !== 'no-repeat' ||
-							( attributes.backgroundSize ?? 'cover' ) !== 'cover' ||
-							!! attributes.bgParallax ||
-							!! attributes.bgKenBurns
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								backgroundImage: undefined,
-								backgroundImageTablet: undefined,
-								backgroundImageMobile: undefined,
-								backgroundOverlayColour: undefined,
-								backgroundAttachment: 'scroll',
-								backgroundPosition: 'center center',
-								backgroundRepeat: 'no-repeat',
-								backgroundSize: 'cover',
-								bgVideo: undefined,
-								bgVideoTablet: undefined,
-								bgVideoMobile: undefined,
-								bgParallax: false,
-								bgKenBurns: false,
-								bgAnimationDuration: 20,
-								bgSvgContent: '',
-								bgSvgPosition: 'background',
-								bgSvgAnimation: 'none',
-								bgSvgAnimationSpeed: 'medium',
-								bgSvgOpacity: 100,
-								bgSvgMinHeight: '',
-								bgSvgTextShadow: false,
-								overlayGradient: false,
-								overlayGradientAngle: 180,
-								overlayGradientFrom: '',
-								overlayGradientTo: '',
-							} )
-						}
-					>
-						<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
-					</ToolsPanelItem>
 				</ToolsPanel>
 			</InspectorControls>
 

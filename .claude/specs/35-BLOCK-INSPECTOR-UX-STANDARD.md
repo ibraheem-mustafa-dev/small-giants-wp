@@ -385,7 +385,54 @@ inheritance, which background/border/shadow/padding don't have. A separate, fram
 typography placement/completeness audit (parallel to the live colour-panel rollout) is queued as
 the next initiative after colour's own two tracks close — not this spec's open item to build yet.
 
-### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion, `ScaleAxisControl` — ALL THREE FULLY LOCKED (added 2026-08-16, D637)
+### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion, `ScaleAxisControl` — ✅ **BUILT 2026-08-16 (D639)**, designed 2026-08-16 (D637)
+
+> ⛔ **BUILD STATUS, and two premises this subsection asserted that turned out FALSE (D639).**
+> Read this box before building anything from the text below — the design text is left intact as
+> the record, but two of its factual claims did not survive contact with the code.
+>
+> | Piece | Status | Note |
+> |---|---|---|
+> | **F.2.1** precondition gate | ✅ **BUILT** as specced | `scripts/check-wrapper-capability-preconditions.js`, fail-closed, no baseline, `--self-test` 11/11. ⚠ **THREE** blocks declare `gridItems`+`layout` (`container`, `cta-section`, `trust-bar`) — F.2.1's text names two. |
+> | **F.2.2** whole subsection | ⛔ **RETIRED — `supports.sgs.gridAreas` DELETED, not built** | Neither reader was needed. See premise 2 AND premise 3 below. The DB column/writer/migration were built then **reverted in the same session** once premise 3 surfaced. |
+> | **F.2.3** scale control | ✅ **BUILT** | `src/components/ScaleAxisControl.js` + storage replace across 6 blocks + SVG-`<pattern>` X tiling. |
+>
+> ⛔ **PREMISE 1 FALSIFIED — "same repeat mechanism the shape already uses".** F.2.3's render text
+> below says X-tiling reuses an existing repeat. There is none: the divider is a single `<path>`
+> in a `preserveAspectRatio="none"` SVG stretched edge-to-edge. Tiling is NEW. Built as an SVG
+> `<pattern>` (Bean-picked over a CSS mask) which keeps the markup, `currentColor` and flip/invert,
+> and is **not entered at all at x=100**, so the default renders byte-identically to before.
+>
+> ⛔ **PREMISE 3 FALSIFIED (found last, decided everything) — "the converter … one comment-only
+> reference explicitly noting the step is a no-op for this reason".** `assembly.py:250` says the
+> OPPOSITE: *"no gridAreas lookup is needed"*. the LIVE route is `assembly.py` step 3d, which derives each area
+> name from the **DRAFT's own BEM element token** (`parse_sgs_bem(cls).element` —
+> `sgs-hero__content` → `content`) and routes via `db.attr_for_area_property(block, area, prop)`,
+> gated on the block declaring `<area>+<Suffix>` attrs — not on any block flag. (⚠ mechanism
+> corrected by /qc-council: `resolvers/grid_area.py` and `fold_helpers.grid_item_areas()` are BOTH
+> dead in production — zero callers, and `ctx.area_name` is set only in test files.) The converter was built not to need it. **So the flag had no consumer and needed
+> none, and was redundant by construction:** "hero has areas content and media" is fully derivable
+> from hero declaring `contentPadding`/`mediaPadding`. `supports.sgs.gridAreas` is **RETIRED**;
+> `check-wrapper-capability-preconditions.js` rule 2 now FAILS the build on any declaration of it
+> (including an empty array, which would otherwise silence the gate).
+>
+> ⛔ **PREMISE 2 FALSIFIED — "`GridAreaPanel`'s own gate is already correct and needs no change,
+> it's simply never called".** It writes the FLAT per-side schema (`contentPaddingTop`/`…Tablet`/
+> `…Mobile`) — 13 of 14 attrs per area — which **stopped existing on 2026-08-11** when D580
+> migrated that storage to box OBJECTS. It was never swept precisely because it has zero mounts.
+> Mounting it as specced would ship a padding control that **silently deletes the value on every
+> use**, which is the standard-level defect Part M already records. It is also SUPERSEDED: hero
+> re-grew its own object-shaped controls (`hero/edit.js:965` "Content padding", `:1336` "Media
+> padding") — and per D626's mount table `gridItems` "absorbs `GridAreaPanel`", while `hero` does
+> not declare `gridItems`, so it would render nothing today even if wired. **Do not mount it
+> without first rebuilding it onto the object storage, or deleting it as superseded** — that
+> decision is open (D639 residual).
+>
+> **Y semantics, ruled by Bean 2026-08-16 (D639):** the addendum below says both "anchors its top
+> edge" and "extends outward only", which describe opposite results. The ruling is **grows INTO
+> the section** — today's behaviour, what `top:-1px`/`bottom:-1px` already produce, and the
+> industry convention. Nothing repositions. Consequence: a new divider is 120px (100% of natural
+> viewBox height) where the old attribute default was 80px.
 
 Design-only spec addition feeding the shared-wrapper decomposition's step 7 (`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4; the D626 grouping locked six opt-in wrapper extensions —
 `background`/`width`/`layout`/`gridItems`/`shapeDividers`/`typography`). D626 named two cross-extension
@@ -718,6 +765,14 @@ Bean is QC-only long-term (CLAUDE.md SUCCESS). This standard must be enforced st
 memory: (a) fold Part L into `block-migration-DONE-checklist.md`; (b) a lint/gate that flags a
 colour control without `enableAlpha`, a URL field not using LinkControl, a preset-only "shadow",
 an animation without a reduced-motion gate; (c) `/doc-audit` cites this spec per block.
+
+**Gates enforcing THIS spec (added 2026-08-16, D639) — both wired into `prebuild` in the same
+commit that built them.** Full per-gate rationale: `plugins/sgs-blocks/CLAUDE.md` §prebuild gates.
+
+| Gate | Enforces | Why it had to exist |
+|---|---|---|
+| `scripts/check-empty-inspector-containers.js` | **Part F** — an inspector container rendered with NO children is a dead control. An empty `<ToolsPanelItem>` still shows in the "+" menu and in `resetAll`, then displays nothing when opened; an empty `<PanelBody>` opens onto blank space. | The ~50-gate stack had **zero** coverage for this class, and one shipped through it to prove the point. `check-dead-controls.js` checks the INVERSE (an attribute whose control nothing renders) — a container whose children were deleted still has valid wiring, so it reads clean. ⛔ AST walk, never a regex: two regexes answered the same question with **0** and **471**. |
+| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (`supports.sgs.gridAreas` is RETIRED — any declaration fails the build). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. Rule 2 began as an orphan guard ("must have ≥1 live reader", Part N's N-2) and became a retirement guard when building that reader proved none was ever needed — the converter derives area names from the draft's CSS. No baseline (zero violations existed) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
 
 ## PART L — Per-block inspector definition-of-done (checklist)
 

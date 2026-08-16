@@ -275,9 +275,9 @@
 			"type": "string",
 			"default": ""
 		},
-		"shapeDividerTopHeight": {
-			"type": "number",
-			"default": 80
+		"shapeDividerTopScale": {
+			"type": "object",
+			"default": { "x": 100, "y": 100 }
 		},
 		"shapeDividerTopFlip": {
 			"type": "boolean",
@@ -295,9 +295,9 @@
 			"type": "string",
 			"default": ""
 		},
-		"shapeDividerBottomHeight": {
-			"type": "number",
-			"default": 80
+		"shapeDividerBottomScale": {
+			"type": "object",
+			"default": { "x": 100, "y": 100 }
 		},
 		"shapeDividerBottomFlip": {
 			"type": "boolean",

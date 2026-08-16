@@ -62,9 +62,27 @@ import {
 	ResponsiveBorderRadiusControl,
 	normaliseResponsiveBox,
 	SgsColourPanel,
+	ScaleAxisControl,
 } from '../../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
+
+// ---------------------------------------------------------------------------
+// Shape-divider scale (Spec 35 §F.2.3, D637).
+//
+// Replaces the old per-edge `shapeDivider{Top,Bottom}Height` px RangeControl
+// with a linked X/Y PERCENTAGE pair. 100% on both axes is the shape's natural,
+// undistorted size — Y translated to px from the SVG's own viewBox height at
+// render, X being one tile spanning the block's full width (which is exactly
+// what the divider does today, so the default renders identically).
+//
+// The range is deliberately wide on X: below 100% the shape tiles to fill the
+// width, above 100% the excess is clipped at the block's edge, so both ends of
+// the slider are meaningful rather than degenerate.
+// ---------------------------------------------------------------------------
+const SHAPE_DIVIDER_SCALE_MIN = 10;
+const SHAPE_DIVIDER_SCALE_MAX = 400;
+const SHAPE_DIVIDER_SCALE_NEUTRAL = 100;
 
 // ---------------------------------------------------------------------------
 // gridItemBorder — shorthand <-> parts (P-SPEC35-BORDER-RESIDUALS item 1).
@@ -1336,14 +1354,15 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						value={ attributes.shapeDividerTopColour }
 						onChange={ ( val ) => setAttributes( { shapeDividerTopColour: val } ) }
 					/>
-					<RangeControl
-						label={ __( 'Height (px)', 'sgs-blocks' ) }
-						value={ attributes.shapeDividerTopHeight }
-						onChange={ ( val ) => setAttributes( { shapeDividerTopHeight: val } ) }
-						min={ 20 }
-						max={ 300 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					<ScaleAxisControl
+						label={ __( 'Size', 'sgs-blocks' ) }
+						value={ attributes.shapeDividerTopScale }
+						onChange={ ( val ) => setAttributes( { shapeDividerTopScale: val } ) }
+						min={ SHAPE_DIVIDER_SCALE_MIN }
+						max={ SHAPE_DIVIDER_SCALE_MAX }
+						step={ 1 }
+						unit="%"
+						defaultValue={ SHAPE_DIVIDER_SCALE_NEUTRAL }
 					/>
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
@@ -1380,14 +1399,15 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						value={ attributes.shapeDividerBottomColour }
 						onChange={ ( val ) => setAttributes( { shapeDividerBottomColour: val } ) }
 					/>
-					<RangeControl
-						label={ __( 'Height (px)', 'sgs-blocks' ) }
-						value={ attributes.shapeDividerBottomHeight }
-						onChange={ ( val ) => setAttributes( { shapeDividerBottomHeight: val } ) }
-						min={ 20 }
-						max={ 300 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					<ScaleAxisControl
+						label={ __( 'Size', 'sgs-blocks' ) }
+						value={ attributes.shapeDividerBottomScale }
+						onChange={ ( val ) => setAttributes( { shapeDividerBottomScale: val } ) }
+						min={ SHAPE_DIVIDER_SCALE_MIN }
+						max={ SHAPE_DIVIDER_SCALE_MAX }
+						step={ 1 }
+						unit="%"
+						defaultValue={ SHAPE_DIVIDER_SCALE_NEUTRAL }
 					/>
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
@@ -1606,102 +1626,55 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Per-area panel (Grid areas — decision 5)
+// GridAreaPanel — DELETED 2026-08-16 (D639). Tombstone, do not resurrect.
+//
+// Built 2026-06-11 (65a3536a) as the shared home for per-area padding/background
+// on a block declaring `supports.sgs.gridAreas`. It was NEVER mounted, and by
+// the time anyone looked it was wrong in three independent ways:
+//
+//  1. UNREACHABLE, twice over. Its only JSX mount was KIND_PANELS.section entry
+//     5, and an AST census of all 17 <ContainerWrapperControls> mounts found 12
+//     'layout' + 5 'content' and ZERO 'section'. The section array is only the
+//     unknown-kind fallback. It also needed a `gridAreas` prop no consumer passes.
+//  2. STALE STORAGE. It wrote the flat per-side schema (`contentPaddingTop`/
+//     `…Tablet`/`…Mobile`) — 13 of 14 attrs per area — which stopped existing when
+//     D580 migrated that storage to box OBJECTS on 2026-08-11. Mounting it would
+//     have shipped a client control that silently DELETED the value on every use.
+//  3. SUPERSEDED. `sgs/hero` re-grew its own object-shaped controls for exactly
+//     these attributes — "Content padding" (hero/edit.js) and "Media padding".
+//
+// `supports.sgs.gridAreas` went with it: it had no consumer and needs none. The
+// LIVE per-area route is `assembly.py` step 3d, which walks the section root's
+// children and derives each area name from the DRAFT's own BEM ELEMENT TOKEN
+// (`db_lookup.parse_sgs_bem( cls ).element` — `sgs-hero__content` -> area
+// `content`), then routes that node's box CSS via `route_area_css_to_block_attrs`
+// -> `db.attr_for_area_property( block, area, prop )`. The destination gate is the
+// block declaring `<area>+<Suffix>` attrs; no flag is consulted at any hop.
+// `assembly.py:250` states it directly: "no gridAreas lookup is needed". The
+// declaration was redundant by construction — "hero has areas content and media"
+// is already fully derivable from hero declaring `contentPadding`/`mediaPadding`.
+//
+// ⚠ MECHANISM CORRECTED 2026-08-16 by the closing /qc-council. This tombstone
+// first credited `resolvers/grid_area.py` + `fold_helpers.grid_item_areas()`
+// (reading `grid-template-areas` CSS). BOTH ARE DEAD IN PRODUCTION:
+// `grid_item_areas()` has ZERO callers, and `grid_area.py`'s layer is gated on
+// `ctx.area_name`, which no production `Ctx(...)` ever sets (only three test
+// files do). The conclusion was right and is stronger under the real mechanism —
+// but the citation was repeated from a docstring instead of re-derived, which is
+// the SAME error D637 made and this session twice caught. See D639's council
+// close-out; the dead-code cleanup is tracked separately, not done here.
+//
+// ⛔ `check-wrapper-capability-preconditions.js` rule 2 now FAILS the build on any
+// `supports.sgs.gridAreas` declaration, so this cannot quietly come back.
 // ---------------------------------------------------------------------------
 
-/**
- * GridAreaPanel
- *
- * Renders per-area styling controls for one named grid area declared in
- * `supports.sgs.gridAreas`. Generic — derives all attr names from `areaName`
- * at runtime; zero block-specific code here.
- *
- * Attr naming convention (matches hero's existing contentPadding* family):
- *   <areaName>PaddingTop / Right / Bottom / Left
- *   <areaName>PaddingTopTablet / RightTablet / BottomTablet / LeftTablet
- *   <areaName>PaddingTopMobile / RightMobile / BottomMobile / LeftMobile
- *   <areaName>PaddingUnit
- *   <areaName>Background
- *
- * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes setAttributes.
- * @param {string}   props.areaName      e.g. 'content' | 'media'.
- * @param {string}   props.label         Human-readable area label for panel title.
- */
-export function GridAreaPanel( { attributes, setAttributes, areaName, label } ) {
-	// Capitalise first letter of areaName for the compound key (e.g. 'content' → 'Content').
-	const cap = areaName.charAt( 0 ).toUpperCase() + areaName.slice( 1 );
-
-	const SIDES = [
-		{ label: __( 'Top', 'sgs-blocks' ), desktop: `${ areaName }PaddingTop`, tablet: `${ areaName }PaddingTopTablet`, mobile: `${ areaName }PaddingTopMobile` },
-		{ label: __( 'Right', 'sgs-blocks' ), desktop: `${ areaName }PaddingRight`, tablet: `${ areaName }PaddingRightTablet`, mobile: `${ areaName }PaddingRightMobile` },
-		{ label: __( 'Bottom', 'sgs-blocks' ), desktop: `${ areaName }PaddingBottom`, tablet: `${ areaName }PaddingBottomTablet`, mobile: `${ areaName }PaddingBottomMobile` },
-		{ label: __( 'Left', 'sgs-blocks' ), desktop: `${ areaName }PaddingLeft`, tablet: `${ areaName }PaddingLeftTablet`, mobile: `${ areaName }PaddingLeftMobile` },
-	];
-
-	const unitAttr = `${ areaName }PaddingUnit`;
-	const bgAttr = `${ areaName }Background`;
-	const currentUnit = attributes[ unitAttr ] || 'px';
-
-	// The area padding attrs are NUMBERS with one shared <area>PaddingUnit
-	// companion (the hero family shape). The SpacingControl shows the combined
-	// '24px' string; on change the number goes to the side attr and the unit
-	// to the shared companion (same composition pattern as TypographyControls).
-	const parseAreaValue = ( raw ) => {
-		const str = String( raw ?? '' ).trim();
-		if ( '' === str ) {
-			return { num: null, unit: currentUnit };
-		}
-		const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
-		if ( ! match ) {
-			return { num: null, unit: currentUnit };
-		}
-		return {
-			num: parseFloat( match[ 1 ] ),
-			unit: match[ 2 ] || currentUnit,
-		};
-	};
-
-	return (
-		<PanelBody title={ label || sprintf( __( '%s area', 'sgs-blocks' ), cap ) } initialOpen={ false }>
-			<DesignTokenPicker
-				label={ __( 'Background colour', 'sgs-blocks' ) }
-				value={ attributes[ bgAttr ] || '' }
-				onChange={ ( val ) => setAttributes( { [ bgAttr ]: val } ) }
-			/>
-
-			<ResponsiveControl label={ __( 'Padding', 'sgs-blocks' ) }>
-				{ ( breakpoint ) => (
-					<>
-						{ SIDES.map( ( side ) => (
-							<SpacingControl
-								key={ side[ breakpoint ] }
-								freeInput
-								label={ side.label }
-								value={ attributes[ side[ breakpoint ] ] != null ? String( attributes[ side[ breakpoint ] ] ) + currentUnit : '' }
-								onChange={ ( val ) => {
-									const { num, unit } = parseAreaValue( val );
-									setAttributes( {
-										[ side[ breakpoint ] ]: num,
-										[ unitAttr ]: unit,
-									} );
-								} }
-							/>
-						) ) }
-					</>
-				) }
-			</ResponsiveControl>
-		</PanelBody>
-	);
-}
 
 // ---------------------------------------------------------------------------
 // KIND → CONTROLS map
 // ---------------------------------------------------------------------------
 //
 // Defines which sub-panels render for each kind value.
-// Entries are render functions that receive ({ attributes, setAttributes, gridAreas }).
+// Entries are render functions that receive ({ attributes, setAttributes }).
 //
 const KIND_PANELS = {
 	section: [
@@ -1753,21 +1726,11 @@ const KIND_PANELS = {
 				<LayoutPanel { ...props } />
 			</PanelBody>
 		),
-		// 5. Grid items — uniform defaults then one per-area panel per declared area.
-		( props ) => (
-			<>
-				<GridItemDefaultsPanel { ...props } />
-				{ Array.isArray( props.gridAreas ) && props.gridAreas.map( ( area ) => (
-					<GridAreaPanel
-						key={ area }
-						attributes={ props.attributes }
-						setAttributes={ props.setAttributes }
-						areaName={ area }
-						label={ `${ area.charAt( 0 ).toUpperCase() + area.slice( 1 ) } ${ __( 'area', 'sgs-blocks' ) }` }
-					/>
-				) ) }
-			</>
-		),
+		// 5. Grid items — uniform defaults only. The per-area `gridAreas` map that
+		//    used to sit here went with GridAreaPanel (D639, see its tombstone
+		//    above): the panel was never reachable, wrote a storage shape D580
+		//    retired, and the capability is already delivered elsewhere.
+		( props ) => <GridItemDefaultsPanel { ...props } />,
 		// 6. Background.
 		( props ) => <BackgroundPanel { ...props } />,
 		// 7. Shadow.
@@ -1828,10 +1791,9 @@ const KIND_PANELS = {
  * @param {Object}   props.attributes    Block attributes object.
  * @param {Function} props.setAttributes Block setAttributes function.
  * @param {string}   [props.kind]        'section' | 'layout' | 'content'. Default 'section'.
- * @param {string[]} [props.gridAreas]   Area names from supports.sgs.gridAreas (e.g. ['content','media']).
- *                                       When provided, the section kind renders one GridAreaPanel per entry
- *                                       under the Grid items section. Consumers that pass no areas get
- *                                       behaviour-identical output to before this prop existed.
+ * ⛔ `props.gridAreas` was REMOVED 2026-08-16 (D639) along with GridAreaPanel — see that
+ * tombstone above. No consumer ever passed it, and the capability it gated is delivered by
+ * the block's own controls (editor) and `resolvers/grid_area.py` (converter).
  * @param {boolean}  [props.showLayout]  Forwarded to LayoutPanel. Pass false when the block owns its OWN
  *                                       layout control — rendering both is silent DATA LOSS, because this
  *                                       panel writes stack/flex/grid into a `layout` attr whose block.json
@@ -1849,7 +1811,6 @@ export default function ContainerWrapperControls( {
 	attributes,
 	setAttributes,
 	kind = 'section',
-	gridAreas,
 	showLayout,
 	showContentBand,
 } ) {
@@ -1867,7 +1828,6 @@ export default function ContainerWrapperControls( {
 					{ renderPanel( {
 						attributes,
 						setAttributes,
-						gridAreas,
 						// Undefined stays undefined so each panel's own default
 						// (both true) applies — passing `false` explicitly is the
 						// only way to suppress a control.

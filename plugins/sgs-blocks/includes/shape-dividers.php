@@ -81,6 +81,55 @@ function sgs_get_shape_dividers(): array {
 }
 
 /**
+ * The authored viewBox of every shape in sgs_get_shape_dividers().
+ *
+ * Every path above is drawn against a 1200x120 coordinate space. These two
+ * constants are what make "100% = the shape's natural, undistorted size"
+ * (Spec 35 §F.2.3) a computable value rather than a magic number: Y at 100%
+ * IS the viewBox height in px, and X at 100% IS one tile spanning the full
+ * viewBox width.
+ */
+const SGS_SHAPE_DIVIDER_VIEWBOX_W = 1200;
+const SGS_SHAPE_DIVIDER_VIEWBOX_H = 120;
+
+/** Slider bounds, mirrored from ContainerWrapperControls.js's SHAPE_DIVIDER_SCALE_*. */
+const SGS_SHAPE_DIVIDER_SCALE_MIN = 10;
+const SGS_SHAPE_DIVIDER_SCALE_MAX = 400;
+
+/**
+ * Clamp one axis of a divider scale to the control's own range.
+ *
+ * Stored attributes are client data and can be anything (a hand-edited post,
+ * a clone, an older shape). Clamping here means a nonsense value degrades to
+ * the nearest sane divider rather than emitting a zero-width pattern tile
+ * (which renders nothing) or a 100000% tile (which renders one invisible
+ * sliver). A non-numeric value falls back to the neutral 100.
+ *
+ * @param mixed $value Raw stored axis value.
+ * @return int Clamped percentage.
+ */
+function sgs_clamp_shape_divider_scale( $value ): int {
+	if ( ! is_numeric( $value ) ) {
+		return 100;
+	}
+	return (int) max( SGS_SHAPE_DIVIDER_SCALE_MIN, min( SGS_SHAPE_DIVIDER_SCALE_MAX, (int) round( (float) $value ) ) );
+}
+
+/**
+ * Read one axis out of a stored `{x,y}` scale attribute.
+ *
+ * @param mixed  $scale Raw stored attribute (expected array with x/y keys).
+ * @param string $axis  'x' or 'y'.
+ * @return int Clamped percentage for that axis.
+ */
+function sgs_shape_divider_axis( $scale, string $axis ): int {
+	if ( ! is_array( $scale ) || ! isset( $scale[ $axis ] ) ) {
+		return 100;
+	}
+	return sgs_clamp_shape_divider_scale( $scale[ $axis ] );
+}
+
+/**
  * Get a single shape divider SVG.
  *
  * MARKUP ONLY — no `style` attribute (FR-32-1 / FR-32-4, D345). This used to
@@ -97,7 +146,7 @@ function sgs_get_shape_dividers(): array {
  * @param string $position 'top' or 'bottom'.
  * @return string SVG HTML or empty string.
  */
-function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, string $position ): string {
+function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, string $position, int $scale_x = 100 ): string {
 	$shapes = sgs_get_shape_dividers();
 
 	if ( ! isset( $shapes[ $shape ] ) ) {
@@ -118,14 +167,81 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 
 	$position_class = 'sgs-shape-divider--' . esc_attr( $position );
 
+	$scale_x = sgs_clamp_shape_divider_scale( $scale_x );
+
+	// ── X = 100%: the original single-path markup, byte-for-byte ──────────────
+	// The default MUST render exactly as it did before this control existed —
+	// a divider whose look shifts merely because the mechanism changed
+	// underneath it would be a regression on every existing page. The <pattern>
+	// wrapper below is therefore reached ONLY when the client has actually
+	// scaled the X axis away from its neutral value.
+	if ( SGS_SHAPE_DIVIDER_VIEWBOX_W === (int) round( SGS_SHAPE_DIVIDER_VIEWBOX_W * $scale_x / 100 ) ) {
+		return sprintf(
+			'<div class="sgs-shape-divider %s" aria-hidden="true">' .
+			'<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' .
+			'<path d="%s" fill="currentColor"%s/>' .
+			'</svg></div>',
+			$position_class,
+			esc_attr( $path ),
+			$transform
+		);
+	}
+
+	// ── X != 100%: tile the shape with an SVG <pattern> ───────────────────────
+	// One tile is `tile_w` user units wide (the viewBox is 1200 wide, so
+	// scale_x=50 gives a 600-unit tile, i.e. two tiles across the block).
+	// `patternUnits="userSpaceOnUse"` keeps the maths in viewBox coordinates so
+	// the tile width is a plain multiplication rather than a bounding-box ratio.
+	//
+	// CENTRE ANCHORING: the pattern's x-origin is placed so that one whole tile
+	// is centred on the block's horizontal midpoint, and the repeat then runs
+	// outward symmetrically in both directions. Below 100% that reads as an
+	// evenly-centred repeat; above 100% the single oversized tile is centred and
+	// the overflow is clipped by the SVG viewport itself — ordinary overflow
+	// semantics, no bespoke maths.
+	$tile_w   = max( 1, (int) round( SGS_SHAPE_DIVIDER_VIEWBOX_W * $scale_x / 100 ) );
+	$origin_x = (int) round( ( SGS_SHAPE_DIVIDER_VIEWBOX_W - $tile_w ) / 2 );
+
+	// The path is authored against a 1200-wide viewBox; squeeze it into the
+	// tile with a plain horizontal scale so the shape keeps its full height.
+	$tile_scale = $tile_w / SGS_SHAPE_DIVIDER_VIEWBOX_W;
+
+	// Pattern IDs must be unique PER DOCUMENT. Deriving the id from the inputs
+	// alone is NOT enough: two blocks on one page sharing shape + position +
+	// tile width (two default heroes with the same top divider at the same
+	// scale) would emit duplicate `id` attributes — invalid markup, and the
+	// browser resolves `url(#id)` to whichever came first. A per-request
+	// counter guarantees uniqueness without making the markup random: it is
+	// deterministic for a given page render, so caching is unaffected.
+	static $instance = 0;
+	++$instance;
+	$pattern_id = 'sgs-sd-' . substr( md5( $shape . '|' . $position . '|' . $tile_w ), 0, 8 ) . '-' . $instance;
+
+	// ⛔ The flip/invert transform goes on the PATH INSIDE the pattern tile, NOT
+	// on the <rect>. `transform-origin="center"` resolves against the
+	// transformed element's OWN bounding box: on the rect that is always the
+	// full 1200x120 viewBox (centre 600,60), but several shapes have a narrower
+	// box (`zigzag` spans y 20-120, centre y=70). Putting it on the rect would
+	// therefore flip asymmetric shapes about a different axis than the
+	// X=100% route does, so the same shape would jump when the client nudged
+	// the X slider off 100. On the path, both routes share one origin.
+	// Flipping each tile is equivalent to flipping the tiled result.
 	return sprintf(
 		'<div class="sgs-shape-divider %s" aria-hidden="true">' .
 		'<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' .
-		'<path d="%s" fill="currentColor"%s/>' .
+		'<defs><pattern id="%s" x="%d" y="0" width="%d" height="120" patternUnits="userSpaceOnUse">' .
+		'<g transform="scale(%s 1)"><path d="%s" fill="currentColor"%s/></g>' .
+		'</pattern></defs>' .
+		'<rect x="0" y="0" width="1200" height="120" fill="url(#%s)"/>' .
 		'</svg></div>',
 		$position_class,
+		esc_attr( $pattern_id ),
+		$origin_x,
+		$tile_w,
+		esc_attr( rtrim( rtrim( number_format( $tile_scale, 6, '.', '' ), '0' ), '.' ) ),
 		esc_attr( $path ),
-		$transform
+		$transform,
+		esc_attr( $pattern_id )
 	);
 }
 
@@ -138,11 +254,24 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
  * scoped stylesheet rule instead of an inline `style` attribute. `color` is set
  * (not `fill`) because the SVG path paints with `fill="currentColor"`.
  *
- * @param string $colour CSS colour value (validated here, as it was inline).
- * @param int    $height Height in pixels.
- * @return string Declarations without braces, e.g. `height:60px;color:#fff`.
+ * HEIGHT is now derived from the Y axis of the `{x,y}` scale attribute rather
+ * than stored as px (Spec 35 §F.2.3, D637): 100% IS the shape's natural
+ * undistorted height, which is the authored viewBox height. Y anchors to the
+ * edge the divider is attached to and grows from there, which is what the
+ * existing `top:-1px` / `bottom:-1px` positioning in the block stylesheet
+ * already does — so no repositioning is needed and no existing divider moves.
+ *
+ * The X axis is NOT emitted here: it changes the SVG's internal tiling, not a
+ * CSS property on the wrapper, and is handled inside
+ * sgs_render_shape_divider() where the markup is built.
+ *
+ * @param string $colour  CSS colour value (validated here, as it was inline).
+ * @param int    $scale_y Vertical scale as a percentage of natural height.
+ * @return string Declarations without braces, e.g. `height:120px;color:#fff`.
  */
-function sgs_shape_divider_decls( string $colour, int $height ): string {
+function sgs_shape_divider_decls( string $colour, int $scale_y ): string {
+	$scale_y = sgs_clamp_shape_divider_scale( $scale_y );
+	$height  = (int) round( SGS_SHAPE_DIVIDER_VIEWBOX_H * $scale_y / 100 );
 	return 'height:' . absint( $height ) . 'px;color:' . sgs_sanitise_colour( $colour );
 }
 

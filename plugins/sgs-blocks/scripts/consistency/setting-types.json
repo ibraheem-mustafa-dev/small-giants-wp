@@ -1619,8 +1619,8 @@
         "heightUnit",
         "imageHeight",
         "imageHeightUnit",
-        "shapeDividerBottomHeight",
-        "shapeDividerTopHeight"
+        "shapeDividerBottomScale",
+        "shapeDividerTopScale"
       ],
       "attr_name_count": 6,
       "instance_count": 20,

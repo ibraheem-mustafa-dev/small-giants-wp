@@ -229,12 +229,18 @@ export default function Edit({ attributes, setAttributes, name }) {
 
   return (
     <>
-      <InspectorControls>
-
-        {/* Background (image/video/svg tabs + ken-burns/parallax) — root-level
-            appearance, kept first so it isn't buried under content-scoped
-            panels (container has no separate Styles tab yet). */}
+      {/* Background (image/video/svg tabs + ken-burns/parallax) — the STYLES
+          tab, not Settings. A background image/video/overlay is appearance, so
+          it belongs beside colour, which D621/D622 already placed in Styles.
+          Standardised 2026-08-16 (Bean-ruled): this panel previously rendered
+          in Settings on container/site-header/site-footer/physics-canvas and in
+          Styles on cta-section/hero — the same panel in two different tabs
+          depending on which block the client had selected. */}
+      <InspectorControls group="styles">
         <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+      </InspectorControls>
+
+      <InspectorControls>
 
         {/* Layout panel — shared LayoutPanel + WidthPanel + container-specific controls
             (HTML tag, min-height ×3). Kept as a single "Layout" PanelBody to preserve

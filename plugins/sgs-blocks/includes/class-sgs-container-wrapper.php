@@ -1331,28 +1331,36 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$shape_bottom = $attributes['shapeDividerBottom'] ?? '';
 
 				if ( $shape_top ) {
+					// Scale is a {x,y} PERCENTAGE object (Spec 35 §F.2.3, D637) —
+					// it replaced the old scalar px `shapeDividerTopHeight`. X drives
+					// the SVG's internal tiling, Y the wrapper's height; both default
+					// to 100 = the shape's natural, undistorted size.
+					$shape_top_scale            = $attributes['shapeDividerTopScale'] ?? null;
 					$shape_top_html             = sgs_render_shape_divider(
 						$shape_top,
 						! empty( $attributes['shapeDividerTopFlip'] ),
 						! empty( $attributes['shapeDividerTopInvert'] ),
-						'top'
+						'top',
+						sgs_shape_divider_axis( $shape_top_scale, 'x' )
 					);
 					$shape_divider_decls['top'] = sgs_shape_divider_decls(
 						sgs_colour_value( $attributes['shapeDividerTopColour'] ?? 'surface' ),
-						(int) ( $attributes['shapeDividerTopHeight'] ?? 60 )
+						sgs_shape_divider_axis( $shape_top_scale, 'y' )
 					);
 				}
 
 				if ( $shape_bottom ) {
+					$shape_bottom_scale            = $attributes['shapeDividerBottomScale'] ?? null;
 					$shape_bottom_html             = sgs_render_shape_divider(
 						$shape_bottom,
 						! empty( $attributes['shapeDividerBottomFlip'] ),
 						! empty( $attributes['shapeDividerBottomInvert'] ),
-						'bottom'
+						'bottom',
+						sgs_shape_divider_axis( $shape_bottom_scale, 'x' )
 					);
 					$shape_divider_decls['bottom'] = sgs_shape_divider_decls(
 						sgs_colour_value( $attributes['shapeDividerBottomColour'] ?? 'surface' ),
-						(int) ( $attributes['shapeDividerBottomHeight'] ?? 60 )
+						sgs_shape_divider_axis( $shape_bottom_scale, 'y' )
 					);
 				}
 

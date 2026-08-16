@@ -163,6 +163,264 @@ and `view.js:328-340` already has a dead `result.price` branch waiting for it. M
 rollout.** Any colour attribute added now falls into the background-family bucket and receives
 gradient automatically in the universal pass. Added after, each needs its own separate gradient
 retrofit. Cheaper in that order, and the dependency is real, not cosmetic.
+## D639 — Step 7 BUILT (F.2.1 gate + F.2.3 scale control + F.2.2 DB reader); two "locked" design premises falsified against the code [ROUTINE]
+
+**2026-08-16.** Step 7 of the shared-wrapper decomposition — building the three designs D637
+locked. Two built as specced. The third could not, because the design rested on statements that
+are not true of the current tree; both were caught by reading the code rather than trusting the
+entry, and the affected half was re-scoped with Bean rather than forced through.
+
+**F.2.1 — precondition gate: BUILT as specced.** New
+`plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js`. Rule 1 (`gridItems`
+requires `layout`) ships fail-closed with NO baseline, following `check-shared-panel-schema.js`
+rather than the baseline-gated `check-box-family-guard.py` — there are zero current violations,
+so a baseline would only be a hole for the next one to hide in. `--self-test` proves each rule
+can fail AND stays quiet on the clean case, including the comment blind-spot that has produced a
+wrong consumer list in this repo three times. **Spec correction, measured not assumed:** THREE
+blocks declare `gridItems`+`layout` (`container`, `cta-section`, `trust-bar`), not the two D637
+names.
+
+**F.2.3 — `ScaleAxisControl` + the storage replace: BUILT, with one premise corrected.**
+`shapeDivider{Top,Bottom}Height` (scalar px, default 80) replaced outright by
+`shapeDivider{Top,Bottom}Scale` (`{x,y}` object, %, default `{x:100,y:100}`) across all 6
+declaring blocks — D637's decided Option A, licensed by the no-deprecations-pre-production policy
+and Bean's direct confirmation that there is nothing on the canary to preserve.
+
+⛔ **FALSIFIED PREMISE 1 — "below 100% the shape tiles/repeats, same repeat mechanism the shape
+already uses today".** There is NO repeat mechanism today: the divider is a single `<path>` in a
+`preserveAspectRatio="none"` SVG stretched edge-to-edge (`includes/shape-dividers.php`,
+`container/style.css`). Tiling is NEW, not reuse. Bean picked the mechanism from a menu: an SVG
+`<pattern>` over a CSS mask, because it keeps the existing markup, keeps colour flowing through
+`currentColor`, keeps flip/invert working, and — decisively — **at x=100 the pattern route is not
+taken at all and the markup is byte-identical to before**, so the default cannot regress. That
+no-regression property is proven by an explicit negative control, not asserted.
+
+**Y ambiguity resolved by Bean, not by inference.** D637's second addendum said the top divider
+"anchors its top edge" AND "extends outward only — never grows back into the section". Those
+describe opposite results. Bean ruled: keep today's behaviour (grows INTO the section — the
+industry convention, and what `top:-1px`/`bottom:-1px` already produce), so nothing repositions.
+**Known consequence, flagged not smuggled:** a newly-inserted divider is now 120px (100% of the
+shape's natural viewBox height) where the old attribute default was 80px.
+
+**Gate correction found by RUNNING a gate, not reading it:** `check-shared-panel-schema.js`
+classified the new object-shaped write as SCALAR and reported `TYPE_MISMATCH` on 6 *correct*
+declarations — it flagged the right code as wrong. `ScaleAxisControl` added to
+`OBJECT_FAMILY_TAGS`.
+
+**F.2.2 — DB reader BUILT; editor half RE-SCOPED, not built.**
+
+⛔ **FALSIFIED PREMISE 2 — "`GridAreaPanel`'s own gate is already correct and needs no change,
+it's simply never called".** `GridAreaPanel` (written 2026-06-11, `65a3536a`) writes the FLAT
+per-side schema `contentPaddingTop`/`...Tablet`/`...Mobile` — 13 of 14 attributes per area. Those
+attributes stopped existing on 2026-08-11 when D580 migrated the storage to box OBJECTS
+(`contentPadding`, `mediaPadding`/`Tablet`/`Mobile`). The panel was never swept because it has
+zero mounts. Mounting it as specced would have shipped a client-facing padding control that
+**silently deletes the value on every use** — the exact standard-level defect Spec 35 Part M
+records ("19 of 21 blocks shipped an inspector that deleted the setting").
+
+**Git history settles the intent (Bean's own instruction to check it).** `65a3536a` DELETED
+hero's own per-side content-padding controls in favour of the shared panel ("duplicate controls
+removed"). The panel was then never mounted anywhere. Hero has since re-grown its own controls in
+the correct object shape — live today at `hero/edit.js:965` ("Content padding") and `:1336`
+("Media padding"), plus `contentBackground`/`mediaBackground`. **So `GridAreaPanel` is not a
+missing feature; it is superseded, and stale.** D626's own mount table settles the gating question
+the same way: `gridItems` "absorbs `GridAreaPanel` as a sub-capability" — and `hero` does not
+declare `gridItems`, so the panel would render nothing today even if wired.
+
+**What DID ship for F.2.2:** `block_composition.grid_areas` — a plain JSON-array TEXT column
+following `accepts_allowed_blocks` on the same table, NOT `container_kind` (a scalar `TEXT CHECK`
+enum; a closed value set can be enumerated, a per-block list of area names cannot) — plus the
+`/sgs-update` Stage 1 declarative writer `_populate_grid_areas`, populated from block.json on
+every run with no per-block dict (R-31-1). That closes hero's two-month orphan through the reader
+that is actually reachable, and `GRID_AREAS_READERS_LIVE` was flipped true in the same commit,
+making rule 2 fail-closed at 0 findings.
+
+⛔ **THE MIGRATION IS DELIBERATELY NOT RUN (Bean-ruled).** `sgs-framework.db` is ONE file shared by
+every worktree; four colour-gaps worktrees were live against it, and `check_schema_drift.py
+--check` runs in every `prebuild` comparing the live DB to the tree's own `schema.sql`. Applying
+it now turns those four builds red. It rides along with the reseed the colour thread already
+needs. **`schema.sql` is likewise deliberately unchanged** — changing it before the migration runs
+breaks THIS branch's build in the mirror-image way. The migration docstring carries the three
+commands that must run together, in order.
+
+**A self-test that caught its own flaw.** Once the real Stage 1 writer existed, four of the new
+gate's rule-2 fixtures went green by reading the REAL tree instead of their fixture — a self-test
+silently no longer testing anything, while still reporting PASS. `dbWriter` is now injected and a
+new assertion covers the DB-writer-alone route. This is the argument for `--self-test` assertions
+that can actually fail.
+
+**Also shipped (Bean-ruled the same session, separate concern):** the shared `BackgroundPanel` was
+reaching clients in two different tabs depending on the block — Settings on `container`,
+`site-header`, `site-footer`, `physics-canvas`; Styles on `cta-section`, `hero`. Standardised on
+Styles (appearance sits with colour, per D621/D622 and Spec 35 A3). The first attempt nested
+`InspectorControls` inside `InspectorControls`, which is invalid; caught by a structural check
+before commit, not after.
+
+**Verification.** Full `npm run build` exit 0 through all ~50 prebuild gates. 20/20 shape-divider
+render assertions (incl. the byte-identical default, tile geometry at 50%/200%, flip/invert under
+tiling, unique pattern ids, clamping of garbage stored values). 11/11 Stage-1 writer assertions
+against a THROWAWAY database — the shared one verified untouched afterwards. 11/11 gate self-test.
+Structural check across all 7 wrapper blocks: tags balanced, zero nested InspectorControls,
+Background resolving to Styles on every one. Only build mutation was a CRLF-only `roster.json`
+diff, reverted.
+
+**Residual, explicitly not closed:** hero/`GridAreaPanel` — whether to delete the stale panel as
+superseded or rebuild it onto the object storage. Bean parked it to the end of this session rather
+than forcing it into step 7. No live canary verification yet (nothing deployed).
+
+**Review pass (adversarial, mechanism-fidelity lens) — 5 real defects, all fixed.** Logged in
+full because one of them was mine and the whole gate stack missed it.
+
+1. ⛔ **A dead control I introduced.** Moving `<BackgroundPanel>` out of `sgs/site-header` deleted
+   the mount and left its `<ToolsPanelItem label="Background">` wrapper standing and EMPTY — still
+   in the "+" menu, still in `resetAll`, showing nothing when opened. **The full ~50-gate build
+   passed with it in the tree**: `check-dead-controls.js` checks the OPPOSITE direction (a control
+   nothing renders); a container whose children were deleted still has valid wiring. New gate
+   `check-empty-inspector-containers.js` closes it — an AST walk, because **two regexes were tried
+   first and both were wrong in opposite directions**: one found 0 (its char class cannot cross the
+   `=>` inside a prop), one found 471 (it matched every container whose last child is
+   self-closing). A false absence and a false flood from the same question; only a parser answers
+   "does this element have children". True answer: 1 in 110 files. Both regex failure shapes are
+   now `--self-test` fixtures. ⚠ The first removal attempt left an unterminated JSX comment — worse
+   than the bug — and the scan still read clean; the redo asserts the slice is self-contained and
+   re-parses the file after writing.
+2. **Flip/invert origin diverged between the two render routes.** The transform sat on the
+   `<rect>`, whose bounding box is always the full viewBox (centre 600,60); several shapes have a
+   narrower box (`zigzag` spans y 20-120, centre y=70), so an asymmetric shape would have JUMPED
+   the moment a client nudged X off 100. Moved onto the `<path>` inside the tile — one origin for
+   both routes.
+3. **Pattern-id collision.** Derived from shape+position+tile-width only, so two identical dividers
+   on one page emitted duplicate `id`s and both `url(#id)` references resolved to the first. Fixed
+   with a per-request counter (deterministic within a render; caching unaffected).
+4. **Stale attribute names** in `uimax-tools/enrich-db.py`'s name→slot dict and
+   `consistency/setting-types.json`. Renamed.
+5. ⭐ **The 80px→120px default — the review's framing was sharper than this entry's original one,
+   and D637's migration ruling never asked the right question.** The risk is not a CUSTOMISED
+   height (which D637 did check); it is a divider **enabled and left at default**, which stores no
+   key and therefore silently inherits the new default. **Settled by measurement, not argument:**
+   0 of 1,375 canary posts mention `shapeDivider` at all — with a positive control run first (1,375
+   posts, 274 carrying sgs blocks, 68 carrying `sgs/container`), because a zero from a query you
+   wrote yourself is worth nothing without one. Bean's "nothing to preserve" is now measured.
+
+**Left unfixed, deliberately:** `hasDbWriter()`'s Python-comment strip does not handle docstrings
+or inline comments. Real but latent — the only current match is the genuine
+`c.execute("UPDATE block_composition SET grid_areas = ? …")`, verified. Recorded rather than
+silently hardened, so the next reader knows it is a known edge and not an oversight.
+
+**CLOSE-OUT (same session, after Bean asked for the hero residual to be finished): `gridAreas`
+and `GridAreaPanel` are BOTH DELETED, and the DB column added earlier in this very entry is
+REVERTED. A THIRD D637 premise was falsified — and this one was mine.**
+
+**The third falsified premise.** This entry states above that the converter has "one comment-only
+reference, `converter/services/assembly.py:250`, explicitly noting the step is a no-op for this
+reason [no readers]". That MISREADS the comment. It actually says the opposite: *"`db.attr_for_area_property`
+is the natural DB gate … so **no gridAreas lookup is needed** and the step is a no-op for every
+block that declares no per-area attrs"*. The step is live and working — its own text describes it
+as the fix for "the hero content-padding gap". The converter does not want the flag; it was built
+not to need it.
+
+**Traced end to end, both candidate consumers derive what they need elsewhere:**
+- **Converter.** `resolvers/grid_area.py` routes per-area box CSS via
+  `db.attr_for_area_property(block, area, css_property)`. The AREA NAMES come from
+  `fold_helpers.grid_item_areas()`, which reads the **DRAFT's own** `grid-template-areas` CSS
+  across breakpoints — nothing to do with the block's flag. Matching is keyed on the block
+  declaring `<area>+<Suffix>` attrs.
+- **Editor.** `GridAreaPanel` was DOUBLY unreachable. AST census of all 17
+  `<ContainerWrapperControls>` mounts: **12 `layout`, 5 `content`, ZERO `section`, none omitted** —
+  and `section` is the only branch that renders it (reached solely as the unknown-kind fallback).
+  It also required a `gridAreas` prop no consumer ever passed. On top of that it wrote the flat
+  per-side storage D580 retired. The capability is delivered by `sgs/hero`'s own object-shaped
+  controls ("Content padding", "Media padding").
+
+**So the flag was redundant BY CONSTRUCTION.** "hero has areas `content` and `media`" is fully
+derivable from hero declaring `contentPadding`/`mediaPadding`. A declaration that restates what the
+attributes already say is a second source of truth that can only drift out of agreement with the
+first.
+
+⛔ **Which means `block_composition.grid_areas` — added earlier in this same entry — was a WRITER
+WITH NO CONSUMER. I moved the orphan up a level instead of closing it, and said so rather than
+leaving it.** Reverted in full: migration deleted, `_populate_grid_areas` and its Stage 1 call
+removed from `sgs-update-v2.py`. Net benefit of the reversal: the deferred-migration problem
+disappears with it — no shared-DB coordination, no schema.sql pairing, no three-commands-together
+dance for the next session.
+
+**Deleted, Bean-ruled (menu + recommendation, option 1 of 3):** `GridAreaPanel` + its unreachable
+KIND_PANELS mapping + the dead `gridAreas` prop threading through the aggregator (a "referenced but
+never used" shape — Part N's N-1); `supports.sgs.gridAreas` from `sgs/hero`; the DB column, writer
+and migration. A tombstone carrying the full reasoning replaces the panel in place.
+
+**The gate was REPURPOSED rather than deleted.** `check-wrapper-capability-preconditions.js` rule 2
+was "a `gridAreas` declaration must have ≥1 live reader"; building that reader is what proved none
+was needed, so it is now a RETIREMENT guard — **any** `supports.sgs.gridAreas` declaration is
+BLOCKING. One deliberate change of behaviour: the old rule ignored an EMPTY array (nothing to
+orphan); the new one flags it too, because `gridAreas: []` would otherwise be the obvious way to
+keep the key and silence the gate. Proven by negative control on the REAL tree, not a fixture:
+re-injecting the flag into `hero/block.json` returns exit **1** with the finding, and restoring it
+returns exit 0 with a matching md5.
+
+**A guard that EXCLUDES a panel is a guard that does not cover it.** `check-shared-panel-schema.js`
+deliberately skipped `GridAreaPanel` because its attr names were template-literal-derived from a
+runtime prop rather than static keys — and that exclusion is precisely why nothing noticed the
+panel had gone stale for three months. Recorded on the constant itself: prefer teaching the
+extractor over buying a blind spot.
+
+**Verification:** `npm run build` exit 0 after the deletion. Gate self-test 8/8 on the reshaped
+rules (positive control, the empty-array hole, and a negative control proving it does not flag
+blocks that never declared it). Sibling `check-shared-panel-schema` self-test + check green.
+Zero live `gridAreas`/`GridAreaPanel` references remain outside tombstone comments.
+
+**/qc-council on the close-out (Bean-requested, 2 raters + my own empirical pass). Decision UPHELD;
+THREE follow-on corrections found, all applied. Two of them were errors in this very entry.**
+
+**EMPIRICAL VALIDATION (the Stage-5 gate, and the one piece neither rater did).** The converter
+golden-fixture harness (`scripts/tests/test_converter_conformance.py`, Gate A — NOT in `prebuild`)
+was run on this branch AND on untouched `origin/main`. Both: **37 failed, 13 passed**, and the
+failing SETS are byte-identical (`diff` empty). So the deletion changed converter output for
+exactly zero fixtures. ⚠ The 37 failures are PRE-EXISTING on `main` and include `sgs-hero` — a
+separate standing problem, not this branch's, and worth someone's attention. Baselining first is
+what stopped 37 red tests being misread as this change's damage.
+
+⛔ **CORRECTION 1 — the mechanism this entry cited was WRONG, and I made D637's exact mistake.**
+This entry (and the tombstone, the gate docstring, Spec 35 and `plugins/sgs-blocks/CLAUDE.md`) said
+the converter "derives area names from the DRAFT's own `grid-template-areas` CSS via
+`fold_helpers.grid_item_areas()`". Verified independently at source: **`grid_item_areas()` has ZERO
+callers** — the only hit repo-wide is its own `def`. And `resolvers/grid_area.py`'s GRID_AREA layer
+is gated on `ctx.area_name`, which **no production `Ctx(...)` ever sets** (only three test files
+do). Both are DEAD IN PRODUCTION. The LIVE route is `assembly.py` **step 3d**: it walks the section
+root's children and takes each area name from the draft's **BEM ELEMENT TOKEN**
+(`db_lookup.parse_sgs_bem( cls ).element` → `sgs-hero__content` gives area `content`), then routes
+via `route_area_css_to_block_attrs` → `db.attr_for_area_property( block, area, prop )`.
+**The CONCLUSION is unchanged and in fact stronger** — the live path reads the draft's markup, so
+the flag is even further from being needed. But the citation was repeated from a docstring instead
+of re-derived from source, which is precisely the failure this session had already caught twice.
+Corrected in all five surfaces.
+
+⛔ **CORRECTION 2 (rater B, BLOCKING) — a live-doc lie in the spec every session must read in
+full.** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md:187` still stated "areas declared in
+`supports.sgs.gridAreas`". `fb9625dd` had touched Spec 35, `decisions.md` and the plugin CLAUDE.md
+but never Spec 31. Rewritten with the VERIFIED mechanism (BEM element token), not with rater B's
+own version — **rater B repeated the same `grid_item_areas()` claim rater A had just disproved**,
+which is the argument for more than one lens: each caught what the other missed, and neither
+should have been applied unchecked.
+
+**CORRECTION 3 (noted, not fixed here) — `resolvers/grid_area.py`, the GRID_AREA branch in
+`layer_detect.py`, and `fold_helpers.grid_item_areas()` are DEAD CODE**, while
+`fold_helpers.route_area_css_to_block_attrs`'s own docstring asserts "THIS FUNCTION IS WIRED AND
+LIVE" and that `grid_area.py` is "the OTHER grid-per-area path; both are live" — provably false.
+A test (`tests/test_l4_area_wiring.py`) exercises the resolver with a hand-built `Ctx`, so it is
+testing dead code while reading green. **Deliberately NOT fixed in this commit:** it is converter
+surface, outside step 7's scope, and deleting a resolver needs its own design gate. Raised with
+Bean rather than parked unilaterally.
+
+**What the council did NOT overturn:** the deletion itself. Client capability is not merely
+preserved but a superset — hero's live controls offer solid **and gradient** background plus a full
+4-side box control at all three tiers, where the deleted panel offered solid-only and the flat
+scalar shape D580 retired. The DB revert was verified clean against the live shared database (no
+`grid_areas` column, no `schema.sql` reference).
+
+⚠ **D-NUMBER COLLISION, flagged for whoever merges:** `main` and `feat/gradient-palette-stops` BOTH
+minted a **D638** for different decisions — step 6 close-out on `main`, the colour-gap council on
+the branch. One must be renumbered at merge.
 
 ## D638 — Wrapper decomposition step 6 (background pilot) CLOSED: build + live verification + multi-rater review [ROUTINE]
 

@@ -126,12 +126,12 @@ CONTAINER_NEW_ATTR_SLOTS: dict[str, str] = {
     "shapeDividerBottom": "separator",
     "shapeDividerBottomColour": "separator",
     "shapeDividerBottomFlip": "separator",
-    "shapeDividerBottomHeight": "separator",
+    "shapeDividerBottomScale": "separator",
     "shapeDividerBottomInvert": "separator",
     "shapeDividerTop": "separator",
     "shapeDividerTopColour": "separator",
     "shapeDividerTopFlip": "separator",
-    "shapeDividerTopHeight": "separator",
+    "shapeDividerTopScale": "separator",
     "shapeDividerTopInvert": "separator",
 }
 
