@@ -370,8 +370,38 @@ export default function Edit( { attributes, setAttributes } ) {
 			     this row has a single state whose key is 'hover', not 'normal'.
 			   - "Attribution colour" and "Border colour" are single-state
 			     (no hover pair exists for either in render.php). */ }
+			{ /* Block-level "Text colour" row ADDED here (2026-08-16) — was the
+			   native WP Text control (`supports.color.text`, now false so WP
+			   no longer renders it as a separate panel); wired straight to
+			   `style.color.text`, which render.php already reads manually
+			   (lines ~225-227, wp_style_engine_get_styles(), scoped to the
+			   block's own `.{uid}` root selector). Block-level "Background
+			   colour" already existed below as a CUSTOM `backgroundColour`
+			   attr/row (NOT the native path) — its native
+			   `supports.color.background` sub-flag is also now false (it was
+			   redundant with this existing row and had no render.php
+			   consumer of its own), but the row itself is unchanged. */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: style?.color?.text,
+								onChange: ( val ) =>
+									setAttributes( {
+										style: {
+											...style,
+											color: { ...style?.color, text: val || undefined },
+										},
+									} ),
+								linked: true,
+							},
+						],
+					},
 					{
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),

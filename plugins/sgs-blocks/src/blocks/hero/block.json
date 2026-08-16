@@ -185,7 +185,6 @@
 					"attrMap": {
 						"css:background-color": "mediaBackground",
 						"css:object-fit": "imageObjectFit",
-						"css:object-position": "imageObjectPosition",
 						"anim:parallax": "mediaParallax",
 						"anim:duration": "mediaAnimationDuration"
 					},
@@ -279,7 +278,7 @@
 						"css:height": "imageHeight",
 						"css:border-radius": "imageBorderRadius",
 						"css:padding": "imagePadding",
-						"css:object-position": "imageObjectPositionTablet"
+						"css:object-position": "imageObjectPosition"
 					},
 					"_note": "The rendered split-media image node itself (`.sgs-hero__split-image`, nested inside the `media` grid-area's wrapper div — render.php ~line 1129-625). imageWidth/imageHeight/imageBorderRadius/imagePadding (and their Tablet/Mobile siblings) all target this node directly, not the `.sgs-hero__media` wrapper div. Ground-truth check (render.php lines 560-625) also shows imageObjectFit/imageObjectPosition(desktop)/imageBorderColour/imageBorderStyle/imageBorderWidth painting on this SAME node, yet the DB currently tags those css_element='media' — that is a separate, pre-existing DB-side inconsistency (both actually paint on split-image per render.php) left untouched here: fixing it needs a DB write, which this manifest-only fix cannot do, and 'media' is already a declared element so it produces no orphan finding. `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 11 attrs css_element='split-image', undeclared until now."
 				},
@@ -289,10 +288,8 @@
 					"order": 13,
 					"clusters": [],
 					"prefix": "",
-					"attrMap": {
-						"css:object-position": "splitImageMobileObjectPosition"
-					},
-					"_note": "The type-agnostic base class emitted by `sgs_tier_media_render()` (`render.php:1135`) — carries `sgs-hero__split-media`, `--{tier}`, and `--{type}` modifiers alongside the type-specific `split-image`/`split-video`/`split-svg` extra class on the same node. Declared so `splitImageMobileObjectPosition`'s `.split-image.split-media--mobile` selector (`render.php:1195`) resolves to a real element instead of an orphan."
+					"attrMap": {},
+					"_note": "The type-agnostic base class emitted by `sgs_tier_media_render()` (`render.php:1135`) — carries `sgs-hero__split-media`, `--{tier}`, and `--{type}` modifiers alongside the type-specific `split-image`/`split-video`/`split-svg` extra class on the same node. object-position tiers (imageObjectPositionTablet, splitImageMobileObjectPosition) paint on the SAME `.sgs-hero__split-image` node via compound selectors (`.split-image.split-media--mobile` at mobile), not on a separate element — all three variants are now unified under the split-image element's claim (constrained to desktop base due to the one-key-per-element rule and the non-standard Tablet/Mobile naming pattern)."
 				}
 			}
 		}

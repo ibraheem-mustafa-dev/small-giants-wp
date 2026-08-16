@@ -173,9 +173,9 @@
 		"align": false,
 		"interactivity": true,
 		"color": {
-			"background": true,
+			"background": false,
 			"gradients": true,
-			"text": true,
+			"text": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {

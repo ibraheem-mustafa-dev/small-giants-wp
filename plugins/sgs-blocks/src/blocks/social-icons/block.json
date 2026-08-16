@@ -21,9 +21,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"gradients": true,
-			"text": true,
+			"background": false,
+			"gradients": false,
+			"text": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {

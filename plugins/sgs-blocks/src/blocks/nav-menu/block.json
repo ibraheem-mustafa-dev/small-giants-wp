@@ -85,7 +85,7 @@
 							}
 						}
 					},
-					"_note": "render.php:304-309 groups `:hover`, `:focus-visible` AND `[aria-current=\"page\"]` into ONE selector list (`$hover_targets`) sharing the SAME itemColourHover/itemBgHover/itemRadiusHover attributes — so `selected` (the current-page indicator, view.js-computed) is declared with the identical attrMap as `hover`, not derived from the name (FR-35-5). underlineThickness/underlineOffset/underlineColour(Hover) belong to the separate `underline` element, not this one — they only apply under hoverStyle='underline'."
+					"_note": "render.php:953-957 defines `$hover_targets` as `:hover, :focus-visible` ONLY. `[aria-current=\"page\"]` was removed 2026-07-31 (render.php:1476-1480 gives it distinct treatment: font-weight:600 top-level, border-left+background in drawer) so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. The `selected` state's attrMap remains itemColourHover/itemBgHover/itemRadiusHover for schema consistency, but these attributes only render on the hover/focus selector list, never on aria-current (FR-35-5). underlineThickness/underlineOffset/underlineColour(Hover) belong to the separate `underline` element, not this one — they only apply under hoverStyle='underline'."
 				},
 				"underline": {
 					"label": "Hover / current-page underline bar",

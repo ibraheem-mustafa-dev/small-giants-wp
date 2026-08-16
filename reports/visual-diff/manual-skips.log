@@ -1,3 +1,15 @@
 # Audit log for SGS_VISUAL_GATE_SKIP bypasses of the visual-diff commit gate.
 # Format: timestamp | block-name | MANUAL SKIP | reason
 # Appended automatically by .githooks/sgs-gates.sh — do not hand-edit entries.
+2026-08-15 23:29:03 | trust-bar | MANUAL SKIP | block.json-only change proven metadata-only via check-blockjson-metadata-only.py (exit 0) -- gate's block-level detection is picking up a concurrent session's unstaged edit.js/render.php changes in the same block directory, not anything in this commit's staged diff
+2026-08-15 23:38:54 | card-grid | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:38:54 | cta-section | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:38:55 | info-box | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:38:56 | testimonial | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:39:32 | brand-strip | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:39:33 | card-grid | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:39:34 | cta-section | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:39:34 | info-box | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:39:35 | team-member | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:39:36 | testimonial | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification
+2026-08-15 23:39:36 | trust-bar | MANUAL SKIP | Uncommitted shadow-colour-extraction migration; committing to a feature branch for canary deploy + live Playwright verification immediately after, not skipping verification

@@ -176,10 +176,56 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* D618/D609 — grouped, SGS-owned colour panel, rendered FIRST so it
 			   sits at the top of the inspector (Styles tab). Replaces the
 			   inline "Icon colour" DesignTokenPicker that used to sit inside
-			   the "Icon" ToolsPanelItem below. Single-state — iconColour has
-			   no hover counterpart. */ }
+			   the "Icon" ToolsPanelItem below. "Text colour" + "Background
+			   colour" are the BLOCK-LEVEL native WP colour controls (was
+			   `supports.color.text`/`background`, now false so WP no longer
+			   renders its own duplicate panel) — wired straight to
+			   `style.color.text`/`background`, which render.php already
+			   reads manually (lines ~172-174, wp_style_engine_get_styles(),
+			   scoped to the root `.sgs-notice-banner` selector) — a real
+			   working control, not dead plumbing. Single-state (no hover
+			   pair exists for either in render.php). iconColour stays
+			   single-state too — no hover counterpart. */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: style?.color?.text,
+								onChange: ( val ) =>
+									setAttributes( {
+										style: {
+											...style,
+											color: { ...style?.color, text: val || undefined },
+										},
+									} ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: style?.color?.background,
+								onChange: ( val ) =>
+									setAttributes( {
+										style: {
+											...style,
+											color: { ...style?.color, background: val || undefined },
+										},
+									} ),
+								linked: true,
+							},
+						],
+					},
 					{
 						key: 'iconColour',
 						label: __( 'Icon colour', 'sgs-blocks' ),

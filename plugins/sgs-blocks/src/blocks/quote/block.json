@@ -73,9 +73,9 @@
 		"className": true,
 		"html": false,
 		"color": {
-			"background": true,
+			"background": false,
 			"gradients": true,
-			"text": true,
+			"text": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -118,7 +118,7 @@
 		"attributionFontSize": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"attributionFontSizeUnit": {
 			"type": "string",
 			"default": "px"
@@ -171,7 +171,7 @@
 		"attributionMarginTop": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"attributionMarginUnit": {
 			"type": "string",
 			"default": "px"
@@ -242,7 +242,7 @@
 		"maxWidth": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"inheritStyle": {
 			"type": "boolean",
 			"default": false

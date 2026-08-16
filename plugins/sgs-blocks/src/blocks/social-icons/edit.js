@@ -9,7 +9,7 @@ import {
 	Flex,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel } from '../../components';
 import { spacingVar } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -226,6 +226,56 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D619 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
+			   Styles tab), rendered FIRST so it sits at the top of the inspector.
+			   `iconColour`/`iconColourHover` are the icon-specific colour attrs;
+			   the native `color` support sub-flags are now false so WordPress
+			   generates no competing native colour UI. The colour mode
+			   (theme vs brand) gates whether the resting colour is user-
+			   controllable: 'theme' mode shows the colour row (one colour for
+			   all icons), 'brand' mode omits it (per-platform override, no
+			   user control). The hover colour is always editable (independent
+			   of mode). */ }
+			<SgsColourPanel
+				rows={ [
+					...( 'theme' === colourMode ? [
+						{
+							key: 'icon',
+							label: __( 'Icon colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: iconColour,
+									onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+									linked: true,
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: iconColourHover,
+									onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+									linked: true,
+								},
+							],
+						},
+					] : [
+						{
+							key: 'icon-hover',
+							label: __( 'Hover colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: iconColourHover,
+									onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+									linked: true,
+								},
+							],
+						},
+					] ),
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Link source', 'sgs-blocks' ) }>
 					<SelectControl
@@ -364,22 +414,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { colourMode: val } ) }
 						help={ 'brand' === colourMode
 							? __( 'Each icon uses its official brand colour (Facebook blue, Instagram pink, etc.) at rest.', 'sgs-blocks' )
-							: __( 'Every icon uses the theme colour below at rest.', 'sgs-blocks' )
+							: __( 'Every icon uses the theme colour below at rest. Edit in the Colour panel at the top.', 'sgs-blocks' )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					{ 'theme' === colourMode && (
-						<DesignTokenPicker
-							label={ __( 'Icon colour', 'sgs-blocks' ) }
-							value={ iconColour }
-							onChange={ ( val ) => setAttributes( { iconColour: val } ) }
-						/>
-					) }
-					<DesignTokenPicker
-						label={ __( 'Hover colour', 'sgs-blocks' ) }
-						value={ iconColourHover }
-						onChange={ ( val ) => setAttributes( { iconColourHover: val } ) }
 					/>
 				</PanelBody>
 

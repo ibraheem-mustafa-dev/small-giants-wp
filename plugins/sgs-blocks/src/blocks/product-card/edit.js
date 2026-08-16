@@ -932,6 +932,56 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// grouping (background/text/border, each Normal+Selected) since this
 	// block's pill controls forward 1:1 onto that same block.
 	const colourRows = [];
+	// Card background/text colour — the BLOCK-LEVEL native WP colour controls
+	// (was `supports.color.background`/`text`, now false so WP no longer
+	// renders its own duplicate panel), wired straight to
+	// `style.color.background`/`text`. Placed FIRST (whole-card controls,
+	// before the per-element rows below). render.php already reads these
+	// manually and unconditionally — lines ~239-243, wp_style_engine_get_styles(),
+	// scoped to the card's own `.{uid}` root selector — regardless of typed
+	// vs bound mode (confirmed: the read happens before the mode branch
+	// split), so this pair applies in BOTH modes, unlike the isBuiltIn-gated
+	// rows below.
+	colourRows.push(
+		{
+			key: 'cardText',
+			label: __( 'Card text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: nativeStyle?.color?.text,
+					onChange: ( val ) =>
+						setAttributes( {
+							style: {
+								...nativeStyle,
+								color: { ...nativeStyle?.color, text: val || undefined },
+							},
+						} ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'cardBackground',
+			label: __( 'Card background colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: nativeStyle?.color?.background,
+					onChange: ( val ) =>
+						setAttributes( {
+							style: {
+								...nativeStyle,
+								color: { ...nativeStyle?.color, background: val || undefined },
+							},
+						} ),
+					linked: true,
+				},
+			],
+		}
+	);
 	if ( isBuiltIn ) {
 		colourRows.push( {
 			key: 'title',
