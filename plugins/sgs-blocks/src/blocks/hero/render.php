@@ -1259,6 +1259,6 @@ if ( $is_split ) {
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns an escaped wrapper; $hero_inner_html built with esc_url/esc_html/esc_attr above; $content is WP core InnerBlocks output.
-echo SGS_Container_Wrapper::render( $hero_helper_attrs, $block, $hero_inner_html, 'section', $hero_helper_opts );
+echo SGS_Container_Wrapper::render( $hero_helper_attrs, $block, $hero_inner_html, SGS_Container_Wrapper::resolve_kind( $block, 'section' ), $hero_helper_opts );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
