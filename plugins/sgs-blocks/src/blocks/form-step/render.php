@@ -52,8 +52,21 @@ $sgs_fs_supports_classes = array( 'sgs-form-step' );
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$sgs_fs_style_engine_input = array();
 
-	if ( ! empty( $sgs_fs_style_group['color'] ) && is_array( $sgs_fs_style_group['color'] ) ) {
-		$sgs_fs_style_engine_input['color'] = $sgs_fs_style_group['color'];
+	// SGS flat colour attrs (D635 pattern — native color.text/color.background
+	// supports are off; the SgsColourPanel writes here instead). Gradient stays
+	// on the WP-native style.color.gradient path (gradients support unchanged).
+	$sgs_fs_color_args = array();
+	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+		$sgs_fs_color_args['text'] = (string) $attributes['textColour'];
+	}
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+		$sgs_fs_color_args['background'] = (string) $attributes['backgroundColour'];
+	}
+	if ( isset( $sgs_fs_style_group['color']['gradient'] ) && '' !== $sgs_fs_style_group['color']['gradient'] ) {
+		$sgs_fs_color_args['gradient'] = (string) $sgs_fs_style_group['color']['gradient'];
+	}
+	if ( ! empty( $sgs_fs_color_args ) ) {
+		$sgs_fs_style_engine_input['color'] = $sgs_fs_color_args;
 	}
 	if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['border'] ) ) {
 		$sgs_fs_border_raw = $sgs_fs_style_group['border'];

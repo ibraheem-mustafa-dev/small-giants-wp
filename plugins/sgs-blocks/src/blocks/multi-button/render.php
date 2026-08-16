@@ -151,14 +151,42 @@ $css .= '}}';
 // stable core style engine (mirrors sgs/label's pattern).
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$mb_color_border = array();
-	if ( isset( $attributes['style']['color'] ) && is_array( $attributes['style']['color'] ) ) {
-		$mb_color_border['color'] = $attributes['style']['color'];
+	// D635-pattern migration: background/text now read from the flat
+	// backgroundColour/textColour attrs (SgsColourPanel), not native
+	// style.color.background/.text (supports.color.background/.text are now
+	// false). Gradient stays native (supports.color.gradients unchanged).
+	$mb_color_args = array();
+	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+		$mb_color_args['text'] = (string) $attributes['textColour'];
+	}
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+		$mb_color_args['background'] = (string) $attributes['backgroundColour'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$mb_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $mb_color_args ) ) {
+		$mb_color_border['color'] = $mb_color_args;
 	}
 	if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
 		$mb_color_border['border'] = $attributes['style']['border'];
 	}
+	// A1 (D638) — padding joined the same no-inline spacing bucket as margin.
+	// spacing.padding support is now TRUE (still __experimentalSkipSerialization,
+	// like margin above) so WP never auto-inlines it; base padding routes through
+	// the style engine to the SAME scoped selector, tablet/mobile tiers are
+	// handled separately by SGS_Container_Wrapper (paddingTablet/paddingMobile,
+	// universal across all `kind` values — see its "Responsive padding — all
+	// kinds" block).
+	$mb_spacing = array();
 	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-		$mb_color_border['spacing'] = array( 'margin' => $attributes['style']['spacing']['margin'] );
+		$mb_spacing['margin'] = $attributes['style']['spacing']['margin'];
+	}
+	if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+		$mb_spacing['padding'] = $attributes['style']['spacing']['padding'];
+	}
+	if ( ! empty( $mb_spacing ) ) {
+		$mb_color_border['spacing'] = $mb_spacing;
 	}
 	if ( ! empty( $mb_color_border ) ) {
 		$mb_style_engine_css = wp_style_engine_get_styles(
@@ -189,6 +217,51 @@ if ( '' !== $mb_preset_text_slug ) {
 if ( '' !== $mb_preset_gradient_slug ) {
 	$mb_preset_classes[] = 'has-background';
 	$mb_preset_classes[] = 'has-' . $mb_preset_gradient_slug . '-gradient-background';
+}
+
+// A2 (D638 §4/§5) — child-button GROUP DEFAULTS, a CSS custom-property
+// fallback chain, NOT the Block Context API and NOT editor-time copy-on-
+// insert (both rejected, see decisions.md D638 §4). Emitted here as
+// `--sgs-mb-btn-<prop>-default` custom properties on THIS block's own
+// wrapper element; button/style.css consumes each one as the SECOND
+// fallback tier of its own `--sgs-btn-*` var (colour props) or as the FIRST
+// var() wrapped around what was previously a flat hardcoded value
+// (radius/font-size/font-weight — sgs/button has no per-instance custom
+// property for those, it wins on selector specificity instead, see
+// button/style.css's docblock addition). Custom properties are explicitly
+// allowed inline (Spec 32 no-inline contract only bans REAL property
+// declarations), so these route through SGS_Container_Wrapper's
+// `extra_styles` opt exactly like any other --sgs-* var elsewhere in this
+// codebase.
+//
+// Sanitisation: colours reuse the shared sgs_colour_value() token-or-literal
+// resolver (defined in includes/helpers-tokens.php, already loaded via
+// render-helpers.php above). Radius/font-size are free-form CSS length
+// strings from a TextControl — strip anything that isn't a digit/letter/dot/
+// percent so a value can never break out of the custom-property declaration.
+// Font-weight is a SelectControl-constrained numeric string (100-900); cast
+// through absint() so only a bare number can ever reach the declaration.
+$mb_child_defaults = array();
+$mb_css_length     = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+if ( isset( $attributes['childBtnBackground'] ) && '' !== $attributes['childBtnBackground'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-bg-default:' . sgs_colour_value( (string) $attributes['childBtnBackground'] );
+}
+if ( isset( $attributes['childBtnTextColour'] ) && '' !== $attributes['childBtnTextColour'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-color-default:' . sgs_colour_value( (string) $attributes['childBtnTextColour'] );
+}
+if ( isset( $attributes['childBtnBorderColour'] ) && '' !== $attributes['childBtnBorderColour'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-border-default:' . sgs_colour_value( (string) $attributes['childBtnBorderColour'] );
+}
+if ( isset( $attributes['childBtnBorderRadius'] ) && '' !== $attributes['childBtnBorderRadius'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-radius-default:' . $mb_css_length( $attributes['childBtnBorderRadius'] );
+}
+if ( isset( $attributes['childBtnFontSize'] ) && '' !== $attributes['childBtnFontSize'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-font-size-default:' . $mb_css_length( $attributes['childBtnFontSize'] );
+}
+if ( isset( $attributes['childBtnFontWeight'] ) && '' !== $attributes['childBtnFontWeight'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-font-weight-default:' . absint( $attributes['childBtnFontWeight'] );
 }
 
 // WS-4: the outer wrapper is now the shared sgs/container element. multi-button keeps
@@ -225,6 +298,7 @@ echo $mb_style . SGS_Container_Wrapper::render(
 		'tag'           => 'div',
 		'extra_classes' => array_merge( array( 'sgs-multi-button', $uid ), $mb_preset_classes ),
 		'extra_attrs'   => array( 'id' => esc_attr( $uid ) ),
+		'extra_styles'  => $mb_child_defaults,
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

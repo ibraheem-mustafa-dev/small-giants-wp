@@ -529,18 +529,6 @@
 			"default": ""
 		},
 		"mediaBackgroundGradient": {
-			"type": "boolean",
-			"default": false
-		},
-		"mediaBackgroundGradientAngle": {
-			"type": "number",
-			"default": 180
-		},
-		"mediaBackgroundGradientFrom": {
-			"type": "string",
-			"default": ""
-		},
-		"mediaBackgroundGradientTo": {
 			"type": "string",
 			"default": ""
 		},
@@ -548,18 +536,6 @@
 			"type": "string"
 		},
 		"mediaOverlayGradient": {
-			"type": "boolean",
-			"default": false
-		},
-		"mediaOverlayGradientAngle": {
-			"type": "number",
-			"default": 180
-		},
-		"mediaOverlayGradientFrom": {
-			"type": "string",
-			"default": ""
-		},
-		"mediaOverlayGradientTo": {
 			"type": "string",
 			"default": ""
 		},
@@ -598,18 +574,6 @@
 			"default": ""
 		},
 		"contentBackgroundGradient": {
-			"type": "boolean",
-			"default": false
-		},
-		"contentBackgroundGradientAngle": {
-			"type": "number",
-			"default": 180
-		},
-		"contentBackgroundGradientFrom": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBackgroundGradientTo": {
 			"type": "string",
 			"default": ""
 		},
@@ -824,18 +788,6 @@
 			"default": {}
 		},
 		"overlayGradient": {
-			"type": "boolean",
-			"default": false
-		},
-		"overlayGradientAngle": {
-			"type": "number",
-			"default": 180
-		},
-		"overlayGradientFrom": {
-			"type": "string",
-			"default": ""
-		},
-		"overlayGradientTo": {
 			"type": "string",
 			"default": ""
 		},

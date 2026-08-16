@@ -22,8 +22,8 @@
 			"full"
 		],
 		"color": {
-			"background": true,
-			"text": true,
+			"background": false,
+			"text": false,
 			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
@@ -50,8 +50,8 @@
 					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:color": "native:color.text",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
@@ -151,6 +151,14 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

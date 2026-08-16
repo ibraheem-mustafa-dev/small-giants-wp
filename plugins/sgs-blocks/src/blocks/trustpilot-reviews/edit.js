@@ -10,7 +10,7 @@ import {
 	InspectorControls,
 	useBlockProps,
 } from '@wordpress/block-editor';
-import { ResponsiveOverride } from '../../components';
+import { ResponsiveOverride, SgsColourPanel } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -92,6 +92,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 		dragMomentum,
 		loopCarousel,
+		backgroundColour,
+		textColour,
 	} = attributes;
 
 	const blockProps = useBlockProps();
@@ -167,6 +169,38 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Source', 'sgs-blocks' ) }>

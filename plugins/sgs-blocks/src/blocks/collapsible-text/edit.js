@@ -17,10 +17,10 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { text, collapsible, collapsedLines, style, paddingTablet, paddingMobile, marginTablet, marginMobile } = attributes;
+	const { text, collapsible, collapsedLines, style, paddingTablet, paddingMobile, marginTablet, marginMobile, backgroundColour, textColour } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-collapsible-text',
@@ -28,6 +28,38 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Collapsible Text Settings', 'sgs-blocks' ) }>
 					<ToggleControl

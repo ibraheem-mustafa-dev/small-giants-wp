@@ -201,11 +201,11 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$fg_style_engine_args = array();
 
 	$fg_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$fg_color_args['text'] = (string) $attributes['style']['color']['text'];
+	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+		$fg_color_args['text'] = (string) $attributes['textColour'];
 	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$fg_color_args['background'] = (string) $attributes['style']['color']['background'];
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+		$fg_color_args['background'] = (string) $attributes['backgroundColour'];
 	}
 	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
 		$fg_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];

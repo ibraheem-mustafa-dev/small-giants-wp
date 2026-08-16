@@ -7,9 +7,10 @@ import {
 import { PanelBody, TextControl } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { SgsColourPanel } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { label } = attributes;
+	const { label, backgroundColour, textColour } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-form-step',
@@ -24,6 +25,38 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Step Settings', 'sgs-blocks' ) }>
 					<TextControl

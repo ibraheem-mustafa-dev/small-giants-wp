@@ -24,8 +24,8 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
+			"background": false,
+			"text": false,
 			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
@@ -67,7 +67,7 @@
 					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "native:__experimentalBorder.width",
@@ -77,7 +77,7 @@
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight"
 					},
-					"_note": "Composite-mirror rule (project CLAUDE.md D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294)."
+					"_note": "Composite-mirror rule (project CLAUDE.md D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294). Background migrated off native color.background onto the flat `backgroundColour` attr (D635-pattern). `supports.color.text` was turned OFF WITHOUT a replacement flat attr — every allowed child (core/image, sgs/media, sgs/icon, sgs/decorative-image) is decorative/non-textual and sgs/icon always sets its own explicit `iconColour`, so inherited `color` never painted anything visible here; adding a `textColour` attr would be a control with no visible effect."
 				},
 				"content-band": {
 					"label": "Content band (throw arena)",
@@ -97,6 +97,10 @@
 		"root": ".wp-block-sgs-physics-canvas"
 	},
 	"attributes": {
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}

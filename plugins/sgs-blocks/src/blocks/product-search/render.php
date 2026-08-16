@@ -28,6 +28,15 @@
  *                          ::backdrop while open. No-JS fallback: the dialog
  *                          renders with the `open` attribute (non-modal,
  *                          inline, no backdrop) so the GET form still works.
+ *   command-palette      — D638 §6 addition. Same <dialog> DIALOG + shared
+ *                          store('sgs/nav') plumbing as full-screen-overlay
+ *                          (deliberately NOT a second containment mechanism —
+ *                          only the wrapper/dialog modifier class differs, so
+ *                          CSS can render it as a smaller centred ~600px
+ *                          modal with a blurred backdrop rather than a true
+ *                          full-screen panel). Also opens on Ctrl/Cmd+K
+ *                          (view.js) by dispatching a real click on the same
+ *                          trigger button the shared store already binds.
  * Legacy aliases 'inline'/'icon' (pre-FR-36-20 stored values) map onto
  * 'inline-bar'/'icon-expand' below — no version bump, no deprecated.js.
  *
@@ -73,7 +82,8 @@ $max_results_tiers  = sgs_responsive_normalise_object( $attributes['maxResults']
 $max_results        = isset( $max_results_tiers['desktop'] ) && '' !== $max_results_tiers['desktop'] && null !== $max_results_tiers['desktop'] ? max( 1, min( 10, (int) $max_results_tiers['desktop'] ) ) : 10;
 $max_results_mobile = isset( $max_results_tiers['mobile'] ) && '' !== $max_results_tiers['mobile'] && null !== $max_results_tiers['mobile'] ? max( 4, min( 8, (int) $max_results_tiers['mobile'] ) ) : 6;
 
-// Validate display mode. FR-36-20: inline-bar | icon-expand | full-screen-overlay.
+// Validate display mode. FR-36-20 + D638 §6: inline-bar | icon-expand |
+// full-screen-overlay | command-palette.
 // Legacy alias map keeps pre-existing 'inline'/'icon' instances rendering
 // identically to their old shape (no version bump / no deprecated.js, D270 —
 // this is the cheap forward-compat translation instead).
@@ -83,9 +93,36 @@ $sgs_ps_display_aliases = array(
 );
 $display_raw            = (string) ( $attributes['displayMode'] ?? 'inline-bar' );
 $display_raw            = $sgs_ps_display_aliases[ $display_raw ] ?? $display_raw;
-$display                = in_array( $display_raw, array( 'inline-bar', 'icon-expand', 'full-screen-overlay' ), true )
+$display                = in_array( $display_raw, array( 'inline-bar', 'icon-expand', 'full-screen-overlay', 'command-palette' ), true )
 	? $display_raw
 	: 'inline-bar';
+
+// full-screen-overlay AND command-palette both open a <dialog> DIALOG through
+// the SAME shared store('sgs/nav') plumbing — command-palette is deliberately
+// NOT a second containment mechanism, only a CSS modifier class differs.
+$sgs_ps_is_dialog_mode = in_array( $display, array( 'full-screen-overlay', 'command-palette' ), true );
+
+// -------------------------------------------------------------------------
+// Colour overrides (D638 §6 gap close) — 5 client-controllable custom
+// properties, each falling back to the existing token default already baked
+// into style.css (var(--sgs-ps-*, token)) when unset. Mirrors sgs/button's
+// --sgs-btn-* pattern (sgs_colour_value() resolves either a token slug or a
+// raw CSS colour, and is breakout-guarded — helpers-tokens.php).
+// -------------------------------------------------------------------------
+$sgs_ps_colour_attrs = array(
+	'--sgs-ps-input-border'    => $attributes['inputBorderColour'] ?? '',
+	'--sgs-ps-focus-ring'      => $attributes['focusRingColour'] ?? '',
+	'--sgs-ps-listbox-bg'      => $attributes['listboxBackgroundColour'] ?? '',
+	'--sgs-ps-result-hover-bg' => $attributes['resultHoverBackgroundColour'] ?? '',
+	'--sgs-ps-mark-bg'         => $attributes['matchHighlightColour'] ?? '',
+);
+$sgs_ps_colour_decls = array();
+foreach ( $sgs_ps_colour_attrs as $sgs_ps_custom_prop => $sgs_ps_colour_val ) {
+	if ( '' === $sgs_ps_colour_val || null === $sgs_ps_colour_val ) {
+		continue;
+	}
+	$sgs_ps_colour_decls[] = $sgs_ps_custom_prop . ':' . sgs_colour_value( $sgs_ps_colour_val );
+}
 
 // -------------------------------------------------------------------------
 // Unique IDs for ARIA wiring (stable per request — not per page-load).
@@ -109,6 +146,18 @@ $sgs_style_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 
 $sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 
 $sgs_scoped_css = array();
+
+// --- Colour overrides — scoped custom-property VALUES (no-inline contract:
+// this is a <style> rule, not an inline style="" attribute), only emitted
+// when at least one of the 5 rows has a client-set value. style.css consumes
+// each via var(--sgs-ps-*, existing-token-default). ---
+if ( $sgs_ps_colour_decls ) {
+	// Keyed on the uid class ALONE (not $sgs_style_sel's wrapper-qualified
+	// form) so the rule also matches the <dialog> once view.js reparents it
+	// out of the wrapper — see the dialog markup below for why it carries
+	// this same class.
+	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_colour_decls ) . ';}';
+}
 
 // --- Base padding/margin — WP-native style.spacing objects (skip-serialised
 // in block.json → not auto-inlined by get_block_wrapper_attributes()).
@@ -181,8 +230,9 @@ if ( $sgs_mobile_decls ) {
 // -------------------------------------------------------------------------
 // i18n strings carried as data-attributes for view.js.
 // -------------------------------------------------------------------------
-$i18n_no_results = esc_attr__( 'No products found', 'sgs-blocks' );
-$i18n_busy       = esc_attr__( 'Search is busy — please try again in a moment', 'sgs-blocks' );
+$i18n_no_results   = esc_attr__( 'No products found', 'sgs-blocks' );
+$i18n_busy         = esc_attr__( 'Search is busy — please try again in a moment', 'sgs-blocks' );
+$i18n_out_of_stock = esc_attr__( 'Out of stock', 'sgs-blocks' );
 
 // The result count is only known client-side (view.js populates the listbox
 // after a REST fetch), so both plural forms are resolved here and handed to
@@ -213,6 +263,7 @@ $sgs_ps_common_data = array(
 	'data-rest'                 => $rest_url,
 	'data-no-results'           => $i18n_no_results,
 	'data-busy'                 => $i18n_busy,
+	'data-out-of-stock'         => $i18n_out_of_stock,
 	'data-count-template-one'   => $i18n_count_template_one,
 	'data-count-template-other' => $i18n_count_template_other,
 	'data-max-results'          => esc_attr( (string) $max_results ),
@@ -235,6 +286,19 @@ if ( 'icon-expand' === $display ) {
 			array(
 				'class'        => 'sgs-product-search sgs-product-search--overlay ' . $sgs_style_uid,
 				'data-display' => 'full-screen-overlay',
+			),
+			$sgs_ps_common_data
+		)
+	);
+} elseif ( 'command-palette' === $display ) {
+	// D638 §6: same dialog mechanism as full-screen-overlay, distinguished
+	// only by the --cmdk modifier class (style.css renders it as a smaller
+	// centred ~600px modal with a blurred backdrop, not a full-screen panel).
+	$wrapper_attrs = get_block_wrapper_attributes(
+		array_merge(
+			array(
+				'class'        => 'sgs-product-search sgs-product-search--cmdk ' . $sgs_style_uid,
+				'data-display' => 'command-palette',
 			),
 			$sgs_ps_common_data
 		)
@@ -340,18 +404,25 @@ ob_start();
 $form_html = ob_get_clean();
 
 // -------------------------------------------------------------------------
-// full-screen-overlay chrome — trigger button + <dialog>, wired through the
-// shared store('sgs/nav') (FR-36-20: reuse the ONE nav open/close/focus/inert
+// Dialog-mode chrome — trigger button + <dialog>, wired through the shared
+// store('sgs/nav') (FR-36-20: reuse the ONE nav open/close/focus/inert
 // utility rather than hand-rolling a second one, R-31-9). The dialog is the
 // DIALOG half of FR-36-10's disclosure-vs-dialog swap; icon-expand below is
 // the DISCLOSURE half — one attribute (displayMode) selects which pattern
 // wraps the SAME $form_html combobox (the spec's "ONE shared combobox
-// implementation reused across all three display modes" differentiator).
+// implementation reused across all display modes" differentiator).
+//
+// D638 §6: command-palette shares this EXACT block with full-screen-overlay
+// — same trigger markup, same <dialog>, same store('sgs/nav') plumbing.
+// Only a dialog modifier class differs (style.css renders --cmdk as a
+// smaller centred ~600px modal with a blurred backdrop). Ctrl/Cmd+K
+// (view.js) opens it by dispatching a real click on this SAME trigger
+// button — no second open/close mechanism is introduced.
 // -------------------------------------------------------------------------
 $overlay_trigger_html = '';
 $overlay_dialog_html  = '';
 
-if ( 'full-screen-overlay' === $display ) {
+if ( $sgs_ps_is_dialog_mode ) {
 	$overlay_context = array(
 		'isOpen'    => false,
 		'drawerRef' => $dialog_id,
@@ -361,6 +432,17 @@ if ( 'full-screen-overlay' === $display ) {
 		? wp_interactivity_data_wp_context( $overlay_context )
 		: sprintf( "data-wp-context='%s'", esc_attr( (string) wp_json_encode( $overlay_context ) ) );
 
+	// command-palette's trigger carries the same aria-label as full-screen-
+	// overlay's, plus a spoken keyboard-shortcut hint (Ctrl/Cmd+K), since it
+	// is the only mode that ALSO opens via a global keyboard shortcut.
+	$trigger_label = 'command-palette' === $display
+		? sprintf(
+			/* translators: %s: the button's accessible label, e.g. "Search". */
+			__( '%s (Ctrl+K)', 'sgs-blocks' ),
+			$button_label
+		)
+		: $button_label;
+
 	$overlay_trigger_html = sprintf(
 		'<div class="sgs-product-search__overlay-trigger-wrap" data-wp-interactive="sgs/nav" %1$s>' .
 			'<button type="button" class="sgs-product-search__icon-toggle" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%2$s" aria-label="%3$s">' .
@@ -369,7 +451,7 @@ if ( 'full-screen-overlay' === $display ) {
 		'</div>',
 		$overlay_context_attr,
 		esc_attr( $dialog_id ),
-		esc_attr( $button_label )
+		esc_attr( $trigger_label )
 	);
 
 	// Close chrome — data-sgs-nav-close is wired imperatively by the shared
@@ -381,17 +463,30 @@ if ( 'full-screen-overlay' === $display ) {
 		$close_icon
 	);
 
+	// Dialog modifier class — 'command-palette' 'sgs-product-search__dialog--cmdk'.
+	$dialog_modifier_class = 'command-palette' === $display ? ' sgs-product-search__dialog--cmdk' : '';
+
 	// No-JS fallback: the `open` attribute renders the dialog inline
 	// (non-modal, no ::backdrop, no showModal semantics) so the form's real
 	// GET submit works with zero JS — mirrors icon-expand's native <details>
 	// no-JS story. view.js closes it on load, then the shared store re-opens
 	// it as a true showModal() on trigger click.
+	// The colour custom properties (--sgs-ps-*) are declared in a scoped rule
+	// keyed on $sgs_style_uid (see below). view.js REPARENTS this <dialog> to
+	// <body> on open (isInsideComponent() containment), which removes it from
+	// being a DOM descendant of the block wrapper the properties are declared
+	// on — custom properties only inherit through current DOM ancestry, so a
+	// reparented dialog would silently lose every colour override. Carrying
+	// the uid class directly on the dialog keeps it addressable by the same
+	// selector regardless of where in the tree it currently sits.
 	$overlay_dialog_html = sprintf(
-		'<dialog id="%1$s" class="sgs-product-search__dialog" data-sgs-nav-drawer open aria-label="%2$s">%3$s<div class="sgs-product-search__dialog-body">%4$s</div></dialog>',
+		'<dialog id="%1$s" class="sgs-product-search__dialog %6$s%5$s" data-sgs-nav-drawer open aria-label="%2$s">%3$s<div class="sgs-product-search__dialog-body">%4$s</div></dialog>',
 		esc_attr( $dialog_id ),
 		esc_attr__( 'Search', 'sgs-blocks' ),
 		$close_html,
-		$form_html
+		$form_html,
+		esc_attr( $dialog_modifier_class ),
+		esc_attr( $sgs_style_uid )
 	);
 }
 
@@ -430,7 +525,7 @@ if ( 'full-screen-overlay' === $display ) {
 			<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $form_html is built entirely from esc_* calls above. ?>
 		</div>
 	</details>
-<?php elseif ( 'full-screen-overlay' === $display ) : ?>
+<?php elseif ( $sgs_ps_is_dialog_mode ) : ?>
 	<?php
 	echo $overlay_trigger_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from wp_interactivity_data_wp_context() (self-escaping) + esc_* calls above.
 	echo $overlay_dialog_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_* calls + the pre-escaped $form_html/$close_html fragments above.

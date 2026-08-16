@@ -123,6 +123,23 @@ $root_sel  = '.' . $style_uid . '.wp-block-sgs-filter-search';
 
 $scoped_css = array();
 
+// Colour attributes — input border, focus ring, and text colour. These are
+// emitted as custom properties on the root selector so they can override the
+// defaults in style.css. If not set, they fall back to the defaults.
+$input_css = '';
+if ( ! empty( $attributes['inputBorderColour'] ?? '' ) ) {
+	$input_css .= '--sgs-filter-search-border:' . sanitize_text_field( $attributes['inputBorderColour'] ) . ';';
+}
+if ( ! empty( $attributes['focusRingColour'] ?? '' ) ) {
+	$input_css .= '--sgs-filter-search-focus:' . sanitize_text_field( $attributes['focusRingColour'] ) . ';';
+}
+if ( ! empty( $attributes['textColour'] ?? '' ) ) {
+	$input_css .= '--sgs-filter-search-text:' . sanitize_text_field( $attributes['textColour'] ) . ';';
+}
+if ( ! empty( $input_css ) ) {
+	$scoped_css[] = "{$root_sel}{" . $input_css . '}';
+}
+
 // Base margin — WP-native style.spacing.margin object (skip-serialised in
 // block.json), emitted scoped via the stable core style engine.
 $base_margin_obj = array();

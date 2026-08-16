@@ -2,10 +2,16 @@
 /**
  * SGS Product Search — REST controller for GET /sgs/v1/product-search.
  *
- * Returns product suggestions (title + thumbnail + permalink + id only) for a
- * guest search query.  Zero data leakage is the primary security invariant:
- * this codebase shipped a draft-product leak before (merchant feed); a repeat
- * is unacceptable.
+ * Returns product suggestions (title + thumbnail + permalink + id +
+ * price_html + on_sale + in_stock) for a guest search query. Zero data
+ * leakage is the primary security invariant: this codebase shipped a
+ * draft-product leak before (merchant feed); a repeat is unacceptable.
+ *
+ * D638 §6 (2026-08-16): price_html/on_sale/in_stock were deliberately added
+ * to the previously price-free response shape, sequenced BEFORE the
+ * universal gradient rollout — see .claude/decisions.md D638 for the design
+ * council that ruled this in. Every other security invariant on this file
+ * (visibility fail-closed, rate limiting, RESULT_CAP) is UNCHANGED.
  *
  * Security chain (in handler order):
  *   1. Global circuit breaker — site-wide ceiling, pre-DB, cheap.
@@ -15,7 +21,8 @@
  *   5. Single WP_Query       — no custom posts_where, no global hook.
  *   6. Result-level re-gate  — defence in depth; near-miss canary log.
  *   7. PHP prefix sort       — prefix-match floats, tie-break title ASC, cap 10.
- *   8. Fixed response shape  — {id, title, permalink, thumbnail} only.
+ *   8. Fixed response shape  — {id, title, permalink, thumbnail, price_html,
+ *                               on_sale, in_stock} only.
  *   9. Cache-Control headers — no-store on every response path.
  *
  * Wiring: required + ::register() called directly in SGS_Blocks::__construct(),
@@ -348,6 +355,9 @@ final class Product_Search_REST {
 		// missed something — an active canary for correctness.
 		$near_miss_logged = false;
 		$survivors        = array();
+		// Keyed by id — reused in Step 8 so price_html/on_sale/in_stock never
+		// need a second wc_get_product() call per survivor.
+		$products_by_id = array();
 
 		foreach ( $candidate_ids as $id ) {
 			$id = (int) $id;
@@ -388,7 +398,8 @@ final class Product_Search_REST {
 				continue;
 			}
 
-			$survivors[] = $id;
+			$survivors[]           = $id;
+			$products_by_id[ $id ] = $product;
 		}
 
 		// ── Step 7: PHP prefix sort + cap ─────────────────────────────────────
@@ -415,10 +426,15 @@ final class Product_Search_REST {
 		$survivors = array_slice( $survivors, 0, self::RESULT_CAP );
 
 		// ── Step 8: Build fixed response ──────────────────────────────────────
-		// Response shape is FIXED: {id, title, permalink, thumbnail}.
-		// No price / meta / stock / variation data — ever.
+		// Response shape is FIXED: {id, title, permalink, thumbnail, price_html,
+		// on_sale, in_stock}. No other meta / variation data — ever (D638 §6
+		// widened this shape from the prior price-free contract; every other
+		// field + the visibility/rate-limit chain above is unchanged).
 		// title is decoded + stripped so the client can render via textContent
 		// safely (XSS inert even if injected into innerHTML by mistake).
+		// price_html is WooCommerce's OWN formatted markup (wc_get_price_html()
+		// — never a hand-built string), wrapped in wp_kses_post() as
+		// defence-in-depth even though it is server-generated, not user input.
 		$out = array();
 
 		foreach ( $survivors as $id ) {
@@ -427,11 +443,22 @@ final class Product_Search_REST {
 				$thumbnail = \wc_placeholder_img_src( 'woocommerce_thumbnail' );
 			}
 
+			// Reuse the Step 6 re-gate's $product — never a second wc_get_product().
+			$product = $products_by_id[ $id ] ?? null;
+			if ( ! $product ) {
+				continue; // Defensive only — every $id here already passed Step 6.
+			}
+
 			$out[] = array(
-				'id'        => (int) $id,
-				'title'     => \wp_strip_all_tags( \html_entity_decode( \get_the_title( $id ), ENT_QUOTES, 'UTF-8' ) ),
-				'permalink' => \get_permalink( $id ),
-				'thumbnail' => (string) $thumbnail,
+				'id'         => (int) $id,
+				'title'      => \wp_strip_all_tags( \html_entity_decode( \get_the_title( $id ), ENT_QUOTES, 'UTF-8' ) ),
+				'permalink'  => \get_permalink( $id ),
+				'thumbnail'  => (string) $thumbnail,
+				'price_html' => \wp_kses_post( $product->get_price_html() ),
+				'on_sale'    => (bool) $product->is_on_sale(),
+				// is_in_stock() — NEVER is_purchasable(), which lies for OOS
+				// (mirrors the documented convention in class-product-manifest.php).
+				'in_stock'   => (bool) $product->is_in_stock(),
 			);
 		}
 

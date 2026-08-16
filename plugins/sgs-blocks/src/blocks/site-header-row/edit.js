@@ -19,6 +19,7 @@ import {
 	ResponsiveBoxControls,
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
+	SgsColourPanel,
 } from '../../components';
 import { resolveResponsiveTier } from '../../utils';
 
@@ -170,6 +171,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridAutoRows,
 		gridTemplateColumns,
 		gridTemplateRows,
+		backgroundColour,
+		textColour,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -292,6 +295,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Header row', 'sgs-blocks' ) }>
 					{ rowSlot && (

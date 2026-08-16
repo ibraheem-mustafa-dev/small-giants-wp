@@ -26,9 +26,9 @@
 		"customClassName": true,
 		"html": false,
 		"color": {
-			"background": true,
+			"background": false,
 			"gradients": true,
-			"text": true,
+			"text": false,
 			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
@@ -40,10 +40,16 @@
 		},
 		"spacing": {
 			"margin": true,
-			"padding": false,
+			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				]
+			},
 			"elements": {
 				"group": {
 					"label": "Button group",
@@ -56,12 +62,14 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:padding": "native:spacing.padding",
+						"css:background-image": "backgroundImage",
 						"css:max-width": "maxWidth",
 						"css:gap": "gap",
 						"css:flex-direction": "flexDirection",
@@ -69,7 +77,7 @@
 						"css:justify-content": "justifyContent",
 						"css:align-items": "alignItems"
 					},
-					"_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. `spacing.margin` IS declared (2026-08-13, D-pending — 9 theme pattern instances were silently discarding style.spacing.margin.top before this fix). `padding`/`typography` remain honest gaps. `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
+					"_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. `spacing.margin`/`spacing.padding` are declared (2026-08-13/2026-08-16). `typography` remains an honest gap. `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Background media (image/video/SVG) + overlay colour/gradient render through the shared SGS_Container_Wrapper (D6, universal regardless of kind) — mapped by convention, not every bg sub-attr individually. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
 				},
 				"button": {
 					"label": "Button",
@@ -81,6 +89,159 @@
 		}
 	},
 	"attributes": {
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"backgroundImage": {
+			"type": "object",
+			"default": null
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"overlayGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoTablet": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"bgParallax": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgKenBurns": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgAnimationDuration": {
+			"type": "number",
+			"default": 20
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgAnimation": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"pulse",
+				"float",
+				"wave"
+			]
+		},
+		"bgSvgAnimationSpeed": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"slow",
+				"medium",
+				"fast"
+			]
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"childBtnBackground": {
+			"type": "string",
+			"default": "",
+			"_comment": "A2 (D638 SS4/5) -- CSS custom-property GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-default on this block's own wrapper; button/style.css reads it as the second fallback tier of --sgs-btn-bg. Empty = no group default; buttons behave exactly as before."
+		},
+		"childBtnTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"childBtnBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"childBtnBorderRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"childBtnFontSize": {
+			"type": "string",
+			"default": ""
+		},
+		"childBtnFontWeight": {
+			"type": "string",
+			"default": ""
+		},
 		"flexDirection": {
 			"type": "object",
 			"default": {"desktop": "row", "mobile": "column"}

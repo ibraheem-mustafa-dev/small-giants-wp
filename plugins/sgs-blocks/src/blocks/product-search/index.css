@@ -15,10 +15,15 @@
 	cursor: not-allowed;
 }
 
-/* Editor hint text below the disabled input. */
+/* Editor hint text below the disabled input.
+   D638 §6: the one genuinely hardcoded colour on this block — was a bare
+   #757575 with no token and no override path. Every other colour on this
+   block already reads a theme token; this now matches that pattern (the
+   #757575 stays only as the pre-token fallback for a theme with no
+   contrast-2 preset defined). */
 .sgs-product-search__editor-hint {
 	margin: 0.5rem 0 0;
 	font-size: 0.8125rem;
-	color: #757575;
+	color: var( --wp--preset--color--contrast-2, #757575 );
 	font-style: italic;
 }

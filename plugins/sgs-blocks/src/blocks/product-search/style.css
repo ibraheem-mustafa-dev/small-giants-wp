@@ -25,7 +25,7 @@
 	flex: 1;
 	min-height: 44px;
 	padding: 0.5rem 0.75rem;
-	border: 1px solid var( --wp--preset--color--border-subtle, #ccc );
+	border: 1px solid var( --sgs-ps-input-border, var( --wp--preset--color--border-subtle, #ccc ) );
 	border-radius: 8px;
 	font: inherit;
 	background: var( --wp--preset--color--base, #fff );
@@ -34,7 +34,7 @@
 }
 
 .sgs-product-search__input:focus-visible {
-	outline: 2px solid var( --wp--preset--color--primary, #0f7e80 );
+	outline: 2px solid var( --sgs-ps-focus-ring, var( --wp--preset--color--primary, #0f7e80 ) );
 	outline-offset: 2px;
 }
 
@@ -74,14 +74,17 @@
 	list-style: none;
 	max-height: 60vh;
 	overflow-y: auto;
-	background: var( --wp--preset--color--base, #fff );
-	border: 1px solid var( --wp--preset--color--border-subtle, #ccc );
+	background: var( --sgs-ps-listbox-bg, var( --wp--preset--color--base, #fff ) );
+	border: 1px solid var( --sgs-ps-input-border, var( --wp--preset--color--border-subtle, #ccc ) );
 	border-radius: 8px;
 	box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );
 }
 
 /* Each result option — the <li> itself is the clickable surface
-   (no inner <a>; ARIA combobox options must have no focusable descendants). */
+   (no inner <a>; ARIA combobox options must have no focusable descendants).
+   --sgs-ps-stagger-index is set per-row by view.js (a JS-set custom-property
+   VALUE, never a property declaration — no-inline contract compliant) and
+   drives the fade-in stagger below. */
 .sgs-product-search__results [role="option"] {
 	display: flex;
 	align-items: center;
@@ -90,11 +93,24 @@
 	padding: 0.5rem 0.75rem;
 	color: inherit;
 	cursor: pointer;
+	animation: sgs-ps-result-fade-in 180ms ease-out backwards;
+	animation-delay: calc( var( --sgs-ps-stagger-index, 0 ) * 30ms );
 }
 
 .sgs-product-search__results [role="option"]:hover,
 .sgs-product-search__results [role="option"].is-active {
-	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
+	background: var( --sgs-ps-result-hover-bg, var( --wp--preset--color--surface-alt, #f5f7f7 ) );
+}
+
+@keyframes sgs-ps-result-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY( 4px );
+	}
+	to {
+		opacity: 1;
+		transform: translateY( 0 );
+	}
 }
 
 .sgs-product-search__results [role="option"] img {
@@ -122,7 +138,7 @@
 }
 
 .sgs-product-search__result-title mark {
-	background: none;
+	background: var( --sgs-ps-mark-bg, none );
 	color: inherit;
 	font-weight: 700;
 }
@@ -130,6 +146,68 @@
 .sgs-product-search__result-price {
 	font-size: 0.875em;
 	color: var( --wp--preset--color--contrast-2, inherit );
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+/* On-sale price — price_html itself carries the WooCommerce <del>/<ins>
+   struck-through/highlighted markup; this class only tints the wrapper so a
+   client can restyle the whole price row for a sale item without touching
+   WooCommerce's own markup. */
+.sgs-product-search__result-price--sale {
+	color: var( --wp--preset--color--primary, inherit );
+}
+
+.sgs-product-search__result-stock--out {
+	font-size: 0.8125em;
+	font-style: italic;
+	color: var( --wp--preset--color--contrast-2, inherit );
+}
+
+/* Skeleton loading rows — shown while a fetch is in flight (never a spinner).
+   aria-hidden in the markup (view.js) keeps them out of the accessible tree
+   and out of getOptions()'s [role="option"] query, so keyboard nav / the
+   live-region count are unaffected. */
+.sgs-product-search__skeleton {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 44px;
+	padding: 0.5rem 0.75rem;
+}
+
+.sgs-product-search__skeleton::before {
+	content: "";
+	width: 40px;
+	height: 40px;
+	flex-shrink: 0;
+	border-radius: 4px;
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
+}
+
+.sgs-product-search__skeleton::after {
+	content: "";
+	flex: 1;
+	height: 0.9rem;
+	border-radius: 4px;
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
+}
+
+.sgs-product-search__skeleton::before,
+.sgs-product-search__skeleton::after {
+	animation: sgs-ps-skeleton-shimmer 1.1s ease-in-out infinite;
+}
+
+@keyframes sgs-ps-skeleton-shimmer {
+	0%,
+	100% {
+		opacity: 0.5;
+	}
+
+	50% {
+		opacity: 1;
+	}
 }
 
 /* Status live region — visually hidden, still read by screen readers */
@@ -142,6 +220,16 @@
 	.sgs-product-search__submit,
 	.sgs-product-search__results [role="option"] {
 		transition-duration: 0.01ms;
+	}
+
+	.sgs-product-search__results [role="option"] {
+		animation-duration: 0.01ms;
+		animation-delay: 0ms;
+	}
+
+	.sgs-product-search__skeleton::before,
+	.sgs-product-search__skeleton::after {
+		animation-duration: 0.01ms;
 	}
 }
 
@@ -229,13 +317,16 @@
    overlay mode — zero impact on the other two display modes.
    ========================================================================== */
 
-.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap {
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap,
+.sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap {
 	display: inline-flex;
 }
 
 /* Trigger button — a plain <button>, not the <summary> icon-expand uses, so
-   it needs its own copy of the same 44×44 px target + visual treatment. */
-.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle {
+   it needs its own copy of the same 44×44 px target + visual treatment.
+   Shared verbatim by command-palette (D638 §6) — same trigger, same store. */
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle,
+.sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -249,12 +340,14 @@
 	cursor: pointer;
 }
 
-.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:hover {
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:hover,
+.sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:hover {
 	opacity: 0.9;
 }
 
-.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible {
-	outline: 2px solid var( --wp--preset--color--primary, #0f7e80 );
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible,
+.sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible {
+	outline: 2px solid var( --sgs-ps-focus-ring, var( --wp--preset--color--primary, #0f7e80 ) );
 	outline-offset: 2px;
 }
 
@@ -320,4 +413,66 @@
 		transition-duration: 0.01ms;
 		animation-duration: 0.01ms;
 	}
+}
+
+/* ==========================================================================
+   Command palette display mode (.sgs-product-search--cmdk)
+   D638 §6 addition. Shares the trigger + <dialog> + store('sgs/nav') plumbing
+   above verbatim (`.sgs-product-search__dialog`, `[data-sgs-nav-drawer]`) —
+   this section ONLY adds the `--cmdk` modifier's own visual treatment
+   (smaller centred modal, blurred backdrop, fade/scale entrance+exit) and
+   the Ctrl/Cmd+K entrance/exit animation. All rules scoped to `--cmdk` — zero
+   impact on the other three display modes.
+
+   Entrance/exit use `animation` + the `.is-closing` class (NOT a CSS
+   `transition`) because the shared store's `runClose()` (nav-interactivity/
+   store.js) waits for an `animationend` event on `.is-closing` before calling
+   `dialog.close()` — extending that existing exit-animation contract rather
+   than inventing a second one, per D638 §6's explicit instruction. Tier V
+   (vanilla CSS) only — a small self-contained fade/scale needs no GSAP.
+   ========================================================================== */
+
+.sgs-product-search__dialog--cmdk {
+	width: min( 600px, 92vw );
+	max-width: 92vw;
+	margin: auto;
+	padding: 1.5rem;
+}
+
+.sgs-product-search__dialog--cmdk::backdrop {
+	background: rgba( 0, 0, 0, 0.55 );
+	backdrop-filter: blur( 6px );
+	-webkit-backdrop-filter: blur( 6px );
+}
+
+@keyframes sgs-ps-cmdk-fade-in {
+	from {
+		opacity: 0;
+		transform: scale( 0.96 ) translateY( -8px );
+	}
+
+	to {
+		opacity: 1;
+		transform: scale( 1 ) translateY( 0 );
+	}
+}
+
+@keyframes sgs-ps-cmdk-fade-out {
+	from {
+		opacity: 1;
+		transform: scale( 1 ) translateY( 0 );
+	}
+
+	to {
+		opacity: 0;
+		transform: scale( 0.96 ) translateY( -8px );
+	}
+}
+
+.sgs-product-search__dialog--cmdk[open] {
+	animation: sgs-ps-cmdk-fade-in 150ms ease-out;
+}
+
+.sgs-product-search__dialog--cmdk.is-closing {
+	animation: sgs-ps-cmdk-fade-out 150ms ease-in;
 }

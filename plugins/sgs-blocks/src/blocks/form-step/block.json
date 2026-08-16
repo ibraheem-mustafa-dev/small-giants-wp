@@ -24,9 +24,9 @@
 			"__experimentalSkipSerialization": true
 		},
 		"color": {
-			"background": true,
+			"background": false,
 			"gradients": true,
-			"text": true,
+			"text": false,
 			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
@@ -48,8 +48,8 @@
 					"clusters": [ "text", "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
 						"css:padding": "native:spacing.padding",
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
@@ -79,6 +79,14 @@
 		"maxWidth": {
 			"type": "object",
 			"default": {}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

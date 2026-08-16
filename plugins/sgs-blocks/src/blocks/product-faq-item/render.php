@@ -56,8 +56,12 @@ if ( '' === trim( wp_strip_all_tags( $question ) ) && '' === trim( $content ) ) 
 // sgs/brand-strip — full native width/style/color/radius support).
 // ---------------------------------------------------------------------------
 
-$style_color_text     = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+// D635-pattern migration: background/text now read from the flat
+// backgroundColour/textColour attrs (SgsColourPanel), not native
+// style.color.background/.text (supports.color.background/.text are now
+// false). Gradient stays native (supports.color.gradients unchanged).
+$style_color_text     = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
+$style_color_bg       = isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '';
 $style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
 $preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
