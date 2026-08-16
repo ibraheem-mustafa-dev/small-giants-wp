@@ -73,35 +73,50 @@ attributes has been touched by the universal rollout.
 
 ## Open — ready to pick up
 
-### ⭐ NEXT SESSION — the actual rollout, 3 parallel builders
+### ⭐ NEXT SESSION — the actual rollout, 4 parallel builders
 
 **What:** Wire the gradient/palette mechanism onto every qualifying colour row, one builder per
-CSS mechanism (they're genuinely different, not one code path — confirmed by the design council):
+CSS mechanism (they're genuinely different, not one code path — confirmed by the design council,
+corrected once more post-council when Bean caught a 4th mechanism the council missed entirely):
 
 1. **Background** (~78 attrs, all blocks) — `background-image: <gradient>`. The pattern from this
    session's 9-family migration replicates directly. Fold the Solid/Gradient toggle into
    `DesignTokenPicker.js` + `SgsColourPanel.js` behind a `gradientCapable`/`attrNames` opt-in
    (per the council's SGS-architecture-fit finding) rather than rebuilding per block — reaches
    every block through the opt-in 46 of them already route through.
-2. **Text** (~90 `color`-valued attrs) — `background-clip: text` + `color: transparent`
-   mechanism. Note: any block using `text-shadow` on gradient text will see the shadow vanish —
-   flag per-block, don't silently ship it broken.
+2. **Text — real text only, ~80 attrs** (90 minus the icon miscounts, item 4 below) —
+   `background-clip: text` + `color: transparent`. Any block using `text-shadow` on gradient text
+   will see the shadow vanish — flag per-block, don't silently ship it broken.
 3. **Border** (~32 `border-color`-valued attrs) — masked pseudo-element (`::before` + `mask`),
    NOT `border-image` (confirmed broken with `border-radius` via MDN). Needs `position:relative`
    on the parent; check for an existing `::before` per block before assuming a free slot.
+4. **Icon/SVG (~10+ attrs, NEW — corrected post-council)** — the DB's `css_property='color'`
+   bucket silently conflates real text with icon colours. SGS's icons (Lucide) render as inline
+   `<svg fill="none" stroke="currentColor">` — `background-clip:text` does NOTHING to an SVG
+   stroke, it only clips a background to browser-painted text glyphs. Confirmed live in
+   `sgs/icon/render.php`. **Simpler fix than it sounds**: SVG has native gradient paint — define
+   a `<linearGradient>` inside the SVG markup and swap `stroke="currentColor"` for
+   `stroke="url(#id)"`. No masking, no text-shadow breakage, reuses the same `SgsGradientPicker`
+   UI already built — only the render-side emission differs. Named-match found at least 10
+   attrs (`accordion`/`business-info`/`button`/`cart`/`icon`/`icon-list`/`notice-banner`/
+   `trust-bar`'s `iconColour`/`iconColourHover`) — likely more via non-name-matched cases
+   (this project's own documented pattern: a name-substring search undercounts, e.g.
+   `mediaBackground` has no "background" in a matchable position). Re-derive the real count via
+   `css_element`/render-surface inspection, not the name grep above, before sizing the builder.
 
-**Orchestration:** 3 parallel agents, each in an ISOLATED GIT WORKTREE — all three touch
+**Orchestration:** 4 parallel agents, each in an ISOLATED GIT WORKTREE — builders 1-3 all touch
 `DesignTokenPicker.js`/`SgsColourPanel.js`, so same-directory parallel dispatch WILL collide.
-Merge sequentially afterward, reconciling the shared-file diffs by hand (they should be
-compatible additions to the same switch/prop shape, not independent inventions, if each builder
-is given the same contract). **/qc gate mandatory before merge** — 3 concurrent builders on
-shared files is exactly the shape that needs a multi-rater pass, not just each builder's own
-"done" claim.
+Builder 4 touches render.php SVG-emission code, likely disjoint from 1-3's files, but worktree
+isolation is cheap insurance — use it for all four. Merge sequentially afterward, reconciling the
+shared-file diffs by hand (they should be compatible additions to the same switch/prop shape, not
+independent inventions, if each builder is given the same contract). **/qc gate mandatory before
+merge** — 4 concurrent builders on shared files is exactly the shape that needs a multi-rater
+pass, not just each builder's own "done" claim.
 
 **Depends on:** this session's commits (`837f7c97`, `2723ee2b`) — the pattern and the mechanism
 both now exist and are proven.
 
-**Estimated time:** several hours across the 3 builders + a full-framework `/sgs-update` reseed +
+**Estimated time:** several hours across the 4 builders + a full-framework `/sgs-update` reseed +
 live canary verification once merged.
 
 ### Carried — low priority, unrelated to Task 3

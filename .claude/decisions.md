@@ -1,5 +1,24 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D636 addendum (2026-08-16, later same session) — a 4th CSS mechanism, missed by the council
+
+Bean caught a real gap the 4-seat council never surfaced: **icon colour is not the same case as
+text colour**, even though the DB's `css_property='color'` classification files them together.
+SGS's icons (Lucide) render as inline `<svg fill="none" stroke="currentColor">` — confirmed live
+in `sgs/icon/render.php`, which emits `color:<value>` on the root and relies on `currentColor`
+inheritance into the SVG's `stroke`. `background-clip:text` (the mechanism D636 assigned to the
+whole `color` bucket) only clips a background to browser-painted TEXT GLYPHS — it does nothing to
+an SVG stroke/fill. So the "~90 text-colour attrs" figure in D636 silently included an unknown
+number of icon attrs that need a different, simpler mechanism entirely: SVG's own native gradient
+paint (`<linearGradient>` def + `stroke="url(#id)"`), which reuses the same `SgsGradientPicker`
+UI with no masking trickery. Named-match found at least 10 attrs across 8 blocks (see LEDGER for
+the list); likely more via non-name-matched cases, per this project's own documented
+name-substring-undercounts pattern.
+
+**Ruling (Bean, same session):** add this as a 4th parallel builder alongside background/text/
+border in the next session's rollout, rather than folding it into the text builder or deferring
+it. Full detail + the corrected 4-builder plan: `.claude/LEDGER.md` "NEXT SESSION" section.
+
 ## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
 
 **2026-08-16.** LEDGER Stream 2 item 2b ("custom gradient bar, per-stop palette linking") was
