@@ -201,6 +201,24 @@ The `--webpack-copy-php` flag copies `render.php` to `build/` automatically — 
 - **`scripts/check-dead-pattern-attrs.py`** — WP silently DISCARDS any attr a block.json doesn't declare (no error, no gate, no build failure). Parses every `sgs/*` block instance in theme patterns/parts against its block.json. Found 45; 39 fixed. **No existing gate covered this class:** `check-dead-controls.js` catches the INVERSE (control-without-render); the F3 gate only fires when a block DECLARES the attr; the build never parses pattern markup at all. `--check` exits 1 on any finding. **⚠ Built at D338 but NOT wired into `prebuild` until 2026-08-05 (D493, commit `2d413758`)** — `package.json` had zero references to it for three weeks, so nothing stopped the 45 findings' class of bug recurring even though this section documented it as a standing defence. Verified clean before wiring. Now runs every build via `prebuild` + standalone `npm run check:dead-pattern-attrs`.
 - **`check-hardcoded-render-defaults.js` → F3b** — the gate previously read block.json for attribute NAMES only, never their `default` VALUES, which is exactly how `sgs/heading`'s `fontSize: 28` shipped and flattened theme.json's per-h-tag scale for months. It now reads theme.json `styles.elements` and flags a literal default that flattens a theme-differentiated property. Gated on the block declaring an enum of element keys, so single-element blocks (`sgs/label`'s `<span>`) never trip it. Verified by regression-injection, not reasoning.
 
+**`check-dead-api-calls.py` — added 2026-08-16 (D639), a subagent invented `wc_get_price_html()`,
+a WooCommerce function that does not exist (the real API is `$product->get_price_html()`), and it
+shipped clean through the entire ~50-gate `prebuild` chain because every other gate is a STATIC
+source check — none of them execute the PHP handler against real data, so a hallucinated-but-
+plausible function name is invisible to all of them. Fatal-erroring in production on every search
+that matched a real product until Bean caught it live.** PHP-tokenizer-based (not regex — a naive
+text match is exactly the class of miss `check-hardcoded-render-defaults.js`'s own
+`stripComments()` bug demonstrated the same session), self-tested to prove it catches the exact
+incident call and does not flag real functions/PHP builtins/locally-defined functions/comment
+text. Wired into `prebuild` **advisory-only** (`(python scripts/check-dead-api-calls.py --check ||
+echo [ADVISORY] ...)`, same pattern as `check-image-controls-support.py`/
+`audit-declared-vs-seeded-roles.py` above) — NOT a hard gate yet. First run: 305 baselined
+findings (real WP/WC functions not yet in the ~250-entry curated allowlist seed
+`scripts/dead-api-checker/wp-wc-function-allowlist.json`); trim the baseline as real functions get
+promoted into the allowlist, promote to a hard `--check` gate once it runs quiet on a genuinely
+clean baseline. Run standalone: `npm run check:dead-api-calls` (survey/self-test modes documented
+in the script's own header).
+
 **Conformance gates — WIRED (update 2026-07-06 D283).** **Gate A** — the converter golden-fixture regression (`tests/test_converter_conformance.py`) is live (D276 programme). **Gate B — `scripts/check-hardcoded-render-defaults.js` is LIVE + wired into `prebuild`** (it blocks the build when a `render.php`/`style.css` hardcodes a layout/visual constant for a property the block declares an attr for — the F3 family defence; 17 baselined debt items). **E11 selector-aware governance (D283, `d7039a79`):** a PREFIXED-HELPER attr (consumed by `sgs_button_element_style_css` / `sgs_typography_css_rule`, which build the CSS key by `$prefix.'Suffix'` concatenation and apply it to a SPECIFIC call-site selector) governs ONLY those selectors — the gate parses render.php for the helper call, extracts the prefix + selector class tokens, and flags a hardcoded value of that attr's property ONLY when the containing style.css rule references a governed token. Native-attr E1/E6 behaviour is unchanged. This is why adding e.g. `ctaBorderRadius` no longer false-flags an unrelated `.pill`/tag border-radius. Do NOT baseline a prefixed-helper false positive — the E11 governance is the fix. (Original "planned" note: `.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`.)
 
 ## Deploy

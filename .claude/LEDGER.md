@@ -37,13 +37,58 @@ and live-verified, not just built. Gradient rollout (Stage 2) is still next, not
 
 ## Shipped this session
 
+### Stream A — `sgs/multi-button` (`260bc914`)
+
+**A1 — container-style parity with `sgs/container`.** Padding (base via native `spacing.padding` +
+`paddingTablet`/`paddingMobile` responsive tiers), background image/video/SVG + overlay
+colour/gradient (via the shared `BackgroundPanel`, universal per D6 regardless of container kind),
+border (already-declared `__experimentalBorder` support, verified wired). Confirmed via live DB
+query (`block_composition.container_kind`) that multi-button already routes through
+`SGS_Container_Wrapper` — zero shared-wrapper-file edits needed.
+
+**A2 — child-button live group defaults.** Background/text/border colour, border radius, font
+size, font weight — a CSS custom-property fallback chain (`--sgs-mb-btn-<prop>-default`, emitted
+on multi-button's own scoped wrapper rule), NOT the Block Context API and NOT editor-time
+copy-on-insert (both rejected on evidence, D638 §4). Colour props gained a second `var()` fallback
+tier; radius/font-size/font-weight gained their FIRST tier (discovered mid-build: `sgs/button`
+never used custom properties for those three — it wins on selector specificity via its own
+per-instance id-scoped rule instead). Inherit is implicit (empty = inherit), no visual indicator —
+Bean's knowingly-accepted call (D638 §5), not re-raised. Live-verified: a child with its own
+explicit colour/radius keeps it; a child with none picks up the group default; re-tested on the
+canary with a real 2-button group (see D639 for the exact computed-style evidence).
+
+### Stream B — `sgs/product-search` (`b80ccd67`, plus 2 post-QC fixes below)
+
+5 client-controllable colour rows via `SgsColourPanel` (input border, focus ring, listbox
+background, result-hover background, match-highlight), the one genuinely hardcoded grey now reads
+a theme token. New `command-palette` ⌘K/Ctrl+K overlay display mode, built by EXTENDING the
+existing `full-screen-overlay`'s `<dialog>` + `store('sgs/nav')` containment mechanism (not a
+second one) — the working ARIA combobox wiring (`role="combobox"`, `aria-expanded`,
+`aria-activedescendant`, live region) was left untouched, confirmed via live DOM read after
+deploy. Rich result cards: image + title + price + bolded match + skeleton loading rows. 3 new
+REST fields (`price_html`, `on_sale`, `in_stock`) wired into `view.js`'s previously-dead
+`result.price` branch.
+
+### Stream C — `sgs/filter-search` (`ca53e67c`)
+
+Fixed the one hardcoded grey, added 3 colour attrs (input border, focus ring, text) via
+`SgsColourPanel`, visual polish to match Stream B's field styling. Small, pattern-following, no
+new mechanism — exactly as scoped.
+
+### Stream D — `sgs/buybox` (`24b84ab1`)
+
+Enabled native `supports.color.background`/`text` + border (radius/width/colour/style) +
+gradients on the block root, emitted via `wp_style_engine_get_styles()` (no inline styles),
+matching `sgs/info-box`'s pattern. `sgs/mega-group` correctly left untouched (D638 §1 — no gap).
+
+### Post-merge fixes (found via live QC, not the build)
+
 | Commit | What |
 |---|---|
-| `260bc914` merge, `b80ccd67` merge, `ca53e67c` merge, `24b84ab1` merge | Streams A/B/C/D merged — multi-button container parity + group defaults, product-search colour+⌘K+rich results, filter-search colour, buybox card surface |
 | `0fe71682` | Fixed the dead `stripComments()` call in `check-hardcoded-render-defaults.js` (Bean-requested); baselined 5 pre-existing F3 debt items it unmasked |
 | `f04f9fa0` | Fixed product-search colour vars not reaching the reparented `<dialog>` — found via live click-through |
 | `c4136e9f` | **CRITICAL** — `wc_get_price_html()` doesn't exist; replaced with the real `$product->get_price_html()`. Search was fatal-erroring on every real match, live in production, until Bean caught it |
-| `feat/dead-api-checker` branch (not merged) | New static checker for hallucinated PHP function calls — self-tested, 305-entry baseline, standalone for now |
+| `feat/dead-api-checker` branch (merged, wired advisory-only) | New static checker for hallucinated PHP function calls — self-tested, 305-entry baseline |
 
 **Numbers:** 4/4 D638 streams shipped full scope. 3 live production bugs found + fixed this
 session (1 pre-existing content-shape drift, 2 introduced by this session's own streams). `npm run
@@ -137,6 +182,7 @@ scope their per-block attribute lists from it.
 | Gradient scope + architecture (council, storage, icon correction) | `decisions.md` D636 + addendum |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Control-type contract (colour §1, gradient field 8) | `.claude/plans/spec-35-control-type-contract.md` |
+| Wrapper decomposition · colour Track A/B (T4, D618 colour panel rollout — separate from D638) | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 / §1.2d |
 | New dead-API checker (not yet wired to prebuild) | `feat/dead-api-checker` branch, `plugins/sgs-blocks/scripts/check-dead-api-calls.py` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
