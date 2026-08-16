@@ -2877,6 +2877,27 @@
         "css_state": "hover"
       },
       "_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — same class as sgs/button.boxShadowColour above; hover-state companion of boxShadowHover (now declared in block.json's button element states.hover.attrMap as 'css:box-shadow')."
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-16 sgs/quote D632 residual closed — the one block explicitly deferred from the original shadow colour-architecture migration (mirrors D621/D622) because a concurrent session held live uncommitted edits on this file at the time; that session has since merged and the checkout is clean. Same class as every other shadow-colour companion-attr override in this file (see sgs/card-grid.cardShadowColour for the full explanation): css_property overridden to box-shadow-color so the colour attr no longer contends with its shape sibling (boxShadow, css_element='wrapper'/css_layer='OUTER' via the pre-existing css-property-classifications.json entry) for the box-shadow slot."
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-16 sgs/quote D632 residual closed — same class as sgs/quote.boxShadowColour above; hover-state companion of boxShadowHover (declared in block.json's box element states.hover.attrMap as 'css:box-shadow')."
     }
   ]
 }

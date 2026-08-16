@@ -1,5 +1,82 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D634 — `sgs/quote` shadow colour-architecture residual closed (D632 last deferred block) [ROUTINE]
+
+**2026-08-16.** `sgs/quote`'s `boxShadow`/`boxShadowHover` migrated off the raw CSS `TextControl` and
+onto the target shape D632 shipped for the other 10 blocks — `ShadowControl` (shape) + a flat sibling
+`{name}Colour` attribute surfaced in `SgsColourPanel`, composed at render via
+`sgs_shadow_value_composed()`. `card-grid` used as the reference implementation, per plan.
+
+Deferred at D632 because a genuinely different concurrent session held live uncommitted edits inside
+`quote/block.json`/`edit.js` at the time; that session (the universal shadow extension itself, PR #28)
+has since merged and the branch no longer exists, so the collision risk is gone.
+
+**Shipped:**
+- `block.json`: new `boxShadowColour`/`boxShadowHoverColour` string attrs.
+- `edit.js`: both raw `<TextControl>`s replaced with `<ShadowControl>` (shape + `colour`/
+  `onColourChange`); the two new colour states added to the block's existing `SgsColourPanel` (`Normal`/
+  `Hover`, `linked: true`), matching `card-grid`'s `card-shadow` row group shape exactly; the `box`
+  element's `resetAll` extended to also clear `boxShadowColour`.
+- `block.json`'s `box` element gained a `states.hover.attrMap` block (`css:box-shadow` →
+  `boxShadowHover`, `css:background-color` → `backgroundColourHover`) — this element previously had no
+  hover-state attrMap at all, so neither hover attr resolved a `css_element`/`css_state` in the DB. The
+  background-hover fix is a pre-existing, unrelated gap in the same slot; fixed alongside since it's the
+  identical shape and was directly adjacent.
+- `render.php`: both `sgs_shadow_value( $sgs_css_safe_value( … ) )` call sites replaced with
+  `sgs_shadow_value_composed( $shape, $colour )`; the now-dead `$sgs_css_safe_value` closure removed
+  (its breakout-stripping is already covered inside `sgs_shadow_value()`'s own raw-value path).
+- `attr-classification-overrides.json`: two new entries (`boxShadowColour`/`boxShadowHoverColour` →
+  `css_property: box-shadow-color`, `css_element: wrapper`, `css_layer: OUTER`, the hover one also
+  `css_state: hover`) — mirrors `sgs/button`'s entries exactly (closest precedent: single flat wrapper
+  element, no BEM sub-element). Without this override the static extractor mis-derives the colour attrs
+  as competing for the `box-shadow` slot itself (the same class of bug D632's own override entries
+  document for every other migrated block).
+- `element-manifest-baseline.json`: `orphan_style_defect` 10 → 12 (two new instances,
+  `sgs/quote — boxShadowColour`/`boxShadowHoverColour`) — same accepted-debt class as the trust-bar/
+  team-member/brand-strip entries already there (the manifest has no vocabulary yet for a colour split
+  out of the `box-shadow` property; the shape attr is correctly claimed via its own attrMap entry, only
+  the sibling colour attr has nowhere to register).
+- DB reseed: `sgs-update-v2.py --stage 1` (scoped, not a full 13-stage run) + `generate-attr-role-map.py`
+  regen, run twice (once for the new attrs, once after the overrides/attrMap fixes) — required to seed
+  the new attrs and pick up the classification override. `npm run build` exits 0; F6/db-consistency
+  gate unchanged (1 baselined, 0 new); element-manifest gate passes (style-defect 12/12 baselined,
+  state-without-base unchanged at 2/2, unclassified 0).
+
+⚠ **The DB reseed also picked up two small, unrelated pre-existing drift corrections** in
+`css-property-classifications.json` (`sgs/hero.columns` css_tier tablet→mobile;
+`sgs/hero`-family `object-position` css_element media→split-image) and one row in `attr-role-map.json` —
+ambient byproducts of running Stage 1, not authored by this change. Included in the same commit rather
+than hand-reverted, since regenerating a derived-classifier file selectively isn't possible and the
+corrections are small and self-evidently more accurate than what they replaced.
+
+Still pending, unrelated to this fix: full re-verification across all 10 (now 11) shadow-migrated
+blocks on the canary — D632 flagged only `card-grid` was ever live-verified mid-build.
+
+## D633 — Wrapper step 5 (live calibration) closed: composite-mirror "enable all 6" assumption falsified [ROUTINE]
+
+**2026-08-16.** Shared-wrapper decomposition initiative (`go-track-1b-playful-hamster.md` §1.4), step 5.
+D626's council assumed, via the composite-mirror rule, that all 7 direct-panel wrapper blocks
+(`container`/`cta-section`/`hero`/`trust-bar`/`site-header`/`site-footer`/`physics-canvas`) should
+uniformly enable all 6 planned extensions. Two independent checks (source grep of literal JSX panel
+mounts + a re-run of the already-built `survey-wrapper-capability.js --survey`, self-test 39/39, no
+script changes) agree this is false: only `container`/`cta-section`/`trust-bar` mount all 5 existing
+panels; `hero` mounts 3 (width/background/shapeDividers); `site-header`/`site-footer` mount 2
+(width/background); `physics-canvas` mounts 1 (width). `RENDERED BUT NOT LIVE: 0` and `ORPHANED
+CAPABILITY: 0` across all 25 wrapper consumers — no declared/rendered/paint drift found.
+
+Two further findings, both scope for step 6/7, not step 5's to fix: **`GridAreaPanel` has zero live
+mounts anywhere in the framework** (its only JSX consumer is the aggregator's own `kind='section'`
+branch, which no real block passes — every aggregator consumer routes `kind='layout'`/`'content'`, and
+all 7 direct-panel blocks bypass the aggregator entirely); **`GridItemDefaultsPanel` mounts
+unconditionally** on its 3 consumers with no `layout`-precondition check and no block declaring
+`supports.sgs.gridAreas` — D626's "`gridItems` requires `layout`, gated on `supports.sgs.gridAreas`" is
+a gate to build, not one to wire to an existing flag.
+
+Full record: `.claude/reports/2026-08-16-wrapper-step5-calibration.md`. Step 6 (background pilot
+extension + merged colour Track B) remains NOT STARTED — its design gate (which blocks should be
+expanded toward full composite-mirror compliance vs kept at their current narrower set) goes to Bean
+next, per this initiative's own ordering.
+
 ## D632 — Universal shadow extension shipped: colour split from `ShadowControl` across 11 blocks [ROUTINE]
 
 **2026-08-16.** PR #28 merged to `main` (`5973606c`, 5 commits `7f289f3b`..`c5acba10`). A

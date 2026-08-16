@@ -97,13 +97,6 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-// CSS-value sanitiser for composite free-text values (box-shadow) — strips
-// only the characters that let a value break out of its declaration into a new
-// CSS rule ( ; { } < > \ ), leaving valid shadow syntax intact.
-$sgs_css_safe_value = static function ( $value ) {
-	return preg_replace( '/[;{}<>\\\\]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 3. Extract + validate attribution slot attributes.
 // ---------------------------------------------------------------------------
@@ -150,11 +143,13 @@ $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', '
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 $border_colour         = $attributes['borderColour'] ?? '';
 
-$box_shadow       = $attributes['boxShadow'] ?? '';
-$box_shadow_hover = $attributes['boxShadowHover'] ?? '';
-$hover_scale      = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
-$hover_colour     = $attributes['textColourHover'] ?? '';
-$hover_bg         = $attributes['backgroundColourHover'] ?? '';
+$box_shadow              = $attributes['boxShadow'] ?? '';
+$box_shadow_hover        = $attributes['boxShadowHover'] ?? '';
+$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
+$box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
+$hover_scale             = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
+$hover_colour            = $attributes['textColourHover'] ?? '';
+$hover_bg                = $attributes['backgroundColourHover'] ?? '';
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
@@ -314,7 +309,7 @@ $css_attrib_prop_attrs   = array_merge(
 		'attributionMarginTopMobile' => $attrib_margin_top_tiers['mobile'] ?? null,
 	)
 );
-$css_attrib_tiers = sgs_responsive_css_rule(
+$css_attrib_tiers        = sgs_responsive_css_rule(
 	$css_attrib_prop_attrs,
 	array(
 		array(
@@ -355,7 +350,7 @@ if ( $hover_bg ) {
 	$hover_rules[] = 'background-color:' . sgs_colour_value( $hover_bg );
 }
 if ( $box_shadow_hover ) {
-	$hover_rules[] = 'box-shadow:' . sgs_shadow_value( $sgs_css_safe_value( $box_shadow_hover ) );
+	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
 }
 $has_scale = null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001;
 if ( $has_scale ) {
@@ -392,7 +387,7 @@ if ( ! $inherit_style ) {
 		}
 	}
 	if ( $box_shadow ) {
-		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value( $sgs_css_safe_value( $box_shadow ) );
+		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 	}
 	if ( $max_width ) {
 		$mw_safe = $sgs_css_length( $max_width );
@@ -591,9 +586,9 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/heading). Every value reaching $scoped_css is pre-sanitised
-	// ($sgs_css_length / $sgs_css_keyword / $sgs_css_safe_value / allowlists /
-	// wp_style_engine_get_styles / sgs_colour_value / sgs_shadow_value /
-	// sgs_responsive_css_rule), so no un-sanitised value survives to here.
+	// ($sgs_css_length / $sgs_css_keyword / allowlists / wp_style_engine_get_styles /
+	// sgs_colour_value / sgs_shadow_value_composed / sgs_responsive_css_rule),
+	// so no un-sanitised value survives to here.
 	echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>
 </style>

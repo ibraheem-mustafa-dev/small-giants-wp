@@ -613,7 +613,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "GRID"
       }
     },
@@ -1439,7 +1439,7 @@
         "css_property": "object-position",
         "css_tier": "desktop",
         "css_layer": "GRID_AREA",
-        "css_element": "media"
+        "css_element": "split-image"
       }
     },
     {
@@ -2772,7 +2772,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -3319,7 +3319,10 @@
       "slug": "sgs/quote",
       "attr": "backgroundColourHover",
       "fields": {
-        "css_property": "background-color"
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -3350,7 +3353,25 @@
     },
     {
       "slug": "sgs/quote",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/quote",
       "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowHoverColour",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER"

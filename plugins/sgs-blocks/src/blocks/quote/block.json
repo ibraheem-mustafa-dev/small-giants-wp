@@ -35,6 +35,14 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:box-shadow": "boxShadow"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:box-shadow": "boxShadowHover"
+							}
+						}
 					}
 				},
 				"quote-body": {
@@ -118,7 +126,7 @@
 		"attributionFontSize": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"attributionFontSizeUnit": {
 			"type": "string",
 			"default": "px"
@@ -171,7 +179,7 @@
 		"attributionMarginTop": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"attributionMarginUnit": {
 			"type": "string",
 			"default": "px"
@@ -211,6 +219,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"boxShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowHoverColour": {
+			"type": "string",
+			"default": ""
+		},
 		"scaleHover": {
 			"type": "number",
 			"default": null
@@ -242,7 +258,7 @@
 		"maxWidth": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"inheritStyle": {
 			"type": "boolean",
 			"default": false
