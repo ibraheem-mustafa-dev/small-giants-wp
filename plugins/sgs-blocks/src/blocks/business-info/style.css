@@ -79,14 +79,19 @@
  * no per-client resolver needed, and no literal to go stale (the unset-means-
  * inherit contract this block already uses for icon/text/label).
  *
- * `--sgs-bi-link-hover` is emitted scoped by render.php ONLY when the operator
- * overrides it; the #e7d768 here is the fallback, i.e. SGS's own credit colour —
- * a component constant, not a client value, and it overrides no theme default.
+ * `--sgs-bi-link-hover-bg` / `--sgs-bi-link-hover-text` are emitted scoped by
+ * render.php ONLY when the operator overrides them; the #e7d768 here is the
+ * fallback, i.e. SGS's own credit colour — a component constant, not a client
+ * value, and it overrides no theme default. Split into two custom properties
+ * 2026-08-16 (D643, linkHoverBackgroundImage/linkHoverTextColour) — one feeds
+ * this gradient colour-stop, the other feeds the @supports fallback `color:`
+ * below; a `color:` value can never legally hold a gradient, so they can no
+ * longer share one attribute now this attribute is a gradient-rollout candidate.
  */
 .sgs-business-attribution .sgs-business-info__link {
 	background-image: linear-gradient(
 		90deg,
-		var(--sgs-bi-link-hover, #e7d768) 50%,
+		var(--sgs-bi-link-hover-bg, #e7d768) 50%,
 		currentColor 50%
 	);
 	background-size: 200% 100%;
@@ -116,7 +121,7 @@
 
 	.sgs-business-attribution .sgs-business-info__link:hover,
 	.sgs-business-attribution .sgs-business-info__link:focus-visible {
-		color: var(--sgs-bi-link-hover, #e7d768);
+		color: var(--sgs-bi-link-hover-text, #e7d768);
 	}
 }
 

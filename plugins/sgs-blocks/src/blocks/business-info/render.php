@@ -56,7 +56,12 @@ $icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
 $text_colour  = (string) ( $attributes['textColour'] ?? '' );
 $label_colour = (string) ( $attributes['labelColour'] ?? '' );
 // Link hover — unset means "no override", so style.css's #e7d768 default applies.
-$link_hover_colour = (string) ( $attributes['linkHoverColour'] ?? '' );
+// Split 2026-08-16 (D643): the resolved colour used to feed BOTH the gradient
+// colour-stop (background-image) AND the @supports-fallback `color:` from one
+// attribute. A `color:` value can never legally hold a gradient, so each CSS
+// technique now gets its own attribute — see block.json's `link` element note.
+$link_hover_bg_image_colour = (string) ( $attributes['linkHoverBackgroundImage'] ?? '' );
+$link_hover_text_colour     = (string) ( $attributes['linkHoverTextColour'] ?? '' );
 
 // Placeholder shown when data is missing.
 $placeholder = sprintf(
@@ -421,10 +426,18 @@ if ( '' !== $sgs_bi_label_colour_css ) {
 	$sgs_bi_colour_decls[] = '--sgs-bi-label-colour:' . $sgs_bi_label_colour_css;
 }
 // Link hover — same omit-when-unset contract as the three above. Unset falls back
-// to style.css's `var(--sgs-bi-link-hover, #e7d768)`, the SGS credit sweep colour.
-$sgs_bi_link_hover_css = sgs_colour_value( $link_hover_colour );
-if ( '' !== $sgs_bi_link_hover_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover:' . $sgs_bi_link_hover_css;
+// to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` / `var(--sgs-bi-link-hover-text, #e7d768)`,
+// the SGS credit sweep colour. Two separate custom properties (split 2026-08-16,
+// D643) — one feeds the gradient colour-stop, one feeds the @supports fallback
+// `color:` — so each can be resolved independently and, later, so only the
+// gradient one can ever be offered a gradient value.
+$sgs_bi_link_hover_bg_css = sgs_colour_value( $link_hover_bg_image_colour );
+if ( '' !== $sgs_bi_link_hover_bg_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-bg:' . $sgs_bi_link_hover_bg_css;
+}
+$sgs_bi_link_hover_text_css = sgs_colour_value( $link_hover_text_colour );
+if ( '' !== $sgs_bi_link_hover_text_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-text:' . $sgs_bi_link_hover_text_css;
 }
 if ( $sgs_bi_colour_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $sgs_bi_colour_decls ) . ';}';
