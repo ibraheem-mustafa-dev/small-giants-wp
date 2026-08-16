@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-15
+last_updated: 2026-08-16
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -9,334 +9,189 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-15 (late session). The colour work is DONE for Track A — every block a client can
-recolour now has one predictable Colour panel, in the Styles tab, and the picker inside it is
-ours rather than WordPress's.** 4 commits on `main` (`aaa91c3e`, `a5b74bd1`, `f6f3c033`,
-`0c287cf6`), plus the doc sweep committed alongside this handoff.
+**2026-08-16. The 12 files that were stuck uncommitted on 2026-08-15 are landed, and the shared-DB
+gate that was blocking every commit is green again.** One commit on `main` (`8b944ff5`), pushed.
 
-**What actually shipped, in order.**
+**What happened, in order.**
 
-1. **The reseed** (your Task 2). Drift orphans 3 → 2, zero new violations. It also flagged an
-   "unexpected" `block_selectors` drop that turned out to be a **false alarm** — diffed my own
-   pre-reseed snapshot against the post-reseed DB, zero rows changed either way; the drop
-   predated tonight entirely.
+1. Checked whether last session's blocker (a concurrent session's shadow-colour work seeding the
+   shared DB with attributes `main` didn't know about) had cleared. It had — that work merged as
+   PR #28 the same evening. The F6/db-consistency gate passes clean.
 
-2. **You asked mid-session whether we'd actually taken WP core's picker code as our own.** We
-   had taken the popover *shell* (last session) but the picker *inside* it — the swatch grid,
-   hex/RGB/alpha sliders — was still a live import. Now forked: ~29 files from WordPress at a
-   pinned version, converted to plain JS, ours to customise. **One real bug surfaced doing it:**
-   the forked CSS leaked into an unrelated block's *frontend* stylesheet (caught by the
-   anti-cheat gate flagging `sgs/accordion`, a block the commit never touched). Fixed properly —
-   two of the four stylesheets were duplicating CSS WordPress already ships, so they were deleted
-   rather than shipped twice.
+2. **Wrapper decomposition step 5 (live calibration) — done.** The design council's assumption that
+   all 7 wrapper-owning blocks (container/cta-section/hero/trust-bar/site-header/site-footer/
+   physics-canvas) should get all 6 planned extensions turned out to be wrong: real panel mounts
+   range from 1 (physics-canvas — width only) to 5 (container/cta-section/trust-bar — everything).
+   Also found two smaller things worth knowing: one whole panel (`GridAreaPanel`) has zero live
+   mounts anywhere in the framework today, and the other (`GridItemDefaultsPanel`) mounts with no
+   safety check at all — both are things step 6 needs to build, not things already working that
+   step 6 can just wire up.
 
-3. **A ruling that was never actually coded.** D621 (last session) said the Colour panel belongs
-   in the **Styles** tab, and the previous LEDGER summarised it as shipped. It wasn't — the
-   component still had no tab setting at all. Caught by reading the code and confirming live in
-   the editor. One-line fix, verified live, **landed before the 33-block rollout** so every block
-   went to the right place first time instead of needing a second pass.
+3. **The one block D632's shadow-colour migration deliberately skipped — `sgs/quote` — is done.**
+   It was skipped last time because another session had live edits on the same file; that session
+   is long since merged, so the collision risk was gone. Migrated it onto the same shape as the
+   other 10 blocks, live-verified on the test site: the shadow's colour and its hover colour both
+   paint correctly and change independently of each other.
 
-4. **Wave 2 — 33 blocks migrated** via 16 parallel agents. Worklist rebuilt from the live DB
-   rather than the plan doc's cached list, which was wrong twice (`social-icons` listed but has
-   no custom colour attrs at all; `cart` missing despite having 5). Agents caught several places
-   where the DB's own classification disagreed with the real code and were right to. **One real
-   bug from the parallel dispatch itself:** an agent shipped a broken JSX tag that broke the
-   shared build for every other agent — found and fixed directly, and notably that agent's own
-   final report described it as "a transient concurrent-build collision" when it was a genuine
-   syntax error. Its sibling agents reported it correctly.
+4. Along the way, three small mechanical problems surfaced and got fixed: the database didn't know
+   about quote's two new attributes until it was told (a normal, expected step); one classification
+   rule needed a matching entry so the new colour attribute didn't fight with its own shadow shape
+   for the same slot; and a live test I ran to verify the colour swap used an invalid test value
+   that hid whether it actually worked — caught, fixed, and re-verified properly before trusting the
+   result.
 
-5. **Task 3 (the schema question) turned out not to need a schema change at all** — and this is
-   the part worth reading. I diagnosed both remaining drift orphans, proposed fixes, and a
-   second-opinion review agent **overturned both diagnoses before anything was built**. My
-   trust-bar diagnosis was factually wrong (I'd conflated two different attributes' CSS emits);
-   my hero one rested on a false premise (a "stale leftover" class that is actually current and
-   intentional). Both real fixes were one-line manifest declarations. Drift orphans: **2 → 0.**
+**What's next — two separate, independent pieces of work, not one.** See "Open — ready to pick up"
+below for the full menu; short version: (a) the wrapper-decomposition programme's next step needs
+your sign-off on which blocks get which capabilities before any more code gets written, and
+(b) the colour programme has two small, unrelated leftover tasks (a design question on 2 blocks,
+and the gradient-bar build) that don't depend on the wrapper work at all.
 
-⚠ **One mistake worth knowing about.** `git commit -- <paths>` re-stages those files from the
-working tree, silently discarding a careful partial staging I'd done minutes earlier — so two of
-the *concurrent* session's uncommitted attribute declarations landed on `main` inside my commit.
-No functional damage (inert declarations, build green) and you ruled to leave it, but it's now a
-STOP entry so it doesn't recur.
+**Full narrative:** `memory/session-2026-08-15*.md` (2026-08-15 session, auto-snapshotted).
 
-6. **Then Bean cleared four more residuals in one go** — and made a fair correction while doing it:
-   three of the four had been parked as "needs a ruling" when they just needed *doing*
-   (the nav-menu stale comment especially — a one-line fix should not have been an agenda item).
-   All four completed via 4 parallel agents and verified. **None of them could commit** — see
-   "Uncommitted work" below; the blocker is the other session's shared-DB state, not the work.
-
-**Full narrative:** `memory/session-2026-08-15*.md` (auto-snapshotted at close).
-
-## Shipped this session
+## Shipped this session (2026-08-16)
 
 | Commit | What |
 |---|---|
-| `aaa91c3e` | **Colour-picker fork (D627).** WP core's `ColorPalette`/`ColorPicker`/`CircularOptionPicker` (~29 files) forked from Gutenberg at pinned SHA `28c0dedc4eaf…` (WP 7.0.4) into `src/components/colour-picker/`. TS→JS, `@emotion/styled`→SCSS. New MIT deps: `react-colorful`, `colord`, `clsx`. No `framer-motion` (verified unused — no Spec 38 Tier-H conflict). Fixed the CSS-leak-into-frontend-bundle bug it introduced |
-| `a5b74bd1` | **D621 actually coded (D628).** `SgsColourPanel` now `group="styles"`. Was ruled last session, summarised as shipped, never written |
-| `f6f3c033` | **Wave 2 — 33 blocks (D629).** 16 parallel agents. Every colour state sets `linked: true` (D619). 17 blocks got live-captured `intent_capture_passed` visual-diff evidence; 16 auto-passed editor-only |
-| `0c287cf6` | **Last 2 drift orphans closed (D630).** Manifest-only. Both original fix-shapes were wrong and were overturned pre-dispatch by an independent review |
-| `49e10671` + `31163cfc` | Doc sweep: D627-D631, Spec 35 Parts A3/H/I/M, plan §1.2d, 4 parking entries, 3 STOP entries (221→224), 3 mistakes entries |
-| ⚠ **UNCOMMITTED** | **4 residual fixes — done and verified, blocked from committing.** See "Uncommitted work" below |
+| `8b944ff5` | **D633 + D634.** Wrapper step 5 (live calibration — falsified the "enable all 6" assumption, report + decision recorded) and `sgs/quote`'s shadow-colour migration (the one block D632 deferred), both live-verified |
 
 ### Numbers
 
-| Metric | Start | End |
+| Metric | Start of session | End |
 |---|---|---|
-| `css_element` drift orphans | 3 | **0** |
-| Blocks on `SgsColourPanel` | ~9 | **~42 of 49 (Track A complete)** |
-| Element-manifest style defects | 7 | 7 (unchanged, at baseline) |
-| STOP catalogue entries | 221 | **224** |
-| D-ceiling | D626 | **D631** |
-
-⚠ **Style defects did NOT drop to 6 as predicted.** Nothing regressed (gate passes at baseline),
-but the prediction was simply not met — recorded honestly rather than quietly dropped.
-
-## ⛔ UNCOMMITTED WORK — read before touching anything
-
-**12 files are modified in the working tree. They are FINISHED and VERIFIED, not work-in-progress.**
-Bean cleared 4 residuals late in the session (rightly pointing out that three of them never needed a
-ruling, just doing). All four landed; none could commit.
-
-| Fix | Files | State |
-|---|---|---|
-| **`social-icons` migrated onto `SgsColourPanel`** | `social-icons/{block.json,edit.js}` | Done. `colourMode='brand'` correctly renders hover-only (brand colours are per-platform, not client-settable) |
-| **`hero` object-position mis-attribution cleared** | `hero/block.json` | Done. All 3 attrs traced in `render.php` (lines 584/590/1195) to ONE node `.sgs-hero__split-image`; the two false claims (`media`, `split-media`) removed |
-| **`nav-menu` stale manifest comment** | `nav-menu/block.json` | Done. Prose only, schema untouched |
-| **Block-level Text/Background rows folded into the panel** | `notice-banner/`, `quote/`, `product-card/` (+`testimonial-slider/edit.js` comment) | Done for 3 of 5 |
-| **Block Build Status rows** | `plugins/sgs-blocks/CLAUDE.md` | Done (earlier in session, same blocker) |
-
-**Verified:** all 5 changed `edit.js` babel-parse clean · all 6 changed `block.json` valid ·
-`check:element-manifest` style-defect **7/7** and state-without-base **1/1** — exactly the
-pre-change baseline, **zero new findings from this work**.
-
-⛔ **`testimonial-slider` and `process-steps` were deliberately NOT changed** — and the agent was
-right to stop. Both declare a `states.hover` whose BASE resolves via `attrMap: native:color.*`, so
-switching the native flag off breaks the element-manifest gate (state-without-base 1 → 5) even
-though `render.php` still paints correctly. Fixing those two needs the manifest's native-base
-resolution addressed first — a real design question, not a flag flip. Both fully reverted.
-
-### Why it couldn't commit (not this work's fault)
-
-The **shared, machine-global** `sgs-framework.db` has `*ShadowColour` attributes seeded into it by
-the concurrent shadow-extension session. That session's **branch** declared those attrs in
-`scripts/behavioural-analyser/css-property-classifications.json`; **`main` does not**. So on `main`
-the F5/db-consistency gate compares a DB that HAS them against a classifier that DOESN'T →
-violations, and **every commit touching `plugins/sgs-blocks/` on `main` is blocked**.
-
-⚠ **The branch then VANISHED mid-session.** `feat/universal-shadow-extension` was deleted locally
-AND on the remote by that session. Its commit `7f289f3b` still exists as a dangling object but is
-**not on `main`**. Violations also went **10 → 16** in that window (stable at 16 across a 20s
-re-sample, so that session is paused, not mid-write).
-
-**Bean had approved merging that branch — the approval was NOT acted on, because the branch it
-referred to no longer exists.** Merging a dangling commit whose author just un-published it could
-clobber a rework in progress. That decision is Bean's to re-make with current facts.
-
-⛔ **Do NOT `--no-verify` these.** It switches off gitleaks, cheat-gate, F5/F6, block-uniformity and
-the visual-diff gate to route around one unrelated failure. The custom `SGS_VISUAL_GATE_SKIP` bypass
-(commit `02de11fd`) does NOT help — it is scoped to the visual-diff gate only; the F5 hook in
-`.githooks/pre-commit` honours no env skip at all, verified by reading its source.
+| Shadow-migrated blocks (D632 family) | 10 of 11 | **11 of 11 — complete** |
+| Wrapper decomposition steps done | 4 of 7 | **5 of 7** |
+| Element-manifest style defects (accepted debt) | 10 | 12 (2 new, same accepted class, written reason in the baseline file) |
+| D-ceiling | D632 | **D634** |
 
 ## Blockers
 
-- **None from this session's own work.** Every gate was green when this session's 4 commits
-  landed (build exit 0, cheat-gate 0 new, element-manifest GATE PASS at baseline).
-- ⛔ **`npm run build` is RED (exit 1) — NOT this session's doing.** F6/db-consistency reports
-  **16 NEW violations** (was 10 earlier in the session), every one a `*ShadowColour` attribute
-  (`cta-section.shadowColour`, `trust-bar.iconCircleShadowColour`/`badgeImageShadowColour`,
-  `brand-strip.tileShadowColour`, `card-grid.cardShadowColour`/`shadowHoverColour`,
-  `team-member.shadowHoverColour`/`cardShadowColour`, `info-box.shadowHoverColour`, …). Full
-  mechanism in "Uncommitted work" above. **Do NOT try to fix these — they are not yours**, and do
-  NOT `--update-baseline` them (that would absorb another session's unfinished work into this
-  project's baseline permanently).
-- ⚠ **The concurrent session's branch `feat/universal-shadow-extension` has been DELETED**
-  (local + remote) after being pushed. Commit `7f289f3b` is dangling but reachable. **Its work is
-  NOT on `main`.** Do not resurrect it by hash without asking Bean — the author un-published it
-  and may be reworking.
-- 📌 **12 of this session's files sit uncommitted and verified** — see "Uncommitted work" above.
-  They are finished; the blocker is environmental, not quality.
+**None.** F6/db-consistency gate passes on its own merit (1 baselined, 0 new). `npm run build` exits
+0. Tree is clean of this session's work (a few pre-existing unrelated dirty files from before this
+session — `package-lock.json`, `reports/phase4-*.txt` — were left untouched; not this session's to
+touch).
 
 ## Open — ready to pick up
 
-### ⭐ NEXT SESSION — orchestration plan
+### ⭐ NEXT SESSION — two independent streams, pick one or both
 
-**You are the SGS framework engineer.** Track A of the colour programme is complete and four
-residual fixes are done-but-unlanded. **Task 0 is unblocking and committing them — do that before
-anything else**, because they will rot or be clobbered while the tree stays dirty on a shared
-checkout.
+These do NOT depend on each other. Present both to Bean as a menu rather than assuming which one
+comes first.
 
 ---
 
-## Task 0 — Unblock and land the 12 uncommitted files ⛔ DO THIS FIRST
+### Stream 1 — Wrapper decomposition (steps 6-7 of 7)
 
-**What:** Get the F5/db-consistency gate green, then commit the 4 finished fixes + the plugin
-CLAUDE.md rows.
-**Why:** Verified work sitting in a dirty tree on a SHARED checkout is the single most losable
-thing in this repo right now.
-**Estimated time:** 10 min if the shadow work has landed; a short conversation with Bean if not.
+**What:** Step 6 — build the `background` pilot extension. Scope, per D626 + this session's step-5
+findings:
+1. A **design gate for Bean** first: given the real per-block panel-mount table (D633,
+   `.claude/reports/2026-08-16-wrapper-step5-calibration.md`), should `hero`/`site-header`/
+   `site-footer`/`physics-canvas` be EXPANDED toward full composite-mirror compliance (every wrapper
+   block gets every capability), or kept at their current narrower, deliberate set? This is a real
+   choice, not a default.
+2. **The PHP wrapper refactor is a hard dependency in the same commit**, not a follow-up — the
+   `kind` argument every block's `render.php` currently hardcodes as the literal string `'section'`
+   must become a function of `enabledExtensions`, or the editor-side migration will look done while
+   the PHP paint side silently disagrees underneath (D626's "hard sequencing dependency").
+3. **Two new precondition gates need building, not wiring** — `GridAreaPanel` has zero live mounts
+   today (D633), and `GridItemDefaultsPanel` currently mounts with no check that the block even has
+   grid layout enabled. Neither existed as a working mechanism to hook into.
+4. **Colour Track B merges into this step** — the shared-wrapper colours
+   (`backgroundOverlayColour`, `shapeDividerTopColour`/`BottomColour`, `gridItemBackground`,
+   `gridItemTextColour`) reach `container`/`cta-section`/`hero`/`trust-bar`/`site-header`/
+   `site-footer` via the SAME file this step already owns — do not run it as a separate session
+   (that was last session's Task 1; it's retired as its own task, see Stream 2 below for why).
 
-**Orchestration:** inline, main thread. Do NOT delegate — this is a judgement call about another
-session's work, not a mechanical task.
+**Why:** Every big migration this initiative promised has shipped except this one. It's also the
+last blocker on colour reaching 100% of the framework (Track A is done; Track B only ships as part
+of this).
 
-**Sequence:**
-1. `git status` + `git log --oneline -5` + `git branch -a` — establish what changed overnight.
-2. `cd plugins/sgs-blocks/scripts && python db-consistency/run.py --check` — is F6 green now?
-3. **If GREEN** (the other session landed its classifier update on `main`): commit the 12 files
-   as one commit, every gate active, no bypass. The full rationale for each fix is in
-   "Uncommitted work" above — reuse it in the commit message.
-4. **If STILL RED**, do NOT force it. Check whether `feat/universal-shadow-extension` was
-   re-pushed (`git branch -a`) or whether `7f289f3b` landed on `main` some other way. Then put
-   the options to Bean: merge the shadow work (if it's genuinely back and its author is done),
-   or wait. ⛔ Do not `--no-verify`, do not `--update-baseline`, do not merge a dangling commit
-   unilaterally.
+**Orchestration:** design gate FIRST (menu + ranking to Bean per Rule 9), then delegated build.
+Re-run `/delegate` after the gate — shape isn't known yet. Read D626 + D633 +
+`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 in full before starting.
 
-**Acceptance:** `git status` clean of these 12 files, every commit gate passed on its own merit
-(no bypass token), and `check:element-manifest` still at style-defect 7/7 / state-without-base 1/1.
+**Estimated time:** ~1 session once the design gate is answered.
+
+**Step 7** (remaining capabilities, shape dividers last — needs a new linked/unlinked X/Y scale
+control, not a pure relocation) is blocked on step 6 landing; not actionable yet.
 
 ---
 
-## Task 1 — Colour-panel Track B (the 6 shared-wrapper blocks)
+### Stream 2 — Colour programme leftovers (independent of Stream 1)
 
-**What:** Migrate the colours owned by `ContainerWrapperControls.js` (`backgroundOverlayColour`,
-`shapeDividerTopColour`/`BottomColour`, `gridItemBackground`, `gridItemTextColour`) onto
-`SgsColourPanel`, reaching `container`, `cta-section`, `hero`, `trust-bar`, `site-header`,
-`site-footer`.
-**Why:** The last blocks where a client still finds colour in a different place. Completes the
-client-facing outcome the whole track exists for.
-**Estimated time:** ~1 session.
+Track A is complete (~43 blocks). Track B is **not a standalone task any more** — it's Stream 1's
+step 6 (see above); don't schedule it twice. Two genuinely separate, smaller items remain:
 
-**Orchestration:**
-- Execution: **design gate FIRST, then delegated**
-- ⛔ **Do NOT dispatch straight into a rollout.** These 5 attributes are declared once in a
-  SHARED component and reach 6 blocks (~29 wrapper consumers total) — Rule 7 (shared mechanism,
-  high blast radius) requires Bean's approval on the shape before building. Track A's per-block
-  recipe does NOT transfer unexamined: there is no per-block `block.json` to edit for these.
-- Model: re-run `/delegate` after the design gate — shape is not yet known.
-- Brief: read D618/D619/D621/D622 + `parking.md` `P-COLOUR-PANEL-TRACK-B-SHARED-WRAPPER`.
-- Context they won't have: `ContainerWrapperControls.js` is ALSO being actively edited by a
-  concurrent session (the shadow-extension work) — **check `git status` and coordinate before
-  any agent touches that file.** Two writers on it is the known failure mode.
-- Depends on: none · Parallel with: none (single shared file)
-- **/qc gate after: yes** — live swatch-pick per block, not DOM structure alone.
-
-**Acceptance:** all 6 blocks' wrapper colours in the Styles-tab Colour panel, `linked: true`,
-a real swatch pick verified live on at least one composite, zero new element-manifest findings.
-
-## Task 2 — The `native:color` manifest-base problem (the one real design question left)
-
-**What:** `testimonial-slider` and `process-steps` still show WP's native Text/Background controls
-alongside the SGS Colour panel, and could NOT be switched off like the other three. Both declare a
-`states.hover` whose BASE resolves via `attrMap: "native:color.text"` / `"native:color.background"`,
-so `check-element-manifest-conformance.js` fails that resolution the moment the native flag goes
-`false` (state-without-base 1 → 5) — even though `render.php` still paints correctly.
-**Why:** It is the last thing standing between the client and one single colour surface everywhere.
-It is a genuine question about how the manifest expresses "the base state lives in native supports",
-not a flag to flip.
+**2a — The `native:color` manifest-base problem.** `testimonial-slider` and `process-steps` still
+show WP's native Text/Background controls alongside the SGS Colour panel — both declare a
+`states.hover` whose BASE resolves via `attrMap: "native:color.text"`/`"native:color.background"`,
+so switching the native flag off breaks the element-manifest gate (state-without-base 1 → 5) even
+though `render.php` paints correctly either way. This is a real design question about how the
+manifest expresses "the base state lives in native supports", not a flag to flip.
+**Orchestration:** design gate (Bean picks), then inline. **/qc gate after: yes.**
 **Estimated time:** design call, then small.
 
-**Orchestration:** design gate (Bean picks), then inline. Depends on: Task 0. **/qc gate after: yes.**
-**Acceptance:** goal-shaped — those two blocks show ONE colour surface, and the element-manifest
-gate passes on its own merit rather than by keeping a duplicate control alive.
-
-⭐ **Related, worth raising in the same conversation:** `audit-css-element-drift.py` only detects
-*undeclared* element names — a **declared-but-wrong** value passes clean. That is exactly how hero's
-three-way mis-attribution survived until it was found by hand this session. Extending the audit to
-cross-check each `attrMap` claim against the selector its attribute actually emits to is the real
-systemic fix, and would have caught hero automatically.
-
-## Task 3 — Custom gradient bar (per-stop palette linking)
-
-**What:** Build the gradient bar with palette-linked stops.
-**Why:** Kadence + Spectra both ship per-stop palette already; this is catch-up, not
-differentiation.
+**2b — Custom gradient bar (per-stop palette linking).** Kadence + Spectra both ship this; catch-up,
+not differentiation. The prerequisite already landed — core's own gradient bar imports the exact
+`ColorPicker` module already forked into `src/components/colour-picker/` (D627), so the shared
+dependency is SGS-owned. Core's own bar offers no palette swatches for stops, so the per-stop
+linking itself is genuinely new work.
+**Orchestration:** delegated after a design gate. **/qc gate after: yes.**
 **Estimated time:** own session.
 
-**Orchestration:** delegated after a design gate. **The prerequisite already landed** — core's own
-gradient bar imports the exact `ColorPicker` module now forked into `src/components/colour-picker/`,
-so the shared dependency is SGS-owned. Note core's bar deliberately offers NO palette swatches for
-stops, so per-stop palette linking is genuinely new work, not a port.
-Depends on: none. **/qc gate after: yes.**
-**Acceptance:** a client can pick a theme palette colour for an individual gradient stop and a
-brand-palette change re-colours it.
-
 ---
-
-## Dependency graph
-
-```
-Task 0 — unblock + land the 12 uncommitted files    ⛔ FIRST, blocks everything
-   |
-   +-- Task 1 — Track B (the main event; design gate before any dispatch)
-   |
-   +-- Task 2 — native:color manifest base (design call, then small)
-   |
-   +-- Task 3 — gradient bar (own session, independent)
-```
-**Task 0 gates the rest** — not because of a code dependency, but because a shared checkout with 12
-verified-but-uncommitted files is the state most likely to lose work. Tasks 1-3 are independent of
-each other once it's clear.
 
 ## Methodology guardrails (do not skip)
 
 - **A ruling in `decisions.md` + a "shipped" line in a status doc is NOT evidence the code
-  changed.** D621 was ruled, summarised as shipped, and had never been written. Read the code.
-- **Verify what a commit ACTUALLY contains** — `git show --stat HEAD` / `git show HEAD -- <file>`
-  — because `git commit -- <paths>` re-stages the working tree over a partial `git add -p`.
-- **A subagent's explanation of a failure IT caused is the least reliable account of it.** One
-  agent called its own real syntax error "a transient collision"; three siblings reported it
-  correctly. Verify causes independently, not just "fixed" claims.
-- **Dispatch a second opinion BEFORE building a fix-shape, not after.** Tonight's review
-  overturned two of my diagnoses pre-dispatch. A coherent-sounding fix is not a verified one.
+  changed.** D621 was ruled, summarised as shipped, and had never been written until 2026-08-15.
+  Read the code.
 - **This checkout is SHARED and the branch can change under you mid-session.** Re-run
   `git branch --show-current` + `git status` immediately before every commit.
-- **Verify on the real editor, not the DOM alone** — a swatch that opens is not a swatch that
-  applies.
+- **A DB reseed picks up ambient, unrelated drift corrections** in shared derived-classifier files
+  (`css-property-classifications.json`, `attr-role-map.json`) — expected, not a bug to chase; note
+  it in the commit rather than hand-reverting (can't selectively regenerate one block's rows).
+- **Verify on the real editor / real canary, not the DOM alone** — a swatch that opens is not a
+  swatch that applies; a computed style that "matches" isn't proof until you've checked the value
+  actually reached the right attribute (this session's shadow-colour probe used an invalid test
+  value on the first pass and silently proved nothing — caught before it was trusted).
 - **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
 
 ## State Snapshot
 
-- **Branch:** ⛔ **VERIFY — this drifted mid-session.** My work is on `main`; a concurrent session
-  created `feat/universal-shadow-extension` and left HEAD there. Run `git branch --show-current`
-  AND `git status` before anything.
-- **D-ceiling:** **D631** — verify with
+- **Branch:** `main`. Verify with `git branch --show-current` before anything — shared checkout.
+- **D-ceiling:** **D634** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep has reported a hex colour as the ceiling before).
-- **`main` HEAD:** `0c287cf6` + this handoff's doc commit. ⛔ Verify.
-- **Build:** ⛔ **currently exit 1** — 10 NEW F6 violations, all `*ShadowColour` attrs from the
-  concurrent shadow-extension session's shared-DB seeding (see Blockers; not this session's work,
-  do not chase). **At the time this session's own commits landed it was exit 0**, with cheat-gate
-  18 baselined / 0 new and element-manifest GATE PASS (style-defect 7/7, state-without-base 1/1).
-  `handoff-preflight.py --check` 9/9 pass (doc gates, unaffected).
-- **DB snapshot (pre-reseed, tonight):**
-  `~/.agents/skills/sgs-wp-engine/sgs-framework.db.bak-2026-08-16-pre-reseed`. Rollback is one `cp`.
-  ⚠ The real DB lives at `~/.agents/skills/sgs-wp-engine/` — there is a **0-byte decoy** at the repo
-  root (`sgs-framework.db`); `dev-setup.md` documents the real path. I snapshotted the decoy first.
-- **Canary:** sandybrown. Every throwaway test page created tonight was deleted (2441, 2443, 2445,
-  2446 — none left live).
-- **Playwright MCP:** worked fine tonight. One stuck `beforeunload` dialog blocked navigation twice —
-  `browser_handle_dialog` clears it; no need to fall back to Chrome DevTools MCP.
+- **`main` HEAD:** `8b944ff5`, pushed to `origin/main`.
+- **Build:** green. `npm run build` exit 0. F6/db-consistency 1 baselined / 0 new. Element-manifest
+  GATE PASS (style-defect 12/12 baselined, state-without-base 2/2, unclassified 0). Cheat-gate 18
+  baselined / 0 new.
+- **Canary:** sandybrown. All shadow-migrated blocks (11 of 11) were deployed this session; only
+  `card-grid` (D632) and `sgs/quote` (this session) have been individually live-verified — the other
+  9 D632 blocks still have "full re-verification pending the next canary deploy" open against them
+  (D632's own note, unchanged).
+- **Playwright MCP:** worked fine this session.
 
 ## Pointers
 
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101 — 224 entries) |
-| Colour programme — full history, Track A/B split, wave detail | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2d |
-| D627-D631 (this session) + D609/D617-D622 (colour architecture) | `decisions.md` |
-| Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (Parts A3/H/I/M updated tonight) |
+| Wrapper decomposition — full 7-step history, step 5 findings | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
+| Colour programme — Track A/B split, wave detail | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2d |
+| Wrapper step 5 calibration (raw data) | `.claude/reports/2026-08-16-wrapper-step5-calibration.md` |
+| D632-D634 (this + last session) + D609/D617-D622/D626 (colour + wrapper architecture) | `decisions.md` |
+| Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Control-type contract (colour §1, link §2) | `.claude/plans/spec-35-control-type-contract.md` |
-| Open deferred work (4 entries added tonight) | `parking.md` |
+| Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
 
 - **`testimonial`/`image-sequence`'s `imageControls`** — real crop scenario, per-item design call each.
-- **2 blocks (not 7) still keep native `supports.color` alongside the SGS panel** —
-  `testimonial-slider` and `process-steps`, both blocked by the `native:color` manifest-base problem
-  that is now **Task 2**. `notice-banner`, `quote` and `product-card` were fixed this session
-  (uncommitted); `testimonial` and `option-picker` already had their flags off.
+- **2 blocks still keep native `supports.color` alongside the SGS panel** — `testimonial-slider` and
+  `process-steps`, both blocked by the `native:color` manifest-base problem (Stream 2, item 2a above).
 - **physics-canvas `ALLOWED_BLOCKS`** — approved in principle; needs its own design gate.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
 - **`templateMode` inert** on both row blocks and physics-canvas.
 - **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
-- **SonarCloud Security Rating C** on PR #27's new code — never resolved, merged on Bean's
-  instruction with the gate red. Worth reading before the next merge.

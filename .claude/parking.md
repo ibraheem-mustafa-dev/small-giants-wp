@@ -352,13 +352,17 @@ heading `hero` variant.
 Track A (33 blocks' own custom colour attrs migrated onto `SgsColourPanel`) is COMPLETE (commit
 `f6f3c033`, wave 2 colour-panel rollout). Track B is the remaining slice: the colours owned by the
 shared `ContainerWrapperControls.js` rather than by each block's own attrs — `container`,
-`cta-section`, `hero`, `trust-bar`, `site-header`, `site-footer`. Bean ruled this a separate session
-because it touches the SHARED wrapper control surface (Rule 7 design-gate territory), not a
-per-block swap like Track A. Its precondition ("wait for Track A to settle") is now met.
+`cta-section`, `hero`, `trust-bar`, `site-header`, `site-footer`.
 
-**Trigger:** a dedicated Track B session — design-gate the `ContainerWrapperControls.js` change
-before building (shared-mechanism blast radius across all 6 consumers), then migrate each of the 6
-onto `SgsColourPanel` using the Track A recipe.
+⚠ **Re-scoped 2026-08-16 (D626/D633) — NOT a standalone session any more.** Track B merges into the
+shared-wrapper decomposition initiative's step 6 (same file, same 6 blocks, Bean-ruled to avoid two
+sessions editing `ContainerWrapperControls.js` independently). Do not schedule this as its own
+session — it ships as part of that initiative's step 6, which also needs a design gate first (which
+blocks expand toward full composite-mirror compliance) and a hard-dependency PHP wrapper refactor in
+the same commit. See `LEDGER.md` "Stream 1 — Wrapper decomposition" and
+`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 step 6.
+
+**Trigger:** superseded — triggers alongside wrapper-decomposition step 6, not independently.
 
 ### P-GRADIENT-BAR-PALETTE-STOPS — per-stop palette-linked colours on a custom gradient bar
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
