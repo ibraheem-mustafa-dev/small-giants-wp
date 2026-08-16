@@ -9,42 +9,34 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-16, late. The gradient rollout's groundwork (Phase 0) is DONE. The builders have not
-started — and the ground turned out to be far worse than anyone thought.**
+**2026-08-16, later session. The one thing left before the gradient rollout's actual builders can
+start is now done: the 3 colour-attribute splits from earlier today are deployed and checked on the
+real site.**
 
-**What we set out to do:** start Stage 2, the universal gradient rollout (D636) — give every colour
-control in the framework a gradient option. **What we actually found:** yesterday's storage change
-(which collapsed each gradient from 4 attributes down to 1) had left NINE places still speaking the
-old language. None of them failed a build, because WordPress silently throws away any attribute a
-block does not declare. They just quietly did nothing.
+**What this session did:** picked up the previous session's "verification owed, not claimed" note. The
+plan the previous session left behind (deploy + a tier-fixture capture) turned out to be the wrong
+tool — that tooling measures RESPONSIVE breakpoints, and this change has nothing to do with
+breakpoints, it's a colour normal/hover-state split. Caught before running it, via a `/qc` pass on the
+plan itself. Used a direct before/after colour-value capture instead.
 
-**The serious one: the cloning pipeline could not clone a gradient at all.** It was writing four
-attributes that no longer exist, producing clones with no gradient, no error and no warning. Stale
-rows in the database were hiding it — clearing them is what exposed it. Fixed, and two capabilities
-fell out for free: radial and conic gradients can now be cloned (they never could), and multi-stop
-gradients keep every colour instead of being flattened to two.
+**Result: all three splits check out.** `business-info` has real footer links live on the site —
+measured their colour before and after deploying, resting and on hover: identical. `social-icons` and
+`mega-panel` turned out to have **no live instances anywhere** (nothing on the real site actually uses
+them yet) — so there was nothing to compare against, but a throwaway test page confirmed the new
+split controls render the right colours with no errors, then was deleted.
 
-**A build check that claimed to be running wasn't.** A gate written yesterday was documented in three
-separate places as enforcing every build. It was wired nowhere. Now genuinely wired, with all three
-docs corrected to record the gap rather than quietly become true.
-
-**Your `accent` ruling was executed — and it shrank.** You ruled that attributes secretly driving
-several CSS properties at once should be split. Four agents in parallel checked each against the real
-code instead of trusting the database, and **4 of the 6 "defects" were not defects at all** — the
-database column was simply wrong. Three blocks were genuinely broken and were split (12 new controls
-replacing 4); two were left alone.
-
-**What is NOT done:** nothing was deployed, so nothing is proven working — only proven building. The
-three splits are committed behind a deliberately-provisional gate bypass recording visual verification
-as OWED, not claimed. That verification is the first job next session.
+**What's now unblocked:** the previous session's own dependency graph said the 5 gradient-mechanism
+builders (background/text/border/icon/shape-divider) could not start until this verification closed.
+It's closed. That's the next piece of work — see "Open" below.
 
 ## Shipped today
 
 | What | Detail lives at |
 |---|---|
+| Task 1a — the 3 colour splits deployed + live-verified, provisional gate bypass resolved | `decisions.md` D643 (updated) |
 | Track 1 — colour-gap closure, 4 streams, 3 live bugs found+fixed | `decisions.md` D640, D641 |
 | Track 2 — wrapper-decomposition steps 6-7 built + merged | `decisions.md` D638, D639 |
-| **Step 7 deployed + live-verified this session** — both checks pass on real computed CSS (see below) | this doc |
+| Step 7 deployed + live-verified (prior session) — both checks pass on real computed CSS | `decisions.md` D639 |
 | grid_area stale-reference repair, 10 reference categories across 13 files, `/qc`-checked | commit `98bb5ce0` |
 | GridAreaPanel confirmed already resolved — no action needed | `decisions.md` D639 + commit `fb9625dd` |
 | `go-track-1b-playful-hamster.md` §1.4 table corrected (was 2 stale steps) | that file |
@@ -75,22 +67,19 @@ how the builders must work.
 **Why:** every colour control gains a gradient option; Bean ruled full universal coverage (D636).
 **Estimated time:** ~1 session per builder in parallel, after the verification task below.
 
-#### Task 1a — Live-verify the three splits (DO THIS FIRST, ~20 min)
+#### ~~Task 1a — Live-verify the three splits~~ ✅ CLOSED 2026-08-16 (this session)
 
-**What:** `sgs/social-icons`, `sgs/business-info` and `sgs/mega-panel` were split into 12 new
-attributes replacing 4, committed behind a PROVISIONAL `SGS_VISUAL_GATE_SKIP`.
-**Why:** these genuinely change the emitted CSS (custom properties renamed and split, every consuming
-selector repointed). Defaults were inherited so the rendered result SHOULD be identical — but that is
-reasoning, not measurement, and D641 is the standing proof that reasoning is not enough.
-**Orchestration:** inline (main thread). Deploy via `build-deploy.py --target sandybrown`, then
-`capture-tier-fixture.py` + `make-visual-diff-reports.py` for the three blocks.
-⚠ **Known ordering problem, unsolved:** genuine before/after capture needs a DEPLOY between staging
-and committing, and the deploy's dirty-tree gate forbids exactly that. Resolve the sequencing with
-Bean explicitly — do NOT reach for `--allow-dirty`.
-**Acceptance:** three real reports at `reports/visual-diff/<block>-<date>.md` carrying measured
-values, and the provisional-bypass note removed from D643 and this LEDGER.
+`sgs/social-icons`, `sgs/business-info`, `sgs/mega-panel` deployed to sandybrown (`0a17f70d`) and
+live-measured. Full record: `decisions.md` D643 (updated). One methodology note for future sessions:
+the tier-fixture capture tooling this row originally specified turned out to be the wrong instrument
+for a colour normal/hover-state split (it's built for responsive breakpoints) — caught by running
+`/qc` on the plan before executing it, not by running the tool and getting a bad result. Two of the
+three blocks (`social-icons`, `mega-panel`) turned out to have zero live instances anywhere in the
+repo, so verification used a throwaway REST-created page instead of a real before/after (nothing was
+"before" for those two). `business-info` had real footer instances and got a genuine before/after —
+byte-identical.
 
-#### Task 1b — The five builders
+#### Task 1b — The five builders (now unblocked)
 
 | Builder | Mechanism | Scale |
 |---|---|---|
@@ -162,11 +151,9 @@ NOT "done" until that scoping produces a build-ready spec, matching how D626 clo
 ### Dependency graph
 
 ```
-Task 1a: deploy + capture the 3 splits   (inline, opus, ~20 min)  <-- DO THIS FIRST
-   |     resolve the deploy-vs-commit ordering with Bean first
-   |     BLOCKS 1b: do not add 5 more unverified mechanisms on top of 3 unverified splits
+Task 1a: deploy + verify the 3 splits   ✅ CLOSED 2026-08-16 — see the row above
    v
-Task 1b: decide the Icon/SVG manifest slot  (inline, opus — no css:stroke member exists)
+Task 1b: decide the Icon/SVG manifest slot  (inline, opus — no css:stroke member exists)  <-- START HERE
    |     BLOCKS builder 4 only; builders 1/2/3/5 can start without it
    v
 Task 1b: 5 builder agents in isolated worktrees (sonnet via /delegate)
@@ -224,22 +211,26 @@ decision.
 - **A subagent's claimed API/function name is a claim to verify** — `wc_get_price_html()` (invented)
   shipped clean through every gate. Full incident: `decisions.md` D641.
 - **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
+- **A verification plan's own tooling choice is a claim to check, not just the plan's logic.**
+  `/qc` on the Task 1a plan (before running it) caught that `capture-tier-fixture.py` is built for
+  RESPONSIVE tiers and has no colour/hover-state concept at all — running it against a colour-state
+  split would have produced a meaningless capture, not a real verification. Read what a tool actually
+  measures before trusting its name to describe what it does.
 
 ## State Snapshot
 
-- **Branch:** `main`, in sync with origin. This session: `c99be9c1` (8 pre-D636 leftovers),
-  `8c3bfbae` (gate wiring + 3 doc corrections), `679ae4d9` (D643 docs + research report), plus three
-  split commits and their merges.
+- **Branch:** `main`, in sync with origin at session start (`0a17f70d`). This session made no new
+  commits — only a `decisions.md` D643 update (verification record) still to commit, plus the plan
+  file at `~/.claude/plans/go-track-1b-spicy-rain.md`.
 - **D-ceiling:** **D643** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
-- **Build:** green through all ~50 gates. Converter suite 666 passed.
-- **DB:** reseeded (stages 1 + 9). Schema drift CLEAN, re-verified after every write because a
-  co-active session shared the file. Backups at `sgs-framework.db.pre-D643*.bak`.
-- **Canary:** UNCHANGED by this session — nothing was deployed. It still carries the earlier Track 1
-  and step-7 deploys.
-- **Worktrees:** none. Four were created and removed cleanly; `node_modules` intact at 972 packages
-  (no junctions were created, which is why removal was safe).
+- **Build:** green through all ~50 gates (unchanged this session — no code touched).
+- **DB:** unchanged this session.
+- **Canary:** **DEPLOYED this session** — `main` (`0a17f70d`) to sandybrown, payload checksums 83/83.
+  Now carries all 3 D643 colour splits, live-verified (see Task 1a above).
+- **Scratch pages:** id 2472 (social-icons/mega-panel verification) created via REST, force-deleted
+  after use — confirmed 404 post-delete.
 - **Pre-existing dirty files, not this session's:** `reports/phase4-*.txt`,
   `.claude/hooks/doc-size-baseline.json`, `.claude/memory/decisions-archive.md`,
   untracked `.claude/reports/*`, `.claude/Border Example HTML.html`.

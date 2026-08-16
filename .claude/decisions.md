@@ -170,16 +170,32 @@ builder's mechanism): the `background-image` half is one stop of a `linear-gradi
 **Net: 12 new attributes, 4 retired**, across 3 blocks. Merged to `main` in 3 commits + 3 merges, zero
 conflicts (confirming the disjoint-file analysis). `post-grid` and `nav-menu` untouched.
 
-⚠ **VISUAL VERIFICATION IS OWED, NOT CLAIMED.** The three splits committed behind a scoped
-`SGS_VISUAL_GATE_SKIP` recorded as **PROVISIONAL**. Unlike this session's earlier bypass (which rested
-on provably unreachable code), these DO change the emitted CSS — custom properties renamed and split,
-every consuming selector repointed. The rendered result is *expected* identical because defaults are
-inherited, but that is reasoning, not measurement. Bypassed only to get the work out of a fragile
-uncommitted state in a shared checkout. **The genuine capture is blocked by an ordering problem worth
-naming: real before/after capture needs a DEPLOY between staging and committing, and the deploy's
-dirty-tree gate forbids exactly that.** Resolving that sequencing — and running
-`capture-tier-fixture.py` + `make-visual-diff-reports.py` against sandybrown — is the immediate next
-task.
+✅ **VISUAL VERIFICATION CLOSED 2026-08-16 (later session).** All three splits deployed to sandybrown
+(`0a17f70d`, payload checksums 83/83) and live-measured. The tooling named above turned out to be the
+wrong instrument — `build-tier-fixture-page.py`/`capture-tier-fixture.py` are hardwired to the
+responsive desktop/tablet/mobile tier model; this split is a colour normal/hover-state change with no
+responsive axis, so a direct `getComputedStyle` capture was used instead. The "ordering problem" also
+turned out to be moot: the canary had not been redeployed since the split landed, so the pre-split
+"before" state was simply whatever was live prior to the deploy — no stash/checkout needed.
+
+- **`sgs/business-info`** (`linkHoverColour` → `linkHoverBackgroundImage` + `linkHoverTextColour`):
+  real live instances exist (footer phone + email links). Measured `color`/`background-image` on both,
+  resting and `:hover`, before and after deploy — byte-identical in all 4 readings
+  (resting `rgb(58,46,38)`/`none`, hover `rgb(197,106,122)`/`none`).
+- **`sgs/social-icons`** (`iconColour`→`iconGlyphColour`/`iconBackground`/`iconBorderColour` ×2 for
+  hover): **zero live instances anywhere in the repo** (confirmed by grep — no pattern/site references
+  it outside a retired palestine-lives backup), so there was no "before" to diff. Verified instead via
+  a throwaway page (id 2472, REST-created, force-deleted after) covering all 3 `iconStyle` variants
+  (plain/filled/outlined) — each rendered its expected `text-muted`-token colour with no PHP errors.
+- **`sgs/mega-panel`** (`accent`→`accentBackground`/`accentBorderColour`/`accentTextColour`/
+  `accentBackgroundImage`): also zero live instances in any shipped pattern. Verified on the same
+  throwaway page using the `mega-brands-1` pattern's own markup — the generated `<style>` (lifted to
+  `uploads/sgs-css/`, not inline) resolves `--sgs-mm-soft`/`--sgs-mm-soft-image` to the same
+  `color-mix(... var(--wp--preset--color--accent) ...)` expression the retired single `accent`
+  attribute produced, confirming the split's inherited defaults land correctly.
+
+The `SGS_VISUAL_GATE_SKIP` provisional bypass on these 3 commits is no longer needed going forward —
+recorded as resolved, not removed retroactively from history.
 
 **Verification.** Full build green through all ~50 gates. Converter suite 666 passed; the 27
 pseudo-overlay tests rewritten to the one-string contract. Visual-diff gate: scoped bypass on
