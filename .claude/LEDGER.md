@@ -10,7 +10,7 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 ## Human Summary — FOR BEAN, plain English (read this first)
 
 **2026-08-16, later the same day. Wrapper decomposition step 7 of 7 is BUILT — the last step of
-the initiative. Branch `feat/wrapper-step7`, 4 commits, NOT merged, NOT deployed.**
+the initiative. Branch `feat/wrapper-step7`, 6 commits, NOT merged, NOT deployed.**
 
 **What step 7 was.** Three separate small things D637 designed: a build-time safety check, a new
 client control for shape dividers, and connecting up a setting on the hero block that had been
@@ -44,6 +44,11 @@ doc, and neither had been caught by the two review passes that signed the design
 
 **Full build passes, exit 0, through all ~50 prebuild gates.**
 
+**A review then found five real defects, including one I had introduced** — moving the Background
+panel left an empty leftover control in the header block that a client could find, switch on, and
+be shown nothing. The entire ~50-gate build passed with it there, because no gate checks for a
+container with its contents removed. There is now one that does. All five are fixed.
+
 ## Shipped this session
 
 | Commit | What |
@@ -52,16 +57,21 @@ doc, and neither had been caught by the two review passes that signed the design
 | `5db5da40` | Shape-divider px `Height` → linked X/Y % `Scale` across 6 blocks; SVG-`<pattern>` tiling; `check-shared-panel-schema.js` taught the new object shape |
 | `fd70746d` | `BackgroundPanel` renders in **Styles** on all 7 wrapper blocks (was split 4 Settings / 2 Styles) |
 | `647e17c6` | `block_composition.grid_areas` migration (**not run**) + `/sgs-update` Stage 1 writer + gate flipped fail-closed |
+| `77454b98` | Docs — D639, Spec 35 §F.2 build-status box, this LEDGER |
+| `3ff2f0b9` | Review fixes — empty-container gate (new), flip origin, pattern-id collision, stale names |
 
-**Verification actually performed:** full `npm run build` exit 0 · 20/20 shape-divider render
-assertions incl. the byte-identical-default negative control · 11/11 Stage-1 writer assertions on a
-THROWAWAY DB (shared DB verified untouched after) · 11/11 gate self-test · structural check across
-all 7 wrapper blocks (tags balanced, zero nested `InspectorControls`).
+**Verification actually performed:** full `npm run build` exit 0, twice · 20/20 + 7/7 shape-divider
+render assertions incl. the byte-identical-default negative control (still holds after the review
+fixes) · 11/11 Stage-1 writer assertions on a THROWAWAY DB (shared DB verified untouched after) ·
+11/11 + 7/7 gate self-tests · 0 empty inspector containers across 110 files · **canary measured: 0
+of 1,375 posts carry a shape divider**, with a positive control run first.
 
 ## Blockers
 
-**None on what's committed.** Not deployed and not live-verified — no canary check has run against
-any of this. That is the honest gap, not a claim of completeness.
+**None on what's committed.** Nothing is DEPLOYED, and no editor/visual verification has run —
+the divider control and the Background tab move have not been seen by a human in a real editor.
+The only canary contact was a read-only database query (0 of 1,375 posts carry a shape divider).
+That is the honest gap, not a claim of completeness.
 
 ## Open — ready to pick up
 
@@ -100,6 +110,12 @@ a **D638** — step 6 close-out vs the colour-gap council. One needs renumbering
 
 - **A "fully locked" design is still a claim to check against the code.** Two of D637's premises
   were false and had survived two review lenses. Read the source before building on a design doc.
+- **A passing gate stack is not coverage.** An empty `<ToolsPanelItem>` — a client-visible dead
+  control — survived all ~50 prebuild gates, because the nearest gate checks the opposite direction.
+- **Two regexes, opposite wrong answers, same question:** 0 findings and 471 findings. Parse the
+  tree; do not pattern-match it.
+- **Verify the FIX landed, not just that the defect is gone.** My first removal left an unterminated
+  comment — worse than the original bug — and the scanner still read clean.
 - **A green exit code proves nothing on its own.** A PHP test file exited 0 both when every
   assertion passed and when an `ABSPATH` guard made it run nothing at all.
 - **A self-test can silently stop testing.** Four fixtures went green by reading the real tree

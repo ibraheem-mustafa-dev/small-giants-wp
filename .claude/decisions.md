@@ -105,6 +105,45 @@ diff, reverted.
 superseded or rebuild it onto the object storage. Bean parked it to the end of this session rather
 than forcing it into step 7. No live canary verification yet (nothing deployed).
 
+**Review pass (adversarial, mechanism-fidelity lens) — 5 real defects, all fixed.** Logged in
+full because one of them was mine and the whole gate stack missed it.
+
+1. ⛔ **A dead control I introduced.** Moving `<BackgroundPanel>` out of `sgs/site-header` deleted
+   the mount and left its `<ToolsPanelItem label="Background">` wrapper standing and EMPTY — still
+   in the "+" menu, still in `resetAll`, showing nothing when opened. **The full ~50-gate build
+   passed with it in the tree**: `check-dead-controls.js` checks the OPPOSITE direction (a control
+   nothing renders); a container whose children were deleted still has valid wiring. New gate
+   `check-empty-inspector-containers.js` closes it — an AST walk, because **two regexes were tried
+   first and both were wrong in opposite directions**: one found 0 (its char class cannot cross the
+   `=>` inside a prop), one found 471 (it matched every container whose last child is
+   self-closing). A false absence and a false flood from the same question; only a parser answers
+   "does this element have children". True answer: 1 in 110 files. Both regex failure shapes are
+   now `--self-test` fixtures. ⚠ The first removal attempt left an unterminated JSX comment — worse
+   than the bug — and the scan still read clean; the redo asserts the slice is self-contained and
+   re-parses the file after writing.
+2. **Flip/invert origin diverged between the two render routes.** The transform sat on the
+   `<rect>`, whose bounding box is always the full viewBox (centre 600,60); several shapes have a
+   narrower box (`zigzag` spans y 20-120, centre y=70), so an asymmetric shape would have JUMPED
+   the moment a client nudged X off 100. Moved onto the `<path>` inside the tile — one origin for
+   both routes.
+3. **Pattern-id collision.** Derived from shape+position+tile-width only, so two identical dividers
+   on one page emitted duplicate `id`s and both `url(#id)` references resolved to the first. Fixed
+   with a per-request counter (deterministic within a render; caching unaffected).
+4. **Stale attribute names** in `uimax-tools/enrich-db.py`'s name→slot dict and
+   `consistency/setting-types.json`. Renamed.
+5. ⭐ **The 80px→120px default — the review's framing was sharper than this entry's original one,
+   and D637's migration ruling never asked the right question.** The risk is not a CUSTOMISED
+   height (which D637 did check); it is a divider **enabled and left at default**, which stores no
+   key and therefore silently inherits the new default. **Settled by measurement, not argument:**
+   0 of 1,375 canary posts mention `shapeDivider` at all — with a positive control run first (1,375
+   posts, 274 carrying sgs blocks, 68 carrying `sgs/container`), because a zero from a query you
+   wrote yourself is worth nothing without one. Bean's "nothing to preserve" is now measured.
+
+**Left unfixed, deliberately:** `hasDbWriter()`'s Python-comment strip does not handle docstrings
+or inline comments. Real but latent — the only current match is the genuine
+`c.execute("UPDATE block_composition SET grid_areas = ? …")`, verified. Recorded rather than
+silently hardened, so the next reader knows it is a known edge and not an oversight.
+
 ⚠ **D-NUMBER COLLISION, flagged for whoever merges:** `main` and `feat/gradient-palette-stops` BOTH
 minted a **D638** for different decisions — step 6 close-out on `main`, the colour-gap council on
 the branch. One must be renumbered at merge.
