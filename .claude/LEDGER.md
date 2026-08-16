@@ -36,7 +36,7 @@ nothing left to decide.
 | Track 1 — colour-gap closure, 4 streams, 3 live bugs found+fixed | `decisions.md` D640, D641 |
 | Track 2 — wrapper-decomposition steps 6-7 built + merged | `decisions.md` D638, D639 |
 | **Step 7 deployed + live-verified this session** — both checks pass on real computed CSS (see below) | this doc |
-| grid_area stale-reference repair, 10 files, `/qc`-checked | commit `98bb5ce0` |
+| grid_area stale-reference repair, 10 reference categories across 13 files, `/qc`-checked | commit `98bb5ce0` |
 | GridAreaPanel confirmed already resolved — no action needed | `decisions.md` D639 + commit `fb9625dd` |
 | `go-track-1b-playful-hamster.md` §1.4 table corrected (was 2 stale steps) | that file |
 
@@ -124,7 +124,7 @@ Full detail: `decisions.md` D636 + addendum.
 | Wrapper decomposition — full 7-step history, now all closed | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
 | Step 7 — built + design corrections + gridAreas retirement | `decisions.md` **D639** + commit `fb9625dd` |
 | grid_area dead-code deletion + docstring fix | `decisions.md` **D642** |
-| This session's grid_area doc repair (10 files) | `git show 98bb5ce0` |
+| This session's grid_area doc repair (13 files) | `git show 98bb5ce0` |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Cloning pipeline governing spec (2 lines corrected this session) | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Spec 39 seed requirements (call-site counts re-derived this session) | `.claude/plans/spec-39-seed-requirements.md` |

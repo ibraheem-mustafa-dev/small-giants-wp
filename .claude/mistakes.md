@@ -1,9 +1,17 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-16 (1 entry added from a parallel-agent-dispatch collision; 1 oldest by date archived to keep at target — 30 → 31 → 30 active.)
+**Last updated:** 2026-08-16 (2 entries added — session-brief verification, LEDGER-rewrite fold-in-not-delete; 2 oldest by date archived to keep at target — 30 → 32 → 30 active.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-16] A session brief's claimed branch/HEAD/D-ceiling/deploy-status is a claim to verify, not a fact to relay
+- **Pattern key:** `verify-incoming-session-brief-against-repo`
+- **Feedback file:** [feedback_verify_incoming_session_brief_against_repo.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_incoming_session_brief_against_repo.md)
+
+### [2026-08-16] A "replace each session" living-status doc's rule governs its own cruft, not another thread's same-day, not-yet-archived work
+- **Pattern key:** `ledger-replace-means-fold-in-not-delete`
+- **Feedback file:** [feedback_ledger_replace_means_fold_in_not_delete.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_ledger_replace_means_fold_in_not_delete.md)
+
 ### [2026-08-16] Parallel agent dispatch needs one isolated clone/worktree per agent, never a shared directory
 - **Pattern key:** `parallel-agent-dispatch-needs-one-directory-each`
 - **Evidence:** 3 shadow-migration subagents were dispatched in parallel into the SAME isolated clone,
@@ -205,16 +213,6 @@
 - **Pattern key:** `check-what-a-glob-matches-before-deleting`
 - **Evidence:** After a bash-escaping accident produced malformed report files, I ran `rm -f reports/visual-diff/*-2026-08-06.md` to clean up "my" files. That glob also matched 10 TRACKED reports another track had committed the same day (`image-sequence`, `nav-menu`, `site-header`, `trust-bar`, …). Only `git status` showing ` D ` lines revealed it; restored with `git checkout -- reports/visual-diff/`.
 - **Rule:** On a shared worktree a DELETE is a cross-track action exactly as a DB write is. List what a glob matches before removing it, and check `git status` immediately after any bulk delete.
-
-### [2026-08-08] I fixed a DB column and silently restaged a derived artefact that scopes a WCAG gate
-- **Pattern key:** `a-write-with-an-untraced-reader-propagates-silently`
-- **Evidence:** D523 corrected 41 `inspector_control_type` rows. `build-roster.py:91` derives `roster.json`'s `surfaces.*` axes from a haystack that INCLUDES that column, so `sgs/form.successRedirect` becoming `SgsLinkControl` flipped `surfaces.link` false→true and left the committed artefact stale with no error. That file is the denominator every Spec 35 rule scopes against, and the same derivation feeds `surfaces.animation` — the scope of `17-reduced-motion-gate`, a live GATE-mode WCAG 2.3.3 rule with a documented 2026-07-30 precedent where a roster regen flipped 18 blocks and fired 18 false-positive WARNs. Found only because a QC-council rater checked `git status` for artefacts nobody had thought about.
-- **Rule:** "What READS this?" and "what is DERIVED from this?" are two different greps. After writing a shared column, regenerate the derived artefacts and DIFF them — a regeneration you do not diff tells you nothing.
-
-### [2026-08-08] My cross-check compared two documents I had written from the same wrong belief
-- **Pattern key:** `two-artefacts-agreeing-is-not-verification-if-they-share-a-source`
-- **Evidence:** I gated superseding the 27-condition checklist on an ABSORPTION MAP and "verified" it by mechanically comparing the contract's table against the tombstone's table. Clean MATCH, 30/30. A council rater then traced each item to its CITED TARGET and found conditions 15 and 18 marked ABSORBED into sections that did not contain their requirement. Both tables carried the identical error because I wrote both.
-- **Rule:** A cross-check only verifies when the two artefacts were produced by INDEPENDENT routes. Verify a claim against the target it cites — does that section actually state the rule? — never against another copy of the claim.
 
 ### [2026-08-08] A truncated search manufactured a false absence, and I told Bean it "existed nowhere"
 - **Pattern key:** `a-truncated-search-manufactures-a-false-absence`
