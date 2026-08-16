@@ -9,137 +9,112 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-16. The 12 files that were stuck uncommitted on 2026-08-15 are landed, and the shared-DB
-gate that was blocking every commit is green again.** One commit on `main` (`8b944ff5`), pushed.
+**2026-08-16, later same day. Task 3 (the gradient bar) is mid-build, in progress, on its own
+branch — not on `main`, not deployed.** Scope grew significantly from the original ask after a
+real technical question surfaced mid-session; here's the honest state.
 
 **What happened, in order.**
 
-1. Checked whether last session's blocker (a concurrent session's shadow-colour work seeding the
-   shared DB with attributes `main` didn't know about) had cleared. It had — that work merged as
-   PR #28 the same evening. The F6/db-consistency gate passes clean.
+1. **Planned the gradient bar** — client picks a theme palette colour for one gradient stop,
+   changing the palette re-colours it. QC'd the plan before building: found and fixed 2 false
+   claims carried forward from an older report (a theme-pattern file that turned out not to need
+   touching; a build-blocking gate that was missing from the plan entirely).
+2. **Spiked the risky unknown first, not assumed.** The npm package the gradient bar needs
+   (`gradient-parser`) was untested against a palette-linked stop (`var(--wp--preset--color--x)`).
+   It round-trips cleanly — confirmed with real test output, not guessed.
+3. **Started the storage-layer build** — the old shape (4 scalars: on/off + angle + start colour
+   + end colour) can only ever express a straight 2-stop gradient; collapsed to 1 string
+   attribute per gradient, across the 9 places it already existed (6 blocks).
+4. **You asked why this was scoped to only 4 blocks, and pushed back hard when I answered with
+   an unverified technical claim.** You were right to refuse it — I'd said "CSS forbids gradient
+   text/borders" without evidence, when you'd seen real products do exactly that. Researched it
+   properly: the raw claim (`color`/`border-color` can't take a gradient value directly) IS true
+   per spec, but gradient text/borders are real, shipped features that get there through a
+   DIFFERENT CSS mechanism (`background-clip:text` for text; a masked pseudo-element for
+   border — `border-image` can't do it, it breaks `border-radius` entirely).
+5. **Ran a proper 4-seat design council** (competitor prior-art / CSS-unification / SGS
+   architecture fit / cost-benefit) on how far to take this. Council recommended scoping text to
+   2 attributes and deferring border. **You overrode that: build all three, universally, across
+   every qualifying colour attribute in the framework — "less effort because we can blanket add
+   the functionality globally."** That's the standing decision now (D636).
+6. **Committed the checkpoint** (`837f7c97` on `feat/gradient-palette-stops`) and wrote it up
+   (D636) before continuing, per your explicit instruction.
 
-2. **Wrapper decomposition step 5 (live calibration) — done.** The design council's assumption that
-   all 7 wrapper-owning blocks (container/cta-section/hero/trust-bar/site-header/site-footer/
-   physics-canvas) should get all 6 planned extensions turned out to be wrong: real panel mounts
-   range from 1 (physics-canvas — width only) to 5 (container/cta-section/trust-bar — everything).
-   Also found two smaller things worth knowing: one whole panel (`GridAreaPanel`) has zero live
-   mounts anywhere in the framework today, and the other (`GridItemDefaultsPanel`) mounts with no
-   safety check at all — both are things step 6 needs to build, not things already working that
-   step 6 can just wire up.
+**What's next:** 3 parallel builders (background / text / border), one per CSS mechanism, then
+QC. Not started yet as of this write — see "Open" below.
 
-3. **The one block D632's shadow-colour migration deliberately skipped — `sgs/quote` — is done.**
-   It was skipped last time because another session had live edits on the same file; that session
-   is long since merged, so the collision risk was gone. Migrated it onto the same shape as the
-   other 10 blocks, live-verified on the test site: the shadow's colour and its hover colour both
-   paint correctly and change independently of each other.
+**Full narrative of the PREVIOUS session's work (D632-D635, wrapper step 5, colour Stream 2 item
+2a):** `memory/session-2026-08-16-morning.md` (auto-snapshotted when this file next rotates).
 
-4. Along the way, three small mechanical problems surfaced and got fixed: the database didn't know
-   about quote's two new attributes until it was told (a normal, expected step); one classification
-   rule needed a matching entry so the new colour attribute didn't fight with its own shadow shape
-   for the same slot; and a live test I ran to verify the colour swap used an invalid test value
-   that hid whether it actually worked — caught, fixed, and re-verified properly before trusting the
-   result.
+## Shipped this session (2026-08-16, gradient session)
 
-**What's next — two separate, independent pieces of work, not one.** See "Open — ready to pick up"
-below for the full menu; short version: (a) the wrapper-decomposition programme's next step needs
-your sign-off on which blocks get which capabilities before any more code gets written, and
-(b) the colour programme has two small, unrelated leftover tasks (a design question on 2 blocks,
-and the gradient-bar build) that don't depend on the wrapper work at all.
-
-5. **Stream 2 item 2a — the `native:color` manifest-base problem — is done, in a separate concurrent
-   session.** `testimonial-slider` and `process-steps` no longer show the duplicate native colour
-   panel; both now match the flat-attr pattern already proven on `quote`/`heading`/`card-grid`/`text`.
-   Deployed and live-verified via REST. Stream 2 now has only item 2b (gradient bar) left.
-
-**Full narrative:** `memory/session-2026-08-15*.md` (2026-08-15 session, auto-snapshotted).
-
-## Shipped this session (2026-08-16)
-
-| Commit | What |
-|---|---|
-| `8b944ff5` | **D633 + D634.** Wrapper step 5 (live calibration — falsified the "enable all 6" assumption, report + decision recorded) and `sgs/quote`'s shadow-colour migration (the one block D632 deferred), both live-verified |
-| `38426a71` | **D635.** `testimonial-slider`/`process-steps` native-colour duplicate panel closed (Stream 2 item 2a) — flat `backgroundColour`/`textColour` attrs, manifest gate unchanged (state-without-base still 2/2), deployed + live-verified |
+| Commit | Branch | What |
+|---|---|---|
+| `837f7c97` | `feat/gradient-palette-stops` | **D636 storage-layer checkpoint.** 9 gradient families (container/cta-section/site-header/site-footer/trust-bar/hero) collapsed from 4 scalars to 1 CSS-string attribute each. Render side routes through `sgs_css_gradient_value()`. Editor picker intentionally non-functional until the DesignTokenPicker rewrite lands (next). Visual-diff gate scoped-bypassed with a logged reason (see D636) — every default is empty, no existing content has a non-default value, rendered output unchanged for every current page. |
 
 ### Numbers
 
-| Metric | Start of session | End |
+| Metric | Start of this piece of work | Now |
 |---|---|---|
-| Shadow-migrated blocks (D632 family) | 10 of 11 | **11 of 11 — complete** |
-| Wrapper decomposition steps done | 4 of 7 | **5 of 7** |
-| Element-manifest style defects (accepted debt) | 10 | 12 (2 new, same accepted class, written reason in the baseline file) |
-| Blocks with duplicate native colour panel | 2 (`testimonial-slider`, `process-steps`) | **0 — Stream 2 item 2a closed** |
-| D-ceiling | D632 | **D635** |
+| Gradient attribute families | 9 (2-stop-only shape) | 9 collapsed to 1-string shape; ~185 more attrs (text+border+rest of background) still pending |
+| Blocks with gradient capability | 6 | 6 (storage only); universal rollout not started |
+| `sgs_css_gradient_value()` call sites | 0 | 9 (wrapper + hero) |
 
 ## Blockers
 
-**None.** F6/db-consistency gate passes on its own merit (1 baselined, 0 new). `npm run build` exits
-0. Tree is clean of this session's work (a few pre-existing unrelated dirty files from before this
-session — `package-lock.json`, `reports/phase4-*.txt` — were left untouched; not this session's to
-touch).
+**None on the checkpoint itself** — `837f7c97` is committed, gates green (gitleaks, cheat-gate,
+F5, F6 all passed; only the visual-diff gate needed the scoped, logged bypass). **But the
+feature is NOT usable yet**: the editor's gradient picker UI still writes the OLD attribute
+names on the 6 blocks touched so far, so it will silently fail to save until the next commit
+(DesignTokenPicker/SgsColourPanel rewrite) lands. Do not deploy this branch to the canary in its
+current state.
 
 ## Open — ready to pick up
 
-### ⭐ NEXT SESSION — two independent streams, pick one or both
+### ⭐ NEXT — dispatch 3 parallel builders, per D636
 
-These do NOT depend on each other. Present both to Bean as a menu rather than assuming which one
-comes first.
+**What:** One builder per CSS mechanism, each covering every qualifying colour attribute for
+their property family, framework-wide:
 
----
+1. **Background** (~78 attrs, all blocks) — `background-image: <gradient>`, reusing the pattern
+   already proven in `837f7c97`. Fold the Solid/Gradient toggle into `DesignTokenPicker.js` +
+   `SgsColourPanel.js` behind a `gradientCapable`/`attrNames` opt-in (per D636's architecture
+   finding) rather than rebuilding per block.
+2. **Text** (~90 `color`-valued attrs) — `background-clip: text` + `color: transparent`
+   mechanism. Needs a solid-colour `@supports` fallback for unsupported browsers, and note that
+   any block using `text-shadow` on a gradient-text element will see the shadow vanish
+   (`color:transparent` breaks it) — flag, don't silently ship broken.
+3. **Border** (~32 `border-color`-valued attrs) — masked pseudo-element (`::before` + `mask`/
+   `-webkit-mask-composite`), NOT `border-image` (confirmed broken with `border-radius`). Needs
+   `position:relative` on the parent; check for existing `::before` usage per block before
+   assuming a free pseudo-element slot.
 
-### Stream 1 — Wrapper decomposition (steps 6-7 of 7)
+**Why:** Bean's explicit ruling (D636) — universal coverage, no carve-outs, less operator
+confusion than a partially-gradient-capable framework.
 
-**What:** Step 6 — build the `background` pilot extension. Scope, per D626 + this session's step-5
-findings:
-1. A **design gate for Bean** first: given the real per-block panel-mount table (D633,
-   `.claude/reports/2026-08-16-wrapper-step5-calibration.md`), should `hero`/`site-header`/
-   `site-footer`/`physics-canvas` be EXPANDED toward full composite-mirror compliance (every wrapper
-   block gets every capability), or kept at their current narrower, deliberate set? This is a real
-   choice, not a default.
-2. **The PHP wrapper refactor is a hard dependency in the same commit**, not a follow-up — the
-   `kind` argument every block's `render.php` currently hardcodes as the literal string `'section'`
-   must become a function of `enabledExtensions`, or the editor-side migration will look done while
-   the PHP paint side silently disagrees underneath (D626's "hard sequencing dependency").
-3. **Two new precondition gates need building, not wiring** — `GridAreaPanel` has zero live mounts
-   today (D633), and `GridItemDefaultsPanel` currently mounts with no check that the block even has
-   grid layout enabled. Neither existed as a working mechanism to hook into.
-4. **Colour Track B merges into this step** — the shared-wrapper colours
-   (`backgroundOverlayColour`, `shapeDividerTopColour`/`BottomColour`, `gridItemBackground`,
-   `gridItemTextColour`) reach `container`/`cta-section`/`hero`/`trust-bar`/`site-header`/
-   `site-footer` via the SAME file this step already owns — do not run it as a separate session
-   (that was last session's Task 1; it's retired as its own task, see Stream 2 below for why).
+**Orchestration:** 3 parallel agents (one per mechanism above), each self-contained — full
+architecture brief is D636 + this LEDGER section + council seat findings (not yet filed as a
+report; ask the dispatching session if starting fresh). Same shared-checkout risk as always — if
+running from a fresh session, confirm no other track is live on `DesignTokenPicker.js`/
+`SgsColourPanel.js` before dispatching, since all 3 builders touch those 2 files.
 
-**Why:** Every big migration this initiative promised has shipped except this one. It's also the
-last blocker on colour reaching 100% of the framework (Track A is done; Track B only ships as part
-of this).
+**Depends on:** `837f7c97` (storage-layer pattern to replicate). **/qc gate after: yes, mandatory
+— 3 concurrent builders on shared files is exactly the shape that needs a multi-rater pass
+before merge, not just each builder's own claim of done.**
 
-**Orchestration:** design gate FIRST (menu + ranking to Bean per Rule 9), then delegated build.
-Re-run `/delegate` after the gate — shape isn't known yet. Read D626 + D633 +
-`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 in full before starting.
-
-**Estimated time:** ~1 session once the design gate is answered.
-
-**Step 7** (remaining capabilities, shape dividers last — needs a new linked/unlinked X/Y scale
-control, not a pure relocation) is blocked on step 6 landing; not actionable yet.
+**Estimated time:** several hours across the 3 builders + a full-framework `/sgs-update` reseed
++ live canary verification once merged.
 
 ---
 
-### Stream 2 — Colour programme leftovers (independent of Stream 1)
+### Carried from the previous session (2026-08-16 morning) — untouched by this piece of work
 
-Track A is complete (~43 blocks). Track B is **not a standalone task any more** — it's Stream 1's
-step 6 (see above); don't schedule it twice. One item remains:
-
-**2a — CLOSED (D635, 2026-08-16).** `testimonial-slider`/`process-steps` moved to the flat-attr
-colour pattern; native panel gone on both, deployed + live-verified. See D635.
-
-**2b — Custom gradient bar (per-stop palette linking).** Kadence + Spectra both ship this; catch-up,
-not differentiation. The prerequisite already landed — core's own gradient bar imports the exact
-`ColorPicker` module already forked into `src/components/colour-picker/` (D627), so the shared
-dependency is SGS-owned. Core's own bar offers no palette swatches for stops, so the per-stop
-linking itself is genuinely new work.
-**Orchestration:** delegated after a design gate. **/qc gate after: yes.**
-**Estimated time:** own session.
-
----
+**Stream 1 — Wrapper decomposition (steps 6-7 of 7).** Needs a design gate from Bean first: given
+the real per-block panel-mount table (D633), should `hero`/`site-header`/`site-footer`/
+`physics-canvas` be expanded toward full composite-mirror compliance, or kept at their current
+narrower set? PHP wrapper refactor (`kind` argument) is a hard same-commit dependency, not a
+follow-up. Two precondition gates need building (`GridAreaPanel` zero live mounts;
+`GridItemDefaultsPanel` no safety check). Full detail: `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4.
 
 ## Methodology guardrails (do not skip)
 
@@ -148,47 +123,45 @@ linking itself is genuinely new work.
   Read the code.
 - **This checkout is SHARED and the branch can change under you mid-session.** Re-run
   `git branch --show-current` + `git status` immediately before every commit.
-- **A DB reseed picks up ambient, unrelated drift corrections** in shared derived-classifier files
-  (`css-property-classifications.json`, `attr-role-map.json`) — expected, not a bug to chase; note
-  it in the commit rather than hand-reverting (can't selectively regenerate one block's rows).
-- **Verify on the real editor / real canary, not the DOM alone** — a swatch that opens is not a
-  swatch that applies; a computed style that "matches" isn't proof until you've checked the value
-  actually reached the right attribute (this session's shadow-colour probe used an invalid test
-  value on the first pass and silently proved nothing — caught before it was trusted).
+- **Fact-check an old report's claims before carrying them forward, even when its judgement was
+  sound.** This session's own plan QC caught 2 false claims carried from a 2-day-old council
+  report (a file that didn't need touching; a gate missing from the plan). The report was right
+  about the big call (storage shape) and wrong about two mechanical details.
+- **When you assert a technical claim as a fact ("CSS forbids X"), that's a claim to verify, not
+  recite from memory** — caught this session when a confident-but-unverified claim was
+  challenged and turned out to be half-right (true at the literal-property level, false as a
+  blanket "impossible").
 - **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
 
 ## State Snapshot
 
-- **Branch:** `main`. Verify with `git branch --show-current` before anything — shared checkout.
-- **D-ceiling:** **D635** — verify with
+- **Branch:** `feat/gradient-palette-stops` — NOT `main`. Verify with `git branch --show-current`
+  before anything — shared checkout.
+- **D-ceiling:** **D636** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep has reported a hex colour as the ceiling before).
-- **`main` HEAD:** `38426a71`, pushed to `origin/main`.
-- **A second, concurrent session is/was active on this checkout during this session** — dirty
-  uncommitted files on `container`/`hero`/`cta-section`/`site-header`/`site-footer`/`trust-bar`/
-  `class-sgs-container-wrapper.php`, not this session's to touch or describe further. D635's deploy
-  worked around this via `git stash` on those exact paths (push → build+deploy → pop), never staging
-  or committing any of it. Re-check `git status` before assuming the checkout is clean.
-- **Build:** green. `npm run build` exit 0. F6/db-consistency 1 baselined / 0 new. Element-manifest
-  GATE PASS (style-defect 12/12 baselined, state-without-base 2/2, unclassified 0). Cheat-gate 18
-  baselined / 0 new.
-- **Canary:** sandybrown. All shadow-migrated blocks (11 of 11) were deployed this session; only
-  `card-grid` (D632) and `sgs/quote` (this session) have been individually live-verified — the other
-  9 D632 blocks still have "full re-verification pending the next canary deploy" open against them
-  (D632's own note, unchanged).
-- **Playwright MCP:** worked fine this session.
+- **`main` HEAD (unchanged by this session):** `38426a71`. This session's work is entirely on
+  `feat/gradient-palette-stops`, not yet merged.
+- **Build:** green on the branch as of `837f7c97`. `npm run build` not re-run since (only PHP/JSON
+  touched, syntax-checked directly). Re-run full build before the next commit.
+- **Canary:** NOT deployed this session. Do not deploy `feat/gradient-palette-stops` — the editor
+  gradient picker is non-functional on it until the DesignTokenPicker rewrite lands.
+- **Pre-existing unrelated dirty files, not this session's to touch:** `package-lock.json`,
+  `reports/phase4-*.txt`, `reports/visual-diff/manual-skips.log`, plus untracked files under
+  `.claude/reports/` and `.claude/Border Example HTML.html`.
 
 ## Pointers
 
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101 — 224 entries) |
+| This session's full plan (spike, QC record, file-by-file scope) | `~/.claude/plans/task-3-custom-silly-book.md` |
+| Gradient scope decision + architecture (council findings, storage shape) | `decisions.md` D636 |
 | Wrapper decomposition — full 7-step history, step 5 findings | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
 | Colour programme — Track A/B split, wave detail | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2d |
-| Wrapper step 5 calibration (raw data) | `.claude/reports/2026-08-16-wrapper-step5-calibration.md` |
-| D632-D635 (this + last session) + D609/D617-D622/D626 (colour + wrapper architecture) | `decisions.md` |
+| D632-D636 + D609/D617-D622/D626 (colour + wrapper architecture) | `decisions.md` |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
-| Control-type contract (colour §1, link §2) | `.claude/plans/spec-35-control-type-contract.md` |
+| Control-type contract (colour §1, length/unit §4.1) | `.claude/plans/spec-35-control-type-contract.md` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 

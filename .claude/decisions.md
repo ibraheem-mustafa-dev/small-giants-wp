@@ -1,5 +1,65 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
+
+**2026-08-16.** LEDGER Stream 2 item 2b ("custom gradient bar, per-stop palette linking") was
+scoped, mid-build, from 9 attribute families on 6 blocks to a framework-wide capability: every
+qualifying colour attribute across all ~49 blocks gains a gradient alternative, not just the
+legacy "overlay" background controls. Two decisions land here — the scope, and the storage shape.
+
+**Spike (decisive, not assumed):** `gradient-parser` (npm, zero runtime deps) round-trips
+`var(--wp--preset--color--x)` gradient stops cleanly in every position tested (linear, radial,
+mixed with `rgba()`), and its `stringify()` output passes the existing
+`sgs_css_gradient_value()` PHP validator (`helpers-tokens.php:736`) unchanged. Added as a
+dependency; no hand-written parser needed.
+
+**Storage (unchanged from the earlier 2026-08-14 qc-council finding, re-confirmed):** ONE string
+attribute per colour row holding the complete CSS gradient value, non-empty wins over the flat
+colour — not a structured object. `sgs_css_gradient_value()` already existed with zero call
+sites and already admits `var()` stops. Kadence stores gradients as a structured tuple instead;
+noted as a real dissent, not adopted — Kadence's reason (server-side PHP recompute of hover
+variants) doesn't apply here, and SGS's shape matches Spectra's per-state sibling-string model
+more closely, plus the cloning converter already parses draft CSS strings and would need a new
+extractor for an object shape.
+
+**Scope — settled via a 4-seat design council** (competitor prior-art / CSS-mechanism
+unification / SGS architecture fit / devil's-advocate cost-benefit), then **overridden by Bean
+toward full universal coverage** after the council's own findings were presented. Council found:
+gradient is legal directly on `background`-family CSS properties only; TEXT needs
+`background-clip:text` (different DOM/CSS mechanism, real caveat: `text-shadow` breaks under
+`color:transparent`); BORDER needs a masked pseudo-element (`border-image` cannot respect
+`border-radius` — confirmed via MDN, not assumed) since no competitor found (Kadence, Spectra,
+Elementor, GenerateBlocks, Divi 5) ships gradient border natively, third-party add-ons only.
+Council's own recommendation was to scope text to 2 attributes (heading/hero headline) and defer
+border entirely, citing accessibility (gradient text defeats single-value contrast tooling) and
+3x QC-surface cost. **Bean's ruling: build all three anyway — "if we cover all we give full
+options and it's less effort because we can blanket add the functionality globally."** Overrides
+the council's cost/value recommendation; the accessibility and QC-surface costs the council
+flagged are accepted, not resolved — noted here so they aren't silently forgotten.
+
+**Architecture (from the council's SGS-fit seat, real code read, not theorised):** the smallest
+path to universal coverage is NOT a bespoke component — fold the Solid/Gradient toggle
+`GradientOverlayControl.js` already built into `DesignTokenPicker.js` + `SgsColourPanel.js`
+behind a `gradientCapable`/`attrNames` opt-in prop, reusing the existing state-tab/popover
+composition 46 of 49 blocks already route through. Reaches every block's colour rows without a
+per-block edit.js rewrite — one object-literal opt-in per colour attribute that gains gradient,
+plus that attribute's 4-scalar family collapsing to 1 string family in its block.json (same
+shape as this session's storage-layer commit).
+
+**Shipped so far (checkpoint, `feat/gradient-palette-stops` branch, not `main`):** commit
+`837f7c97` collapses the 9 pre-existing "overlay" gradient families (container/cta-section/
+site-header/site-footer/trust-bar/hero) to the new 1-string shape, storage + render only — the
+editor picker is intentionally non-functional until the DesignTokenPicker rewrite lands (next
+commits). Visual-diff gate scoped-bypassed for this checkpoint (6 blocks,
+`SGS_VISUAL_GATE_SKIP`) — legitimate because every default is empty and no stored content has
+ever set a non-default value on these attrs, so rendered output for all existing pages is
+byte-identical; a real live-diff capture belongs at the end of the full build, not this
+intermediate step.
+
+**Next:** 3 parallel builders (background / text / border), each implementing their CSS
+mechanism + the DesignTokenPicker/SgsColourPanel opt-in wiring for their property family across
+every qualifying block, per the architecture above. QC after each lands.
+
 ## D635 — `testimonial-slider`/`process-steps` native-colour duplicate panel closed (Stream 2 item 2a) [ROUTINE]
 
 **2026-08-16.** Both blocks showed WP's native Text/Background colour panel alongside their own SGS
