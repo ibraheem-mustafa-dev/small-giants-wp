@@ -131,20 +131,32 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				return $fallback;
 			}
 
-			$enabled = $supports['sgs']['enabledExtensions'] ?? null;
-			if ( ! is_array( $enabled ) ) {
-				// Block hasn't migrated to the enabledExtensions mechanism at
-				// all — preserve today's literal exactly (no narrowing).
-				return $fallback;
-			}
-
-			if ( in_array( 'shapeDividers', $enabled, true ) || in_array( 'gridItems', $enabled, true ) ) {
-				return 'section';
-			}
-			if ( in_array( 'layout', $enabled, true ) ) {
-				return 'layout';
-			}
-			return 'content';
+			// Deliberately NO narrowing from `enabledExtensions` membership,
+			// even once declared. Bug found + fixed 2026-08-16, mid-step-6
+			// build: an earlier version of this method downgraded $kind to
+			// 'content' whenever neither 'shapeDividers' nor 'gridItems' was
+			// present, on the assumption that $kind tracks WHICH optional
+			// panels a block has. That's false for the 7 direct-panel
+			// blocks — every one of them is structurally 'section'-kind
+			// (that's why their render.php literal was always 'section',
+			// never 'layout'/'content'), and `$is_section` in render() below
+			// ALSO gates capabilities that have nothing to do with
+			// shapeDividers/gridItems — minHeight and content-band padding
+			// (D624) among them. Narrowing site-header (width+background
+			// only, no shapeDividers/gridItems) to 'content' silently killed
+			// its live minHeight + band-padding controls — caught by two
+			// independent build agents before it shipped, not by any gate.
+			// `$kind` and `enabledExtensions` are orthogonal axes: $kind is
+			// the block's fundamental render mode (fixed per block, set by
+			// its own render.php call site); enabledExtensions is which
+			// OPTIONAL capabilities within that mode are switched on. This
+			// method's job is only to confirm the mechanism exists — it does
+			// NOT yet derive $kind from capability membership. Splitting
+			// $is_section's bundled unrelated capabilities into individual
+			// gates (so a real per-capability narrowing becomes possible) is
+			// step 7 scope, not step 6 — see the plan doc §1.4 step 7 and
+			// decisions.md D626.
+			return $fallback;
 		}
 
 		/**
