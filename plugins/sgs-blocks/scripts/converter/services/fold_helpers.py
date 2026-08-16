@@ -7,7 +7,7 @@ behaviour-IDENTICAL (Spec 31 §12.4, D246):
   - ``_resolve_co_declared_var``        (convert.py:384)  -> ``_resolve_co_declared_var`` (private)
   - ``_expand_box_shorthand``           (convert.py:2354) -> ``_expand_box_shorthand`` (private)
   - ``_lift_content_band_max_width``    (convert.py:5821) -> ``lift_content_band_max_width``
-  - ``_grid_item_areas``               (convert.py:2308) -> ``grid_item_areas``
+  - ``_grid_item_areas``               (convert.py:2308) -> DELETED 2026-08-16 (D639; zero callers — the resolver it fed, `resolvers/grid_area.py`, was itself dead code and removed the same session)
   - ``_route_area_css_to_block_attrs`` (convert.py:2405) -> ``route_area_css_to_block_attrs``
   - ``_route_interior_css_to_parent_slot`` (convert.py:2597) -> ``route_interior_css_to_parent_slot``
 
@@ -198,39 +198,11 @@ def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
 # ---------------------------------------------------------------------------
 
 
-# ---------------------------------------------------------------------------
-# grid_item_areas (convert.py:2308 — ported verbatim, renamed)
-# ---------------------------------------------------------------------------
-
-def grid_item_areas(node: Tag, css_rules: dict) -> frozenset[str]:
-    """Return the grid-area names a node's OWN CSS declares, else empty frozenset.
-
-    Reads the node's own base CSS plus EVERY breakpoint tier; returns the UNION
-    of area names across tiers. No ``display:grid`` -> frozenset() (conservative).
-
-    Ported from convert.py:2308 (behaviour-identical).
-    """
-    base, bp = collect_css_decls_for_element(node, css_rules)
-    tiers: list[dict[str, str]] = [base, *bp.values()]
-
-    has_grid = any(
-        strip_important(t.get("display", "")).strip().lower() == "grid"
-        for t in tiers
-    )
-    if not has_grid:
-        return frozenset()
-
-    names: set[str] = set()
-    for t in tiers:
-        raw = strip_important(t.get("grid-template-areas", "")).strip()
-        if not raw or raw.lower() in ("none", "inherit", "initial", "unset"):
-            continue
-        for row in re.findall(r"[\"']([^\"']*)[\"']", raw):
-            for token in row.split():
-                if token != ".":
-                    names.add(token.lower())
-    return frozenset(names)
-
+# grid_item_areas (convert.py:2308) DELETED 2026-08-16 (D639) — zero callers.
+# It fed `resolvers/grid_area.py`'s `ctx.area_name`, which no production
+# Ctx-builder ever set; both were dead code and removed the same session. The
+# real grid-per-area routing is `route_area_css_to_block_attrs` below, keyed on
+# the draft's BEM element token via `services.assembly` step 3d, not on this.
 
 # ---------------------------------------------------------------------------
 # lift_content_band_max_width (convert.py:5821 — ported verbatim, renamed)
@@ -277,9 +249,13 @@ def route_area_css_to_block_attrs(
     emitter unmigrated. Refuted by the call graph, not by opinion — grep the callers
     before believing any "unwired" claim, including this one.
 
-    Historical: the per-declaration ``resolvers/grid_area.py`` resolver (fed by the
-    ``Decl`` stream ``_build_css_attrs`` assembles) is the OTHER grid-per-area path; both
-    are live. The tier mapping below matches post-D259 cascade semantics. Ported from
+    Corrected 2026-08-16 (D639): the paragraph that used to sit here claimed the
+    per-declaration ``resolvers/grid_area.py`` resolver was "the OTHER grid-per-area
+    path; both are live". That was false — ``grid_area.py``'s trigger
+    (``ctx.area_name`` set) was never produced by any production Ctx-builder, only
+    by test fixtures. It and its dispatch wiring were dead code and have been
+    deleted. THIS function is the only live grid-per-area path; there is no other.
+    The tier mapping below matches post-D259 cascade semantics. Ported from
     convert.py:2405.
     """
     base_decls, bp_decls = collect_css_decls_for_element(

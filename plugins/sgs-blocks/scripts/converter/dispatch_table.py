@@ -14,7 +14,6 @@ EXECUTION Step 12 / 2026-07-04 correction below):
         outer_box      elif layer == OUTER
         content_band   elif layer == CONTENT
         grid           elif layer == GRID
-        grid_area      elif layer == GRID_AREA                               (stub-only this phase)
         unrouted       else                                                  (FAIL LOUD, never a silent gap)
 
 Tier does NOT affect the resolver choice (tier-invariance, §2.1) — routing is a
@@ -27,9 +26,9 @@ that used to sit between the layer-driven resolvers and `unrouted` (keyed on
 `delegates_content == 0`). GROUND-TRUTH: source=file evidence=
 `converter/services/layer_detect.py::layer_detect` is called exactly once per
 element (`orchestrator.process_element`, cached on `ctx.base_layer`) and its
-every code path returns one of `{"OUTER", "GRID_AREA", "GRID", "CONTENT"}` — it
-NEVER returns `None` or any other string, regardless of `delegates_content`. Since
-`_LAYER_TO_RESOLVER` below has an entry for all 4 of those keys, `by_layer` here is
+every code path returns one of `{"OUTER", "GRID", "CONTENT"}` — it NEVER returns
+`None` or any other string, regardless of `delegates_content`. Since
+`_LAYER_TO_RESOLVER` below has an entry for all 3 of those keys, `by_layer` here is
 NEVER `None` for any real `ctx.base_layer` — so the removed `if delegates_content
 == 0:` branch could only ever be reached by a value of `layer` that layer_detect
 can provably never produce. `resolver_id` has exactly ONE production call site
@@ -40,6 +39,13 @@ for the proof. `media_signal` (the function) is RETAINED (still directly testabl
 still an honest documented-deferred stub) — only its CALL SITE inside `resolver_id`
 was removed, since that call site is what made the branch reachable in tests only
 via a synthetic out-of-domain `layer` string, never in production.
+
+`grid_area`/`GRID_AREA` REMOVED (2026-08-16, D639): the resolver, its dispatch
+entry, and `layer_detect`'s branch that could route to it. The trigger
+(`ctx.area_name` set) was never produced by any production Ctx-builder — only test
+fixtures set it. The real grid-per-area routing is
+`services.fold_helpers.route_area_css_to_block_attrs`, called directly from
+`services.assembly` step 3d, entirely independent of this dispatch table.
 """
 from __future__ import annotations
 
@@ -54,9 +60,10 @@ from converter.db.db_lookup import _TYPOGRAPHY_CSS_SCOPE
 # Resolver ids the table can return (each maps to resolvers/<id>.py).
 # EXECUTION Step 12 (2026-07-04): "scalar_media"/"scalar_content" REMOVED — proven
 # unreachable from resolver_id's one production call site (see module docstring).
+# "grid_area" REMOVED 2026-08-16 (D639) — see module docstring.
 RESOLVER_IDS = frozenset({
     "typography", "excluded",
-    "outer_box", "content_band", "grid", "grid_area",
+    "outer_box", "content_band", "grid",
     "unrouted",
 })
 
@@ -64,7 +71,6 @@ _LAYER_TO_RESOLVER = {
     "OUTER": "outer_box",
     "CONTENT": "content_band",
     "GRID": "grid",
-    "GRID_AREA": "grid_area",
 }
 
 # GRID-layer-INTRINSIC properties (D249 / W3 all-routes fix). A node carrying

@@ -5,7 +5,7 @@ HARD failure (ConservationError), NOT a quietly-written GAP. "UNROUTED fails" mu
 a tested failure-path, not a prose promise.
 
 A property reaches 'unrouted' only when: it is NOT typography, NOT excluded, NOT a
-known layer (OUTER/CONTENT/GRID/GRID_AREA), and the block HAS inner blocks (so the
+known layer (OUTER/CONTENT/GRID), and the block HAS inner blocks (so the
 scalar branch is not taken). That combination = a routing bug, and it must fail loud.
 """
 from __future__ import annotations

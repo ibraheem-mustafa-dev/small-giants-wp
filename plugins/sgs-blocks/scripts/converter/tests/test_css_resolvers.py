@@ -16,8 +16,8 @@ import sqlite3
 import pytest
 
 from converter.context import Ctx, Decl
-from converter.models import GAP, GapOrigin, Write
-from converter.resolvers import content_band, grid, grid_area, typography
+from converter.models import Write
+from converter.resolvers import content_band, grid, typography
 from converter.db.db_lookup import SGS_DB
 
 
@@ -29,10 +29,8 @@ def conn():
 
 
 def _ctx(conn, *, slug="sgs/container", kind="section", hib=1, root=False,
-         layer=None, area=None):
-    c = Ctx(slug, kind, hib, None, None, None, root, layer, conn)
-    c.area_name = area
-    return c
+         layer=None):
+    return Ctx(slug, kind, hib, None, None, None, root, layer, conn)
 
 
 # ---------------------------------------------------------------------------
@@ -176,63 +174,15 @@ def test_typography_metamorphic_size_scale(conn):
     assert va * 2 == vb
 
 
-# ---------------------------------------------------------------------------
-# grid_area — GRID_AREA layer (per-area box CSS; FIX-A documented gap)
-# ---------------------------------------------------------------------------
-
-def test_grid_area_padding_object_write(conn):
-    # Post-D295 hero migrated per-area padding flat→OBJECT: a padding-side decl
-    # routes into the contentPadding box-object attr (a {side: value} write the
-    # orchestrator accumulator folds), NOT the retired flat contentPaddingTop +
-    # Unit-companion pair. Value is a CSS length STRING (unit inline), never a
-    # bare number.
-    out = grid_area.resolve(
-        Decl("padding-top", "32px", "Base"),
-        _ctx(conn, slug="sgs/hero", layer="GRID_AREA", area="content"),
-    )
-    assert not isinstance(out, (list, GAP))
-    assert out.attr == "contentPadding"
-    assert out.value == {"top": "32px"}
-
-
-def test_grid_area_background_string(conn):
-    out = grid_area.resolve(
-        Decl("background-color", "#ffffff", "Base"),
-        _ctx(conn, slug="sgs/hero", layer="GRID_AREA", area="content"),
-    )
-    assert (out.attr, out.value) == ("contentBackground", "#ffffff")
-
-
-def test_grid_area_per_slot_max_width_is_documented_gap(conn):
-    # FIX-A: sgs/hero has no per-area contentMaxWidth attr → honest NO_DESTINATION
-    # (documented EXCLUDED-from-Ctx-enrichment; closing it is a DB seed).
-    out = grid_area.resolve(
-        Decl("max-width", "500px", "Base"),
-        _ctx(conn, slug="sgs/hero", layer="GRID_AREA", area="content"),
-    )
-    assert isinstance(out, GAP)
-    assert out.origin is GapOrigin.NO_DESTINATION
-
-
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
-))
-def test_grid_area_tier_suffix(conn):
-    # Tablet tier → the contentPaddingTablet OBJECT attr (device-tier suffix on the
-    # object family), value keyed by side. No side-suffixed flat attr, no Unit.
-    out = grid_area.resolve(
-        Decl("padding-top", "16px", "Tablet"),
-        _ctx(conn, slug="sgs/hero", layer="GRID_AREA", area="content"),
-    )
-    assert not isinstance(out, (list, GAP))
-    assert out.attr == "contentPaddingTablet"
-    assert out.value == {"top": "16px"}
-
+# grid_area (GRID_AREA layer) tests REMOVED 2026-08-16 (D639) along with
+# resolvers/grid_area.py itself — its trigger (ctx.area_name) was never set by
+# any production Ctx-builder, only by this file's own fixtures. The real
+# grid-per-area routing is fold_helpers.route_area_css_to_block_attrs, tested
+# in test_l4_area_wiring.py.
 
 # ---------------------------------------------------------------------------
-# R-31-1 DB-driven Unit-companion derivation (replaces the hardcoded
-# re.sub(r"(Top|Right|Bottom|Left)(Mobile|Tablet|Desktop)?$") at grid_area:119).
-# The side + breakpoint + unit suffix grammar is DB-OWNED (modifier_suffixes).
+# R-31-1 DB-driven Unit-companion derivation. The side + breakpoint + unit
+# suffix grammar is DB-OWNED (modifier_suffixes).
 # ---------------------------------------------------------------------------
 
 def test_unit_companion_attr_strips_side_and_breakpoint_via_db(conn):
@@ -245,17 +195,3 @@ def test_unit_companion_attr_strips_side_and_breakpoint_via_db(conn):
     assert unit_companion_attr("contentPaddingRightMobile", conn) == "contentPaddingUnit"
     # bare numeric (no side/breakpoint) → append Unit only
     assert unit_companion_attr("gap", conn) == "gapUnit"
-
-
-def test_grid_area_padding_object_side_bottom(conn):
-    # End-to-end: a per-area padding-bottom decl on hero routes to the contentPadding
-    # object with the 'bottom' key (CSS length STRING, unit inline — no Unit companion,
-    # the object holds all sides). The `unit_companion_attr` helper is still exercised
-    # by test_unit_companion_attr_strips_side_and_breakpoint_via_db (a pure string test).
-    out = grid_area.resolve(
-        Decl("padding-bottom", "24px", "Base"),
-        _ctx(conn, slug="sgs/hero", layer="GRID_AREA", area="content"),
-    )
-    assert not isinstance(out, (list, GAP))
-    assert out.attr == "contentPadding"
-    assert out.value == {"bottom": "24px"}

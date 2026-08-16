@@ -1,16 +1,15 @@
 """layer_detect — classify a node's structural layer (design §2 / §2.2).
 
-Returns OUTER | CONTENT | GRID | GRID_AREA from the node's CSS signature + its
-structural position (MF-3), NEVER its class name. Computed once on the BASE
-(non-@media) declaration set and cached on Ctx.base_layer (tier-invariance §2.1).
+Returns OUTER | CONTENT | GRID from the node's CSS signature + its structural
+position (MF-3), NEVER its class name. Computed once on the BASE (non-@media)
+declaration set and cached on Ctx.base_layer (tier-invariance §2.1).
 
-GRID_AREA (Spec 31 §3.A L4 — D207 grid-per-area dissolve) is detected from the
-Ctx, not the decls: when the Ctx-builder has resolved that this element occupies a
-named area in its PARENT's grid-template-areas (BEM token ∈ parent
-`grid_item_areas`, set on ``ctx.area_name``), the element's box CSS routes to the
-owning block's per-area attrs. This precedes the node's OWN display:grid check —
-an element can BE a grid item (parent context) AND also declare its own grid; the
-per-area routing of its box CSS to the parent owns the structural layer here.
+GRID_AREA removed 2026-08-16 (D639): a `ctx.area_name`-driven branch existed here
+for the Spec 31 §3.A L4 grid-per-area dissolve, but no production Ctx-builder ever
+set `area_name` — only test fixtures did. The REAL grid-per-area routing is
+`services.fold_helpers.route_area_css_to_block_attrs`, called directly from
+`services.assembly` step 3d (a different mechanism, keyed on the draft's BEM
+element token) — it never depended on this branch or on `layer_detect` at all.
 
 Slice-scoped/provisional (§10 A15): re-validated at the grid stage against a
 `display`-switch fixture. The precedence order below is pinned + tested.
@@ -25,12 +24,6 @@ def layer_detect(ctx: Any, base_decls: dict[str, str]) -> str:
     # OUTER-vs-CONTENT ambiguity on a `max-width; margin:0 auto` root section.
     if ctx.is_root:
         return "OUTER"
-
-    # §3.A L4 (D207): an element the Ctx-builder placed in a named parent grid area
-    # routes its box CSS to the owning block's per-area attrs (GRID_AREA), regardless
-    # of its own display. Detected from Ctx (parent context), not the element's decls.
-    if getattr(ctx, "area_name", None):
-        return "GRID_AREA"
 
     # §2.2 precedence: a node carrying display:grid / grid-template-columns IS GRID
     # (the more specific, attr-bearing concern) — its max-width routes to the grid.

@@ -1,5 +1,54 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D642 — Dead grid_area converter code deleted; the lying docstring it left behind fixed [ROUTINE]
+
+**2026-08-16.** Follow-up to D639's Correction 3, which found but deliberately did not fix:
+`resolvers/grid_area.py`, the `GRID_AREA` branch in `services/layer_detect.py`, and
+`fold_helpers.grid_item_areas()` are dead code — their trigger (`ctx.area_name` set) was never
+produced by any production `Ctx`-builder, only by three test files. Meanwhile
+`fold_helpers.route_area_css_to_block_attrs()`'s own docstring asserted `grid_area.py` "is the
+OTHER grid-per-area path; both are live" — false, and actively dangerous (D639 records a
+QC-council rater who read the SAME docstring's neighbouring claim and, in good faith, nearly
+recommended deleting the genuinely live function).
+
+**Verified independently before touching anything** (not taken on D639's word alone): grepped the
+full `converter/` tree for every assignment to `ctx.area_name` — confirmed zero production call
+sites (only `test_css_resolvers.py`, `test_layer_detect_grid_area.py`, and `test_dispatch_table.py`'s
+`_FakeCtx` ever set it). Confirmed the real live grid-per-area routing is
+`fold_helpers.route_area_css_to_block_attrs`, called from `services/assembly.py` step 3d, keyed on
+the draft's BEM element token — a different mechanism entirely, never dependent on the dead code.
+
+**Deleted:** `resolvers/grid_area.py` (whole file); `fold_helpers.grid_item_areas()` (zero callers,
+confirmed); the `GRID_AREA` branch in `layer_detect.py`; the `"grid_area"`/`"GRID_AREA"` entries in
+`dispatch_table.py`'s `RESOLVER_IDS`/`_LAYER_TO_RESOLVER` and `resolvers/__init__.py`'s `REGISTRY`;
+the now-unused `area_name` field on `context.py`'s `Ctx` dataclass; the whole
+`tests/test_layer_detect_grid_area.py` file (existed solely to test the deleted branch); 5
+grid_area-specific tests in `test_css_resolvers.py`; the `GRID_AREA` case from `test_dispatch_table.py`'s
+parametrised/enumerated coverage.
+
+**Fixed:** the false "both are live" docstring claim in `route_area_css_to_block_attrs()`, corrected
+to name it the only live grid-per-area path; every other file (`scalar_content.py`, `scalar_media.py`,
+`services/assembly.py`, `state_value_lift.py`, `tier_suffix.py`, `db_lookup.py`,
+`test_unrouted_fails.py`) that cited the 4-layer domain (`{OUTER, GRID_AREA, GRID, CONTENT}`) or the
+deleted file by name, corrected to the real 3-layer domain / the real live consumer. Left
+`db_lookup.py`'s two `css_layer='...'|'GRID_AREA'` DB-schema-domain mentions untouched — that's a
+different, DB-schema-level concept this session had no way to verify against the (locally empty)
+DB, and touching it without verification would repeat the exact unverified-claim mistake this
+cleanup exists to fix.
+
+**Verification, not assumption:** all 49 tests in the 4 touched/adjacent test files pass (43 passed,
+6 xfailed — matching pre-existing xfail markers, none new). Full converter suite: 910 passed, 2
+skipped, 11 xfailed (down from the pre-change 919/2/12 by exactly the 9 deleted tests — no
+unexplained delta). **Golden-fixture conformance test** (`tests/test_converter_conformance.py`,
+Gate A, not in `prebuild`) run on this branch AND stashed-back to the pre-change tree: **both give
+byte-identical 37 failed / 13 passed**, `diff` on the sorted failure lists empty — the deletion
+changed converter output for exactly zero fixtures, matching D639's own equivalent proof for its
+`gridAreas` deletion. Full `npm run build` exit 0.
+
+**Not touched, correctly out of scope:** `db_lookup.py`'s `css_layer` DB-domain mentions (above);
+whatever caused the pre-existing 37 golden-fixture failures (baselined by this same proof, not
+this session's to fix — D639 flagged `sgs-hero`'s failure as a separate standing problem).
+
 ## D641 — Stage 1 colour-gap streams shipped; live QC on the real canary caught 2 production bugs neither build nor merge would have found [INCIDENT]
 
 **2026-08-16.** All 4 D640 streams built (isolated worktrees, `/delegate`-routed: A/B Sonnet,

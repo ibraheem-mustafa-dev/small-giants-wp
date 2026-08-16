@@ -9,8 +9,8 @@ production call site.
 GROUND-TRUTH: source=file evidence=`converter/services/layer_detect.py::layer_detect`
 is called exactly once per element (`orchestrator.process_element`, cached on
 `ctx.base_layer`) and every one of its code paths returns a value in
-`{"OUTER", "GRID_AREA", "GRID", "CONTENT"}` — never `None`, never anything the
-removed `delegates_content == 0` branch needed to fire on. All 4 of those layers
+`{"OUTER", "GRID", "CONTENT"}` — never `None`, never anything the
+removed `delegates_content == 0` branch needed to fire on. All 3 of those layers
 already have a registered resolver (`_LAYER_TO_RESOLVER` in dispatch_table.py), so
 the branch this stub served could only ever be reached synthetically (a test
 passing a fabricated out-of-domain `layer` string), never in the real pipeline.

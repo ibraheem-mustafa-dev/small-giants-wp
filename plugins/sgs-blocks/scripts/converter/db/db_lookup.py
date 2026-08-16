@@ -4329,7 +4329,8 @@ def attr_for_area_property(
     ``areaName + PropertySuffix`` name-build). Match ``block_attributes`` on
     ``css_property`` + ``css_element = area``, restricted to the base-resolver domain
     (``css_tier IN (NULL,'desktop')``, ``css_state IS NULL``; the tier/state siblings are
-    re-appended by grid_area.py's tier_suffix, Spec 31 §3.A.4). Exactly one → return;
+    re-appended by fold_helpers.route_area_css_to_block_attrs's own tier mapping,
+    Spec 31 §3.A.4). Exactly one → return;
     ≥2 → raise ``AmbiguousAreaAttrError`` (never rowid-pick); zero → None (honest gap;
     caller gap-tracks — flag-not-drop, Spec 31 §3.A.8).
 

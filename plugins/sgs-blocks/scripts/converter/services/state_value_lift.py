@@ -36,7 +36,7 @@ contracts and keeps every existing base+Hover-companion pair parity-neutral
 `attr_for_state_property`).
 
 Callers (any resolver dispatching a state-carrying Decl — `outer_box`,
-`content_band`, `grid`, `grid_area`, universally, R-31-9): call
+`content_band`, `grid`, universally, R-31-9): call
 `resolve_state_property(decl, ctx)` BEFORE the ordinary
 `attr_resolve(...)+tier_state_suffix(...)` chain. A `None` return means "no
 direct-state destination for this (block, css_property, state)" -- fall

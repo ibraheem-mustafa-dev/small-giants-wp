@@ -53,7 +53,6 @@ def test_excluded_property_is_pre_layer_sink():
     ("OUTER", "outer_box"),
     ("CONTENT", "content_band"),
     ("GRID", "grid"),
-    ("GRID_AREA", "grid_area"),
 ])
 def test_layer_routing(layer, expected):
     assert resolver_id(layer, "max-width", delegates_content=1, conn=_conn()) == expected
@@ -100,14 +99,12 @@ def test_layer_detect_domain_is_exhaustively_covered_by_layer_to_resolver():
     only ever have fired for a layer value layer_detect can provably never produce.
     """
     class _FakeCtx:
-        def __init__(self, is_root, area_name=None):
+        def __init__(self, is_root):
             self.is_root = is_root
-            self.area_name = area_name
 
     cases = [
         # (ctx, base_decls) -> every branch in layer_detect, in source order.
         (_FakeCtx(is_root=True), {}),                                          # OUTER (root)
-        (_FakeCtx(is_root=False, area_name="header"), {}),                    # GRID_AREA
         (_FakeCtx(is_root=False), {"display": "grid"}),                       # GRID (display)
         (_FakeCtx(is_root=False), {"grid-template-columns": "1fr 1fr"}),      # GRID (template)
         (_FakeCtx(is_root=False), {"max-width": "600px", "margin": "0 auto"}),  # CONTENT (band)
@@ -132,6 +129,6 @@ def test_routing_is_tier_invariant_by_construction():
 
 
 def test_all_returns_are_registered_ids():
-    for layer in ("OUTER", "CONTENT", "GRID", "GRID_AREA", "???"):
+    for layer in ("OUTER", "CONTENT", "GRID", "???"):
         rid = resolver_id(layer, "max-width", delegates_content=1, conn=_conn())
         assert rid in RESOLVER_IDS

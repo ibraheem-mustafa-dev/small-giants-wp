@@ -234,7 +234,7 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
 # unreachability: `layer_detect` (converter/services/layer_detect.py), the ONLY
 # producer of the `layer` value resolver_id is ever called with in production
 # (orchestrator.process_element, cached as ctx.base_layer), NEVER returns
-# anything outside {"OUTER","GRID_AREA","GRID","CONTENT"} — all 4 already have a
+# anything outside {"OUTER","GRID","CONTENT"} — all 3 already have a
 # registered layer resolver, so the removed `delegates_content == 0` branch could
 # only fire for a `layer` value layer_detect can provably never produce. See
 # converter/tests/test_dispatch_table.py for the proof test.

@@ -51,7 +51,7 @@ def tier_state_suffix(base_attr: str, decl, conn: sqlite3.Connection) -> str:
     (step 4a, D309) to a base attr, universally — Spec 31 §3.A.
 
     This is the ONE shared re-append every box resolver (outer_box / content_band /
-    grid / grid_area) must call after ``attr_resolve`` so a ``:hover``/``:focus``/
+    grid) must call after ``attr_resolve`` so a ``:hover``/``:focus``/
     ``:active`` declaration on ANY route (a grid's border, a per-area background, an
     outer box colour) routes to the block's ``{base}{Tier}{State}`` companion instead
     of silently writing the base attr (the colourBorder double-write conservation

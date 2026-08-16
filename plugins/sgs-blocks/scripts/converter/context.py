@@ -89,14 +89,12 @@ class Ctx:
     is_root: bool
     base_layer: str | None       # cached by layer_detect (§2.1)
     conn: sqlite3.Connection
-    # The named grid-area this element occupies in its PARENT's grid-template-areas
-    # (Spec 31 §3.A L4 — D207 grid-per-area dissolve). Set by the Ctx-builder when
-    # the element's BEM token ∈ the parent grid's area names (reuse
-    # fold_helpers.grid_item_areas); read by the grid_area resolver to route the
-    # element's box CSS onto the owning block's <areaName>+<suffix> attrs. None for
-    # a non-grid-area element. Has a default so existing positional Ctx(...) callers
-    # (tests, slice) are unaffected.
-    area_name: str | None = None
+    # `area_name` (Spec 31 §3.A L4 — D207 grid-per-area dissolve) REMOVED 2026-08-16
+    # (D639): no production Ctx-builder ever set it, only test fixtures did, so the
+    # `grid_area` resolver and layer_detect's GRID_AREA branch it fed were both dead
+    # code and have been deleted. The real grid-per-area routing is
+    # `fold_helpers.route_area_css_to_block_attrs`, called from `assembly` step 3d,
+    # keyed on the draft's BEM element token — it never depended on this field.
     # FR-31-2.8.4 destination-parametric dispatch: where this element's routed
     # Writes land. None (the default — every existing caller/test unaffected)
     # = SELF: the caller merges ElementResult.attrs() into the element's own
