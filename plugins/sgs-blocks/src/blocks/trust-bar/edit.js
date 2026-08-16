@@ -271,7 +271,7 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 }
 
 // ─── Main Edit component ──────────────────────────────────────────────────────
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		badgeStyle,
 		items,
@@ -490,7 +490,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Background (image/video/svg tabs + ken-burns/parallax) — root-level
 					appearance, kept first in the Styles tab (mirrors sgs/container). */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ /* ── Section (outer): width + min-height ──────────────────── */ }
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
