@@ -465,17 +465,33 @@ import `GridAreaPanel` and never will under the current shape). Ship this guard 
 after F.2.2's editor-layer change lands — enabling it earlier will either false-negative or need to
 be disabled for the gap window; do not enable it blind.
 
-**F.2.3 — `shapeDividers` linked/unlinked X/Y scale control. ⚠ NEEDS REVISION (2026-08-16) — the
-control SHAPE below is NOT locked. Do not build F.2.3 as specced without a follow-up decision from
-Bean.** The storage fork (replace, not add-alongside — see below) IS decided and stable. What's open:
-an independent review lens found this control shape was picked with no competitor research (contrast
+**F.2.3 — `shapeDividers` linked/unlinked X/Y scale control. ⚠ PARTIALLY REVISED (2026-08-16) — the
+X/Y RENDER BEHAVIOUR is now RULED (below), the CONTROL SHAPE (link/unlink toggle vs. two independent
+sliders) is still open. Do not build the control-shape half without a follow-up decision from Bean;
+the render-behaviour half is safe to build against.** The storage fork (replace, not add-alongside)
+IS decided and stable.
+
+**X/Y render behaviour — RULED by Bean, 2026-08-16.** 100% is the shape's natural, undistorted size
+on both axes (the default). **Y anchors to the edge the divider is attached to** (top divider anchors
+its top edge, bottom divider anchors its bottom edge) and extends OUTWARD ONLY as Y increases — it
+never grows back into the section it decorates. **X anchors from the horizontal CENTRE of the block**
+it's attached to, scaling symmetrically left/right from the middle — not from either edge. Values
+below 100% on X make the shape narrower, so the pattern **tiles/repeats** to fill the block's width
+(same repeat mechanism the shape already uses today, just at a smaller per-tile width); values above
+100% make the shape wider than the block, so the excess is simply **not rendered/visible** — clipped
+at the block's own width, same as any other CSS `overflow:hidden` element wider than its container.
+This closes the "X-axis render behaviour is undefined" gap the second review lens flagged — resolves
+to plain, ordinary CSS overflow/repeat semantics, nothing bespoke needed. **Migration:** confirmed
+directly with Bean — "there is nothing to preserve" on the live canary; the D635-style content-check
+this entry's addendum flagged as a due-diligence gap is closed by this ruling, not deferred.
+
+**Control shape — still open, this is the one thing left before F.2.3 can build.** An independent
+review lens found the link/unlink toggle shape below was picked with no competitor research (contrast
 D636, which ran a 4-seat Kadence/Spectra/Elementor council before an analogous gradient-control
-decision) and the X-axis's render behaviour is undefined (stretch? tile? clip past 100%?) — you
-cannot judge a control's client-simplicity without knowing what it visually does. A candidate
-alternative worth weighing against the link/unlink shape below: two independently-labelled sliders
-("Divider height" / "Divider width") with no link toggle at all — "linking" reads naturally for 4
-equal box sides, less naturally for a 2-axis shape stretch. Full record: `decisions.md` D637 addendum.
-New component
+decision). Candidate alternative worth weighing against the link/unlink shape below: two
+independently-labelled sliders ("Divider height" / "Divider width") with no link toggle at all —
+"linking" reads naturally for 4 equal box sides, less naturally for a 2-axis shape stretch. Full
+record: `decisions.md` D637 addendum. New component
 `plugins/sgs-blocks/src/components/ScaleAxisControl.js` — the 2-axis analogue of WP core
 `BoxControl`'s 4-side link pattern (D626: "architecturally the same linked/unlinked pattern
 BoxControl's 4-side link already uses, applied to 2 axes"). Interface:

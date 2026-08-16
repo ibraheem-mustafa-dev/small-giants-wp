@@ -270,6 +270,28 @@ the three corrections above folded in). Design #3 needs a follow-up design gate 
 control shape (or confirms the link/unlink one after seeing the concern) — before its build starts.
 This is not a blocker to starting step 7 on #1/#2's build track in parallel.
 
+**Second addendum (2026-08-16, later same session) — Design #3's render behaviour + migration gap
+both RULED by Bean, control-shape question still open.**
+
+- **Migration due-diligence gap CLOSED by ruling, not a check.** Bean confirmed directly: "there is
+  nothing to preserve" on the live canary. The D635-style content grep this addendum flagged as a
+  gap is not needed — skip it, ship the clean replace.
+- **X/Y render behaviour RULED, closing the other half of the review lens's finding.** 100% = the
+  shape's natural undistorted size on both axes. **Y anchors to the edge the divider is attached to**
+  (top divider's top edge; bottom divider's bottom edge) and extends OUTWARD ONLY — never grows back
+  into the section. **X anchors from the block's horizontal CENTRE**, scaling symmetrically. Below
+  100% on X, the (now-narrower) shape **tiles/repeats** to fill the block width — same repeat
+  mechanism the shape already uses. Above 100% on X, the excess is simply **clipped/not rendered** —
+  ordinary `overflow:hidden` semantics, nothing bespoke. Bean's own framing, worth keeping verbatim:
+  "any of the shape dividers is just a normal shape that sits on top or below a section/block" — the
+  render model is exactly as simple as that sentence, the earlier "unspecified" finding was a real
+  gap in the DOC, not evidence the underlying behaviour was actually ambiguous or hard to define.
+- **Still open:** the CONTROL SHAPE (link/unlink toggle vs. two independent labelled sliders) —
+  render behaviour being defined doesn't answer how a client picks the two numbers. This is the one
+  remaining thing before Design #3 builds.
+
+Full spec update: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2.3.
+
 ## D636 addendum (2026-08-16, later same session) — a 4th CSS mechanism, missed by the council
 
 Bean caught a real gap the 4-seat council never surfaced: **icon colour is not the same case as
