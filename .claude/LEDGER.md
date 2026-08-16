@@ -178,7 +178,7 @@ scope their per-block attribute lists from it.
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | **This session's incident record — ALL 4 bugs found + fixed, live evidence** | **`decisions.md` D639** |
 | Stage 1 council — all rulings, evidence, traps | `decisions.md` D638 |
-| Stage 1 execution plan (what each stream built) | `.claude/plans/2026-08-16-colour-gaps-parallel-plan.md` |
+| Stage 1 execution plan (archived, executed) | `.claude/plans/archive/2026-08-16-colour-gaps-parallel-plan.md` |
 | Gradient scope + architecture (council, storage, icon correction) | `decisions.md` D636 + addendum |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Control-type contract (colour §1, gradient field 8) | `.claude/plans/spec-35-control-type-contract.md` |
