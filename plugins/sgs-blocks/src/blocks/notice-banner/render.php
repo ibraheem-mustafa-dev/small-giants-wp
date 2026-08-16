@@ -57,6 +57,8 @@ $variant           = $attributes['variant'] ?? 'info';
 $icon_source       = $attributes['iconSource'] ?? '';
 $icon_name         = $attributes['iconName'] ?? '';
 $icon_colour       = $attributes['iconColour'] ?? '';
+// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
+$icon_colour_gradient = $attributes['iconColourGradient'] ?? '';
 $display_mode      = $attributes['displayMode'] ?? 'inline';
 $sticky_position   = $attributes['stickyPosition'] ?? 'top';
 $dismissible       = ! empty( $attributes['dismissible'] );
@@ -210,6 +212,16 @@ $scoped_css = array();
 // scoped declaration keyed off the SAME root uid. ---
 if ( $icon_colour ) {
 	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon{color:' . sgs_colour_value( $icon_colour ) . ';}';
+}
+// D636/D644 icon/SVG gradient — non-empty wins over iconColour's flat
+// currentColor paint above (helpers-svg-gradient.php). $icon_html was built
+// earlier (icon/lucide/wp-icon cases only carry real <svg> markup — dashicon/
+// emoji/text are unaffected, sgs_svg_inject_defs() no-ops when there's no
+// <svg> to match).
+$sgs_notice_banner_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+if ( '' !== $sgs_notice_banner_stroke_grad['defs'] ) {
+	$icon_html    = sgs_svg_inject_defs( $icon_html, $sgs_notice_banner_stroke_grad['defs'] );
+	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon svg{' . $sgs_notice_banner_stroke_grad['css'] . ';}';
 }
 
 // --- Width (base only, kept-scalar). ---

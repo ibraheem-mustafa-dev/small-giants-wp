@@ -56,12 +56,14 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "iconColour",
+						"css:stroke": "iconColourGradient",
 						"css:background-color": "backgroundColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient",
 								"css:background-color": "shapeColourHover"
 							}
 						}
@@ -177,6 +179,16 @@
 		"iconColourHover": {
 			"type": "string",
 			"default": "accent-text"
+		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string (linear-gradient()/radial-gradient()) painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time. Sibling attribute per D636 — see helpers-svg-gradient.php."
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of iconColourGradient. Non-empty wins over iconColourHover on :hover/:focus-visible."
 		},
 		"shapeColourHover": {
 			"type": "string",

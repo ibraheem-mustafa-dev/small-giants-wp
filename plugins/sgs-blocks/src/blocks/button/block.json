@@ -94,18 +94,20 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "fill" ],
 					"attrMap": {
-						"css:color": "iconColour"
+						"css:color": "iconColour",
+						"css:stroke": "iconColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "iconColourHover"
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
 							}
 						}
 					},
-					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap was deleted (D613) -- confirmed dead on both sides, no consumer anywhere in the plugin."
+					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap was deleted (D613) -- confirmed dead on both sides, no consumer anywhere in the plugin. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient/iconColourHoverGradient, added 2026-08-16 (Builder 4) — non-empty wins over the flat currentColor paint at render time (helpers-svg-gradient.php)."
 				}
 			}
 		}
@@ -350,9 +352,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
+		},
 		"iconColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of iconColourGradient. Non-empty wins over iconColourHover on :hover/:focus-visible."
 		},
 		"iconTitle": {
 			"type": "string",

@@ -46,6 +46,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 		iconColour,
+		iconColourGradient,
 		textColour,
 		labelColour,
 		linkHoverBackgroundImage,
@@ -79,6 +80,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconColour,
 								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 						],
 					},

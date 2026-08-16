@@ -113,11 +113,12 @@
 				"icon": {
 					"label": "Toggle icon",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "fill" ],
 					"attrMap": {
-						"css:color": "iconColour"
+						"css:color": "iconColour",
+						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps."
+					"_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
 				},
 				"item": {
 					"label": "Accordion item",
@@ -160,6 +161,11 @@
 		},
 		"iconColour": {
 			"type": "string"
+		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the toggle chevron's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
 		"openIcon": {
 			"type": "string",
@@ -282,6 +288,7 @@
 		"sgs/accordionHeaderColour": "headerColour",
 		"sgs/accordionHeaderBackground": "headerBackground",
 		"sgs/accordionIconColour": "iconColour",
+		"sgs/accordionIconColourGradient": "iconColourGradient",
 		"sgs/accordionOpenIcon": "openIcon",
 		"sgs/accordionCloseIcon": "closeIcon",
 		"sgs/accordionDefaultOpen": "defaultOpen"

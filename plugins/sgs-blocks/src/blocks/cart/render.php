@@ -75,6 +75,8 @@ $display_mode          = in_array( $attributes['displayMode'] ?? 'link', $allowe
 $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'shopping-cart' ) );
 $icon_size             = absint( $attributes['iconSize'] ?? 24 );
 $icon_colour           = $attributes['iconColour'] ?? 'primary';
+// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
+$icon_colour_gradient  = $attributes['iconColourGradient'] ?? '';
 $badge_colour          = $attributes['badgeColour'] ?? 'accent';
 $badge_text_colour     = $attributes['badgeTextColour'] ?? 'accent-text';
 $aria_label            = sanitize_text_field( $attributes['ariaLabel'] ?? __( 'View your cart', 'sgs-blocks' ) );
@@ -216,6 +218,13 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 // ── Icon SVG ─────────────────────────────────────────────────────────────────
 $icon_svg = sgs_get_lucide_icon( $icon_name );
+// D636/D644 icon/SVG gradient — non-empty gradient wins over iconColour's
+// flat currentColor paint (helpers-svg-gradient.php).
+$sgs_cart_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+if ( '' !== $sgs_cart_stroke_grad['defs'] ) {
+	$icon_svg     = sgs_svg_inject_defs( $icon_svg, $sgs_cart_stroke_grad['defs'] );
+	$scoped_css[] = "{$sel} .sgs-cart__icon svg{" . $sgs_cart_stroke_grad['css'] . ';}';
+}
 
 // ── Accessible label with count ───────────────────────────────────────────────
 // Uses a sprintf-style template; view.js replaces the live count.

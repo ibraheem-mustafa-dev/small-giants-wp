@@ -697,9 +697,18 @@ if ( '' !== $preset_bg_slug ) {
 // 6. Build icon output.
 // ---------------------------------------------------------------------------
 
+// D636/D644 icon/SVG gradient siblings — non-empty wins over the flat
+// iconColour/iconColourHover above at paint time (helpers-svg-gradient.php).
+$icon_colour_gradient       = isset( $attributes['iconColourGradient'] ) ? $attributes['iconColourGradient'] : '';
+$icon_colour_hover_gradient = isset( $attributes['iconColourHoverGradient'] ) ? $attributes['iconColourHoverGradient'] : '';
+$sgs_button_stroke_grad       = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$sgs_button_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
+
 $icon_html = '';
 if ( $icon ) {
 	$icon_svg = sgs_get_lucide_icon( $icon );
+	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad['defs'] );
+	$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_button_stroke_grad_hover['defs'] );
 
 	if ( $icon_svg ) {
 		// For icon-only: inject a <title> into the SVG for screen readers.
@@ -724,6 +733,12 @@ if ( $icon ) {
 		}
 		if ( $icon_colour ) {
 			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon{color:" . sgs_colour_value( $icon_colour ) . ';}';
+		}
+		if ( '' !== $sgs_button_stroke_grad['css'] ) {
+			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon svg{" . $sgs_button_stroke_grad['css'] . ';}';
+		}
+		if ( '' !== $sgs_button_stroke_grad_hover['css'] ) {
+			$scoped_css_parts[] = ".{$uid}.sgs-button:hover .sgs-button__icon svg,.{$uid}.sgs-button:focus-visible .sgs-button__icon svg{" . $sgs_button_stroke_grad_hover['css'] . ';}';
 		}
 
 		// wp_kses with SVG allowance for the icon.

@@ -53,6 +53,8 @@ $link_email     = ! empty( $attributes['linkEmail'] );
 // colour control) still wins — see the colour-bridge block below, which only
 // emits the custom property when the resolved value is non-empty.
 $icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
+// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
+$icon_colour_gradient = (string) ( $attributes['iconColourGradient'] ?? '' );
 $text_colour  = (string) ( $attributes['textColour'] ?? '' );
 $label_colour = (string) ( $attributes['labelColour'] ?? '' );
 // Link hover — unset means "no override", so style.css's #e7d768 default applies.
@@ -78,17 +80,31 @@ $placeholder = sprintf(
 // rather than re-deriving REST_REQUEST/is_admin() locally.
 $sgs_is_editor_render = ! \SGS\Blocks\sgs_is_frontend_render();
 
+// D636/D644 icon/SVG gradient — computed here (before $icon_html's closure
+// definition below, which needs it) using the SAME uid this render also uses
+// for its scoped <style> further down (moved up unchanged — one definition,
+// referenced both here and where $root_sel is built).
+$uid                 = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_bi_stroke_grad  = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$sgs_bi_defs_injected = false;
+
 /**
  * Helper: wrap an inline SVG icon in a presentational span.
  *
  * @param string $icon_name Lucide icon slug.
  * @return string HTML.
  */
-$icon_html = function ( string $icon_name ) use ( $show_icon ): string {
+$icon_html = function ( string $icon_name ) use ( $show_icon, $sgs_bi_stroke_grad, &$sgs_bi_defs_injected ): string {
 	if ( ! $show_icon ) {
 		return '';
 	}
 	$svg = sgs_get_lucide_icon( $icon_name );
+	// Gradient <defs> only needs to exist ONCE in the DOM — this closure can
+	// render more than once per instance (e.g. a combined display type).
+	if ( ! $sgs_bi_defs_injected && '' !== $sgs_bi_stroke_grad['defs'] ) {
+		$svg                   = sgs_svg_inject_defs( $svg, $sgs_bi_stroke_grad['defs'] );
+		$sgs_bi_defs_injected = true;
+	}
 	return sprintf( '<span class="sgs-business-info__icon" aria-hidden="true">%s</span>', $svg );
 };
 
@@ -396,10 +412,14 @@ $sgs_css_length = static function ( $value ) {
 	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
 };
 
-$uid      = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+// $uid was already computed earlier (above $icon_html's closure definition,
+// which needs the gradient derived from it) — reused here, not recomputed.
 $root_sel = '.' . $uid;
 
 $scoped_css = array();
+if ( '' !== $sgs_bi_stroke_grad['css'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-business-info__icon svg{" . $sgs_bi_stroke_grad['css'] . ';}';
+}
 
 // --- Colour bridge (icon/text/label) — was an inline `style` attr, now a
 // scoped custom-property declaration; style.css's var(--sgs-bi-*, currentColor)

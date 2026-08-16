@@ -89,9 +89,12 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "fill" ],
 					"prefix": "icon",
-					"_note": "iconColour resolves via the default {prefix}{suffix} convention (Colour suffix). Emitted as a scoped rule `.{uid} .sgs-notice-banner__icon{color:...}` (render.php:203-207), not inline."
+					"attrMap": {
+						"css:stroke": "iconColourGradient"
+					},
+					"_note": "iconColour resolves via the default {prefix}{suffix} convention (Colour suffix). Emitted as a scoped rule `.{uid} .sgs-notice-banner__icon{color:...}` (render.php:203-207), not inline. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
 				}
 			}
 		}
@@ -133,6 +136,11 @@
 		"iconColour": {
 			"type": "string",
 			"default": ""
+		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
 		"displayMode": {
 			"type": "string",

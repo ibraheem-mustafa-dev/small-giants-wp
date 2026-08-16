@@ -173,7 +173,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		labelCollapse,
 		iconSize,
 		iconColour,
+		iconColourGradient,
 		iconColourHover,
+		iconColourHoverGradient,
 		iconTitle,
 		fontWeight,
 		fontStyle,
@@ -437,12 +439,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconColour,
 								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconColourHover,
 								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

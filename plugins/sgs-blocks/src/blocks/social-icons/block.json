@@ -89,6 +89,7 @@
 					],
 					"attrMap": {
 						"css:color": "iconGlyphColour",
+						"css:stroke": "iconGlyphColourGradient",
 						"css:background-color": "iconBackground",
 						"css:border-color": "iconBorderColour"
 					},
@@ -96,6 +97,7 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "iconGlyphColourHover",
+								"css:stroke": "iconGlyphColourHoverGradient",
 								"css:background-color": "iconBackgroundHover",
 								"css:border-color": "iconBorderColourHover"
 							}
@@ -175,9 +177,19 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"iconGlyphColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting every icon's stroke instead of a flat colour. Non-empty wins over iconGlyphColour at render time (D636/D644)."
+		},
 		"iconGlyphColourHover": {
 			"type": "string",
 			"default": "primary"
+		},
+		"iconGlyphColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of iconGlyphColourGradient. Non-empty wins over iconGlyphColourHover on :hover."
 		},
 		"colourMode": {
 			"type": "string",

@@ -39,6 +39,7 @@ export default function Edit({ attributes, setAttributes }) {
     headerColour,
     headerBackground,
     iconColour,
+    iconColourGradient,
     openIcon,
     closeIcon,
   } = attributes;
@@ -98,6 +99,9 @@ export default function Edit({ attributes, setAttributes }) {
                 label: __("Normal", "sgs-blocks"),
                 value: iconColour,
                 onChange: (val) => setAttributes({ iconColour: val }),
+                gradientValue: iconColourGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourGradient: val ?? "" }),
               },
             ],
           },

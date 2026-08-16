@@ -160,6 +160,7 @@ export default function Edit({ attributes, setAttributes }) {
     icon: defaultIconName,
     defaultIconSource,
     iconColour,
+    iconColourGradient,
     iconSize,
     textColour,
     gap,
@@ -351,6 +352,9 @@ export default function Edit({ attributes, setAttributes }) {
                 value: iconColour,
                 onChange: (val) => setAttributes({ iconColour: val ?? "" }),
                 linked: true,
+                gradientValue: iconColourGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourGradient: val ?? "" }),
               },
             ],
           },

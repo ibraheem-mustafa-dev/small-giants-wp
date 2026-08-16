@@ -139,6 +139,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showIcon,
 		iconSource,
 		iconColour,
+		iconColourGradient,
 		displayMode,
 		stickyPosition,
 		dismissible,
@@ -236,6 +237,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: iconColour,
 								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
 								linked: true,
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 						],
 					},
