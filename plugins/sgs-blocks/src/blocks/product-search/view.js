@@ -4,8 +4,8 @@
  * Accessible combobox with debounced REST fetch, keyboard navigation, and
  * AbortController-based request cancellation.
  *
- * Supports three display modes set by render.php via data-display
- * (FR-36-20 — ONE shared combobox implementation reused across all three;
+ * Supports four display modes set by render.php via data-display
+ * (FR-36-20 — ONE shared combobox implementation reused across all four;
  * only the chrome wiring below differs):
  *   (none / "inline")     — always-visible search bar, unchanged behaviour.
  *   "icon"                — <details>/<summary> DISCLOSURE (FR-36-10); JS
@@ -15,6 +15,14 @@
  *                           the side-effect import below registers it, so
  *                           this block never hand-rolls a second open/close/
  *                           focus/inert utility (R-31-9).
+ *   "command-palette"     — D638 §6. The SAME <dialog> DIALOG mechanism as
+ *                           full-screen-overlay (isInsideComponent() below
+ *                           already covers it — no second containment
+ *                           guard). Adds ONE thing on top: a global Ctrl/
+ *                           Cmd+K shortcut that dispatches a real click on
+ *                           the existing trigger button, reusing the shared
+ *                           store's actions.toggleDrawer exactly as a mouse
+ *                           click would.
  *
  * No jQuery. Only dependency is the shared nav store (FR-36-7 reuse).
  */
@@ -44,6 +52,7 @@ function initInstance( root ) {
 	const noResults = root.dataset.noResults || 'No products found';
 	const busy =
 		root.dataset.busy || 'Search is busy — please try again in a moment';
+	const outOfStock = root.dataset.outOfStock || 'Out of stock';
 	// Both plural forms come from PHP (_n_noop() in render.php) — never do
 	// English-only pluralisation rules or string surgery here; this text is
 	// read aloud by the aria-live status region (WCAG 4.1.3).
@@ -73,15 +82,28 @@ function initInstance( root ) {
 
 	// Display-mode detection — set by render.php as data-display.
 	// icon: <details>/<summary> DISCLOSURE (FR-36-10).
-	// full-screen-overlay: <dialog> DIALOG (FR-36-10), driven by the shared
-	// store('sgs/nav') import above.
+	// full-screen-overlay / command-palette: <dialog> DIALOG (FR-36-10),
+	// driven by the shared store('sgs/nav') import above — command-palette
+	// (D638 §6) is the SAME dialog mechanism, only its CSS modifier class
+	// differs, so it is included here rather than given a second dialog
+	// detection branch.
 	const isIcon = root.dataset.display === 'icon';
 	const isOverlay = root.dataset.display === 'full-screen-overlay';
+	const isPalette = root.dataset.display === 'command-palette';
 	const details = isIcon
 		? root.querySelector( '.sgs-product-search__disclosure' )
 		: null;
-	const dialog = isOverlay
-		? root.querySelector( '.sgs-product-search__dialog' )
+	const dialog =
+		isOverlay || isPalette
+			? root.querySelector( '.sgs-product-search__dialog' )
+			: null;
+	// The trigger button is NOT reparented (only the dialog + scrim are —
+	// see the shared store's reparentToBody()), so it stays queryable from
+	// `root` for the whole life of the instance.
+	const overlayTrigger = isPalette
+		? root.querySelector(
+				'.sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle'
+		  )
 		: null;
 
 	// DOM refs.
@@ -151,6 +173,28 @@ function initInstance( root ) {
 		ul.hidden = true;
 		input.setAttribute( 'aria-expanded', 'false' );
 		clearActive();
+		// Clear any stale skeleton/result rows so the next open never flashes
+		// last query's content before fetchResults() repopulates it.
+		ul.innerHTML = '';
+	}
+
+	/**
+	 * Skeleton loading rows — shown while a fetch is genuinely in flight
+	 * (never a spinner). `aria-hidden` + no `role="option"` keeps them out
+	 * of getOptions()'s query and the accessible tree, so keyboard nav and
+	 * the aria-live result count are completely unaffected by their presence.
+	 */
+	const SKELETON_ROW_COUNT = 3;
+
+	function renderSkeletonRows() {
+		ul.innerHTML = '';
+		for ( let i = 0; i < SKELETON_ROW_COUNT; i++ ) {
+			const li = document.createElement( 'li' );
+			li.className = 'sgs-product-search__skeleton';
+			li.setAttribute( 'aria-hidden', 'true' );
+			ul.appendChild( li );
+		}
+		ul.hidden = false;
 	}
 
 	/**
@@ -252,6 +296,35 @@ function initInstance( root ) {
 	}
 
 	// -------------------------------------------------------------------------
+	// Command palette — global Ctrl/Cmd+K opens the SAME trigger the shared
+	// store already binds `actions.toggleDrawer` to (D638 §6). Dispatching a
+	// real .click() on the live button — rather than importing/calling the
+	// store's `actions` directly — is deliberate: those actions read
+	// getContext()/getElement() from the Interactivity runtime's currently-
+	// executing directive, which only resolves correctly from a real
+	// directive-bound event. A synthetic click on the already-hydrated
+	// button re-enters that exact directive, so this extends the existing
+	// open/close guard instead of adding a second one.
+	// -------------------------------------------------------------------------
+	if ( isPalette && overlayTrigger ) {
+		document.addEventListener( 'keydown', ( event ) => {
+			const isMac = /Mac|iPod|iPhone|iPad/.test(
+				window.navigator.platform || ''
+			);
+			const modifierPressed = isMac ? event.metaKey : event.ctrlKey;
+
+			if (
+				modifierPressed &&
+				! event.repeat &&
+				( event.key === 'k' || event.key === 'K' )
+			) {
+				event.preventDefault();
+				overlayTrigger.click();
+			}
+		} );
+	}
+
+	// -------------------------------------------------------------------------
 	// Fetch
 	// -------------------------------------------------------------------------
 
@@ -262,6 +335,12 @@ function initInstance( root ) {
 		}
 		activeController = new AbortController();
 		const { signal } = activeController;
+
+		// Skeleton loading rows — shown the moment the fetch actually starts
+		// (not during the 300ms debounce wait). aria-hidden + no role="option"
+		// keeps them invisible to getOptions()/aria-activedescendant, so
+		// keyboard nav and the live-region result count are unaffected.
+		renderSkeletonRows();
 
 		try {
 			const response = await fetch(
@@ -295,6 +374,7 @@ function initInstance( root ) {
 			// Populate the listbox. Options must have NO focusable descendants
 			// (ARIA combobox rule — an inner <a> trips axe nested-interactive).
 			// The URL lives on li.dataset.href; navigation happens via JS.
+			// (This also clears any skeleton rows renderSkeletonRows() left.)
 			ul.innerHTML = '';
 			capped.forEach( ( result, i ) => {
 				const optId = listId + '-opt-' + i;
@@ -302,6 +382,10 @@ function initInstance( root ) {
 				li.setAttribute( 'role', 'option' );
 				li.id = optId;
 				li.dataset.href = result.permalink || '';
+				// Per-row fade-in stagger (Tier V CSS, style.css) — a JS-set
+				// custom-property VALUE, never a property declaration, so this
+				// stays inside the no-inline styling contract (Spec 32).
+				li.style.setProperty( '--sgs-ps-stagger-index', String( i ) );
 
 				// Product preview — thumbnail (FR-36-20 MUST). The REST response
 				// always includes `thumbnail`; see class-product-search-rest.php.
@@ -325,18 +409,33 @@ function initInstance( root ) {
 				appendHighlightedTitle( titleEl, result.title || '', q );
 				info.appendChild( titleEl );
 
-				// Price preview (FR-36-20 MUST). NOTE: the current REST response
-				// (class-product-search-rest.php, out of this build's file scope)
-				// deliberately excludes price — "no price / meta / stock /
-				// variation data — ever" is its documented invariant. This reads
-				// `result.price` defensively so the preview activates the moment
-				// that invariant is revisited server-side; it renders nothing
-				// today. Always textContent — never innerHTML.
-				if ( typeof result.price === 'string' && result.price ) {
+				// Price + stock preview (D638 §6, FR-36-20 MUST). The REST
+				// response now includes `price_html` (WooCommerce's own
+				// wc_get_price_html() markup — currency/locale-formatted,
+				// already sanitised server-side via wp_kses_post, see
+				// class-product-search-rest.php step 8) plus `on_sale` and
+				// `in_stock` booleans.
+				if ( typeof result.price_html === 'string' && result.price_html ) {
 					const priceEl = document.createElement( 'span' );
 					priceEl.className = 'sgs-product-search__result-price';
-					priceEl.textContent = result.price;
+					if ( result.on_sale ) {
+						priceEl.classList.add(
+							'sgs-product-search__result-price--sale'
+						);
+					}
+					// price_html is trusted server-formatted currency markup
+					// from our own REST endpoint (never user input) — WC's own
+					// documented usage pattern for this field is innerHTML.
+					priceEl.innerHTML = result.price_html; // eslint-disable-line no-unsanitized/property -- trusted, see class-product-search-rest.php step 8.
 					info.appendChild( priceEl );
+
+					if ( result.in_stock === false ) {
+						const stockEl = document.createElement( 'span' );
+						stockEl.className =
+							'sgs-product-search__result-stock sgs-product-search__result-stock--out';
+						stockEl.textContent = outOfStock;
+						info.appendChild( stockEl );
+					}
 				}
 
 				li.appendChild( info );
