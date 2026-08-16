@@ -241,7 +241,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourHover,
 		textAlign,
 		backgroundColour,
+		backgroundColourGradient,
 		backgroundColourHover,
+		backgroundColourHoverGradient,
 		fontStyle,
 		textDecoration,
 		inheritStyle,
@@ -320,6 +322,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: backgroundColour,
 								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -327,6 +332,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: backgroundColourHover,
 								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

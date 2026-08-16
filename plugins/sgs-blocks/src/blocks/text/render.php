@@ -94,7 +94,8 @@ $first_letter_font_weight    = $attributes['firstLetterFontWeight'] ?? '';
 // --- New peer-parity attrs ---
 
 // Background.
-$background_colour = $attributes['backgroundColour'] ?? '';
+$background_colour          = $attributes['backgroundColour'] ?? '';
+$background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 
 // Box-object interface contract §1/§2: a CSS-length sanitiser for object-attr
 // side/corner values — strips everything except digits, dot, %, and unit
@@ -154,8 +155,9 @@ $box_shadow_hover = $attributes['boxShadowHover'] ?? '';
 
 // Hover state.
 $hover_scale      = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : null;
-$hover_colour     = $attributes['textColourHover'] ?? '';
-$hover_background = $attributes['backgroundColourHover'] ?? '';
+$hover_colour              = $attributes['textColourHover'] ?? '';
+$hover_background          = $attributes['backgroundColourHover'] ?? '';
+$hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
 // Width override.
 $custom_width      = $attributes['customWidth'] ?? '';
@@ -225,8 +227,9 @@ if ( $text_colour ) {
 	$base_decls[] = 'color:' . sgs_colour_value( $text_colour );
 }
 
-if ( $background_colour ) {
-	$base_decls[] = 'background-color:' . sgs_colour_value( $background_colour );
+$background_decl = sgs_background_paint_decl( $background_colour, $background_colour_gradient );
+if ( $background_decl ) {
+	$base_decls[] = $background_decl;
 }
 
 if ( $font_weight ) {
@@ -483,15 +486,16 @@ if ( $drop_cap ) {
 // keyboard-navigation parity (change is not colour-only — scale + shadow
 // provide additional non-colour cue).
 $css_hover = '';
-$has_hover = ( $hover_colour || $hover_background || null !== $hover_scale || $box_shadow_hover );
+$has_hover = ( $hover_colour || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_hover );
 if ( $has_hover ) {
 	$hover_decls = array();
 
 	if ( $hover_colour ) {
 		$hover_decls[] = 'color:' . sgs_colour_value( $hover_colour );
 	}
-	if ( $hover_background ) {
-		$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background );
+	$hover_background_decl = sgs_background_paint_decl( $hover_background, $hover_background_gradient );
+	if ( $hover_background_decl ) {
+		$hover_decls[] = $hover_background_decl;
 	}
 	if ( null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001 ) {
 		$hover_decls[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';

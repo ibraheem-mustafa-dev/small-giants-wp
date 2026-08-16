@@ -65,6 +65,8 @@ $hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 $title_colour        = $attributes['titleColour'] ?? '';
 $subtitle_colour     = $attributes['subtitleColour'] ?? '';
 $hover_bg            = $attributes['backgroundColourHover'] ?? '';
+$hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
+$hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text          = $attributes['textColourHover'] ?? '';
 $hover_border        = $attributes['borderColourHover'] ?? '';
 $transition_dur      = $attributes['transitionDuration'] ?? '300';
@@ -72,7 +74,8 @@ $transition_ease     = $attributes['transitionEasing'] ?? 'ease-in-out';
 $hover_scale         = $attributes['scaleHover'] ?? '';
 $hover_shadow        = $attributes['shadowHover'] ?? '';
 $hover_shadow_colour = $attributes['shadowHoverColour'] ?? '';
-$card_background     = $attributes['cardBackground'] ?? '';
+$card_background          = $attributes['cardBackground'] ?? '';
+$card_background_gradient = $attributes['cardBackgroundGradient'] ?? '';
 $card_border_colour  = $attributes['cardBorderColour'] ?? '';
 $card_border_width   = $attributes['cardBorderWidth'] ?? array();
 $card_radius         = $attributes['cardRadius'] ?? '';
@@ -211,8 +214,16 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // `.sgs-card-grid__item` element at all, so this rule is a harmless no-op
 // there and never leaks into product-card's own styling.
 $card_state_vars = array();
-if ( '' !== $card_background ) {
-	$card_state_vars[] = '--sgs-card-background:' . sgs_colour_value( $card_background ) . ';';
+if ( '' !== $card_background || '' !== $card_background_gradient ) {
+	$card_bg_paint = sgs_background_paint_value( $card_background, $card_background_gradient );
+	if ( 'background-image' === $card_bg_paint['property'] ) {
+		// Higher specificity than style.css's `.sgs-card-grid__item{background:var(...)}`
+		// (this rule is scoped to `{$root_sel} .sgs-card-grid__item`), so a real
+		// `background-image` declaration here always wins regardless of load order.
+		$card_state_vars[] = 'background-image:' . $card_bg_paint['value'] . ';';
+	} elseif ( 'background-color' === $card_bg_paint['property'] ) {
+		$card_state_vars[] = '--sgs-card-background:' . $card_bg_paint['value'] . ';';
+	}
 }
 if ( '' !== $card_border_colour ) {
 	$card_state_vars[] = '--sgs-card-border-color:' . sgs_colour_value( $card_border_colour ) . ';';
@@ -412,6 +423,10 @@ if ( 'wc-product' === $source || 'cpt-collection' === $source ) {
 	);
 	if ( $hover_bg ) {
 		$wc_style_parts[] = '--sgs-hover-bg: var(--wp--preset--color--' . sanitize_key( $hover_bg ) . ')';
+	}
+	$hover_bg_gradient_value = sgs_css_gradient_value( $hover_bg_gradient );
+	if ( '' !== $hover_bg_gradient_value ) {
+		$wc_style_parts[] = '--sgs-hover-bg-image: ' . $hover_bg_gradient_value;
 	}
 	if ( $hover_text ) {
 		$wc_style_parts[] = '--sgs-hover-text: var(--wp--preset--color--' . sanitize_key( $hover_text ) . ')';
@@ -616,6 +631,10 @@ $grid_style_parts = array(
 
 if ( $hover_bg ) {
 	$grid_style_parts[] = '--sgs-hover-bg: var(--wp--preset--color--' . sanitize_key( $hover_bg ) . ')';
+}
+$hover_bg_gradient_value = sgs_css_gradient_value( $hover_bg_gradient );
+if ( '' !== $hover_bg_gradient_value ) {
+	$grid_style_parts[] = '--sgs-hover-bg-image: ' . $hover_bg_gradient_value;
 }
 if ( $hover_text ) {
 	$grid_style_parts[] = '--sgs-hover-text: var(--wp--preset--color--' . sanitize_key( $hover_text ) . ')';
