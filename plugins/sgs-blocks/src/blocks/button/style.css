@@ -10,6 +10,23 @@
  * token  >  framework fallback. Hover is a stylesheet `:hover` rule (inline can
  * never express it). No client brand value or property declaration is inlined —
  * only `--sgs-btn-*` VALUES (Spec 32 FR-32-2/3/4).
+ *
+ * GROUP DEFAULTS (D638 §4, 2026-08-16) — `sgs/multi-button` may set a
+ * `--sgs-mb-btn-<prop>-default` custom property on its own wrapper element (a
+ * `sgs/button` never sets these itself). CSS custom properties inherit
+ * through the DOM, so an unset `--sgs-btn-*` on a child button falls through
+ * to its group's default before reaching the old hardcoded/theme-token
+ * fallback. A preset class (`.sgs-button--primary` etc., below) or a
+ * per-instance colour attr both still WIN outright — they set `--sgs-btn-*`
+ * directly, so the fallback chain never runs for that property on that
+ * button. `border-radius`/`font-size`/`font-weight` have no per-instance
+ * custom property of their own (sgs/button emits those three via a
+ * higher-specificity id-scoped rule instead, selector `.uid.sgs-button` —
+ * see render.php step 4 "Pattern A"), so their group-default var is the ONLY
+ * var() tier: when the button has its own explicit value the id-scoped rule
+ * always wins by specificity regardless of what this base rule reads; when
+ * it does not, this rule's var() resolves the group default (or the
+ * original literal if no group default is set either).
  */
 
 .sgs-button {
@@ -21,13 +38,13 @@
 	justify-content: center;
 	box-sizing: border-box;
 	font-family: inherit;
-	font-weight: 600;
-	font-size: 15px;
+	font-weight: var(--sgs-mb-btn-font-weight-default, 600);
+	font-size: var(--sgs-mb-btn-font-size-default, 15px);
 	line-height: 1.2;
 	padding: 14px 24px;
 	border-width: 2px;
 	border-style: solid;
-	border-radius: 10px;
+	border-radius: var(--sgs-mb-btn-radius-default, 10px);
 	min-height: 48px;
 	text-align: center;
 	text-decoration: none;
@@ -39,10 +56,12 @@
 
 	/* Colour — consumed from the --sgs-btn-* vars a preset class sets (or a
 	   per-instance inline override sets). Neutral fallbacks keep a preset-less
-	   ("custom") button legible. */
-	color: var(--sgs-btn-color, var(--wp--preset--color--text));
-	background-color: var(--sgs-btn-bg, transparent);
-	border-color: var(--sgs-btn-border, transparent);
+	   ("custom") button legible. A group default (sgs/multi-button, D638 §4)
+	   sits BETWEEN the two — reached only when neither a preset nor a
+	   per-instance override has set --sgs-btn-*. */
+	color: var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text)));
+	background-color: var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent));
+	border-color: var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent));
 }
 
 /*
@@ -67,9 +86,9 @@
 .sgs-button:hover,
 .sgs-button:focus-visible {
 	text-decoration: none;
-	color: var(--sgs-btn-color-hover, var(--sgs-btn-color, var(--wp--preset--color--text)));
-	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, transparent));
-	border-color: var(--sgs-btn-border-hover, var(--sgs-btn-border, transparent));
+	color: var(--sgs-btn-color-hover, var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text))));
+	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent)));
+	border-color: var(--sgs-btn-border-hover, var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent)));
 	/* Preset hover transform (FR-33-4 open-bag "transform-lift"): applied from the client's
 	   buttonPresets hover-transform token; `none` fallback = current behaviour when no preset.
 	   A per-instance scaleHover attr emits a higher-specificity `.uid.sgs-button:hover` rule
