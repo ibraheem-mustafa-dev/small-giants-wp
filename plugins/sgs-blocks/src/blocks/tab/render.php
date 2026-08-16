@@ -103,11 +103,11 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$tab_style_engine_args = array();
 
 	$tab_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$tab_color_args['text'] = (string) $attributes['style']['color']['text'];
+	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+		$tab_color_args['text'] = (string) $attributes['textColour'];
 	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$tab_color_args['background'] = (string) $attributes['style']['color']['background'];
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+		$tab_color_args['background'] = (string) $attributes['backgroundColour'];
 	}
 	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
 		$tab_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];

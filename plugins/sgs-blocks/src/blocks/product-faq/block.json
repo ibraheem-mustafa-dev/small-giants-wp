@@ -24,8 +24,8 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
+			"background": false,
+			"text": false,
 			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
@@ -65,8 +65,8 @@
 					"clusters": [ "text", "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:line-height": "native:typography.lineHeight",
 						"css:padding": "native:spacing.padding",
@@ -86,6 +86,14 @@
 		"root": ".wp-block-sgs-product-faq"
 	},
 	"attributes": {
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
 		"heading": {
 			"type": "string",
 			"default": "Frequently Asked Questions",

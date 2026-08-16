@@ -151,8 +151,22 @@ $css .= '}}';
 // stable core style engine (mirrors sgs/label's pattern).
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$mb_color_border = array();
-	if ( isset( $attributes['style']['color'] ) && is_array( $attributes['style']['color'] ) ) {
-		$mb_color_border['color'] = $attributes['style']['color'];
+	// D635-pattern migration: background/text now read from the flat
+	// backgroundColour/textColour attrs (SgsColourPanel), not native
+	// style.color.background/.text (supports.color.background/.text are now
+	// false). Gradient stays native (supports.color.gradients unchanged).
+	$mb_color_args = array();
+	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+		$mb_color_args['text'] = (string) $attributes['textColour'];
+	}
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+		$mb_color_args['background'] = (string) $attributes['backgroundColour'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$mb_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $mb_color_args ) ) {
+		$mb_color_border['color'] = $mb_color_args;
 	}
 	if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
 		$mb_color_border['border'] = $attributes['style']['border'];

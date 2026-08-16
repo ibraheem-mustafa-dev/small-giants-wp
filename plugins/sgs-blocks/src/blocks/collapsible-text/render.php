@@ -116,9 +116,10 @@ $padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attrib
 $margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-// WP `color` support values (skip-serialised — NOT auto-inlined).
-$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+// SGS flat colour attrs (D635 pattern — native color.text/color.background
+// supports are off; the SgsColourPanel writes here instead).
+$style_color_text = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
+$style_color_bg   = isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 

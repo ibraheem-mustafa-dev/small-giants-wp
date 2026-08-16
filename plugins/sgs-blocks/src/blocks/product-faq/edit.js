@@ -31,8 +31,9 @@ import {
 	PanelBody,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
 import { UnitControl } from '../../components/primitives';
+import { colourVar } from '../../utils';
 
 const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'H2', 'sgs-blocks' ), value: 2 },
@@ -71,8 +72,23 @@ function boxShorthand( box, keys ) {
 // (radius/width/style/colour — all skip-serialised so useBlockProps() no
 // longer auto-applies them) + the SGS kept-scalar width family.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth } = attributes;
+	const { style, maxWidth, backgroundColour, textColour } = attributes;
 	const wrapperStyle = {};
+
+	// D635-pattern migration: background/text preview now reads the flat
+	// backgroundColour/textColour attrs (SgsColourPanel) instead of
+	// style.color.background/.text (supports.color.background/.text are now
+	// false). Mirrors sgs/quote's buildWrapperStyle.
+	if ( backgroundColour ) {
+		wrapperStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
+			? backgroundColour
+			: colourVar( backgroundColour );
+	}
+	if ( textColour ) {
+		wrapperStyle.color = /^#|^rgb|^hsl/.test( textColour )
+			? textColour
+			: colourVar( textColour );
+	}
 
 	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
@@ -116,6 +132,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 		maxWidth,
+		backgroundColour,
+		textColour,
 	} = attributes;
 
 	const HeadingTag = `h${ headingLevel }`;
@@ -134,6 +152,43 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D635-pattern migration: native Text/Background colour panel replaced
+			    by flat backgroundColour/textColour attrs surfaced via the shared
+			    SgsColourPanel (matches testimonial-slider/process-steps/quote/
+			    heading/card-grid/text). No hover-colour attrs exist on this block,
+			    so each row has a single 'normal' state only. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'FAQ Settings', 'sgs-blocks' ) }>
 					<SelectControl

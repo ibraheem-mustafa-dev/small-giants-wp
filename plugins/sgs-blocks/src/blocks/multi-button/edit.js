@@ -8,7 +8,7 @@ import {
 import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { ResponsiveOverride, SpacingControl } from '../../components';
+import { ResponsiveOverride, SpacingControl, SgsColourPanel } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -82,6 +82,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		justifyContent,
 		flexWrap,
 		alignItems,
+		backgroundColour,
+		textColour,
 	} = attributes;
 
 	// Only the DESKTOP tier is read here (the editorStyle preview below). The
@@ -129,6 +131,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* D635-pattern migration: native Text/Background colour panel replaced by
+			    flat backgroundColour/textColour attrs surfaced via the shared SgsColourPanel
+			    (matches testimonial-slider/process-steps/quote/heading/card-grid/text).
+			    No hover-colour attrs exist on this block, so each row has a single
+			    'normal' state only. Gradients stay on the native panel (unchanged). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* H6 fix (2026-07-05, STOP-43): kind='content' only (width/contentWidth +
 				    padding/spacing). The block owns its own responsive flex layout

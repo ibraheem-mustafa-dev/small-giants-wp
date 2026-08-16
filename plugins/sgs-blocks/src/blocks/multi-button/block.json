@@ -26,9 +26,9 @@
 		"customClassName": true,
 		"html": false,
 		"color": {
-			"background": true,
+			"background": false,
 			"gradients": true,
-			"text": true,
+			"text": false,
 			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
@@ -56,8 +56,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
@@ -81,6 +81,14 @@
 		}
 	},
 	"attributes": {
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
 		"flexDirection": {
 			"type": "object",
 			"default": {"desktop": "row", "mobile": "column"}

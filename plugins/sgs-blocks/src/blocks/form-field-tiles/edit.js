@@ -9,7 +9,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { IconPicker, IconPreview } from '../../components';
+import { IconPicker, IconPreview, SgsColourPanel } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveResponsiveTier } from '../../utils';
 
@@ -30,6 +30,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		tiles,
 		multiSelect,
 		columns,
+		backgroundColour,
+		textColour,
 	} = attributes;
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — this control only ever edits
@@ -74,6 +76,38 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
 				   ToolsPanel's own "Field settings" title with no
