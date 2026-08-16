@@ -394,19 +394,19 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
 				$bg_attachment = 'scroll';
 			}
-			$overlay_colour  = $attributes['backgroundOverlayColour'] ?? '';
+			$overlay_colour = $attributes['backgroundOverlayColour'] ?? '';
 			// Task 3 (gradient palette-stop rebuild): overlayGradient is now ONE
 			// attribute holding the complete CSS gradient value (any stop count),
 			// validated through sgs_css_gradient_value() at the point of emission
 			// below — replaces the old 4-attr bool/angle/from/to shape, which could
 			// only ever express a straight two-stop gradient.
-			$overlay_gradient = $attributes['overlayGradient'] ?? '';
-			$bg_video               = $attributes['bgVideo'] ?? null;
-			$bg_video_tablet        = $attributes['bgVideoTablet'] ?? null;
-			$bg_video_mobile        = $attributes['bgVideoMobile'] ?? null;
-			$bg_parallax            = ! empty( $attributes['bgParallax'] );
-			$bg_ken_burns           = ! empty( $attributes['bgKenBurns'] );
-			$bg_animation_duration  = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
+			$overlay_gradient      = $attributes['overlayGradient'] ?? '';
+			$bg_video              = $attributes['bgVideo'] ?? null;
+			$bg_video_tablet       = $attributes['bgVideoTablet'] ?? null;
+			$bg_video_mobile       = $attributes['bgVideoMobile'] ?? null;
+			$bg_parallax           = ! empty( $attributes['bgParallax'] );
+			$bg_ken_burns          = ! empty( $attributes['bgKenBurns'] );
+			$bg_animation_duration = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
 
 			$shadow = $attributes['shadow'] ?? '';
 			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
@@ -1335,31 +1335,67 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// it replaced the old scalar px `shapeDividerTopHeight`. X drives
 					// the SVG's internal tiling, Y the wrapper's height; both default
 					// to 100 = the shape's natural, undistorted size.
-					$shape_top_scale            = $attributes['shapeDividerTopScale'] ?? null;
+					$shape_top_scale = $attributes['shapeDividerTopScale'] ?? null;
+
+					// GRADIENT (D636/D643, Builder 5 — corrected to the two-sibling-
+					// attribute storage shape after the coordinator's D643-note
+					// mis-transcription was caught against the live overlay
+					// precedent, `backgroundOverlayColour`/`overlayGradient`):
+					// `shapeDividerTopColour` stays a flat colour, unchanged;
+					// `shapeDividerTopColourGradient` is a SIBLING attribute that
+					// wins when it holds a valid, non-empty gradient — same
+					// resolution order as the overlay pair (~L1285 above).
+					// sgs_css_gradient_value() is the single place that decides
+					// whether the raw value is a safe gradient; a gradient that
+					// fails to parse into any usable SVG stops degrades to the
+					// flat-colour path rather than painting nothing.
+					$shape_top_colour_raw    = $attributes['shapeDividerTopColour'] ?? 'surface';
+					$shape_top_gradient_raw  = $attributes['shapeDividerTopColourGradient'] ?? '';
+					$shape_top_gradient      = sgs_css_gradient_value( $shape_top_gradient_raw );
+					$shape_top_gradient_id   = $shape_top_gradient ? sgs_shape_divider_gradient_id() : '';
+					$shape_top_gradient_defs = $shape_top_gradient
+						? sgs_render_shape_divider_gradient_defs( $shape_top_gradient, $shape_top_gradient_id )
+						: '';
+					$shape_top_uses_gradient = '' !== $shape_top_gradient_defs;
+
 					$shape_top_html             = sgs_render_shape_divider(
 						$shape_top,
 						! empty( $attributes['shapeDividerTopFlip'] ),
 						! empty( $attributes['shapeDividerTopInvert'] ),
 						'top',
-						sgs_shape_divider_axis( $shape_top_scale, 'x' )
+						sgs_shape_divider_axis( $shape_top_scale, 'x' ),
+						$shape_top_uses_gradient ? $shape_top_gradient_defs : '',
+						$shape_top_uses_gradient ? $shape_top_gradient_id : ''
 					);
 					$shape_divider_decls['top'] = sgs_shape_divider_decls(
-						sgs_colour_value( $attributes['shapeDividerTopColour'] ?? 'surface' ),
+						$shape_top_uses_gradient ? '' : sgs_colour_value( $shape_top_colour_raw ),
 						sgs_shape_divider_axis( $shape_top_scale, 'y' )
 					);
 				}
 
 				if ( $shape_bottom ) {
-					$shape_bottom_scale            = $attributes['shapeDividerBottomScale'] ?? null;
+					$shape_bottom_scale = $attributes['shapeDividerBottomScale'] ?? null;
+
+					$shape_bottom_colour_raw    = $attributes['shapeDividerBottomColour'] ?? 'surface';
+					$shape_bottom_gradient_raw  = $attributes['shapeDividerBottomColourGradient'] ?? '';
+					$shape_bottom_gradient      = sgs_css_gradient_value( $shape_bottom_gradient_raw );
+					$shape_bottom_gradient_id   = $shape_bottom_gradient ? sgs_shape_divider_gradient_id() : '';
+					$shape_bottom_gradient_defs = $shape_bottom_gradient
+						? sgs_render_shape_divider_gradient_defs( $shape_bottom_gradient, $shape_bottom_gradient_id )
+						: '';
+					$shape_bottom_uses_gradient = '' !== $shape_bottom_gradient_defs;
+
 					$shape_bottom_html             = sgs_render_shape_divider(
 						$shape_bottom,
 						! empty( $attributes['shapeDividerBottomFlip'] ),
 						! empty( $attributes['shapeDividerBottomInvert'] ),
 						'bottom',
-						sgs_shape_divider_axis( $shape_bottom_scale, 'x' )
+						sgs_shape_divider_axis( $shape_bottom_scale, 'x' ),
+						$shape_bottom_uses_gradient ? $shape_bottom_gradient_defs : '',
+						$shape_bottom_uses_gradient ? $shape_bottom_gradient_id : ''
 					);
 					$shape_divider_decls['bottom'] = sgs_shape_divider_decls(
-						sgs_colour_value( $attributes['shapeDividerBottomColour'] ?? 'surface' ),
+						$shape_bottom_uses_gradient ? '' : sgs_colour_value( $shape_bottom_colour_raw ),
 						sgs_shape_divider_axis( $shape_bottom_scale, 'y' )
 					);
 				}

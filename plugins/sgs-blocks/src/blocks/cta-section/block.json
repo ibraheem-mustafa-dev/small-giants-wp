@@ -407,6 +407,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"shapeDividerTopColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"shapeDividerTopScale": {
 			"type": "object",
 			"default": { "x": 100, "y": 100 }
@@ -424,6 +428,10 @@
 			"default": ""
 		},
 		"shapeDividerBottomColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomColourGradient": {
 			"type": "string",
 			"default": ""
 		},

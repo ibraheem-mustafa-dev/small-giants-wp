@@ -802,6 +802,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"shapeDividerBottomColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"shapeDividerBottomFlip": {
 			"type": "boolean",
 			"default": false
@@ -819,6 +823,10 @@
 			"default": ""
 		},
 		"shapeDividerTopColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopColourGradient": {
 			"type": "string",
 			"default": ""
 		},

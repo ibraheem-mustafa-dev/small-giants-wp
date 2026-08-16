@@ -140,13 +140,29 @@ function sgs_shape_divider_axis( $scale, string $axis ): int {
  * than left as dead parameters. `sgs_render_shape_divider_decls()` builds the
  * matching declarations so the two cannot drift apart.
  *
- * @param string $shape    Shape key.
- * @param bool   $flip     Flip horizontally.
- * @param bool   $invert   Invert vertically (mirror).
- * @param string $position 'top' or 'bottom'.
+ * GRADIENT (D636/D643 gradient rollout, Builder 5): a shape divider's
+ * path paints via `fill="currentColor"`, resolving a CSS `color:` declaration
+ * — and `currentColor` can only ever resolve to ONE flat colour, never a
+ * gradient. There is no CSS-side trick that gets a gradient onto this path.
+ * The only real mechanism is SVG's own native gradient paint: a
+ * `<linearGradient>`/`<radialGradient>` definition plus `fill="url(#id)"` on
+ * the path, replacing the `currentColor` hop entirely. `$gradient_defs`
+ * (pre-built `<linearGradient>…</linearGradient>` markup, from
+ * `sgs_render_shape_divider_gradient_defs()`) and `$gradient_id` are BOTH
+ * empty for the flat-colour path — the caller decides which path applies by
+ * whether the stored attribute value is a gradient CSS string.
+ *
+ * @param string $shape         Shape key.
+ * @param bool   $flip          Flip horizontally.
+ * @param bool   $invert        Invert vertically (mirror).
+ * @param string $position      'top' or 'bottom'.
+ * @param int    $scale_x       X-axis scale percentage.
+ * @param string $gradient_defs Pre-built `<linearGradient>`/`<radialGradient>`
+ *                               markup, or '' for the flat-colour path.
+ * @param string $gradient_id   The id referenced by `$gradient_defs`, or ''.
  * @return string SVG HTML or empty string.
  */
-function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, string $position, int $scale_x = 100 ): string {
+function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, string $position, int $scale_x = 100, string $gradient_defs = '', string $gradient_id = '' ): string {
 	$shapes = sgs_get_shape_dividers();
 
 	if ( ! isset( $shapes[ $shape ] ) ) {
@@ -169,20 +185,33 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 
 	$scale_x = sgs_clamp_shape_divider_scale( $scale_x );
 
-	// ── X = 100%: the original single-path markup, byte-for-byte ──────────────
-	// The default MUST render exactly as it did before this control existed —
-	// a divider whose look shifts merely because the mechanism changed
-	// underneath it would be a regression on every existing page. The <pattern>
-	// wrapper below is therefore reached ONLY when the client has actually
-	// scaled the X axis away from its neutral value.
+	// The gradient path is only reachable when BOTH the defs markup and its
+	// id are present — a caller passing one without the other (shouldn't
+	// happen, but defensive) falls back to the flat-colour mechanism rather
+	// than emitting a `url(#)` that resolves to nothing.
+	$use_gradient = '' !== $gradient_defs && '' !== $gradient_id;
+	$fill_attr    = $use_gradient ? 'url(#' . $gradient_id . ')' : 'currentColor';
+	$defs_markup  = $use_gradient ? '<defs>' . $gradient_defs . '</defs>' : '';
+
+	// ── X = 100%: the original single-path markup, byte-for-byte for the
+	// flat-colour default ─────────────────────────────────────────────────
+	// The flat-colour default MUST render exactly as it did before this
+	// control existed — a divider whose look shifts merely because the
+	// mechanism changed underneath it would be a regression on every
+	// existing page. The <pattern> wrapper below is therefore reached ONLY
+	// when the client has actually scaled the X axis away from its neutral
+	// value.
 	if ( SGS_SHAPE_DIVIDER_VIEWBOX_W === (int) round( SGS_SHAPE_DIVIDER_VIEWBOX_W * $scale_x / 100 ) ) {
 		return sprintf(
 			'<div class="sgs-shape-divider %s" aria-hidden="true">' .
 			'<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' .
-			'<path d="%s" fill="currentColor"%s/>' .
+			'%s' .
+			'<path d="%s" fill="%s"%s/>' .
 			'</svg></div>',
 			$position_class,
+			$defs_markup,
 			esc_attr( $path ),
+			esc_attr( $fill_attr ),
 			$transform
 		);
 	}
@@ -226,20 +255,26 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 	// X=100% route does, so the same shape would jump when the client nudged
 	// the X slider off 100. On the path, both routes share one origin.
 	// Flipping each tile is equivalent to flipping the tiled result.
+	// The gradient def (when present) is nested inside the SAME <defs> block
+	// as the tile <pattern> — both are definitions, order doesn't matter to
+	// the browser, and the path inside the pattern references it exactly the
+	// same way the X=100% path does, one gradient per tile.
 	return sprintf(
 		'<div class="sgs-shape-divider %s" aria-hidden="true">' .
 		'<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' .
-		'<defs><pattern id="%s" x="%d" y="0" width="%d" height="120" patternUnits="userSpaceOnUse">' .
-		'<g transform="scale(%s 1)"><path d="%s" fill="currentColor"%s/></g>' .
+		'<defs>%s<pattern id="%s" x="%d" y="0" width="%d" height="120" patternUnits="userSpaceOnUse">' .
+		'<g transform="scale(%s 1)"><path d="%s" fill="%s"%s/></g>' .
 		'</pattern></defs>' .
 		'<rect x="0" y="0" width="1200" height="120" fill="url(#%s)"/>' .
 		'</svg></div>',
 		$position_class,
+		$defs_markup,
 		esc_attr( $pattern_id ),
 		$origin_x,
 		$tile_w,
 		esc_attr( rtrim( rtrim( number_format( $tile_scale, 6, '.', '' ), '0' ), '.' ) ),
 		esc_attr( $path ),
+		esc_attr( $fill_attr ),
 		$transform,
 		esc_attr( $pattern_id )
 	);
@@ -265,14 +300,314 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
  * CSS property on the wrapper, and is handled inside
  * sgs_render_shape_divider() where the markup is built.
  *
- * @param string $colour  CSS colour value (validated here, as it was inline).
+ * GRADIENT (Builder 5): the caller passes an EMPTY `$colour` for a gradient
+ * divider — `currentColor` cannot resolve to a gradient, so there is nothing
+ * useful to write into `color:` when the path paints via `fill="url(#id)"`
+ * instead. `color:` is now OMITTED entirely rather than emitted empty (which
+ * used to leave a dangling, invalid `color:` with no value).
+ *
+ * @param string $colour  CSS colour value (validated here, as it was inline),
+ *                         or '' when this divider paints a gradient instead.
  * @param int    $scale_y Vertical scale as a percentage of natural height.
- * @return string Declarations without braces, e.g. `height:120px;color:#fff`.
+ * @return string Declarations without braces, e.g. `height:120px;color:#fff`
+ *                or `height:120px` when `$colour` is ''.
  */
 function sgs_shape_divider_decls( string $colour, int $scale_y ): string {
 	$scale_y = sgs_clamp_shape_divider_scale( $scale_y );
 	$height  = (int) round( SGS_SHAPE_DIVIDER_VIEWBOX_H * $scale_y / 100 );
-	return 'height:' . absint( $height ) . 'px;color:' . sgs_sanitise_colour( $colour );
+	$decls   = 'height:' . absint( $height ) . 'px';
+
+	$safe_colour = sgs_sanitise_colour( $colour );
+	if ( '' !== $safe_colour ) {
+		$decls .= ';color:' . $safe_colour;
+	}
+
+	return $decls;
+}
+
+/**
+ * Mint a per-request-unique id for a shape-divider gradient `<defs>` element.
+ *
+ * SVG `id`s are document-global — two block instances on the same page each
+ * using a gradient divider would collide, and the browser resolves
+ * `url(#id)` to whichever gradient def came first, silently miscolouring
+ * the second instance. A static per-request counter guarantees uniqueness
+ * without randomness (deterministic for a given render, so caching is
+ * unaffected) — mirrors the existing per-instance pattern-id counter inside
+ * sgs_render_shape_divider()'s X!=100% tiling branch.
+ *
+ * @return string A unique id, safe for direct use in an `id="…"` attribute.
+ */
+function sgs_shape_divider_gradient_id(): string {
+	static $instance = 0;
+	++$instance;
+	return 'sgs-sd-grad-' . $instance;
+}
+
+/**
+ * Split a comma-separated CSS argument list on TOP-LEVEL commas only —
+ * i.e. commas that are not nested inside a function call's parentheses.
+ * A gradient's colour stops are comma-separated, but a stop's own colour
+ * can itself be a function containing commas (`rgb(0, 0, 0)`,
+ * `var(--a, --b)`), so a naive `explode(',', …)` would shred those in half.
+ *
+ * @param string $value The inner argument list of a gradient function.
+ * @return array<int, string> Trimmed top-level segments.
+ */
+function sgs_split_top_level_commas( string $value ): array {
+	$parts   = array();
+	$depth   = 0;
+	$current = '';
+	$length  = strlen( $value );
+
+	for ( $i = 0; $i < $length; $i++ ) {
+		$char = $value[ $i ];
+		if ( '(' === $char ) {
+			++$depth;
+		} elseif ( ')' === $char ) {
+			--$depth;
+		}
+		if ( ',' === $char && 0 === $depth ) {
+			$parts[] = trim( $current );
+			$current = '';
+			continue;
+		}
+		$current .= $char;
+	}
+	if ( '' !== trim( $current ) ) {
+		$parts[] = trim( $current );
+	}
+
+	return $parts;
+}
+
+/**
+ * Format a float for direct use inside an SVG attribute — trims trailing
+ * zeros/decimal point so `50.0000` becomes `50`, without ever producing an
+ * empty string (a value that rounds to exactly 0 stays `0`, not '').
+ *
+ * @param float $value     The number to format.
+ * @param int   $precision Decimal places before trimming.
+ * @return string A compact numeric string.
+ */
+function sgs_svg_trim_number( float $value, int $precision = 4 ): string {
+	$formatted = rtrim( rtrim( number_format( $value, $precision, '.', '' ), '0' ), '.' );
+	return '' === $formatted ? '0' : $formatted;
+}
+
+/**
+ * Split an `sgs_colour_value()`-resolved colour into its opaque `stop-color`
+ * and a separate `stop-opacity`. SVG's `stop-color` presentation attribute
+ * does not carry alpha the way CSS hex8/rgba() does — some browsers accept
+ * hex8/rgba() there as a CSS-colour-4 extension, but writing the alpha out
+ * explicitly as `stop-opacity` is the SVG-native mechanism and works
+ * everywhere, matching the same alpha the operator picked via the gradient
+ * bar's `enableAlpha` control.
+ *
+ * A `var(--wp--preset--color--…)` token cannot have its alpha inspected at
+ * render time (it resolves in the browser, not in PHP) — it is treated as
+ * fully opaque, same as every other SGS colour consumer treats an unresolved
+ * token.
+ *
+ * @param string $resolved_colour Output of sgs_colour_value() for one stop.
+ * @return array{colour: string, opacity: float} Opaque colour + 0-1 opacity.
+ */
+function sgs_svg_stop_colour_parts( string $resolved_colour ): array {
+	if ( preg_match( '/^#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i', $resolved_colour, $matches ) ) {
+		return array(
+			'colour'  => '#' . $matches[1] . $matches[2] . $matches[3],
+			'opacity' => round( hexdec( $matches[4] ) / 255, 3 ),
+		);
+	}
+	return array(
+		'colour'  => $resolved_colour,
+		'opacity' => 1.0,
+	);
+}
+
+/**
+ * Parse a validated CSS gradient string (output of sgs_css_gradient_value())
+ * into its type/angle/stops, so a shape divider can rebuild it as a native
+ * SVG gradient. Never called on unvalidated input — the caller always
+ * routes the raw attribute through sgs_css_gradient_value() first, which is
+ * the ONE place the security allow-list lives; this function only decides
+ * how to lay a value it already trusts out as SVG stops.
+ *
+ * @param string $gradient A gradient string already passed by sgs_css_gradient_value().
+ * @return array{type: string, angle: ?float, stops: array<int, array{colour: string, position: ?float}>}
+ *         Empty 'stops' when parsing fails (caller degrades to flat colour).
+ */
+function sgs_parse_gradient_stops( string $gradient ): array {
+	$empty = array(
+		'type'  => '',
+		'angle' => null,
+		'stops' => array(),
+	);
+
+	if ( ! preg_match( '/^(?:repeating-)?(linear|radial|conic)-gradient\((.+)\)$/is', $gradient, $outer ) ) {
+		return $empty;
+	}
+
+	$type  = $outer[1];
+	$parts = sgs_split_top_level_commas( $outer[2] );
+
+	if ( empty( $parts ) ) {
+		return $empty;
+	}
+
+	// The first segment MAY be an angle/direction/shape descriptor rather
+	// than a colour stop (`180deg`, `to right`, `circle at center`, …) —
+	// detect and strip it before treating every remaining segment as a stop.
+	$angle                 = null;
+	$first                 = $parts[0];
+	$is_leading_descriptor = (bool) preg_match( '/^-?[\d.]+(deg|turn|rad|grad)$/i', $first )
+		|| 0 === stripos( $first, 'to ' )
+		|| 0 === stripos( $first, 'circle' )
+		|| 0 === stripos( $first, 'ellipse' )
+		|| 0 === stripos( $first, 'closest-' )
+		|| 0 === stripos( $first, 'farthest-' )
+		|| 0 === stripos( $first, 'from ' )
+		|| 0 === stripos( $first, 'at ' );
+
+	if ( $is_leading_descriptor ) {
+		if ( preg_match( '/^(-?[\d.]+)deg$/i', $first, $angle_match ) ) {
+			$angle = (float) $angle_match[1];
+		} elseif ( preg_match( '/^(-?[\d.]+)turn$/i', $first, $turn_match ) ) {
+			$angle = ( (float) $turn_match[1] ) * 360;
+		}
+		array_shift( $parts );
+	}
+
+	if ( empty( $parts ) ) {
+		return $empty;
+	}
+
+	$stops = array();
+	foreach ( $parts as $part ) {
+		// A stop is "<colour>" or "<colour> <position%>" — the position, when
+		// present, is always the trailing percentage token.
+		if ( preg_match( '/^(.*\S)\s+(-?[\d.]+)%$/', $part, $stop_match ) ) {
+			$colour_raw = $stop_match[1];
+			$position   = (float) $stop_match[2];
+		} else {
+			$colour_raw = $part;
+			$position   = null;
+		}
+
+		$resolved = sgs_colour_value( trim( $colour_raw ) );
+		if ( '' === $resolved ) {
+			continue;
+		}
+
+		$stops[] = array(
+			'colour'   => $resolved,
+			'position' => $position,
+		);
+	}
+
+	if ( empty( $stops ) ) {
+		return $empty;
+	}
+
+	// Fill in missing positions using CSS's own default distribution: first
+	// defaults to 0%, last to 100%, and any gap between two known positions
+	// is spread evenly across the stops sitting between them.
+	$last_index = count( $stops ) - 1;
+	if ( null === $stops[0]['position'] ) {
+		$stops[0]['position'] = 0.0;
+	}
+	if ( null === $stops[ $last_index ]['position'] ) {
+		$stops[ $last_index ]['position'] = 100.0;
+	}
+	for ( $i = 0; $i <= $last_index; $i++ ) {
+		if ( null !== $stops[ $i ]['position'] ) {
+			continue;
+		}
+		$next_index = $i + 1;
+		while ( null === $stops[ $next_index ]['position'] ) {
+			++$next_index;
+		}
+		$prev_position           = $stops[ $i - 1 ]['position'];
+		$next_position           = $stops[ $next_index ]['position'];
+		$span                    = $next_index - ( $i - 1 );
+		$stops[ $i ]['position'] = $prev_position + ( $next_position - $prev_position ) * ( $i - ( $i - 1 ) ) / $span;
+	}
+
+	return array(
+		'type'  => $type,
+		'angle' => $angle,
+		'stops' => $stops,
+	);
+}
+
+/**
+ * Build the SVG `<linearGradient>`/`<radialGradient>` definition markup for
+ * one shape-divider gradient, ready to be nested inside a `<defs>` block.
+ *
+ * `radial` gradients map directly to SVG's native `<radialGradient>`.
+ * `linear` gradients are converted from the CSS angle convention (0deg =
+ * pointing up, increasing clockwise) to SVG's x1/y1/x2/y2 on a unit square
+ * via the standard CSS→SVG gradient-angle formula. `conic` has no native SVG
+ * primitive — SVG cannot express an angular sweep as a paint server — so it
+ * degrades to the SAME linear treatment using whichever angle the author
+ * supplied (or the CSS default). This is a visible, honest approximation,
+ * not a silent flat-colour drop: every stop's colour still renders, just
+ * swept linearly instead of angularly. Recorded as an accepted limitation
+ * (mirrors D643's own precedent of admitting a capability gap rather than
+ * inventing an unproven algorithm for a mechanism SVG cannot express).
+ *
+ * @param string $gradient    A validated gradient string (sgs_css_gradient_value() output).
+ * @param string $gradient_id The id this definition will be referenced by.
+ * @return string `<linearGradient>…</linearGradient>` / `<radialGradient>…</radialGradient>`
+ *                markup, or '' when the gradient could not be parsed into any usable stops.
+ */
+function sgs_render_shape_divider_gradient_defs( string $gradient, string $gradient_id ): string {
+	$parsed = sgs_parse_gradient_stops( $gradient );
+
+	if ( empty( $parsed['stops'] ) ) {
+		return '';
+	}
+
+	$stop_markup = '';
+	foreach ( $parsed['stops'] as $stop ) {
+		$parts        = sgs_svg_stop_colour_parts( $stop['colour'] );
+		$stop_markup .= sprintf(
+			'<stop offset="%s%%" stop-color="%s" stop-opacity="%s"/>',
+			esc_attr( sgs_svg_trim_number( (float) $stop['position'] ) ),
+			esc_attr( $parts['colour'] ),
+			esc_attr( sgs_svg_trim_number( $parts['opacity'], 3 ) )
+		);
+	}
+
+	if ( '' === $stop_markup ) {
+		return '';
+	}
+
+	if ( 'radial' === $parsed['type'] ) {
+		return sprintf(
+			'<radialGradient id="%s" cx="50%%" cy="50%%" r="75%%">%s</radialGradient>',
+			esc_attr( $gradient_id ),
+			$stop_markup
+		);
+	}
+
+	// linear (and conic, degraded — see docblock above).
+	$angle = $parsed['angle'] ?? 180.0; // CSS default for an angle-less linear-gradient: "to bottom".
+	$rad   = deg2rad( $angle );
+	$x2    = 0.5 + sin( $rad ) * 0.5;
+	$y2    = 0.5 - cos( $rad ) * 0.5;
+	$x1    = 1 - $x2;
+	$y1    = 1 - $y2;
+
+	return sprintf(
+		'<linearGradient id="%s" x1="%s" y1="%s" x2="%s" y2="%s">%s</linearGradient>',
+		esc_attr( $gradient_id ),
+		esc_attr( sgs_svg_trim_number( $x1 ) ),
+		esc_attr( sgs_svg_trim_number( $y1 ) ),
+		esc_attr( sgs_svg_trim_number( $x2 ) ),
+		esc_attr( sgs_svg_trim_number( $y2 ) ),
+		$stop_markup
+	);
 }
 
 /**
