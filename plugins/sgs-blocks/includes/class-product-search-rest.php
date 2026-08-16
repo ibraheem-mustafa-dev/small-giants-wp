@@ -454,7 +454,7 @@ final class Product_Search_REST {
 				'title'      => \wp_strip_all_tags( \html_entity_decode( \get_the_title( $id ), ENT_QUOTES, 'UTF-8' ) ),
 				'permalink'  => \get_permalink( $id ),
 				'thumbnail'  => (string) $thumbnail,
-				'price_html' => \wp_kses_post( \wc_get_price_html( $product ) ),
+				'price_html' => \wp_kses_post( $product->get_price_html() ),
 				'on_sale'    => (bool) $product->is_on_sale(),
 				// is_in_stock() — NEVER is_purchasable(), which lies for OOS
 				// (mirrors the documented convention in class-product-manifest.php).
