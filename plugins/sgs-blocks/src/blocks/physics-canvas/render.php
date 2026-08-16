@@ -122,19 +122,29 @@ if ( ! empty( $sgs_ps_supports_classes ) ) {
 	$sgs_ps_wrapper_opts['extra_classes'] = $sgs_ps_supports_classes;
 }
 
-// 'section' kind — matches block.json's declared containerKind: 'section'
-// (composite-mirror rule, D152). NOT 'content': this block never renders its
-// own background-image/video/SVG/shape-divider attributes, so the extra
-// layers 'section' kind can address simply never activate — but the kind
-// argument must still agree with the declared containerKind or a future
-// capability added to the wrapper (padding/gap/contentWidth on THIS layer)
-// would silently be unreachable here while every other section-kind
-// composite gets it for free.
+// Migrated to SGS_Container_Wrapper::resolve_kind() 2026-08-16 (D626/D633
+// step 6, Phase B, second pass) after 2113eeb6 fixed the helper. An earlier
+// version of resolve_kind() narrowed this block's kind from 'section' to
+// 'content' (its enabledExtensions is ['background'] only — no
+// 'shapeDividers'/'gridItems'/'layout'), which would have been a genuine
+// interaction-risk regression: class-sgs-container-wrapper.php's
+// $is_section gate (L853) controls the BASE desktop min-height entirely, and
+// this block's minHeight (480px desktop/320px mobile) IS the throw arena's
+// rendered box height that view.js reads as Draggable's bounds and the
+// Physics2D floor/wall geometry — narrowing would have silently collapsed
+// the arena. Caught before shipping, reported, and fixed at the source —
+// resolve_kind() no longer narrows away from $fallback at all; it is a
+// pass-through today (real per-capability narrowing is step 7 scope).
+// Re-verified directly against the merged fix before wiring this in: every
+// code path in resolve_kind() returns $fallback unconditionally, so this
+// call is behaviourally identical to the literal 'section' it replaces —
+// minHeight/vertical-align-centring/band-padding all keep rendering exactly
+// as before.
 $sgs_ps_output = SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$content,
-	'section',
+	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	$sgs_ps_wrapper_opts
 );
 

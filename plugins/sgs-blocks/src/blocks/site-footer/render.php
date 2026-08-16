@@ -141,11 +141,23 @@ if ( '' !== $css ) {
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
+// Migrated to SGS_Container_Wrapper::resolve_kind() 2026-08-16 (D626/D633
+// step 6, Phase B, second pass) after 2113eeb6 fixed the helper: an earlier
+// version of resolve_kind() narrowed unmigrated-looking blocks (enabledExtensions
+// without shapeDividers/gridItems/layout) to kind='content', which would have
+// silently dropped this block's live minHeight + contentBandPadding
+// tablet/mobile controls ($is_section-gated in render() below). Caught before
+// shipping (see this file's git history), reported, and fixed at the source —
+// resolve_kind() no longer narrows away from $fallback at all; it is a
+// pass-through today (real per-capability narrowing is step 7 scope). Verified
+// directly against the merged fix before wiring this in: every code path in
+// resolve_kind() returns $fallback unconditionally, so this call is
+// behaviourally identical to the literal 'section' it replaces.
 echo SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$content,
-	'section',
+	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
 		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'footer',
 		'extra_classes' => $classes,

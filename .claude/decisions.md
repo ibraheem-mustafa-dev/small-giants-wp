@@ -1,8 +1,8 @@
 # small-giants-wp — Architectural Decisions Log
 
-## D639 — Stage 1 colour-gap streams shipped; live QC on the real canary caught 2 production bugs neither build nor merge would have found [INCIDENT]
+## D641 — Stage 1 colour-gap streams shipped; live QC on the real canary caught 2 production bugs neither build nor merge would have found [INCIDENT]
 
-**2026-08-16.** All 4 D638 streams built (isolated worktrees, `/delegate`-routed: A/B Sonnet,
+**2026-08-16.** All 4 D640 streams built (isolated worktrees, `/delegate`-routed: A/B Sonnet,
 C/D Haiku), merged cleanly (zero conflicts — confirms the plan's disjoint-file analysis), full
 ~50-gate build green. Deployed to sandybrown for the plan's mandatory live-canary check
 (multi-button + product-search, real clicks) — this is what found the two bugs below; neither
@@ -31,7 +31,7 @@ redeploying. (b) `ownership` gate refused: the canary was running `integrate/wra
 done being checked live; deployed with `--takeover`.
 
 **3. Live click-through (not DOM assertions) found a real cross-cutting product-search bug.**
-The 5 D638 colour custom-properties (`--sgs-ps-*`) are declared in a scoped rule keyed on
+The 5 D640 colour custom-properties (`--sgs-ps-*`) are declared in a scoped rule keyed on
 `.{uid}.wp-block-sgs-product-search`. `view.js` reparents the `full-screen-overlay` /
 `command-palette` `<dialog>` to `<body>` on open (`isInsideComponent()` containment) — which
 removes it from being a DOM descendant of that wrapper. CSS custom properties only inherit
@@ -74,13 +74,13 @@ trustworthy as a hard gate on day one; run standalone for a few weeks, trim the 
 functions get promoted into the curated allowlist, decide on `prebuild` wiring with Bean once it's
 proven quiet on a clean codebase.
 
-**What actually shipped vs D638's plan:** all 4 streams shipped their full scope (A1+A2, B's 4
-parts, C, D) — no D638 ruling turned out wrong in practice. The rulings held; what the plan didn't
+**What actually shipped vs D640's plan:** all 4 streams shipped their full scope (A1+A2, B's 4
+parts, C, D) — no D640 ruling turned out wrong in practice. The rulings held; what the plan didn't
 anticipate was that build-gate-green code can still fail on first live contact, which is precisely
 why the plan's own live-canary-verification step existed. Every fix above was found via that step
 or by Bean's own live testing, not by any of the ~50 static gates.
 
-## D638 — Colour-gap council: buybox/mega-group cleared, multi-button group-defaults scoped, search blocks sequenced BEFORE the gradient rollout [ROUTINE]
+## D640 — Colour-gap council: buybox/mega-group cleared, multi-button group-defaults scoped, search blocks sequenced BEFORE the gradient rollout [ROUTINE]
 
 **2026-08-16.** 6-seat design council (buybox/mega-group code re-investigation · S-tier search/filter
 prior-art · search/filter SGS build-fit · multi-button group-default prior-art · multi-button SGS
@@ -163,6 +163,127 @@ and `view.js:328-340` already has a dead `result.price` branch waiting for it. M
 rollout.** Any colour attribute added now falls into the background-family bucket and receives
 gradient automatically in the universal pass. Added after, each needs its own separate gradient
 retrofit. Cheaper in that order, and the dependency is real, not cosmetic.
+
+## D638 — Wrapper decomposition step 6 (background pilot) CLOSED: build + live verification + multi-rater review [ROUTINE]
+
+**2026-08-16.** Phase D (verification/close-out) of `~/.claude/plans/go-read-the-track-encapsulated-hare.md`,
+run in the isolated worktree `C:\Users\Bean\Projects\swp-wrapper-integrate` (branch
+`integrate/wrapper-step6`) after Phase A (shared mechanism, merged to `main` ahead of this
+session per plan §1.4 sequencing — `f1b467f5`/`2113eeb6`), Phase B (3 parallel per-block
+worktrees, sequentially merged), and Phase C (D637, step 7 gate design) all landed.
+
+**What shipped (verified against source, not summary):** `background` is a real opt-in
+extension via the existing `enabledExtensions` mechanism (D579/PR#25 shape, no new
+mechanism) on all 7 direct-panel blocks — `container`, `cta-section`, `trust-bar`, `hero`,
+`site-header`, `site-footer`, and **`physics-canvas`** (genuinely new capability; it had
+none before). Every block's `render.php` calls
+`SGS_Container_Wrapper::resolve_kind($block, 'section')` instead of a hardcoded `'section'`
+literal — confirmed via grep across all 7 files, zero remaining unconditional literals.
+
+**The real bug found and fixed mid-build (worth recording precisely, per this project's
+own reason `decisions.md` exists):** an earlier version of `resolve_kind()` narrowed a
+block's `$kind` from `'section'` to `'content'` whenever the block's declared
+`enabledExtensions` didn't include `'shapeDividers'`/`'gridItems'` — on the false
+assumption that `$kind` tracks which optional panels a block has. That's wrong: all 7
+direct-panel blocks are structurally `'section'`-kind regardless of which optional panels
+they enable, and `$is_section` in `SGS_Container_Wrapper::render()` also gates min-height
+and content-band padding — capabilities that have nothing to do with shapeDividers/
+gridItems. Narrowing `site-header`/`site-footer` (width+background only) to `'content'`
+would have silently killed their min-height and band padding; for `physics-canvas`
+specifically the consequence is more severe than cosmetic — its `minHeight` IS the throw
+arena's rendered box height that `view.js` reads as the Draggable bounds and Physics2D
+floor/wall geometry, so the same narrowing would have collapsed the interactive arena's
+collision geometry. Found independently by two build agents (Phase B agents 2 and 3, both
+building against the same shared file before either had merged), fixed at the source
+(`resolve_kind()` now returns `$fallback` unconditionally — a safe no-op passthrough, not
+a per-block workaround) rather than worked around per-block. Commit `2113eeb6`.
+
+**Live verification (sandybrown canary, Playwright, both editor and frontend, both
+default/unset and value-set states):**
+- `sgs/container` — Background panel renders in the block's **Settings** tab (not Styles
+  — a real, minor discrepancy against D626's own placement table, noted below, not fixed
+  here as it's a pre-existing placement question outside step 6's scope of gating
+  visibility). Set a background image via the real media library picker (not a stub);
+  frontend confirms it paints via a `::before` pseudo-element
+  (`background-image:url(...)`, `position:absolute`, `z-index:-1`) per the block's Spec 32
+  no-inline-style contract — zero inline `style` attribute on the rendered `<section>`.
+  Default/unset state independently confirmed clean (no `has-bg-image` class, `none`) on
+  5 other live container instances on the same page (header-icons row, 2× footer link
+  columns, footer brand) with no cross-instance leakage.
+- `sgs/hero` — Background panel renders in the **Styles** tab under a "Container / Entire
+  Block" group (matches D626's table). Set + confirmed painting the same way.
+- `sgs/physics-canvas` — (a) Background panel now appears in Settings where it did not
+  exist before (confirmed via a before/after heading-list read of the inspector); (b) set
+  an image, frontend confirms it paints via the same `::before` mechanism; (c) confirmed
+  via computed style — not simulated drag — that the background layer cannot intercept
+  pointer events on any throwable content: `::before` is `position:absolute`,
+  `z-index:-1`, `pointer-events:none`, while the content layer (`.sgs-container__inner`)
+  is `position:relative`, `z-index:1`. This is architectural proof the layering is safe
+  regardless of what's inside; a live drag-and-drop simulation was not additionally run
+  (scope call, not a gap — the z-index/pointer-events proof is the load-bearing fact a
+  drag test would also be reducible to). Console showed one pre-existing, unrelated error
+  (`@sgs/gsap-draggable` module-resolution failure) traced to `render.php`'s existing
+  `trim($content) !== ''` gate on the motion-registry enqueue — this instance had no
+  decorative children, so the gate correctly skipped registering the import-map entry
+  while `view.js`'s own `viewScriptModule` still unconditionally imports it; not a
+  regression from this diff (verified: this code path is untouched by any step 6 commit).
+- `sgs/site-footer` (the resolve_kind bug-fix regression guard) — built a positive
+  control: a fresh site-footer instance with `minHeight:{desktop:'400px'}` and
+  `contentBandPadding:{desktop:{top/right/bottom/left:'80px'}}` set explicitly via
+  `wp.data`. Frontend confirms `min-height:400px` and inner `padding:80px` land exactly as
+  set — proving the fix holds (the pre-fix narrowing would have silently dropped both). A
+  second, real theme footer instance on the same page correctly shows the unset default
+  (`0px`), confirming no cross-instance leakage. Site-header shares the identical PHP
+  mechanism (`class-sgs-container-wrapper.php`'s `resolve_kind()`/`$is_section` gate) so
+  this same proof covers it; a separate header-specific instance was not additionally
+  built.
+- Scratch verification page (id 2453) created, exercised, then deleted (force-delete via
+  REST) — nothing left on the canary from this verification pass.
+
+**Multi-rater review (Bean's standing instruction, §2.2) — two parallel lenses dispatched
+against `git diff origin/main...HEAD`, both returned:**
+1. **Mechanism-fidelity + regression-safety lens** — verified `resolve_kind()`'s full
+   function body genuinely returns `$fallback` unconditionally on every path (no residual
+   narrowing), and confirmed the same-commit rule was followed per block. **One real
+   finding, doc-only:** `class-sgs-container-wrapper.php`'s `resolve_kind()` docblock
+   still said (from when Phase A wrote it) "NOT wired into any render.php by this
+   commit... every one of the 7 blocks still passes the literal `'section'` string,
+   unchanged" — true when written, false once Phase B landed. Zero runtime risk
+   (`resolve_kind()` is inert either way), but a real doc-accuracy bug. Fixed in this same
+   close-out, commit `dd750633`.
+2. **DB-first + composite-mirror + universality lens** — PASS on all three checks: no new
+   hardcoded lookup dicts introduced (the mechanism is `enabledExtensions` — an existing,
+   sanctioned block.json array, not a new dict-shaped mechanism); the `background`
+   attribute set (`backgroundImage`/`backgroundImageTablet`/`Mobile`,
+   `backgroundOverlayColour`, position/repeat/size/attachment, `bgKenBurns`/`bgParallax`,
+   `overlayGradient*`, `bgSvg*`×7, `bgVideo*`) is byte-identical in shape across all 7
+   blocks — no block invented a divergent name for the same concept; physics-canvas's
+   `resolve_kind()` migration is already complete in this diff, no stale non-migration
+   found (this check's premise was already resolved by the time the lens ran).
+
+**Residual, disclosed not buried (per Bean's standing instruction on honest gaps):**
+Phase C's own review (D637) got only 1 of 2 dispatched lenses back — the second hung
+~28 minutes with zero output and was treated as a hung dispatch, not a pass. That gap is
+on the STEP 7 GATE DESIGN (gridItems/layout precondition, gridAreas flag, ScaleAxisControl
+shape) — a design surface this session (Phase D) did not touch or re-review. It remains
+open against step 7's build, not against anything shipped in step 6. Also disclosed, not
+fixed here (out of step 6's scope): `sgs/container`'s Background panel sits in Settings
+while `sgs/hero`'s sits in Styles — a real placement inconsistency against D626's own
+table, worth a design-gate question before step 7, not a step-6 defect.
+
+**Build/tree:** `npm run build` exit 0 both before and after the docblock fix (motion
+bundle budget gate PASSED, no baseline drift). `git status` clean of any unintended
+mutation both times — one harmless CRLF-only diff on
+`scripts/consistency/roster.json` (0-line content diff, git line-ending normalisation
+artefact) was reverted via `git checkout --` rather than committed, twice.
+
+**Merge:** fast-forwarded `integrate/wrapper-step6` onto `main` (23 commits, no divergent
+`main`-side commits since this branch forked — verified via `git fetch origin main` +
+`git log --oneline origin/main..HEAD`/`HEAD..origin/main` before merging) and pushed.
+
+**Wrapper decomposition: step 6 of 7 CLOSED.** Step 7 (remaining capabilities, shape
+dividers last) is next, gated on the step 7 design (D637) getting its missing second
+review lens before build starts.
 
 ## D637 — Step 7 gate design locked: gridItems/layout precondition, gridAreas flag completion, ScaleAxisControl [ROUTINE]
 
@@ -250,65 +371,118 @@ before step 7 build starts is the honest residual, not a blocker to recording th
 **Output:** written to `decisions.md` (this entry) + `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
 new §F.2. No code changed this session — feeds step 7's build directly.
 
-## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
+**Addendum (2026-08-16, later same session) — the missing second lens ran, plus an independent
+adversarial fact-check. Design #3 downgraded to NEEDS REVISION; three small corrections folded in.**
 
-**2026-08-16.** LEDGER Stream 2 item 2b ("custom gradient bar, per-stop palette linking") was
-scoped, mid-build, from 9 attribute families on 6 blocks to a framework-wide capability: every
-qualifying colour attribute across all ~49 blocks gains a gradient alternative, not just the
-legacy "overlay" background controls. Two decisions land here — the scope, and the storage shape.
+Two fresh review lenses ran against this entry + Spec 35 §F.2: (a) the universality/client-UX lens
+that hung the first time, re-dispatched; (b) an independent adversarial confirmation pass that
+re-derived every factual claim from source rather than trusting either this entry or lens (a).
 
-**Spike (decisive, not assumed):** `gradient-parser` (npm, zero runtime deps) round-trips
-`var(--wp--preset--color--x)` gradient stops cleanly in every position tested (linear, radial,
-mixed with `rgba()`), and its `stringify()` output passes the existing
-`sgs_css_gradient_value()` PHP validator (`helpers-tokens.php:736`) unchanged. Added as a
-dependency; no hand-written parser needed.
+**Design #1 (gridItems/layout gate) — CONFIRMED sound**, both lenses. One precision correction: the
+entry cited `check-shared-panel-schema.js`/`check-box-family-guard.py` as "the same family" without
+noting they differ in a load-bearing way — `check-shared-panel-schema.js` has no baseline mechanism
+(every finding is a real bug, always); `check-box-family-guard.py` is baseline-gated (hash-locked,
+`--update-baseline`) because it was retrofitted onto pre-existing violations. The new gate correctly
+follows the no-baseline shape (zero current `gridItems`-without-`layout` violations exist, confirmed
+live), but the entry should say *why* it picked that sub-shape, not just cite both as precedent.
 
-**Storage (unchanged from the earlier 2026-08-14 qc-council finding, re-confirmed):** ONE string
-attribute per colour row holding the complete CSS gradient value, non-empty wins over the flat
-colour — not a structured object. `sgs_css_gradient_value()` already existed with zero call
-sites and already admits `var()` stops. Kadence stores gradients as a structured tuple instead;
-noted as a real dissent, not adopted — Kadence's reason (server-side PHP recompute of hover
-variants) doesn't apply here, and SGS's shape matches Spectra's per-state sibling-string model
-more closely, plus the cloning converter already parses draft CSS strings and would need a new
-extractor for an object shape.
+**Design #2 (gridAreas completion) — CONFIRMED sound, both lenses, with two corrections:**
+- The line reference was imprecise — `sgs/hero/block.json`'s `gridAreas` array starts at line 51,
+  not lines 46-49 (the earlier grep miscounted by a few lines; the claim itself — real, correctly-shaped
+  data, zero readers — was right).
+- **The DB-column analogy is off by one precedent.** `grid_areas` needs to store a JSON *array*
+  (`["content","media"]`); the entry likened it to `container_kind`, which is a scalar `TEXT CHECK`
+  enum column — the wrong shape to compare against. The accurate sibling, confirmed in the same
+  table, is `accepts_allowed_blocks` (`seed-composition-roles.py:334-336`) — an unconstrained JSON-text
+  array column with no DB-level `CHECK`. Still buildable, still low-risk, just weaker integrity
+  guarantee than "sibling to `container_kind`" implied. Fix the citation before build, not a redesign.
+- **New gap, found by the confirmation lens, not in the original design:** the regression guard
+  described in Design #2 ("any block declaring `gridAreas` must have ≥1 live reader") is only
+  checkable against the **post-migration** direct-import architecture (each block's own `edit.js`
+  importing its own `./block.json`). Under the CURRENT aggregator architecture, `<GridAreaPanel>` is
+  reached generically through `KIND_PANELS.section`, never per-block — so a naive
+  "grep `<GridAreaPanel>` in `<slug>/edit.js`" guard would false-negative against today's tree (hero
+  doesn't import it and never will under the current shape). Spec 35 §F.2.2 needs an explicit note
+  that the regression guard's `--check` mode targets the shape AFTER this design's editor-layer
+  change lands, and needs scoping/disabling for the gap window before that, or it ships broken on
+  day one.
 
-**Scope — settled via a 4-seat design council** (competitor prior-art / CSS-mechanism
-unification / SGS architecture fit / devil's-advocate cost-benefit), then **overridden by Bean
-toward full universal coverage** after the council's own findings were presented. Council found:
-gradient is legal directly on `background`-family CSS properties only; TEXT needs
-`background-clip:text` (different DOM/CSS mechanism, real caveat: `text-shadow` breaks under
-`color:transparent`); BORDER needs a masked pseudo-element (`border-image` cannot respect
-`border-radius` — confirmed via MDN, not assumed) since no competitor found (Kadence, Spectra,
-Elementor, GenerateBlocks, Divi 5) ships gradient border natively, third-party add-ons only.
-Council's own recommendation was to scope text to 2 attributes (heading/hero headline) and defer
-border entirely, citing accessibility (gradient text defeats single-value contrast tooling) and
-3x QC-surface cost. **Bean's ruling: build all three anyway — "if we cover all we give full
-options and it's less effort because we can blanket add the functionality globally."** Overrides
-the council's cost/value recommendation; the accessibility and QC-surface costs the council
-flagged are accepted, not resolved — noted here so they aren't silently forgotten.
+**Design #3 (`ScaleAxisControl`) — DOWNGRADED to NEEDS REVISION. Not locked. Do not build as
+currently specced without a decision from Bean.** The universality/client-UX lens's core finding:
+the link/unlink X/Y percentage shape was decided unilaterally, with **no competitor research**
+(confirmed: this codebase's own D636 ran a 4-seat competitor council — Kadence/Spectra/Elementor —
+before deciding an analogous gradient-control shape; Design #3 did not do the equivalent for shape
+dividers), and the **X-axis's actual render behaviour is unspecified** (does scaling X stretch the
+SVG horizontally, tile it, or clip it past 100%? — undefined, and you cannot judge a control's
+client-simplicity without knowing what it visually does). Recommended alternative to weigh, not a
+final answer: two independently-labelled sliders ("Divider height" / "Divider width") instead of a
+BoxControl-style link/unlink toggle — "linking" is a natural concept for 4 equal sides, less natural
+for a 2D shape stretch with only 2 axes. The Option A/B *storage* fork (replace vs add-alongside) is
+NOT in question — both lenses agreed Option A (clean replace) is right, given the no-deprecations
+policy. What's unresolved is the *control shape* on top of that storage decision.
 
-**Architecture (from the council's SGS-fit seat, real code read, not theorised):** the smallest
-path to universal coverage is NOT a bespoke component — fold the Solid/Gradient toggle
-`GradientOverlayControl.js` already built into `DesignTokenPicker.js` + `SgsColourPanel.js`
-behind a `gradientCapable`/`attrNames` opt-in prop, reusing the existing state-tab/popover
-composition 46 of 49 blocks already route through. Reaches every block's colour rows without a
-per-block edit.js rewrite — one object-literal opt-in per colour attribute that gains gradient,
-plus that attribute's 4-scalar family collapsing to 1 string family in its block.json (same
-shape as this session's storage-layer commit).
+**Migration due-diligence gap (both lenses independently flagged the same thing):** the entry's
+"no live client content to preserve" claim rests entirely on the D293/D270 policy and was never
+checked against the actual canary — unlike its own sibling entry D635, which explicitly grepped
+canary post content for the old attribute before claiming a clean replace was safe. Before Design #3
+builds (in whatever final shape), run the same one-line check D635 ran: confirm no sandybrown page
+has a non-default `shapeDividerTopHeight`/`shapeDividerBottomHeight` set, and record the result here
+or in the step-7 build's own commit.
 
-**Shipped so far (checkpoint, `feat/gradient-palette-stops` branch, not `main`):** commit
-`837f7c97` collapses the 9 pre-existing "overlay" gradient families (container/cta-section/
-site-header/site-footer/trust-bar/hero) to the new 1-string shape, storage + render only — the
-editor picker is intentionally non-functional until the DesignTokenPicker rewrite lands (next
-commits). Visual-diff gate scoped-bypassed for this checkpoint (6 blocks,
-`SGS_VISUAL_GATE_SKIP`) — legitimate because every default is empty and no stored content has
-ever set a non-default value on these attrs, so rendered output for all existing pages is
-byte-identical; a real live-diff capture belongs at the end of the full build, not this
-intermediate step.
+**Net effect on step 7's build order:** Designs #1 and #2 are locked and buildable as specced (with
+the three corrections above folded in). Design #3 needs a follow-up design gate — Bean picks a
+control shape (or confirms the link/unlink one after seeing the concern) — before its build starts.
+This is not a blocker to starting step 7 on #1/#2's build track in parallel.
 
-**Next:** 3 parallel builders (background / text / border), each implementing their CSS
-mechanism + the DesignTokenPicker/SgsColourPanel opt-in wiring for their property family across
-every qualifying block, per the architecture above. QC after each lands.
+**Second addendum (2026-08-16, later same session) — Design #3's render behaviour + migration gap
+both RULED by Bean, control-shape question still open.**
+
+- **Migration due-diligence gap CLOSED by ruling, not a check.** Bean confirmed directly: "there is
+  nothing to preserve" on the live canary. The D635-style content grep this addendum flagged as a
+  gap is not needed — skip it, ship the clean replace.
+- **X/Y render behaviour RULED, closing the other half of the review lens's finding.** 100% = the
+  shape's natural undistorted size on both axes. **Y anchors to the edge the divider is attached to**
+  (top divider's top edge; bottom divider's bottom edge) and extends OUTWARD ONLY — never grows back
+  into the section. **X anchors from the block's horizontal CENTRE**, scaling symmetrically. Below
+  100% on X, the (now-narrower) shape **tiles/repeats** to fill the block width — same repeat
+  mechanism the shape already uses. Above 100% on X, the excess is simply **clipped/not rendered** —
+  ordinary `overflow:hidden` semantics, nothing bespoke. Bean's own framing, worth keeping verbatim:
+  "any of the shape dividers is just a normal shape that sits on top or below a section/block" — the
+  render model is exactly as simple as that sentence, the earlier "unspecified" finding was a real
+  gap in the DOC, not evidence the underlying behaviour was actually ambiguous or hard to define.
+- **Control shape — RULED by Bean, closing the last open item.** Keep the link/unlink toggle (F.2.3's
+  original design) — the alternative offered ("two independent sliders, unrelated axes") was itself
+  wrong, corrected directly: X and Y are not unrelated for a shape/image resize — keeping proportions
+  uniform via one overall-size control is the primary interaction people expect, per-axis tweaking is
+  the secondary override. That is exactly what link/unlink already provides, and it has BETTER
+  real-world precedent than the doc's original `BoxControl` comparison — proportional-scale-with-a-
+  lock-toggle is the standard shape/image-resize convention (Figma/Photoshop/Canva), not just a
+  borrowed 4-side-padding pattern. No component interface change — the spec's original
+  `ScaleAxisControl` shape was already correct; only the earlier reasoning against it was wrong.
+
+**Net: Design #3 is now FULLY LOCKED — render behaviour, control shape, and storage fork all decided.
+Step 7 has no remaining design blocker on any of the three designs.**
+
+Full spec update: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2.3.
+
+## D636 addendum (2026-08-16, later same session) — a 4th CSS mechanism, missed by the council
+
+Bean caught a real gap the 4-seat council never surfaced: **icon colour is not the same case as
+text colour**, even though the DB's `css_property='color'` classification files them together.
+SGS's icons (Lucide) render as inline `<svg fill="none" stroke="currentColor">` — confirmed live
+in `sgs/icon/render.php`, which emits `color:<value>` on the root and relies on `currentColor`
+inheritance into the SVG's `stroke`. `background-clip:text` (the mechanism D636 assigned to the
+whole `color` bucket) only clips a background to browser-painted TEXT GLYPHS — it does nothing to
+an SVG stroke/fill. So the "~90 text-colour attrs" figure in D636 silently included an unknown
+number of icon attrs that need a different, simpler mechanism entirely: SVG's own native gradient
+paint (`<linearGradient>` def + `stroke="url(#id)"`), which reuses the same `SgsGradientPicker`
+UI with no masking trickery. Named-match found at least 10 attrs across 8 blocks (see LEDGER for
+the list); likely more via non-name-matched cases, per this project's own documented
+name-substring-undercounts pattern.
+
+**Ruling (Bean, same session):** add this as a 4th parallel builder alongside background/text/
+border in the next session's rollout, rather than folding it into the text builder or deferring
+it. Full detail + the corrected 4-builder plan: `.claude/LEDGER.md` "NEXT SESSION" section.
 
 ## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
 

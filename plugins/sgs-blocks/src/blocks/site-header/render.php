@@ -325,7 +325,7 @@ echo SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$content,
-	'section',
+	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
 		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'header',
 		'extra_classes' => $classes,

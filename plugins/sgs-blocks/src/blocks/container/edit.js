@@ -86,7 +86,7 @@ const TEMPLATE_MODE_OPTIONS = [
   { label: __("Card grid", "sgs-blocks"), value: "card-grid" },
 ];
 
-export default function Edit({ attributes, setAttributes }) {
+export default function Edit({ attributes, setAttributes, name }) {
   const {
     layout,
     gap,
@@ -234,7 +234,7 @@ export default function Edit({ attributes, setAttributes }) {
         {/* Background (image/video/svg tabs + ken-burns/parallax) — root-level
             appearance, kept first so it isn't buried under content-scoped
             panels (container has no separate Styles tab yet). */}
-        <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+        <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
         {/* Layout panel — shared LayoutPanel + WidthPanel + container-specific controls
             (HTML tag, min-height ×3). Kept as a single "Layout" PanelBody to preserve

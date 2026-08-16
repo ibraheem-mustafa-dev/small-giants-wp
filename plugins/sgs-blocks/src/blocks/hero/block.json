@@ -42,6 +42,11 @@
 		"sgs": {
 			"is_section_root": true,
 			"containerKind": "section",
+			"enabledExtensions": [
+				"width",
+				"background",
+				"shapeDividers"
+			],
 			"variantAttr": "variant",
 			"gridAreas": [
 				"content",

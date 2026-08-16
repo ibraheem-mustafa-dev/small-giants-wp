@@ -61,8 +61,10 @@ import {
 	GradientOverlayControl,
 	ResponsiveBorderRadiusControl,
 	normaliseResponsiveBox,
+	SgsColourPanel,
 } from '../../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
+import { isExtensionEnabled } from '../../extensions/hide-extensions';
 
 // ---------------------------------------------------------------------------
 // gridItemBorder — shorthand <-> parts (P-SPEC35-BORDER-RESIDUALS item 1).
@@ -760,7 +762,33 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
  * Background panel (image/video/overlay/svg/animation tabs).
  * Section kind only.
  */
-export function BackgroundPanel( { attributes, setAttributes } ) {
+/**
+ * BackgroundPanel — gated via the existing allowlist opt-in mechanism
+ * (D579 / `hide-extensions.js`), added 2026-08-16 (wrapper decomposition
+ * step 6, D626/D633).
+ *
+ * `name` is an OPTIONAL prop: the block name (or a settings object), passed
+ * through to `isExtensionEnabled()` exactly as the HOC-injected universal
+ * extensions already do (`hover-effects.js`). It is deliberately NOT a new
+ * required prop — every one of today's 6 call sites (`container`,
+ * `cta-section`, `trust-bar`, `hero`, `site-footer`, `site-header`, all in
+ * `src/blocks/*\/edit.js`, plus the `kind='section'` aggregator branch further
+ * down this file) mounts `<BackgroundPanel attributes={…} setAttributes={…} />`
+ * with no `name` — none of those 6 blocks declare `supports.sgs.enabledExtensions`
+ * today (D633 calibration). When `name` is absent the panel renders
+ * unconditionally, IDENTICAL to its pre-2026-08-16 behaviour — this is what
+ * keeps the 6 shipped blocks byte-identical after this change. A block only
+ * gets gated once a LATER commit (Phase B of the wrapper-decomposition plan,
+ * `~/.claude/plans/go-read-the-track-encapsulated-hare.md`) both passes
+ * `name={ name }` here AND declares `'background'` in its own
+ * `supports.sgs.enabledExtensions` — that is how `physics-canvas` gains this
+ * panel for the first time without touching this component again.
+ */
+export function BackgroundPanel( { attributes, setAttributes, name } ) {
+	if ( undefined !== name && ! isExtensionEnabled( name, 'background' ) ) {
+		return null;
+	}
+
 	const {
 		backgroundImage,
 		backgroundImageTablet,
@@ -1168,6 +1196,118 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 				/>
 			) }
 		</PanelBody>
+	);
+}
+
+/**
+ * WrapperColourPanel — Colour Track B (D626, merged into step 6 rather than
+ * running as a separate session; built 2026-08-16).
+ *
+ * The shared wrapper owns colour-bearing attrs OUTSIDE `BackgroundPanel`
+ * itself: `shapeDividerTopColour`/`shapeDividerBottomColour` (currently a
+ * `DesignTokenPicker` inline inside `ShapeDividersPanel`, unchanged by this
+ * component) and `gridItemBackground`/`gridItemTextColour` (currently a
+ * `DesignTokenPicker` inline inside `GridItemDefaultsPanel`, likewise
+ * unchanged). This component gives Phase B a ready-made `SgsColourPanel`
+ * (D609/D634 shape — swatch-left row, states in a popover) surfacing THE
+ * SAME attributes via the SAME onChange contract, so a future commit can
+ * mount it instead of (not alongside) the inline pickers without inventing a
+ * new attribute or a new colour-row shape.
+ *
+ * ⛔ NOT mounted anywhere by this commit — Phase A builds the mechanism only.
+ * No block's `edit.js` renders `<WrapperColourPanel>` yet, so the existing
+ * inline `DesignTokenPicker` rows inside `ShapeDividersPanel`/
+ * `GridItemDefaultsPanel` remain the ONLY live colour controls for those two
+ * attribute pairs until a later commit wires this in (and, in the same
+ * commit, removes the now-duplicate inline pickers — mounting both at once
+ * would be two controls writing one attribute, D609's "never optional, one
+ * place" rule).
+ *
+ * Rows are OMITTED (not disabled) when the underlying setting doesn't apply
+ * yet — same convention `SgsColourPanel`'s own docblock documents (9c: never
+ * hide a row behind a "+" menu, just don't include it): a shape-divider
+ * colour row needs that divider enabled first; a grid-item colour row needs
+ * `layout === 'grid'` first, exactly the same gate `GridItemDefaultsPanel`
+ * itself already applies (`if ( layout !== 'grid' ) { return null; }`,
+ * confirmed at this file's `GridItemDefaultsPanel`, ~:1274-1287).
+ *
+ * Gated on the same `'background'` extension as `BackgroundPanel` (D626:
+ * "merge it into this initiative's step 6 (background pilot)") via the same
+ * optional `name` prop / `isExtensionEnabled` mechanism — see that
+ * component's docblock for the backward-compatibility contract.
+ */
+export function WrapperColourPanel( { attributes, setAttributes, name } ) {
+	if ( undefined !== name && ! isExtensionEnabled( name, 'background' ) ) {
+		return null;
+	}
+
+	const {
+		layout = 'stack',
+		shapeDividerTop = '',
+		shapeDividerBottom = '',
+		shapeDividerTopColour,
+		shapeDividerBottomColour,
+		gridItemBackground = '',
+		gridItemTextColour = '',
+	} = attributes;
+
+	return (
+		<SgsColourPanel
+			rows={ [
+				shapeDividerTop && {
+					key: 'shapeDividerTopColour',
+					label: __( 'Top divider colour', 'sgs-blocks' ),
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: shapeDividerTopColour,
+							onChange: ( val ) => setAttributes( { shapeDividerTopColour: val } ),
+							linked: true,
+						},
+					],
+				},
+				shapeDividerBottom && {
+					key: 'shapeDividerBottomColour',
+					label: __( 'Bottom divider colour', 'sgs-blocks' ),
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: shapeDividerBottomColour,
+							onChange: ( val ) => setAttributes( { shapeDividerBottomColour: val } ),
+							linked: true,
+						},
+					],
+				},
+				'grid' === layout && {
+					key: 'gridItemBackground',
+					label: __( 'Grid item background colour', 'sgs-blocks' ),
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: gridItemBackground,
+							onChange: ( val ) => setAttributes( { gridItemBackground: val } ),
+							linked: true,
+						},
+					],
+				},
+				'grid' === layout && {
+					key: 'gridItemTextColour',
+					label: __( 'Grid item text colour', 'sgs-blocks' ),
+					states: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: gridItemTextColour,
+							onChange: ( val ) => setAttributes( { gridItemTextColour: val } ),
+							linked: true,
+						},
+					],
+				},
+			] }
+		/>
 	);
 }
 

@@ -489,5 +489,5 @@ $style_block       = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scope
 // $title_html  — built with wp_kses_post + esc_attr.
 // $badges_html — all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-echo $style_block . SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, 'section', $tb_wrapper_opts );
+echo $style_block . SGS_Container_Wrapper::render( $attributes, $block, $title_html . $badges_html, SGS_Container_Wrapper::resolve_kind( $block, 'section' ), $tb_wrapper_opts );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

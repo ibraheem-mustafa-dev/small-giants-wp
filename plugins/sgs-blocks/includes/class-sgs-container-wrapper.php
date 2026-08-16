@@ -54,6 +54,112 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 	final class SGS_Container_Wrapper {
 
 		/**
+		 * Resolve the `$kind` argument for render() from a block's DECLARED
+		 * `supports.sgs.enabledExtensions`, instead of a hardcoded literal
+		 * (D626 "hard sequencing dependency" / D633 calibration; built as
+		 * part of the wrapper-decomposition step 6 background pilot).
+		 *
+		 * WIRED into all 7 direct-panel blocks' render.php as of Phase B/D
+		 * of `~/.claude/plans/go-read-the-track-encapsulated-hare.md`
+		 * (2026-08-16) — `container`/`cta-section`/`trust-bar`/`hero`/
+		 * `site-header`/`site-footer`/`physics-canvas` each now call
+		 * `SGS_Container_Wrapper::resolve_kind( $block, 'section' )` in the
+		 * same commit that added `enabledExtensions` to that block's
+		 * block.json (D626's "same-commit rule" — never split the editor
+		 * half and the PHP half of one block's migration). No block still
+		 * passes the literal `'section'` string directly to render(); the
+		 * narrowing bug found mid-build (see below) was fixed at the
+		 * source in this same method, not worked around per-block.
+		 *
+		 * ⚠ Background/overlay attrs (`backgroundImage`/`bgVideo`/
+		 * `backgroundOverlayColour`/etc.) are OUT OF SCOPE for this
+		 * resolver — D6 (2026-08-11, logged inline at ~L262 of this file)
+		 * already made that whole family read UNIVERSALLY, gated only by
+		 * whether a block's own block.json DECLARES the attr, not by
+		 * `$kind`. Verified empirically before writing this method: every
+		 * `$bg_*`/`$overlay_*` read in this file (L271-303, L1180-1209) is
+		 * unconditional — there is no `$is_section`/`$is_layout` guard on
+		 * any of it. So gating background PAINT on `enabledExtensions`
+		 * needs no PHP change at all; it is already correct by
+		 * construction (a block only gets a live background once it
+		 * declares the attrs, which for `physics-canvas` happens in Phase
+		 * B alongside `enabledExtensions:['background']`).
+		 *
+		 * What THIS resolver actually reaches: the capabilities still tied
+		 * to the `'section'`/`'layout'`/`'content'` literal today — shape
+		 * dividers (`$is_section`-gated, ~L1223) and part of the grid-item
+		 * custom-property emission (`$is_section || $is_layout`-gated,
+		 * ~L1732). Both are OUT OF SCOPE to migrate in Phase A per this
+		 * initiative's own step ordering (`shapeDividers`/`gridItems` are
+		 * separate extensions, step 7 — D626), so this method's mapping is
+		 * deliberately conservative: it only NARROWS kind away from
+		 * `$fallback` once a block has explicitly opted into fewer
+		 * capabilities via `enabledExtensions`; a block with no declaration
+		 * at all gets `$fallback` back UNCHANGED.
+		 *
+		 * @param \WP_Block|null $block    Block instance passed to render.php.
+		 * @param string         $fallback What today's render.php literal
+		 *                                 currently passes (usually
+		 *                                 `'section'`) — returned verbatim
+		 *                                 when the block declares no
+		 *                                 `enabledExtensions` at all, so an
+		 *                                 un-migrated block's behaviour is
+		 *                                 byte-identical to before this
+		 *                                 method existed.
+		 * @return string 'section'|'layout'|'content'.
+		 */
+		public static function resolve_kind( $block, string $fallback = 'section' ): string {
+			$allowed = array( 'section', 'layout', 'content' );
+			if ( ! in_array( $fallback, $allowed, true ) ) {
+				$fallback = 'section';
+			}
+
+			$supports = null;
+			if ( $block instanceof \WP_Block && isset( $block->block_type->supports ) && is_array( $block->block_type->supports ) ) {
+				$supports = $block->block_type->supports;
+			} elseif ( $block instanceof \WP_Block && ! empty( $block->name ) ) {
+				// Fallback lookup — mirrors the established pattern in
+				// includes/image-controls.php for reading a block's DECLARED
+				// supports from its registered block type.
+				$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block->name );
+				if ( null !== $registered && is_array( $registered->supports ?? null ) ) {
+					$supports = $registered->supports;
+				}
+			}
+
+			if ( null === $supports ) {
+				return $fallback;
+			}
+
+			// Deliberately NO narrowing from `enabledExtensions` membership,
+			// even once declared. Bug found + fixed 2026-08-16, mid-step-6
+			// build: an earlier version of this method downgraded $kind to
+			// 'content' whenever neither 'shapeDividers' nor 'gridItems' was
+			// present, on the assumption that $kind tracks WHICH optional
+			// panels a block has. That's false for the 7 direct-panel
+			// blocks — every one of them is structurally 'section'-kind
+			// (that's why their render.php literal was always 'section',
+			// never 'layout'/'content'), and `$is_section` in render() below
+			// ALSO gates capabilities that have nothing to do with
+			// shapeDividers/gridItems — minHeight and content-band padding
+			// (D624) among them. Narrowing site-header (width+background
+			// only, no shapeDividers/gridItems) to 'content' silently killed
+			// its live minHeight + band-padding controls — caught by two
+			// independent build agents before it shipped, not by any gate.
+			// `$kind` and `enabledExtensions` are orthogonal axes: $kind is
+			// the block's fundamental render mode (fixed per block, set by
+			// its own render.php call site); enabledExtensions is which
+			// OPTIONAL capabilities within that mode are switched on. This
+			// method's job is only to confirm the mechanism exists — it does
+			// NOT yet derive $kind from capability membership. Splitting
+			// $is_section's bundled unrelated capabilities into individual
+			// gates (so a real per-capability narrowing becomes possible) is
+			// step 7 scope, not step 6 — see the plan doc §1.4 step 7 and
+			// decisions.md D626.
+			return $fallback;
+		}
+
+		/**
 		 * Render the outer wrapper for a container-style block.
 		 *
 		 * Returns a single pre-joined string:

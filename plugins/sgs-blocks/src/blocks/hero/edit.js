@@ -187,7 +187,7 @@ const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		variant,
 		splitImageBleed,
@@ -1466,7 +1466,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
 					CSS string built by ShadowControl), resolved by sgs_shadow_value()
