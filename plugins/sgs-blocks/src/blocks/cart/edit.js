@@ -27,6 +27,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconName,
 		iconSize,
 		iconColour,
+		iconColourGradient,
 		badgeColour,
 		badgeTextColour,
 		ariaLabel,
@@ -80,6 +81,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: iconColour,
 								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
 								linked: true,
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
 							},
 						],
 					},

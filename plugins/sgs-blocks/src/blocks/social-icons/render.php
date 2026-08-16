@@ -59,6 +59,10 @@ $icon_border_gradient       = sgs_css_gradient_value( $attributes['iconBorderCol
 $icon_border_gradient_hover = sgs_css_gradient_value( $attributes['iconBorderColourHoverGradient'] ?? '' );
 $icon_glyph_colour       = $attributes['iconGlyphColour'] ?? 'text-muted';
 $icon_glyph_colour_hover = $attributes['iconGlyphColourHover'] ?? 'primary';
+// D636/D644 icon/SVG gradient siblings — non-empty wins over the flat glyph
+// colours above at render time (helpers-svg-gradient.php).
+$icon_glyph_colour_gradient       = $attributes['iconGlyphColourGradient'] ?? '';
+$icon_glyph_colour_hover_gradient = $attributes['iconGlyphColourHoverGradient'] ?? '';
 $colour_mode_raw     = $attributes['colourMode'] ?? 'theme';
 $colour_mode         = in_array( $colour_mode_raw, array( 'theme', 'brand' ), true ) ? $colour_mode_raw : 'theme';
 $style_type_raw      = $attributes['iconStyle'] ?? 'plain';
@@ -295,6 +299,20 @@ if ( '' !== $icon_border_gradient ) {
 	);
 }
 
+// D636/D644 icon/SVG gradient — one rule per state paints every icon's stroke
+// (mirrors the single --sgs-social-glyph* custom properties above; a
+// gradient def is injected once into the FIRST rendered item's SVG below so
+// no duplicate #id exists in the DOM).
+$sgs_social_stroke_grad       = sgs_svg_stroke_gradient( $icon_glyph_colour_gradient, $uid . '-ig' );
+$sgs_social_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_glyph_colour_hover_gradient, $uid . '-igh' );
+if ( '' !== $sgs_social_stroke_grad['css'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{" . $sgs_social_stroke_grad['css'] . ';}';
+}
+if ( '' !== $sgs_social_stroke_grad_hover['css'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-social-icons__item:hover svg{" . $sgs_social_stroke_grad_hover['css'] . ';}';
+}
+$sgs_social_defs_injected = false;
+
 // --- Per-icon-item size (was inline `style="width:...px;height:...px"`). ---
 // WCAG 2.5.8 target size: the clickable box (`.sgs-social-icons__item`) is
 // floored at 44px regardless of the requested icon size, but the SVG glyph
@@ -467,6 +485,11 @@ foreach ( $icons as $icon_item ) {
 	} else {
 		$icon_name  = $platform_icons[ $platform ] ?? 'link';
 		$glyph_html = sgs_get_lucide_icon( $icon_name );
+		if ( ! $sgs_social_defs_injected ) {
+			$glyph_html                = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad['defs'] );
+			$glyph_html                = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad_hover['defs'] );
+			$sgs_social_defs_injected = true;
+		}
 	}
 
 	// FR-36-21 MUST — decorative glyph hidden from assistive tech (Spec 36).

@@ -54,6 +54,8 @@ $icon_pos   = $block->context['sgs/accordionIconPosition'] ?? 'right';
 $header_col = $block->context['sgs/accordionHeaderColour'] ?? '';
 $header_bg  = $block->context['sgs/accordionHeaderBackground'] ?? '';
 $icon_col   = $block->context['sgs/accordionIconColour'] ?? '';
+// D636/D644 icon/SVG gradient sibling — non-empty wins over icon_col above.
+$icon_col_gradient = $block->context['sgs/accordionIconColourGradient'] ?? '';
 $open_icon  = sanitize_key( $block->context['sgs/accordionOpenIcon'] ?? 'chevron-down' );
 $close_icon = sanitize_key( $block->context['sgs/accordionCloseIcon'] ?? 'chevron-up' );
 
@@ -88,6 +90,13 @@ if ( $icon_col ) {
 	if ( '' !== $icon_slug ) {
 		$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open,' . $root_sel . ' .sgs-accordion-item__icon-close{color:var(--wp--preset--color--' . $icon_slug . ')}';
 	}
+}
+
+// D636/D644 icon/SVG gradient — non-empty wins over icon_col's flat
+// currentColor paint above (helpers-svg-gradient.php).
+$sgs_ai_stroke_grad = sgs_svg_stroke_gradient( $icon_col_gradient, $uid . '-ig' );
+if ( '' !== $sgs_ai_stroke_grad['css'] ) {
+	$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open svg,' . $root_sel . ' .sgs-accordion-item__icon-close svg{' . $sgs_ai_stroke_grad['css'] . '}';
 }
 
 // WP-native color / border supports — no-inline contract (§A).
@@ -159,6 +168,14 @@ if ( ! $open_icon_svg ) {
 }
 if ( ! $close_icon_svg ) {
 	$close_icon_svg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 15l-6-6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+// D636/D644 — the gradient <defs> only needs to exist ONCE in the DOM
+// (`url(#id)` resolves document-wide); both icon spans render simultaneously
+// (CSS toggles which is visible), so injecting into the open-icon SVG alone
+// is sufficient.
+if ( '' !== $sgs_ai_stroke_grad['defs'] ) {
+	$open_icon_svg = sgs_svg_inject_defs( $open_icon_svg, $sgs_ai_stroke_grad['defs'] );
 }
 
 $icon_html = sprintf(

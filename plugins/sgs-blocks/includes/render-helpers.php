@@ -73,6 +73,16 @@
  *                                     (c) — explicitly-wired object-fit/
  *                                     object-position, caller owns selector)
  *
+ *   helpers-svg-gradient.php        — sgs_svg_stroke_gradient,
+ *                                     sgs_svg_inject_defs (D636/D644 icon/SVG
+ *                                     gradient mechanism — converts a
+ *                                     validated CSS gradient string into an
+ *                                     SVG <linearGradient>/<radialGradient>
+ *                                     def + the `stroke:url(#id)` CSS
+ *                                     declaration that overrides a Lucide/
+ *                                     wp-icon glyph's `stroke="currentColor"`
+ *                                     presentation attribute)
+ *
  * A single `require_once render-helpers.php` continues to resolve every
  * function that this file has always provided. All callers are unchanged.
  *
@@ -100,3 +110,4 @@ require_once __DIR__ . '/helpers-cart-panel.php';
 require_once __DIR__ . '/helpers-list-markers.php';
 require_once __DIR__ . '/helpers-mega-render.php';
 require_once __DIR__ . '/helpers-row-behaviour.php';
+require_once __DIR__ . '/helpers-svg-gradient.php';

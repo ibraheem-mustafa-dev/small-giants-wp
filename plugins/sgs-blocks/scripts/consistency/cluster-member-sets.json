@@ -261,11 +261,13 @@
 				{
 					"key": "css:stroke",
 					"label": "Stroke (SVG line paint)",
-					"suffixes": [],
-					"appliesToLayers": [
-						"OUTER"
+					"suffixes": [
+						"IconColourGradient",
+						"IconColourHoverGradient",
+						"IconGlyphColourGradient",
+						"IconGlyphColourHoverGradient"
 					],
-					"_note": "STOPGAP registration only — independently added by two parallel builders (Builder 1 background, Builder 5 shape-divider) to satisfy check-cluster-coverage.py's coverage requirement after D644 added the css:stroke row to setting-registry.json without a matching cluster member. This is the reconciled single entry (coordinator, merge step). Empty suffixes deliberately: real icon/SVG attribute names belong to Builder 4 (icon/SVG gradient mechanism), who populates this array once those attrs exist — this member exists only so the shared build gate doesn't fail for every OTHER builder in the meantime."
+					"_note": "Builder 4 (D636 gradient rollout, icon/SVG mechanism) — real attribute names, replacing D644's stopgap empty-suffix registration. Every SGS icon glyph (Lucide + the bundled @wordpress/icons subset) is stroke-based (`stroke=\"currentColor\"` presentation attribute); a gradient can't ride the `color:`/currentColor chain a flat icon colour uses, so it paints instead via a real SVG <linearGradient>/<radialGradient> def + a `stroke:url(#id)` CSS override (helpers-svg-gradient.php). The sibling-attribute pattern names the gradient attr `{flatAttr}Gradient` (D636/D643 shape, matches every other builder this rollout) — hence the 4 suffixes here cover every real base/hover icon-colour attribute found across the framework (sgs/icon, sgs/icon-list, sgs/social-icons, sgs/business-info, sgs/button, sgs/cart, sgs/notice-banner, sgs/trust-bar, sgs/accordion). Resolution for these attrs is via EXPLICIT block.json attrMap (mirroring how css:color is already declared on every one of these elements), not suffix auto-derivation — this array exists to satisfy check-cluster-coverage.py's advisory coverage scan, per D644. Deliberately carries NO `appliesToLayers` (unlike css:fill's `[\"OUTER\"]` restriction, copied then removed) — `memberAppliesToElement()` in check-element-manifest-conformance.js gates BASE-level resolution to elements whose declared `layer` is in that list, and every icon/glyph element this member targets is a leaf paint element, not an OUTER arrangement layer; leaving the restriction in produced 4 false ORPHAN:UNCLASSIFIED findings (icon/button/notice-banner/cart) with only the :hover state resolving (state resolution does not gate on appliesToLayers) — measured via `node scripts/check-element-manifest-conformance.js --check`, not assumed."
 				},
 				{
 					"key": "input:media-source",

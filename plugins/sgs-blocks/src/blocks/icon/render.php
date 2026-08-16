@@ -114,6 +114,10 @@ $aria_label         = $attributes['ariaLabel'] ?? '';
 $hover_icon_colour  = $attributes['iconColourHover'] ?? 'accent-text';
 $hover_shape_colour = $attributes['shapeColourHover'] ?? '';
 $hover_scale        = (float) ( $attributes['scaleHover'] ?? 1.1 );
+// D636/D644 icon/SVG gradient sibling attrs — non-empty wins over the flat
+// iconColour/iconColourHover above at paint time (helpers-svg-gradient.php).
+$icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
+$icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 
 // Validate linkTarget — only allow known safe values.
 if ( ! in_array( $link_target, array( '_self', '_blank' ), true ) ) {
@@ -217,6 +221,18 @@ $uid      = 'sgs-icn-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-icon';
 
 $scoped_css = array();
+
+// D636/D644 icon/SVG gradient — resting + hover. sgs_svg_stroke_gradient()
+// fails soft (empty defs/css) on an empty/invalid attribute value, so this is
+// always safe to compute even when neither gradient is set.
+$sgs_icon_stroke_grad       = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$sgs_icon_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
+if ( '' !== $sgs_icon_stroke_grad['css'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-icon__svg svg{" . $sgs_icon_stroke_grad['css'] . ';}';
+}
+if ( '' !== $sgs_icon_stroke_grad_hover['css'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-icon__link:hover .sgs-icon__svg svg,{$root_sel} .sgs-icon__link:focus-visible .sgs-icon__svg svg{" . $sgs_icon_stroke_grad_hover['css'] . ';}';
+}
 
 $root_decls = $var_decls;
 if ( $icon_colour ) {
@@ -355,6 +371,8 @@ switch ( $icon_source ) {
 
 	case 'wp-icon':
 		$icon_svg = sgs_get_wp_icon( $wp_icon_name );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad['defs'] );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad_hover['defs'] );
 		$output   = sprintf(
 			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
 			$icon_svg
@@ -387,6 +405,8 @@ switch ( $icon_source ) {
 	case 'lucide':
 	default:
 		$icon_svg = sgs_get_lucide_icon( $icon_name );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad['defs'] );
+		$icon_svg = sgs_svg_inject_defs( $icon_svg, $sgs_icon_stroke_grad_hover['defs'] );
 		$output   = sprintf(
 			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
 			$icon_svg

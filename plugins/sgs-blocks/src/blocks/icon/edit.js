@@ -105,6 +105,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkRel,
 		ariaLabel,
 		iconColourHover,
+		iconColourGradient,
+		iconColourHoverGradient,
 		shapeColourHover,
 		scaleHover,
 		iconAlign,
@@ -217,6 +219,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: iconColour,
 								onChange: ( val ) =>
 									setAttributes( { iconColour: val } ),
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										iconColourGradient: val,
+									} ),
 							},
 							{
 								key: 'hover',
@@ -225,6 +232,11 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( {
 										iconColourHover: val,
+									} ),
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										iconColourHoverGradient: val,
 									} ),
 							},
 						],

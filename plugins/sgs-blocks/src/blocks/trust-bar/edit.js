@@ -282,6 +282,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconCircleSize,
 		iconCircleBackground,
 		iconColour,
+		iconColourGradient,
 		iconCircleBorderRadius,
 		iconCircleShadow,
 		iconCircleShadowColour,
@@ -729,8 +730,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						/>
 						<DesignTokenPicker
 							label={ __( 'Icon colour', 'sgs-blocks' ) }
-							value={ iconColour }
-							onChange={ ( val ) => setAttributes( { iconColour: val } ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: iconColour,
+									onChange: ( val ) => setAttributes( { iconColour: val } ),
+									gradientValue: iconColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { iconColourGradient: val ?? '' } ),
+								},
+							] }
 						/>
 						<DesignTokenPicker
 							label={ __( 'Label colour', 'sgs-blocks' ) }

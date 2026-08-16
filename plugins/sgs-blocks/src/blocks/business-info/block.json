@@ -55,6 +55,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
+		},
 		"textColour": {
 			"type": "string",
 			"default": ""
@@ -242,11 +247,12 @@
 				"icon": {
 					"label": "Icon",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "fill" ],
 					"attrMap": {
-						"css:color": "iconColour"
+						"css:color": "iconColour",
+						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member."
+					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
 				},
 				"link": {
 					"label": "Link",

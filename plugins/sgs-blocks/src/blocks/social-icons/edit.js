@@ -133,7 +133,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconBorderColourHover,
 		iconBorderColourHoverGradient,
 		iconGlyphColour,
+		iconGlyphColourGradient,
 		iconGlyphColourHover,
+		iconGlyphColourHoverGradient,
 		colourMode,
 		iconStyle,
 		gap,
@@ -317,6 +319,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									value: iconGlyphColour,
 									onChange: ( val ) => setAttributes( { iconGlyphColour: val ?? '' } ),
 									linked: true,
+									gradientValue: iconGlyphColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { iconGlyphColourGradient: val ?? '' } ),
 								},
 								{
 									key: 'hover',
@@ -324,6 +329,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									value: iconGlyphColourHover,
 									onChange: ( val ) => setAttributes( { iconGlyphColourHover: val ?? '' } ),
 									linked: true,
+									gradientValue: iconGlyphColourHoverGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { iconGlyphColourHoverGradient: val ?? '' } ),
 								},
 							],
 						},
@@ -364,6 +372,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									value: iconGlyphColourHover,
 									onChange: ( val ) => setAttributes( { iconGlyphColourHover: val ?? '' } ),
 									linked: true,
+									gradientValue: iconGlyphColourHoverGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { iconGlyphColourHoverGradient: val ?? '' } ),
 								},
 							],
 						},

@@ -135,6 +135,8 @@ $items          = $attributes['items'] ?? array();
 $default_icon   = $attributes['icon'] ?? 'check';
 $default_source = $attributes['defaultIconSource'] ?? 'lucide';
 $icon_colour    = $attributes['iconColour'] ?? '';
+// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
+$icon_colour_gradient = $attributes['iconColourGradient'] ?? '';
 $icon_size      = $attributes['iconSize'] ?? 'medium';
 $dividers       = ! empty( $attributes['dividers'] );
 $text_colour    = $attributes['textColour'] ?? '';
@@ -355,6 +357,13 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 // repeated <li> elements. ---
 if ( $icon_colour ) {
 	$scoped_css[] = "{$icon_sel}{color:" . sgs_colour_value( $icon_colour ) . ';}';
+}
+// D636/D644 icon/SVG gradient — one rule paints every item's icon (mirrors the
+// single icon_colour rule above; a gradient def is injected once into the
+// FIRST rendered item's SVG below so no duplicate #id exists in the DOM).
+$sgs_icon_list_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+if ( '' !== $sgs_icon_list_stroke_grad['css'] ) {
+	$scoped_css[] = "{$icon_sel} svg{" . $sgs_icon_list_stroke_grad['css'] . ';}';
 }
 if ( $text_colour ) {
 	$scoped_css[] = "{$text_sel}{color:" . sgs_colour_value( $text_colour ) . ';}';
@@ -582,6 +591,10 @@ if ( $uses_dashicon ) {
 // ---------------------------------------------------------------------------
 
 $render_marker_icon = in_array( $marker_type, array( 'icon', 'emoji' ), true );
+// D636/D644 — the gradient <defs> only needs to exist ONCE in the DOM
+// (`url(#id)` resolves document-wide); injected into the first rendered
+// item's <svg> only, to avoid a duplicate #id across the repeater.
+$sgs_icon_list_defs_injected = false;
 
 // $resolved_items (step 0/3 above) is the SAME shape for both sources —
 // typed items keep their optional iconSource/iconName/newTab keys, menu
@@ -602,7 +615,11 @@ foreach ( $resolved_items as $item ) {
 			$item_source = $default_source;
 			$item_name   = $default_icon;
 		}
-		$svg         = $render_icon( $item_source, $item_name );
+		$svg = $render_icon( $item_source, $item_name );
+		if ( ! $sgs_icon_list_defs_injected && '' !== $sgs_icon_list_stroke_grad['defs'] ) {
+			$svg                          = sgs_svg_inject_defs( $svg, $sgs_icon_list_stroke_grad['defs'] );
+			$sgs_icon_list_defs_injected = true;
+		}
 		$marker_html = sgs_list_marker_render( $marker_type, $svg );
 	}
 

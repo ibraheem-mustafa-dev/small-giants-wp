@@ -57,12 +57,13 @@
 				"icon": {
 					"label": "Cart icon",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "fill" ],
 					"prefix": "icon",
 					"attrMap": {
-						"css:color": "iconColour"
+						"css:color": "iconColour",
+						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4)."
+					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
 				},
 				"badge": {
 					"label": "Item-count badge",
@@ -113,6 +114,11 @@
 		"iconColour": {
 			"type": "string",
 			"default": "primary"
+		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the cart icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
 		"badgeColour": {
 			"type": "string",

@@ -51,6 +51,12 @@ $label_colour = $attributes['labelColour'] ?? 'text';
 $icon_circle_size          = absint( $attributes['iconCircleSize'] ?? 44 );
 $icon_circle_bg            = $attributes['iconCircleBackground'] ?? 'surface';
 $icon_colour               = $attributes['iconColour'] ?? 'primary-dark';
+// D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above,
+// but only paints the outline (default) badge's `stroke` — a 'filled' badge's
+// `fill` paint is out of this mechanism's scope (css:fill territory, Builder 5).
+$icon_colour_gradient      = $attributes['iconColourGradient'] ?? '';
+$tb_stroke_grad            = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$tb_stroke_grad_defs_used  = false;
 $text_colour               = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
 $icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
@@ -255,6 +261,13 @@ if ( $title_colour_val ) {
 	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__title{color:' . esc_attr( $title_colour_val ) . '}';
 }
 
+// D636/D644 icon/SVG gradient — one rule paints every outline (default,
+// non-'filled') badge's icon stroke; a 'filled' badge's `fill` paint is
+// deliberately out of scope (css:fill territory).
+if ( '' !== $tb_stroke_grad['css'] ) {
+	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__circle svg{' . $tb_stroke_grad['css'] . '}';
+}
+
 // --- Optional title -----------------------------------------------------------
 // Guard against whitespace-only or HTML-only values (e.g. an empty <br> saved
 // by RichText) so an unset title never renders a visible element.
@@ -376,6 +389,14 @@ foreach ( $items as $tb_item_index => $item ) {
 		} else {
 			// No icon set — show the generic check tick so the badge is never blank.
 			$svg = sgs_get_lucide_icon( 'check' );
+		}
+
+		// D636/D644 icon/SVG gradient — the def only needs to exist ONCE in the
+		// DOM (`url(#id)` resolves document-wide); injected into the first
+		// rendered badge's SVG only, to avoid a duplicate #id across the loop.
+		if ( ! $tb_stroke_grad_defs_used && '' !== $tb_stroke_grad['defs'] ) {
+			$svg                       = sgs_svg_inject_defs( $svg, $tb_stroke_grad['defs'] );
+			$tb_stroke_grad_defs_used = true;
 		}
 
 		// Per-badge fill style: 'filled' paints a solid glyph (e.g. a filled star),
