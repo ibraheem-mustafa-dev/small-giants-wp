@@ -48,7 +48,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		textColour,
 		labelColour,
-		linkHoverColour,
+		linkHoverBackgroundImage,
+		linkHoverTextColour,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -59,12 +60,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
 			   default InspectorControls group), rendered FIRST so it sits at
-			   the top of the inspector. `linkHoverColour` has no "normal"
-			   sibling attribute in this block's schema (style.css's own
-			   #e7d768 credit-sweep colour is the implicit normal state), so
-			   it renders as a single-state row rather than a normal/hover
-			   pair. `supports.color` sub-flags are now false so WordPress
-			   generates no native colour UI to overlap with this panel. */ }
+			   the top of the inspector. `linkHoverBackgroundImage` /
+			   `linkHoverTextColour` (split 2026-08-16, D643 — see block.json's
+			   `link` element note) have no "normal" sibling attribute in this
+			   block's schema (style.css's own #e7d768 credit-sweep colour is
+			   the implicit normal state), so each renders as a single-state
+			   row rather than a normal/hover pair. `supports.color` sub-flags
+			   are now false so WordPress generates no native colour UI to
+			   overlap with this panel. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -104,14 +107,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'link-hover',
+						key: 'link-hover-sweep',
 						label: __( 'Link hover colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: linkHoverColour,
-								onChange: ( val ) => setAttributes( { linkHoverColour: val ?? '' } ),
+								value: linkHoverBackgroundImage,
+								onChange: ( val ) => setAttributes( { linkHoverBackgroundImage: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'link-hover-fallback',
+						label: __( 'Link hover colour (older browsers)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: linkHoverTextColour,
+								onChange: ( val ) => setAttributes( { linkHoverTextColour: val ?? '' } ),
 							},
 						],
 					},

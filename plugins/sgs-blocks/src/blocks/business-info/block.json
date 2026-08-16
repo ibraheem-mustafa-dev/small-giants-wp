@@ -63,7 +63,11 @@
 			"type": "string",
 			"default": ""
 		},
-		"linkHoverColour": {
+		"linkHoverBackgroundImage": {
+			"type": "string",
+			"default": ""
+		},
+		"linkHoverTextColour": {
 			"type": "string",
 			"default": ""
 		},
@@ -249,7 +253,7 @@
 					"order": 5,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types (render.php:118,138,319). Added 2026-08-15 — this attribute had no manifest home at all, causing an undeclared-element orphan. `linkHoverColour` is the block's only link-colour attribute (confirmed via DB query — no resting `linkColour` exists): declaring it under `states.hover` was tried first but rejected — FR-35-5's STATE_WITHOUT_BASE check runs independent of `clusters`, so a hover-only colour with no resting counterpart always trips it, and this project's baseline may only ever go DOWN, never up for a genuinely-accepted new instance (unlike sgs/post-grid's pre-existing, already-baselined case). `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery."
+					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types (render.php:118,138,319). Added 2026-08-15 — this attribute had no manifest home at all, causing an undeclared-element orphan. `linkHoverColour` (single attribute) was SPLIT 2026-08-16 (D643) into `linkHoverBackgroundImage` + `linkHoverTextColour` — ground-truthed against style.css:86-121: the resolved colour feeds TWO genuinely different CSS mechanisms on `.sgs-business-attribution .sgs-business-info__link` — (1) one gradient colour-stop inside the `background-image:linear-gradient(...)` text-clip sweep (the primary path, modern browsers), and (2) a plain `color:` declaration inside the `@supports not (background-clip:text)` fallback (older browsers with no text-clip support). A single flat-colour attribute happened to serve both today because they render the SAME visual outcome via different techniques, but a `color:` declaration can never legally hold a CSS gradient — so the pair had to split before either could gain a gradient option. Declaring either under `states.hover` was tried first but rejected — FR-35-5's STATE_WITHOUT_BASE check runs independent of `clusters`, so a hover-only colour with no resting counterpart always trips it, and this project's baseline may only ever go DOWN, never up for a genuinely-accepted new instance (unlike sgs/post-grid's pre-existing, already-baselined case). `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery."
 				}
 			}
 		}
