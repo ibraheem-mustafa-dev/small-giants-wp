@@ -54,6 +54,7 @@
  */
 import { useSettings } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';
+import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	BaseControl,
@@ -64,8 +65,16 @@ import {
 	FlexItem,
 	TabPanel,
 } from '@wordpress/components';
-import { HStack, Item, ItemGroup, ZStack } from './primitives';
+import {
+	HStack,
+	Item,
+	ItemGroup,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ZStack,
+} from './primitives';
 import { ColorPalette } from './colour-picker';
+import SgsGradientPicker from './gradient-picker';
 
 /**
  * Resolve a stored colour VALUE to a displayable CSS colour.
@@ -86,6 +95,122 @@ export function resolveColourToken( value, palette ) {
 	}
 	const match = ( palette || [] ).find( ( c ) => c.slug === value );
 	return match ? match.color : `var(--wp--preset--color--${ value })`;
+}
+
+/**
+ * Detect whether a stored colour-row value IS a CSS gradient function,
+ * mirroring the PREFIX half of the PHP validator
+ * (`sgs_css_gradient_value()`, `includes/helpers-tokens.php`) that decides
+ * the same question at render time. Detection only — this never re-derives
+ * the security allow-list; PHP remains the single source of truth for what
+ * is safe to emit, this just decides which UI mode to show.
+ *
+ * @param {*} value Stored attribute value.
+ * @return {boolean} True when the value looks like a gradient function.
+ */
+export function isGradientCssValue( value ) {
+	return (
+		typeof value === 'string' &&
+		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( value.trim() )
+	);
+}
+
+/**
+ * GradientCapableColourField — a single string attribute that can hold
+ * EITHER a flat colour OR a complete CSS gradient value (D636 storage
+ * model: "one attribute holds the complete CSS value, non-empty gradient
+ * wins over the flat colour"). This is the single-attribute sibling of
+ * `GradientOverlayControl.js`, which serves the two-attribute
+ * (`gradient`/`solid`) whole-block overlay shape — this field exists for
+ * colour rows that were never split into a pair, so there is nowhere to
+ * write a second attribute and no need to invent one.
+ *
+ * Mode is DERIVED from the stored value via `isGradientCssValue()`, not a
+ * separate boolean attr — same resolution model as `GradientOverlayControl`.
+ * A local toggle-in-progress is UI-only state (mirrors that control too):
+ * switching the Solid/Gradient tab does not write the attribute by itself,
+ * only picking an actual colour/stop does, so browsing the tabs can never
+ * destroy the other mode's value before the operator commits to a change.
+ *
+ * @param {Object}   props
+ * @param {string}   props.id          Stable id for label/description association.
+ * @param {string}   props.label       The control's own label.
+ * @param {string}   props.value       Stored value — flat colour OR gradient CSS string.
+ * @param {Function} props.onChange    Attribute setter (receives the new string).
+ * @param {boolean}  props.clearable   Forwarded to `ColorPalette`.
+ * @param {boolean}  props.linked      Forwarded to the shared slug-vs-hex change handler.
+ * @param {boolean}  props.enableAlpha Forwarded to `ColorPalette` / `SgsGradientPicker`.
+ * @param {Array}    props.colours     Active theme colour palette.
+ */
+function GradientCapableColourField( {
+	id,
+	label,
+	value,
+	onChange,
+	clearable,
+	linked,
+	enableAlpha,
+	colours,
+} ) {
+	const [ localGradientMode, setLocalGradientMode ] = useState( null );
+	const gradientEnabled =
+		localGradientMode !== null
+			? localGradientMode
+			: isGradientCssValue( value );
+
+	// Each mode only ever reads the slice of the stored value that belongs
+	// to it — the other mode's stale shape (e.g. a gradient string sitting
+	// in a control currently showing Solid) is never handed to a control
+	// that can't parse it.
+	const gradientCurrent = isGradientCssValue( value ) ? value : '';
+	const solidCurrent = isGradientCssValue( value ) ? undefined : value;
+	const displayValue = linked
+		? resolveColourToken( solidCurrent, colours )
+		: solidCurrent;
+	const handleSolidChange = makeChangeHandler( { linked, colours, onChange } );
+
+	return (
+		<BaseControl id={ id } label={ label } __nextHasNoMarginBottom>
+			<ToggleGroupControl
+				label={ __( 'Type', 'sgs-blocks' ) }
+				value={ gradientEnabled ? 'gradient' : 'solid' }
+				onChange={ ( val ) => setLocalGradientMode( val === 'gradient' ) }
+				isBlock
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			>
+				<ToggleGroupControlOption
+					value="solid"
+					label={ __( 'Solid', 'sgs-blocks' ) }
+				/>
+				<ToggleGroupControlOption
+					value="gradient"
+					label={ __( 'Gradient', 'sgs-blocks' ) }
+				/>
+			</ToggleGroupControl>
+			{ gradientEnabled ? (
+				<SgsGradientPicker
+					value={ gradientCurrent }
+					onChange={ ( newGradient ) => {
+						setLocalGradientMode( true );
+						onChange( newGradient ?? '' );
+					} }
+					enableAlpha={ enableAlpha }
+					__experimentalIsRenderedInSidebar
+				/>
+			) : (
+				<ColorPalette
+					colors={ colours }
+					value={ displayValue }
+					onChange={ handleSolidChange }
+					clearable={ clearable }
+					disableCustomColors={ false }
+					enableAlpha={ enableAlpha }
+					aria-label={ label }
+				/>
+			) }
+		</BaseControl>
+	);
 }
 
 /**
@@ -340,9 +465,10 @@ export default function DesignTokenPicker( {
 	linked = false,
 	enableAlpha = true,
 	states,
+	gradientCapable = false,
 } ) {
 	const [ colours ] = useSettings( 'color.palette' );
-	// Hook order must stay unconditional (both branches below return from the
+	// Hook order must stay unconditional (every branch below returns from the
 	// same component), so this is computed once regardless of which shape
 	// renders — fixes contract §1 field 2 (missing id) for every one of the
 	// 43 existing call sites, not only the new row shape.
@@ -359,6 +485,25 @@ export default function DesignTokenPicker( {
 				label={ label }
 				states={ states }
 				clearable={ clearable }
+				enableAlpha={ enableAlpha }
+				colours={ colours }
+			/>
+		);
+	}
+
+	// `gradientCapable` (D636 rollout) — the single stored attribute may hold
+	// EITHER a flat colour or a complete CSS gradient string. Opt-in only: no
+	// existing call site passes this prop, so every one of them keeps
+	// rendering the plain ColorPalette below, byte-identical.
+	if ( gradientCapable ) {
+		return (
+			<GradientCapableColourField
+				id={ id }
+				label={ label }
+				value={ value }
+				onChange={ onChange }
+				clearable={ clearable }
+				linked={ linked }
 				enableAlpha={ enableAlpha }
 				colours={ colours }
 			/>

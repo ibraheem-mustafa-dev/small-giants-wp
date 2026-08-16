@@ -1353,6 +1353,7 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						label={ __( 'Colour', 'sgs-blocks' ) }
 						value={ attributes.shapeDividerTopColour }
 						onChange={ ( val ) => setAttributes( { shapeDividerTopColour: val } ) }
+						gradientCapable
 					/>
 					<ScaleAxisControl
 						label={ __( 'Size', 'sgs-blocks' ) }
@@ -1398,6 +1399,7 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						label={ __( 'Colour', 'sgs-blocks' ) }
 						value={ attributes.shapeDividerBottomColour }
 						onChange={ ( val ) => setAttributes( { shapeDividerBottomColour: val } ) }
+						gradientCapable
 					/>
 					<ScaleAxisControl
 						label={ __( 'Size', 'sgs-blocks' ) }

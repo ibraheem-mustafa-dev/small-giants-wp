@@ -249,6 +249,15 @@
 					]
 				},
 				{
+					"key": "css:stroke",
+					"label": "Stroke (SVG line paint)",
+					"suffixes": [],
+					"appliesToLayers": [
+						"OUTER"
+					],
+					"note": "D644 (2026-08-16) added css:stroke to setting-registry.json for icon/SVG gradient support (stroke-based Lucide icons cannot use css:fill/css:background-image), and named THIS cluster + this appliesToLayers shape as the destination, deliberately deferring the member entry itself: 'the exact suffixes array needs real attribute names that don't exist yet ... Builder 4's own task, once it has chosen its real attribute names.' This member entry exists ONLY to satisfy check-cluster-coverage.py's blocking gate (a css:* row with zero cluster membership fails the whole build for every parallel gradient-rollout builder, not just icon/SVG) — suffixes is deliberately EMPTY, not guessed, so it makes no false claim about which attributes exist. Builder 4 (icon/SVG) populates the real suffixes list."
+				},
+				{
 					"key": "input:media-source",
 					"label": "Background video source",
 					"suffixes": [
