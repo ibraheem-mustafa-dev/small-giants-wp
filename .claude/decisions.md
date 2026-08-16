@@ -286,9 +286,18 @@ both RULED by Bean, control-shape question still open.**
   "any of the shape dividers is just a normal shape that sits on top or below a section/block" — the
   render model is exactly as simple as that sentence, the earlier "unspecified" finding was a real
   gap in the DOC, not evidence the underlying behaviour was actually ambiguous or hard to define.
-- **Still open:** the CONTROL SHAPE (link/unlink toggle vs. two independent labelled sliders) —
-  render behaviour being defined doesn't answer how a client picks the two numbers. This is the one
-  remaining thing before Design #3 builds.
+- **Control shape — RULED by Bean, closing the last open item.** Keep the link/unlink toggle (F.2.3's
+  original design) — the alternative offered ("two independent sliders, unrelated axes") was itself
+  wrong, corrected directly: X and Y are not unrelated for a shape/image resize — keeping proportions
+  uniform via one overall-size control is the primary interaction people expect, per-axis tweaking is
+  the secondary override. That is exactly what link/unlink already provides, and it has BETTER
+  real-world precedent than the doc's original `BoxControl` comparison — proportional-scale-with-a-
+  lock-toggle is the standard shape/image-resize convention (Figma/Photoshop/Canva), not just a
+  borrowed 4-side-padding pattern. No component interface change — the spec's original
+  `ScaleAxisControl` shape was already correct; only the earlier reasoning against it was wrong.
+
+**Net: Design #3 is now FULLY LOCKED — render behaviour, control shape, and storage fork all decided.
+Step 7 has no remaining design blocker on any of the three designs.**
 
 Full spec update: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2.3.
 

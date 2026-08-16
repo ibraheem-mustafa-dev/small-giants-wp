@@ -385,7 +385,7 @@ inheritance, which background/border/shadow/padding don't have. A separate, fram
 typography placement/completeness audit (parallel to the live colour-panel rollout) is queued as
 the next initiative after colour's own two tracks close — not this spec's open item to build yet.
 
-### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion (LOCKED), `ScaleAxisControl` (NEEDS REVISION) (added 2026-08-16, D637)
+### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion, `ScaleAxisControl` — ALL THREE FULLY LOCKED (added 2026-08-16, D637)
 
 Design-only spec addition feeding the shared-wrapper decomposition's step 7 (`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4; the D626 grouping locked six opt-in wrapper extensions —
 `background`/`width`/`layout`/`gridItems`/`shapeDividers`/`typography`). D626 named two cross-extension
@@ -465,11 +465,8 @@ import `GridAreaPanel` and never will under the current shape). Ship this guard 
 after F.2.2's editor-layer change lands — enabling it earlier will either false-negative or need to
 be disabled for the gap window; do not enable it blind.
 
-**F.2.3 — `shapeDividers` linked/unlinked X/Y scale control. ⚠ PARTIALLY REVISED (2026-08-16) — the
-X/Y RENDER BEHAVIOUR is now RULED (below), the CONTROL SHAPE (link/unlink toggle vs. two independent
-sliders) is still open. Do not build the control-shape half without a follow-up decision from Bean;
-the render-behaviour half is safe to build against.** The storage fork (replace, not add-alongside)
-IS decided and stable.
+**F.2.3 — `shapeDividers` linked/unlinked X/Y scale control. ✅ FULLY LOCKED (2026-08-16) — render
+behaviour, control shape, and storage fork all decided. Safe to build as specced.**
 
 **X/Y render behaviour — RULED by Bean, 2026-08-16.** 100% is the shape's natural, undistorted size
 on both axes (the default). **Y anchors to the edge the divider is attached to** (top divider anchors
@@ -485,13 +482,20 @@ to plain, ordinary CSS overflow/repeat semantics, nothing bespoke needed. **Migr
 directly with Bean — "there is nothing to preserve" on the live canary; the D635-style content-check
 this entry's addendum flagged as a due-diligence gap is closed by this ruling, not deferred.
 
-**Control shape — still open, this is the one thing left before F.2.3 can build.** An independent
-review lens found the link/unlink toggle shape below was picked with no competitor research (contrast
-D636, which ran a 4-seat Kadence/Spectra/Elementor council before an analogous gradient-control
-decision). Candidate alternative worth weighing against the link/unlink shape below: two
-independently-labelled sliders ("Divider height" / "Divider width") with no link toggle at all —
-"linking" reads naturally for 4 equal box sides, less naturally for a 2-axis shape stretch. Full
-record: `decisions.md` D637 addendum. New component
+**Control shape — RULED by Bean, 2026-08-16, keep the link/unlink toggle. The earlier reasoning
+against it (framed here as "4 equal box sides vs 2 unrelated axes") was WRONG, corrected directly by
+Bean:** X and Y are not unrelated axes needing independent controls by default — for scaling any
+shape or image, keeping proportions uniform via ONE overall-size control is the primary interaction
+people expect, with per-axis tweaking as the secondary, occasional override. That is exactly what
+link/unlink already provides, and it has a stronger real-world precedent than `BoxControl`'s 4-side
+pattern: proportional-scale-by-default with a lock/unlock toggle is the standard shape-resize
+convention in every design tool (Figma, Photoshop, Canva) — closer prior art than the 4-side-padding
+analogy this doc originally leaned on, and it didn't need the D636-style competitor council the
+earlier finding asked for; the corrected reasoning stands on its own. **Default state stays LINKED**
+(computed as `value.x === value.y` on mount, per the interface below — every fresh instance starts at
+`{x:100,y:100}`, so it opens linked; an instance already unlinked to different X/Y values correctly
+reopens unlinked). No interface change needed — the component spec below was already correct; only
+the reasoning for choosing it was wrong and is now fixed. New component
 `plugins/sgs-blocks/src/components/ScaleAxisControl.js` — the 2-axis analogue of WP core
 `BoxControl`'s 4-side link pattern (D626: "architecturally the same linked/unlinked pattern
 BoxControl's 4-side link already uses, applied to 2 axes"). Interface:
@@ -540,14 +544,17 @@ one; a deliberate scope boundary for this design, not an oversight.
 DB-first compliance returned PASS on all three subsections (the `assembly.py:250` correction folded
 in above). The universality/client-UX lens — hung on its first dispatch, re-run successfully — found
 **F.2.1 and F.2.2 sound** (two citation corrections folded in above: the precedent-shape note in
-F.2.1, the `accepts_allowed_blocks`/regression-guard-scoping corrections in F.2.2) and **F.2.3 NEEDS
-REVISION** (see the warning at the top of F.2.3 — the link/unlink control shape is not locked; the
-Option A/B *storage* fork it was checking IS confirmed correct by both lenses). An independent
-adversarial confirmation pass re-derived every factual claim in F.2.2 from source (not from this doc
-or either lens) and confirmed all of them, catching one further correction (the DB-column analogy)
-along the way. Full record: `decisions.md` D637 + its 2026-08-16 addendum. **Net: F.2.1/F.2.2 are
-locked and buildable as specced; F.2.3 needs a follow-up design gate with Bean before its build
-starts.**
+F.2.1, the `accepts_allowed_blocks`/regression-guard-scoping corrections in F.2.2) and flagged F.2.3's
+render behaviour and control-shape reasoning as unresolved. An independent adversarial confirmation
+pass re-derived every factual claim in F.2.2 from source (not from this doc or either lens) and
+confirmed all of them, catching one further correction (the DB-column analogy) along the way. Bean
+then ruled directly on both F.2.3 open items (`decisions.md` D637's second addendum, 2026-08-16): the
+X/Y render behaviour (edge-anchored Y extending outward, centre-anchored X with tile-below/clip-above
+100% semantics) and the control shape (keep link/unlink — the earlier "unrelated axes" framing was
+wrong; proportional-scale-by-default is the standard shape/image-resize convention, a stronger
+precedent than the original `BoxControl` analogy). Full record: `decisions.md` D637 + both addenda.
+**Net: all three of F.2.1/F.2.2/F.2.3 are locked and buildable as specced — step 7 has no remaining
+design blocker.**
 
 ## PART G — Prefer native, don't hand-roll (adopt these WP mechanisms)
 
