@@ -282,9 +282,9 @@ function sgs_functional_colour_to_hex( string $value ): string {
 
 	// rgb()/rgba() — comma OR space separated; alpha after a comma or slash.
 	if ( preg_match( '/^rgba?\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+%?)\s*(?:[,\/]\s*([\d.]+%?)\s*)?\)$/i', $v, $m ) ) {
-		$r = sgs_css_channel_to_255( $m[1] );
-		$g = sgs_css_channel_to_255( $m[2] );
-		$b = sgs_css_channel_to_255( $m[3] );
+		$r   = sgs_css_channel_to_255( $m[1] );
+		$g   = sgs_css_channel_to_255( $m[2] );
+		$b   = sgs_css_channel_to_255( $m[3] );
 		$hex = sprintf( '#%02X%02X%02X', $r, $g, $b );
 		if ( isset( $m[4] ) && '' !== $m[4] ) {
 			$a = sgs_css_alpha_to_255( $m[4] );
@@ -307,9 +307,9 @@ function sgs_functional_colour_to_hex( string $value ): string {
 
 	// oklch(L C H) — L 0-1 or %, C 0-~0.4 or % (of 0.4), H deg.
 	if ( preg_match( '/^oklch\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+)(?:deg)?\s*(?:[,\/]\s*([\d.]+%?)\s*)?\)$/i', $v, $m ) ) {
-		$l   = sgs_css_num_or_pct( $m[1], 1.0 );
-		$c   = sgs_css_num_or_pct( $m[2], 0.4 );
-		$h   = deg2rad( (float) $m[3] );
+		$l = sgs_css_num_or_pct( $m[1], 1.0 );
+		$c = sgs_css_num_or_pct( $m[2], 0.4 );
+		$h = deg2rad( (float) $m[3] );
 		return sgs_rgb_to_hex( sgs_oklab_to_rgb( $l, $c * cos( $h ), $c * sin( $h ) ), $m[4] ?? '' );
 	}
 
@@ -323,9 +323,9 @@ function sgs_functional_colour_to_hex( string $value ): string {
 
 	// lch(L C H) — L 0-100 or %, C 0-~150 or % (of 150), H deg.
 	if ( preg_match( '/^lch\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+)(?:deg)?\s*(?:[,\/]\s*([\d.]+%?)\s*)?\)$/i', $v, $m ) ) {
-		$l   = sgs_css_num_or_pct( $m[1], 100.0 );
-		$c   = sgs_css_num_or_pct( $m[2], 150.0 );
-		$h   = deg2rad( (float) $m[3] );
+		$l = sgs_css_num_or_pct( $m[1], 100.0 );
+		$c = sgs_css_num_or_pct( $m[2], 150.0 );
+		$h = deg2rad( (float) $m[3] );
 		return sgs_rgb_to_hex( sgs_lab_to_rgb( $l, $c * cos( $h ), $c * sin( $h ) ), $m[4] ?? '' );
 	}
 
@@ -826,6 +826,120 @@ function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string
 	}
 
 	return $paint['property'] . ':' . $paint['value'];
+}
+
+/**
+ * Resolve a text-colour attribute (flat colour OR gradient string, D636
+ * single-attribute storage) into a bare CSS declaration fragment — no
+ * selector, no trailing `;`, matching the shape every block already pushes
+ * onto its own `$decls[]`/`$text_decls[]` array (e.g.
+ * `$text_decls[] = 'color:' . sgs_colour_value( $text_colour )` in
+ * `heading/render.php`), so adopting gradient support is a one-line swap at
+ * each call site rather than a restructure.
+ *
+ * D636 Task 1b "text" builder — the CSS mechanism for a gradient painted
+ * through text glyphs is `background-clip: text` + `color: transparent`,
+ * proven live first on `sgs/business-info`'s link-hover sweep (D643). A flat
+ * colour (the common case — most instances of a text-colour attribute are
+ * never set to a gradient) emits a plain `color:` declaration, byte-identical
+ * to every attribute's previous behaviour.
+ *
+ * A gradient value additionally NEEDS `sgs_text_colour_gradient_fallback_rule()`
+ * emitted as its own standalone rule (see that function) — this function
+ * alone is not safe to use for a gradient without it, because `color:
+ * transparent` with no `background-clip: text` support renders the text
+ * INVISIBLE, not merely un-gradiented.
+ *
+ * @param string|null $value Stored attribute value — flat colour/slug or a
+ *                            complete CSS gradient string.
+ * @return string A single declaration fragment with no trailing `;`
+ *                (e.g. `color:#fff` or
+ *                `background-image:linear-gradient(...);-webkit-background-clip:text;background-clip:text;color:transparent`),
+ *                or an empty string if $value is empty or an invalid gradient.
+ */
+function sgs_text_colour_decl( ?string $value ): string {
+	$value = trim( (string) $value );
+
+	if ( '' === $value ) {
+		return '';
+	}
+
+	if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\(/i', $value ) ) {
+		$colour = sgs_colour_value( $value );
+		return '' === $colour ? '' : 'color:' . $colour;
+	}
+
+	$gradient = sgs_css_gradient_value( $value );
+	if ( '' === $gradient ) {
+		return '';
+	}
+
+	return 'background-image:' . $gradient . ';-webkit-background-clip:text;background-clip:text;color:transparent';
+}
+
+/**
+ * The `@supports not (background-clip: text)` fallback rule that MUST
+ * accompany `sgs_text_colour_decl()` whenever its input was a gradient (a
+ * no-op — returns '' — for a flat colour, so it is always safe to call
+ * unconditionally alongside the decl call).
+ *
+ * The fallback colour is the gradient's FIRST colour stop, extracted from
+ * the already-validated gradient string (safe to slice — the whole string
+ * has already passed `sgs_css_gradient_value()`'s character-class +
+ * breakout gate), so an old browser gets a sensible solid colour instead of
+ * an invisible `transparent` or a bare `inherit`.
+ *
+ * @param string      $selector Scoped CSS selector (already uid-prefixed by the caller) —
+ *                               MUST be the exact same selector `sgs_text_colour_decl()`'s
+ *                               declaration was emitted onto.
+ * @param string|null $value    The same value passed to `sgs_text_colour_decl()`.
+ * @return string A standalone `@supports` rule, or '' when $value is not a gradient.
+ */
+function sgs_text_colour_gradient_fallback_rule( string $selector, ?string $value ): string {
+	$value = trim( (string) $value );
+
+	if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\(/i', $value ) ) {
+		return '';
+	}
+
+	$gradient = sgs_css_gradient_value( $value );
+	if ( '' === $gradient ) {
+		return '';
+	}
+
+	$fallback_colour = 'inherit';
+	if ( preg_match( '/(#[0-9a-fA-F]{3,8}|rgba?\([^)]+\)|hsla?\([^)]+\)|var\(--wp--preset--color--[a-z0-9-]+\))/', $gradient, $stop_match ) ) {
+		$fallback_colour = $stop_match[1];
+	}
+
+	return '@supports not ((background-clip:text) or (-webkit-background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour ) . ';}}';
+}
+
+/**
+ * Resolve which of a text-colour attribute's two SIBLING values should be
+ * used — the flat colour attribute, or its `{attr}Gradient` sibling.
+ *
+ * D636 storage correction (coordinator, 2026-08-16): the rollout does NOT
+ * share one attribute slot between a flat colour and a gradient. It mirrors
+ * `sgs/container`'s existing, shipped `backgroundOverlayColour` /
+ * `overlayGradient` precedent (`class-sgs-container-wrapper.php` ~397-403) —
+ * two sibling attributes, gradient wins when set and valid, the flat
+ * attribute is left completely untouched. `sgs_text_colour_decl()` and
+ * `sgs_text_colour_gradient_fallback_rule()` need NO change for this: they
+ * already detect "is this a gradient function or a flat colour" from
+ * whatever single value they're handed — this resolver just decides which
+ * of the two sibling attributes that single value should be.
+ *
+ * @param string|null $flat_value     The flat-colour attribute's value (unchanged, never a gradient).
+ * @param string|null $gradient_value The sibling `{attr}Gradient` attribute's value.
+ * @return string The value to pass into `sgs_text_colour_decl()` /
+ *                 `sgs_text_colour_gradient_fallback_rule()` — the gradient
+ *                 string when valid and non-empty, otherwise the flat value
+ *                 verbatim (untouched, even if empty).
+ */
+function sgs_resolve_text_colour_or_gradient( ?string $flat_value, ?string $gradient_value ): string {
+	$gradient = sgs_css_gradient_value( (string) $gradient_value );
+	return '' !== $gradient ? $gradient : (string) $flat_value;
 }
 
 /**

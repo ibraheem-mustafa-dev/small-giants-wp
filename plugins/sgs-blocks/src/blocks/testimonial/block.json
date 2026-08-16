@@ -82,12 +82,13 @@
 				"quote-text": {
 					"label": "Quote text",
 					"order": 2,
-					"clusters": [ "text", "layout" ],
+					"clusters": [ "text", "fill", "layout" ],
 					"prefix": "quote",
 					"attrMap": {
-						"css:margin-bottom": "quoteMarginBottom"
+						"css:margin-bottom": "quoteMarginBottom",
+						"css:background-image": "quoteColourGradient"
 					},
-					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix)."
+					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix). quoteColourGradient (D636 Task 1b) is the text-colour gradient sibling to quoteColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member."
 				},
 				"reviewer-name": {
 					"label": "Reviewer name",
@@ -286,6 +287,10 @@
 			"default": ""
 		},
 		"quoteColour": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteColourGradient": {
 			"type": "string",
 			"default": ""
 		},

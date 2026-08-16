@@ -111,8 +111,8 @@ $is_subheading = ( 'subheading' === $heading_role );
 $rendered_tag  = $is_subheading ? $sub_tag : $level;
 
 // Typography attrs.
-$font_family         = $attributes['fontFamily'] ?? '';
-$font_size_unit      = $attributes['fontSizeUnit'] ?? 'px';
+$font_family    = $attributes['fontFamily'] ?? '';
+$font_size_unit = $attributes['fontSizeUnit'] ?? 'px';
 // No '700' fallback (D338): that duplicated theme.json's styles.elements.heading
 // fontWeight and forced an emit that beat it, so a client could never change heading
 // weight. Empty => the emitter below writes no declaration => the theme wins.
@@ -125,9 +125,13 @@ $text_transform      = isset( $attributes['textTransform'] ) ? $attributes['text
 // '' = inherit (D343). NEVER default this to a colour: the scoped rule it emits
 // is (0,2,0) and beats the theme's own `h1..h6 { color: … }` (0,0,1), so a
 // default here silently disables the client's heading colour on every heading.
-$text_colour         = $attributes['textColour'] ?? '';
-$font_style          = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
-$text_decoration     = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
+$text_colour = $attributes['textColour'] ?? '';
+// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
+// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient:
+// TWO attributes, gradient wins when set+valid, textColour is untouched.
+$text_colour_gradient = $attributes['textColourGradient'] ?? '';
+$font_style           = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
+$text_decoration      = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
 
 // Wrapper-level attrs. Box-object interface contract §B: padding/margin are box
 // objects — base from WP-native style.spacing.* (skip-serialised, read in step
@@ -145,8 +149,10 @@ $transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
 $allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
 $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
 
-$hover_scale      = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
+$hover_scale               = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
 $hover_colour              = $attributes['textColourHover'] ?? '';
+// D636 Task 1b, sibling-attribute shape — see $text_colour_gradient above.
+$hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
@@ -260,8 +266,14 @@ $preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_
 // id-scoped text selector, never inline (contract §A).
 $text_decls = array();
 
-if ( $text_colour ) {
-	$text_decls[] = 'color:' . sgs_colour_value( $text_colour );
+// D636 Task 1b — sibling gradient attribute wins when set+valid; the
+// gradient path paints through the glyphs via background-clip:text.
+$text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
+if ( '' !== $text_colour_effective ) {
+	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
+	if ( '' !== $text_colour_decl ) {
+		$text_decls[] = $text_colour_decl;
+	}
 }
 if ( $font_weight ) {
 	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
@@ -379,8 +391,13 @@ $scoped_css = array();
 
 // --- Hover states ---
 $hover_rules = array();
-if ( $hover_colour ) {
-	$hover_rules[] = 'color:' . sgs_colour_value( $hover_colour );
+// D636 Task 1b — sibling gradient attribute wins when set+valid.
+$hover_colour_effective = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
+if ( '' !== $hover_colour_effective ) {
+	$hover_colour_decl = sgs_text_colour_decl( $hover_colour_effective );
+	if ( '' !== $hover_colour_decl ) {
+		$hover_rules[] = $hover_colour_decl;
+	}
 }
 $hover_background_decl = sgs_background_paint_decl( $hover_background, $hover_background_gradient );
 if ( $hover_background_decl ) {
@@ -398,13 +415,24 @@ if ( $hover_rules || $has_scale ) {
 	$scoped_css[] = "{$root_sel}{transition:all {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
-		$scoped_css[] = "{$root_sel}:hover,{$root_sel}:focus-within{" . implode( ';', $hover_rules ) . ';}';
+		$hover_sel           = "{$root_sel}:hover,{$root_sel}:focus-within";
+		$scoped_css[]        = "{$hover_sel}{" . implode( ';', $hover_rules ) . ';}';
+		$hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $hover_sel, $hover_colour_effective );
+		if ( '' !== $hover_fallback_rule ) {
+			$scoped_css[] = $hover_fallback_rule;
+		}
 	}
 }
 
 // --- Root typography (scoped) — the h-tag IS the text element now. ---
 if ( $text_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $text_decls ) . ';}';
+}
+// D636 Task 1b — old-browser fallback for a gradient textColour; a no-op
+// (returns '') when the flat colour (no gradient sibling set) applies.
+$text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
+if ( '' !== $text_colour_fallback_rule ) {
+	$scoped_css[] = $text_colour_fallback_rule;
 }
 
 // fontSize is a TIER OBJECT when authored as a number (Spec 35 migration,

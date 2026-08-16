@@ -81,8 +81,12 @@
 				"number": {
 					"label": "Number",
 					"order": 2,
-					"clusters": [ "text" ],
-					"prefix": "number"
+					"clusters": [ "text", "fill" ],
+					"prefix": "number",
+					"attrMap": {
+						"css:background-image": "numberColourGradient"
+					},
+					"_note": "numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member (every other fill member is an honest GAP, this element has no background/border surface)."
 				},
 				"label": {
 					"label": "Label",
@@ -136,6 +140,10 @@
 		"numberColour": {
 			"type": "string",
 			"default": "primary"
+		},
+		"numberColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"labelColour": {
 			"type": "string",

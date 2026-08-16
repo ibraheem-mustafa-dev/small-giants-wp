@@ -56,9 +56,10 @@
 					"prefix": "number",
 					"attrMap": {
 						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight"
+						"css:line-height": "native:typography.lineHeight",
+						"css:background-image": "numberColourGradient"
 					},
-					"_note": "selectors.typography targets .sgs-counter__number, so the block-level typography.fontSize/lineHeight supports serialise onto this element specifically, not the wrapper — unlike quote's root-level inherited-default case."
+					"_note": "selectors.typography targets .sgs-counter__number, so the block-level typography.fontSize/lineHeight supports serialise onto this element specifically, not the wrapper — unlike quote's root-level inherited-default case. numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism."
 				},
 				"label": {
 					"label": "Label",
@@ -140,6 +141,10 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"numberColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"labelColour": {
 			"type": "string",
 			"default": "text-muted"
@@ -151,7 +156,7 @@
 		"labelFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"labelFontWeight": {
 			"type": "string",
 			"default": ""

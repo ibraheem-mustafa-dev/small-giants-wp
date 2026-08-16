@@ -109,6 +109,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadiusTablet,
 		borderRadiusMobile,
 		numberColour,
+		numberColourGradient,
 		labelColour,
 	} = attributes;
 
@@ -141,12 +142,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'number',
 						label: __( 'Number colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: numberColour,
 								onChange: ( val ) => setAttributes( { numberColour: val } ),
+								gradientValue: numberColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { numberColourGradient: val ?? '' } ),
 							},
 						],
 					},

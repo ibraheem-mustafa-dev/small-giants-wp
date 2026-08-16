@@ -18,7 +18,7 @@ import {
   ResponsiveBorderRadiusControl,
   SgsColourPanel,
 } from "../../components";
-import { colourVar } from "../../utils";
+import { colourVar, resolveTextColourPreviewStyle } from "../../utils";
 
 
 function formatNumber(num, separator) {
@@ -47,6 +47,7 @@ export default function Edit({ attributes, setAttributes }) {
     duration,
     separator,
     numberColour,
+    numberColourGradient,
     labelColour,
     icon,
     accentStroke,
@@ -78,9 +79,7 @@ export default function Edit({ attributes, setAttributes }) {
 
   const blockProps = useBlockProps({ className, style: wrapperPreviewStyle });
 
-  const numberStyle = {
-    color: colourVar(numberColour) || undefined,
-  };
+  const numberStyle = resolveTextColourPreviewStyle(numberColour, numberColourGradient, colourVar);
 
   const labelStyle = {
     color: colourVar(labelColour) || undefined,
@@ -99,6 +98,7 @@ export default function Edit({ attributes, setAttributes }) {
           {
             key: "number",
             label: __("Number colour", "sgs-blocks"),
+            gradientCapable: true,
             states: [
               {
                 key: "normal",
@@ -106,6 +106,8 @@ export default function Edit({ attributes, setAttributes }) {
                 value: numberColour,
                 onChange: (val) => setAttributes({ numberColour: val ?? "" }),
                 linked: true,
+                gradientValue: numberColourGradient,
+                gradientOnChange: (val) => setAttributes({ numberColourGradient: val ?? "" }),
               },
             ],
           },

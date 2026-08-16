@@ -69,9 +69,12 @@ $show_hours      = $attributes['showHours'] ?? true;
 $show_minutes    = $attributes['showMinutes'] ?? true;
 $show_seconds    = $attributes['showSeconds'] ?? true;
 $number_colour   = $attributes['numberColour'] ?? 'primary';
-$label_colour    = $attributes['labelColour'] ?? 'text-muted';
-$card_style_raw  = $attributes['cardStyle'] ?? 'elevated';
-$digit_style_raw = $attributes['digitStyle'] ?? 'simple';
+// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
+// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+$number_colour_gradient = $attributes['numberColourGradient'] ?? '';
+$label_colour           = $attributes['labelColour'] ?? 'text-muted';
+$card_style_raw         = $attributes['cardStyle'] ?? 'elevated';
+$digit_style_raw        = $attributes['digitStyle'] ?? 'simple';
 
 $allowed_card_styles  = array( 'flat', 'bordered', 'elevated', 'filled' );
 $card_style           = in_array( $card_style_raw, $allowed_card_styles, true ) ? $card_style_raw : 'elevated';
@@ -82,7 +85,12 @@ $digit_style          = in_array( $digit_style_raw, $allowed_digit_styles, true 
 // 3. Calculate initial server-side values for fixed target dates.
 // ---------------------------------------------------------------------------
 
-$initial    = array( 'days' => 0, 'hours' => 0, 'minutes' => 0, 'seconds' => 0 );
+$initial    = array(
+	'days'    => 0,
+	'hours'   => 0,
+	'minutes' => 0,
+	'seconds' => 0,
+);
 $server_ts  = 0;
 $is_expired = false;
 
@@ -132,10 +140,10 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 	}
 }
 
-$padding_tablet_obj      = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj      = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj       = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj       = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
@@ -150,7 +158,7 @@ $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $at
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 // WP `typography` support values (skip-serialised).
-$style_font_size = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
+$style_font_size  = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
 $preset_size_slug = isset( $attributes['fontSize'] ) ? sanitize_html_class( $attributes['fontSize'] ) : '';
 $text_align_raw   = isset( $attributes['textAlign'] ) ? (string) $attributes['textAlign'] : '';
 $allowed_aligns   = array( 'left', 'center', 'right', 'justify' );
@@ -218,8 +226,27 @@ if ( '' !== $text_align ) {
 // --- Number/label colour custom-property VALUES (FR-32-4, D345) — scoped, NOT
 // inline. Previously an inline `style="--x:y"` attribute on the root; the
 // values are sanitised via sgs_colour_value() exactly as before, just routed
-// into the same scoped <style> tag instead of get_block_wrapper_attributes(). ---
-$scoped_css[] = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+// into the same scoped <style> tag instead of get_block_wrapper_attributes().
+//
+// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
+// a gradient value cannot ride a `color: var(--x)` custom property (the
+// consuming declaration in style.css is a plain `color:`), so when the
+// sibling numberColourGradient wins, the custom-property write is skipped
+// (the static rule's own `inherit` fallback applies) and a direct scoped
+// rule on `.sgs-countdown__number` below carries the background-clip:text
+// mechanism instead. numberColour itself is UNCHANGED — never a gradient.
+$number_colour_gradient_valid = sgs_css_gradient_value( $number_colour_gradient );
+$number_colour_for_var        = ( '' !== $number_colour_gradient_valid ) ? '' : $number_colour;
+$scoped_css[]                 = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour_for_var ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+
+if ( '' !== $number_colour_gradient_valid ) {
+	$number_gradient_sel = "{$root_sel} .sgs-countdown__number";
+	$number_colour_decl  = sgs_text_colour_decl( $number_colour_gradient_valid );
+	if ( '' !== $number_colour_decl ) {
+		$scoped_css[] = "{$number_gradient_sel}{{$number_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_gradient_sel, $number_colour_gradient_valid );
+}
 
 // --- Responsive tiers — padding/margin/border-radius, each routed through the
 // same style-engine call, wrapped in the block's own scoped @media (contract
@@ -325,16 +352,28 @@ $data_attrs .= ' data-digit-style="' . esc_attr( $digit_style ) . '"';
 
 $units = array();
 if ( $show_days ) {
-	$units[] = array( 'class' => 'days', 'label' => __( 'Days', 'sgs-blocks' ) );
+	$units[] = array(
+		'class' => 'days',
+		'label' => __( 'Days', 'sgs-blocks' ),
+	);
 }
 if ( $show_hours ) {
-	$units[] = array( 'class' => 'hours', 'label' => __( 'Hours', 'sgs-blocks' ) );
+	$units[] = array(
+		'class' => 'hours',
+		'label' => __( 'Hours', 'sgs-blocks' ),
+	);
 }
 if ( $show_minutes ) {
-	$units[] = array( 'class' => 'minutes', 'label' => __( 'Minutes', 'sgs-blocks' ) );
+	$units[] = array(
+		'class' => 'minutes',
+		'label' => __( 'Minutes', 'sgs-blocks' ),
+	);
 }
 if ( $show_seconds ) {
-	$units[] = array( 'class' => 'seconds', 'label' => __( 'Seconds', 'sgs-blocks' ) );
+	$units[] = array(
+		'class' => 'seconds',
+		'label' => __( 'Seconds', 'sgs-blocks' ),
+	);
 }
 
 $grid_hidden    = $is_expired ? ' hidden' : '';

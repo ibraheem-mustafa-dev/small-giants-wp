@@ -58,6 +58,7 @@
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
 						"css:color": "textColour",
+						"css:background-image": "textColourGradient",
 						"css:text-align": "textAlign",
 						"css:font-family": "fontFamily",
 						"css:background-color": "backgroundColour",
@@ -78,6 +79,7 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
+								"css:background-image": "textColourHoverGradient",
 								"css:background-color": "backgroundColourHover",
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:box-shadow": "boxShadowHover"
@@ -107,6 +109,10 @@
 			"role": "content"
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -214,6 +220,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"firstLetterColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"firstLetterFontSize": {
 			"type": "number"
 		},
@@ -268,6 +278,10 @@
 			"type": "number"
 		},
 		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
