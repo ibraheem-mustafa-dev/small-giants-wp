@@ -61,6 +61,18 @@
 			"type": "string",
 			"default": ""
 		},
+		"inputBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"focusRingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
 		"marginTablet": {
 			"type": "object",
 			"default": {}
