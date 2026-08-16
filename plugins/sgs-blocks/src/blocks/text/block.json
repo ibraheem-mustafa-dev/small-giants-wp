@@ -47,7 +47,12 @@
 				"text": {
 					"label": "Text",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout", "motion" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"motion"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:font-size": "fontSize",
@@ -58,11 +63,10 @@
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
 						"css:color": "textColour",
-						"css:background-image": "textColourGradient",
+						"css:background-image": "backgroundColourGradient",
 						"css:text-align": "textAlign",
 						"css:font-family": "fontFamily",
 						"css:background-color": "backgroundColour",
-						"css:background-image": "backgroundColourGradient",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
@@ -73,16 +77,17 @@
 						"css:width": "customWidth",
 						"css:max-width": "maxWidth",
 						"css:transition-duration": "transitionDuration",
-						"css:transition-timing-function": "transitionEasing"
+						"css:transition-timing-function": "transitionEasing",
+						"css:color-gradient": "textColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
-								"css:background-image": "textColourHoverGradient",
-								"css:background-color": "backgroundColourHover",
 								"css:background-image": "backgroundColourHoverGradient",
-								"css:box-shadow": "boxShadowHover"
+								"css:background-color": "backgroundColourHover",
+								"css:box-shadow": "boxShadowHover",
+								"css:color-gradient": "textColourHoverGradient"
 							}
 						}
 					},
@@ -91,7 +96,9 @@
 				"first-letter": {
 					"label": "Drop cap (first letter)",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"attrMap": {
 						"css:font-size": "firstLetterFontSize",
 						"css:font-weight": "firstLetterFontWeight",

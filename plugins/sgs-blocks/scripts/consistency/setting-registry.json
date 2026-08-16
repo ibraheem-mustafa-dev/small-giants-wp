@@ -1288,6 +1288,31 @@
 			"notes": "Highest-instance-count setting (125) — the single biggest lever in the registry. Some observed_control_types (RangeControl/ToggleControl) are almost certainly OTHER settings that share the dedup key by accident (e.g. a boolean 'use custom colour' toggle) — worth a spot-check, flagged in the parent report. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): text colour is SOLID ONLY - no gradient on text; named swatches for a11y; custom full picker behind the rainbow swatch. See compound_sets/structural_patterns in _meta for the colour-split rationale."
 		},
 		{
+			"setting_key": "css:color-gradient",
+			"category": "css-property",
+			"label": "Text colour (gradient)",
+			"optimal_control": {
+				"component": "DesignTokenPicker (enableAlpha + clearable, gradient tab)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Spec 35 Part B (Colour completeness) + Part H",
+			"current_state": "sgs/heading + sgs/text, D636 Task 1b text-gradient builder, 2026-08-16",
+			"divergence": "the literal CSS PROPERTY the value paints through is background-image (via background-clip:text), identical to css:background-image's mechanism — but the two are semantically distinct (one fills the text glyphs, one fills the box behind them) and can legitimately both be set on the same element at once, so they cannot share one manifest key without one silently overwriting the other's attrMap entry (found live: a merge of two independently-built gradient mechanisms on sgs/heading and sgs/text silently dropped one side's attrMap entry because both used css:background-image)",
+			"divergence_severity": "medium",
+			"notes": "Added 2026-08-16 (coordinator, gradient-rollout merge). Sibling to css:color the same way css:background-image is sibling to css:background-color — one member per flat/gradient pair, per distinct visual role, not per literal CSS property name."
+		},
+		{
 			"setting_key": "css:display",
 			"category": "css-property",
 			"label": "Display type",

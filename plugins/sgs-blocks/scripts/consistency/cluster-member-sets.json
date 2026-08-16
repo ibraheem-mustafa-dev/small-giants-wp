@@ -125,6 +125,16 @@
 					"nativeSupportsPath": "color.text"
 				},
 				{
+					"key": "css:color-gradient",
+					"label": "Text colour (gradient)",
+					"suffixes": [
+						"ColourGradient",
+						"TextColourGradient",
+						"ColorGradient"
+					],
+					"note": "Added 2026-08-16, gradient-rollout merge. Sibling to css:color the way css:background-image is sibling to css:background-color. Real CSS mechanism is background-image + background-clip:text (see sgs_text_colour_decl() in helpers-tokens.php) — deliberately NOT css:background-image itself, because that key is already claimed by the box-fill gradient (css:background-color's sibling) and a text element can legitimately have both a box background gradient and a text-fill gradient at once."
+				},
+				{
 					"key": "css:text-align",
 					"label": "Text align",
 					"suffixes": [
