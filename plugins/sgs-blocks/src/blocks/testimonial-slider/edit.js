@@ -143,6 +143,21 @@ export default function Edit( { attributes, setAttributes } ) {
 	// block's own manifest (block.json `_ownership_note`) and are out of
 	// scope here. Each row therefore carries a single 'hover' state — still
 	// `linked: true` per D619 — rather than a normal/hover pair.
+	//
+	// STOP (2026-08-16, per-block judgement — see block CLAUDE.md): a NORMAL
+	// state wired to `style.color.background`/`text` (native WP Text/
+	// Background) plus flipping `supports.color.background`/`text` to false
+	// was ATTEMPTED here and reverted. block.json's `slider` element
+	// declares `states.hover` for BOTH background-color and color, whose
+	// BASE resolves via `attrMap: "native:color.background"`/
+	// `"native:color.text"`. Turning the native flag off makes the
+	// element-manifest checker's BASE resolution fail (it checks the
+	// `supports` flag directly, not render.php's actual behaviour), while
+	// the already-declared HOVER state still resolves fine — this trips
+	// STATE_WITHOUT_BASE (measured: gate rose from 1 to 5, `npm run
+	// check:element-manifest`). Left as-is rather than forcing a gate
+	// regression; native Text/Background controls remain visible alongside
+	// this panel's Background/Text (hover-only) rows for this block only.
 	return (
 		<>
 			<SgsColourPanel
