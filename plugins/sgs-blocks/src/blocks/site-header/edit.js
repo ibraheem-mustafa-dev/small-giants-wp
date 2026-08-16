@@ -694,64 +694,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					{ /* Background/overlay panel — same shared component + default
-					     attrNames used by sgs/container, sgs/cta-section and sgs/hero
-					     (ContainerWrapperControls.js's BackgroundPanel, which wraps
-					     GradientOverlayControl). site-header declares the identical
-					     backgroundOverlayColour, overlayGradient, overlayGradientAngle,
-					     overlayGradientFrom and overlayGradientTo attrs
-					     (block.json:216,356-368) but had no
-					     control mounted — inspector-scan rule 21-render-without-control. */ }
-					<ToolsPanelItem
-						label={ __( 'Background', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! attributes.backgroundImage?.url ||
-							!! attributes.backgroundImageTablet?.url ||
-							!! attributes.backgroundImageMobile?.url ||
-							!! attributes.bgVideo?.url ||
-							!! attributes.bgVideoTablet?.url ||
-							!! attributes.bgVideoMobile?.url ||
-							!! attributes.bgSvgContent ||
-							!! attributes.backgroundOverlayColour ||
-							!! attributes.overlayGradient ||
-							( attributes.backgroundAttachment ?? 'scroll' ) !== 'scroll' ||
-							( attributes.backgroundPosition ?? 'center center' ) !== 'center center' ||
-							( attributes.backgroundRepeat ?? 'no-repeat' ) !== 'no-repeat' ||
-							( attributes.backgroundSize ?? 'cover' ) !== 'cover' ||
-							!! attributes.bgParallax ||
-							!! attributes.bgKenBurns
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								backgroundImage: undefined,
-								backgroundImageTablet: undefined,
-								backgroundImageMobile: undefined,
-								backgroundOverlayColour: undefined,
-								backgroundAttachment: 'scroll',
-								backgroundPosition: 'center center',
-								backgroundRepeat: 'no-repeat',
-								backgroundSize: 'cover',
-								bgVideo: undefined,
-								bgVideoTablet: undefined,
-								bgVideoMobile: undefined,
-								bgParallax: false,
-								bgKenBurns: false,
-								bgAnimationDuration: 20,
-								bgSvgContent: '',
-								bgSvgPosition: 'background',
-								bgSvgAnimation: 'none',
-								bgSvgAnimationSpeed: 'medium',
-								bgSvgOpacity: 100,
-								bgSvgMinHeight: '',
-								bgSvgTextShadow: false,
-								overlayGradient: false,
-								overlayGradientAngle: 180,
-								overlayGradientFrom: '',
-								overlayGradientTo: '',
-							} )
-						}
-					>
-					</ToolsPanelItem>
 				</ToolsPanel>
 			</InspectorControls>
 

@@ -206,19 +206,33 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 	// tile with a plain horizontal scale so the shape keeps its full height.
 	$tile_scale = $tile_w / SGS_SHAPE_DIVIDER_VIEWBOX_W;
 
-	// Pattern IDs must be unique per document — two dividers on one page with
-	// different shapes would otherwise collide on the first-defined pattern.
-	// Derived from the inputs (not random) so the markup stays deterministic
-	// and cacheable.
-	$pattern_id = 'sgs-sd-' . substr( md5( $shape . '|' . $position . '|' . $tile_w ), 0, 10 );
+	// Pattern IDs must be unique PER DOCUMENT. Deriving the id from the inputs
+	// alone is NOT enough: two blocks on one page sharing shape + position +
+	// tile width (two default heroes with the same top divider at the same
+	// scale) would emit duplicate `id` attributes — invalid markup, and the
+	// browser resolves `url(#id)` to whichever came first. A per-request
+	// counter guarantees uniqueness without making the markup random: it is
+	// deterministic for a given page render, so caching is unaffected.
+	static $instance = 0;
+	++$instance;
+	$pattern_id = 'sgs-sd-' . substr( md5( $shape . '|' . $position . '|' . $tile_w ), 0, 8 ) . '-' . $instance;
 
+	// ⛔ The flip/invert transform goes on the PATH INSIDE the pattern tile, NOT
+	// on the <rect>. `transform-origin="center"` resolves against the
+	// transformed element's OWN bounding box: on the rect that is always the
+	// full 1200x120 viewBox (centre 600,60), but several shapes have a narrower
+	// box (`zigzag` spans y 20-120, centre y=70). Putting it on the rect would
+	// therefore flip asymmetric shapes about a different axis than the
+	// X=100% route does, so the same shape would jump when the client nudged
+	// the X slider off 100. On the path, both routes share one origin.
+	// Flipping each tile is equivalent to flipping the tiled result.
 	return sprintf(
 		'<div class="sgs-shape-divider %s" aria-hidden="true">' .
 		'<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' .
 		'<defs><pattern id="%s" x="%d" y="0" width="%d" height="120" patternUnits="userSpaceOnUse">' .
-		'<g transform="scale(%s 1)"><path d="%s" fill="currentColor"/></g>' .
+		'<g transform="scale(%s 1)"><path d="%s" fill="currentColor"%s/></g>' .
 		'</pattern></defs>' .
-		'<rect x="0" y="0" width="1200" height="120" fill="url(#%s)"%s/>' .
+		'<rect x="0" y="0" width="1200" height="120" fill="url(#%s)"/>' .
 		'</svg></div>',
 		$position_class,
 		esc_attr( $pattern_id ),
@@ -226,8 +240,8 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 		$tile_w,
 		esc_attr( rtrim( rtrim( number_format( $tile_scale, 6, '.', '' ), '0' ), '.' ) ),
 		esc_attr( $path ),
-		esc_attr( $pattern_id ),
-		$transform
+		$transform,
+		esc_attr( $pattern_id )
 	);
 }
 
