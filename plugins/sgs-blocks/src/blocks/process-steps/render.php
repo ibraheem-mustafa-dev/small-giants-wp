@@ -148,7 +148,13 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 // WP `color` / `typography` / `shadow` support values (skip-serialised in
 // block.json → NOT auto-inlined). Passed wholesale to the style engine below
 // — the engine safely ignores any sub-key it doesn't recognise.
-$style_color_args      = isset( $attributes['style']['color'] ) && is_array( $attributes['style']['color'] ) ? $attributes['style']['color'] : array();
+$style_color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$style_color_args['text'] = (string) $attributes['textColour'];
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$style_color_args['background'] = (string) $attributes['backgroundColour'];
+}
 $style_typography_args = isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] ) ? $attributes['style']['typography'] : array();
 $style_shadow          = isset( $attributes['style']['shadow'] ) ? (string) $attributes['style']['shadow'] : '';
 $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';

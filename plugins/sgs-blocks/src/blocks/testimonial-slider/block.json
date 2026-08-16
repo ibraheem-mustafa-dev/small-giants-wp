@@ -38,8 +38,8 @@
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:background-color": "native:color.background",
-						"css:color": "native:color.text",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:line-height": "native:typography.lineHeight",
 						"css:letter-spacing": "native:typography.letterSpacing",
@@ -103,8 +103,8 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
+			"background": false,
+			"text": false,
 			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
@@ -179,6 +179,14 @@
 			"default": 3
 		},
 		"cardStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
 			"type": "string",
 			"default": ""
 		},

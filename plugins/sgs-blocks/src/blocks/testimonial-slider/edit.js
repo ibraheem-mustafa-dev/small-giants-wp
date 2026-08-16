@@ -82,6 +82,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		showArrows,
 		slidesVisible,
 		cardStyle,
+		backgroundColour,
+		textColour,
 		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
@@ -134,30 +136,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	);
 
-	// D619/D609 — the wrapper's own colours are HOVER-ONLY in this block's
-	// attribute set (block.json declares backgroundColourHover/
-	// textColourHover/borderColourHover with no normal-state counterpart —
-	// verified against block.json attributes + the `slider` element's
-	// `states.hover.attrMap`, which is the ONLY states entry present). Quote
-	// text/author/rating/avatar colours belong to the child sgs/testimonial
-	// block's own manifest (block.json `_ownership_note`) and are out of
-	// scope here. Each row therefore carries a single 'hover' state — still
-	// `linked: true` per D619 — rather than a normal/hover pair.
+	// D619/D609 — the wrapper's own colours pair a normal state with a hover
+	// state per row (background/text), matching quote/heading. Border stays
+	// hover-only — no border-colour base attr exists on this block.
 	//
-	// STOP (2026-08-16, per-block judgement — see block CLAUDE.md): a NORMAL
-	// state wired to `style.color.background`/`text` (native WP Text/
-	// Background) plus flipping `supports.color.background`/`text` to false
-	// was ATTEMPTED here and reverted. block.json's `slider` element
-	// declares `states.hover` for BOTH background-color and color, whose
-	// BASE resolves via `attrMap: "native:color.background"`/
-	// `"native:color.text"`. Turning the native flag off makes the
-	// element-manifest checker's BASE resolution fail (it checks the
-	// `supports` flag directly, not render.php's actual behaviour), while
-	// the already-declared HOVER state still resolves fine — this trips
-	// STATE_WITHOUT_BASE (measured: gate rose from 1 to 5, `npm run
-	// check:element-manifest`). Left as-is rather than forcing a gate
-	// regression; native Text/Background controls remain visible alongside
-	// this panel's Background/Text (hover-only) rows for this block only.
+	// UPDATED (2026-08-16): previously the normal state here read/wrote
+	// native `style.color.background`/`.text` with `supports.color`
+	// left `true`, because flipping that flag off broke the element-manifest
+	// checker's BASE resolution for this element's declared `states.hover`
+	// (`attrMap` pointed at `native:color.background`/`native:color.text`,
+	// which the checker only resolves when `supports.color.*` is `true` —
+	// measured: gate rose from 1 to 5, `npm run audit:element-manifest`).
+	// Fixed at the root by moving the manifest's base `attrMap` onto flat
+	// `backgroundColour`/`textColour` attrs (the same pattern quote/heading/
+	// card-grid/text already use) — `supports.color.background`/`.text` are
+	// now `false` and the native Text/Background panel no longer renders.
 	return (
 		<>
 			<SgsColourPanel
@@ -166,6 +159,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
 						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
@@ -180,6 +181,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
 						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),

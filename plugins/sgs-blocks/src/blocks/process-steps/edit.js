@@ -118,6 +118,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberBackground,
 		titleColour,
 		descriptionColour,
+		backgroundColour,
+		textColour,
 		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
@@ -193,23 +195,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		color: colourVar( descriptionColour ) || undefined,
 	};
 
-	// Wrapper normal text/background colour is native WP `style.color.{text,background}`
-	// (block.json attrMap: "css:color":"native:color.text", "css:background-color":
-	// "native:color.background" — GROUND-TRUTH: render.php reads
-	// $attributes['style']['color'] wholesale into wp_style_engine_get_styles(),
-	// scoped to the root selector, so this is a real working control, not dead
-	// plumbing). Its HOVER counterpart is the custom textColourHover/
-	// backgroundColourHover scalar attrs. Read/write directly (native supports
-	// sub-flags below are set false so WP's own colour panel no longer renders).
-	const wrapperColourText = style?.color?.text;
-	const wrapperColourBackground = style?.color?.background;
-	const setWrapperColour = ( key, val ) =>
-		setAttributes( {
-			style: {
-				...style,
-				color: { ...style?.color, [ key ]: val || undefined },
-			},
-		} );
+	// Wrapper normal text/background colour is the flat backgroundColour/
+	// textColour attrs (block.json attrMap: "css:color":"textColour",
+	// "css:background-color":"backgroundColour"). Moved off native
+	// `style.color.{text,background}` 2026-08-16 — that path required
+	// `supports.color.background`/`.text` to stay `true` for the
+	// element-manifest checker's BASE resolution on this element's declared
+	// `states.hover` to keep resolving (native attrMap only resolves when
+	// the matching `supports` flag is `true`); the flat-attr form resolves
+	// regardless, which is what let `supports.color.background`/`.text` flip
+	// to `false` and the native Text/Background panel stop rendering.
 
 	const updateStep = ( index, updated ) => {
 		const newSteps = [ ...steps ];
@@ -315,8 +310,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: wrapperColourText,
-								onChange: ( val ) => setWrapperColour( 'text', val ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 							},
 							{
@@ -335,8 +330,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: wrapperColourBackground,
-								onChange: ( val ) => setWrapperColour( 'background', val ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
 							},
 							{
