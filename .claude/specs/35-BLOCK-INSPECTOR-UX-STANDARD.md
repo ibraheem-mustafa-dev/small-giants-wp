@@ -393,7 +393,7 @@ the next initiative after colour's own two tracks close — not this spec's open
 >
 > | Piece | Status | Note |
 > |---|---|---|
-> | **F.2.1** precondition gate | ✅ **BUILT** as specced | `scripts/check-wrapper-capability-preconditions.js`, fail-closed, no baseline, `--self-test` 11/11. ⚠ **THREE** blocks declare `gridItems`+`layout` (`container`, `cta-section`, `trust-bar`) — F.2.1's text names two. |
+> | **F.2.1** precondition gate | ✅ **BUILT** as specced; **WIRED at D643, not at build time** | `scripts/check-wrapper-capability-preconditions.js`, fail-closed, no baseline, `--self-test` 11/11. ⚠ **THREE** blocks declare `gridItems`+`layout` (`container`, `cta-section`, `trust-bar`) — F.2.1's text names two. ⚠ **The build-day claim that it was wired into `prebuild` was FALSE** — zero `package.json` references until D643 (2026-08-16), so it ran nowhere while three docs said it ran every build. Now in `prebuild` + `npm run check:wrapper-capability`. |
 > | **F.2.2** whole subsection | ⛔ **RETIRED — `supports.sgs.gridAreas` DELETED, not built** | Neither reader was needed. See premise 2 AND premise 3 below. The DB column/writer/migration were built then **reverted in the same session** once premise 3 surfaced. |
 > | **F.2.3** scale control | ✅ **BUILT** | `src/components/ScaleAxisControl.js` + storage replace across 6 blocks + SVG-`<pattern>` X tiling. |
 >
