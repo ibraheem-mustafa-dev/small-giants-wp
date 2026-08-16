@@ -111,7 +111,12 @@ $scoped_css = array();
 // Number / label custom colour (SGS scalar attrs) — scoped, NOT inline.
 // ---------------------------------------------------------------------------
 if ( $number_colour ) {
-	$scoped_css[] = "{$number_sel}{color:" . sgs_colour_value( $number_colour ) . ';}';
+	// D636 Task 1b — flat colour OR a complete CSS gradient string.
+	$number_colour_decl = sgs_text_colour_decl( $number_colour );
+	if ( '' !== $number_colour_decl ) {
+		$scoped_css[] = "{$number_sel}{{$number_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_sel, $number_colour );
 }
 if ( $label_colour ) {
 	$scoped_css[] = "{$label_sel}{color:" . sgs_colour_value( $label_colour ) . ';}';

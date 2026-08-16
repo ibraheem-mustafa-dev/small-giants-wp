@@ -57,17 +57,25 @@
  * calling block, not disclosed/undisclosed via a ToolsPanel.
  *
  * @param {Object} props
- * @param {Array}  props.rows Colour rows: `[{ key, label, states }]`, where
- *                             `states` matches `DesignTokenPicker`'s own
+ * @param {Array}  props.rows Colour rows: `[{ key, label, states, gradientCapable }]`,
+ *                             where `states` matches `DesignTokenPicker`'s own
  *                             `states` prop shape. Falsy entries are dropped,
  *                             so a caller can inline a condition
  *                             (`shape !== 'none' && { … }`) directly in the
- *                             array literal.
+ *                             array literal. `gradientCapable: true` (D636
+ *                             Task 1b "text" builder) renders the row with
+ *                             `GradientCapableColourControl` instead of
+ *                             `DesignTokenPicker` — same swatch/popover/tabs
+ *                             shape, with a Solid/Gradient toggle per state,
+ *                             for a colour whose CSS mechanism is text-colour
+ *                             (`background-clip: text`). Every existing row
+ *                             (no `gradientCapable`) is unaffected.
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
+import GradientCapableColourControl from './GradientCapableColourControl';
 
 export default function SgsColourPanel( { rows } ) {
 	const visible = ( rows || [] ).filter( Boolean );
@@ -83,13 +91,18 @@ export default function SgsColourPanel( { rows } ) {
 				initialOpen
 				className="sgs-colour-panel"
 			>
-				{ visible.map( ( row ) => (
-					<DesignTokenPicker
-						key={ row.key }
-						label={ row.label }
-						states={ row.states }
-					/>
-				) ) }
+				{ visible.map( ( row ) => {
+					const Control = row.gradientCapable
+						? GradientCapableColourControl
+						: DesignTokenPicker;
+					return (
+						<Control
+							key={ row.key }
+							label={ row.label }
+							states={ row.states }
+						/>
+					);
+				} ) }
 			</PanelBody>
 		</InspectorControls>
 	);

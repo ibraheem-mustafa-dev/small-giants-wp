@@ -30,7 +30,7 @@ import {
 	ShadowControl,
 	SgsColourPanel,
 } from '../../components';
-import { colourVar, fontSizeVar } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
@@ -264,8 +264,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	} );
 
 	// Per-element inline style — raw colour value (hex or token), best-effort font size.
+	// D636 Task 1b — quoteColour may also be a complete CSS gradient string.
 	const quoteInlineStyle = {
-		color: quoteColour || undefined,
+		...resolveTextColourPreviewStyle( quoteColour ),
 		fontSize: quoteFontSize ? fontSizeVar( quoteFontSize ) : undefined,
 		fontStyle: quoteFontStyle || undefined,
 		lineHeight: quoteLineHeight || undefined,
@@ -412,6 +413,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					{
 						key: 'quote',
 						label: __( 'Quote colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',

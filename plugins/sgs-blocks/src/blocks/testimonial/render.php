@@ -131,8 +131,12 @@ $schema_enabled = ! empty( $attributes['schemaEnabled'] );
 
 // ── Per-element typography (empty → CSS token default via the block's own
 // scoped CSS; NOTHING is emitted inline any more — contract §A). ────────────
-$quote_font_size   = sgs_font_size_value( $attributes['quoteFontSize'] ?? '' );
-$quote_colour      = sgs_colour_value( $attributes['quoteColour'] ?? '' );
+$quote_font_size = sgs_font_size_value( $attributes['quoteFontSize'] ?? '' );
+// D636 Task 1b — kept RAW (not pre-resolved via sgs_colour_value()) because a
+// gradient string needs the multi-declaration background-clip:text shape,
+// not a single 'color' => value pair — see the quote rule below, which
+// builds it separately from $sgs_el_rule()'s one-prop-per-key map.
+$quote_colour_raw  = (string) ( $attributes['quoteColour'] ?? '' );
 $quote_style       = in_array( $attributes['quoteFontStyle'] ?? '', array( 'italic', 'normal' ), true ) ? $attributes['quoteFontStyle'] : '';
 $quote_line_height = $sgs_css_length( trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) ) );
 $quote_margin_bot  = sgs_container_gap_value( $attributes['quoteMarginBottom'] ?? '' );
@@ -154,7 +158,7 @@ $hover_border_colour     = $attributes['borderColourHover'] ?? '';
 $hover_effect            = $attributes['effectHover'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
-$hover_scale              = $attributes['scaleHover'] ?? '';
+$hover_scale             = $attributes['scaleHover'] ?? '';
 $hover_shadow            = $attributes['shadowHover'] ?? '';
 $hover_shadow_colour     = $attributes['shadowHoverColour'] ?? '';
 $stagger_delay           = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
@@ -219,7 +223,6 @@ if ( '' !== $summary_rule ) {
 $quote_rule = $sgs_el_rule(
 	'.sgs-testimonial__quote',
 	array(
-		'color'         => $quote_colour,
 		'font-size'     => $quote_font_size,
 		'font-style'    => $quote_style,
 		'line-height'   => $quote_line_height,
@@ -229,6 +232,14 @@ $quote_rule = $sgs_el_rule(
 if ( '' !== $quote_rule ) {
 	$scoped_css[] = $quote_rule;
 }
+// D636 Task 1b — flat colour OR a complete CSS gradient string, built
+// separately from $sgs_el_rule()'s prop=>value map (see $quote_colour_raw).
+$quote_colour_sel  = $root_sel . ' .sgs-testimonial__quote';
+$quote_colour_decl = sgs_text_colour_decl( $quote_colour_raw );
+if ( '' !== $quote_colour_decl ) {
+	$scoped_css[] = $quote_colour_sel . '{' . $quote_colour_decl . ';}';
+}
+$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $quote_colour_sel, $quote_colour_raw );
 
 // Reviewer name.
 $name_rule = $sgs_el_rule(

@@ -16,7 +16,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 } from '../../components';
-import { colourVar, fontSizeVar } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
@@ -150,7 +150,7 @@ function buildTextStyle( attributes ) {
 	} = attributes;
 
 	const style = {
-		color: colourVar( textColour ) || undefined,
+		...resolveTextColourPreviewStyle( textColour, colourVar ),
 		// A string fontSize is a theme preset slug — resolve to the preset
 		// custom property (mirrors sgs_font_size_value() server-side).
 		fontSize: buildPreviewFontSize( fontSize, fontSizeUnit ),
@@ -293,6 +293,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',

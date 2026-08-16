@@ -25,6 +25,14 @@ export { default as GradientOverlayControl } from './GradientOverlayControl';
 // control (Spec 35 control-type contract field 8 — SgsGradientPicker REPLACES the
 // native GradientPicker, it is not an internal detail of the overlay control).
 export { default as SgsGradientPicker } from './gradient-picker';
+// D636 Task 1b "text" builder — gradient-capable sibling to DesignTokenPicker
+// for colour rows whose CSS mechanism is text-colour (background-clip:text).
+// See the file's own docblock for why this is a new component, not an edit
+// to DesignTokenPicker (which needs no changes per the rollout's own notes).
+export {
+	default as GradientCapableColourControl,
+	isGradientValue,
+} from './GradientCapableColourControl';
 export { default as SgsLinkControl } from './SgsLinkControl';
 export {
 	default as LinkPopoverField,

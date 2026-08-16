@@ -16,7 +16,7 @@ import {
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken } from '../../components';
-import { colourVar, resolveResponsiveTier } from '../../utils';
+import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const STYLE_OPTIONS = [
@@ -237,6 +237,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'price',
 						label: __( 'Price colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -524,12 +525,10 @@ export default function Edit( { attributes, setAttributes } ) {
 												'£0 /mo',
 												'sgs-blocks'
 											) }
-											style={ {
-												color:
-													colourVar(
-														priceColour
-													) || undefined,
-											} }
+											style={ resolveTextColourPreviewStyle(
+												priceColour,
+												colourVar
+											) }
 										/>
 										{ billingToggle !== 'none' && billingToggle !== 'monthly-only' && (
 											<>
@@ -548,12 +547,10 @@ export default function Edit( { attributes, setAttributes } ) {
 														'£0 /yr',
 														'sgs-blocks'
 													) }
-													style={ {
-														color:
-															colourVar(
-																priceColour
-															) || undefined,
-													} }
+													style={ resolveTextColourPreviewStyle(
+														priceColour,
+														colourVar
+													) }
 												/>
 												<TextControl
 													label={ __( 'Savings badge (yearly)', 'sgs-blocks' ) }

@@ -133,14 +133,14 @@ if ( $show_toggle ) {
 // ── Build plan cards HTML ────────────────────────────────────────────────────
 $plans_html = '';
 foreach ( $plans as $plan_index => $plan ) {
-	$plan_name          = wp_strip_all_tags( $plan['name'] ?? '' );
-	$plan_price         = wp_strip_all_tags( $plan['price'] ?? '' );
-	$plan_price_yr      = wp_strip_all_tags( $plan['priceYearly'] ?? '' );
-	$plan_period        = sanitize_key( $plan['period'] ?? 'monthly' );
-	$plan_desc          = wp_strip_all_tags( $plan['description'] ?? '' );
-	$plan_features_raw  = (array) ( $plan['features'] ?? array() );
-	$plan_cta_text      = sanitize_text_field( $plan['ctaText'] ?? __( 'Get started', 'sgs-blocks' ) );
-	$plan_cta_url       = esc_url( $plan['ctaUrl'] ?? '' );
+	$plan_name         = wp_strip_all_tags( $plan['name'] ?? '' );
+	$plan_price        = wp_strip_all_tags( $plan['price'] ?? '' );
+	$plan_price_yr     = wp_strip_all_tags( $plan['priceYearly'] ?? '' );
+	$plan_period       = sanitize_key( $plan['period'] ?? 'monthly' );
+	$plan_desc         = wp_strip_all_tags( $plan['description'] ?? '' );
+	$plan_features_raw = (array) ( $plan['features'] ?? array() );
+	$plan_cta_text     = sanitize_text_field( $plan['ctaText'] ?? __( 'Get started', 'sgs-blocks' ) );
+	$plan_cta_url      = esc_url( $plan['ctaUrl'] ?? '' );
 	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
 	// Task 2.1) resolved via sgs_link_attributes() — ctaUrl/ctaTarget/ctaRel
 	// are the existing per-plan storage keys, unchanged.
@@ -151,11 +151,11 @@ foreach ( $plans as $plan_index => $plan ) {
 			'rel'           => $plan['ctaRel'] ?? '',
 		)
 	);
-	$plan_highlighted   = (bool) ( $plan['highlighted'] ?? false );
-	$plan_icon          = sanitize_key( $plan['iconName'] ?? '' );
-	$plan_ribbon_text   = sanitize_text_field( $plan['ribbonText'] ?? '' );
-	$plan_ribbon_colour = sanitize_key( $plan['ribbonColour'] ?? 'accent' );
-	$plan_savings_badge = sanitize_text_field( $plan['savingsBadgeText'] ?? '' );
+	$plan_highlighted    = (bool) ( $plan['highlighted'] ?? false );
+	$plan_icon           = sanitize_key( $plan['iconName'] ?? '' );
+	$plan_ribbon_text    = sanitize_text_field( $plan['ribbonText'] ?? '' );
+	$plan_ribbon_colour  = sanitize_key( $plan['ribbonColour'] ?? 'accent' );
+	$plan_savings_badge  = sanitize_text_field( $plan['savingsBadgeText'] ?? '' );
 
 	// ── Normalise features: legacy string → {text, included:true} ───────────
 	$plan_features = array();
@@ -241,12 +241,12 @@ foreach ( $plans as $plan_index => $plan ) {
 
 	// ── Price display ─────────────────────────────────────────────────────────
 	// priceColour is BLOCK-LEVEL — emitted once as a scoped rule below.
-	$period_labels    = array(
+	$period_labels = array(
 		'monthly' => __( '/mo', 'sgs-blocks' ),
 		'yearly'  => __( '/yr', 'sgs-blocks' ),
 		'one-off' => '',
 	);
-	$period_label     = $period_labels[ $plan_period ] ?? '';
+	$period_label  = $period_labels[ $plan_period ] ?? '';
 
 	// Monthly price: show unless yearly-only mode.
 	$monthly_hidden = ( 'yearly-only' === $billing_toggle ) ? ' hidden' : '';
@@ -494,7 +494,16 @@ if ( $badge_colour || $badge_bg ) {
 	$responsive_css .= $root_sel . ' .sgs-pricing-table__badge{' . implode( ';', $pt_badge_decls ) . '}';
 }
 if ( $price_colour ) {
-	$responsive_css .= $root_sel . ' .sgs-pricing-table__price{color:' . $colour_val( $price_colour ) . '}';
+	// D636 Task 1b — flat colour/slug OR a complete CSS gradient string. The
+	// block-local $colour_val() closure only ever emits a preset-slug var(),
+	// so a gradient routes through sgs_text_colour_decl() instead (it also
+	// resolves a plain slug the same way $colour_val() does).
+	$price_sel         = $root_sel . ' .sgs-pricing-table__price';
+	$price_colour_decl = sgs_text_colour_decl( $price_colour );
+	if ( '' !== $price_colour_decl ) {
+		$responsive_css .= $price_sel . '{' . $price_colour_decl . '}';
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $price_sel, $price_colour );
 }
 if ( $feature_colour ) {
 	$responsive_css .= $root_sel . ' .sgs-pricing-table__feature{color:' . $colour_val( $feature_colour ) . '}';

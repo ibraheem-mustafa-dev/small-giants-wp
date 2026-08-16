@@ -47,8 +47,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $text = isset( $attributes['text'] ) ? (string) $attributes['text'] : '';
 // User-facing HTML-tag chooser removed (2026-07-05) — the converter never
 // emitted this attr; sgs/text always renders a <p>.
-$tag_name         = 'p';
-$text_colour      = $attributes['textColour'] ?? '';
+$tag_name    = 'p';
+$text_colour = $attributes['textColour'] ?? '';
 // fontSize / lineHeight / letterSpacing are OBJECT-typed {desktop,tablet,mobile}
 // attrs (Spec 35 tier-object migration) — normalise via the shared helper rather
 // than raw-bracket-reading a Tablet/Mobile SIBLING attr that no longer exists in
@@ -63,14 +63,14 @@ $line_height_obj  = sgs_responsive_normalise_object( $attributes['lineHeight'] ?
 $line_height      = $line_height_obj['desktop'];
 $line_height_unit = $attributes['lineHeightUnit'] ?? 'em';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
-$line_height_unit            = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-$letter_spacing_obj          = sgs_responsive_normalise_object( $attributes['letterSpacing'] ?? null );
-$letter_spacing              = $letter_spacing_obj['desktop'];
-$letter_spacing_unit         = $attributes['letterSpacingUnit'] ?? 'em';
-$font_style                  = $attributes['fontStyle'] ?? '';
-$text_decoration             = $attributes['textDecoration'] ?? '';
-$text_transform              = $attributes['textTransform'] ?? '';
-$font_family                 = $attributes['fontFamily'] ?? '';
+$line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
+$letter_spacing_obj  = sgs_responsive_normalise_object( $attributes['letterSpacing'] ?? null );
+$letter_spacing      = $letter_spacing_obj['desktop'];
+$letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'em';
+$font_style          = $attributes['fontStyle'] ?? '';
+$text_decoration     = $attributes['textDecoration'] ?? '';
+$text_transform      = $attributes['textTransform'] ?? '';
+$font_family         = $attributes['fontFamily'] ?? '';
 
 // Box-object interface contract §B (100% box-group): base padding/margin route
 // to WP-native style.spacing (read in step 6). Tablet/mobile tiers are the SGS
@@ -138,12 +138,12 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 // Border-width — Box-object interface contract §1/§2: `borderWidth` is an SGS
 // custom OBJECT attr { top, right, bottom, left } — no WP-native border-width
 // support, no tiers (mirrors sgs/button's base-only contract).
-$border_width_obj  = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
 $border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
 $border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
 $border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
 $border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
-$has_border_width     = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style  = $attributes['borderStyle'] ?? 'none';
 $border_colour = $attributes['borderColour'] ?? '';
@@ -222,7 +222,11 @@ if ( $inherit_style ) {
 $base_decls = array();
 
 if ( $text_colour ) {
-	$base_decls[] = 'color:' . sgs_colour_value( $text_colour );
+	// D636 Task 1b — flat colour OR a complete CSS gradient string.
+	$text_colour_decl = sgs_text_colour_decl( $text_colour );
+	if ( '' !== $text_colour_decl ) {
+		$base_decls[] = $text_colour_decl;
+	}
 }
 
 if ( $background_colour ) {
@@ -364,6 +368,9 @@ if ( null !== $font_size && '' !== $font_size && ! is_numeric( $font_size ) ) {
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).
 $css_base_decls = $base_decls ? $scope . '{' . implode( ';', $base_decls ) . ';}' : '';
+// D636 Task 1b — old-browser fallback for a gradient textColour; a no-op
+// (returns '') when $text_colour was a flat colour.
+$css_base_decls .= sgs_text_colour_gradient_fallback_rule( $scope, $text_colour );
 
 // Base padding/margin/border-radius — Box-object interface contract (b): the
 // block declares __experimentalSkipSerialization on spacing + border.radius
@@ -473,9 +480,14 @@ if ( $drop_cap ) {
 		$fl_decls[] = 'font-weight:' . esc_attr( $first_letter_font_weight );
 	}
 	if ( $first_letter_colour ) {
-		$fl_decls[] = 'color:' . sgs_colour_value( $first_letter_colour );
+		// D636 Task 1b — flat colour OR a complete CSS gradient string.
+		$first_letter_colour_decl = sgs_text_colour_decl( $first_letter_colour );
+		if ( '' !== $first_letter_colour_decl ) {
+			$fl_decls[] = $first_letter_colour_decl;
+		}
 	}
-	$css_drop_cap = $scope . '::first-letter{' . implode( ';', $fl_decls ) . '}';
+	$css_drop_cap  = $scope . '::first-letter{' . implode( ';', $fl_decls ) . '}';
+	$css_drop_cap .= sgs_text_colour_gradient_fallback_rule( $scope . '::first-letter', $first_letter_colour );
 }
 
 // Hover state scoped CSS.
@@ -488,7 +500,11 @@ if ( $has_hover ) {
 	$hover_decls = array();
 
 	if ( $hover_colour ) {
-		$hover_decls[] = 'color:' . sgs_colour_value( $hover_colour );
+		// D636 Task 1b — flat colour OR a complete CSS gradient string.
+		$hover_colour_decl = sgs_text_colour_decl( $hover_colour );
+		if ( '' !== $hover_colour_decl ) {
+			$hover_decls[] = $hover_colour_decl;
+		}
 	}
 	if ( $hover_background ) {
 		$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background );
@@ -505,6 +521,7 @@ if ( $has_hover ) {
 		// FIX C: operator-supplied duration + easing replace the hardcoded 200ms/ease.
 		$css_hover  = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
 		$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
+		$css_hover .= sgs_text_colour_gradient_fallback_rule( $scope . ':hover,' . $scope . ':focus-visible', $hover_colour );
 
 		// Respect reduced-motion preference.
 		$css_hover .= '@media (prefers-reduced-motion:reduce){' . $scope . '{transition:none !important;transform:none !important;}}';

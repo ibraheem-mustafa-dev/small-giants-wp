@@ -92,3 +92,37 @@ export function resolveShadowPreviewComposed( shape, colour ) {
 	}
 	return `${ shape } ${ colour || 'rgba(0,0,0,0.1)' }`;
 }
+
+/**
+ * Editor-canvas preview style for a text-colour attribute (D636 Task 1b —
+ * the "text" gradient builder). Mirrors the PHP-side
+ * `sgs_text_colour_decl()` (`includes/helpers-tokens.php`): a flat colour
+ * resolves via the block's own solid-colour resolver unchanged (so this is a
+ * no-op wrapper for every existing call site until a gradient is actually
+ * picked); a gradient string switches to the `background-clip: text` shape
+ * so the editor canvas shows the same effect the frontend renders — the
+ * fallback `@supports` rule only matters on the frontend, no legacy-browser
+ * concern exists inside the editor iframe.
+ *
+ * Blocks with a native JS live-preview (no `<ServerSideRender>`) call this
+ * in place of a bare `color: resolveSolid( value )` — see `sgs/heading`'s
+ * `buildTextStyle()` for the reference call site.
+ *
+ * @param {string}   value       Stored attribute value — flat colour/slug/var() or a gradient string.
+ * @param {Function} [resolveSolid] Resolver for the flat-colour case (e.g. `colourVar`). Identity if omitted.
+ * @return {Object} A style fragment to spread into the element's inline style object.
+ */
+export function resolveTextColourPreviewStyle( value, resolveSolid ) {
+	if ( ! value ) {
+		return {};
+	}
+	if ( /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( value ) ) {
+		return {
+			backgroundImage: value,
+			WebkitBackgroundClip: 'text',
+			backgroundClip: 'text',
+			color: 'transparent',
+		};
+	}
+	return { color: resolveSolid ? resolveSolid( value ) : value };
+}

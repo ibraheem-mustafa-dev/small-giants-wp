@@ -765,6 +765,93 @@ function sgs_css_gradient_value( ?string $value ): string {
 }
 
 /**
+ * Resolve a text-colour attribute (flat colour OR gradient string, D636
+ * single-attribute storage) into a bare CSS declaration fragment — no
+ * selector, no trailing `;`, matching the shape every block already pushes
+ * onto its own `$decls[]`/`$text_decls[]` array (e.g.
+ * `$text_decls[] = 'color:' . sgs_colour_value( $text_colour )` in
+ * `heading/render.php`), so adopting gradient support is a one-line swap at
+ * each call site rather than a restructure.
+ *
+ * D636 Task 1b "text" builder — the CSS mechanism for a gradient painted
+ * through text glyphs is `background-clip: text` + `color: transparent`,
+ * proven live first on `sgs/business-info`'s link-hover sweep (D643). A flat
+ * colour (the common case — most instances of a text-colour attribute are
+ * never set to a gradient) emits a plain `color:` declaration, byte-identical
+ * to every attribute's previous behaviour.
+ *
+ * A gradient value additionally NEEDS `sgs_text_colour_gradient_fallback_rule()`
+ * emitted as its own standalone rule (see that function) — this function
+ * alone is not safe to use for a gradient without it, because `color:
+ * transparent` with no `background-clip: text` support renders the text
+ * INVISIBLE, not merely un-gradiented.
+ *
+ * @param string|null $value Stored attribute value — flat colour/slug or a
+ *                            complete CSS gradient string.
+ * @return string A single declaration fragment with no trailing `;`
+ *                (e.g. `color:#fff` or
+ *                `background-image:linear-gradient(...);-webkit-background-clip:text;background-clip:text;color:transparent`),
+ *                or an empty string if $value is empty or an invalid gradient.
+ */
+function sgs_text_colour_decl( ?string $value ): string {
+	$value = trim( (string) $value );
+
+	if ( '' === $value ) {
+		return '';
+	}
+
+	if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\(/i', $value ) ) {
+		$colour = sgs_colour_value( $value );
+		return '' === $colour ? '' : 'color:' . $colour;
+	}
+
+	$gradient = sgs_css_gradient_value( $value );
+	if ( '' === $gradient ) {
+		return '';
+	}
+
+	return 'background-image:' . $gradient . ';-webkit-background-clip:text;background-clip:text;color:transparent';
+}
+
+/**
+ * The `@supports not (background-clip: text)` fallback rule that MUST
+ * accompany `sgs_text_colour_decl()` whenever its input was a gradient (a
+ * no-op — returns '' — for a flat colour, so it is always safe to call
+ * unconditionally alongside the decl call).
+ *
+ * The fallback colour is the gradient's FIRST colour stop, extracted from
+ * the already-validated gradient string (safe to slice — the whole string
+ * has already passed `sgs_css_gradient_value()`'s character-class +
+ * breakout gate), so an old browser gets a sensible solid colour instead of
+ * an invisible `transparent` or a bare `inherit`.
+ *
+ * @param string      $selector Scoped CSS selector (already uid-prefixed by the caller) —
+ *                               MUST be the exact same selector `sgs_text_colour_decl()`'s
+ *                               declaration was emitted onto.
+ * @param string|null $value    The same value passed to `sgs_text_colour_decl()`.
+ * @return string A standalone `@supports` rule, or '' when $value is not a gradient.
+ */
+function sgs_text_colour_gradient_fallback_rule( string $selector, ?string $value ): string {
+	$value = trim( (string) $value );
+
+	if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\(/i', $value ) ) {
+		return '';
+	}
+
+	$gradient = sgs_css_gradient_value( $value );
+	if ( '' === $gradient ) {
+		return '';
+	}
+
+	$fallback_colour = 'inherit';
+	if ( preg_match( '/(#[0-9a-fA-F]{3,8}|rgba?\([^)]+\)|hsla?\([^)]+\)|var\(--wp--preset--color--[a-z0-9-]+\))/', $gradient, $stop_match ) ) {
+		$fallback_colour = $stop_match[1];
+	}
+
+	return '@supports not ((background-clip:text) or (-webkit-background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour ) . ';}}';
+}
+
+/**
  * Resolve a font-size attribute value to a CSS font-size string.
  *
  * If the value starts with a digit (e.g. "16px", "1.5em") or with "clamp(",

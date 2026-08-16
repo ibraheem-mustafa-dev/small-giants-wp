@@ -30,7 +30,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 } from '../../components';
-import { colourVar, fontSizeVar } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
@@ -163,10 +163,14 @@ function buildEditorStyle( attributes ) {
 
 	if ( textColour ) {
 		// colourVar wraps slugs in var(--wp--preset--color--X);
-		// raw hex passes through as-is from ColorPalette.
-		previewStyle.color = /^#|^rgb|^hsl/.test( textColour )
-			? textColour
-			: colourVar( textColour );
+		// raw hex passes through as-is from ColorPalette. A gradient string
+		// (D636 Task 1b) switches to the background-clip:text preview shape.
+		Object.assign(
+			previewStyle,
+			resolveTextColourPreviewStyle( textColour, ( v ) =>
+				/^#|^rgb|^hsl/.test( v ) ? v : colourVar( v )
+			)
+		);
 	}
 	if ( fontSizeVal ) {
 		// A string fontSize is a theme preset slug — resolve to the preset
@@ -266,7 +270,16 @@ function buildDropCapStyle( attributes ) {
 		dropCapStyle[ '--sgs-ed-first-letter-font-weight' ] = firstLetterFontWeight;
 	}
 
-	if ( firstLetterColour ) {
+	// The drop-cap ::first-letter pseudo-element cannot receive an inline React
+	// style, so this custom property is consumed by a `color:var(...)`
+	// declaration in a companion stylesheet — a gradient string is not a valid
+	// `color` value there. D636 Task 1b: the FRONTEND render (render.php +
+	// sgs_text_colour_decl()) renders a gradient drop-cap correctly via
+	// background-clip:text; the editor CANVAS simply shows no colour override
+	// for a gradient value (falls back to inherited colour) rather than risk
+	// an invalid CSS custom-property consumer — a solid colour still previews
+	// exactly as before.
+	if ( firstLetterColour && ! /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( firstLetterColour ) ) {
 		dropCapStyle[ '--sgs-ed-first-letter-colour' ] = /^#|^rgb|^hsl/.test( firstLetterColour )
 			? firstLetterColour
 			: colourVar( firstLetterColour );
@@ -368,6 +381,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'textColour',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -421,6 +435,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'firstLetterColour',
 						label: __( 'First-letter colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',

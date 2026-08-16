@@ -141,6 +141,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'number',
 						label: __( 'Number colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
