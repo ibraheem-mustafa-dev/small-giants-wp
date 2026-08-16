@@ -1,5 +1,91 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D637 — Step 7 gate design locked: gridItems/layout precondition, gridAreas flag completion, ScaleAxisControl [ROUTINE]
+
+**2026-08-16.** Phase C of `go-read-the-track-encapsulated-hare.md` — designing (not building) the
+three step-7 gates D626/D633 flagged as "design decisions to build in step 6/7, not existing flags
+to wire": the `gridItems requires layout` validation rule, the `supports.sgs.gridAreas` gate, and
+the `shapeDividers` linked/unlinked X/Y scale control. Feeds step 7 of the shared-wrapper
+decomposition directly.
+
+**Verify-before-design correction (D633 partially wrong, caught this pass):** D633 stated `0 hits`
+for `supports.sgs.gridAreas` across all 7 direct-panel blocks. False — `sgs/hero/block.json`
+(`supports.sgs.gridAreas: ["content","media"]`, lines 46-49) has declared it since the 2026-06-11
+"Step 6 — official per-area grid layer" commit. It is real, correctly-shaped data, not a comment.
+What D633 got right: it has **zero readers anywhere** — not `GridAreaPanel` (confirmed still
+zero live mounts, D633's finding re-verified), not `/sgs-update`, not the converter (one comment-only
+reference at `converter/services/assembly.py:250` explaining the step is a no-op for this exact
+reason — found by the council review below, missed in the first draft's own grep, which is itself
+an instance of `feedback_a_grep_for_a_class_name_is_not_a_usage_census`). So the gap is two missing
+READERS, not a missing declaration — the flag needs no shape change.
+
+**Design #1 — `gridItems requires layout`: build-time static gate, not a `/sgs-update` DB-seed
+check.** `enabledExtensions` is a flat block.json array (D579/PR#25 shape) with no DB table home and
+no other consumer that would justify creating one — unlike `boxFamilies`/`variantAttr`, which feed
+the cloning converter and are genuine R-31-1 DB-first cases. New script
+`check-wrapper-capability-preconditions.js`, same family as `check-shared-panel-schema.js` /
+`check-box-family-guard.py` (`--survey`/`--check`/`--json`/`--self-test`, wired into `prebuild`),
+holding a small declared table (`CAPABILITY_PRECONDITIONS = { gridItems: ['layout'] }`) — the same
+shape `check-shared-panel-schema.js` already uses for its own `PANEL_NAMES`/`OBJECT_FAMILY_TAGS`
+constants, so this is not a new pattern. No "--fix" mode: a codemod silently adding `layout` to a
+block's declared extensions would be exactly the "scope creep" step 6 Phase B explicitly forbids.
+
+**Design #2 — `supports.sgs.gridAreas`: complete the two missing readers, following the
+`boxFamilies`/`variantAttr` pattern that's already 2/3 built on the same block.json object.**
+(1) DB layer: add `block_composition.grid_areas` as a new JSON column (sibling to the existing
+`container_kind` column — flat per-block data, same weight class; NOT a new table, `variant_slots`
+earned its table because it's genuinely relational per-variant data, this isn't), populated
+declaratively by `/sgs-update` Stage 1 exactly like `boxFamilies` already is. (2) Editor layer: a
+direct-panel block's `edit.js` imports its own `./block.json` (the `index.js` in every block already
+does this — established pattern, zero new mechanism) and, when `enabledExtensions` includes
+`gridItems`, maps `metadata.supports.sgs.gridAreas ?? []` to one `<GridAreaPanel>` each —
+`GridAreaPanel`'s own array-driven gate is already correct and needs no change, it's simply never
+called. **Which blocks should declare the flag**, closed to a real distinction, not "grid-layout
+composites" broadly: only blocks with a FIXED set of semantically-named sub-regions needing
+independent per-region styling (today, only `sgs/hero`'s split variant — `content`+`media`).
+Container/cta-section/trust-bar's grid children are repeatable, unnamed InnerBlocks items and do NOT
+qualify. **This design does not decide whether `hero` should gain `layout`+`gridItems` in its own
+`enabledExtensions`** — that composite-mirror expansion question is explicitly out of scope here,
+per D633's own "not this report's call" note; this only specifies the wiring IF/when that happens.
+**Regression guard folded into Design #1's script:** a second rule — any block declaring non-empty
+`gridAreas` must have at least one live reader (DB write or panel mount) — so this exact orphan
+pattern fails the build if it recurs, per Spec 35 Part N's "a built mechanism is not a reached one."
+
+**Design #3 — `shapeDividers` scale control: new `ScaleAxisControl` component
+(`src/components/ScaleAxisControl.js`), 2-axis version of WP core `BoxControl`'s link pattern.**
+Props: `label`, `value:{x,y}`, `onChange`, `min`/`max`/`step`, `unit`. Internal `isLinked` state
+computed on mount as `value.x === value.y` (mirrors core BoxControl's own `isValuesMixed`-on-mount
+behaviour — not a persisted attribute), toggled via the same `link`/`linkOff` icon pair core
+`BoxControl` already renders. Linked = one control writes `{x:v,y:v}`; unlinked = two controls
+("Horizontal (X)" / "Vertical (Y)") write independently; re-linking mixed values collapses `y ← x`.
+Storage is an object attr (`{x,y}`), matching this plugin's established box-family object contract
+(`gridItemPadding`, `mediaPadding`, etc. are all object-shaped, never scalar pairs) — not a new
+storage convention. **Fork decided: Option A — REPLACE `shapeDivider{Top,Bottom}Height` (px) outright
+with `shapeDivider{Top,Bottom}Scale:{x,y}` (%, default `{x:100,y:100}`)**, over Option B (add a new
+X-axis attribute alongside the unchanged px Height). Reasoning: this project's own "no version bumps,
+no deprecations pre-production" policy (D293/D270) exists precisely to license a clean replace over
+an add-alongside when there's no live client content to preserve; Option B would also leave two
+controls (Height px, ScaleY) with overlapping visual effect, which is a worse client-facing shape
+than one clean pair. No responsive tiers proposed (shape dividers have no existing per-breakpoint
+variant and D626 doesn't ask for one) — a deliberate scope boundary, not an oversight.
+
+**Council review — one of two lenses returned, logged honestly per Bean's standing instruction.**
+Dispatched two parallel lens agents against the draft (mechanism-fidelity + DB-first compliance;
+universality + client-UX + component-shape), mirroring `/qc-council`'s multi-rater pattern since no
+direct skill-invocation path was available this session. The mechanism-fidelity lens returned
+(88s) and verified all three designs sound — PASS on Design #1 and #3 as drafted, PASS on Design #2
+with the `assembly.py:250` grep correction folded in above (the one substantive change the council
+produced). The universality/client-UX lens was polled for ~28 minutes (vs the sibling's 88 seconds)
+with zero output at any check and never returned — treated as a hung dispatch, not "still working";
+proceeding on the single returned lens plus this session's own judgement rather than fabricating a
+second opinion. **Flagged as NOT independently cross-examined:** the Option A/B fork on Design #3,
+and the "which blocks qualify for `gridAreas`" scope call on Design #2 — both are judgement calls a
+second lens was specifically dispatched to pressure-test. Re-running that lens (or a human sign-off)
+before step 7 build starts is the honest residual, not a blocker to recording this design now.
+
+**Output:** written to `decisions.md` (this entry) + `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
+new §F.2. No code changed this session — feeds step 7's build directly.
+
 ## D636 addendum (2026-08-16, later same session) — a 4th CSS mechanism, missed by the council
 
 Bean caught a real gap the 4-seat council never surfaced: **icon colour is not the same case as
