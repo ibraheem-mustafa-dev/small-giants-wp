@@ -375,23 +375,21 @@ future session.
 **Trigger:** a dedicated gradient-bar build session, using the now-forked colour-picker components
 as its base.
 
-### P-HERO-OBJECTPOSITION-CSS-ELEMENT-MISATTRIBUTION — sgs/hero's object-position attrs disagree on their own css_element
+### P-DRIFT-AUDIT-BLIND-TO-DECLARED-BUT-WRONG-ELEMENTS — the audit only catches UNDECLARED names, not wrong ones
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
 
-Found by a second-opinion code-reviewer agent (2026-08-15) and explicitly parked by Bean rather than
-fixed inline. One CSS property (`object-position`) painting on ONE DOM node gets three different
-`css_element` names across sgs/hero's desktop/tablet/mobile attribute variants: `imageObjectPosition`
-(desktop) is `attrMap`-forced to element `media`; `imageObjectPositionTablet` is `attrMap`-claimed by
-`split-image`; `splitImageMobileObjectPosition` derives `split-media`. Hero's own `block.json`
-already carries a `_note` admitting part of this is wrong and unfixed.
+**Residual scope only — the hero instance that exposed this is FIXED** (2026-08-16, same session:
+all three `object-position` attrs traced in `render.php` to one node `.sgs-hero__split-image`, the
+two false element claims removed; Bean's call was "get rid of the fake names and keep the real one").
 
-**Wider point worth carrying into the fix:** the drift audit (`audit-css-element-drift.py`) only
-detects *undeclared* element names — a value that is **declared but wrong** passes clean, so
-"zero orphans" is a floor, not a census.
+What remains is the systemic hole that let it hide: `audit-css-element-drift.py` only detects
+*undeclared* element names. A value that is **declared but wrong** passes clean — which is why one
+CSS property carrying three different `css_element` names across its own tier variants survived
+until it was found by hand in review. **"Zero orphans" is a floor, not a census.**
 
-**Trigger:** a design decision on which element name is authoritative per attribute, before any
-code fix — plus possibly extending `audit-css-element-drift.py` to cross-check `attrMap` claims
-against the emitting selector rather than only checking for undeclared names.
+**Trigger:** extend the audit to cross-check each `attrMap` claim against the selector its attribute
+actually emits to in `render.php`, rather than only checking that the name is declared somewhere.
+Would have caught the hero case automatically.
 
 ### P-FLOATING-UI-BOTTOM-BARS — extend Spec 18 Floating UI to persistent bottom bars
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-26
@@ -508,19 +506,6 @@ now 444 lines (not the 502 originally logged), still 48% over the 300-line cap. 
 notice/dismiss-handling logic to bring it closer.
 
 **Trigger:** Next time anything is added to this file, or Wave 3 starts.
-
-### P-SOCIAL-ICONS-COLOUR-PANEL-DESIGN-DECISION — sgs/social-icons has no custom colour attrs to migrate onto SgsColourPanel
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
-
-Found during the 2026-08-15 DB census: `sgs/social-icons` was listed in the prior session's plan as
-a Track-A colour-panel candidate, but it has **no custom colour attributes at all** — it uses native
-WP colour supports (`supports.color`) exclusively. It can't follow the `SgsColourPanel` recipe
-(which migrates custom colour attrs) without first deciding whether/how to convert it to custom
-attrs. This is genuinely a design decision, not an effort estimate.
-
-**Trigger:** a design session deciding whether `sgs/social-icons` gains custom colour attrs (icon
-colour / background per state, etc.) — only once that's decided does it become a colour-panel
-migration candidate.
 
 ### P-SPEC37-OPEN-RESIDUALS — Spec 37 coverage-matrix residuals
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-21

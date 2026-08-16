@@ -3722,3 +3722,27 @@ parked-work descriptions, which is what a parking file is for.
 D-range; do not delete.
 
 ---
+
+
+### P-SOCIAL-ICONS-COLOUR-PANEL-DESIGN-DECISION — RESOLVED 2026-08-16
+**Resolution:** the entry's own premise was wrong. It claimed social-icons had "no custom colour
+attributes at all" — it has `iconColour` + `iconColourHover`. Bean's ruling: no design gate needed,
+just migrate it like every other block. Done 2026-08-16 — one row, two states, `linked: true`,
+`supports.color` sub-flags off. The one real subtlety: `colourMode='brand'` paints per-platform
+brand colours a client cannot set, so that mode renders the hover state only rather than a dead
+resting control. (Landed uncommitted pending the F5 gate — see LEDGER Task 0.)
+
+Original entry, verbatim:
+
+### P-SOCIAL-ICONS-COLOUR-PANEL-DESIGN-DECISION — sgs/social-icons has no custom colour attrs to migrate onto SgsColourPanel
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
+
+Found during the 2026-08-15 DB census: `sgs/social-icons` was listed in the prior session's plan as
+a Track-A colour-panel candidate, but it has **no custom colour attributes at all** — it uses native
+WP colour supports (`supports.color`) exclusively. It can't follow the `SgsColourPanel` recipe
+(which migrates custom colour attrs) without first deciding whether/how to convert it to custom
+attrs. This is genuinely a design decision, not an effort estimate.
+
+**Trigger:** a design session deciding whether `sgs/social-icons` gains custom colour attrs (icon
+colour / background per state, etc.) — only once that's decided does it become a colour-panel
+migration candidate.
