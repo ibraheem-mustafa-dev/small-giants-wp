@@ -49,11 +49,15 @@
 	display: block;
 	width: 100%;
 	/* Custom-property fallbacks consumed by the preset rules below. render.php
-	   overrides --sgs-mm-soft / --sgs-mm-card (and the full colour set) per
-	   instance on the frontend; edit.js sets the accent / gap / aside props in
-	   the editor. These defaults keep the marker chips + card fills painted in
-	   the canvas, where render.php never runs. */
-	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent, var( --wp--preset--color--accent ) ) 10%, transparent );
+	   overrides --sgs-mm-soft / --sgs-mm-soft-image / --sgs-mm-card (and the
+	   full colour set) per instance on the frontend; edit.js sets the
+	   accentBackground / accentBorderColour / accentTextColour /
+	   accentBackgroundImage / gap / aside props in the editor (D643 — split
+	   from the old single `--sgs-mm-accent`). These defaults keep the marker
+	   chips + card fills + spotlight glow painted in the canvas, where
+	   render.php never runs. */
+	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent-bg, var( --wp--preset--color--accent ) ) 10%, transparent );
+	--sgs-mm-soft-image: color-mix( in srgb, var( --sgs-mm-accent-image, var( --wp--preset--color--accent ) ) 10%, transparent );
 	--sgs-mm-card: rgba( 255, 255, 255, 0.6 );
 }
 
@@ -66,7 +70,8 @@
 :root[ data-theme='dark' ] .wp-block-sgs-mega-panel[ data-mega-scheme='auto' ] {
 	--sgs-mm-text: #f3f2ee;
 	--sgs-mm-muted: #9a9992;
-	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent, var( --wp--preset--color--accent ) ) 16%, transparent );
+	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent-bg, var( --wp--preset--color--accent ) ) 16%, transparent );
+	--sgs-mm-soft-image: color-mix( in srgb, var( --sgs-mm-accent-image, var( --wp--preset--color--accent ) ) 16%, transparent );
 	--sgs-mm-panel-bg: rgba( 20, 20, 25, 0.82 );
 	--sgs-mm-card: rgba( 255, 255, 255, 0.04 );
 	--sgs-mm-panel-border: rgba( 255, 255, 255, 0.11 );
@@ -113,7 +118,7 @@
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
 	transform: translateY( -3px );
-	border-color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+	border-color: var( --sgs-mm-accent-border, var( --wp--preset--color--accent ) );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover::after,
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within::after {
@@ -187,8 +192,10 @@
    frozen CSS contract. view.js applies the `data-spotlight` attribute (JS-only
    — no PHP-side attribute needed) to `.sgs-mega-aside` when present, then
    writes ONLY `--mx`/`--my`. `--sgs-spotlight-colour` reuses the panel's own
-   "soft" role token (§4) so the glow follows whichever accent the operator
-   picked. Aside content gets `position:relative;z-index:1` so it paints
+   "soft-image" role token (§4, D643 — background-image, split from the
+   background-color "soft" token) so the glow follows whichever
+   accentBackgroundImage the operator picked. Aside content gets
+   `position:relative;z-index:1` so it paints
    ABOVE the absolutely-positioned glow layer. --------------------------- */
 .wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ] {
 	position: relative;
@@ -201,7 +208,7 @@
 	pointer-events: none;
 	background: radial-gradient(
 		260px circle at var( --mx, 50% ) var( --my, 30% ),
-		var( --sgs-spotlight-colour, var( --sgs-mm-soft, var( --wp--preset--color--accent ) ) ),
+		var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
 		transparent 70%
 	);
 }
@@ -213,7 +220,7 @@
 	.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before {
 		background: radial-gradient(
 			260px circle at 50% 30%,
-			var( --sgs-spotlight-colour, var( --sgs-mm-soft, var( --wp--preset--color--accent ) ) ),
+			var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
 			transparent 70%
 		);
 	}
@@ -230,7 +237,7 @@
 	height: 34px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
-	color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
 /* -- cards --------------------------------------------------------------- */
@@ -258,7 +265,7 @@
 	height: 36px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
-	color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
 /* -- minimal ------------------------------------------------------------- */
@@ -279,7 +286,7 @@
 	height: 34px;
 	border-radius: 10px;
 	background-color: var( --sgs-mm-soft );
-	color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+	color: var( --sgs-mm-accent-text, var( --wp--preset--color--accent ) );
 }
 
 /* -- group-heading visibility — cards + minimal always hide the group heading

@@ -155,7 +155,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		headings,
 		colourScheme,
-		accent,
+		accentBackground,
+		accentBorderColour,
+		accentTextColour,
+		accentBackgroundImage,
 		maxWidth,
 		panelPadding,
 		groupGap,
@@ -181,9 +184,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	// down through the DOM from this root to every descendant regardless of
 	// display type, so editor.css can consume them on `.sgs-mega-panel__content`
 	// / `.sgs-mega-aside` even though those are separate elements.
-	const accentValue = colourVar( accent ) || 'var(--wp--preset--color--accent)';
+	const accentBackgroundValue = colourVar( accentBackground ) || 'var(--wp--preset--color--accent)';
+	const accentBorderValue = colourVar( accentBorderColour ) || 'var(--wp--preset--color--accent)';
+	const accentTextValue = colourVar( accentTextColour ) || 'var(--wp--preset--color--accent)';
+	const accentImageValue = colourVar( accentBackgroundImage ) || 'var(--wp--preset--color--accent)';
 	const shellStyle = {
-		'--sgs-mm-accent': accentValue,
+		// Split from the old single `--sgs-mm-accent` (D643) — style.css derives
+		// --sgs-mm-soft / --sgs-mm-soft-image from -bg / -image via color-mix();
+		// -text / -border are consumed directly.
+		'--sgs-mm-accent-bg': accentBackgroundValue,
+		'--sgs-mm-accent-border': accentBorderValue,
+		'--sgs-mm-accent-text': accentTextValue,
+		'--sgs-mm-accent-image': accentImageValue,
 		'--sgs-mm-panel-bg': panelBg ? colourVar( panelBg ) || panelBg : undefined,
 		'--sgs-mm-panel-border': borderColour
 			? colourVar( borderColour ) || borderColour
@@ -232,16 +244,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			{ /* GROUND-TRUTH: block.json attributes.panelBg / borderColour /
-			   accent (plain string colour attrs) + render.php:80-205 (accent
-			   resolves once to $accent_value / --sgs-mm-accent and is reused
-			   verbatim across every consuming rule, including some :hover
-			   selectors on CHILD elements — there is no separate accentHover
-			   attribute in block.json, so accent stays ONE normal-state row,
-			   not a hover pair) + style.css (panelBg -> background-color,
-			   borderColour -> border-color) — confirmed 2026-08-15 against the
-			   live source before wiring these rows. All single-state,
-			   `linked: true` per D619 (all three previously used `linked` on
-			   their DesignTokenPicker already). */ }
+			   accentBackground / accentBorderColour / accentTextColour /
+			   accentBackgroundImage (plain string colour attrs) +
+			   render.php:80-360 (each accent* attribute resolves to its OWN
+			   --sgs-mm-accent-bg / -border / -text / -image custom property,
+			   consumed by exactly ONE real CSS property each — background-color
+			   via the derived --sgs-mm-soft, border-color, color, and the aside
+			   spotlight's background-image via the derived --sgs-mm-soft-image
+			   — split 2026-08-16 (D643) from the single `accent` attribute that
+			   previously drove all four at once) + style.css (panelBg ->
+			   background-color, borderColour -> border-color). Confirmed
+			   2026-08-16 against the live source before wiring these rows. All
+			   single-state, `linked: true` per D619 (all previously used
+			   `linked` on their DesignTokenPicker already). */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -271,14 +286,57 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'accent',
-						label: __( 'Accent', 'sgs-blocks' ),
+						key: 'accentBackground',
+						label: __( 'Accent background', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: accent,
-								onChange: ( val ) => setAttributes( { accent: val ?? 'accent' } ),
+								value: accentBackground,
+								onChange: ( val ) =>
+									setAttributes( { accentBackground: val ?? 'accent' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'accentBorderColour',
+						label: __( 'Accent border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: accentBorderColour,
+								onChange: ( val ) =>
+									setAttributes( { accentBorderColour: val ?? 'accent' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'accentTextColour',
+						label: __( 'Accent text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: accentTextColour,
+								onChange: ( val ) =>
+									setAttributes( { accentTextColour: val ?? 'accent' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'accentBackgroundImage',
+						label: __( 'Accent background image', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: accentBackgroundImage,
+								onChange: ( val ) =>
+									setAttributes( { accentBackgroundImage: val ?? 'accent' } ),
 								linked: true,
 							},
 						],

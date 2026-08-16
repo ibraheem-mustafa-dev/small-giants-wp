@@ -84,9 +84,25 @@
 			"default": "light",
 			"enum": [ "light", "dark", "auto" ]
 		},
-		"accent": {
+		"accentBackground": {
 			"type": "string",
-			"default": "accent"
+			"default": "accent",
+			"_note": "Split from the old single `accent` attribute (D643, Bean-ruled: one colour attribute secretly painting 4 unrelated CSS properties blocks the gradient rollout — each property needs its own control). Feeds the icon-chip `background-color` (via the derived `--sgs-mm-soft` 10% tint) across all 3 group styles. Default unchanged from the retired `accent` attribute so existing rendering is preserved exactly."
+		},
+		"accentBorderColour": {
+			"type": "string",
+			"default": "accent",
+			"_note": "Split from the old single `accent` attribute (D643). Feeds `border-color` on the `cards` style's hover/focus-within state, and is the DEFAULT source colour for the aside separator's border-left (asideSeparator.colour still overrides). Default unchanged from the retired `accent` attribute."
+		},
+		"accentTextColour": {
+			"type": "string",
+			"default": "accent",
+			"_note": "Split from the old single `accent` attribute (D643). Feeds the icon-chip `color` (icon glyph colour) across all 3 group styles. Default unchanged from the retired `accent` attribute."
+		},
+		"accentBackgroundImage": {
+			"type": "string",
+			"default": "accent",
+			"_note": "Split from the old single `accent` attribute (D643). Feeds the aside's cursor-spotlight radial-gradient glow (`background`, i.e. a background-image, via the derived `--sgs-mm-soft-image` 10% tint) — only visible when `data-spotlight` is active (view.js, §6 U6). Default unchanged from the retired `accent` attribute."
 		},
 		"maxWidth": {
 			"type": "object",
