@@ -54,6 +54,7 @@
  */
 import { useSettings } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';
+import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	BaseControl,
@@ -63,9 +64,12 @@ import {
 	Flex,
 	FlexItem,
 	TabPanel,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
 } from '@wordpress/components';
 import { HStack, Item, ItemGroup, ZStack } from './primitives';
 import { ColorPalette } from './colour-picker';
+import SgsGradientPicker from './gradient-picker';
 
 /**
  * Resolve a stored colour VALUE to a displayable CSS colour.
@@ -186,9 +190,28 @@ function SgsColourStateControl( {
 	const descId = `${ id }-desc`;
 	const hasStates = states.length > 1;
 
+	// D636 border-gradient rollout — ADDITIVE opt-in. A state entry may carry
+	// `gradientValue`/`onGradientChange` (the sibling `{attr}Gradient` string
+	// attribute a block's render.php resolves via a gradient-wins-over-flat
+	// helper, e.g. `sgs_border_gradient_css()`). Presence of the ONCHANGE
+	// FUNCTION (not the value) marks a state gradient-capable — mirrors
+	// `GradientOverlayControl.js`'s existing Solid/Gradient UX exactly, just
+	// per-state so a row with Normal + Hover toggles each independently. When
+	// absent, a state renders exactly as before this patch — zero behaviour
+	// change for the 43 existing non-gradient call sites.
+	const [ gradientModeOverride, setGradientModeOverride ] = useState( {} );
+	const isGradientCapable = ( s ) => typeof s.onGradientChange === 'function';
+	const isGradientMode = ( s ) =>
+		isGradientCapable( s ) &&
+		( gradientModeOverride[ s.key ] ?? !! s.gradientValue );
+
 	const resolved = states.map( ( s ) => ( {
 		...s,
-		display: s.linked ? resolveColourToken( s.value, colours ) : s.value,
+		display: isGradientMode( s )
+			? s.gradientValue
+			: s.linked
+			? resolveColourToken( s.value, colours )
+			: s.value,
 	} ) );
 
 	const renderPalette = ( s ) => (
@@ -227,6 +250,67 @@ function SgsColourStateControl( {
 			}
 		/>
 	);
+
+	// Gradient-capable states get a Solid/Gradient toggle above the palette —
+	// same UX as `GradientOverlayControl.js`'s whole-block overlay, reused
+	// per-state here. Non-capable states render exactly as before.
+	const renderStateContent = ( s ) => {
+		if ( ! isGradientCapable( s ) ) {
+			return renderPalette( s );
+		}
+
+		const gradientMode = isGradientMode( s );
+
+		return (
+			<div key={ s.key } className="sgs-colour-control__gradient-capable">
+				<ToggleGroupControl
+					label={ __( 'Type', 'sgs-blocks' ) }
+					value={ gradientMode ? 'gradient' : 'solid' }
+					onChange={ ( val ) => {
+						setGradientModeOverride( ( prev ) => ( {
+							...prev,
+							[ s.key ]: val === 'gradient',
+						} ) );
+						// Switching back to solid clears the stored gradient so
+						// the two paths never disagree about which is "current"
+						// once the local override is gone — mirrors
+						// GradientOverlayControl.js's identical rule.
+						if ( 'solid' === val ) {
+							s.onGradientChange( '' );
+						}
+					} }
+					isBlock
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				>
+					<ToggleGroupControlOption
+						value="solid"
+						label={ __( 'Solid', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="gradient"
+						label={ __( 'Gradient', 'sgs-blocks' ) }
+					/>
+				</ToggleGroupControl>
+				{ gradientMode ? (
+					<SgsGradientPicker
+						value={ s.gradientValue }
+						onChange={ ( newGradient ) => {
+							setGradientModeOverride( ( prev ) => ( {
+								...prev,
+								[ s.key ]: true,
+							} ) );
+							s.onGradientChange( newGradient ?? '' );
+						} }
+						enableAlpha={ enableAlpha }
+						__experimentalIsRenderedInSidebar
+					/>
+				) : (
+					renderPalette( s )
+				) }
+			</div>
+		);
+	};
 
 	// The swatch cluster — a single ColorIndicator for one state, or core's
 	// own ZStack-of-overlapping-swatches for 2+ states (global-styles/
@@ -299,7 +383,7 @@ function SgsColourStateControl( {
 							>
 								{ ( tab ) => (
 									<div className="sgs-colour-control__content">
-										{ renderPalette(
+										{ renderStateContent(
 											resolved.find(
 												( s ) => s.key === tab.name
 											) ?? resolved[ 0 ]
@@ -309,7 +393,7 @@ function SgsColourStateControl( {
 							</TabPanel>
 						) : (
 							<div className="sgs-colour-control__content">
-								{ renderPalette( resolved[ 0 ] ) }
+								{ renderStateContent( resolved[ 0 ] ) }
 							</div>
 						)
 					}

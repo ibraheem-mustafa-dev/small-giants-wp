@@ -140,6 +140,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"borderRadius": {
 			"type": "string",
 			"default": "20px"

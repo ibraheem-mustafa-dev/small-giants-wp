@@ -167,9 +167,17 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"iconBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"iconBorderColourHover": {
 			"type": "string",
 			"default": "primary"
+		},
+		"iconBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"iconGlyphColour": {
 			"type": "string",

@@ -165,6 +165,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		panelBg,
 		bgBlur,
 		borderColour,
+		borderColourGradient,
 		borderRadius,
 		asideWidth,
 		asideSeparator,
@@ -282,6 +283,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: borderColour,
 								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
 								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
 							},
 						],
 					},

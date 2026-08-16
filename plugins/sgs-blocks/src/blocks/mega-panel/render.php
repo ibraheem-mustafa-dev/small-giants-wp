@@ -89,6 +89,7 @@ $accent_text_slug   = isset( $attributes['accentTextColour'] ) ? sanitize_html_c
 $accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 $border_radius     = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['borderRadius'] ?? '20px' ) : '20px';
 $aside_width       = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideWidth'] ?? '340px' ) : '340px';
 $aside_separator   = is_array( $attributes['asideSeparator'] ?? null ) ? $attributes['asideSeparator'] : array( 'style' => 'line' );
@@ -278,6 +279,11 @@ $css .= $root_sel . '{'
 	. 'box-shadow:0 30px 80px -30px rgba(0,0,0,.28),0 2px 8px -2px rgba(0,0,0,.08);'
 	. 'container-type:inline-size;'
 	. '}';
+
+// Border gradient (D636 border builder) — masked ::before on the panel root.
+if ( '' !== $border_colour_gradient ) {
+	$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '1px' );
+}
 
 if ( $bg_blur ) {
 	$css .= $root_sel . '{backdrop-filter:saturate(1.5) blur(24px);-webkit-backdrop-filter:saturate(1.5) blur(24px);}';

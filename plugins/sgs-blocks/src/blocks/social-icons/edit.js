@@ -129,7 +129,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconBackground,
 		iconBackgroundHover,
 		iconBorderColour,
+		iconBorderColourGradient,
 		iconBorderColourHover,
+		iconBorderColourHoverGradient,
 		iconGlyphColour,
 		iconGlyphColourHover,
 		colourMode,
@@ -289,6 +291,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									value: iconBorderColour,
 									onChange: ( val ) => setAttributes( { iconBorderColour: val ?? '' } ),
 									linked: true,
+									gradientValue: iconBorderColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { iconBorderColourGradient: val ?? '' } ),
 								},
 								{
 									key: 'hover',
@@ -296,6 +301,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									value: iconBorderColourHover,
 									onChange: ( val ) => setAttributes( { iconBorderColourHover: val ?? '' } ),
 									linked: true,
+									gradientValue: iconBorderColourHoverGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { iconBorderColourHoverGradient: val ?? '' } ),
 								},
 							],
 						},
