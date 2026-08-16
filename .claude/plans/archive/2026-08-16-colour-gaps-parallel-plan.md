@@ -4,12 +4,12 @@
 doc_type: plan
 status: EXECUTED — all 4 streams shipped, deployed, live-verified 2026-08-16
 created: 2026-08-16
-governing_decision: .claude/decisions.md D638 (6-seat council — READ IN FULL before building)
-outcome_record: .claude/decisions.md D639 — what actually shipped, 2 production bugs found via
+governing_decision: .claude/decisions.md D640 (6-seat council — READ IN FULL before building)
+outcome_record: .claude/decisions.md D641 — what actually shipped, 2 production bugs found via
   live QC and fixed (not caught by any of this plan's own build/merge gates), full incident record
 blocks: Stage 2 (the universal gradient rollout, D636) — now unblocked, see LEDGER.md
 branch: feat/gradient-palette-stops (existing, PR #29) — do NOT branch fresh off main
-archived: this file is historical — read D639 for what actually happened, not this plan alone
+archived: this file is historical — read D641 for what actually happened, not this plan alone
 ```
 
 ## Pre-conditions
@@ -22,7 +22,7 @@ Check all five before dispatching any stream:
    `ContainerWrapperControls.js` on this shared checkout. If Stream A determines multi-button
    routes through `SGS_Container_Wrapper`, coordinate before touching that file — two writers on
    it is the known failure mode.
-3. **D638 read in full** (`.claude/decisions.md`) — it carries the mechanism rulings and the
+3. **D640 read in full** (`.claude/decisions.md`) — it carries the mechanism rulings and the
    evidence behind them. Building from this plan's summary alone loses the "why".
 4. **`npm run build` exits 0 on a clean tree** before any stream starts, so a later failure is
    attributable to this work rather than inherited.
@@ -79,7 +79,7 @@ background media, from the block's own inspector, and each paints on the real fr
 Suggested set — confirm against what a client actually reaches for: button background colour,
 text colour, border colour, border radius, font size, font weight.
 
-**Mechanism (settled, D638 §4 — do not re-derive): CSS custom-property fallback chain.**
+**Mechanism (settled, D640 §4 — do not re-derive): CSS custom-property fallback chain.**
 - `sgs/button` already never hardcodes its background — it emits `--sgs-btn-bg` only when its own
   attr is set, and reads `var(--sgs-btn-bg, …)` (`button/render.php:329-353`)
 - multi-button emits `--sgs-mb-btn-<prop>-default` on its own wrapper (it already composes scoped
@@ -91,7 +91,7 @@ text colour, border colour, border radius, font size, font weight.
   inherited in CSS)
 
 ⛔ **NOT the Context API. NOT editor-time copy-on-insert.** Both were considered and rejected with
-evidence (D638 §4) — Context only exposes a value without filling the attribute; copy-on-insert
+evidence (D640 §4) — Context only exposes a value without filling the attribute; copy-on-insert
 means later changes to the group default silently stop affecting existing children, which no real
 tool does (Kadence/GenerateBlocks/Figma all use live fallback).
 
@@ -102,7 +102,7 @@ fallback, and never rebuild it.
 
 ⚠ **Inherit is IMPLICIT (empty = inherit), no visual indicator — Bean's explicit call.** The
 council flagged the tradeoff (change the group default, a child with its own value shows no
-change and no explanation); Bean accepted it knowingly (D638 §5). Do not add an indicator unless
+change and no explanation); Bean accepted it knowingly (D640 §5). Do not add an indicator unless
 Bean asks. Do not re-raise it.
 
 **Acceptance:** set a group default → a child button with no explicit value of its own picks it
@@ -166,12 +166,12 @@ type-to-narrow input under `woocommerce/product-filter-attribute` — the gap is
 
 ## Stream D — `sgs/buybox` optional card surface (smallest, do only if time allows)
 
-Residual gap from D638 §1: `.sgs-buybox`'s root is a bare 2-col grid
+Residual gap from D640 §1: `.sgs-buybox`'s root is a bare 2-col grid
 (`style.css:10-14`, zero paint) with `supports.color.background/text:false` (`block.json:20-31`),
 so there is no way to give the whole configurator a "card" look. One `block.json` supports change
 + a scoped background/border rule, same pattern as any other block.
 
-⛔ **`sgs/mega-group` needs NOTHING** — confirmed no gap (D638 §1). Do not touch it.
+⛔ **`sgs/mega-group` needs NOTHING** — confirmed no gap (D640 §1). Do not touch it.
 
 ---
 
@@ -204,9 +204,9 @@ most design + a11y judgement; A2 is architectural (new mechanism); A1/C/D are pa
 ## Doc checkpoints
 
 - **After each stream merges:** update `LEDGER.md`'s shipped table + numbers.
-- **After all streams merge:** one `decisions.md` entry recording what actually shipped vs D638's
+- **After all streams merge:** one `decisions.md` entry recording what actually shipped vs D640's
   plan, including any ruling that turned out wrong in practice. Then `/handoff`.
-- **If a stream discovers D638 was wrong about something** — record it as a correction in
+- **If a stream discovers D640 was wrong about something** — record it as a correction in
   `decisions.md` immediately, don't let it live only in a commit message.
 
 ## Then Stage 2
@@ -220,7 +220,7 @@ builders scope their per-block attribute lists from it.
 Deliberately OUT of scope for Stage 1 — do not let a stream pull these in:
 
 - **The inherit-vs-overridden visual indicator** for A2. Bean ruled implicit-inherit with no
-  indicator (D638 §5), knowingly accepting the tradeoff. Revisit only if it causes real client
+  indicator (D640 §5), knowingly accepting the tradeoff. Revisit only if it causes real client
   confusion in use — not on a builder's initiative.
 - **The other ~27 of `sgs/button`'s style attributes.** A2 is scoped to ~6-8 core visual
   properties. Expanding the set is a fresh scope decision, not a judgement call mid-build.
@@ -228,6 +228,6 @@ Deliberately OUT of scope for Stage 1 — do not let a stream pull these in:
   a DIFFERENT mechanism from A2 — keep them separate or the distinction rots.
 - **Category chips / faceted filter UI** on product-search. The council raised it; it needs a
   per-result term lookup the current REST shape doesn't do, and it wasn't part of Bean's ask.
-- **`sgs/mega-group`** — confirmed no gap (D638 §1). Not a deferral; there is nothing to do.
+- **`sgs/mega-group`** — confirmed no gap (D640 §1). Not a deferral; there is nothing to do.
 - **Gradient on any of Stage 1's new attributes.** That is Stage 2's job, universally, in one
   pass — the whole reason Stage 1 runs first. Do not hand-add gradient to a new attr here.
