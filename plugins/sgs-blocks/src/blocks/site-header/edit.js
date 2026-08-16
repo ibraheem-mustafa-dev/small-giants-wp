@@ -340,7 +340,7 @@ const TEMPLATE = [
 	[ 'sgs/site-header-row', { rowSlot: 'bottom' } ],
 ];
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const blockProps = useBlockProps( { className: 'sgs-site-header' } );
 	const refEl = useRef( null );
 
@@ -741,7 +741,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							} )
 						}
 					>
-						<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+						<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 					</ToolsPanelItem>
 				</ToolsPanel>
 			</InspectorControls>

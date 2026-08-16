@@ -42,6 +42,10 @@
 		},
 		"sgs": {
 			"containerKind": "section",
+			"enabledExtensions": [
+				"width",
+				"background"
+			],
 			"hideExtensions": [
 				"fx"
 			],
