@@ -288,11 +288,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
 				$bg_attachment = 'scroll';
 			}
-			$overlay_colour         = $attributes['backgroundOverlayColour'] ?? '';
-			$overlay_gradient       = ! empty( $attributes['overlayGradient'] );
-			$overlay_gradient_angle = isset( $attributes['overlayGradientAngle'] ) ? absint( $attributes['overlayGradientAngle'] ) : 180;
-			$overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
-			$overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
+			$overlay_colour  = $attributes['backgroundOverlayColour'] ?? '';
+			// Task 3 (gradient palette-stop rebuild): overlayGradient is now ONE
+			// attribute holding the complete CSS gradient value (any stop count),
+			// validated through sgs_css_gradient_value() at the point of emission
+			// below — replaces the old 4-attr bool/angle/from/to shape, which could
+			// only ever express a straight two-stop gradient.
+			$overlay_gradient = $attributes['overlayGradient'] ?? '';
 			$bg_video               = $attributes['bgVideo'] ?? null;
 			$bg_video_tablet        = $attributes['bgVideoTablet'] ?? null;
 			$bg_video_mobile        = $attributes['bgVideoMobile'] ?? null;
@@ -1170,7 +1172,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$overlay_html  = '';
 			$overlay_decls = ''; // Emitted scoped on .{uid} .sgs-container__overlay below (no-inline).
 			if ( ! $opt_no_overlay ) { // D6: universal, was section-only.
-				$has_overlay_colour = $overlay_colour || ( $overlay_gradient && $overlay_gradient_from );
+				// Task 3: overlayGradient is now a complete CSS gradient string,
+				// validated through sgs_css_gradient_value() — a non-empty valid
+				// gradient wins over the flat colour, matching how WP core and
+				// Kadence/Spectra/Otter all resolve colour-vs-gradient.
+				$overlay_gradient_value = sgs_css_gradient_value( $overlay_gradient );
+				$has_overlay_colour     = $overlay_colour || $overlay_gradient_value;
 
 				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
 				// — a colour or gradient set with NO media rendered nothing at all,
@@ -1185,15 +1192,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// picker's own alpha channel is the one place transparency is
 					// set now. `backgroundOverlayOpacity` no longer exists as an
 					// attribute (see block.json); do not reintroduce it here.
-					if ( $overlay_gradient && $overlay_gradient_from ) {
-						$grad_from     = sgs_colour_value( $overlay_gradient_from );
-						$grad_to       = $overlay_gradient_to ? sgs_colour_value( $overlay_gradient_to ) : 'transparent';
-						$overlay_decls = sprintf(
-							'background-image:linear-gradient(%ddeg,%s,%s)',
-							$overlay_gradient_angle,
-							$grad_from,
-							$grad_to
-						);
+					if ( $overlay_gradient_value ) {
+						$overlay_decls = 'background-image:' . $overlay_gradient_value;
 					} else {
 						$overlay_decls = sprintf(
 							'background-color:%s',

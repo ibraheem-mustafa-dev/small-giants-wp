@@ -221,18 +221,6 @@
 			"type": "string"
 		},
 		"overlayGradient": {
-			"type": "boolean",
-			"default": false
-		},
-		"overlayGradientAngle": {
-			"type": "number",
-			"default": 180
-		},
-		"overlayGradientFrom": {
-			"type": "string",
-			"default": ""
-		},
-		"overlayGradientTo": {
 			"type": "string",
 			"default": ""
 		},
