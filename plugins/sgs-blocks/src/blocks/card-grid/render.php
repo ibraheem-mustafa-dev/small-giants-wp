@@ -69,6 +69,11 @@ $hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text          = $attributes['textColourHover'] ?? '';
 $hover_border        = $attributes['borderColourHover'] ?? '';
+// D636 border-colour gradient siblings — resolved once here, emitted via
+// sgs_border_gradient_css() masked ::before further down; border-color can
+// never legally hold a gradient value, so these never feed --sgs-hover-border
+// / --sgs-card-border-color above.
+$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $transition_dur      = $attributes['transitionDuration'] ?? '300';
 $transition_ease     = $attributes['transitionEasing'] ?? 'ease-in-out';
 $hover_scale         = $attributes['scaleHover'] ?? '';
@@ -77,6 +82,7 @@ $hover_shadow_colour = $attributes['shadowHoverColour'] ?? '';
 $card_background          = $attributes['cardBackground'] ?? '';
 $card_background_gradient = $attributes['cardBackgroundGradient'] ?? '';
 $card_border_colour  = $attributes['cardBorderColour'] ?? '';
+$card_border_gradient = sgs_css_gradient_value( $attributes['cardBorderColourGradient'] ?? '' );
 $card_border_width   = $attributes['cardBorderWidth'] ?? array();
 $card_radius         = $attributes['cardRadius'] ?? '';
 $card_shadow         = $attributes['cardShadow'] ?? '';
@@ -244,6 +250,18 @@ if ( '' !== $card_shadow ) {
 }
 if ( ! empty( $card_state_vars ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';
+}
+
+// --- Border gradient (D636 border builder) — masked ::before, replaces the
+// flat --sgs-card-border-color / --sgs-hover-border custom-property scheme
+// above when set. ---
+if ( '' !== $card_border_gradient ) {
+	$card_grid_native_css .= sgs_border_gradient_css(
+		$root_sel . ' .sgs-card-grid__item',
+		$card_border_gradient,
+		'' !== $hover_border_gradient ? $hover_border_gradient : sgs_colour_value( $hover_border ),
+		'1px'
+	);
 }
 
 // ── Explicit media crop (Spec 35 capability-routing doctrine Part 9,

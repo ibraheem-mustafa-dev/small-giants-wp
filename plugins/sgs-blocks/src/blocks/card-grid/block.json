@@ -105,6 +105,7 @@
 						"css:background-color": "cardBackground",
 						"css:background-image": "cardBackgroundGradient",
 						"css:border-color": "cardBorderColour",
+						"css:border-color-gradient": "cardBorderColourGradient",
 						"css:border-width": "cardBorderWidth",
 						"css:border-radius": "cardRadius",
 						"css:box-shadow": "cardShadow"
@@ -115,6 +116,7 @@
 								"css:background-color": "backgroundColourHover",
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:box-shadow": "shadowHover"
 							}
 						}
@@ -257,6 +259,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"cardBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card border instead of a flat colour. Non-empty wins over cardBorderColour at render time (D636)."
+		},
 		"cardBorderWidth": {
 			"type": "object",
 			"default": {}
@@ -285,6 +292,11 @@
 		"borderColourHover": {
 			"type": "string",
 			"default": "primary"
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of cardBorderColourGradient. Non-empty wins over borderColourHover on :hover."
 		},
 		"transitionDuration": {
 			"type": "string",

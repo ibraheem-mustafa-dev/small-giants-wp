@@ -228,6 +228,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardBackground,
 		cardBackgroundGradient,
 		cardBorderColour,
+		cardBorderColourGradient,
 		cardBorderWidth,
 		cardRadius,
 		cardShadow,
@@ -235,6 +236,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourHover,
 		backgroundColourHoverGradient,
 		borderColourHover,
+		borderColourHoverGradient,
 		textColourHover,
 		shadowHover,
 		shadowHoverColour,
@@ -411,6 +413,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: cardBorderColour,
 								onChange: ( val ) => setAttributes( { cardBorderColour: val ?? '' } ),
 								linked: true,
+								gradientValue: cardBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { cardBorderColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -418,6 +423,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: borderColourHover,
 								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
