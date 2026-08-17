@@ -40,9 +40,9 @@ $label         = isset( $attributes['label'] ) ? $attributes['label'] : 'Click H
 // Named $sgs_link_id (not $link_id) — WPCS flags $link_id as a WordPress
 // global override (the legacy Links Manager bookmark API used a global of
 // that exact name).
-$sgs_link_id   = isset( $attributes['linkId'] ) ? absint( $attributes['linkId'] ) : 0;
-$link_kind     = isset( $attributes['linkKind'] ) ? sanitize_text_field( $attributes['linkKind'] ) : '';
-$resolved_url  = '';
+$sgs_link_id  = isset( $attributes['linkId'] ) ? absint( $attributes['linkId'] ) : 0;
+$link_kind    = isset( $attributes['linkKind'] ) ? sanitize_text_field( $attributes['linkKind'] ) : '';
+$resolved_url = '';
 if ( $sgs_link_id ) {
 	if ( 'taxonomy' === $link_kind ) {
 		$term_link    = get_term_link( $sgs_link_id );
@@ -64,7 +64,7 @@ $download      = ! empty( $attributes['download'] );
 // otherwise <button>, preserving link-vs-button semantics without a setting.
 $tag_name   = $has_url ? 'a' : 'button';
 $is_submit  = ! empty( $attributes['isSubmit'] );
-$aria_label        = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
+$aria_label = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
 // Spec 35 T3.4 / Part C — WCAG 2.1 AA 4.1.2 (Name, Role, Value). The inspector
 // control's help text promises "Overrides the visible label for screen
 // readers" with no icon-only qualifier, so an explicit operator override must
@@ -96,30 +96,30 @@ $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['
 // old …Tablet/…Mobile sibling attrs are no longer declared by block.json.
 // '' (tablet/mobile) = inherit desktop, matching the pre-migration sentinel.
 $width_type_obj        = sgs_responsive_normalise_object( $attributes['widthType'] ?? null );
-$width_type             = null !== $width_type_obj['desktop'] ? sanitize_text_field( $width_type_obj['desktop'] ) : 'fit';
+$width_type            = null !== $width_type_obj['desktop'] ? sanitize_text_field( $width_type_obj['desktop'] ) : 'fit';
 $custom_width_obj      = sgs_responsive_normalise_object( $attributes['customWidth'] ?? null );
-$custom_width           = null !== $custom_width_obj['desktop'] ? absint( $custom_width_obj['desktop'] ) : null;
-$custom_width_unit_obj  = sgs_responsive_normalise_object( $attributes['customWidthUnit'] ?? null );
-$custom_width_unit      = '%' === ( $custom_width_unit_obj['desktop'] ?? '' ) ? '%' : 'px';
+$custom_width          = null !== $custom_width_obj['desktop'] ? absint( $custom_width_obj['desktop'] ) : null;
+$custom_width_unit_obj = sgs_responsive_normalise_object( $attributes['customWidthUnit'] ?? null );
+$custom_width_unit     = '%' === ( $custom_width_unit_obj['desktop'] ?? '' ) ? '%' : 'px';
 
 // Per-device width tiers ('' = inherit desktop). Each tier carries its own
 // widthType enum + custom value + custom unit so a button can be e.g. fit on
 // desktop, full on mobile (the draft's full-width-on-mobile pattern).
-$width_type_tab       = null !== $width_type_obj['tablet'] ? sanitize_text_field( $width_type_obj['tablet'] ) : '';
-$width_type_mob       = null !== $width_type_obj['mobile'] ? sanitize_text_field( $width_type_obj['mobile'] ) : '';
-$custom_width_tab     = null !== $custom_width_obj['tablet'] ? absint( $custom_width_obj['tablet'] ) : null;
-$custom_width_mob     = null !== $custom_width_obj['mobile'] ? absint( $custom_width_obj['mobile'] ) : null;
-$custom_width_tab_u   = '%' === ( $custom_width_unit_obj['tablet'] ?? '' ) ? '%' : 'px';
-$custom_width_mob_u   = '%' === ( $custom_width_unit_obj['mobile'] ?? '' ) ? '%' : 'px';
+$width_type_tab     = null !== $width_type_obj['tablet'] ? sanitize_text_field( $width_type_obj['tablet'] ) : '';
+$width_type_mob     = null !== $width_type_obj['mobile'] ? sanitize_text_field( $width_type_obj['mobile'] ) : '';
+$custom_width_tab   = null !== $custom_width_obj['tablet'] ? absint( $custom_width_obj['tablet'] ) : null;
+$custom_width_mob   = null !== $custom_width_obj['mobile'] ? absint( $custom_width_obj['mobile'] ) : null;
+$custom_width_tab_u = '%' === ( $custom_width_unit_obj['tablet'] ?? '' ) ? '%' : 'px';
+$custom_width_mob_u = '%' === ( $custom_width_unit_obj['mobile'] ?? '' ) ? '%' : 'px';
 // minHeight is a TIER OBJECT (Spec 35 migration, 2026-08-11) — {desktop,
 // tablet,mobile}; the old …Tablet/…Mobile sibling attrs are no longer
 // declared by block.json. minHeightUnit/minHeightTabletUnit/minHeightMobileUnit
 // are a SEPARATE, still-flat family (each tier's own unit) — untouched here,
 // out of this migration's scope.
-$min_height_obj    = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
-$min_height        = null !== $min_height_obj['desktop'] ? absint( $min_height_obj['desktop'] ) : null;
-$min_height_tab    = null !== $min_height_obj['tablet'] ? absint( $min_height_obj['tablet'] ) : null;
-$min_height_mob    = null !== $min_height_obj['mobile'] ? absint( $min_height_obj['mobile'] ) : null;
+$min_height_obj = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
+$min_height     = null !== $min_height_obj['desktop'] ? absint( $min_height_obj['desktop'] ) : null;
+$min_height_tab = null !== $min_height_obj['tablet'] ? absint( $min_height_obj['tablet'] ) : null;
+$min_height_mob = null !== $min_height_obj['mobile'] ? absint( $min_height_obj['mobile'] ) : null;
 
 // Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
 // §1): a CSS-length sanitiser for object-attr side/corner values — strips
@@ -184,7 +184,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
 		$base_border_radius = $radius_raw;
 	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean  = array();
+		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
@@ -201,18 +201,18 @@ $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null 
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
 // Typography (custom mode only).
-$font_weight      = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
-$font_style_attr  = isset( $attributes['fontStyle'] ) ? $sgs_css_keyword( $attributes['fontStyle'] ) : 'normal';
-$text_transform   = isset( $attributes['textTransform'] ) ? $sgs_css_keyword( $attributes['textTransform'] ) : '';
-$text_decoration  = isset( $attributes['textDecoration'] ) ? $sgs_css_keyword( $attributes['textDecoration'] ) : '';
+$font_weight     = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
+$font_style_attr = isset( $attributes['fontStyle'] ) ? $sgs_css_keyword( $attributes['fontStyle'] ) : 'normal';
+$text_transform  = isset( $attributes['textTransform'] ) ? $sgs_css_keyword( $attributes['textTransform'] ) : '';
+$text_decoration = isset( $attributes['textDecoration'] ) ? $sgs_css_keyword( $attributes['textDecoration'] ) : '';
 // fontSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — same shape as
 // lineHeight/letterSpacing below; the old …Tablet/…Mobile sibling attrs are
 // no longer declared by block.json.
-$font_size_obj    = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
-$font_size        = null !== $font_size_obj['desktop'] ? (float) $font_size_obj['desktop'] : null;
-$font_size_tab    = null !== $font_size_obj['tablet'] ? (float) $font_size_obj['tablet'] : null;
-$font_size_mob    = null !== $font_size_obj['mobile'] ? (float) $font_size_obj['mobile'] : null;
-$font_size_unit   = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
+$font_size_obj  = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
+$font_size      = null !== $font_size_obj['desktop'] ? (float) $font_size_obj['desktop'] : null;
+$font_size_tab  = null !== $font_size_obj['tablet'] ? (float) $font_size_obj['tablet'] : null;
+$font_size_mob  = null !== $font_size_obj['mobile'] ? (float) $font_size_obj['mobile'] : null;
+$font_size_unit = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
 // lineHeight / letterSpacing are TIER OBJECTS (Spec 35 migration, 2026-08-11)
 // — each ONE attr holding {desktop,tablet,mobile}; the old …Tablet/…Mobile
 // sibling attrs are no longer declared by block.json. The *Unit attrs were
@@ -255,14 +255,14 @@ $tier_object_synthetic_attrs = array_merge(
 );
 
 // Colours (custom mode only).
-$colour_text         = isset( $attributes['colourText'] ) ? $attributes['colourText'] : '';
-$colour_text_hover   = isset( $attributes['colourTextHover'] ) ? $attributes['colourTextHover'] : '';
-$colour_bg           = isset( $attributes['colourBackground'] ) ? $attributes['colourBackground'] : '';
-$colour_bg_gradient  = isset( $attributes['colourBackgroundGradient'] ) ? $attributes['colourBackgroundGradient'] : '';
-$colour_bg_hover     = isset( $attributes['colourBackgroundHover'] ) ? $attributes['colourBackgroundHover'] : '';
+$colour_text              = isset( $attributes['colourText'] ) ? $attributes['colourText'] : '';
+$colour_text_hover        = isset( $attributes['colourTextHover'] ) ? $attributes['colourTextHover'] : '';
+$colour_bg                = isset( $attributes['colourBackground'] ) ? $attributes['colourBackground'] : '';
+$colour_bg_gradient       = isset( $attributes['colourBackgroundGradient'] ) ? $attributes['colourBackgroundGradient'] : '';
+$colour_bg_hover          = isset( $attributes['colourBackgroundHover'] ) ? $attributes['colourBackgroundHover'] : '';
 $colour_bg_hover_gradient = isset( $attributes['colourBackgroundHoverGradient'] ) ? $attributes['colourBackgroundHoverGradient'] : '';
-$colour_border       = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
-$colour_border_hover = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
+$colour_border            = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
+$colour_border_hover      = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
 // D636 border-colour gradient siblings — resolved here, emitted as a masked
 // ::before border (sgs_border_gradient_css) further down; border-color cannot
 // legally hold a gradient itself, so these do NOT feed the --sgs-btn-border*
@@ -295,11 +295,11 @@ $text_decoration_hover = isset( $attributes['textDecorationHover'] ) ? sanitize_
 // border-width support, no tiers (matches the pre-existing base-only contract).
 $border_style     = isset( $attributes['borderStyle'] ) ? $sgs_css_keyword( $attributes['borderStyle'] ) : 'solid';
 $border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_rgt    = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bot    = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_lft    = $sgs_css_length( $border_width_obj['left'] ?? '' );
-$has_border_width     = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
+$border_width_top = $sgs_css_length( $border_width_obj['top'] ?? '' );
+$border_width_rgt = $sgs_css_length( $border_width_obj['right'] ?? '' );
+$border_width_bot = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Box shadow — SHAPE-only string attrs (D621/D622 colour-architecture
 // redesign); colour lives in the sibling boxShadowColour/boxShadowHoverColour
@@ -557,12 +557,12 @@ $sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
 	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
 };
 
-$padding_tab_val  = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val  = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val   = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val   = $sgs_box_shorthand( $margin_mobile_obj );
-$radius_tab_val   = $sgs_corner_shorthand( $border_radius_tablet_obj );
-$radius_mob_val   = $sgs_corner_shorthand( $border_radius_mobile_obj );
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -715,8 +715,8 @@ if ( '' !== $preset_bg_slug ) {
 
 // D636/D644 icon/SVG gradient siblings — non-empty wins over the flat
 // iconColour/iconColourHover above at paint time (helpers-svg-gradient.php).
-$icon_colour_gradient       = isset( $attributes['iconColourGradient'] ) ? $attributes['iconColourGradient'] : '';
-$icon_colour_hover_gradient = isset( $attributes['iconColourHoverGradient'] ) ? $attributes['iconColourHoverGradient'] : '';
+$icon_colour_gradient         = isset( $attributes['iconColourGradient'] ) ? $attributes['iconColourGradient'] : '';
+$icon_colour_hover_gradient   = isset( $attributes['iconColourHoverGradient'] ) ? $attributes['iconColourHoverGradient'] : '';
 $sgs_button_stroke_grad       = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
 $sgs_button_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
 
@@ -908,7 +908,7 @@ $merged_class  = trim( $btn_class_str . $full_modifier );
 // $merged_style carries ONLY custom-property VALUES ($inline_styles from step
 // 3) — base padding/margin/border-radius/border-width are scoped <style>
 // rules (step 4), never inline (Box-object interface contract (b)).
-$merged_style  = trim( $btn_style_str );
+$merged_style = trim( $btn_style_str );
 
 // D345 (Spec 32 FR-32-4 as amended 2026-07-18): the per-instance custom-property
 // VALUES ($inline_styles — --sgs-btn-color/bg/border + hover variants + icon-gap)
@@ -918,7 +918,7 @@ $merged_style  = trim( $btn_style_str );
 // style.css's `:hover` rules consume these vars via var() on the SAME element
 // regardless of where the custom properties are declared, so behaviour is identical.
 if ( '' !== $merged_style ) {
-	$scoped_css_parts[] = ".{$uid}.sgs-button{" . $merged_style . "}";
+	$scoped_css_parts[] = ".{$uid}.sgs-button{" . $merged_style . '}';
 }
 
 // --- Border gradient (D636 border builder) — masked ::before, replaces the
@@ -953,8 +953,14 @@ $allowed_css_tags = array(
 	'style' => array(),
 );
 if ( $scoped_css_parts ) {
+	// Class-level compound selector, matching the seven other scoped rules in this file.
+	// It was previously `#{$uid} .sgs-button` — ID-scoped AND a DESCENDANT combinator, while
+	// the uid and the class sit on the SAME element, so it matched zero elements and
+	// prefers-reduced-motion was silently ignored (measured live on the canary 2026-08-17:
+	// `#id .sgs-button` = 0 matches, `#id.sgs-button` = 1). ID scoping also breaks Spec 32
+	// §6.1(b)/D303, which requires class level so the client's sgsCustomCss residual can win.
 	$raw_css = implode( '', $scoped_css_parts )
-		. '@media(prefers-reduced-motion:reduce){#' . $uid . ' .sgs-button{transition:none !important;transform:none !important;}}';
+		. "@media(prefers-reduced-motion:reduce){.{$uid}.sgs-button{transition:none !important;transform:none !important;}}";
 	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper
 	// pattern: it blocks a </style> breakout while leaving CSS combinators like
 	// `>` intact (esc_html would turn `>` into &gt; and break any descendant rule).
