@@ -260,7 +260,6 @@ $tb_wrapper_opts = array(
 	'extra_classes' => $tb_extra_classes,
 	'extra_styles'  => $styles,
 	'extra_attrs'   => $tb_extra_attrs,
-	'no_overlay'    => true,
 );
 
 // --- Title colour (no-inline contract: scoped rule, not inline style=) -------
