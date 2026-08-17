@@ -83,14 +83,16 @@
 						"css:border-style": "borderStyle",
 						"css:box-shadow": "native:shadow",
 						"css:transition-duration": "transitionDuration",
-						"css:transition-timing-function": "transitionEasing"
+						"css:transition-timing-function": "transitionEasing",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
 								"css:color": "textColourHover",
-								"css:border-color": "borderColourHover"
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
 							}
 						}
 					},
@@ -246,6 +248,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper's hover-state border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColourHover on :hover."
+		},
 		"effectHover": {
 			"type": "string",
 			"default": "none"
@@ -288,6 +295,11 @@
 		"borderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
 		},
 		"transitionDuration": {
 			"type": "string",

@@ -154,14 +154,16 @@
 						"css:background-color": "ctaColourBackground",
 						"css:color": "ctaColourText",
 						"css:border-color": "ctaColourBorder",
-						"css:padding": "ctaPadding"
+						"css:padding": "ctaPadding",
+						"css:border-color-gradient": "ctaColourBorderGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "ctaColourBackgroundHover",
 								"css:color": "ctaColourTextHover",
-								"css:border-color": "ctaColourBorderHover"
+								"css:border-color": "ctaColourBorderHover",
+								"css:border-color-gradient": "ctaColourBorderHoverGradient"
 							}
 						}
 					},
@@ -296,6 +298,11 @@
 			"default": "",
 			"description": "Built-in CTA border colour override. EMPTY (default) = inherit the shared button-preset channel via the sgs-button--{style} class. Set only to override."
 		},
+		"ctaColourBorderGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over ctaColourBorder."
+		},
 		"ctaColourBackgroundHover": {
 			"type": "string",
 			"default": "",
@@ -310,6 +317,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Built-in CTA hover border colour override. EMPTY (default) = inherit the shared button-preset hover channel via the sgs-button--{style} class. Set only to override."
+		},
+		"ctaColourBorderHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's hover-state border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over ctaColourBorderHover on :hover/:focus-visible."
 		},
 		"ctaBorderStyle": {
 			"type": "string",

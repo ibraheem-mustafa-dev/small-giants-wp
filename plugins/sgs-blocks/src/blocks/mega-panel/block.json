@@ -95,6 +95,11 @@
 			"default": "accent",
 			"_note": "Split from the old single `accent` attribute (D643). Feeds `border-color` on the `cards` style's hover/focus-within state, and is the DEFAULT source colour for the aside separator's border-left (asideSeparator.colour still overrides). Default unchanged from the retired `accent` attribute."
 		},
+		"accentBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the `cards` style's hover/focus-within border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over accentBorderColour on that hover/focus-within state only — accentBorderColour has no resting-state border of its own to override (render.php)."
+		},
 		"accentTextColour": {
 			"type": "string",
 			"default": "accent",

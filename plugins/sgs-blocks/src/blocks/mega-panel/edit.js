@@ -157,6 +157,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourScheme,
 		accentBackground,
 		accentBorderColour,
+		accentBorderColourGradient,
 		accentTextColour,
 		accentBackgroundImage,
 		maxWidth,
@@ -314,6 +315,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { accentBorderColour: val ?? 'accent' } ),
 								linked: true,
+								gradientValue: accentBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { accentBorderColourGradient: val ?? '' } ),
 							},
 						],
 					},

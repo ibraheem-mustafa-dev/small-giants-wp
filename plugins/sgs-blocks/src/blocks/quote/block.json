@@ -35,7 +35,8 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:box-shadow": "boxShadow"
+						"css:box-shadow": "boxShadow",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -216,6 +217,11 @@
 		"borderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the quote box's border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
 		},
 		"boxShadow": {
 			"type": "string",

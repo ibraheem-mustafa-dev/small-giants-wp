@@ -646,9 +646,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaColourBackground,
 		ctaColourText,
 		ctaColourBorder,
+		ctaColourBorderGradient,
 		ctaColourBackgroundHover,
 		ctaColourTextHover,
 		ctaColourBorderHover,
+		ctaColourBorderHoverGradient,
 		ctaBorderStyle,
 		ctaBorderWidth,
 		ctaBorderRadius,
@@ -1115,6 +1117,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourBorder,
 					onChange: ( val ) => setAttributes( { ctaColourBorder: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourBorderGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { ctaColourBorderGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -1122,6 +1127,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: ctaColourBorderHover,
 					onChange: ( val ) => setAttributes( { ctaColourBorderHover: val ?? '' } ),
 					linked: true,
+					gradientValue: ctaColourBorderHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { ctaColourBorderHoverGradient: val ?? '' } ),
 				},
 			],
 		},

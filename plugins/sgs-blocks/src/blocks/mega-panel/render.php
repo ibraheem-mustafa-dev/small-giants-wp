@@ -85,6 +85,7 @@ $bg_blur     = ! empty( $attributes['bgBlur'] );
 // unchanged unless an operator now picks a different colour per role.
 $accent_bg_slug     = isset( $attributes['accentBackground'] ) ? sanitize_html_class( (string) $attributes['accentBackground'] ) : 'accent';
 $accent_border_slug = isset( $attributes['accentBorderColour'] ) ? sanitize_html_class( (string) $attributes['accentBorderColour'] ) : 'accent';
+$accent_border_gradient = sgs_css_gradient_value( $attributes['accentBorderColourGradient'] ?? '' );
 $accent_text_slug   = isset( $attributes['accentTextColour'] ) ? sanitize_html_class( (string) $attributes['accentTextColour'] ) : 'accent';
 $accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
@@ -357,6 +358,20 @@ $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '::after{transition:none;}'
 	. $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:none;}'
 	. '}';
+
+// Accent border gradient (D636 border builder) — masked ::before ring, scoped
+// to ONLY the hover/focus-within state (mirrors accentBorderColour above,
+// which likewise has no resting-state border of its own to override —
+// accent-border-color is exclusively a hover/focus-within paint on this
+// `cards`-style tile).
+if ( '' !== $accent_border_gradient ) {
+	$css .= sgs_border_gradient_css(
+		$style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within',
+		$accent_border_gradient,
+		null,
+		'1px'
+	);
+}
 
 // -- minimal -------------------------------------------------------------
 $css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
