@@ -25,15 +25,10 @@ trusted from the background work.
 whole D636 gradient rollout (background/text/border/shape-divider/icon, everywhere it's genuinely
 used) is now finished across the framework, not just the 4 blocks the previous session managed.
 
-**What happened:** four builders ran in parallel, split across 20 blocks (~30 attributes) after
-re-checking the real database instead of trusting last session's rough list — it turned out bigger
-and more accurate than expected. All four batches came back clean, merged one at a time with a real
-build + gate check after each merge (not just a clean `git merge` exit code). One genuine bug
-surfaced after merging: a checker script had a hardcoded list that needed updating alongside the new
-attributes, and two new controls on the product-card block silently failed the build until that was
-fixed — a 2-line fix once found. Deployed to the real site and checked directly on the page (not just
-a green build) that the gradient border actually paints correctly on 3 different block types,
-including the one that had the bug.
+**What happened:** four parallel builders across 20 blocks (~30 attrs), scope re-derived from the DB
+rather than last session's list; merged one at a time with a real build + gate check after each. One
+genuine bug (a checker's hardcoded list, 2-line fix). Deployed and checked on the page, not just
+green. Full record: `decisions.md` D646.
 
 **One thing intentionally left out:** three blocks (`container`, `cta-section`, `hero`) have a
 "grid item border" setting that turned out to be a different kind of thing than expected — a raw
