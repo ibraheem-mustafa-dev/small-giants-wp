@@ -48,9 +48,9 @@ $title_colour = $attributes['titleColour'] ?? 'text-muted';
 $label_colour = $attributes['labelColour'] ?? 'text';
 
 // --- icon-circle attributes ---------------------------------------------------
-$icon_circle_size          = absint( $attributes['iconCircleSize'] ?? 44 );
-$icon_circle_bg            = $attributes['iconCircleBackground'] ?? 'surface';
-$icon_colour               = $attributes['iconColour'] ?? 'primary-dark';
+$icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
+$icon_circle_bg   = $attributes['iconCircleBackground'] ?? 'surface';
+$icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above,
 // but only paints the outline (default) badge's `stroke` — a 'filled' badge's
 // `fill` paint is out of this mechanism's scope (css:fill territory, Builder 5).
@@ -242,6 +242,16 @@ if ( $auto_scroll ) {
 	$tb_extra_attrs['data-auto-scroll-pause'] = $auto_scroll_pause ? 'true' : 'false';
 }
 
+// Landmark label override — a fixed 'Trust signals' aria-label is set above
+// regardless of tag (it also names the default <section>'s region landmark).
+// nav/aside only: let the client override it (main was removed from the
+// tagName allowlist entirely; header/footer lose their landmark role once
+// nested so need no label).
+$tb_tag_name = isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section';
+if ( in_array( $tb_tag_name, array( 'nav', 'aside' ), true ) && ! empty( $attributes['ariaLabel'] ) ) {
+	$tb_extra_attrs['aria-label'] = sanitize_text_field( $attributes['ariaLabel'] );
+}
+
 // Wrapper opts — the helper owns the OUTER <div> wrapper + any mirrored
 // container layers (bg/width/etc. when the operator sets them);
 // trust-bar keeps its own interior (title + badges) as $inner_html.
@@ -330,11 +340,11 @@ $items_html = '';
 // 1-based position when the badges are the sole children of their parent.
 // Two compositions exist, both decided further down (see the $badges_html
 // ternary and the SGS_Container_Wrapper::render() call):
-//   * auto-scroll ON  → badges are wrapped in `.sgs-trust-bar__track`, which
-//     therefore contains ONLY badges → offset 0.
-//   * auto-scroll OFF → badges are passed to the wrapper as
-//     `$title_html . $badges_html`, so a rendered title is an element sibling
-//     immediately before badge 1 → offset 1.
+// * auto-scroll ON  → badges are wrapped in `.sgs-trust-bar__track`, which
+// therefore contains ONLY badges → offset 0.
+// * auto-scroll OFF → badges are passed to the wrapper as
+// `$title_html . $badges_html`, so a rendered title is an element sibling
+// immediately before badge 1 → offset 1.
 // The block's `autoScroll` default is FALSE, so the offset case is the DEFAULT
 // rendering path, not an edge case.
 //
@@ -361,7 +371,7 @@ foreach ( $items as $tb_item_index => $item ) {
 			'rel'           => isset( $item['linkRel'] ) && '' !== $item['linkRel'] ? $item['linkRel'] : 'noreferrer',
 		)
 	);
-	$item_attrs = '';
+	$item_attrs      = '';
 
 	if ( 'icon-circle' === $badge_style && $is_pending ) {
 		$item_attrs = ' hidden data-pending="true"';
@@ -395,15 +405,15 @@ foreach ( $items as $tb_item_index => $item ) {
 		// DOM (`url(#id)` resolves document-wide); injected into the first
 		// rendered badge's SVG only, to avoid a duplicate #id across the loop.
 		if ( ! $tb_stroke_grad_defs_used && '' !== $tb_stroke_grad['defs'] ) {
-			$svg                       = sgs_svg_inject_defs( $svg, $tb_stroke_grad['defs'] );
+			$svg                      = sgs_svg_inject_defs( $svg, $tb_stroke_grad['defs'] );
 			$tb_stroke_grad_defs_used = true;
 		}
 
 		// Per-badge fill style: 'filled' paints a solid glyph (e.g. a filled star),
 		// exempting it from the uniform outline default in style.css. An operator
 		// can override the fill colour per badge via item.fillColour.
-		$is_filled     = isset( $item['fillStyle'] ) && 'filled' === $item['fillStyle'];
-		$circle_class  = 'sgs-trust-bar__circle' . ( $is_filled ? ' sgs-trust-bar__circle--filled' : '' );
+		$is_filled    = isset( $item['fillStyle'] ) && 'filled' === $item['fillStyle'];
+		$circle_class = 'sgs-trust-bar__circle' . ( $is_filled ? ' sgs-trust-bar__circle--filled' : '' );
 		if ( $is_filled && ! empty( $item['fillColour'] ) ) {
 			// sgs_colour_value() resolves a token slug → CSS var (or passes a raw
 			// colour) and already escapes the value. fillColour VARIES per item, so
@@ -494,14 +504,14 @@ $badges_html = $auto_scroll
 // .sgs-trust-bar__label      → icon-circle variant
 // .sgs-trust-bar__badge-label → text-only + image-badge variants
 // $uid_scope already declared above (color/border scoped-emit block).
-$label_sel        = $uid_scope . ' .sgs-trust-bar__label,' . $uid_scope . ' .sgs-trust-bar__badge-label';
-$title_sel        = $uid_scope . ' .sgs-trust-bar__title';
-$typo_css         = sgs_typography_css_rule( $attributes, 'label', $label_sel );
-$typo_css        .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
+$label_sel = $uid_scope . ' .sgs-trust-bar__label,' . $uid_scope . ' .sgs-trust-bar__badge-label';
+$title_sel = $uid_scope . ' .sgs-trust-bar__title';
+$typo_css  = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+$typo_css .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
 // No-inline contract: combine the color/border scoped rules ($tb_extra_scoped_css,
 // built above — includes title/label colour) with typography into ONE <style> tag.
-$all_scoped_css   = $tb_extra_scoped_css . $typo_css;
-$style_block       = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scoped_css ) . '</style>' : '';
+$all_scoped_css = $tb_extra_scoped_css . $typo_css;
+$style_block    = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scoped_css ) . '</style>' : '';
 
 // WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
 // $style_block — built entirely from wp_style_engine_get_styles() +

@@ -1110,6 +1110,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>
+					{ [ 'nav', 'aside' ].includes( attributes.tagName ) && (
+						<TextControl
+							label={ __( 'Landmark label', 'sgs-blocks' ) }
+							value={ attributes.ariaLabel || '' }
+							onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
+							help={ __( 'Required when a page has more than one Nav or Aside — lets screen readers tell them apart (e.g. "Primary", "Footer links", "Related articles").', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 
 				{/* ── 4. Split image styling (SPLIT VARIANT ONLY — appearance for the split

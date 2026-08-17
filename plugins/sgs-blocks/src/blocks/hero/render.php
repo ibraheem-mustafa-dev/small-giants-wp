@@ -108,9 +108,9 @@ $sgs_radius_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
 // ── Shell / layout attributes (still scalar — drive the wrapper + media column).
 // FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
 // ctaSecondary*) are deliberately NOT read here. R-22-14: no fallback.
-$variant             = $attributes['variant'] ?? 'standard';
-$alignment           = $attributes['alignment'] ?? 'left';
-$bg_image            = $attributes['backgroundImage'] ?? null;
+$variant   = $attributes['variant'] ?? 'standard';
+$alignment = $attributes['alignment'] ?? 'left';
+$bg_image  = $attributes['backgroundImage'] ?? null;
 // WS-4: `overlayColour`/`overlayOpacity` were renamed to `backgroundOverlayColour`/
 // `backgroundOverlayOpacity` (the shared container owns those names). The legacy
 // `overlayColour` attribute has since been deleted outright (D270 — pre-production
@@ -125,8 +125,8 @@ $bg_image            = $attributes['backgroundImage'] ?? null;
 // other reason (media present); it must never itself trigger the span, or
 // every hero with no media and no configured overlay would render an opaque
 // full-bleed layer (caught live, 2026-08-11 — same session as the ungate).
-$overlay_colour_raw  = $attributes['backgroundOverlayColour'] ?? '';
-$overlay_colour      = '' !== $overlay_colour_raw ? $overlay_colour_raw : 'text';
+$overlay_colour_raw = $attributes['backgroundOverlayColour'] ?? '';
+$overlay_colour     = '' !== $overlay_colour_raw ? $overlay_colour_raw : 'text';
 // D5 (Background panel redesign, 2026-08-11): `backgroundOverlayOpacity` no
 // longer exists as an attribute — the colour/gradient picker's own alpha is
 // the one dimming mechanism now, matching SGS_Container_Wrapper's overlay.
@@ -153,14 +153,14 @@ $overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient']
 // the only rows carrying splitMedia/splitImage were one leftover DRAFT from the
 // reverted D594 session and this session's own probe page, plus their revisions
 // — zero real content.
-$split_image         = $attributes['splitImage'] ?? null;
+$split_image = $attributes['splitImage'] ?? null;
 // splitImageTablet was DECLARED in block.json (b717717d) but read by nothing —
 // no render, no editor control — so the attribute existed and did nothing. The
 // dead-control gate did not catch it (it treats a responsive-family member as
 // consumed when the BASE is consumed, which is exactly wrong here: rendering the
 // base says nothing about whether the tablet tier renders). Wired 2026-08-07.
-$split_image_tablet  = $attributes['splitImageTablet'] ?? null;
-$split_image_mobile  = $attributes['splitImageMobile'] ?? null;
+$split_image_tablet = $attributes['splitImageTablet'] ?? null;
+$split_image_mobile = $attributes['splitImageMobile'] ?? null;
 // Per-tier media TYPE (2026-08-13). The split media column may be an image on one
 // device and a video or inline SVG on another, so each tier carries its own type
 // alongside its own source. '' on a narrower tier = inherit the next wider tier,
@@ -188,10 +188,10 @@ $image_object_position_tablet = $attributes['imageObjectPositionTablet'] ?? '';
 // 2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist
 // in block.json (WP silently discards any attr the block.json doesn't
 // declare, D338). sgs_responsive_normalise_object() is the canonical reader.
-$min_height_obj      = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
-$min_height          = $sgs_css_length( $min_height_obj['desktop'] ?? '' );
-$min_height_tablet   = $sgs_css_length( $min_height_obj['tablet'] ?? '' );
-$min_height_mobile   = $sgs_css_length( $min_height_obj['mobile'] ?? '360px' );
+$min_height_obj    = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
+$min_height        = $sgs_css_length( $min_height_obj['desktop'] ?? '' );
+$min_height_tablet = $sgs_css_length( $min_height_obj['tablet'] ?? '' );
+$min_height_mobile = $sgs_css_length( $min_height_obj['mobile'] ?? '360px' );
 
 // Sub-headline / headline / label font-size are owned by the child
 // sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
@@ -252,9 +252,9 @@ $image_border_radius_mobile_obj = is_array( $attributes['imageBorderRadiusMobile
 
 // Image border — width is a box-object family (base only, no tiers, matches
 // the pre-existing base-only contract). Style/colour stay scalar attrs.
-$image_border_style  = $sgs_css_keyword( $attributes['imageBorderStyle'] ?? 'none' );
+$image_border_style     = $sgs_css_keyword( $attributes['imageBorderStyle'] ?? 'none' );
 $image_border_width_obj = is_array( $attributes['imageBorderWidth'] ?? null ) ? $attributes['imageBorderWidth'] : array();
-$image_border_colour = $attributes['imageBorderColour'] ?? '';
+$image_border_colour    = $attributes['imageBorderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $image_border_colour when set.
 $image_border_colour_gradient = sgs_css_gradient_value( $attributes['imageBorderColourGradient'] ?? '' );
 
@@ -265,9 +265,9 @@ $image_padding_tablet_obj = is_array( $attributes['imagePaddingTablet'] ?? null 
 $image_padding_mobile_obj = is_array( $attributes['imagePaddingMobile'] ?? null ) ? $attributes['imagePaddingMobile'] : array();
 
 // mediaPadding — outer padding + background on the .sgs-hero__media wrapper.
-$media_padding_obj         = is_array( $attributes['mediaPadding'] ?? null ) ? $attributes['mediaPadding'] : array();
-$media_padding_tablet_obj  = is_array( $attributes['mediaPaddingTablet'] ?? null ) ? $attributes['mediaPaddingTablet'] : array();
-$media_padding_mobile_obj  = is_array( $attributes['mediaPaddingMobile'] ?? null ) ? $attributes['mediaPaddingMobile'] : array();
+$media_padding_obj        = is_array( $attributes['mediaPadding'] ?? null ) ? $attributes['mediaPadding'] : array();
+$media_padding_tablet_obj = is_array( $attributes['mediaPaddingTablet'] ?? null ) ? $attributes['mediaPaddingTablet'] : array();
+$media_padding_mobile_obj = is_array( $attributes['mediaPaddingMobile'] ?? null ) ? $attributes['mediaPaddingMobile'] : array();
 
 // contentPadding — padding on the .sgs-hero__content wrapper. TIER-OF-BOXES
 // OBJECT {desktop,tablet,mobile} as of Spec 35 box-tier migration (2026-08-11)
@@ -275,10 +275,10 @@ $media_padding_mobile_obj  = is_array( $attributes['mediaPaddingMobile'] ?? null
 // exist in this block's schema; sgs_responsive_normalise_object() is the
 // canonical reader (helpers-responsive.php:273), box=true so an unset/legacy
 // value never mis-resolves as a flat side (D328 defence).
-$content_padding_tiers       = sgs_responsive_normalise_object( $attributes['contentPadding'] ?? null, true );
-$content_padding_obj         = is_array( $content_padding_tiers['desktop'] ) ? $content_padding_tiers['desktop'] : array();
-$content_padding_tablet_obj  = is_array( $content_padding_tiers['tablet'] ) ? $content_padding_tiers['tablet'] : array();
-$content_padding_mobile_obj  = is_array( $content_padding_tiers['mobile'] ) ? $content_padding_tiers['mobile'] : array();
+$content_padding_tiers      = sgs_responsive_normalise_object( $attributes['contentPadding'] ?? null, true );
+$content_padding_obj        = is_array( $content_padding_tiers['desktop'] ) ? $content_padding_tiers['desktop'] : array();
+$content_padding_tablet_obj = is_array( $content_padding_tiers['tablet'] ) ? $content_padding_tiers['tablet'] : array();
+$content_padding_mobile_obj = is_array( $content_padding_tiers['mobile'] ) ? $content_padding_tiers['mobile'] : array();
 
 // HC2: per-breakpoint text-align on .sgs-hero__content. Desktop = base rule
 // (no @media), tablet/mobile via the scoped <style> @media mechanism — mirrors
@@ -322,7 +322,7 @@ $split_order_mobile = $split_order_obj['mobile'] ?? 'media-first';
 // Vertical alignment. Content max-width now lives on the universal wrapper attr
 // `contentWidth` (rendered by SGS_Container_Wrapper as the .sgs-container__inner
 // cap) — the legacy per-hero contentMaxWidth* family was removed 2026-06-09.
-$vertical_alignment      = $attributes['verticalAlignment'] ?? 'center';
+$vertical_alignment = $attributes['verticalAlignment'] ?? 'center';
 
 // Split layout renders the media column on the explicit 'split' variant.
 // FR-22-20 (2026-06-01): the cloning converter now DETECTS the variant from the
@@ -330,7 +330,7 @@ $vertical_alignment      = $attributes['verticalAlignment'] ?? 'center';
 // detection — see Spec 22 §FR-22-20), so this original gate is correct. The
 // 2026-06-01 data-presence band-aid (`|| ! empty( $split_image['url'] )`) is
 // reverted per D133 — it mis-fired on stale data; variant detection replaces it.
-$is_split        = ( 'split' === $variant );
+$is_split = ( 'split' === $variant );
 
 // Build wrapper styles.
 $styles = array();
@@ -399,7 +399,7 @@ if ( $is_split ) {
 	// "Array to string conversion" on every render and emitted a garbage band.
 	$cw_tiers = sgs_responsive_normalise_object( $attributes['contentWidth'] ?? null );
 	$cw_raw   = (string) ( $cw_tiers['desktop'] ?? '' );
-	$band   = '';
+	$band     = '';
 	if ( 'normal' === $cw_raw ) {
 		// Tie to the theme.json global (framework default 1200px; per-site
 		// override in the snapshot, e.g. Indus 1140px) — no hardcoded px
@@ -443,7 +443,7 @@ if ( $is_split ) {
 	// Base grid-template-columns — moved here from the old inline style="" on
 	// the section element (Pattern A). Allowlist the ratio string: only fr,
 	// px, %, numbers, spaces, auto, calc() permitted.
-	$safe_ratio = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio ) ? $split_col_ratio : '1fr 1fr';
+	$safe_ratio      = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio ) ? $split_col_ratio : '1fr 1fr';
 	$responsive_css .= '.' . $uid . '{grid-template-columns:' . $safe_ratio . '}';
 
 	// Base gap — reads the SHARED `gap` attr (de-duped from splitGap, 2026-07-06).
@@ -455,7 +455,7 @@ if ( $is_split ) {
 	// expects a scalar length -- handing it the raw array would emit
 	// "Array to string conversion" on every render plus literal `gap:Array`.
 	$hero_gap_obj = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
-	$hero_gap = sgs_container_gap_value( $hero_gap_obj['desktop'] ?? '' );
+	$hero_gap     = sgs_container_gap_value( $hero_gap_obj['desktop'] ?? '' );
 	if ( '' !== $hero_gap ) {
 		$responsive_css .= '.' . $uid . '{gap:' . $hero_gap . '}';
 	}
@@ -577,7 +577,7 @@ if ( $is_split ) {
 	if ( 'none' !== $image_border_style || $img_border_has_width ) {
 		$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 		$safe_border_style     = in_array( $image_border_style, $allowed_border_styles, true ) ? $image_border_style : 'solid';
-		$img_border_decls   = array( 'border-style:' . $safe_border_style );
+		$img_border_decls      = array( 'border-style:' . $safe_border_style );
 		if ( $img_border_has_width ) {
 			$img_border_decls[] = 'border-width:' . $img_border_width_val;
 		}
@@ -600,8 +600,8 @@ if ( $is_split ) {
 
 	// ── object-fit / object-position — moved from inline style="" (contract §A).
 	if ( 'custom' !== $image_object_fit ) {
-		$allowed_fits = array( 'fill', 'contain', 'cover', 'none' );
-		$safe_fit     = in_array( $image_object_fit, $allowed_fits, true ) ? $image_object_fit : 'cover';
+		$allowed_fits    = array( 'fill', 'contain', 'cover', 'none' );
+		$safe_fit        = in_array( $image_object_fit, $allowed_fits, true ) ? $image_object_fit : 'cover';
 		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{object-fit:' . $safe_fit . '}';
 	}
 	$safe_object_position = $sgs_css_object_position( $image_object_position );
@@ -671,7 +671,7 @@ if ( null !== $media_pad_mob ) {
 // Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
 // overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
 // (includes/class-sgs-container-wrapper.php ~1159-1176).
-$media_bg_resolved      = $attributes['mediaBackground'] ?? '';
+$media_bg_resolved = $attributes['mediaBackground'] ?? '';
 // Task 3: mediaBackgroundGradient is now ONE attribute holding the complete
 // CSS gradient value, validated through sgs_css_gradient_value().
 $media_bg_gradient_value = sgs_css_gradient_value( $attributes['mediaBackgroundGradient'] ?? '' );
@@ -727,13 +727,13 @@ $content_background = isset( $attributes['contentBackground'] ) ? (string) $attr
 // Task 3: contentBackgroundGradient is now ONE attribute holding the
 // complete CSS gradient value, validated through sgs_css_gradient_value().
 $content_bg_gradient_value = sgs_css_gradient_value( $attributes['contentBackgroundGradient'] ?? '' );
-$v_align_map         = array(
+$v_align_map               = array(
 	'top'    => 'flex-start',
 	'center' => 'center',
 	'bottom' => 'flex-end',
 );
-$content_justify = $v_align_map[ $vertical_alignment ] ?? 'center';
-$content_decls    = array( 'display:flex', 'flex-direction:column', 'justify-content:' . $content_justify );
+$content_justify           = $v_align_map[ $vertical_alignment ] ?? 'center';
+$content_decls             = array( 'display:flex', 'flex-direction:column', 'justify-content:' . $content_justify );
 if ( $content_bg_gradient_value ) {
 	$content_decls[] = 'background-image:' . $content_bg_gradient_value;
 } elseif ( $content_background ) {
@@ -1091,10 +1091,10 @@ foreach (
 		);
 		continue;
 	}
-	$sgs_hero_tier_media     = 'video' === $sgs_hero_resolved_type ? $sgs_hero_tier_video : $sgs_hero_tier_image;
-	$sgs_hero_tier_media_id  = ! empty( $sgs_hero_tier_media['id'] ) ? absint( $sgs_hero_tier_media['id'] ) : 0;
-	$sgs_hero_tier_width     = ! empty( $sgs_hero_tier_media['width'] ) ? absint( $sgs_hero_tier_media['width'] ) : 0;
-	$sgs_hero_tier_height    = ! empty( $sgs_hero_tier_media['height'] ) ? absint( $sgs_hero_tier_media['height'] ) : 0;
+	$sgs_hero_tier_media    = 'video' === $sgs_hero_resolved_type ? $sgs_hero_tier_video : $sgs_hero_tier_image;
+	$sgs_hero_tier_media_id = ! empty( $sgs_hero_tier_media['id'] ) ? absint( $sgs_hero_tier_media['id'] ) : 0;
+	$sgs_hero_tier_width    = ! empty( $sgs_hero_tier_media['width'] ) ? absint( $sgs_hero_tier_media['width'] ) : 0;
+	$sgs_hero_tier_height   = ! empty( $sgs_hero_tier_media['height'] ) ? absint( $sgs_hero_tier_media['height'] ) : 0;
 	// Image tier only: fall back to WP attachment metadata when the stored
 	// attribute lacks explicit dimensions (prevents CLS) — mirrors the
 	// pre-refactor desktop-image behaviour (tablet/mobile never had this).
@@ -1180,7 +1180,7 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 				$responsive_css .= '.' . $uid . ' .sgs-hero__media-overlay{background-color:' . sgs_colour_value( $media_overlay_colour_raw ) . '}';
 			}
 		}
-		$media_html      = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . $media_overlay_html . '</div>';
+		$media_html = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . $media_overlay_html . '</div>';
 		// ⛔ CALLER CONTRACT (helpers-tier-media.php): this MUST be appended to
 		// $responsive_css BEFORE it is printed below — it is, at line ~1166.
 		$responsive_css .= $sgs_hero_tier_result['css'];
@@ -1219,7 +1219,7 @@ if ( $responsive_css ) {
 $hero_inner_html = $bg_img_html . $video_html . $overlay_html
 	. $content_html . $media_html;
 
-$hero_helper_attrs = $attributes;
+$hero_helper_attrs   = $attributes;
 $sgs_hero_null_attrs = array(
 	'bgVideo',
 	'bgVideoMobile',
@@ -1255,6 +1255,14 @@ $hero_helper_opts = array(
 );
 if ( $is_split ) {
 	$hero_helper_opts['wrap_inner'] = false;
+}
+
+// Landmark label (nav/aside only — main was removed from the tagName allowlist
+// entirely; header/footer lose their landmark role once nested so need no label).
+if ( in_array( $hero_helper_opts['tag'], array( 'nav', 'aside' ), true ) && ! empty( $attributes['ariaLabel'] ) ) {
+	$hero_helper_opts['extra_attrs'] = array(
+		'aria-label' => sanitize_text_field( $attributes['ariaLabel'] ),
+	);
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns an escaped wrapper; $hero_inner_html built with esc_url/esc_html/esc_attr above; $content is WP core InnerBlocks output.

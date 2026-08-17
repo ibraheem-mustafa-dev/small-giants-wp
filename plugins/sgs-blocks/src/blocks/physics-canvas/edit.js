@@ -26,7 +26,6 @@ import { WidthPanel, MIN_HEIGHT_OPTIONS, BackgroundPanel } from '../container/co
 const TAG_NAME_OPTIONS = [
 	{ label: __( 'Section (default)', 'sgs-blocks' ), value: 'section' },
 	{ label: __( 'Div (no semantics)', 'sgs-blocks' ), value: 'div' },
-	{ label: __( 'Main (page main content)', 'sgs-blocks' ), value: 'main' },
 	{ label: __( 'Article (self-contained)', 'sgs-blocks' ), value: 'article' },
 	{ label: __( 'Aside (complementary)', 'sgs-blocks' ), value: 'aside' },
 	{ label: __( 'Nav (navigation)', 'sgs-blocks' ), value: 'nav' },
@@ -168,7 +167,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						value={ attributes.tagName || 'section' }
 						options={ TAG_NAME_OPTIONS }
 						onChange={ ( val ) => setAttributes( { tagName: val } ) }
-						help={ __( 'Semantic tag for accessibility landmarks and SEO. Use Main / Nav / Aside / Article for their meaning; Div for a plain wrapper.', 'sgs-blocks' ) }
+						help={ __( 'Semantic tag for accessibility landmarks and SEO. Use Nav / Aside / Article for their meaning; Div for a plain wrapper.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

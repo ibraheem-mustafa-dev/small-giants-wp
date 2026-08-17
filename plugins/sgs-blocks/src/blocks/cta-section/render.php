@@ -65,7 +65,7 @@ $sgs_css_length = static function ( $value ) {
 
 // FR-22-6: scalar content attrs (headline, body) are intentionally NOT read here.
 // They are retained in block.json for deprecated.js back-compat only. R-22-14.
-$ribbon                   = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
+$ribbon = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
 // WS-4: `layout` renamed to `contentLayout` (the container owns `layout` = grid/flex).
 // Read the new name; fall back to the legacy `layout` for un-migrated posts (belt-and-braces alongside deprecated.js).
 $content_layout           = $attributes['contentLayout'] ?? ( $attributes['layout'] ?? 'centred' );
@@ -100,7 +100,7 @@ $hover_border_colour     = $attributes['borderColourHover'] ?? '';
 // sgs_border_gradient_css() masked ::before further down; border-color can
 // never legally hold a gradient value, so this never feeds --sgs-hover-border
 // above. gridItemBorder (a separate raw CSS shorthand attribute) is untouched.
-$hover_border_gradient   = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
+$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -480,17 +480,27 @@ $cta_helper_attrs                    = $attributes;
 $cta_helper_attrs['backgroundImage'] = null;
 $cta_helper_attrs['shadow']          = null;
 
+$cta_wrapper_opts = array(
+	'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
+	'extra_classes' => $classes,
+	'extra_styles'  => $wrapper_styles,
+	'no_overlay'    => true,
+);
+
+// Landmark label (nav/aside only — main was removed from the tagName allowlist
+// entirely; header/footer lose their landmark role once nested so need no label).
+if ( in_array( $cta_wrapper_opts['tag'], array( 'nav', 'aside' ), true ) && ! empty( $attributes['ariaLabel'] ) ) {
+	$cta_wrapper_opts['extra_attrs'] = array(
+		'aria-label' => sanitize_text_field( $attributes['ariaLabel'] ),
+	);
+}
+
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 echo SGS_Container_Wrapper::render(
 	$cta_helper_attrs,
 	$block,
 	$cta_inner_html,
 	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
-	array(
-		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
-		'extra_classes' => $classes,
-		'extra_styles'  => $wrapper_styles,
-		'no_overlay'    => true,
-	)
+	$cta_wrapper_opts
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

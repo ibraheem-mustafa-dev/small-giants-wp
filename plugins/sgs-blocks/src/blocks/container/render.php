@@ -111,6 +111,14 @@ if ( ! empty( $sgs_container_supports_classes ) ) {
 	$sgs_container_wrapper_opts['extra_classes'] = $sgs_container_supports_classes;
 }
 
+// Landmark label (nav/aside only — main was removed from the tagName allowlist
+// entirely; header/footer lose their landmark role once nested so need no label).
+if ( in_array( $html_tag, array( 'nav', 'aside' ), true ) && ! empty( $attributes['ariaLabel'] ) ) {
+	$sgs_container_wrapper_opts['extra_attrs'] = array(
+		'aria-label' => sanitize_text_field( $attributes['ariaLabel'] ),
+	);
+}
+
 $sgs_container_output = SGS_Container_Wrapper::render(
 	$attributes,
 	$block,

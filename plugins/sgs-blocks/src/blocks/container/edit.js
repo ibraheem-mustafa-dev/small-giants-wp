@@ -7,6 +7,7 @@ import {
 import {
   PanelBody,
   SelectControl,
+  TextControl,
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
@@ -71,7 +72,6 @@ function gapCssValue( gap, tier = 'desktop' ) {
 const TAG_NAME_OPTIONS = [
   { label: __( "Section (default)", "sgs-blocks" ), value: "section" },
   { label: __( "Div (no semantics)", "sgs-blocks" ), value: "div" },
-  { label: __( "Main (page main content)", "sgs-blocks" ), value: "main" },
   { label: __( "Article (self-contained)", "sgs-blocks" ), value: "article" },
   { label: __( "Aside (complementary)", "sgs-blocks" ), value: "aside" },
   { label: __( "Nav (navigation)", "sgs-blocks" ), value: "nav" },
@@ -251,10 +251,20 @@ export default function Edit({ attributes, setAttributes, name }) {
             value={ attributes.tagName || "section" }
             options={ TAG_NAME_OPTIONS }
             onChange={ ( val ) => setAttributes( { tagName: val } ) }
-            help={ __( "Semantic tag for accessibility landmarks and SEO. Use Main / Nav / Aside / Article for their meaning; Div for a plain wrapper.", "sgs-blocks" ) }
+            help={ __( "Semantic tag for accessibility landmarks and SEO. Use Nav / Aside / Article for their meaning; Div for a plain wrapper.", "sgs-blocks" ) }
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />
+          { [ 'nav', 'aside' ].includes( attributes.tagName ) && (
+            <TextControl
+              label={ __( "Landmark label", "sgs-blocks" ) }
+              value={ attributes.ariaLabel || "" }
+              onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
+              help={ __( "Required when a page has more than one Nav or Aside — lets screen readers tell them apart (e.g. \"Primary\", \"Footer links\", \"Related articles\").", "sgs-blocks" ) }
+              __nextHasNoMarginBottom
+              __next40pxDefaultSize
+            />
+          ) }
           <hr style={ { margin: "16px 0" } } />
           <LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
           <hr style={ { margin: "16px 0" } } />
