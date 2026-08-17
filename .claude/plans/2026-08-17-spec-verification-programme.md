@@ -242,6 +242,10 @@ by name, and a differently-named field fails the gate against otherwise-correct 
   "section":  "§4 FR-32-1",           // step 1
   "quote":    "<the claim, verbatim>",// step 1
   "type":     "requirement",          // step 1 — requirement|status-claim|checklist-item|step
+  "grouped_with": null,               // step 1b — parent "FR-32-N" when this is an UNNUMBERED
+                                      //   normative statement that restates an existing FR.
+                                      //   null for everything else. Never used to copy a verdict
+                                      //   across unmatched: a BROADER child stays PARTIAL.
   "predict":  "if done, X returns 0", // step 2 — written BEFORE running
   "command":  "node scripts/…",       // step 2 — '' if live-only
   "live":     false,                  // step 2 — true = settle at step 4b
@@ -265,6 +269,58 @@ by name, and a differently-named field fails the gate against otherwise-correct 
 - **Test:** *Happy:* row count ≥ section count. *Edge:* a prose section with no testable claim gets
   `no-checkable-points`, not silence. *Fail:* malformed JSON → regenerate, do not hand-patch.
   *Integration:* standalone.
+
+### Step 1b — Triage the UNNUMBERED normative statements `[ADDED after S1, 2026-08-17]`
+- **Model:** inline (judgement — a script cannot decide this)
+- **Action:** Walk every row typed `requirement` that carries NO `FR-` id. For each, decide which
+  of three things it is, and record the decision on the row.
+- **Time:** 15 min
+- **Files:** `.claude/scratch/<doc>-points.json`
+
+**Why this step exists.** S1 found that all six of Spec 32's §3 "hard constraints" — binding,
+unnumbered, no `Done when:` — were **restatements of FRs that were already verified elsewhere**.
+Without this step they read as six unverified requirements. Two wrong reflexes were both tried and
+both rejected:
+
+- ⛔ **Do NOT demote them** ("only numbered items are binding"). That turns *an agent forgot to
+  number this* into *this is no longer a requirement* — de-scoping by clerical accident, which is
+  the exact failure class this programme exists to stop. **A missing number NEVER de-scopes a
+  requirement. Identification is by CONTENT — is it binding? — never by formatting.**
+- ⛔ **Do NOT blanket-promote them** to new FR ids either. On Spec 32 that would have manufactured
+  six duplicate requirements, each a second copy of an FR, each then drifting independently.
+
+**The three outcomes — pick one per statement, per case:**
+
+| Outcome | When | What to record |
+|---|---|---|
+| **GROUP** | It is the end-goal, restatement or plain-English framing of an existing FR | `grouped_with: "FR-32-N"`, and inherit that FR's evidence **only so far as it genuinely settles this claim** |
+| **PROMOTE** | Genuinely distinct and covered by no FR | Give it its own FR id at Step 5; it then needs its own `predict`/`command` like any requirement |
+| **RECLASSIFY** | It is not a requirement at all — a decision rule, a definition, or rationale | Re-type the row; say what it governs |
+
+**⛔ Grouping is NOT free inheritance — this is where the judgement actually bites.** Copying the
+parent's verdict across is the whole trap. Compare the two claims:
+
+- If the child's claim is the SAME as its parent's → it inherits the verdict and the evidence.
+- If the child's claim is **BROADER** than its parent's → it stays `PARTIAL`, and the reason names
+  the gap. Worked example from S1: §3's *"No client brand value hardcoded in block PHP/JS/CSS"*
+  grouped to `FR-32-6`, whose evidence covers the reference block's fallbacks and the one known
+  `product-card` hardcode. But the constraint claims *no client value anywhere in ANY block* — a
+  population claim nothing in the session measured. It stayed `PARTIAL` with that gap stated.
+
+**Also at this step — a `Done when:` clause naming a verifier is a RESOURCE, not a defect.** When a
+requirement names its own check and that check does not exist, the requirement is telling you what
+to build. `FR-32-9` requires a *"lint/grep check per component"*; no such script exists. That is the
+cheapest verification work in the programme — build it and the requirement becomes self-verifying.
+Record it as a Step 7 item against the spec that owns it; never mark the requirement DONE because
+the sentence exists.
+
+- **Outcome:** No row typed `requirement` is left both un-numbered and un-triaged.
+- **On-Fail:** Genuinely ambiguous ownership → **ask Bean in that moment** with the statement, the
+  two or three candidate parents, your recommendation and why. Do not guess and do not park it.
+- **Test:** *Happy:* every unnumbered requirement carries `grouped_with`, a promotion note, or a
+  re-type. *Edge:* a statement broader than its parent is `PARTIAL`, never `DONE`-by-association.
+  *Fail:* a row silently inherits a verdict with no reason recorded. *Integration:* the counts move
+  only for rows whose parent evidence genuinely covers them.
 
 ### Step 2 — Predict before running
 - **Model:** inline
@@ -403,7 +459,9 @@ uses the D609 toggle, so re-derive what is genuinely still divergent before writ
   flagged for Bean, not split silently. *Fail:* preflight passes. *Integration:* `git status` shows
   only intended files.
 
-**Session done when — all seven, no partial credit:**
+**Session done when — all eight, no partial credit:**
+0. **Every row typed `requirement` that carries no `FR-` id has been triaged at Step 1b** —
+   grouped, promoted, or reclassified. None left both un-numbered and un-judged.
 1. Every point has a verdict, a command and its raw output
 2. No row is `AGENT`
 3. **Every `live`-tagged point was settled on the canary — zero carried forward.**
@@ -463,6 +521,7 @@ uses the D609 toggle, so re-derive what is genuinely still divergent before writ
 | Step | Model | Why |
 |---|---|---|
 | 1 Extract | sonnet | Mechanical walk |
+| **1b Triage** | **inline** | Judgement — group vs promote vs reclassify, and whether a child's claim is broader than its parent's. A script cannot decide any of it |
 | 2 Predict | **inline** | Needs the doc's intent |
 | 3 Run | sonnet | Command execution |
 | 4 Verdicts | **inline** | Judgement; successor check + DELETE/KEEP disposition |
