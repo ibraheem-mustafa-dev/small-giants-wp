@@ -1,0 +1,519 @@
+/**
+ * BackgroundPanel — shared wrapper panel.
+ *
+ * Split out of ContainerWrapperControls.js on 2026-08-17 (Bean-requested). That file held six
+ * independently-mountable shared panels in one module, which repeatedly read as a "monolith" — an
+ * audit in this repo measured the decomposition by its LINE COUNT, concluded no split had happened,
+ * and had to retract it. One panel per file removes the ambiguity: the split is visible in `ls`.
+ *
+ * Blocks may import this directly, or via ContainerWrapperControls.js which re-exports it for the
+ * existing ~30 call sites.
+ */
+
+import { __ } from '@wordpress/i18n';
+import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import {
+	PanelBody,
+	SelectControl,
+	RangeControl,
+	Button,
+	ToggleControl,
+	TextareaControl,
+	TabPanel,
+} from '@wordpress/components';
+import {
+	ResponsiveControl,
+	DesignTokenPicker,
+	GradientOverlayControl,
+	SgsColourPanel,
+} from '../../../components';
+import { UnitControl } from '../../../components/primitives';
+import { isExtensionEnabled } from '../../extensions/hide-extensions';
+import { LENGTH_UNITS } from './_shared';
+
+const BG_SIZE_OPTIONS = [
+	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
+	{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
+	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
+];
+
+const BG_POSITION_OPTIONS = [
+	{ label: __( 'Centre centre', 'sgs-blocks' ), value: 'center center' },
+	{ label: __( 'Top centre', 'sgs-blocks' ), value: 'top center' },
+	{ label: __( 'Bottom centre', 'sgs-blocks' ), value: 'bottom center' },
+	{ label: __( 'Centre left', 'sgs-blocks' ), value: 'center left' },
+	{ label: __( 'Centre right', 'sgs-blocks' ), value: 'center right' },
+	{ label: __( 'Top left', 'sgs-blocks' ), value: 'top left' },
+	{ label: __( 'Top right', 'sgs-blocks' ), value: 'top right' },
+	{ label: __( 'Bottom left', 'sgs-blocks' ), value: 'bottom left' },
+	{ label: __( 'Bottom right', 'sgs-blocks' ), value: 'bottom right' },
+];
+
+const BG_REPEAT_OPTIONS = [
+	{ label: __( 'No repeat', 'sgs-blocks' ), value: 'no-repeat' },
+	{ label: __( 'Repeat', 'sgs-blocks' ), value: 'repeat' },
+	{ label: __( 'Repeat X', 'sgs-blocks' ), value: 'repeat-x' },
+	{ label: __( 'Repeat Y', 'sgs-blocks' ), value: 'repeat-y' },
+];
+
+const BG_ATTACHMENT_OPTIONS = [
+	{ label: __( 'Scroll', 'sgs-blocks' ), value: 'scroll' },
+	{ label: __( 'Fixed (parallax)', 'sgs-blocks' ), value: 'fixed' },
+];
+
+export function BackgroundPanel( { attributes, setAttributes, name } ) {
+	if ( undefined !== name && ! isExtensionEnabled( name, 'background' ) ) {
+		return null;
+	}
+
+	const {
+		backgroundImage,
+		backgroundImageTablet,
+		backgroundImageMobile,
+		backgroundSize = 'cover',
+		backgroundPosition = 'center center',
+		backgroundRepeat = 'no-repeat',
+		backgroundAttachment = 'scroll',
+		bgVideo,
+		bgVideoTablet,
+		bgVideoMobile,
+		bgParallax = false,
+		bgKenBurns = false,
+		bgAnimationDuration = 20,
+		bgSvgContent = '',
+		bgSvgPosition = 'background',
+		bgSvgAnimation = 'none',
+		bgSvgAnimationSpeed = 'medium',
+		bgSvgOpacity = 100,
+		bgSvgTextShadow = false,
+		bgSvgMinHeight = '',
+	} = attributes;
+
+	const hasBgImage = !! backgroundImage?.url;
+
+	return (
+		<PanelBody title={ __( 'Background', 'sgs-blocks' ) } initialOpen={ false }>
+			<p className="components-base-control__help">
+				{ __(
+					'This colour is the background. With an image or video behind it, lower its alpha to let the media show through — there is no separate overlay to set up.',
+					'sgs-blocks'
+				) }
+			</p>
+			<GradientOverlayControl
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<TabPanel
+				tabs={ [
+					{ name: 'image', title: __( 'Image', 'sgs-blocks' ) },
+					{ name: 'video', title: __( 'Video', 'sgs-blocks' ) },
+					{ name: 'svg', title: __( 'SVG', 'sgs-blocks' ) },
+				] }
+			>
+				{ ( tab ) => {
+					// ---- Image tab ----
+					if ( tab.name === 'image' ) {
+						return (
+							<>
+								{ /* The BASE picker stays OUTSIDE the device switcher, always
+								     visible. It is the primary control: putting it inside the
+								     desktop branch would hide it whenever the global device
+								     toggle sits on tablet/mobile, so a client on a narrow
+								     preview could not set the main image at all — and the
+								     tier gate's "set a desktop image above" would point at
+								     nothing. Matches src/blocks/media/edit.js, where the base
+								     picker precedes the tier control. */ }
+								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
+									{ __( 'Background image', 'sgs-blocks' ) }
+								</p>
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={ ( media ) =>
+											setAttributes( { backgroundImage: { id: media.id, url: media.url, alt: media.alt } } )
+										}
+										allowedTypes={ [ 'image' ] }
+										value={ backgroundImage?.id }
+										render={ ( { open } ) => (
+											<div style={ { marginBottom: '8px' } }>
+												{ backgroundImage?.url ? (
+													<>
+														<img src={ backgroundImage.url } alt="" style={ { maxWidth: '100%', marginBottom: '8px' } } />
+														<Button variant="secondary" onClick={ () => setAttributes( { backgroundImage: undefined } ) } isDestructive>
+															{ __( 'Remove image', 'sgs-blocks' ) }
+														</Button>
+													</>
+												) : (
+													<Button variant="secondary" onClick={ open }>
+														{ __( 'Select image', 'sgs-blocks' ) }
+													</Button>
+												) }
+											</div>
+										) }
+									/>
+								</MediaUploadCheck>
+
+								{ /* ONE consolidated per-device override (was 2 more always-visible
+								     stacked MediaUpload controls). Gated on the base image
+								     existing — an override for an image that is not there is a
+								     dead control (Spec 35 Part D5). */ }
+								{ hasBgImage && (
+								<ResponsiveControl label={ __( 'Art direction (optional)', 'sgs-blocks' ) }>
+									{ ( bp ) => {
+										if ( 'desktop' === bp ) {
+											return (
+												<p style={ { margin: 0, fontStyle: 'italic' } }>
+													{ __(
+														'The image above is used on desktop. Switch to tablet or mobile to set a different crop.',
+														'sgs-blocks'
+													) }
+												</p>
+											);
+										}
+
+										const key = 'tablet' === bp ? 'backgroundImageTablet' : 'backgroundImageMobile';
+										const tierImage = attributes[ key ];
+										return (
+											<>
+												<MediaUploadCheck>
+													<MediaUpload
+														onSelect={ ( media ) =>
+															setAttributes( { [ key ]: { id: media.id, url: media.url, alt: media.alt } } )
+														}
+														allowedTypes={ [ 'image' ] }
+														value={ tierImage?.id }
+														render={ ( { open } ) => (
+															<Button variant="secondary" onClick={ open }>
+																{ tierImage?.url
+																	? __( 'Replace image', 'sgs-blocks' )
+																	: __( 'Set image', 'sgs-blocks' ) }
+															</Button>
+														) }
+													/>
+												</MediaUploadCheck>
+												{ tierImage?.url && (
+													<Button
+														variant="link"
+														isDestructive
+														onClick={ () => setAttributes( { [ key ]: undefined } ) }
+														style={ { marginTop: '8px', display: 'block' } }
+													>
+														{ __( 'Use the main image here', 'sgs-blocks' ) }
+													</Button>
+												) }
+											</>
+										);
+									} }
+								</ResponsiveControl>
+								) }
+
+								{ hasBgImage && (
+									<>
+										<SelectControl
+											label={ __( 'Size', 'sgs-blocks' ) }
+											value={ backgroundSize }
+											options={ BG_SIZE_OPTIONS }
+											onChange={ ( val ) => setAttributes( { backgroundSize: val } ) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										<SelectControl
+											label={ __( 'Position', 'sgs-blocks' ) }
+											value={ backgroundPosition }
+											options={ BG_POSITION_OPTIONS }
+											onChange={ ( val ) => setAttributes( { backgroundPosition: val } ) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										<SelectControl
+											label={ __( 'Repeat', 'sgs-blocks' ) }
+											value={ backgroundRepeat }
+											options={ BG_REPEAT_OPTIONS }
+											onChange={ ( val ) => setAttributes( { backgroundRepeat: val } ) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										<SelectControl
+											label={ __( 'Attachment', 'sgs-blocks' ) }
+											value={ backgroundAttachment }
+											options={ BG_ATTACHMENT_OPTIONS }
+											onChange={ ( val ) => setAttributes( { backgroundAttachment: val } ) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</>
+								) }
+							</>
+						);
+					}
+
+					// ---- Video tab ----
+					if ( tab.name === 'video' ) {
+						return (
+							<>
+								<p className="components-base-control__help">
+									{ __( 'Video replaces the background image. Add an image as fallback for browsers that block autoplay.', 'sgs-blocks' ) }
+								</p>
+								{ /* BASE picker OUTSIDE the device switcher, always visible —
+								     same reasoning as the image tab above: the base video is the
+								     primary control and must not disappear when the global device
+								     toggle sits on tablet/mobile. */ }
+								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
+									{ __( 'Background video', 'sgs-blocks' ) }
+								</p>
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={ ( media ) => setAttributes( { bgVideo: { id: media.id, url: media.url } } ) }
+										allowedTypes={ [ 'video' ] }
+										value={ bgVideo?.id }
+										render={ ( { open } ) => (
+											<div style={ { marginBottom: '8px' } }>
+												{ bgVideo?.url ? (
+													<>
+														<p style={ { fontSize: '12px', marginBottom: '4px' } }>{ bgVideo.url.split( '/' ).pop() }</p>
+														<Button variant="secondary" onClick={ () => setAttributes( { bgVideo: undefined } ) } isDestructive>
+															{ __( 'Remove video', 'sgs-blocks' ) }
+														</Button>
+													</>
+												) : (
+													<Button variant="secondary" onClick={ open }>
+														{ __( 'Select video', 'sgs-blocks' ) }
+													</Button>
+												) }
+											</div>
+										) }
+									/>
+								</MediaUploadCheck>
+
+								{ /* ONE consolidated per-device override, gated on the base video
+								     existing (Spec 35 Part D5). Mirrors src/blocks/media/edit.js's
+								     video art-direction control. */ }
+								{ bgVideo?.url && (
+								<ResponsiveControl label={ __( 'Art direction (optional)', 'sgs-blocks' ) }>
+									{ ( bp ) => {
+										if ( 'desktop' === bp ) {
+											return (
+												<p style={ { margin: 0, fontStyle: 'italic' } }>
+													{ __(
+														'The video above is used on desktop. Switch to tablet or mobile to set a different one.',
+														'sgs-blocks'
+													) }
+												</p>
+											);
+										}
+
+										const key = 'tablet' === bp ? 'bgVideoTablet' : 'bgVideoMobile';
+										const tierVideo = attributes[ key ];
+										return (
+											<>
+												<MediaUploadCheck>
+													<MediaUpload
+														onSelect={ ( media ) => setAttributes( { [ key ]: { id: media.id, url: media.url } } ) }
+														allowedTypes={ [ 'video' ] }
+														value={ tierVideo?.id }
+														render={ ( { open } ) => (
+															<Button variant="secondary" onClick={ open }>
+																{ tierVideo?.url
+																	? __( 'Replace video', 'sgs-blocks' )
+																	: __( 'Set video', 'sgs-blocks' ) }
+															</Button>
+														) }
+													/>
+												</MediaUploadCheck>
+												{ tierVideo?.url && (
+													<>
+														<p style={ { fontSize: '12px', marginTop: '4px', marginBottom: '4px' } }>{ tierVideo.url.split( '/' ).pop() }</p>
+														<Button
+															variant="link"
+															isDestructive
+															onClick={ () => setAttributes( { [ key ]: undefined } ) }
+															style={ { marginTop: '4px', display: 'block' } }
+														>
+															{ __( 'Use the main video here', 'sgs-blocks' ) }
+														</Button>
+													</>
+												) }
+											</>
+										);
+									} }
+								</ResponsiveControl>
+								) }
+							</>
+						);
+					}
+
+					// ---- SVG tab ----
+					if ( tab.name === 'svg' ) {
+						return (
+							<>
+								<p className="components-base-control__help">
+									{ __( 'Paste SVG markup to render it as an animated background or foreground layer. Animations use pure CSS — no JavaScript required.', 'sgs-blocks' ) }
+								</p>
+								<TextareaControl
+									label={ __( 'SVG code', 'sgs-blocks' ) }
+									value={ bgSvgContent }
+									onChange={ ( val ) => setAttributes( { bgSvgContent: val } ) }
+									help={ __( 'Paste your <svg>…</svg> markup here.', 'sgs-blocks' ) }
+									rows={ 8 }
+								/>
+								{ bgSvgContent && (
+									<>
+										<SelectControl
+											label={ __( 'Position', 'sgs-blocks' ) }
+											value={ bgSvgPosition }
+											options={ [
+												{ label: __( 'Background (behind content)', 'sgs-blocks' ), value: 'background' },
+												{ label: __( 'Foreground (above content)', 'sgs-blocks' ), value: 'foreground' },
+											] }
+											onChange={ ( val ) => setAttributes( { bgSvgPosition: val } ) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										<RangeControl
+											label={ __( 'Opacity (%)', 'sgs-blocks' ) }
+											value={ bgSvgOpacity }
+											onChange={ ( val ) => setAttributes( { bgSvgOpacity: val } ) }
+											min={ 0 }
+											max={ 100 }
+											step={ 5 }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										<SelectControl
+											label={ __( 'Animation', 'sgs-blocks' ) }
+											value={ bgSvgAnimation }
+											options={ [
+												{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+												{ label: __( 'Pulse', 'sgs-blocks' ), value: 'pulse' },
+												{ label: __( 'Float', 'sgs-blocks' ), value: 'float' },
+												{ label: __( 'Wave', 'sgs-blocks' ), value: 'wave' },
+											] }
+											onChange={ ( val ) => setAttributes( { bgSvgAnimation: val } ) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+										{ bgSvgAnimation !== 'none' && (
+											<SelectControl
+												label={ __( 'Animation speed', 'sgs-blocks' ) }
+												value={ bgSvgAnimationSpeed }
+												options={ [
+													{ label: __( 'Slow', 'sgs-blocks' ), value: 'slow' },
+													{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
+													{ label: __( 'Fast', 'sgs-blocks' ), value: 'fast' },
+												] }
+												onChange={ ( val ) => setAttributes( { bgSvgAnimationSpeed: val } ) }
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										) }
+										<ToggleControl
+											label={ __( 'Text shadow', 'sgs-blocks' ) }
+											help={ __( 'Adds a subtle shadow to inner text for readability over busy SVG layers.', 'sgs-blocks' ) }
+											checked={ bgSvgTextShadow }
+											onChange={ ( val ) => setAttributes( { bgSvgTextShadow: val } ) }
+											__nextHasNoMarginBottom
+										/>
+										<UnitControl
+											label={ __( 'Minimum height', 'sgs-blocks' ) }
+											value={ bgSvgMinHeight }
+											units={ LENGTH_UNITS }
+											onChange={ ( val ) => setAttributes( { bgSvgMinHeight: val ?? '' } ) }
+											help={ __(
+												'Minimum height applied to the SVG background layer, e.g. 400px or 50vh. Leave blank for no minimum.',
+												'sgs-blocks'
+											) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</>
+								) }
+							</>
+						);
+					}
+
+					return null;
+				} }
+			</TabPanel>
+
+			{ /* Ken-burns/parallax are MODIFIERS on whichever media source is active
+			    above (image/video), not a media source themselves — so they sit
+			    below the tabs rather than as a peer "Anim" tab. Same relocation
+			    technique as the Overlay colour/gradient row above the tabs. */ }
+			<hr style={ { margin: '16px 0' } } />
+			<p className="components-base-control__help">
+				{ __( 'Requires a background image. Ken-burns and parallax are mutually exclusive — ken-burns takes priority.', 'sgs-blocks' ) }
+			</p>
+			<ToggleControl
+				label={ __( 'Ken-burns zoom', 'sgs-blocks' ) }
+				help={ __( 'Slow zoom animation on the background image.', 'sgs-blocks' ) }
+				checked={ bgKenBurns }
+				onChange={ ( val ) =>
+					setAttributes( { bgKenBurns: val, bgParallax: val ? false : bgParallax } )
+				}
+				__nextHasNoMarginBottom
+			/>
+			<ToggleControl
+				label={ __( 'Parallax scroll', 'sgs-blocks' ) }
+				help={ __( 'Fixed background-attachment parallax effect. Disabled on touch devices.', 'sgs-blocks' ) }
+				checked={ bgParallax }
+				onChange={ ( val ) =>
+					setAttributes( { bgParallax: val, bgKenBurns: val ? false : bgKenBurns } )
+				}
+				__nextHasNoMarginBottom
+			/>
+			{ bgKenBurns && (
+				<RangeControl
+					label={ __( 'Animation duration (seconds)', 'sgs-blocks' ) }
+					value={ bgAnimationDuration }
+					onChange={ ( val ) => setAttributes( { bgAnimationDuration: val } ) }
+					min={ 5 }
+					max={ 60 }
+					step={ 1 }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+		</PanelBody>
+	);
+}
+
+/**
+ * WrapperColourPanel — Colour Track B (D626, merged into step 6 rather than
+ * running as a separate session; built 2026-08-16).
+ *
+ * The shared wrapper owns colour-bearing attrs OUTSIDE `BackgroundPanel`
+ * itself: `shapeDividerTopColour`/`shapeDividerBottomColour` (as of the
+ * gradient rollout, Builder 5 D636/D643/coordinator-correction, a
+ * `GradientOverlayControl` inline inside `ShapeDividersPanel` — two sibling
+ * attrs per position, `shapeDivider{Top,Bottom}Colour` (flat) +
+ * `shapeDivider{Top,Bottom}ColourGradient` (gradient), unchanged by this
+ * component) and `gridItemBackground`/`gridItemTextColour` (currently a
+ * `DesignTokenPicker` inline inside `GridItemDefaultsPanel`, likewise
+ * unchanged). This component gives Phase B a ready-made `SgsColourPanel`
+ * (D609/D634 shape — swatch-left row, states in a popover) surfacing THE
+ * SAME flat-colour attributes via the SAME onChange contract — it does NOT
+ * yet know about the gradient sibling, so a future commit wiring this in
+ * must extend it (or keep `GradientOverlayControl`) rather than silently
+ * dropping gradient support.
+ *
+ * ⛔ NOT mounted anywhere by this commit — Phase A builds the mechanism only.
+ * No block's `edit.js` renders `<WrapperColourPanel>` yet, so
+ * `GradientOverlayControl` (shape dividers) / the inline `DesignTokenPicker`
+ * (`GridItemDefaultsPanel`) remain the ONLY live colour controls for those
+ * two attribute pairs until a later commit wires this in (and, in the same
+ * commit, removes the now-duplicate inline pickers — mounting both at once
+ * would be two controls writing one attribute, D609's "never optional, one
+ * place" rule).
+ *
+ * Rows are OMITTED (not disabled) when the underlying setting doesn't apply
+ * yet — same convention `SgsColourPanel`'s own docblock documents (9c: never
+ * hide a row behind a "+" menu, just don't include it): a shape-divider
+ * colour row needs that divider enabled first; a grid-item colour row needs
+ * `layout === 'grid'` first, exactly the same gate `GridItemDefaultsPanel`
+ * itself already applies (`if ( layout !== 'grid' ) { return null; }`,
+ * confirmed at this file's `GridItemDefaultsPanel`, ~:1274-1287).
+ *
+ * Gated on the same `'background'` extension as `BackgroundPanel` (D626:
+ * "merge it into this initiative's step 6 (background pilot)") via the same
+ * optional `name` prop / `isExtensionEnabled` mechanism — see that
+ * component's docblock for the backward-compatibility contract.
+ */
