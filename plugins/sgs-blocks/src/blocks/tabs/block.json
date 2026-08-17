@@ -89,6 +89,7 @@
 						"css:color": "tabTextColour",
 						"css:background-color": "tabBgColour",
 						"css:border-color": "tabIndicatorColour",
+						"css:border-color-gradient": "tabIndicatorColourGradient",
 						"css:transition-duration": "transitionDuration"
 					},
 					"states": {
@@ -96,7 +97,8 @@
 							"attrMap": {
 								"css:color": "tabActiveTextColour",
 								"css:background-color": "tabActiveBgColour",
-								"css:border-color": "tabActiveIndicatorColour"
+								"css:border-color": "tabActiveIndicatorColour",
+								"css:border-color-gradient": "tabActiveIndicatorColourGradient"
 							}
 						},
 						"hover": {
@@ -113,7 +115,8 @@
 					"clusters": [ "fill", "layout" ],
 					"attrMap": {
 						"css:background-color": "panelBgColour",
-						"css:border-color": "panelBorderColour"
+						"css:border-color": "panelBorderColour",
+						"css:border-color-gradient": "panelBorderColourGradient"
 					},
 					"_note": "Only background + border-colour are independently controlled for the panel — the remaining fill/layout members are honest gaps."
 				}
@@ -172,9 +175,19 @@
 		"tabIndicatorColour": {
 			"type": "string"
 		},
+		"tabIndicatorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting tab indicator instead of a flat colour. Non-empty wins over tabIndicatorColour at render time (D636 border-colour rollout)."
+		},
 		"tabActiveIndicatorColour": {
 			"type": "string",
 			"default": "primary"
+		},
+		"tabActiveIndicatorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Selected-state sibling of tabIndicatorColourGradient. Non-empty wins over tabActiveIndicatorColour when the tab is selected."
 		},
 		"tabHoverBgColour": {
 			"type": "string"
@@ -185,6 +198,11 @@
 		"panelBorderColour": {
 			"type": "string",
 			"default": "border-subtle"
+		},
+		"panelBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel border instead of a flat colour. Non-empty wins over panelBorderColour at render time (D636 border-colour rollout)."
 		},
 		"transitionDuration": {
 			"type": "number",
