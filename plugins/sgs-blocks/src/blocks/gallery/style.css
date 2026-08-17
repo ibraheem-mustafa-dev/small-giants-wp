@@ -558,7 +558,8 @@ body.sgs-gallery-lightbox-open {
    Responsive breakpoints
    ========================================================================== */
 
-/* Tablet: 600px – 1023px */
+/* Tablet: 768px – 1023px (the mobile block below is later in source order and
+   same specificity, so it wins under 768px). */
 @media ( max-width: 1023px ) {
 	.sgs-gallery--grid .sgs-gallery__grid,
 	.sgs-gallery--carousel .sgs-gallery__grid {
@@ -577,8 +578,8 @@ body.sgs-gallery-lightbox-open {
 	}
 }
 
-/* Mobile: max 599px */
-@media ( max-width: 599px ) {
+/* Mobile: max 767px = SGS_Breakpoints::MOBILE_MAX. Was 599px. */
+@media ( max-width: 767px ) {
 	.sgs-gallery--grid .sgs-gallery__grid {
 		grid-template-columns: repeat( var( --sgs-columns-mobile, 1 ), 1fr );
 	}

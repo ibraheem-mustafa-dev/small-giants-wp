@@ -264,8 +264,11 @@
 	flex-shrink: 0;
 }
 
-/* Collapse side layout to top on narrow viewports */
-@media (max-width: 599px) {
+/* Collapse side layout to top on narrow viewports.
+   767px = SGS_Breakpoints::MOBILE_MAX (the framework device tier). Was 599px,
+   which left 600-767px stacking-free while the wrapper had already switched to
+   the mobile tier. */
+@media (max-width: 767px) {
 	.sgs-info-box--media-left,
 	.sgs-info-box--media-right {
 		flex-direction: column;

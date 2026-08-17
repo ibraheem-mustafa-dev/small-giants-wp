@@ -832,7 +832,12 @@
    Responsive breakpoints
    ========================================================================== */
 
-@media ( max-width: 599px ) {
+/* 767px = SGS_Breakpoints::MOBILE_MAX. Was 599px.
+   ⚠ The tablet range below MUST move with this one. It is an explicit
+   `600px <= width <= 1023px` range, not a cascading max-width, so raising this
+   ceiling alone would leave 600-767px matching BOTH blocks — and the tablet
+   block wins on source order, silently cancelling the change. */
+@media ( max-width: 767px ) {
 	.sgs-post-grid--grid .sgs-post-grid__inner,
 	.sgs-post-grid--masonry .sgs-post-grid__inner,
 	.sgs-post-grid--carousel .sgs-post-grid__inner {
@@ -864,7 +869,9 @@
 	}
 }
 
-@media ( 600px <= width <= 1023px ) {
+/* Companion to the mobile ceiling above — lower bound moved 600px -> 768px so
+   the two ranges stay adjacent and non-overlapping across the device tiers. */
+@media ( 768px <= width <= 1023px ) {
 	.sgs-post-grid--grid .sgs-post-grid__inner,
 	.sgs-post-grid--carousel .sgs-post-grid__inner {
 		--sgs-columns: var( --sgs-columns-tablet, 2 );
