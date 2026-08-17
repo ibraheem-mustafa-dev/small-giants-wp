@@ -353,6 +353,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover-state border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColourHover on hover — this block has no resting-state border colour attribute of its own to override (native __experimentalBorder.color, unaffected)."
+		},
 		"effectHover": {
 			"type": "string",
 			"default": "none"
