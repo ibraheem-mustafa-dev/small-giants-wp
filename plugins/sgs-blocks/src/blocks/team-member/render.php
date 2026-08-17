@@ -100,6 +100,13 @@ $sgs_css_safe_value = static function ( $value ) {
 // 3. Scalar content / layout attributes.
 // ---------------------------------------------------------------------------
 $name                = $attributes['name'] ?? '';
+// Name heading level — an out-of-enum stored value is otherwise silently
+// coerced to the block.json default (blockjson-enum-coerces-invalid-to-
+// default), so it is validated here too (mirrors sgs/icon-list).
+$allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
+$heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
 $sgs_role            = $attributes['role'] ?? '';
 $bio                 = $attributes['bio'] ?? '';
 $name_colour         = $attributes['nameColour'] ?? '';
@@ -310,7 +317,7 @@ if ( '' !== $photo_img ) {
 // nameColour/roleColour declarations move to the scoped <style> below,
 // keyed on the element's class inside the root scope.
 // ---------------------------------------------------------------------------
-$name_html = $name ? sprintf( '<h3 class="sgs-team-member__name">%s</h3>', wp_kses_post( $name ) ) : '';
+$name_html = $name ? sprintf( '<%1$s class="sgs-team-member__name">%2$s</%1$s>', esc_attr( $heading_level ), wp_kses_post( $name ) ) : '';
 $role_html = $sgs_role ? sprintf( '<p class="sgs-team-member__role">%s</p>', wp_kses_post( $sgs_role ) ) : '';
 $bio_html  = ( $bio && ! $is_compact ) ? sprintf( '<p class="sgs-team-member__bio">%s</p>', wp_kses_post( $bio ) ) : '';
 

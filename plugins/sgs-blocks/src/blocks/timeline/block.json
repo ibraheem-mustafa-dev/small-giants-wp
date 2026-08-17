@@ -141,6 +141,11 @@
 			"type": "string",
 			"default": "vertical"
 		},
+		"headingLevel": {
+			"type": "string",
+			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"default": "h3"
+		},
 		"alignment": {
 			"type": "string",
 			"default": "alternating"

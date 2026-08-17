@@ -45,6 +45,13 @@ $sgs_css_keyword = static function ( $value ) {
 $source  = $attributes['source'] ?? 'manual';
 $variant = $attributes['variant'] ?? 'card';
 $items   = $attributes['items'] ?? array();
+// Card title heading level — an out-of-enum stored value is otherwise
+// silently coerced to the block.json default (blockjson-enum-coerces-
+// invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
+$allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
+$heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (absint() on an unresolved array
 // throws "Array to int conversion" and would emit e.g. `columns:0`, exactly
@@ -749,7 +756,7 @@ foreach ( $items as $index => $item ) :
 		<?php if ( 'card' === $variant ) : ?>
 			<div class="sgs-card-grid__body">
 				<?php if ( ! empty( $item['title'] ) ) : ?>
-					<h3 class="sgs-card-grid__title"><?php echo esc_html( $item['title'] ); ?></h3>
+					<<?php echo esc_attr( $heading_level ); ?> class="sgs-card-grid__title"><?php echo esc_html( $item['title'] ); ?></<?php echo esc_attr( $heading_level ); ?>>
 				<?php endif; ?>
 				<?php if ( ! empty( $item['subtitle'] ) ) : ?>
 					<p class="sgs-card-grid__subtitle"><?php echo esc_html( $item['subtitle'] ); ?></p>

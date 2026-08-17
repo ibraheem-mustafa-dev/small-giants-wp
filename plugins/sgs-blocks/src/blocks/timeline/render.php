@@ -62,6 +62,13 @@ $sgs_css_length = static function ( $value ) {
 // ---------------------------------------------------------------------------
 
 $entries          = isset( $attributes['entries'] ) && is_array( $attributes['entries'] ) ? $attributes['entries'] : array();
+// Entry-title heading level — an out-of-enum stored value is otherwise
+// silently coerced to the block.json default (blockjson-enum-coerces-
+// invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
+$allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
+$heading_level    = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
 $orientation      = $attributes['orientation'] ?? 'vertical';
 $alignment        = $attributes['alignment'] ?? 'alternating';
 $connector_style  = $attributes['connectorStyle'] ?? 'line';
@@ -453,7 +460,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 				<?php endif; ?>
 			</div>
 			<div class="sgs-timeline__content">
-				<h3 class="sgs-timeline__title"><?php echo esc_html( $entry_title ); ?></h3>
+				<<?php echo esc_attr( $heading_level ); ?> class="sgs-timeline__title"><?php echo esc_html( $entry_title ); ?></<?php echo esc_attr( $heading_level ); ?>>
 				<?php if ( $description ) : ?>
 					<div class="sgs-timeline__description"><?php echo wp_kses_post( $description ); ?></div>
 				<?php endif; ?>

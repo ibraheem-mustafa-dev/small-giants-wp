@@ -71,7 +71,14 @@ $sgs_css_keyword = static function ( $value ) {
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
 
-$steps                   = isset( $attributes['steps'] ) && is_array( $attributes['steps'] ) ? $attributes['steps'] : array();
+$steps = isset( $attributes['steps'] ) && is_array( $attributes['steps'] ) ? $attributes['steps'] : array();
+// Step-title heading level — an out-of-enum stored value is otherwise
+// silently coerced to the block.json default (blockjson-enum-coerces-
+// invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
+$allowed_heading_levels  = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
+$heading_level           = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
 $connector_style         = $attributes['connectorStyle'] ?? 'line';
 $number_style            = $attributes['numberStyle'] ?? 'circle';
 $number_colour           = $attributes['numberColour'] ?? '';
@@ -93,12 +100,12 @@ $border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
 $border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
 $border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
 $border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
-$has_border_width     = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
-$border_style_raw      = $attributes['borderStyle'] ?? 'none';
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
-$border_colour         = $attributes['borderColour'] ?? '';
+$border_style_raw       = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles  = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style           = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+$border_colour          = $attributes['borderColour'] ?? '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
@@ -210,7 +217,7 @@ if ( $transition_easing ) {
 // frontend exactly as an inline property declaration is — FR-32-1's done-when is
 // "no `style` attribute at all", explicitly including a custom-property value.
 // They are emitted into the block's scoped rule below instead (see section 4).
-$wrapper_args = array(
+$wrapper_args  = array(
 	'class' => implode( ' ', $wrapper_classes ),
 );
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
@@ -232,10 +239,10 @@ if ( $wrapper_style_parts ) {
 $root_border_decls = array();
 if ( 'none' !== $border_style ) {
 	if ( $has_border_width ) {
-		$bwt                  = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr                  = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb                  = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl                  = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr                 = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb                 = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl                 = '' !== $border_width_left ? $border_width_left : '0';
 		$root_border_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 	}
 	$root_border_decls[] = 'border-style:' . $border_style;
@@ -403,7 +410,7 @@ if ( $description_colour ) {
 			<?php if ( 'none' !== $number_style ) : ?>
 				<span class="sgs-process-steps__number" aria-hidden="true"><?php echo esc_html( $number ); ?></span>
 			<?php endif; ?>
-			<h3 class="sgs-process-steps__title"><?php echo esc_html( $step_title ); ?></h3>
+			<<?php echo esc_attr( $heading_level ); ?> class="sgs-process-steps__title"><?php echo esc_html( $step_title ); ?></<?php echo esc_attr( $heading_level ); ?>>
 			<?php if ( $description ) : ?>
 				<p class="sgs-process-steps__description"><?php echo esc_html( $description ); ?></p>
 			<?php endif; ?>

@@ -11,6 +11,17 @@ import {
 	Button,
 } from '@wordpress/components';
 
+// D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
+// allow-list exactly (render.php validates the same set independently).
+const HEADING_LEVEL_OPTIONS = [
+	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
+	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
+	{ label: __( 'Heading 4', 'sgs-blocks' ), value: 'h4' },
+	{ label: __( 'Heading 5', 'sgs-blocks' ), value: 'h5' },
+	{ label: __( 'Heading 6', 'sgs-blocks' ), value: 'h6' },
+	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
+];
+
 const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
@@ -112,6 +123,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		style,
 		steps,
+		headingLevel,
 		connectorStyle,
 		numberStyle,
 		numberColour,
@@ -196,6 +208,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const descStyle = {
 		color: colourVar( descriptionColour ) || undefined,
 	};
+
+	// D649 — heading level is an identity control (document-outline
+	// placement), not a style control; mirrors render.php's own fallback.
+	const HeadingTag = headingLevel || 'h3';
 
 	// Wrapper normal text/background colour is the flat backgroundColour/
 	// textColour attrs (block.json attrMap: "css:color":"textColour",
@@ -374,6 +390,22 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
+				<PanelBody title={ __( 'Process Steps Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { headingLevel: val } )
+						}
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Steps', 'sgs-blocks' ) }>
 					{ steps.map( ( step, index ) => (
 						<StepEditor
@@ -547,7 +579,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								{ step.number || index + 1 }
 							</span>
 						) }
-						<h3
+						<HeadingTag
 							className="sgs-process-steps__title"
 							style={ titleStyle }
 						>
@@ -555,7 +587,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								'Step title',
 								'sgs-blocks'
 							) }
-						</h3>
+						</HeadingTag>
 						{ step.description && (
 							<p
 								className="sgs-process-steps__description"

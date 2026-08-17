@@ -25,6 +25,17 @@ import {
 } from '@wordpress/components';
 import { NumberControl, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
+// D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
+// allow-list exactly (render.php validates the same set independently).
+const HEADING_LEVEL_OPTIONS = [
+	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
+	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
+	{ label: __( 'Heading 4', 'sgs-blocks' ), value: 'h4' },
+	{ label: __( 'Heading 5', 'sgs-blocks' ), value: 'h5' },
+	{ label: __( 'Heading 6', 'sgs-blocks' ), value: 'h6' },
+	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
+];
+
 const VARIANT_OPTIONS = [
 	{ label: __( 'Carousel', 'sgs-blocks' ), value: 'carousel' },
 	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
@@ -67,6 +78,7 @@ const newReview = () => ( {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
+		headingLevel,
 		dataSource,
 		emptyState,
 		businessUnitUrl,
@@ -202,6 +214,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
+				<PanelBody title={ __( 'Trustpilot Reviews Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Card title heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( value ) => setAttributes( { headingLevel: value } ) }
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 or H4 under a page-level H2.',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Source', 'sgs-blocks' ) }>
 					<SelectControl

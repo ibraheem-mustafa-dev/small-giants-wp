@@ -43,6 +43,13 @@ $sgs_css_keyword = static function ( $value ) {
 // ───────────────────────────────────────────────────────────────────────────
 
 $variant            = isset( $attributes['variant'] ) ? $attributes['variant'] : 'carousel';
+// Card-title heading level — an out-of-enum stored value is otherwise
+// silently coerced to the block.json default (blockjson-enum-coerces-
+// invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
+$allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
+$heading_level      = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
 $data_source        = isset( $attributes['dataSource'] ) ? sanitize_key( $attributes['dataSource'] ) : 'synced';
 $empty_state        = isset( $attributes['emptyState'] ) ? $attributes['emptyState'] : 'hide';
 $business_url       = isset( $attributes['businessUnitUrl'] ) ? $attributes['businessUnitUrl'] : '';
@@ -503,7 +510,7 @@ endif;
 				</header>
 
 				<?php if ( '' !== $review_title ) : ?>
-					<h3 class="sgs-trustpilot-reviews__card-title"><?php echo esc_html( $review_title ); ?></h3>
+					<<?php echo esc_attr( $heading_level ); ?> class="sgs-trustpilot-reviews__card-title"><?php echo esc_html( $review_title ); ?></<?php echo esc_attr( $heading_level ); ?>>
 				<?php endif; ?>
 
 				<div class="sgs-trustpilot-reviews__card-body"><?php echo wp_kses_post( wpautop( $body ) ); ?></div>
