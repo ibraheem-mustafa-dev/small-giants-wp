@@ -16,6 +16,27 @@
       }
     },
     {
+      "slug": "sgs/icon-list",
+      "attr": "headingLevel",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "headingLevel",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "headingLevel",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
       "slug": "sgs/trust-bar",
       "attr": "labelFontSize",
       "fields": {
