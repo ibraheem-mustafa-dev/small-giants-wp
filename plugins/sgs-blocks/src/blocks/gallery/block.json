@@ -308,10 +308,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"templateMode": {
-			"type": "string",
-			"default": ""
-		},
 		"dragToScroll": {
 			"type": "boolean",
 			"default": false
