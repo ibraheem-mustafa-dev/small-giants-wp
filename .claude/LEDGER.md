@@ -51,7 +51,7 @@ keeping six panels in one file is what caused my misreading in the first place.
 | Spec 32 — per-FR verified status block; §11's 3 questions closed; §6.1 heading corrected | `specs/32-…md` §0a, §6.1, §11 |
 | Spec 35 — Part L per-item verified state; Parts I/J/N corrected; 2 "gap" labels were wrong | `specs/35-…md` |
 | Control-type contract FOLDED into Spec 35 as **Part O**; 16 references repointed | `specs/35-…md` Part O |
-| `ContainerWrapperControls.js` split 1,888 → 268 lines + 6 panel files + `_shared.js` | `src/blocks/container/components/` |
+| `ContainerWrapperControls.js` split 1,887 → 268 lines + 6 panel files + `_shared.js` | `src/blocks/container/components/` |
 | Both tombstones DELETED (they formed a redirect chain) | — |
 | Root `CLAUDE.md` Spec 32 line corrected (was stale twice over) | `CLAUDE.md` |
 

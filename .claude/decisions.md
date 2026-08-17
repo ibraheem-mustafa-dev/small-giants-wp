@@ -31,7 +31,7 @@ later decision that never updates the earlier entry, and can simply be wrong —
 session agents at the end of long sessions. Consult one only while investigating a specific point,
 and only to learn WHY. A decision log is tier 4 of the verification ladder, like any other doc.
 
-**Ruling 4 — `ContainerWrapperControls.js` split into one file per panel (Bean).** 1,888 → 268 lines
+**Ruling 4 — `ContainerWrapperControls.js` split into one file per panel (Bean).** 1,887 → 268 lines
 plus 6 panel files + `_shared.js`. Dependency-driven: 21 of 23 constants belong to exactly one panel;
 `LENGTH_UNITS` was the only shared one; `_GRID_BORDER_STYLE_WORDS` was dead and dropped. The aggregate
 re-exports all six, so the ~30 importing blocks are untouched. Verified: webpack exit 0, four gates
