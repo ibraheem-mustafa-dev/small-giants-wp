@@ -122,7 +122,14 @@
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"
 					},
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
+					},
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D636 border-colour gradient sweep (remaining-block batch): `borderColourHoverGradient` is a HOVER-ONLY sibling to `borderColourHover` — the wrapper has no resting border-colour attribute at all (border-style is never set at rest), so only a `states.hover` entry exists, no base-level attrMap entry."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -415,6 +422,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover border instead of a flat colour. Non-empty wins over borderColourHover at render time (D636)."
+		},
 		"transitionDuration": {
 			"type": "string",
 			"default": "300"
@@ -511,6 +523,11 @@
 		"imageBorderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"imageBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the split-image border instead of a flat colour. Non-empty wins over imageBorderColour at render time (D636)."
 		},
 		"imagePadding": {
 			"type": "object",

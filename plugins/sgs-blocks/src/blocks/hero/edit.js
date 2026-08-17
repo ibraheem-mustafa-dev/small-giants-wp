@@ -237,6 +237,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		imageBorderStyle,
 		imageBorderWidth,
 		imageBorderColour,
+		imageBorderColourGradient,
 		imagePadding,
 		imagePaddingTablet,
 		imagePaddingMobile,
@@ -1285,7 +1286,20 @@ export default function Edit( { attributes, setAttributes, name } ) {
 										showResponsive={ false }
 										onChange={ ( tier, next ) => setAttributes( { imageBorderWidth: next } ) }
 									/>
-									<DesignTokenPicker label={ __( 'Border colour', 'sgs-blocks' ) } value={ imageBorderColour } onChange={ ( val ) => setAttributes( { imageBorderColour: val } ) } />
+									<DesignTokenPicker
+										label={ __( 'Border colour', 'sgs-blocks' ) }
+										states={ [
+											{
+												key: 'normal',
+												label: __( 'Normal', 'sgs-blocks' ),
+												value: imageBorderColour,
+												onChange: ( val ) => setAttributes( { imageBorderColour: val } ),
+												gradientValue: imageBorderColourGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( { imageBorderColourGradient: val ?? '' } ),
+											},
+										] }
+									/>
 								</>
 							) }
 
