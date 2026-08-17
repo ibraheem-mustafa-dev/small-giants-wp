@@ -5763,3 +5763,15 @@ pass.
 75 after the colour-bug fix (correctness only, same count) → 54 after Signal 4. `npm run build`
 green throughout every commit in this decision.
 
+## 2026-08-16 — Sweep: uncited D-numbers in the none span
+
+Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), per-project/client CLAUDE.md files, and scripts/*.py. 0 entries moved verbatim. Cross-referenced-by-a-kept-entry list (informational, not excluded from sweep): 
+
+---
+
+## 2026-08-17 — Sweep: uncited D-numbers in the none span
+
+Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), per-project/client CLAUDE.md files, and scripts/*.py. 0 entries moved verbatim. Cross-referenced-by-a-kept-entry list (informational, not excluded from sweep): 
+
+---
+

@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-08-08T19:18:51.783Z",
+	"generatedAt": "2026-08-17T17:43:15.838Z",
 	"totalBlocks": 83,
 	"blocks": [
 		{
@@ -9,9 +9,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -40,22 +37,14 @@
 			},
 			"dropConditionalInert": [
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"justifyContent",
 				"justifyItems",
 				"alignContent",
 				"alignItems",
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"flexDirection",
 				"flexWrap"
 			],
@@ -67,9 +56,9 @@
 				"headerColour",
 				"headerBackground",
 				"iconColour",
+				"iconColourGradient",
 				"openIcon",
-				"closeIcon",
-				"templateMode"
+				"closeIcon"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -105,6 +94,10 @@
 					"routed": false,
 					"via": null
 				},
+				"iconColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"openIcon": {
 					"routed": false,
 					"via": null
@@ -124,10 +117,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				},
 				"paddingTablet": {
 					"routed": true,
@@ -159,9 +148,7 @@
 			"hasStyleCss": false,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -181,7 +168,9 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"title",
-				"isOpen"
+				"isOpen",
+				"backgroundColour",
+				"textColour"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -200,6 +189,14 @@
 				"maxWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -323,7 +320,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -376,9 +372,6 @@
 				"afterLabel",
 				"labelColour",
 				"labelBackgroundColour",
-				"labelFontSize",
-				"labelFontSizeTablet",
-				"labelFontSizeMobile",
 				"labelFontWeight",
 				"labelFontStyle",
 				"labelLineHeight",
@@ -392,13 +385,10 @@
 				"handleIconColour",
 				"height",
 				"heightUnit",
-				"heightTablet",
-				"heightMobile",
 				"maxWidth",
 				"maxWidthUnit",
-				"maxWidthTablet",
-				"maxWidthMobile",
 				"boxShadow",
+				"boxShadowColour",
 				"borderRadiusTablet",
 				"borderRadiusMobile"
 			],
@@ -543,20 +533,12 @@
 					"via": null
 				},
 				"labelFontSize": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "sgs_responsive_css_rule"
 				},
 				"labelFontSizeUnit": {
 					"routed": true,
 					"via": "sgs_responsive_css_rule"
-				},
-				"labelFontSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"labelFontSizeMobile": {
-					"routed": false,
-					"via": null
 				},
 				"labelFontWeight": {
 					"routed": false,
@@ -614,14 +596,6 @@
 					"routed": false,
 					"via": null
 				},
-				"heightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"heightMobile": {
-					"routed": false,
-					"via": null
-				},
 				"maxWidth": {
 					"routed": false,
 					"via": null
@@ -630,15 +604,11 @@
 					"routed": false,
 					"via": null
 				},
-				"maxWidthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"maxWidthMobile": {
-					"routed": false,
-					"via": null
-				},
 				"boxShadow": {
+					"routed": false,
+					"via": null
+				},
+				"boxShadowColour": {
 					"routed": false,
 					"via": null
 				},
@@ -652,7 +622,7 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_responsive_css_rule": 2
+				"sgs_responsive_css_rule": 3
 			},
 			"dominantHelper": "sgs_responsive_css_rule",
 			"scalarStylingLift": false
@@ -664,7 +634,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -712,10 +681,13 @@
 				"tileBorderWidth",
 				"tileBackgroundColour",
 				"tileBorderColour",
+				"tileBorderColourGradient",
 				"tileShadow",
+				"tileShadowColour",
 				"backgroundColourHover",
 				"textColourHover",
 				"borderColourHover",
+				"borderColourHoverGradient",
 				"effectHover",
 				"transitionDuration",
 				"transitionEasing",
@@ -794,14 +766,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"nameFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"nameFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"nameFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -818,27 +782,11 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"nameLineHeightTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"nameLineHeightMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"nameLetterSpacing": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
 				"nameLetterSpacingUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"nameLetterSpacingTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"nameLetterSpacingMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -890,7 +838,15 @@
 					"routed": false,
 					"via": null
 				},
+				"tileBorderColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"tileShadow": {
+					"routed": false,
+					"via": null
+				},
+				"tileShadowColour": {
 					"routed": false,
 					"via": null
 				},
@@ -903,6 +859,10 @@
 					"via": null
 				},
 				"borderColourHover": {
+					"routed": false,
+					"via": null
+				},
+				"borderColourHoverGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -944,7 +904,7 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_typography_css_rule": 16
+				"sgs_typography_css_rule": 10
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": false
@@ -956,9 +916,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"link",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -1044,9 +1001,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"text",
-					"background",
-					"link",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -1074,9 +1028,11 @@
 				"linkPhone",
 				"linkEmail",
 				"iconColour",
+				"iconColourGradient",
 				"textColour",
 				"labelColour",
-				"linkHoverColour",
+				"linkHoverBackgroundImage",
+				"linkHoverTextColour",
 				"paddingTablet",
 				"paddingMobile",
 				"marginTablet",
@@ -1108,6 +1064,10 @@
 					"routed": false,
 					"via": null
 				},
+				"iconColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"textColour": {
 					"routed": false,
 					"via": null
@@ -1116,7 +1076,11 @@
 					"routed": false,
 					"via": null
 				},
-				"linkHoverColour": {
+				"linkHoverBackgroundImage": {
+					"routed": false,
+					"via": null
+				},
+				"linkHoverTextColour": {
 					"routed": false,
 					"via": null
 				},
@@ -1148,8 +1112,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -1172,6 +1134,8 @@
 			"dropUnrouted": [
 				"label",
 				"url",
+				"linkId",
+				"linkKind",
 				"linkTarget",
 				"rel",
 				"download",
@@ -1180,17 +1144,9 @@
 				"widthType",
 				"customWidth",
 				"customWidthUnit",
-				"widthTypeTablet",
-				"widthTypeMobile",
-				"customWidthTablet",
-				"customWidthUnitTablet",
-				"customWidthMobile",
-				"customWidthUnitMobile",
 				"minHeight",
 				"minHeightUnit",
-				"minHeightTablet",
 				"minHeightTabletUnit",
-				"minHeightMobile",
 				"minHeightMobileUnit",
 				"paddingTablet",
 				"paddingMobile",
@@ -1203,20 +1159,20 @@
 				"textDecoration",
 				"textDecorationHover",
 				"fontSize",
-				"fontSizeTablet",
-				"fontSizeMobile",
 				"lineHeight",
-				"lineHeightTablet",
-				"lineHeightMobile",
 				"letterSpacing",
-				"letterSpacingTablet",
-				"letterSpacingMobile",
+				"colourBackgroundGradient",
+				"colourBackgroundHoverGradient",
+				"colourBorderGradient",
+				"colourBorderHoverGradient",
 				"borderStyle",
 				"borderWidth",
 				"borderRadiusTablet",
 				"borderRadiusMobile",
 				"boxShadow",
+				"boxShadowColour",
 				"boxShadowHover",
+				"boxShadowHoverColour",
 				"scaleHover",
 				"transitionDuration",
 				"transitionEasing",
@@ -1224,10 +1180,10 @@
 				"iconPosition",
 				"labelCollapse",
 				"iconSize",
-				"iconSizeTablet",
-				"iconSizeMobile",
 				"iconColour",
+				"iconColourGradient",
 				"iconColourHover",
+				"iconColourHoverGradient",
 				"iconTitle",
 				"ariaLabel",
 				"anchor",
@@ -1242,6 +1198,14 @@
 					"via": null
 				},
 				"url": {
+					"routed": false,
+					"via": null
+				},
+				"linkId": {
+					"routed": false,
+					"via": null
+				},
+				"linkKind": {
 					"routed": false,
 					"via": null
 				},
@@ -1277,30 +1241,6 @@
 					"routed": false,
 					"via": null
 				},
-				"widthTypeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"widthTypeMobile": {
-					"routed": false,
-					"via": null
-				},
-				"customWidthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"customWidthUnitTablet": {
-					"routed": false,
-					"via": null
-				},
-				"customWidthMobile": {
-					"routed": false,
-					"via": null
-				},
-				"customWidthUnitMobile": {
-					"routed": false,
-					"via": null
-				},
 				"minHeight": {
 					"routed": false,
 					"via": null
@@ -1309,15 +1249,7 @@
 					"routed": false,
 					"via": null
 				},
-				"minHeightTablet": {
-					"routed": false,
-					"via": null
-				},
 				"minHeightTabletUnit": {
-					"routed": false,
-					"via": null
-				},
-				"minHeightMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -1369,14 +1301,6 @@
 					"routed": false,
 					"via": null
 				},
-				"fontSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"fontSizeMobile": {
-					"routed": false,
-					"via": null
-				},
 				"fontSizeUnit": {
 					"routed": true,
 					"via": "sgs_responsive_css_rule"
@@ -1385,27 +1309,11 @@
 					"routed": false,
 					"via": null
 				},
-				"lineHeightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"lineHeightMobile": {
-					"routed": false,
-					"via": null
-				},
 				"lineHeightUnit": {
 					"routed": true,
 					"via": "sgs_responsive_css_rule"
 				},
 				"letterSpacing": {
-					"routed": false,
-					"via": null
-				},
-				"letterSpacingTablet": {
-					"routed": false,
-					"via": null
-				},
-				"letterSpacingMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -1425,17 +1333,33 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
+				"colourBackgroundGradient": {
+					"routed": false,
+					"via": null
+				},
 				"colourBackgroundHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
+				},
+				"colourBackgroundHoverGradient": {
+					"routed": false,
+					"via": null
 				},
 				"colourBorder": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
+				"colourBorderGradient": {
+					"routed": false,
+					"via": null
+				},
 				"colourBorderHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
+				},
+				"colourBorderHoverGradient": {
+					"routed": false,
+					"via": null
 				},
 				"borderStyle": {
 					"routed": false,
@@ -1457,7 +1381,15 @@
 					"routed": false,
 					"via": null
 				},
+				"boxShadowColour": {
+					"routed": false,
+					"via": null
+				},
 				"boxShadowHover": {
+					"routed": false,
+					"via": null
+				},
+				"boxShadowHoverColour": {
 					"routed": false,
 					"via": null
 				},
@@ -1489,23 +1421,19 @@
 					"routed": false,
 					"via": null
 				},
-				"iconSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"iconSizeMobile": {
-					"routed": false,
-					"via": null
-				},
-				"iconGap": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
 				"iconColour": {
 					"routed": false,
 					"via": null
 				},
+				"iconColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"iconColourHover": {
+					"routed": false,
+					"via": null
+				},
+				"iconColourHoverGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -1528,7 +1456,7 @@
 			},
 			"helperCounts": {
 				"sgs_responsive_css_rule": 3,
-				"render.php (block-private)": 7
+				"render.php (block-private)": 6
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": false
@@ -1539,9 +1467,21 @@
 			"hasRenderPhp": true,
 			"hasStyleCss": true,
 			"inlineViaSupports": {
-				"color": [],
+				"color": [
+					"background",
+					"text",
+					"gradients",
+					"__experimentalSkipSerialization"
+				],
 				"spacing": [
 					"margin",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"color",
+					"style",
 					"__experimentalSkipSerialization"
 				]
 			},
@@ -1638,9 +1578,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -1677,37 +1614,35 @@
 			},
 			"dropConditionalInert": [
 				"columns",
-				"columnsMobile",
 				"gap",
-				"columnsTablet",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"flexDirection",
 				"flexWrap",
 				"justifyContent",
 				"justifyItems",
 				"alignContent",
-				"alignItems",
-				"gapMobile",
-				"gapTablet"
+				"alignItems"
 			],
 			"dropUnrouted": [
 				"variant",
+				"headingLevel",
 				"_comment_items_media",
 				"items",
 				"effectHover",
 				"titleColour",
 				"subtitleColour",
 				"cardBackground",
+				"cardBackgroundGradient",
 				"cardBorderColour",
+				"cardBorderColourGradient",
 				"cardBorderWidth",
 				"cardRadius",
 				"cardShadow",
+				"cardShadowColour",
+				"backgroundColourHoverGradient",
+				"borderColourHoverGradient",
 				"imageZoomHover",
 				"grayscaleHover",
 				"sgsAnimation",
@@ -1738,12 +1673,15 @@
 				"productEmptyMessage",
 				"queryPostType",
 				"queryPostsPerPage",
-				"queryCategory",
-				"templateMode"
+				"queryCategory"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
 				"variant": {
+					"routed": false,
+					"via": null
+				},
+				"headingLevel": {
 					"routed": false,
 					"via": null
 				},
@@ -1779,14 +1717,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"titleFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"titleFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"subtitleFontSize": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -1795,19 +1725,19 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"subtitleFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"subtitleFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"cardBackground": {
 					"routed": false,
 					"via": null
 				},
+				"cardBackgroundGradient": {
+					"routed": false,
+					"via": null
+				},
 				"cardBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"cardBorderColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -1823,9 +1753,17 @@
 					"routed": false,
 					"via": null
 				},
+				"cardShadowColour": {
+					"routed": false,
+					"via": null
+				},
 				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
+				},
+				"backgroundColourHoverGradient": {
+					"routed": false,
+					"via": null
 				},
 				"textColourHover": {
 					"routed": true,
@@ -1834,6 +1772,10 @@
 				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
+				},
+				"borderColourHoverGradient": {
+					"routed": false,
+					"via": null
 				},
 				"transitionDuration": {
 					"routed": true,
@@ -1848,6 +1790,10 @@
 					"via": "render.php (block-private)"
 				},
 				"shadowHover": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"shadowHoverColour": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -1990,15 +1936,11 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 9,
-				"sgs_typography_css_rule": 8,
+				"render.php (block-private)": 10,
+				"sgs_typography_css_rule": 4,
 				"SGS_Container_Wrapper": 3
 			},
 			"dominantHelper": "render.php (block-private)",
@@ -2028,6 +1970,7 @@
 				"iconName",
 				"iconSize",
 				"iconColour",
+				"iconColourGradient",
 				"badgeColour",
 				"badgeTextColour",
 				"ariaLabel",
@@ -2060,6 +2003,10 @@
 					"via": null
 				},
 				"iconColour": {
+					"routed": false,
+					"via": null
+				},
+				"iconColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -2139,8 +2086,7 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"text",
-					"background",
+					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -2167,7 +2113,9 @@
 				"paddingTablet",
 				"paddingMobile",
 				"marginTablet",
-				"marginMobile"
+				"marginMobile",
+				"backgroundColour",
+				"textColour"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -2188,14 +2136,6 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"fontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"fontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"fontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -2230,10 +2170,18 @@
 				"marginMobile": {
 					"routed": false,
 					"via": null
+				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"sgs_typography_css_rule": 8
+				"sgs_typography_css_rule": 6
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": false
@@ -2244,14 +2192,6 @@
 			"hasRenderPhp": true,
 			"hasStyleCss": true,
 			"inlineViaSupports": {
-				"color": [
-					"background",
-					"text",
-					"gradients",
-					"link",
-					"heading",
-					"__experimentalSkipSerialization"
-				],
 				"spacing": [
 					"margin",
 					"padding",
@@ -2283,23 +2223,18 @@
 			},
 			"dropConditionalInert": [
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gap",
-				"gapTablet",
-				"gapMobile",
+				"alignItems",
 				"gridItemPadding",
 				"gridItemBackground",
 				"gridItemBorderRadius",
 				"gridItemBorder",
+				"gridItemBorderGradient",
+				"gridItemBorderGradientHover",
 				"gridItemShadow",
 				"gridItemTextColour",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"justifyItems",
 				"alignContent",
@@ -2309,6 +2244,7 @@
 			],
 			"dropUnrouted": [
 				"tagName",
+				"ariaLabel",
 				"templateMode"
 			],
 			"tierWithoutBase": [],
@@ -2318,6 +2254,10 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"tagName": {
+					"routed": false,
+					"via": null
+				},
+				"ariaLabel": {
 					"routed": false,
 					"via": null
 				},
@@ -2353,23 +2293,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"backgroundOverlayOpacity": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"overlayGradient": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientAngle": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientFrom": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientTo": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -2405,27 +2329,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"maxWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"minHeight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"verticalAlign": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -2437,7 +2341,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerTopHeight": {
+				"shapeDividerTopColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -2457,7 +2365,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerBottomHeight": {
+				"shapeDividerBottomColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -2524,30 +2436,10 @@
 				"contentBandPadding": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandBackground": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 56
+				"SGS_Container_Wrapper": 44
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -2559,8 +2451,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -2599,6 +2489,7 @@
 				"showMinutes",
 				"showSeconds",
 				"numberColour",
+				"numberColourGradient",
 				"labelColour",
 				"cardStyle",
 				"digitStyle",
@@ -2653,6 +2544,10 @@
 					"routed": false,
 					"via": null
 				},
+				"numberColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"labelColour": {
 					"routed": false,
 					"via": null
@@ -2701,9 +2596,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"link",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -2740,6 +2632,7 @@
 				"duration",
 				"separator",
 				"numberColour",
+				"numberColourGradient",
 				"labelColour",
 				"icon",
 				"accentStroke",
@@ -2782,6 +2675,10 @@
 					"routed": false,
 					"via": null
 				},
+				"numberColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"labelColour": {
 					"routed": false,
 					"via": null
@@ -2791,14 +2688,6 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"labelFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"labelFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"labelFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -2852,7 +2741,7 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_typography_css_rule": 8
+				"sgs_typography_css_rule": 6
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": true
@@ -2864,9 +2753,7 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -2890,15 +2777,12 @@
 					"fontWeight",
 					"fontStyle",
 					"__experimentalSkipSerialization"
-				],
-				"shadow": [
-					"shadow"
 				]
 			},
 			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
-				"noOverlayOptOut": true,
+				"noOverlayOptOut": false,
 				"nulledAttrs": [
 					"backgroundImage",
 					"shadow",
@@ -2912,33 +2796,23 @@
 					"backgroundPosition",
 					"backgroundRepeat",
 					"backgroundAttachment",
-					"backgroundOverlayColour",
-					"backgroundOverlayOpacity",
-					"overlayGradient",
-					"overlayGradientAngle",
-					"overlayGradientFrom",
-					"overlayGradientTo"
+					"backgroundOverlayColour"
 				]
 			},
 			"dropConditionalInert": [
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gap",
-				"gapTablet",
-				"gapMobile",
+				"alignItems",
 				"gridItemPadding",
 				"gridItemBackground",
 				"gridItemBorderRadius",
 				"gridItemBorder",
+				"gridItemBorderGradient",
+				"gridItemBorderGradientHover",
 				"gridItemShadow",
 				"gridItemTextColour",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"justifyItems",
 				"alignContent",
@@ -2959,6 +2833,7 @@
 				"backgroundImageOpacity",
 				"stats",
 				"gradientPreset",
+				"borderColourHoverGradient",
 				"transitionDuration",
 				"transitionEasing",
 				"contentLayout",
@@ -2969,14 +2844,9 @@
 				"backgroundRepeat",
 				"backgroundAttachment",
 				"backgroundOverlayColour",
-				"backgroundOverlayOpacity",
-				"overlayGradient",
-				"overlayGradientAngle",
-				"overlayGradientFrom",
-				"overlayGradientTo",
 				"shadow",
-				"templateMode",
-				"tagName"
+				"shadowColour",
+				"ariaLabel"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -3044,6 +2914,10 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
+				"borderColourHoverGradient": {
+					"routed": false,
+					"via": null
+				},
 				"transitionDuration": {
 					"routed": false,
 					"via": null
@@ -3088,25 +2962,9 @@
 					"routed": false,
 					"via": null
 				},
-				"backgroundOverlayOpacity": {
-					"routed": false,
-					"via": null
-				},
 				"overlayGradient": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientAngle": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientFrom": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientTo": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgVideo": {
 					"routed": true,
@@ -3136,23 +2994,15 @@
 					"routed": false,
 					"via": null
 				},
+				"shadowColour": {
+					"routed": false,
+					"via": null
+				},
 				"maxWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
 				"minHeight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"verticalAlign": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -3164,7 +3014,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerTopHeight": {
+				"shapeDividerTopColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -3184,7 +3038,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerBottomHeight": {
+				"shapeDividerBottomColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -3224,10 +3082,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"templateMode": {
-					"routed": false,
-					"via": null
-				},
 				"contentWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -3248,45 +3102,21 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandBackground": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentBandPadding": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"tagName": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"ariaLabel": {
 					"routed": false,
 					"via": null
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 43,
+				"SGS_Container_Wrapper": 37,
 				"render.php (block-private)": 3
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
@@ -3327,15 +3157,7 @@
 				"parallaxStrength",
 				"fadeOnScroll",
 				"overflow",
-				"positionXTablet",
-				"positionYTablet",
-				"widthTablet",
-				"rotationTablet",
 				"hideOnTablet",
-				"positionXMobile",
-				"positionYMobile",
-				"widthMobile",
-				"rotationMobile",
 				"hideOnMobile",
 				"pathDrawOnScroll",
 				"pathDrawDurationMs",
@@ -3428,39 +3250,7 @@
 					"routed": false,
 					"via": null
 				},
-				"positionXTablet": {
-					"routed": false,
-					"via": null
-				},
-				"positionYTablet": {
-					"routed": false,
-					"via": null
-				},
-				"widthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"rotationTablet": {
-					"routed": false,
-					"via": null
-				},
 				"hideOnTablet": {
-					"routed": false,
-					"via": null
-				},
-				"positionXMobile": {
-					"routed": false,
-					"via": null
-				},
-				"positionYMobile": {
-					"routed": false,
-					"via": null
-				},
-				"widthMobile": {
-					"routed": false,
-					"via": null
-				},
-				"rotationMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -3496,8 +3286,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -3521,20 +3309,11 @@
 				"nulledAttrs": []
 			},
 			"dropConditionalInert": [
-				"columnsDesktop",
-				"columnsTablet",
-				"columnsMobile",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"alignItems",
 				"justifyItems",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"flexDirection",
 				"flexWrap",
@@ -3547,7 +3326,8 @@
 				"minItemWidth",
 				"minItemWidthUnit",
 				"_comment_gap_unit",
-				"templateMode"
+				"backgroundColour",
+				"textColour"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -3579,7 +3359,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"templateMode": {
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
 					"routed": false,
 					"via": null
 				}
@@ -3612,6 +3396,10 @@
 				"attributeId",
 				"threshold",
 				"placeholder",
+				"inputBorderColour",
+				"inputBorderColourGradient",
+				"focusRingColour",
+				"textColour",
 				"marginTablet",
 				"marginMobile"
 			],
@@ -3626,6 +3414,22 @@
 					"via": null
 				},
 				"placeholder": {
+					"routed": false,
+					"via": null
+				},
+				"inputBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"inputBorderColourGradient": {
+					"routed": false,
+					"via": null
+				},
+				"focusRingColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
 					"routed": false,
 					"via": null
 				},
@@ -3649,9 +3453,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -3679,18 +3480,11 @@
 				"nulledAttrs": []
 			},
 			"dropConditionalInert": [
+				"alignItems",
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"justifyItems",
 				"alignContent",
@@ -4753,9 +4547,7 @@
 			"hasStyleCss": false,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -4774,20 +4566,13 @@
 			},
 			"dropConditionalInert": [
 				"columns",
+				"alignItems",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"justifyItems",
 				"alignContent",
-				"columnsMobile",
-				"columnsTablet",
 				"flexDirection",
 				"flexWrap",
 				"justifyContent"
@@ -4805,7 +4590,8 @@
 				"conditionalOperator",
 				"conditionalValue",
 				"selectedStyle",
-				"templateMode"
+				"backgroundColour",
+				"textColour"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -4869,7 +4655,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"templateMode": {
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
 					"routed": false,
 					"via": null
 				}
@@ -4894,11 +4684,16 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
-				"heading"
+				"heading",
+				"headingLevel"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
 				"heading": {
+					"routed": false,
+					"via": null
+				},
+				"headingLevel": {
 					"routed": false,
 					"via": null
 				}
@@ -4914,9 +4709,7 @@
 			"hasStyleCss": false,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -4939,7 +4732,10 @@
 				"nulledAttrs": []
 			},
 			"dropConditionalInert": [],
-			"dropUnrouted": [],
+			"dropUnrouted": [
+				"backgroundColour",
+				"textColour"
+			],
 			"tierWithoutBase": [],
 			"attrRouting": {
 				"label": {
@@ -4953,6 +4749,14 @@
 				"maxWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -4968,14 +4772,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
-					"__experimentalSkipSerialization"
-				],
-				"spacing": [
-					"margin",
-					"padding",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -5011,7 +4807,6 @@
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"templateMode",
 				"dragToScroll",
 				"dragMomentum",
 				"loopCarousel"
@@ -5027,14 +4822,6 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"columns": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -5142,27 +4929,19 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"padding": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"margin": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"gridTemplateColumns": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gridTemplateColumnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridTemplateRows": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -5194,18 +4973,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"templateMode": {
-					"routed": false,
-					"via": null
-				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"dragToScroll": {
 					"routed": false,
 					"via": null
@@ -5220,7 +4987,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 22,
+				"SGS_Container_Wrapper": 16,
 				"render.php (block-private)": 7
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
@@ -5233,9 +5000,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -5254,14 +5018,8 @@
 			},
 			"dropConditionalInert": [
 				"columns",
-				"columnsTablet",
-				"columnsMobile",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"flexDirection",
 				"flexWrap",
@@ -5269,9 +5027,7 @@
 				"justifyItems",
 				"alignContent",
 				"alignItems",
-				"gap",
-				"gapTablet",
-				"gapMobile"
+				"gap"
 			],
 			"dropUnrouted": [
 				"variant",
@@ -5299,8 +5055,7 @@
 				"loopCarousel",
 				"sgsAnimation",
 				"sgsAnimationDuration",
-				"sgsAnimationEasing",
-				"templateMode"
+				"sgsAnimationEasing"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -5419,10 +5174,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				}
 			},
 			"helperCounts": {
@@ -5438,8 +5189,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"text",
-					"background",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -5466,9 +5215,6 @@
 				"subTag",
 				"anchor",
 				"fontFamily",
-				"fontSize",
-				"fontSizeTablet",
-				"fontSizeMobile",
 				"fontWeight",
 				"lineHeight",
 				"lineHeightUnit",
@@ -5476,6 +5222,7 @@
 				"letterSpacingUnit",
 				"textTransform",
 				"textColour",
+				"textColourGradient",
 				"fontStyle",
 				"textDecoration",
 				"paddingTablet",
@@ -5483,14 +5230,18 @@
 				"marginTablet",
 				"marginMobile",
 				"backgroundColour",
+				"backgroundColourGradient",
 				"borderWidth",
 				"borderStyle",
 				"borderColour",
+				"borderColourGradient",
 				"boxShadow",
 				"boxShadowHover",
 				"scaleHover",
 				"textColourHover",
+				"textColourHoverGradient",
 				"backgroundColourHover",
+				"backgroundColourHoverGradient",
 				"customWidth",
 				"customWidthUnit",
 				"textAlign",
@@ -5526,20 +5277,12 @@
 					"via": null
 				},
 				"fontSize": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "sgs_responsive_css_rule"
 				},
 				"fontSizeUnit": {
 					"routed": true,
 					"via": "sgs_responsive_css_rule"
-				},
-				"fontSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"fontSizeMobile": {
-					"routed": false,
-					"via": null
 				},
 				"fontWeight": {
 					"routed": false,
@@ -5566,6 +5309,10 @@
 					"via": null
 				},
 				"textColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -5597,6 +5344,10 @@
 					"routed": false,
 					"via": null
 				},
+				"backgroundColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"borderWidth": {
 					"routed": false,
 					"via": null
@@ -5606,6 +5357,10 @@
 					"via": null
 				},
 				"borderColour": {
+					"routed": false,
+					"via": null
+				},
+				"borderColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -5625,7 +5380,15 @@
 					"routed": false,
 					"via": null
 				},
+				"textColourHoverGradient": {
+					"routed": false,
+					"via": null
+				},
 				"backgroundColourHover": {
+					"routed": false,
+					"via": null
+				},
+				"backgroundColourHoverGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -5659,7 +5422,7 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_responsive_css_rule": 1
+				"sgs_responsive_css_rule": 2
 			},
 			"dominantHelper": "sgs_responsive_css_rule",
 			"scalarStylingLift": false
@@ -5670,17 +5433,6 @@
 			"hasRenderPhp": true,
 			"hasStyleCss": true,
 			"inlineViaSupports": {
-				"color": [
-					"background",
-					"text",
-					"gradients",
-					"__experimentalSkipSerialization"
-				],
-				"spacing": [
-					"margin",
-					"padding",
-					"__experimentalSkipSerialization"
-				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
@@ -5704,122 +5456,7 @@
 				"usesWrapper": true,
 				"noOverlayOptOut": true,
 				"nulledAttrs": [
-					"topLeft",
-					"topRight",
-					"bottomLeft",
-					"bottomRight",
-					"radius",
-					"border",
-					"selector",
-					"css",
-					"style",
-					"typography",
-					"fontSize",
-					"",
-					"lineHeight",
-					"letterSpacing",
-					"textTransform",
-					"fontWeight",
-					"fontStyle",
-					" .sgs-hero__headline",
-					"textAlign",
-					"left",
-					"center",
-					"right",
-					" .sgs-hero__headline{text-align:",
-					"}",
-					"textColor",
-					"backgroundColor",
-					"has-text-color",
-					"has-",
-					"-color",
-					"has-background",
-					"-background-color",
-					"color",
-					"background",
-					"gradient",
-					"url",
-					"<video class=\"sgs-hero__video-bg\" autoplay loop muted playsinline aria-hidden=\"true\">",
-					"<source src=\"%s\" type=\"video/mp4\"></video>",
-					" data-src-tablet=\"%s\"",
-					"<video class=\"sgs-hero__video-bg sgs-hero__video-bg--responsive\" autoplay loop muted playsinline aria-hidden=\"true\"",
-					" data-src-desktop=\"%s\"%s data-src-mobile=\"%s\">",
-					"id",
-					"high",
-					"auto",
-					"eager",
-					"lazy",
-					"class",
-					"sgs-hero__bg-img",
-					"aria-hidden",
-					"true",
-					"fetchpriority",
-					"loading",
-					"decoding",
-					"sync",
-					"async",
-					"alt",
-					" sgs-hero__bg-img--parallax",
-					"/includes/render-helpers.php",
-					"full",
-					"<div class=\"sgs-hero__svg-bg\" aria-hidden=\"true\">",
-					"</div>",
-					"<span class=\"sgs-hero__overlay\" aria-hidden=\"true\"></span>",
-					".",
-					" .sgs-hero__overlay{background-color:",
-					";opacity:",
-					"<div class=\"sgs-hero__content\">",
-					"type",
-					"video",
-					"sgs-hero__media",
-					" sgs-hero__media--bleed",
-					"<div class=\"",
-					"\">",
-					"sgs/hero",
-					"sgs-hero__split-image",
-					"width",
-					"height",
-					"large",
-					" sgs-hero__split-image--bleed",
-					"sgs-hero__split-image sgs-hero__split-image--mobile",
-					" .sgs-hero__split-image--mobile{object-position:",
-					"@media (max-width:767px){.",
-					" .sgs-hero__split-image--desktop{display:none}}",
-					"@media (min-width:768px){.",
-					" .sgs-hero__split-image--mobile{display:none}}",
-					"sgs-hero__split-image sgs-hero__split-image--tablet",
-					"@media (min-width:768px) and (max-width:1023px){.",
-					" .sgs-hero__split-image--tablet{display:none}}",
-					"@media (min-width:1024px){.",
-					" sgs-hero__split-image--desktop",
-					"<style id=\"%s\">%s</style>",
-					"backgroundImage",
-					"backgroundImageTablet",
-					"backgroundImageMobile",
-					"bgVideo",
-					"bgVideoMobile",
-					"bgSvgContent",
-					"minHeight",
-					"minHeightTablet",
-					"minHeightMobile",
-					"backgroundColourHover",
-					"backgroundAttachment",
-					"backgroundOverlayColour",
-					"backgroundOverlayOpacity",
-					"backgroundPosition",
-					"backgroundRepeat",
-					"backgroundSize",
-					"bgVideoTablet",
-					"bgSvgAnimation",
-					"bgSvgAnimationSpeed",
-					"bgSvgMinHeight",
-					"bgSvgOpacity",
-					"bgSvgPosition",
-					"bgSvgTextShadow",
-					"overlayGradient",
-					"overlayGradientAngle",
-					"overlayGradientFrom",
-					"overlayGradientTo"
+					"overlayGradient"
 				]
 			},
 			"dropConditionalInert": [
@@ -5828,56 +5465,49 @@
 				"flexDirection",
 				"flexWrap",
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"gap",
-				"gapMobile",
-				"gapTablet",
 				"gridAutoRows",
 				"gridItemBackground",
 				"gridItemBorder",
+				"gridItemBorderGradient",
+				"gridItemBorderGradientHover",
 				"gridItemBorderRadius",
 				"gridItemPadding",
 				"gridItemShadow",
 				"gridItemTextColour",
 				"gridTemplateColumns",
-				"gridTemplateColumnsMobile",
-				"gridTemplateColumnsTablet",
 				"gridTemplateRows",
-				"gridTemplateRowsMobile",
-				"gridTemplateRowsTablet",
-				"justifyItems"
+				"justifyItems",
+				"alignItems"
 			],
 			"dropUnrouted": [
 				"variant",
-				"headline",
-				"subHeadline",
 				"alignment",
-				"backgroundImage",
-				"overlayColour",
-				"overlayOpacity",
 				"splitImage",
 				"splitImageTablet",
-				"_comment_splitMedia",
-				"splitMedia",
 				"splitImageMobile",
+				"splitMediaType",
+				"splitMediaTypeTablet",
+				"splitMediaTypeMobile",
+				"splitVideo",
+				"splitVideoTablet",
+				"splitVideoMobile",
+				"splitSvg",
+				"splitSvgTablet",
+				"splitSvgMobile",
 				"splitImageMobileObjectPosition",
+				"imageObjectPositionTablet",
 				"label",
-				"svgContent",
-				"minHeight",
-				"minHeightTablet",
-				"minHeightMobile",
+				"backgroundColourHover",
+				"textColourHover",
+				"borderColourHover",
+				"borderColourHoverGradient",
 				"transitionDuration",
 				"transitionEasing",
 				"textAlignMobile",
 				"textAlignTablet",
 				"textAlignDesktop",
-				"bgVideo",
-				"bgVideoTablet",
-				"bgVideoMobile",
 				"splitImageBleed",
-				"subHeadlineMaxWidth",
-				"splitImageMobileHeight",
 				"imageObjectFit",
 				"imageObjectPosition",
 				"imageWidth",
@@ -5885,8 +5515,6 @@
 				"imageWidthMobile",
 				"imageWidthUnit",
 				"imageHeight",
-				"imageHeightTablet",
-				"imageHeightMobile",
 				"imageHeightUnit",
 				"imageBorderRadius",
 				"imageBorderRadiusTablet",
@@ -5894,55 +5522,32 @@
 				"imageBorderStyle",
 				"imageBorderWidth",
 				"imageBorderColour",
+				"imageBorderColourGradient",
 				"imagePadding",
 				"imagePaddingTablet",
 				"imagePaddingMobile",
 				"mediaBackground",
+				"mediaBackgroundGradient",
+				"mediaOverlayColour",
+				"mediaOverlayGradient",
+				"mediaParallax",
+				"mediaKenBurns",
+				"mediaAnimationDuration",
 				"contentPadding",
-				"contentPaddingTablet",
-				"contentPaddingMobile",
 				"mediaPadding",
 				"mediaPaddingTablet",
 				"mediaPaddingMobile",
 				"contentBackground",
-				"splitContentOrderMobile",
+				"contentBackgroundGradient",
+				"splitContentOrder",
 				"verticalAlignment",
-				"headlineMarginBottom",
-				"headlineMarginBottomMobile",
-				"subHeadlineMarginBottom",
-				"subHeadlineMarginBottomMobile",
-				"backgroundAttachment",
-				"backgroundImageMobile",
-				"backgroundImageTablet",
-				"backgroundOverlayColour",
-				"backgroundOverlayOpacity",
-				"backgroundPosition",
-				"backgroundRepeat",
-				"backgroundSize",
-				"bgSvgAnimation",
-				"bgSvgAnimationSpeed",
-				"bgSvgContent",
-				"bgSvgMinHeight",
-				"bgSvgOpacity",
-				"bgSvgPosition",
-				"bgSvgTextShadow",
 				"overlayGradient",
-				"overlayGradientAngle",
-				"overlayGradientFrom",
-				"overlayGradientTo",
-				"templateMode"
+				"templateMode",
+				"ariaLabel"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
 				"variant": {
-					"routed": false,
-					"via": null
-				},
-				"headline": {
-					"routed": false,
-					"via": null
-				},
-				"subHeadline": {
 					"routed": false,
 					"via": null
 				},
@@ -5951,16 +5556,8 @@
 					"via": null
 				},
 				"backgroundImage": {
-					"routed": false,
-					"via": null
-				},
-				"overlayColour": {
-					"routed": false,
-					"via": null
-				},
-				"overlayOpacity": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"splitImage": {
 					"routed": false,
@@ -5970,15 +5567,43 @@
 					"routed": false,
 					"via": null
 				},
-				"_comment_splitMedia": {
-					"routed": false,
-					"via": null
-				},
-				"splitMedia": {
-					"routed": false,
-					"via": null
-				},
 				"splitImageMobile": {
+					"routed": false,
+					"via": null
+				},
+				"splitMediaType": {
+					"routed": false,
+					"via": null
+				},
+				"splitMediaTypeTablet": {
+					"routed": false,
+					"via": null
+				},
+				"splitMediaTypeMobile": {
+					"routed": false,
+					"via": null
+				},
+				"splitVideo": {
+					"routed": false,
+					"via": null
+				},
+				"splitVideoTablet": {
+					"routed": false,
+					"via": null
+				},
+				"splitVideoMobile": {
+					"routed": false,
+					"via": null
+				},
+				"splitSvg": {
+					"routed": false,
+					"via": null
+				},
+				"splitSvgTablet": {
+					"routed": false,
+					"via": null
+				},
+				"splitSvgMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -5986,37 +5611,33 @@
 					"routed": false,
 					"via": null
 				},
+				"imageObjectPositionTablet": {
+					"routed": false,
+					"via": null
+				},
 				"label": {
 					"routed": false,
 					"via": null
 				},
-				"svgContent": {
-					"routed": false,
-					"via": null
-				},
 				"minHeight": {
-					"routed": false,
-					"via": null
-				},
-				"minHeightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"minHeightMobile": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundColourHover": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textColourHover": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"borderColourHover": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
+				},
+				"borderColourHoverGradient": {
+					"routed": false,
+					"via": null
 				},
 				"transitionDuration": {
 					"routed": false,
@@ -6047,26 +5668,18 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"bgVideo": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgVideoTablet": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgVideoMobile": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"splitImageBleed": {
-					"routed": false,
-					"via": null
-				},
-				"subHeadlineMaxWidth": {
-					"routed": false,
-					"via": null
-				},
-				"splitImageMobileHeight": {
 					"routed": false,
 					"via": null
 				},
@@ -6098,14 +5711,6 @@
 					"routed": false,
 					"via": null
 				},
-				"imageHeightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"imageHeightMobile": {
-					"routed": false,
-					"via": null
-				},
 				"imageHeightUnit": {
 					"routed": false,
 					"via": null
@@ -6134,6 +5739,10 @@
 					"routed": false,
 					"via": null
 				},
+				"imageBorderColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"imagePadding": {
 					"routed": false,
 					"via": null
@@ -6150,15 +5759,31 @@
 					"routed": false,
 					"via": null
 				},
+				"mediaBackgroundGradient": {
+					"routed": false,
+					"via": null
+				},
+				"mediaOverlayColour": {
+					"routed": false,
+					"via": null
+				},
+				"mediaOverlayGradient": {
+					"routed": false,
+					"via": null
+				},
+				"mediaParallax": {
+					"routed": false,
+					"via": null
+				},
+				"mediaKenBurns": {
+					"routed": false,
+					"via": null
+				},
+				"mediaAnimationDuration": {
+					"routed": false,
+					"via": null
+				},
 				"contentPadding": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingTablet": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6178,7 +5803,11 @@
 					"routed": false,
 					"via": null
 				},
-				"splitContentOrderMobile": {
+				"contentBackgroundGradient": {
+					"routed": false,
+					"via": null
+				},
+				"splitContentOrder": {
 					"routed": false,
 					"via": null
 				},
@@ -6186,85 +5815,65 @@
 					"routed": false,
 					"via": null
 				},
-				"headlineMarginBottom": {
-					"routed": false,
-					"via": null
-				},
-				"headlineMarginBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"subHeadlineMarginBottom": {
-					"routed": false,
-					"via": null
-				},
-				"subHeadlineMarginBottomMobile": {
-					"routed": false,
-					"via": null
-				},
 				"backgroundAttachment": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundImageMobile": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundImageTablet": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundOverlayColour": {
-					"routed": false,
-					"via": null
-				},
-				"backgroundOverlayOpacity": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundPosition": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundRepeat": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundSize": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgAnimationDuration": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
 				"bgSvgAnimation": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgSvgAnimationSpeed": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgSvgContent": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgSvgMinHeight": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgSvgOpacity": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgSvgPosition": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"bgSvgTextShadow": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"contentWidth": {
 					"routed": true,
@@ -6282,18 +5891,6 @@
 					"routed": false,
 					"via": null
 				},
-				"overlayGradientAngle": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientFrom": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientTo": {
-					"routed": false,
-					"via": null
-				},
 				"shadow": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -6306,11 +5903,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"shapeDividerBottomColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"shapeDividerBottomFlip": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerBottomHeight": {
+				"shapeDividerBottomScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -6326,11 +5927,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"shapeDividerTopColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"shapeDividerTopFlip": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerTopHeight": {
+				"shapeDividerTopScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -6342,39 +5947,7 @@
 					"routed": false,
 					"via": null
 				},
-				"verticalAlign": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandBackground": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentBandPadding": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -6397,11 +5970,14 @@
 				"tagName": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"ariaLabel": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 3,
-				"SGS_Container_Wrapper": 31
+				"SGS_Container_Wrapper": 44
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -6412,11 +5988,7 @@
 			"hasRenderPhp": true,
 			"hasStyleCss": true,
 			"inlineViaSupports": {
-				"color": [
-					"background",
-					"text",
-					"__experimentalSkipSerialization"
-				],
+				"color": [],
 				"spacing": [
 					"margin",
 					"padding",
@@ -6450,6 +6022,8 @@
 				"linkRel",
 				"ariaLabel",
 				"iconColourHover",
+				"iconColourGradient",
+				"iconColourHoverGradient",
 				"shapeColourHover",
 				"scaleHover",
 				"iconAlign"
@@ -6532,6 +6106,14 @@
 					"routed": false,
 					"via": null
 				},
+				"iconColourGradient": {
+					"routed": false,
+					"via": null
+				},
+				"iconColourHoverGradient": {
+					"routed": false,
+					"via": null
+				},
 				"shapeColourHover": {
 					"routed": false,
 					"via": null
@@ -6558,7 +6140,6 @@
 				"color": [
 					"background",
 					"text",
-					"link",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -6589,6 +6170,7 @@
 				"icon",
 				"defaultIconSource",
 				"iconColour",
+				"iconColourGradient",
 				"iconSize",
 				"dividers",
 				"textColour",
@@ -6601,6 +6183,7 @@
 				"borderRadiusMobile",
 				"borderWidth",
 				"borderColour",
+				"borderColourGradient",
 				"borderStyle",
 				"heading",
 				"headingLevel",
@@ -6626,6 +6209,10 @@
 					"via": null
 				},
 				"iconColour": {
+					"routed": false,
+					"via": null
+				},
+				"iconColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -6677,6 +6264,10 @@
 					"routed": false,
 					"via": null
 				},
+				"borderColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"borderStyle": {
 					"routed": false,
 					"via": null
@@ -6713,14 +6304,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"headingFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"headingFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"headingFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -6745,14 +6328,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"itemFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"itemFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"itemFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -6771,7 +6346,7 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_typography_css_rule": 16
+				"sgs_typography_css_rule": 12
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": false
@@ -6966,13 +6541,16 @@
 				"backgroundColourHover",
 				"textColourHover",
 				"borderColourHover",
+				"borderColourHoverGradient",
 				"transitionDuration",
 				"transitionEasing",
+				"shadowHover",
+				"shadowHoverColour",
 				"grayscaleHover",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"contentWidth",
+				"width",
 				"maxWidth",
 				"paddingTablet",
 				"paddingMobile",
@@ -7025,6 +6603,10 @@
 					"routed": false,
 					"via": null
 				},
+				"borderColourHoverGradient": {
+					"routed": false,
+					"via": null
+				},
 				"transitionDuration": {
 					"routed": false,
 					"via": null
@@ -7038,8 +6620,12 @@
 					"via": "render.php (block-private)"
 				},
 				"shadowHover": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
+				},
+				"shadowHoverColour": {
+					"routed": false,
+					"via": null
 				},
 				"grayscaleHover": {
 					"routed": false,
@@ -7057,7 +6643,7 @@
 					"routed": false,
 					"via": null
 				},
-				"contentWidth": {
+				"width": {
 					"routed": false,
 					"via": null
 				},
@@ -7083,7 +6669,7 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 2
+				"render.php (block-private)": 1
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": false
@@ -7095,8 +6681,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"text",
-					"background",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -7117,8 +6701,7 @@
 				"backgroundColour",
 				"fontFamily",
 				"fontSize",
-				"fontSizeTablet",
-				"fontSizeMobile",
+				"fontSizeUnit",
 				"fontWeight",
 				"lineHeight",
 				"lineHeightUnit",
@@ -7129,8 +6712,6 @@
 				"textDecoration",
 				"textAlign",
 				"padding",
-				"paddingTablet",
-				"paddingMobile",
 				"marginTablet",
 				"marginMobile",
 				"borderRadius",
@@ -7159,14 +6740,6 @@
 					"via": null
 				},
 				"fontSizeUnit": {
-					"routed": true,
-					"via": "sgs_responsive_css_rule"
-				},
-				"fontSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"fontSizeMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -7210,14 +6783,6 @@
 					"routed": false,
 					"via": null
 				},
-				"paddingTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingMobile": {
-					"routed": false,
-					"via": null
-				},
 				"marginTablet": {
 					"routed": false,
 					"via": null
@@ -7235,10 +6800,8 @@
 					"via": null
 				}
 			},
-			"helperCounts": {
-				"sgs_responsive_css_rule": 1
-			},
-			"dominantHelper": "sgs_responsive_css_rule",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -7265,6 +6828,9 @@
 			"dropUnrouted": [
 				"mediaType",
 				"svgContent",
+				"_comment_svgArtDirection",
+				"svgContentTablet",
+				"svgContentMobile",
 				"svgAnimation",
 				"svgAnimationSpeed",
 				"videoUrl",
@@ -7312,26 +6878,19 @@
 				"imageHeight",
 				"maxWidth",
 				"maxWidthUnit",
-				"maxWidthMobile",
-				"maxWidthTablet",
 				"maxHeight",
 				"maxHeightUnit",
-				"maxHeightMobile",
-				"maxHeightTablet",
 				"height",
 				"heightUnit",
-				"heightMobile",
-				"heightTablet",
 				"objectFit",
 				"objectPosition",
 				"borderRadiusTablet",
 				"borderRadiusMobile",
 				"boxShadow",
+				"boxShadowColour",
 				"opacity",
 				"alignment",
 				"order",
-				"orderMobile",
-				"orderTablet",
 				"caption",
 				"captionTag",
 				"captionColour",
@@ -7350,6 +6909,18 @@
 					"via": null
 				},
 				"svgContent": {
+					"routed": false,
+					"via": null
+				},
+				"_comment_svgArtDirection": {
+					"routed": false,
+					"via": null
+				},
+				"svgContentTablet": {
+					"routed": false,
+					"via": null
+				},
+				"svgContentMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -7541,14 +7112,6 @@
 					"routed": false,
 					"via": null
 				},
-				"maxWidthMobile": {
-					"routed": false,
-					"via": null
-				},
-				"maxWidthTablet": {
-					"routed": false,
-					"via": null
-				},
 				"maxHeight": {
 					"routed": false,
 					"via": null
@@ -7557,27 +7120,11 @@
 					"routed": false,
 					"via": null
 				},
-				"maxHeightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"maxHeightTablet": {
-					"routed": false,
-					"via": null
-				},
 				"height": {
 					"routed": false,
 					"via": null
 				},
 				"heightUnit": {
-					"routed": false,
-					"via": null
-				},
-				"heightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"heightTablet": {
 					"routed": false,
 					"via": null
 				},
@@ -7601,6 +7148,10 @@
 					"routed": false,
 					"via": null
 				},
+				"boxShadowColour": {
+					"routed": false,
+					"via": null
+				},
 				"opacity": {
 					"routed": false,
 					"via": null
@@ -7610,14 +7161,6 @@
 					"via": null
 				},
 				"order": {
-					"routed": false,
-					"via": null
-				},
-				"orderMobile": {
-					"routed": false,
-					"via": null
-				},
-				"orderTablet": {
 					"routed": false,
 					"via": null
 				},
@@ -7677,6 +7220,7 @@
 				"asidePadding",
 				"asideRadius",
 				"asideBorderColour",
+				"asideBorderColourGradient",
 				"asideBorderWidth"
 			],
 			"tierWithoutBase": [],
@@ -7698,6 +7242,10 @@
 					"via": null
 				},
 				"asideBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"asideBorderColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -7748,13 +7296,18 @@
 				"style",
 				"headings",
 				"colourScheme",
-				"accent",
+				"accentBackground",
+				"accentBorderColour",
+				"accentBorderColourGradient",
+				"accentTextColour",
+				"accentBackgroundImage",
 				"maxWidth",
 				"panelPadding",
 				"groupGap",
 				"panelBg",
 				"bgBlur",
 				"borderColour",
+				"borderColourGradient",
 				"borderRadius",
 				"asideWidth",
 				"asideSeparator",
@@ -7780,7 +7333,23 @@
 					"routed": false,
 					"via": null
 				},
-				"accent": {
+				"accentBackground": {
+					"routed": false,
+					"via": null
+				},
+				"accentBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"accentBorderColourGradient": {
+					"routed": false,
+					"via": null
+				},
+				"accentTextColour": {
+					"routed": false,
+					"via": null
+				},
+				"accentBackgroundImage": {
 					"routed": false,
 					"via": null
 				},
@@ -7805,6 +7374,10 @@
 					"via": null
 				},
 				"borderColour": {
+					"routed": false,
+					"via": null
+				},
+				"borderColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -7913,9 +7486,12 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
+					"__experimentalSkipSerialization"
+				],
+				"spacing": [
+					"margin",
+					"padding",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -7934,38 +7510,158 @@
 			},
 			"dropConditionalInert": [
 				"flexDirection",
-				"flexDirectionTablet",
-				"flexDirectionMobile",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"justifyContent",
-				"justifyContentTablet",
-				"justifyContentMobile",
 				"flexWrap",
-				"flexWrapTablet",
-				"flexWrapMobile",
 				"alignItems",
-				"alignItemsTablet",
-				"alignItemsMobile",
 				"alignContent",
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"gridAutoRows",
 				"gridTemplateColumns",
-				"gridTemplateColumnsMobile",
-				"gridTemplateColumnsTablet",
 				"gridTemplateRows",
-				"gridTemplateRowsMobile",
-				"gridTemplateRowsTablet",
 				"justifyItems"
 			],
 			"dropUnrouted": [
+				"backgroundColour",
+				"textColour",
+				"childBtnBackground",
+				"childBtnTextColour",
+				"childBtnBorderColour",
+				"childBtnBorderRadius",
+				"childBtnFontSize",
+				"childBtnFontWeight",
 				"templateMode"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImage": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundSize": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundRepeat": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundAttachment": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundOverlayColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgParallax": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgKenBurns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgAnimationDuration": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimation": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimationSpeed": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgOpacity": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgMinHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgTextShadow": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"childBtnBackground": {
+					"routed": false,
+					"via": null
+				},
+				"childBtnTextColour": {
+					"routed": false,
+					"via": null
+				},
+				"childBtnBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"childBtnBorderRadius": {
+					"routed": false,
+					"via": null
+				},
+				"childBtnFontSize": {
+					"routed": false,
+					"via": null
+				},
+				"childBtnFontWeight": {
+					"routed": false,
+					"via": null
+				},
 				"contentWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -7984,7 +7680,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 3
+				"SGS_Container_Wrapper": 27
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -8108,7 +7804,7 @@
 			},
 			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
@@ -8118,7 +7814,11 @@
 				"collapsePoint",
 				"drawerRef",
 				"featuredItemIds",
+				"navLabel",
+				"gap",
 				"listColumns",
+				"paddingTablet",
+				"paddingMobile",
 				"_note_nav_fill",
 				"navBg",
 				"navColour",
@@ -8157,8 +7857,7 @@
 				"submenuColour",
 				"submenuMinWidth",
 				"submenuRadius",
-				"submenuPadding",
-				"templateMode"
+				"submenuPadding"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -8179,32 +7878,24 @@
 					"via": null
 				},
 				"navLabel": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"layout": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"gap": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"listColumns": {
 					"routed": false,
 					"via": null
 				},
 				"paddingTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"paddingMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"_note_nav_fill": {
 					"routed": false,
@@ -8271,14 +7962,6 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"itemFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"itemFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"itemFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -8393,89 +8076,12 @@
 				"submenuPadding": {
 					"routed": false,
 					"via": null
-				},
-				"alignContent": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columns": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"flexDirection": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"flexWrap": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridAutoRows": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumns": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRows": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"justifyContent": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"justifyItems": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 24,
-				"sgs_typography_css_rule": 8
+				"sgs_typography_css_rule": 6
 			},
-			"dominantHelper": "SGS_Container_Wrapper",
+			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": false
 		},
 		{
@@ -8485,8 +8091,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -8524,9 +8128,9 @@
 				"showIcon",
 				"text",
 				"variant",
-				"contentWidth",
 				"maxWidth",
 				"iconColour",
+				"iconColourGradient",
 				"displayMode",
 				"stickyPosition",
 				"dismissible",
@@ -8562,15 +8166,15 @@
 					"routed": false,
 					"via": null
 				},
-				"contentWidth": {
-					"routed": false,
-					"via": null
-				},
 				"maxWidth": {
 					"routed": false,
 					"via": null
 				},
 				"iconColour": {
+					"routed": false,
+					"via": null
+				},
+				"iconColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -8618,9 +8222,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -8657,14 +8258,14 @@
 				"pillBgColour",
 				"pillTextColour",
 				"pillBorderColour",
+				"pillBorderColourGradient",
 				"pillSelectedBgColour",
 				"pillSelectedTextColour",
 				"pillSelectedBorderColour",
+				"pillSelectedBorderColourGradient",
 				"pillBorderRadius",
 				"pillSelectedBorderRadius",
 				"pillPadding",
-				"pillPaddingTablet",
-				"pillPaddingMobile",
 				"paddingTablet",
 				"paddingMobile",
 				"marginTablet",
@@ -8674,7 +8275,8 @@
 				"borderWidth",
 				"borderStyle",
 				"borderColour",
-				"contentWidth",
+				"borderColourGradient",
+				"width",
 				"maxWidth"
 			],
 			"tierWithoutBase": [
@@ -8694,14 +8296,6 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"labelFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"labelFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"labelFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -8765,6 +8359,10 @@
 					"routed": false,
 					"via": null
 				},
+				"pillBorderColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"pillSelectedBgColour": {
 					"routed": false,
 					"via": null
@@ -8777,19 +8375,15 @@
 					"routed": false,
 					"via": null
 				},
+				"pillSelectedBorderColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"pillFontSize": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
 				"pillFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"pillFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"pillFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -8806,14 +8400,6 @@
 					"via": null
 				},
 				"pillPadding": {
-					"routed": false,
-					"via": null
-				},
-				"pillPaddingTablet": {
-					"routed": false,
-					"via": null
-				},
-				"pillPaddingMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -8853,7 +8439,11 @@
 					"routed": false,
 					"via": null
 				},
-				"contentWidth": {
+				"borderColourGradient": {
+					"routed": false,
+					"via": null
+				},
+				"width": {
 					"routed": false,
 					"via": null
 				},
@@ -8863,7 +8453,7 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_typography_css_rule": 11
+				"sgs_typography_css_rule": 7
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": true
@@ -8875,8 +8465,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -8899,48 +8487,20 @@
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
-			"dropConditionalInert": [
-				"alignContent",
-				"columns",
-				"columnsMobile",
-				"columnsTablet",
-				"flexDirection",
-				"flexWrap",
-				"gap",
-				"gapMobile",
-				"gapTablet",
-				"gridAutoRows",
-				"gridItemBackground",
-				"gridItemBorderRadius",
-				"gridItemPadding",
-				"gridItemShadow",
-				"gridItemTextColour",
-				"gridTemplateColumns",
-				"gridTemplateColumnsMobile",
-				"gridTemplateColumnsTablet",
-				"gridTemplateRows",
-				"gridTemplateRowsMobile",
-				"gridTemplateRowsTablet",
-				"justifyContent",
-				"justifyItems"
-			],
+			"dropConditionalInert": [],
 			"dropUnrouted": [
+				"backgroundColour",
 				"physicsGravity",
 				"physicsBounce",
-				"physicsEdgeResistance",
-				"templateMode"
+				"physicsEdgeResistance"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -8948,39 +8508,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"minHeightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandBackground": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentBandPadding": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -9004,18 +8536,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"physicsGravity": {
-					"routed": false,
-					"via": null
-				},
-				"physicsBounce": {
-					"routed": false,
-					"via": null
-				},
-				"physicsEdgeResistance": {
-					"routed": false,
-					"via": null
-				},
 				"backgroundAttachment": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -9033,10 +8553,6 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundOverlayColour": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"backgroundOverlayOpacity": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -9104,81 +8620,29 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"layout": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"overlayGradient": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"overlayGradientAngle": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientFrom": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientTo": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerBottom": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerBottomColour": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerBottomFlip": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerBottomHeight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerBottomInvert": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerTop": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerTopColour": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerTopFlip": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerTopHeight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"shapeDividerTopInvert": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"tagName": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
+				"physicsGravity": {
 					"routed": false,
 					"via": null
 				},
-				"verticalAlign": {
+				"physicsBounce": {
+					"routed": false,
+					"via": null
+				},
+				"physicsEdgeResistance": {
+					"routed": false,
+					"via": null
+				},
+				"tagName": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 57
+				"SGS_Container_Wrapper": 32
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -9190,9 +8654,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -9256,6 +8717,7 @@
 				"borderColourHover",
 				"scaleHover",
 				"shadowHover",
+				"shadowHoverColour",
 				"imageZoomHover",
 				"transitionDuration",
 				"transitionEasing",
@@ -9268,8 +8730,7 @@
 				"loopCarousel",
 				"sgsAnimation",
 				"sgsAnimationDuration",
-				"sgsAnimationEasing",
-				"templateMode"
+				"sgsAnimationEasing"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -9309,19 +8770,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"alignItems": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"cardStyle": {
 					"routed": false,
 					"via": null
 				},
 				"columns": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -9433,6 +8890,10 @@
 					"routed": false,
 					"via": null
 				},
+				"shadowHoverColour": {
+					"routed": false,
+					"via": null
+				},
 				"imageZoomHover": {
 					"routed": false,
 					"via": null
@@ -9493,35 +8954,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridTemplateColumns": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gridTemplateColumnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridTemplateRows": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -9537,10 +8974,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"templateMode": {
-					"routed": false,
-					"via": null
-				},
 				"flexDirection": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -9555,7 +8988,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 21
+				"SGS_Container_Wrapper": 14
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -9567,9 +9000,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -9598,20 +9028,13 @@
 			},
 			"dropConditionalInert": [
 				"columns",
+				"alignItems",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"justifyItems",
 				"alignContent",
-				"columnsMobile",
-				"columnsTablet",
 				"flexDirection",
 				"flexWrap",
 				"justifyContent"
@@ -9622,8 +9045,10 @@
 				"billingToggleMonthlyLabel",
 				"billingToggleYearlyLabel",
 				"plans",
+				"headingLevel",
 				"titleColour",
 				"priceColour",
+				"priceColourGradient",
 				"featureColour",
 				"ctaStyle",
 				"ctaColour",
@@ -9633,8 +9058,7 @@
 				"popularBadgeBackground",
 				"sgsAnimation",
 				"sgsAnimationDuration",
-				"sgsAnimationEasing",
-				"templateMode"
+				"sgsAnimationEasing"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -9662,11 +9086,19 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"headingLevel": {
+					"routed": false,
+					"via": null
+				},
 				"titleColour": {
 					"routed": false,
 					"via": null
 				},
 				"priceColour": {
+					"routed": false,
+					"via": null
+				},
+				"priceColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -9721,10 +9153,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				}
 			},
 			"helperCounts": {
@@ -9740,8 +9168,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -9776,12 +9202,16 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"steps",
+				"headingLevel",
 				"connectorStyle",
 				"numberStyle",
 				"numberColour",
 				"numberBackground",
 				"titleColour",
 				"descriptionColour",
+				"backgroundColour",
+				"textColour",
+				"borderColourHoverGradient",
 				"effectHover",
 				"paddingTablet",
 				"paddingMobile",
@@ -9790,6 +9220,7 @@
 				"borderWidth",
 				"borderStyle",
 				"borderColour",
+				"borderColourGradient",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing"
@@ -9797,6 +9228,10 @@
 			"tierWithoutBase": [],
 			"attrRouting": {
 				"steps": {
+					"routed": false,
+					"via": null
+				},
+				"headingLevel": {
 					"routed": false,
 					"via": null
 				},
@@ -9824,6 +9259,14 @@
 					"routed": false,
 					"via": null
 				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
+				},
 				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
@@ -9835,6 +9278,10 @@
 				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
+				},
+				"borderColourHoverGradient": {
+					"routed": false,
+					"via": null
 				},
 				"effectHover": {
 					"routed": false,
@@ -9865,6 +9312,10 @@
 					"via": null
 				},
 				"borderColour": {
+					"routed": false,
+					"via": null
+				},
+				"borderColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -9902,9 +9353,7 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -9942,6 +9391,8 @@
 				"priceNote",
 				"ctaText",
 				"ctaUrl",
+				"ctaColourBorderGradient",
+				"ctaColourBorderHoverGradient",
 				"ctaPadding",
 				"cardPadding",
 				"indexVariationUrl",
@@ -10039,6 +9490,10 @@
 					"routed": true,
 					"via": "sgs_button_element_style_css"
 				},
+				"ctaColourBorderGradient": {
+					"routed": false,
+					"via": null
+				},
 				"ctaColourBackgroundHover": {
 					"routed": true,
 					"via": "sgs_button_element_style_css"
@@ -10050,6 +9505,10 @@
 				"ctaColourBorderHover": {
 					"routed": true,
 					"via": "sgs_button_element_style_css"
+				},
+				"ctaColourBorderHoverGradient": {
+					"routed": false,
+					"via": null
 				},
 				"ctaBorderStyle": {
 					"routed": true,
@@ -10090,10 +9549,6 @@
 				"cardPadding": {
 					"routed": false,
 					"via": null
-				},
-				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
 				},
 				"maxWidth": {
 					"routed": true,
@@ -10203,14 +9658,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"titleFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"titleFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"titleFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -10239,14 +9686,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"priceFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"priceFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"priceFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -10260,14 +9699,6 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"descFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"descFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"descFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -10291,27 +9722,11 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"pillFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"pillFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"priceNoteFontSize": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
 				"priceNoteFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"priceNoteFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"priceNoteFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -10327,27 +9742,11 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"priceFromLabelFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"priceFromLabelFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"tagFontSize": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
 				"tagFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"tagFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"tagFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -10379,8 +9778,8 @@
 			"helperCounts": {
 				"sgs_button_element_style_css": 12,
 				"render.php (block-private)": 16,
-				"SGS_Container_Wrapper": 2,
-				"sgs_typography_css_rule": 35
+				"SGS_Container_Wrapper": 1,
+				"sgs_typography_css_rule": 21
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": true
@@ -10392,8 +9791,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -10423,10 +9820,11 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
+				"backgroundColour",
+				"textColour",
 				"heading",
 				"headingLevel",
 				"iconPosition",
-				"contentWidth",
 				"maxWidth",
 				"paddingTablet",
 				"paddingMobile",
@@ -10435,6 +9833,14 @@
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
+				},
 				"heading": {
 					"routed": false,
 					"via": null
@@ -10444,10 +9850,6 @@
 					"via": null
 				},
 				"iconPosition": {
-					"routed": false,
-					"via": null
-				},
-				"contentWidth": {
 					"routed": false,
 					"via": null
 				},
@@ -10483,9 +9885,7 @@
 			"hasStyleCss": false,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -10504,11 +9904,21 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
+				"backgroundColour",
+				"textColour",
 				"question",
 				"isOpen"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
+				},
 				"question": {
 					"routed": false,
 					"via": null
@@ -10546,11 +9956,15 @@
 				"placeholder",
 				"buttonLabel",
 				"maxResults",
-				"maxResultsMobile",
 				"paddingTablet",
 				"paddingMobile",
 				"marginTablet",
-				"marginMobile"
+				"marginMobile",
+				"inputBorderColour",
+				"focusRingColour",
+				"listboxBackgroundColour",
+				"resultHoverBackgroundColour",
+				"matchHighlightColour"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10570,10 +9984,6 @@
 					"routed": false,
 					"via": null
 				},
-				"maxResultsMobile": {
-					"routed": false,
-					"via": null
-				},
 				"paddingTablet": {
 					"routed": false,
 					"via": null
@@ -10589,6 +9999,26 @@
 				"marginMobile": {
 					"routed": false,
 					"via": null
+				},
+				"inputBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"focusRingColour": {
+					"routed": false,
+					"via": null
+				},
+				"listboxBackgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"resultHoverBackgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"matchHighlightColour": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {},
@@ -10602,9 +10032,7 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -10635,8 +10063,6 @@
 				"attributionEnabled",
 				"attributionColour",
 				"attributionFontSize",
-				"attributionFontSizeTablet",
-				"attributionFontSizeMobile",
 				"attributionFontWeight",
 				"attributionFontFamily",
 				"attributionFontStyle",
@@ -10644,14 +10070,16 @@
 				"attributionTextTransform",
 				"attributionLineHeight",
 				"attributionMarginTop",
-				"attributionMarginTopTablet",
-				"attributionMarginTopMobile",
 				"backgroundColour",
+				"backgroundColourGradient",
 				"borderWidth",
 				"borderStyle",
 				"borderColour",
+				"borderColourGradient",
 				"boxShadow",
 				"boxShadowHover",
+				"boxShadowColour",
+				"boxShadowHoverColour",
 				"scaleHover",
 				"textColourHover",
 				"backgroundColourHover",
@@ -10659,10 +10087,7 @@
 				"paddingMobile",
 				"marginTablet",
 				"marginMobile",
-				"contentWidth",
 				"maxWidth",
-				"maxWidthTablet",
-				"maxWidthMobile",
 				"inheritStyle",
 				"transitionDuration",
 				"transitionEasing"
@@ -10686,14 +10111,6 @@
 					"via": null
 				},
 				"attributionFontSize": {
-					"routed": false,
-					"via": null
-				},
-				"attributionFontSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"attributionFontSizeMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -10733,19 +10150,15 @@
 					"routed": false,
 					"via": null
 				},
-				"attributionMarginTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"attributionMarginTopMobile": {
-					"routed": false,
-					"via": null
-				},
 				"attributionMarginUnit": {
 					"routed": true,
 					"via": "sgs_responsive_css_rule"
 				},
 				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"backgroundColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -10761,11 +10174,23 @@
 					"routed": false,
 					"via": null
 				},
+				"borderColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"boxShadow": {
 					"routed": false,
 					"via": null
 				},
 				"boxShadowHover": {
+					"routed": false,
+					"via": null
+				},
+				"boxShadowColour": {
+					"routed": false,
+					"via": null
+				},
+				"boxShadowHoverColour": {
 					"routed": false,
 					"via": null
 				},
@@ -10797,19 +10222,7 @@
 					"routed": false,
 					"via": null
 				},
-				"contentWidth": {
-					"routed": false,
-					"via": null
-				},
 				"maxWidth": {
-					"routed": false,
-					"via": null
-				},
-				"maxWidthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"maxWidthMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -10866,12 +10279,8 @@
 				"width",
 				"maxWidth",
 				"maxWidthUnit",
-				"maxWidthTablet",
-				"maxWidthMobile",
 				"maxHeight",
 				"maxHeightUnit",
-				"maxHeightTablet",
-				"maxHeightMobile",
 				"linkToHome",
 				"alt",
 				"paddingTablet",
@@ -10937,27 +10346,11 @@
 					"routed": false,
 					"via": null
 				},
-				"maxWidthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"maxWidthMobile": {
-					"routed": false,
-					"via": null
-				},
 				"maxHeight": {
 					"routed": false,
 					"via": null
 				},
 				"maxHeightUnit": {
-					"routed": false,
-					"via": null
-				},
-				"maxHeightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"maxHeightMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -11011,13 +10404,7 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"lineStyle",
-				"width",
 				"widthUnit",
-				"widthTablet",
-				"widthMobile",
-				"thickness",
-				"thicknessTablet",
-				"thicknessMobile",
 				"colour",
 				"opacity",
 				"alignment",
@@ -11025,10 +10412,7 @@
 				"paddingMobile",
 				"marginTablet",
 				"marginMobile",
-				"gradientEnabled",
-				"gradientColourStart",
-				"gradientColourEnd",
-				"gradientAngle",
+				"lineGradient",
 				"contentMode",
 				"contentIconSource",
 				"contentIconName",
@@ -11046,36 +10430,20 @@
 					"via": null
 				},
 				"width": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "sgs_responsive_css_rule"
 				},
 				"widthUnit": {
 					"routed": false,
 					"via": null
 				},
-				"widthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"widthMobile": {
-					"routed": false,
-					"via": null
-				},
 				"thickness": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "sgs_responsive_css_rule"
 				},
 				"thicknessUnit": {
 					"routed": true,
 					"via": "sgs_responsive_css_rule"
-				},
-				"thicknessTablet": {
-					"routed": false,
-					"via": null
-				},
-				"thicknessMobile": {
-					"routed": false,
-					"via": null
 				},
 				"colour": {
 					"routed": false,
@@ -11105,19 +10473,7 @@
 					"routed": false,
 					"via": null
 				},
-				"gradientEnabled": {
-					"routed": false,
-					"via": null
-				},
-				"gradientColourStart": {
-					"routed": false,
-					"via": null
-				},
-				"gradientColourEnd": {
-					"routed": false,
-					"via": null
-				},
-				"gradientAngle": {
+				"lineGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -11165,14 +10521,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"contentFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"contentFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"contentFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -11191,8 +10539,8 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_responsive_css_rule": 1,
-				"sgs_typography_css_rule": 8
+				"sgs_responsive_css_rule": 3,
+				"sgs_typography_css_rule": 6
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": false
@@ -11230,8 +10578,7 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
-				"tagName",
-				"templateMode"
+				"tagName"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -11239,23 +10586,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"maxWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11296,10 +10627,6 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"backgroundOverlayColour": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"backgroundOverlayOpacity": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11371,27 +10698,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"columnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandBackground": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentBandPadding": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11403,18 +10710,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gap": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"justifyContent": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -11423,27 +10718,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"minHeightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"overlayGradient": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientAngle": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientFrom": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientTo": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11459,11 +10734,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"shapeDividerBottomColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"shapeDividerBottomFlip": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerBottomHeight": {
+				"shapeDividerBottomScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11479,11 +10758,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"shapeDividerTopColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"shapeDividerTopFlip": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerTopHeight": {
+				"shapeDividerTopScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11495,17 +10778,13 @@
 					"routed": false,
 					"via": null
 				},
-				"templateMode": {
-					"routed": false,
-					"via": null
-				},
-				"verticalAlign": {
+				"alignItems": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 65
+				"SGS_Container_Wrapper": 49
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -11517,8 +10796,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -11539,6 +10816,8 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"rowSlot",
+				"backgroundColour",
+				"textColour",
 				"rowTransparent",
 				"rowHideOnScroll",
 				"rowShrink",
@@ -11551,19 +10830,19 @@
 					"routed": false,
 					"via": null
 				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
+				},
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
 				"columns": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11579,7 +10858,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"verticalAlign": {
+				"alignItems": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11627,35 +10906,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridAutoRows": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gridTemplateColumnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridTemplateRows": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11669,7 +10924,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 24
+				"SGS_Container_Wrapper": 16
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -11712,8 +10967,7 @@
 				"headerShrink",
 				"headerHideOnScroll",
 				"contrastSafe",
-				"tagName",
-				"templateMode"
+				"tagName"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -11721,23 +10975,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"maxWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11801,10 +11039,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"backgroundOverlayOpacity": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"backgroundPosition": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -11873,27 +11107,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"columnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandBackground": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentBandPadding": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11905,18 +11119,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gap": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"justifyContent": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -11925,27 +11127,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"minHeightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"overlayGradient": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientAngle": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientFrom": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradientTo": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11961,11 +11143,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"shapeDividerBottomColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"shapeDividerBottomFlip": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerBottomHeight": {
+				"shapeDividerBottomScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11981,11 +11167,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"shapeDividerTopColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"shapeDividerTopFlip": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerTopHeight": {
+				"shapeDividerTopScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -11997,17 +11187,13 @@
 					"routed": false,
 					"via": null
 				},
-				"templateMode": {
-					"routed": false,
-					"via": null
-				},
-				"verticalAlign": {
+				"alignItems": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 65
+				"SGS_Container_Wrapper": 49
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -12019,8 +11205,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -12041,6 +11225,8 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"rowSlot",
+				"backgroundColour",
+				"textColour",
 				"rowTransparent",
 				"rowHideOnScroll",
 				"rowShrink",
@@ -12053,19 +11239,19 @@
 					"routed": false,
 					"via": null
 				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
+				},
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
 				"columns": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -12077,7 +11263,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"verticalAlign": {
+				"alignItems": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -12125,14 +11311,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridAutoRows": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -12141,23 +11319,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gridTemplateColumnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridTemplateRows": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -12171,7 +11333,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 24
+				"SGS_Container_Wrapper": 16
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -12183,8 +11345,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -12208,8 +11368,16 @@
 				"icons",
 				"source",
 				"iconSize",
-				"iconColour",
-				"iconColourHover",
+				"iconBackground",
+				"iconBackgroundHover",
+				"iconBorderColour",
+				"iconBorderColourGradient",
+				"iconBorderColourHover",
+				"iconBorderColourHoverGradient",
+				"iconGlyphColour",
+				"iconGlyphColourGradient",
+				"iconGlyphColourHover",
+				"iconGlyphColourHoverGradient",
 				"colourMode",
 				"iconStyle",
 				"gap",
@@ -12232,11 +11400,43 @@
 					"routed": false,
 					"via": null
 				},
-				"iconColour": {
+				"iconBackground": {
 					"routed": false,
 					"via": null
 				},
-				"iconColourHover": {
+				"iconBackgroundHover": {
+					"routed": false,
+					"via": null
+				},
+				"iconBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"iconBorderColourGradient": {
+					"routed": false,
+					"via": null
+				},
+				"iconBorderColourHover": {
+					"routed": false,
+					"via": null
+				},
+				"iconBorderColourHoverGradient": {
+					"routed": false,
+					"via": null
+				},
+				"iconGlyphColour": {
+					"routed": false,
+					"via": null
+				},
+				"iconGlyphColourGradient": {
+					"routed": false,
+					"via": null
+				},
+				"iconGlyphColourHover": {
+					"routed": false,
+					"via": null
+				},
+				"iconGlyphColourHoverGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -12280,8 +11480,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -12388,9 +11586,7 @@
 			"hasStyleCss": false,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"gradients",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
@@ -12409,7 +11605,9 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
-				"label"
+				"label",
+				"backgroundColour",
+				"textColour"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -12424,6 +11622,14 @@
 				"maxWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -12439,9 +11645,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"link",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -12577,9 +11780,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -12602,21 +11802,14 @@
 				"nulledAttrs": []
 			},
 			"dropConditionalInert": [
+				"alignItems",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"justifyItems",
 				"alignContent",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"flexDirection",
 				"flexWrap",
 				"justifyContent"
@@ -12631,12 +11824,14 @@
 				"tabBgColour",
 				"tabActiveBgColour",
 				"tabIndicatorColour",
+				"tabIndicatorColourGradient",
 				"tabActiveIndicatorColour",
+				"tabActiveIndicatorColourGradient",
 				"tabHoverBgColour",
 				"panelBgColour",
 				"panelBorderColour",
-				"transitionDuration",
-				"templateMode"
+				"panelBorderColourGradient",
+				"transitionDuration"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -12676,7 +11871,15 @@
 					"routed": false,
 					"via": null
 				},
+				"tabIndicatorColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"tabActiveIndicatorColour": {
+					"routed": false,
+					"via": null
+				},
+				"tabActiveIndicatorColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -12689,6 +11892,10 @@
 					"via": null
 				},
 				"panelBorderColour": {
+					"routed": false,
+					"via": null
+				},
+				"panelBorderColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -12707,10 +11914,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				}
 			},
 			"helperCounts": {
@@ -12761,6 +11964,7 @@
 				"photoTablet",
 				"photoMobile",
 				"name",
+				"headingLevel",
 				"role",
 				"bio",
 				"socialLinks",
@@ -12771,6 +11975,8 @@
 				"photoShape",
 				"sgsBlockLink",
 				"sgsBlockLinkTarget",
+				"shadowHover",
+				"shadowHoverColour",
 				"imageZoomHover",
 				"grayscaleHover",
 				"transitionDuration",
@@ -12779,7 +11985,6 @@
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
 				"overlayHover",
-				"contentWidth",
 				"maxWidth",
 				"paddingTablet",
 				"paddingMobile",
@@ -12801,6 +12006,10 @@
 					"via": null
 				},
 				"name": {
+					"routed": false,
+					"via": null
+				},
+				"headingLevel": {
 					"routed": false,
 					"via": null
 				},
@@ -12849,10 +12058,18 @@
 					"via": "render.php (block-private)"
 				},
 				"shadowHover": {
+					"routed": false,
+					"via": null
+				},
+				"shadowHoverColour": {
+					"routed": false,
+					"via": null
+				},
+				"cardShadow": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"cardShadow": {
+				"cardShadowColour": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -12885,10 +12102,6 @@
 					"via": null
 				},
 				"overlayHover": {
-					"routed": false,
-					"via": null
-				},
-				"contentWidth": {
 					"routed": false,
 					"via": null
 				},
@@ -12926,10 +12139,7 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"link",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -12989,6 +12199,7 @@
 				"schemaEnabled",
 				"quoteFontSize",
 				"quoteColour",
+				"quoteColourGradient",
 				"quoteFontStyle",
 				"quoteLineHeight",
 				"quoteMarginBottom",
@@ -13003,17 +12214,18 @@
 				"backgroundColourHover",
 				"textColourHover",
 				"borderColourHover",
+				"borderColourHoverGradient",
 				"effectHover",
 				"transitionDuration",
 				"transitionEasing",
 				"scaleHover",
 				"shadowHover",
+				"shadowHoverColour",
 				"staggerDelay",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
 				"_comment_wrapperAttrs",
-				"contentWidth",
 				"maxWidth",
 				"_comment_boxTiers",
 				"paddingTablet",
@@ -13115,6 +12327,10 @@
 					"routed": false,
 					"via": null
 				},
+				"quoteColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"quoteFontStyle": {
 					"routed": false,
 					"via": null
@@ -13171,6 +12387,10 @@
 					"routed": false,
 					"via": null
 				},
+				"borderColourHoverGradient": {
+					"routed": false,
+					"via": null
+				},
 				"effectHover": {
 					"routed": false,
 					"via": null
@@ -13191,6 +12411,10 @@
 					"routed": false,
 					"via": null
 				},
+				"shadowHoverColour": {
+					"routed": false,
+					"via": null
+				},
 				"staggerDelay": {
 					"routed": false,
 					"via": null
@@ -13208,10 +12432,6 @@
 					"via": null
 				},
 				"_comment_wrapperAttrs": {
-					"routed": false,
-					"via": null
-				},
-				"contentWidth": {
 					"routed": false,
 					"via": null
 				},
@@ -13251,8 +12471,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -13286,18 +12504,11 @@
 				"nulledAttrs": []
 			},
 			"dropConditionalInert": [
+				"alignItems",
 				"columns",
-				"columnsMobile",
-				"columnsTablet",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gap",
-				"gapTablet",
-				"gapMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"justifyItems",
 				"alignContent",
@@ -13314,13 +12525,15 @@
 				"showArrows",
 				"slidesVisible",
 				"cardStyle",
+				"backgroundColour",
+				"textColour",
 				"backgroundColourHover",
 				"textColourHover",
 				"borderColourHover",
+				"borderColourHoverGradient",
 				"effectHover",
 				"transitionDuration",
 				"transitionEasing",
-				"templateMode",
 				"dragToScroll"
 			],
 			"tierWithoutBase": [],
@@ -13361,6 +12574,14 @@
 					"routed": false,
 					"via": null
 				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
+					"routed": false,
+					"via": null
+				},
 				"backgroundColourHover": {
 					"routed": false,
 					"via": null
@@ -13370,6 +12591,10 @@
 					"via": null
 				},
 				"borderColourHover": {
+					"routed": false,
+					"via": null
+				},
+				"borderColourHoverGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -13388,10 +12613,6 @@
 				"maxWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				},
 				"contentWidth": {
 					"routed": true,
@@ -13434,16 +12655,14 @@
 			"dropUnrouted": [
 				"text",
 				"textColour",
+				"textColourGradient",
 				"fontSize",
-				"fontSizeTablet",
-				"fontSizeMobile",
+				"fontSizeUnit",
 				"fontWeight",
 				"lineHeight",
-				"lineHeightTablet",
-				"lineHeightMobile",
+				"lineHeightUnit",
 				"letterSpacing",
-				"letterSpacingTablet",
-				"letterSpacingMobile",
+				"letterSpacingUnit",
 				"fontStyle",
 				"textDecoration",
 				"textTransform",
@@ -13457,18 +12676,23 @@
 				"maxWidthUnit",
 				"dropCap",
 				"firstLetterColour",
+				"firstLetterColourGradient",
 				"firstLetterFontSize",
 				"firstLetterFontSizeUnit",
 				"firstLetterFontWeight",
 				"backgroundColour",
+				"backgroundColourGradient",
 				"borderWidth",
 				"borderStyle",
 				"borderColour",
+				"borderColourGradient",
 				"boxShadow",
 				"boxShadowHover",
 				"scaleHover",
 				"textColourHover",
+				"textColourHoverGradient",
 				"backgroundColourHover",
+				"backgroundColourHoverGradient",
 				"customWidth",
 				"customWidthUnit",
 				"inheritStyle",
@@ -13485,19 +12709,15 @@
 					"routed": false,
 					"via": null
 				},
+				"textColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"fontSize": {
 					"routed": false,
 					"via": null
 				},
 				"fontSizeUnit": {
-					"routed": true,
-					"via": "sgs_responsive_css_rule"
-				},
-				"fontSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"fontSizeMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -13510,14 +12730,6 @@
 					"via": null
 				},
 				"lineHeightUnit": {
-					"routed": true,
-					"via": "sgs_responsive_css_rule"
-				},
-				"lineHeightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"lineHeightMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -13526,14 +12738,6 @@
 					"via": null
 				},
 				"letterSpacingUnit": {
-					"routed": true,
-					"via": "sgs_responsive_css_rule"
-				},
-				"letterSpacingTablet": {
-					"routed": false,
-					"via": null
-				},
-				"letterSpacingMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -13589,6 +12793,10 @@
 					"routed": false,
 					"via": null
 				},
+				"firstLetterColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"firstLetterFontSize": {
 					"routed": false,
 					"via": null
@@ -13605,6 +12813,10 @@
 					"routed": false,
 					"via": null
 				},
+				"backgroundColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"borderWidth": {
 					"routed": false,
 					"via": null
@@ -13614,6 +12826,10 @@
 					"via": null
 				},
 				"borderColour": {
+					"routed": false,
+					"via": null
+				},
+				"borderColourGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -13633,7 +12849,15 @@
 					"routed": false,
 					"via": null
 				},
+				"textColourHoverGradient": {
+					"routed": false,
+					"via": null
+				},
 				"backgroundColourHover": {
+					"routed": false,
+					"via": null
+				},
+				"backgroundColourHoverGradient": {
 					"routed": false,
 					"via": null
 				},
@@ -13658,10 +12882,8 @@
 					"via": null
 				}
 			},
-			"helperCounts": {
-				"sgs_responsive_css_rule": 3
-			},
-			"dominantHelper": "sgs_responsive_css_rule",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -13671,8 +12893,6 @@
 			"hasStyleCss": false,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -13707,6 +12927,7 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"orientation",
+				"headingLevel",
 				"alignment",
 				"entries",
 				"connectorStyle",
@@ -13719,6 +12940,7 @@
 				"borderRadiusMobile",
 				"borderWidth",
 				"borderColour",
+				"borderColourGradient",
 				"borderStyle"
 			],
 			"tierWithoutBase": [
@@ -13726,6 +12948,10 @@
 			],
 			"attrRouting": {
 				"orientation": {
+					"routed": false,
+					"via": null
+				},
+				"headingLevel": {
 					"routed": false,
 					"via": null
 				},
@@ -13789,6 +13015,10 @@
 					"routed": false,
 					"via": null
 				},
+				"borderColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"borderStyle": {
 					"routed": false,
 					"via": null
@@ -13807,9 +13037,7 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
 					"text",
-					"gradients",
 					"__experimentalSkipSerialization"
 				],
 				"spacing": [
@@ -13828,13 +13056,8 @@
 			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
-				"noOverlayOptOut": true,
-				"nulledAttrs": [
-					"overlayGradient",
-					"overlayGradientAngle",
-					"overlayGradientFrom",
-					"overlayGradientTo"
-				]
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
@@ -13846,21 +13069,20 @@
 				"badgeSize",
 				"iconCircleBackground",
 				"iconColour",
+				"iconColourGradient",
 				"iconCircleBorderRadius",
 				"iconCircleShadow",
+				"iconCircleShadowColour",
 				"badgeImageBorderRadius",
 				"badgeImageSize",
 				"badgeImageShadow",
+				"badgeImageShadowColour",
 				"badgeImageObjectFit",
 				"textColour",
 				"autoScroll",
 				"autoScrollSpeed",
 				"autoScrollPauseOnHover",
-				"overlayGradient",
-				"overlayGradientAngle",
-				"overlayGradientFrom",
-				"overlayGradientTo",
-				"templateMode"
+				"ariaLabel"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -13885,14 +13107,6 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"titleFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"titleFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"titleFontSizeMobile": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
@@ -13924,14 +13138,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"labelFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"labelFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"labelFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -13956,11 +13162,19 @@
 					"routed": false,
 					"via": null
 				},
+				"iconColourGradient": {
+					"routed": false,
+					"via": null
+				},
 				"iconCircleBorderRadius": {
 					"routed": false,
 					"via": null
 				},
 				"iconCircleShadow": {
+					"routed": false,
+					"via": null
+				},
+				"iconCircleShadowColour": {
 					"routed": false,
 					"via": null
 				},
@@ -13973,6 +13187,10 @@
 					"via": null
 				},
 				"badgeImageShadow": {
+					"routed": false,
+					"via": null
+				},
+				"badgeImageShadowColour": {
 					"routed": false,
 					"via": null
 				},
@@ -14008,31 +13226,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"columnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"columnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridTemplateColumns": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateColumnsMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -14068,25 +13262,9 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"backgroundOverlayOpacity": {
+				"overlayGradient": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"overlayGradient": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientAngle": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientFrom": {
-					"routed": false,
-					"via": null
-				},
-				"overlayGradientTo": {
-					"routed": false,
-					"via": null
 				},
 				"bgVideo": {
 					"routed": true,
@@ -14124,15 +13302,7 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"minHeightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"minHeightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"verticalAlign": {
+				"alignItems": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -14144,7 +13314,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerTopHeight": {
+				"shapeDividerTopColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -14164,7 +13338,11 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"shapeDividerBottomHeight": {
+				"shapeDividerBottomColourGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomScale": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -14212,6 +13390,18 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"gridItemBorder": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridItemBorderGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridItemBorderGradientHover": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"gridItemBorderRadius": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -14225,14 +13415,6 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"gridTemplateRows": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gridTemplateRowsMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -14260,10 +13442,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"templateMode": {
-					"routed": false,
-					"via": null
-				},
 				"contentWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -14284,47 +13462,23 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandBackground": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentBandPadding": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidthTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
 				"tagName": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"ariaLabel": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"sgs_typography_css_rule": 14,
+				"sgs_typography_css_rule": 10,
 				"render.php (block-private)": 1,
-				"SGS_Container_Wrapper": 76
+				"SGS_Container_Wrapper": 64
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": true
@@ -14336,8 +13490,6 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background",
-					"text",
 					"gradients",
 					"__experimentalSkipSerialization"
 				],
@@ -14357,14 +13509,8 @@
 			},
 			"dropConditionalInert": [
 				"columns",
-				"columnsTablet",
-				"columnsMobile",
 				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
 				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
 				"gridAutoRows",
 				"flexDirection",
 				"flexWrap",
@@ -14372,15 +13518,16 @@
 				"justifyItems",
 				"alignContent",
 				"alignItems",
-				"gap",
-				"gapTablet",
-				"gapMobile"
+				"gap"
 			],
 			"dropUnrouted": [
 				"variant",
 				"dataSource",
 				"emptyState",
+				"headingLevel",
 				"businessUnitUrl",
+				"backgroundColour",
+				"textColour",
 				"reviews",
 				"trustScore",
 				"trustScoreLabel",
@@ -14405,8 +13552,7 @@
 				"loopCarousel",
 				"sgsAnimation",
 				"sgsAnimationDuration",
-				"sgsAnimationEasing",
-				"templateMode"
+				"sgsAnimationEasing"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -14422,7 +13568,19 @@
 					"routed": false,
 					"via": null
 				},
+				"headingLevel": {
+					"routed": false,
+					"via": null
+				},
 				"businessUnitUrl": {
+					"routed": false,
+					"via": null
+				},
+				"backgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"textColour": {
 					"routed": false,
 					"via": null
 				},
@@ -14537,10 +13695,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
 				}
 			},
 			"helperCounts": {
@@ -14631,14 +13785,6 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"labelFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"labelFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
 				"labelFontWeight": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -14677,7 +13823,7 @@
 				}
 			},
 			"helperCounts": {
-				"sgs_typography_css_rule": 6
+				"sgs_typography_css_rule": 4
 			},
 			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": true
