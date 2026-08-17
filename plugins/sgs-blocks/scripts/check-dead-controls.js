@@ -1101,9 +1101,29 @@ function checkExtensionFile( filePath, sharedCorpus ) {
  * @return {string} Comment-stripped source.
  */
 function stripPhpCommentsForAssignmentCheck( src ) {
+	// ONE alternation pass, NOT two sequential .replace() calls — the comment
+	// style that STARTS FIRST must win, and only a single left-to-right scan
+	// can decide that.
+	//
+	// Why (real bug, fixed 2026-08-17): block comments used to be stripped in
+	// their own pass BEFORE line comments. `hero/render.php` has an ordinary
+	// `//` line comment reading "the *Tablet/*Mobile siblings ..." — the `/*`
+	// inside it opened a phantom block comment that did not close until another
+	// `//` comment ~715 lines later happened to contain `*/`. Everything between
+	// was deleted before the liveness check ran, so CHECK 5 reported 24 live
+	// attributes as dead. All 24 findings were false.
+	//
+	// Reordering the two passes instead would only move the bug: a `//` comment
+	// containing `*/` would then leave an unterminated `/*` behind, which the
+	// block pattern cannot match, silently leaking comment text back into the
+	// analysed source (a false NEGATIVE — the mirror of the bug above).
 	return src
-		.replace( /\/\*[\s\S]*?\*\//g, ' ' )
-		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' )
+		.replace(
+			/\/\*[\s\S]*?\*\/|(^|[^:])\/\/[^\n]*/g,
+			( _match, lineCommentPrefix ) =>
+				// undefined => the block-comment branch matched (no capture group).
+				undefined === lineCommentPrefix ? ' ' : lineCommentPrefix + ' '
+		)
 		.replace( /^[ \t]*#[^\n]*/gm, ' ' );
 }
 
@@ -1906,6 +1926,16 @@ function runCheck5SelfTest( log ) {
 			// SGS_Container_Wrapper::render()'s extra_attrs array — a
 			// shared-include function — right there in render.php).
 			passedToHelperAttr: { type: 'string', default: '' },
+			// Negative control 4 — REGRESSION GUARD for the comment-swallow bug
+			// (fixed 2026-08-17). Assigned BEFORE a `//` line comment that
+			// happens to contain the two characters `/*`, then used AFTER it and
+			// before a later `//` comment containing `*/`. This is the exact
+			// sgs/hero shape: assignment at :208, stray `/*` inside a `//`
+			// comment at :313, real use at :345, stray `*/` inside another `//`
+			// comment at :1028. Pre-fix, the block-comment pass ran first and
+			// deleted everything between the two strays — swallowing the real
+			// use and reporting 24 live hero attributes as dead. Must NOT flag.
+			commentSwallowAttr: { type: 'string', default: '' },
 		},
 	};
 	fs.writeFileSync( path.join( tmpDir, 'block.json' ), JSON.stringify( blockJson, null, 2 ), 'utf8' );
@@ -1923,6 +1953,15 @@ function runCheck5SelfTest( log ) {
 			'',
 			"$helper_var = $attributes['passedToHelperAttr'] ?? '';",
 			"sgs_some_shared_helper( array( 'x' => $helper_var ) );",
+			'',
+			// Regression guard: the two stray comment sequences below live
+			// inside ORDINARY `//` line comments, copied in shape from
+			// sgs/hero/render.php:313 and :1028. The real use of
+			// $swallow_var sits between them and must survive stripping.
+			"$swallow_var = $attributes['commentSwallowAttr'] ?? '';",
+			'// 3b) the *Tablet/*Mobile siblings no longer exist in block.json',
+			'echo esc_html( $swallow_var );',
+			'// splitMediaType*/splitVideo* were declared + read into local vars',
 			'',
 		].join( '\n' ),
 		'utf8'
@@ -1972,6 +2011,20 @@ function runCheck5SelfTest( log ) {
 		);
 	} else {
 		log( 'FAIL — Test C: directly-read "directReadAttr" was flagged — false positive.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'commentSwallowAttr' ) ) {
+		log(
+			'PASS — Test G (regression, the 2026-08-17 comment-swallow bug): a real use sitting ' +
+				'between a `//` comment containing "/*" and a later one containing "*/" was NOT swallowed.'
+		);
+	} else {
+		log(
+			'FAIL — Test G: "commentSwallowAttr" was flagged. The comment stripper is swallowing ' +
+				'source between two stray sequences inside line comments — this is the bug that ' +
+				'produced 24 false hero findings. Fix stripPhpCommentsForAssignmentCheck(), not this test.'
+		);
 		pass = false;
 	}
 
