@@ -2227,7 +2227,7 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   the SAME commit — `ResponsiveControl` for flat siblings, `ResponsiveOverride` for an object base —
   and the writers are found by grepping `edit.js`, `components/` AND `extensions/`. A SHARED
   component is the high-risk case: one file fed 19 blocks here.** Governing text:
-  `plans/spec-35-control-type-contract.md` §12 field 3.
+  `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` PART O §12 field 3.
 
 - **STOP-THE-FRONTEND-IS-NOT-THE-EDITOR-AND-A-SCRIPTED-VALUE-NEVER-TOUCHES-THE-INSPECTOR.** The prior
   session's verification set values programmatically, so they were already the correct shape and the

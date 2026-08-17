@@ -1,7 +1,7 @@
 ---
 doc_type: design
 title: "Flat tier siblings → tier objects: the migration sequencing"
-spec_ref: .claude/plans/spec-35-control-type-contract.md §12 (governing) · D549 · D552
+spec_ref: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §12 (governing) · D549 · D552
 date: 2026-08-10
 updated: 2026-08-11
 status: COMPLETE — 2026-08-11 (D580). The original 6-pass plan never named the real terminal

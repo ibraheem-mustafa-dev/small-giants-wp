@@ -44,7 +44,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   Settings, native supports in core's Styles tab, CSS-class/anchor in Advanced.
   ⛔ **A3 previously read "Behaviour/content → Settings; appearance → Styles".** That rule splits an
   element's appearance from the content it modifies; 8 blocks were sorted on it on 2026-08-08 and
-  rejected. Full rule: `.claude/plans/spec-35-control-type-contract.md` §"THE PLACEMENT RULE".
+  rejected. Full rule: **PART O** (this spec) §"THE PLACEMENT RULE".
   ⭐ **COLOUR SETTLED 2026-08-15 (D621 + D622) — it is no longer an open exception to A3/A4.** ⚠
   **The ruling and the code were two separate events, same day:** `SgsColourPanel.js` had no `group`
   prop at all until commit `a5b74bd1` (2026-08-15) — a prior status summary had already called D621
@@ -72,7 +72,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   framing that block-root/no-element controls needed a single catch-all "block-level panel" still
   to be designed. A control that styles **nothing** (`variant`, `templateMode`, `tagName`, `layout`,
   `autoplay`, `showDots`, `required`) takes **one `Settings` panel, pinned first.** Full rule:
-  `.claude/plans/spec-35-control-type-contract.md` §"THE PLACEMENT RULE".
+  **PART O** (this spec) §"THE PLACEMENT RULE".
 - **A5. Progressive disclosure with `ToolsPanel`/`ToolsPanelItem`** once a panel hits ~6+ controls:
   optional controls behind the "+" menu, 1–3 `isShownByDefault`, `resetAll`. THE anti-clutter tool.
   - ⛔ **NAMED EXCEPTION — COLOUR IS NEVER OPTIONAL (Bean-ruled 2026-08-13).** A colour control must
@@ -81,7 +81,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
     very clutter defect A5 exists to prevent, arriving via A5's own mechanism. Colour's states
     (normal/hover/active) are reached **inside** the control's popover, never as sibling controls or a
     second panel — which is what removes the density pressure A5 would otherwise be solving for.
-    Full control shape + the three binding clauses: `plans/spec-35-control-type-contract.md` §1 field 9.
+    Full control shape + the three binding clauses: **PART O** (this spec) §1 field 9.
   - ⚠ **A5 is also the mechanism behind a defect measured 2026-08-13**, recorded so the next reader
     does not repeat the diagnosis: 22 panels tree-wide nest a `ToolsPanel` inside a `PanelBody`, and 17
     of those repeat the same title twice to the client. ⛔ The obvious fix — delete the outer
@@ -140,7 +140,7 @@ download attr P.
 
 **PLACEMENT — the LINK control is a POPOVER, never an inline inspector mount (Bean-ruled
 2026-08-13, live review of `sgs/button`'s pilot; canonical component +full rationale:
-`plans/spec-35-control-type-contract.md` §2 LINK).** Mount `LinkPopoverField`
+**PART O** (this spec) §2 LINK).** Mount `LinkPopoverField`
 (`src/components/LinkPopoverControl.js`) for a single trigger, or its `LinkPopoverContent` primitive
 when a block needs more than one trigger (e.g. a toolbar button AND a sidebar row) opening the same
 popover instance. Root cause this fixes: core `LinkControl` floors at `min-width:350px` (cancelled
@@ -659,7 +659,7 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 > real outstanding work, not a documentation fix. Do not treat a green build as evidence of
 > conformance here.
 >
-> Governing document: `.claude/plans/spec-35-control-type-contract.md` (AUTHORITATIVE 2026-08-08),
+> Governing document: **PART O** (this spec) (AUTHORITATIVE 2026-08-08),
 > which lists both raw components as **banned lookalikes**. **PART I of this same spec already
 > records `DesignTokenPicker` and `SgsLinkControl` as BUILT + ROLLED OUT** — Part H was simply never
 > swept when they landed, so the spec contradicted itself. Measured in `src/` at `a09226e8`: raw
@@ -893,7 +893,7 @@ an independently derivable "should" denominator.
 > plans:** a responsive family's **control primitive must match its STORAGE SHAPE**, and the two
 > change together in one commit — `ResponsiveControl` for flat sibling attrs, `ResponsiveOverride`
 > for an object-typed base. Governing text with the measured incident:
-> `plans/spec-35-control-type-contract.md` §12 field 3.
+> **PART O** (this spec) §12 field 3.
 >
 > **Why it earned a place here:** the mismatch is silent and destructive in both directions.
 > WordPress discards an attribute a block no longer declares, and coerces a flat value on an
@@ -1020,7 +1020,7 @@ overlap on pre-animation-timeline browsers (documented, not speculatively fixed)
 
 **2026-08-09 (D537–D540) — THE PLACEMENT RULE itself changed shape; several rows above are now
 superseded, not merely extended.** Full text: `decisions.md` D537–D540; canonical rule text: A3/A4
-above + `.claude/plans/spec-35-control-type-contract.md` §THE PLACEMENT RULE.
+above + **PART O** (this spec) §THE PLACEMENT RULE.
 - **A4's "block-level panel" is retired.** Every root-scoped control now resolves to a TIER 2
   property-family panel via `cluster-member-sets.json`, not a catch-all — see A4 above. The Task 3
   vocabulary gap this exposed (background-media + shape-divider families had no cluster member to
@@ -1077,7 +1077,7 @@ above + `.claude/plans/spec-35-control-type-contract.md` §THE PLACEMENT RULE.
 
 **2026-08-10 (session 2) — the shared wrapper became generically responsive; the tier axis is now
 universal, not per-block.** Full amendment (the two-axis model, the six-row prop_map, the Stage-2
-custom-property split, the four measurement controls): **`plans/spec-35-control-type-contract.md`
+custom-property split, the four measurement controls): ****PART O** (this spec)
 §12 (THE RESPONSIVE WRAPPER FAMILY)** — do not duplicate that text here, it drifts. Summary only:
 - `inspector-scan` gained **rule 26** (a new detector; see the rule file for its exact contract) and
   `sgs_emit_responsive_css()`'s `WidthPanel` had its two duplicate "… by viewport" controls merged
@@ -1218,7 +1218,7 @@ D2 reports and never assigns (66% precise); D8 reports a SCHEMA gap, never a rol
 
 ### N.3 — Enforcement status
 
-**Governed by the CONTROL-TYPE CONTRACT (`.claude/plans/spec-35-control-type-contract.md`) since
+**Governed by the CONTROL-TYPE CONTRACT (**PART O** (this spec)) since
 2026-08-08, D522/D523.** The 27-condition DONE checklist it replaced is a tombstone; every one of its
 30 items is ABSORBED into a control-type contract or CARRIED into that document's §CARRIED
 OBLIGATIONS, proven by its ABSORPTION MAP. ⚠ **The former "0 of 24 end conditions" figure carried
@@ -1230,6 +1230,1439 @@ and neither is "the gate reads green": a gate keyed to a component NAME has a bl
 construction, which is why the contract requires each rule to enumerate its banned lookalikes.
 ⛔ Task F builds no enforcement for a rule scoped against `block_capabilities` or icon `role` until
 those two Tier 0 columns are corrected.
+
+
+---
+
+## PART O — THE CONTROL-TYPE CONTRACT *(folded in from **PART O** (this spec), 2026-08-17, Bean-approved)*
+
+> **Why this is here.** This content was `status: AUTHORITATIVE (2026-08-08)` but lived as a 143 KB
+> `doc_type: reference` file in `.claude/plans/`, which this spec then deferred to at nine separate
+> line sites. An authoritative contract outranking its own numbered spec, from the plans folder, is a
+> doc-architecture defect: `plans/` is working material, `specs/` is the standard. Folded here so
+> Spec 35 is self-contained and there is one governing document, not two.
+>
+> **What folded:** every binding clause — the placement rule, the element manifest, the scoping axes,
+> all 14 numbered control-type contracts, the carried obligations, and both cross-cutting sections.
+>
+> **What did NOT fold, deliberately:** the 2026-08-07 council verdict, the 27-condition absorption
+> map, the point-in-time defect register and the enforcement plan. Those are historical records of
+> how this contract was arrived at, not rules to follow. They remain in git history at
+> **PART O** (this spec) (now a tombstone).
+>
+> ⚠ **Section numbering is preserved.** A citation of the form "contract §1 field 9" or "§14 BORDER"
+> still resolves — read it as "Part O §1 field 9". Sub-headings were demoted one level to nest here.
+
+### How to read a contract
+
+Every control type below declares the same eight fields. A block satisfies the contract for a type
+when it is in that type's **scope** and uses the **canonical component** with the **required props**,
+in the **correct tab**, and contains none of the **banned lookalikes**.
+
+---
+
+### ⛔ THE PLACEMENT RULE *(amended 2026-08-08, Bean-locked — replaces "behaviour → Settings"; TWO-TIER structure added 2026-08-09, D537)*
+
+> **TIER 1 — the element.** One panel per element, holding that element's content, its styling and
+> its hover together. Panel title = the element's `label`. Panel order = the element's `order`.
+> Hover renders inline beside the value it modifies — never as its own panel.
+>
+> **TIER 2 — the property-family.** WITHIN a panel — and for every control that scopes to no
+> element — controls group by property family: text / fill / layout / position / motion /
+> animation. These families are **not invented for this rule**; they are the families already
+> defined in `scripts/consistency/cluster-member-sets.json`, with labels and owning components
+> already declared there. Which families an element HAS is its own `clusters` key. Resolution
+> honours `appliesToLayers`.
+>
+> **A control that styles NOTHING** (`variant`, `templateMode`, `tagName`, `layout`, `autoplay`,
+> `showDots`, `required` — no CSS property behind it) takes **one `Settings` panel, pinned first.**
+
+That is the whole rule. There is **no behaviour-vs-appearance question** anywhere in it.
+
+Two resolver rules ship with tier 2, both derived from declarations, neither a manufactured
+tie-break: (a) an explicit `attrMap` entry is AUTHORITATIVE — another element's cluster reaching
+the same attribute name is not ambiguity; (b) an element that explicitly claims a cluster member
+owns that member's WHOLE SUFFIX FAMILY (`grid` maps `css:grid-template-columns`, so a block's
+separate `columns` attribute — the same member under another name — is `grid`'s too).
+
+⚠ **"Panel order = the element's `order`" is PROVISIONAL (Bean, 2026-08-08).** It gives a per-block
+order, which is not the same thing as **CO-28**'s cross-block canonical order — and CO-28's own gate
+("Bean picks the canonical panel order — a Rule 7 design gate") **still stands, unreleased.** Research
+2026-08-08 supports leaving it open: no competitor centralises panel order; in Kadence, Spectra,
+Stackable, Otter and Essential Blocks alike it is authoring order. Do NOT build an ordering rule from
+this line. Spec 35 **A8** ("panel order = frequency-first") is the other side of the same open
+question.
+
+**Derived, never hand-sorted.** The source is `supports.sgs.elements` in each `block.json` (**82 of
+83** files declare it; 283 elements — 83 is the FILE count, not the declaring count).
+Where an element cannot be resolved, the control **stays exactly where it is today**
+and the ambiguity is reported — no-worse-than-today is the floor.
+
+**Applies to every state, not just hover.** `states.hover` and `states.selected` both render inline
+beside their base value (18 elements declare `hover`, 4 declare `selected`).
+
+**Controls with no element** — anything injected by a universal extension in
+`src/blocks/extensions/`, and any block-wide setting — belong to no element by construction. Under
+D537 (2026-08-09) they do **not** collect in one catch-all "block-level panel": each one resolves
+to its **TIER 2 property-family panel** (text/fill/layout/position/motion/animation) via
+`cluster-member-sets.json`, exactly as an element's own controls do. Only a control that styles
+**nothing** — no CSS property behind it (`variant`, `templateMode`, `tagName`, `layout`,
+`autoplay`, `showDots`, `required`) — takes the single pinned-first `Settings` panel. The
+per-control-type `Tab` field below is now subordinate to this resolution too: it picks the
+WordPress *group* only for a "styles-nothing" control landing in the pinned `Settings` panel, not
+for any control that has a real property family.
+
+#### Where the tabs go — Bean-decided 2026-08-08
+
+**SGS owns a three-tab bar (Content · Style · Advanced), as Kadence, Spectra and Stackable all do.**
+The native Settings/Styles split is not a standard: core has **no** semantic rule for it. Verified in
+the Gutenberg source — the Styles tab is a hard-coded list of native block-support categories
+(`typography`/`color`/`background`/`border`/`dimensions`/`layout`/`position`/`filter`/`elements`) and
+the Settings tab is simply the `default` group, i.e. everything else. There is no principle to apply,
+which is exactly why every attempt to apply one produced a different answer.
+
+⛔ **SEQUENCING — the tab bar lands AFTER native-supports retirement (design §5), not before.** While
+27 blocks still declare native `color` and 48 declare `__experimentalBorder`, core renders its own
+Styles tab regardless of what we do. Shipping our tab bar first gives the client THREE SGS tabs plus
+core's Styles tab — strictly worse than today. Native retirement is itself blocked on the background
+capability (design §3 / Phase 1). **Phase 1 remains the first build.**
+
+**Until the tab bar ships**, element panels stay in Settings and native supports stay in core's Styles
+tab. That is the interim state, not the target, and it is not a rule anyone should extend.
+
+#### Why this replaces the old rule
+
+The retired rule was *"behaviour → Settings; appearance → Styles. This discriminator is the
+contract"* (**§8 BOOLEAN field 4** — both CO-28 and Cross-cutting A mis-cited it as "§6 field 4"; §6
+is STATE / HOVER). It sorts by what a control DOES and says nothing about what it BELONGS TO, so every
+element's appearance control got pulled out of that element's panel and piled into Styles. Eight
+blocks were hand-sorted on it on 2026-08-08 and Bean rejected the result. **The doc was the defect,
+not only the pass that followed it.** Those 8 blocks (`dfba396b`) are **superseded, not reverted** —
+re-derived by this rule like any other block.
+
+**Prior art this is modelled on** (researched 2026-08-08, primary sources): Kadence, Spectra and
+Stackable each group a composite block's controls by PART, one named panel per visible element;
+Otter (`review`) and Essential Blocks (`team-member`) converge on the same shape independently in
+hand-written source. Hover as a per-control state switch beside the base value is unanimous —
+Kadence, Stackable (4 states), Otter, and core's own `state-control.js`. **Nobody centralises panel
+order**; in every codebase checked it is authoring order, which is why CO-28 stays open (below).
+
+**Design of record:** `.claude/plans/2026-08-08-element-driven-inspector-design.md` §2.1, §2.2,
+§10.1–10.2.
+
+---
+
+### THE ELEMENT MANIFEST — schema of record *(rehomed here 2026-08-08)*
+
+`supports.sgs.elements` in each `block.json` is what THE PLACEMENT RULE and CO-2 derive from, so its
+schema is normative and lives in a **living** doc. It previously lived only in
+`.claude/plans/archive/spec-35-compound-control-sets-design.md` §"The element manifest" — an
+**archived** doc that a live gate (`scripts/check-element-manifest-conformance.js`) still cited.
+Archive is git-blame-only by project convention; a load-bearing schema cannot live there. That
+document remains the historical derivation; **this section is the schema.**
+
+**Measured against the tree, 2026-08-08** (not transcribed): **82 of 83 `block.json` files declare
+`supports.sgs.elements`; 283 elements.** ⚠ Not "83 of 83" — that figure was inherited from the
+design doc and is wrong; 83 is the FILE count, 82 the DECLARING count. Quote the predicate. Key
+frequencies — `label` 283 · `order` 283 · `clusters` 283 · `attrMap` 149 · `prefix` 102 ·
+`isWrapper` 69 · `layer` 57 · `states` 20 (18 `hover`, 4 `selected`, 2 elements carry both).
+
+```jsonc
+"supports": { "sgs": { "elements": {
+  "<elementKey>": {
+    "label": "Headline",              // REQUIRED — the panel title the client reads
+    "order": 7,                       // REQUIRED — panel position; ties break by reading order
+    "clusters": [ "text", "fill" ],   // REQUIRED — which of text/fill/layout this element HAS (F4 flag)
+    "prefix": "headline",             // OPTIONAL — attr-name prefix for the default convention
+    "isWrapper": true,                // OPTIONAL — ONLY the element representing the block ROOT.
+                                      //   Gates the native-supports fallback, AND selects TIER 2
+                                      //   of THE PLACEMENT RULE (D537 — block-root controls
+                                      //   resolve by property-family, not to a catch-all panel).
+    "layer": "OUTER",                 // OPTIONAL — OUTER | GRID | CONTENT | GRID_AREA (wrapper layer)
+    "attrMap": {                      // OPTIONAL — explicit STYLE overrides, always tried first
+      "css:font-size": "headlineFontSize",
+      "css:padding":   "native:spacing.padding"
+    },
+    "contentAttrs": [ "headline", "headlineTag" ],   // OPTIONAL — see below
+    "states": {                       // OPTIONAL — hover/selected values, nested INSIDE the element
+      "hover": { "attrMap": { "css:color": "colourTextHover" } }
+    }
+  }
+} } }
+```
+
+#### `contentAttrs` — the field added by this amendment
+
+**Problem it solves, in plain English.** The manifest records which *styling* properties an element
+owns ("the headline owns its font size and its colour"). It records nothing about which *content*
+field belongs to that element ("the headline's words live in the attribute called `headline`"). CO-2
+requires an element's panel to hold its content **and** its styling. The styling half is in data; the
+content half is today knowable only by reading each block's `edit.js` by hand — which is exactly the
+hand-authoring this model exists to remove.
+
+**Definition.** `contentAttrs` is an ordered list of `block.json` attribute names naming the content
+fields that element owns (its text, its media source, its link, its heading tag). Additive,
+machine-checkable, and read by the inspector to gather an element's content controls into its panel.
+
+**Binding conditions (Bean-decided 2026-08-08 — "generate and review"):**
+
+1. **Generated, then reviewed — never hand-written across 283 elements.** The generator derives
+   ownership from what `render.php` actually prints inside each element, matching how `attrMap`'s own
+   403 `native:` entries were produced.
+2. **Its output is a PROPOSAL until reviewed.** `sgs/hero` first; Bean reads it before a second block
+   is touched.
+3. **It must REPORT what it cannot determine**, per element — never emit a confident guess. An
+   unresolved element gets **no `contentAttrs`**, and states why.
+4. **Absence means no move.** Until an element declares `contentAttrs`, its content controls stay
+   exactly where they are. That is the no-worse-than-today floor.
+5. **Ships with `--check`** so drift fails the build rather than waiting to be noticed, and is
+   **re-runnable and idempotent** — a block changing shape must not need hand-repair.
+
+⚠ **Named risk:** inference from `render.php` is weakest exactly where render is variant-driven
+(`hero`, `testimonial`, `product-card`). Condition 3 is what keeps that from becoming silent damage —
+those elements surface as *unresolved*, not as a wrong answer that moves a client's control into the
+wrong panel.
+
+#### Attr→element resolution order (unchanged — implemented in `resolveMember()`)
+
+1. **Explicit `attrMap[member.key]`** — authoritative. A `native:<dot-path>` value checks
+   `block.json.supports` at that path; any other value is checked as a literal attribute name
+   (case-insensitive fallback).
+2. **Default convention** — `{element.prefix}{member.suffix}`, suffixes in the order
+   `scripts/consistency/cluster-member-sets.json` declares them.
+3. **Native-supports fallback** — ONLY when `isWrapper === true` and the member declares a
+   `nativeSupportsPath`. Gated to the wrapper because native `supports` apply to the block ROOT only;
+   ungated, every element sharing the `layout` cluster falsely inherits the wrapper's margin/border.
+
+A member resolving via none of the three is a **GAP** — reported, never silently dropped, never
+hand-excluded. A block with no `supports.sgs.elements` key is **skipped**, not flagged.
+
+⚠ **GAP and "stays where it is" are the SAME outcome seen from two sides, not two rules.** A declared
+cluster member that resolves to nothing is *reported* as a GAP (the conformance view) and the control
+*does not move* (the placement view). Nothing is relocated on a guess in either case.
+
+⚠ **`states` has a second, currently-unused form the code supports:** `resolveStateMember()`
+(`check-element-manifest-conformance.js:305-330`) also accepts `suffix` + `members` alongside
+`attrMap`. No block uses it today. It is live and reachable — document it before relying on the
+`attrMap` form being the only one.
+
+⛔ **CORRECTED 2026-08-09 — the 83-vs-84 distinction below was REAL when written and is now GONE.
+There is one denominator: 83.**
+
+~~⚠ **83 vs 84 — both figures are correct and they count different things.** The scoping axes above use
+**84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'`). This section uses **83**: the blocks
+with a `src/blocks/*/block.json` on disk declaring `supports.sgs.elements`.~~ Measured at `a09226e8`,
+all three sources now agree:
+
+| Source | Count |
+|---|---|
+| `SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'` | **83** |
+| `ls src/blocks/*/block.json` | **83** |
+| `ls src/blocks/*/edit.js` | **83** |
+| `inspector-scan` `_meta.denominator` (roster / disk / union) | **83 / 83 / 83** |
+
+`ls -d src/blocks/*/` returns 84 — the extra directory is `extensions/`, which holds no `block.json`
+and is not a block. That is the whole of the old discrepancy.
+
+⚠ **Do NOT mechanically rewrite every "84" in this document to 83.** Most downstream 84s are inputs
+to a *derived* figure measured at the time (e.g. LINK §3's "67 = 84 − 17 opt-outs"). Each such figure
+must be **re-derived by running its own query**, not decremented — silently shifting a derived number
+by one is exactly the unmeasured-relay trap this document exists to prevent. Quote the denominator,
+and its measurement date, with any figure derived from it.
+
+---
+
+### The scoping axes (machine-readable — never a hardcoded block list, per R-31-1)
+
+Denominator is always **83** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'`) — ⛔ **corrected
+2026-08-09 from 84; that query returns 83 today.** The per-axis splits in the table below were
+measured against the older roster and are NOT re-derived here: re-run each axis before quoting it.
+Full reconciliation in the ELEMENT MANIFEST section's denominator box.
+
+| Axis | Source | Split |
+|---|---|---|
+| `surfaces.colour` | roster.json | 64 |
+| `surfaces.styling` | roster.json | 65 |
+| `surfaces.media` | roster.json | 30 |
+| `surfaces.animation` | roster.json | 21 — **the proven precedent**, used by rule 17 |
+| `surfaces.link` | roster.json | **17** (over- AND under-inclusive — see LINK §5). ⚠ Was 16; D523 flipped `sgs/form` when `successRedirect` became `SgsLinkControl`, because `build-roster.py:91` derives this axis from a haystack INCLUDING `inspector_control_type`. Regenerate `roster.json` after ANY DB write to that column. |
+| `category` | roster.json | content 46 · forms 17 · interactive 13 · layout 8 |
+| `blocks.tier` | DB | block 80 · class-section 4 |
+| `block_composition.container_kind` | DB | content 12 · layout 16 · section 6 (scoped to built SGS blocks) |
+| `block_composition.composition_role` | DB | content-block 65 · leaf 10 · section-root 8 · wrapper-shell 1 |
+| `blocks.parent_block` | DB | 23 child-restricted blocks |
+| `blocks.replaces` | DB | 23 replace a core block |
+| `blocks.variant_attr` | DB | 5 variant-bearing blocks |
+| `block_attributes.is_responsive` | DB | 45 blocks |
+| `block_attributes.box_family` | DB | 46 blocks |
+| `block_attributes.css_state` | DB | 23 blocks (after excluding one mistag) |
+| **`extensions/*` REACH** | **the extension source itself** | **NOT a DB axis — see below** |
+
+#### ⛔ The EXTENSION SURFACE axis (council S1 — added 2026-08-08, restores the generalisation)
+
+**No block-scoped axis above can select a control injected by a universal extension**, because a
+`blocks.registerBlockType` filter writes attributes at runtime and `block_attributes` only ever sees
+what a `block.json` declares. `extensions/hover-effects.js` registers **11 literal `sgsHover*` attrs
+(19 `sgs*` attrs in total) onto 67 blocks** this way — invisible to every DB column by construction.
+STATE's "23 blocks, 3 conform" is therefore a large undercount **of the very shape STATE bans**.
+*(The "13" first written here was corrected by QC council 2026-08-08 — count the literals before
+quoting a reach figure.)*
+
+⛔ **THIS AXIS IS AN UNBUILT PREREQUISITE, not just a rule to remember.** Measured 2026-08-08: the
+existing engine **cannot see** `src/blocks/extensions/` at all. `inspector-scan/core/roster.js:58-70`
+only admits directories under `src/blocks/` that contain a `block.json`, and `extensions/` has none;
+`run.js`'s `buildCtx` supplies `blocksDir` / `patternsDir` / `themeDir` and **no `extensionsDir`**;
+`core/components.js:34` discovers only `src/components/`, so the proposed transitive
+`writesColour`/`writesIcon` resolution will not reach the extension HOCs either. **Any rule whose
+scope includes the extension surface is blocked until that plumbing lands.** Per-block reach is NOT
+available from `generate-extension-attributes.js` (names only) — derive it from `hideExtensions`.
+
+The contract originally made this argument for LINK alone and failed to generalise it. It binds on
+**four** contracts, all reached through the same file: **LINK** (raw URL field), **STATE** (11 literal
+`sgsHover*` attrs, 19 `sgs*` total), **SHADOW** (a preset `SelectControl` on a shadow attr), **COLOUR** (hover colour
+fields). Therefore:
+
+> **Every contract's `Scope` field must state its extension reach explicitly, and every detection
+> rule must read `src/blocks/extensions/*.js` as well as per-block `edit.js`.** A rule scanning only
+> per-block `edit.js` has a blind spot the exact size of the extension roster, and that blind spot is
+> where the largest single violation set in this document lives.
+
+Reach is derived, not hardcoded: a block is in an extension's surface when it does not opt out via
+`supports.sgs.hideExtensions`. `noOptOutExtensions` is `[]` today.
+
+**Bean's own suggested categories all map to real axes.** Three corrections:
+- **"Section" is three distinct axes**, not one — `tier='class-section'` (4), `container_kind='section'`
+  (6), `composition_role='section-root'` (8). Each contract must say which it means.
+- **"Blocks with text" routes via `role`, not typography supports.** Both give 65, but they are
+  *different sets* overlapping by only 49 — `sgs/decorative-image` holds client-editable alt/caption
+  text with no typography support; `sgs/container` and `sgs/icon` have the support and no text.
+- **Dynamic-vs-static is useless** — 84/0. Every SGS block is dynamic.
+
+#### ⛔ DB columns that are NOT trustworthy as gate inputs (all four measured 2026-08-07)
+
+> ✅ **1 and 2 were FIXED 2026-08-08 — D523 `e73bacde`, extended after QC council.** Both are now
+> usable as gate inputs — ⚠ **but `inspector_control_type` is 64.6% NULL — 1,753 of 2,712 rows `WHERE block_slug LIKE 'sgs/%'`.**
+> (Scope stated per carried condition 27: the unscoped all-blocks figure is 70.2% and is NOT the one that governs.)
+> A rule may TRUST a non-NULL value; it must NOT read NULL as "no control". "Trustworthy" was an
+> overclaim in the first draft of this box; the analysis below is retained because it names the defect CLASS every remaining rule must
+> avoid. **3 and 4 remain OPEN.** What actually landed: 7 `box_family` values declared in block.json
+> (⛔ not `mega-panel.borderRadius` — scalar, NULL is correct); `_KNOWN_CONTROLS` widened with this
+> framework's own single-attribute components, correcting **41** `inspector_control_type` rows (10
+> previously NULL, 31 previously wrong), measured on a sandbox DB copy first and idempotent on
+> re-run. A **repeater guard** was added in the same pass: a control inside an iteration over the
+> attribute's OWN value is a per-item control and must not be credited to the array attr — otherwise
+> widening the roster would have made `sgs/pricing-table::plans` read `SgsLinkControl`.
+> ⚠ **Council S5 is therefore DISCHARGED**: the four clauses depending on `inspector_control_type`
+> (BOOLEAN §1/§6, FREE-TEXT §2/§6) may now rely on it — but only for attrs whose control is a single
+> named component. **Residual: `site-{header,footer}-row` `padding`/`margin` still read NULL**, being
+> edited through `ContainerWrapperControls`, a multi-attribute façade that names no single attr. A
+> multi-attribute façade cannot be recorded in a single-value column; **that is a contract question,
+> not a data bug**, and no rule may treat those NULLs as "no control".
+
+1. ~~**`inspector_control_type`**~~ **— FIXED (D523).** Was: says `TextControl` for `sgs/icon.linkUrl` and `sgs/media.linkUrl`;
+   both use `SgsLinkControl` (icon/edit.js:231, media/edit.js:734). Missed `sgs/button`'s `URLInput`
+   entirely.
+   **ROOT CAUSE (council, 2026-08-07): `_KNOWN_CONTROLS` at
+   `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py:2436-2441` is a hardcoded
+   16-name tuple containing ZERO custom SGS components** — no `SgsLinkControl`, `URLInput`,
+   `IconPicker`, `ShadowControl`, `StateToggleControl`, `TypographyControls`, `ResponsiveBoxControl`,
+   `ResponsiveOverride`. An unrecognised tag yields no candidate, so no disagreement, so no write —
+   and the stale value (a fossil of the `enrich-db.py` heuristic deleted 2026-07-21) survives
+   forever. The single writer is otherwise healthy: it UPDATEs on disagreement and re-runs every
+   `/sgs-update`. **This is the SAME defect class as the gates it feeds** — matching controls by
+   component NAME rather than by what they do — and it is an R-31-1 hardcoded-dict breach inside the
+   data layer. Fix: extend the tuple, re-run Stage 1.
+   ⚠ Measure this on the LIVE tree: `.claude/worktrees/` holds **10** stale copies of this file with
+   identical paths and plausible contents.
+2. ~~**`box_family`**~~ **— FIXED (D523).** Was: **7** genuinely NULL *object*-typed attrs with live BoxControls:
+   `card-grid.cardBorderWidth`, `mega-panel.panelPadding`, `nav-drawer.drawerPadding`,
+   `site-header-row.padding`/`margin`, `site-footer-row.padding`/`margin`.
+   ⛔ **`mega-panel.borderRadius` was a FALSE POSITIVE in the first draft of this contract** — it is
+   `attr_type='string'`, a single scalar radius edited by a plain `UnitControl`. `box_family` scopes
+   to 4-side/4-corner OBJECT attrs, so NULL is correct there, as it is for every other scalar radius
+   (`card-grid.cardRadius`, `nav-menu.itemRadius`, `mega-aside.asideRadius`). Root cause of the
+   error: the list was compiled by reading `edit.js` instead of checking `attr_type` in the DB.
+   **Cause is class (d), not a broken mechanism** — `_collect_boxfamily_overrides()` reads
+   `supports.sgs.boxFamilies` from block.json and is idempotent; VERIFIED that none of the 5 blocks
+   declares that key. Fix is block.json edits, not a script change.
+3. **`role LIKE 'icon-%'`** — tags 2 blocks; `IconPicker` is used by **13** (15 sites). An **85%**
+   under-count, not 78%. ⚠ The `icon-*` family is the converter's SOURCE-disambiguation key, not a
+   "uses IconPicker" tag, so the promotion pass is self-limiting and never admits a new member —
+   widening it is a design choice, not a backfill. **OPEN.**
+4. **`block_capabilities`** — TWO different problems under one table name (council, 2026-08-07):
+   - **The 3 "lift" capabilities** (`scalar-content-lift`, `scalar-styling-lift`,
+     `array-content-lift`) are class (d) — read declaratively from `supports.sgs.*` in block.json,
+     written idempotently, mechanism healthy. `sgs/testimonial-slider` and `sgs/content-collection`
+     have real content arrays and are genuine omissions. ⛔ **`sgs/post-grid` is NOT one** — its
+     arrays (`categories`, `tags`) are config filters, its content comes from `WP_Query`, and the
+     capability's own docstring excludes exactly this case. Adding it would be actively wrong.
+     ⚠ `sgs/gallery` — verify `mediaItems` is authored content, not config, BEFORE declaring it.
+   - **The other ~35 capability values** (`grid-layout`, `carousel`, `logo-strip`, …) have **no
+     writer on the live path at all.** Their sole writer is a hardcoded `CAPABILITY_RULES` dict in
+     `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py` — outside this repo, dead on the live
+     path. That is why `sgs/post-grid` has zero capability rows of ANY kind. This is class (b) plus
+     a second R-31-1 breach. **`isCollectionKind()` therefore cannot be delivered by a backfill** —
+     it needs a declarative block.json source designed and ported into Stage 1.
+   - ⚠ Sibling: `block_selectors` had the identical disease and was only PARTIALLY ported
+     (2026-08-01) — two writers now exist, last-one-wins. Running `populate-db.py` to patch
+     capabilities would silently clobber selectors. Treat retiring that script as ONE job.
+   - ⚠ `PARENT_CHILD` in the same file is a third hardcoded dict, untraced.
+
+Regenerate before building any gate on them.
+
+---
+
+### 1. COLOUR
+
+1. **Canonical** — `src/components/DesignTokenPicker.js`. No competitor exists.
+2. **Required props** — `label`, `value`, `onChange`. `enableAlpha` and `clearable` already
+   **default true** (lines 55, 57), so condition 4 was satisfied by construction, not by call sites.
+   `linked` only when the value should track a theme slug (D288). **`id` is REQUIRED and missing** —
+   line 86 passes `label` to `BaseControl` with no `id`, so every colour control in the framework is
+   unnamed to a screen reader.
+3. **Banned lookalikes** — `ColorPalette`/`ColorGradientControl`/`GradientPicker`/
+   `PanelColorGradientSettings`; `<TextControl type="color">` (`star-rating/edit.js:155-168`);
+   raw `GradientPicker` inside `GradientOverlayControl.js:191`, reaching `container`, `hero`,
+   `trust-bar`, `cta-section` indirectly.
+4. **Tab — SETTLED 2026-08-15 (D621 + D622). Do not re-derive; both halves are now ruled.**
+
+   **(a) WHICH TAB — Styles (D621).** The Colour panel renders in the **Styles** tab, first, above
+   Background. ⛔ D618's earlier "Settings" placement is superseded: it reasoned that Styles is
+   reserved for genuine native supports, but the framework **never uses native colour supports** — it
+   replicates the native control's look and sets `supports.color` sub-flags `false`. The real rule is
+   that **Styles holds root CSS and visuals**, which is why the Background panel (media uploads
+   included) lives there. A colour is a visual.
+
+   **(b) WHICH PANEL — the D533/D537 resolver, exactly like every other property family (D622).**
+   An element-scoped colour goes in **its element's panel**; a colour no element claims falls to its
+   **property-family panel**. ⛔ There is no bespoke colour-placement rule, and one must not be
+   invented — colour was the last family still placed by hand, and any separate rule would build a
+   second placement system beside the working one. `placement-reach.py` resolves all 2,262 declared
+   attributes with zero human judgement; `check-element-manifest-conformance.js --check` gates it in
+   `prebuild`.
+
+   ⭐ **Leaf blocks group by construction, not by exception.** `sgs/button`'s `colourText`,
+   `colourBackground` and `colourBorder` all sit on the same element (`wrapper`), so they render side
+   by side in one panel — the compare-and-contrast case Bean asked about — while `iconColour` sits
+   with the `icon` element, which is genuinely a different thing.
+
+ *(Placement and SHAPE stay independent axes — see field 9a. Moving a colour must never change what
+ the control looks like.)*
+5. **Scope** — eligibility `surfaces.colour` (64); detection target `role='color'` (50 blocks,
+   261 rows). The 14-block gap is a DB-completeness issue, not a control gap.
+6. **Conformance** — 49/50 conform. `sgs/star-rating` violates.
+7. **Detection** — extend `inspector-scan/core/components.js` with a `writesColour` flag derived
+   from each component's own source, exactly as `wrapsImage` already works for rule 18. This
+   resolves indirect/shared-component cases transitively and catches lookalikes by semantic.
+8. **RESOLVED 2026-08-16 (D636), supersedes the 2026-08-11 ruling below.** The "not worth the
+   time" ruling on a bespoke per-stop palette editor was re-opened once SGS composed its own
+   colour popover (`DesignTokenPicker` = `Dropdown` + native `ColorPalette`, not WP's sealed
+   `GradientPicker`), which made a palette-capable stop editor cheap rather than expensive. Native
+   `GradientPicker` is REPLACED, not kept — `SgsGradientPicker`
+   (`plugins/sgs-blocks/src/components/gradient-picker/`), forked from the same pinned Gutenberg
+   SHA the colour-picker fork uses, mounts the SGS `ColorPalette` above the raw picker in each
+   stop's popover. A stop picked from the palette stores `var(--wp--preset--color--<slug>)`. Tab
+   placement: Styles (D621, same as every other colour). Storage: ONE string attribute per
+   gradient holding the complete CSS value (D636), not this contract's per-scalar
+   `DesignTokenPicker` shape — gradient stays its OWN control type, this field's original question
+   answered "no" on the routing half, "yes, palette-linked" on the capability half. Shipped so far
+   on the 6 legacy overlay blocks; the universal rollout across all colour-capable blocks is
+   tracked in `LEDGER.md`/`parking.md` `P-GRADIENT-UNIVERSAL-ROLLOUT`, not yet done.
+   ⛔ Prior text, kept for the historical record only — do not act on it: *"native `GradientPicker`
+   was deliberately KEPT as-is for the 4 wrapper blocks — no per-stop theme-palette selection
+   exists in Gutenberg core to build against, and Bean ruled a bespoke stop editor 'not worth the
+   time' once shown the real cost. So today, gradient stops do NOT route through this contract's
+   canonical `DesignTokenPicker` anywhere in the codebase — native only."*
+
+9. ⭐ **THE STATE + SHAPE RULE — Bean-ruled 2026-08-13. This is the load-bearing addition to this
+   section and it binds every colour in the framework, wherever it lives.**
+
+   Bean, from a manual inspector review: *"Shadow Colour should be set in the colour section and that
+   way both hover effects are dealt with, the other viable way is a tab toggle in pop up colour picker
+   between states. Never should be set up like that with optional hide or show."* And: *"any element
+   specific colour that ends up staying in its element … should still use the same thin rectangular
+   control that shows the number of states pickable per setting that has its colour picker pop out."*
+
+   Three binding clauses:
+
+   - **9a. ONE CONTROL SHAPE, EVERYWHERE.** Every colour renders as the same thin row: a compact
+     rectangular control carrying its swatch(es), showing **how many states are pickable for that
+     setting**, with the picker itself in a **popover**. This holds regardless of where the control
+     sits — an element-scoped colour that stays in its element's TIER 1 panel (per THE PLACEMENT RULE)
+     uses the identical row. Placement and shape are independent axes; moving a colour must never
+     change what it looks like.
+   - **9b. STATES LIVE INSIDE THE CONTROL, NEVER BESIDE IT.** Normal / hover / active are reached by a
+     tab toggle **within the popover**, not by separate sibling controls and not by a second panel.
+     ⛔ This RETIRES the pattern of a distinct `*Hover` colour control mounted next to its resting
+     twin. It also means a compound property's colour half (shadow colour being the named case) is set
+     **in the colour row**, where the state toggle already handles hover — not as a lone field on the
+     shadow builder.
+   - **9c. ⛔ A COLOUR IS NEVER AN OPTIONAL `ToolsPanelItem`.** It must not sit behind the "+"
+     disclosure menu, and it must not be hideable per instance. Bean, verbatim: *"Never should be set
+     up like that with optional hide or show."* This is a deliberate, named exception to A5's
+     progressive-disclosure guidance — A5 governs control density in general; colour is carved out of
+     it. A client hunting a "+" menu to find a colour is the defect A5 was meant to prevent, arriving
+     by A5's own mechanism.
+
+   **Why it is a contract clause and not a tidy-up.** The framework currently ships several different
+   colour controls and 101 hand-rolled `*Hover` attributes across 24 blocks against a shared state
+   extension with live reach 0 (measured 2026-08-13; ⚠ a competing count of 93/20 exists and the
+   population must be re-measured before any migration — see §9.9-N4 of
+   `reports/2026-08-13-inspector-uniformity-root-cause.md`). Under D602 colour is squarely inside the
+   EXPECTED set, so "the same property behaves identically everywhere" is exactly what this clause
+   makes checkable.
+
+   ⚠ **NOT YET BUILT. This clause is the target, not a description of the tree.** `DesignTokenPicker`
+   today is a labelled `BaseControl` with no state axis and no popover; delivering 9a–9c is a real
+   build on that component plus a rollout, and it must not be read as already satisfied. Its own
+   conformance figure (field 6, 49/50) measures the OLD shape and does not speak to this clause.
+   ⚠ Field 2's missing `id` defect stands and should be fixed in the same work, not after it.
+
+### 2. LINK
+
+⚑ **SUPERSEDED 2026-08-13 — Canonical control changed.** Bean reviewed `sgs/button`'s popover-based
+LINK control live and ruled: *"That link control looks perfect. Set this as the standard and look
+for everywhere there is a hyperlink option — then replace it. Also, we should replace the current
+raw link input box in the block link extension with this link setup."* `SgsLinkControl`'s INLINE
+mount is retired as the canonical shape (kept only as a legacy shim for the 7 repeater-item
+consumers not yet migrated — see field 6). Fields below are rewritten to match; the original
+`SgsLinkControl`-as-canonical text is struck through in spirit, not preserved, per this doc's own
+"replace, don't append" convention for a superseded ruling.
+
+1. **Canonical** — `src/components/LinkPopoverControl.js`. Two exports: `LinkPopoverContent` (the
+   `<Popover>` primitive — mount when a block needs MULTIPLE triggers sharing one popover instance,
+   e.g. `sgs/button`'s toolbar button + sidebar row) and `LinkPopoverField` (self-contained
+   trigger-row + popover in one component — the common single-trigger case). Root-caused the same
+   two defects `SgsLinkControl`'s docblock already named (core `LinkControl`'s 350px floor overflowing
+   a ~248px inline panel; staged `settings` toggles with no blur/close commit) by moving off the
+   inline mount onto core's own designed home for `LinkControl` — a popover with a real Submit
+   interaction, matching `core/button`. Neither Kadence nor Otter mount `LinkControl` inline in a
+   sidebar panel either.
+2. **Required props** — `LinkPopoverField`: `label`, `value`, `onChange`. Two value shapes: object
+   `{ url, linkId, linkKind, linkTarget, rel, download }` (default) or bare string (`searchOnly`).
+   `targetMode` ('enum' 4-value _self/_blank/_parent/_top, or 'boolean' open-in-new-tab) selects which
+   target shape a consumer's schema actually declares — **do not default to 'enum' for a boolean-typed
+   schema attr**, that's exactly the "flat value on an object attr" coercion-trap class of bug.
+   `enableInternalResolution` opts a consumer INTO `linkId`/`linkKind` render-time ID resolution — off
+   by default (only `sgs/button`'s `render.php` resolves them today).
+3. **Banned lookalikes** — `<TextControl type="url">`; `<URLInput>`; `SgsLinkControl`'s inline mount
+   for any NEW consumer (existing repeater-item consumers are a migration backlog, not a new
+   violation — see field 6).
+4. **Tab** — unchanged: `settings` when the control styles nothing and lands in the pinned `Settings`
+   panel; an element-scoped link (e.g. `sgs/icon`'s own Link panel) stays in that element's TIER 1
+   panel regardless.
+5. **Scope** — unchanged from the pre-supersession measurement: **14 blocks with a navigational link
+   field, plus the 67-block extension surface** (`hover-effects.js`'s block-link — no block-scoped
+   axis can see this; see the EXTENSION SURFACE axis, council S1).
+6. **Conformance (re-measured 2026-08-13, post-migration)** — Migrated to `LinkPopoverControl`:
+   `sgs/button` (dual-trigger, `LinkPopoverContent` direct), the block-link extension (67-block reach,
+   `LinkPopoverField` + `renderExtraFields` for its bespoke accessible-label field), `sgs/icon`,
+   `sgs/media`, `sgs/product-card` (3 fields, `searchOnly`). **Still on `SgsLinkControl`'s inline
+   mount — 7 blocks the DB's `role='link-href'` scan cannot see (repeater-item links, not top-level
+   attrs):** `brand-strip`, `card-grid`, `form`, `pricing-table`, `social-icons`, `team-member`,
+   `trust-bar`. These are a migration backlog for the same reason field 5 already named them
+   DB-invisible — not newly discovered, but newly PRIORITISED now the canonical shape has changed
+   under them.
+7. **Detection** — `inspector-scan/rules/08-raw-url-link.js` extended 2026-08-13 to also flag
+   `SgsLinkControl` JSX elements (not just `<TextControl type="url">`), scoped ADVISORY (the 7
+   remaining consumers are a known backlog, not a build-breaking regression) with a named promotion
+   trigger: promote to blocking once the 7-block backlog clears.
+8. **Open** — is `google-reviews.reviewRequestUrl` genuinely config, or a link a visitor follows?
+   Does `whatsapp-cta.phoneNumber` deserve its own PHONE contract? Should the 7 remaining
+   `SgsLinkControl` repeater-item consumers migrate to `LinkPopoverField` in a follow-up pass, or does
+   a repeater ITEM (as opposed to a block-level field) want a different trigger shape (inline, not
+   popover — a popover-per-row could feel heavy in a 6-row repeater)? Flagged, not decided, here.
+
+### 3. ENUM / MODE
+
+1. **Canonical** — no shared component. `SelectControl` over a **declared `block.json` enum** is the
+   de facto standard (**82** files); `ToggleGroupControl` for short option sets (14 files) — **the
+   threshold is nowhere written down, so it cannot yet be gated.**
+2. **Required props** — `value` bound to the attr; `options` matching the declared `enum` **exactly**.
+3. **Banned lookalikes** — (a) a shared aggregator offering options outside the consuming block's
+   enum; (b) a PHP-enforced closed set with no `block.json` enum (free-text box, no validation).
+4. **Tab** — `settings`, explicitly, not by relying on the default.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
+5. **Scope** — 284 rows with declared enums; 1,372 string rows are the search space, not the
+   violator count.
+6. **Conformance — three distinct live defects on ONE shared control:**
+   - `sgs/testimonial-slider` — enum `full|split` vs picker `stack|flex|grid`. **Zero overlap.** Its
+     only Layout control is permanently broken.
+   - `sgs/post-grid` — enum `grid|list|masonry|carousel`. Only `grid` overlaps.
+   - `sgs/feature-grid` — `render.php:131` hardcodes `$attributes['layout'] = 'grid'` before calling
+     the wrapper. The control is live, visible and inert.
+   - 9 further blocks mount `kind="layout"` with **no enum at all** — PHP enforces 3 values,
+     `block.json` enforces nothing.
+   - 13 attrs across 8 blocks: PHP-enforced closed set, no declared enum. **Floor, not ceiling.**
+   - ⚠ `sgs/gallery` already fixed this **for itself** via `showLayout={false}`, with a comment
+     naming the exact bug. A local fix while the shared component kept shipping it to twelve others.
+7. **Detection** — diff a shared control's hardcoded option values against each consuming block's
+   declared enum. Generalises to any future aggregator; needs no per-block knowledge.
+8. **Open** — should `LayoutPanel` build its options **from the consuming block's own enum** instead
+   of a fixed list? That makes the class of bug structurally impossible. Shared-mechanism → Rule 7
+   design gate. Is `feature-grid` deliberately grid-only (remove the control) or is the hardcode a
+   leftover?
+
+### 4. LENGTH / UNIT
+
+1. **Canonical** — `<ResponsiveControl>` wrapping `<UnitControl>` with a real `units` array
+   (R-22-13). Object-cascade blocks use `<ResponsiveOverride>` instead. Do not blend the two.
+2. **Required props** — real `units`, never px-only. Responsive wrapping REQUIRED when the attr
+   family declares Tablet/Mobile siblings. **Label association REQUIRED and missing** — see §10.
+3. **Banned lookalikes** — raw-px `RangeControl` (**0 live violations found** — the only hits are the
+   shadow builder's sliders, which are correct); `SelectControl` writing a `*Unit` attr (already
+   gated); a `TextControl` standing in for `UnitControl` — ~~`sgs/card-grid.cardRadius`, help text
+   *"e.g. 8px"*, accepts invalid CSS~~ ✅ **FIXED 2026-08-11 (D561)**; see §14 field 6 for the full
+   raw-text census (3 found, 3 fixed, 0 remaining). **Phase 3.2a must not re-list `cardRadius`.**
+4. **Tab** — `typography` for font-size/line-height, `dimensions` for spacing, `layout` for grid
+   geometry. All Styles.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
+5. **Scope** — `is_responsive=1 AND css_property IN (<length set>)` → 36 blocks.
+6. **Conformance** — the `TypographyControls` consumers conform. Violators: ~~`cardRadius`~~
+   (fixed 2026-08-11, D561); 79 of 85 blocks with no tab split; **12 attributes declared + rendered
+   with no control** (below).
+7. **Detection** — join `css_property` against a length allowlist, then assert the innermost control
+   is a `UnitControl`.
+8. **Open** — spacing-token scale is unbuilt; does the contract require it once it exists?
+
+### 5. 4-VALUE BOX
+
+1. **Canonical** — `ResponsiveBoxControl` (4 sides) / `ResponsiveBorderRadiusControl` (4 corners);
+   `ResponsiveBoxControls` (plural) for object-cascade rows.
+2. **Required props** — `values` per tier, `onChange(tier, next)`, real `units`.
+3. **Banned lookalikes** — per-side scalars (**migration COMPLETE — 0 remaining**); regex side-token
+   grouping in the converter (already gated, converter-side only — nothing guards editor code).
+4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
+5. **Scope** — reconciled to **51 blocks** (46 DB-classified ∪ 48 grep-matched, 43 overlap). The
+   discrepancy resolved: `before-after`/`media` use `ResponsiveBorderRadiusControl` (no "BoxControl"
+   substring); 5 blocks have live box controls with `box_family` NULL.
+6. **Conformance** — 43 conform. **`sgs/physics-canvas` declares 6 responsive box attrs, passes them
+   to `SGS_Container_Wrapper`, which renders them — and its `edit.js` contains "padding" zero times.**
+7. **Detection** — must NOT rely on `box_family` alone (it under-populates); add a code-derived
+   cross-check on the attr's object shape.
+8. **Open** — backfill the 6 orphan attrs? Rename the singular/plural pair?
+
+### 6. STATE / HOVER
+
+1. **Canonical** — `src/components/StateToggleControl.js`. **Verified adoptable today** — it already
+   hosts a mixed group (colour + UnitControl + SelectControl) under one toggle in
+   `nav-menu/edit.js:1407-1545`. No extension needed. `states` is a prop, not hardcoded.
+2. **Required props** — one toggle per logical attr GROUP, not per attribute; the render-prop must
+   cover **every** paired attr in both states.
+3. **Banned lookalikes** — a separate "Hover" panel (7 blocks; `post-grid`'s is 145 lines from its
+   base panel); adjacent "X" and "X (hover)" controls (3 blocks); **a `*Hover` attr with no control
+   at all (8 blocks, ~27 attrs)**; preset-only reachability (`product-card`).
+4. **Placement** — the state value sits **inside the same control group as its base value**. This is
+   how `theme.json` nests pseudo-states under the element, and how the block's own PHP helpers
+   already build `:hover` from the same `$prefix`.
+5. **Scope** — `attr_name LIKE '%Hover%' OR css_state IN ('hover','selected')`, excluding
+   `sgs/mega-panel.accent` (a colour-scheme picker, mistagged). **23 blocks; 3 conform, 20 do not.**
+   ⚠ Use `%Hover%`, not `%Hover` — the suffix form misses `business-info.linkHoverColour`.
+   ⚠ `trust-bar.autoScrollPauseOnHover` and `team-member.overlayHover` are **behavioural flags, not
+   state pairs** — a name-only rule false-positives on both.
+   ⚠ `table-of-contents.activeLinkColour` is a genuine `selected` state that **name-matching cannot
+   find**. A new semantically-named state with `css_state` NULL would be invisible to every method here.
+6. **Conformance** — conform: `brand-strip`, `button`, `nav-menu`.
+7. **Detection** — three separate rules, not one: `state-attr-no-toggle`, `state-attr-unreachable`,
+   `state-attr-preset-only` (park the third — one instance cannot prove the shape, per R-31-9).
+8. **RESOLVED, not open — migration needs ZERO schema change.** Every attr already exists with its
+   current type; `StateToggleControl` is a presentational wrapper reading/writing the same keys. No
+   version bump, no deprecation. Consistent with D293/D270.
+
+### 7. MEDIA
+
+1. **Canonical** — `src/components/MediaPicker.js` (9 consumers) + `MediaGalleryPicker` for bulk.
+   ⚠ `MediaPicker` is **not barrel-exported**; all 9 consumers import by path.
+2. **Required props** — `MediaUpload` always inside `MediaUploadCheck` (**0 violations — keep the
+   gate**); alt text; the D5 tier rules. **A reused picker sub-control renders an optional child only
+   when that invocation supplies both `value` and `onChange`** (the `ImagePickerRow` lesson).
+3. **Banned lookalikes** — per-tier duplicate pickers instead of one `ResponsiveControl`-wrapped
+   picker: `sgs/responsive-logo/edit.js:281-305` renders **three always-visible** logo slots.
+4. **Tab** — `settings`; `content` for collection/repeater media (0 SGS blocks currently use
+   `group="content"`).
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
+5. **Scope** — `surfaces.media` (30) is the eligible pool. The 15 blocks declaring
+   `supports.sgs.imageControls` are a **conformance subset, not the pool**. Rule 18's own
+   `wrapsImage` resolution is MORE precise than the DB proxy — do not regress it.
+6. **Conformance — the D521 rollout landed cleanly on 6 of 7.** Tier types match base types
+   everywhere; zero blocks tiered their alt text. `responsive-logo` is the exception (predates D521
+   by two days).
+7. **Detection** — two D5 clauses are checkable from `block.json` alone: **tier/base type mismatch**
+   and **alt-role attr with a Tablet/Mobile suffix**. Neither exists as a rule. The video-swap
+   return path and per-width paint need the live first-paint capture bar.
+8. **Open** — retrofit `responsive-logo`? Fold `showAlt` into `MediaPicker` and retire the local copy?
+
+### 8. BOOLEAN
+
+1. **Canonical** — `ToggleControl` (160 of 163 controlled boolean rows) for enable/disable;
+   `ToggleGroupControl` when the states are **named alternatives** (`overlayGradient` → "Solid /
+   Gradient" is CORRECT, not a violation); `CheckboxControl` **only** for a boolean scoped to one
+   item in a repeated list (all 8 uses verified correct).
+2. **Required props** — `label`; `__nextHasNoMarginBottom` on **133/162** instances.
+3. **Banned lookalikes** — a 2-option `SelectControl` driving a boolean (3 DB rows); a
+   `RadioControl` with two options (**1 live instance — `heading/edit.js:281`**; the earlier "ZERO"
+   was false, the judgement it supported survives); literal "On/Off" toggle groups (**none found**).
+4. **Tab** — **element-scoped → that element's panel in Settings (THE PLACEMENT RULE, TIER 1).**
+   Root-scoped (no element): resolves to its TIER 2 property-family panel via
+   `cluster-member-sets.json` (D537), UNLESS the boolean styles nothing — e.g. `autoplay`,
+   `showDots`, `required` — in which case it takes the pinned-first `Settings` panel. The old
+   "behaviour → Settings; appearance → Styles" root-scope split is retired; it was never a
+   whole-inspector rule and must not be read as one again.
+5. **Scope** — 252 boolean rows.
+6. **Conformance** — 89 boolean rows have no recorded control. **Not asserted as defects** — needs
+   per-row triage.
+7. **Detection** — classify the component bound to each boolean attr; `ToggleGroupControl` writing a
+   literal boolean is a *candidate*, not a violation.
+8. **Open** — whether a 2-option group reads as enable/disable or as alternatives is a label
+   judgement, not an AST fact. Advisory only.
+
+### 9. FREE TEXT / BARE NUMBER
+
+1. **Canonical** — `TextControl` for short single-line config; `TextareaControl` for long-form;
+   `NumberControl` for unbounded or precision-typed numbers; `RangeControl` for coarse bounded
+   values. **A number with a CSS unit is a LENGTH, not a bare number.**
+2. **Required props** — `__next40pxDefaultSize` is on **2 of 199** `TextControl`s and **1 of 8**
+   `NumberControl`s.
+3. **Banned lookalikes** — free text where a closed set exists (→ ENUM); free text driving a colour
+   (`star-rating`) or typography (7 rows); `product-card.ctaFontSize` as a bare unitless
+   `NumberControl` — a direct breach of the mandatory `TypographyControls` rule.
+4. **Tab** — **element-scoped → that element's panel in Settings (THE PLACEMENT RULE, TIER 1)** — an
+   element's text content and its appearance numbers sit in the SAME panel, not opposite tabs.
+   Root-scoped (no element): resolves to its TIER 2 property-family panel via
+   `cluster-member-sets.json` (D537), UNLESS the field styles nothing (e.g. `tagName`), in which
+   case it takes the pinned-first `Settings` panel. The old "content/behaviour → Settings;
+   appearance numbers → Styles" root-scope split is retired.
+5. **Scope** — 1,654 string rows, 432 number/integer rows.
+6. **Conformance** — **the content split is SOUND**: body content lives in-canvas via `RichText`,
+   sidebar text fields are genuinely short labels. Validated pattern, not a gap.
+   ⚠ **317 number rows have no recorded control** — explicitly NOT asserted as defects; triage needed.
+7. **Detection** — cross-reference each control's target attr against `role`/`css_property`.
+8. **Open** — retype the string-typed font sizes to number?
+
+### 10. ICON
+
+1. **Canonical** — `src/components/IconPicker.js`. No competitor exists.
+2. **Required props** — `label`, `value`, `onChange`. **`id` REQUIRED and missing** (line 335) —
+   the same `BaseControl`-without-`id` defect as COLOUR and LINK.
+3. **Banned lookalikes** — a `SelectControl` over a hardcoded icon-name list; a `TextControl` taking
+   a raw icon slug; an emoji/character field standing in for an icon; a per-item icon picker inside a
+   repeater that is not this component (`form-field-tiles`, `pricing-table` both mount the real one —
+   listed so a future repeater cannot claim novelty).
+4. **Tab** — `settings` when the icon carries meaning (a list marker, a nav affordance);
+   `styles` when it is decoration on an already-labelled control. *(Subordinate to THE PLACEMENT
+   RULE: this Tab field only governs a control that STYLES NOTHING and lands in the pinned
+   `Settings` panel (D537). A control with a real property family resolves to its TIER 2 family
+   panel via `cluster-member-sets.json` instead. An element-scoped control goes in its element's
+   panel (TIER 1) regardless of this field.)*
+5. **Scope — `block_capabilities` capability `icon-picker` (13 blocks / 15 sites), declared via
+   `supports.sgs.iconPicker`.** ⛔ **Never scope this contract by `role LIKE 'icon-%'`** — that role
+   family is the converter's icon-SOURCE discriminator and tags 2 blocks, an 85% under-count of a
+   different question (D525 separated the two rather than widening the role, which would have broken
+   the converter's arm).
+   ⚠ The census is 13 blocks only because it scanned **past `edit.js`** — `sgs/cart` mounts the
+   picker from `TriggerSettingsControls.js`. A per-block `edit.js` scan reports 12 and looks
+   complete. See the EXTENSION SURFACE axis.
+6. **Conformance** — 13/13 mount the canonical component; **0/13 pass the `id` requirement**, so the
+   real conformance figure is 0, not the "9/9" this doc first carried over a set four blocks short.
+7. **Detection** — census `<IconPicker` across `src/blocks/**/edit.js` **and `src/blocks/extensions/*.js`**;
+   assert every mount passes `id`. Lookalike detection via a `writesIcon` flag on
+   `inspector-scan/core/components.js`, derived from the component's own source (the `writesColour`
+   pattern), so an indirect mount through a shared wrapper resolves transitively.
+8. **Open** — does the `icon-*` role widen, or does a new declarative flag carry "uses IconPicker"?
+   **This is Tier 0 (d) and it is a design gate, not a backfill.**
+
+### 11. SHADOW
+
+1. **Canonical** — `src/components/ShadowControl.js`, storing a **CSS string**
+   (X/Y/blur/spread/colour+alpha/inset).
+2. **Required props** — `label`, `value`, `onChange`. **`id` REQUIRED and missing** (line 126).
+3. **Banned lookalikes — this type's list is the whole point, because rule 07 sees exactly one of
+   them:**
+   - a **preset `SelectControl`** (None/Small/Medium) writing a shadow attr — *the only shape rule 07
+     inspects*;
+   - **a preset `SelectControl` on a shadow attr reaching 67 blocks through
+     `extensions/hover-effects.js`** — same shape, invisible to every per-block scan (see the
+     EXTENSION SURFACE axis);
+   - **a bare `TextControl` asking for raw CSS** — `sgs/quote:699` and `sgs/media:685`; media's help
+     text literally reads *"A raw CSS box-shadow value, e.g. 0 6px 24px rgba(0,0,0,0.15)"*. A direct
+     breach of the framework's own non-negotiable that no setting may require touching code;
+   - **a hand-rolled builder storing an object** where the shared component stores a string —
+     `sgs/button`, ~80 duplicated lines, incompatible shape;
+   - **no control at all** — `sgs/heading` and `sgs/text` declare `boxShadow`/`boxShadowHover`,
+     render them, and expose nothing. Rule 07 cannot see this class by construction.
+4. **Tab** — `styles` (it is appearance), inside the border/effects grouping.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
+5. **Scope** — `css_property LIKE '%shadow%'` across `block_attributes`, **plus** the extension
+   surface. Real footprint **17 blocks**; rule 07 reports 1.
+6. **Conformance** — 4 exact defects confirmed (`heading`/`text` × `boxShadow`/`boxShadowHover`),
+   2 raw-CSS text fields, 1 duplicate builder, 6 secondary shadow attrs unverified.
+7. **Detection** — census from the DB, then classify each attr's control in `edit.js` as
+   *compliant / preset-select / raw-text / duplicate-builder / **no-control***. Five buckets, not a
+   boolean. The fifth is the fourth quadrant and needs the render-without-control rule.
+8. **Open** — does `sgs/button`'s object shape migrate to the string shape, or does `ShadowControl`
+   gain an object mode? Either is a shared-mechanism change → **Rule 7 design gate.**
+
+### 12. THE RESPONSIVE WRAPPER FAMILY
+
+> ### ⭐ AMENDED 2026-08-10 (D548 / D549 / D550) — read before acting on this section
+>
+> **The shared wrapper is now responsive GENERICALLY.** Bean-directed: fix the wrapper once so
+> "every block that uses it doesn't need individual fixes that require forking". Six layout
+> properties (`alignContent`, `justifyContent`, `justifyItems`, `flexDirection`, `flexWrap`,
+> `gridAutoRows`) are tier-capable as of `2056af6a` — as **six array rows**, not new code:
+> `sgs_emit_responsive_css()` was already generic (atoms → tier cascade → tier-diff). Adding
+> property #7 is one row.
+>
+> **The apparent conflict with this spec's purpose is RESOLVED, not a trade-off.** "Make every
+> property responsive" looked like it contradicted Spec 35's goal of shrinking the control
+> surface. It does not, **because of the one global device toggle (D546)**: a `<ResponsiveControl>`
+> renders ONE control at a time, so a tier adds **zero** visible controls. The surface only grows
+> if tiers render side by side — the banned lookalike in field 3 below. ⛔ Do not re-litigate this
+> as a cost/benefit; it was one only before the toggle existed.
+>
+> **TWO INDEPENDENT AXES (Bean-clarified — this was blurred and is now settled):**
+>
+> | Axis | Shape | Applies to |
+> |---|---|---|
+> | **TIER** | `{desktop, tablet, mobile}` | **ANY** property, including text colour |
+> | **BOX** | `{top, right, bottom, left}` | ONLY genuinely per-side props (padding, margin, border-width, border-radius) |
+>
+> A property may have one, both or neither. Text colour cannot be a per-side box but CAN have
+> tiers. Field 6's "three incompatible STORAGE shapes" is being collapsed onto the TIER object;
+> the BOX axis is orthogonal and stays.
+>
+> **Census, not guesswork:** `npm run survey:responsive-shape` — 83 blocks, 311 tier families
+> (185 flat, 32 declaring BOTH shapes, 94 orphans). **173 are real migration candidates.** It
+> separates them from families that are CORRECT as-is: 36 `asset_like` (a per-tier ASSET is a
+> different resource per device, not a cascade — `sgs/media`'s tiers are a deliberate runtime
+> swap, D521) and 7 `flag_like` (conjunctive per-device flags the operator must see together).
+>
+> ⛔ **STAGE 2 still open:** the six `gridItem*` properties plus `shadow` emit as CSS CUSTOM
+> PROPERTIES on a different selector and need their own tier plumbing.
+> ⚠ **AMENDED 2026-08-12 (D589):** `contentBandBackground` was in this list and is now **RETIRED,
+> not pending** — Bean ruled a background fills its CONTAINER and is never clipped to the inner
+> band, so the whole capability is deleted rather than made tier-capable. Seven properties remain.
+>
+> ⚠ **Landmine, guarded once, will recur:** a tier object reaching a LEGACY scalar read causes a
+> PHP "Array to string conversion" on every render. `gridAutoRows` is guarded; five siblings were
+> already safe via strict `in_array()` allowlists. **Check the legacy read before making any
+> further property tier-capable.**
+
+1. **Canonical** — **`ResponsiveControl`** (flat per-tier attrs) and **`ResponsiveOverride`**
+   (object-cascade rows). ⛔ These two are the **only** sanctioned primitives, and that is not this
+   document's opinion — **`lint-responsive-controls.py` is a WIRED prebuild gate naming exactly these
+   two** (council S6). Any reshape proposal that renames or removes either must change that gate in
+   the same commit or it will fail the build.
+2. **Required props** — a per-tier `value`/`onChange(tier, next)` pair; the wrapped control supplies
+   its own `units`. **Label association REQUIRED and missing on BOTH** — `ResponsiveControl:150-170`
+   and `ResponsiveOverride:78-83` render an unassociated label span. The fix is the same for each: a
+   `useInstanceId()` id on the span plus `role="group" aria-labelledby` around the render-prop output
+   — a GROUP association, because the child control is caller-supplied and cannot be trusted to label
+   itself. These two account for **30 of the 42** unnamed controls.
+3. **Banned lookalikes** — per-tier duplicate controls rendered side by side instead of one wrapped
+   control (`responsive-logo/edit.js:281-305` renders three always-visible logo slots); a bespoke
+   `DeviceTabs`; a third breakpoint of any value (**the 768/1024 lock — carried obligation 11**);
+   blending `ResponsiveControl` with `ResponsiveOverride` on one attr family.
+
+   ⛔ **THE PAIRING IS BINDING, AND IT BROKE LIVE ON 19 BLOCKS (D563, 2026-08-11).** The primitive
+   must match the STORAGE SHAPE of the family it writes, and the two are chosen together or not at
+   all:
+
+   | Storage in `block.json` | The only correct primitive |
+   |---|---|
+   | scalar base **with** `Tablet`/`Mobile` sibling attrs | `ResponsiveControl` |
+   | `"type": "object"` base, **no** siblings | `ResponsiveOverride` |
+
+   A mismatch is not a style question, it is **destructive and silent in both directions**. Measured:
+   after `gap` migrated to the object shape, `ContainerWrapperControls.js` — ONE shared file feeding
+   19 blocks — still wrote `gap`/`gapTablet`/`gapMobile` through `ResponsiveControl`. The two sibling
+   attrs no longer existed, so WordPress discarded them without error (D338); and the desktop branch
+   wrote a STRING into an object-typed attr, which coerces to the default and **destroys the whole
+   setting**. Nothing failed, nothing warned, and it shipped to the canary.
+
+   **Therefore, whenever a family's storage shape changes, every control writing it changes in the
+   SAME commit, and the result is proven in the LIVE EDITOR** — register, render, write, assert the
+   stored shape, assert no flat siblings, assert zero console errors. A frontend check cannot find
+   this, because a programmatically-set value is already the right shape and never exercises the
+   inspector. Search every writer across `edit.js`, `components/` and `extensions/` — a shared
+   component is the high-risk case precisely because one file serves many blocks.
+4. **Tab** — inherits the tab of whatever it wraps. The wrapper never changes placement.
+5. **Scope** — `block_attributes.is_responsive=1` → 45 blocks, **plus** any attr family declaring
+   `Tablet`/`Mobile` siblings that the column has not caught.
+   ⚠ **Two traps, both walked into during the audit:** literal-name matching MISSES `brand-strip`
+   (tier keys built dynamically in PHP at `helpers-typography.php:90,98`) and FALSE-POSITIVES on
+   `fontSizeTablet` (built by computed key in JS) — nearly 54 false findings between them.
+6. **Conformance** — the cascade resolver underneath is genuinely unified (`resolveTier()`, client +
+   PHP). **Do not "fix" that.** What is real: three incompatible STORAGE shapes (flat per-tier attrs,
+   dominant; one nested `{desktop,tablet,mobile}` object per FR-37-16, read by
+   `sgs_responsive_normalise_object()` which **has no concept of the `base` key** `ResponsiveBoxControl`
+   uses internally — no live call site crosses them, so the landmine is unarmed, not disarmed; and
+   flat boolean-or-null tiers).
+7. **Detection** — assert every attr family with `Tablet`/`Mobile` siblings mounts one of the two
+   canonical wrappers; assert no third breakpoint constant appears. ⚠ Must tolerate computed keys in
+   both directions — see the two traps in field 5.
+8. **Open (all Rule 7 design gates, none to be built from this document):**
+   - `ResponsiveControl` ships a complete `isInherited`/`resolvedValue`/`onReset` API with **zero
+     callers**, while `ResponsiveOverride` solves the same problem with 8. ⛔ **That API is a Spec 35
+     T1.2 deliverable, shipped intentionally — it is NOT dead code, and deleting it needs a gate.**
+   - `ResponsiveTriStateControl` vs `BooleanResponsiveControl` are **not** an accidental fork —
+     the latter's header states the shape incompatibility IS the reason both exist, and the promotion
+     check this document proposed "sharpening" was already performed and documented.
+   - `ResponsiveBoxControl` vs `ResponsiveBoxControls` — one letter apart, zero shared code.
+     ⛔ Renaming the plural severs `check-dead-controls`' prop-name bindings.
+
+### 13. CONTROLS WITH NO CONTRACT YET (council F — enumerated so none is "homeless")
+
+Every shape below is live and fits none of contracts 1–12. **A rule may not silently ignore these;
+each is either given a contract or recorded as deliberately uncontracted with a reason.** Listing
+them here is what stops the next enforcement pass repeating the 27's blind spot.
+
+| Shape | Live footprint | Nearest contract | Verdict |
+|---|---|---|---|
+| preset `SelectControl` on `minHeight` | 5 sites | LENGTH (§4) | **Needs a contract** — a length behind a preset picker breaks the token system |
+| raw `BoxControl` (not the Responsive wrapper) | 5 sites | 4-VALUE BOX (§5) | **Needs a contract** — bypasses the tier wrapper |
+| `BorderRadiusControl` (singular, non-responsive) | live | BORDER (§14) | **Absorbed by §14** |
+| `SpacingControl` | 9 sites | LENGTH (§4) | **Needs a contract** — is it a length, or its own token-scale type? |
+| `DeviceTabs` | ⚑ **DEAD — 0 callers** (Spec 35 Phase 1.2/1.3, 2026-08-10) | RESPONSIVE (§12) | **Banned lookalike — verdict still binds if reintroduced.** The component file still exists and is still exported from `components/index.js`, but every `<DeviceTabs>` render was deleted: the tier is now chosen once, in the global toggle (`src/blocks/extensions/responsive-device-toggle.js`). `inspector-scan` rule 25 flags any block that reintroduces one. This cell read `live` until the QC council caught it. |
+| `AnimationControl` | 1 site | — | **Needs a contract**, and it is where carried obligation 17 (reduced-motion) binds |
+| `ComboboxControl` | 2 sites | ENUM (§3) | Absorbed by §3 as a permitted large-option-set variant |
+| `FormTokenField` | live | ENUM (§3) | Multi-select enum — **needs an explicit clause in §3** |
+| `FocalPointPicker` | 7 sites (2026-08-11, D585 — was 1 when this row was written; `imageControls` census + fix shipped: before-after + 6 newly-converted blocks) | MEDIA (§7) | **Absorbed by §7** — and it is carried obligation 9's evidence |
+| repeater item editors | `plans`, `icons`, `tiles` | — | **Needs a contract.** ⚠ D523 proved a per-item control must never be recorded as the array's control. ⛔ **The D523 guard is FRAGILE — see below.** |
+
+⛔ **Known fragility in the D523 repeater guard (QC council, 2026-08-08).** `_repeater_item_spans()`
+matches `<attr>.map(` where the identifier resolves to the attribute being written. Three limits,
+all confirmed against live code:
+1. **`pricing-table::plans` fires by NAME COINCIDENCE, not by design.** `edit.js:97` destructures
+   `plans: plansRaw`, then `:116` creates a **shadowing local** `const plans = (plansRaw||[]).map(…)`.
+   The span matches only because that local happens to be spelled like the DB attr. **Rename it and
+   the guard silently stops firing**, reintroducing the exact bug it was built to fix.
+2. **`gallery::mediaItems` is preserved by upstream failure, not by the guard.** `edit.js:202` does
+   `const items = mediaItems || [];` — a plain assignment `_build_js_destructure_map` cannot see — so
+   candidate resolution yields nothing and the row is simply left alone. Harmless here, but it means
+   the guard's real coverage is narrower than "3 tags" implies.
+3. **Blind by construction to** `.forEach(` / `for…of` iteration, and to any repeater whose items are
+   rendered by a component in another file (the scan is single-file per block's `edit.js`).
+A rule scoped on `inspector_control_type` for an ARRAY attr must therefore carry its own AST
+cross-check — do not treat this guard as complete.
+
+### 14. BORDER (restores condition 7's dropped half)
+
+1. **Canonical** — `ResponsiveBorderRadiusControl` for the 4 corners, and for style + width +
+   colour a **composed builder** (width `UnitControl` with a real units array + style
+   `SelectControl` + token-aware colour picker). Radius is a **separate** control from width and
+   style — that separation is the condition, not an implementation detail.
+
+   ⭐ **AMENDED 2026-08-11 (D566). This field used to name core's `BorderBoxControl`, which has
+   never existed in this tree.** It was carried as permanent open debt for months. Resolved by
+   evidence rather than by building it:
+   - The only live demand was `gridItemBorder` (container / cta-section / hero / trust-bar, one
+     control in `ContainerWrapperControls.js` serving all four) — a raw `TextControl` taking a CSS
+     shorthand, i.e. §14.3's own banned lookalike. That is now the composed builder above.
+   - ⛔ **Core's `__experimentalBorderBoxControl` was deliberately NOT adopted.** It works in a
+     `{color, style, width}` OBJECT, while the attribute stores a CSS shorthand STRING. Adopting it
+     would force a stored-content migration on every live instance **for no user-visible gain** —
+     the operator gets the same three inputs either way. The composed builder writes the identical
+     string, so the change shipped with zero migration.
+   - Per-side border width has **no demand at all** (D560: 0 tier attrs, and no block asks for
+     per-side widths), so a per-side builder would be capability manufactured against zero evidence.
+     If a client ever asks, this field is the place to revisit — with that request as the evidence.
+2. **Required props** — per-side values, a real `units` array, alpha on the colour, and a `label`.
+3. **Banned lookalikes** — a None/Thin/Thick **preset `SelectControl`** standing in for a real
+   builder (the exact shape condition 7 banned for shadow, and it was dropped for border); per-side
+   scalar attrs instead of an object (**migration COMPLETE — 0 remaining**, keep the gate);
+   a `TextControl` taking a raw CSS `border` shorthand (**0 remaining as of 2026-08-11** — the last
+   one was `gridItemBorder`, see field 1); radius folded into the width control.
+4. **Tab** — `border`. Styles.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
+5. **Scope** — `box_family IN ('borderWidth', …)` ∪ `css_property LIKE 'border%'`. ⚠ `box_family` is
+   now trustworthy (D523) but still scopes only to 4-side/4-corner OBJECT attrs — a scalar radius
+   (`card-grid.cardRadius`, `nav-menu.itemRadius`, `mega-aside.asideRadius`) is correctly NULL there
+   and must be picked up by the `css_property` leg, or the rule will miss every one of them.
+6. **Conformance** — ✅ **MEASURED 2026-08-11 (Phase 0 item 0a, D561).** Source:
+   `npm run survey:box`, re-run after the three fixes below. Cite these, not the pre-fix figures.
+
+   | Leg | In scope | Canonical | Non-canonical |
+   |---|---|---|---|
+   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **30 — 100%** | **0** wrong-shape · **0** preset-select · **0** with no control |
+   | **Scalar radius** | 13 | `UnitControl` **11** *(was 8; +3 this session)* | `RangeControl` 2 |
+   | **Scalar border-width** | 7 | `UnitControl` **3** (the new grid-item builder) | `RangeControl` 1, remainder resolved to panel wrappers. **0 raw-CSS `TextControl`** |
+
+   ⭐ **RE-MEASURED 2026-08-11 with a FIXED instrument (D566).** The figures above are the
+   post-fix run, not the original. `survey-box-controls.py` had two compounding defects, both now
+   fixed with regression guards (self-test 5 → 7 cases, and `--self-test-demonstrate-failure` still
+   proves the harness is not hard-wired green):
+   - **It counted matches inside COMMENTS.** `sgs/counter/edit.js:216` is the JSX comment
+     `{/* … the borderRadiusTablet/borderRadiusMobile object attrs. */}`.
+   - **It had no ELEMENT BOUNDARY.** `_nearest_preceding_jsx_tag` walked back 60 lines for any
+     capitalised tag, so an occurrence *after* an element closed was still blamed on it — the
+     Margin `<ResponsiveBoxControl>` opened at `:196` and closed `/>` at `:210`.
+
+   Together those manufactured **every** non-canonical hit in the 4-CORNER leg. Post-fix the leg is
+   clean and — the check that matters — **the 24 real canonical mounts are unchanged**, so the
+   false positives were cleared without going blind. A third leg defect is also fixed: the scalar
+   legs passed an EMPTY canonical set, so 11 correct `UnitControl` mounts printed
+   `[non-canonical/raw]`; a leg that can only ever report non-conformance is not a measurement.
+   `UnitControl`/`ResponsiveControl` are canonical there per §4.1 + §14.5.
+
+   ⚠ One residual row, correctly reported and NOT a defect: `product-card.ctaBorderRadius` also
+   appears at `edit.js:1421` inside the style-preset `SelectControl`'s `onChange`, which *reseeds*
+   it from `BUTTON_PRESETS`. That is a side-effect write, not a control mount — its real canonical
+   mount is detected at `:1664`. Attributing a side-effect write to the writing control is a known
+   remaining limitation of static attribution, disclosed rather than silently counted.
+   | **Per-side scalars** (§14.3 migration) | — | — | **0 — §14.3's "migration COMPLETE" claim reproduces independently** |
+
+   **Fixed this session (raw `TextControl` taking free CSS → `UnitControl`, §14.3 → §14.1/§14.2):**
+   `sgs/card-grid.cardRadius`, `sgs/trust-bar.iconCircleBorderRadius`,
+   `sgs/trust-bar.badgeImageBorderRadius`. All three are `type: string` and their `render.php` reads
+   a plain string, so the value domain is unchanged; the canary carried **0** stored instances
+   (positive controls: 295 posts with `wp:sgs/` blocks, 33 with some radius). Each got an explicit
+   `units` array **including `%`** per field 2 — load-bearing, since `iconCircleBorderRadius`
+   *defaults* to `'50%'` and a px-only array would have silently removed the block's own circle.
+
+   ⛔ **THE SURVEY'S FALSE-POSITIVE RATE IN THIS LEG IS 7 OF 7 — every non-canonical hit it named
+   was wrong. Do not dispatch a codemod at its raw output.**
+
+   ⚠ **CORRECTED 2026-08-11 by a QC council (D566), and the way it was wrong is the lesson.** This
+   entry first recorded only the 2 `SelectControl` hits as false positives and passed the 5
+   `ResponsiveBoxControl` hits through as real, under "Recorded, NOT fixed — Phase 3". A rater read
+   the code; **all 5 are the same defect class as the 2 already caught.** `sgs/counter:196`,
+   `sgs/timeline:390` and `sgs/whatsapp-cta:204` are each the **Margin** `ResponsiveBoxControl`
+   (`values={{ base: style?.spacing?.margin … }}`) — the scanner attributed a nearby `borderRadius*`
+   attribute NAME to the closest `ResponsiveBoxControl`, which controls margin. **Real count: 0.**
+
+   The failure was not the scanner — it was applying the read-the-code check to one bucket of a
+   table and not the bucket beside it. **When a survey leg is shown to mis-attribute, re-check EVERY
+   bucket in that leg, not just the one that prompted the suspicion.**
+
+   The 2 `SelectControl` hits, for the record:
+   - `sgs/button` — the flagged `SelectControl` is `textDecorationHover`; `borderRadiusTablet/Mobile`
+     actually feed `ResponsiveBorderRadiusControl` (`edit.js:772-773`). **Canonical.**
+   - `sgs/product-card` — the flagged `SelectControl` is `ctaStyle`; `ctaBorderRadius` feeds
+     `ResponsiveBorderRadiusControl` (`edit.js:1670`). **Canonical.**
+
+   So the *real* §14.3 banned-lookalike population was **3, not 5**, and all 3 are now fixed. This is
+   the same defect class already recorded against the LENGTH survey — the scanner attributes an
+   attribute name found in a nearby **comment** to the next control it sees. Treat every survey leg
+   as a candidate list requiring a read, never a defect list.
+
+   ✅ **ALL §14 RESIDUALS DISCHARGED 2026-08-11 (D566).** There is no remaining border backlog and
+   no parking entry — `P-SPEC35-BORDER-RESIDUALS` was opened to un-orphan these and closed the same
+   day once each was actually resolved:
+   - the 6 "no control" radius attrs → **0**. Four (`gridItemBorderRadius`) always had a control in
+     a shared panel the survey could not see; the two real ones (`option-picker.borderRadiusTablet`
+     /`Mobile`, declared AND rendered at `render.php:250-251`) now have one.
+   - the "5 corner attrs fed to a 4-SIDE control" → **withdrawn, false positives**.
+   - the raw-CSS `TextControl` border → **replaced** (field 1).
+   - the missing `units` arrays → **fixed**; the real gap was **2**, not the 8 recorded.
+
+   ✅ **Instrument defects — FIXED 2026-08-11 (D566), not merely recorded.** (a) the scalar legs now
+   declare `UnitControl`/`ResponsiveControl` canonical; (b) comment matches and out-of-element
+   attributions are both eliminated, with regression guards. Remaining owed work is in
+   `P-SPEC35-BORDER-RESIDUALS`: the 8 scalar mounts still passing **no `units` array** (field 2).
+7. **Detection** — as §11 SHADOW: classify each border attr's control into compliant / preset-select
+   / raw-text / no-control. ~~`sgs/card-grid.cardRadius` is a known raw-text violation (help text
+   *"e.g. 8px"*, accepts invalid CSS)~~ — ✅ **FIXED 2026-08-11 (D561), along with two this field
+   never named: `sgs/trust-bar.iconCircleBorderRadius` and `.badgeImageBorderRadius`.** The
+   raw-text population was **3**, and it is now **0**. ⚠ `cardRadius` is also listed under LENGTH §4
+   — it is discharged there too, so Phase 3.2a must not re-list it.
+8. ~~**Open**~~ — ✅ **ANSWERED 2026-08-11 (D560). Border splits in two, and the measurement is
+   unambiguous.**
+   - **RADIUS is already responsive, and already built.** **12** blocks declare
+     `…borderRadius{Tablet,Mobile}` — before-after, brand-strip, button, countdown-timer, counter,
+     hero, icon-list, media, option-picker, table-of-contents, timeline, whatsapp-cta. The wrapper
+     is `ResponsiveBorderRadiusControl` (`src/components/ResponsiveBoxControl.js:162-196`), in
+     production at 17 mounts. **No build owed** — the responsive wrapper question was answered by
+     someone shipping one.
+   - **WIDTH / STYLE / COLOUR are desktop-only in practice.** `borderWidth{Tablet,Mobile}` matches
+     **0 of 83** `block.json` files; `border{Style,Colour,Color}{Tablet,Mobile}` likewise **0**. The
+     11 `borderWidth` object attrs and 31 `border-color` attrs carry no tier sibling anywhere. The
+     one apparent counter-example, `sgs/separator.thickness`, is a **scalar** `border-width` whose
+     3 tiers are a flat→object migration candidate (Phase 1.6), not a per-side border builder.
+   - **Ruling: leave width/style/colour desktop-only.** ⚠ This is a **demand** ruling, not a
+     capability ruling. D549's generic principle (any property may take the TIER axis) still stands,
+     and `SGS_Container_Wrapper` is *already* tier-plumbed for border since D549 Stage 2
+     (`class-sgs-container-wrapper.php:2125-2172`) — so reversing this costs block-side attributes
+     and control mounts only, never wrapper work. That is what makes it cheap to reverse, and why
+     building on principle ahead of demand was rejected.
+   - **Promotion trigger, if wanted later:** the first block, stored instance, or draft clone that
+     actually carries a per-device border width. Until one exists there is nothing to verify a
+     build against.
+   - ~~⛔ **Separately, and NOT resolved by this:** `BorderBoxControl` — §14.1's canonical component
+     for width + style + colour — has zero source files tree-wide… That is a Phase 3 build.~~
+     ⛔ **STRUCK 2026-08-13. This bullet was already false when written** — D566 amended field 1 the
+     SAME DAY to remove `BorderBoxControl` as canonical and resolve the debt **by evidence rather
+     than by building it**. Its "zero source files" observation is correct and no longer a defect:
+     nothing is owed, there is no Phase 3 border build. Read field 1, not this bullet. *(Found while
+     clearing the three parallel stale citations in Spec 35 — this was the fourth, and the most
+     dangerous, because it framed a closed decision as outstanding work.)*
+
+---
+
+---
+
+### CARRIED OBLIGATIONS — the conditions no single control type owns
+
+**These are RESTORED verbatim in force from the 27-condition checklist (council finding A).** A
+control-type contract answers *"which component, which props, which tab"*. It cannot answer *"is
+this panel grouped by block part"* or *"is this animation reduced-motion gated"* — those bind across
+every type or across none. **Dropping them was the draft's most serious failure**, because two are
+accessibility requirements and one was the only written record of a locked standard.
+
+Each carries the same eight-field discipline where it can, and states its enforcement honestly.
+
+#### CO-17. Reduced-motion gate on all animation *(was condition 17 — WCAG 2.3.3 AA)*
+Every animation and transition is `prefers-reduced-motion`-gated, from day one, never bolted on.
+**Enforced by** `inspector-scan/rules/17-reduced-motion-gate.js` — **GATE mode, one of only four**.
+⚠ **This is a WCAG conformance requirement, not a preference.** It binds on §13's `AnimationControl`,
+on `extensions/animation.js` (84 blocks), and on `fx.js`. Losing it would have silently dropped an
+accessibility gate that is currently live and passing.
+
+#### CO-11. The 768/1024 device-tier lock *(was condition 11)*
+Responsive props expose the locked 768/1024 tiers via `ResponsiveControl`; **no bespoke third
+breakpoint.** ⚠ **Measured: these values exist ONLY as per-file constants in 3 `view.js` files** —
+there is no shared constant, no schema, no gate. **The written rule was the sole thing holding the
+standard**, so deleting it would have left 768/1024 enforced by nothing at all. Binds with §12 field 3
+and with the device-tier-vs-visual-breakpoint distinction (a design-driven `min-width:600px` is
+legitimate and must NOT be swept). **Enforced by** UNENFORCED — and now visibly so.
+
+#### CO-2. Element-first panels *(was condition 2 — REWRITTEN 2026-08-08 to the derived model)*
+
+Composite blocks group inspector panels by block PART, not by property type — **derived from
+`supports.sgs.elements`, never hand-sorted.** This is THE PLACEMENT RULE above; CO-2 adds only the
+two clauses that rule leaves implicit:
+
+1. **A panel holds its element's WHOLE surface** — content (`contentAttrs`), then style clusters in
+   declared `clusters` order, then its states inline beside the values they modify.
+2. **A "Hover" panel is a banned lookalike** (§6 field 3), not a placement choice. So is splitting one
+   element's controls across two panels.
+
+CO-2 binds *what goes together*; **CO-28** binds *sequence*. Separate obligations; neither implies
+the other.
+
+**Enforced by** UNENFORCED — the `consistency-scanner` this was once attributed to does not exist
+anywhere in the codebase. `element-panel-conformance` (design §6) will enforce it, advisory-first with
+a must-flag / must-not-flag fixture pair. **Not built yet — do not cite CO-2 as gated.**
+
+#### CO-28. Consistent ORDER of panels, clusters and controls *(NEW — Bean-raised 2026-08-08, not a carried item)*
+*(Numbered 28, above the 27-condition space, precisely BECAUSE CO-numbers mirror old condition
+numbers. It was first drafted as "CO-22" — which would have collided with condition 22, "silence is
+not rejection", a live map row still awaiting a proper destination. A new obligation must never
+squat on a carried item's number.)*
+The same thing sits in the same place in every block. Three levels, all binding:
+1. **Panel / tab order** — the sequence of inspector panels follows one canonical order across every
+   block that has those panels. A client who learns one block has learned the shelf layout of all of
+   them.
+2. **Cluster order within a panel** — related controls form the same cluster in the same position
+   (e.g. colour before spacing before border, base value immediately before its state value per
+   CO-2's sibling rule in §6 field 4).
+3. **Control order within a cluster** — a fixed sequence per control TYPE, not per author.
+
+**Enforced by** UNENFORCED — no rule, gate or linter in the tree checks order at any of the three
+levels (verified 2026-08-08 by grepping every `.js`/`.py` under `plugins/sgs-blocks/scripts/` for
+`panel.?order` / `control.?order` / `canonical.?order` / `expectedOrder`: **zero hits** — every
+"ordering" match in the codebase is converter *execution* order, not inspector layout).
+
+⚠ **CORRECTION — this entry is a PROMOTION, not a discovery.** It was first written here claiming
+panel order "existed nowhere in the contract". That was **wrong**, and wrong by the classic
+truncated-grep failure: the search that produced the claim was capped at its first 20 hits and the
+relevant line sits at ~980. **Cross-cutting A already carried it**: *"Panel order — three competitors
+converged on ordering being deliberate. Stackable achieves it by convention repeated per block, not a
+shared assembler; GenerateBlocks centralises the Styles tab only — Advanced stays per-block even
+there."* What was genuinely missing is that this sat as a **competitor-research note with no
+obligation, no canonical order and no enforcement**. CO-28 promotes it to a binding obligation and
+inherits that research as its starting evidence — it does not replace or re-derive it.
+
+**Distinct from CO-2, which it sits next to.** CO-2 binds *grouping* — "panels grouped by block PART,
+not by property type". It is silent on sequence: a block can satisfy CO-2 completely and still present
+its parts in a different order from every other block. Grouping says what goes together; this says
+where it goes.
+
+**Why it belongs to the client, not to tidiness.** Spec 35 exists because Bean's clients are
+tech-illiterate and live in the block editor. Inconsistent order costs them the one thing that makes
+an unfamiliar block usable — transfer of learning from the block they already know. It is the same
+class of harm as a missing control (the setting is reachable, but not *findable*), which is why it is
+an obligation and not a style note.
+
+⛔ **Do NOT build a rule from this entry yet.** No canonical order has been *decided*, and
+`rules.json._meta.zeroIsAClaim` forbids trusting a live run before an independently-derived expected
+population exists. Two prerequisites, in order: (a) Bean picks the canonical panel order — a **Rule 7
+design gate**, since it binds every block; (b) the current per-block order is censused so the backlog
+is known before anything is scoped against it. A rule written before (a) would be enforcing an order
+nobody chose.
+
+##### ⛔ HARD DEPENDENCY — PLACEMENT before ORDER *(Bean-approved sequencing, 2026-08-08)*
+
+**CO-28 does not start until Cross-cutting A's placement backlog is worked.** This is a dependency,
+not a preference, and the measurement is what makes it one: **65 of 83 blocks have 2+ inspector
+panels and no `group` prop at all** (`inspector-scan` rule `01-tab-group`, the single largest backlog
+in the scanner). No group prop means every panel lands in Settings. **You cannot standardise the
+order of panels across Settings and Styles while most blocks never split into two tabs.** Ordering an
+unsorted pile is not a smaller version of this job — it is a different job that cannot begin yet.
+
+Placement, unlike order, needs **no design gate**: it is decided — but ⚠ **not by what this paragraph
+originally said.** It first read: *"12 of the 14 control contracts carry an explicit `Tab` field, §6
+field 4 supplies the discriminator — 'behaviour → Settings; appearance → Styles. This discriminator
+is the contract.' — and Cross-cutting A states 'the definitive tab assignment is the `Tab` field of
+each contract above'."* Two defects in that sentence, both corrected 2026-08-08:
+
+- **The citation was wrong.** That sentence lives in **§8 BOOLEAN field 4**, not §6 (STATE / HOVER).
+- **The rule was wrong**, and it is the rule that produced the rejected 8-block sort. Placement is now
+  governed by **THE PLACEMENT RULE** (top of this document, TWO-TIER since D537 2026-08-09): TIER 1
+  element scope decides the panel first; TIER 2 property-family (`cluster-member-sets.json`) decides
+  placement for everything scoped to no element; a contract's `Tab` field is authoritative only for a
+  control that styles nothing, and there only picks the WordPress *group* inside the pinned
+  `Settings` panel.
+
+Still nothing to choose, only to apply — but apply the amended rule, and derive it from
+`supports.sgs.elements` rather than sorting by hand.
+
+**The agreed sequence (Cross-cutting A's own recommendation, endorsed unchanged):**
+1. **Fix the 6 extension files.** They inject panels into **all 84 blocks**, mostly via a bare
+   `<InspectorControls>` — `animation.js:138` (motion is Styles), `hover-effects.js:279`,
+   `image-controls.js:157` (sizing/position is Styles) are WRONG; `fx.js`, `custom-css.js`,
+   `block-defaults.js` are already correct. Three files correct placement on every block at once.
+   Also `parallax.js` splits ONE feature across two tabs **by accident** (background → `group="color"`
+   at :144, element → bare at :182).
+2. **Work the 65 down** by hand.
+3. **Promote `01-tab-group` to gate** once that backlog is zero — never before (advisory-first rule).
+4. **THEN CO-28**, whose own two prerequisites above still apply on top.
+
+⚠ **The step-1 fix is currently UNGUARDED.** No rule scans `src/blocks/extensions/` — rule 01 only
+ever reads per-block `edit.js`, and `inspector-scan` has no `extensionsDir` at all (the documented
+BLOCKED extension surface). The 6 files can be fixed and then silently regress. Wiring that
+visibility belongs with step 1, not after it.
+
+**Fold in with step 2 — default-open discipline.** Only the first panel per tab defaults open;
+**23 blocks violate** (`decorative-image` opens 5 of 7). Same findability harm as order, same files,
+same pass — doing it separately means touching all of them twice.
+
+#### CO-3. ToolsPanel on dense panels *(was condition 3 — downgraded to a bare remediation count)*
+Any panel with ~6+ controls uses `ToolsPanel`/`ToolsPanelItem` progressive disclosure (1–3
+`isShownByDefault`, `resetAll`). **Enforced by** `inspector-scan/rules/03-dense-panel-candidate.js`,
+ADVISORY. ⚠ A remediation count ("15 dense panels") is a backlog, not a rule — the obligation is
+restored here so the backlog has something to be a backlog *of*.
+
+#### CO-9. Full image controls *(was condition 9)*
+Image-rendering blocks expose size dropdown (attachment `sizes`) + aspect-ratio + object-fit +
+`FocalPointPicker` where relevant. **Enforced by** `audit-feature-parity.py` (vs `core/image`).
+Binds with §7 MEDIA and gives §13's lone `FocalPointPicker` its home.
+
+#### CO-10. Multi-item data is array-shaped *(was condition 10)*
+Any repeated/multi-item media or content uses an array attr with `gallery`/`multiple="add"`
+(`MediaGalleryPicker`) or a repeater — never a scalar attr added one at a time. **Scope: 25 blocks
+declare 34 array attrs.** **Enforced by** `audit-feature-parity.py`. ⚠ **D523 clarifies the control
+question this raises:** the control for an array attr is the REPEATER UI, never the per-item control
+inside it — a rule reading `inspector_control_type` for an array attr is asking the wrong question.
+
+#### CO-13. hideExtensions is a per-BLOCK obligation *(was condition 13)*
+Irrelevant universal-extension panels are hidden per block via `supports.sgs.hideExtensions`
+(declarative). ⚠ The draft kept the mechanism and dropped the **per-block obligation** — which is
+the part that makes it anyone's job. **Enforced by** UNENFORCED. (Corrected 2026-08-06: the retired
+`audit-inspector-conformance.js` never carried a hideExtensions rule — a phantom-tool claim.)
+
+#### CO-15. No duplicated native-supports panel *(was condition 15 — RESTORED 2026-08-08)*
+No bespoke panel re-implements a control a native `supports` panel already provides. This is the
+inspector-UX form of **R-31-9**. **Enforced by** UNENFORCED — `check-duplicate-controls.js` exists
+and is **wired to nothing** (0 refs in `package.json`).
+⛔ **Restored after a QC-council audit, 2026-08-08.** This document's own ABSORPTION MAP claimed it
+was absorbed into Cross-cutting B. It was not: Cross-cutting B is about universal-EXTENSION opt-out
+fit, a different question, and the requirement appeared nowhere in this file. The map cited a target
+that did not contain the rule — the exact failure mode this contract exists to end, committed by the
+contract about itself. (Corrected 2026-08-06: the retired `audit-inspector-conformance.js` never
+carried a duplicate-native-panel rule either — that was a phantom-tool claim.)
+
+#### CO-18. Decorative-image toggle + ARIA-label *(was condition 18 — RESTORED 2026-08-08)*
+A decorative-image toggle (**empty alt + `aria-hidden`**) and a general **ARIA-label** control are
+present wherever the block's rendered markup needs them. *(Spec 35 C, E6.)* **Enforced by**
+UNENFORCED — no automated gate exists.
+⛔ **Restored after the same audit.** The map claimed §7 MEDIA field 2 + CO-19. Neither holds: §7
+field 2 says only "alt text", and CO-19 governs the accessibility of the **editor control UI itself**
+(keyboard, contrast, `aria-describedby`) — a different target from the **rendered output's**
+accessibility, which is what this condition is about. ⚠ Do not re-merge these two: an accessible
+control that writes an inaccessible output satisfies CO-19 and fails CO-18.
+
+#### CO-16. Native over hand-rolled *(was condition 16)*
+Native `supports` are used over hand-rolled equivalents for aspect-ratio / duotone / sticky /
+lightbox — **check native BEFORE building any of these.** Points at a Bean-approved D402 verdict
+table. **Enforced by** feature-parity + Wave-3 native-migration audit. ⚠ This is the condition that
+**prompts §G's open question** (retire `sgsCustomCss` for WP 7.0 native per-block CSS) — dropping it
+would have removed the standing instruction that raises that question at all.
+
+#### CO-19. Accessibility pass, E1–E4 *(was condition 19)*
+Keyboard-operable · 4.5:1 contrast on the block's own control UI · `help` linked via
+`aria-describedby` · every control has an accessible name. **Enforced by** manual pass —
+**informational, never a gate** (`a11y-validation-feedback-informational-not-gate`). ⚠ The missing
+`id` on `DesignTokenPicker`, `SgsLinkControl`, `IconPicker`, `ShadowControl`, `ResponsiveControl` and
+`ResponsiveOverride` is an E1–E4 failure, which is why those clauses appear in six contracts above.
+
+#### CO-20. Client patterns use templateLock *(was condition 20 — carried in a form the spec FORBIDS)*
+⛔ **`templateLock:"contentOnly"` is per-client opt-in — "never framework patterns" (D402,
+Bean-approved).** The draft's Tier 4 "23 pattern templateLock" reinstated a framework-wide backlog
+D402 had closed; that entry is REMOVED. The obligation as it correctly stands: a **client-facing**
+pattern using a block sets `templateLock:"contentOnly"`. **Enforced by** pattern audit; `rules.json`
+correctly keeps rule 20 ADVISORY.
+
+#### CO-21. No Part-F anti-patterns *(was condition 21)*
+None of the Spec 35 Part F fail-list is present: essential control sidebar-only · incomplete option
+sets · no reset · colour-only focus · bespoke Custom-CSS field · raw-px spacing. **Enforced by** the
+contracts above, collectively.
+
+#### T1 / T2 / T3 — the Bean-locked threaded standards *(dropped entirely)*
+⚠ **`audit-feature-parity.py` is a LIVE WIRED GATE. Dropping these left a running gate with no
+governing document** — the precise inversion of the failure this contract exists to end.
+- **T1. Feature-parity** — the block exposes AT LEAST the full capability of the core block(s) it
+  replaces (`block-replacements.json`), unless a named exception in `feature-parity-exceptions.json`
+  mapped to a Wave. *(memory `sgs-block-feature-parity-with-replaced-core`.)*
+- **T2. Shrink-to-fit** — intrinsically responsive: root/section min-content ≤ resolved container
+  width at every tier, 0 forced horizontal overflow, **measured with the UNIT-C `min-width:0`
+  backstop DISABLED** (proves intrinsic, not backstop-rescued). *(memory
+  `blocks-must-shrink-to-fit-container`.)*
+- **T3. Media-controls** — for media blocks, the control SET was decided against a competitor
+  comparison (Kadence / Spectra / GenerateBlocks + core) and every candidate is built or Wave-mapped.
+
+#### Rule-authoring discipline 22 / 24 / 25 / 26 *(dropped; these govern how every rule above is WRITTEN)*
+- **22. Silence is not rejection — and never resolve a conflict by POSITION.** A detector's absence
+  from a supporting list and its presence-with-a-negative-verdict are different facts. Generalised
+  after three independent recurrences: whenever a script merges evidence from more than one source,
+  **the tie-break must be STATED in the script's own logic or comments** — never left to whatever the
+  data structure's default ordering produces. Correctness by accident of iteration order breaks the
+  moment input order changes.
+- **24. A report's named artefact must exist on disk** — mechanically checkable, not asserted. (Two
+  claimed "durable regression fixtures" were transient and gone.)
+- **25. Name the CONSUMER before measuring a value, then prove it by reading that consumer.**
+  `derived_selector` was measured against what a block RENDERS and 593 of 889 reported as phantom —
+  it is a DRAFT-side matcher. Reading the prior decision did not prevent the repeat; only reading the
+  consuming code would have.
+- **26. A zero from a search you wrote requires a positive control.** Find something you KNOW is
+  present first. Three zero results in one session were broken searches, not empty worlds.
+- *(23 and 27 are absorbed, not carried — see the absorption map.)*
+
+---
+
+
+### Cross-cutting A — PLACEMENT
+
+WordPress has **16 real group keys** (verified against Gutenberg source, not docs — this mapping is
+not on developer.wordpress.org). `settings` is a hard alias of `default`. `advanced` renders as a
+panel *inside* Settings, not its own tab. `content` and `list` map to their own tabs.
+
+⚠ **AMENDED 2026-08-08 — this line used to read "The definitive tab assignment is the 'Tab' field of
+each contract above." It is no longer true and must not be quoted.** The definitive tab assignment is
+**THE PLACEMENT RULE** at the top of this document: TIER 1 element scope decides the panel first.
+
+⚠ **FURTHER AMENDED 2026-08-09, D537 — controls scoping to no element are NOT all "Tab field"
+territory.** TIER 2 property-family (`cluster-member-sets.json`) is authoritative for any such
+control that styles something. A contract's `Tab` field is authoritative only for a control that
+styles **nothing** — no CSS property behind it — and there only for choosing *which group inside
+the pinned-first `Settings` panel* it lands in.
+
+**The highest-leverage placement fix is NOT the 66-block backlog — it is 6 files.** The universal
+extensions inject panels into all 84 blocks and mostly use a bare `<InspectorControls>`:
+
+| File | Group | Verdict |
+|---|---|---|
+| `animation.js:138` | bare | wrong — motion is Styles |
+| `hover-effects.js:279` | bare | Hover + Click Effects wrong; Block Link defensible |
+| `image-controls.js:157` | bare | wrong — sizing/position is Styles |
+| `conditional-visibility.js:302` | bare | defensible (utility) |
+| `fx.js:1230` | `styles` | correct |
+| `custom-css.js:66` / `block-defaults.js:88` | `InspectorAdvancedControls` | correct |
+
+Fixing the group prop on those files corrects placement on every block at once. **No rule scans
+`extensions/` — rule 01 only ever reads per-block `edit.js`.**
+
+Also: `parallax.js` splits ONE feature across two tabs — background parallax uses `group="color"`
+(line 144), element parallax is bare (line 182). Same feature, two tabs, by accident.
+
+**Default-open discipline** — only the first panel per tab defaults open. **23 blocks violate**;
+`decorative-image` opens 5 of 7.
+
+**Panel order** — three competitors converged on ordering being deliberate. Corrections to the
+earlier claim: Stackable achieves it by **convention repeated per block, not a shared assembler**;
+GenerateBlocks centralises the **Styles tab only** — Advanced stays per-block even there.
+
+**On `<SgsInspectorControls>`** — proposal only, Rule 7 design gate required. Honest assessment: it
+would dissolve the 66-block backlog by construction, but it **does not reach the extension files**,
+which are HOCs, not components a block author calls — and that is the bigger leverage point.
+Recommended sequence instead: fix the 6 extension files (cheap, universal), work the 66 down by
+hand, promote `01-tab-group` to gate, and revisit the assembler only if it drifts again.
+
+### Cross-cutting B — UNIVERSAL EXTENSION FIT
+
+**Correction to an earlier claim in this investigation:** `noOptOutExtensions` is `[]` today.
+Animation's opt-out landed 2026-07-19. The three remaining without one are self-classified
+utilities. The script's own file header still describes the old state and is stale.
+
+⛔ **BOTH OPT-OUT RECOMMENDATIONS WITHDRAWN BY THE COUNCIL (2026-08-07).**
+- **`customCss`** — `sgsCustomCss` is load-bearing for clone fidelity (Spec 31 FR-31-5.2
+  residual-band passthrough), carries a deliberate framework-wide exemption in Spec 35 Part F, and
+  its own file header says "never remove it". The contract's argument that "the utility defence
+  protects the attribute, not the sidebar space" **misread the source** —
+  `check-universal-fit.js:38-49` argues explicitly about the PANEL ("an unused panel is inert").
+  Second-order harm the contract missed: hiding the control makes a converter-written `ResidualBand`
+  invisible and uneditable to the client. **See §G for the genuine alternative** — adopt WP 7.0's
+  native per-block CSS and delete the extension, rather than hiding ours.
+- **`responsiveVisibility`** — it owns **no panel at all**; its toggles render from
+  `conditional-visibility.js:343`. An opt-out would remove zero sidebar rows, so the stated
+  rationale does not apply. D400 additionally ruled its three independent per-device toggles are
+  KEPT, no reshape.
+- **`conditionalVisibility`** keeps none — CONFIRMED by D401 ("kept deliberately").
+
+**Why `sgs/gallery` is never flagged** — `isInappropriateFitKind()` is exactly:
+```js
+return block.category === 'sgs-forms' && block.surfaces.styling === false;
+```
+Gallery is `sgs-content` with `styling: true`. It fails both, always.
+
+**Root cause: the heuristic asks a product-taxonomy question when the real one is architectural.**
+Wrapping a gallery in one link is broken because HTML forbids nesting interactive elements — the
+gallery's own images are interactive. Nothing to do with styling or category.
+
+⛔ **SUPERSEDED 2026-08-08 (D525).** The rule first proposed here —
+`capability IN ('array-content-lift','carousel','grid-layout','logo-strip') OR attr_type='array' AND
+role='content'` — **cannot be built as written.** Three of those four capabilities are FOSSILS with
+no writer and no reader (see §Tier 0). And the array-attr fallback leg was measured: it selects 10
+blocks and **misses `sgs/gallery`**, the very block this section is about, because `mediaItems`
+carries no role.
+
+**The shipped rule is a DECLARATION:**
+```
+isCollectionKind(block) = block_capabilities row (slug, 'collection')
+                          ← supports.sgs.collection in the block's own block.json
+```
+15 blocks declare it. Fire it for **Block Link** specifically. No prerequisite remains — the data
+exists, has a live writer, and a block states the fact about itself.
+
+⛔ **CORRECTED:** the hardcoded 14-slug denylist is **not** in `animation.js` — it is at
+**`scripts/check-universal-fit.js:146`**, i.e. inside the AUDIT GATE, not the extension.
+`animation.js:44` holds only `CORE_ANIMATION_BLOCKS`, a 4-entry ALLOW-list, and its docblock records
+that the per-block denylist was **removed 2026-07-19** in favour of declarative `hideExtensions`.
+The contract inherited the gate's own stale comment (line 143) about where the list lives. The count
+14 is right; the file, the severity and the remediation target were all wrong. The R-31-1 concern
+still stands — but against the gate, and alongside the 4-slug allow-list nobody has looked at.
+
+---
+
 
 ## Sources
 

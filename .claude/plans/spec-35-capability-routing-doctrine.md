@@ -458,7 +458,7 @@ re-derives them.
 | new | No rule for when auto-injection is legitimate; `hideExtensions` is opt-**out** only. Add Part 1's decision procedure + Part 2's tests |
 | `:266-267`, `:487-489` | **VALIDATED** — D402's skip-serialisation + scoped-emission rule is exactly core's intent. Cite Part 3, and record the Selectors API explicitly as the obvious-looking wrong answer (the doc never mentions it — verified by grep — so nobody has erred yet) |
 
-**`.claude/plans/spec-35-control-type-contract.md`**
+**`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` PART O**
 
 | Line | Correction |
 |---|---|

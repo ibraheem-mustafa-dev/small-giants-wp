@@ -1,7 +1,7 @@
 ---
 doc_type: strategic-plan
 title: "The block-level panel — tier 1 element, tier 2 property-family"
-spec_ref: .claude/plans/spec-35-control-type-contract.md §THE PLACEMENT RULE · §CO-28
+spec_ref: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §THE PLACEMENT RULE · §CO-28
 date: 2026-08-08
 status: "MODEL APPROVED (D537, Bean, 2026-08-09) — tier 1 element / tier 2 property-family is
         locked and propagated (f5a31435, d4d6d687). §4 VOCABULARY GATE BUILT (055a24ce,
