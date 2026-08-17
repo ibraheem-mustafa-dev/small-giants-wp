@@ -1,5 +1,86 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D646 — Border-colour gradient framework sweep complete: 19 blocks, all colour work closed [ROUTINE]
+
+**2026-08-17.** Closes the residual scope D645 left open — the border-colour gradient sweep across
+the rest of the framework. With this, the entire D636 gradient rollout (background/text/border/
+shape-divider/icon) is finished for every block that legitimately uses it, not just the 4 done
+same-session as D645.
+
+**Scope, re-derived from the DB, not the carried-forward candidate list.** The prior session's
+candidate list (compiled under time pressure) was a rough guess; this session queried
+`block_attributes` for every `css_property` containing `border-color` and got a materially larger,
+more accurate list — 35 attributes across 21 blocks, not ~28 across 20. Three scope calls made with
+Bean before dispatch (negotiated, not assumed): (1) hover-state border colours ARE in scope, not just
+resting-state — doubles the attribute count but matches what a real editor control should offer; (2)
+`sgs/post-grid` (combined `border-color,border-top-color,color` — a different technique), `sgs/form`
+(a focus ring, not decorative colour), and `sgs/separator` (D643's locked border-image exception) are
+OUT of scope — each is a different mechanism, not a same-shape omission; (3) `sgs/container`/
+`sgs/cta-section`/`sgs/hero`'s `gridItemBorder` was provisionally called "in scope" before its actual
+attribute shape was checked — it turned out to be a raw CSS shorthand string (`"1px solid #fff"`),
+not a plain colour value, which the sibling-attribute gradient mechanism was never built for. PARKED
+rather than forced in; needs its own short design call on how a gradient attaches to a shorthand
+string, not a batch-dispatch item. Final live scope: **19 blocks, ~28 attributes**
+(`social-icons` and `mega-panel.borderColour` were already done at D645 and excluded).
+
+**Orchestration: 4 parallel batches of ~5 blocks each, isolated worktrees, Sonnet.** Each batch
+reused the existing `sgs_border_gradient_css()` (`helpers-tokens.php`) + `gradientValue`/
+`onGradientChange` (`DesignTokenPicker.js`) mechanism without modification — zero shared-file
+collisions this time, unlike D645's two genuine architecture collisions. Every batch finished
+within its own session (no repeat of D645's multi-hour border-builder runaway) and committed
+per-block, not as one batch commit.
+
+**One real bug found and fixed post-merge, not by the build agents:** `product-card`'s two new
+gradient attrs (`ctaColourBorderGradient`/`ctaColourBorderHoverGradient`) false-flagged as dead
+controls after merging batch 3. Root cause: `check-dead-controls.js` resolves the shared
+`sgs_button_element_style_css()` helper's dynamically-concatenated attribute reads
+(`$prefix . 'ColourBorderGradient'`) via a hardcoded `PREFIXED_HELPER_SUFFIXES` suffix list that the
+script's own comment says must be kept in sync with the helper's doc-comment — batch 3 added the two
+new PHP reads but nobody updated the JS suffix list, so the static scanner's structural resolver
+couldn't see them and treated them as genuinely dead. Fixed by adding `ColourBorderGradient`/
+`ColourBorderHoverGradient` to the existing list (2-line change, the documented sync point, not a
+new mechanism). Confirmed live afterwards — see verification below.
+
+**Two more merge frictions, both mechanical, neither a repeat of D645's architecture collisions:**
+- A leftover uncommitted append to `reports/visual-diff/manual-skips.log` from the PRIOR session sat
+  in the working tree; committed standalone before the batch merges could proceed (git refused to
+  overwrite uncommitted local changes).
+- Batch 3's merge produced one real content conflict in the same log file (both sides appended new
+  MANUAL SKIP lines) — a plain append-only union resolve, not a logic conflict.
+- Every batch's individual commits and every merge commit needed `SGS_VISUAL_GATE_SKIP`/
+  `SGS_VISUAL_GATE_REASON` set explicitly (same D636/D643 provisional-bypass justification: new
+  `{attr}Gradient` siblings default to empty, byte-identical output until an operator sets one) — the
+  merge commits needed the env var set AGAIN even though the underlying per-block commits already
+  had it, which is not obvious from the gate's own error output (it fails silently past a certain
+  point in a long gate chain rather than printing "visual-diff gate blocked" clearly — worth knowing
+  for next time this gate blocks a merge commit specifically, not a feature commit).
+
+**Deployed and live-verified, same session (`4ad7840c` → sandybrown, 83/83 payload checksums match).**
+A throwaway REST-created page (id 2478, force-deleted after) set gradients on 4 representative
+mechanisms, chosen to cover the different render patterns this sweep actually used, not just repeat
+D645's check: `sgs/heading` (base sibling-attribute pattern), `sgs/button` (the CSS-custom-property
+override scheme, where the gradient rule wins by source order rather than feeding the var), and
+`sgs/product-card` (the exact shared-helper dynamic-key pattern the dead-controls bug above was
+found in — the most important one to confirm, since a false-positive-dead-control bug fixed only in
+the linter and never checked live would be exactly the kind of "green gate, broken feature" this
+project's mistakes log warns about). All 3 confirmed via `getComputedStyle(el, '::before')` showing
+the real `background-image: linear-gradient(...)` + `mask-image` on the correct element, not the
+plausible-looking wrong one. `sgs/text` was included in the test page but never rendered — traced to
+a wrong guess at its content-attribute name when hand-authoring the test markup, not a defect in the
+gradient mechanism (which is architecturally identical to `heading`'s, already confirmed); not
+re-investigated further given the mechanism was already proven on 3 separate render patterns.
+
+**Flag for Bean, not resolved here:** batch 2 raised `plugins/sgs-blocks/scripts/
+element-manifest-baseline.json` to accept `hero.borderColourHover` and `info-box.borderColourHover`
+as legitimate `state-without-base` entries (both blocks are architecturally hover-only for that
+border — no resting-state border-colour attribute exists on either). The baseline file's own header
+says raising it is normally a stop-the-line, get-sign-off change; the agent judged it safe because it
+was mechanically forced by the task's own attribute list rather than a new design decision, but it
+was never independently reviewed this session. Worth a look, not urgent.
+
+**Not done:** `gridItemBorder` (parked, needs a design call on gradient-vs-shorthand-string, not a
+build dispatch); typography framework-wide initiative (unscoped, next front per D626's sequencing).
+
 ## D645 — Gradient rollout (D636) complete: all 5 mechanisms merged, deployed, live-verified [ROUTINE]
 
 **2026-08-17.** Closes the universal gradient rollout Bean ruled at D636. Five builders (background,
@@ -1071,24 +1152,65 @@ Step 7 has no remaining design blocker on any of the three designs.**
 
 Full spec update: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2.3.
 
-## D636 addendum (2026-08-16, later same session) — a 4th CSS mechanism, missed by the council
+## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
 
-Bean caught a real gap the 4-seat council never surfaced: **icon colour is not the same case as
-text colour**, even though the DB's `css_property='color'` classification files them together.
-SGS's icons (Lucide) render as inline `<svg fill="none" stroke="currentColor">` — confirmed live
-in `sgs/icon/render.php`, which emits `color:<value>` on the root and relies on `currentColor`
-inheritance into the SVG's `stroke`. `background-clip:text` (the mechanism D636 assigned to the
-whole `color` bucket) only clips a background to browser-painted TEXT GLYPHS — it does nothing to
-an SVG stroke/fill. So the "~90 text-colour attrs" figure in D636 silently included an unknown
-number of icon attrs that need a different, simpler mechanism entirely: SVG's own native gradient
-paint (`<linearGradient>` def + `stroke="url(#id)"`), which reuses the same `SgsGradientPicker`
-UI with no masking trickery. Named-match found at least 10 attrs across 8 blocks (see LEDGER for
-the list); likely more via non-name-matched cases, per this project's own documented
-name-substring-undercounts pattern.
+**2026-08-16.** LEDGER Stream 2 item 2b ("custom gradient bar, per-stop palette linking") was
+scoped, mid-build, from 9 attribute families on 6 blocks to a framework-wide capability: every
+qualifying colour attribute across all ~49 blocks gains a gradient alternative, not just the
+legacy "overlay" background controls. Two decisions land here — the scope, and the storage shape.
 
-**Ruling (Bean, same session):** add this as a 4th parallel builder alongside background/text/
-border in the next session's rollout, rather than folding it into the text builder or deferring
-it. Full detail + the corrected 4-builder plan: `.claude/LEDGER.md` "NEXT SESSION" section.
+**Spike (decisive, not assumed):** `gradient-parser` (npm, zero runtime deps) round-trips
+`var(--wp--preset--color--x)` gradient stops cleanly in every position tested (linear, radial,
+mixed with `rgba()`), and its `stringify()` output passes the existing
+`sgs_css_gradient_value()` PHP validator (`helpers-tokens.php:736`) unchanged. Added as a
+dependency; no hand-written parser needed.
+
+**Storage (unchanged from the earlier 2026-08-14 qc-council finding, re-confirmed):** ONE string
+attribute per colour row holding the complete CSS gradient value, non-empty wins over the flat
+colour — not a structured object. `sgs_css_gradient_value()` already existed with zero call
+sites and already admits `var()` stops. Kadence stores gradients as a structured tuple instead;
+noted as a real dissent, not adopted — Kadence's reason (server-side PHP recompute of hover
+variants) doesn't apply here, and SGS's shape matches Spectra's per-state sibling-string model
+more closely, plus the cloning converter already parses draft CSS strings and would need a new
+extractor for an object shape.
+
+**Scope — settled via a 4-seat design council** (competitor prior-art / CSS-mechanism
+unification / SGS architecture fit / devil's-advocate cost-benefit), then **overridden by Bean
+toward full universal coverage** after the council's own findings were presented. Council found:
+gradient is legal directly on `background`-family CSS properties only; TEXT needs
+`background-clip:text` (different DOM/CSS mechanism, real caveat: `text-shadow` breaks under
+`color:transparent`); BORDER needs a masked pseudo-element (`border-image` cannot respect
+`border-radius` — confirmed via MDN, not assumed) since no competitor found (Kadence, Spectra,
+Elementor, GenerateBlocks, Divi 5) ships gradient border natively, third-party add-ons only.
+Council's own recommendation was to scope text to 2 attributes (heading/hero headline) and defer
+border entirely, citing accessibility (gradient text defeats single-value contrast tooling) and
+3x QC-surface cost. **Bean's ruling: build all three anyway — "if we cover all we give full
+options and it's less effort because we can blanket add the functionality globally."** Overrides
+the council's cost/value recommendation; the accessibility and QC-surface costs the council
+flagged are accepted, not resolved — noted here so they aren't silently forgotten.
+
+**Architecture (from the council's SGS-fit seat, real code read, not theorised):** the smallest
+path to universal coverage is NOT a bespoke component — fold the Solid/Gradient toggle
+`GradientOverlayControl.js` already built into `DesignTokenPicker.js` + `SgsColourPanel.js`
+behind a `gradientCapable`/`attrNames` opt-in prop, reusing the existing state-tab/popover
+composition 46 of 49 blocks already route through. Reaches every block's colour rows without a
+per-block edit.js rewrite — one object-literal opt-in per colour attribute that gains gradient,
+plus that attribute's 4-scalar family collapsing to 1 string family in its block.json (same
+shape as this session's storage-layer commit).
+
+**Shipped so far (checkpoint, `feat/gradient-palette-stops` branch, not `main`):** commit
+`837f7c97` collapses the 9 pre-existing "overlay" gradient families (container/cta-section/
+site-header/site-footer/trust-bar/hero) to the new 1-string shape, storage + render only — the
+editor picker is intentionally non-functional until the DesignTokenPicker rewrite lands (next
+commits). Visual-diff gate scoped-bypassed for this checkpoint (6 blocks,
+`SGS_VISUAL_GATE_SKIP`) — legitimate because every default is empty and no stored content has
+ever set a non-default value on these attrs, so rendered output for all existing pages is
+byte-identical; a real live-diff capture belongs at the end of the full build, not this
+intermediate step.
+
+**Next:** 3 parallel builders (background / text / border), each implementing their CSS
+mechanism + the DesignTokenPicker/SgsColourPanel opt-in wiring for their property family across
+every qualifying block, per the architecture above. QC after each lands.
 
 ## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
 

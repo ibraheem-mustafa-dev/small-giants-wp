@@ -1450,6 +1450,8 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 		gridItemBackground = '',
 		gridItemBorderRadius = {},
 		gridItemBorder = '',
+		gridItemBorderGradient = '',
+		gridItemBorderGradientHover = '',
 		gridItemShadow = '',
 		gridItemTextColour = '',
 	} = attributes;
@@ -1554,10 +1556,42 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				/>
 				<DesignTokenPicker
 					label={ __( 'Border colour', 'sgs-blocks' ) }
-					value={ _gridBorderParts( gridItemBorder ).colour }
-					onChange={ ( val ) => setAttributes( {
-						gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), colour: val || '' } ),
-					} ) }
+					states={ [
+						{
+							key: 'base',
+							label: __( 'Border colour', 'sgs-blocks' ),
+							value: _gridBorderParts( gridItemBorder ).colour,
+							onChange: ( val ) => setAttributes( {
+								gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), colour: val || '' } ),
+							} ),
+							// D636 border-gradient rollout (residual scope, 2026-08-17) —
+							// gridItemBorder stays a plain shorthand string (width/style);
+							// the gradient is a SIBLING attribute painting only the colour,
+							// same pattern as every other block in this rollout.
+							gradientValue: gridItemBorderGradient,
+							onGradientChange: ( val ) => setAttributes( { gridItemBorderGradient: val ?? '' } ),
+						},
+					] }
+				/>
+				{ /* Hover-only — no resting-state solid colour exists for grid items
+				     today (gridItemBorder has never had a hover twin), so this row is
+				     GRADIENT-ONLY: its "Solid" branch has nothing to write to and just
+				     clears the hover gradient (SgsColourStateControl's existing rule —
+				     switching to Solid always clears the stored gradient), which is the
+				     correct "no hover override" state. Same shape as this session's
+				     hover-only borders with no resting twin (mega-panel/testimonial). */ }
+				<DesignTokenPicker
+					label={ __( 'Border colour (hover)', 'sgs-blocks' ) }
+					states={ [
+						{
+							key: 'hover',
+							label: __( 'Hover', 'sgs-blocks' ),
+							value: '',
+							onChange: () => {},
+							gradientValue: gridItemBorderGradientHover,
+							onGradientChange: ( val ) => setAttributes( { gridItemBorderGradientHover: val ?? '' } ),
+						},
+					] }
 				/>
 			</div>
 			<ShadowControl

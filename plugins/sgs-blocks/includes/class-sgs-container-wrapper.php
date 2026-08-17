@@ -640,17 +640,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// HTML tag. No block declares a user-facing 'htmlTag' attr any more
 			// (removed 2026-07-05) — callers pass 'tag' in $opts explicitly.
 			$html_tag = $opt_tag ? $opt_tag : 'section';
-			// Full landmark + sectioning + grouping range (D344, 2026-07-16): the
-			// ARIA-landmark tags (main/nav/aside/header/footer) + sectioning
-			// (article/section) + grouping (div/figure), plus the pre-existing
-			// details/fieldset. This is what a generic container needs to carry a
-			// semantic tag in every page context (WCAG 2.2 landmark navigation + SEO).
+			// Landmark + sectioning + grouping range (D344, 2026-07-16; 'main' removed
+			// — see below). The ARIA-landmark tags (nav/aside/header/footer) +
+			// sectioning (article/section) + grouping (div/figure), plus the
+			// pre-existing details/fieldset. This is what a generic container needs to
+			// carry a semantic tag in every page context (WCAG 2.2 landmark navigation
+			// + SEO).
+			//
+			// 'main' is deliberately NOT in this list. A page has exactly one <main>
+			// landmark (no nesting exception exists for it, unlike header/footer/aside
+			// — confirmed against HTML-AAM); offering it on a repeatable layout block
+			// let a client produce 2-3 <main> landmarks on one page. Any stored
+			// tagName:'main' from before this change falls through to the 'section'
+			// default below, same as any other invalid value.
 			$allowed_tags = array(
 				'section',
 				'div',
 				'article',
 				'aside',
-				'main',
 				'nav',
 				'header',
 				'footer',
@@ -688,6 +695,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$grid_item_background    = $attributes['gridItemBackground'] ?? '';
 			$grid_item_border_radius = sgs_serialise_box_corners( $attributes['gridItemBorderRadius'] ?? array() );
 			$grid_item_border        = $attributes['gridItemBorder'] ?? '';
+			// D636 border-gradient rollout (residual scope, 2026-08-17): siblings of
+			// gridItemBorder rather than a replacement — gridItemBorder stays the
+			// authoritative width/style source even when a gradient paints the
+			// colour. sgs_border_gradient_css() is itself a no-op when the resolved
+			// gradient is '', so unset content is byte-identical to before these
+			// existed.
+			$grid_item_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradient'] ?? '' ) ) : '';
+			$grid_item_border_gradient_hover = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradientHover'] ?? '' ) ) : '';
 			$grid_item_shadow        = $attributes['gridItemShadow'] ?? '';
 			$grid_item_text_colour   = $attributes['gridItemTextColour'] ?? '';
 			// is_array guards (Spec 35 Phase 1.4b, STAGE 2): these four ARE being made
@@ -1144,28 +1159,27 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'sgs-container--has-min-height';
 			}
 
-			// D6: universal, was section-only.
-			if ( true ) {
-				if ( $has_bg_image && ! $has_bg_video ) {
-					$classes[] = 'sgs-container--has-bg-image';
-					if ( $bg_parallax ) {
-						$classes[] = 'sgs-container--parallax';
-					}
-					if ( $bg_ken_burns ) {
-						$classes[] = 'sgs-container--ken-burns';
-					}
+			// D6: universal, was section-only (the `if ( true )` wrapper this was
+			// left inside of has been removed as dead-conditional cleanup).
+			if ( $has_bg_image && ! $has_bg_video ) {
+				$classes[] = 'sgs-container--has-bg-image';
+				if ( $bg_parallax ) {
+					$classes[] = 'sgs-container--parallax';
 				}
-				if ( $has_bg_video ) {
-					$classes[] = 'sgs-container--has-bg-video';
+				if ( $bg_ken_burns ) {
+					$classes[] = 'sgs-container--ken-burns';
 				}
-				if ( $has_bg_svg ) {
-					$classes[] = 'sgs-container--has-bg-svg';
-					$classes[] = 'sgs-container--svg-' . esc_attr( $bg_svg_position );
-					$classes[] = 'sgs-container--svg-anim-' . esc_attr( $bg_svg_animation );
-					$classes[] = 'sgs-container--svg-speed-' . esc_attr( $bg_svg_speed );
-					if ( $bg_svg_text_shadow ) {
-						$classes[] = 'sgs-container--svg-text-shadow';
-					}
+			}
+			if ( $has_bg_video ) {
+				$classes[] = 'sgs-container--has-bg-video';
+			}
+			if ( $has_bg_svg ) {
+				$classes[] = 'sgs-container--has-bg-svg';
+				$classes[] = 'sgs-container--svg-' . esc_attr( $bg_svg_position );
+				$classes[] = 'sgs-container--svg-anim-' . esc_attr( $bg_svg_animation );
+				$classes[] = 'sgs-container--svg-speed-' . esc_attr( $bg_svg_speed );
+				if ( $bg_svg_text_shadow ) {
+					$classes[] = 'sgs-container--svg-text-shadow';
 				}
 			}
 
@@ -1553,7 +1567,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// composite's extra_styles + ken-burns/svg/grid-item vars) also need a
 				// scoped .$uid home, because they are no longer emitted inline (Spec 32
 				// FR-32-4 as amended). Without a uid there is nowhere to scope them.
-				|| ! empty( $styles );
+				|| ! empty( $styles )
+				// D636 border-gradient rollout (residual scope) — a grid-item gradient
+				// border is masked ::before CSS, which (like the shape-divider rules
+				// above) can only ever be a scoped .$uid rule, never inline.
+				|| '' !== $grid_item_border_gradient;
 
 			$uid = '';
 			if ( $needs_uid ) {
@@ -1580,6 +1598,26 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				foreach ( $shape_divider_decls as $sd_position => $sd_decls ) {
 					$responsive_css .= '.' . $uid . ' .sgs-shape-divider--' . $sd_position . '{' . $sd_decls . '}';
 				}
+			}
+
+			// D636 border-gradient rollout (residual scope, 2026-08-17) — grid-item
+			// border gradient. gridItemBorder stays a plain shorthand STRING
+			// (width/style authored as free text); the gradient is a sibling that
+			// paints only the colour, via the same masked ::before ring every other
+			// block in this rollout uses. Scoped to THIS instance's grid children
+			// only (.$uid.sgs-container--grid > .sgs-container) — the base rule in
+			// style.css is unscoped/global (border: var(--sgs-gi-border)) and must
+			// stay that way for every OTHER container's grid items to keep working.
+			if ( '' !== $grid_item_border_gradient && $uid ) {
+				$grid_item_border_width = function_exists( 'sgs_grid_border_parts' )
+					? sgs_grid_border_parts( $grid_item_border )['width']
+					: '';
+				$responsive_css .= sgs_border_gradient_css(
+					'.' . $uid . '.sgs-container--grid > .sgs-container',
+					$grid_item_border_gradient,
+					'' !== $grid_item_border_gradient_hover ? $grid_item_border_gradient_hover : null,
+					'' !== $grid_item_border_width ? $grid_item_border_width : '2px'
+				);
 			}
 
 			// Grid/flex scoped-CSS selector — the __inner content band when
@@ -1869,13 +1907,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// SAME ::before media layer as the base tier (Phase 1, 2026-08-08);
 				// targeting .$uid here while the base painted ::before would leave the
 				// desktop image showing through underneath on tablet/mobile.
-				if ( true ) { // D6: universal, was section-only.
-					if ( ! empty( $bg_image_tablet['url'] ) ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
-					}
-					if ( ! empty( $bg_image_mobile['url'] ) ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
-					}
+				// D6: universal, was section-only (the `if ( true )` wrapper this was
+				// left inside of has been removed as dead-conditional cleanup).
+				if ( ! empty( $bg_image_tablet['url'] ) ) {
+					$responsive_css .= '@media (max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+				}
+				if ( ! empty( $bg_image_mobile['url'] ) ) {
+					$responsive_css .= '@media (max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 				}
 
 				// QB-2: Responsive gridTemplateColumns — section + layout kinds.

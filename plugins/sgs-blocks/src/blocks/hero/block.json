@@ -215,8 +215,16 @@
 						"css:border-width": "gridItemBorder",
 						"css:border-style": "gridItemBorder",
 						"css:border-color": "gridItemBorder",
+						"css:border-color-gradient": "gridItemBorderGradient",
 						"css:box-shadow": "gridItemShadow",
 						"css:color": "gridItemTextColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color-gradient": "gridItemBorderGradientHover"
+							}
+						}
 					},
 					"_note": "Inherited from the sgs/container capability mirror — present on this block's attribute list but not exercised by any hero variant today. Declared so the attrs resolve rather than surface as orphans."
 				},
@@ -762,6 +770,16 @@
 			"type": "string",
 			"default": ""
 		},
+		"gridItemBorderGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
+		},
+		"gridItemBorderGradientHover": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
+		},
 		"gridItemBorderRadius": {
 			"type": "object",
 			"default": {}
@@ -901,13 +919,16 @@
 				"section",
 				"article",
 				"aside",
-				"main",
 				"nav",
 				"header",
 				"footer",
 				"figure"
 			],
 			"default": "section"
+		},
+		"ariaLabel": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

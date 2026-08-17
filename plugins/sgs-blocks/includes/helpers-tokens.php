@@ -943,6 +943,44 @@ function sgs_resolve_text_colour_or_gradient( ?string $flat_value, ?string $grad
 }
 
 /**
+ * Split a `gridItemBorder`-style CSS border SHORTHAND string ("1px solid
+ * #ccc") into its width/style/colour parts, order-independent.
+ *
+ * Mirrors `_gridBorderParts()` in
+ * `container/components/ContainerWrapperControls.js` exactly (same
+ * whitespace-split + fixed style-word list + width regex classification) —
+ * PHP and JS must agree on which token is which, since the editor writes the
+ * shorthand and render.php/the wrapper reads it back. Only the width part is
+ * used by the gradient mechanism below (the colour part is superseded by the
+ * gradient when one is set; the style part is untouched either way).
+ *
+ * @param string $value Raw shorthand string, e.g. "2px dashed #ccc".
+ * @return array{width:string,style:string,colour:string}
+ */
+function sgs_grid_border_parts( string $value ): array {
+	$parts = array(
+		'width'  => '',
+		'style'  => '',
+		'colour' => '',
+	);
+	$style_words = array( 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'none' );
+	$tokens      = preg_split( '/\s+/', trim( $value ), -1, PREG_SPLIT_NO_EMPTY );
+	if ( ! $tokens ) {
+		return $parts;
+	}
+	foreach ( $tokens as $token ) {
+		if ( '' === $parts['style'] && in_array( strtolower( $token ), $style_words, true ) ) {
+			$parts['style'] = strtolower( $token );
+		} elseif ( '' === $parts['width'] && preg_match( '/^[\d.]+(px|rem|em|%)?$/', $token ) ) {
+			$parts['width'] = $token;
+		} elseif ( '' === $parts['colour'] ) {
+			$parts['colour'] = $token;
+		}
+	}
+	return $parts;
+}
+
+/**
  * Universal masked-`::before` gradient-border emitter (D636 border builder,
  * 2026-08-16). `border-color` cannot legally hold a CSS gradient — the only
  * way to paint a gradient into a border-shaped ring that still respects
