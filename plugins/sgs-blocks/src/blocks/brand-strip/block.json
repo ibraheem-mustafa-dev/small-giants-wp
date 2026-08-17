@@ -33,6 +33,7 @@
 						"css:background-color": "tileBackgroundColour",
 						"css:border-width": "tileBorderWidth",
 						"css:border-color": "tileBorderColour",
+						"css:border-color-gradient": "tileBorderColourGradient",
 						"css:border-radius": "tileRadius",
 						"css:box-shadow": "tileShadow",
 						"css:padding": "tilePadding",
@@ -293,6 +294,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"tileBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the tile border instead of a flat colour. Non-empty wins over tileBorderColour at render time (D636)."
+		},
 		"tileShadow": {
 			"type": "string",
 			"default": ""
@@ -311,6 +317,11 @@
 		"borderColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of tileBorderColourGradient. Non-empty wins over borderColourHover on :hover/:focus-within."
 		},
 		"effectHover": {
 			"type": "string",

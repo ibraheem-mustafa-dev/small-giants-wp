@@ -81,6 +81,10 @@ $logo_fit            = in_array( $logo_fit_raw, array( 'contain', 'cover' ), tru
 $tile_bg_colour      = $attributes['tileBackgroundColour'] ?? '';
 $tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
 $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
+// D636 border-colour gradient siblings — non-empty wins over the flat colour
+// above at render time (helpers-tokens.php sgs_border_gradient_css()).
+$tile_border_gradient       = sgs_css_gradient_value( $attributes['tileBorderColourGradient'] ?? '' );
+$hover_border_gradient      = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 // Raw CSS box-shadow VALUE (or theme shadow-preset slug) from the shared
 // ShadowControl builder — replaces the old none/small/medium enum SelectControl
 // (Spec 35 Task 2 element-first rebuild). A pre-migration legacy string such as
@@ -317,6 +321,17 @@ if ( $tile_border_width > 0 || '' !== $tile_border_colour ) {
 	if ( $tile_border_decls ) {
 		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{" . implode( ';', $tile_border_decls ) . ';}';
 	}
+}
+
+// --- Border gradient (D636 border builder) — masked ::before, replaces the
+// flat border-color above (and its :hover var-driven sibling) when set. ---
+if ( '' !== $tile_border_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css(
+		"{$root_sel} .sgs-brand-strip__item",
+		$tile_border_gradient,
+		'' !== $hover_border_gradient ? $hover_border_gradient : sgs_colour_value( $hover_border_colour ),
+		$tile_border_width > 0 ? $tile_border_width . 'px' : '1px'
+	);
 }
 
 // --- Tile shadow (Spec 35 Task 2 — ShadowControl builder replaces the old
