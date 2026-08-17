@@ -3,6 +3,14 @@
  *
  * Provides a live post preview via useEntityRecords (no ServerSideRender
  * round-trips) and 8 inspector panels covering every attribute.
+ *
+ * ⛔ `templateMode` (the container-family allowed-children preset) was
+ * declared in block.json but REMOVED (was never wired): this block has no
+ * InnerBlocks slot at all — its content is a live query of WP posts/pages
+ * rendered as React `PreviewCard`s, not a child-block tree an operator
+ * populates. There is nothing for an "allowed children" restriction to
+ * apply to. Do not re-add templateMode without first adding a genuine
+ * InnerBlocks slot.
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
