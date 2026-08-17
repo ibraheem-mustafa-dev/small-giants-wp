@@ -266,15 +266,6 @@
 				"space-evenly"
 			]
 		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
-		},
 		"contentWidth": {
 			"type": "object",
 			"default": {}
