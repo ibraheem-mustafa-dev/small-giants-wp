@@ -41,6 +41,7 @@ the real browser accessibility tree on sandybrown, deployed.
 | Dead-controls checker fix (product-card's 2 gradient attrs false-flagged) | `decisions.md` D646 |
 | Landmark-tag a11y fix — drop `main`, label `nav`/`aside`, 5 blocks, live-verified | `decisions.md` D647 |
 | `gridItemBorder` gradient + hover, 4 blocks — deployed, live-verified | `decisions.md` D648 |
+| `cta-section` overlay controls fixed (were painting nothing); testimonial/image-sequence image controls fixed | `decisions.md` D650 |
 
 ## Blockers
 
@@ -151,13 +152,27 @@ stylesheet. Commit `b0182f1c`.
 
 ## Open — carried, not this session's to close
 
-- **`testimonial`/`image-sequence`'s `imageControls`** — real crop scenario, per-item design call each.
-- **physics-canvas `ALLOWED_BLOCKS`** — approved in principle; needs its own design gate.
-- **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
-- **`templateMode` inert** on both row blocks and physics-canvas.
+- **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`) — real cause found
+  2026-08-17: `sgs/mega-group` sets `templateLock:'all'`, which drops a locked block's stored child
+  content on every editor load/save. Deleting/recreating the page reproduces the same loss; the real
+  fix is relaxing/removing that lock on `sgs/mega-group`. It's Track 2's canary — check with them first.
+- **`templateMode` dead on 18 of 19 blocks that declare it** (re-verified 2026-08-17, wider than
+  previously noted) — only `sgs/container` actually wires it (destructures the attribute, restricts
+  `allowedBlocks` by it, has a real editor control). Everything else — `accordion`, `card-grid`,
+  `cta-section`, `feature-grid`, `form`, `gallery`, `hero`, `nav-menu`, `physics-canvas`,
+  `pricing-table`, both header/footer row blocks, `tabs`, etc. — declares it in `block.json` with zero
+  consumption anywhere. Fix = wire container's existing pattern into each. Not yet scoped/dispatched.
 - **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
-- **`sgs/cta-section` overlay colour/gradient controls paint nothing** (`no_overlay=>true` passed to
-  the shared wrapper) — needs a design call: drop the controls, or stop passing `no_overlay` (D643).
-- **`element-manifest-baseline.json`'s two new hover-only entries** (`hero.borderColourHover`,
-  `info-box.borderColourHover`) — mechanically forced by this session's attribute list, not
-  independently reviewed. Worth a look, not urgent (D646).
+- **`element-manifest-baseline.json`'s reasoning text is factually wrong** (spotted 2026-08-17
+  reviewing the two `hero.borderColourHover`/`info-box.borderColourHover` entries): the accepted
+  gate count is correct (neither block has a resting-state GRADIENT border — WP core never supported
+  one), but the written reason claims "no resting border-colour attribute at all", which is false —
+  both blocks have a real, working resting border colour via WP-native `__experimentalBorder.color`,
+  already correctly wired. No build-gate risk either way; a future reader could be misled by the
+  wrong reasoning into skipping a real gap elsewhere under the false premise. Text-only fix, needs
+  sign-off since edits to that file are treated as needing one.
+- **`sgs/trust-bar` has the same overlay-controls-paint-nothing bug `cta-section` just had fixed**
+  (found while fixing cta-section, 2026-08-17, not yet fixed) — declares
+  `backgroundOverlayColour`/`overlayGradient`, mounts the same `BackgroundPanel`, passes
+  `no_overlay: true`, and has no overlay-rendering code of its own. Same fix shape as cta-section's:
+  drop `no_overlay: true` unless investigation finds a real conflict (cta-section's didn't).

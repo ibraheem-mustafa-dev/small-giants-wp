@@ -1,5 +1,60 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D650 — Four residual-list items cleared: 2 real fixes, 1 non-issue, 1 disputed reasoning [ROUTINE]
+
+**2026-08-17.** Bean asked for the "carried, not this session's" residual items to be worked through:
+`cta-section` overlay controls, the `element-manifest-baseline.json` review, `testimonial`/
+`image-sequence` image controls, and `physics-canvas`'s `ALLOWED_BLOCKS`. Dispatched 4 parallel
+agents. Outcome: 2 real bugs fixed, 1 item turned out to already be done, 1 review found the gate's
+outcome was fine but its written justification was wrong.
+
+**`sgs/cta-section` overlay colour/gradient controls — FIXED (`12ade09f`).** Root cause confirmed:
+`render.php` passed `'no_overlay' => true` to the shared wrapper, which gates the ENTIRE overlay
+branch — the only place `backgroundOverlayColour`/`overlayGradient` are read and painted. The editor
+control (`BackgroundPanel`) was live and saving correctly; it just never rendered anything. No
+genuine conflict found — cta-section's OWN `.sgs-cta-section__overlay` span handles a narrower,
+unrelated feature (image-darkening opacity), and `container/style.css` already excludes both overlay
+spans from the same reset rule, proving the framework already anticipated them coexisting. Removed
+`no_overlay: true`. **`sgs/trust-bar` has the identical bug** (found in passing, not fixed — flagged
+as its own residual, same fix shape expected).
+
+**`element-manifest-baseline.json`'s two new `borderColourHover`-gradient entries — REVIEWED,
+DISPUTED reasoning only.** The accepted gate count is correct: neither `hero` nor `info-box` has a
+resting-state GRADIENT border, because WordPress core has never supported one at rest. But the
+written justification claims "no resting border-colour attribute at all" — false. Both blocks have a
+real, working resting border colour via native `__experimentalBorder.color`, already correctly
+wired in the manifest. No build-gate risk from the wrong text, but a future reader could be misled
+by the false premise into skipping a genuine gap elsewhere. Text-only correction proposed, not
+applied — edits to that file are treated as needing sign-off.
+
+**`sgs/testimonial` + `sgs/image-sequence` image controls — FIXED (`718cefeb`).** Investigated all
+three of testimonial's image slots before designing anything: avatar (fixed circular crop) and org
+logo (fixed contain-fit, a brand mark must never crop) are legitimate component-owned constants —
+same status as `sgs/label`'s fixed 12px font-size per the framework's own DEFAULT-vs-HARDCODE test —
+not client-overridable. Only work-media (case-study photo/video) genuinely varies and needed a real
+control; the block's existing blanket `imageControls:true` only reaches `<figure>`-wrapped markup, so
+it worked for work-media by accident and was silently unreachable for the `<div>`-wrapped avatar/logo
+regardless. Added `imageControlsExplicit:true` scoped to work-media only, matching the existing
+team-member/gallery/testimonial-slider precedent. `image-sequence`'s `imageControls:true` was
+DECLARED but the canvas JS (`fx-image-sequence.js`'s `drawCover()`) always centre-crops every frame
+with zero configurability — wiring a picker an operator could set but the canvas can never honour
+would be worse than the dead control it replaces, so the declaration was removed instead.
+
+**`sgs/physics-canvas`'s `ALLOWED_BLOCKS` — turned out to already be done, six days before the LEDGER
+note that called it open.** Shipped 2026-08-03 (commit `50c9122b`, D447) with Bean's own explicit
+ruling on record: a QC council found the roster isn't fully accessibility-safe in every
+configuration (`allowedBlocks` filters by block NAME not capability — `sgs/media`/`sgs/icon` still
+carry `linkUrl`, `sgs/media` a focusable native video), and Bean ruled that's an accepted, deliberate
+ceiling for what the block itself documents as a "niche artistic canvas... deliberately NOT built for
+accessibility". The dispatched agent correctly declined to re-litigate an explicit, on-the-record
+ruling rather than guess at a "better" list. Stale LEDGER line struck.
+
+**Verification.** Full build green after all 3 code-touching agents merged (their own individual
+builds + this session's final consolidated build). `check-element-manifest-conformance.js` and
+`check-dead-controls.js` both clean. Deployed to sandybrown and live-verified — see the deploy log for
+the two real fixes' before/after confirmation, same discipline as every other fix this session
+(computed style / rendered output, not just a green gate).
+
 ## D649 — Typography initiative SCOPED: 8 properties, native strip gated on a content migration, font-family cut [ROUTINE]
 
 **2026-08-17.** D626 queued typography as the next framework-wide initiative after colour's Track
