@@ -63,9 +63,12 @@ const HEADER_PROMOTED_SLUGS = [
 	...new Set( HEADER_PROMOTED.map( ( item ) => item.slug ) ),
 ];
 
-// No allowedBlocks restriction: site-header-row is a container-equivalent (like
-// sgs/container in free mode) — it accepts ANY block, not a curated palette. The
-// row's job is layout, not gatekeeping content.
+// No allowedBlocks restriction BY DEFAULT: site-header-row is a
+// container-equivalent (like sgs/container in free mode) — it accepts ANY
+// block, not a curated palette. The row's job is layout, not gatekeeping
+// content. templateMode (below) lets an operator opt INTO a curated palette,
+// mirroring sgs/container's own templateMode exactly — see
+// TEMPLATE_MODE_ALLOWED / TEMPLATE_MODE_OPTIONS.
 
 // Row layout maps to the shared wrapper's `layout` attr. Cluster = a wrapping
 // flex row (unlike items: logo + nav + cart); Columns = an equal-width grid of
@@ -83,6 +86,36 @@ const DISTRIBUTION_OPTIONS = [
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'flex-end' },
 	{ label: __( 'Spread apart', 'sgs-blocks' ), value: 'space-between' },
+];
+
+// QB-3: allowedBlocks per templateMode — mirrors sgs/container's exact
+// pattern (container/edit.js). "free" (default) imposes no restrictions;
+// these lists are adjusted for what actually belongs in a header row rather
+// than container's generic content-section lists — the promoted elements
+// above (logo, nav, search, cart, account/CTA buttons, business info) are
+// what a header row actually holds, so "grid-section" mode curates around
+// those instead of container's heading/text/media set.
+const TEMPLATE_MODE_ALLOWED = {
+	'grid-section': [
+		'sgs/responsive-logo',
+		'sgs/nav-menu',
+		'sgs/product-search',
+		'sgs/cart',
+		'sgs/button',
+		'sgs/multi-button',
+		'sgs/business-info',
+		'sgs/container',
+	],
+	'card-grid': [
+		'sgs/business-info',
+		'sgs/container',
+	],
+};
+
+const TEMPLATE_MODE_OPTIONS = [
+	{ label: __( 'Free (no restrictions)', 'sgs-blocks' ), value: 'free' },
+	{ label: __( 'Grid section', 'sgs-blocks' ), value: 'grid-section' },
+	{ label: __( 'Card grid', 'sgs-blocks' ), value: 'card-grid' },
 ];
 
 const ROW_LABELS = {
@@ -173,6 +206,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridTemplateRows,
 		backgroundColour,
 		textColour,
+		templateMode = 'free',
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -274,9 +308,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		style: { ...previewStyle, ...paddingPreview },
 	} );
 
+	// QB-3: allowedBlocks per templateMode — only restrict when the operator
+	// explicitly opts into a structured mode. "free" (default) imposes no
+	// restrictions, mirroring sgs/container's own templateMode.
+	const allowedBlocks = templateMode !== 'free'
+		? TEMPLATE_MODE_ALLOWED[ templateMode ] ?? undefined
+		: undefined;
+
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		templateLock: false,
 		orientation: 'horizontal',
+		allowedBlocks,
 		renderAppender: hasInnerBlocks
 			? undefined
 			: () => (
@@ -419,6 +461,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+				</PanelBody>
+				{/* QB-3: Template mode — allowed children restriction, mirrors
+				  sgs/container's own "Template mode" panel exactly. */}
+				<PanelBody
+					title={ __( 'Template mode', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Allowed children', 'sgs-blocks' ) }
+						value={ templateMode }
+						options={ TEMPLATE_MODE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { templateMode: val } )
+						}
+						help={ __(
+							'Grid section and Card grid restrict which block types can be inserted directly inside this row. Free (default) imposes no restrictions.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 				<PanelBody
 					title={ __( 'Alignment & grid', 'sgs-blocks' ) }
