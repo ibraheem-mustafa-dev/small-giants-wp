@@ -26,6 +26,19 @@ import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiv
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
 /**
+ * ⛔ `templateMode` (the container-family allowed-children preset) was
+ * declared in block.json but REMOVED (was never wired): this block's
+ * allowedBlocks is ALREADY fixed to a single type — `sgs/site-footer-row` —
+ * at the block.json level, enforced alongside a structural 3-row TEMPLATE
+ * under `templateLock: 'all'` (see the seed-once guard below). Both
+ * templateMode presets (grid-section/card-grid) list content blocks like
+ * heading/text/button/info-box that this block can never accept anyway, so
+ * neither preset could ever do anything. Same shape as physics-canvas: no
+ * room for a variable content-type restriction on a block already locked to
+ * one child type. Do not re-add templateMode here.
+ */
+
+/**
  * Compute WCAG 2.1 relative luminance from an sRGB hex, RGB, or CSS variable colour.
  * Mirrors the PHP sgs_wcag_relative_luminance() algorithm.
  *
