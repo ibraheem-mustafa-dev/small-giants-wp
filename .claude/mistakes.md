@@ -1,9 +1,13 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-16 (2 entries added — session-brief verification, LEDGER-rewrite fold-in-not-delete; 2 oldest by date archived to keep at target — 30 → 32 → 30 active.)
+**Last updated:** 2026-08-17 (1 entry added — stale-worktree gate failures; 1 oldest by date archived to keep at target — 30 → 31 → 30 active.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-17] A worktree-isolated agent's gate failures unrelated to its own diff can be pure staleness vs main, not real regressions
+- **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures`
+- **Feedback file:** [feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md)
+
 ### [2026-08-16] A session brief's claimed branch/HEAD/D-ceiling/deploy-status is a claim to verify, not a fact to relay
 - **Pattern key:** `verify-incoming-session-brief-against-repo`
 - **Feedback file:** [feedback_verify_incoming_session_brief_against_repo.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_incoming_session_brief_against_repo.md)
@@ -146,10 +150,6 @@
 - **Pattern key:** `an-unreachable-capability-is-a-control-surface-problem`
 - **blub.db row:** `411`
 - **Feedback file:** [feedback_unreachable_capability_is_a_control_surface_problem.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_unreachable_capability_is_a_control_surface_problem.md)
-### [2026-07-21] An accurate derived value can still be UNUSABLE if under-keyed — ask what it must be KEYED BY before writing it
-- **Pattern key:** `derived-value-must-be-keyed-to-be-usable`
-- **blub.db row:** `407`
-- **Feedback file:** [feedback_derived_value_must_be_keyed_to_be_usable.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_derived_value_must_be_keyed_to_be_usable.md)
 ### [2026-07-21] A gate firing on NEW findings is evidence about your data — explain every finding before baselining or bypassing
 - **Pattern key:** `a-gate-firing-is-evidence-about-your-data`
 - **blub.db row:** `408`

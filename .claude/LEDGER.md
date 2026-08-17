@@ -91,118 +91,134 @@ close-out doc against the repo found it. Two smaller count errors in the same da
 
 ### CLOSED this session — no action needed
 
-- **Task A / D636 gradient rollout** — all 5 mechanisms (background, text, border, shape-divider,
-  icon) shipped across the framework. `gridItemBorder` gradient + hover was the last parked piece
-  (D648, `b0182f1c`), now done. Nothing gradient-related remains open.
-- **`templateMode`** — all 23 declaring blocks resolved (5 wired, 17 removed, `container` was already
-  correct). Verify end state with
-  `git grep -l '"templateMode"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` → expect exactly 6,
-  all consuming it.
-- **`cta-section` + `trust-bar` overlay controls** — both were painting nothing, both fixed and
-  live-verified.
+- **Task A / D636 gradient rollout** — all 5 mechanisms shipped across the framework. Nothing
+  gradient-related remains open.
+- **`templateMode`** — all 23 declaring blocks resolved. Verify with
+  `git grep -l '"templateMode"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` → expect exactly 6.
+- **`cta-section` + `trust-bar` overlay controls** — both fixed, live-verified.
+- **Task B's 4 prerequisite residuals (R1-R4) + the counter classifier finding** — ALL CLOSED,
+  merged, deployed (`decisions.md` D653/D654, `LEDGER.md` State Snapshot below has hashes). The
+  typography initiative below is now genuinely unblocked, not just scoped.
 
-### Task B — Typography framework-wide initiative — ✅ SCOPED 2026-08-17 (D649), ready to build
+### Task B — Typography framework-wide initiative — prerequisites cleared, ready to EXECUTE
 
-**What:** the next framework-wide control-standardisation initiative, after colour. Scoping is DONE.
-**Why:** typography is the last group of settings with no standard — a client changing a heading's
-size gets a different control depending on the block, and 7 values the framework paints can't be set
-by a client at all.
-**Estimated time:** ~2h40m critical path (per the plan's own estimate; treat as optimistic).
+**Agent identity:** you are picking up a fully-scoped, prerequisite-cleared framework initiative.
+The scoping decision (D649) and every blocking defect it surfaced (D653/D654) are done — this is
+now pure build work following an already-approved plan, not a design session.
+
+**State recap:** typography is the last group of block settings with no standard — a client
+changing a heading's size gets a different control depending on which block they're on, and one
+property (`text-align`) couldn't be set by a client at all until today. That gap is now closed. All
+four residuals D649 surfaced (hardcoded `<h3>` tags, numeric/string heading-level mismatch, the
+converter's blindness to 3 blocks, `text-align`'s missing emission, plus a safety-gate scoping gap
+and one unrelated DB classifier gap found along the way) are fixed, merged to `main`, and — where
+applicable — deployed live. Nothing is blocking W1/W2 from starting.
+
+## Task 1 — W1: data layer (14 orphan element declarations + one reseed)
+
+**What:** declare `supports.sgs.elements` on 14 `sgs/*` blocks that are missing it, then run ONE
+scheduled `/sgs-update`.
+**Why:** the shared `TypographyControls` re-skin (Task 2) and the eventual detector (Task 4) both
+read this manifest — building on top of an incomplete one means redoing work later.
+**Estimated time:** ~20 min (mechanical, well-spec'd).
 
 **Orchestration:**
-- Execution: **delegated** — 4 agents, one worktree each. NOT 16: the work is mostly subtractive and
-  driven by one shared component's defaults, so 16 agents would all queue on the same file.
-- Model: sonnet per batch via `/delegate` (mechanical, well-spec'd); reserve opus for the W2
-  component design if it turns out to need real design judgement.
-- Dispatch pattern: `/dispatching-parallel-agents`, batched — pilot on `sgs/label` first (3
-  divergences, all prop-flips, no storage change) before fanning out.
-- ⛔ **Give every agent the "run builds synchronously, never background them" instruction.** Three of
-  five agents this session stalled by backgrounding their own build and ending the turn — background
-  subagents are not woken mid-tool-call, so they just sit. Cost: three resume round-trips.
-- Depends on: nothing. **Parallel with:** the residuals below.
-- `/qc` gate after: yes — multi-rater before any commit touching converter/pipeline/SGS-block logic.
+- Execution: delegated, 1 agent, isolated worktree.
+- Model: sonnet via `/delegate` (mechanical).
+- Depends on: nothing. **Parallel with:** Task 2.
+- `/qc` gate after: no (pure data-layer declaration, no rendering behaviour change) — but DO run the
+  full build + `check-element-manifest-conformance.js --check` before committing.
 
-**Acceptance:** `npm run survey:typography` → divergence 0 across all 8 properties, AND the W4
-detector green and proven able to fail on a seeded break, AND — the leg every other gate misses —
-a canary page saved BEFORE the change still paints its pre-existing typography after migration.
+**Acceptance:** all 14 blocks show a populated `supports.sgs.elements` manifest; F6 gate stays clean
+(current baseline: `unclassified 0, role-map-stale 0, state-without-base 4/4 baselined` — must not
+regress).
 
-**Read first:** `decisions.md` **D649** (rulings + 3 live defects), then the plan at
-`~/.claude/plans/read-all-of-spec-soft-fairy.md` (workstreams, gated order, verification).
+## Task 2 — W2 + W2b: shared component re-skin
 
-**What:** scoping is DONE — 3 research streams + a 5-seat design council, Bean-approved.
-**Read first:** `decisions.md` **D649** (the rulings + 3 live defects it surfaced), then the plan at
-`~/.claude/plans/read-all-of-spec-soft-fairy.md` (workstreams, gated order, verification).
+**What:** 4 small local components + 1 import, re-skin `TypographyControls.js` **in place** (zero
+forks) + one SCSS rule. `text-align` is a NEW PHP emission path (built this session, R1) — treat it
+as new capability to wire into the re-skinned component, not something already working.
+**Why:** this is the client-facing inspector UI every block's typography control will route through.
+**Estimated time:** ~40 min.
 
-**Scope:** 8 properties (font-family CUT). Native WP typography UI off everywhere. All 39 blocks,
-in two populations: **A** = 22 blocks with SGS typography attrs; **B** = 17 blocks declaring
-`supports.typography` with ZERO attrs (greenfield).
+**Orchestration:**
+- Execution: delegated, 1 agent, isolated worktree — **pilot on `sgs/label` first** (3 known
+  divergences, all prop-flips, no storage-shape change) before fanning out to other blocks.
+- Model: sonnet via `/delegate`; escalate to opus only if the component re-skin turns out to need
+  real design judgement beyond following the existing dialect.
+- Depends on: nothing (reads the CURRENT manifest state; doesn't need Task 1 to finish first, but
+  will need Task 1's blocks eventually for full coverage — sequence W3 after both).
+- `/qc` gate after: yes — multi-rater before any commit touching shared editor components.
 
-⛔ **Gate G1 blocks every strip.** 24 `render.php` files read `attributes.style.typography` and
-paint it live, 3 shipped patterns store it, deprecations are banned (D270/D293) — so nothing is
-stripped until a stored-content migration is proven on a canary page saved BEFORE the change.
-Stripping first silently destroys typography clients already set.
+**Acceptance:** `sgs/label`'s typography controls render through the re-skinned component with zero
+visual regression (screenshot/manual check), `text-align` control present and functional.
 
-**Start here (both ungated):** W1 = 14 `sgs/*` orphan element declarations, then ONE scheduled
-`/sgs-update`. W2 = 4 small local components + 1 import + re-skin `TypographyControls` **in place**
-(zero forks) + one SCSS rule. W2b = `text-align` needs NEW PHP emission — it is not a re-skin.
-**Orchestration:** 4 agents, not 16, one worktree each; pilot on `sgs/label`. Critical path ≈2h40m.
+⛔ **Give every agent the "run builds synchronously, never background them" instruction.** Five
+agents across this session's earlier work stalled by backgrounding their own build and ending the
+turn — a backgrounded subagent process is not woken mid-tool-call, it just sits. Cost each time:
+a full resume round-trip.
 
-**Three live defects it surfaced. ALL THREE NOW CLOSED (D649→D653, 2026-08-17), except R2.**
+## Task 3 — W3: layout (blocked on Tasks 1+2)
 
-✅ **Hardcoded `<h3>` on 7 content blocks — FIXED, DEPLOYED, LIVE-VERIFIED** (`6c994ef5`; deploy
-evidence: `build-deploy.py --target sandybrown --skip-build`, `payload-verify PASS: all 83`,
-`oldshape-audit PASS`). ✅ **The 2 empty-state placeholders (`gallery`/`post-grid`) — FIXED same day**
-(`decisions.md` D653, `2a6000be`): demoted `<h3>`→`<p>` after a `/research-check` confirmed the
-"configurable level" alternative doesn't apply to non-reused boilerplate with no content underneath
-it. **Committed + pushed to `main`, NOT yet deployed to sandybrown** — batch into the next deploy.
+**What:** apply the re-skinned component + completed manifest across the block layout layer.
+**Depends on:** Task 1 AND Task 2 both complete.
+**Orchestration:** plan at dispatch time once Tasks 1/2's actual diff is known — do not pre-commit
+to an agent count here.
+**`/qc` gate after:** yes, multi-rater.
 
-✅ **Numeric→string canonicalisation — FIXED** (`81669d5c`), uncovering and fixing a real bug:
-`includes/product-card-builtin-render.php`'s typed mode cast the level with `(int)`, silently forcing
-every typed product-card to `<h2>` regardless of the client's choice. Live-verified fixed.
+## Task 4 — W4: the detector (blocked on Task 3)
 
-✅ **Converter blindness — FIXED** (`e4a23783`) **and now actually LIVE, not just correct-but-inert**
-(`decisions.md` D653, `66527712`): the 3 blocks it needed (`icon-list`/`product-card`/`product-faq`)
-are now `role='tag-identity'` in the DB, via the same override channel that already correctly
-classifies `sgs/heading.level`/`sgs/media.mediaType` — verified against the D643 incident (a prior
-attempt at this broke a different gate) before applying, not just trusted from the investigation.
-Committed + pushed, **DB reseed already applied locally** (this change lives in the shared
-`sgs-framework.db`, not something a site deploy touches).
+**What:** build/verify the typography-divergence detector (`npm run survey:typography` target:
+divergence 0 across all 8 properties). Must be proven able to FAIL on a seeded break, not just pass
+once — a detector that can't fail is not a detector.
+**Depends on:** Task 3.
+**Acceptance:** self-tested, green on current state, red on an injected regression.
 
-✅ **`text-align` — FIXED** (`decisions.md` D653, `2205dfa9`): `sgs_typography_css_rule()` now emits
-8 properties, not 7. Unblocks the typography initiative's W2b workstream.
+## Task 5 — W5-A / G1 gate / W5-B (blocked on Task 4)
 
-✅ **R2 — CLOSED same day (`decisions.md` D654, `d7b82965`/merge `2fe4f7ff`).** E12 now covers 11/11
-heading-level blocks (was 1/11), via the exact prerequisite named above: `supports.sgs.elements[].attrMap`
-filled on 8 blocks + the guard's comparison loop element-scoped through it. `--self-test` (5/5, run
-directly not trusted from the report) confirms both documented false positives
-(`icon-list.iconColour`, `product-card.ctaFontWeight`) stay suppressed and a genuine same-element case
-still fires. Deployed, `payload-verify PASS: all 83`.
-
-✅ **Counter classifier finding — CLOSED same day (`decisions.md` D654, `2db9a2ac`/merge `372f2b3e`).**
-Root cause found (a colour-resolver helper's return value was opaque to the classifier's static
-tracer) and fixed generally, not as a one-off — confirmed by an isolated before/after diff catching a
-SECOND, previously-unknown instance of the identical gap (`sgs/testimonial.quoteColour`) for free.
-`db-consistency`'s finding is genuinely gone, not baselined-and-hidden.
+**What:** migrate Population A (22 blocks with SGS typography attrs) first. ⛔ **Gate G1 blocks
+every native-supports STRIP** — 24 `render.php` files actively read `attributes.style.typography`
+and paint it, 3 shipped patterns store it, deprecations are banned (D270/D293). Nothing is stripped
+until a stored-content migration is proven on a canary page **saved BEFORE the change**. Only after
+G1 clears does Population B (17 blocks declaring `supports.typography` with ZERO attributes —
+genuinely greenfield, not a re-skin) proceed.
+**Depends on:** Task 4 (detector must exist and be trustworthy before migrating real blocks).
+**`/qc` gate after:** yes, multi-rater, every commit.
 
 ### Dependency graph
 
 ```
-Task B — Typography (delegated, 4 agents, one worktree each)
-  pilot: sgs/label (inline check first)
-    ↓
-  W1 (data layer, 14 orphans) + W2 (components) — parallel, both ungated
-    ↓ /qc multi-rater
-  W3 (layout) → W4 (detector, must be green + self-tested)
-    ↓
-  W5-A (22 blocks) → ⛔ G1 stored-content migration proof → W5-B (17 blocks)
-    ↓
-  commit + merge to main
-
-Residuals below — independent, parallel with all of the above.
+Task 1 (W1, data layer)  ──┐
+Task 2 (W2/W2b, pilot sgs/label first)  ──┤
+                                          ↓ both complete
+                                    Task 3 (W3, layout)
+                                          ↓ /qc multi-rater
+                                    Task 4 (W4, detector — must prove it can FAIL)
+                                          ↓
+                        Task 5a (W5-A, 22 blocks) → ⛔ G1 canary-proof gate → Task 5b (W5-B, 17 blocks)
+                                          ↓ /qc multi-rater every commit
+                                    commit + merge to main + deploy
 ```
+
+**Read first, in this order:** `decisions.md` D649 (rulings), D653+D654 (the residuals that are now
+closed — confirms nothing here is still blocked), then the plan at
+`~/.claude/plans/read-all-of-spec-soft-fairy.md` (full workstream detail + verification criteria).
 
 ## Methodology guardrails (do not skip — carried forward from D645, still true)
 
+- **A bypass token belongs to ONE hook — verify which hook printed the block before using it.**
+  Confirmed twice on this repo (2026-08-12 and again 2026-08-17): `[gates-ok:...]` only works for
+  the Claude-Code-level `f5-commit-gate.py` PreToolUse hook. The real git-level `.githooks/pre-commit`
+  chain understands ONLY `--no-verify` (never without explicit permission) or a gate's own mechanism
+  (e.g. `db-consistency/run.py --update-baseline`, itself gated by a THIRD token,
+  `[baseline-ok:<reason>]`). Three distinct token vocabularies confirmed in this one repo — read the
+  actual blocking script's own output before typing any bypass syntax from memory.
+- **A worktree-isolated agent's gate failures unrelated to its own diff can be pure staleness vs
+  `main`, not real regressions.** If `main` moved (a concurrent fix touched a shared
+  DB/classifier/baseline file) after the worktree branched, the agent's gate check compares against
+  stale state and produces a wall of spurious findings. Fix: `git merge origin/main` into the
+  worktree BEFORE committing — not re-investigation, not baselining. Confirmed twice in one session
+  (2026-08-17).
 - ⛔ **NEVER pipe a population-defining survey through `head -N`.** A `head` on the command that
   DEFINES a sweep's scope is not a display convenience, it is a silent data-loss step, and it
   truncates at exactly the band where the short answer still looks complete (cut 23 → 20 on

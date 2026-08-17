@@ -6,6 +6,13 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-08-17 — cap sweep (31 → 30 active), oldest 1 by date, moved verbatim, to make room for 1 new entry at cap
+
+### [2026-07-21] An accurate derived value can still be UNUSABLE if under-keyed — ask what it must be KEYED BY before writing it
+- **Pattern key:** `derived-value-must-be-keyed-to-be-usable`
+- **blub.db row:** `407`
+- **Feedback file:** [feedback_derived_value_must_be_keyed_to_be_usable.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_derived_value_must_be_keyed_to_be_usable.md)
+
 ## 2026-08-16 — archive sweep (31 → 30 active), oldest 1 by date, moved verbatim, to make room for 1 new entry at cap
 
 ### [2026-08-08] Python's default text mode would have turned a 22-entry sweep into a 7,679-line diff
