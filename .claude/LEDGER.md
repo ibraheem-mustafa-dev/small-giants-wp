@@ -289,7 +289,7 @@ closed — confirms nothing here is still blocked), then the plan at
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | **Border-colour sweep close-out — full scope/merge/bug record** | **`decisions.md` D646** |
 | Gradient rollout Phase 0 + scope + storage decisions | `decisions.md` D636, D643, D644, D645 |
-| ⛔ **Wrapper decomposition — NOT complete (corrected 2026-08-17).** The 7 steps are individually done, but the monolith they exist to split **GREW**: `ContainerWrapperControls.js` 1,728→**1,887**, `class-sgs-container-wrapper.php` 2,599→**2,787**, and `components/` still holds exactly one file. Steps 6–7 wired a flag-based opt-in layer ONTO the monolith; **no capability has been extracted.** Next step = the first real extraction, not another flag | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
+| ✅ **Wrapper decomposition — COMPLETE. The shared wrapper is scrapped and split into individual shared panels.** 6 independently-mountable panels exported (`Width`/`Layout`/`Background`/`WrapperColour`/`ShapeDividers`/`GridItemDefaults`); `container` + `physics-canvas` mount **zero** aggregate, purely individual panels. ⛔ **Do not re-audit this by line count** — the files grew because D636 added gradient capability; the split is at the export/mount level (I made exactly that error on 2026-08-17 and had to retract it) | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
@@ -319,6 +319,13 @@ still missing `SgsLinkControl`); 4 parking entries; `~/.claude/plans/` holds **6
 are uncited stale Track 1b docs — a population the project-only sweep misses.
 
 ### ⛔ NEW defects found by the step-level verification (2026-08-17)
+
+0. ⚠ **RETRACTED, recorded so it isn't repeated:** this section first claimed the wrapper
+   decomposition had "not started" because `ContainerWrapperControls.js` and its PHP sibling had GROWN
+   in line count. **Wrong metric.** They grew because D636 added gradient capability. The split is at
+   the **export/mount** level — 6 independently-mountable panels, with `container` and
+   `physics-canvas` mounting zero aggregate. **A file-organisation test cannot measure an API-level
+   decomposition.** Bean corrected it.
 
 1. **`site-header` + `site-footer` each declare 13 `shapeDivider*` attributes with NO control and no
    `ShapeDividersPanel` mount — 26 dead attributes a client can never reach.** Found by triaging the
