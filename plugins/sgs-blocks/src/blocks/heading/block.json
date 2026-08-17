@@ -83,7 +83,8 @@
             "css:width": "customWidth",
             "css:transition-duration": "transitionDuration",
             "css:transition-timing-function": "transitionEasing",
-            "css:color-gradient": "textColourGradient"
+            "css:color-gradient": "textColourGradient",
+            "css:border-color-gradient": "borderColourGradient"
           },
           "states": {
             "hover": {
@@ -246,6 +247,11 @@
     "borderColour": {
       "type": "string",
       "default": ""
+    },
+    "borderColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the border instead of a flat colour. Non-empty wins over borderColour at render time (D636)."
     },
     "boxShadow": {
       "type": "string",
