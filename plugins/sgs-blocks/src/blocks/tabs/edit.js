@@ -125,6 +125,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Inner blocks must be children of the wrapper element (not the nav).
 	// We render them conditionally via CSS display — only show the active tab.
+	// `templateMode` (grid-section/card-grid presets) was removed from
+	// block.json — this composite already restricts children to its own
+	// structural child block (`sgs/tab`) below; a generic preset would only
+	// conflict with that fixed relationship.
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: 'sgs-tabs__panels',
