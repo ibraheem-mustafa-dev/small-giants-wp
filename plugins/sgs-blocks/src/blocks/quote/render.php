@@ -143,6 +143,7 @@ $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 $border_colour         = $attributes['borderColour'] ?? '';
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 $box_shadow              = $attributes['boxShadow'] ?? '';
 $box_shadow_hover        = $attributes['boxShadowHover'] ?? '';
@@ -404,6 +405,13 @@ if ( ! $inherit_style ) {
 
 if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
+}
+
+// --- Border gradient (D636 border builder) — masked ::before ring, gated
+// the SAME way as the flat border-color declaration above. ---
+if ( ! $inherit_style && 'none' !== $border_style && '' !== $border_colour_gradient ) {
+	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '1px';
+	$scoped_css[]          = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_gradient_width );
 }
 
 // --- Base spacing (padding/margin), border-radius, WP colour + typography

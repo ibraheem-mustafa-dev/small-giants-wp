@@ -304,6 +304,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderWidth,
 		borderStyle,
 		borderColour,
+		borderColourGradient,
 		boxShadow,
 		boxShadowHover,
 		boxShadowColour,
@@ -469,6 +470,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: borderColour,
 								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
 								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
 							},
 						],
 					},
