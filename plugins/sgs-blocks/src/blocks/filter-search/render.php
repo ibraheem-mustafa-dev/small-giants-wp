@@ -130,6 +130,11 @@ $input_css = '';
 if ( ! empty( $attributes['inputBorderColour'] ?? '' ) ) {
 	$input_css .= '--sgs-filter-search-border:' . sanitize_text_field( $attributes['inputBorderColour'] ) . ';';
 }
+// D636 border-colour gradient sibling — resolved here, emitted via
+// sgs_border_gradient_css() masked ::before further down (border-color can
+// never legally hold a gradient value, so this never feeds the
+// --sgs-filter-search-border custom property above).
+$input_border_gradient = sgs_css_gradient_value( $attributes['inputBorderColourGradient'] ?? '' );
 if ( ! empty( $attributes['focusRingColour'] ?? '' ) ) {
 	$input_css .= '--sgs-filter-search-focus:' . sanitize_text_field( $attributes['focusRingColour'] ) . ';';
 }
@@ -138,6 +143,18 @@ if ( ! empty( $attributes['textColour'] ?? '' ) ) {
 }
 if ( ! empty( $input_css ) ) {
 	$scoped_css[] = "{$root_sel}{" . $input_css . '}';
+}
+
+// --- Border gradient (D636 border builder) — masked ::before, replaces the
+// flat --sgs-filter-search-border custom property above when set. No hover
+// state exists on this attribute. ---
+if ( '' !== $input_border_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css(
+		"{$root_sel} .sgs-filter-search__input",
+		$input_border_gradient,
+		null,
+		'1px'
+	);
 }
 
 // Base margin — WP-native style.spacing.margin object (skip-serialised in

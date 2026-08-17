@@ -18,7 +18,7 @@ import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
 const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, focusRingColour, textColour } = attributes;
+	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, focusRingColour, textColour } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-filter-search sgs-filter-search--editor-preview',
@@ -38,6 +38,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: inputBorderColour,
 								onChange: ( val ) => setAttributes( { inputBorderColour: val ?? '' } ),
 								linked: true,
+								gradientValue: inputBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { inputBorderColourGradient: val ?? '' } ),
 							},
 						],
 					},
