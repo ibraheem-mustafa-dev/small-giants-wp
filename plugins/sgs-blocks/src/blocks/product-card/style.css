@@ -1077,20 +1077,29 @@
 }
 
 /*
- * FP-H: bound-branch title heading at non-default levels. The bound branches
- * now emit <h2>/<h3>/<h4> per the headingLevel attr; only `.product-card h3`
- * was previously styled, so h2/h4 titles would fall back to UA/theme heading
- * sizes (a dead-control-by-styling gap). Scoped to DIRECT children of
- * .product-card-body — bound markup only.
- * Typed built-in headings are styled by .sgs-product-card__title above.
+ * FP-H / D649: bound-branch title styling is keyed on the CLASS, not the tag.
+ *
+ * This rule used to enumerate `.product-card-body > h2, > h4` because bound
+ * markup emitted a bare tag with no class. That enumeration was a standing
+ * maintenance trap: it had already been extended once (h3 -> h2/h4) and the
+ * newest selectable tag, `p`, was silently unstyled — a dead-control-by-styling
+ * gap that reappears every time the headingLevel enum grows.
+ *
+ * render.php now emits `class="sgs-product-card__title"` on the bound title at
+ * both emission sites, so the single rule above
+ * (`.product-card .sgs-product-card__title`) styles EVERY level identically —
+ * h2..h6, p, and anything added later. The declarations were already
+ * byte-identical, so h2/h4 are visually unchanged.
+ *
+ * It also closes a real defect on the DEFAULT path: bound h3 matched only
+ * `.product-card h3` (0,1,1), which hardcodes weight and colour, so a client's
+ * titleColour was silently IGNORED on bound h3 while h2/h4 honoured it. The
+ * class rule (0,2,0) now wins and reads the custom properties. Verified safe on
+ * the canary: all 4 live instances carrying titleColour are typed-mode (they
+ * already used this class); zero bound-mode instances set it.
+ *
+ * ⛔ Do not reintroduce a tag-enumerated title rule here.
  */
-.product-card .product-card-body > h2,
-.product-card .product-card-body > h4 {
-	font-size: var(--sgs-card-title-font-size, 20px);
-	font-weight: var(--sgs-card-title-font-weight, 500);
-	color: var(--sgs-card-title-colour, var(--wp--preset--color--text, #3a2e26));
-	margin: 0;
-}
 
 /*
  * FP-H: bound-mode secondary CTA — a plain learn-more anchor rendered after

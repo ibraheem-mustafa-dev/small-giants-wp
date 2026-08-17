@@ -1018,8 +1018,15 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php if ( '' !== $sgs_badge_inbody ) : ?>
 					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 				<?php endif; ?>
-				<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. ?>
-				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?>>
+				<?php
+				// FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper.
+				// D649: the title carries `sgs-product-card__title` so styling keys on IDENTITY, not
+				// tag name. Bound markup previously emitted a bare tag, which forced style.css to
+				// enumerate `> h2, > h4` — a rule that had to be extended every time a new tag became
+				// selectable, and silently left the newest one (`p`) unstyled. Keying on the class
+				// makes that class of bug impossible and unifies bound with typed mode.
+				?>
+				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
 					<?php if ( '' !== $card_permalink ) : ?>
 						<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 					<?php else : ?>
@@ -1424,8 +1431,8 @@ ob_start();
 	<?php if ( '' !== $sgs_badge_inbody ) : ?>
 		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 	<?php endif; ?>
-	<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. ?>
-	<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?>>
+	<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. D649: class carries the styling — see the sibling site above. ?>
+	<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
 	<?php if ( '' !== $card_permalink ) : ?>
 		<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 	<?php else : ?>
