@@ -141,7 +141,10 @@
 					"order": 5,
 					"clusters": [ "text" ],
 					"prefix": "title",
-					"_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`."
+					"attrMap": {
+						"tag": "headingLevel"
+					},
+					"_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element."
 				},
 				"subtitle": {
 					"label": "Card subtitle",

@@ -90,9 +90,10 @@
 					"order": 3,
 					"clusters": [ "text" ],
 					"attrMap": {
-						"css:color": "titleColour"
+						"css:color": "titleColour",
+						"tag": "headingLevel"
 					},
-					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap."
+					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:379/381) but this element has no `prefix` declared, so it needs an explicit map."
 				},
 				"price": {
 					"label": "Price",

@@ -80,6 +80,15 @@
 						"css:flex-wrap": "flexWrap"
 					},
 					"_note": "Mirrors sgs/container's `inner` element (block.json). Added 2026-08-05 (Bean): gaps are GRID-element properties — they sit between a block's internal pieces, inside both the OUTER layer and the content-width layer, so they belong to neither. Before this, gap/gapTablet/gapMobile on this block resolved to NO css_property at all: the shared SGS_Container_Wrapper renders them (class-sgs-container-wrapper.php:166-169) but the emission scanner only reads each block's OWN render.php/style.css, and this block declared no explicit attrMap to fall back on. The prefix convention could not have covered it either — with an empty prefix the candidate is built as prefix + PascalCase suffix (\"\" + \"Gap\" = \"Gap\"), which never matches the real lowercase attribute name. That is the same limitation sgs/container's own inner `_note` documents. Explicit mapping is the established fix, not a workaround."
+				},
+				"title": {
+					"label": "Review card title",
+					"order": 3,
+					"clusters": [],
+					"attrMap": {
+						"tag": "headingLevel"
+					},
+					"_note": "Added (D-pending, E12 scoping fix). `headingLevel` sets the rendered tag on `.sgs-trustpilot-reviews__card-title` (render.php:513) — no colour/font-size/weight attribute exists for the per-review title on this block (an honest gap, styled entirely by shared framework CSS), so `clusters: []` — this element exists purely so `headingLevel` resolves to its own element rather than falling in with the unrelated `wrapper`/`inner` elements."
 				}
 			},
 			"fx": {

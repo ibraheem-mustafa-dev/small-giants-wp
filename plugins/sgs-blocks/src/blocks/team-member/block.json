@@ -90,7 +90,10 @@
 					"order": 3,
 					"clusters": [ "text" ],
 					"prefix": "name",
-					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly."
+					"attrMap": {
+						"tag": "headingLevel"
+					},
+					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:320, `.sgs-team-member__name`) but doesn't match the `name` prefix convention on its own."
 				},
 				"role": {
 					"label": "Role",

@@ -1047,6 +1047,91 @@ function isFlaggableLiteral( value, property ) {
 	return true;
 }
 
+// E12 escape-hatch tags — see the PART A comment inside checkBlockJsonDefaults
+// for why these (and only these) are admitted alongside real theme.json
+// element keys.
+const HEADING_ENUM_ESCAPE_HATCH_TAGS = new Set( [ 'p', 'div', 'span' ] );
+
+/**
+ * E12 PART B — resolve a block attribute to its owning `supports.sgs.elements`
+ * key, so E12 can require the enum attribute and a candidate attribute to
+ * land on the SAME element before flagging (the prerequisite the PART A
+ * comment names). This is a minimal attr→element resolver — it mirrors
+ * check-element-manifest-conformance.js's two resolution forms (explicit
+ * `attrMap`, then the `{prefix}{PascalCase}` convention) but does not need
+ * that script's cluster/member machinery, because all it has to answer is
+ * "which element, if any, owns this attribute name".
+ *
+ * Resolution order:
+ *   1. SINGLE-ELEMENT BLOCK — a block declaring exactly one `elements` key
+ *      (e.g. sgs/heading's "heading", sgs/product-faq's "box") has every
+ *      attribute trivially on that one element (mirrors the D293
+ *      "single-semantic-element block IS the wrapper" convention — Spec 32).
+ *      This is why sgs/heading, already the one block E12 evaluates today,
+ *      keeps working unchanged: enum attr and candidate attr both resolve to
+ *      "heading", so scoping is a same-element no-op for it.
+ *   2. EXPLICIT `attrMap` VALUE MATCH — an element whose `attrMap` maps some
+ *      key to a value equal to `attrName` (case-insensitive), skipping
+ *      `native:*` values (those name a WP `supports` path, not a block
+ *      attribute, so they can never equal an attribute name).
+ *   3. `{element.prefix}{PascalCase suffix}` CONVENTION — same boundary rule
+ *      as `findOrphans()` in check-element-manifest-conformance.js: the
+ *      prefix must be followed by an uppercase letter (or nothing), so
+ *      prefix "icon" matches "iconColour" but not "icons". An element with
+ *      no `prefix`, or an explicit `prefix: ""` (the documented orphan-scan
+ *      opt-out for elements whose key string-collides with an unrelated
+ *      top-level attribute — e.g. form-review's "heading" element vs the
+ *      unrelated `headingLevel` attr), is not tried via this route.
+ *
+ * Returns the element key, or `null` when the attribute cannot be resolved
+ * to any element. E12 REFUSES to flag rather than guess in that case — the
+ * house "refuse rather than guess" convention (migrate-tier-object.py S2/S3).
+ *
+ * @param {string} attrName Block attribute name to resolve.
+ * @param {object} elements `supports.sgs.elements` map (may be `{}`).
+ * @return {string|null}
+ */
+function resolveAttrElement( attrName, elements ) {
+	const keys = Object.keys( elements );
+	if ( keys.length === 0 ) {
+		return null;
+	}
+	if ( keys.length === 1 ) {
+		return keys[ 0 ];
+	}
+
+	for ( const key of keys ) {
+		const attrMap = elements[ key ] && elements[ key ].attrMap;
+		if ( ! attrMap || 'object' !== typeof attrMap ) {
+			continue;
+		}
+		for ( const mapped of Object.values( attrMap ) ) {
+			if ( 'string' !== typeof mapped || mapped.startsWith( 'native:' ) ) {
+				continue; // a WP supports path, not a block attribute name
+			}
+			if ( mapped.toLowerCase() === attrName.toLowerCase() ) {
+				return key;
+			}
+		}
+	}
+
+	for ( const key of keys ) {
+		const prefix = elements[ key ] && elements[ key ].prefix;
+		if ( 'string' !== typeof prefix || '' === prefix ) {
+			continue; // undeclared prefix, or explicit opt-out
+		}
+		if ( ! attrName.startsWith( prefix ) ) {
+			continue;
+		}
+		const rest = attrName.slice( prefix.length );
+		if ( rest.length === 0 || rest[ 0 ] === rest[ 0 ].toUpperCase() ) {
+			return key;
+		}
+	}
+
+	return null;
+}
+
 /**
  * Scan one block's block.json for a literal `default` that flattens a
  * theme.json per-element scale (F3b). Returns findings in the same shape the
@@ -1081,56 +1166,58 @@ function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
 
 		// E12 — THEME-ELEMENT DIVERGENCE GATE (see the F3B header comment for
 		// the full rationale): only fires when this attr's enum values are
-		// THEMSELVES theme.json `styles.elements` keys.
+		// THEMSELVES theme.json `styles.elements` keys (PART A), and only flags a
+		// candidate attribute that lands on the SAME `supports.sgs.elements` entry
+		// as the enum attribute (PART B).
 		//
-		// ⚠ D649 — this guard is KNOWN too strict, and widening it is BLOCKED on a
-		// prerequisite. A heading-level enum legitimately offers a non-heading escape
-		// (`p`) so a decorative title can leave the document outline — `sgs/icon-list`
-		// has shipped exactly that in its PHP allowlist (`h2..h6` + `p`) since
-		// FR-36-26c. theme.json declares no `p` element, so one such value
-		// disqualifies the whole enum and the block goes unchecked. Today only
-		// `sgs/heading` is evaluated by this gate.
+		// HISTORY (D649, kept for the record — do not re-attempt either superseded
+		// shape below without re-reading this): the original guard required EVERY
+		// enum value to be a real theme.json element key. A heading-level enum
+		// legitimately offers a non-heading escape (`p`) so a decorative title can
+		// leave the document outline (`sgs/icon-list`'s PHP allowlist, `h2..h6` + `p`,
+		// since FR-36-26c) — theme.json declares no `p` element, so that one value
+		// disqualified the WHOLE enum and 10 of 11 heading-level-enum blocks
+		// (card-grid, form-review, icon-list, pricing-table, process-steps,
+		// product-card, product-faq, team-member, timeline, trustpilot-reviews) went
+		// unchecked; only `sgs/heading` (enum is `h1`..`h6`, no escape hatch) passed.
 		//
-		// ⛔ Do NOT simply relax this to `some()` — measured: it newly admits three
-		// enums that are not element switches and collide only by string coincidence
-		// (`cart.displayMode`→`link`, `heading.headingRole`→`heading`,
-		// `pricing-table.toggleStyle`→`button`).
+		// Two widenings were tried and reverted the same day:
+		//   - `some()` instead of `every()` — measured: newly admits three enums that
+		//     are not element switches at all, colliding only by string coincidence
+		//     (`cart.displayMode`→`link`, `heading.headingRole`→`heading`,
+		//     `pricing-table.toggleStyle`→`button`). NOT reinstated.
+		//   - `every(elementKey || p|div|span)` alone, with NO same-element scoping —
+		//     otherwise the right relaxation (PART A below), but on its own it paired
+		//     the enum with EVERY attribute whose default is a literal for a
+		//     divergent property, with no check the two are even the same part of the
+		//     block. Produced two false positives the same session: `sgs/icon-list`
+		//     .iconColour (the per-item marker) flagged against .headingLevel (the
+		//     list heading), and `sgs/product-card`.ctaFontWeight (the CTA button)
+		//     flagged against .headingLevel likewise. Neither is a real bug — they
+		//     just don't share an element.
 		//
-		// ⛔ And do NOT widen it to `every(elementKey || p|div|span)` either, which is
-		// otherwise correct: it was built and reverted the same session because E12
-		// pairs the enum with EVERY attribute whose default is a literal for a
-		// divergent property, WITHOUT checking the two are on the same element. On
-		// `sgs/icon-list` that immediately produced a false positive — `iconColour`
-		// (the per-item marker, `render.php:137`) flagged against `headingLevel`
-		// (the list heading). A second instance appeared the same day on
-		// `sgs/product-card.ctaFontWeight` (default "600", the CTA button, consumed
-		// via `sgs_button_element_style_css(..., 'cta', ...)`) — likewise nothing to
-		// do with the heading.
-		//
-		// ⚠ NEITHER false positive is reproducible against the code as it stands, and
-		// an audit corrected the record on this: each was observed in a TRANSIENT
-		// state (icon-list under the reverted widening; product-card in the window
-		// after its enum became strings but before `p` was added). Both blocks are
-		// SKIPPED by the entry guard today because their enums contain `p`. Do not
-		// read these as live bugs to suppress — they are evidence about the guard's
-		// SHAPE, not a current finding.
-		//
-		// ⚠ THE REAL SCALE, measured: 11 blocks declare a heading-level enum and
-		// only `sgs/heading` is evaluated — the other 10 (card-grid, form-review,
-		// icon-list, pricing-table, process-steps, product-card, product-faq,
-		// team-member, timeline, trustpilot-reviews) are all skipped for containing
-		// `p`. That is NOT a regression: before D649 those blocks had no enum, a
-		// numeric enum, or no attribute at all, so none was evaluated either. It is a
-		// forgone GAIN, deliberately accepted — enums of `h2..h6` alone would be
-		// evaluated, but would hit the element-blindness above. Closing it means
-		// doing the attrMap scoping, not dropping `p`.
-		//
-		// PREREQUISITE: scope E12 to attributes on the SAME element as the enum attr,
-		// via `supports.sgs.elements[].attrMap`. ⚠ Not a quick fix — `icon-list`
-		// declares 5 elements and maps NEITHER `iconColour` nor `headingLevel`, so
-		// the manifest needs filling before it can scope anything.
-		if ( enumValues.length < 2 || ! enumValues.every( ( v ) => allElementKeys.has( v ) ) ) {
+		// FIX (this pass) — both parts land together; either alone reproduces one of
+		// the two reverted failure modes:
+		//   PART A — accept the small closed escape-hatch set below alongside real
+		//     element keys (not `.some()` — every value must still be either a real
+		//     element key or in this set).
+		//   PART B — resolveAttrElement() (above) resolves BOTH the enum attribute
+		//     and each candidate attribute to their owning `supports.sgs.elements`
+		//     entry via that element's `attrMap` or `{prefix}{PascalCase}`
+		//     convention. A candidate is only flagged when both resolve AND resolve
+		//     to the SAME element. Either attribute resolving to nothing (an
+		//     incomplete manifest) means REFUSE, not guess — see the function doc.
+		if (
+			enumValues.length < 2 ||
+			! enumValues.every( ( v ) => allElementKeys.has( v ) || HEADING_ENUM_ESCAPE_HATCH_TAGS.has( v ) )
+		) {
 			continue;
+		}
+
+		const elements    = ( meta.supports && meta.supports.sgs && meta.supports.sgs.elements ) || {};
+		const enumElement = resolveAttrElement( enumAttrName, elements );
+		if ( ! enumElement ) {
+			continue; // can't resolve the enum attr itself to an element — refuse, don't guess
 		}
 
 		const divergentProps = getDivergentProps( enumValues, elementPropertyValues );
@@ -1148,9 +1235,27 @@ function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
 		}
 
 		for ( const [ attrName, attrDef ] of Object.entries( attributes ) ) {
-			if ( attrName === enumAttrName || ! attrDef || ! ( 'default' in attrDef ) ) {
+			// `attributes` can carry bare-string pseudo-comment keys (e.g.
+			// card-grid's `_comment_items_media`, a documented convention across
+			// 20 blocks — see grep for `"_comment` under `attributes` in any
+			// block.json) rather than a real `{ type, default, … }` attribute
+			// definition. `'default' in attrDef` THROWS on a non-object RHS, so
+			// this must be excluded before the `in` check runs, not just fail it.
+			// Only newly reachable here because PART A above now lets more
+			// blocks' enums past the entry guard than before this pass.
+			if ( attrName === enumAttrName || ! attrDef || 'object' !== typeof attrDef || ! ( 'default' in attrDef ) ) {
 				continue;
 			}
+
+			// PART B — same-element scoping (see the E12 comment above). Refuse
+			// rather than guess when the candidate attribute doesn't resolve to
+			// an element at all, or resolves to a DIFFERENT element than the enum
+			// attribute — this is exactly what stops icon-list.iconColour /
+			// product-card.ctaFontWeight from being flagged against headingLevel.
+			if ( resolveAttrElement( attrName, elements ) !== enumElement ) {
+				continue;
+			}
+
 			const props = attrToCssProps( attrName );
 			if ( props.size === 0 ) {
 				continue;
@@ -1815,6 +1920,155 @@ function writeBaseline( allFindings ) {
 }
 
 // ---------------------------------------------------------------------------
+// SELF-TEST — E12 element-scoping (Part A + Part B, this pass)
+//
+// Mirrors the house `--self-test` convention (see
+// scripts/surveys/lib/wrapper-capability-selftest.js /
+// scripts/surveys/survey-experimental-imports.js): every rule carries a
+// NEGATIVE control (the exact false positive an earlier, reverted version of
+// this gate actually produced) alongside a POSITIVE control (proof the gate
+// still catches a real same-element hardcode once scoping is added — a
+// positive control with no matching negative can't tell "working" apart from
+// "always returns nothing").
+//
+// Runs against synthetic block.json fixtures (NOT the real block.json files)
+// so the assertions pin the GATE's logic, not today's manifest content —
+// but reads the REAL theme.json (via the already-memoized
+// getAllElementKeys()/getElementPropertyValues()) because the per-h-tag
+// font-size/font-weight divergence those fixtures rely on IS the theme.json
+// contract E12 exists to protect; faking that too would test nothing.
+// ---------------------------------------------------------------------------
+
+function selfTestE12() {
+	process.stdout.write( '[check-hardcoded-render-defaults --self-test] E12 element-scoping\n\n' );
+
+	let checks   = 0;
+	let failures = 0;
+	function assert( label, actual, expected ) {
+		checks++;
+		if ( JSON.stringify( actual ) === JSON.stringify( expected ) ) {
+			process.stdout.write( `  PASS  ${ label }\n` );
+		} else {
+			failures++;
+			process.stdout.write(
+				`  FAIL  ${ label }\n        expected ${ JSON.stringify( expected ) }\n        actual   ${ JSON.stringify( actual ) }\n`
+			);
+		}
+	}
+
+	const allElementKeys        = getAllElementKeys();
+	const elementPropertyValues = getElementPropertyValues();
+	if ( allElementKeys.size === 0 || elementPropertyValues.size === 0 ) {
+		process.stdout.write( '  SKIP — theme.json unavailable, cannot exercise E12 (treat as a self-test failure, not a pass)\n' );
+		process.exit( 1 );
+	}
+
+	// CASE 1 — NEGATIVE CONTROL: sgs/icon-list's original reverted false
+	// positive. `iconColour` (the "item-icon" element, per-item marker) must
+	// NOT be flagged against `headingLevel` (the "heading" element) — they
+	// resolve to different elements via the `{prefix}{PascalCase}`
+	// convention, exactly as the real icon-list block.json does today.
+	{
+		const meta = {
+			attributes: {
+				headingLevel: { type: 'string', enum: [ 'h2', 'h3', 'h4', 'h5', 'h6', 'p' ], default: 'h3' },
+				iconColour:   { type: 'string', default: '#ff0000' },
+			},
+			supports: { sgs: { elements: {
+				heading:       { prefix: 'heading' },
+				'item-icon':   { prefix: 'icon' },
+			} } },
+		};
+		const findings = checkBlockJsonDefaults( meta, JSON.stringify( meta, null, 2 ), false );
+		assert(
+			'icon-list.iconColour is NOT flagged against headingLevel (different elements: item-icon vs heading)',
+			findings.some( ( f ) => f.attr.startsWith( 'iconColour' ) ),
+			false
+		);
+	}
+
+	// CASE 2 — NEGATIVE CONTROL: sgs/product-card's original reverted false
+	// positive. `ctaFontWeight` (the "cta" element) must NOT be flagged
+	// against `headingLevel` (the "title" element).
+	{
+		const meta = {
+			attributes: {
+				headingLevel:  { type: 'string', enum: [ 'h2', 'h3', 'h4', 'p' ], default: 'h3' },
+				ctaFontWeight: { type: 'string', default: '600' },
+			},
+			supports: { sgs: { elements: {
+				title: { prefix: 'title', attrMap: { tag: 'headingLevel' } },
+				cta:   { prefix: 'cta' },
+			} } },
+		};
+		const findings = checkBlockJsonDefaults( meta, JSON.stringify( meta, null, 2 ), false );
+		assert(
+			'product-card.ctaFontWeight is NOT flagged against headingLevel (different elements: cta vs title)',
+			findings.some( ( f ) => f.attr.startsWith( 'ctaFontWeight' ) ),
+			false
+		);
+	}
+
+	// CASE 3 — POSITIVE CONTROL (synthetic): a genuine SAME-element hardcode
+	// must still be caught. No block among the current 11 heading-level-enum
+	// blocks happens to ship a literal font-weight default mapped onto the
+	// SAME element as its own headingLevel today (that's exactly why this is
+	// a synthetic fixture rather than a real-block citation — see the task
+	// report for the honest "no live positive exists yet" finding). This
+	// proves the gate still FIRES once an enum attr and a candidate attr
+	// resolve to the same element, so PART B isn't silently refusing every
+	// case out of over-caution.
+	{
+		const meta = {
+			attributes: {
+				headingLevel:    { type: 'string', enum: [ 'h2', 'h3', 'h4', 'h5', 'h6', 'p' ], default: 'h3' },
+				titleFontWeight: { type: 'string', default: '700' },
+			},
+			supports: { sgs: { elements: {
+				title: { prefix: 'title', attrMap: { tag: 'headingLevel' } },
+			} } },
+		};
+		const findings = checkBlockJsonDefaults( meta, JSON.stringify( meta, null, 2 ), false );
+		assert(
+			'a genuine same-element hardcode (synthetic titleFontWeight vs headingLevel, both element=title) IS still flagged',
+			findings.some( ( f ) => f.attr.startsWith( 'titleFontWeight' ) ),
+			true
+		);
+	}
+
+	// CASE 4 — supporting unit check on resolveAttrElement() directly: a
+	// single-element block (mirrors sgs/heading, sgs/product-faq) resolves
+	// ANY attribute to its one element — this is why sgs/heading, already
+	// evaluated by E12 before this pass, keeps working unchanged.
+	{
+		const elements = { box: { isWrapper: true } };
+		assert(
+			'single-element block resolves an unmapped attribute to its one element',
+			resolveAttrElement( 'anythingAtAll', elements ),
+			'box'
+		);
+	}
+
+	// CASE 5 — an attribute that resolves to NO element (incomplete manifest)
+	// must REFUSE rather than guess — resolveAttrElement() returns null, not
+	// a fallback element.
+	{
+		const elements = {
+			title: { prefix: 'title' },
+			cta:   { prefix: 'cta' },
+		};
+		assert(
+			'an attribute matching no element and no attrMap resolves to null (refuse, not guess)',
+			resolveAttrElement( 'somethingUnrelated', elements ),
+			null
+		);
+	}
+
+	process.stdout.write( `\n${ checks - failures }/${ checks } checks passed\n` );
+	process.exit( failures > 0 ? 1 : 0 );
+}
+
+// ---------------------------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------------------------
 
@@ -1823,6 +2077,11 @@ function main() {
 	const check           = args.includes( '--check' );
 	const asJson          = args.includes( '--json' );
 	const doWriteBaseline = args.includes( '--write-baseline' );
+
+	if ( args.includes( '--self-test' ) ) {
+		selfTestE12();
+		return;
+	}
 
 	const blockDirs = fs
 		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )

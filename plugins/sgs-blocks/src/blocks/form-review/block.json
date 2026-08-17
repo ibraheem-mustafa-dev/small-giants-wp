@@ -36,7 +36,10 @@
                     "order": 1,
                     "clusters": [],
                     "prefix": "",
-                    "_note": "Renders as <h3 class=\"sgs-form-review__heading\"> (dynamic tag driven by the block-wide headingLevel attr since the WCAG 1.3.1 fix — was a hardcoded <h3>) — no per-instance colour/font-size/weight attribute exists on this block; the heading is styled entirely by shared framework CSS. clusters: [] is a genuine gap, not hidden. `prefix: \"\"` opts this element OUT of orphan-scanning's default-to-elementKey fallback (check-element-manifest-conformance.js) — without it, the element key 'heading' string-prefix-matches the unrelated top-level `headingLevel` attr and misreports it as an unclaimed orphan of THIS element, exactly the 'help' element + 'helpText' false-positive the script's own header documents and fixes the same way."
+                    "attrMap": {
+                        "tag": "headingLevel"
+                    },
+                    "_note": "Renders as <h3 class=\"sgs-form-review__heading\"> (dynamic tag driven by the block-wide headingLevel attr since the WCAG 1.3.1 fix — was a hardcoded <h3>) — no per-instance colour/font-size/weight attribute exists on this block; the heading is styled entirely by shared framework CSS. clusters: [] is a genuine gap, not hidden. `prefix: \"\"` opts this element OUT of orphan-scanning's default-to-elementKey fallback (check-element-manifest-conformance.js) — without it, the element key 'heading' string-prefix-matches the unrelated top-level `headingLevel` attr and misreports it as an unclaimed orphan of THIS element, exactly the 'help' element + 'helpText' false-positive the script's own header documents and fixes the same way. `attrMap.tag` added (D-pending, E12 scoping fix, check-hardcoded-render-defaults.js) — a DIFFERENT script from the orphan-scan one above; its resolver reads `attrMap` values regardless of the `prefix: \"\"` opt-out, so this entry is safe alongside it and is the only way `headingLevel` resolves to an element for that gate (there is genuinely no other styleable attribute on this block to collide with it, but the mapping keeps the gate's resolution honest rather than silent)."
                 },
                 "intro": {
                     "label": "Intro text",

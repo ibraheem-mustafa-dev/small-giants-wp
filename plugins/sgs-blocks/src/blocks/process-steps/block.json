@@ -111,9 +111,10 @@
 						"css:font-style": "native:typography.fontStyle",
 						"css:letter-spacing": "native:typography.letterSpacing",
 						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign"
+						"css:text-align": "native:typography.textAlign",
+						"tag": "headingLevel"
 					},
-					"_note": "block.json declares `selectors.typography: '.sgs-process-steps__title'`, so the root's native typography paints the step TITLE. titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`)."
+					"_note": "block.json declares `selectors.typography: '.sgs-process-steps__title'`, so the root's native typography paints the step TITLE. titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`). `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:413, `.sgs-process-steps__title`) but doesn't match the `title` prefix convention on its own."
 				},
 				"number": {
 					"label": "Step number badge",
