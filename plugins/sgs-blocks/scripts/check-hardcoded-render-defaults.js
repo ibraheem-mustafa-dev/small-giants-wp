@@ -1082,6 +1082,34 @@ function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
 		// E12 — THEME-ELEMENT DIVERGENCE GATE (see the F3B header comment for
 		// the full rationale): only fires when this attr's enum values are
 		// THEMSELVES theme.json `styles.elements` keys.
+		//
+		// ⚠ D649 — this guard is KNOWN too strict, and widening it is BLOCKED on a
+		// prerequisite. A heading-level enum legitimately offers a non-heading escape
+		// (`p`) so a decorative title can leave the document outline — `sgs/icon-list`
+		// has shipped exactly that in its PHP allowlist (`h2..h6` + `p`) since
+		// FR-36-26c. theme.json declares no `p` element, so one such value
+		// disqualifies the whole enum and the block goes unchecked. Today only
+		// `sgs/heading` is evaluated by this gate.
+		//
+		// ⛔ Do NOT simply relax this to `some()` — measured: it newly admits three
+		// enums that are not element switches and collide only by string coincidence
+		// (`cart.displayMode`→`link`, `heading.headingRole`→`heading`,
+		// `pricing-table.toggleStyle`→`button`).
+		//
+		// ⛔ And do NOT widen it to `every(elementKey || p|div|span)` either, which is
+		// otherwise correct: it was built and reverted the same session because E12
+		// pairs the enum with EVERY attribute whose default is a literal for a
+		// divergent property, WITHOUT checking the two are on the same element. On
+		// `sgs/icon-list` that immediately produced a false positive — `iconColour`
+		// (the per-item marker, `render.php:137`) flagged against `headingLevel`
+		// (the list heading). The imprecision is invisible today only because
+		// `sgs/heading` is the sole block evaluated, and there every styling attr
+		// genuinely does target the heading.
+		//
+		// PREREQUISITE: scope E12 to attributes on the SAME element as the enum attr,
+		// via `supports.sgs.elements[].attrMap`. ⚠ Not a quick fix — `icon-list`
+		// declares 5 elements and maps NEITHER `iconColour` nor `headingLevel`, so
+		// the manifest needs filling before it can scope anything.
 		if ( enumValues.length < 2 || ! enumValues.every( ( v ) => allElementKeys.has( v ) ) ) {
 			continue;
 		}
