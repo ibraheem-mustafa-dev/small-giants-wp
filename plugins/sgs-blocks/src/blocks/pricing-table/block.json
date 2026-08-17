@@ -521,15 +521,6 @@
 				"space-between",
 				"space-around"
 			]
-		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -19,6 +19,14 @@ import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolv
 import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
+// ⛔ `templateMode` (the container-family allowed-children preset) was
+// declared in block.json but REMOVED (was never wired): this block has no
+// InnerBlocks slot — every plan is a typed repeater ITEM inside the `plans`
+// array attribute (arrayContentLift, block.json), edited via RichText/
+// TextControl/IconPicker bound to array indices, not a child-block tree.
+// There is no children roster to restrict. Do not re-add templateMode
+// without first adding a genuine InnerBlocks slot.
+
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
