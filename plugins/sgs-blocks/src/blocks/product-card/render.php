@@ -448,9 +448,12 @@ if ( 0 === $product_id && isset( $block->context['postId'] ) ) {
 
 $data = \SGS\Blocks\Product_Bindings::get_product_data( $product_id, $source_mode );
 
-// FP-H: bound-branch title heading tag from headingLevel, clamped 2–4 (same
-// clamp as the typed built-in helper). Integer-derived — injection-safe.
-$sgs_bound_htag = 'h' . max( 2, min( 4, (int) ( $attributes['headingLevel'] ?? 3 ) ) );
+// FP-H: bound-branch title heading tag from headingLevel. Allowlisted against
+// the block's own h2/h3/h4 enum (mirrors sgs/icon-list's pattern) — injection-safe.
+$sgs_allowed_heading_levels = array( 'h2', 'h3', 'h4' );
+$sgs_bound_htag             = in_array( $attributes['headingLevel'] ?? '', $sgs_allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
 
 // FP-H: resolve the CTA behaviour ONCE for all bound branches (context seed +
 // markup share this value so label and behaviour always agree).
@@ -1015,14 +1018,14 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php if ( '' !== $sgs_badge_inbody ) : ?>
 					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 				<?php endif; ?>
-				<?php // FP-H: heading tag from headingLevel (clamped int — injection-safe); title via override helper. ?>
-				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
+				<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. ?>
+				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'. ?>>
 					<?php if ( '' !== $card_permalink ) : ?>
 						<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 					<?php else : ?>
 						<?php echo esc_html( $sgs_resolved_title ); ?>
 					<?php endif; ?>
-				</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
+				</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'. ?>>
 
 				<?php if ( '' !== $sgs_resolved_desc ) : ?>
 				<div class="product-desc">
@@ -1421,14 +1424,14 @@ ob_start();
 	<?php if ( '' !== $sgs_badge_inbody ) : ?>
 		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 	<?php endif; ?>
-	<?php // FP-H: heading tag from headingLevel (clamped int — injection-safe); title via override helper. ?>
-	<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
+	<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. ?>
+	<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'. ?>>
 	<?php if ( '' !== $card_permalink ) : ?>
 		<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 	<?php else : ?>
 		<?php echo esc_html( $sgs_resolved_title ); ?>
 	<?php endif; ?>
-	</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer-derived 'h2'|'h3'|'h4'. ?>>
+	</<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'. ?>>
 
 	<?php if ( '' !== $sgs_resolved_desc ) : ?>
 		<div class="product-desc">

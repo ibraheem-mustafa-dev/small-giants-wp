@@ -88,13 +88,14 @@ $sgs_css_length = static function ( $value ) {
 // 2. Extract content attributes.
 // ---------------------------------------------------------------------------
 
-$heading       = $attributes['heading'] ?? 'Frequently Asked Questions';
-$heading_level = (int) ( $attributes['headingLevel'] ?? 2 );
+$heading = $attributes['heading'] ?? 'Frequently Asked Questions';
 // Note: iconPosition is consumed by the child block via providesContext.
 
-// Clamp heading level to permitted range 2–4.
-$heading_level = max( 2, min( 4, $heading_level ) );
-$heading_tag   = 'h' . $heading_level;
+// Allowlisted against the block's own h2/h3/h4 enum (mirrors sgs/icon-list's pattern).
+$sgs_allowed_heading_levels = array( 'h2', 'h3', 'h4' );
+$heading_tag                = in_array( $attributes['headingLevel'] ?? '', $sgs_allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h2';
 
 $anchor = $attributes['anchor'] ?? '';
 

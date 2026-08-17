@@ -100,12 +100,12 @@
 			"role": "content"
 		},
 		"headingLevel": {
-			"type": "number",
-			"default": 2,
+			"type": "string",
+			"default": "h2",
 			"enum": [
-				2,
-				3,
-				4
+				"h2",
+				"h3",
+				"h4"
 			]
 		},
 		"iconPosition": {
@@ -151,7 +151,7 @@
 	"example": {
 		"attributes": {
 			"heading": "Frequently Asked Questions",
-			"headingLevel": 2,
+			"headingLevel": "h2",
 			"iconPosition": "right"
 		},
 		"innerBlocks": [

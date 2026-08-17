@@ -36,9 +36,9 @@ import { UnitControl } from '../../components/primitives';
 import { colourVar } from '../../utils';
 
 const HEADING_LEVEL_OPTIONS = [
-	{ label: __( 'H2', 'sgs-blocks' ), value: 2 },
-	{ label: __( 'H3', 'sgs-blocks' ), value: 3 },
-	{ label: __( 'H4', 'sgs-blocks' ), value: 4 },
+	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
+	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
+	{ label: __( 'Heading 4', 'sgs-blocks' ), value: 'h4' },
 ];
 
 const ICON_POSITION_OPTIONS = [
@@ -136,7 +136,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColour,
 	} = attributes;
 
-	const HeadingTag = `h${ headingLevel }`;
+	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4' ];
+	const HeadingTag = ALLOWED_HEADING_LEVELS.includes( headingLevel )
+		? headingLevel
+		: 'h2';
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-faq',
@@ -196,7 +199,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ headingLevel }
 						options={ HEADING_LEVEL_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { headingLevel: Number( val ) } )
+							setAttributes( { headingLevel: val } )
 						}
 						help={ __(
 							'Pick the level that fits your page outline — usually H2 on a product page.',
