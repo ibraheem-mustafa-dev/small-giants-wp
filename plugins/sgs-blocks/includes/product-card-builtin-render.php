@@ -10,7 +10,7 @@
  *  - image src:         esc_url()
  *  - image alt:         esc_attr()
  *  - tag badge text:    esc_html()
- *  - heading tag name:  (int) clamp to 2–4 → integer literal, injection-safe
+ *  - heading tag name:  in_array allowlist ('h2'|'h3'|'h4'|'p') → injection-safe
  *  - heading text:      esc_html()
  *  - description:       wp_kses_post() (may contain rich inline markup)
  *  - pill labels:       esc_html() + esc_attr() on class
@@ -78,8 +78,13 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 			'pillSelectedBorderRadius' => isset( $attributes['pickerPillSelectedBorderRadius'] ) ? sanitize_text_field( (string) $attributes['pickerPillSelectedBorderRadius'] ) : '',
 		);
 
-		// Heading level — clamp to 2|3|4; integer, not a user string.
-		$sgs_pcard_hlevel = max( 2, min( 4, (int) ( $attributes['headingLevel'] ?? 3 ) ) );
+		// Heading level — allowlisted against the block's own h2/h3/h4/p enum
+		// (mirrors sgs/icon-list's pattern + the bound-mode sites in render.php) —
+		// injection-safe.
+		$sgs_pcard_allowed_heading_levels = array( 'h2', 'h3', 'h4', 'p' );
+		$sgs_pcard_htag                   = in_array( $attributes['headingLevel'] ?? '', $sgs_pcard_allowed_heading_levels, true )
+			? $attributes['headingLevel']
+			: 'h3';
 
 		// CTA style classes — allowlisted; esc_attr applied at output.
 		$sgs_allowed_styles  = array( 'primary', 'secondary', 'outline' );
@@ -136,11 +141,10 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 			endif;
 
 			/*
-			 * Heading tag is an integer (2, 3, or 4) — injection-safe; phpcs:ignore is
-			 * belt-and-braces because WPCS cannot verify integer safety statically.
+			 * Heading tag name is allowlisted against 'h2'|'h3'|'h4'|'p' — injection-safe.
 			 */
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<h' . $sgs_pcard_hlevel . ' class="sgs-product-card__title">' . esc_html( $sgs_pcard_name ) . '</h' . $sgs_pcard_hlevel . '>';
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'.
+			echo '<' . $sgs_pcard_htag . ' class="sgs-product-card__title">' . esc_html( $sgs_pcard_name ) . '</' . $sgs_pcard_htag . '>';
 
 			if ( '' !== $sgs_pcard_desc ) :
 				?>

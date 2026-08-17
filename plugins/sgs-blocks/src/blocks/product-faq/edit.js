@@ -39,6 +39,7 @@ const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
 	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
 	{ label: __( 'Heading 4', 'sgs-blocks' ), value: 'h4' },
+	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
 
 const ICON_POSITION_OPTIONS = [
@@ -136,7 +137,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColour,
 	} = attributes;
 
-	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4' ];
+	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4', 'p' ];
 	const HeadingTag = ALLOWED_HEADING_LEVELS.includes( headingLevel )
 		? headingLevel
 		: 'h2';

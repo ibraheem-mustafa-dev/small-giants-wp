@@ -408,7 +408,8 @@
 			"enum": [
 				"h2",
 				"h3",
-				"h4"
+				"h4",
+				"p"
 			],
 			"description": "HTML heading level for the product title in typed built-in mode (h2, h3, or h4)."
 		},

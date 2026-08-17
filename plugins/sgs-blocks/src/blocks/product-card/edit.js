@@ -911,7 +911,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 
 	// Heading tag derived from headingLevel attr (allowlisted string, e.g. 'h3').
-	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4' ];
+	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4', 'p' ];
 	const headingTag = ALLOWED_HEADING_LEVELS.includes( headingLevel )
 		? headingLevel
 		: 'h3';
@@ -1261,6 +1261,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									{ value: 'h2', label: 'Heading 2' },
 									{ value: 'h3', label: 'Heading 3' },
 									{ value: 'h4', label: 'Heading 4' },
+									{ value: 'p', label: 'Paragraph (not a heading)' },
 								] }
 								onChange={ ( v ) =>
 									setAttributes( { headingLevel: v } )
