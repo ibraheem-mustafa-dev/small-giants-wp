@@ -49,6 +49,38 @@
       "value": "16px",
       "attr": "pickerPillBorderRadius, pickerPillSelectedBorderRadius, tagBorderRadius",
       "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+    },
+    {
+      "block": "sgs/card-grid",
+      "file": "src\\blocks\\card-grid\\block.json",
+      "property": "color",
+      "value": "primary",
+      "attr": "titleColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
+      "reason": "2026-08-17 — unmasked by the E12 element-scoping fix (D-pending): PART A now admits enums containing p/div/span, so card-grid's headingLevel enum (h2..h6,p) reaches the F3b default-value scan for the first time; PART B correctly resolves titleColour and headingLevel to the SAME element ('title'). NOT a real F3 violation — CONFIRMED false positive of a SEPARATE, pre-existing gap in isLiteralConstant()/formatDefaultForLiteralCheck(): titleColour's block.json default (\"primary\") is a design-TOKEN SLUG, not a literal CSS colour. render.php:616-618 always resolves it through sgs_colour_value(), which returns 'var(--wp--preset--color--primary)' — never the literal string 'primary' — so the painted CSS is a var() reference, exempt per this script's own CSS_VAR_RE rule, and correctly theme-differentiated (the var resolves against whatever the theme's 'primary' preset is at each breakpoint/variation, not a flattened constant). Verified by reading render.php directly (not inferred). Fixing the underlying gap (recognising a bare colour-token-slug default as var()-bound) is out of scope for the E12 pass — it is a shared exemption in isLiteralConstant() used by every block's CSS scan, not specific to headingLevel/E12, and changing it deserves its own review. Tracked separately; do not re-baseline blindly if this recurs on a NEW attribute/value pair — verify the render.php path resolves through sgs_colour_value() (or an equivalent local wrapper) first."
+    },
+    {
+      "block": "sgs/pricing-table",
+      "file": "src\\blocks\\pricing-table\\block.json",
+      "property": "color",
+      "value": "text",
+      "attr": "titleColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
+      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:99-104 declares a local `$colour_val` closure that always returns `var(--wp--preset--color--<slug>)`, and render.php:534-535 is the only place titleColour is painted, always through that closure — the block.json default \"text\" is never emitted as a literal. Same root cause, same out-of-scope-for-E12 disposition."
+    },
+    {
+      "block": "sgs/process-steps",
+      "file": "src\\blocks\\process-steps\\block.json",
+      "property": "color",
+      "value": "text",
+      "attr": "titleColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
+      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:381-382 paints titleColour exclusively through sgs_colour_value(), which returns 'var(--wp--preset--color--text)', never the literal 'text'. Same root cause, same out-of-scope-for-E12 disposition."
+    },
+    {
+      "block": "sgs/team-member",
+      "file": "src\\blocks\\team-member\\block.json",
+      "property": "color",
+      "value": "primary",
+      "attr": "nameColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
+      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:583-584 paints nameColour exclusively through sgs_colour_value(), which returns 'var(--wp--preset--color--primary)', never the literal 'primary'. Same root cause, same out-of-scope-for-E12 disposition."
     }
   ]
 }

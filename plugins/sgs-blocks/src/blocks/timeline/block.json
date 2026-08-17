@@ -100,9 +100,10 @@
 						"css:font-style": "native:typography.fontStyle",
 						"css:letter-spacing": "native:typography.letterSpacing",
 						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign"
+						"css:text-align": "native:typography.textAlign",
+						"tag": "headingLevel"
 					},
-					"_note": "block.json declares `selectors.typography: '.sgs-timeline__title'`, so the root's native typography support paints the entry TITLE, not the wrapper — declared on its own element to reflect where it actually renders. No independent title colour control exists (colour is the shared wrapper `color.text`) — honest gap."
+					"_note": "block.json declares `selectors.typography: '.sgs-timeline__title'`, so the root's native typography support paints the entry TITLE, not the wrapper — declared on its own element to reflect where it actually renders. No independent title colour control exists (colour is the shared wrapper `color.text`) — honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:463) and this element has no `prefix` declared, so it needs an explicit map."
 				},
 				"connector": {
 					"label": "Connector line / node",

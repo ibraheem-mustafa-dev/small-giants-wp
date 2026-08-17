@@ -91,7 +91,11 @@
 					"label": "Title",
 					"order": 4,
 					"clusters": [ "text" ],
-					"prefix": "title"
+					"prefix": "title",
+					"attrMap": {
+						"tag": "headingLevel"
+					},
+					"_note": "`attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:454-456 bound branch, render.php:1022-1435 typed branch, `.sgs-product-card__title`) but doesn't match the `title` prefix convention on its own. This is what lets check-hardcoded-render-defaults.js's E12 gate resolve `headingLevel` to THIS element and correctly NOT resolve `ctaFontWeight` here (it resolves to the separate `cta` element below via that element's own `cta` prefix)."
 				},
 				"price": {
 					"label": "Price",
