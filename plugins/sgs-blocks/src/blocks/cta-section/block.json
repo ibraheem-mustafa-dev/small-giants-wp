@@ -288,6 +288,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover border instead of a flat colour. Non-empty wins over borderColourHover on :hover/:focus-within (D636). There is no resting-state sibling — the base border colour is governed by the native supports.__experimentalBorder colour control."
+		},
 		"transitionDuration": {
 			"type": "string",
 			"default": "300"

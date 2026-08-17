@@ -240,6 +240,22 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
+					{
+						key: 'hover-border',
+						label: __( 'Hover border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: attributes.borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
 				] }
 			/>
 

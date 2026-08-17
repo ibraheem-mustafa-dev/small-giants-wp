@@ -96,6 +96,11 @@ $stats        = $attributes['stats'] ?? array();
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
+// D636 border-colour gradient sibling — resolved here, emitted via
+// sgs_border_gradient_css() masked ::before further down; border-color can
+// never legally hold a gradient value, so this never feeds --sgs-hover-border
+// above. gridItemBorder (a separate raw CSS shorthand attribute) is untouched.
+$hover_border_gradient   = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -147,6 +152,20 @@ if ( $has_image_bg ) {
 	// Image backgrounds keep using a CSS background-image so the existing
 	// overlay + text layering continues to work without layout changes.
 	$responsive_css .= $root_sel . '{background-image:url(' . esc_url( $resolved_media['url'] ) . ');background-size:cover;background-position:center}';
+}
+
+// --- Border gradient (D636 border builder) — masked ::before, HOVER-ONLY:
+// there is no resting borderColour attribute on this block (the base border
+// is governed by the native __experimentalBorder colour support, or unset),
+// so the mask is scoped to a single :is(:hover, :focus-within) compound
+// selector rather than the usual normal+hover pair — a comma-separated
+// selector list here would attach the generated ::before to only the LAST
+// listed state (a known gotcha), so :is() keeps it one compound selector. ---
+if ( '' !== $hover_border_gradient ) {
+	$responsive_css .= sgs_border_gradient_css(
+		$root_sel . ':is(:hover,:focus-within)',
+		$hover_border_gradient
+	);
 }
 
 // Class marker replaces the old [style*="background"] attribute sniff
