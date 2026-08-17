@@ -56,6 +56,9 @@ const CTA_TEMPLATE = [
 	],
 ];
 
+// `templateMode` (grid-section/card-grid presets) was removed from block.json —
+// the content column already restricts children to this fixed, more specific
+// list below; a generic preset would only conflict with it.
 const CTA_ALLOWED_BLOCKS = [ 'sgs/heading', 'sgs/text', 'sgs/multi-button' ];
 
 const LAYOUT_OPTIONS = [
