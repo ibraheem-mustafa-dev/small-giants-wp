@@ -1,5 +1,58 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D654 — remaining 2 loose ends closed: E12 gate scoping (R2) + counter.numberColour classifier registration [ROUTINE]
+
+**2026-08-17 (same day, later).** Closes the two items D653 left open. Both were investigated and
+built as background agents, each independently re-verified (build + self-test/gate output re-run
+directly, not trusted from the agent's report) before merging to `main`.
+
+**R2 — E12 gate now covers 11 of 11 heading-level blocks, not 1.** Two-part fix to
+`check-hardcoded-render-defaults.js`'s E12 guard, exactly the prerequisite D649/D653 both named:
+(1) the entry guard now admits the `p`/`div`/`span` escape-hatch tag values alongside real
+theme.json element keys (previously any enum containing `p` disqualified the whole block) —
+deliberately NOT the `.some()` shape tried and reverted earlier, which admitted enums that collide
+with element-key names by string coincidence; (2) a new `resolveAttrElement()` element-scopes the
+comparison loop via `supports.sgs.elements[].attrMap`, so a candidate attribute is only flagged
+against the heading-level enum when both resolve to the SAME element — refusing rather than
+guessing when either side can't be resolved. `attrMap` filled for `headingLevel` on 8 blocks
+(`card-grid`, `form-review`, `pricing-table`, `process-steps`, `product-card`, `team-member`,
+`timeline`, `trustpilot-reviews`); `sgs/heading`/`sgs/icon-list`/`sgs/product-faq` already resolved
+correctly. **Re-verified independently, not just trusted:** ran the gate's own `--self-test`
+directly — 5/5 pass, including both documented false-positive negative controls
+(`icon-list.iconColour` vs `headingLevel`, `product-card.ctaFontWeight` vs `headingLevel`) and a
+synthetic same-element positive control still firing. 4 genuine new findings the wider coverage
+surfaced (`titleColour`/`nameColour` on 4 blocks) were investigated, confirmed to be colour token
+slugs resolved via `sgs_colour_value()` at render time (never painted literally), and baselined as a
+separate pre-existing gap — not blindly suppressed. Also fixed a latent bug the wider coverage
+exposed: several `block.json` `attributes` objects carry bare-string pseudo-comment keys (e.g.
+`card-grid`'s `_comment_items_media`) that crashed the `'default' in attrDef` check with a
+`TypeError` once more blocks reached that code path.
+
+⚠ **Hit and resolved mid-build:** the agent's fix was blocked from committing by ~60 "rogue seed"
+findings in an unrelated pre-existing gate — but this was the SAME drift the counter-classifier fix
+(below) had already resolved on `main` minutes earlier; the agent's worktree had simply branched
+before that merge landed. Fixed by merging current `main` into the worktree before committing, not
+by re-doing any investigation.
+
+**Counter classifier — `sgs/counter.numberColour` and a second, previously-unknown instance
+(`sgs/testimonial.quoteColour`) now survive a reseed.** Root cause (proven by reading the code, not
+guessed): both attributes route through `sgs_resolve_text_colour_or_gradient()`
+(`helpers-tokens.php`, added under D636) — a helper that builds the CSS declaration internally and
+returns it as an opaque string, so the literal property name never appears in `render.php`'s own
+source text where the classifier's tracer looks. Fixed generally (not a special case for `counter`
+alone) by adding a new classifier shape (`_attrs_from_text_colour_resolver_calls` in
+`extract-signatures.py`) that resolves any call site of that specific helper function to
+`css_property='color'` on its flat argument. **Generality confirmed by an isolated before/after
+diff:** exactly 2 additions, 0 removals — `sgs/counter.numberColour` (the reported gap) and
+`sgs/testimonial.quoteColour` (a second real instance the fix caught for free, proving it targets
+the actual cause rather than being tailored to one attribute). Verified: the finding is GONE from
+`db-consistency`'s gate output (not baselined-and-hidden), full converter suite unchanged
+(676/1/11), F6 conformance gate clean.
+
+**Deployed same session.** `2fe4f7ff` to sandybrown, `payload-verify PASS: all 83`. R2's block.json
+attrMap additions are metadata (build-time gate + converter routing signal), not new client-facing
+controls — no visible behaviour change expected, deployed for consistency with `main`.
+
 ## D653 — 3 of 4 typography-initiative residuals closed: text-align emission, empty-state heading tag, tag-identity role reclassification [ROUTINE]
 
 **2026-08-17.** Closes R1, R3, R4 from `reports/2026-08-17-typography-residuals-followup-prompt.md`

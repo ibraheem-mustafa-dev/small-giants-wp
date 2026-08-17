@@ -9,17 +9,17 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-17 (later same day). Three of the four typography-initiative loose ends are closed —
-committed, pushed to `main`, not yet deployed to the live site.** Alignment (left/centre/right) can
-now be sent to the page for the first time (it was silently missing before); two blocks' "nothing
-here yet" placeholder text stopped being mis-tagged as a page heading (checked against real
-accessibility research first, not just my own judgement); and three blocks' heading-level settings
-will now survive the "clone a design" pipeline correctly, closing a gap found earlier today. All
-three ran in parallel, each independently verified, and the database change went through a
-compliance check against the actual code before being applied (not just trusting the investigation
-report) because it touches a shared database other work depends on. One small, unrelated, pre-existing
-database inconsistency surfaced along the way — flagged below, not fixed, since it wasn't part of the
-ask. **One item (R2) is still open — it needs its own design decision, not mechanical work.**
+**2026-08-17 (later same day). ALL FOUR typography-initiative loose ends are now closed — committed,
+pushed, and deployed live.** Alignment (left/centre/right) can now be sent to the page for the first
+time; two blocks' "nothing here yet" placeholder text stopped being mis-tagged as a page heading
+(checked against real accessibility research first); three blocks' heading-level settings now survive
+the "clone a design" pipeline correctly; a safety-check that only watched 1 of 11 relevant blocks now
+watches all 11, properly scoped so it can't wrongly flag unrelated settings (the two shortcuts that
+would have caused that were already tried and reverted before today — this fix does it properly); and
+a colour setting that worked but wasn't properly recorded in the framework's own bookkeeping is now
+registered generally, which caught a second, previously-unknown instance of the same gap for free.
+Everything independently re-verified against the actual code/gate output before merging, not just
+trusted from the background work.
 
 **Earlier the same day:** the border-colour gradient sweep finished — colour is fully closed. The
 whole D636 gradient rollout (background/text/border/shape-divider/icon, everywhere it's genuinely
@@ -80,7 +80,8 @@ close-out doc against the repo found it. Two smaller count errors in the same da
 | R1 — `text-align` now emits from the shared typography helper (8th property, was 0) | `decisions.md` D653 |
 | R4 — gallery/post-grid empty-state placeholder `<h3>`→`<p>` (researched first via `/research-check`) | `decisions.md` D653 |
 | R3 — 3 blocks' `headingLevel` reclassified `role='tag-identity'`, unblocking the D649 converter fix | `decisions.md` D653 |
-| ⚠ New unrelated finding baselined not fixed: `sgs/counter.numberColour` rogue DB seed | `decisions.md` D653 |
+| R2 — E12 gate scoped via attrMap, now covers 11/11 heading-level blocks (was 1/11) — deployed, live-verified | `decisions.md` D654 |
+| Counter classifier fix — `numberColour` + a second bonus catch (`testimonial.quoteColour`) now survive a reseed | `decisions.md` D654 |
 
 ## Blockers
 
@@ -170,18 +171,18 @@ Committed + pushed, **DB reseed already applied locally** (this change lives in 
 ✅ **`text-align` — FIXED** (`decisions.md` D653, `2205dfa9`): `sgs_typography_css_rule()` now emits
 8 properties, not 7. Unblocks the typography initiative's W2b workstream.
 
-⛔ **R2 — STILL OPEN, deliberately not dispatched.** The F3b gate's E12 guard cannot be widened yet:
-it pairs a heading-level enum with **every** literal-defaulted attribute *without checking they share
-an element*, and two candidate widenings were already built and reverted (full reasoning documented
-**inside the gate** — read it before re-attempting). **Prerequisite: scope E12 via
-`supports.sgs.elements[].attrMap`**, which needs the manifest filled first — a design/investigation
-task, not mechanical execution, which is why it wasn't parallel-dispatched with R1/R3/R4.
+✅ **R2 — CLOSED same day (`decisions.md` D654, `d7b82965`/merge `2fe4f7ff`).** E12 now covers 11/11
+heading-level blocks (was 1/11), via the exact prerequisite named above: `supports.sgs.elements[].attrMap`
+filled on 8 blocks + the guard's comparison loop element-scoped through it. `--self-test` (5/5, run
+directly not trusted from the report) confirms both documented false positives
+(`icon-list.iconColour`, `product-card.ctaFontWeight`) stay suppressed and a genuine same-element case
+still fires. Deployed, `payload-verify PASS: all 83`.
 
-⚠ **New, unrelated finding — flagged, not fixed:** `sgs/counter.numberColour` is a real, correctly
-classified colour attribute that was never registered in the DB classifier/override layer (a
-pre-existing "rogue seed" the R3 reseed's own consistency gate surfaced). Baselined with a recorded
-reason rather than silently fixed (out of scope) or silently ignored. Needs its own small decision:
-does it belong in the classifier layer or the override layer?
+✅ **Counter classifier finding — CLOSED same day (`decisions.md` D654, `2db9a2ac`/merge `372f2b3e`).**
+Root cause found (a colour-resolver helper's return value was opaque to the classifier's static
+tracer) and fixed generally, not as a one-off — confirmed by an isolated before/after diff catching a
+SECOND, previously-unknown instance of the identical gap (`sgs/testimonial.quoteColour`) for free.
+`db-consistency`'s finding is genuinely gone, not baselined-and-hidden.
 
 ### Dependency graph
 
@@ -242,26 +243,26 @@ Residuals below — independent, parallel with all of the above.
 
 ## State Snapshot
 
-- **Branch:** `main`. Last CODE commit of this session's work: `66527712` (D653 — R3 tag-identity
-  reclassification), pushed. Also on `main`: `2205dfa9`/`fe5e1078` (R1, text-align emission),
-  `2a6000be`/`22deee71` (R4, empty-state heading tag). ⚠ **Do not treat any hash here as "current
-  HEAD"** — this is a SHARED worktree with concurrent sessions committing to `main`, and a HEAD
-  written into a doc is stale the moment that doc is itself committed. Run `git rev-parse --short HEAD`
-  and `git log --oneline -5` to see where things actually are.
-- **D-ceiling:** **D653** — verify with
+- **Branch:** `main`. All 5 fixes from today's later session (R1/R2/R3/R4 + the counter classifier
+  finding) are committed, merged, pushed, and deployed: `66527712` (R3), `2205dfa9`/`fe5e1078` (R1),
+  `2a6000be`/`22deee71` (R4), `2db9a2ac`/`372f2b3e` (counter classifier), `d7b82965`/`2fe4f7ff` (R2).
+  ⚠ **Do not treat any hash here as "current HEAD"** — this is a SHARED worktree with concurrent
+  sessions committing to `main`, and a HEAD written into a doc is stale the moment that doc is itself
+  committed. Run `git rev-parse --short HEAD` and `git log --oneline -5` to see where things actually
+  are.
+- **D-ceiling:** **D654** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
 - **Build:** green through all ~50 gates, including the git-level `db-consistency`/`cheat-gate`/F5/F6
-  commit floor (`.githooks/pre-commit`) that R3's commit tripped and cleared honestly — one pre-existing,
-  unrelated finding (`sgs/counter.numberColour`) baselined with a recorded reason, not silently waved
-  through. `check-element-manifest-conformance.js`: GATE PASS (unclassified 0, role-map-stale 0,
-  state-without-base 4/4 baselined — unchanged by today's R1/R3/R4 work).
+  commit floor (`.githooks/pre-commit`). `check-element-manifest-conformance.js`: GATE PASS
+  (unclassified 0, role-map-stale 0, state-without-base 4/4 baselined — unchanged by today's work).
+  `check-hardcoded-render-defaults.js --self-test`: 5/5 pass (R2's negative controls, re-run directly).
 - **Converter test suite:** 676 passed / 11 xfailed (unchanged baseline) — the 19 tag-identity tests
   that were previously blocked by R3's misclassification now pass for real.
-- **Canary:** R1/R3/R4 **NOT yet deployed** — committed + pushed to `main` only. R3's DB-only change
-  needs no site deploy (lives in `sgs-framework.db`); R1/R4 need a normal `build-deploy.py` pass
-  whenever the next deploy batches. Last actual sandybrown deploy this session was earlier the same
-  day: `main` (`4ad7840c`), payload checksums 83/83, gradient borders live-verified.
+- **Canary:** ALL of today's later-session work is deployed and live-verified. R1/R4 (`fa72594f`) and
+  R2 (`2fe4f7ff`) both confirmed via `payload-verify PASS: all 83`; R1/R4's actual code content
+  additionally re-confirmed by reading the deployed files directly over SSH (not just the deploy log).
+  R3 and the counter-classifier fix are DB-only, no site deploy needed. Last deploy hash: `2fe4f7ff`.
 - **Worktrees:** agent worktrees from this session (and some carried from D645) still exist under
   `.claude/worktrees/agent-*` — branches all merged, worktree dirs not yet cleaned up, low priority.
   `git worktree remove` each when convenient.
