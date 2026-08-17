@@ -316,12 +316,9 @@ are uncited stale Track 1b docs — a population the project-only sweep misses.
 
 ### ⛔ NEW defects found by the step-level verification (2026-08-17)
 
-0. ⚠ **RETRACTED, recorded so it isn't repeated:** this section first claimed the wrapper
-   decomposition had "not started" because `ContainerWrapperControls.js` and its PHP sibling had GROWN
-   in line count. **Wrong metric.** They grew because D636 added gradient capability. The split is at
-   the **export/mount** level — 6 independently-mountable panels, with `container` and
-   `physics-canvas` mounting zero aggregate. **A file-organisation test cannot measure an API-level
-   decomposition.** Bean corrected it.
+0. ⚠ **RETRACTED (Bean corrected it), kept so it isn't repeated:** I claimed the wrapper decomposition
+   "had not started" because the files GREW in line count. **Wrong metric** — they grew from D636
+   gradient work. **A file-organisation test cannot measure an API-level split.**
 
 1. **`site-header` + `site-footer` each declare 13 `shapeDivider*` attributes with NO control and no
    `ShapeDividersPanel` mount — 26 dead attributes a client can never reach.** Found by triaging the
