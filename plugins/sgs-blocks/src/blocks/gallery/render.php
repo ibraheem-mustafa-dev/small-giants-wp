@@ -393,7 +393,7 @@ ob_start();
 					<circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
 					<polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 				</svg>
-				<h3 class="sgs-gallery__empty-heading"><?php esc_html_e( 'No images yet', 'sgs-blocks' ); ?></h3>
+				<p class="sgs-gallery__empty-heading"><?php esc_html_e( 'No images yet', 'sgs-blocks' ); ?></p>
 				<p class="sgs-gallery__empty-text"><?php esc_html_e( 'Add images via the editor sidebar to populate this gallery.', 'sgs-blocks' ); ?></p>
 			</div>
 			<?php

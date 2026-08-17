@@ -348,7 +348,7 @@ if ( $query->have_posts() ) {
 	echo '<line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
 	echo '<polyline points="10 9 9 9 8 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
 	echo '</svg>';
-	echo '<h3 class="sgs-post-grid__empty-heading">' . esc_html__( 'No posts yet', 'sgs-blocks' ) . '</h3>';
+	echo '<p class="sgs-post-grid__empty-heading">' . esc_html__( 'No posts yet', 'sgs-blocks' ) . '</p>';
 	echo '<p class="sgs-post-grid__empty-text">' . esc_html__( 'The selected category or filter has no published posts. Check back soon or try a different selection.', 'sgs-blocks' ) . '</p>';
 	echo '</div>';
 }
