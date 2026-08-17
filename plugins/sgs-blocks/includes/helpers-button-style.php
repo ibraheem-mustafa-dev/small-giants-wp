@@ -71,6 +71,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$colour_bg_hover     = (string) $read( 'ColourBackgroundHover' );
 		$colour_text_hover   = (string) $read( 'ColourTextHover' );
 		$colour_border_hover = (string) $read( 'ColourBorderHover' );
+		// D636 border-gradient rollout — sibling attributes, gradient-wins-when-set.
+		$colour_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderGradient' ) ) : '';
+		$colour_border_hover_gradient = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderHoverGradient' ) ) : '';
 		$font_weight         = (string) $read( 'FontWeight' );
 		$width_type          = (string) $read( 'WidthType' );
 
@@ -201,6 +204,45 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			);
 
 			$css .= $hover_selector . ',' . $focus_selector . '{' . implode( '', $hover_decls ) . '}';
+		}
+
+		// ── Border gradient (D636 border builder) — masked ::before ring,
+		// appended so it wins the cascade over the flat border-color
+		// declarations above (same selector, later source order — the shared
+		// sgs_border_gradient_css() helper sets border-color:transparent on
+		// the base rule itself). Width mirrors whatever border-width this
+		// call resolved above, falling to 2px (this helper's typical
+		// default) when unset. NOTE: sgs_border_gradient_css()'s own hover
+		// pairing is fixed to :hover/:focus-within (not this file's
+		// :focus-visible convention) — a documented, deliberate reuse of the
+		// shared helper rather than a hand-rolled duplicate.
+		if ( function_exists( 'sgs_border_gradient_css' ) && '' !== $colour_border_gradient ) {
+			$gradient_width = null !== $border_width_shorthand
+				? $border_width_shorthand
+				: ( null !== $border_width ? $border_width . 'px' : '2px' );
+			$css           .= sgs_border_gradient_css(
+				$selector,
+				$colour_border_gradient,
+				'' !== $colour_border_hover_gradient ? $colour_border_hover_gradient : ( '' !== $colour_border_hover ? sgs_colour_value( $colour_border_hover ) : null ),
+				$gradient_width
+			);
+		} elseif ( function_exists( 'sgs_border_gradient_css' ) && '' !== $colour_border_hover_gradient ) {
+			// Resting border stays flat/unset; only the hover state gains a
+			// gradient ring, scoped to :hover only (this call's own
+			// :focus-visible convention, matching $hover_decls above).
+			$gradient_width      = null !== $border_width_shorthand
+				? $border_width_shorthand
+				: ( null !== $border_width ? $border_width . 'px' : '2px' );
+			$hover_only_selector = implode(
+				',',
+				array_map(
+					static function ( $part ) {
+						return $part . ':hover,' . $part . ':focus-visible';
+					},
+					array_map( 'trim', explode( ',', $selector ) )
+				)
+			);
+			$css                .= sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width );
 		}
 
 		return $css;
