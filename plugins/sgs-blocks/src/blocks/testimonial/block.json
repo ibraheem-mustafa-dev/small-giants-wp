@@ -54,6 +54,7 @@
 		},
 		"sgs": {
 			"imageControls": true,
+			"imageControlsExplicit": true,
 			"containerKind": "content",
 			"scalarContentLift": true,
 			"presetSelectors": [ "effectHover" ],
@@ -112,19 +113,19 @@
 					"label": "Avatar image",
 					"order": 6,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls), not the Text/Fill/Layout style clusters."
+					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:89-95 fixes object-fit:cover + border-radius:50% (circular headshot crop) as a component-owned constant — every avatar needs the same crop treatment, matching the CLAUDE.md DEFAULT-vs-HARDCODE test's 'component's own constant stays' carve-out (same status as sgs/label's fixed fontSize:12). Rendered inside a plain `<div>` (render.php), which the generic mechanism's 3 selectors (`> img` / `.wp-block-image > img` / `figure > img`) never reach anyway — leaving it declared-but-unreached would just be a silent no-op, so it is excluded by design rather than left accidentally dead. Only work-media below is wired for genuine per-instance crop control."
 				},
 				"org-logo-image": {
 					"label": "Organisation logo",
 					"order": 7,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls), not the Text/Fill/Layout style clusters."
+					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:101-107 fixes object-fit:contain — a logo must never be cropped, so this is a component-owned constant, not a client-overridable style. Same 'plain `<div>` wrapper, never reached by the generic mechanism anyway' reasoning as avatar-image above."
 				},
 				"work-media": {
 					"label": "Work / case-study media",
 					"order": 8,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus workMedia's own picker, not the Text/Fill/Layout style clusters."
+					"_note": "The ONE image slot this block wires for genuine per-instance crop control (design decision, 2026-08-17) — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots above. `imageControlsExplicit:true` + an explicit `sgs_media_position_css()` call in render.php targets the known selector `.sgs-testimonial__work img, .sgs-testimonial__work video` directly (matches the team-member/gallery/testimonial-slider precedent), rather than relying on the generic render_block guessing injector — which only coincidentally reached this `<figure>`-wrapped slot and never the avatar/logo `<div>`-wrapped ones."
 				},
 				"rating": {
 					"label": "Rating",

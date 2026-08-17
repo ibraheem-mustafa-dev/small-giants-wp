@@ -162,14 +162,14 @@ $hover_border_colour     = $attributes['borderColourHover'] ?? '';
 // $hover_border_colour above, painted via the shared masked ::before ring
 // mechanism, scoped to :hover/:focus-within (this block has no resting-state
 // border colour attribute of its own to override).
-$hover_border_gradient   = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
-$hover_effect            = $attributes['effectHover'] ?? 'none';
-$transition_duration     = $attributes['transitionDuration'] ?? '300';
-$transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
-$hover_scale             = $attributes['scaleHover'] ?? '';
-$hover_shadow            = $attributes['shadowHover'] ?? '';
-$hover_shadow_colour     = $attributes['shadowHoverColour'] ?? '';
-$stagger_delay           = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
+$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
+$hover_effect          = $attributes['effectHover'] ?? 'none';
+$transition_duration   = $attributes['transitionDuration'] ?? '300';
+$transition_easing     = $attributes['transitionEasing'] ?? 'ease-in-out';
+$hover_scale           = $attributes['scaleHover'] ?? '';
+$hover_shadow          = $attributes['shadowHover'] ?? '';
+$hover_shadow_colour   = $attributes['shadowHoverColour'] ?? '';
+$stagger_delay         = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
 
 // ── Width (WS-4 container-mirror, content kind: kept-scalar, no tiers) ─────
 $max_width = $attributes['maxWidth'] ?? '';
@@ -625,6 +625,39 @@ if ( ! empty( $work_media['url'] ) ) {
 	if ( '' !== $work_inner ) {
 		$work_html = '<figure class="sgs-testimonial__work">' . $work_inner . '</figure>';
 	}
+}
+
+// --- Image controls (supports.sgs.imageControls + imageControlsExplicit) ---
+// This block has THREE image slots (avatar / org logo / work media) but only
+// ONE of them is a genuine per-instance crop-control candidate. Design
+// decision (verified against style.css before writing, not guessed):
+// - avatar (.sgs-testimonial__avatar img)  — style.css:89-95 already fixes
+// object-fit:cover + border-radius:50% (a circular headshot crop). This
+// is a component-owned constant, same status as sgs/label's fixed
+// fontSize:12 (CLAUDE.md's DEFAULT-vs-HARDCODE test) — every avatar in
+// every testimonial needs the identical circular cover-crop, so exposing
+// a per-instance override adds an inspector control with no real use.
+// - org logo (.sgs-testimonial__logo img) — style.css:101-107 fixes
+// object-fit:contain. A logo must NEVER be cropped (cropping a client's
+// own brand mark is a defect, not a style choice), so this is also a
+// component-owned constant, not a client control.
+// - work media (.sgs-testimonial__work img/video) — style.css:113-119 sets
+// NO object-fit at all (natural aspect ratio only). Case-study photos
+// vary wildly in composition/aspect ratio, so THIS is the one slot with
+// a genuine per-instance crop need. Wired explicitly (known selector,
+// matches the team-member/gallery/testimonial-slider precedent) rather
+// than relying on the generic render_block guessing injector, since the
+// generic mechanism's 3 CSS selectors only reach a <figure>-wrapped
+// image — the avatar/logo `<div>` wrappers would never be reached by it
+// anyway, so leaving it generic silently only "worked" for this one slot
+// by accident.
+$work_media_position_css = sgs_media_position_css(
+	$attributes,
+	'sgs',
+	$root_sel . ' .sgs-testimonial__work img, ' . $root_sel . ' .sgs-testimonial__work video'
+);
+if ( '' !== $work_media_position_css ) {
+	$scoped_css[] = $work_media_position_css;
 }
 
 // ── Text nodes (gated) — NO inline style="" any more; every declaration is

@@ -25,7 +25,6 @@
 		],
 		"inserter": false,
 		"sgs": {
-			"imageControls": true,
 			"elements": {
 				"wrapper": {
 					"label": "Block wrapper",
@@ -52,7 +51,7 @@
 					"order": 3,
 					"clusters": [],
 					"prefix": "",
-					"_note": "`.sgs-image-sequence__thumbnail` (render.php:183) — the fail-open <img> shown with JS blocked or under reduced motion (FR-38-2). Its inset/size/object-fit are structural defaults (style.css:33-40); `thumbnail` and `thumbnailAlt` are media identity and alt TEXT, not style properties, so no cluster is declared. prefix: \"\" is an explicit opt-out of orphan scanning for that reason (thumbnailAlt is alt TEXT)."
+					"_note": "`.sgs-image-sequence__thumbnail` (render.php:183) — the fail-open <img> shown with JS blocked or under reduced motion (FR-38-2). Its inset/size/object-fit are structural defaults (style.css:33-40); `thumbnail` and `thumbnailAlt` are media identity and alt TEXT, not style properties, so no cluster is declared. prefix: \"\" is an explicit opt-out of orphan scanning for that reason (thumbnailAlt is alt TEXT). ⛔ `supports.sgs.imageControls` was deliberately NOT declared here (design decision, 2026-08-17, correcting a DECLARED-BUT-DEAD finding from check-image-controls-support.py) — the JS canvas that takes over from this thumbnail (fx-image-sequence.js `drawCover()`) ALWAYS scales+crops every frame as a centred cover-fit with zero configurability (no object-position/object-fit param exists in the draw call). Exposing an imageControls panel on the thumbnail would let an operator set e.g. object-fit:contain or a custom focal point that the canvas can never honour — producing a guaranteed visual mismatch/flash the instant JS takes over, worse than a dead control. Removed rather than wired."
 				},
 				"canvas": {
 					"label": "Frame canvas",
