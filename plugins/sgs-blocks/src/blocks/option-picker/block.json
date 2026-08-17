@@ -63,7 +63,8 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:background-color": "native:color.background",
-						"css:color": "native:color.text"
+						"css:color": "native:color.text",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "D294 content-KIND, no-wrapper (render.php:5-33) — the <fieldset> IS the block root (no SGS_Container_Wrapper call). Border radius stays WP-native; width/style/colour are SGS custom object/string attrs (borderWidth/borderStyle/borderColour) per render.php:123-135 — mapped explicitly since no prefix covers bare root attrs. Root has no independent typography (fontSize/weight/etc belong to legend/pill) — those text-cluster members are honest gaps."
 				},
@@ -80,7 +81,8 @@
 					"clusters": [ "text", "fill", "layout" ],
 					"prefix": "pill",
 					"attrMap": {
-						"css:background-color": "pillBgColour"
+						"css:background-color": "pillBgColour",
+						"css:border-color-gradient": "pillBorderColourGradient"
 					},
 					"states": {
 						"selected": {
@@ -88,7 +90,8 @@
 								"css:background-color": "pillSelectedBgColour",
 								"css:color": "pillSelectedTextColour",
 								"css:border-color": "pillSelectedBorderColour",
-								"css:border-radius": "pillSelectedBorderRadius"
+								"css:border-radius": "pillSelectedBorderRadius",
+								"css:border-color-gradient": "pillSelectedBorderColourGradient"
 							}
 						}
 					},
@@ -227,6 +230,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"pillBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting pill border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over pillBorderColour."
+		},
 		"pillSelectedBgColour": {
 			"type": "string",
 			"default": ""
@@ -238,6 +246,11 @@
 		"pillSelectedBorderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"pillSelectedBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the selected pill border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over pillSelectedBorderColour."
 		},
 		"pillFontSize": {
 			"type": "object",
@@ -309,6 +322,11 @@
 		"borderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the root fieldset border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
 		},
 		"width": {
 			"type": "string",

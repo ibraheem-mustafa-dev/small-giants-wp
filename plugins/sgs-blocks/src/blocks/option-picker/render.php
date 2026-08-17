@@ -105,9 +105,11 @@ $show_selected_tick   = array_key_exists( 'showSelectedTick', $attributes ) ? (b
 $pill_bg_colour       = $attributes['pillBgColour'] ?? '';
 $pill_text_colour     = $attributes['pillTextColour'] ?? '';
 $pill_border_colour   = $attributes['pillBorderColour'] ?? '';
+$pill_border_gradient = sgs_css_gradient_value( $attributes['pillBorderColourGradient'] ?? '' );
 $pill_sel_bg_colour   = $attributes['pillSelectedBgColour'] ?? '';
 $pill_sel_text_colour = $attributes['pillSelectedTextColour'] ?? '';
 $pill_sel_border_col  = $attributes['pillSelectedBorderColour'] ?? '';
+$pill_sel_border_gradient = sgs_css_gradient_value( $attributes['pillSelectedBorderColourGradient'] ?? '' );
 // Border-radius attrs are CSS-length STRINGS (e.g. "6px") — so the universal
 // styling-lift's generic string value lands in a matching string attr (no
 // number/string mismatch) AND an explicit "0"/"0px" is distinguishable from
@@ -136,6 +138,7 @@ $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 $border_colour         = $attributes['borderColour'] ?? '';
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // ---------------------------------------------------------------------------
 // 3. Guard: render nothing if no options.
@@ -361,6 +364,31 @@ if ( $content_width ) {
 }
 if ( $root_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+}
+
+// --- Border gradients (D636 border builder) — masked ::before rings.
+// Root: only relevant when a real border is on (mirrors the flat-colour gate
+// above). Pill: all 3 style variants (outlined/filled/ghost) share an
+// identical `border: 2px solid …` shorthand on .sgs-option-picker__pill
+// (style.css:188/238/269), so ONE universal rule covers every variant — no
+// per-style carve-out. Selected: the compound `:checked ~ .pill` selector is
+// reproduced verbatim so specificity matches the flat-colour rule it
+// overrides (both rooted at $root_sel, which out-specifies the variant
+// class prefix style.css itself uses). ---
+if ( '' !== $border_colour_gradient && 'none' !== $border_style ) {
+	$root_gradient_width = '' !== $border_width_top ? $border_width_top : '1px';
+	$scoped_css[]         = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $root_gradient_width );
+}
+if ( '' !== $pill_border_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css( "{$root_sel} .sgs-option-picker__pill", $pill_border_gradient, null, '2px' );
+}
+if ( '' !== $pill_sel_border_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css(
+		"{$root_sel} .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill",
+		$pill_sel_border_gradient,
+		null,
+		'2px'
+	);
 }
 
 // --- Base WP-native style.* — skip-serialised, emitted scoped (contract §A/§b) ---
