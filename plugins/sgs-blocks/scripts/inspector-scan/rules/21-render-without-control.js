@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/plans/spec-35-control-type-contract.md §"The defect
+// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"The defect
 // register" ("The fourth quadrant: declared + rendered + NO CONTROL") and §11
 // field 7 ("Five buckets, not a boolean. The fifth is the fourth quadrant and
 // needs the render-without-control rule").
@@ -634,7 +634,7 @@ module.exports = {
 						'block renders. The framework paints this value and no client can change it.',
 					fix:
 						`Add an inspector control for "${ attr }" following the matching control contract in ` +
-						'.claude/plans/spec-35-control-type-contract.md, OR remove it from block.json and hard-code ' +
+						'.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O, OR remove it from block.json and hard-code ' +
 						'the rendered value if it was never meant to be client-settable.',
 					keyParts: [ attr ],
 				} )

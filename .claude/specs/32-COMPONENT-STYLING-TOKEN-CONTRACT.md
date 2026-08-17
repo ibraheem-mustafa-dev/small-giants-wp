@@ -41,6 +41,40 @@ lock_reason: null
 
 > **Sibling spec (Bean decision, 2026-07-28): Spec 32 and Spec 35 stay SEPARATE, not merged.** Spec 32 (this doc) owns the styling/token EMISSION contract (no-inline, scoped CSS, box-object attrs). Spec 35 owns the block INSPECTOR-UX standard (editor-facing controls). Both gate every block build — read them together.
 
+## 0a. VERIFIED IMPLEMENTATION STATUS — per requirement, 2026-08-17
+
+> Every row below was checked by running a command against the tree, not by reading a status line.
+> Method + full evidence: `.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md`.
+> ⛔ **Re-derive before quoting.** This table is itself a cache; the section it replaced sat stale for
+> weeks while claiming the opposite of the root `CLAUDE.md`.
+
+| Requirement | Status | Evidence |
+|---|---|---|
+| **FR-32-1** no inline `style` content | ✅ **DONE** | `audit-inline-styling.js --check` → **0 violations across 83 blocks**, exit 0 |
+| **FR-32-2** style.css consumes `--wp--custom--{block}-presets--*` | ✅ DONE | `button/style.css:104-129` |
+| **FR-32-3** hover/focus are stylesheet rules | ✅ DONE (static; live hover-diff not re-run) | `--sgs-btn-*-hover` per preset |
+| **FR-32-4** per-instance override is a scoped rule, never inline `--var` | ✅ DONE | 0 `style=` writes in any block `render.php`; `helpers-scoped-instance-vars.php` |
+| **FR-32-4a** per-item repeater override uses `:nth-child(N)` with positional integrity | ✅ DONE | `social-icons:517`, `card-grid:710`, `trust-bar:429` (carries the derived-offset fix) |
+| **FR-32-5** per-client tokens at `settings.custom.{component}Presets` | ⚠ **PARTIAL — 2 of 8** | Only `indus-foods` + `mamas-munches` snapshots carry `buttonPresets`; the other 6 fall through to the FR-32-6 fallback **by construction, not by choice** |
+| **FR-32-6** fallback is always a theme token, never a client hex | ✅ DONE — **and proven in production data**, since 6/8 snapshots already run on the fallback path | `button/style.css:104-129`, no hex literals |
+| **FR-32-7** pipeline extractor lifts draft CSS into `buttonPresets` | ✅ DONE | `scripts/extract-button-presets.py` |
+| **FR-32-8** converter emits the semantic variant class; naked link stays naked | ✅ DONE (code; live DOM not re-run) | `converter/recognition.py` DB-driven; `tests/test_button_preset_seed.py` |
+| **FR-32-9** `{component}Presets` namespace + fixed role vocabulary + **lint/grep check per component** | ⚠ **PARTIAL** | Convention correct where used, but **only one component ever instantiated a group** (`product-card`'s CTA reuses `buttonPresets` — see §11 Q1), and **the "lint/grep check per component" gate does not exist as any script** |
+| **FR-32-10** pipeline extraction + block consumption (box families) | ⚠ see §6.1 — roster stale (74→83 blocks) | |
+| **FR-32-11** blocks register scoped CSS into the shared collector | ✅ **DONE** — ⚠ *prose overstates the call graph* | `class-sgs-css-registry.php`; **68/83 `render.php` still echo their own `<style>`, which is CORRECT** — §6.2(a) designs a single `render_block` priority-99 chokepoint that lifts them, explicitly "NOT ~60 per-block emit-site edits". Only one caller of `sgs_collect_css()` exists, by design |
+
+**§9 Phasing — all three phases DONE.** Phase 1 (button reference), Phase 2 (multi-button /
+product-card CTA / option-picker pills), Phase 3 (framework-wide sweep + build gate, wired into
+`prebuild` and passing).
+
+**§8 Acceptance criteria — 1 of 5 provable statically.** Row 5 (fresh button with `buttonPresets`
+absent still renders) is effectively proven by production data (6/8 client snapshots have no
+`buttonPresets` key). Rows 1–4 specify live Playwright measurement and were **not** re-run in this
+audit — do not read them as verified.
+
+**Open, genuinely:** FR-32-5's 6 un-tokenised client snapshots · FR-32-9's missing per-component
+naming-lint gate · §6.1's stale 74-block roster + the untriaged `mega-panel.borderRadius` scalar.
+
 ## 0. Problem statement
 
 SGS is a reusable component library driven by a cloning pipeline, not a manual-authoring plugin. Two failures made the button (and, by the same anti-pattern, "a huge amount of our blocks") un-reusable and buggy:

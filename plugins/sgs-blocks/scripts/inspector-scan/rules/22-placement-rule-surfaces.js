@@ -1,7 +1,7 @@
 'use strict';
 
 // GROUND-TRUTH: spec=.claude/decisions.md D537 (read verbatim 2026-08-09) +
-// .claude/plans/spec-35-control-type-contract.md §"THE PLACEMENT RULE".
+// .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE PLACEMENT RULE".
 // source=file evidence=the SURFACES list below was not derived from a guess: every
 // entry is a file this session actually had to amend when D537 was propagated
 // (commits f5a31435 + d4d6d687), verified by `git show --stat` on both.

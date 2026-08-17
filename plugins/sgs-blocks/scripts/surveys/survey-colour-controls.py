@@ -14,7 +14,7 @@ Usage:
     python survey-colour-controls.py --json         # machine-readable report
     python survey-colour-controls.py --self-test     # prove the detector can FAIL
 
-Governing doc: .claude/plans/spec-35-control-type-contract.md §1 COLOUR.
+Governing doc: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 COLOUR.
 Canonical component: src/components/DesignTokenPicker.js.
 Banned lookalikes (per spec): ColorPalette, ColorGradientControl, GradientPicker,
 PanelColorGradientSettings, <TextControl type="color">, and the raw GradientPicker

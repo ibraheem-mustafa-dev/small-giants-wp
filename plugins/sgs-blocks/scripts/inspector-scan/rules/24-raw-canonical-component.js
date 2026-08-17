@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/plans/spec-35-control-type-contract.md §1 COLOUR /
+// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 COLOUR /
 // §2 LINK (read live 2026-08-10). §1.1/§1.3: canonical = `DesignTokenPicker`,
 // banned lookalikes = `ColorPalette`/`ColorGradientControl`/`GradientPicker`/
 // `PanelColorGradientSettings`. §2.1/§2.3: canonical = `SgsLinkControl`,

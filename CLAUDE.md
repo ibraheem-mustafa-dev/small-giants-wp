@@ -251,9 +251,19 @@ Only two things here get re-litigated; both are settled:
   `SGS_Container_Wrapper` (genuine grid/section), itself fully scoped.
 - **No version bumps, no deprecations pre-production** (Bean D293 — overrides STOP-57).
 
-**Rollout COMPLETE (D346)** — zero inline `style` attributes on both live sites. ⛔ Never cache a
-roster or count here; verify via the prebuild gates (`audit-inline-styling.js`,
-`check-no-inline.py`). Per-block definition of done: `.claude/plans/block-migration-DONE-checklist.md`.
+**Rollout COMPLETE — re-verified 2026-08-17 by RUNNING the gate, not by reading a doc:**
+`node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` → **0 inline styling violations
+across 83 blocks**, exit 0. Zero `sgs/*` blocks emit an inline `style` property declaration.
+⚠ **Cite D346 with its caveat.** D405 records that D346's *original* inline-zero win was **partly an
+accident** — four `render_block` injectors were having their own inline writes silently stripped, so
+the gate passed while those features were dead. That was root-cause-fixed afterwards
+(`helpers-scoped-instance-vars.php` + the 2026-07-30 sweep). **The claim is true today because it was
+earned, not because the masking bug still hides it.**
+⛔ Never cache a roster or count here; verify via the prebuild gates — `audit-inline-styling.js`
+(static, real failing path) and `no-inline/check-no-inline.py` (**note the `no-inline/` subdirectory**;
+it is a LIVE canary check that **WARNS + PASSES when the canary is unreachable**, so a green run on a
+disconnected machine proves nothing). Per-block definition of done:
+`.claude/plans/block-migration-DONE-checklist.md`.
 Visual-diff reports: repo-ROOT `reports/visual-diff/` (STOP-67).
 
 ### Image controls discipline

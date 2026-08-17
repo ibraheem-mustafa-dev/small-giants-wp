@@ -25,7 +25,7 @@
  * — hex survives), so no extra JS-side conversion is needed here.
  *
  * ── D609 (2026-08-13) — THE STATE + SHAPE RULE ─────────────────────────────
- * Contract: `.claude/plans/spec-35-control-type-contract.md` §1 field 9.
+ * Contract: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` PART O §1 field 9.
  * Bean, from a manual inspector review: "any element specific colour that
  * ends up staying in its element … should still use the same thin
  * rectangular control that shows the number of states pickable per setting

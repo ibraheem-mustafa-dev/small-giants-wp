@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/plans/spec-35-control-type-contract.md §12 (THE
+// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §12 (THE
 // RESPONSIVE WRAPPER FAMILY) source=file evidence=live-read
 // src/blocks/container/components/ContainerWrapperControls.js:276-307 + :351-399
 // and src/blocks/extensions/image-controls.js:224-281, both read 2026-08-10.

@@ -4,7 +4,7 @@
  * Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable.
  *
  * Reads each block's `block.json` `supports.sgs.elements` manifest (schema of
- * record: .claude/plans/spec-35-control-type-contract.md §"THE ELEMENT
+ * record: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §"THE ELEMENT
  * MANIFEST" — rehomed there 2026-08-08 from
  * .claude/plans/archive/spec-35-compound-control-sets-design.md, which is
  * archived and must not be cited as live) and, for every element × declared

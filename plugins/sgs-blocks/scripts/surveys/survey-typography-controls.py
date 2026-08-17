@@ -15,7 +15,7 @@ Usage:
     python survey-typography-controls.py --self-test     # prove the detector can FAIL
 
 Governing docs:
-  - .claude/plans/spec-35-control-type-contract.md §4 LENGTH/UNIT field 6
+  - .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §4 LENGTH/UNIT field 6
     ("the TypographyControls consumers conform") + the FOURTH-QUADRANT trap
     box (§E) documenting the exact false-negative/false-positive pair this
     script exists to survive.

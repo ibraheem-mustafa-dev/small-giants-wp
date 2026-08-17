@@ -1,6 +1,6 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/plans/spec-35-control-type-contract.md §2 LINK
+// GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §2 LINK
 // (amended 2026-08-13 — the "SUPERSEDED" clause at the top of §2, read live
 // before writing this rule). Bean reviewed `sgs/button`'s popover-based LINK
 // control live and ruled it the standard, to be rolled out everywhere a raw

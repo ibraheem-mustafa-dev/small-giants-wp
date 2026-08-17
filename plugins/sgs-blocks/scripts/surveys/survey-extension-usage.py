@@ -5,7 +5,7 @@ extension's denylist (`hideExtensions`) to an allowlist (`enabledExtensions`).
 WHY THIS EXISTS
 ----------------
 The Phase 2.1 plan (`.claude/plans/go-track-1b-playful-hamster.md`) and the
-control-type contract (`.claude/plans/spec-35-control-type-contract.md` §H)
+control-type contract (`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` PART O §H)
 both say the same thing: flipping a universal extension to opt-in WITHOUT
 first measuring real usage risks silently deleting a client capability — the
 extension attaches invisibly (a `blocks.registerBlockType` JS filter, not a

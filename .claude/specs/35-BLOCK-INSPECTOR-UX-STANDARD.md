@@ -816,10 +816,19 @@ commit that built them.** Full per-gate rationale: `plugins/sgs-blocks/CLAUDE.md
 
 - [ ] **control-dense panels use ToolsPanel** — **0 of 15** flagged dense `PanelBody` elements convert.
       (Not contradicted by "23 files use ToolsPanel somewhere" — different populations)
-- [ ] **states use `StateToggleControl`** — ⛔ **the component is DEAD CODE: 0 imports, 0 JSX mounts.**
-      Exported from `components/index.js:45`, mounted nowhere; every apparent use is a comment saying
-      where it *used to* live. State toggling actually works via `DesignTokenPicker`'s `states` prop —
-      a different mechanism than this item names. **Either wire it or delete it and reword the item**
+- [x] **states use `StateToggleControl`** → ⛔ **RE-VERDICT 2026-08-17: the CAPABILITY IS DONE; this
+      item names a component the design DELIBERATELY REJECTED.** An earlier pass in this same audit
+      recorded it "NOT DONE" on the strength of `StateToggleControl` having 0 mounts. That was the
+      wrong conclusion — it checked for the named component instead of asking whether a successor
+      delivers the capability.
+      **D609 (2026-08-13, Bean-ruled, `DesignTokenPicker.js:27-34`) supersedes it explicitly:** states
+      are reached by *"a tab toggle in pop up colour picker between states"* — **"never a sibling
+      control, never a second panel, and NEVER behind an optional '+' disclosure."** `StateToggleControl`
+      **is** a sibling control, i.e. precisely the shape D609 banned.
+      **Live: 60 blocks pass `states:` to the colour control.** `StateToggleControl` is an orphan of the
+      pre-D609 design, still exported from `components/index.js:45` with 0 mounts.
+      **Actions: (a) reword this item to name the D609 tab-toggle mechanism; (b) delete the orphan
+      component.** Neither is a capability gap.
 - [ ] **decorative-image + ARIA-label where needed** — **1 of 14** image-rendering blocks
       (`sgs/media`'s `imageIsDecorative`). `sgs/decorative-image` needs none — it hardcodes
       `aria-hidden` by construction

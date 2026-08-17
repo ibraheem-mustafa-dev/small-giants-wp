@@ -11,7 +11,7 @@ plugins/sgs-blocks/src/components/) to report, per box/border attribute,
 which control component actually renders it today — so a good existing
 shape gets ADOPTED rather than a worse one invented.
 
-Governing spec: .claude/plans/spec-35-control-type-contract.md §5 (4-VALUE
+Governing spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §5 (4-VALUE
 BOX) + §14 (BORDER). Canonical components per §5:
   - ResponsiveBoxControl        — 4-side box (padding / margin / border-width)
   - ResponsiveBorderRadiusControl — 4-corner radius
