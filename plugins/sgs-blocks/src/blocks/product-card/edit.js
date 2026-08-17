@@ -910,8 +910,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		} );
 	}
 
-	// Heading tag derived from headingLevel attr.
-	const headingTag = `h${ headingLevel || 3 }`;
+	// Heading tag derived from headingLevel attr (allowlisted string, e.g. 'h3').
+	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4', 'p' ];
+	const headingTag = ALLOWED_HEADING_LEVELS.includes( headingLevel )
+		? headingLevel
+		: 'h3';
 
 	// D618/D619 — ONE grouped, SGS-owned colour panel, rendered FIRST (mirrors
 	// button/edit.js + option-picker/edit.js). Rows group by CSS property, not
@@ -1253,16 +1256,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									'HTML heading tag for the product name (h2, h3, or h4).',
 									'sgs-blocks'
 								) }
-								value={ String( headingLevel || 3 ) }
+								value={ headingLevel || 'h3' }
 								options={ [
-									{ value: '2', label: 'H2' },
-									{ value: '3', label: 'H3' },
-									{ value: '4', label: 'H4' },
+									{ value: 'h2', label: 'Heading 2' },
+									{ value: 'h3', label: 'Heading 3' },
+									{ value: 'h4', label: 'Heading 4' },
+									{ value: 'p', label: 'Paragraph (not a heading)' },
 								] }
 								onChange={ ( v ) =>
-									setAttributes( {
-										headingLevel: Number.parseInt( v, 10 ),
-									} )
+									setAttributes( { headingLevel: v } )
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize

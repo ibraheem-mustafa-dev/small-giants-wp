@@ -403,12 +403,13 @@
 			"description": "Spec 28 P1 (FR-28-9a): when true, the 'Best value' badge targets the 2nd-largest pack (decoy) instead of the largest. In live-data mode the per-product meta _sgs_decoy_enabled overrides this."
 		},
 		"headingLevel": {
-			"type": "number",
-			"default": 3,
+			"type": "string",
+			"default": "h3",
 			"enum": [
-				2,
-				3,
-				4
+				"h2",
+				"h3",
+				"h4",
+				"p"
 			],
 			"description": "HTML heading level for the product title in typed built-in mode (h2, h3, or h4)."
 		},
