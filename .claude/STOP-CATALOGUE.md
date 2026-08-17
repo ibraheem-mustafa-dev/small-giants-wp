@@ -2326,6 +2326,23 @@ does not fit this catalogue's scope (anti-patterns THIS project's structural def
   each independently), sharpened to the case where the agent reporting the mechanism is the same one
   that caused the effect.
 
+- **STOP-A-FILES-METADATA-NEVER-DECIDES-WHAT-IS-INSIDE-IT.** On 2026-08-17 I was asked whether a
+  shared component had been decomposed. I answered from the file's **LINE COUNT** — it had grown from
+  1,728 to 1,887 lines, so I concluded no split had happened, wrote that into two governing docs, and
+  called it the session's most important finding. I never opened the file. It HAD been split: it
+  exported six independently-mountable panels, listed plainly at the top, and blocks were already
+  mounting them individually. The line count had grown for an unrelated reason (a gradient rollout
+  added real capability). Bean corrected it; the finding was retracted from both docs.
+  **The rule: a filename, a line count, a file's existence, a directory listing and a grep-hit count
+  are all METADATA. None of them is evidence about what a file contains or does. Open the file.**
+  Three sibling instances the same day: a doc's own status line contradicted the gate that actually
+  measured it (Spec 32 said "ROLLOUT ONGOING" while the check returned zero violations); three
+  separate subagents counted comments saying a component *used to* live somewhere as live usage; and
+  a case-sensitive grep for `isDecorative` missed the real attribute `imageIsDecorative`. The
+  structural defence is the verification ladder in
+  `.claude/plans/2026-08-17-spec-verification-programme.md` — LIVE > SOURCE > TOOL > DOC, where DOC is
+  explicitly not evidence and a tool whose own `--self-test` fails drops to DOC tier.
+
 - **STOP-A-DIRECTORY-SCOPED-GATE-CAN-BE-TRIPPED-BY-A-CONCURRENT-SESSIONS-UNRELATED-UNCOMMITTED-FILES.**
   This repo's visual-diff commit gate decides "did this block change visually?" partly by looking at
   a block's WHOLE directory rather than only the staged diff. A `sgs/trust-bar/block.json`-only change

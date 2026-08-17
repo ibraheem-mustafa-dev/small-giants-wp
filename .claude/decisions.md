@@ -1,5 +1,52 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D655 — Spec-verification programme adopted; control-type contract folded into Spec 35; wrapper split per panel [INCIDENT]
+
+**2026-08-17 (later session).** A completion audit of Spec 35 / Spec 32 / the Track 1b plan produced
+claims that were largely unverified, and one materially wrong. **The defining error: I judged whether
+a shared component had been decomposed by its file's LINE COUNT (1,728 → 1,887), never opened the
+file, and wrote that conclusion into two governing docs.** It HAD been split — six independently-
+mountable panels were in its export list, and blocks were already mounting them individually. Bean
+caught it; retracted from both docs. Captured as `STOP-A-FILES-METADATA-NEVER-DECIDES-WHAT-IS-INSIDE-IT`.
+
+**Ruling 1 — the control-type contract is FOLDED into Spec 35 as PART O (Bean-approved).** It was
+`status: AUTHORITATIVE`, 143 KB, `doc_type: reference`, living in `plans/` while Spec 35 deferred to
+it at 9 line sites. Binding clauses moved (placement rule, element manifest, scoping axes, all 14
+control-type contracts, carried obligations, both cross-cutting sections) with section numbering
+preserved, so "contract §14 BORDER" resolves as "Part O §14". Historical material (council verdict,
+absorption map, defect register, enforcement plan) did NOT move — it records how the contract was
+reached, not rules to follow. 16 references repointed, incl. two JSON code files and 13 code comments.
+
+**Ruling 2 — superseded items are DELETED by default, per case (Bean, overriding my recommendation).**
+*If something is superseded, the replacement should be written up too, so there is usually no reason
+to keep a record — it is an easy way to confuse and misinform agents relying on grepping for terms or
+doing surface-level checks, and it creates more work when at most it redirects to the replacement.*
+KEEP only with a named justification. Two guards: confirm the replacement is genuinely written up
+BEFORE deleting, and never delete the underlying need along with the dead mechanism. Applied
+immediately — both `plans/` tombstones deleted (they formed a redirect chain).
+
+**Ruling 3 — decision logs are OUT of any mandatory reading gate (Bean).** They bias investigation
+(read "X was closed" and you hunt for confirmation instead of testing it), can be overturned by a
+later decision that never updates the earlier entry, and can simply be wrong — they are written by
+session agents at the end of long sessions. Consult one only while investigating a specific point,
+and only to learn WHY. A decision log is tier 4 of the verification ladder, like any other doc.
+
+**Ruling 4 — `ContainerWrapperControls.js` split into one file per panel (Bean).** 1,888 → 268 lines
+plus 6 panel files + `_shared.js`. Dependency-driven: 21 of 23 constants belong to exactly one panel;
+`LENGTH_UNITS` was the only shared one; `_GRID_BORDER_STYLE_WORDS` was dead and dropped. The aggregate
+re-exports all six, so the ~30 importing blocks are untouched. Verified: webpack exit 0, four gates
+exit 0, dead-controls findings byte-identical pre/post (stash-compared). Known interaction recorded:
+`inspector-scan` rule 21 resolves control corpora per export, so its advisory count moves — and that
+rule is independently unhealthy on `main` (its `--self-test` FAILS at HEAD, proven by stashing the
+split; recorded `openBacklog` 129 vs live 65).
+
+**Deliverable:** `.claude/plans/2026-08-17-spec-verification-programme.md` — 6 sessions, one doc each,
+under one rule: **no verdict without a command and its raw output, and no doc edit from a number not
+personally re-derived.** Enforced by an evidence class per point (`LIVE`/`RAN-TOOL`/`READ-CODE`/
+`AGENT`), a hard bar on `AGENT`-classed claims reaching any doc, a ban on metadata deciding verdicts,
+and live browser verification inside every session. `/qc` on the plan found 3 executability defects
+(a broken data contract, a canary-down deadlock, 5 bare filenames) — all fixed before it shipped.
+
 ## D654 — remaining 2 loose ends closed: E12 gate scoping (R2) + counter.numberColour classifier registration [ROUTINE]
 
 **2026-08-17 (same day, later).** Closes the two items D653 left open. Both were investigated and

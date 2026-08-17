@@ -4,6 +4,10 @@
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-17] A file's metadata (name, line count, existence) never decides what is inside it — open the file
+- **Pattern key:** `a-files-metadata-never-decides-what-is-inside-it`
+- **Feedback file:** [feedback_a_files_metadata_never_decides_what_is_inside_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_files_metadata_never_decides_what_is_inside_it.md)
+
 ### [2026-08-17] A worktree-isolated agent's gate failures unrelated to its own diff can be pure staleness vs main, not real regressions
 - **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures`
 - **Feedback file:** [feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md)

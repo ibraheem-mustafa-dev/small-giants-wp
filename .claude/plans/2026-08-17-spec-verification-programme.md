@@ -202,6 +202,29 @@ look and what was intended. It never settles anything.
 
 Any "no" → read again. Starting the loop half-read is how the last attempt failed.
 
+
+### Running sessions in parallel — what is safe, and what is not
+
+**Safe to run together: S1 + S5 only** (Bean-ruled 2026-08-17). Different target docs, no write
+overlap, and S5 is small. **S4 is NOT in the parallel set** — its register cross-references Spec 35
+throughout, so it runs after S2/S3 have produced their verdicts.
+
+⛔ **NEVER run S2 and S3 in parallel.** Both write to the same file — Spec 35, Parts A–L and Parts
+M–O. Concurrent edits collide and the later write silently clobbers the earlier. Sequential, always.
+
+⛔ **ONE CANARY LOCK.** Every session's Step 4b deploys to the same canary. Two sessions deploying at
+once means each is live-testing the other's code without knowing it — the exact class of error this
+programme exists to remove. Whoever is running a live pass holds the canary; the others do their
+static work and wait.
+
+⚠ **Shared worktree.** Concurrent sessions committing to `main` has caused real trouble here — it is
+why the pathspec-scoped commit gate exists. Commit with an explicit pathspec, never `git add -A`, and
+re-check `git status` for another session's files before every commit.
+
+**S6 cannot start until all five rosters exist** — it resolves disagreements between them.
+
+Schedule: **`S1 ∥ S5` → `S2` → `S3` → `S4` → `S6`.** Six sessions become five slots.
+
 ---
 
 ## The loop — identical in every doc session
