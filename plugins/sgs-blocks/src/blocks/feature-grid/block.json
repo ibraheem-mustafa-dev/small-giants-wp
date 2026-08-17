@@ -144,10 +144,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"templateMode": {
-			"type": "string",
-			"default": ""
-		},
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
