@@ -1,5 +1,66 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D649 — Typography initiative SCOPED: 8 properties, native strip gated on a content migration, font-family cut [ROUTINE]
+
+**2026-08-17.** D626 queued typography as the next framework-wide initiative after colour's Track
+A+B. This is that scoping pass — 3 research streams + a **5-seat design council** (sidebar geometry,
+execution efficiency, code-grounded fork adjudication, tag level, adversarial pre-mortem). Plan:
+`~/.claude/plans/read-all-of-spec-soft-fairy.md`. Bean-approved.
+
+**Rulings.**
+1. **Scope = 8 properties** (font-size/weight/style, line-height, letter-spacing, text-transform,
+   text-decoration, text-align). **font-family CUT** — the per-block opt-out offered when Bean first
+   ruled it in **does not exist** (`hideExtensions` is a developer-authored, per-block,
+   per-extension-slug denylist with no property granularity and no client surface). Combined with
+   ruling 2 removing the Global Styles link, keeping it would have inverted root `CLAUDE.md`'s
+   canonical saved-defaults model. Declared on 1 of 83 blocks — no divergence to standardise.
+2. **Native WP typography UI off everywhere**, replaced by SGS controls. ⛔ This **overrides** the
+   settled "do not re-open" answer at `go-track-1b-playful-hamster.md` §3.2 ("Should we strip native
+   `supports`? — No"). Legitimate: §3.2 reasoned about BORDER, where the native panel is the best
+   control; typography's controls are being rebuilt, not discarded. **That file is outside the repo
+   and untracked by git** — relocate the settled-questions table into this log before relying on it.
+3. **All 39 blocks in scope, but GATED.** Two disjoint populations: **A** = 22 blocks with SGS
+   typography attrs (real standardisation); **B** = **17 blocks declaring `supports.typography` with
+   ZERO SGS typography attributes** (greenfield). **G1 blocks every strip**: 24 `render.php` files
+   actively read `attributes.style.typography` and paint it, 3 shipped patterns store it, and
+   deprecations are banned (D270/D293) — so no block is stripped until a stored-content migration is
+   proven on a canary page saved BEFORE the change.
+4. **Components: zero forks.** 4 small local components, 1 import (`FontFamilyControl`), and
+   **re-skin `TypographyControls.js` in place** — it already speaks the emitter's dialect and carries
+   the per-property tier-object/flat-scalar routing mirroring `helpers-typography.php:91-93`.
+   ⛔ Core's `LineHeightControl` is **unitless-only** — importing it would DELETE the shipped
+   `em`/`rem`/`px` capability. Core's text-transform control cannot express SGS's 5-value enum.
+   `TypographyPanel` unforkable: core **bundles** `global-styles-engine` inline while wp-scripts
+   **externalises** it to a handle WordPress never registers.
+5. **Tag level → pinned `Settings` panel as an identity control** (extends D537), **not** the
+   Typography panel — placing it there makes the misuse (h2→h3 for smaller text) more discoverable
+   than the correct action. Mandatory **echo** into Typography's unset states. Canonical shape:
+   `string`, enum `["p","h1".."h6"]`, `levelOptions` to narrow per block, default `h2`. Warn on
+   descending skips only; never gate (axe `best-practice`, W3C G141 advisory — whereas the client's
+   workaround, `p-as-heading`, IS `wcag2a`).
+
+**Three live defects this scoping surfaced, none previously known.**
+- **9 blocks emit a hardcoded `<h3>` with no level control** (`card-grid`, `form-review`, `gallery`,
+  `post-grid`, `pricing-table`, `process-steps`, `team-member`, `timeline`, `trustpilot-reviews`) —
+  **the framework skips h2 by construction on every client page.**
+- **The F3b gate is blind to 3 of 4 level attributes** (its guard filters `enum` to strings then
+  checks element keys; `icon-list` has no enum, the numeric enums filter to `[]`). It reads clean
+  because it never looks. **The cloning converter has the same blindness** — `'h3' in {'2','3','4'}`.
+- **`text-align` has ZERO emission in `sgs_typography_css_rule()`** — it emits 7 properties, not 8.
+  New PHP capability, not a re-skin. And `check-dead-controls.js:477-495`'s
+  `PREFIXED_HELPER_SUFFIXES` has no `TextAlign`, so every new alignment control would false-flag as
+  dead. *(The same array also lists all 6 dead `*Tablet`/`*Mobile` families slated for deletion.)*
+
+**Corrections to my own earlier claims, recorded so they are not re-derived.** "63 rows in one
+block" was **FALSE** — `product-card`'s 7 mounts are gated `isBuiltIn`/`isBound`, mutually exclusive,
+max concurrent 6 in two collapsed panels. The mount census counted a **JSDoc comment** (26 mounts,
+not 27) — the standing *grep-is-not-a-census* trap. And the adversarial seat's own "21 not 25 /
+18 not 20" corrections were themselves wrong (re-parsed: 25 and 20 stand); its structural finding
+survived intact and the true Population B is **17**, worse than the 16 it claimed.
+
+**Also owed:** root `CLAUDE.md`'s "44px touch targets" claim is wrong for sidebar controls (40px;
+harmless — 2.1 AA has no target criterion). Add a `CREDITS.md` for the colour/gradient forks.
+
 ## D648 — `gridItemBorder` gradient + hover, the last parked piece of D636/D646 [ROUTINE]
 
 **2026-08-17.** Closes the one piece D646 explicitly parked: a gradient option for
