@@ -206,6 +206,10 @@ const CONTRAST_SAFE_OPTIONS = [
 	{ label: __( 'Force solid', 'sgs-blocks' ), value: 'force-solid' },
 ];
 
+// `templateMode` (grid-section/card-grid presets) was removed from block.json —
+// this block already restricts children to exactly `sgs/site-header-row` below,
+// a more specific structural rule that a generic preset would only conflict
+// with. See sgs/site-header-row for the block that actually wires templateMode.
 const ALLOWED_BLOCKS = [ 'sgs/site-header-row' ];
 
 /**
