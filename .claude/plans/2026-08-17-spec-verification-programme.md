@@ -139,6 +139,50 @@ Each one happened on 2026-08-17:
 
 ---
 
+## ⛔ MANDATORY READING GATE — read these IN FULL before Step 1
+
+Not a skim. Not a grep. **End to end, before touching anything.**
+
+The reason is this project's own hard rule: issues surface mid-work in sections you weren't planning
+to touch, and with the whole doc already in your head you can diagnose them instead of guessing. It
+is also how the 2026-08-17 session went wrong — a section was judged from a summary of it rather than
+the thing itself.
+
+### Every session, without exception
+
+| Read fully | Why |
+|---|---|
+| **This plan** | The loop, the ladder, the rules. You cannot run the session without it |
+| **`.claude/LEDGER.md`** | Where the project actually is today |
+| **`CLAUDE.md`** (root) + **`.claude/CLAUDE.md`** | The 7 non-negotiable rules and the doc conventions |
+| **`.claude/STOP-CATALOGUE.md`** | Every recorded failure pattern. Several fired during 2026-08-17 |
+
+⚠ **Read as reference, never as truth:**
+`.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md` — the prior audit. **Its verdicts
+are unverified input.** Use it to find *where to look*, never to decide what is true. Roughly a third
+of it rests on single-agent reports that were never re-derived.
+
+### Per session
+
+| Session | Read IN FULL before starting | Also open |
+|---|---|---|
+| **S1 — Spec 32** | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` | Root `CLAUDE.md` Spec 32 section (it disagreed with the spec); `decisions.md` D346 **and** D405 (D405 records that D346's win was partly a masking bug) |
+| **S2 — Spec 35 A–L** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts A–L** | **Part G's verdict table** — it overrides Part L in at least two places, so Part L cannot be judged without it. `inspector-scan/rules.json` `_meta` (the mode table + the `zeroIsAClaim` doctrine) |
+| **S3 — Spec 35 M–O** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts M–O** | `plugins/sgs-blocks/package.json` `prebuild` (the real wiring); `.githooks/pre-commit` + `sgs-gates.sh`. Part N's claims are about gates — read the gates, not the prose |
+| **S4 — Track 1b plan** | `~/.claude/plans/go-track-1b-playful-hamster.md` — **all three PARTs** | S2+S3 verdict rosters. PART 3 is marked "settled, never a work-list" — verify that claim too |
+| **S5 — doctrine** | `.claude/plans/spec-35-capability-routing-doctrine.md` | S1–S4 rosters. It mostly confirms or contradicts them |
+| **S6 — close-out** | All five `points.json` rosters | `.claude/parking.md` in full (61 entries); both plans folders |
+
+### Reading-gate self-check — answer before Step 1
+
+1. Did I read the target doc **end to end**, or skim to the parts I expected to matter?
+2. Can I name the sections that **contradict each other** inside it?
+3. Do I know which of its claims are **status prose** versus **requirements**?
+
+Any "no" → read again. Starting the loop half-read is how the last attempt failed.
+
+---
+
 ## The loop — identical in every doc session
 
 Same seven steps each time. Learn once, run five times.
