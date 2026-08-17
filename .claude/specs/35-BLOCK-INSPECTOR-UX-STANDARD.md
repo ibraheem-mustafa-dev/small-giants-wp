@@ -170,9 +170,18 @@ by query/context P · **content-only editing (N: `templateLock:"contentOnly"`)**
 **Content:** dynamic data binding (N: **Block Bindings API**, WP 6.5+ — build on this, not a bespoke
 system) T · repeaters/loops (N: `core/query`) T · counters/ratings/icons P.
 
-**A11y/SEO as controls:** alt-text field (N) T · **decorative-image toggle** (empty alt +
-`aria-hidden`) — gap, cheap, WCAG · heading-level (N) T · **general ARIA-label control** for icon-only
-buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in blocks.
+**A11y/SEO as controls:** alt-text field (N) T · ~~**decorative-image toggle** (empty alt +
+`aria-hidden`) — gap, cheap, WCAG~~ ✅ **BUILT — corrected 2026-08-17**: `imageIsDecorative`
+(`media/block.json:293`) is declared and genuinely wired to render — `media/render.php:606` sets
+`aria-hidden="true"` from it. Scoped to `sgs/media`; `sgs/decorative-image` needs no toggle because it
+hardcodes `aria-hidden="true"` on every image it emits (`render.php:180,250`), i.e. the whole block is
+decorative by construction. ⚠ **Residual is real but narrower than "gap": 13 other image-rendering
+blocks still have no decorative/ARIA attribute** (`inspector-scan` rule 18, advisory) · heading-level (N) T · ~~**general ARIA-label control** for icon-only
+buttons — gap~~ ✅ **PARTLY BUILT — corrected 2026-08-17**: `ariaLabel` is declared on both
+`button/block.json:395` and `icon/block.json:175` — the two blocks that actually render icon-only
+triggers. Also added to `sgs/container`, `sgs/cta-section` and `sgs/trust-bar` at D647 as a landmark
+label for `nav`/`aside`. **Not verified as universal across every block that could render icon-only** —
+that narrower question is the real residual, not "no control exists" · schema → leave to `seo-schema` skill, don't duplicate in blocks.
 
 ## PART D — Responsive UX
 
@@ -734,7 +743,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | **Spacing token control** | raw units | still open — not part of the 2026-07-28 waves; not gated by Part K |
 | ToolsPanel disclosure | **BUILT + ROLLED OUT** — 23 panels converted across 19 blocks, 8 skip-reasoned in-code (`07c67642`+`f5fac495`) | DONE (Wave 2) |
 | **Client-safe editing** | `templateLock:"contentOnly"` resolved **PER-CLIENT OPT-IN ONLY** (D402 design gate, Part G) | Not a framework rollout — deliberate, not a gap |
-| **Dynamic content** | check for bespoke | still open — not part of the 2026-07-28 waves |
+| **Dynamic content** | ~~check for bespoke~~ | ✅ **BUILT — this row was WRONG, corrected 2026-08-17.** `includes/class-sgs-block-bindings-support.php` (`Sgs_Block_Bindings_Support`) is live and wired at `sgs-blocks.php:296`, widening the native Block Bindings API for `sgs/text`, `sgs/heading` and `sgs/button`. Two further binding SOURCES are registered: `class-sgs-site-info-binding.php` and `class-product-bindings.php` (with a PHPUnit test). This is the native mechanism Part G mandates, not a bespoke one. **Residual: confirm the 3-block scope is the intended coverage, or extend it** — not "still open, nothing built" |
 | **Reduced-motion gate** | verify on animation ext | **RESOLVED 2026-07-30 — the "gap" was a measurement bug, not missing gates.** A DB roster regeneration briefly flagged 18 blocks (14× `form-field-*`, `form-review`, `form-step`, `accordion-item`, `tab`) as lacking `prefers-reduced-motion`. All 18 were FALSE POSITIVES: `build-roster.py` substring-matched `"animation"` against the raw `supports.sgs` JSON, so `hideExtensions:["animation"]` — an opt-**OUT** list — was read as *having* animation. None of the 18 even has a `style.css`. Fixed by stripping `hideExtensions` before matching (`animation` 36→18; gate PASS; the 18 retained are the genuinely-animating blocks, all passing). **A genuine framework-wide gate already covers every block:** `theme/sgs-theme/assets/css/core-blocks-critical.css:69-78` (`*`/`*::before`/`*::after` + `!important`), enqueued unconditionally (`functions.php:233`) — it explicitly "replaces piecemeal per-block reduced-motion rules". **RESOLVED 2026-08-01: rule 5 now sees the global gate.** ⚠ The mechanism described below LIVES ON, but it moved: `audit-inspector-conformance.js` was retired 2026-08-06 (Task D, `4e07ab6c`) and this detector now sits in `plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js`, which additionally resolves the theme directory via `ctx.themeDir` rather than a hardcoded path (so a fixture can simulate "global gate absent"). Historically, `audit-inspector-conformance.js` gained `findUnconditionallyEnqueuedThemeCssPaths()` + `cssHasUniversalReducedMotionGate()`: it reads `theme/sgs-theme/functions.php` live each run, follows the `add_action( 'wp_enqueue_scripts', ... )` hook to the enqueuing function, keeps only `wp_enqueue_style()` calls at brace-depth 0 (genuinely unconditional, not inside an `if`/`foreach`), resolves each enqueued CSS file, and checks it for a `@media (prefers-reduced-motion: reduce)` block that targets `*, *::before, *::after` with `!important`. A block whose own `style.css`/`view.js` has no `prefers-reduced-motion` string is no longer flagged when that live-detected global gate is present. Nothing is hardcoded as "the gate exists" — if the CSS rule or its unconditional enqueue is ever removed, the detector returns false on its next read and rule 5 goes back to flagging every genuinely-ungated animating block (proven via a negative-control run against a temporarily gate-blinded copy of the theme files, then confirmed byte-identical via md5 after restore). |
 | **Whole-card link** | **BUILT** — stretched-link overlay (sibling overlay + aria-label + focus ring; nested-`<a>` impossible by construction) replaces the old whole-block `sgsBlockLink` wrap; team-member + info-box dead attrs deleted (`07c67642`) | DONE (Wave 2) |
 | Native duotone/aspectRatio/sticky | duotone + aspectRatio **ADOPTED native** on media/gallery (D402 verdict table, `ac0c30eb`); shadow/minHeight/sticky/gallery-lightbox **KEPT SGS** (deliberate) | DONE (Wave 3) |

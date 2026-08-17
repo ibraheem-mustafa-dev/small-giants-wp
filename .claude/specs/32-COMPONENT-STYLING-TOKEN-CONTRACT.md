@@ -143,7 +143,26 @@ Key decisions:
 - **Tokens via `settings.custom`, not a bespoke generator.** WP already emits the vars from the snapshot — zero generation code (Spec 11 D24 proven; live-verified 2026-07-07).
 - **Framework default = a theme token (`--wp--preset--color--*`), never a client hex** — so a fresh block is neutral-correct and re-skins with the palette.
 
-## 6.1 Geometry token families / box-object contract (added 2026-07-09, `no-inline-styling-design-gate` + `box-object-interface-contract`; ROLLOUT ONGOING)
+## 6.1 Geometry token families / box-object contract (added 2026-07-09, `no-inline-styling-design-gate` + `box-object-interface-contract`; ROLLOUT COMPLETE — ⚠ ROSTER STALE, see box below)
+
+> ⚠ **Heading corrected 2026-08-17.** It read "ROLLOUT ONGOING" while root `CLAUDE.md` said "Rollout
+> COMPLETE (D346)". The rollout IS complete — verified by running the gate, not by reading either doc:
+> `node scripts/audit-inline-styling.js --check` → **0 inline styling violations across 83 blocks**,
+> exit 0. **Zero `sgs/*` blocks emit an inline `style` property declaration today.**
+>
+> ⛔ **But read D405 before quoting D346.** D405 records that D346's original inline-zero win was
+> *partly an accident* — four `render_block` injectors were having their inline writes silently
+> stripped, so the gate passed while the features were dead. That was root-cause-fixed afterwards
+> (`helpers-scoped-instance-vars.php` + the 2026-07-30 sweep). **The zero-inline claim is true today
+> because it was earned, not because the masking bug still hides it** — which is a different and
+> stronger statement than either doc previously made.
+>
+> ⚠ **The family roster below is STALE and was never re-run.** It claims "a universal scan of all 74
+> blocks". Live count is **83** (`ls plugins/sgs-blocks/src/blocks/*/block.json | wc -l`); 14 blocks
+> were added after the scan date. Spot-checked: the new blocks mostly adopted the object shape by
+> construction, **except `mega-panel.borderRadius`, a flat `{"type":"string","default":"20px"}` scalar
+> that appears in neither the MERGE nor the KEEP-SCALAR table** — it postdates both. Re-run the scan
+> before treating the roster as authoritative.
 
 **Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **ROLLOUT COMPLETE (D346, 2026-07-18).** The framework-wide inline-zero drive is DONE: both live sites (palestine-lives Indus + sandybrown Mama's) render EVERY `sgs/*` block with ZERO inline `style` attributes (verified live — page-wide `style="--"`=0, empty `style=""`=0). The remaining surface was cleared by (a) the two-facet shared-`SGS_Container_Wrapper` change (Facet A: emit the `style` key only when non-empty → kills empty `style=""` on every content-KIND composite + header/footer; Facet B: route `$styles` `--var` VALUES to a scoped `.$uid{…}` rule) and (b) block-private conversions of the residual blocks (info-box/icon/testimonial/button/cart/option-picker/audio/collapsible-text/responsive-logo/mega-menu). Every affected `[style*="--sgs-*"]` presence-selector was rewritten to `var(--x,<resting>)` inert fallbacks (GOTCHA F). See D346 + `reports/visual-diff/*-2026-07-18.md`. Only remaining follow-up: a structural anti-regression prebuild gate (deferred to a new session). `P-NOINLINE-ROSTER-RECOUNT` resolved.
 
@@ -298,13 +317,17 @@ WP var derivation: `settings.custom.buttonPresets.primary.hover-background` → 
 - **Supersedes the D283 preset-as-seed inline-attr styling model** (Spec 11 2026-07-06 update). The button's OWN "Apply preset" button + render.php's inline colour painting are removed for styling; `inheritStyle` remains only as the variant selector that drives the BEM class. **`src/blocks/button/presets.js` itself is RETAINED** (not deleted) — it is reused by `sgs/product-card`'s CTA "Apply preset" control; only the button block's own consumption of it for styling was removed. Do not treat this file as dead per spec — check its live import graph before touching it. Pre-production (D270 no-deprecations) — existing dev/canary buttons are re-cloned, not migrated.
 - Spec 11 §3/§4 styling model is now historical; this spec is the operative styling contract. Spec 11 remains the button's attribute-surface / feature reference.
 
-## 11. Open Questions
+## 11. Open Questions — ✅ ALL THREE ANSWERED IN SHIPPED CODE (verified 2026-08-17)
 
-| Question | Owner | Due |
-|---|---|---|
-| Does product-card's `cta*` prefixed set fold into `cardPresets`, or keep a `cta`-scoped token group reused from `buttonPresets`? | Claude | Phase 2 |
-| Should the per-instance override var be block-scoped (`--sgs-button-background`) or a shared cross-block name? Block-scoped is proposed. | Claude | Phase 1 build |
-| Outline hover border: draft says `var(--primary)` (not `primary-dark`). Keep faithful to draft, or does Bean update the draft to `primary-dark`? | Bean | Phase 1 |
+⚠ **These sat marked "open" with a `Due: Phase 1/Phase 2` long after both phases closed. Every one was
+in fact resolved by the implementation; the table was never updated.** Verified directly against the
+tree, not inferred from prose.
+
+| Question | Owner | Answer, as shipped | Evidence |
+|---|---|---|---|
+| Does product-card's `cta*` set fold into `cardPresets`, or reuse `buttonPresets`? | Claude | **REUSE `buttonPresets`.** No `cardPresets` group was ever created — `git grep -c cardPresets` across `plugins/` + `sites/` returns **0**. The CTA's colour is governed entirely by the shared `.sgs-button` / `.sgs-button--{preset}` class channel under the composite-mirror rule; the former per-block divergent rules were removed as a bug | `product-card/style.css:204-241` (D310 colour + D314 layout composite-mirror) |
+| Block-scoped override var, or a shared cross-block name? | Claude | **BLOCK-SCOPED, as proposed.** Every block uses its own prefixed namespace — `--sgs-btn-*`, `--sgs-op-*`, `--sgs-mb-btn-*`, `--sgs-social-*`, `--sgs-trust-badge-*` | `button/style.css`, `option-picker/style.css`, `multi-button/render.php` |
+| Outline hover border — keep draft-faithful `var(--primary)`, or update the draft to `primary-dark`? | Bean | **DRAFT-FAITHFUL `primary` kept.** The outline preset's hover-border falls back to `var(--wp--preset--color--primary)`; the draft was not changed | `button/style.css:129` |
 
 ## 12. Palette Token Semantics (the colour-role contract) — added 2026-08-01, v1.5
 
