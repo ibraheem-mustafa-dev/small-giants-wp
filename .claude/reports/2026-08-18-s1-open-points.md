@@ -4,18 +4,19 @@ date: 2026-08-18
 session: S1 of the spec-verification programme (Spec 32)
 status: S1 steps 1–4c COMPLETE · steps 5, 6, 7 OUTSTANDING
 governing_plan: .claude/plans/2026-08-17-spec-verification-programme.md
-roster: .claude/scratch/spec32-points.json
+roster: .claude/reports/2026-08-18-spec32-points-roster.json
 ---
 
 # S1 — open points for the follow-up session
 
-**Read this with the roster open.** `.claude/scratch/spec32-points.json` holds all 219 points, each
-with its prediction, command, raw output, verdict, evidence class and reason. Nothing below needs to
-be re-derived from scratch — it needs finishing.
+**Read this with the roster open.** `.claude/reports/2026-08-18-spec32-points-roster.json` holds all
+219 points, each with its prediction, command, raw output, verdict, evidence class and reason.
+Nothing below needs to be re-derived from scratch — it needs finishing.
 
-⚠ **The roster lives in `.claude/scratch/`, which is gitignored and ages out after 30 days**
-(Bean-decided 2026-08-17). It is NOT version-controlled. If the follow-up session is more than a few
-weeks away, promote it to `reports/` first.
+⚠ **Use the `reports/` copy, not `.claude/scratch/spec32-points.json`.** The working copy lives in
+scratch, which is gitignored and ages out after 30 days (Bean-decided 2026-08-17); it was promoted to
+`reports/` at close so S6 can still read it. The two were identical at handoff — if you edit the
+scratch copy during the session, re-copy it to `reports/` before closing.
 
 ---
 

@@ -194,8 +194,11 @@ Per the programme. ⛔ NEVER S2 ∥ S3 (same file). ⛔ ONE canary lock.
   `check-preset-token-naming`, `check-id-scoped-emits`, `audit-inline-styling` all exit 0.
 - **Canary:** deployed and live-verified — all 21 palette slugs resolve at `:root`, 0 inline styles
   across 59 blocks, reduced-motion rule matches 1 element. ⚠ `wp_global_styles` push still pending.
-- **Uncommitted:** `plugins/sgs-blocks/scripts/check-dead-controls.js` — **another session's work**
-  (a real fix to its comment-stripper). Deliberately untouched. Do not commit or revert it.
+- **Uncommitted: a CO-ACTIVE SESSION is live on this repo.** At handoff it held
+  `gallery/style.css`, `info-box/style.css`, `post-grid/style.css`, `tabs/style.css` (and earlier
+  `scripts/check-dead-controls.js`, a real fix to its comment-stripper, since committed). **The set
+  moves — re-run `git status` yourself; do not trust this list.** Deliberately untouched: commit by
+  explicit pathspec only, never `git add -A`, and never revert a file you did not change.
 
 ## Pointers
 
