@@ -21,6 +21,20 @@ supersedes: "spec-35-media-positioning-standard-design.md (b202f965) — same se
 > declared). Full record: `go-track-1b-playful-hamster.md` Phase 4 "Background, part 2". The
 > `imageControls`-specific gate this doctrine originally scoped is still not built.
 
+> ✅ **SECOND CORRECTION — 2026-08-17 completion audit. The `imageControls` gate IS now built, one day
+> after the line above was written.** `plugins/sgs-blocks/scripts/surveys/check-image-controls-support.py`
+> shipped 2026-08-12 (`ceec53b3`, "feat(gates): imageControls effect-verification gate"), carries the
+> full `--survey`/`--check`/`--self-test` triad, and is wired into `prebuild` plus a standalone
+> `npm run check:image-controls-support`. **Nothing under Part 6 remains "never built" for its original
+> target.**
+>
+> ⚠ **But read the wiring, not just the presence:** it is wired as
+> `(python scripts/surveys/check-image-controls-support.py --check || echo [ADVISORY] …)` — the `||`
+> absorbs its exit 1, so it **cannot fail the build**. Deliberate at introduction (this project's own
+> doctrine says never gate on the run that introduces a gate), and the promotion trigger is unchanged:
+> fix or remove `sgs/image-sequence`'s dead `imageControls` declaration, then flip it to blocking.
+> Evidence: `.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md`.
+
 # Capability routing doctrine
 
 ## Context — what this is, and why it is not a media doc

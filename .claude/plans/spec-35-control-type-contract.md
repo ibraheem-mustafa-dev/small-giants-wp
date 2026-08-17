@@ -1749,9 +1749,33 @@ calls it. **11,932 errors.** Net of formatting: 111 unsafe experimental API impo
 `BaseControl` a11y defects, 20 `jsx-a11y` label issues, 23 i18n issues, one genuine conditional-hook
 bug. Bumping 22.22.0 → 24.4.0 is a drop-in (do NOT go to 25.x — needs ESLint 9 + flat config).
 
-### Gates built and wired to nothing
-`check-universal-fit.js` · `check-duplicate-controls.js` · `audit-block-file-consistency.py` ·
-`audit-block-uniformity.py` · `lint:js`. Zero references in `package.json` each.
+### ~~Gates built and wired to nothing~~ — ⛔ STALE ON 4 OF ITS 5 INSTANCES (corrected 2026-08-17 completion audit)
+
+~~`check-universal-fit.js` · `check-duplicate-controls.js` · `audit-block-file-consistency.py` ·
+`audit-block-uniformity.py` · `lint:js`. Zero references in `package.json` each.~~
+
+**Re-measured against `package.json` on 2026-08-17. The "zero references" claim does not hold:**
+
+| Script | Actual wiring |
+|---|---|
+| `check-universal-fit.js` | **WIRED-BLOCKING** in `prebuild`, with a real failing path (`process.exit( allOk ? 0 : 1 )`) |
+| `check-duplicate-controls.js` | **WIRED-BLOCKING** in `prebuild` |
+| `audit-block-file-consistency.py` | **WIRED-BLOCKING** in `prebuild` — but see below |
+| `audit-block-uniformity.py` | **WIRED, NEUTRALISED** — `(… \|\| echo [ADVISORY] …)`; `\|\|` absorbs its exit 1 |
+| `lint:js` | unchanged; still not in the gate chain (per E6) |
+
+⚠ **The register's general point survives in a DIFFERENT and more precise form — the failure is not
+"unwired", it is "wired but non-blocking".** Three mechanisms, all live:
+1. **Shell-neutralised** — 5 prebuild entries wrapped `(script --check || echo [ADVISORY] …)`:
+   `check-dead-api-calls.py`, `audit-declared-vs-seeded-roles.py`, `audit-block-uniformity.py`,
+   `check-editor-render-parity.js`, `check-image-controls-support.py`.
+2. **Flag-neutralised** — `check-simple-surface-cap.js` fails only under `--strict`; prebuild passes
+   no flags.
+3. **Self-neutralised** — `audit-block-file-consistency.py`'s own docstring: *"WARN-ONLY: this script
+   exits 0 ALWAYS, regardless of findings or `--check`"*, yet it is wired **with** `--check`.
+
+Full evidence: `.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md` §"Enforcement
+machinery". **Do not re-derive this register from the old list — check `package.json` directly.**
 
 ### Docs that assert more than the gates proved
 - Spec 35 Part M — *"Wave 1 DONE, migrated across all raw-URL fields"*. Two whole classes were never
