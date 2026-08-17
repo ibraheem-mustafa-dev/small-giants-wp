@@ -83,6 +83,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		asidePadding,
 		asideRadius,
 		asideBorderColour,
+		asideBorderColourGradient,
 		asideBorderWidth,
 	} = attributes;
 
@@ -167,6 +168,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: asideBorderColour,
 								onChange: ( val ) => setAttributes( { asideBorderColour: val ?? '' } ),
 								linked: true,
+								gradientValue: asideBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { asideBorderColourGradient: val ?? '' } ),
 							},
 						],
 					},
