@@ -171,5 +171,6 @@ build, and the programme is a verification pass.
 | This session's audit (UNVERIFIED input, not truth) | `.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md` |
 | Governing spec for inspector UX (now incl. Part O) | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
+| Track 1b plan doc | `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
