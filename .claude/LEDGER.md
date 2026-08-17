@@ -40,6 +40,7 @@ the real browser accessibility tree on sandybrown, deployed.
 | Border-colour gradient sweep — 19 blocks, ~28 attrs, merged/deployed/live-verified | `decisions.md` D646 |
 | Dead-controls checker fix (product-card's 2 gradient attrs false-flagged) | `decisions.md` D646 |
 | Landmark-tag a11y fix — drop `main`, label `nav`/`aside`, 5 blocks, live-verified | `decisions.md` D647 |
+| `gridItemBorder` gradient + hover, 4 blocks — deployed, live-verified | `decisions.md` D648 |
 
 ## Blockers
 
@@ -60,18 +61,19 @@ D626's sequencing.
 not a build dispatch. Read D626 in full for the colour precedent before scoping.
 **Depends on:** nothing (colour work is now fully closed).
 
-### Residual — `gridItemBorder` gradient (parked, not scoped)
+### `gridItemBorder` gradient — CLOSED
 
-**What:** `sgs/container`, `sgs/cta-section`, `sgs/hero` all share a `gridItemBorder` attribute that
-is a raw CSS shorthand STRING (e.g. `"1px solid #fff"`, combining colour+style+width in one value),
-not a plain colour value — the sibling-attribute gradient pattern (`{attr}Gradient` string, gradient
-wins when set) was built for a single colour value and doesn't map cleanly onto a shorthand string.
-**Why parked, not built:** discovered mid-session when the actual attribute shape was checked (the
-DB's `css_property` column just said "border-color,border-style,border-width", which reads like a
-normal candidate until you see the block.json declares ONE string attr, not three separate ones).
-Needs a short design call — e.g. does the gradient apply only to the colour component, parsed out of
-the shorthand? does the attribute get split into 3 first? — before it's build-dispatch-ready.
-**Not urgent.**
+Built, deployed, live-verified same session. `sgs/container`, `sgs/cta-section`, `sgs/hero`, and
+`sgs/trust-bar` (a 4th block found mid-build — it mounts the same shared panel and wasn't in the
+original 3-block scope) all gained `gridItemBorderGradient` (resting) + `gridItemBorderGradientHover`
+(hover — a genuinely new capability; grid items never had a hover state before). `gridItemBorder`
+itself stays an unparsed shorthand string (width+style, no content migration); the gradient siblings
+paint only the colour via the existing masked `::before` mechanism, using a new `sgs_grid_border_parts()`
+PHP helper that mirrors the editor's existing `_gridBorderParts()` token classification. Live-verified
+via the generated lifted CSS file (not a DOM query — a hand-typed test page's nested block markup
+didn't render as real child blocks, a test-authoring artefact, not a code defect): the masked-ring CSS,
+correct parsed width, resting gradient, and hover gradient all confirmed byte-correct in the deployed
+stylesheet. Commit `b0182f1c`.
 
 ## Methodology guardrails (do not skip — carried forward from D645, still true)
 
@@ -97,8 +99,8 @@ the shorthand? does the attribute get split into 3 first? — before it's build-
 
 ## State Snapshot
 
-- **Branch:** `main`, in sync with origin, HEAD `4ad7840c`.
-- **D-ceiling:** **D646** — verify with
+- **Branch:** `main`, in sync with origin, HEAD `079e75eb`.
+- **D-ceiling:** **D648** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
 - **Build:** green through all ~50 gates. `check-element-manifest-conformance.js`: GATE PASS
