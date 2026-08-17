@@ -166,6 +166,12 @@ const VARIANT_OPTIONS = [
 	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
 ];
 
+const TEMPLATE_MODE_OPTIONS = [
+	{ label: __( 'Free (no restrictions)', 'sgs-blocks' ), value: 'free' },
+	{ label: __( 'Grid section', 'sgs-blocks' ), value: 'grid-section' },
+	{ label: __( 'Card grid', 'sgs-blocks' ), value: 'card-grid' },
+];
+
 const ALIGN_OPTIONS = [
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'centre' },
@@ -266,6 +272,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		textAlignDesktop,
 		textAlignTablet,
 		textAlignMobile,
+		templateMode = 'free',
 	} = attributes;
 
 	const isSplit = variant === 'split';
@@ -412,12 +419,39 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const blockProps = useBlockProps( { className, style: wrapperStyle } );
 
+	// Template mode — allowed children restriction, mirroring sgs/container's
+	// own TEMPLATE_MODE_ALLOWED pattern. The content column is unrestricted by
+	// default ("free" — same as its behaviour before templateMode existed:
+	// no allowedBlocks was ever set here), so this is purely additive and
+	// never a regression for existing hero content.
+	const TEMPLATE_MODE_ALLOWED = {
+		'grid-section': [
+			'sgs/container',
+			'sgs/label',
+			'sgs/heading',
+			'sgs/text',
+			'sgs/button',
+			'sgs/multi-button',
+			'sgs/media',
+		],
+		'card-grid': [
+			'sgs/info-box',
+			'sgs/card-grid',
+			'sgs/container',
+		],
+	};
+	const allowedBlocks =
+		'free' !== templateMode
+			? TEMPLATE_MODE_ALLOWED[ templateMode ] ?? undefined
+			: undefined;
+
 	// FR-22-6: content column uses InnerBlocks (label + heading + text + buttons).
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-hero__content', style: contentPreviewStyle },
 		{
 			template: HERO_CONTENT_TEMPLATE,
 			templateLock: false,
+			allowedBlocks,
 		}
 	);
 
@@ -435,6 +469,26 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( val ) =>
 							setAttributes( { variant: val } )
 						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
+				{/* Template mode — allowed children restriction for the content
+				   column, mirroring sgs/container. */}
+				<PanelBody
+					title={ __( 'Template mode', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Allowed children', 'sgs-blocks' ) }
+						value={ templateMode }
+						options={ TEMPLATE_MODE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { templateMode: val } ) }
+						help={ __(
+							'Grid section and Card grid restrict which block types can be inserted directly inside this hero’s content column. Free (default) imposes no restrictions.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
