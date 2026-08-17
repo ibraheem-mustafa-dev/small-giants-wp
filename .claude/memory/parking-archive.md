@@ -3746,3 +3746,19 @@ attrs. This is genuinely a design decision, not an effort estimate.
 **Trigger:** a design session deciding whether `sgs/social-icons` gains custom colour attrs (icon
 colour / background per state, etc.) — only once that's decided does it become a colour-panel
 migration candidate.
+
+### P-GRADIENT-UNIVERSAL-ROLLOUT — background/text/border/icon gradient across all colour-capable blocks
+**Status:** CLOSED · **Bucket:** framework · **Parked:** 2026-08-16 · **Completed:** 2026-08-17
+
+RESOLVED — the full D636 universal gradient rollout shipped across the framework. All 5 mechanisms
+(background, text, border-colour, shape-divider, icon/SVG stroke) built, merged, deployed to
+sandybrown and live-verified on the real rendered output. Border-colour was the last mechanism: it
+completed in two passes — 20 blocks / ~30 attributes across 4 parallel worktree batches (D646), then
+`gridItemBorder` gradient + hover on 4 more blocks as the final parked residual (D648, `b0182f1c`).
+
+Storage shape settled and consistent across all 5 mechanisms: a sibling `{attr}Gradient` string
+attribute alongside the existing flat-colour attribute; gradient wins when set and valid via
+`sgs_css_gradient_value()`. Never a shared slot, never a mode-toggle on one attribute.
+
+Full record: `decisions.md` D636 (scope), D643/D644 (Phase 0 + `css:stroke`), D645 (first 4
+mechanisms + the 2 cross-builder merge collisions), D646 (border sweep), D648 (`gridItemBorder`).

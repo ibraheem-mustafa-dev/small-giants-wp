@@ -70,12 +70,45 @@ close-out doc against the repo found it. Two smaller count errors in the same da
 
 ## Open — ready to pick up
 
-### Task A — CLOSED
+### CLOSED this session — no action needed
 
-Border-colour gradient framework sweep is complete. The D636 gradient rollout as a whole (all 5
-mechanisms: background, text, border, shape-divider, icon) is now closed.
+- **Task A / D636 gradient rollout** — all 5 mechanisms (background, text, border, shape-divider,
+  icon) shipped across the framework. `gridItemBorder` gradient + hover was the last parked piece
+  (D648, `b0182f1c`), now done. Nothing gradient-related remains open.
+- **`templateMode`** — all 23 declaring blocks resolved (5 wired, 17 removed, `container` was already
+  correct). Verify end state with
+  `git grep -l '"templateMode"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'` → expect exactly 6,
+  all consuming it.
+- **`cta-section` + `trust-bar` overlay controls** — both were painting nothing, both fixed and
+  live-verified.
 
 ### Task B — Typography framework-wide initiative — ✅ SCOPED 2026-08-17 (D649), ready to build
+
+**What:** the next framework-wide control-standardisation initiative, after colour. Scoping is DONE.
+**Why:** typography is the last group of settings with no standard — a client changing a heading's
+size gets a different control depending on the block, and 7 values the framework paints can't be set
+by a client at all.
+**Estimated time:** ~2h40m critical path (per the plan's own estimate; treat as optimistic).
+
+**Orchestration:**
+- Execution: **delegated** — 4 agents, one worktree each. NOT 16: the work is mostly subtractive and
+  driven by one shared component's defaults, so 16 agents would all queue on the same file.
+- Model: sonnet per batch via `/delegate` (mechanical, well-spec'd); reserve opus for the W2
+  component design if it turns out to need real design judgement.
+- Dispatch pattern: `/dispatching-parallel-agents`, batched — pilot on `sgs/label` first (3
+  divergences, all prop-flips, no storage change) before fanning out.
+- ⛔ **Give every agent the "run builds synchronously, never background them" instruction.** Three of
+  five agents this session stalled by backgrounding their own build and ending the turn — background
+  subagents are not woken mid-tool-call, so they just sit. Cost: three resume round-trips.
+- Depends on: nothing. **Parallel with:** the residuals below.
+- `/qc` gate after: yes — multi-rater before any commit touching converter/pipeline/SGS-block logic.
+
+**Acceptance:** `npm run survey:typography` → divergence 0 across all 8 properties, AND the W4
+detector green and proven able to fail on a seeded break, AND — the leg every other gate misses —
+a canary page saved BEFORE the change still paints its pre-existing typography after migration.
+
+**Read first:** `decisions.md` **D649** (rulings + 3 live defects), then the plan at
+`~/.claude/plans/read-all-of-spec-soft-fairy.md` (workstreams, gated order, verification).
 
 **What:** scoping is DONE — 3 research streams + a 5-seat design council, Bean-approved.
 **Read first:** `decisions.md` **D649** (the rulings + 3 live defects it surfaced), then the plan at
@@ -105,19 +138,22 @@ Stripping first silently destroys typography clients already set.
   `check-dead-controls.js`'s `PREFIXED_HELPER_SUFFIXES` — every new alignment control would
   false-flag as dead. *(That array also still lists the 6 dead `*Tablet`/`*Mobile` families.)*
 
-### `gridItemBorder` gradient — CLOSED
+### Dependency graph
 
-Built, deployed, live-verified same session. `sgs/container`, `sgs/cta-section`, `sgs/hero`, and
-`sgs/trust-bar` (a 4th block found mid-build — it mounts the same shared panel and wasn't in the
-original 3-block scope) all gained `gridItemBorderGradient` (resting) + `gridItemBorderGradientHover`
-(hover — a genuinely new capability; grid items never had a hover state before). `gridItemBorder`
-itself stays an unparsed shorthand string (width+style, no content migration); the gradient siblings
-paint only the colour via the existing masked `::before` mechanism, using a new `sgs_grid_border_parts()`
-PHP helper that mirrors the editor's existing `_gridBorderParts()` token classification. Live-verified
-via the generated lifted CSS file (not a DOM query — a hand-typed test page's nested block markup
-didn't render as real child blocks, a test-authoring artefact, not a code defect): the masked-ring CSS,
-correct parsed width, resting gradient, and hover gradient all confirmed byte-correct in the deployed
-stylesheet. Commit `b0182f1c`.
+```
+Task B — Typography (delegated, 4 agents, one worktree each)
+  pilot: sgs/label (inline check first)
+    ↓
+  W1 (data layer, 14 orphans) + W2 (components) — parallel, both ungated
+    ↓ /qc multi-rater
+  W3 (layout) → W4 (detector, must be green + self-tested)
+    ↓
+  W5-A (22 blocks) → ⛔ G1 stored-content migration proof → W5-B (17 blocks)
+    ↓
+  commit + merge to main
+
+Residuals below — independent, parallel with all of the above.
+```
 
 ## Methodology guardrails (do not skip — carried forward from D645, still true)
 
@@ -161,7 +197,13 @@ stylesheet. Commit `b0182f1c`.
 
 ## State Snapshot
 
-- **Branch:** `main`, in sync with origin, HEAD `3cf842be`.
+- **Branch:** `main`. Last CODE commit of this session's work: `bc67f11f` (the `trustpilot-reviews`
+  templateMode removal); the D651 doc commit `ea3e9e73` follows it. ⚠ **Do not treat any hash here
+  as "current HEAD"** — this is a SHARED worktree with concurrent sessions committing to `main`, and
+  a HEAD written into a doc is stale the moment that doc is itself committed (the previous version
+  of this line was 12 commits behind at publication). Run `git rev-parse --short HEAD` and
+  `git log --oneline -5` to see where things actually are. A concurrent track merged D649
+  heading-level work (`6c994ef5`) on top of this session's; it was unpushed at handoff time.
 - **D-ceiling:** **D651** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
@@ -191,16 +233,10 @@ stylesheet. Commit `b0182f1c`.
 
 ## Open — carried, not this session's to close
 
-- **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`) — real cause found
-  2026-08-17: `sgs/mega-group` sets `templateLock:'all'`, which drops a locked block's stored child
-  content on every editor load/save. Deleting/recreating the page reproduces the same loss; the real
-  fix is relaxing/removing that lock on `sgs/mega-group`. It's Track 2's canary — check with them first.
+**Two items surfaced 2026-08-17 have a ready-to-paste follow-up session prompt:**
+`.claude/plans/2026-08-17-followup-session-prompt.md` — (1) `sgs/mega-group`'s `templateLock:'all'`
+silently dropping stored child content (the real cause of Track 2's canary text-node loss), and
+(2) `element-manifest-baseline.json`'s reason text asserting a false premise. Deliberately NOT
+parked — they are next-session work with a written brief, not deferred work.
+
 - **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
-- **`element-manifest-baseline.json`'s reasoning text is factually wrong** (spotted 2026-08-17
-  reviewing the two `hero.borderColourHover`/`info-box.borderColourHover` entries): the accepted
-  gate count is correct (neither block has a resting-state GRADIENT border — WP core never supported
-  one), but the written reason claims "no resting border-colour attribute at all", which is false —
-  both blocks have a real, working resting border colour via WP-native `__experimentalBorder.color`,
-  already correctly wired. No build-gate risk either way; a future reader could be misled by the
-  wrong reasoning into skipping a real gap elsewhere under the false premise. Text-only fix, needs
-  sign-off since edits to that file are treated as needing one.

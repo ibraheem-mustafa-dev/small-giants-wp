@@ -364,27 +364,6 @@ the same commit. See `LEDGER.md` "Stream 1 — Wrapper decomposition" and
 
 **Trigger:** superseded — triggers alongside wrapper-decomposition step 6, not independently.
 
-### P-GRADIENT-UNIVERSAL-ROLLOUT — background/text/border/icon gradient across all 65 colour-capable blocks
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-16
-
-**Residual scope only — the gradient bar itself is now SHIPPED** (2026-08-16, commits `837f7c97` +
-`2723ee2b` on `feat/gradient-palette-stops`): `SgsGradientPicker` (`plugins/sgs-blocks/src/
-components/gradient-picker/`), forked from the same pinned Gutenberg SHA the colour-picker fork
-uses, with palette-linked stops via a `token` field — picking a theme swatch stores
-`var(--wp--preset--color--<slug>)`, so a brand-palette change re-colours the stop. Wired into the
-6 legacy "overlay" blocks. A prerequisite 13-block migration off native WP colour supports also
-shipped in the same commit (accordion-item, collapsible-text, feature-grid, form-field-tiles,
-form-step, multi-button, physics-canvas, product-faq, product-faq-item, site-footer-row,
-site-header-row, tab, trustpilot-reviews).
-
-What's left is the actual client-facing payoff: wiring this mechanism onto every qualifying
-colour row across all 65 colour-capable blocks, via 4 CSS mechanisms (background/text/border/
-icon-SVG — confirmed genuinely different by a 4-seat design council, with the icon mechanism
-caught as a real 4th case only after the council's own text-bucket classification was checked
-against live code). Full detail, the 4-builder dispatch shape, and the worktree-isolation
-requirement: `.claude/LEDGER.md` "NEXT SESSION" + `decisions.md` D636 + its addendum.
-
-**Trigger:** the next session's opening task — see `LEDGER.md` for the ready-to-dispatch plan.
 
 ### P-DRIFT-AUDIT-BLIND-TO-DECLARED-BUT-WRONG-ELEMENTS — the audit only catches UNDECLARED names, not wrong ones
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15

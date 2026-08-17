@@ -855,6 +855,25 @@ behaviour per commit before deleting or re-merging a branch.
   BLOCKED" yet the commit was created (19:09, `4e049ba9`). `SGS_EXIT=1` + `exit $SGS_EXIT`
   should have blocked. UNEXPLAINED — investigate before trusting it as the only net; write
   reports BEFORE committing, don't rely on the gate to remind you.
+- **STOP-TRUNCATED-SURVEY (D651, 2026-08-17)** — ⛔ **NEVER pipe a population-defining survey
+  through `head -N`.** A `head` on the command that DEFINES a sweep's scope is not a display
+  convenience, it is a silent data-loss step. Measured: `grep -rn "templateMode" …/block.json
+  …/edit.js | head -20` cut a **23**-block population to 20. The sweep then ran its full course
+  against the short list — 4 agent batches, 19 commits, green build, all gates clean, successful
+  deploy, live verification — and was written up as COMPLETE while 3 blocks (`testimonial-slider`,
+  `trust-bar`, `trustpilot-reviews`) still carried the defect. **`head` truncates at exactly the
+  band where the short answer still looks like a plausible complete one.** Count first
+  (`| wc -l`), page second. **And the deeper rule: a COMPLETENESS error is invisible to every
+  CORRECTNESS gate** — the ~50-gate prebuild chain, the 83/83 deploy checksum verify, and live
+  `getComputedStyle` checks all answer "is what I changed right?", never "did I change everything
+  I should have?". Nothing in the defence stack can catch this class. It was found only by
+  re-deriving the roster from `git grep` while fact-checking the close-out doc, AFTER deploy.
+  **Re-query the population at close-out; never close a sweep against the list you opened it
+  with.** (Same session, same shape, twice more: D646 said "19 blocks" where the commit log shows
+  20 — and contradicted its own "4 batches of ~5"; a `grep -c … | paste -sd+ | bc` check reported
+  0 existing `allowedBlocks` for a block that has one at `edit.js:133`, nearly causing a wrong
+  wire-vs-remove call. Read the file; don't trust the count.) Memory:
+  `feedback_a_completeness_error_is_invisible_to_every_correctness_gate`.
 - **STOP-EMPTY-INSPECTOR-CONTAINER (D639, 2026-08-16)** — an inspector container rendered
   with NO children is a client-visible dead control: an empty `<ToolsPanelItem>` still
   appears in its ToolsPanel's "+" menu and in `resetAll`, then shows nothing when opened.
