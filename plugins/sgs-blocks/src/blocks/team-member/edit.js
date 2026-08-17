@@ -57,6 +57,17 @@ const PHOTO_SHAPES = [
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 ];
 
+// D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
+// allow-list exactly (render.php validates the same set independently).
+const HEADING_LEVEL_OPTIONS = [
+	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
+	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
+	{ label: __( 'Heading 4', 'sgs-blocks' ), value: 'h4' },
+	{ label: __( 'Heading 5', 'sgs-blocks' ), value: 'h5' },
+	{ label: __( 'Heading 6', 'sgs-blocks' ), value: 'h6' },
+	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
+];
+
 const DISPLAY_MODES = [
 	{ label: __( 'Full (photo, name, role, bio, socials)', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Compact (photo, name, role)', 'sgs-blocks' ), value: 'compact' },
@@ -225,6 +236,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		// so the tier map stays the single source of truth for which attr
 		// belongs to which device.
 		name,
+		headingLevel,
 		role,
 		bio,
 		nameColour,
@@ -246,6 +258,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const isCompact = 'compact' === displayMode;
+
+	// D649 — heading level is an identity control (document-outline
+	// placement), not a style control; mirrors render.php's own fallback.
+	const HeadingTag = headingLevel || 'h3';
 
 	const activeMedia = photo && photo.url ? photo : null;
 
@@ -357,6 +373,18 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Card Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<SelectControl
 						label={ __( 'Display mode', 'sgs-blocks' ) }
 						help={ __(
@@ -532,7 +560,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</div>
 				<RichText
-					tagName="h3"
+					tagName={ HeadingTag }
 					className="sgs-team-member__name"
 					value={ name }
 					onChange={ ( val ) => setAttributes( { name: val } ) }

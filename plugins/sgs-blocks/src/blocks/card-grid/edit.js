@@ -29,6 +29,17 @@ const VARIANT_OPTIONS = [
 	{ label: __( 'Overlay', 'sgs-blocks' ), value: 'overlay' },
 ];
 
+// D649 — no JSON `enum` reliance in the UI list order matters less than the
+// allow-list itself matching render.php's exactly (mirrors sgs/icon-list).
+const HEADING_LEVEL_OPTIONS = [
+	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
+	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
+	{ label: __( 'Heading 4', 'sgs-blocks' ), value: 'h4' },
+	{ label: __( 'Heading 5', 'sgs-blocks' ), value: 'h5' },
+	{ label: __( 'Heading 6', 'sgs-blocks' ), value: 'h6' },
+	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
+];
+
 const ASPECT_RATIO_OPTIONS = [
 	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
 	{ label: '1:1', value: '1/1' },
@@ -218,6 +229,7 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
+		headingLevel,
 		items,
 		columns,
 		gap,
@@ -281,6 +293,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
+
+	// D649 — heading level is an identity control (document-outline placement),
+	// not a style control; the tag mirrors render.php's own allowlist fallback.
+	const HeadingTag = headingLevel || 'h3';
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — resolve each tier explicitly,
 	// or the editor preview would emit "--sgs-card-grid-columns: [object
@@ -465,6 +481,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
+				<PanelBody title={ __( 'Card Grid Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+						help={ __(
+							'Pick the level that fits your page outline — usually H2 or H3 depending on what comes before this grid.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Content Source', 'sgs-blocks' ) }>
 					<SelectControl
@@ -884,12 +914,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ variant === 'card' && (
 								<div className="sgs-card-grid__body">
 									{ item.title && (
-										<h3
+										<HeadingTag
 											className="sgs-card-grid__title"
 											style={ titleStyle }
 										>
 											{ item.title }
-										</h3>
+										</HeadingTag>
 									) }
 									{ item.subtitle && (
 										<p

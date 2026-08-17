@@ -55,6 +55,17 @@ const BILLING_TOGGLE_OPTIONS = [
 	{ label: __( 'No toggle', 'sgs-blocks' ), value: 'none' },
 ];
 
+// D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
+// allow-list exactly (render.php validates the same set independently).
+const HEADING_LEVEL_OPTIONS = [
+	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
+	{ label: __( 'Heading 3', 'sgs-blocks' ), value: 'h3' },
+	{ label: __( 'Heading 4', 'sgs-blocks' ), value: 'h4' },
+	{ label: __( 'Heading 5', 'sgs-blocks' ), value: 'h5' },
+	{ label: __( 'Heading 6', 'sgs-blocks' ), value: 'h6' },
+	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
+];
+
 const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
@@ -106,6 +117,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		billingToggleYearlyLabel,
 		plans: plansRaw,
 		style,
+		headingLevel,
 		titleColour,
 		priceColour,
 		priceColourGradient,
@@ -147,6 +159,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
+
+	// D649 — heading level is an identity control (document-outline
+	// placement), not a style control; mirrors render.php's own fallback.
+	const HeadingTag = headingLevel || 'h3';
 
 	const updatePlan = ( index, key, value ) => {
 		const newPlans = [ ...plans ];
@@ -327,6 +343,22 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
+				<PanelBody title={ __( 'Pricing Table Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { headingLevel: val } )
+						}
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Columns', 'sgs-blocks' ) }
@@ -499,7 +531,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 								<div className="sgs-pricing-table__header">
 									<RichText
-										tagName="h3"
+										tagName={ HeadingTag }
 										className="sgs-pricing-table__name"
 										value={ plan.name }
 										onChange={ ( val ) =>

@@ -47,6 +47,13 @@ $columns_obj  = sgs_responsive_normalise_object( $attributes['columns'] ?? null 
 $columns      = absint( $columns_obj['desktop'] ?? 3 );
 $plans        = (array) ( $attributes['plans'] ?? array() );
 $style        = sanitize_key( $attributes['style'] ?? 'card' );
+// Plan-name heading level — an out-of-enum stored value is otherwise
+// silently coerced to the block.json default (blockjson-enum-coerces-
+// invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
+$allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
+$heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
 $title_colour = $attributes['titleColour'] ?? '';
 $price_colour = $attributes['priceColour'] ?? '';
 // D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
@@ -358,7 +365,7 @@ foreach ( $plans as $plan_index => $plan ) {
 			'%s' . // ribbon.
 			'%s' . // per-plan icon.
 			'<div class="sgs-pricing-table__header">' .
-				'<h3 class="sgs-pricing-table__name">%s</h3>' .
+				'<%s class="sgs-pricing-table__name">%s</%s>' .
 				'%s' . // price wrapper.
 				( $plan_desc ? '<p class="sgs-pricing-table__description">%s</p>' : '%s' ) .
 			'</div>' .
@@ -369,7 +376,9 @@ foreach ( $plans as $plan_index => $plan ) {
 		$badge_html,  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
 		$ribbon_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
 		$icon_html,   // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_get_lucide_icon() returns safe SVG.
+		esc_attr( $heading_level ),
 		esc_html( $plan_name ),
+		esc_attr( $heading_level ),
 		$price_html,  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.
 		$plan_desc ? esc_html( $plan_desc ) : '',
 		$features_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — built from escaped parts above.

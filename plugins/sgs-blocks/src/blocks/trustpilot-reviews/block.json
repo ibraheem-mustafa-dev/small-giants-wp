@@ -129,6 +129,11 @@
 				"coming-soon"
 			]
 		},
+		"headingLevel": {
+			"type": "string",
+			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"default": "h3"
+		},
 		"businessUnitUrl": {
 			"type": "string",
 			"default": ""

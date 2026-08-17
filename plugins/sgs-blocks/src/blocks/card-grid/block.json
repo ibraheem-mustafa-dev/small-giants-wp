@@ -168,6 +168,11 @@
 			"type": "string",
 			"default": "card"
 		},
+		"headingLevel": {
+			"type": "string",
+			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"default": "h3"
+		},
 		"_comment_items_media": "Migrated 2026-05-05 â€” each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
 		"items": {
 			"type": "array",
