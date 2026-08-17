@@ -10,6 +10,15 @@ import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
  * (see editor.css), so switching the panel's style restyles every group in
  * the canvas uniformly.
  *
+ * `templateLock:'insert'`, NOT `'all'` (fixed 2026-08-17, D652). WordPress's
+ * own template-sync effect (`useInnerBlockTemplateSync`) re-runs on EVERY
+ * editor mount whenever the lock is `'all'`/`'contentOnly'`, and silently
+ * discards any stored child that doesn't line up with `TEMPLATE` by position
+ * — this is what destroyed a text node on Track 2's canary (post 2164,
+ * 2026-08-07). `'insert'` still blocks a client from adding/removing/
+ * reordering the heading+list structure (Bean's original intent) but never
+ * triggers that destructive resync, so existing content survives every load.
+ *
  * @param {Object} props Block props.
  * @return {JSX.Element} The block editor UI.
  */
@@ -22,7 +31,7 @@ export default function Edit() {
 	const blockProps = useBlockProps( { className: 'sgs-mega-group' } );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		template: TEMPLATE,
-		templateLock: 'all',
+		templateLock: 'insert',
 	} );
 
 	return <div { ...innerBlocksProps } />;

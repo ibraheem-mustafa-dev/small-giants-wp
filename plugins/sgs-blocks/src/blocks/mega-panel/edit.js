@@ -13,8 +13,11 @@
  * added; there is no separate `columnCount` attribute any more. Each
  * individual mega-group/mega-aside still locks its OWN internal template
  * (mega-group: heading+icon-list; mega-aside: media+LABEL+heading+text+button
- * — five children, see `mega-aside/edit.js:37`; `templateLock: 'all'` on
- * their own edit.js) so an operator cannot break THEIR shape, but can freely
+ * — five children, see `mega-aside/edit.js:37`; `templateLock: 'insert'` on
+ * their own edit.js, fixed from `'all'` 2026-08-17/D652 — `'all'` re-ran
+ * WordPress's template-sync on every mount and silently dropped stored
+ * content that didn't line up with the template by position) so an operator
+ * cannot break THEIR shape, but can freely
  * select and edit any nested block's own settings (e.g. sgs/icon-list's
  * link controls) — the previous `contentOnly` lock at the panel level
  * suppressed the inspector for that whole subtree, which is what hid them.

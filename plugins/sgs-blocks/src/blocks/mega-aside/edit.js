@@ -129,9 +129,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: previewStyle,
 		'data-aside-format': format,
 	} );
+	// `templateLock:'insert'`, NOT `'all'` (fixed 2026-08-17, D652, same fix as
+	// sgs/mega-group). `'all'`/`'contentOnly'` re-run WordPress's template-sync
+	// effect on every editor mount and silently discard any stored child that
+	// doesn't line up with TEMPLATE by position; `'insert'` still blocks a
+	// client from adding/removing/reordering the five fixed children but never
+	// triggers that destructive resync.
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		template: TEMPLATE,
-		templateLock: 'all',
+		templateLock: 'insert',
 	} );
 
 	return (
