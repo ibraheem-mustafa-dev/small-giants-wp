@@ -128,15 +128,46 @@ Stripping first silently destroys typography clients already set.
 (zero forks) + one SCSS rule. W2b = `text-align` needs NEW PHP emission — it is not a re-skin.
 **Orchestration:** 4 agents, not 16, one worktree each; pilot on `sgs/label`. Critical path ≈2h40m.
 
-**Three live defects it surfaced, worth fixing regardless of the initiative:**
-- **9 blocks hardcode `<h3>` with no level control** — the framework skips h2 by construction on
-  every client page (`card-grid`, `form-review`, `gallery`, `post-grid`, `pricing-table`,
-  `process-steps`, `team-member`, `timeline`, `trustpilot-reviews`).
-- **The F3b gate AND the cloning converter are both blind to 3 of 4 heading-level attributes** —
-  `icon-list` has no enum; `product-card`/`product-faq` use numeric enums that filter to `[]`.
-- **`text-align` has zero emission in `sgs_typography_css_rule()`** and no entry in
-  `check-dead-controls.js`'s `PREFIXED_HELPER_SUFFIXES` — every new alignment control would
-  false-flag as dead. *(That array also still lists the 6 dead `*Tablet`/`*Mobile` families.)*
+**Three live defects it surfaced. TWO ARE NOW FIXED, DEPLOYED AND LIVE-VERIFIED (2026-08-17):**
+
+✅ **Hardcoded `<h3>` — FIXED on 7 blocks** (`6c994ef5`). `card-grid`, `form-review`,
+`pricing-table`, `process-steps`, `team-member`, `timeline`, `trustpilot-reviews` each gained
+`headingLevel` (`enum [h2..h6,p]`, `default h3` so output is unchanged), PHP-allowlisted, control in
+the pinned **Settings** panel per D649's identity-control ruling. ⚠ **It was 7, not 9** — `gallery`
+and `post-grid`'s `<h3>`s are **empty-state placeholders inside `role="status"`**, not client
+content; deliberately excluded, they need their own design call.
+**Live-verified on the canary** (probe pages created via REST, force-deleted after, 404 confirmed):
+unset → `<h3>`, `h2` → `<h2>`, `p` → `<p>` correctly closed.
+
+✅ **Numeric→string canonicalisation — FIXED** (`81669d5c`). `product-card`/`product-faq`
+`headingLevel` is now `{type:string, enum:[h2,h3,h4,p]}`. **Uncovered a live bug in the process:**
+`includes/product-card-builtin-render.php` — the TYPED mode, the block's **default** — had never
+been migrated and cast the value with `(int)`, so any string became `0`, clamped to `2`. **Every
+typed product-card silently rendered `<h2>` regardless of the client's choice.** Live-verified fixed:
+unset → `h3`, `h4` → `h4`, `p` → `p`.
+
+✅ **Converter blindness — FIXED** (`e4a23783`, 10 tests each proven to fail without the fix).
+⚠ **Necessary but NOT sufficient:** those three blocks are `role='enum-mode'`/`'technical'`, not
+`role='tag-identity'`, so the SQL's role filter still excludes them. **Residual: reclassify them**,
+which needs a shared `/sgs-update` reseed — deliberately not done mid-migration.
+
+⛔ **STILL OPEN — `text-align` has zero emission in `sgs_typography_css_rule()`** (it emits 7
+properties, not 8) and no entry in `check-dead-controls.js:477-495`'s `PREFIXED_HELPER_SUFFIXES`, so
+every new alignment control would false-flag as dead. *(That array also still lists the 6 dead
+`*Tablet`/`*Mobile` families slated for deletion — both edits belong in the same commit.)*
+
+⛔ **ALSO OPEN — the F3b gate's E12 guard cannot be widened yet, and this is now twice-evidenced.**
+It pairs a heading-level enum with **every** literal-defaulted attribute *without checking they share
+an element*: `icon-list.iconColour` (per-item marker) flagged against `headingLevel` (list heading),
+and `product-card.ctaFontWeight` (CTA button) flagged against the same. Invisible before only because
+`sgs/heading` was the sole block it evaluated. **Prerequisite: scope E12 via
+`supports.sgs.elements[].attrMap`** — needs the manifest filled first. Both candidate widenings were
+built and reverted; the full reasoning is documented **inside the gate** so nobody re-derives it.
+⚠ Including `p` in every heading-level enum is what currently keeps these blocks *outside* that gate.
+
+⚠ **One follow-up needing a decision, flagged not guessed:** `product-card/style.css`'s bound-mode
+title rule is scoped to `h2, h4` only — a card that now selects `p` renders, but falls back to
+unstyled browser paragraph sizing.
 
 ### Dependency graph
 
