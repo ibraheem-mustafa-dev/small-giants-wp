@@ -187,15 +187,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
-		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}

@@ -50,6 +50,10 @@ export default function Edit({ attributes, setAttributes }) {
     `sgs-accordion--icon-${iconPosition}`,
   ].join(" ");
 
+  // `templateMode` (grid-section/card-grid presets) was removed from
+  // block.json — this composite already restricts children to its own
+  // structural child block (`sgs/accordion-item`) below; a generic preset
+  // would only conflict with that fixed relationship.
   const blockProps = useBlockProps({ className });
   const innerBlocksProps = useInnerBlocksProps(blockProps, {
     allowedBlocks: ["sgs/accordion-item"],
