@@ -492,6 +492,7 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'LetterSpacingUnit',
 		'LetterSpacingTablet',
 		'LetterSpacingMobile',
+		'TextAlign',
 	],
 	sgs_button_element_style_css: [
 		'ColourBackground',

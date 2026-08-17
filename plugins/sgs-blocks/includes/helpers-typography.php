@@ -68,6 +68,7 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$k_line_unit  = sgs_typography_attr( $prefix, 'LineHeightUnit' );
 		$k_letter     = sgs_typography_attr( $prefix, 'LetterSpacing' );
 		$k_letter_unit = sgs_typography_attr( $prefix, 'LetterSpacingUnit' );
+		$k_align      = sgs_typography_attr( $prefix, 'TextAlign' );
 
 		// Numeric responsive families (font-size / line-height / letter-spacing) may
 		// each be stored EITHER as the modern {desktop,tablet,mobile} OBJECT (Spec 35
@@ -197,6 +198,14 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$allowed_decorations = array( 'none', 'underline', 'line-through', 'overline' );
 		if ( ! empty( $attributes[ $k_decoration ] ) && in_array( $attributes[ $k_decoration ], $allowed_decorations, true ) ) {
 			$base_decls[] = 'text-decoration:' . $attributes[ $k_decoration ] . ';';
+		}
+		// text-align — flat scalar (no responsive tier), same discipline as
+		// font-weight/font-style/text-transform/text-decoration above.
+		// Allowlist-validated (brand-strip/render.php:370, heading/render.php
+		// precedent) — never interpolated raw.
+		$allowed_aligns = array( 'left', 'center', 'right', 'justify' );
+		if ( ! empty( $attributes[ $k_align ] ) && in_array( $attributes[ $k_align ], $allowed_aligns, true ) ) {
+			$base_decls[] = 'text-align:' . $attributes[ $k_align ] . ';';
 		}
 
 		if ( ! empty( $base_decls ) ) {
