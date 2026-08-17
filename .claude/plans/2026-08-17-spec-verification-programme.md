@@ -111,7 +111,7 @@ A static check cannot answer any of them. If a point is one of these, tier 2 is 
 - **Does it render correctly?** Anything about output, layout or applied styling.
 - **Keyboard, focus and contrast.** No static detector in this repo covers them.
 
-Canary + credentials: `dev-setup.md`; creds at `.claude/secrets/sandybrown.env`. Use Playwright MCP.
+Canary + credentials: `.claude/dev-setup.md`; creds at `.claude/secrets/sandybrown.env`. Use Playwright MCP.
 
 ### The three traps this ladder exists to stop
 
@@ -162,12 +162,33 @@ the thing itself.
 are unverified input.** Use it to find *where to look*, never to decide what is true. Roughly a third
 of it rests on single-agent reports that were never re-derived.
 
+### ⛔ NOT in the reading gate: `.claude/decisions.md` and `.claude/memory/decisions-archive.md`
+
+**Do not read the decision logs before starting.** Consult a specific decision only while
+investigating a specific point, and only to learn *why* something was done — never to learn what is
+true.
+
+Three reasons, all of them live:
+
+1. **They bias the investigation.** Read a decision saying "X was closed" and you go looking for
+   confirmation of X instead of testing X. That is the failure mode this whole programme exists to
+   break.
+2. **A decision can be overturned by a later one, and the earlier entry is rarely updated.** Part L
+   still cites a component D609 banned months later.
+3. **A decision can simply be wrong.** They are written by session agents at the end of long
+   sessions. Several from 2026-08-17 were provably wrong — one entry contradicted itself 60 lines
+   further down, and reading only its opening produced a false finding that reached two governing
+   docs.
+
+A decision log sits at **tier 4** of the ladder, exactly like any other doc: it tells you where to
+look and what was intended. It never settles anything.
+
 ### Per session
 
 | Session | Read IN FULL before starting | Also open |
 |---|---|---|
-| **S1 — Spec 32** | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` | Root `CLAUDE.md` Spec 32 section (it disagreed with the spec); `decisions.md` D346 **and** D405 (D405 records that D346's win was partly a masking bug) |
-| **S2 — Spec 35 A–L** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts A–L** | **Part G's verdict table** — it overrides Part L in at least two places, so Part L cannot be judged without it. `inspector-scan/rules.json` `_meta` (the mode table + the `zeroIsAClaim` doctrine) |
+| **S1 — Spec 32** | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` | Root `CLAUDE.md` Spec 32 section — it disagreed with the spec, so the disagreement itself is a finding |
+| **S2 — Spec 35 A–L** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts A–L** | **Part G's verdict table** — it overrides Part L in at least two places, so Part L cannot be judged without it. `plugins/sgs-blocks/scripts/inspector-scan/rules.json` `_meta` (the mode table + the `zeroIsAClaim` doctrine) |
 | **S3 — Spec 35 M–O** | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **Parts M–O** | `plugins/sgs-blocks/package.json` `prebuild` (the real wiring); `.githooks/pre-commit` + `sgs-gates.sh`. Part N's claims are about gates — read the gates, not the prose |
 | **S4 — Track 1b plan** | `~/.claude/plans/go-track-1b-playful-hamster.md` — **all three PARTs** | S2+S3 verdict rosters. PART 3 is marked "settled, never a work-list" — verify that claim too |
 | **S5 — doctrine** | `.claude/plans/spec-35-capability-routing-doctrine.md` | S1–S4 rosters. It mostly confirms or contradicts them |
@@ -186,6 +207,27 @@ Any "no" → read again. Starting the loop half-read is how the last attempt fai
 ## The loop — identical in every doc session
 
 Same seven steps each time. Learn once, run five times.
+
+### The roster schema — ONE row per point, these exact field names
+
+Every step below adds fields to the same row. **Use these names exactly** — QA Gate A queries them
+by name, and a differently-named field fails the gate against otherwise-correct work.
+
+```jsonc
+{
+  "id":       "S32-FR-01",            // step 1
+  "section":  "§4 FR-32-1",           // step 1
+  "quote":    "<the claim, verbatim>",// step 1
+  "type":     "requirement",          // step 1 — requirement|status-claim|checklist-item|step
+  "predict":  "if done, X returns 0", // step 2 — written BEFORE running
+  "command":  "node scripts/…",       // step 2 — '' if live-only
+  "live":     false,                  // step 2 — true = settle at step 4b
+  "output":   "<verbatim stdout>",    // step 3  ⛔ this exact key
+  "verdict":  "DONE",                 // step 4 — DONE|PARTIAL (n/m)|NOT-DONE|UNVERIFIABLE
+  "evidence": "RAN-TOOL",             // step 4 — LIVE|RAN-TOOL|READ-CODE|AGENT
+  "disposition": null                 // step 4 — DELETE|KEEP(<reason>), superseded points only
+}
+```
 
 ### Step 1 — Extract the point roster `[SESSION-START]`
 - **Model:** sonnet (mechanical)
@@ -281,7 +323,7 @@ uses the D609 toggle, so re-derive what is genuinely still divergent before writ
   3. **Correct?** Compare against what the point claims.
 - **Outcome:** Every live-only point has `LIVE` evidence and a verdict. Zero left marked.
 - **Time:** 30 min (+ ~5 min deploy)
-- **On-Fail:** Canary unreachable → **stop, do not mark them passed.** `check-no-inline.py` warns and
+- **On-Fail:** Canary unreachable → **stop, do not mark them passed.** `plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` (note the `no-inline/` subdirectory — citing it bare is a known trap) warns and
   PASSES when the canary is down; a green run on a disconnected machine proves nothing. Carry the
   points to the next session rather than recording a false pass.
 - **Test:** *Happy:* a control moved on-screen changes the rendered output. *Edge:* a control that
@@ -341,7 +383,11 @@ uses the D609 toggle, so re-derive what is genuinely still divergent before writ
 **Session done when — all seven, no partial credit:**
 1. Every point has a verdict, a command and its raw output
 2. No row is `AGENT`
-3. **Every `live`-tagged point was settled on the canary — zero carried forward**
+3. **Every `live`-tagged point was settled on the canary — zero carried forward.**
+   ⚠ **One exception, and only one:** the canary is genuinely unreachable. Then the session closes
+   as `LIVE-BLOCKED`, naming every unsettled point, and the **next session's Step 4b clears those
+   first, before its own.** A blocked session is not a failed session — but it is never "done", and
+   the points are never marked passed.
 4. Every superseded item has a `DELETE`/`KEEP(<reason>)` disposition, and DELETEs are done
 5. QA Gate A passed
 6. The doc matches the roster — no claim disagrees with `points.json`
