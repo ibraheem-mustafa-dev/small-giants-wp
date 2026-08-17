@@ -29,7 +29,7 @@
 }
 
 .sgs-info-box--bordered {
-	border: 1px solid var(--wp--preset--color--border-subtle, #D4DBE5);
+	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 

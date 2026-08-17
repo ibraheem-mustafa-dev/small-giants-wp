@@ -14,7 +14,7 @@
 
 .sgs-team-member--flat { background: transparent; }
 .sgs-team-member--bordered {
-	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 .sgs-team-member--elevated {
@@ -111,7 +111,7 @@
 	font-size: var(--wp--preset--font-size--small, 0.75rem);
 	text-decoration: none;
 	color: var(--wp--preset--color--text-muted);
-	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 	transition: var(--wp--custom--transition--fast, 0.15s ease);
 }

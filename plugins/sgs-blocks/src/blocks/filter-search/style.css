@@ -10,11 +10,11 @@
 	width: 100%;
 	min-height: 44px; /* WCAG 2.5.5 — 44px minimum touch target. */
 	padding: 0.5rem 0.75rem;
-	border: 1px solid var( --sgs-filter-search-border, var( --wp--preset--color--border-subtle, #ccc ) );
+	border: 1px solid var( --sgs-filter-search-border, var( --wp--preset--color--border, #ccc ) );
 	border-radius: 6px;
 	font: inherit;
-	background-color: var( --wp--preset--color--base, #fff );
-	color: var( --sgs-filter-search-text, var( --wp--preset--color--contrast, #1a1a1a ) );
+	background-color: var( --wp--preset--color--surface, #fff );
+	color: var( --sgs-filter-search-text, var( --wp--preset--color--text, #1a1a1a ) );
 	box-sizing: border-box;
 	transition: outline 0.2s ease-out, outline-offset 0.2s ease-out;
 }

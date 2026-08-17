@@ -57,7 +57,7 @@
 	cursor: pointer;
 	display: grid;
 	place-items: center;
-	color: var( --wp--preset--color--base, #fff );
+	color: var( --wp--preset--color--text-inverse, #fff );
 	background: var( --sgs-audio-accent, #c9821f );
 	transition: transform 0.12s ease;
 }
@@ -92,13 +92,13 @@
 	height: 15px;
 	border-radius: 50%;
 	background: var( --sgs-audio-accent );
-	border: 2px solid var( --wp--preset--color--base, #fff );
+	border: 2px solid var( --wp--preset--color--text-inverse, #fff );
 	cursor: pointer;
 }
 .sgs-audio__seek::-moz-range-thumb {
 	width: 15px;
 	height: 15px;
-	border: 2px solid var( --wp--preset--color--base, #fff );
+	border: 2px solid var( --wp--preset--color--text-inverse, #fff );
 	border-radius: 50%;
 	background: var( --sgs-audio-accent );
 	cursor: pointer;
@@ -204,7 +204,7 @@
 	transition: background 0.06s linear;
 }
 .sgs-audio--gradient-pulse .sgs-audio__transport {
-	color: var( --wp--preset--color--base, #fff );
+	color: var( --wp--preset--color--text-inverse, #fff );
 }
 
 @media ( prefers-reduced-motion: reduce ) {

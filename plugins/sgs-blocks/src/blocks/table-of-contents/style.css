@@ -14,7 +14,7 @@
 
 .sgs-toc--card {
 	background: var(--wp--preset--color--surface-alt, #fff);
-	border: 1px solid var(--wp--preset--color--border-subtle, #e2e8f0);
+	border: 1px solid var(--wp--preset--color--border, #e2e8f0);
 	border-radius: var(--wp--custom--border-radius--md, 0.5rem);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 }

@@ -119,7 +119,7 @@ a.sgs-trust-bar__badge:focus-visible {
 .sgs-trust-bar--text-only .sgs-trust-bar__badge {
 	flex-direction: column;
 	background: var(--wp--preset--color--surface-alt, #F5F7F7);
-	border: 1px solid var(--wp--preset--color--border-subtle, #e5e7eb);
+	border: 1px solid var(--wp--preset--color--border, #e5e7eb);
 	border-radius: 999px;
 	padding: 0.625rem 1.125rem;
 	min-height: 36px;

@@ -9,7 +9,12 @@
         {
           "slug": "primary",
           "color": "#0A7EA8",
-          "name": "Primary (Dark Blue)"
+          "name": "Primary"
+        },
+        {
+          "slug": "primary-text",
+          "name": "Text on Primary",
+          "color": "#FFFFFF"
         },
         {
           "slug": "primary-dark",
@@ -19,22 +24,22 @@
         {
           "slug": "accent",
           "color": "#D8CA50",
-          "name": "Accent (Dark Gold)"
+          "name": "Accent"
         },
         {
           "slug": "accent-text",
           "color": "#7A6B00",
-          "name": "Accent Text (Dark Gold — WCAG AA on white)"
+          "name": "Text on Accent"
         },
         {
           "slug": "accent-light",
           "color": "#E7D768",
-          "name": "Accent Light (Light Gold)"
+          "name": "Accent Light"
         },
         {
-          "slug": "border-subtle",
+          "slug": "border",
           "color": "#2EADE2",
-          "name": "Light Blue"
+          "name": "Border"
         },
         {
           "slug": "success",
@@ -42,9 +47,29 @@
           "name": "Success"
         },
         {
+          "slug": "success-light",
+          "name": "Success Light",
+          "color": "#ECFDF5"
+        },
+        {
           "slug": "error",
           "color": "#DC2626",
           "name": "Error"
+        },
+        {
+          "slug": "error-light",
+          "name": "Error Light",
+          "color": "#FEF2F2"
+        },
+        {
+          "slug": "info",
+          "name": "Info",
+          "color": "#3B82F6"
+        },
+        {
+          "slug": "info-light",
+          "name": "Info Light",
+          "color": "#EBF5FF"
         },
         {
           "slug": "whatsapp",
@@ -54,12 +79,12 @@
         {
           "slug": "surface",
           "color": "#FFFFFF",
-          "name": "Surface"
+          "name": "Page Background"
         },
         {
           "slug": "surface-alt",
           "color": "#F8F7F4",
-          "name": "Surface Alt"
+          "name": "Raised Background"
         },
         {
           "slug": "text",
@@ -74,7 +99,7 @@
         {
           "slug": "text-inverse",
           "color": "#FFFFFF",
-          "name": "Text Inverse"
+          "name": "Text on Dark"
         },
         {
           "slug": "border-light",

@@ -10,6 +10,11 @@
           "name": "Primary"
         },
         {
+          "slug": "primary-text",
+          "name": "Text on Primary",
+          "color": "#F1F5F9"
+        },
+        {
           "slug": "primary-dark",
           "color": "#0F4C4C",
           "name": "Primary Dark"
@@ -22,7 +27,7 @@
         {
           "slug": "accent-text",
           "color": "#92400E",
-          "name": "Accent Text"
+          "name": "Text on Accent"
         },
         {
           "slug": "accent-light",
@@ -35,9 +40,29 @@
           "name": "Success"
         },
         {
+          "slug": "success-light",
+          "name": "Success Light",
+          "color": "#ECFDF5"
+        },
+        {
           "slug": "error",
           "color": "#DC2626",
           "name": "Error"
+        },
+        {
+          "slug": "error-light",
+          "name": "Error Light",
+          "color": "#FEF2F2"
+        },
+        {
+          "slug": "info",
+          "name": "Info",
+          "color": "#3B82F6"
+        },
+        {
+          "slug": "info-light",
+          "name": "Info Light",
+          "color": "#EBF5FF"
         },
         {
           "slug": "whatsapp",
@@ -47,12 +72,12 @@
         {
           "slug": "surface",
           "color": "#FAF9F6",
-          "name": "Surface"
+          "name": "Page Background"
         },
         {
           "slug": "surface-alt",
           "color": "#F1F0EC",
-          "name": "Surface Alt"
+          "name": "Raised Background"
         },
         {
           "slug": "text",
@@ -67,12 +92,12 @@
         {
           "slug": "text-inverse",
           "color": "#F1F5F9",
-          "name": "Text Inverse"
+          "name": "Text on Dark"
         },
         {
-          "slug": "border-subtle",
+          "slug": "border",
           "color": "#D4DBE5",
-          "name": "Border Subtle"
+          "name": "Border"
         },
         {
           "slug": "border-light",
@@ -356,7 +381,7 @@
         "outline": {
           "background": "transparent",
           "text": "var(--wp--preset--color--text)",
-          "border": "var(--wp--preset--color--border-subtle)",
+          "border": "var(--wp--preset--color--border)",
           "border-width": "2px",
           "border-radius": "8px",
           "padding": "12px 24px 12px 24px",

@@ -291,7 +291,7 @@
 }
 
 .sgs-buybox .value-ladder__saving {
-	color: var( --wp--preset--color--contrast, #1a1a1a );
+	color: var( --wp--preset--color--text, #1a1a1a );
 	font-weight: 600;
 	font-size: 13px;
 	white-space: nowrap;

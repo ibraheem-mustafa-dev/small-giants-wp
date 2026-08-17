@@ -49,7 +49,7 @@
 	display: block;
 	font-size: var(--wp--preset--font-size--small);
 	font-weight: 600;
-	color: var(--wp--preset--color--foreground, currentColor);
+	color: var(--wp--preset--color--text, currentColor);
 	margin-bottom: var(--wp--preset--spacing--20, 8px);
 	padding: 0;
 }
@@ -184,8 +184,8 @@
 
 .sgs-option-picker--outlined .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg, transparent);
-	color:            var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor));
-	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--foreground, currentColor));
+	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
+	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--text, currentColor));
 }
 
 /* Considering state (hover / focus-within on the label) */
@@ -234,13 +234,13 @@
 
 .sgs-option-picker--filled .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #e5e7eb));
-	color:            var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor));
+	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
 	border: 2px solid transparent;
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--filled .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
-	background-color: var(--sgs-op-bg, var(--wp--preset--color--tertiary, #d1d5db));
+	background-color: var(--sgs-op-bg, var(--wp--preset--color--surface-alt, #d1d5db));
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
@@ -265,7 +265,7 @@
 
 .sgs-option-picker--ghost .sgs-option-picker__pill {
 	background-color: transparent;
-	color:            var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor));
+	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
 	border: 2px solid transparent;
 }
 
@@ -364,7 +364,7 @@
    (set by PHP as --sgs-op-swatch-text on the pill element) to the pill
    text.  The chip colour itself is already in background: on the <span>. */
 .sgs-option-picker__pill--has-colour {
-	color: var(--sgs-op-swatch-text, var(--sgs-op-text, var(--wp--preset--color--foreground, currentColor)));
+	color: var(--sgs-op-swatch-text, var(--sgs-op-text, var(--wp--preset--color--text, currentColor)));
 }
 
 /* Keep WCAG contrast on the checked state too — the selected background
@@ -445,7 +445,7 @@
 
 .sgs-option-picker--solid {
 	--sgs-op-bg: var(--wp--custom--option-picker-presets--solid--bg, transparent);
-	--sgs-op-text: var(--wp--custom--option-picker-presets--solid--text, var(--wp--preset--color--foreground, currentColor));
+	--sgs-op-text: var(--wp--custom--option-picker-presets--solid--text, var(--wp--preset--color--text, currentColor));
 	--sgs-op-border: var(--wp--custom--option-picker-presets--solid--border, var(--wp--preset--color--primary, #1F7A7A));
 	--sgs-op-sel-bg: var(--wp--custom--option-picker-presets--solid--sel-bg, var(--wp--preset--color--primary, #1F7A7A));
 	--sgs-op-sel-text: var(--wp--custom--option-picker-presets--solid--sel-text, #ffffff);
@@ -454,10 +454,10 @@
 
 .sgs-option-picker--soft {
 	--sgs-op-bg: var(--wp--custom--option-picker-presets--soft--bg, var(--wp--preset--color--surface, #ffffff));
-	--sgs-op-text: var(--wp--custom--option-picker-presets--soft--text, var(--wp--preset--color--foreground, currentColor));
-	--sgs-op-border: var(--wp--custom--option-picker-presets--soft--border, var(--wp--preset--color--border-subtle, #d1d5db));
+	--sgs-op-text: var(--wp--custom--option-picker-presets--soft--text, var(--wp--preset--color--text, currentColor));
+	--sgs-op-border: var(--wp--custom--option-picker-presets--soft--border, var(--wp--preset--color--border, #d1d5db));
 	--sgs-op-sel-bg: var(--wp--custom--option-picker-presets--soft--sel-bg, var(--wp--preset--color--secondary, #fdeef0));
-	--sgs-op-sel-text: var(--wp--custom--option-picker-presets--soft--sel-text, var(--wp--preset--color--text, var(--wp--preset--color--foreground, currentColor)));
+	--sgs-op-sel-text: var(--wp--custom--option-picker-presets--soft--sel-text, var(--wp--preset--color--text, var(--wp--preset--color--text, currentColor)));
 	--sgs-op-sel-border: var(--wp--custom--option-picker-presets--soft--sel-border, var(--wp--preset--color--primary, #1F7A7A));
 }
 

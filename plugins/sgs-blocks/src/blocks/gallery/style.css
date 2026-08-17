@@ -535,7 +535,7 @@ body.sgs-gallery-lightbox-open {
 }
 
 .sgs-gallery__empty-icon {
-	color: var( --wp--preset--color--border-subtle, #ccc );
+	color: var( --wp--preset--color--border, #ccc );
 	flex-shrink: 0;
 }
 

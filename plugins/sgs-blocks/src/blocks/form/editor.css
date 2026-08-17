@@ -1,5 +1,5 @@
 .sgs-form {
-	border: 1px dashed var(--wp--preset--color--border-subtle, #ccc);
+	border: 1px dashed var(--wp--preset--color--border, #ccc);
 	padding: 1rem;
 	border-radius: 4px;
 }

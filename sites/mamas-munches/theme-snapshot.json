@@ -17,9 +17,9 @@
           "_source": "declared"
         },
         {
-          "slug": "border-subtle",
+          "slug": "border",
           "color": "#e8d5c0",
-          "name": "Border Subtle",
+          "name": "Border",
           "_source": "declared"
         },
         {
@@ -35,6 +35,11 @@
           "_source": "declared"
         },
         {
+          "slug": "primary-text",
+          "name": "Text on Primary",
+          "color": "#fffaf5"
+        },
+        {
           "slug": "primary-dark",
           "color": "#c56a7a",
           "name": "Primary Dark",
@@ -47,15 +52,20 @@
           "_source": "declared"
         },
         {
+          "slug": "success-light",
+          "name": "Success Light",
+          "color": "#ECFDF5"
+        },
+        {
           "slug": "surface",
           "color": "#fbf3dc",
-          "name": "Surface",
+          "name": "Page Background",
           "_source": "declared"
         },
         {
           "slug": "surface-alt",
           "color": "#fff9f0",
-          "name": "Surface Alt",
+          "name": "Raised Background",
           "_source": "declared"
         },
         {
@@ -73,7 +83,7 @@
         {
           "slug": "text-inverse",
           "color": "#fffaf5",
-          "name": "Text Inverse",
+          "name": "Text on Dark",
           "_source": "declared"
         },
         {
@@ -85,7 +95,7 @@
         {
           "slug": "accent-text",
           "color": "#7A6500",
-          "name": "Accent Text (WCAG AA on White)"
+          "name": "Text on Accent"
         },
         {
           "slug": "footer-bg",
@@ -119,6 +129,41 @@
         {
           "slug": "client-text",
           "color": "text"
+        },
+        {
+          "slug": "info",
+          "name": "Info",
+          "color": "#3B82F6"
+        },
+        {
+          "slug": "info-light",
+          "name": "Info Light",
+          "color": "#EBF5FF"
+        },
+        {
+          "slug": "error-light",
+          "name": "Error Light",
+          "color": "#FEF2F2"
+        },
+        {
+          "slug": "accent-light",
+          "name": "Accent Light",
+          "color": "#FEF3C7"
+        },
+        {
+          "slug": "error",
+          "name": "Error",
+          "color": "#DC2626"
+        },
+        {
+          "slug": "whatsapp",
+          "name": "WhatsApp",
+          "color": "#25D366"
+        },
+        {
+          "slug": "border-light",
+          "name": "Border Light",
+          "color": "#E5E7EB"
         }
       ],
       "gradients": [],

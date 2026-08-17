@@ -8,15 +8,15 @@
 .sgs-image-sequence-editor__placeholder {
 	padding: 2rem;
 	text-align: center;
-	border: 2px dashed var( --wp--preset--color--contrast-2, #ccc );
-	background: var( --wp--preset--color--base-2, #f9f9f9 );
+	border: 2px dashed var( --wp--preset--color--text-muted, #ccc );
+	background: var( --wp--preset--color--surface-alt, #f9f9f9 );
 }
 
 .sgs-image-sequence-editor__preview-wrapper {
 	position: relative;
 	width: 100%;
 	overflow: hidden;
-	border: 1px solid var( --wp--preset--color--contrast-2, #ddd );
+	border: 1px solid var( --wp--preset--color--text-muted, #ddd );
 }
 
 .sgs-image-sequence-editor__preview {
@@ -29,7 +29,7 @@
 .sgs-image-sequence-editor__frame-count {
 	margin-top: 0.5rem;
 	font-size: 0.8125rem;
-	color: var( --wp--preset--color--contrast-3, #666 );
+	color: var( --wp--preset--color--text-muted, #666 );
 }
 
 .sgs-image-sequence-editor__verify {

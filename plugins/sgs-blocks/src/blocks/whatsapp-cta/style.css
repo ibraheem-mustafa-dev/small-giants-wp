@@ -29,7 +29,7 @@
  * it is kept — but de-specified via :where() (0,0,0) so the operator's own
  * scoped `.{uid}` rule always wins. */
 :where(.sgs-whatsapp-cta__btn) {
-	color: var(--wp--preset--color--base, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-whatsapp-cta__btn:hover {

@@ -123,7 +123,7 @@
 .sgs-button--outline {
 	--sgs-btn-color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
 	--sgs-btn-bg: var(--wp--custom--button-presets--outline--background, transparent);
-	--sgs-btn-border: var(--wp--custom--button-presets--outline--border, var(--wp--preset--color--border-subtle));
+	--sgs-btn-border: var(--wp--custom--button-presets--outline--border, var(--wp--preset--color--border));
 	--sgs-btn-color-hover: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
 	--sgs-btn-bg-hover: var(--wp--custom--button-presets--outline--hover-background, var(--wp--preset--color--surface-alt));
 	--sgs-btn-border-hover: var(--wp--custom--button-presets--outline--hover-border, var(--wp--preset--color--primary));

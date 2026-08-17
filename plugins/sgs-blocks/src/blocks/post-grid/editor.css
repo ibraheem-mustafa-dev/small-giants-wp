@@ -9,7 +9,7 @@
 .sgs-post-grid-editor__placeholder {
 	padding: 40px 20px;
 	text-align: center;
-	border: 2px dashed var(--wp--preset--color--border-subtle, #ccc);
+	border: 2px dashed var(--wp--preset--color--border, #ccc);
 	border-radius: 8px;
 	color: var(--wp--preset--color--text-muted, #888);
 }

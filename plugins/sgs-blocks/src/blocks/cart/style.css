@@ -161,8 +161,8 @@
 /* Per-instance colours (panelBg/panelTextColour) are scoped custom-property
    VALUES from render.php (Spec 32 no-inline) — this file consumes the vars only. */
 .sgs-cart__panel {
-	background-color: var(--sgs-cart-panel-bg, var(--wp--preset--color--base, #fff));
-	color: var(--sgs-cart-panel-text, var(--wp--preset--color--contrast, #111));
+	background-color: var(--sgs-cart-panel-bg, var(--wp--preset--color--surface, #fff));
+	color: var(--sgs-cart-panel-text, var(--wp--preset--color--text, #111));
 }
 
 /* ── Flyout — DISCLOSURE (FR-36-10): a plain absolutely-positioned popover,

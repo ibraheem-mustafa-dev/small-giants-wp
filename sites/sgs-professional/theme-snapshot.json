@@ -10,7 +10,12 @@
         {
           "slug": "primary",
           "color": "#1E2D5E",
-          "name": "Primary (Deep Navy)"
+          "name": "Primary"
+        },
+        {
+          "slug": "primary-text",
+          "name": "Text on Primary",
+          "color": "#FFFFFF"
         },
         {
           "slug": "primary-dark",
@@ -20,7 +25,7 @@
         {
           "slug": "accent",
           "color": "#8B4A6B",
-          "name": "Accent (Burgundy/Plum)"
+          "name": "Accent"
         },
         {
           "slug": "accent-light",
@@ -33,14 +38,29 @@
           "name": "Error"
         },
         {
+          "slug": "error-light",
+          "name": "Error Light",
+          "color": "#FEF2F2"
+        },
+        {
+          "slug": "info",
+          "name": "Info",
+          "color": "#3B82F6"
+        },
+        {
+          "slug": "info-light",
+          "name": "Info Light",
+          "color": "#EBF5FF"
+        },
+        {
           "slug": "surface",
           "color": "#FFFFFF",
-          "name": "Surface (White)"
+          "name": "Page Background"
         },
         {
           "slug": "surface-alt",
           "color": "#F8F7F9",
-          "name": "Surface Alt (Lavender Tint)"
+          "name": "Raised Background"
         },
         {
           "slug": "footer-bg",
@@ -48,9 +68,9 @@
           "name": "Footer Background"
         },
         {
-          "slug": "text-primary",
+          "slug": "text",
           "color": "#1E2D5E",
-          "name": "Text Primary"
+          "name": "Text"
         },
         {
           "slug": "text-secondary",
@@ -65,17 +85,37 @@
         {
           "slug": "text-inverse",
           "color": "#FFFFFF",
-          "name": "Text Inverse (White)"
+          "name": "Text on Dark"
         },
         {
-          "slug": "border-subtle",
+          "slug": "border",
           "color": "#8B4A6B",
-          "name": "Border Subtle (Plum)"
+          "name": "Border"
         },
         {
           "slug": "border-light",
           "color": "#E5E7EB",
           "name": "Border Light"
+        },
+        {
+          "slug": "success-light",
+          "name": "Success Light",
+          "color": "#ECFDF5"
+        },
+        {
+          "slug": "accent-text",
+          "name": "Text on Accent",
+          "color": "#92400E"
+        },
+        {
+          "slug": "success",
+          "name": "Success",
+          "color": "#2E7D4F"
+        },
+        {
+          "slug": "whatsapp",
+          "name": "WhatsApp",
+          "color": "#25D366"
         }
       ]
     },

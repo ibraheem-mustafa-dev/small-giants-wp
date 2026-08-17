@@ -9,7 +9,7 @@
 
 /* Subtle placeholder styling */
 .sgs-toc__empty {
-	border: 1px dashed var(--wp--preset--color--border-subtle, #ccc);
+	border: 1px dashed var(--wp--preset--color--border, #ccc);
 	padding: 1rem;
 	text-align: center;
 	border-radius: 4px;

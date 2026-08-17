@@ -16,15 +16,15 @@
 
 /* ===== Variant: Info ===== */
 :where(.sgs-notice-banner--info) {
-	--_banner-bg: var(--wp--preset--color--info-bg, #EBF5FF);
-	--_banner-border: var(--wp--preset--color--info-border, #3B82F6);
+	--_banner-bg: var(--wp--preset--color--info-light, #EBF5FF);
+	--_banner-border: var(--wp--preset--color--info, #3B82F6);
 	background-color: var(--_banner-bg);
 	border-left-color: var(--_banner-border);
 }
 
 /* ===== Variant: Success ===== */
 :where(.sgs-notice-banner--success) {
-	--_banner-bg: var(--wp--preset--color--success-bg, #ECFDF5);
+	--_banner-bg: var(--wp--preset--color--success-light, #ECFDF5);
 	--_banner-border: var(--wp--preset--color--success, #2E7D4F);
 	background-color: var(--_banner-bg);
 	border-left-color: var(--_banner-border);
@@ -42,7 +42,7 @@
 
 /* ===== Variant: Error ===== */
 :where(.sgs-notice-banner--error) {
-	--_banner-bg: var(--wp--preset--color--error-bg, #FEF2F2);
+	--_banner-bg: var(--wp--preset--color--error-light, #FEF2F2);
 	--_banner-border: var(--wp--preset--color--error, #DC2626);
 	background-color: var(--_banner-bg);
 	border-left-color: var(--_banner-border);

@@ -421,6 +421,49 @@ uses the D609 toggle, so re-derive what is genuinely still divergent before writ
 - **Fail:** Any mismatch → redo step 4 for that section. Do not proceed.
 - **Marker:** QA
 
+### Step 4c — Close-out review with Bean `[DECISION GATE]` `[ADDED after S1, 2026-08-17]`
+- **Model:** inline
+- **Exec:** SEQUENTIAL. Deps: Step 4, 4b, QA Gate A. **Blocks Step 5.**
+- **Time:** 10 min to present; however long Bean's answers take
+
+**Why this sits BEFORE Step 5, not after.** Step 5 writes every verdict into the spec. If Bean then
+decides to close out three open items, those same claims have to be rewritten a second time — the
+doc is updated twice over for one session's work, and the intermediate version is a published state
+that was never true for more than an hour. Verdicts are only final once Bean has had the chance to
+act on them. So: **present, decide, close out, THEN write once.**
+
+**Action.** Convert the roster from a verdict tally into an ACTIONABLE view and put it in front of
+Bean. A verdict distribution is not a decision aid — "14 PARTIAL" tells him nothing about what to do.
+Re-cut every non-DONE row into these buckets, and for each item give the residual scope, what it
+would take to close, and a time estimate:
+
+| Bucket | Means | What Bean needs to see |
+|---|---|---|
+| **Nothing to do** | DONE | A count only. Do not enumerate |
+| **Residual — small** | PARTIAL where the remainder is minutes | The item, the residual, the estimate |
+| **Residual — real** | PARTIAL/NOT-DONE needing genuine build work | The item, why it matters, the estimate |
+| **Not started** | The spec requires it and NOTHING exists | Name it plainly — this is the bucket most likely to be mistaken for "partly done" |
+| **Blocked on a fixture** | UNVERIFIABLE because the test surface does not exist | What fixture would settle it, and its cost |
+| **Needs a decision** | Cannot proceed without Bean choosing | Situation / options / recommendation / why |
+| **Delete** | SUPERSEDED with a DELETE disposition | The entry and its replacement, for confirmation |
+
+**⛔ Separate NOT-STARTED from PARTIAL explicitly.** They collapse into each other in a verdict
+count and they are completely different decisions. S1's worked example: `FR-32-9` reads PARTIAL —
+the naming convention IS followed — but the per-component lint gate it requires has **never been
+built**. "Partly done" and "half of it does not exist" need different words in front of Bean.
+
+**Then act on the answers BEFORE Step 5.** Anything Bean elects to close out gets built and verified
+in this session, and its row is re-judged with the new evidence. Step 5 then writes the doc once,
+reflecting the final state.
+
+- **Outcome:** Every non-DONE row has been seen by Bean, bucketed, and either closed out this
+  session or explicitly left open with its reason recorded.
+- **On-Fail:** Bean unavailable → do NOT guess which to close. Write the doc with the verdicts as
+  they stand and carry the close-out list into the next session, named.
+- **Test:** *Happy:* every non-DONE row appears in exactly one bucket with an estimate. *Edge:* a
+  NOT-STARTED item is never presented as PARTIAL. *Fail:* Step 5 runs before this gate returns.
+  *Integration:* the doc is written exactly ONCE per session.
+
 ### Step 5 — Write verdicts into the doc
 - **Model:** inline
 - **Action:** Update each claim in place. Keep the original wording struck through where it was

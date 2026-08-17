@@ -52,7 +52,7 @@
 	flex-direction: column;
 	padding: var(--sgs-pricing-padding);
 	border-radius: var(--sgs-pricing-border-radius);
-	background-color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--surface, #fff);
 	transition: box-shadow 0.3s ease;
 }
 
@@ -67,7 +67,7 @@
 }
 
 .sgs-pricing-table--bordered .sgs-pricing-table__plan {
-	border: 1px solid var(--wp--preset--color--neutral-200, #e5e5e5);
+	border: 1px solid var(--wp--preset--color--border-light, #e5e5e5);
 	box-shadow: none;
 }
 
@@ -87,7 +87,7 @@
 	border-radius: 999px;
 	font-size: 0.875rem;
 	font-weight: 600;
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--accent, #d4a843);
 	text-transform: uppercase;
 	letter-spacing: 0.025em;
@@ -123,7 +123,7 @@
 
 .sgs-pricing-table__period {
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--text-light, #6b6b6b);
+	color: var(--wp--preset--color--text-muted, #6b6b6b);
 }
 
 /* Features list */
@@ -163,7 +163,7 @@
 .sgs-pricing-table__feature {
 	position: relative;
 	padding: 0.75rem 0 0.75rem 2rem;
-	border-bottom: 1px solid var(--wp--preset--color--neutral-100, #f5f5f5);
+	border-bottom: 1px solid var(--wp--preset--color--border-light, #f5f5f5);
 	color: var(--wp--preset--color--text, #333);
 }
 
@@ -218,7 +218,7 @@
 }
 
 .sgs-pricing-table__cta--primary {
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--primary, #333);
 }
 
@@ -227,7 +227,7 @@
 }
 
 .sgs-pricing-table__cta--secondary {
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--secondary, #6c757d);
 }
 
@@ -236,7 +236,7 @@
 }
 
 .sgs-pricing-table__cta--accent {
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--accent, #d4a843);
 }
 
@@ -251,7 +251,7 @@
 }
 
 .sgs-pricing-table__cta--outline:hover {
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--primary, #333);
 }
 
@@ -306,7 +306,7 @@
 	border-radius: 0 var(--sgs-pricing-border-radius) 0 var(--wp--custom--border-radius--small, 4px);
 	font-size: 0.8rem;
 	font-weight: 600;
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--accent, #d4a843);
 	text-transform: uppercase;
 	letter-spacing: 0.03em;
@@ -322,7 +322,7 @@
 	margin: 0 0 var(--wp--preset--spacing--20, 1rem);
 	font-size: var(--wp--preset--font-size--large, 1.5rem);
 	font-weight: 700;
-	color: var(--wp--preset--color--heading, #1e1e1e);
+	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
 /* ── Feature included / excluded states ──────────────────────────────────── */
@@ -343,7 +343,7 @@
 	border-radius: 999px;
 	font-size: 0.8rem;
 	font-weight: 700;
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--success, #2e7d4f);
 	letter-spacing: 0.01em;
 }
@@ -412,7 +412,7 @@
 .sgs-pricing-table__toggle--style-text .sgs-pricing-table__toggle-track {
 	position: absolute;
 	inset: 0;
-	border: 2px solid var(--wp--preset--color--border-subtle, #ccc);
+	border: 2px solid var(--wp--preset--color--border, #ccc);
 	border-radius: 999px;
 	pointer-events: none;
 }
@@ -450,7 +450,7 @@
 .sgs-pricing-table__toggle--style-button
 	.sgs-pricing-table__toggle-input:checked
 	+ .sgs-pricing-table__toggle-label {
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--primary, #0f7e80);
 	font-weight: 700;
 }

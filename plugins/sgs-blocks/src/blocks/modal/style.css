@@ -32,7 +32,7 @@
 }
 
 .sgs-modal__trigger--primary {
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--primary, #333);
 }
 
@@ -43,7 +43,7 @@
 }
 
 .sgs-modal__trigger--secondary {
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	background-color: var(--wp--preset--color--secondary, #6c757d);
 }
 
@@ -164,7 +164,7 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background-color: var(--wp--preset--color--border-subtle, #e0e0e0);
+	background-color: var(--wp--preset--color--border, #e0e0e0);
 	color: var(--wp--preset--color--text, #1e1e1e);
 	cursor: pointer;
 	transition:

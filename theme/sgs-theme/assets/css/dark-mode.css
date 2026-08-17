@@ -23,7 +23,7 @@
 	--wp--preset--color--primary-dark: #0F7E80;
 	--wp--preset--color--accent: #FFA04D;
 	--wp--preset--color--accent-light: #3D2A1A;
-	--wp--preset--color--border-subtle: #2A4A4B;
+	--wp--preset--color--border: #2A4A4B;
 	--wp--preset--color--footer-bg: #0A3B3D;
 
 	/* Shadow adjustments for dark backgrounds */
@@ -47,7 +47,7 @@
 		--wp--preset--color--primary-dark: #0F7E80;
 		--wp--preset--color--accent: #FFA04D;
 		--wp--preset--color--accent-light: #3D2A1A;
-		--wp--preset--color--border-subtle: #2A4A4B;
+		--wp--preset--color--border: #2A4A4B;
 		--wp--preset--color--footer-bg: #0A3B3D;
 
 		--wp--preset--shadow--subtle: 0 1px 3px rgba(0,0,0,0.3);

@@ -10,7 +10,7 @@
 
 .sgs-accordion-item {
 	border: 0;
-	border-bottom: 1px solid var(--wp--preset--color--border-light, var(--wp--preset--color--border-subtle, #e0e0e0));
+	border-bottom: 1px solid var(--wp--preset--color--border-light, var(--wp--preset--color--border, #e0e0e0));
 }
 
 .sgs-accordion-item:last-child {
@@ -196,7 +196,7 @@
 /* ─── STYLE: BORDERED ─── */
 
 .sgs-accordion--bordered .sgs-accordion-item {
-	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 
@@ -219,7 +219,7 @@
 /* ─── STYLE: FLUSH ─── */
 
 .sgs-accordion--flush .sgs-accordion-item {
-	border-bottom: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border-bottom: 1px solid var(--wp--preset--color--border, #e0e0e0);
 }
 
 .sgs-accordion--flush .sgs-accordion-item:last-child {
@@ -240,7 +240,7 @@
 
 .sgs-accordion--card .sgs-accordion-item {
 	background: var(--wp--preset--color--surface-alt, #ffffff);
-	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }

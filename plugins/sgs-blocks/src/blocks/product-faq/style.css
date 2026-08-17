@@ -18,7 +18,7 @@
 /* ─── FAQ ITEM ─── */
 
 .sgs-product-faq-item {
-	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	background: var(--wp--preset--color--surface, #ffffff);
 }

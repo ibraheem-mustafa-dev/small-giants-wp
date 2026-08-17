@@ -151,7 +151,7 @@
 	width: 100%;
 	max-width: 100%;
 	padding: 0.75rem 1rem;
-	border: 1px solid var(--wp--preset--color--border-subtle, #ccc);
+	border: 1px solid var(--wp--preset--color--border, #ccc);
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 	font-family: inherit;
@@ -327,7 +327,7 @@ select.sgs-form-field__input {
 .sgs-form-tile {
 	display: flex;
 	padding: 1rem;
-	border: 2px solid var(--wp--preset--color--border-subtle, #ccc);
+	border: 2px solid var(--wp--preset--color--border, #ccc);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	cursor: pointer;
 	transition: border-color 0.2s, background-color 0.2s;
@@ -435,7 +435,7 @@ select.sgs-form-field__input {
 	align-items: center;
 	gap: 0.5rem;
 	padding: 2rem;
-	border: 2px dashed var(--wp--preset--color--border-subtle, #ccc);
+	border: 2px dashed var(--wp--preset--color--border, #ccc);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	text-align: center;
 	cursor: pointer;
@@ -551,7 +551,7 @@ select.sgs-form-field__input {
 	justify-content: center;
 	font-size: 0.8125rem;
 	font-weight: 600;
-	border: 2px solid var(--wp--preset--color--border-subtle, #ccc);
+	border: 2px solid var(--wp--preset--color--border, #ccc);
 	color: var(--wp--preset--color--text-muted, #555);
 	transition: all 0.2s;
 }
@@ -666,7 +666,7 @@ select.sgs-form-field__input {
 
 .sgs-form__button--prev {
 	background: transparent;
-	border: 1px solid var(--wp--preset--color--border-subtle, #ccc);
+	border: 1px solid var(--wp--preset--color--border, #ccc);
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 

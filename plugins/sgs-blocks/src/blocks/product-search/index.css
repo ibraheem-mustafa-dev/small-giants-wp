@@ -24,6 +24,6 @@
 .sgs-product-search__editor-hint {
 	margin: 0.5rem 0 0;
 	font-size: 0.8125rem;
-	color: var( --wp--preset--color--contrast-2, #757575 );
+	color: var( --wp--preset--color--text-muted, #757575 );
 	font-style: italic;
 }

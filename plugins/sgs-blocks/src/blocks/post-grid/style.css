@@ -21,7 +21,7 @@
 	--sgs-columns-mobile: 1;
 	--sgs-columns: var( --sgs-columns-desktop );
 	--sgs-gap: 30px;
-	--sgs-card-bg: var( --wp--preset--color--base, #ffffff );
+	--sgs-card-bg: var( --wp--preset--color--surface, #ffffff );
 	--sgs-card-radius: 8px;
 	--sgs-card-shadow: 0 2px 12px rgba( 0, 0, 0, 0.08 );
 	--sgs-hover-scale: 1;
@@ -175,7 +175,7 @@
 .sgs-post-grid__card--flat {
 	border-radius: var( --sgs-card-radius );
 	box-shadow: none;
-	border: 1px solid var( --wp--preset--color--border-subtle, #e0e0e0 );
+	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
 }
 
 .sgs-post-grid__card--flat .sgs-post-grid__image {
@@ -382,7 +382,7 @@
 	width: 100%;
 	height: 100%;
 	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
-	color: var( --wp--preset--color--border-subtle, #c0c8cc );
+	color: var( --wp--preset--color--border, #c0c8cc );
 }
 
 .sgs-post-grid__image-placeholder svg {
@@ -477,7 +477,7 @@
 }
 
 .sgs-post-grid__card--flat:hover {
-	border-color: var( --sgs-hover-border, var( --wp--preset--color--border-subtle, #e0e0e0 ) );
+	border-color: var( --sgs-hover-border, var( --wp--preset--color--border, #e0e0e0 ) );
 }
 
 .sgs-post-grid__card--minimal:hover {
@@ -690,8 +690,8 @@
 	min-height: 44px;
 	font-size: 2rem;
 	line-height: 1;
-	background: var( --wp--preset--color--base, #fff );
-	border: 1px solid var( --wp--preset--color--border-subtle, #e0e0e0 );
+	background: var( --wp--preset--color--surface, #fff );
+	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
 	border-radius: 50%;
 	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.12 );
 	cursor: pointer;
@@ -740,7 +740,7 @@
 	padding: 0;
 	border-radius: 50%;
 	border: none;
-	background: var( --wp--preset--color--border-subtle, #ccc );
+	background: var( --wp--preset--color--border, #ccc );
 	cursor: pointer;
 	transition: background-color 150ms ease, transform 150ms ease;
 }
@@ -769,7 +769,7 @@
 
 .sgs-post-grid__card--skeleton {
 	/* background-image (not shorthand) preserves background-color cascade (Section R, H-9) */
-	background-image: linear-gradient( 90deg, var( --wp--preset--color--surface-alt, #f0f0f0 ) 25%, var( --wp--preset--color--border-subtle, #e0e0e0 ) 50%, var( --wp--preset--color--surface-alt, #f0f0f0 ) 75% );
+	background-image: linear-gradient( 90deg, var( --wp--preset--color--surface-alt, #f0f0f0 ) 25%, var( --wp--preset--color--border, #e0e0e0 ) 50%, var( --wp--preset--color--surface-alt, #f0f0f0 ) 75% );
 	background-size: 200% 100%;
 	animation: sgs-shimmer 1.5s infinite;
 	border-radius: var( --sgs-card-radius );
@@ -810,7 +810,7 @@
 }
 
 .sgs-post-grid__empty-icon {
-	color: var( --wp--preset--color--border-subtle, #ccc );
+	color: var( --wp--preset--color--border, #ccc );
 	flex-shrink: 0;
 }
 

@@ -337,7 +337,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: var( --wp--preset--color--base, #fff );
+	background-color: var( --wp--preset--color--surface, #fff );
 }
 
 .wp-block-sgs-before-after__svg svg {
