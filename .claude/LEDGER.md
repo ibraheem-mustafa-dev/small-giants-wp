@@ -9,9 +9,21 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-17. The border-colour gradient sweep is done — colour is fully closed. The whole D636
-gradient rollout (background/text/border/shape-divider/icon, everywhere it's genuinely used) is now
-finished across the framework, not just the 4 blocks the previous session managed.**
+**2026-08-17 (later same day). Three of the four typography-initiative loose ends are closed —
+committed, pushed to `main`, not yet deployed to the live site.** Alignment (left/centre/right) can
+now be sent to the page for the first time (it was silently missing before); two blocks' "nothing
+here yet" placeholder text stopped being mis-tagged as a page heading (checked against real
+accessibility research first, not just my own judgement); and three blocks' heading-level settings
+will now survive the "clone a design" pipeline correctly, closing a gap found earlier today. All
+three ran in parallel, each independently verified, and the database change went through a
+compliance check against the actual code before being applied (not just trusting the investigation
+report) because it touches a shared database other work depends on. One small, unrelated, pre-existing
+database inconsistency surfaced along the way — flagged below, not fixed, since it wasn't part of the
+ask. **One item (R2) is still open — it needs its own design decision, not mechanical work.**
+
+**Earlier the same day:** the border-colour gradient sweep finished — colour is fully closed. The
+whole D636 gradient rollout (background/text/border/shape-divider/icon, everywhere it's genuinely
+used) is now finished across the framework, not just the 4 blocks the previous session managed.
 
 **What happened:** four builders ran in parallel, split across 20 blocks (~30 attributes) after
 re-checking the real database instead of trusting last session's rough list — it turned out bigger
@@ -65,6 +77,10 @@ close-out doc against the repo found it. Two smaller count errors in the same da
 | ⚠ Truncated-survey incident: the sweep above shipped incomplete (`head -20` on a 23-row population), caught by fact-checking the close-out doc | `decisions.md` D651 |
 | `mega-group`/`mega-aside` templateLock `'all'`→`'insert'` (content-loss bug, real cause of D650's post-2164 incident) — deployed, live-verified via editor round-trip | `decisions.md` D652 |
 | `element-manifest-baseline.json` hero/info-box border-gradient reason text corrected (count unchanged) | `decisions.md` D652 |
+| R1 — `text-align` now emits from the shared typography helper (8th property, was 0) | `decisions.md` D653 |
+| R4 — gallery/post-grid empty-state placeholder `<h3>`→`<p>` (researched first via `/research-check`) | `decisions.md` D653 |
+| R3 — 3 blocks' `headingLevel` reclassified `role='tag-identity'`, unblocking the D649 converter fix | `decisions.md` D653 |
+| ⚠ New unrelated finding baselined not fixed: `sgs/counter.numberColour` rogue DB seed | `decisions.md` D653 |
 
 ## Blockers
 
@@ -130,63 +146,42 @@ Stripping first silently destroys typography clients already set.
 (zero forks) + one SCSS rule. W2b = `text-align` needs NEW PHP emission — it is not a re-skin.
 **Orchestration:** 4 agents, not 16, one worktree each; pilot on `sgs/label`. Critical path ≈2h40m.
 
-**Three live defects it surfaced. TWO ARE NOW FIXED, DEPLOYED AND LIVE-VERIFIED (2026-08-17).**
+**Three live defects it surfaced. ALL THREE NOW CLOSED (D649→D653, 2026-08-17), except R2.**
 
-⚠ **DEPLOY EVIDENCE, added after a `/qc-council` adversarial seat correctly flagged this section as
-asserting "DEPLOYED" with none of the hash+checksum this file's own convention requires everywhere
-else.** The claim was true but unevidenced, which is indistinguishable from unsubstantiated to any
-later reader — and this project already burned a session on exactly that shape (D651's three
-corrective commits recorded as shipped when they landed after the deploy).
-- Deploy run: `build-deploy.py --target sandybrown --skip-build`, ownership marker **`6c994ef5`**,
-  `payload-verify PASS: all 83 deployed block.json match the payload`, `oldshape-audit PASS`.
-- **Re-confirmed on the live server, not from the run's own output:** `headingLevel` present in
-  the deployed `build/blocks/{card-grid,form-review,pricing-table,process-steps,team-member,timeline,
-  trustpilot-reviews}/block.json` (7/7).
-- ✅ **`a21dda8d` (product-card title→class) IS also live** — verified directly: its signature
-  (`?> class="sgs-product-card__title">`) appears twice in the deployed `product-card/render.php` and
-  the deleted tag-enumerated CSS rule is absent (grep count 0). Its own deploy was refused for a dirty
-  tree, so a concurrent session's later deploy carried it. **An earlier note in this file saying it was
-  "committed but not deployed" is therefore STALE.**
+✅ **Hardcoded `<h3>` on 7 content blocks — FIXED, DEPLOYED, LIVE-VERIFIED** (`6c994ef5`; deploy
+evidence: `build-deploy.py --target sandybrown --skip-build`, `payload-verify PASS: all 83`,
+`oldshape-audit PASS`). ✅ **The 2 empty-state placeholders (`gallery`/`post-grid`) — FIXED same day**
+(`decisions.md` D653, `2a6000be`): demoted `<h3>`→`<p>` after a `/research-check` confirmed the
+"configurable level" alternative doesn't apply to non-reused boilerplate with no content underneath
+it. **Committed + pushed to `main`, NOT yet deployed to sandybrown** — batch into the next deploy.
 
+✅ **Numeric→string canonicalisation — FIXED** (`81669d5c`), uncovering and fixing a real bug:
+`includes/product-card-builtin-render.php`'s typed mode cast the level with `(int)`, silently forcing
+every typed product-card to `<h2>` regardless of the client's choice. Live-verified fixed.
 
-✅ **Hardcoded `<h3>` — FIXED on 7 blocks** (`6c994ef5`). `card-grid`, `form-review`,
-`pricing-table`, `process-steps`, `team-member`, `timeline`, `trustpilot-reviews` each gained
-`headingLevel` (`enum [h2..h6,p]`, `default h3` so output is unchanged), PHP-allowlisted, control in
-the pinned **Settings** panel per D649's identity-control ruling. ⚠ **It was 7, not 9** — `gallery`
-and `post-grid`'s `<h3>`s are **empty-state placeholders inside `role="status"`**, not client
-content; deliberately excluded, they need their own design call.
-**Live-verified on the canary** (probe pages created via REST, force-deleted after, 404 confirmed):
-unset → `<h3>`, `h2` → `<h2>`, `p` → `<p>` correctly closed.
+✅ **Converter blindness — FIXED** (`e4a23783`) **and now actually LIVE, not just correct-but-inert**
+(`decisions.md` D653, `66527712`): the 3 blocks it needed (`icon-list`/`product-card`/`product-faq`)
+are now `role='tag-identity'` in the DB, via the same override channel that already correctly
+classifies `sgs/heading.level`/`sgs/media.mediaType` — verified against the D643 incident (a prior
+attempt at this broke a different gate) before applying, not just trusted from the investigation.
+Committed + pushed, **DB reseed already applied locally** (this change lives in the shared
+`sgs-framework.db`, not something a site deploy touches).
 
-✅ **Numeric→string canonicalisation — FIXED** (`81669d5c`). `product-card`/`product-faq`
-`headingLevel` is now `{type:string, enum:[h2,h3,h4,p]}`. **Uncovered a live bug in the process:**
-`includes/product-card-builtin-render.php` — the TYPED mode, the block's **default** — had never
-been migrated and cast the value with `(int)`, so any string became `0`, clamped to `2`. **Every
-typed product-card silently rendered `<h2>` regardless of the client's choice.** Live-verified fixed:
-unset → `h3`, `h4` → `h4`, `p` → `p`.
+✅ **`text-align` — FIXED** (`decisions.md` D653, `2205dfa9`): `sgs_typography_css_rule()` now emits
+8 properties, not 7. Unblocks the typography initiative's W2b workstream.
 
-✅ **Converter blindness — FIXED** (`e4a23783`, 10 tests each proven to fail without the fix).
-⚠ **Necessary but NOT sufficient:** those three blocks are `role='enum-mode'`/`'technical'`, not
-`role='tag-identity'`, so the SQL's role filter still excludes them. **Residual: reclassify them**,
-which needs a shared `/sgs-update` reseed — deliberately not done mid-migration.
+⛔ **R2 — STILL OPEN, deliberately not dispatched.** The F3b gate's E12 guard cannot be widened yet:
+it pairs a heading-level enum with **every** literal-defaulted attribute *without checking they share
+an element*, and two candidate widenings were already built and reverted (full reasoning documented
+**inside the gate** — read it before re-attempting). **Prerequisite: scope E12 via
+`supports.sgs.elements[].attrMap`**, which needs the manifest filled first — a design/investigation
+task, not mechanical execution, which is why it wasn't parallel-dispatched with R1/R3/R4.
 
-⛔ **STILL OPEN — `text-align` has zero emission in `sgs_typography_css_rule()`** (it emits 7
-properties, not 8) and no entry in `check-dead-controls.js:477-495`'s `PREFIXED_HELPER_SUFFIXES`, so
-every new alignment control would false-flag as dead. *(That array also still lists the 6 dead
-`*Tablet`/`*Mobile` families slated for deletion — both edits belong in the same commit.)*
-
-⛔ **ALSO OPEN — the F3b gate's E12 guard cannot be widened yet, and this is now twice-evidenced.**
-It pairs a heading-level enum with **every** literal-defaulted attribute *without checking they share
-an element*: `icon-list.iconColour` (per-item marker) flagged against `headingLevel` (list heading),
-and `product-card.ctaFontWeight` (CTA button) flagged against the same. Invisible before only because
-`sgs/heading` was the sole block it evaluated. **Prerequisite: scope E12 via
-`supports.sgs.elements[].attrMap`** — needs the manifest filled first. Both candidate widenings were
-built and reverted; the full reasoning is documented **inside the gate** so nobody re-derives it.
-⚠ Including `p` in every heading-level enum is what currently keeps these blocks *outside* that gate.
-
-⚠ **One follow-up needing a decision, flagged not guessed:** `product-card/style.css`'s bound-mode
-title rule is scoped to `h2, h4` only — a card that now selects `p` renders, but falls back to
-unstyled browser paragraph sizing.
+⚠ **New, unrelated finding — flagged, not fixed:** `sgs/counter.numberColour` is a real, correctly
+classified colour attribute that was never registered in the DB classifier/override layer (a
+pre-existing "rogue seed" the R3 reseed's own consistency gate surfaced). Baselined with a recorded
+reason rather than silently fixed (out of scope) or silently ignored. Needs its own small decision:
+does it belong in the classifier layer or the override layer?
 
 ### Dependency graph
 
@@ -247,19 +242,26 @@ Residuals below — independent, parallel with all of the above.
 
 ## State Snapshot
 
-- **Branch:** `main`. Last CODE commit of this session's work: `43fcd42d` (D652 — mega-group/
-  mega-aside templateLock fix + baseline text correction). ⚠ **Do not treat any hash here
-  as "current HEAD"** — this is a SHARED worktree with concurrent sessions committing to `main`, and
-  a HEAD written into a doc is stale the moment that doc is itself committed. Run
-  `git rev-parse --short HEAD` and `git log --oneline -5` to see where things actually are.
-- **D-ceiling:** **D652** — verify with
+- **Branch:** `main`. Last CODE commit of this session's work: `66527712` (D653 — R3 tag-identity
+  reclassification), pushed. Also on `main`: `2205dfa9`/`fe5e1078` (R1, text-align emission),
+  `2a6000be`/`22deee71` (R4, empty-state heading tag). ⚠ **Do not treat any hash here as "current
+  HEAD"** — this is a SHARED worktree with concurrent sessions committing to `main`, and a HEAD
+  written into a doc is stale the moment that doc is itself committed. Run `git rev-parse --short HEAD`
+  and `git log --oneline -5` to see where things actually are.
+- **D-ceiling:** **D653** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
-- **Build:** green through all ~50 gates. `check-element-manifest-conformance.js`: GATE PASS
-  (unclassified 0, role-map-stale 0, state-without-base 4/4 baselined).
-- **Canary:** DEPLOYED this session — `main` (`4ad7840c`) to sandybrown, payload checksums 83/83.
-  Live-verified: `heading`/`button`/`product-card` gradient borders confirmed via
-  `getComputedStyle(el, '::before')`. Scratch page 2478 force-deleted after use.
+- **Build:** green through all ~50 gates, including the git-level `db-consistency`/`cheat-gate`/F5/F6
+  commit floor (`.githooks/pre-commit`) that R3's commit tripped and cleared honestly — one pre-existing,
+  unrelated finding (`sgs/counter.numberColour`) baselined with a recorded reason, not silently waved
+  through. `check-element-manifest-conformance.js`: GATE PASS (unclassified 0, role-map-stale 0,
+  state-without-base 4/4 baselined — unchanged by today's R1/R3/R4 work).
+- **Converter test suite:** 676 passed / 11 xfailed (unchanged baseline) — the 19 tag-identity tests
+  that were previously blocked by R3's misclassification now pass for real.
+- **Canary:** R1/R3/R4 **NOT yet deployed** — committed + pushed to `main` only. R3's DB-only change
+  needs no site deploy (lives in `sgs-framework.db`); R1/R4 need a normal `build-deploy.py` pass
+  whenever the next deploy batches. Last actual sandybrown deploy this session was earlier the same
+  day: `main` (`4ad7840c`), payload checksums 83/83, gradient borders live-verified.
 - **Worktrees:** agent worktrees from this session (and some carried from D645) still exist under
   `.claude/worktrees/agent-*` — branches all merged, worktree dirs not yet cleaned up, low priority.
   `git worktree remove` each when convenient.

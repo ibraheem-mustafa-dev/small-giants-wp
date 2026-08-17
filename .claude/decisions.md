@@ -1,5 +1,65 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D653 — 3 of 4 typography-initiative residuals closed: text-align emission, empty-state heading tag, tag-identity role reclassification [ROUTINE]
+
+**2026-08-17.** Closes R1, R3, R4 from `reports/2026-08-17-typography-residuals-followup-prompt.md`
+(that doc is now superseded — see its own note). Dispatched in parallel (isolated worktrees), each
+verified independently before merge; R3 additionally passed a direct `/qc` compliance check (source
+re-read, not the investigating agent's report trusted at face value) before being applied, since it
+touches the shared `sgs-framework.db`. R2 stays open — see `LEDGER.md`.
+
+**R1 — `text-align` now emits (`2205dfa9`, merged `fe5e1078`).** `sgs_typography_css_rule()`
+(`helpers-typography.php`) now emits 8 properties, not 7 — `text-align` added as a flat scalar
+(no responsive tiers, matching `font-weight`/`font-style`/`text-transform`/`text-decoration`'s
+pattern), allowlist-validated (`left|center|right|justify`), attr shape `{prefix}TextAlign`.
+`check-dead-controls.js`'s `PREFIXED_HELPER_SUFFIXES.sgs_typography_css_rule` gained the matching
+`'TextAlign'` entry in the same commit — without it, any future `{prefix}TextAlign` attribute would
+false-flag as dead and fail the build. `brand-strip`'s existing hand-rolled `nameTextAlign` (its own
+`--sgs-name-text-align` custom-property mechanism) deliberately left untouched — refactoring it onto
+the new shared capability is separate follow-up work, not done here. Build + `check:dead-controls`
+both verified green.
+
+**R4 — gallery/post-grid empty-state placeholder demoted `<h3>`→`<p>` (`2a6000be`, merged `22deee71`).**
+Preceded by a `/research-check` (default tier, 2 agents) into empty-state heading semantics, then a
+direct code trace (not assumption) confirming this codebase's empty-state block is ONLY ever
+server-rendered on initial page load — `class-post-grid-rest.php`'s AJAX filter path returns an empty
+string on zero results with no empty-state markup at all, so `role="status"` was already confirmed
+inert before the fix, and the "make the level configurable" alternative (what mature component
+libraries like Adobe React Spectrum do) doesn't apply to fixed non-reused framework boilerplate with
+no content underneath it — the orphan-heading concern the research surfaced. CSS was already
+class-keyed (not tag-keyed) in both blocks' `style.css`, so no selector changes were needed.
+
+**R3 — `sgs/icon-list`/`sgs/product-card`/`sgs/product-faq` `headingLevel` reclassified
+`role='tag-identity'` (`66527712`).** Closes the residual left open by `e4a23783` (D649's converter
+tag-identity fix, correct but inert for these three blocks because their DB role was
+`'technical'`/`'enum-mode'`, not `'tag-identity'`). Dispatched as **investigation-only** first
+(no writes) given the D643 precedent (a prior role-reclassification attempt broke
+`check-element-manifest-conformance.js`'s F6 gate with 51 false violations by setting
+`css_property` without a companion `attrMap` declaration, fully reverted). The investigation found
+`role='tag-identity'` is deliberately never auto-derived by any classifier tier — it's reserved for
+the hand-authored `attr-classification-overrides.json` override channel, the exact mechanism that
+already correctly classifies `sgs/heading.level`/`sgs/media.mediaType`. Before applying, independently
+re-verified (not trusted from the investigating agent's report): the override schema match, that
+`check-element-manifest-conformance.js`'s `STYLE_ROLES` set (lines 105-115) genuinely excludes
+`tag-identity` by design, that the converter's consumer SQL (`db_lookup.py:1176-1178`) only reads
+`role` and never `css_property` (the field D643 actually broke on), and that no other script in the
+codebase reads the old `enum-mode`/`technical` classification for these three blocks. Applied 3
+entries to `attr-classification-overrides.json`, ran `/sgs-update --stage 1` (enum values refreshed
+from current block.json in the same pass — they were stale numeric `[2,3,4]`/`NULL` shapes). Post-fix:
+role-map regenerated (`role-map-stale 0`), F6 gate clean (unchanged baseline), full converter suite
+676 passed/11 xfailed (unchanged), and the 19 tag-identity-specific tests — previously blocked by this
+exact misclassification, not merely untested — pass for real.
+
+**One new, unrelated finding surfaced and baselined, not fixed here:** the R3 reseed's
+`db-consistency` gate flagged `sgs/counter.numberColour` as a "rogue" `css_property` seed — a real,
+correctly-valued colour attribute (`D636`'s `numberColourGradient` sibling proves it's genuine) that
+was never registered in either the classifier layer or the override layer, so it would silently vanish
+on a future reseed that doesn't happen to preserve it. Pre-existing, unconnected to `sgs/counter`, and
+this session never touched that block — fixing it would be scope creep on an unreviewed judgement call
+(does it belong in the classifier or the override layer?). Baselined via the gate's own
+`--update-baseline` with a recorded reason rather than silently fixed or silently ignored. **New
+residual — needs its own small decision, not urgent.**
+
 ## D652 — mega-group/mega-aside templateLock 'all'->'insert' (content-loss bug) + baseline text correction [ROUTINE]
 
 **2026-08-17.** Closes both follow-up items from the 2026-08-17 orchestration plan.

@@ -3,6 +3,13 @@
 **Rewritten 2026-08-17 after a `/qc-council` pass falsified three claims in the first version.** Paste
 the block below into a fresh session. It inherits no context — everything is stated inline.
 
+⛔ **SUPERSEDED 2026-08-17 — R1, R3, R4 are now CLOSED. Do not redo any of this file's R1/R3/R4
+sections.** See `decisions.md` D653 for the full closure record and `LEDGER.md` for current status.
+This file is kept for its historical record of the investigation (D643-avoidance reasoning, the
+research trail) — the ONLY item from this file still open is **R2** (the F3b gate's E12 guard scoping
+prerequisite), which was deliberately excluded from D653's dispatch because it needs its own design
+pass, not mechanical execution.
+
 ---
 
 Invoke `/autopilot` before doing anything else.
