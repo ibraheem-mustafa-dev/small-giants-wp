@@ -23,11 +23,11 @@ weeks away, promote it to `reports/` first.
 
 | Verdict | Count |
 |---|---|
-| DONE | 197 |
+| DONE | 199 |
 | PARTIAL | 12 |
 | UNVERIFIABLE | 4 |
 | SUPERSEDED (disposed `DELETE`) | 3 |
-| NOT-DONE | 2 |
+| NOT-DONE | 0 |
 | PARTIAL (2/8) | 1 |
 | **AGENT-classed** | **0** ✓ |
 | **PENDING-LIVE carried forward** | **0** ✓ |
@@ -92,7 +92,20 @@ mamas-munches' (#e8d5c0), so product-card borders render grey-blue rather than w
 snapshot is correct; only the live DB layer is stale. Detailed in
 `reports/visual-diff/product-card-2026-08-18.md`.
 
-### 3b. HIGH — `text-secondary` is a client-only slug that framework code references
+### 3b. RESOLVED IN-SESSION — §12.5(b) missing slots, and the attributionMarginTop verdict
+
+Both former NOT-DONE rows are now DONE, re-derived after the fixes landed:
+
+- **§12.5(b) "no snapshot is missing a slot"** was FALSE when audited (7 of 8 clients short, `text`
+  missing from 5) and is TRUE now — 20 slugs seeded, `text-primary` migrated, re-derived as **0
+  clients missing any of the 21**. Step 5 must record both halves: the claim as written was wrong,
+  and the gap is closed.
+- **`attributionMarginTop`** was never a defect. The KEEP-SCALAR decision is about the BOX axis (no
+  4-side BoxControl) and it is not a box object; it is tier-objectified on the orthogonal RESPONSIVE
+  axis. `render.php:291` calls it a KEPT-SCALAR in so many words. My NOT-DONE conflated the two axes
+  — the exact conflation D549 records.
+
+### 3b(ii). HIGH — `text-secondary` is a client-only slug that framework code references
 
 `includes/variations/sgs-text-variations.php:83` reads `--wp--preset--color--text-secondary`, which
 **only 5 clients declare**. On `helping-doctors`, `indus-foods` and `mamas-munches` it falls back to

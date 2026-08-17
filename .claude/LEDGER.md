@@ -9,7 +9,7 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**S1 of the verification programme ran, and it worked — 197 of 219 points in Spec 32 now carry a
+**S1 of the verification programme ran, and it worked — 199 of 219 points in Spec 32 now carry a
 verdict backed by a command and its raw output. Along the way it found three real bugs that every
 existing gate had passed.**
 
@@ -47,7 +47,7 @@ without losing anything.
 
 | What | Detail lives at |
 |---|---|
-| **S1 verdicts — 197/219 DONE, 0 AGENT-classed, 0 live points carried** | `.claude/reports/2026-08-18-spec32-points-roster.json` |
+| **S1 verdicts — 199/219 DONE, 0 AGENT-classed, 0 live points carried** | `.claude/reports/2026-08-18-spec32-points-roster.json` |
 | **Open-points report — what remains, why, and what closes it** | `.claude/reports/2026-08-18-s1-open-points.md` |
 | `sgs/button` reduced-motion rule fixed (live-proven 0→1 match) + `check-id-scoped-emits.js` | D657 · `f52c6b53` |
 | 72 phantom colour refs fixed; palette completed to 21 slugs across 9 files | D658 · `0def190f` |

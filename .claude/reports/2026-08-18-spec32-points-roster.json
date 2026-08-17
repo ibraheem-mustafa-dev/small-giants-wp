@@ -1156,13 +1156,13 @@
     "quote": "`attributionMarginTop` | quote | Single side only — a 4-side BoxControl would show 3 dead controls",
     "type": "checklist-item",
     "predict": "Row asserts a box-family roster entry compiled in a 74-block scan. If still accurate, the named family/blocks resolve in the live tree; the roster is flagged STALE against 83 blocks.",
-    "command": "python -c \"\nimport json\nd=json.load(open('plugins/sgs-blocks/src/blocks/quote/block.json',encoding='utf-8')).get('attributes',{})\na=d.get('attributionMarginTop')\nprint('MISSING' if a is None else 'type=' + str(a.get('type')))\n\" ",
+    "command": "grep -n 'attributionMarginTop' quote/edit.js quote/render.php",
     "live": false,
-    "output": "type=object",
+    "output": "render.php:291 '// ... attributionMarginTop is a KEPT-SCALAR' | render.php:294 + edit.js:260 '// attributionFontSize / attributionMarginTop are TIER OBJECTS' | render.php:303 sgs_responsive_normalise_object(...)['desktop'] | edit.js:272 attributionMarginTop?.desktop",
     "exit_code": 0,
-    "verdict": "NOT-DONE",
+    "verdict": "DONE",
     "evidence": "READ-CODE",
-    "verdict_reason": "Roster records a deliberate KEEP-SCALAR decision for `attributionMarginTop` on sgs/quote (\"a 4-side BoxControl would show 3 dead controls\"). It is now {\"type\":\"object\",\"default\":{}} - the decision was reversed without the roster being updated. Note the empty-object default is itself the recorded \"box-object migration drops old scalar defaults\" trap and is worth a separate check.",
+    "verdict_reason": "The KEEP-SCALAR decision IS honoured. The roster's decision was 'do not make this a 4-side BoxControl - it would show 3 dead controls', i.e. keep it scalar on the BOX axis. It is not a box object: it has no top/right/bottom/left keys and render.php calls it a KEPT-SCALAR in so many words. It is object-typed on the ORTHOGONAL RESPONSIVE axis ({desktop,tablet,mobile}), from the Spec 35 tier migration (d6ca8b10). An earlier NOT-DONE here was MY defect - I read 'type: object' as box-shaped and conflated the TIER and BOX axes, which is the exact conflation D549 records and `npm run survey:responsive-shape` exists to detect.",
     "disposition": null
   },
   {
@@ -3070,11 +3070,11 @@
     "predict": "Row cites `theme-snapshot.json` as its evidence. If the claim holds, that artefact exists in the tree (and, where the row asserts content, contains what the row says it does).",
     "command": "compare each sites/*/theme-snapshot.json palette against the framework roster",
     "live": false,
-    "output": "eye-care-ward-end missing [accent-text, success, text, whatsapp]; helping-doctors [accent-text]; mamas-munches [accent-light, border-light, error, whatsapp]; sgs-construction/-healthcare/-mosque/-professional each missing [accent-text, success, text, whatsapp]; indus-foods none",
+    "output": "framework slugs: 21 | clients missing any: 0",
     "exit_code": 0,
-    "verdict": "NOT-DONE",
+    "verdict": "DONE",
     "evidence": "RAN-TOOL",
-    "verdict_reason": "The row claims 'No snapshot is missing a slot'. That is FALSE: 7 of 8 clients lack framework slugs. Most serious is `text` - the most-referenced ink token, 303 references - missing from 5 clients, so on those sites every one of those references falls back to a hardcoded literal and can never be themed. Those 5 use `text-primary` instead. ⚠ An earlier pass in THIS session marked this row DONE: the command was right but the decide-function returned DONE unconditionally and pasted the output without asserting it was empty - a verdict that could not fail, which is the very trap this programme exists to close.",
+    "verdict_reason": "The claim was FALSE when audited - 7 of 8 clients lacked framework slugs, `text` (303 refs) missing from 5 - and it is TRUE NOW because this session fixed it: 20 slugs seeded, text-primary migrated to text on 5 clients, re-derived as 0 clients missing any of the 21. Step 5 must record BOTH: the claim as written was unverified and wrong, and the underlying gap is closed. ⚠ An earlier pass in this session marked this row DONE from a verdict function that never asserted its own output was empty (D660); this DONE is re-derived, not inherited.",
     "disposition": null
   },
   {
