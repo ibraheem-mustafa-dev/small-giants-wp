@@ -4,7 +4,7 @@
   "_not_gated": "total_gap (3363 live) is deliberately NOT gated. A GAP means an element's declared cluster names a CSS property the element has no attribute for — e.g. a container's `fill` cluster naming css:object-fit. That is COVERAGE, not a defect. Gating it would fail every build forever while measuring the wrong thing.",
 
   "orphan_style_defect": 12,
-  "total_state_without_base": 3,
+  "total_state_without_base": 4,
 
   "_accepted": {
     "orphan_style_defect": {
@@ -24,9 +24,9 @@
       ]
     },
     "total_state_without_base": {
-      "count": 3,
-      "reason": "sgs/post-grid declares a state-scoped css:transform with no resting-state twin. A hover value with nothing to return to is usually a real defect, but it predates this gate and needs a live check before being changed. Second STATE_WITHOUT_BASE on sgs/post-grid, same shape as the existing accepted scaleHover entry — hover-only shadow with no resting-state equivalent is an intentional design choice on this block, not a gap. 2026-08-17 (D636 border-colour gradient sweep, remaining-block batch): sgs/hero's borderColourHoverGradient added as a new state-only attribute. sgs/hero's wrapper element has NO resting border-colour attribute at all (border-style is never set at rest, so a resting border-colour is inert either way — the pre-existing flat borderColourHover follows the exact same hover-only shape, it simply predates this gate so was never counted). The gradient sibling mirrors its flat counterpart's shape 1:1, not a new defect — same class as the post-grid entries above (hover-only styling is an intentional design choice on blocks with no resting border of their own).",
-      "instances": [ "sgs/post-grid — css:transform", "sgs/post-grid — css:box-shadow", "sgs/hero — css:border-color-gradient (wrapper, hover)" ]
+      "count": 4,
+      "reason": "sgs/post-grid declares a state-scoped css:transform with no resting-state twin. A hover value with nothing to return to is usually a real defect, but it predates this gate and needs a live check before being changed. Second STATE_WITHOUT_BASE on sgs/post-grid, same shape as the existing accepted scaleHover entry — hover-only shadow with no resting-state equivalent is an intentional design choice on this block, not a gap. 2026-08-17 (D636 border-colour gradient sweep, remaining-block batch): sgs/hero's borderColourHoverGradient added as a new state-only attribute. sgs/hero's wrapper element has NO resting border-colour attribute at all (border-style is never set at rest, so a resting border-colour is inert either way — the pre-existing flat borderColourHover follows the exact same hover-only shape, it simply predates this gate so was never counted). The gradient sibling mirrors its flat counterpart's shape 1:1, not a new defect — same class as the post-grid entries above (hover-only styling is an intentional design choice on blocks with no resting border of their own). Same batch: sgs/info-box's borderColourHoverGradient — the `box` element's base attrMap has no css:border-color-gradient entry (only the pre-existing flat borderColourHover has a hover-only counterpart; a resting border-colour-gradient control was never in this task's scope, mirroring the flat borderColourHover attribute which is ALSO hover-only with no resting sibling attribute of its own).",
+      "instances": [ "sgs/post-grid — css:transform", "sgs/post-grid — css:box-shadow", "sgs/hero — css:border-color-gradient (wrapper, hover)", "sgs/info-box — css:border-color-gradient (box, hover)" ]
     }
   },
 
