@@ -64,41 +64,80 @@ HTTP 200), so the fault is inside the script. Consequence: the canary serves the
 (#D4DBE5) instead of mamas' (#e8d5c0), so product-card borders render grey-blue rather than beige.
 The local snapshot is correct; only the live DB layer is stale.
 
-## THE FRONT — finish S1, then S2
+## THE FRONT — close the WHOLE of S1, then S2
 
-**Read `.claude/reports/2026-08-18-s1-open-points.md` FIRST.** It separates what is already settled
-and merely needs transcribing into Spec 32 from what is genuinely open. Do not re-derive either.
+**Goal: S1 finishes.** Not "make progress on S1" — every open point either closes with evidence, or
+is recorded as genuinely unclosable with the named blocker. Then Spec 32 is written once and
+committed. Total ~3h.
 
-### Task 1 — Step 5: write the verdicts into Spec 32
-**What:** Transcribe the settled verdicts into the spec — 10 stale claims corrected, 3 SUPERSEDED
-entries deleted, §12.2's palette section rewritten for the 21-slug roster.
-**Why:** The roster is the evidence; the spec is what the next session reads. Until Step 5 runs they
-disagree.
-**Orchestration:** inline (Opus) — governing-doc edits. **Not** delegated.
-**Depends on:** none. **/qc gate after:** yes, `/qc-inline`.
-**Acceptance:** no claim in Spec 32 disagrees with the roster; `handoff-preflight.py --check` passes.
-**Time:** ~40 min.
+### ⛔ MANDATORY READING GATE — read these IN FULL before touching anything
 
-### Task 2 — unblock the canary palette push
-**What:** Fix `push-theme-snapshot.py`'s wp_global_styles read, then push mamas-munches and confirm
-`border` resolves to #e8d5c0 live.
-**Why:** Until it lands, the canary renders framework defaults where it should render client values,
-and `ACC-03` (the re-skin test Bean approved) stays blocked behind it.
-**Orchestration:** delegated — **sonnet** via `/delegate`; single agent.
-**Brief:** the REST route returns HTTP 200 with the canary app password; the script reports it
-unavailable. Find and fix the discrepancy. Do NOT use `--force-no-backup`.
-**Depends on:** none. **Parallel with:** Task 1. **/qc gate after:** yes — verify live, not exit code.
-**Acceptance:** `border` resolves to #e8d5c0 at `:root` on the canary.
-**Time:** ~25 min.
+Not a skim, not a grep. The 2026-08-17 session failed precisely by acting on a summary of a document
+rather than the document.
 
-### Task 3 — Step 6 (reverse check) + Step 7 (cross-spec, commit)
-**What:** Find what exists in code but is absent from Spec 32; move items owned by other specs.
-Already banked: 3 undocumented `nth-child` emitters (gallery:438, google-reviews:488,
-pricing-table:244) and the dead page-144 canary reference in root `CLAUDE.md`.
-**Orchestration:** sonnet for the scan, **verified inline** — re-derive every count before writing it.
-**Depends on:** Task 1. **/qc gate after:** yes.
-**Acceptance:** every item cites a path; moved items exist in the destination spec.
-**Time:** ~35 min.
+| Read fully | Why |
+|---|---|
+| **`.claude/reports/2026-08-18-s1-open-points.md`** | THE brief. Separates what is settled-and-needs-transcribing from what is genuinely open. Read this first |
+| **`.claude/reports/2026-08-18-spec32-points-roster.json`** | All 219 points with prediction, command, raw output, verdict, evidence. The evidence base for Step 5 |
+| **`.claude/plans/2026-08-17-spec-verification-programme.md`** | The loop, the verification ladder, Step 1b, Step 4c, the 8-condition done-gate |
+| **`.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`** | The doc being corrected — END TO END, per the programme's own rule |
+| **`.claude/STOP-CATALOGUE.md`** | §E16 is this session's five new entries, all earned by real failures |
+
+**Self-check before Task 1:** can you name the 3 SUPERSEDED entries to delete, the 10 stale claims to
+correct, and the 4 points that need a fixture? If not, re-read — the brief already lists all of them.
+
+⛔ **Do NOT read `decisions.md` end-to-end.** Consult a specific D-number only while investigating a
+specific point, and only for *why* — never for what is true.
+
+### Task 1 — unblock the canary palette push `[start here, it gates Task 3]`
+**What:** Fix `push-theme-snapshot.py`'s `wp_global_styles` read, push mamas-munches, confirm `border`
+resolves to `#e8d5c0` live (currently serving the framework `#D4DBE5`).
+**Why:** Blocks `ACC-03`. The credentials are fine — `curl -u` against `/wp-json/wp/v2/global-styles/7`
+returns HTTP 200 — so the fault is inside the script.
+**Orchestration:** delegated, **sonnet** via `/delegate`. ⛔ Dispatch prompt MUST forbid mutating any
+repo file as a fixture (D659). ⛔ Never `--force-no-backup`.
+**Acceptance:** `border` = `#e8d5c0` at `:root` on the canary, verified live not by exit code. **~25 min.**
+
+### Task 2 — build ONE probe page, close 4 live points
+**What:** A canary page carrying `social-icons` + `card-grid` + `trust-bar` (repeaters), an instance
+with a real per-instance override, and an asymmetric 4-side box.
+**Closes:** `FR-32-4a` positional integrity · `FR-32-10` · `§6.1(e)` · `FR-32-4`.
+**Orchestration:** inline (Playwright) — cannot be delegated, needs the editor and the eye.
+**Parallel with:** Task 1. **Acceptance:** all 4 rows carry `LIVE` evidence. **~30 min.**
+
+### Task 3 — the remaining close-outs
+**a.** `ACC-03` re-skin (Bean-approved): edit `buttonPresets.primary.text`, push, measure, revert.
+**Depends on Task 1.**
+**b.** `§6.2(d)` head mode: flip `sgs_css_output_mode`, measure, flip back.
+**c.** `NFR-02` editor parity: open the editor, compare against the frontend.
+**d.** `ACC-05`: render a site actually running the fallback path.
+**e.** `NFR-03`: add `:focus-visible` to the 5 blocks that have `:hover` without it — `hero`,
+`icon-list`, `mega-panel`, `process-steps`, `testimonial`.
+**f.** `text-secondary`: framework code reads a slug only 5 clients declare. Decide — seed it for all,
+or drop the reference. Then tighten `check-palette-slug-refs.py` to per-client resolution.
+**Orchestration:** a–d inline; e–f may delegate to sonnet. **~50 min.**
+
+### Task 4 — Step 5: write every verdict into Spec 32 `[the deliverable]`
+**What:** 10 stale claims corrected, 3 SUPERSEDED entries DELETED, §12.2 rewritten for the 21-slug
+roster, the two discharged "live not re-run" caveats dropped. All listed in the brief.
+**Orchestration:** inline (Opus) — governing doc, never delegated.
+**Depends on:** Tasks 1–3 (so the doc is written ONCE, per Step 4c). **/qc gate:** `/qc-inline`.
+**Acceptance:** no claim in Spec 32 disagrees with the roster. **~40 min.**
+
+### Task 5 — Steps 6 + 7: reverse check, cross-spec, commit `[close]`
+**What:** Find what exists in code but is absent from Spec 32. Already banked: 3 undocumented
+`nth-child` emitters (`gallery:438`, `google-reviews:488`, `pricing-table:244`) and the dead page-144
+canary reference in root `CLAUDE.md`. Move other-spec items to their owning spec, then commit.
+**Orchestration:** sonnet scans, **verified inline** — re-derive every count before writing it (D660).
+**Acceptance:** the programme's 8-condition done-gate, all eight. **~35 min.**
+
+```
+Task 1 (sonnet) ── Task 2 (inline, parallel)
+      └─> Task 3a          Task 3b-f
+              └──────┬──────┘
+                  Task 4 (Step 5, inline)  ← doc written ONCE
+                     └─> Task 5 (Steps 6+7) ─> commit ─> S1 CLOSED
+```
 
 ### Then S2 — Spec 35 Parts A–L
 Per the programme. ⛔ NEVER S2 ∥ S3 (same file). ⛔ ONE canary lock.
