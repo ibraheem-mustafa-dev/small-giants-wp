@@ -48,6 +48,36 @@ None of these decide a verdict. Open the file.
 
 ---
 
+## How to talk to Bean during these sessions
+
+**Plain English, always.** No jargon without a plain-English anchor first. A file path or function
+name is fine *after* you have said what the thing does and why it matters. Bean is a non-coder — if a
+sentence needs three proper nouns to make sense, rewrite it.
+
+**Never defer a decision. Ask it.**
+
+⛔ Banned: "flagged for Bean", "needs your sign-off", "goes on a list", "we'll decide later",
+"raised for a future session". Every one of those is a decision *not made* — it stalls the work and
+grows a backlog nobody clears.
+
+✅ Instead, the moment a decision is needed, say all four things and stop:
+
+1. **The situation** — what is true, in plain words
+2. **The options** — what each one actually means in practice, not just its name
+3. **The recommendation** — one, not a menu of equals
+4. **Why** — the reasoning, including what it costs if the choice is wrong
+
+Then wait for the answer and carry on. A decision takes Bean under a minute when it is put like
+that; a deferred one costs a whole session later.
+
+**Summaries:** what happened → what it means → what is next. Short. Lead with the thing that
+changes what Bean does.
+
+**Never report a finding and stop.** Finding something is not the deliverable. Either fix it, or ask
+which of the options Bean wants — in the same message.
+
+---
+
 ## Method: the docs are a map, never the answer
 
 This mirrors `/systematic-debugging`'s iron law — no fix without a proven root cause. Here: **no
@@ -258,7 +288,8 @@ uses the D609 toggle, so re-derive what is genuinely still divergent before writ
 - **Outcome:** This doc holds only its own work. Each moved item is recorded where it belongs.
 - **Time:** 20 min
 - **⛔ Explicit pathspec on every commit** — shared worktree, concurrent sessions on `main`.
-- **On-Fail:** Unsure which spec owns it → leave it and ask Bean. Do not guess ownership.
+- **On-Fail:** Unsure which spec owns it → **ask Bean in that moment**, with the item, the two or
+  three candidate specs, your recommendation and why. Do not guess, and do not park it.
 - **Test:** *Happy:* moved items exist in the destination spec. *Edge:* an item spanning two specs is
   flagged for Bean, not split silently. *Fail:* preflight passes. *Integration:* `git status` shows
   only intended files.
@@ -295,7 +326,8 @@ uses the D609 toggle, so re-derive what is genuinely still divergent before writ
   text. It is a post-move regression check, nothing more.
 - **Outcome:** Only genuinely open plans remain in either plans folder.
 - **Time:** 45 min
-- **On-Fail:** A doc with unclear ownership stays put and goes on a short list for Bean.
+- **On-Fail:** Unclear ownership → **ask Bean there and then**: name the doc, say what it covers,
+  give the archive/keep options and your recommendation. One question, answered, then continue.
 - **Test:** *Happy:* `git grep -n "<basename>"` returns nothing outside archive/ and history.
   *Edge:* a tombstone stays at its live path deliberately. *Fail:* preflight `no-dangling-links`
   passes. *Integration:* all 9 pass.
