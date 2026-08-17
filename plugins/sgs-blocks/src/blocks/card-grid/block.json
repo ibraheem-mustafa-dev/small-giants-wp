@@ -560,10 +560,6 @@
 		"alignItems": {
 			"type": "string",
 			"default": ""
-		},
-		"templateMode": {
-			"type": "string",
-			"default": ""
 		}
 	},
 	"render": "file:./render.php",
