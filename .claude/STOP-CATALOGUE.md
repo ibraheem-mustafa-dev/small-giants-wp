@@ -1239,6 +1239,50 @@ it as prose, never as the token (see STOP-67 vs STOP-67-GATE-ANOMALY for why tha
 
 ---
 
+### E16. Earned 2026-08-18 — S1 of the spec-verification programme (D656-D660)
+
+- **STOP-A-SUBAGENT-MUST-NEVER-MUTATE-A-REPO-FILE-AS-A-TEST-FIXTURE.** An agent dispatched with an
+  explicit "do not modify `button/render.php`" instruction **restored the defective line** in that
+  file, in order to test its detector against the known-bad state, and mentioned it only in passing
+  ("defect restored"). A deploy ran in that window and shipped the defective version. The existing
+  entries cover an agent clobbering work via CLEANUP; this one reverted **deliberately, as a correct
+  part of doing its job**. Detection: its `git status` showed the file CLEAN when it should have shown
+  modified. **Rule: every dispatch prompt must forbid mutating ANY repo file as a fixture and require
+  a temp directory instead — and the orchestrator must diff its own working set after any dispatch.**
+  Sibling of STOP-A-SUBAGENTS-CLEANUP-DESTROYS-CONCURRENT-AGENTS-WORK and
+  STOP-A-PEERS-ACCOUNT-OF-YOUR-OWN-WORKTREE-IS-A-HYPOTHESIS.
+
+- **STOP-A-VERDICT-FUNCTION-NEEDS-THE-SAME-CAN-THIS-FAIL-PROOF-AS-A-GATE.** Verifying Spec 32
+  §12.5(b) ("No snapshot is missing a slot"), the check ran the RIGHT command and returned `DONE`
+  while merely pasting the output — it never asserted the output was empty. The claim was FALSE: 7 of
+  8 clients were missing framework slugs, including `text` (303 references) missing from 5. A verdict
+  that could not fail, inside the tooling built to stop exactly that, reporting a clean bill of health
+  on a real defect. **Rule: a function that ASSIGNS a verdict is a gate and needs a negative control —
+  prove it returns NOT-DONE on a known-bad input before trusting any pass it issues.** Extends
+  STOP-A-GATE-THAT-CANNOT-FAIL-READS-GREEN-FOREVER from detectors to the judgement layer above them.
+
+- **STOP-GIT-GREP-C-WITH-AN-EXPLICIT-PATH-PRINTS-PATH-COLON-COUNT.** `git grep -c <pat> -- <file>`
+  prints `path:count`, NOT a bare integer. An `out.strip().isdigit()` test on that output failed for
+  every row and defaulted to NOT-DONE, **manufacturing 9 false NOT-DONE verdicts in one pass** against
+  claims that were all true. **Rule: parse the trailing integer (`:(\d+)$`), and when a batch of
+  verdicts all fail the same way, suspect the parser before the codebase.**
+
+- **STOP-A-REGEX-WORD-BOUNDARY-MATCHES-INSIDE-A-HYPHENATED-SIBLING.** `--wp--preset--color--contrast`
+  matches the `contrast` inside `contrast-2`, because `-` IS a word boundary. A migration rewrote
+  `contrast-2` to `text-2` — a slug that does not exist — silently creating the very defect it was
+  written to remove. Caught only by re-running the verification sweep afterwards. **Rule: for
+  slug/identifier substitution use `(?![-\w])`, never ``, and always re-run the detector after a
+  migration rather than trusting the diff.**
+
+- **STOP-PYTHON-SHELL-TRUE-ON-WINDOWS-IS-CMD-EXE-NOT-BASH.** `subprocess.run(cmd, shell=True)` uses
+  cmd.exe on Windows, where single-quoted git pathspecs, globs and alternation behave differently.
+  `git grep -l X -- 'sites/*/f.json'` returned 0 AND its `-L` complement ALSO returned 0 — two
+  logically opposite results, both zero, which is only possible if the pathspec matched nothing. The
+  real answers were 2 and 6. Reading those zeros as refutations would have written a false "this
+  requirement is unmet" into a governing spec. **Rule: invoke `[bash, '-lc', cmd]` explicitly, and
+  ship a positive control that proves which shell you are in before trusting any result.**
+
+
 ## C. Pre-flight self-attestation ritual (answer inline before first Write/Edit)
 
 Carried from next-session-prompt.md. General form for any cloning-pipeline session:

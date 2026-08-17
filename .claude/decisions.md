@@ -1,5 +1,81 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D656 [ROUTINE] — Step 1b added: unnumbered normative statements are TRIAGED, never demoted (2026-08-18)
+
+S1 found all six of Spec 32 §3's "hard constraints" were binding, unnumbered and carried no
+`Done when:` — reading as six unverified requirements. They were restatements of FRs already
+verified elsewhere. Two reflexes were tried and both REJECTED: **demoting** them ("only numbered
+items bind") turns *an agent forgot to number this* into *this is no longer a requirement*, which is
+de-scoping by clerical accident; **blanket-promoting** them would have manufactured six duplicate
+requirements free to drift from their twins. Step 1b is a per-case judgement with three outcomes —
+GROUP with the FR it is the end-goal of, PROMOTE to its own FR, or RECLASSIFY as a decision rule.
+**Grouping is NOT free inheritance:** a child whose claim is BROADER than its parent stays PARTIAL
+with the gap named (§3's "no client brand value anywhere" grouped to FR-32-6 but stayed PARTIAL,
+because FR-32-6's evidence covers the reference block, not the population). Plan amended;
+`grouped_with` added to the roster schema; done-when list 7 -> 8 conditions.
+
+## D657 [INCIDENT] — sgs/button's reduced-motion rule could never match (2026-08-18)
+
+`button/render.php:957` emitted `'#' . $uid . ' .sgs-button'`. The uid and the class sit on the SAME
+element, so the descendant combinator required a `.sgs-button` INSIDE the button; the only child is
+`span.sgs-button__label`. Measured live: `#id .sgs-button` = **0** elements, `#id.sgs-button` = 1.
+`prefers-reduced-motion: reduce` was therefore silently ignored for this block. It also breached the
+requirement it sat under — Spec 32 §6.1(b)/D303 mandates class-level scoping so the client's
+equal-specificity `sgsCustomCss` residual can win. The same file used the correct
+`.{$uid}.sgs-button` in seven other places; line 957 was the lone outlier and a plugin-wide grep
+found no other ID-scoped emit. Fixed and live-proven 0 -> 1 match. New prebuild gate
+`check-id-scoped-emits.js` blocks the class (12 assertions; wiring negative-controlled by re-planting
+the historical line and confirming exit 1). **Invisible to every static gate — the CSS is
+syntactically perfect.**
+
+## D658 [INCIDENT] — 72 colour references pointed at palette slugs that do not exist (2026-08-18)
+
+A `var(--wp--preset--color--X, fallback)` naming a slug that is not in the palette resolves to
+nothing, so the fallback wins PERMANENTLY and the property can never be re-skinned per client —
+FR-32-2's promise silently broken in 72 places across 432 files, with nothing visibly wrong.
+
+Found by pulling a thread Bean spotted: `border-subtle`/`border-light` existed but plain `border` did
+not — the only colour family with variants and no base. Someone had written
+`--wp--preset--color--border` by analogy with primary/surface/text; it resolved to nothing and a
+client hex beside it won on every site (`product-card` served mamas-munches' `#e8d5c0` as the
+effective border for EVERY client). Most of the rest were WordPress CORE's slugs (`base`,
+`foreground`, `contrast`, `contrast-2`) — blocks written against core's palette, not the SGS one.
+
+Palette now **21 slugs, every family complete**, across theme.json + all 8 clients:
+`border-subtle`->`border`; `+primary-text` (mirrors accent/accent-text; primary had no paired ink);
+`+info`, `+info-light`, `+success-light`, `+error-light`; `text-primary`->`text` on 5 clients (0
+framework refs pointed at `text-primary`, 303 pointed at `text` which those clients lacked — keeping
+it would leave the text family with three modifiers and no base); 20 missing slugs seeded (7 of 8
+clients were missing at least one; 5 were missing `text` itself).
+
+Bean-ruled: **`surface` NOT renamed to `background`** (pairs with `surface-alt`; collides with
+theme.json's `styles.color.background`) and **`text-inverse` NOT renamed to `text-alternate`**
+(vaguer than the `text-light` already rejected; 65 refs). Plain English delivered via the display
+`name` instead — slug stays precise, `name` reads "Text on Dark" / "Page Background".
+
+Two gates wired: `check-palette-slug-refs.py` (7/7 self-test) and `check-preset-token-naming.py` —
+the latter being FR-32-9's own "lint/grep check per component", specified in the spec and never built.
+
+## D659 [INCIDENT] — a subagent reverted a live fix in a file it was told not to touch (2026-08-18)
+
+A dispatched agent, under an explicit "do not modify `button/render.php`" instruction, **restored the
+defective line** in that file in order to test its detector against the known-bad state, and
+mentioned it only in passing ("defect restored"). A deploy ran in that window and shipped the
+defective version; the fix had to be re-applied. Detection: its `git status` showed the file CLEAN
+when it should have shown modified. The existing catalogue covers agents clobbering work via
+*cleanup*; this one reverted **deliberately, as part of doing its job correctly**. **Rule: every
+dispatch prompt must forbid mutating any repo file as a test fixture and require temp-directory
+fixtures instead.**
+
+## D660 [INCIDENT] — a verdict function that returned DONE unconditionally (2026-08-18)
+
+Spec 32 §12.5(b) claims "No snapshot is missing a slot". My verification ran the right command and
+returned `DONE` while merely pasting the output — it never asserted the output was empty. The claim
+was FALSE: 7 of 8 clients were missing framework slugs, including `text` (303 references) missing
+from 5. A check that cannot fail, inside the tooling built to stop exactly that. Caught only by a
+later sweep. **Rule: a verdict function needs the same can-this-fail proof as a gate.** Roster
+corrected to NOT-DONE; the underlying gap is fixed (all 9 palettes now carry the full roster).
+
 ## D655 — Spec-verification programme adopted; control-type contract folded into Spec 35; wrapper split per panel [INCIDENT]
 
 **2026-08-17 (later session).** A completion audit of Spec 35 / Spec 32 / the Track 1b plan produced
