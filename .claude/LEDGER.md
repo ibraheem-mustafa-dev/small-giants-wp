@@ -294,7 +294,7 @@ closed — confirms nothing here is still blocked), then the plan at
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | **Border-colour sweep close-out — full scope/merge/bug record** | **`decisions.md` D646** |
 | Gradient rollout Phase 0 + scope + storage decisions | `decisions.md` D636, D643, D644, D645 |
-| Wrapper decomposition — full 7-step history, now all closed | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
+| ⛔ **Wrapper decomposition — NOT complete (corrected 2026-08-17).** The 7 steps are individually done, but the monolith they exist to split **GREW**: `ContainerWrapperControls.js` 1,728→**1,887**, `class-sgs-container-wrapper.php` 2,599→**2,787**, and `components/` still holds exactly one file. Steps 6–7 wired a flag-based opt-in layer ONTO the monolith; **no capability has been extracted.** Next step = the first real extraction, not another flag | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
@@ -322,6 +322,21 @@ stop and disambiguate; needs a rename.
 **Also open:** D543's owed `LinkControl` sweep (never done, grown 8→11 lines in Spec 35; `dev-setup.md`
 still missing `SgsLinkControl`); 4 parking entries; `~/.claude/plans/` holds **68** files of which 11
 are uncited stale Track 1b docs — a population the project-only sweep misses.
+
+### ⛔ NEW defects found by the step-level verification (2026-08-17)
+
+1. **`site-header` + `site-footer` each declare 13 `shapeDivider*` attributes with NO control and no
+   `ShapeDividersPanel` mount — 26 dead attributes a client can never reach.** Found by triaging the
+   wrapper-capability survey's 12 orphan findings: 4 blocks were detector false positives, these 2
+   are real. Exactly the class **B4** exists to catch; B4 being unbuilt is why nothing caught it.
+2. **`survey-wrapper-capability.js --self-test` is 38/39, not the 39/39 recorded.** One assertion
+   fails ("overlay gradient family IS controlled"), reproduced twice. A detector with a failing
+   self-test is not trustworthy until fixed.
+3. **`StateToggleControl` is an orphan of a design D609 explicitly rejected** — states are a tab
+   toggle inside the colour popover, "never a sibling control". 0 mounts; 60 blocks use the D609
+   route. **Delete the component and reword Spec 35 Part L** — this is cruft, not a gap.
+4. **Track 1b §1.3 waves are NOT done:** WAVE 2 has D2/D3/D4 still open; **WAVE 3 is 1 of 8**, and
+   most of its items are gated on those open Wave-2 decisions.
 
 ⚠ **Search hygiene:** `.claude/worktrees/` holds 17 stale doc copies. `grep -r` returns **54** hits
 where `git grep` returns **3**. Use `git grep`; the worktrees are worth cleaning up.
