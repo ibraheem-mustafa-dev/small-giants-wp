@@ -53,13 +53,35 @@ the real browser accessibility tree on sandybrown, deployed.
 Border-colour gradient framework sweep is complete. The D636 gradient rollout as a whole (all 5
 mechanisms: background, text, border, shape-divider, icon) is now closed.
 
-### Task B — Typography framework-wide initiative
+### Task B — Typography framework-wide initiative — ✅ SCOPED 2026-08-17 (D649), ready to build
 
-**What:** not yet scoped — the next framework-wide control-migration initiative after colour, per
-D626's sequencing.
-**Orchestration:** `/brainstorming` or a design council first (same shape as D626's colour council),
-not a build dispatch. Read D626 in full for the colour precedent before scoping.
-**Depends on:** nothing (colour work is now fully closed).
+**What:** scoping is DONE — 3 research streams + a 5-seat design council, Bean-approved.
+**Read first:** `decisions.md` **D649** (the rulings + 3 live defects it surfaced), then the plan at
+`~/.claude/plans/read-all-of-spec-soft-fairy.md` (workstreams, gated order, verification).
+
+**Scope:** 8 properties (font-family CUT). Native WP typography UI off everywhere. All 39 blocks,
+in two populations: **A** = 22 blocks with SGS typography attrs; **B** = 17 blocks declaring
+`supports.typography` with ZERO attrs (greenfield).
+
+⛔ **Gate G1 blocks every strip.** 24 `render.php` files read `attributes.style.typography` and
+paint it live, 3 shipped patterns store it, deprecations are banned (D270/D293) — so nothing is
+stripped until a stored-content migration is proven on a canary page saved BEFORE the change.
+Stripping first silently destroys typography clients already set.
+
+**Start here (both ungated):** W1 = 14 `sgs/*` orphan element declarations, then ONE scheduled
+`/sgs-update`. W2 = 4 small local components + 1 import + re-skin `TypographyControls` **in place**
+(zero forks) + one SCSS rule. W2b = `text-align` needs NEW PHP emission — it is not a re-skin.
+**Orchestration:** 4 agents, not 16, one worktree each; pilot on `sgs/label`. Critical path ≈2h40m.
+
+**Three live defects it surfaced, worth fixing regardless of the initiative:**
+- **9 blocks hardcode `<h3>` with no level control** — the framework skips h2 by construction on
+  every client page (`card-grid`, `form-review`, `gallery`, `post-grid`, `pricing-table`,
+  `process-steps`, `team-member`, `timeline`, `trustpilot-reviews`).
+- **The F3b gate AND the cloning converter are both blind to 3 of 4 heading-level attributes** —
+  `icon-list` has no enum; `product-card`/`product-faq` use numeric enums that filter to `[]`.
+- **`text-align` has zero emission in `sgs_typography_css_rule()`** and no entry in
+  `check-dead-controls.js`'s `PREFIXED_HELPER_SUFFIXES` — every new alignment control would
+  false-flag as dead. *(That array also still lists the 6 dead `*Tablet`/`*Mobile` families.)*
 
 ### `gridItemBorder` gradient — CLOSED
 
