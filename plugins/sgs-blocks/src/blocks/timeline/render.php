@@ -161,10 +161,13 @@ $border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
 $border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
-$border_colour         = $attributes['borderColour'] ?? '';
-$border_style_raw      = $attributes['borderStyle'] ?? 'none';
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+$border_colour = $attributes['borderColour'] ?? '';
+// D636 border-colour gradient rollout — non-empty wins over $border_colour
+// above, painted via the shared masked ::before ring mechanism.
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+$border_style_raw       = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles  = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style           = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 // ---------------------------------------------------------------------------
 // 3. Scoped CSS assembly. uid is a CLASS (this block has anchor support for
@@ -219,6 +222,15 @@ if ( 'none' !== $border_style ) {
 }
 if ( $root_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+}
+
+// D636 border-colour gradient rollout — masked ::before ring, only when the
+// operator has ALSO set a real border (matches every other border decl
+// above, gated on 'none' !== $border_style). Width mirrors the resolved
+// top border width when set, else the shared helper's own 2px default.
+if ( 'none' !== $border_style && '' !== $border_colour_gradient ) {
+	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '2px';
+	$scoped_css[]          = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_gradient_width );
 }
 
 // --- Base spacing (padding/margin), border-radius, WP colour + shadow
