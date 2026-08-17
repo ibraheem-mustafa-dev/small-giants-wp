@@ -283,10 +283,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"templateMode": {
-			"type": "string",
-			"default": "free"
-		},
 		"gap": {
 			"type": "object",
 			"default": {}
