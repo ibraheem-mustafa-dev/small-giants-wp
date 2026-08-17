@@ -28,12 +28,18 @@ including the one that had the bug.
 text value like `"1px solid white"` rather than a simple colour — so it needs its own short design
 decision before a gradient can be added to it safely. Not urgent, flagged below.
 
+**Separately, same day:** a second session fixed an accessibility gap on the same five container-like
+blocks — `main` could be picked as the wrapper's HTML tag and produce 2-3 "main content" landmarks on
+one page; `nav`/`aside` had no way to give a client-facing accessible label. Fixed, live-verified via
+the real browser accessibility tree on sandybrown, deployed.
+
 ## Shipped today
 
 | What | Detail lives at |
 |---|---|
 | Border-colour gradient sweep — 19 blocks, ~28 attrs, merged/deployed/live-verified | `decisions.md` D646 |
 | Dead-controls checker fix (product-card's 2 gradient attrs false-flagged) | `decisions.md` D646 |
+| Landmark-tag a11y fix — drop `main`, label `nav`/`aside`, 5 blocks, live-verified | `decisions.md` D647 |
 
 ## Blockers
 

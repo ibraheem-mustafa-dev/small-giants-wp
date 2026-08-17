@@ -1,5 +1,60 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D647 — Landmark-tag a11y fix: drop `main`, gate `nav`/`aside` behind a label control [ROUTINE]
+
+**2026-08-17.** `sgs/container`, `sgs/hero`, `sgs/cta-section`, `sgs/trust-bar`, and `sgs/physics-canvas`
+all let a client set the block wrapper's semantic HTML tag to `main`/`nav`/`aside` via the shared
+`tagName` enum + `SGS_Container_Wrapper`'s own allowlist, with no accessible-name field anywhere on
+any of them. Checked against HTML-AAM/WAI-ARIA (not assumed) before fixing:
+
+- **`main` removed from the enum on all 5 blocks + the shared wrapper's allowlist.** `<main>` is
+  always exposed as the page's one main-content landmark, with no nesting exception (unlike
+  header/footer/aside — see below); offering it on a repeatable layout block let a page end up with
+  2-3 `<main>` landmarks. A stored `tagName:'main'` from before this change falls through to the
+  existing `'section'` default, the same path any other invalid value already took.
+- **`nav`/`aside` stay, but gain a new `ariaLabel` attribute + a "Landmark label" control** (shown
+  only when the tag is nav/aside) on `container`/`hero`/`cta-section`/`trust-bar`. `nav` is always a
+  `navigation` landmark regardless of nesting — multiple per page are legitimate but need a name to
+  tell them apart. `aside` is subtler: nested inside sectioning content it's `role=generic` by
+  default (not a landmark at all, harmless) and *only* becomes `complementary` once it has an
+  accessible name — the label field doesn't just disambiguate `aside`, it's what promotes the element
+  to a real landmark in the first place.
+- **`physics-canvas` excluded from the label control.** Its wrapper is permanently `aria-hidden`
+  (decorative-only, FR-38-27) — a label on a hidden element is inert, assistive tech never computes
+  its name. Still gets the `main` removal (semantically wrong on a hidden element regardless of AT
+  exposure).
+- **`header`/`footer` untouched, deliberately.** Confirmed against HTML-AAM: both lose their landmark
+  role entirely once nested in sectioning content (the same exemption `aside` gets), and page-level
+  header/footer is already `sgs/site-header`/`sgs/site-footer`'s job — no duplicate/unlabelled-landmark
+  risk to fix.
+- Two pre-existing dead `if ( true ) { ... }` conditionals in the shared wrapper (D6
+  universal-isation leftovers) removed in the same pass — behaviour-preserving dedent, `php -l`
+  clean.
+
+**Live-verified on sandybrown, not just build-green** (Playwright accessibility-tree checks, not raw
+HTML attributes): a labelled `nav` resolves to a real `navigation` landmark with the given name; an
+unlabelled nested `aside` resolves to `generic` (no landmark) and a labelled one to `complementary`;
+a legacy `tagName:'main'` post falls back cleanly to `<section>` on both frontend and the block
+editor (no console error, no "unexpected content" prompt). Also confirmed the HTML-tag dropdown no
+longer offers "Main" live in the editor.
+
+**One false alarm during verification, root-caused before acting on it — worth remembering.** A
+hand-built REST test payload wrapped the legacy-`main` block's stored content in a literal
+`<main class="wp-block-sgs-container">…</main>` string, mimicking what "already-converted markup"
+might look like. `sgs/container`'s `save.js` is pure `<InnerBlocks.Content />` (no wrapper tag of its
+own) — for a dynamic InnerBlocks block, WP passes whatever raw HTML sits between the block comment
+markers straight through as `$content`, so that hand-typed `<main>` landed as literal *inner* content
+inside the (correctly-generated) `<section>` wrapper, not from the wrapper logic at all. Looked
+identical to a real regression in the browser accessibility tree until traced through `render_block`
+filters + a minimal PHP repro on the server. Lesson: when hand-authoring test `post_content` for a
+dynamic InnerBlocks block, match the real `save.js` shape (no wrapper tag) — a fixture that "looks
+like" plausible legacy markup can fabricate a regression that isn't there.
+
+Files: `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` +
+`src/blocks/{container,hero,cta-section,trust-bar,physics-canvas}/{block.json,edit.js,render.php}`.
+Commit `7daeb8b6` (main). Deployed to sandybrown (`build-deploy.py --target sandybrown
+--blocks-only`).
+
 ## D646 — Border-colour gradient framework sweep complete: 19 blocks, all colour work closed [ROUTINE]
 
 **2026-08-17.** Closes the residual scope D645 left open — the border-colour gradient sweep across
