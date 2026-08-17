@@ -130,7 +130,24 @@ Stripping first silently destroys typography clients already set.
 (zero forks) + one SCSS rule. W2b = `text-align` needs NEW PHP emission — it is not a re-skin.
 **Orchestration:** 4 agents, not 16, one worktree each; pilot on `sgs/label`. Critical path ≈2h40m.
 
-**Three live defects it surfaced. TWO ARE NOW FIXED, DEPLOYED AND LIVE-VERIFIED (2026-08-17):**
+**Three live defects it surfaced. TWO ARE NOW FIXED, DEPLOYED AND LIVE-VERIFIED (2026-08-17).**
+
+⚠ **DEPLOY EVIDENCE, added after a `/qc-council` adversarial seat correctly flagged this section as
+asserting "DEPLOYED" with none of the hash+checksum this file's own convention requires everywhere
+else.** The claim was true but unevidenced, which is indistinguishable from unsubstantiated to any
+later reader — and this project already burned a session on exactly that shape (D651's three
+corrective commits recorded as shipped when they landed after the deploy).
+- Deploy run: `build-deploy.py --target sandybrown --skip-build`, ownership marker **`6c994ef5`**,
+  `payload-verify PASS: all 83 deployed block.json match the payload`, `oldshape-audit PASS`.
+- **Re-confirmed on the live server, not from the run's own output:** `headingLevel` present in
+  the deployed `build/blocks/{card-grid,form-review,pricing-table,process-steps,team-member,timeline,
+  trustpilot-reviews}/block.json` (7/7).
+- ✅ **`a21dda8d` (product-card title→class) IS also live** — verified directly: its signature
+  (`?> class="sgs-product-card__title">`) appears twice in the deployed `product-card/render.php` and
+  the deleted tag-enumerated CSS rule is absent (grep count 0). Its own deploy was refused for a dirty
+  tree, so a concurrent session's later deploy carried it. **An earlier note in this file saying it was
+  "committed but not deployed" is therefore STALE.**
+
 
 ✅ **Hardcoded `<h3>` — FIXED on 7 blocks** (`6c994ef5`). `card-grid`, `form-review`,
 `pricing-table`, `process-steps`, `team-member`, `timeline`, `trustpilot-reviews` each gained

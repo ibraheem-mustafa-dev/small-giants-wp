@@ -1102,9 +1102,28 @@ function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
 		// divergent property, WITHOUT checking the two are on the same element. On
 		// `sgs/icon-list` that immediately produced a false positive — `iconColour`
 		// (the per-item marker, `render.php:137`) flagged against `headingLevel`
-		// (the list heading). The imprecision is invisible today only because
-		// `sgs/heading` is the sole block evaluated, and there every styling attr
-		// genuinely does target the heading.
+		// (the list heading). A second instance appeared the same day on
+		// `sgs/product-card.ctaFontWeight` (default "600", the CTA button, consumed
+		// via `sgs_button_element_style_css(..., 'cta', ...)`) — likewise nothing to
+		// do with the heading.
+		//
+		// ⚠ NEITHER false positive is reproducible against the code as it stands, and
+		// an audit corrected the record on this: each was observed in a TRANSIENT
+		// state (icon-list under the reverted widening; product-card in the window
+		// after its enum became strings but before `p` was added). Both blocks are
+		// SKIPPED by the entry guard today because their enums contain `p`. Do not
+		// read these as live bugs to suppress — they are evidence about the guard's
+		// SHAPE, not a current finding.
+		//
+		// ⚠ THE REAL SCALE, measured: 11 blocks declare a heading-level enum and
+		// only `sgs/heading` is evaluated — the other 10 (card-grid, form-review,
+		// icon-list, pricing-table, process-steps, product-card, product-faq,
+		// team-member, timeline, trustpilot-reviews) are all skipped for containing
+		// `p`. That is NOT a regression: before D649 those blocks had no enum, a
+		// numeric enum, or no attribute at all, so none was evaluated either. It is a
+		// forgone GAIN, deliberately accepted — enums of `h2..h6` alone would be
+		// evaluated, but would hit the element-blindness above. Closing it means
+		// doing the attrMap scoping, not dropping `p`.
 		//
 		// PREREQUISITE: scope E12 to attributes on the SAME element as the enum attr,
 		// via `supports.sgs.elements[].attrMap`. ⚠ Not a quick fix — `icon-list`

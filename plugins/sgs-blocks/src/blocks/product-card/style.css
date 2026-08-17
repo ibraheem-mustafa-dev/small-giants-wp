@@ -1088,8 +1088,17 @@
  * render.php now emits `class="sgs-product-card__title"` on the bound title at
  * both emission sites, so the single rule above
  * (`.product-card .sgs-product-card__title`) styles EVERY level identically —
- * h2..h6, p, and anything added later. The declarations were already
- * byte-identical, so h2/h4 are visually unchanged.
+ * h2..h6, p, and anything added later.
+ *
+ * The two rules' declarations carried the SAME PROPERTY VALUES, so h2/h4 are
+ * visually unchanged. ⚠ An earlier version of this comment (and commit
+ * a21dda8d's message) said "byte-identical" — that is FALSE and was corrected
+ * by a source-level audit: the deleted rule wrote `var(--sgs-card-title-font-size,
+ * 20px)` while the surviving rule writes `var( --sgs-card-title-font-size, 20px )`
+ * (spaces inside the parens), on all three var() declarations. CSS ignores that
+ * whitespace so the rendered result is identical, but the literal byte claim was
+ * wrong. Kept here because "byte-identical" is the kind of overclaim that gets
+ * trusted instead of re-checked.
  *
  * It also closes a real defect on the DEFAULT path: bound h3 matched only
  * `.product-card h3` (0,1,1), which hardcodes weight and colour, so a client's
