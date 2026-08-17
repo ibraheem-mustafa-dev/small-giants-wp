@@ -733,7 +733,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | Responsive per-breakpoint | `ResponsiveControl`, `ResponsiveBoxControl` EXIST | audit coverage; use everywhere responsive-worthy |
 | Typography per element | `TypographyControls` EXISTS (R-22-13) | extend to appearance/letter-spacing where missing |
 | Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; verified 2026-07-28, `DesignTokenPicker.js:51-58,:87-94`). ⭐ **`SgsColourPanel` (the shared per-element colour panel that groups `DesignTokenPicker` instances under D621/D622's Styles-tab placement) — Track A rollout COMPLETE 2026-08-15** (`f6f3c033`, wave 2, on top of wave 1 + the `sgs/icon` pilot): most colour-bearing blocks now route colour through the shared panel — re-derive the exact split via `git log --oneline -- 'plugins/sgs-blocks/src/blocks/*/edit.js'` grepped for `SgsColourPanel`, do not trust a cached count here. **Track B has NOT started** — `container`, `cta-section`, `hero`, `trust-bar`, `site-header`, `site-footer` keep colour inside the shared `ContainerWrapperControls.js` (Bean-ruled separate session). Seven blocks (`notice-banner`, `quote`, `testimonial-slider`, `testimonial`, `option-picker`, `process-steps`, `product-card`) deliberately KEPT native `supports.color` sub-flags `true` alongside the panel — those flags are load-bearing for a root-level `style.color.*` mechanism the migration does not replace, so native colour UI may still appear alongside `SgsColourPanel` for those blocks specifically. `sgs/social-icons` was surveyed and found NOT a Track-A candidate (no custom colour attrs, only native supports) — needs its own design pass, not a migration. | DONE (Wave 1.1); Track A DONE 2026-08-15, Track B OPEN |
-| Normal/Hover state | `StateToggleControl` EXISTS (2026-07-18) | roll out to stateful blocks |
+| Normal/Hover state | ⛔ **`StateToggleControl` is DEAD CODE — corrected 2026-08-17.** It exists and is exported (`components/index.js:45`) but has **0 imports and 0 JSX mounts** anywhere. Every apparent usage is a comment recording where it *used to* live (`brand-strip/edit.js:316`, `nav-menu/edit.js:463`) | ⚠ **"roll out to stateful blocks" never happened — and may not need to.** Hover/state colour is already delivered by a DIFFERENT, working mechanism: `SgsColourPanel`'s `rows[].states` array, passed through to `DesignTokenPicker`'s own `states` prop (e.g. `button/edit.js:395-397`). **Decide: wire `StateToggleControl`, or delete it and make the `states`-prop route canonical.** Do not record this row as "exists → roll out" — that reads as progress against a component nothing uses |
 | Extension gating | `hideExtensions` (opt-out, most extensions) + `enabledExtensions` (opt-in, hover/blockLink only, D579 2026-08-11) EXIST | — |
 | **Shadow builder** | ⛔ **UPDATED 2026-08-16 (D632) — colour split out of the builder.** `ShadowControl` (`src/components/ShadowControl.js`) now stores SHAPE only (X/Y/blur/spread/inset); colour is a split sibling `{name}Colour` attribute that appears as a normal row in the per-block `SgsColourPanel`, matching D621/D622's placement model, composed at render/preview via `sgs_shadow_value_composed()` (PHP)/`resolveShadowPreviewComposed()` (JS). Onto this shape: `cta-section`, `trust-bar` (`iconCircleShadow`/`badgeImageShadow` only — its own root shadow renders inside the shared container wrapper, deliberately out of scope), `card-grid`, `team-member`, `brand-strip`, `testimonial`, `info-box`, `post-grid` (off a banned preset-only picker), `before-after`, `media` (off a raw CSS `TextControl`), `button` (off a hand-rolled object attribute). ~~**Residual: `sgs/quote`'s `boxShadow`/`boxShadowHover` still on the raw CSS `TextControl`**~~ — ✅ **CLOSED 2026-08-16 (D634), this row was stale until the 2026-08-17 completion audit.** `sgs/quote` was migrated onto the same shape as the other 11 blocks: `ShadowControl` for shape + flat sibling `boxShadowColour`/`boxShadowHoverColour` surfaced in `SgsColourPanel`, composed via `sgs_shadow_value_composed()`, with `card-grid` used as the reference implementation exactly as this row predicted. Verified live: `quote/block.json` declares both colour attrs and `quote/edit.js` mounts `ShadowControl`. | ✅ DONE (Wave 1 + D634 residual closed) |
 | **Link/CTA** | `SgsLinkControl` **BUILT + ROLLED OUT** (`src/components/SgsLinkControl.js`) — card-grid, media (4 fields), product-card (3 CTAs), trust-bar item links migrated (`ac0c30eb`, 2026-07-28); raw-url-link WARNs 40→0 (2 reasoned EXC exemptions remain) | DONE (Wave 1) |
@@ -785,17 +785,94 @@ commit that built them.** Full per-gate rationale: `plugins/sgs-blocks/CLAUDE.md
 
 ## PART L — Per-block inspector definition-of-done (checklist)
 
-[ ] Settings/Styles/Advanced split via `group` · [ ] element-first panels · [ ] control-dense panels
-use ToolsPanel · [ ] every colour has `enableAlpha`+clearable · [ ] every CSS-length uses UnitControl
-(real units) or the spacing token scale · [ ] every 4-value prop per-side via box_family · [ ] compound
-values (shadow/border) use real builders · [ ] links use LinkControl (new-tab + rel) · [ ] images have
-size + aspect-ratio + object-fit + focal point where relevant · [ ] multi-item data is array-shaped
-with gallery/repeater · [ ] responsive props expose the 768/1024 device switcher · [ ] states use
-`StateToggleControl` · [ ] irrelevant universal panels hidden via `hideExtensions` · [ ] `MediaUploadCheck`
-on every MediaUpload · [ ] no native-supports panel duplicated · [ ] native supports used over hand-rolled
-(aspectRatio/duotone/sticky/lightbox) · [ ] animation `prefers-reduced-motion`-gated · [ ] decorative-image
-+ ARIA-label where needed · [ ] keyboard + contrast + `aria-describedby` a11y pass · [ ] client patterns
-use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
+> ✅ **VERIFIED PER-ITEM AGAINST CODE, 2026-08-17** — 4 parallel agents + an adversarial refutation
+> pass. Previously all 21 boxes were unticked, which **understated** the position: several items are
+> genuinely done and provable from gate output. Two items are unachievable **as worded** because they
+> contradict Part G of this same spec. Full evidence:
+> `.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md`.
+>
+> ⛔ **A "0 findings" result is only evidence if a rule actually looks.** L15 below is the worked
+> example: it was first recorded as satisfied on a zero that no rule produces.
+
+**DONE — verified, gate-enforced (4):**
+
+- [x] **links use LinkControl (new-tab + rel)** — rule 08 `gate`, 0 flagged (2 baselined non-content
+      config URLs). Live control is `LinkPopoverField` (11 mounts); the popover placement rule holds
+- [x] **responsive props expose the 768/1024 device switcher** — rule 25 `gate`, 0 flagged;
+      `DeviceTabs` has zero callers, so no per-control switcher survives anywhere
+- [x] **`MediaUploadCheck` on every MediaUpload** — rule 14 `gate`, 0 flagged; verified beyond the
+      rule's `edit.js`-only corpus into `components/` + `extensions/`, all compliant
+- [x] **animation `prefers-reduced-motion`-gated** — rule 17 `gate`, 0 flagged; JS checks in the motion
+      extensions **plus** an unconditional framework-wide CSS gate
+
+**MOSTLY DONE, one unaudited edge (1):**
+
+- [~] **every colour has `enableAlpha` + clearable** — rule 04 `gate`, 0 flagged, and no raw colour
+      pickers exist (all route through `DesignTokenPicker`, which defaults both true). ⚠ Rule 04 scans
+      only `*/edit.js`; `colour-picker/color-palette/index.js` defaults `enableAlpha = false` and its
+      callers were never audited. Close that, then tick
+
+**NOT DONE — verified (4):**
+
+- [ ] **control-dense panels use ToolsPanel** — **0 of 15** flagged dense `PanelBody` elements convert.
+      (Not contradicted by "23 files use ToolsPanel somewhere" — different populations)
+- [ ] **states use `StateToggleControl`** — ⛔ **the component is DEAD CODE: 0 imports, 0 JSX mounts.**
+      Exported from `components/index.js:45`, mounted nowhere; every apparent use is a comment saying
+      where it *used to* live. State toggling actually works via `DesignTokenPicker`'s `states` prop —
+      a different mechanism than this item names. **Either wire it or delete it and reword the item**
+- [ ] **decorative-image + ARIA-label where needed** — **1 of 14** image-rendering blocks
+      (`sgs/media`'s `imageIsDecorative`). `sgs/decorative-image` needs none — it hardcodes
+      `aria-hidden` by construction
+- [ ] **keyboard + contrast + `aria-describedby` a11y pass** — `aria-describedby` appears in 4 files
+      against a far larger `help=` population. Keyboard + contrast need a live axe pass; no static
+      detector covers either
+
+**PARTIAL — measured (5):**
+
+- [~] Settings/Styles/Advanced split via `group` — **25/83** (rule 01, advisory)
+- [~] every CSS-length uses UnitControl or the token scale — `UnitControl`/`BoxControl` dominate 465
+      instances, but a `RangeControl` raw-px residue and 117 statically-unresolved attrs remain
+- [~] every 4-value prop per-side via box_family — **184/203** canonical
+- [~] compound values use real builders — shadow confirmed (`ShadowControl`, 16–20 mounts); **border
+      builder coverage unverified** (1 file against 48 blocks declaring `__experimentalBorder`)
+- [~] images have size + aspect-ratio + object-fit + focal point — **6/11** upload blocks; 22 opt into
+      the shared `imageControls` extension
+
+**UNVERIFIED — no enforcing rule exists (1):**
+
+- [ ] **no native-supports panel duplicated** — ⛔ **corrected 2026-08-17.** This was briefly recorded
+      as satisfied. **There is no gate for it.** None of the 16 `inspector-scan` rules targets Part F's
+      "bespoke panel duplicating a native `supports` panel"; `check-shared-panel-schema.js`,
+      `check-dead-controls.js` and `check-duplicate-controls.js` all target different bug classes. A
+      manual check found no duplicated *colour* panel, which is one shape of the anti-pattern, not
+      proof of the item. **Needs a rule before it can be ticked**
+
+**NOT ACHIEVABLE AS WORDED — this checklist contradicts Part G (2):**
+
+- ⛔ **native supports used over hand-rolled (aspectRatio/duotone/sticky/lightbox)** — Part G's D402
+      verdict table rules **`position.sticky` = KEEP SGS** ("collides with the D400 behaviour cascade")
+      and **`lightbox` = KEEP SGS (gallery)** ("bespoke has more features"). So 0/83 native adoption for
+      those two is the *intended* architecture, not a gap. `aspectRatio` (5 blocks) and `duotone`
+      (2 blocks, native key) ARE the adopt-cases. **Reword this item to name only aspectRatio + duotone**
+- ⛔ **client patterns use `templateLock:"contentOnly"`** — Part G rules it **PER-CLIENT OPT-IN ONLY …
+      never framework patterns**, and Part M already re-labels it "not a framework rollout — deliberate,
+      not a gap". 0/46 framework patterns is therefore correct-by-design. **Reword or drop**
+
+**PARTIAL, aggregate (1):**
+
+- [~] **no Part-F anti-patterns** — every *gated* anti-pattern is clean (7/7 gate rules, 0 findings);
+      4 advisory categories remain open (tab-group 58, dense panels 15, decorative-image 13,
+      responsive-duplicate 2)
+
+**UNVERIFIABLE STATICALLY (1):**
+
+- [ ] **element-first panels** — 83/84 blocks declare a `supports.sgs.elements` manifest, but only
+      container-family blocks route through a shared element-grouping renderer. Whether panels are
+      *ordered by element* for direct-panel blocks needs a live editor pass
+
+**Multi-item data is array-shaped** (24 blocks, no counter-example found across spot-checked
+repeater blocks) and **`hideExtensions`** (26 blocks, mechanism live) are treated as met; neither has
+an independently derivable "should" denominator.
 
 ## PART M — Implementation status (living; updated 2026-08-11)
 
@@ -871,7 +948,21 @@ component layer.**
 **NOT** hold for the `imageControls` extension: built and attached, but functionally reaching 2 of
 the 15 blocks that declare it. Built ≠ reaching. See `plans/spec-35-capability-routing-doctrine.md`.
 
-**Roadmap (Part J) — BUILD status: COMPLETE (2026-07-28, `07c67642` → `64f5080e`).** All three
+⛔ **CORRECTED 2026-08-17 — "COMPLETE" does not hold. 3 of Part J's 10 steps have no code behind
+them**, verified independently (agents + an adversarial refutation pass), each confirmed as a real
+named deliverable rather than a misreading:
+- **Step 4 — `templateLock:"contentOnly"` in client patterns:** `contentOnly` returns **0 hits** outside
+  test fixtures. ⚠ But see Part G / Part L: this is now ruled per-client-opt-in and Part M's own table
+  already re-labels it "not a framework rollout — deliberate, not a gap". **Step 4's wording is stale,
+  not merely undone — reword it rather than scheduling the work.**
+- **Step 5 — `MediaGalleryPicker` → `brand-strip` logos:** untouched. `brand-strip/edit.js:24` imports
+  the single-slot `MediaPicker`, not `MediaGalleryPicker`. **Genuinely unbuilt.**
+- **Step 10 — "Section Styles" (block style variations with inner-element styles, WP 6.6):** **0 hits**
+  for `Section Styles`/`SectionStyles` anywhere in the codebase. A real deliverable, quoted from Part
+  G's own native-mechanism table. **Genuinely unbuilt**, and never surfaced by this section's own
+  self-audit, which flags only spacing-token + dynamic-content.
+
+~~**Roadmap (Part J) — BUILD status: COMPLETE (2026-07-28, `07c67642` → `64f5080e`).**~~ All three
 waves shipped same day; the plan referenced in earlier revisions
 (`~/.claude/plans/please-read-through-all-hashed-wreath.md`) executed in full:
 - **Wave 1 (rollout) — DONE.** `SgsLinkControl` migrated across all raw-URL fields (card-grid
@@ -1048,6 +1139,13 @@ TERMINAL STEADY STATE for this data layer: a future non-zero reading is a regres
 attribute landed unrouted), not a backlog to clear by hand. The command above still regenerates
 the true figure every time — the "never cache a count" discipline does not relax just because the
 count is currently zero; it is exactly the number a stale cache would get wrong first.
+
+> ⛔ **AND IT DID. Live re-run 2026-08-17: `eligible pool 5 · reached by any detector 5 ·
+> ASSIGNABLE 0`.** The pool is **not** 0 and this paragraph's "TERMINAL STEADY STATE" framing is
+> stale — by its own stated rule, a non-zero reading means new attributes landed and were routed by
+> mechanism (`ASSIGNABLE 0` confirms they ARE reached by a detector, so this is not an unrouted-
+> attribute regression). **Do not quote "pool = 0" from this section; run the command.** This
+> paragraph warned against exactly the cache it then became.
 
 ### N.1 — The mechanism map (what may LEGALLY seed each role)
 
