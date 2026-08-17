@@ -154,22 +154,32 @@ def build_block_markup(
             _gap_collector.record_content_gap(r, block_slug=rec.slug or "")
 
     # step 3a2: R-31-2 TAG-IDENTITY write (CG-2 fix, 2026-07-05 — the zero-h1
+    # defect; shape-normalisation fix, 2026-08-17 — the h3-vs-numeric-enum
     # defect). Recognition uses the tag to pick the block then DISCARDED it on
     # every path; nothing wrote sgs/heading.level, so render.php's h2 default
     # flattened h1/h3/h4 (live page: 0×h1, 15×h2; SEO + WCAG hierarchy). For
     # each attr the block declares with role='tag-identity' (the sanctioned
     # ATTR_CLASSIFICATION_OVERRIDES channel — an explicit declaration, never
     # enum-contains guessing, FR-31-2.1a/R-31-9), write the source node's tag
-    # when it is a member of the attr's enum (an <img> is outside mediaType's
-    # enum — the block default stands). setdefault: an explicit value from
-    # variant/CSS/content wins. Same precedent shape as steps 3b/5 (DB-gated
-    # attr declaration + node-structural signal, no slug literal).
+    # when db_lookup.tag_identity_match resolves a value for it — matching is
+    # done via a shape-normalised canonical form (2026-08-17 fix) so a
+    # numeric-enum block (legacy [2,3,4] shape) and a string-tag-enum block
+    # (["h2",...] canonical shape) both recognise 'h3', and a block declaring
+    # NO enum at all still gets the tag written unconditionally rather than
+    # being silently skipped (previously the SQL required enum_values IS NOT
+    # NULL, and a bare `tag in allowed` never matched a numeric enum's
+    # str-cast members against an "h3"-shaped tag — both excluded every block
+    # except sgs/heading, the only one that happened to carry a string enum).
+    # setdefault: an explicit value from variant/CSS/content wins. Same
+    # precedent shape as steps 3b/5 (DB-gated attr declaration + node-
+    # structural signal, no slug literal).
     if rec.slug is not None:
         _node_tag = getattr(section_root, "name", None)
         if _node_tag:
             for _ti_attr, _ti_allowed in db_lookup.tag_identity_attrs(rec.slug).items():
-                if _node_tag in _ti_allowed:
-                    attrs.setdefault(_ti_attr, _node_tag)
+                _ti_value = db_lookup.tag_identity_match(_node_tag, _ti_allowed)
+                if _ti_value is not None:
+                    attrs.setdefault(_ti_attr, _ti_value)
 
     # step 3a3: text-wrap fidelity (D305). The theme applies `text-wrap: balance`
     # to ALL headings (core-blocks-critical.css `h1..h6`) — a deliberate

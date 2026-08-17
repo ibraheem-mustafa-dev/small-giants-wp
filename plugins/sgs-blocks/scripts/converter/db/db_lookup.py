@@ -1142,7 +1142,7 @@ def attr_is_colour_role(block_slug: str, attr_name: str) -> bool:
 
 
 @functools.lru_cache(maxsize=256)
-def tag_identity_attrs(block_slug: str) -> dict[str, frozenset[str]]:
+def tag_identity_attrs(block_slug: str) -> "dict[str, frozenset[str] | None]":
     """Return {attr_name: allowed_tag_values} for the block's tag-identity attrs.
 
     A tag-identity attr (role='tag-identity', declared via the sanctioned
@@ -1155,27 +1155,104 @@ def tag_identity_attrs(block_slug: str) -> dict[str, frozenset[str]]:
     nothing (an <img> is not in mediaType's enum — the block default stands).
     Explicit role gate, NEVER bare enum-contains (hero.variant contains
     'video', quote.attributionTag contains 'div' — R-31-9 over-broad).
+
+    A declared attr's enum can take THREE shapes (all must work — different
+    blocks/migration states carry different ones at the same time, e.g. the
+    string-tag shape being rolled out is not required to land before this
+    reads correctly): enum values are HTML tag strings (``["h1",...,"h6"]``,
+    sgs/heading.level — the canonical shape), enum values are numeric levels
+    (``[2,3,4]``, a legacy shape still live on some blocks), or the attr
+    declares no enum at all (``enum_values IS NULL`` — a free-form
+    tag-identity attr with no declared restriction). A dict VALUE of ``None``
+    is the "no enum declared" sentinel (write the node tag unconditionally);
+    a ``frozenset[str]`` is the declared allow-list, string-cast exactly as
+    stored (matching/writing is shape-normalised by ``tag_identity_match``,
+    not here — this accessor stays a faithful read of the DB row). Malformed
+    or empty enum JSON is dropped from the result (never matches), same as
+    before this fix — only a genuine SQL NULL earns the None sentinel.
     """
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
             "SELECT attr_name, enum_values FROM block_attributes "
-            "WHERE block_slug = ? AND role = 'tag-identity' "
-            "AND enum_values IS NOT NULL",
+            "WHERE block_slug = ? AND role = 'tag-identity'",
             (block_slug,),
         ).fetchall()
     finally:
         conn.close()
-    out: dict[str, frozenset[str]] = {}
+    out: dict[str, "frozenset[str] | None"] = {}
     for name, raw in rows:
+        if raw is None:
+            out[name] = None
+            continue
         try:
-            vals = json.loads(raw) if raw and raw.strip().startswith("[") else []
+            vals = json.loads(raw) if raw.strip().startswith("[") else []
         except (ValueError, TypeError):
             vals = []
         allowed = frozenset(str(v) for v in vals if v is not None)
         if allowed:
             out[name] = allowed
     return out
+
+
+def _canonical_tag_token(value: object) -> str:
+    """Normalise a tag-identity token to a shape-agnostic comparable form.
+
+    Heading levels compare equal regardless of which of the three enum
+    shapes carried them: the integer level ``3``, the numeric string
+    ``"3"``, and the HTML tag string ``"h3"`` all normalise to ``"h3"``.
+    Every other token (``"p"``, ``"image"``, ``"video"``, ``"svg"``, a
+    literal node tag like ``"div"``) normalises to its own lowercased
+    string form and nothing else — ``"p"`` is a legitimate non-heading
+    tag-identity value (FR-31-2.1a) and must never collide with a heading
+    canonical form in either direction.
+    """
+    s = str(value).strip().lower()
+    if s.isdigit() and 1 <= int(s) <= 6:
+        return f"h{s}"
+    if len(s) == 2 and s[0] == "h" and s[1].isdigit() and 1 <= int(s[1]) <= 6:
+        return s
+    return s
+
+
+def _tag_identity_write_value(member: str) -> "str | int":
+    """Cast a matched enum member back to the JSON type it was likely stored as.
+
+    ``tag_identity_attrs`` string-casts every enum member for comparison
+    (``json.loads`` gives ints for a numeric enum like ``[2,3,4]``, but the
+    frozenset holds ``"2"``/``"3"``/``"4"``). A purely-numeric member is
+    written back as an ``int`` so it round-trips through the block's own
+    numeric attribute type (the legacy shape); anything else is written
+    back as the string it already is (``"h3"``, ``"p"``, ``"image"``...).
+    Generic on the member's own textual shape — no per-block table.
+    """
+    return int(member) if member.isdigit() else member
+
+
+def tag_identity_match(node_tag: str, allowed: "frozenset[str] | None") -> "str | int | None":
+    """Return the value assembly step 3a2 should write for ``node_tag``, or None.
+
+    ``allowed=None`` is the "no enum declared" sentinel from
+    ``tag_identity_attrs`` — the attr accepts any tag unconditionally, so
+    the raw node tag is written verbatim (this is the shape that must not
+    be silently excluded: an attr with no enum yet is still a genuine
+    tag-identity declaration). Otherwise ``node_tag`` and every member of
+    ``allowed`` are compared via their CANONICAL form (``_canonical_tag_token``),
+    so a numeric-enum member and a string-tag member both recognise the
+    same heading level regardless of which shape the block's enum carries;
+    the ORIGINAL matched member is cast back to its likely JSON type
+    (``_tag_identity_write_value``) so the write matches the block's own
+    attribute type. Returns ``None`` when nothing matches — the caller
+    must not write (the block's own default stands), so a genuinely
+    out-of-range or out-of-enum tag is correctly rejected, not coerced.
+    """
+    if allowed is None:
+        return node_tag
+    canonical_node = _canonical_tag_token(node_tag)
+    for member in allowed:
+        if _canonical_tag_token(member) == canonical_node:
+            return _tag_identity_write_value(member)
+    return None
 
 
 @functools.lru_cache(maxsize=4096)
