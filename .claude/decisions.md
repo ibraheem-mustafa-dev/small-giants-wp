@@ -1,5 +1,59 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D651 — trust-bar overlay fix + full templateMode sweep, 19 blocks [ROUTINE]
+
+**2026-08-17.** Closes the two remaining items from D650's investigation: `sgs/trust-bar`'s twin of
+the `cta-section` overlay bug, and the `templateMode` dead-attribute problem (D650 found it affected
+18 of 19 blocks, wider than the LEDGER's earlier "row blocks and physics-canvas" note). Dispatched 5
+parallel agents (1 for trust-bar, 4 for `templateMode` in batches of ~5).
+
+**`sgs/trust-bar` overlay — FIXED (`4ab9bb3d`), live-verified (`rgba(0, 255, 0, 0.5)` painted exactly
+as set).** Same root cause as `cta-section`'s (`no_overlay: true` gating the wrapper's entire overlay
+branch), but NOT assumed identical without checking — investigated trust-bar's own layers (badges,
+auto-scroll track) for a real conflict first, and found none: every `SGS_Container_Wrapper`-wrapped
+block gets the same `.sgs-container > *:not(.sgs-container__overlay)` z-index lift, so trust-bar's
+content sits above the overlay by the same generic mechanism cta-section relies on.
+
+**`templateMode` — resolved across all 19 blocks that declared it.** Re-checking the DB found most
+already carry the identical `["free","grid-section","card-grid"]` enum `sgs/container` uses — clearly
+scaffolded from container's shape but never wired, not independently-designed attributes needing
+per-block judgment calls. Split into 4 batches by enum shape (3 batches of the standard enum, 1 batch
+of 4 blocks with no matching enum needing individual investigation):
+
+- **5 blocks WIRED** (real `TEMPLATE_MODE_ALLOWED` map + `allowedBlocks` restriction + inspector
+  control, mirroring `sgs/container`'s exact pattern): `hero`, `form`, `multi-button`,
+  `site-header-row`, `site-footer-row`.
+- **13 blocks had the dead attribute REMOVED**, each for a verified, block-specific reason rather
+  than a blanket assumption: `form-field-tiles`/`nav-menu`/`post-grid`/`pricing-table`/`gallery`/
+  `card-grid`/`google-reviews` have no InnerBlocks slot at all (typed repeaters or `ServerSideRender`-
+  driven, nothing to restrict); `tabs`/`accordion`/`site-header`/`site-footer`/`cta-section` already
+  have their OWN fixed, more specific `allowedBlocks` restriction that a generic preset would only
+  conflict with; `physics-canvas` has a fixed decorative-only roster under an explicit accessibility
+  ruling (D447) that a variable preset would directly undermine.
+- **1 block (`feature-grid`) removed** — already had its own fixed `allowedBlocks`, same shape as
+  the `tabs`/`accordion` group.
+
+**No design guesswork on the ambiguous cases — every removal is backed by a specific, checked reason,
+not "couldn't figure out what modes made sense".** The one dispatch given genuinely ambiguous blocks
+(4 with no matching enum: `feature-grid`, `gallery`, `google-reviews`, `card-grid`) investigated each
+individually rather than batch-applying one answer, and all 4 independently converged on "no
+InnerBlocks slot exists, remove" — confirmed correct on manual review of the diffs before committing.
+
+**Process note, not a new failure mode:** three of the five dispatched agents stopped mid-task after
+launching their own build in the background and not following up on it (no separate notification
+wakes an agent mid-tool-call) — resumed each with an explicit "run synchronously, don't background
+it" instruction, and the last one needed the work finished directly rather than a third resume
+attempt, after it appeared to have gone genuinely idle. All work was still correct once completed;
+this was a dispatch-mechanics friction, not a defect in any of the actual code changes.
+
+**Verification.** Full consolidated build after all 19 commits: green, `check-element-manifest-
+conformance.js` and `check-dead-controls.js` both clean (0 net-new). Deployed to sandybrown (83/83
+payload checksums). Live-verified trust-bar's overlay via computed style on the real page. `templateMode`
+being an editor-time InnerBlocks restriction (not a frontend paint), live-verified via the BUILT bundle
+instead — confirmed the 5 wired blocks' compiled `index.js` actually contains the new
+`TEMPLATE_MODE_ALLOWED`/`templateMode` code, and confirmed 5 sampled removed blocks' compiled bundles
+are genuinely clean of it (both directions checked, not just "the source diff looks right").
+
 ## D650 — Four residual-list items cleared: 2 real fixes, 1 non-issue, 1 disputed reasoning [ROUTINE]
 
 **2026-08-17.** Bean asked for the "carried, not this session's" residual items to be worked through:

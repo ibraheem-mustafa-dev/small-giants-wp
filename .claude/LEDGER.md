@@ -33,6 +33,15 @@ blocks — `main` could be picked as the wrapper's HTML tag and produce 2-3 "mai
 one page; `nav`/`aside` had no way to give a client-facing accessible label. Fixed, live-verified via
 the real browser accessibility tree on sandybrown, deployed.
 
+**Also today:** worked through 6 smaller residual items sitting in the backlog. Two real bugs got
+fixed (`cta-section` AND `trust-bar` overlay colour/gradient controls were both painting nothing —
+same root cause, same fix, both live-verified). A 19-block sweep found `templateMode` was declared
+but doing nothing on 18 of 19 blocks that had it — 5 got properly wired (restricting which blocks can
+go inside them), 13 had the dead attribute removed outright (mostly blocks with no child-block area
+at all, so there was nothing to restrict). One review found a baseline file's reasoning was wrong
+even though its actual effect wasn't — flagged, not fixed, since it needs your sign-off. One
+"open item" turned out to already be finished six days ago.
+
 ## Shipped today
 
 | What | Detail lives at |
@@ -42,6 +51,7 @@ the real browser accessibility tree on sandybrown, deployed.
 | Landmark-tag a11y fix — drop `main`, label `nav`/`aside`, 5 blocks, live-verified | `decisions.md` D647 |
 | `gridItemBorder` gradient + hover, 4 blocks — deployed, live-verified | `decisions.md` D648 |
 | `cta-section` overlay controls fixed (were painting nothing); testimonial/image-sequence image controls fixed | `decisions.md` D650 |
+| `trust-bar` overlay controls fixed (same bug as cta-section); `templateMode` sweep — 5 wired, 13 dead attrs removed, across 19 blocks | `decisions.md` D651 |
 
 ## Blockers
 
@@ -122,8 +132,8 @@ stylesheet. Commit `b0182f1c`.
 
 ## State Snapshot
 
-- **Branch:** `main`, in sync with origin, HEAD `079e75eb`.
-- **D-ceiling:** **D648** — verify with
+- **Branch:** `main`, in sync with origin, HEAD `3cf842be`.
+- **D-ceiling:** **D651** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
 - **Build:** green through all ~50 gates. `check-element-manifest-conformance.js`: GATE PASS
@@ -156,12 +166,6 @@ stylesheet. Commit `b0182f1c`.
   2026-08-17: `sgs/mega-group` sets `templateLock:'all'`, which drops a locked block's stored child
   content on every editor load/save. Deleting/recreating the page reproduces the same loss; the real
   fix is relaxing/removing that lock on `sgs/mega-group`. It's Track 2's canary — check with them first.
-- **`templateMode` dead on 18 of 19 blocks that declare it** (re-verified 2026-08-17, wider than
-  previously noted) — only `sgs/container` actually wires it (destructures the attribute, restricts
-  `allowedBlocks` by it, has a real editor control). Everything else — `accordion`, `card-grid`,
-  `cta-section`, `feature-grid`, `form`, `gallery`, `hero`, `nav-menu`, `physics-canvas`,
-  `pricing-table`, both header/footer row blocks, `tabs`, etc. — declares it in `block.json` with zero
-  consumption anywhere. Fix = wire container's existing pattern into each. Not yet scoped/dispatched.
 - **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
 - **`element-manifest-baseline.json`'s reasoning text is factually wrong** (spotted 2026-08-17
   reviewing the two `hero.borderColourHover`/`info-box.borderColourHover` entries): the accepted
@@ -171,8 +175,3 @@ stylesheet. Commit `b0182f1c`.
   already correctly wired. No build-gate risk either way; a future reader could be misled by the
   wrong reasoning into skipping a real gap elsewhere under the false premise. Text-only fix, needs
   sign-off since edits to that file are treated as needing one.
-- **`sgs/trust-bar` has the same overlay-controls-paint-nothing bug `cta-section` just had fixed**
-  (found while fixing cta-section, 2026-08-17, not yet fixed) — declares
-  `backgroundOverlayColour`/`overlayGradient`, mounts the same `BackgroundPanel`, passes
-  `no_overlay: true`, and has no overlay-rendering code of its own. Same fix shape as cta-section's:
-  drop `no_overlay: true` unless investigation finds a real conflict (cta-section's didn't).
