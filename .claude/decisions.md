@@ -1,5 +1,40 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D652 — mega-group/mega-aside templateLock 'all'->'insert' (content-loss bug) + baseline text correction [ROUTINE]
+
+**2026-08-17.** Closes both follow-up items from the 2026-08-17 orchestration plan.
+
+**`sgs/mega-group` + `sgs/mega-aside` — FIXED (`43fcd42d`), live-verified via a real editor
+round-trip.** `templateLock:'all'` was confirmed as the real cause of Track 2's canary (post 2164)
+losing a text node on 2026-08-07 — not an unexplained one-off. Confirmed against WordPress core
+source directly (not guesswork): `useInnerBlockTemplateSync`'s effect re-runs
+`synchronizeBlocksWithTemplate` on EVERY editor mount whenever `templateLock` is `'all'`/
+`'contentOnly'`, and that function matches stored children to `TEMPLATE` entries BY POSITION —
+any child that doesn't line up gets replaced from the template (dropping its content) and any
+stored child beyond the template's length is removed outright. `templateLock:'insert'` still
+blocks a client from adding/removing/reordering the fixed structure (mega-group: heading+icon-list;
+mega-aside: media+label+heading+text+button) — the original design intent — but the sync only
+re-runs for `'all'`/`'contentOnly'` (or when innerBlocks is empty), so `'insert'` never triggers the
+destructive resync and existing content survives every load. Comprehensive fix: `mega-aside` has
+the identical pattern (same fixed-children shape) and was fixed in the same commit; `mega-panel`'s
+own doc comment referencing both blocks' lock value was updated to match.
+
+**Verified on a real page, not asserted.** Built + deployed to sandybrown (`43fcd42d`, payload
+checksums 83/83). Created a probe page (id 2489) via REST with a mega-panel > mega-group containing
+a heading with distinctive text (`PROBE-D652-TEXT`) + icon-list with its default 3 items. Opened in
+the block editor, confirmed content present on first mount, saved, reloaded the editor on a fresh
+navigation (not just a re-render), confirmed content still present, saved again. Content survived
+every load. Probe page force-deleted after, 404 confirmed.
+
+**`element-manifest-baseline.json` reason text — CORRECTED (`43fcd42d`).** The `hero`/`info-box`
+`css:border-color-gradient (hover)` entries claimed neither block has "a resting border-colour
+attribute at all" — false. Both declare a real, working resting border colour via native
+`__experimentalBorder.color` (verified directly: `hero/block.json:119`, `info-box/block.json:82`).
+The actual gap is narrower: WordPress core has never supported a resting-state border GRADIENT
+(only a resting-state flat colour), so no resting counterpart can exist for that specific attrMap
+member — a WP-core ceiling, not a missing SGS control. Gated count unchanged (12/12, 4/4);
+`check-element-manifest-conformance.js --check` GATE PASS confirmed, build green.
+
 ## D651 — trust-bar overlay fix + full templateMode sweep, 19 blocks [ROUTINE]
 
 **2026-08-17.** Closes the two remaining items from D650's investigation: `sgs/trust-bar`'s twin of

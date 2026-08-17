@@ -63,6 +63,8 @@ close-out doc against the repo found it. Two smaller count errors in the same da
 | `cta-section` overlay controls fixed (were painting nothing); testimonial/image-sequence image controls fixed | `decisions.md` D650 |
 | `trust-bar` overlay controls fixed (same bug as cta-section); `templateMode` sweep — 5 wired, 17 dead attrs removed, across all 23 declaring blocks | `decisions.md` D651 |
 | ⚠ Truncated-survey incident: the sweep above shipped incomplete (`head -20` on a 23-row population), caught by fact-checking the close-out doc | `decisions.md` D651 |
+| `mega-group`/`mega-aside` templateLock `'all'`→`'insert'` (content-loss bug, real cause of D650's post-2164 incident) — deployed, live-verified via editor round-trip | `decisions.md` D652 |
+| `element-manifest-baseline.json` hero/info-box border-gradient reason text corrected (count unchanged) | `decisions.md` D652 |
 
 ## Blockers
 
@@ -228,14 +230,12 @@ Residuals below — independent, parallel with all of the above.
 
 ## State Snapshot
 
-- **Branch:** `main`. Last CODE commit of this session's work: `bc67f11f` (the `trustpilot-reviews`
-  templateMode removal); the D651 doc commit `ea3e9e73` follows it. ⚠ **Do not treat any hash here
+- **Branch:** `main`. Last CODE commit of this session's work: `43fcd42d` (D652 — mega-group/
+  mega-aside templateLock fix + baseline text correction). ⚠ **Do not treat any hash here
   as "current HEAD"** — this is a SHARED worktree with concurrent sessions committing to `main`, and
-  a HEAD written into a doc is stale the moment that doc is itself committed (the previous version
-  of this line was 12 commits behind at publication). Run `git rev-parse --short HEAD` and
-  `git log --oneline -5` to see where things actually are. A concurrent track merged D649
-  heading-level work (`6c994ef5`) on top of this session's; it was unpushed at handoff time.
-- **D-ceiling:** **D651** — verify with
+  a HEAD written into a doc is stale the moment that doc is itself committed. Run
+  `git rev-parse --short HEAD` and `git log --oneline -5` to see where things actually are.
+- **D-ceiling:** **D652** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
 - **Build:** green through all ~50 gates. `check-element-manifest-conformance.js`: GATE PASS
@@ -263,11 +263,5 @@ Residuals below — independent, parallel with all of the above.
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
-
-**Two items surfaced 2026-08-17 have a ready-to-paste follow-up session prompt:**
-`.claude/plans/2026-08-17-followup-session-prompt.md` — (1) `sgs/mega-group`'s `templateLock:'all'`
-silently dropping stored child content (the real cause of Track 2's canary text-node loss), and
-(2) `element-manifest-baseline.json`'s reason text asserting a false premise. Deliberately NOT
-parked — they are next-session work with a written brief, not deferred work.
 
 - **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
