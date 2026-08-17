@@ -381,8 +381,24 @@ if ( '' !== $cta_preset_bg_slug ) {
 
 // WS-4: the OUTER wrapper is now the shared sgs/container element (rendered by
 // SGS_Container_Wrapper::render() at the foot of this file). cta-section's own
-// classes + CSS vars + bespoke cover-image background ride through via opts; its
-// overlay stays in the interior (no_overlay) so there is no double-emit.
+// classes + CSS vars + bespoke cover-image background ride through via opts.
+//
+// D643/D-open(9) FIX (2026-08-17): `no_overlay` was previously passed here,
+// which suppresses the WRAPPER's `.sgs-container__overlay` span entirely —
+// the only place `backgroundOverlayColour`/`overlayGradient` are read and
+// painted. `<BackgroundPanel>` in edit.js exposes both controls, they save
+// correctly, but painted nothing (recorded as decisions.md D-open item 9).
+// This is NOT the same overlay as cta-section's own `.sgs-cta-section__overlay`
+// span below, which only darkens a background IMAGE/VIDEO via
+// `--sgs-cta-overlay-opacity` (a single fixed `primary-dark` tint tied to
+// `backgroundImageOpacity`) — a narrower, distinct feature. The two spans do
+// not double-emit the same thing: style.css already excludes
+// `.sgs-cta-section__overlay` from the wrapper's generic child-positioning
+// reset (`container/style.css:63`), proving the framework already expects
+// both to coexist. So `no_overlay` is no longer passed — the wrapper's
+// colour/gradient overlay now paints underneath cta-section's own
+// image-darkening overlay when both are set (predictable stacking, not a
+// conflict).
 
 // Build background media (video) + overlay.
 $media_html = '';
@@ -471,11 +487,17 @@ if ( $responsive_css ) {
 }
 
 // cta-section keeps its bespoke cover-image background ($wrapper_styles -> extra_styles)
-// and its opacity overlay (in the interior). Null the helper's backgroundImage so it does
-// NOT also emit a CSS background, and pass no_overlay so it does NOT emit a second overlay
-// (C3 double-emit guard). `shadow` is ALSO nulled — cta-section now emits box-shadow itself
-// (scoped, above) so the wrapper must not re-emit it via extra_styles (which would inline
-// it). The full container attr surface is still mirrored for editor controls.
+// and its own opacity overlay (in the interior, image/video darkening only). Null the
+// helper's backgroundImage so it does NOT also emit a CSS background (C3 double-emit
+// guard — this one IS a real duplicate: both would paint the same image). `shadow` is
+// ALSO nulled — cta-section now emits box-shadow itself (scoped, above) so the wrapper
+// must not re-emit it via extra_styles (which would inline it). The full container attr
+// surface is still mirrored for editor controls.
+//
+// `no_overlay` is deliberately NOT passed (fixed 2026-08-17, decisions.md D-open item
+// 9) — that flag suppresses the wrapper's `backgroundOverlayColour`/`overlayGradient`
+// emission, a distinct feature from cta-section's own image-darkening overlay above.
+// See the comment above the WS-4 note for the full rationale.
 $cta_helper_attrs                    = $attributes;
 $cta_helper_attrs['backgroundImage'] = null;
 $cta_helper_attrs['shadow']          = null;
@@ -484,7 +506,6 @@ $cta_wrapper_opts = array(
 	'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
 	'extra_classes' => $classes,
 	'extra_styles'  => $wrapper_styles,
-	'no_overlay'    => true,
 );
 
 // Landmark label (nav/aside only — main was removed from the tagName allowlist
