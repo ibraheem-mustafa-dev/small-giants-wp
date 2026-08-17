@@ -49,15 +49,11 @@ existing more-specific restriction a generic preset would only fight). One revie
 file's reasoning was wrong even though its actual effect wasn't — flagged, not fixed, since it needs
 your sign-off. One "open item" turned out to already be finished six days ago.
 
-⚠ **Worth knowing — I got that sweep wrong the first time and caught it myself afterwards.** My
-original survey command ended in `| head -20`, which silently cut the list off at 20 when the real
-answer was 23. I then reported "19 blocks" to you, dispatched agents against that short list, shipped
-it, deployed it, and wrote it up as complete — while three blocks (`testimonial-slider`, `trust-bar`,
-`trustpilot-reviews`) still had the dead attribute. Fixed in a follow-up pass and redeployed. **No
-build gate, deploy check, or live test could have caught this** — they all verify that what you DID
-touch is correct, and none of them knows what you should have touched. Only fact-checking the
-close-out doc against the repo found it. Two smaller count errors in the same day's docs (D646 said
-19 blocks where it was 20) came from the same habit of trusting my own earlier prose over a re-query.
+⚠ **The `head -20` incident:** a survey command truncated a 23-row population to 20; the sweep shipped
+and deployed 3 blocks short, and **no build gate, deploy check or live test could have caught it** —
+they verify what you DID touch, never what you should have. Only fact-checking the close-out doc
+against the repo found it. Full record: `decisions.md` D651 · rule: `STOP-CATALOGUE.md`
+STOP-TRUNCATED-SURVEY.
 
 ## Shipped today
 
