@@ -1513,6 +1513,66 @@ def _attrs_from_helper_calls(
     return props, elements
 
 
+# ── Shape E: the text-colour-or-gradient resolver pair ─────────────────────────
+# `sgs_resolve_text_colour_or_gradient( $flat, $gradient )` (includes/helpers-tokens.php)
+# picks between a flat text-colour attribute and its `{attr}Gradient` sibling; its
+# result is fed straight into `sgs_text_colour_decl()`, which returns a bare
+# `color:...` (flat branch) or `background-image:...;...;color:transparent` (gradient
+# branch) declaration fragment — WITHOUT the literal property name ever appearing in
+# render.php's own source text (it is built INSIDE the helper, in helpers-tokens.php).
+# Shapes A/B/C (`_attr_to_raw_props_php`) and Shape D (`_attrs_from_helper_calls`)
+# both only see literal property tokens actually written in render.php, so neither
+# can see this one — a real consumption-pattern gap, not a naming-pattern gap
+# (D636, 2026-08-16 rollout; found live 2026-08-17 via sgs/counter.numberColour
+# missing `css_property` and vanishing on every reseed — db-consistency Check #8
+# "rogue seed").
+#
+# Every one of this codebase's 6 call sites (sgs/heading, sgs/text ×2, sgs/testimonial,
+# sgs/pricing-table, sgs/counter, verified by reading each render.php) passes the FLAT
+# attribute as the resolver's first argument and its `{attr}Gradient` sibling as the
+# second; the gradient sibling already resolves correctly everywhere via an explicit,
+# hand-curated `"css:background-image": "{attr}Gradient"` block.json attrMap entry, so
+# only the FLAT (first) argument needs recovering here — the gradient half is a solved
+# problem, not a gap. This mirrors Shape D's "closed, documented helper vocabulary"
+# pattern (`_HELPER_SUFFIX_PROPS`) rather than guessing from the attribute's name: the
+# fix is "trace what the CODE does", general to every current AND future call site,
+# not a per-block special case.
+_TEXT_COLOUR_RESOLVER_CALL_RE = re.compile(
+    r"sgs_resolve_text_colour_or_gradient\s*\("
+)
+
+
+def _attrs_from_text_colour_resolver_calls(
+    php_src: str, var_attr: "dict[str, str]"
+) -> "dict[str, set[str]]":
+    """Shape E: every `sgs_resolve_text_colour_or_gradient( $flat, $gradient )` call
+    site resolves its FIRST argument to a real `color` css_property — see the module
+    comment above `_TEXT_COLOUR_RESOLVER_CALL_RE` for the full mechanism + evidence.
+
+    The first argument is almost always a bare `$var` (resolved through the
+    multi-hop `var_attr` map built by `_build_php_var_attr_map`, so a cast/
+    null-coalesce/ternary wrapper upstream of the resolver call — e.g.
+    sgs/testimonial's `$quote_colour_raw = (string) ( $attributes['quoteColour']
+    ?? '' );` — is already handled); a direct `$attributes['attrName']` literal is
+    also matched as a documented fallback shape. Anything else (a non-var, non-
+    direct-attribute expression) is left unresolved — an honest gap, not a guess.
+    """
+    props: dict[str, set[str]] = defaultdict(set)
+    for m in _TEXT_COLOUR_RESOLVER_CALL_RE.finditer(php_src):
+        call_args = _split_balanced_call_args(php_src, m.end())
+        if not call_args or len(call_args) < 1:
+            continue
+        flat_arg = call_args[0].strip()
+        attr_m = re.match(r"^\$(?:attributes|attrs)\[['\"](\w+)['\"]\]$", flat_arg)
+        if attr_m:
+            props[attr_m.group(1)].add("color")
+            continue
+        var_m = re.match(r"^\$(\w+)$", flat_arg)
+        if var_m and var_m.group(1) in var_attr:
+            props[var_attr[var_m.group(1)]].add("color")
+    return props
+
+
 def _attr_to_raw_props_php(
     php_src: str,
     known_css_props: "frozenset[str]",
@@ -2226,6 +2286,9 @@ def extract_css_property_and_layer() -> dict:
         raw, php_attr_state, php_attr_element = _attr_to_raw_props_php(php_src, known_css_props, var_attr, short_slug)
         helper_props, helper_elements = _attrs_from_helper_calls(php_src, block_attr_names, short_slug)
         for attr, props in helper_props.items():
+            raw[attr] = raw.get(attr, set()) | props
+        text_colour_resolver_props = _attrs_from_text_colour_resolver_calls(php_src, var_attr)
+        for attr, props in text_colour_resolver_props.items():
             raw[attr] = raw.get(attr, set()) | props
 
         for attr, tokens in raw.items():
