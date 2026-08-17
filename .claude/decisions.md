@@ -14,30 +14,62 @@ auto-scroll track) for a real conflict first, and found none: every `SGS_Contain
 block gets the same `.sgs-container > *:not(.sgs-container__overlay)` z-index lift, so trust-bar's
 content sits above the overlay by the same generic mechanism cta-section relies on.
 
-**`templateMode` — resolved across all 19 blocks that declared it.** Re-checking the DB found most
-already carry the identical `["free","grid-section","card-grid"]` enum `sgs/container` uses — clearly
+**`templateMode` — resolved across all 23 blocks that declared it (22 of them dead).** Most already
+carry the identical `["free","grid-section","card-grid"]` enum `sgs/container` uses — clearly
 scaffolded from container's shape but never wired, not independently-designed attributes needing
 per-block judgment calls. Split into 4 batches by enum shape (3 batches of the standard enum, 1 batch
-of 4 blocks with no matching enum needing individual investigation):
+of 4 blocks with no matching enum needing individual investigation), plus a 3-block corrective pass
+(see the truncated-survey incident below):
 
 - **5 blocks WIRED** (real `TEMPLATE_MODE_ALLOWED` map + `allowedBlocks` restriction + inspector
   control, mirroring `sgs/container`'s exact pattern): `hero`, `form`, `multi-button`,
   `site-header-row`, `site-footer-row`.
-- **13 blocks had the dead attribute REMOVED**, each for a verified, block-specific reason rather
+- **17 blocks had the dead attribute REMOVED**, each for a verified, block-specific reason rather
   than a blanket assumption: `form-field-tiles`/`nav-menu`/`post-grid`/`pricing-table`/`gallery`/
-  `card-grid`/`google-reviews` have no InnerBlocks slot at all (typed repeaters or `ServerSideRender`-
-  driven, nothing to restrict); `tabs`/`accordion`/`site-header`/`site-footer`/`cta-section` already
-  have their OWN fixed, more specific `allowedBlocks` restriction that a generic preset would only
-  conflict with; `physics-canvas` has a fixed decorative-only roster under an explicit accessibility
-  ruling (D447) that a variable preset would directly undermine.
-- **1 block (`feature-grid`) removed** — already had its own fixed `allowedBlocks`, same shape as
-  the `tabs`/`accordion` group.
+  `card-grid`/`google-reviews`/`trust-bar`/`trustpilot-reviews` have no InnerBlocks slot at all
+  (typed repeaters or `ServerSideRender`-driven, nothing to restrict);
+  `tabs`/`accordion`/`site-header`/`site-footer`/`cta-section`/`feature-grid`/`testimonial-slider`
+  already have their OWN fixed, more specific `allowedBlocks` restriction that a generic preset would
+  only conflict with; `physics-canvas` has a fixed decorative-only roster under an explicit
+  accessibility ruling (D447) that a variable preset would directly undermine.
+- **End state, verified by query not by prose:** exactly 6 blocks now declare `templateMode`
+  (`container` + the 5 wired above) and all 6 consume it. Check with
+  `git grep -l '"templateMode"' -- 'plugins/sgs-blocks/src/blocks/*/block.json'`.
 
 **No design guesswork on the ambiguous cases — every removal is backed by a specific, checked reason,
 not "couldn't figure out what modes made sense".** The one dispatch given genuinely ambiguous blocks
 (4 with no matching enum: `feature-grid`, `gallery`, `google-reviews`, `card-grid`) investigated each
 individually rather than batch-applying one answer, and all 4 independently converged on "no
 InnerBlocks slot exists, remove" — confirmed correct on manual review of the diffs before committing.
+
+**⛔ INCIDENT — the sweep shipped INCOMPLETE and the first version of this entry stated a false
+count, caught only by fact-checking my own doc afterwards.** The original survey command was
+`grep -rn "templateMode" .../block.json .../edit.js | head -20`. **The `| head -20` silently
+truncated the roster at exactly 20 lines.** I then treated that truncated list as the complete
+population, reported "18 of 19 blocks" to Bean, dispatched 4 agent batches against it, shipped 19
+commits, deployed, and wrote this entry claiming "resolved across all 19 blocks that declared it".
+
+The real population was **23**. Three blocks — `testimonial-slider`, `trust-bar`,
+`trustpilot-reviews` — were never surveyed, never dispatched, and were still carrying the dead
+attribute after the sweep was declared complete and deployed. Fixed in a corrective pass
+(`3a7c416c`, `426ef795`, `bc67f11f`).
+
+**This is `a-truncated-search-manufactures-a-false-absence` — a lesson already in this project's own
+memory index — reproduced verbatim.** Two compounding details worth keeping:
+1. **A `head -N` in a survey is not a display convenience, it is a silent data-loss step.** It
+   truncated at 20 against a true population of 23, which is exactly the band where the result still
+   looks like a plausible complete answer. Never pipe a population-defining survey through `head`;
+   count first (`| wc -l`), then page if needed.
+2. **A second flawed command nearly caused a second wrong call in the same corrective pass.** A
+   `grep -c ... | paste -sd+ | bc` check reported `testimonial-slider` had 0 existing `allowedBlocks`
+   — it actually has a fixed `allowedBlocks: ['sgs/testimonial']` at `edit.js:133`. Reading the file
+   directly caught it. Had the count been trusted, that block would have been WIRED (adding a
+   conflicting generic preset) instead of correctly having the attribute removed.
+3. **What actually caught it:** running `/qc-council` on my OWN close-out doc, whose Stage-1
+   ground-truth load re-derived the roster from `git grep` against the pre-sweep commit rather than
+   re-reading the prose. Nothing in the ~50-gate build chain, the deploy verify, or the live check
+   could have caught this — every one of them validates what WAS touched, and none of them knows
+   what SHOULD have been in scope. **A completeness error is invisible to every correctness gate.**
 
 **Process note, not a new failure mode:** three of the five dispatched agents stopped mid-task after
 launching their own build in the background and not following up on it (no separate notification
@@ -46,13 +78,16 @@ it" instruction, and the last one needed the work finished directly rather than 
 attempt, after it appeared to have gone genuinely idle. All work was still correct once completed;
 this was a dispatch-mechanics friction, not a defect in any of the actual code changes.
 
-**Verification.** Full consolidated build after all 19 commits: green, `check-element-manifest-
+**Verification.** Full consolidated build after all 22 commits: green, `check-element-manifest-
 conformance.js` and `check-dead-controls.js` both clean (0 net-new). Deployed to sandybrown (83/83
 payload checksums). Live-verified trust-bar's overlay via computed style on the real page. `templateMode`
 being an editor-time InnerBlocks restriction (not a frontend paint), live-verified via the BUILT bundle
 instead — confirmed the 5 wired blocks' compiled `index.js` actually contains the new
 `TEMPLATE_MODE_ALLOWED`/`templateMode` code, and confirmed 5 sampled removed blocks' compiled bundles
 are genuinely clean of it (both directions checked, not just "the source diff looks right").
+
+⚠ **The 3 corrective-pass commits are built + gate-verified but were NOT in the deploy above** —
+they landed after it. Re-deploy before treating the canary as carrying the complete sweep.
 
 ## D650 — Four residual-list items cleared: 2 real fixes, 1 non-issue, 1 disputed reasoning [ROUTINE]
 
@@ -214,7 +249,9 @@ session actually touched, leaving the other session's in-progress edits complete
 other session committed and deployed its own work first; this session then deployed on top of the
 combined `main` once the tree was clean.
 
-**Deployed and live-verified (`079e75eb` → sandybrown).** A throwaway REST-created page (id 2483,
+**Deployed and live-verified (deployed tree state `079e75eb` → sandybrown; the `gridItemBorder` code
+itself is commit `b0182f1c` — `079e75eb` was merely the HEAD at deploy time, a docs commit, and
+citing it alone read as though it carried the work).** A throwaway REST-created page (id 2483,
 force-deleted after) set a grid container with `gridItemBorder`/`gridItemBorderGradient`/
 `gridItemBorderGradientHover` all set. The DOM query for the actual painted `::before` came back
 empty — the hand-typed nested block markup didn't render its children as real `sgs/container`
@@ -307,7 +344,12 @@ OUT of scope — each is a different mechanism, not a same-shape omission; (3) `
 attribute shape was checked — it turned out to be a raw CSS shorthand string (`"1px solid #fff"`),
 not a plain colour value, which the sibling-attribute gradient mechanism was never built for. PARKED
 rather than forced in; needs its own short design call on how a gradient attaches to a shorthand
-string, not a batch-dispatch item. Final live scope: **19 blocks, ~28 attributes**
+string, not a batch-dispatch item. Final live scope: **20 blocks, ~30 attributes**
+*(corrected 2026-08-17: this entry originally said "19 blocks", contradicting its own "4 parallel
+batches of ~5 blocks each" two paragraphs above. Verified by commit count —
+`git log --oneline --grep="feat(gradient): border-colour gradient"` returns 20 per-block commits
+plus D645's mechanism commit. Same undercount-a-roster shape as the templateMode incident in D651;
+count from the repo, never from the prose.)*
 (`social-icons` and `mega-panel.borderColour` were already done at D645 and excluded).
 
 **Orchestration: 4 parallel batches of ~5 blocks each, isolated worktrees, Sonnet.** Each batch

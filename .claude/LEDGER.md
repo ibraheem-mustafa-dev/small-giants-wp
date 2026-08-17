@@ -13,7 +13,7 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 gradient rollout (background/text/border/shape-divider/icon, everywhere it's genuinely used) is now
 finished across the framework, not just the 4 blocks the previous session managed.**
 
-**What happened:** four builders ran in parallel, split across 19 blocks (~28 attributes) after
+**What happened:** four builders ran in parallel, split across 20 blocks (~30 attributes) after
 re-checking the real database instead of trusting last session's rough list — it turned out bigger
 and more accurate than expected. All four batches came back clean, merged one at a time with a real
 build + gate check after each merge (not just a clean `git merge` exit code). One genuine bug
@@ -35,23 +35,34 @@ the real browser accessibility tree on sandybrown, deployed.
 
 **Also today:** worked through 6 smaller residual items sitting in the backlog. Two real bugs got
 fixed (`cta-section` AND `trust-bar` overlay colour/gradient controls were both painting nothing —
-same root cause, same fix, both live-verified). A 19-block sweep found `templateMode` was declared
-but doing nothing on 18 of 19 blocks that had it — 5 got properly wired (restricting which blocks can
-go inside them), 13 had the dead attribute removed outright (mostly blocks with no child-block area
-at all, so there was nothing to restrict). One review found a baseline file's reasoning was wrong
-even though its actual effect wasn't — flagged, not fixed, since it needs your sign-off. One
-"open item" turned out to already be finished six days ago.
+same root cause, same fix, both live-verified). A sweep found `templateMode` was declared but doing
+nothing on 22 of the 23 blocks that had it — 5 got properly wired (restricting which blocks can go
+inside them), 17 had the dead attribute removed outright (either no child-block area at all, or an
+existing more-specific restriction a generic preset would only fight). One review found a baseline
+file's reasoning was wrong even though its actual effect wasn't — flagged, not fixed, since it needs
+your sign-off. One "open item" turned out to already be finished six days ago.
+
+⚠ **Worth knowing — I got that sweep wrong the first time and caught it myself afterwards.** My
+original survey command ended in `| head -20`, which silently cut the list off at 20 when the real
+answer was 23. I then reported "19 blocks" to you, dispatched agents against that short list, shipped
+it, deployed it, and wrote it up as complete — while three blocks (`testimonial-slider`, `trust-bar`,
+`trustpilot-reviews`) still had the dead attribute. Fixed in a follow-up pass and redeployed. **No
+build gate, deploy check, or live test could have caught this** — they all verify that what you DID
+touch is correct, and none of them knows what you should have touched. Only fact-checking the
+close-out doc against the repo found it. Two smaller count errors in the same day's docs (D646 said
+19 blocks where it was 20) came from the same habit of trusting my own earlier prose over a re-query.
 
 ## Shipped today
 
 | What | Detail lives at |
 |---|---|
-| Border-colour gradient sweep — 19 blocks, ~28 attrs, merged/deployed/live-verified | `decisions.md` D646 |
+| Border-colour gradient sweep — 20 blocks, ~30 attrs, merged/deployed/live-verified | `decisions.md` D646 |
 | Dead-controls checker fix (product-card's 2 gradient attrs false-flagged) | `decisions.md` D646 |
 | Landmark-tag a11y fix — drop `main`, label `nav`/`aside`, 5 blocks, live-verified | `decisions.md` D647 |
 | `gridItemBorder` gradient + hover, 4 blocks — deployed, live-verified | `decisions.md` D648 |
 | `cta-section` overlay controls fixed (were painting nothing); testimonial/image-sequence image controls fixed | `decisions.md` D650 |
-| `trust-bar` overlay controls fixed (same bug as cta-section); `templateMode` sweep — 5 wired, 13 dead attrs removed, across 19 blocks | `decisions.md` D651 |
+| `trust-bar` overlay controls fixed (same bug as cta-section); `templateMode` sweep — 5 wired, 17 dead attrs removed, across all 23 declaring blocks | `decisions.md` D651 |
+| ⚠ Truncated-survey incident: the sweep above shipped incomplete (`head -20` on a 23-row population), caught by fact-checking the close-out doc | `decisions.md` D651 |
 
 ## Blockers
 
@@ -109,6 +120,24 @@ correct parsed width, resting gradient, and hover gradient all confirmed byte-co
 stylesheet. Commit `b0182f1c`.
 
 ## Methodology guardrails (do not skip — carried forward from D645, still true)
+
+- ⛔ **NEVER pipe a population-defining survey through `head -N`.** A `head` on the command that
+  DEFINES a sweep's scope is not a display convenience, it is a silent data-loss step, and it
+  truncates at exactly the band where the short answer still looks complete (cut 23 → 20 on
+  2026-08-17; the sweep shipped and deployed missing 3 blocks). Count first (`| wc -l`), page second.
+  This is the memory-indexed `a-truncated-search-manufactures-a-false-absence` lesson, reproduced.
+- ⛔ **A completeness error is invisible to every correctness gate.** The ~50-gate build chain, the
+  deploy payload-checksum verify, and live DOM checks all validate what WAS touched; not one of them
+  knows what SHOULD have been in scope. The only thing that caught the incomplete sweep was
+  re-deriving the roster from the repo while fact-checking the close-out doc. **Re-query the
+  population at close-out; never close a sweep against the same list you opened it with.**
+- **Count from the repo, never from your own earlier prose.** Two separate count errors on
+  2026-08-17 (D646's "19 blocks" where the commit log says 20; D651's "19" where the real population
+  was 23) both came from carrying a number forward instead of re-deriving it.
+- **A subagent's fact-check needs fact-checking too.** The doc fact-checker that found the two real
+  count errors also reported a third finding — "the `build/` directory doesn't exist, so the bundle
+  verification is unverifiable" — which was itself wrong: `build/` is gitignored, so it checked via
+  `git` and missed a directory that is plainly on disk. Right method, wrong source.
 
 - **A clean `git merge` exit code is not proof the merge is correct.** This session's real bug (the
   dead-controls checker's stale suffix list) surfaced only when the FULL build was run after the
