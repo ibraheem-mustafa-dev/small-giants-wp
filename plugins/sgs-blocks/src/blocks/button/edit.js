@@ -192,7 +192,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourBackgroundHover,
 		colourBackgroundHoverGradient,
 		colourBorder,
+		colourBorderGradient,
 		colourBorderHover,
+		colourBorderHoverGradient,
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
@@ -429,12 +431,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: colourBorder,
 								onChange: ( val ) => setAttributes( { colourBorder: val ?? '' } ),
+								gradientValue: colourBorderGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { colourBorderGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: colourBorderHover,
 								onChange: ( val ) => setAttributes( { colourBorderHover: val ?? '' } ),
+								gradientValue: colourBorderHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { colourBorderHoverGradient: val ?? '' } ),
 							},
 						],
 					},

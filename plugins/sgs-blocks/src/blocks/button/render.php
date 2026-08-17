@@ -263,6 +263,12 @@ $colour_bg_hover     = isset( $attributes['colourBackgroundHover'] ) ? $attribut
 $colour_bg_hover_gradient = isset( $attributes['colourBackgroundHoverGradient'] ) ? $attributes['colourBackgroundHoverGradient'] : '';
 $colour_border       = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
 $colour_border_hover = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
+// D636 border-colour gradient siblings — resolved here, emitted as a masked
+// ::before border (sgs_border_gradient_css) further down; border-color cannot
+// legally hold a gradient itself, so these do NOT feed the --sgs-btn-border*
+// custom properties above.
+$colour_border_gradient       = isset( $attributes['colourBorderGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderGradient'] ) : '';
+$colour_border_hover_gradient = isset( $attributes['colourBorderHoverGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderHoverGradient'] ) : '';
 
 // WP-native `color` support (skip-serialised — Spec 32 no-inline contract):
 // get_block_wrapper_attributes() no longer auto-inlines these, but
@@ -913,6 +919,18 @@ $merged_style  = trim( $btn_style_str );
 // regardless of where the custom properties are declared, so behaviour is identical.
 if ( '' !== $merged_style ) {
 	$scoped_css_parts[] = ".{$uid}.sgs-button{" . $merged_style . "}";
+}
+
+// --- Border gradient (D636 border builder) — masked ::before, replaces the
+// flat --sgs-btn-border* custom-property scheme above when set (border-color
+// can never legally hold a gradient value). ---
+if ( '' !== $colour_border_gradient ) {
+	$scoped_css_parts[] = sgs_border_gradient_css(
+		".{$uid}.sgs-button",
+		$colour_border_gradient,
+		'' !== $colour_border_hover_gradient ? $colour_border_hover_gradient : sgs_colour_value( $colour_border_hover ),
+		$has_border_width ? ( '' !== $border_width_top ? $border_width_top : '1px' ) : '1px'
+	);
 }
 
 $wrapper_attr = get_block_wrapper_attributes(
