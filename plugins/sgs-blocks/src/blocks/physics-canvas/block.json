@@ -258,15 +258,6 @@
 				"figure"
 			],
 			"default": "section"
-		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
 		}
 	},
 	"render": "file:./render.php",

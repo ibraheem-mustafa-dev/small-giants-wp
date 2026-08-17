@@ -50,6 +50,18 @@ const ALLOWED_BLOCKS = [
 	'sgs/decorative-image',
 ];
 
+/**
+ * ⛔ `templateMode` (free/grid-section/card-grid, the container-family
+ * allowed-children preset) was declared in block.json but never wired here —
+ * REMOVED from block.json rather than wired. This block's children are
+ * already fixed to the 4-item decorative-only roster above (D447), and both
+ * templateMode presets would ADD heading/text/button/info-box/card-grid —
+ * exactly the operable/must-read content D447 exists to exclude (a thrown
+ * body has no discrete single-pointer alternative under WCAG 2.5.7). There
+ * is no room for a variable content-type restriction alongside a fixed
+ * accessibility restriction; do not re-add templateMode here.
+ */
+
 export default function Edit( { attributes, setAttributes, name } ) {
 	const { physicsGravity, physicsBounce, physicsEdgeResistance, backgroundColour } = attributes;
 
