@@ -64,8 +64,17 @@ const FOOTER_PROMOTED_SLUGS = [
 	...new Set( FOOTER_PROMOTED.map( ( item ) => item.slug ) ),
 ];
 
-// No allowedBlocks restriction: site-footer-row is a container-equivalent (like
-// sgs/container in free mode) — it accepts ANY block, not a curated palette.
+// No allowedBlocks restriction BY DEFAULT: site-footer-row is a
+// container-equivalent (like sgs/container in free mode) — it accepts ANY
+// block, not a curated palette. `templateMode` (wired below, mirroring
+// sgs/container's edit.js exactly) lets an operator OPT INTO a restricted
+// roster the same way sgs/container does; "free" (the default) keeps this
+// unrestricted behaviour.
+const TEMPLATE_MODE_OPTIONS = [
+	{ label: __( 'Free (no restrictions)', 'sgs-blocks' ), value: 'free' },
+	{ label: __( 'Grid section', 'sgs-blocks' ), value: 'grid-section' },
+	{ label: __( 'Card grid', 'sgs-blocks' ), value: 'card-grid' },
+];
 
 // Distribution maps to the shared wrapper's justifyContent attr (flex rows only).
 const DISTRIBUTION_OPTIONS = [
@@ -183,6 +192,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridTemplateRows,
 		backgroundColour,
 		textColour,
+		templateMode = 'free',
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -292,9 +302,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		style: { ...previewStyle, ...paddingPreview },
 	} );
 
+	// Template mode — allowedBlocks per templateMode, mirroring
+	// sgs/container's edit.js exactly. Only restrict when the operator
+	// explicitly opts into a structured mode; "free" (default) imposes no
+	// restrictions, preserving this block's existing container-equivalent
+	// behaviour.
+	const TEMPLATE_MODE_ALLOWED = {
+		'grid-section': [
+			'sgs/container',
+			'sgs/heading',
+			'sgs/text',
+			'sgs/button',
+			'sgs/business-info',
+			'sgs/social-icons',
+			'sgs/nav-menu',
+		],
+		'card-grid': [
+			'sgs/info-box',
+			'sgs/card-grid',
+			'sgs/container',
+		],
+	};
+	const allowedBlocks = templateMode !== 'free'
+		? TEMPLATE_MODE_ALLOWED[ templateMode ] ?? undefined
+		: undefined;
+
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		templateLock: false,
 		orientation: 'horizontal',
+		allowedBlocks,
 		renderAppender: hasInnerBlocks
 			? undefined
 			: () => (
@@ -447,6 +483,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
+
+				{ /* Template mode — allowed children restriction, mirroring
+				     sgs/container's own "Template mode" panel. */ }
+				<PanelBody
+					title={ __( 'Template mode', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Allowed children', 'sgs-blocks' ) }
+						value={ templateMode }
+						options={ TEMPLATE_MODE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { templateMode: val } ) }
+						help={ __(
+							'Grid section and Card grid restrict which block types can be inserted directly inside this row. Free (default) imposes no restrictions.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
 				<PanelBody
 					title={ __( 'Alignment & grid', 'sgs-blocks' ) }
 					initialOpen={ false }
