@@ -153,6 +153,9 @@ $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right 
 
 $border_style  = $attributes['borderStyle'] ?? 'none';
 $border_colour = $attributes['borderColour'] ?? '';
+// D636 border-colour gradient rollout — non-empty wins over $border_colour
+// above, painted via the shared masked ::before ring mechanism.
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // Box shadow — preset slug or empty.
 $box_shadow       = $attributes['boxShadow'] ?? '';
@@ -382,6 +385,16 @@ $css_base_decls = $base_decls ? $scope . '{' . implode( ';', $base_decls ) . ';}
 // D636 Task 1b — old-browser fallback for a gradient textColour; a no-op
 // (returns '') when $text_colour was a flat colour.
 $css_base_decls .= sgs_text_colour_gradient_fallback_rule( $scope, $text_colour_effective );
+
+// D636 border-colour gradient rollout — masked ::before ring. Width mirrors
+// the resolved border width (top value when sides are equal, else the
+// per-side top as a reasonable single-width approximation for the mask
+// inset — the mask technique assumes one uniform ring width); falls back to
+// the shared helper's own 2px default when no border width is set at all.
+if ( '' !== $border_colour_gradient ) {
+	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '2px';
+	$css_base_decls       .= sgs_border_gradient_css( $scope, $border_colour_gradient, null, $border_gradient_width );
+}
 
 // Base padding/margin/border-radius — Box-object interface contract (b): the
 // block declares __experimentalSkipSerialization on spacing + border.radius

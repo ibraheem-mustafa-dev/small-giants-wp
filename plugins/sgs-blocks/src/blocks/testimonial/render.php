@@ -158,6 +158,11 @@ $rating_size           = isset( $attributes['ratingSize'] ) && (int) $attributes
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
+// D636 border-colour gradient rollout — non-empty wins over the flat
+// $hover_border_colour above, painted via the shared masked ::before ring
+// mechanism, scoped to :hover/:focus-within (this block has no resting-state
+// border colour attribute of its own to override).
+$hover_border_gradient   = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect            = $attributes['effectHover'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
@@ -476,6 +481,18 @@ if ( $wrapper_vars ) {
 }
 if ( $hover_decls ) {
 	$scoped_css[] = $root_sel . ':hover{' . implode( ';', $hover_decls ) . '}';
+}
+
+// D636 border-colour gradient rollout — masked ::before ring, scoped to ONLY
+// the hover/focus-within state (mirrors mega-panel's accentBorderColourGradient
+// — this block likewise has no resting-state border colour of its own).
+if ( '' !== $hover_border_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css(
+		$root_sel . ':hover,' . $root_sel . ':focus-within',
+		$hover_border_gradient,
+		null,
+		'1px'
+	);
 }
 
 // ── Rating node (fully gated) ───────────────────────────────────────────────

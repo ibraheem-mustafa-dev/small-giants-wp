@@ -53,10 +53,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabActiveTextColour,
 		tabActiveBgColour,
 		tabIndicatorColour,
+		tabIndicatorColourGradient,
 		tabActiveIndicatorColour,
+		tabActiveIndicatorColourGradient,
 		tabHoverBgColour,
 		panelBgColour,
 		panelBorderColour,
+		panelBorderColourGradient,
 		transitionDuration,
 	} = attributes;
 
@@ -222,6 +225,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabIndicatorColour,
 								onChange: ( val ) => setAttributes( { tabIndicatorColour: val ?? '' } ),
 								linked: true,
+								gradientValue: tabIndicatorColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tabIndicatorColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'active',
@@ -229,6 +235,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabActiveIndicatorColour,
 								onChange: ( val ) => setAttributes( { tabActiveIndicatorColour: val ?? '' } ),
 								linked: true,
+								gradientValue: tabActiveIndicatorColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tabActiveIndicatorColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -255,6 +264,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: panelBorderColour,
 								onChange: ( val ) => setAttributes( { panelBorderColour: val ?? '' } ),
 								linked: true,
+								gradientValue: panelBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { panelBorderColourGradient: val ?? '' } ),
 							},
 						],
 					},

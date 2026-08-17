@@ -83,6 +83,7 @@
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
 						"css:border-style": "borderStyle",
 						"css:box-shadow": "native:shadow"
 					},
@@ -221,6 +222,11 @@
 		"borderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour at render time."
 		},
 		"borderStyle": {
 			"type": "string",

@@ -104,6 +104,17 @@ foreach ( $colour_props as $attr => $prop ) {
 
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
+// D636 border-colour gradient rollout — resting/active tab indicator + panel
+// border. tabIndicatorColour/tabActiveIndicatorColour resolve to css:border-
+// color in the DB (the box-shadow underline is this block's visual technique
+// for border-colour), so they take the same masked ::before ring mechanism
+// as every other border-colour attribute. Non-empty gradient wins over the
+// flat colour; each state uses its own selector (not `:hover`) so the ring
+// only appears on the tab actually in that state.
+$tab_indicator_gradient        = sgs_css_gradient_value( $attributes['tabIndicatorColourGradient'] ?? '' );
+$tab_active_indicator_gradient = sgs_css_gradient_value( $attributes['tabActiveIndicatorColourGradient'] ?? '' );
+$panel_border_gradient         = sgs_css_gradient_value( $attributes['panelBorderColourGradient'] ?? '' );
+
 // ─── Scoped uid + root selector (NO-INLINE contract §A) ──────────────────────
 // Own uid, independent of the wrapper's internal uid — mirrors sgs/hero. Added
 // as an extra class so $root_sel resolves against the rendered wrapper element.
@@ -195,6 +206,34 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$tabs_responsive_css .= $tabs_scoped_styles['css'];
 		}
 	}
+}
+
+// D636 border-colour gradient rollout — masked ::before ring per state.
+// Resting/active are distinct static selectors (aria-selected), never a CSS
+// `:hover`, so hover_paint stays null on every call here.
+if ( '' !== $tab_indicator_gradient ) {
+	$tabs_responsive_css .= sgs_border_gradient_css(
+		"{$root_sel} .sgs-tabs__tab:not([aria-selected='true'])",
+		$tab_indicator_gradient,
+		null,
+		'2px'
+	);
+}
+if ( '' !== $tab_active_indicator_gradient ) {
+	$tabs_responsive_css .= sgs_border_gradient_css(
+		"{$root_sel} .sgs-tabs__tab[aria-selected='true']",
+		$tab_active_indicator_gradient,
+		null,
+		'2px'
+	);
+}
+if ( '' !== $panel_border_gradient ) {
+	$tabs_responsive_css .= sgs_border_gradient_css(
+		"{$root_sel} .sgs-tabs__panel",
+		$panel_border_gradient,
+		null,
+		'1px'
+	);
 }
 
 // $css_vars (CSS custom-property VALUES only, e.g. --sgs-tab-text:…) stay

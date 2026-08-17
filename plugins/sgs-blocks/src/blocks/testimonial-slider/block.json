@@ -202,6 +202,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover-state slider border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColourHover on hover."
+		},
 		"effectHover": {
 			"type": "string",
 			"default": "none"

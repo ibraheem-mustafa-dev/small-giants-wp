@@ -202,6 +202,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
+		borderColourHoverGradient,
 		transitionDuration,
 		transitionEasing,
 		scaleHover,
@@ -408,6 +409,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { borderColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

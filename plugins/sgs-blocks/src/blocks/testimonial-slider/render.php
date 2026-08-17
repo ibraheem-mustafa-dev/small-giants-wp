@@ -69,6 +69,10 @@ $slides_visible = $attributes['slidesVisible'] ?? 1;
 $hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
+// D636 border-colour gradient rollout — non-empty wins over the flat
+// $hover_border_colour above, painted via the shared masked ::before ring
+// mechanism, scoped to :hover/:focus-within.
+$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
@@ -279,6 +283,18 @@ if ( $hover_border_colour ) {
 }
 if ( $slider_hover_decls ) {
 	$slider_scoped_css .= $root_sel . ':hover{' . implode( ';', $slider_hover_decls ) . '}';
+}
+
+// D636 border-colour gradient rollout — masked ::before ring, scoped to
+// :hover/:focus-within only (mirrors sgs/testimonial's own borderColourHover
+// gradient — same hover-only semantics, no resting-state border to override).
+if ( '' !== $hover_border_gradient ) {
+	$slider_scoped_css .= sgs_border_gradient_css(
+		$root_sel . ':hover,' . $root_sel . ':focus-within',
+		$hover_border_gradient,
+		null,
+		'1px'
+	);
 }
 
 // ── Own extra attrs — carousel data-* + ARIA region attrs ─────────────────
