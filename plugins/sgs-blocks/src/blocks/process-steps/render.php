@@ -81,6 +81,7 @@ $description_colour      = $attributes['descriptionColour'] ?? '';
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
+$hover_border_gradient   = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect            = $attributes['effectHover'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '';
 $transition_easing       = $attributes['transitionEasing'] ?? '';
@@ -98,6 +99,7 @@ $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 $border_colour         = $attributes['borderColour'] ?? '';
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 $base_padding_obj = array();
@@ -243,6 +245,27 @@ if ( 'none' !== $border_style ) {
 }
 if ( $root_border_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_border_decls ) . ';}';
+}
+
+// --- Border gradients (D636 border builder) — masked ::before ring, gated
+// the SAME way as the flat-colour declarations above (border geometry only
+// exists once borderStyle !== 'none'; style.css's :hover rule paints an
+// invisible 0-width border otherwise regardless of colour). ---
+if ( 'none' !== $border_style ) {
+	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '1px';
+	if ( '' !== $border_colour_gradient ) {
+		$scoped_css[] = sgs_border_gradient_css(
+			$root_sel,
+			$border_colour_gradient,
+			'' !== $hover_border_gradient ? $hover_border_gradient : ( $hover_border_colour ? sgs_colour_value( $hover_border_colour ) : null ),
+			$border_gradient_width
+		);
+	} elseif ( '' !== $hover_border_gradient ) {
+		// Resting border stays flat (or unset); only the hover state gains a
+		// gradient ring — mirrors mega-panel's accentBorderColourGradient
+		// hover-only pattern.
+		$scoped_css[] = sgs_border_gradient_css( "{$root_sel}:hover", $hover_border_gradient, null, $border_gradient_width );
+	}
 }
 
 // --- Base spacing (padding/margin), border-radius, WP colour + typography +
