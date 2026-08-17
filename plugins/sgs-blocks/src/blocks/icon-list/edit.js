@@ -173,6 +173,7 @@ export default function Edit({ attributes, setAttributes }) {
     borderRadiusMobile,
     borderWidth,
     borderColour,
+    borderColourGradient,
     borderStyle,
     heading,
     headingLevel,
@@ -381,6 +382,9 @@ export default function Edit({ attributes, setAttributes }) {
                 value: borderColour,
                 onChange: (val) => setAttributes({ borderColour: val ?? "" }),
                 linked: true,
+                gradientValue: borderColourGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ borderColourGradient: val ?? "" }),
               },
             ],
           },

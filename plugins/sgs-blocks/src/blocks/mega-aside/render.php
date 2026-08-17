@@ -51,6 +51,8 @@ $aside_format    = isset( $attributes['asideFormat'] ) && in_array( $attributes[
 
 $aside_bg_raw            = isset( $attributes['asideBg'] ) ? (string) $attributes['asideBg'] : '';
 $aside_border_colour_raw = isset( $attributes['asideBorderColour'] ) ? (string) $attributes['asideBorderColour'] : '';
+// D636 border-colour gradient — sibling attribute, wins over $aside_border_colour_raw when set.
+$aside_border_colour_gradient = sgs_css_gradient_value( isset( $attributes['asideBorderColourGradient'] ) ? $attributes['asideBorderColourGradient'] : '' );
 $aside_radius            = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideRadius'] ?? '' ) : '';
 // Box-object interface contract §1/§2: asideBorderWidth is an SGS custom
 // OBJECT attr { top, right, bottom, left } — no tiers (mirrors sgs/button's
@@ -104,6 +106,18 @@ if ( $aside_border_has_width && null !== $aside_border_width_shorthand ) {
 		? sgs_colour_value( $aside_border_colour_raw )
 		: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
 	$css                      .= $root_sel . '{border-width:' . $aside_border_width_shorthand . ';border-style:solid;border-color:' . $aside_border_colour_value . ';}';
+
+	// D636 border builder — masked ::before, wins over the flat border-color
+	// decl above (emitted after it so the cascade favours the mask).
+	if ( '' !== $aside_border_colour_gradient ) {
+		$aside_border_gradient_width = sgs_css_length_sanitise( $aside_border_width_obj['top'] ?? '' );
+		$css                        .= sgs_border_gradient_css(
+			$root_sel,
+			$aside_border_colour_gradient,
+			null,
+			'' !== $aside_border_gradient_width ? $aside_border_gradient_width : '1px'
+		);
+	}
 }
 
 if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj ) ) {

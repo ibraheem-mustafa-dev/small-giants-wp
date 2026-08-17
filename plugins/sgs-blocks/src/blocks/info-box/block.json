@@ -92,7 +92,8 @@
 								"css:background-color": "backgroundColourHover",
 								"css:color": "textColourHover",
 								"css:border-color": "borderColourHover",
-								"css:box-shadow": "shadowHover"
+								"css:box-shadow": "shadowHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
 							}
 						}
 					}
@@ -174,6 +175,11 @@
 		"borderColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover border instead of a flat colour. Non-empty wins over borderColourHover at render time (D636)."
 		},
 		"transitionDuration": {
 			"type": "string",

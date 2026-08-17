@@ -140,6 +140,8 @@ $text_decoration      = isset( $attributes['textDecoration'] ) ? sanitize_text_f
 $background_colour          = $attributes['backgroundColour'] ?? '';
 $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 $border_colour               = $attributes['borderColour'] ?? '';
+// D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
+$border_colour_gradient      = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 $box_shadow        = $attributes['boxShadow'] ?? '';
 $box_shadow_hover  = $attributes['boxShadowHover'] ?? '';
 
@@ -504,6 +506,12 @@ if ( null !== $heading_preset_source && '' !== $heading_preset_source
 // --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
+}
+
+// --- Border gradient (D636 border builder) — masked ::before, wins over the flat
+// border-color decl above (emitted after it so the cascade favours the mask). ---
+if ( ! $inherit_style && '' !== $border_colour_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $has_border_width ? $bwt : '1px' );
 }
 
 // --- Base spacing (padding/margin), border-radius, and WP colour support —

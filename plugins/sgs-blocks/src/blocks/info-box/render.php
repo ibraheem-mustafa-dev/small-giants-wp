@@ -88,6 +88,8 @@ $sgs_icon_position       = isset( $attributes['iconPosition'] ) ? $attributes['i
 $sgs_hover_bg            = isset( $attributes['backgroundColourHover'] ) ? $attributes['backgroundColourHover'] : '';
 $sgs_hover_text          = isset( $attributes['textColourHover'] ) ? $attributes['textColourHover'] : '';
 $sgs_hover_border        = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
+// D636 border-colour gradient — sibling attribute, wins over $sgs_hover_border when set.
+$sgs_hover_border_gradient = sgs_css_gradient_value( isset( $attributes['borderColourHoverGradient'] ) ? $attributes['borderColourHoverGradient'] : '' );
 $sgs_hover_scale         = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
 $sgs_hover_shadow        = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
 $sgs_hover_shadow_colour = isset( $attributes['shadowHoverColour'] ) ? $attributes['shadowHoverColour'] : '';
@@ -397,6 +399,13 @@ if ( $sgs_wrapper_styles ) {
 }
 if ( $sgs_hover_decls ) {
 	$scoped_css[] = $root_sel . ':hover{' . implode( ';', $sgs_hover_decls ) . '}';
+}
+
+// --- Border gradient, hover state (D636 border builder) — masked ::before,
+// scoped to the ":hover" selector itself so it wins over the flat border-color
+// decl above (emitted after it, same cascade-order trick as the flat rule). ---
+if ( '' !== $sgs_hover_border_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css( "{$root_sel}:hover", $sgs_hover_border_gradient, null, '1px' );
 }
 
 $root_attr_args = array(

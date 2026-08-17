@@ -208,6 +208,8 @@ $min_height_mobile   = $sgs_css_length( $min_height_obj['mobile'] ?? '360px' );
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
+// D636 border-colour gradient — sibling attribute, wins over $hover_border_colour when set.
+$hover_border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -253,6 +255,8 @@ $image_border_radius_mobile_obj = is_array( $attributes['imageBorderRadiusMobile
 $image_border_style  = $sgs_css_keyword( $attributes['imageBorderStyle'] ?? 'none' );
 $image_border_width_obj = is_array( $attributes['imageBorderWidth'] ?? null ) ? $attributes['imageBorderWidth'] : array();
 $image_border_colour = $attributes['imageBorderColour'] ?? '';
+// D636 border-colour gradient — sibling attribute, wins over $image_border_colour when set.
+$image_border_colour_gradient = sgs_css_gradient_value( $attributes['imageBorderColourGradient'] ?? '' );
 
 // imagePadding — inner padding on the <img> element itself. Box-object
 // family: base + tablet + mobile, each { top, right, bottom, left }.
@@ -363,6 +367,15 @@ $root_sel = '.' . $uid . '.wp-block-sgs-hero';
 // Pattern A throughout: base rule first, then tablet(≤1023), then mobile(≤767),
 // all on the SAME selector — cascade order does the overriding, no !important.
 $responsive_css = '';
+
+// --- Border gradient, hover state (D636 border builder) — masked ::before,
+// scoped to the ":hover" selector itself so it paints ONLY on hover (the
+// wrapper has no resting border-colour attribute of its own; the flat-colour
+// path above already reads as inert at rest — border-style is never set — so
+// the gradient mask mirrors that: it only exists inside the :hover rule). ---
+if ( '' !== $hover_border_colour_gradient ) {
+	$responsive_css .= sgs_border_gradient_css( "{$root_sel}:hover", $hover_border_colour_gradient, null, '1px' );
+}
 
 // Split variant: replace the default flex layout with CSS Grid. No-inline
 // contract (§A): display:grid is a real property declaration, so it is
@@ -572,6 +585,17 @@ if ( $is_split ) {
 			$img_border_decls[] = 'border-color:' . sgs_colour_value( $image_border_colour );
 		}
 		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{' . implode( ';', $img_border_decls ) . '}';
+	}
+
+	// D636 border builder — masked ::before, wins over the flat border-color
+	// decl above (emitted after it so the cascade favours the mask).
+	if ( '' !== $image_border_colour_gradient ) {
+		$responsive_css .= sgs_border_gradient_css(
+			'.' . $uid . ' .sgs-hero__split-image',
+			$image_border_colour_gradient,
+			null,
+			$img_border_has_width ? $img_border_width_val : '1px'
+		);
 	}
 
 	// ── object-fit / object-position — moved from inline style="" (contract §A).

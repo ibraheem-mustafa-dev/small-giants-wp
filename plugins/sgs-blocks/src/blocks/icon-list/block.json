@@ -77,7 +77,8 @@
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
-						"css:gap": "gap"
+						"css:gap": "gap",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "The root <ul> (render.php step 6). `gap` is the per-item spacing preset slug emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist)."
 				},
@@ -231,6 +232,11 @@
 		"borderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border instead of a flat colour. Non-empty wins over borderColour at render time (D636)."
 		},
 		"borderStyle": {
 			"type": "string",

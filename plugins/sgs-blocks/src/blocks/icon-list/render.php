@@ -301,6 +301,8 @@ $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 $border_colour         = $attributes['borderColour'] ?? '';
+// D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // WP `color`/`typography` support values (skip-serialised → NOT auto-inlined).
 $style_color_text  = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
@@ -467,6 +469,13 @@ if ( 'none' !== $border_style ) {
 		$border_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 	}
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_decls ) . ';}';
+}
+
+// --- Border gradient (D636 border builder) — masked ::before, wins over the
+// flat border-color decl above (emitted after it so the cascade favours the
+// mask). ---
+if ( '' !== $border_colour_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $has_border_width ? $bwt : '1px' );
 }
 
 // --- Responsive padding/margin/border-radius tiers — box objects, hand-built
