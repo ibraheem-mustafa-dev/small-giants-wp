@@ -82,6 +82,7 @@ close-out doc against the repo found it. Two smaller count errors in the same da
 | R3 — 3 blocks' `headingLevel` reclassified `role='tag-identity'`, unblocking the D649 converter fix | `decisions.md` D653 |
 | R2 — E12 gate scoped via attrMap, now covers 11/11 heading-level blocks (was 1/11) — deployed, live-verified | `decisions.md` D654 |
 | Counter classifier fix — `numberColour` + a second bonus catch (`testimonial.quoteColour`) now survive a reseed | `decisions.md` D654 |
+| **Track 1b / Spec 35 / Spec 32 completion audit** (`ee4bdcaf`) — 79 claims predicate-checked, 3 stale cross-doc claims corrected, 1 plan archived | `reports/2026-08-17-track1b-spec35-32-completion-audit.md` |
 
 ## Blockers
 
@@ -301,3 +302,26 @@ closed — confirms nothing here is still blocked), then the plan at
 ## Open — carried, not this session's to close
 
 - **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
+
+### From the 2026-08-17 completion audit (`reports/2026-08-17-track1b-spec35-32-completion-audit.md`)
+
+⚠ **Six gates look like enforcement and are not** — this is the "stop diverging" purpose Track 1b was
+written to serve, and it is not met. **Its own scoped build, not a doc edit.** Five prebuild entries
+are shell-neutralised (`(script --check || echo [ADVISORY])` — `||` eats the exit 1); one fails only
+under `--strict` that prebuild never passes; one exits 0 always while wired with `--check`; three of
+the four commit-floor gates no-op silently without the local DB; Spec 32's live gate PASSES when the
+canary is unreachable. Rule modes in `rules.json` are correct and DO gate — but `openBacklog` is stale
+on 3 rules (21: 129→65, 24: 1→0, 26: 8→2) and rule 24 is `gate` with no `promotedOn`.
+
+**Bean's calls, not started:** (a) the control-type contract is `AUTHORITATIVE` but lives in `plans/` —
+fold into Spec 35 or promote to `specs/`; (b) Spec 32 §6.1 says "ROLLOUT ONGOING", root `CLAUDE.md`
+says "COMPLETE (D346)" — and D405 already records D346's win as partly vacuous; (c) **"Track 1b" names
+TWO different tracks** (this inspector work AND the gradient rollout) — a session has already had to
+stop and disambiguate; needs a rename.
+
+**Also open:** D543's owed `LinkControl` sweep (never done, grown 8→11 lines in Spec 35; `dev-setup.md`
+still missing `SgsLinkControl`); 4 parking entries; `~/.claude/plans/` holds **68** files of which 11
+are uncited stale Track 1b docs — a population the project-only sweep misses.
+
+⚠ **Search hygiene:** `.claude/worktrees/` holds 17 stale doc copies. `grep -r` returns **54** hits
+where `git grep` returns **3**. Use `git grep`; the worktrees are worth cleaning up.
