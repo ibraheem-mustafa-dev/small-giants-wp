@@ -157,6 +157,20 @@ The correct design already existed pre-D283 (Spec 11 Decision 24, 2026-05-22): a
 
 - **Performance:** static preset CSS lives in the block's enqueued `style.css` (shared, cached) — not per-instance `<style>`. Per-instance override vars add only a tiny scoped `.{uid}.{block}{ --var:value }` rule (registered into the shared collector, NOT inline — FR-32-4 as amended 2026-07-18) when actually overridden. **Per-instance scoped CSS (responsive tiers, `:hover`, box/typography rules, AND per-instance override `--var` values) is CONSOLIDATED, not scattered** — every block registers into the shared collector (FR-32-11 / §6.2) and the frontend emits ONE cached external stylesheet (default) or one inline footer `<style>` (fallback), never ~100 per-block `<style>` tags in the body. This removes the ~33KB / ~100-tag body bloat measured on page 8 (2026-07-12) and makes the per-instance CSS browser-cacheable.
 - **Editor parity:** because preset CSS is in `style.css` (loaded in the editor via `editorStyle`/`style`), the editor and frontend match with no render.php-emitted stylesheet (which the editor would not show). Override vars set on the element apply in both.
+- **Security (added 2026-08-18 — the ONLY genuine fold surfaced by the S1 doc-disposition council).**
+  This contract's whole mechanism is *assembling a `<style>` blob from block attribute values*, so
+  the sanitisation of those values is Spec 32's concern, not Spec 31's (which governs extraction, not
+  render-time output). Two binding rules, previously documented ONLY in
+  `.claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md` §D and
+  `.claude/plans/block-migration-DONE-checklist.md` condition 8 — i.e. in no spec at all:
+  1. **Free-text KEYWORD attrs** that are concatenated into a CSS declaration (`borderStyle`,
+     `textTransform`, and any future enum-ish string attr) MUST be filtered to the CSS keyword
+     alphabet before emission: `preg_replace( '/[^a-zA-Z-]/', '', $value )`. An unfiltered value
+     closes the declaration and injects arbitrary CSS.
+  2. **The assembled `<style>` blob** MUST pass `wp_strip_all_tags()` before echoing, so no attribute
+     value can close the `<style>` element and open a `<script>`.
+  *Done when:* every block emitting a scoped rule from a free-text attr applies (1), and every
+  `<style>` emit site applies (2). ⚠ No gate enforces this yet — it is a code-review rule today.
 - **Accessibility:** every hover rule MUST have a keyboard-reachable counterpart. **Which pseudo-class is not a free choice — it follows the element (amended 2026-08-18, Bean-ruled):**
   - the hover target is itself focusable (a link, button, or `tabindex` element) → **`:focus-visible`**;
   - the hover target is a CONTAINER whose focusable content sits inside it (a card, a list item, a section) → **`:focus-within`**.
@@ -273,6 +287,14 @@ A merged box family is ONE attribute of `"type": "object"` holding named keys �
 | `labelMarginBottom` | option-picker | Single side |
 | `quoteMarginBottom` | testimonial | Single side |
 | `shapeDivider{Top,Bottom}` + `…Colour/Flip/Height/Invert` | **6** — container, cta-section, hero, **site-footer**, **site-header**, trust-bar (re-derived 2026-08-18; the earlier 4-block list omitted site-footer/site-header, which would let a future box-family migration treat their divider attrs as unclassified) | Not a box property — two independent decorative SVG slots each with its own sub-settings; `{top,right,bottom,left}` is semantically wrong (no left/right divider). Keep the named-slot structure. |
+
+> **The `box_family` categorisation guard is Spec 31's, not this spec's — cross-referenced, not
+> duplicated (2026-08-18).** The DB column, its declarative seeding via `block.json`
+> `supports.sgs.boxFamilies`, and the plant-tested AST gate (`check-box-family-guard.py`) are
+> specified in **Spec 31 §3.A step 3b, §4 and FR-31-22.1/.2**. ⚠ Do NOT follow
+> `.claude/plans/2026-07-09-box-object-interface-contract.md` §3 on this: it still describes a
+> `block_attributes.box_side` column that **does not exist** (Spec 31 §4 records it corrected away
+> 2026-07-14) and an `ATTR_CLASSIFICATION_OVERRIDES` seeding channel replaced at D300.
 
 Note: `sgs/button`/`sgs/heading`/`sgs/quote`/`sgs/text` route border via **CUSTOM attrs** (`supports.__experimentalBorder` is NULL on button) — a different routing path from container's WP-native border support. The categorisation guard is keyed on the DB `box_family` value, never the routing path, so both classes merge correctly under one mechanism (Spec 31 §4/§3.A step 3b).
 

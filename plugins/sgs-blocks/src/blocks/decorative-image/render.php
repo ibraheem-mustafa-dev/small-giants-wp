@@ -6,7 +6,7 @@
  * z-index are emitted into the block's OWN scoped `<style>` tag — NOTHING is
  * emitted as an inline `style="property:…"` declaration on the rendered
  * element (no-inline styling contract, Spec 32 /
- * `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`).
+ * `.claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md`).
  *
  * Scoping: this block declares `supports.anchor` — the scope token is
  * therefore a CLASS (`.sgs-di-XXXXXXXX`), never an id, so it can never

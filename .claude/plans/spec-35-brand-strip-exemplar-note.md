@@ -32,7 +32,9 @@ re-derive the pattern from the spec prose — copy these choices verbatim into `
   `core/editor` `getDeviceType()` so the switcher moves the REAL canvas, not a private toggle.
 - **`ResponsiveBoxControl`** / **`ResponsiveBorderRadiusControl`** — base/tablet/mobile box
   values in one control, feeding the locked 768/1024 device tiers.
-- **`StateToggleControl`** — ONE `ToggleGroupControl` (Normal/Hover) gates a whole colour
+- **`⛔ **STALE — corrected 2026-08-18. `StateToggleControl` is DEAD CODE: 0 imports, 0 JSX mounts (Spec 35 line ~736). The `brand-strip/edit.js:316` citation below is a COMMENT recording where it USED to live — the block was refactored at D609/D618 to `SgsColourPanel` + `DesignTokenPicker`'s `states` prop, which is the current canonical hover-state pattern. Do NOT copy the guidance below into the `sgs/media` rebuild; follow Spec 35's `states`-prop verdict instead.**
+
+StateToggleControl`** — ONE `ToggleGroupControl` (Normal/Hover) gates a whole colour
   block, with a persistent swatch legend so a hover colour is never invisible while editing
   Normal. This is the canonical hover-state pattern — do not build a second "Hover" panel.
 - **`TypographyControls`** (prefix `"name"`) for the caption — never hand-roll a font-size

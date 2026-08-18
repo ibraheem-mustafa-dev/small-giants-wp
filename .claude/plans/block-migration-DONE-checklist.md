@@ -4,7 +4,7 @@ title: Block no-inline migration — DONE checklist (end conditions only)
 status: ACTIVE
 created: 2026-07-09
 governs: the universal no-inline styling rollout
-detail: .claude/plans/2026-07-09-per-block-no-inline-migration-contract.md (the HOW — this doc is the WHAT-DONE-LOOKS-LIKE)
+detail: .claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md (the HOW — this doc is the WHAT-DONE-LOOKS-LIKE)
 ---
 
 # Block migration — DONE checklist
@@ -68,5 +68,5 @@ re-derive them.
 **Which pattern (D294):** single-element + content-KIND-box+width-only → block-private (quote/heading/text/button); section/layout composites → keep the (scoped) wrapper (hero/container).
 
 ## Reference impls / detail
-- HOW-TO + rationale: `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`.
+- HOW-TO + rationale: `.claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md`.
 - Mechanism spec: Spec 31 §3.A/§4/§13.4 (FR-31-22), Spec 32 §6.1.

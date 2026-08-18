@@ -35,7 +35,14 @@ A merged box family is ONE attribute of `"type": "object"` holding named keys:
 - **container:** root padding (WP spacing base + `paddingTablet`/`paddingMobile`), root margin (WP spacing base + `marginTablet`/`marginMobile`), `contentBandPadding` + `contentBandPaddingTablet`/`Mobile`.
 - **button:** root padding + margin (as above), `borderWidth` (object), root border-radius (WP `style.border.radius` base + `borderRadiusTablet`/`Mobile`).
 
-## 3. DB categorisation (the collision guard) — `block_attributes.box_family` + `box_side`
+## 3. DB categorisation (the collision guard) — `block_attributes.box_family`
+
+> ⛔ **CORRECTED 2026-08-18. This section named a `box_side` column that DOES NOT EXIST.** Spec 31 §4
+> records it corrected away on 2026-07-14 (verified against the live schema: `block_attributes` has
+> `box_family` only; per-side identity is carried by attr-name convention). The seeding channel below
+> is also superseded — `ATTR_CLASSIFICATION_OVERRIDES` was replaced at **D300** by declarative
+> `block.json` `supports.sgs.boxFamilies`, and the 137 override rows were removed.
+> **Spec 31 §3.A step 3b / §4 / FR-31-22.1/.2 is the authority.** Read this section as history.
 Seeded via `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py` (adds the columns on the fly, reseed-durable).
 - Every OBJECT box attr gets `box_family` = the family name (`padding`/`margin`/`borderWidth`/`borderRadius`/`contentBandPadding`/…). `box_side` = NULL on the object attr itself (the object holds all sides).
 - **Rule for the merge/migration:** an attr is a merge/migration TARGET only if it (or the flat attr it replaces) carries a `box_family`. The 10 keep-scalar families get NO `box_family` → excluded. The migration MUST query `box_family`, never a name regex (enforced by the AST gate — §6).
@@ -51,11 +58,19 @@ For a box family at a tier, the converter accumulates the 4 side-Decls (or 4 cor
 - **render.php / shared helper:** read the object attr (`$attrs['paddingTablet']['top'] ?? ''`), emit a scoped `.uid{}` / `@media` rule (base already handled by the Phase-0 wrapper path for WP spacing; SGS object tiers via `helpers-responsive.php` reading the object). NEVER emit inline. WP-native base (spacing/border-radius) serialised scoped via `wp_style_engine_get_styles` + `__experimentalSkipSerialization` (Phase-0 pattern), extended to border-radius for button.
 - **editor (edit.js):** bind each box family to WP's `BoxControl` (4-side) or the corner control (`__experimentalBorderRadiusControl` / BoxControl corner mode) via a shared responsive wrapper component; `onChange` writes the `{top,right,bottom,left}` (or corner) object; the device switcher selects base/tablet/mobile. Editor preview must match the frontend scoped output.
 
-## 6. THE AST COLLISION GATE
+## 6. THE AST COLLISION GATE — ✅ BUILT (this section is historical)
+
+> **Corrected 2026-08-18.** This described work to be done. The gate shipped:
+> `plugins/sgs-blocks/scripts/check-box-family-guard.py`, wired into `prebuild`, plant-tested per
+> Spec 31 FR-31-22.2. Do not re-build it.
 A static gate (Node or Python, same shape as the existing cheat-gate scanner) that FAILS the build if any per-side/per-corner grouping or migration operation runs without a `box_family` DB check in its call path. Plant-test: it must FIRE on a planted name-regex merge (`.*Top$`) and stay SILENT on the correct `box_family`-gated merge.
 
 ## 7. Non-negotiables
 - No deprecations (D270) — reshaped blocks re-cloned, no `deprecated.js`.
 - Every merged attr keeps a client-facing editor control (BoxControl).
 - Live-verify via the Pilot Acceptance Test A1–A9 (design-gate doc) before any rollout.
-- Bump block version on every CSS/render change (STOP-57).
+- ⛔ **NO block version bumps and NO `deprecated.js` — pre-production (D270/D293, which OVERRIDE
+  STOP-57).** *This line previously read "Bump block version on every CSS/render change (STOP-57)" —
+  the pre-D293 rule, stated as current instruction in the doc with the most code citations of any
+  plan file. Corrected 2026-08-18. Canonical: root `CLAUDE.md`; `STOP-CATALOGUE.md` marks STOP-57
+  superseded; `block-migration-DONE-checklist.md` condition 9 always had it right.*

@@ -1,7 +1,7 @@
 ---
 doc_type: reference
 title: LOCKED per-block no-inline migration contract (rollout — every block builds against this verbatim)
-status: ACTIVE
+status: ARCHIVED 2026-08-18 — the universal no-inline rollout this contract governed COMPLETED at D346. Its live clauses are covered by Spec 32 (§6.1(a)/(b)/(c), FR-32-1, and the §5 Security rule folded from its own §D on 2026-08-18) and Spec 31 (FR-31-5.2 breakpoints, §13.6 D294 pattern selector). Retained for history only — do NOT build against it.
 created: 2026-07-09
 references:
   - .claude/plans/2026-07-09-box-object-interface-contract.md
