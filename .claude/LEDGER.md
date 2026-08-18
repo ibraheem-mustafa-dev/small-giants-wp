@@ -54,6 +54,10 @@ without losing anything.
 | `check-palette-slug-refs.py` + `check-preset-token-naming.py` (FR-32-9's own missing gate) | `0def190f` |
 | Step 1b (triage unnumbered normative statements) added to the programme plan | D656 · `6ed24ee5` |
 | Tree cleaned — hook artefacts, LEDGER pointer, 3 untracked reports committed | `010d7d41`–`62855152` |
+| **[2nd thread] Plans-folder audit — 14 docs archived, 58 citations repointed first. Plans root 29→20, strategy 9→4** | `4dd5f895` · `69fe8024` · this session |
+| **[2nd thread] `check-dead-controls` CHECK 5 — 24 false advisories → 0.** Comment-stripper ran `/* */` before `//`, so a `//` comment containing `/*` swallowed 715 lines of `hero/render.php` | D661 · `a2bdbae7` |
+| **[2nd thread] Device-tier breakpoint 599→767 on 4 stylesheets** (+ post-grid companion range). Live-verified on canary; `form` deliberately untouched | D662 · `efe5c2a3` · `reports/2026-08-18-breakpoint-599-to-767-live-evidence.md` |
+| **[2nd thread] Stage 8 runtime audit — CWV + network + console from ONE Lighthouse run** | D663 · **PR #31**, not merged |
 
 ## Blockers
 
@@ -161,7 +165,9 @@ Per the programme. ⛔ NEVER S2 ∥ S3 (same file). ⛔ ONE canary lock.
 - **Two parallel hover systems** — the COLOUR subset already uses the D609 toggle; re-derive what is
   genuinely still duplicated before treating it as a defect.
 - **Six gates look like enforcement and are not** — 5 shell-neutralised by `|| echo [ADVISORY]`.
-- **17 stale agent worktrees** under `.claude/worktrees/` — inflate a naive `grep -r` ~18×.
+- ~~17 stale agent worktrees~~ — **RESOLVED 2026-08-18.** `git worktree list` returns only the
+  live checkouts and `.claude/worktrees/` is empty. The `git grep`-not-`grep -r` guardrail below
+  still stands on its own merits, but the ~18× inflation this item warned about is gone.
 
 ## Methodology guardrails (carried forward — all still true)
 

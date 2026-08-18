@@ -62,7 +62,7 @@ exhaustive per-file `-S` runs for every candidate path (time constraint).
 - Status: RECONSTRUCTED-FROM-GLOSS
 - git history: not checked per-file.
 - Definition (catalogue-ready): **STOP-52-D2-DOCTRINE-NO-SILENT-CSS-DROP** — an unroutable CSS declaration (e.g. `::before`/`::after` pseudo-element rules) must route to a client-editable residual channel (`sgsCustomCss`) or be recorded in `excluded_properties` — never silently dropped. Named "Bean STOP-52 D2 doctrine" at the close of the D279 diagnosis-first fix wave.
-- Source: `.claude/decisions.md:2279` ("Bean STOP-52 D2 doctrine set"); `.claude/plans/2026-07-22-spec31-completion-to-100.md:113-114` ("route to the built sgsCustomCss residual channel (client-editable, STOP-52-compliant) OR excluded_properties. No silent drop.").
+- Source: `.claude/decisions.md:2279` ("Bean STOP-52 D2 doctrine set"); `.claude/plans/archive/2026-07-22-spec31-completion-to-100.md:113-114` ("route to the built sgsCustomCss residual channel (client-editable, STOP-52-compliant) OR excluded_properties. No silent drop.").
 
 ### STOP-27
 - Status: VERBATIM
