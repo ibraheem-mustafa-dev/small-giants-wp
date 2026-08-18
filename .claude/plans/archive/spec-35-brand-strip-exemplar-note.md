@@ -1,23 +1,23 @@
 ---
 doc_type: reference
 title: Spec 35 exemplar note — sgs/brand-strip inspector (the bar for sgs/media)
-status: ARCHIVED 2026-08-18 — PURPOSE VOID. This note existed for exactly one job: to be the
-  "copy this verbatim" exemplar for the `sgs/media` inspector rebuild (see `title:` and `governs:`
-  below, and 15 in-body references). Bean confirmed 2026-08-18 that the sgs/media rebuild is NOT
-  happening. Measured, the rebuild was DROPPED rather than completed: `media/edit.js` carries 2
-  shared Spec-35 components against `brand-strip/edit.js`'s 9. With no target block, the note
-  governs nothing.
-  ⛔ Do NOT resurrect it as a general exemplar without re-verifying it first — it was stale in TWO
-  ways when archived: (1) it recommended `StateToggleControl`, which Spec 35 (~line 736) records as
-  dead code with 0 imports and 0 JSX mounts; (2) its own scope caveat admits brand-strip was never
-  fully at the bar (`tileShadow` as a SELECT not `ShadowControl`; a raw `TextControl` not
-  `SgsLinkControl`) — 4 legacy-pattern mentions still in that file at archive time.
-  The live rubric is **Spec 35 PART O**, not this file. Only `decisions.md` ever cited it.
-  Residual fact worth keeping: `sgs/brand-strip` remains the most Spec-35-conformant block in the
-  library (9 shared components vs the next-best 2) — if a future block build wants a worked example,
-  read that block's files directly and re-verify against PART O, rather than trusting this note.
-created: 2026-07-19
-governs: what "good" looks like for the sgs/media pilot inspector rebuild
+status: ARCHIVED 2026-08-18 — PURPOSE FULFILLED. This note existed for exactly one job: to be the
+  "copy this verbatim" exemplar for the `sgs/media` inspector rebuild (see `title:`/`governs:` below
+  and 15 in-body references). Bean confirmed 2026-08-18 that **the sgs/media rebuild is COMPLETE**.
+  The exemplar has served its purpose; the live rubric is Spec 35 PART O.
+  ⛔ **CORRECTION — an earlier version of this note (commit b5c77a27) said the rebuild had been
+  DROPPED, citing "media/edit.js carries 2 shared Spec-35 components vs brand-strip's 9". THAT WAS
+  FALSE and the measurement was broken.** It grepped a hardcoded list of four component names chosen
+  by the author, only one of which (`SgsColourPanel`) `sgs/media` actually uses, and counted matching
+  LINES rather than components. Re-derived by parsing the real `from '../../components'` import
+  block: **`media` imports 6, `brand-strip` imports 7** — and `media` imports `ShadowControl` and
+  `LinkPopoverField`, the two components this note's own scope caveat says brand-strip LACKS. On the
+  evidence `sgs/media` is at least as Spec-35-conformant as the block held up as its exemplar.
+  ⛔ Do NOT resurrect this note as a general exemplar without re-verifying — it was stale in two ways
+  at archive time: it recommended `StateToggleControl` (dead code, 0 imports / 0 JSX mounts, Spec 35
+  ~line 736), and its own scope caveat admits brand-strip was never fully at the bar (`tileShadow` a
+  SELECT not `ShadowControl`; a raw `TextControl` not `SgsLinkControl`).
+  Only `decisions.md` ever cited this note.
 source: plugins/sgs-blocks/src/blocks/brand-strip/* (QC'd 2026-07-19)
 sibling: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O (the rubric this passes against — replaced
   the superseded inspector DONE-checklist, on 2026-08-08 per D522/D523)
