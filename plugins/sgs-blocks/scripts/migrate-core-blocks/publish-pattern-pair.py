@@ -31,7 +31,16 @@ def load_env():
         if line.startswith('#') or '=' not in line:
             continue
         k, v = line.split('=', 1)
-        env[k.strip()] = v.strip()
+        v = v.strip()
+        # Strip a MATCHED surrounding quote pair. Bash's `source` strips these as part of
+        # its own parsing, so a hand-rolled reader that does not diverges SILENTLY - here it
+        # built Basic auth from a quoted user/password and 401'd every authenticated REST
+        # call, which reads as a credentials fault rather than a parsing one (2026-08-18).
+        # Matched-pair ONLY: a blind .strip() of quote chars corrupts a value that
+        # legitimately ends in one.
+        if len(v) >= 2 and v[0] == v[-1] and v[0] in ('"', "'"):
+            v = v[1:-1]
+        env[k.strip()] = v
     return env
 
 
