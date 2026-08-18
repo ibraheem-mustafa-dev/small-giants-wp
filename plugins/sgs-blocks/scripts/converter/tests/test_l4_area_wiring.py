@@ -42,7 +42,7 @@ def test_area_resolver_skips_band_alias_for_cta_section():
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_area_resolver_routes_per_area_padding_to_object_for_hero():
     """Post-D295 (no-inline box-object rollout) hero migrated its per-area padding

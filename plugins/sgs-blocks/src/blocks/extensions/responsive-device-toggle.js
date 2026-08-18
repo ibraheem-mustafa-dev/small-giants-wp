@@ -15,7 +15,7 @@
  * figures are 68 / 31.
  *
  * Design + the probe evidence behind every decision below:
- *   .claude/plans/2026-08-10-global-device-toggle-design.md
+ *   .claude/plans/archive/2026-08-10-global-device-toggle-design.md
  *
  * Three things here look like over-engineering and are not. Each was measured on
  * the canary (WP 7.0.2, both editors, 2026-08-10):

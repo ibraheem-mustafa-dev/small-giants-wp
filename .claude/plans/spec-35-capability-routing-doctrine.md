@@ -471,7 +471,7 @@ re-derives them.
 | `:305` + new | **Silent on `skipSerialization`** (grep: zero hits) while recording 27 blocks declaring native `color` and 48 `__experimentalBorder`. Under Part 3 those land on the root. Live constraint on Phase 2.2 |
 | §12 `:919`, `:981` | Records three incompatible storage shapes; **zero hits for declare-once/auto-expand**. Part 5 settles the destination shape — cite it |
 
-**`.claude/plans/spec-35-flat-to-object-migration-design.md`**
+**`.claude/plans/archive/spec-35-flat-to-object-migration-design.md`**
 
 | Line | Correction |
 |---|---|
@@ -492,7 +492,7 @@ re-derives them.
 > (`.sgs-container > *:not(.sgs-container__overlay)`) collapsed hero's overlay span to 0×0
 > regardless. Both fixed; native `supports.color` was also removed from hero (it was live and
 > conflicting with the overlay mechanism, not dead as assumed elsewhere in this doc). Full detail:
-> `decisions.md` D581, `.claude/plans/background-panel-redesign.md`. The `:not(.has-background)`
+> `decisions.md` D581, `.claude/plans/archive/background-panel-redesign.md`. The `:not(.has-background)`
 > conditional-DOM-shape fragility described just below for `.sgs-hero__bg-img`/`.sgs-hero__video-bg`
 > is a SEPARATE, still-real issue — not addressed by this fix.
 

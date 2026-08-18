@@ -290,7 +290,7 @@ instances); `animateFrom` reduced to `auto|fade` with per-anchor motion defaults
   align class; `drawerAlign` centres direct children as boxes while the nav-menu stretches full
   width with `text-align:start`, so `centred-statement` renders left-aligned).
 - **⭐ THE ARCHITECTURE DECISION IS MADE — gate SIGNED (Bean, 2026-07-29):**
-  `plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. Binding outcomes:
+  `plans/archive/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. Binding outcomes:
   1. **The drawer moves to a CPT — admin name "Menu drawer"** (Bean's naming; "Menu Panels" rejected
      as vague/mega-adjacent). Registration, Active/preview model and admin shape are owned by
      **Spec 37 FR-37-43** (the CPT family is 37's); this spec keeps drawer BEHAVIOUR (modal a11y,

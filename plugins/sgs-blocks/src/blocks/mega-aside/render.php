@@ -2,7 +2,7 @@
 /**
  * Server-side render for sgs/mega-aside — the optional side panel of a mega.
  *
- * GROUND-TRUTH: verified against .claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md
+ * GROUND-TRUTH: verified against .claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md
  * §8 (aside formats) + the live mega-panel/render.php pattern (uid, sgs_colour_value,
  * sgs_css_length_sanitise, sgs_emit_responsive_css) this file mirrors.
  *

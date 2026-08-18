@@ -119,7 +119,7 @@ _DECORATIVE_IMAGE_RULES = {
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_decorative_image_top_left_lift_after_unexclude():
     node = BeautifulSoup(_DECORATIVE_IMAGE_HTML, "html.parser").find("img")

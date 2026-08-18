@@ -57,7 +57,7 @@ conflict). Then read the LEDGER's ⭐CURRENT block before anything else.
 2. **`.claude/STOP-CATALOGUE.md`** — the uncapped STOP catalogue (87 entries) + pre-flight ritual (§C).
 3. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** IN FULL (governing spec) — esp. FR-36-4/5/10/11/16/17
    and **§8 the concrete live-QC gate**, which defines what "verified" means for this surface.
-4. **`.claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md`** §0.5 (CORE + CF-1..CF-15), §3 (exact layout
+4. **`.claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md`** §0.5 (CORE + CF-1..CF-15), §3 (exact layout
    values), §4 (dark cascade), §6 (motion timings), §8 (aside formats) — what the built thing is SUPPOSED
    to do, so you can tell "working" from "wrong".
 5. **`.claude/decisions.md` D396 + D397** — the three inert-bug root causes and the settled findings.

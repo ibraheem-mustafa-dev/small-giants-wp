@@ -77,7 +77,7 @@ conflict). Then read the LEDGER's ⭐CURRENT blocks.
    **`plugins/sgs-blocks/src/blocks/modal/{block.json,render.php,style.css,view.js}`** — the modal
    already implements the centred-card geometry and hand-rolls its own `showModal()`. Read both
    before deciding where the geometry model lives.
-7. **`.claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md`** §0.5 (CORE + CF-1..CF-15) — the binding
+7. **`.claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md`** §0.5 (CORE + CF-1..CF-15) — the binding
    council fixes still govern the mega surface you may touch.
 
 ## Why this matters (motivation — Rule 7)

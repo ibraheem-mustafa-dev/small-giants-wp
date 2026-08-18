@@ -1,7 +1,7 @@
 /**
  * SGS Mega Aside — block editor UI.
  *
- * GROUND-TRUTH: verified against .claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md
+ * GROUND-TRUTH: verified against .claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md
  * §8 (aside formats) + mega-panel/edit.js's own Aside PanelBody + the shared
  * ResponsiveBoxControl doc-comment for the values/onChange contract.
  *

@@ -29,7 +29,7 @@ supersedes_nothing: this ADDS to the record; see PART 6 for its effect on the Tr
 > Spec 39 rework, and a shim was rejected by name**. **12 tests already carry
 > `@pytest.mark.xfail(strict=True)`** citing D554 (e.g. `converter/tests/test_css_resolvers.py:48`
 > asserts exactly this flat-vs-object `max-width` divergence), and
-> `.claude/plans/2026-08-12-converter-db-drift.md` already documents it.
+> `.claude/plans/archive/2026-08-12-converter-db-drift.md` already documents it.
 > **§9.8 is not an undiscovered bug — it is an accepted, already-encoded consequence.**
 > Its correct status: **a REQUIREMENT for the Spec 39 rework**, not a fix. Re-proving it
 > would spend a session duplicating an existing artefact.
@@ -931,7 +931,7 @@ The original task (*"clone a draft with max-width + a tablet override, assert bo
 - ⛔ **It is already settled** — D554 ruling C + 12 `xfail(strict=True)` tests + the
   `2026-08-12-converter-db-drift.md` write-up.
 
-**Do this instead (~20 min, reading only):** read `.claude/plans/2026-08-12-converter-db-drift.md`
+**Do this instead (~20 min, reading only):** read `.claude/plans/archive/2026-08-12-converter-db-drift.md`
 and `decisions.md` D554. Confirm §9.8's 204 destinations are the **same population** D554
 already ruled on. If they are — and they almost certainly are — **strike §9.8's "urgent bug"
 framing and re-file it as a Spec 39 requirement**, then say so to Bean in one line. If they

@@ -256,7 +256,7 @@ file:line evidence was gathered for this item beyond what R5 already cites.
 
 **Provenance.** A `/qc-council` (3 raters + structural pre-gates) ran against a proposed R1-shaped fix
 on 2026-08-12 and **falsified it twice over**. The fix was NOT built (D554 ruling C forbids the shim);
-what survives is the evidence below. Full record: `.claude/plans/2026-08-12-converter-db-drift.md`,
+what survives is the evidence below. Full record: `.claude/plans/archive/2026-08-12-converter-db-drift.md`,
 `decisions.md` D590. **These are inputs, not decisions** — same status as the rest of this file.
 
 ### G5 — ⛔ THREE shapes hide under `attr_type='object'`, and NOTHING in the schema separates them

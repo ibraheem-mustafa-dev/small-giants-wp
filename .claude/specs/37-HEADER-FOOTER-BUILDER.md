@@ -553,7 +553,7 @@ chosen starter by its CHILDREN, not its `metadata.patternName`).
 embedded drawer; a seed step creates one default "Menu drawer" post per site; FR-36-9a's one-click
 fix changes from "insert sibling block" to "create a Menu drawer + set the reference".
 **Status:** `NOT-BUILT` — capability wave of the merged 36/37 track
-(`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`).
+(`plans/archive/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`).
 **Done when:** a drawer authored in *SGS → Menu drawers* renders as the site default, a second
 drawer can be picked per-burger, the starter picker offers the 7 looks and a chosen starter's
 CHILD TREE survives save, and zero `variantPreset` attrs remain in shipped markup.

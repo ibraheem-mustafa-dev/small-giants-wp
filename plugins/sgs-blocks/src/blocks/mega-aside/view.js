@@ -1,7 +1,7 @@
 /**
  * SGS Mega Aside (sgs/mega-aside) — frontend interactivity for `preview` format.
  *
- * GROUND-TRUTH: verified against .claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md
+ * GROUND-TRUTH: verified against .claude/plans/archive/2026-07-24-mega-menu-BUILD-SPEC.md
  * §8 ("preview: hover-reactive — displays the currently-hovered link's title
  * and description") + icon-list/view.js's module-bootstrap pattern (reused
  * here, same house style: querySelectorAll + forEach + DOMContentLoaded gate).

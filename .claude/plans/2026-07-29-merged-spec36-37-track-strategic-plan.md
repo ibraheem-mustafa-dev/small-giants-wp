@@ -5,7 +5,7 @@ spec_id: 36+37 (merged execution track)
 date: 2026-07-29
 status: ACTIVE
 scope_source: reports/2026-07-28-spec36-37-remaining-work-inventory.md
-architecture: plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md (SIGNED, DP1–DP7)
+architecture: plans/archive/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md (SIGNED, DP1–DP7)
 supersedes: plans/2026-07-22-spec36-37-parallel-execution-plan.md (parallel model rejected by DP1);
   plans/2026-07-28-B3-header-footer-style-preset-library-design-gate.md (subsumed — §7 answers in gate §0)
 ---
