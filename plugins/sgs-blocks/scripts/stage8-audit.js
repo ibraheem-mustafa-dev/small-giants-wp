@@ -16,15 +16,24 @@
  * mechanism (`lighthouse` + `chrome-launcher`) instead; (2) Lighthouse's own
  * `errors-in-console` and `network-requests` audits already cover two of the three
  * report types, so building bespoke scripts for them would duplicate Google's own
- * work. ONE Lighthouse run therefore yields all three reports — see
- * `lib/stage8-report-builders.js` for the pure extraction/severity logic (kept
- * separate so this file stays under the repo's 250-line limit and so --self-test can
- * exercise that logic without a browser).
+ * work. ONE Lighthouse run therefore yields all three reports.
  *
- * `lighthouse` and `chrome-launcher` are both native ESM packages (`"type":
- * "module"`); this script stays CommonJS to match every sibling script in this
- * directory, so both are loaded via a dynamic `import()` rather than converting the
- * whole file to ESM.
+ * This file is deliberately thin — CLI parsing lives in `lib/stage8-cli.js`, browser
+ * orchestration in `lib/stage8-lighthouse.js`, and the pure severity/extraction
+ * logic (+ --self-test) in `lib/stage8-report-builders.js` / `lib/stage8-self-test.js`
+ * — all so this file, and each of them, stays under the repo's 250-line limit, and
+ * so --self-test can exercise the severity logic without a browser.
+ *
+ * SEVERITY LEVELS (worst to best): error > critical > warn > pass. `error` means the
+ * MEASUREMENT failed (nav failure, missing/errored Lighthouse audit, empty network
+ * log) — never coerced into "pass". `critical` means the page loaded and something
+ * on it genuinely failed. See `lib/stage8-report-builders.js`'s header for the full
+ * rationale.
+ *
+ * DELIBERATE EXTENSION BEYOND THE SOURCE BRIEF: a blocked/cancelled network request
+ * (no HTTP response at all) is treated as at least `warn`, even though the brief
+ * only specified 404/4xx thresholds — a request that never got a response is a real
+ * signal worth surfacing, not a silent no-op.
  *
  * NOT WIRED INTO `prebuild` (deliberately) — it needs a live URL + a real Chrome
  * launch; a gate that silently passes when the target is unreachable is worse than
@@ -34,7 +43,7 @@
  * USAGE
  *   node scripts/stage8-audit.js --url <url> [--viewport mobile|desktop] [--runs N]
  *                                 [--allow-domains a.com,b.com] [--ignore-patterns "regex1,regex2"]
- *   node scripts/stage8-audit.js --url <url> --check     # exit 1 on any "critical" severity
+ *   node scripts/stage8-audit.js --url <url> --check     # exit 1 on "critical" OR "error" severity
  *   node scripts/stage8-audit.js --self-test              # proves the severity logic can fail
  *
  * @package SGS\Blocks
@@ -43,138 +52,15 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
-const {
-	worstSeverity,
-	buildCwvReport,
-	buildNetworkReport,
-	buildConsoleReport,
-} = require( './lib/stage8-report-builders.js' );
+const { printUsage, parseArgs, makeRunId } = require( './lib/stage8-cli.js' );
+const { runLighthouse } = require( './lib/stage8-lighthouse.js' );
+const { worstSeverity, medianLhr, buildCwvReport } = require( './lib/stage8-report-builders.js' );
+const { buildNetworkReport, buildConsoleReport } = require( './lib/stage8-network-console-builders.js' );
 
 const CHECK_MODE = process.argv.includes( '--check' );
 const SELF_TEST = process.argv.includes( '--self-test' );
 
 const REPORTS_ROOT = path.resolve( __dirname, '../reports' );
-
-// ---------------------------------------------------------------------------
-// CLI parsing
-// ---------------------------------------------------------------------------
-function printUsage() {
-	process.stdout.write( `
-stage8-audit.js — Core Web Vitals + network + console audit from ONE Lighthouse run.
-
-Usage:
-  node scripts/stage8-audit.js --url <url> [options]
-
-Options:
-  --url <url>               Required. A live, publicly reachable page.
-  --viewport mobile|desktop  Default: mobile (Lighthouse mobile is the Google ranking signal).
-  --runs <n>                 Default: 1. Runs Lighthouse N times; reports use the LAST run.
-  --allow-domains <a,b,c>    Comma-separated hosts suppressed from the network error/blocked lists.
-  --ignore-patterns <r1,r2>  Comma-separated regex source strings suppressing known console noise.
-  --check                    Exit non-zero if overall severity is "critical". Needs a live URL — do NOT wire into prebuild.
-  --self-test                 Proves the severity/extraction logic against fixture data. No network, no browser.
-` );
-}
-
-function parseArgs( argv ) {
-	const args = {
-		url: null,
-		viewport: 'mobile',
-		runs: 1,
-		allowDomains: [],
-		ignorePatterns: [],
-	};
-	for ( let i = 0; i < argv.length; i++ ) {
-		const a = argv[ i ];
-		if ( a === '--url' ) {
-			args.url = argv[ ++i ];
-		} else if ( a === '--viewport' ) {
-			args.viewport = argv[ ++i ];
-		} else if ( a === '--runs' ) {
-			args.runs = parseInt( argv[ ++i ], 10 );
-		} else if ( a === '--allow-domains' ) {
-			args.allowDomains = argv[ ++i ].split( ',' ).map( ( s ) => s.trim() ).filter( Boolean );
-		} else if ( a === '--ignore-patterns' ) {
-			args.ignorePatterns = argv[ ++i ].split( ',' ).map( ( s ) => s.trim() ).filter( Boolean );
-		}
-	}
-	if ( ! [ 'mobile', 'desktop' ].includes( args.viewport ) ) args.viewport = 'mobile';
-	if ( ! Number.isFinite( args.runs ) || args.runs < 1 ) args.runs = 1;
-	return args;
-}
-
-// ---------------------------------------------------------------------------
-// Run-id — timestamp-derived, plus a short slug of the URL host. Deterministic
-// given an explicit `now` (self-test never uses Date.now() directly, per the
-// dispatch brief — it always passes a fixed Date).
-// ---------------------------------------------------------------------------
-function slugifyHost( url ) {
-	try {
-		const host = new URL( url ).hostname.toLowerCase();
-		return host.replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' ) || 'unknown-host';
-	} catch ( e ) {
-		return 'unknown-host';
-	}
-}
-
-function makeRunId( url, now ) {
-	const pad = ( n ) => String( n ).padStart( 2, '0' );
-	const stamp =
-		`${ now.getFullYear() }${ pad( now.getMonth() + 1 ) }${ pad( now.getDate() ) }-` +
-		`${ pad( now.getHours() ) }${ pad( now.getMinutes() ) }${ pad( now.getSeconds() ) }`;
-	return `${ stamp }-${ slugifyHost( url ) }`;
-}
-
-// ---------------------------------------------------------------------------
-// Lighthouse orchestration (real network/browser path — never exercised by
-// --self-test).
-// ---------------------------------------------------------------------------
-async function runLighthouse( { url, viewport, runs } ) {
-	let launch;
-	let lighthouse;
-	try {
-		( { launch } = await import( 'chrome-launcher' ) );
-		lighthouse = ( await import( 'lighthouse' ) ).default;
-	} catch ( err ) {
-		throw new Error(
-			`lighthouse/chrome-launcher failed to load (${ err.message }). Run "npm install" in plugins/sgs-blocks first.`
-		);
-	}
-
-	let desktopConfig;
-	if ( viewport === 'desktop' ) {
-		desktopConfig = ( await import( 'lighthouse/core/config/desktop-config.js' ) ).default;
-	}
-
-	let chrome;
-	try {
-		chrome = await launch( { chromeFlags: [ '--headless=new', '--disable-gpu', '--no-sandbox' ] } );
-	} catch ( err ) {
-		// Requirement #8: never a silent pass — an explicit, unambiguous message.
-		throw new Error(
-			`Chrome/Chromium is unavailable — cannot run Lighthouse (${ err.message }). ` +
-				'Install Google Chrome or Chromium, or set the CHROME_PATH environment variable to its binary.'
-		);
-	}
-
-	try {
-		let lhr = null;
-		for ( let i = 0; i < runs; i++ ) {
-			const result = await lighthouse(
-				url,
-				{ port: chrome.port, output: 'json', logLevel: 'error' },
-				desktopConfig
-			);
-			if ( ! result || ! result.lhr ) {
-				throw new Error( `Lighthouse run ${ i + 1 }/${ runs } against ${ url } returned no result.` );
-			}
-			lhr = result.lhr;
-		}
-		return lhr;
-	} finally {
-		await chrome.kill();
-	}
-}
 
 // ---------------------------------------------------------------------------
 // Report writing
@@ -187,9 +73,20 @@ function writeReport( subdir, runId, data ) {
 	return file;
 }
 
+// M6: a bad page can carry hundreds of network/console entries — dumping the full
+// JSON to stdout is unbounded. Print a short summary line; the written report file
+// holds the detail.
 function printSummary( label, report ) {
-	process.stdout.write( `\n-- ${ label } (${ report.severity.toUpperCase() }) --\n` );
-	process.stdout.write( JSON.stringify( report, null, 2 ) + '\n' );
+	const bits = [];
+	if ( 'lcp_ms' in report ) bits.push( `LCP ${ report.lcp_ms ?? 'n/a' }ms`, `CLS ${ report.cls ?? 'n/a' }` );
+	if ( 'total_requests' in report ) {
+		bits.push( `${ report.total_requests } requests`, `${ report.errors.length } errors`, `${ report.blocked.length } blocked`, `${ report.slow.length } slow` );
+	}
+	if ( 'errors' in report && 'warnings' in report && ! ( 'total_requests' in report ) ) {
+		bits.push( `${ report.errors.length } errors`, `${ report.warnings.length } warnings` );
+	}
+	const suffix = bits.length > 0 ? ` — ${ bits.join( ', ' ) }` : '';
+	process.stdout.write( `-- ${ label } (${ report.severity.toUpperCase() })${ suffix } --\n` );
 }
 
 // ---------------------------------------------------------------------------
@@ -197,14 +94,15 @@ async function main() {
 	const args = parseArgs( process.argv.slice( 2 ) );
 	if ( ! args.url ) {
 		printUsage();
-		process.stderr.write( '\n--url is required.\n' );
+		process.stderr.write( '\n--url is required (and must parse as a valid URL).\n' );
 		process.exitCode = 1;
 		return;
 	}
 
 	let lhr;
 	try {
-		lhr = await runLighthouse( args );
+		const lhrs = await runLighthouse( args );
+		lhr = medianLhr( lhrs ); // I6: median of the CWV metrics across --runs (identity when runs=1).
 	} catch ( err ) {
 		process.stderr.write( `[stage8-audit] FATAL: ${ err.message }\n` );
 		process.exitCode = 1;
@@ -228,7 +126,11 @@ async function main() {
 	process.stdout.write( `\nWritten:\n  ${ cwvFile }\n  ${ networkFile }\n  ${ consoleFile }\n` );
 	process.stdout.write( `\nOVERALL SEVERITY: ${ overall.toUpperCase() }\n` );
 
-	process.exitCode = CHECK_MODE && overall === 'critical' ? 1 : 0;
+	// CRITICAL 1 fix: "error" (measurement failed — nav failure, missing audit,
+	// empty network log) must fail the gate exactly like "critical" does. The
+	// original code only checked `=== 'critical'`, so a page that never loaded
+	// reported OVERALL PASS and exit 0.
+	process.exitCode = CHECK_MODE && ( overall === 'critical' || overall === 'error' ) ? 1 : 0;
 }
 
 // ---------------------------------------------------------------------------
