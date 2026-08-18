@@ -258,14 +258,21 @@ A merged box family is ONE attribute of `"type": "object"` holding named keys �
 > `borderRadiusTablet` → 11). **The families are real and unchanged — only the counts had drifted**,
 > because the roster was written over 74 blocks and never re-run as the library grew to 83.
 
-**KEEP scalar (~~10~~ **8** families — not box properties, or single-side):**
+**KEEP scalar — **4** families (not box properties, or single-side):**
+
+> ⚠ **Both the old header AND the first correction of it were wrong; the TABLE was always right.**
+> The 2026-07-09 original said "10 families" while its own table listed 6 — miscounted from
+> inception. On 2026-08-18 two genuinely-retired rows were deleted and the header was mechanically
+> dropped 10→8 (subtracting from a number that was never right) instead of being recounted against
+> the table it heads. Recounted 2026-08-18: **4 rows, 4 families.** A count in prose is a copy with
+> no invalidation — recount against the table, never arithmetic off the previous figure.
 
 | Family | Blocks | Why not an object |
 |---|---|---|
 | `attributionMarginTop` | quote | Single side only — a 4-side BoxControl would show 3 dead controls |
 | `labelMarginBottom` | option-picker | Single side |
 | `quoteMarginBottom` | testimonial | Single side |
-| `shapeDivider{Top,Bottom}` + `…Colour/Flip/Height/Invert` | container/cta-section/hero/trust-bar | Not a box property — two independent decorative SVG slots each with its own sub-settings; `{top,right,bottom,left}` is semantically wrong (no left/right divider). Keep the named-slot structure. |
+| `shapeDivider{Top,Bottom}` + `…Colour/Flip/Height/Invert` | **6** — container, cta-section, hero, **site-footer**, **site-header**, trust-bar (re-derived 2026-08-18; the earlier 4-block list omitted site-footer/site-header, which would let a future box-family migration treat their divider attrs as unclassified) | Not a box property — two independent decorative SVG slots each with its own sub-settings; `{top,right,bottom,left}` is semantically wrong (no left/right divider). Keep the named-slot structure. |
 
 Note: `sgs/button`/`sgs/heading`/`sgs/quote`/`sgs/text` route border via **CUSTOM attrs** (`supports.__experimentalBorder` is NULL on button) — a different routing path from container's WP-native border support. The categorisation guard is keyed on the DB `box_family` value, never the routing path, so both classes merge correctly under one mechanism (Spec 31 §4/§3.A step 3b).
 
