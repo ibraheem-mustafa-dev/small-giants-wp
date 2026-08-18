@@ -126,7 +126,7 @@ Read all 6 confirmed rubrics back-to-back. Check for contradictions, overlapping
 
 ## Task 5: Update rubrics index
 
-Create `~/.claude/pipelines/.rubrics/README.md` — one-line summary per rubric, canonical save paths, link back to the toolset spec at `.claude/plans/strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md`.
+Create `~/.claude/pipelines/.rubrics/README.md` — one-line summary per rubric, canonical save paths, link back to the toolset spec at `.claude/plans/archive/strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md`.
 
 ## Guardrails
 

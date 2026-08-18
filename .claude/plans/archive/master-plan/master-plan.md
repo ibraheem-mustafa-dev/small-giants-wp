@@ -65,7 +65,7 @@ Spec phase estimates were authored 2026-04-27/28 by Bean + Claude (Opus). Three 
 
 **Out of scope (deferred / parked):**
 - **Indus Foods Phase 4** — anything inside `sites/indus-foods/.claude/` is a tracked subproject with its own master plan + state.md. THIS plan does not duplicate or override that subproject's content. Indus Phase 2 build (Track B item P5.B2) coordinates with the subproject but does not absorb it.
-- Pipelines P8 (content), P10 (scroll-animation premium), P11 (email campaign), P13 (app delivery) — see `plans/strategy/2026-04-21-non-essential-pipelines-deferred.md`
+- Pipelines P8 (content), P10 (scroll-animation premium), P11 (email campaign), P13 (app delivery) — see `plans/archive/strategy/2026-04-21-non-essential-pipelines-deferred.md`
 - WooCommerce integration (intentionally avoided)
 - Non-design skills outside the 22-rubric optimisation set (triaged in Phase 2b)
 
@@ -123,7 +123,7 @@ Studio does NOT replace the deploy. It sits in front of it. The existing tar+scp
 | ID | Unit | Files / where | Inputs | Outputs | Critical |
 |----|------|--------------|--------|---------|----|
 | **P1.5a** | Run `/skill-auditor` + `/agent-auditor` for overlap / duplicate / abandonment surface | All skill + agent dirs | P1.1c | Audit reports — kill / merge / park / keep candidates | YES |
-| **P1.5b** | Cross-reference `plans/strategy/2026-04-21-non-essential-pipelines-deferred.md` and parking lots; produce a single triage table (kill / merge / park / keep, one row per tool) | `.claude/plans/strategy/2026-04-29-tooling-triage.md` (new) | P1.5a | Triage table | YES |
+| **P1.5b** | Cross-reference `plans/archive/strategy/2026-04-21-non-essential-pipelines-deferred.md` and parking lots; produce a single triage table (kill / merge / park / keep, one row per tool) | `.claude/plans/archive/strategy/2026-04-29-tooling-triage.md` (new) | P1.5a | Triage table | YES |
 | **P1.5c** | Bean sign-off on the triage table (HARD GATE — scope-shaping decision) | (chat) | P1.5b | Confirmed triage decisions | YES |
 | **P1.5d** | Execute kills (delete + redirect) + merges (parallel where safe) | Various skill/agent files | P1.5c | Surviving roster | YES |
 | **P1.5e** | Sandbox-preview gate setup — pin Studio version + create `sgs-base.blueprint.json` + Hostinger import flow doc + `/verify-loop --target-url` flag + `studio-preview-up.ps1` helper + `deploy-check` `--studio-pass` flag | `theme/sgs-theme/sgs-base.blueprint.json`, `CLAUDE.md` deploy section, `~/.claude/skills/verify-loop/SKILL.md`, `~/.claude/skills/deploy-check/` | WP Studio AI manual at `~/.claude/skills/wp-studio/wp-studio-ai-manual.md` | Pre-deploy verification gate operational | NO (parallel to P1.5d) |
@@ -312,7 +312,7 @@ POST failure is non-blocking (logged, not fatal). The phase-planner skill emits 
 | Phase 1 | `cd ~/.agents/skills/shared-references && mkdir -p optimisation-toolkit/tests && touch optimisation-toolkit/canary_split.py` |
 | Phase 2 | `python ~/.claude/hooks/local-search.py "skill-optimiser end-goal-rubric"` — preload context |
 | Phase 3 | List the 13 pipelines from spec §2c into a tracking file at `~/.claude/pipeline-state/three-lens-gap-analysis/<run_id>/pipelines.txt` |
-| Phase 4 | Read `plans/strategy/2026-04-24-design-brain-architecture.md` §3.1 + §3.8 — confirm the 5 SQLite tables before scripting |
+| Phase 4 | Read `plans/archive/strategy/2026-04-24-design-brain-architecture.md` §3.1 + §3.8 — confirm the 5 SQLite tables before scripting |
 | Phase 5 — A2 Responsive Extension | `cd plugins/sgs-blocks/src/extensions && mkdir -p responsive-extension && touch responsive-extension/index.js` |
 | Phase 5 — A3 Hover Extension | `grep -lE "hover|on:hover" plugins/sgs-blocks/src/extensions/*.js \| head -5` — locate existing hover code to lift |
 | Phase 5 — A4 /quoter rebuild | `ls ~/.claude/skills/quoter/SKILL.md` — confirm current state before rebuild |
@@ -358,12 +358,12 @@ Each phase below hands off to `/phase-planner` as a separate session. Plan-level
 
 [Phase 4 — handoff]
   Trigger: invoke /phase-planner with phase scope = "Phase 4 — Tooling rebuild"
-  Entry context: spec §5 Phase 4 + Phase 4 detail (4.1-4.5) + plans/strategy/2026-04-24-design-brain-architecture.md
+  Entry context: spec §5 Phase 4 + Phase 4 detail (4.1-4.5) + plans/archive/strategy/2026-04-24-design-brain-architecture.md
   Plan-Level Label hint: PLAN: opus (architectural; multi-skill cross-cutting; novel SQLite schemas)
 
 [Phase 5 — handoff]
   Trigger: invoke /phase-planner per A-item OR per client — phase-planner does the inner sequencing
-  Entry context: spec §5 Phase 5 + Track A item detail + plans/strategy/2026-04-21-step2-strategic-plan.md
+  Entry context: spec §5 Phase 5 + Track A item detail + plans/archive/strategy/2026-04-21-step2-strategic-plan.md
   Plan-Level Label hint: PLAN: opus for A6 (ecom plugin, novel) + A8 (3D configurator, novel); PLAN: sonnet for A2-A5/A7/A9 (extensions/blocks following established patterns)
 ```
 
@@ -391,8 +391,8 @@ This plan triggers updates to:
 | Doc | Role |
 |-----|------|
 | [`~/.claude/specs/2026-04-27-optimisation-toolkit-design.md`](~/.claude/specs/2026-04-27-optimisation-toolkit-design.md) | Source spec — design and reasoning |
-| [`.claude/plans/strategy/2026-04-21-step2-strategic-plan.md`](strategy/2026-04-21-step2-strategic-plan.md) | Step 2 of master plan (5-client queue) |
-| [`.claude/plans/strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md`](strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md) | Verified tool inventory + 13 pipelines |
-| [`.claude/plans/strategy/2026-04-24-design-brain-architecture.md`](strategy/2026-04-24-design-brain-architecture.md) | Phase 4 design-brain spec |
-| [`.claude/plans/strategy/2026-04-21-non-essential-pipelines-deferred.md`](strategy/2026-04-21-non-essential-pipelines-deferred.md) | Pipelines deferred from critical path |
+| [`.claude/plans/archive/strategy/2026-04-21-step2-strategic-plan.md`](strategy/2026-04-21-step2-strategic-plan.md) | Step 2 of master plan (5-client queue) |
+| [`.claude/plans/archive/strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md`](strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md) | Verified tool inventory + 13 pipelines |
+| [`.claude/plans/archive/strategy/2026-04-24-design-brain-architecture.md`](strategy/2026-04-24-design-brain-architecture.md) | Phase 4 design-brain spec |
+| [`.claude/plans/archive/strategy/2026-04-21-non-essential-pipelines-deferred.md`](strategy/2026-04-21-non-essential-pipelines-deferred.md) | Pipelines deferred from critical path |
 | [`.claude/plans/open-r-items-animation-harvest-sgs-discover.md`](open-r-items-animation-harvest-sgs-discover.md) | 12 R-items closed today; tracker for any reopens |

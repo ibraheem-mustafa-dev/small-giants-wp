@@ -30,7 +30,7 @@ entry_condition: triage signed off + kills executed + dispatch-graph-validator c
 **Entry condition (P1.5 → P2):** triage signed off + kills executed + dispatch-graph-validator clean + sandbox-preview gate green.
 
 **Entry context (read before starting this phase):**
-- `.claude/plans/strategy/2026-04-29-tooling-triage.md` — signed-off triage decisions
+- `.claude/plans/archive/strategy/2026-04-29-tooling-triage.md` — signed-off triage decisions
 - `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md §10.1` — 22 confirmed rubric paths
 - `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md §5 Phase 2a/2b/2c` — phase spec
 - `.claude/plans/master-plan.md §Phase 2` — P2.2a/b/c units + G2 gate
@@ -133,7 +133,7 @@ Step 1 — [SESSION-START] Confirm entry conditions and update state
   Model:       inline
   Action:      Run dispatch-graph-validator (expect 0 dead refs). Confirm sandbox-preview gate green via /verify-loop --target-url smoke. Confirm state.md current_phase=phase-2-rubrics-universe.
   Files:       .claude/state.md (update if needed)
-  Inputs:      .claude/plans/strategy/2026-04-29-tooling-triage.md, .claude/state.md
+  Inputs:      .claude/plans/archive/strategy/2026-04-29-tooling-triage.md, .claude/state.md
   Outcome:     Validator exits 0; state.md confirms phase-2; HARD-GATE rule embedded into /gap-analysis (verified by reading Step 4.5 of /gap-analysis SKILL.md and confirming the cross-turn pause rule is present)
   Exec:        SEQUENTIAL
   Deps:        none
@@ -141,7 +141,7 @@ Step 1 — [SESSION-START] Confirm entry conditions and update state
   Time:        5 min
   Tooling:     dispatch-graph-validator.py, sgs-skillscore.py, Read
   On-Fail:     Validator dead refs → fix or add ignore comments. /gap-analysis Step 4.5 missing the rule → run /lifecycle on /gap-analysis first.
-  Cold-Entry:  Read this plan file + .claude/plans/strategy/2026-04-29-tooling-triage.md + .claude/state.md
+  Cold-Entry:  Read this plan file + .claude/plans/archive/strategy/2026-04-29-tooling-triage.md + .claude/state.md
   Test:
     Happy:       Validator clean, state.md shows phase-2, /gap-analysis Step 4.5 references the cross-turn pause rule
     Edge:        Acceptable validator ignore comments (task_shape enums) — pass
@@ -372,7 +372,7 @@ Step 14 — [SESSION-START] Triage remaining ~140 tools
   Marker:      SESSION-START
   Time:        25 min
   Tooling:     Glob, Read, Write
-  Cold-Entry:  Read this plan + .claude/state.md + .claude/plans/strategy/2026-04-29-tooling-triage.md
+  Cold-Entry:  Read this plan + .claude/state.md + .claude/plans/archive/strategy/2026-04-29-tooling-triage.md
   Test:
     Happy:       ≥100 rows, 50–70 RUBRIC, rest SKIP, serving_pipeline populated
     Edge:        New skills since last audit → cap at 140 alphabetically, note cap

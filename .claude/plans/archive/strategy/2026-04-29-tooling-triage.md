@@ -6,7 +6,7 @@ status: SIGNED-OFF-2026-04-30
 sources:
   - .claude/reports/2026-04-30-skill-audit.md
   - .claude/reports/2026-04-30-agent-audit.md
-  - .claude/plans/strategy/2026-04-21-non-essential-pipelines-deferred.md
+  - .claude/plans/archive/strategy/2026-04-21-non-essential-pipelines-deferred.md
 ---
 
 # Tooling Triage — Phase 1.5 (P1.5b)

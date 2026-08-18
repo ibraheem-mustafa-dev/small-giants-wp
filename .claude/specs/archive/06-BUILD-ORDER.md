@@ -66,6 +66,6 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 | [`../architecture.md`](../architecture.md) | Combined system design + 354-feature audit + dev setup. Cold-start reading. |
 | [`../../CLAUDE.md`](../../CLAUDE.md) | Hard rules, deploy commands, gotchas. |
 | [`../../docs/plans/2026-02-21-master-feature-audit.md`](../../docs/plans/2026-02-21-master-feature-audit.md) | 354-feature graded roadmap. Last full refresh 2026-02-26 — directional, not current. |
-| [`../plans/strategy/2026-04-24-design-brain-architecture.md`](../plans/strategy/2026-04-24-design-brain-architecture.md) | Pipeline 6 (QA → Deploy) and Council reviewer architecture. |
+| [`../plans/archive/strategy/2026-04-24-design-brain-architecture.md`](../plans/archive/strategy/2026-04-24-design-brain-architecture.md) | Pipeline 6 (QA → Deploy) and Council reviewer architecture. |
 | `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md` | Optimisation toolkit + rubric system (relocated to user-level specs). |
 | [`./common-wp-styling-errors.md`](common-wp-styling-errors.md) | Real failure-pattern catalogue from 2026-04-29 polish session + 2026-04-30 audit. |
