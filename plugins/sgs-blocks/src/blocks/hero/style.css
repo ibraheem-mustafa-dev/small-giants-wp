@@ -312,7 +312,8 @@ section.sgs-hero {
 		transition: transform 0.35s ease-in-out;
 	}
 
-	.sgs-hero--split .sgs-hero__media:hover .sgs-hero__split-image {
+	.sgs-hero--split .sgs-hero__media:hover .sgs-hero__split-image,
+	.sgs-hero--split .sgs-hero__media:focus-within .sgs-hero__split-image {
 		transform: scale(1.05);
 	}
 }
@@ -378,7 +379,8 @@ section.sgs-hero {
  * cascading normally), and `transparent` (border-style is never set, so the
  * colour is inert either way). Merged into one rule since all three now
  * share the identical `.sgs-hero:hover` selector. */
-.sgs-hero:hover {
+.sgs-hero:hover,
+.sgs-hero:focus-within {
 	background-color: var(--sgs-hover-bg, transparent);
 	color: var(--sgs-hover-text, inherit);
 	border-color: var(--sgs-hover-border, transparent);

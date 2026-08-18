@@ -118,11 +118,13 @@
  * unconditional. This value is PAINTED (not what the element inherits), so
  * it is kept — but de-specified via :where() (0,0,0) so the operator's own
  * scoped `.{uid}` rule always wins. */
-:where(.sgs-icon-list__item:hover .sgs-icon-list__text) {
+:where(.sgs-icon-list__item:hover .sgs-icon-list__text),
+:where(.sgs-icon-list__item:focus-within .sgs-icon-list__text) {
 	color: var(--wp--preset--color--primary);
 }
 
-.sgs-icon-list__item:hover .sgs-icon-list__icon {
+.sgs-icon-list__item:hover .sgs-icon-list__icon,
+.sgs-icon-list__item:focus-within .sgs-icon-list__icon {
 	transform: scale(1.05);
 }
 
@@ -131,7 +133,8 @@
 		transition: none;
 	}
 
-	.sgs-icon-list__item:hover .sgs-icon-list__icon {
+	.sgs-icon-list__item:hover .sgs-icon-list__icon,
+	.sgs-icon-list__item:focus-within .sgs-icon-list__icon {
 		transform: none;
 	}
 }

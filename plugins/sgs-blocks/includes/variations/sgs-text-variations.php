@@ -80,7 +80,6 @@ function sgs_register_text_styles(): void {
 					font-size: 1.2em;
 					line-height: 1.7;
 					font-weight: 300;
-					color: var( --wp--preset--color--text-secondary, #4A4A4A );
 				}
 			',
 		)
