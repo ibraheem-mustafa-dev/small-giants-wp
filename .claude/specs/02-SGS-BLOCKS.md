@@ -122,7 +122,7 @@ Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUT
 - **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + alignment. Gap is provided by the shared `ContainerWrapperControls` gap control (raw-px free-input, `sgs_container_gap_value()`) — no separate per-block gap control.
 - **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes. **RECORDED EXCEPTION (Bean sign-off 2026-06-10, FP-H design gate):** `sgs/product-card` is a BUILT-IN-ELEMENT card — its CTA (and every other commerce element) renders from the block's own typed attributes via the element-MIRROR pattern (the CTA mirrors `sgs/button`'s control set through shared helpers; auto-propagation: a new `sgs/button` capability is a gap candidate on the mirror), with ZERO InnerBlocks in typed mode (no deprecation path needed — Bean 2026-06-10: the typed card is not yet used in any content). CTA model (approved): max 2 text buttons (1 primary + 1 secondary), behaviours add-to-basket / buy-now / learn-more, express-pay as a phase-2 gateway-rendered toggle. See `.claude/reports/wave2/FP-E-FP-H-DESIGN-GATE-2026-06-10.md`.
 - **Preset binding** via `inheritStyle: 'primary' | 'secondary' | 'outline' | 'custom'` reads from `wp_options.sgs_button_presets`, mirrored to `theme.json` `settings.custom.buttonPresets`. Three editing paths (Settings page, Site Editor block-style-variations, theme.json) write the same backing store.
-- **Existing CTA-rendering blocks** (sgs/hero etc.) are refactored to InnerBlocks composition with deprecation paths preserving existing post content. See spec 11 §5.
+- **Existing CTA-rendering blocks** (sgs/hero etc.) are refactored to InnerBlocks composition. No deprecation path — D271/D293, pre-production policy. See spec 11 §5.
 - **Render-time sanitisation (XS-9.2):** `sgs/button` `render.php` uses a tightened `wp_kses` allowlist that **excludes `<a>`** — the wrapper anchor is emitted by the render path itself, so any nested `<a>` inside button content is a malformed input. URL scheme allowlisting (`http`, `https`, `mailto`, `tel`) is enforced at the converter layer when the button is composed from a mockup. Prevents nested-anchor markup and javascript:/data: URI injection.
 
 ## Pipeline / extraction
@@ -258,7 +258,7 @@ block-name/
 - `mediaType` — icon | emoji | image (default: icon)
 - `icon` — SVG slug from icon library (default: `star-filled`)
 - `mediaEmoji` — string (when `mediaType=emoji`)
-- `boxMedia` — media object (when `mediaType=image`; `image` retained for deprecation back-compat)
+- `boxMedia` — media object (when `mediaType=image`; `image` retained for back-compat)
 - `iconPosition` — top | left | right (default: top)
 - `heading` — string (RichText, `role: content`)
 - `subtitle` — string (RichText, `role: content`)
