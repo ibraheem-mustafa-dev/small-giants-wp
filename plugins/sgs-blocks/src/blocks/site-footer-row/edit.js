@@ -353,7 +353,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				rows={ [
 					{
 						key: 'background',
-						label: __( 'Background colour', 'sgs-blocks' ),
+						label: __( 'Row background', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
@@ -367,7 +367,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					},
 					{
 						key: 'text',
-						label: __( 'Text colour', 'sgs-blocks' ),
+						label: __( 'Row text colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',

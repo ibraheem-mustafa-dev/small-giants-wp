@@ -27,7 +27,7 @@ import {
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
 
@@ -437,6 +437,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		headerShrink,
 		headerHideOnScroll,
 		contrastSafe,
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourScrolled,
+		backgroundColourScrolledGradient,
+		textColour,
+		textColourScrolled,
+		headerTransparentDirection,
 		style,
 	} = attributes;
 
@@ -525,6 +532,87 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	return (
 		<>
+			{ /* COLOUR — mounted FIRST because WordPress concatenates same-group
+			     InspectorControls Fills in mount order, and this panel is pinned
+			     to the top of the block's inspector by standing rule.
+
+			     Migrated off WordPress's native colour supports 2026-08-19. The
+			     header was one of only three blocks showing core's colour UI with
+			     no SGS panel, while sgs/site-header-row carried the SAME two
+			     colours as SGS attributes — one concept, two mechanisms, two
+			     levels. block.json keeps `supports.color` DECLARED (a gate reads
+			     the key as a pipeline contract signal) with every sub-flag false,
+			     so core renders no panel of its own and there is exactly one
+			     colour home per block.
+
+			     Labels say "Header …" against the row block's "Row …" so the two
+			     levels read as different scopes rather than duplicates: this
+			     colours the whole bar, a row colours one band inside it. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Header background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'At rest', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
+								linked: true,
+							},
+							{
+								// `scrolled` is a REAL state, not a notional one:
+								// view.js toggles `.is-header-scrolled` on the
+								// header element and render.php paints against it.
+								// Structurally identical to `current`
+								// ([aria-current]) — a class toggled at runtime,
+								// painted by CSS.
+								key: 'scrolled',
+								label: __( 'Once scrolled', 'sgs-blocks' ),
+								value: backgroundColourScrolled,
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourScrolled: val ?? '',
+									} ),
+								gradientValue: backgroundColourScrolledGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										backgroundColourScrolledGradient: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Header text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'At rest', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'scrolled',
+								label: __( 'Once scrolled', 'sgs-blocks' ),
+								value: textColourScrolled,
+								onChange: ( val ) =>
+									setAttributes( { textColourScrolled: val ?? '' } ),
+							},
+						],
+					},
+				] }
+			/>
+
 			{ /* Background renders in the STYLES tab, not Settings (standardised
 			     2026-08-16, Bean-ruled). Same shared panel, same tab, on every
 			     wrapper block — it used to land in Settings here and in Styles on
@@ -839,6 +927,66 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							</Notice>
 						) }
 					</ToolsPanelItem>
+
+					{ /* WHICH STATE IS WHICH (2026-08-19). The transparent
+					     behaviour always had two states — see-through at rest,
+					     solid once scrolled — but the order was hardcoded, so a
+					     client who wanted colour at the top and transparency
+					     further down had no way to say so. This adds no new CSS
+					     mechanism; it swaps which of the two existing rules
+					     carries the transparency. Shown only once Transparent is
+					     on, for the same reason the contrast control is: with it
+					     off there is no pair to order. */ }
+					{ isTransparentOn && (
+						<ToolsPanelItem
+							label={ __( 'Which way round', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! headerTransparentDirection &&
+								'transparent-first' !== headerTransparentDirection
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									headerTransparentDirection:
+										'transparent-first',
+								} )
+							}
+						>
+							<SelectControl
+								label={ __( 'Which way round', 'sgs-blocks' ) }
+								value={
+									headerTransparentDirection ||
+									'transparent-first'
+								}
+								options={ [
+									{
+										label: __(
+											'See-through at the top, solid once scrolled',
+											'sgs-blocks'
+										),
+										value: 'transparent-first',
+									},
+									{
+										label: __(
+											'Solid at the top, see-through once scrolled',
+											'sgs-blocks'
+										),
+										value: 'solid-first',
+									},
+								] }
+								onChange={ ( value ) =>
+									setAttributes( {
+										headerTransparentDirection: value,
+									} )
+								}
+								help={ __(
+									'Set the colours for each state in the Colour panel, under “Header background”.',
+									'sgs-blocks'
+								) }
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					) }
 
 					{ /* Conditionally rendered, not just disclosure-hidden — see the
 					     isStickyOn docblock above. Only appears once Sticky on
