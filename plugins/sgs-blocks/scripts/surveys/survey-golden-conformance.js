@@ -208,22 +208,59 @@ function axisBannedLookalikes( spec, reached, canonicalFiles ) {
  * answer. Measured 2026-08-19: including it reports 50 blocks; excluding it
  * reports 26, which reproduces the schema's own independently-dated figure.
  */
-const NATIVE_UI_FLAGS = [ 'background', 'text', 'link', 'gradients', 'button', 'heading', 'enableContrastChecker' ];
+/**
+ * Which `supports.*` key makes WordPress CORE render its own competing UI.
+ *
+ * ⛔ READ FROM THE SCHEMA, NEVER HARDCODED. This axis previously checked
+ * `supports.color` for EVERY control type, because it was written when the
+ * schema encoded colour alone. The moment the other 13 types landed it reported
+ * 350 violations — 25 blocks x 14 types — the same colour answer repeated under
+ * thirteen wrong headings. The engine is only generic if it reads the predicate.
+ *
+ * Only 4 types declare a detectVia today (colour -> supports.color, length-unit
+ * and box-4value -> supports.spacing, typography -> supports.typography). The
+ * rest have no native competitor and correctly report N/A.
+ */
+function nativeUiSupportKey( spec ) {
+	const via = spec.nativeUi && spec.nativeUi.detectVia;
+	if ( ! via || 'string' !== typeof via ) return null;
+	const m = via.match( /supports\.([A-Za-z][A-Za-z0-9]*)/ );
+	return m ? m[ 1 ] : null;
+}
+
+/**
+ * Sub-flags that make core paint. "Any sub-flag set true" is the schema's own
+ * wording, so this is generic across families rather than a per-family list.
+ *
+ * ⛔ `__experimental*` keys are EXCLUDED. They are serialisation opt-outs, not
+ * UI switches — `__experimentalSkipSerialization` is REQUIRED by the conformant
+ * shape. Counting it reported 50 blocks against a true 25, a mistake made
+ * independently by two sessions before it was caught by re-reading the schema.
+ */
+function liveNativeFlags( supportValue ) {
+	if ( true === supportValue ) return [ '(enabled)' ];
+	if ( ! supportValue || 'object' !== typeof supportValue ) return [];
+	return Object.keys( supportValue ).filter(
+		( k ) => true === supportValue[ k ] && ! k.startsWith( '__' ) && 'enabled' !== k
+	);
+}
 
 function axisNativeUi( spec, blockJson, reached ) {
-	if ( ! spec.nativeUi ) return { verdict: NA, detail: 'schema declares no native-UI fingerprint' };
-	const colour = ( ( blockJson || {} ).supports || {} ).color;
-	if ( ! colour || typeof colour !== 'object' ) {
-		return { verdict: OK, detail: 'does not declare supports.color' };
-	}
-	const live = NATIVE_UI_FLAGS.filter( ( f ) => colour[ f ] === true );
-	if ( ! live.length ) return { verdict: OK, detail: 'declared, every UI flag false' };
+	const key = nativeUiSupportKey( spec );
+	if ( ! key ) return { verdict: NA, detail: 'schema declares no native-UI competitor for this control type' };
+
+	const supports = ( blockJson || {} ).supports || {};
+	if ( ! ( key in supports ) ) return { verdict: OK, detail: `does not declare supports.${ key }` };
+
+	const live = liveNativeFlags( supports[ key ] );
+	if ( ! live.length ) return { verdict: OK, detail: `supports.${ key } declared, every UI flag false` };
 
 	const panel = ( ( spec.canonical || {} ).panel || {} ).component;
 	const doublePainted = panel && reached.has( panel );
 	return {
 		verdict: BAD,
-		detail: `core renders its own UI (${ live.join( ',' ) })` + ( doublePainted ? ' — DOUBLE-PAINTED alongside ours' : ' — CORE-ONLY, no SGS panel' ),
+		detail: `core renders its own UI (supports.${ key }: ${ live.join( ',' ) })` +
+			( doublePainted ? ' — DOUBLE-PAINTED alongside ours' : ' — CORE-ONLY, no SGS panel' ),
 		kind: doublePainted ? 'double-painted' : 'core-only',
 	};
 }
@@ -585,7 +622,13 @@ function selfTest() {
 		if ( ! pass ) console.log( `         got ${ JSON.stringify( actual ) }, expected ${ JSON.stringify( expected ) }` );
 	};
 
-	const spec = { nativeUi: {}, canonical: { panel: { component: 'SgsColourPanel' } } };
+	// detectVia is what makes this axis apply at all — a type without one has no
+	// native competitor. Supplying it here keeps the fixtures honest about the
+	// contract rather than the old hardcoded-supports.color behaviour.
+	const spec = {
+		nativeUi: { detectVia: 'block.json supports.color — any sub-flag set true' },
+		canonical: { panel: { component: 'SgsColourPanel' } },
+	};
 
 	// NEGATIVE CONTROL for the trap I actually hit: __experimentalSkipSerialization
 	// is REQUIRED by the conformant shape. Counting it as a UI flag reports 50
@@ -688,6 +731,33 @@ function selfTest() {
 			'colour'
 		).qualifies,
 		null
+	);
+
+	// The bug these pin: this axis used to check supports.color for EVERY control
+	// type, reporting 350 violations (25 blocks x 14 types) the moment the other
+	// 13 landed — one colour answer repeated under thirteen wrong headings.
+	check(
+		'a control type with NO detectVia reports N/A, not a colour answer',
+		axisNativeUi( { nativeUi: {} }, { supports: { color: { text: true } } }, new Map() ).verdict,
+		NA
+	);
+	check(
+		'detectVia routes to the declared support key, not always color',
+		axisNativeUi(
+			{ nativeUi: { detectVia: 'block.json supports.typography — any sub-flag set true' } },
+			{ supports: { color: { text: true }, typography: { fontSize: true } } },
+			new Map()
+		).verdict,
+		BAD
+	);
+	check(
+		'…and a block with the OTHER family live reads CONFORMANT for this type',
+		axisNativeUi(
+			{ nativeUi: { detectVia: 'block.json supports.typography — any sub-flag set true' } },
+			{ supports: { color: { text: true }, typography: { __experimentalSkipSerialization: true } } },
+			new Map()
+		).verdict,
+		OK
 	);
 
 	console.log( '' );

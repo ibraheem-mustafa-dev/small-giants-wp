@@ -45,11 +45,32 @@ build, and it unblocks roughly 70-80% of the repair work.
 | **hero 8 dead `gridItem*` attrs deleted** + rule 21 ratcheted 259 → 253 | 126→118 attrs, 13→12 elements |
 | **Schema corrected** after Bean challenged its source | state vocabulary split real vs notional |
 | **`submenuPadding` tiered** to match nav-drawer/mega-panel | canary had ZERO stored values; fallback proven by executing the helper |
-| **State vocabulary renamed `selected` → `current`** — code layer only | 13 rows; NO reseed run, that is coordinated separately |
-| **tabs follows the vocabulary** + **DB reseed run** + **25 orphan rows pruned** | prediction declared then reconciled exactly; DB attrs 2440→2415 |
+| **State vocabulary renamed `selected` → `current`, then reseeded** | code-layer rename (13 rows) landed first; tabs + DB reseed + 25 orphan prune followed same session — DB attrs 2440→2415 |
 | **site-header: 6 attrs deleted** that could never render + rule 21 ratcheted 253→250 | no `layout` attr, so the emit gate was unsatisfiable |
 | **surface-cap now scans all 4** header/footer blocks (rows were never measured) | + the composite-undercount limitation documented |
 | **Header session prompt** written · **D670–D679** recorded · **STOP §A15** (9 STOPs, ritual Q15) · programme doc updated | |
+
+## This session — two new detectors built, NOT yet wired (2026-08-19)
+
+Verified via `node scripts/inspector-scan/run.js --json`, `python scripts/check-inert-controls.py
+--json`, `python scripts/check-undeclared-attrs.py --json`:
+
+- **`check-inert-controls.py`** — 1 finding: `sgs/feature-grid` `layout` overwritten in
+  `render.php` before use (CONDITIONAL) — the control is visible, the edit is discarded.
+  Required correction before trusting it: its self-test exercised four helpers and never
+  called its own scanner, so breaking the core pattern still passed.
+- **`check-undeclared-attrs.py`** — 3 findings: `sgs/quote.backgroundColourHoverGradient`,
+  `sgs/text.fontSizeMobile`, `sgs/text.fontSizeTablet` — destructured in `edit.js`, absent
+  from `block.json`, WP silently discards the write. First run reported 41 (38 false — gated
+  on non-existent `supports.style`, and wrongly flagged `className`, which WP declares by
+  default).
+- **NOT done:** neither detector is registered in `rules.json` or `package.json`; zero golden
+  rows registered; one duplicate survey pending deletion. Registration is the main agent's job
+  (single-merge-point files, §10 of the programme doc).
+- **State vocabulary is 4 names, not 3.** `sgs-db.py sql "SELECT css_state, COUNT(*) FROM
+  block_attributes GROUP BY css_state"` → `hover` 115 / `current` 13 / **`scrolled` 3**
+  (`sgs/site-header` background/backgroundGradient/text, admitted in the header session) /
+  zero `selected`. No doc previously listed `scrolled` as a vocabulary member in its own right.
 
 ## Blockers
 

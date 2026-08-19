@@ -1,6 +1,21 @@
 /**
  * SgsLinkControl — shared wrapper around WordPress core `LinkControl`.
  *
+ * ⚠ ADDED 2026-08-19 — this file currently has **ZERO JSX mounts** anywhere
+ * in the plugin (verified via `grep -rn '<SgsLinkControl'` across
+ * `src/blocks/` and `src/components/`, 2026-08-19 — every remaining hit
+ * across `card-grid`/`team-member`/`brand-strip`/`trust-bar`/`pricing-table`/
+ * `social-icons`/`media`/`form` is a comment citing the OLD shape, plus
+ * PHP `render.php` files that never import a JS component at all). It is
+ * superseded by `LinkPopoverControl` — see that file's own docblock ("Supersedes
+ * `SgsLinkControl`'s INLINE mount as the canonical shape") for why: this
+ * component's inline-`PanelBody` mounting of core `LinkControl` staged toggle
+ * state that only committed on an explicit Submit/Enter, so a toggle flipped
+ * then navigated away from was silently discarded (root-caused 2026-07-28).
+ * `LinkPopoverControl` fixed this by rendering the toggles itself, driven
+ * directly by `value`/`onChange`, never handed to `LinkControl`'s `settings`
+ * prop. This file is kept as source but is currently dead code.
+ *
  * Spec 35 Part I action item 2: every link/URL field in the framework should
  * offer internal-content search, an open-in-new-tab toggle, and rel
  * nofollow/sponsored controls — not a raw `TextControl`. `LinkControl`

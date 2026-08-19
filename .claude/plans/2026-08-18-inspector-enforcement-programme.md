@@ -127,12 +127,17 @@ exit 1 with COMMIT BLOCKED. Before this landed, the whole rule set ran only on a
 | Source | Coverage | Use |
 |---|---|---|
 | `block_attributes.role` | **2,435 / 2,440 sgs attrs — 99.8%** | ⭐ the join key |
-| `supports.sgs.elements` `label`/`order`/`clusters` | **308 / 308 — 100%** | the panel side |
+| `supports.sgs.elements` `label`/`order`/`clusters` | **307 elements, 83/83 blocks** ⚠ was 308 | the panel side |
 | `scripts/consistency/roster.json` `surfaces.*` | 83 / 83 blocks | ⭐ **in-repo, DB-derived, regenerated in prebuild, staleness-gated** |
 | `css_property` | 995 — 40.8% | secondary |
 | `inspector_control_type` | 973 — 39.9% | secondary |
 | `css_element` | 910 — 37.3% | ⛔ too sparse to gate on |
-| `supports.sgs.elements` `contentAttrs` | **0 / 308** | ⛔ unpopulated; see §3.3 |
+| `supports.sgs.elements` `contentAttrs` | **0 / 307** | ⛔ unpopulated; see §3.3 |
+
+⚠ **Corrected 2026-08-19** — re-verified via `python scripts/surveys/survey-control-mounts.py .`:
+`supports.sgs.elements` `label`/`order`/`clusters` totals **307 declared elements across 83 of
+83 declaring blocks** (not 308 — the earlier figure was one over). §3.3's "308 declared
+elements" carries the same stale figure and was not corrected here (out of this pass's scope).
 
 The `role` vocabulary already separates content from style from behaviour: `layout` 598 ·
 `color` 324 · `typography` 178 · `visual` 162 · `behaviour` 148 · `boolean-visibility` 145 ·
@@ -157,10 +162,14 @@ invent new ones.
 
 ### 2.5 The shared panels
 
-`SgsColourPanel` 60/83 · `TypographyControls` 16/83 · `ShadowControl` 15/83 ·
-`ResponsiveBoxControl` 60/83 · `MediaPicker` **8/83** (13 mounts across 8 blocks; imported by
-path, not barrel-exported). ⚠ An earlier draft said 9 — that conflated `MediaPicker` (8) with
-`MediaGalleryPicker` (1), the multi-count trap §6 warns about.
+⚠ **Re-measured 2026-08-19** via `python scripts/surveys/survey-control-mounts.py .` (MOUNT
+CENSUS `blocks` column). Two of the five prior figures were stale:
+`SgsColourPanel` **61/83** (was 60) · `TypographyControls` 16/83 (confirmed) · `ShadowControl`
+15/83 (confirmed) · `ResponsiveBoxControl` **48/83** (was 60 — the old figure over-counted) ·
+`MediaPicker` **8/83** (confirmed; 13 mounts across 8 blocks; imported by path, not
+barrel-exported). ⚠ An earlier draft said 9 — that conflated `MediaPicker` (8) with
+`MediaGalleryPicker` (1), the multi-count trap §6 warns about; that warning still holds and the
+survey confirms MediaPicker and MediaGalleryPicker (2 mounts / 1 block) remain distinct rows.
 Every one is adopted by a developer typing an import and a mount. **No filter, HOC, flag or
 DB row makes adoption happen or records that it is owed.** That is the root cause in §3.
 
@@ -241,6 +250,15 @@ colour rows, not twelve**.
 entries and ~90 `clusters: []` declaration-only entries are exactly the false positives the
 rule excludes. Net gateable: **138 elements across 50 blocks**, derived by predicate, never
 a hardcoded list.
+
+⚠ **Not re-verified 2026-08-19 — flagged, not corrected.** No D4 script exists yet (§4 still
+lists it "⬜ not built"), so this figure has no command that reproduces it; it was derived by
+hand-applying the predicate above to the manifest, not by running something. Re-verification
+attempted this session found no script under `scripts/` computing "138"/"50" for this rule (`git
+grep -n 138` and `git grep -n isWrapper` over `scripts/` turn up unrelated hex colours and other
+tooling only). Per this session's brief: leave the figure as-is rather than guess a replacement.
+Whoever builds D4 should treat 138/50 as an unverified prior, not ground truth, and let the
+built script's own count supersede it.
 
 **Per-family placement was considered and rejected.** Splitting one piece's appearance
 across a typography panel, a border panel and a colour panel means visiting three panels to
@@ -502,6 +520,25 @@ Counts corrected by measurement this session: double-painted labels 12 → **5**
    ways — see §2.2.
 5. **Promote one existing advisory rule to gate**, proving the promotion path works before
    adding more to a pool that has never drained.
+6. ⭐ **Two new standalone detectors exist, NOT yet registered in `rules.json` or wired into
+   the `inspector-scan` framework** (built 2026-08-19; the main agent registers them — see
+   the working rules in §10 on single-merge-point files):
+   - **`scripts/check-inert-controls.py`** — catches a block attribute overwritten in
+     `render.php` before use, so the client's control is visible but does nothing. **1 live
+     finding:** `sgs/feature-grid` `layout` (CONDITIONAL — `render.php:156` overwrites it).
+     Built by a subagent and required correction before it could be trusted: it shipped a
+     self-test that exercised four helper functions and never called its own scanner, so
+     breaking the detector's core matching pattern still passed self-test green.
+   - **`scripts/check-undeclared-attrs.py`** — catches an attribute destructured in
+     `edit.js` but never declared in `block.json`, which WordPress silently discards at
+     render (the D338 pattern). **3 live findings:** `sgs/quote`
+     `backgroundColourHoverGradient`, `sgs/text` `fontSizeMobile`, `sgs/text`
+     `fontSizeTablet`. Also built by a subagent and also required correction: the first run
+     reported 41 findings, of which 38 were false positives — it gated on `supports.style`,
+     which is not a real WordPress supports key, and treated `className` as needing
+     declaration when WordPress declares it by default.
+   Re-verify: `python scripts/check-inert-controls.py --json` and
+   `python scripts/check-undeclared-attrs.py --json` (both run clean today, post-correction).
 
 ### Phase 2 — hero, as a literal map of the thirteen
 

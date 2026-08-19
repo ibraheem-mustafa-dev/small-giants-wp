@@ -1302,13 +1302,19 @@ Stackable, Otter and Essential Blocks alike it is authoring order. Do NOT build 
 this line. Spec 35 **A8** ("panel order = frequency-first") is the other side of the same open
 question.
 
-**Derived, never hand-sorted.** The source is `supports.sgs.elements` in each `block.json` (**82 of
-83** files declare it; 283 elements — 83 is the FILE count, not the declaring count).
-Where an element cannot be resolved, the control **stays exactly where it is today**
+**Derived, never hand-sorted.** The source is `supports.sgs.elements` in each `block.json` — **83 of
+83** files declare it as of 2026-08-19 (`survey-control-mounts.py .`); 307 elements. *(Superseded:
+an earlier 2026-08-08 measurement read "82 of 83 … 283 elements"; the gap has since closed and the
+tree has grown — re-run the survey rather than quoting either figure.)* Where an element cannot be
+resolved, the control **stays exactly where it is today**
 and the ambiguity is reported — no-worse-than-today is the floor.
 
 **Applies to every state, not just hover.** `states.hover`, `states.current` and `states.scrolled`
-all render inline beside their base value (18 elements declare `hover`, 4 `current`, 1 `scrolled`).
+all render inline beside their base value. **Measured 2026-08-19** (`python
+scripts/surveys/survey-control-mounts.py .`): 22 elements declare `hover`, 3 `current`, 1
+`scrolled` (25 elements declare a state; 1 carries two). *(Superseded same-day figure, kept for the
+record only — do not act on it: "18 `hover`, 4 `current`, 1 `scrolled`". Always re-run the survey
+rather than trusting either count.)*
 ⚠ **`scrolled` ADDED 2026-08-19 (D682)** — admitted to `golden-controls.json`'s REAL state vocabulary
 on the same basis `current` was: a class toggled at RUNTIME (`.is-header-scrolled`, by
 `header-behaviours/view.js`) and painted by CSS in `sgs/site-header/render.php`. It is not notional —
@@ -1383,13 +1389,17 @@ schema is normative and lives in a **living** doc. It previously lived only in
 Archive is git-blame-only by project convention; a load-bearing schema cannot live there. That
 document remains the historical derivation; **this section is the schema.**
 
-**Measured against the tree, 2026-08-08** (not transcribed): **82 of 83 `block.json` files declare
-`supports.sgs.elements`; 283 elements.** ⚠ Not "83 of 83" — that figure was inherited from the
-design doc and is wrong; 83 is the FILE count, 82 the DECLARING count. Quote the predicate. Key
-frequencies — `label` 283 · `order` 283 · `clusters` 283 · `attrMap` 149 · `prefix` 102 ·
-`isWrapper` 69 · `layer` 57 · `states` 21 (18 `hover`, 4 `current` — renamed from `selected`
-2026-08-19, D676/D678 — 2 elements carry both; plus 1 `scrolled` on `sgs/site-header.wrapper`,
-D682). ⚠ Counts drift — re-derive from the manifests rather than quoting this line.
+**Measured 2026-08-19** (`python scripts/surveys/survey-control-mounts.py .`): **83 of 83
+`block.json` files declare `supports.sgs.elements`; 307 elements. 25 elements declare a state —
+`hover` 22 · `current` 3 · `scrolled` 1 (on `sgs/site-header.wrapper`) · 1 element carries two.**
+`scrolled` is a real state name (renamed from `selected` → `current` at D676/D678; `scrolled` added
+separately at D682) and must be included wherever this document enumerates the state vocabulary. ⚠
+Counts drift — re-derive from the manifests rather than quoting this line.
+
+*(Superseded, kept for the historical record only — do not act on either: a 2026-08-08 pass read
+"82 of 83 … 283 elements"; a later same-day pass at D676/D678/D682 read "21 states (18 `hover`, 4
+`current`, 2 elements carry both, plus 1 `scrolled`)". Both were accurate for their own measurement
+date; the tree has grown since — always re-run the survey.)*
 
 ```jsonc
 "supports": { "sgs": { "elements": {
@@ -1505,10 +1515,10 @@ Full reconciliation in the ELEMENT MANIFEST section's denominator box.
 
 | Axis | Source | Split |
 |---|---|---|
-| `surfaces.colour` | roster.json | 64 |
-| `surfaces.styling` | roster.json | 65 |
-| `surfaces.media` | roster.json | 30 |
-| `surfaces.animation` | roster.json | 21 — **the proven precedent**, used by rule 17 |
+| `surfaces.colour` | roster.json | **65** (measured 2026-08-19, `survey-control-mounts.py .`; superseded — was quoted as 64) |
+| `surfaces.styling` | roster.json | **64** (measured 2026-08-19; superseded — was quoted as 65; the two figures were transposed against colour in the prior text) |
+| `surfaces.media` | roster.json | **33** (measured 2026-08-19; superseded — was quoted as 30) |
+| `surfaces.animation` | roster.json | **22** (measured 2026-08-19; superseded — was quoted as 21) — **the proven precedent**, used by rule 17 |
 | `surfaces.link` | roster.json | **17** (over- AND under-inclusive — see LINK §5). ⚠ Was 16; D523 flipped `sgs/form` when `successRedirect` became `SgsLinkControl`, because `build-roster.py:91` derives this axis from a haystack INCLUDING `inspector_control_type`. Regenerate `roster.json` after ANY DB write to that column. |
 | `category` | roster.json | content 46 · forms 17 · interactive 13 · layout 8 |
 | `blocks.tier` | DB | block 80 · class-section 4 |
@@ -1526,33 +1536,62 @@ Full reconciliation in the ELEMENT MANIFEST section's denominator box.
 
 **No block-scoped axis above can select a control injected by a universal extension**, because a
 `blocks.registerBlockType` filter writes attributes at runtime and `block_attributes` only ever sees
-what a `block.json` declares. `extensions/hover-effects.js` registers **11 literal `sgsHover*` attrs
-(19 `sgs*` attrs in total) onto 67 blocks** this way — invisible to every DB column by construction.
-STATE's "23 blocks, 3 conform" is therefore a large undercount **of the very shape STATE bans**.
-*(The "13" first written here was corrected by QC council 2026-08-08 — count the literals before
-quoting a reach figure.)*
+what a `block.json` declares. That generalisation still holds. The specific reach figure attached to
+it does not — see the correction immediately below.
 
-⛔ **THIS AXIS IS AN UNBUILT PREREQUISITE, not just a rule to remember.** Measured 2026-08-08: the
+⛔ **CORRECTED 2026-08-19 — the `hover` extension's reach is 0, not 67.** D551 flipped `hover` (and
+`blockLink`) from `hideExtensions` (opt-out denylist) to `enabledExtensions` (opt-in allowlist);
+`isExtensionEnabled()` now returns true only when a block.json explicitly lists the slug, and
+**verified 2026-08-19 (`grep -A3 enabledExtensions src/blocks/*/block.json`): no block.json lists
+`hover`.** The `hover` extension therefore reaches **0** blocks today. §1 field 9 already stated this
+("shared state extension with live reach 0") — that was the one place in this document that was
+right; the passages below previously contradicted it and are now brought into line.
+*(Superseded, kept for the record only — do not act on it: "`extensions/hover-effects.js` registers
+11 literal `sgsHover*` attrs (19 `sgs*` attrs in total) onto 67 blocks".)* STATE's "23 blocks, 3
+conform" (§6 field 5) is a name-matched DB count, independent of this extension's live reach, and
+still stands on its own terms.
+
+⚠ **Reach must be derived PER SLUG from whichever mechanism currently governs that slug, never
+copied from one extension to another.** Live tallies measured 2026-08-19 (`grep -c` per
+`enabledExtensions` listing): `background` 7 · `width` 5 · `shapeDividers` 4 · `layout` 3 ·
+`gridItems` 3 · `blockLink` 3 · `hover` 0. A "67-block reach" figure attached to any OTHER slug in
+this document (LINK's block-link surface, SHADOW's preset reach) must be independently re-verified
+against this same allowlist — see those sections' own corrections.
+
+✅ **CORRECTED 2026-08-19 — this axis is no longer an unbuilt prerequisite.** The 2026-08-08 claim
+below was true when written and is now stale; kept for the historical record, not to be acted on:
+
+~~⛔ **THIS AXIS IS AN UNBUILT PREREQUISITE, not just a rule to remember.** Measured 2026-08-08: the
 existing engine **cannot see** `src/blocks/extensions/` at all. `inspector-scan/core/roster.js:58-70`
 only admits directories under `src/blocks/` that contain a `block.json`, and `extensions/` has none;
 `run.js`'s `buildCtx` supplies `blocksDir` / `patternsDir` / `themeDir` and **no `extensionsDir`**;
 `core/components.js:34` discovers only `src/components/`, so the proposed transitive
 `writesColour`/`writesIcon` resolution will not reach the extension HOCs either. **Any rule whose
-scope includes the extension surface is blocked until that plumbing lands.** Per-block reach is NOT
-available from `generate-extension-attributes.js` (names only) — derive it from `hideExtensions`.
+scope includes the extension surface is blocked until that plumbing lands.**~~
+
+**What is actually true today (verified 2026-08-19 by reading the current files directly):** `run.js`
+`buildCtx()` now supplies `extensionsDir` AND `componentsDir` on `ctx`, alongside `blocksDir` /
+`patternsDir` / `themeDir`. `core/components.js` exports `resolveComponentFiles()`, which indexes
+`src/components/`, every `src/blocks/*/components/`, AND `src/blocks/extensions/` — the plumbing the
+2026-08-08 text said was missing. Rule 26 already reads that corpus. **The downstream conclusion that
+LINK / STATE / SHADOW / COLOUR are "undetectable by construction" no longer holds** — the plumbing
+those four contracts said was blocking them has landed; each contract's own `Scope`/`Detection`
+fields should be read against their own 2026-08-19 corrections, not against this stale blocker.
 
 The contract originally made this argument for LINK alone and failed to generalise it. It binds on
-**four** contracts, all reached through the same file: **LINK** (raw URL field), **STATE** (11 literal
-`sgsHover*` attrs, 19 `sgs*` total), **SHADOW** (a preset `SelectControl` on a shadow attr), **COLOUR** (hover colour
+**four** contracts, all reachable through `src/blocks/extensions/`: **LINK** (raw URL field), **STATE**
+(hover attrs), **SHADOW** (a preset `SelectControl` on a shadow attr), **COLOUR** (hover colour
 fields). Therefore:
 
 > **Every contract's `Scope` field must state its extension reach explicitly, and every detection
 > rule must read `src/blocks/extensions/*.js` as well as per-block `edit.js`.** A rule scanning only
-> per-block `edit.js` has a blind spot the exact size of the extension roster, and that blind spot is
-> where the largest single violation set in this document lives.
+> per-block `edit.js` has a blind spot the exact size of the extension roster — now closed by
+> `resolveComponentFiles()`, but only for rules that actually use it.
 
-Reach is derived, not hardcoded: a block is in an extension's surface when it does not opt out via
-`supports.sgs.hideExtensions`. `noOptOutExtensions` is `[]` today.
+Reach is derived, not hardcoded: a block is in an extension's surface when it opts IN via
+`supports.sgs.enabledExtensions` (D551 — was an opt-out `hideExtensions` denylist for `hover` and
+`blockLink` specifically; other extensions may still use the older denylist form). `noOptOutExtensions`
+is `[]` today.
 
 **Bean's own suggested categories all map to real axes.** Three corrections:
 - **"Section" is three distinct axes**, not one — `tier='class-section'` (4), `container_kind='section'`
@@ -1682,8 +1721,10 @@ Regenerate before building any gate on them.
 
  *(Placement and SHAPE stay independent axes — see field 9a. Moving a colour must never change what
  the control looks like.)*
-5. **Scope** — eligibility `surfaces.colour` (64); detection target `role='color'` (50 blocks,
-   261 rows). The 14-block gap is a DB-completeness issue, not a control gap.
+5. **Scope** — eligibility `surfaces.colour` (**65** as of 2026-08-19 — see the scoping axes table;
+   superseded from 64); detection target `role='color'` (50 blocks, 261 rows). ⚠ The "14-block gap"
+   below was derived from the old 64 figure and is NOT re-derived here — re-run the `role='color'`
+   count before quoting a gap size.
 6. **Conformance** — ✅ **Corrected 2026-08-19: `sgs/star-rating` no longer violates.** It now
    mounts `SgsColourPanel` (`star-rating/edit.js:134`), so this field's stale "49/50, star-rating
    violates" reads as 50/50 against the OLD (pre-D609) shape. This figure still measures the legacy
@@ -1823,27 +1864,35 @@ consumers not yet migrated — see field 6). Fields below are rewritten to match
 4. **Tab** — unchanged: `settings` when the control styles nothing and lands in the pinned `Settings`
    panel; an element-scoped link (e.g. `sgs/icon`'s own Link panel) stays in that element's TIER 1
    panel regardless.
-5. **Scope** — unchanged from the pre-supersession measurement: **14 blocks with a navigational link
-   field, plus the 67-block extension surface** (`hover-effects.js`'s block-link — no block-scoped
-   axis can see this; see the EXTENSION SURFACE axis, council S1).
-6. **Conformance (re-measured 2026-08-13, post-migration)** — Migrated to `LinkPopoverControl`:
-   `sgs/button` (dual-trigger, `LinkPopoverContent` direct), the block-link extension (67-block reach,
-   `LinkPopoverField` + `renderExtraFields` for its bespoke accessible-label field), `sgs/icon`,
-   `sgs/media`, `sgs/product-card` (3 fields, `searchOnly`). **Still on `SgsLinkControl`'s inline
-   mount — 7 blocks the DB's `role='link-href'` scan cannot see (repeater-item links, not top-level
-   attrs):** `brand-strip`, `card-grid`, `form`, `pricing-table`, `social-icons`, `team-member`,
-   `trust-bar`. These are a migration backlog for the same reason field 5 already named them
-   DB-invisible — not newly discovered, but newly PRIORITISED now the canonical shape has changed
-   under them.
+5. **Scope** — **14 blocks with a navigational link field, plus the `blockLink` extension surface —
+   3 blocks (measured 2026-08-19, `grep -A3 enabledExtensions src/blocks/*/block.json`), not 67.**
+   ⛔ **Superseded, kept for the record only — do not act on it:** "plus the 67-block extension
+   surface (`hover-effects.js`'s block-link)". That figure predates D551's opt-out→opt-in flip on
+   `blockLink`; see the EXTENSION SURFACE axis correction above — reach must be re-derived per slug,
+   not copied from an earlier measurement.
+6. **Conformance (re-measured 2026-08-19, post-migration)** — Migrated to `LinkPopoverControl`:
+   `sgs/button` (dual-trigger, `LinkPopoverContent` direct), the `blockLink` extension (**3-block
+   reach**, superseded from 67 — see field 5, `LinkPopoverField` + `renderExtraFields` for its bespoke
+   accessible-label field), `sgs/icon`, `sgs/media`, `sgs/product-card` (3 fields, `searchOnly`).
+   **`SgsLinkControl`'s inline-mount backlog is now DISCHARGED — 0 blocks, not 7.** Measured
+   2026-08-19 (`survey-control-mounts.py .`): `SgsLinkControl` has **0 JSX mounts tree-wide**. Rule
+   27 (`27-superseded-link-control.js`) was promoted from advisory to `mode: gate` at
+   `openBacklog: 0` on 2026-08-14 — its own `advisoryReason` in `rules.json` records the same 0-count
+   backlog clearing across two sessions (the last of the 7 — `social-icons` — migrated 2026-08-14,
+   commit `f6b26866`).
+   *(Superseded, kept for the record only — do not act on it: "Still on `SgsLinkControl`'s inline
+   mount — 7 blocks the DB's `role='link-href'` scan cannot see: `brand-strip`, `card-grid`, `form`,
+   `pricing-table`, `social-icons`, `team-member`, `trust-bar`".)*
 7. **Detection** — `inspector-scan/rules/08-raw-url-link.js` extended 2026-08-13 to also flag
-   `SgsLinkControl` JSX elements (not just `<TextControl type="url">`), scoped ADVISORY (the 7
-   remaining consumers are a known backlog, not a build-breaking regression) with a named promotion
-   trigger: promote to blocking once the 7-block backlog clears.
+   `SgsLinkControl` JSX elements (not just `<TextControl type="url">`), and
+   `27-superseded-link-control.js` flags any NEW `<SgsLinkControl>` JSX usage. **The promotion trigger
+   named in earlier text has already fired** — rule 27 is `mode: gate` as of 2026-08-14, not advisory
+   awaiting a backlog clear.
 8. **Open** — is `google-reviews.reviewRequestUrl` genuinely config, or a link a visitor follows?
-   Does `whatsapp-cta.phoneNumber` deserve its own PHONE contract? Should the 7 remaining
-   `SgsLinkControl` repeater-item consumers migrate to `LinkPopoverField` in a follow-up pass, or does
-   a repeater ITEM (as opposed to a block-level field) want a different trigger shape (inline, not
-   popover — a popover-per-row could feel heavy in a 6-row repeater)? Flagged, not decided, here.
+   Does `whatsapp-cta.phoneNumber` deserve its own PHONE contract? The former 7-block
+   `SgsLinkControl` repeater-item migration question is CLOSED (field 6) — the repeater-ITEM trigger
+   shape question it raised (inline vs popover-per-row) was resolved in practice by the migration
+   itself; no residual decision remains open here.
 
 ### 3. ENUM / MODE
 
@@ -1858,8 +1907,8 @@ consumers not yet migrated — see field 6). Fields below are rewritten to match
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
-5. **Scope** — 284 rows with declared enums; 1,372 string rows are the search space, not the
-   violator count.
+5. **Scope** — **272 rows with declared enums** (measured 2026-08-19, `survey-control-mounts.py .`;
+   superseded from 284); 1,372 string rows are the search space, not the violator count.
 6. **Conformance — three distinct live defects on ONE shared control:**
    - `sgs/testimonial-slider` — enum `full|split` vs picker `stack|flex|grid`. **Zero overlap.** Its
      only Layout control is permanently broken.
@@ -1976,7 +2025,8 @@ its element's panel (TIER 1) regardless of this field.)*
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
-5. **Scope** — `surfaces.media` (30) is the eligible pool. The 15 blocks declaring
+5. **Scope** — `surfaces.media` (**33** as of 2026-08-19 — see the scoping axes table; superseded
+   from 30) is the eligible pool. The 15 blocks declaring
    `supports.sgs.imageControls` are a **conformance subset, not the pool**. Rule 18's own
    `wrapsImage` resolution is MORE precise than the DB proxy — do not regress it.
 6. **Conformance — the D521 rollout landed cleanly on 6 of 7.** Tier types match base types
@@ -2075,9 +2125,15 @@ its element's panel (TIER 1) regardless of this field.)*
    them:**
    - a **preset `SelectControl`** (None/Small/Medium) writing a shadow attr — *the only shape rule 07
      inspects*;
-   - **a preset `SelectControl` on a shadow attr reaching 67 blocks through
-     `extensions/hover-effects.js`** — same shape, invisible to every per-block scan (see the
-     EXTENSION SURFACE axis);
+   - ⛔ **CORRECTED 2026-08-19 — a preset `SelectControl` on a shadow attr via
+     `extensions/hover-effects.js`'s `hover` extension reaches 0 blocks, not 67.** D551 flipped
+     `hover` to an opt-in `enabledExtensions` allowlist and no block.json lists it (verified
+     `grep -A3 enabledExtensions src/blocks/*/block.json` — see the EXTENSION SURFACE axis
+     correction above; same finding as §1 field 9 and §2 LINK field 5). *(Superseded, kept for the
+     record only — do not act on it: "reaching 67 blocks through `extensions/hover-effects.js` —
+     same shape, invisible to every per-block scan".)* The shape itself (a preset select standing in
+     for `ShadowControl`) is still real wherever it DOES occur block-locally — this correction is to
+     the extension-reach figure, not to whether the lookalike is banned;
    - **a bare `TextControl` asking for raw CSS** — `sgs/quote:699` and `sgs/media:685`; media's help
      text literally reads *"A raw CSS box-shadow value, e.g. 0 6px 24px rgba(0,0,0,0.15)"*. A direct
      breach of the framework's own non-negotiable that no setting may require touching code;
@@ -2091,7 +2147,10 @@ lands in the pinned `Settings` panel (D537). A control that has a real property 
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `css_property LIKE '%shadow%'` across `block_attributes`, **plus** the extension
-   surface. Real footprint **17 blocks**; rule 07 reports 1.
+   surface. Real footprint **17 blocks**; rule 07 reports 1. ⚠ Not re-derived today — this figure was
+   computed when the extension surface's `hover` reach was believed to be 67 (now corrected to 0
+   above); re-run the `css_property LIKE '%shadow%'` query before quoting 17 rather than assuming it
+   still holds.
 6. **Conformance** — 4 exact defects confirmed (`heading`/`text` × `boxShadow`/`boxShadowHover`),
    2 raw-CSS text fields, 1 duplicate builder, 6 secondary shadow attrs unverified.
 7. **Detection** — census from the DB, then classify each attr's control in `edit.js` as
@@ -2578,7 +2637,10 @@ carried a duplicate-native-panel rule either — that was a phantom-tool claim.)
 #### CO-18. Decorative-image toggle + ARIA-label *(was condition 18 — RESTORED 2026-08-08)*
 A decorative-image toggle (**empty alt + `aria-hidden`**) and a general **ARIA-label** control are
 present wherever the block's rendered markup needs them. *(Spec 35 C, E6.)* **Enforced by**
-UNENFORCED — no automated gate exists.
+`inspector-scan/rules/18-decorative-image-aria.js`, ADVISORY, `openBacklog: 13` (verified
+2026-08-19 against `plugins/sgs-blocks/scripts/inspector-scan/rules.json`). ⛔ **Superseded, kept
+for the record only — do not act on it: "UNENFORCED — no automated gate exists."** That was false
+when written and remains false today; the rule has existed and run since 2026-08-03.
 ⛔ **Restored after the same audit.** The map claimed §7 MEDIA field 2 + CO-19. Neither holds: §7
 field 2 says only "alt text", and CO-19 governs the accessibility of the **editor control UI itself**
 (keyboard, contrast, `aria-describedby`) — a different target from the **rendered output's**

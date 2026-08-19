@@ -37,20 +37,29 @@
  * the caller passes `states`:
  *
  *  - No `states` prop → THE LEGACY SHAPE, byte-identical rendering to every
- *    existing call site (43 blocks / 214 instances, contract §1 field 6) —
- *    a labelled `ColorPalette` inline in the sidebar. Only change: the
- *    long-standing missing-`id` defect (field 2) is fixed here, for every
- *    caller, via `useInstanceId` + a verified-honoured `aria-label` on
- *    `ColorPalette` (see the comment on that prop below for why `id` alone
- *    does not fix this).
+ *    existing call site — a labelled `ColorPalette` inline in the sidebar.
+ *    Only change: the long-standing missing-`id` defect (field 2) is fixed
+ *    here, for every caller, via `useInstanceId` + a verified-honoured
+ *    `aria-label` on `ColorPalette` (see the comment on that prop below for
+ *    why `id` alone does not fix this).
  *  - `states={[{ key, label, value, onChange, linked? }, …]}` → THE NEW
  *    D609 ROW SHAPE (`SgsColourStateControl` below): a thin swatch row that
  *    opens a popover; a single state renders the palette directly, 2+ states
  *    add an in-popover tab toggle. This is the shape every colour control
- *    should eventually carry (9a) — today only the pilot block
- *    (`sgs/icon`) opts in, per the build brief's "pilot ONE block, do not
- *    roll out" instruction. Converting the other 42 call sites is a
- *    separate, deliberate decision, not a side effect of this file.
+ *    should eventually carry (9a).
+ *
+ *    ⚠ CORRECTED 2026-08-19 — the two paragraphs above used to quote fixed
+ *    counts ("43 blocks / 214 instances" for the legacy shape; "today only
+ *    the pilot block sgs/icon opts in… the other 42 call sites") that were
+ *    true only at D609 (2026-08-13), before `SgsColourPanel` (added
+ *    2026-08-19, contract §1 field 1) became the 61-block adoption route.
+ *    Both shapes are now live across many more callers and the split is a
+ *    moving target — Spec 35 PART O §1 field 9 records the current rollout
+ *    as "only 17% of colour rows carry 2+ states… the other 83% still call
+ *    the component with no `states` prop", itself flagged there as due for
+ *    re-measurement. Do not requote a fixed block/instance count here —
+ *    re-derive from `golden-controls.json` or the spec field above, which
+ *    are the sources this number is meant to track.
  */
 import { useSettings } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';

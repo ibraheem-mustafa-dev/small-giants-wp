@@ -1,18 +1,26 @@
 /**
  * DeviceTabs — shared accessible device-tier switcher (FR-37-29).
  *
+ * ⚠ CORRECTED 2026-08-19 — this file currently has **ZERO JSX mounts**
+ * anywhere in the plugin (verified via `grep -rl '<DeviceTabs\b'` across
+ * `src/blocks/` and `src/components/`, 2026-08-19 — every remaining hit is a
+ * comment documenting its removal, not a live mount). The two consumers this
+ * docblock used to describe (`ResponsiveControl`, `ResponsiveOverride`) both
+ * removed their per-control `<DeviceTabs>` strip — Phase 1.2 (2026-08-10) for
+ * `ResponsiveControl`, Phase 1.3 (2026-08-10) for `ResponsiveOverride` and
+ * `ResponsiveTriStateControl`. What supersedes it: the single global device
+ * toggle docked at the bottom of the inspector,
+ * `src/blocks/extensions/responsive-device-toggle.js`, which every
+ * responsive control now reads via `core/editor`'s `getDeviceType()` instead
+ * of rendering its own switcher. This file is kept as source but is
+ * currently dead code — do not cite the description below as describing a
+ * live mount without re-verifying first.
+ *
  * Presentational only: owns the `role="tablist"` / `role="tab"` structure,
  * `aria-selected`, roving tabindex, arrow-key + Home/End keyboard navigation,
  * and >=44x44px targets. It owns NO state — the active tier and the change
- * handler are both controlled by the caller, so each consumer keeps its own
- * state model on top of this shared shell:
- *
- *   - `ResponsiveControl` reads and drives WordPress's native `core/editor`
- *     device preview (falling back to local state where that store is
- *     absent) — clicking a tab here resizes the real editor canvas.
- *   - `ResponsiveOverride` keeps its own per-tier `{desktop,tablet,mobile}`
- *     object model with inherit semantics; it uses `getTabLabel` to show an
- *     "(inherited)" label on a tier with no own value.
+ * handler are both controlled by the caller, so a consumer mounting it would
+ * keep its own state model on top of this shared shell.
  *
  * Accessibility (FR-37-29 / WCAG 2.2):
  *  - Real `tablist`/`tab` roles (not a plain `ButtonGroup`), so the switcher
