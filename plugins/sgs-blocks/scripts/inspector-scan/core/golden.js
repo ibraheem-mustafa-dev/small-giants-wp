@@ -56,6 +56,36 @@ const GOLDENS_DIR = path.resolve( __dirname, '..', '..', 'consistency', 'goldens
 // are named explicitly; a fourth peer needs its own line, not an implicit one.
 const PEER_FILES = [ 'styling.json', 'input.json', 'behaviour.json' ];
 
+// The axes the census can actually MEASURE, and the schema field each one
+// needs to be measurable at all. Keyed by what the axis DOES, not by any
+// control type's name — a type is measurable on an axis when it declares the
+// field, whatever the type is called.
+const MEASURABLE_AXES = [ 'canonical', 'bannedLookalikes', 'nativeUi' ];
+
+/**
+ * Can this axis be measured for this row, i.e. does the row carry the field
+ * the engine reads? A row whose axis object exists but holds only prose
+ * (`_note`) is NOT measurable — that shape is exactly how a capability goes
+ * dark while still looking declared.
+ *
+ * @param {Object} row  One control-type row.
+ * @param {string} axis One of MEASURABLE_AXES.
+ * @return {boolean} True when the engine has something to read.
+ */
+function axisIsMeasurable( row, axis ) {
+	const a = row && row[ axis ];
+	if ( ! a || typeof a !== 'object' ) return false;
+	if ( axis === 'canonical' ) {
+		return Boolean(
+			( a.panel && a.panel.component ) || ( a.row && a.row.component )
+		);
+	}
+	if ( axis === 'bannedLookalikes' ) {
+		return Array.isArray( a.jsxComponents ) && a.jsxComponents.length > 0;
+	}
+	return typeof a.detectVia === 'string' && a.detectVia.length > 0;
+}
+
 /**
  * The union of golden-controls.json + any of PEER_FILES that exist on disk.
  * A missing peer file is tolerated (ENOENT) since B/C's files may land after
@@ -78,7 +108,12 @@ const PEER_FILES = [ 'styling.json', 'input.json', 'behaviour.json' ];
 function loadMergedSchema() {
 	const base = loadSchema();
 	const merged = {
-		_meta: { ...base._meta, encoded: [ ...base._meta.encoded ], sources: [ 'golden-controls.json' ] },
+		_meta: {
+			...base._meta,
+			encoded: [ ...base._meta.encoded ],
+			sources: [ 'golden-controls.json' ],
+			capabilityLoss: [],
+		},
 		controls: { ...base.controls },
 	};
 	const claimedByPeer = Object.create( null ); // control-type key -> which peer file claimed it
@@ -101,6 +136,36 @@ function loadMergedSchema() {
 			);
 		}
 		for ( const k of peerKeys ) claimedByPeer[ k ] = file;
+		// CAPABILITY-LOSS LEDGER. Overriding a base row is expected, but an
+		// override that DROPS a measurable axis the base row declared silently
+		// removes a whole detection capability — the census then reports N/A,
+		// which is indistinguishable from "this type has no such axis".
+		// Measured 2026-08-19: styling.json's finalised typography / box-4value
+		// / length-unit rows each replaced a base row carrying
+		// `nativeUi.detectVia` with one carrying only a `_note`, and the
+		// native-UI axis for those three went dark in one merge. That may be
+		// the right call per type — box-4value's own note calls it "a gap, not
+		// silently assumed clean" — but it must be VISIBLE, not inferred later
+		// from a column of N/A. Recorded on _meta so a caller can print it;
+		// deliberately not thrown, since a legitimate finalisation may drop an
+		// axis that genuinely does not apply.
+		for ( const k of peerKeys ) {
+			const baseRow = base.controls[ k ];
+			const peerRow = peer.controls[ k ];
+			if ( ! baseRow || ! peerRow ) continue;
+			for ( const axis of MEASURABLE_AXES ) {
+				const had = axisIsMeasurable( baseRow, axis );
+				const has = axisIsMeasurable( peerRow, axis );
+				if ( had && ! has ) {
+					merged._meta.capabilityLoss.push( {
+						type: k,
+						axis,
+						from: 'golden-controls.json',
+						to: 'goldens/' + file,
+					} );
+				}
+			}
+		}
 		Object.assign( merged.controls, peer.controls || {} );
 		merged._meta.encoded.push( ...( ( peer._meta && peer._meta.encoded ) || peerKeys ) );
 		merged._meta.sources.push( 'goldens/' + file );
@@ -328,6 +393,8 @@ function slugify( s ) {
 module.exports = {
 	loadSchema,
 	loadMergedSchema,
+	axisIsMeasurable,
+	MEASURABLE_AXES,
 	GOLDEN_PATH,
 	NATIVE_UI_FLAGS,
 	nativeUiFlags,

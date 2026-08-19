@@ -48,7 +48,7 @@ const path = require( 'path' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const { resolveComponentFiles } = require( '../inspector-scan/core/components' );
-const { loadMergedSchema } = require( '../inspector-scan/core/golden' );
+const { loadMergedSchema, axisIsMeasurable: schemaAxisIsMeasurable } = require( '../inspector-scan/core/golden' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
 const BLOCKS_DIR = path.join( PLUGIN_ROOT, 'src', 'blocks' );
@@ -296,7 +296,18 @@ function axisBannedLookalikes( spec, reached, canonicalFiles ) {
 function nativeUiSupportKey( spec ) {
 	const via = spec.nativeUi && spec.nativeUi.detectVia;
 	if ( ! via || 'string' !== typeof via ) return null;
-	const m = via.match( /supports\.([A-Za-z][A-Za-z0-9]*)/ );
+	// ⛔ The leading `_` is REQUIRED in this character class. WordPress ships
+	// real support families under `__experimental*` names, and the previous
+	// pattern `[A-Za-z][A-Za-z0-9]*` could not match one — so `border`, whose
+	// row DOES declare `detectVia: block.json supports.__experimentalBorder`,
+	// silently resolved to null and reported N/A across all 83 blocks. A
+	// declared predicate that the engine cannot read is the worst shape a
+	// detector can take: it looks like "this type has no native competitor"
+	// and is indistinguishable from a clean result. Session A's own handover
+	// records 52 blocks with `supports.__experimentalBorder` sub-flags TRUE —
+	// none of which this axis could see. Covered by the selfTest fixture
+	// 'an __experimental support family is readable, not silently N/A'.
+	const m = via.match( /supports\.(_*[A-Za-z][A-Za-z0-9_]*)/ );
 	return m ? m[ 1 ] : null;
 }
 
@@ -667,7 +678,16 @@ function survey() {
 			rows.push( { block: `sgs/${ slug }`, type, axes } );
 		}
 	}
-	return { encoded, rows };
+	// schemaControls + capabilityLoss travel with the result so the report can
+	// distinguish "this axis does not apply" from "nothing measured it", and
+	// name any axis a peer row deleted. Without them a reader has only a column
+	// of N/A, which looks like coverage.
+	return {
+		encoded,
+		rows,
+		schemaControls: golden.controls || {},
+		capabilityLoss: ( golden._meta && golden._meta.capabilityLoss ) || [],
+	};
 }
 
 // ---------------------------------------------------------------------------
@@ -718,6 +738,47 @@ function report( result ) {
 		for ( const [ file, n ] of [ ...owners ].sort( ( a, b ) => b[ 1 ] - a[ 1 ] ) ) {
 			console.log( `  ${ String( n ).padStart( 3 ) } block(s)  ${ path.relative( PLUGIN_ROOT, file ) }` );
 		}
+	}
+
+	// ── MEASURABILITY ────────────────────────────────────────────────────────
+	// A column of N/A has two completely different meanings and the totals
+	// above cannot tell them apart: "this axis genuinely does not apply to this
+	// type" versus "this type's row never declared the field the engine reads,
+	// so nothing was measured". Reporting the second as N/A is a false
+	// absence — it reads exactly like a clean, fully-covered result. This
+	// section states, per type, which axes the census could actually evaluate.
+	console.log( '' );
+	console.log( 'MEASURABILITY — which axes each control type can be scored on' );
+	console.log( '  (UNMEASURED = the row declares no field for that axis; NOT a clean result)' );
+	const MEASURED_AXES = [ 'canonical', 'bannedLookalikes', 'nativeUi' ];
+	const unmeasured = [];
+	for ( const type of result.encoded ) {
+		const spec = ( result.schemaControls || {} )[ type ] || {};
+		const cells = MEASURED_AXES.map( ( a ) => {
+			const can = schemaAxisIsMeasurable( spec, a );
+			if ( ! can ) unmeasured.push( `${ type }.${ a }` );
+			return ( can ? 'measured' : 'UNMEASURED' ).padEnd( 13 );
+		} );
+		console.log( '  ' + type.padEnd( 22 ) + cells.join( '' ) );
+	}
+	console.log(
+		`  ${ result.encoded.length } type(s) x ${ MEASURED_AXES.length } axes = ` +
+		`${ result.encoded.length * MEASURED_AXES.length } cells, ` +
+		`${ unmeasured.length } UNMEASURED`
+	);
+
+	// Capability the merge DELETED: a finalised peer row replacing a base row
+	// that declared an axis the peer does not. Loud, because the symptom is a
+	// column of N/A that looks like coverage.
+	const loss = result.capabilityLoss || [];
+	if ( loss.length ) {
+		console.log( '' );
+		console.log( 'CAPABILITY LOST IN THE MERGE — a peer row dropped an axis its base row declared:' );
+		for ( const l of loss ) {
+			console.log( `  ${ l.type }.${ l.axis }  ${ l.from } -> ${ l.to }` );
+		}
+		console.log( '  Each is either a deliberate finalisation or an accidental deletion.' );
+		console.log( '  It cannot be told apart from a genuine N/A downstream — decide it here.' );
 	}
 	console.log( '' );
 }
@@ -855,6 +916,30 @@ function selfTest() {
 		'a control type with NO detectVia reports N/A, not a colour answer',
 		axisNativeUi( { nativeUi: {} }, { supports: { color: { text: true } } }, new Map() ).verdict,
 		NA
+	);
+	// REGRESSION (2026-08-19). `border`'s row declares
+	// `supports.__experimentalBorder`, which the old `[A-Za-z][A-Za-z0-9]*`
+	// pattern could not match — the key resolved to null and the axis reported
+	// N/A on all 83 blocks, reading exactly like "no native competitor exists".
+	check(
+		'an __experimental support family is readable, not silently N/A',
+		axisNativeUi(
+			{ nativeUi: { detectVia: 'block.json supports.__experimentalBorder — any sub-flag set true' } },
+			{ supports: { __experimentalBorder: { color: true } } },
+			new Map()
+		).verdict,
+		BAD
+	);
+	// Paired negative control: the same family declared but all sub-flags off
+	// must read CONFORMANT, so the check above cannot pass by always saying BAD.
+	check(
+		'…and the same family with every sub-flag false reads CONFORMANT',
+		axisNativeUi(
+			{ nativeUi: { detectVia: 'block.json supports.__experimentalBorder — any sub-flag set true' } },
+			{ supports: { __experimentalBorder: { color: false, __experimentalSkipSerialization: true } } },
+			new Map()
+		).verdict,
+		OK
 	);
 	check(
 		'detectVia routes to the declared support key, not always color',
