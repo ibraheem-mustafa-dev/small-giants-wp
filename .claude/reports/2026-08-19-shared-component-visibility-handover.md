@@ -133,6 +133,40 @@ field added to a shared panel is caught instead of passing invisibly.
 
 ---
 
+## 4b. ⭐ The SECOND gap — counting by primitive instead of by behaviour
+
+Found by the header session on 2026-08-19, verified here, and **it will bite you
+once per control type**. It is a sibling of the visibility gap above, not the
+same bug:
+
+| | The visibility gap (§2) | This gap |
+|---|---|---|
+| Failure | the rule cannot **see** the shared file | it sees it, and **counts it with the wrong primitive** |
+| Symptom | finding attributed to nobody | a visible control counted as **zero** |
+| Fix | `resolveComponentFiles()` | count by **what the control does**, not which primitive renders it |
+
+**The evidence.** `check-simple-surface-cap.js`'s own header (line ~110)
+prescribes: *"resolve the mount to its source file and count its
+`isShownByDefault` items."* Measured against the tree:
+
+| Component | `<ToolsPanelItem>` | `isShownByDefault` | `<PanelBody>` |
+|---|---|---|---|
+| `SgsColourPanel` | **0** | **0** | 1 |
+| `ResponsiveBoxControls` | **0** | **0** | 1 |
+
+Both render a `PanelBody` containing plain controls. Following the prescribed fix
+would score **a visible colour panel as contributing nothing**. The correct fix
+is to run the script's existing row visitor over the resolved component's body —
+that visitor already handles collapsed panels, bare controls and ToolsPanelItems
+consistently, which is exactly what a per-primitive count throws away.
+
+⛔ **Why this matters more to you than to me.** You are encoding **12 more control
+types**, and they do not share a primitive — link, enum, length/unit, 4-value box,
+media, boolean, icon, shadow and the rest each render differently. A detector that
+keys on one primitive is wrong once per type, and each time it fails as a
+**false absence**, which reads exactly like a clean result. This is the repo's
+own captured rule: *detect a control by what it does, not its component name.*
+
 ## 5. What is still open on my side
 
 - Rule 31 does **not** yet consume `resolveComponentFiles()`. It is next, and it
