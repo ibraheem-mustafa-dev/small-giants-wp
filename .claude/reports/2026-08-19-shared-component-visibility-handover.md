@@ -1,180 +1,191 @@
-# Shared-component visibility — handover to the golden-controls session
+# Control-detection: what your golden scripts must get right
 
 ```
 doc_type: report
-created: 2026-08-19
-for:     the parallel session building goldens for the remaining Part O control
-         types + its auditing/migrating scripts, modelled on LinkPopover
-from:    the C1–C4 hover/colour session (branch feat/hover-helper)
-commits: 002a5fcb (the shared resolver) · bcd19863 (rule 27 consuming it)
+created:  2026-08-19
+for:      the session defining goldens for the remaining Part O control types
+          and building their auditing/migrating scripts (modelled on LinkPopover)
+from:     the C1–C4 hover/colour session (branch feat/hover-helper)
+commits:  002a5fcb  shared component resolver
+          bcd19863 + fea5163c  rule 27 widened + its fixtures
+          6c3ec1b0  surface-cap composite expansion
 ```
 
-## Why you are being handed this
+You are encoding **12 more control types**. Every one of them will be found by a
+detector, and this session spent a day proving that the *finding* half is where
+these scripts break — not the schema half. Three concrete traps, all measured,
+all with code you can call instead of rewriting.
 
-Your scripts and mine both have to answer the same question — *"which blocks does
-this control finding belong to?"* — and if we each answer it our own way the repo
-ends up with two import graphs that can disagree with no way to arbitrate. This
-is that layer, already built, tested and shipped. **Consume it; do not build a
-second one.**
-
-⭐ **The thing to read first, because it affects your model example directly:**
-`LinkPopoverControl.js` lives in `src/components/` — a *shared* file — and
-`SgsLinkControl` has **0** direct `edit.js` mounts (it is reached through the
-barrel). A script modelled on LinkPopover using the per-block `edit.js` scope
-would be blind to its own model's definition site and would read `SgsLinkControl`
-as unused.
+⭐ **Read §1 before you model anything on LinkPopover.** Your example is itself
+inside the blind spot.
 
 ---
 
-## 1. The three layers — only one of them is shared
+## 1. Your model example is in the blind spot
 
-Your goldens and my rules are different layers of the same stack. Knowing which
-is which prevents both of us duplicating the other's half.
+`LinkPopoverControl.js` lives in `src/components/` — a **shared** file — and
+`SgsLinkControl` has **0** direct `edit.js` mounts; it is reached through the
+barrel. A script scoped to per-block `edit.js` is therefore blind to its own
+model's definition site and would read `SgsLinkControl` as unused.
 
-| Layer | Answers | Lives in | Owner |
+That is not hypothetical. `27-superseded-link-control` — the LinkPopover
+enforcement — had exactly that scope and **declared the gap in its own header**:
+
+> *"A component reached indirectly via a block's own local `components/`
+> subfolder is invisible — this rule reads each block's own `edit.js`."*
+
+It was running as `mode: gate` at `openBacklog: 0`.
+
+> ⚠ **A gate at zero with a blind spot is worse than a noisy advisory.** Rule
+> 31's blindness reads as a 409-item backlog. Rule 27's read as *finished*.
+
+Fixed in `bcd19863`. Predicted 0 new findings before running (`git grep -ln
+"<SgsLinkControl" -- src/` returns zero files tree-wide), measured 0 — so the
+gate could not red. The value is forward: the next LINK field added to a shared
+panel is caught rather than passing invisibly.
+
+---
+
+## 2. The three layers — only one is shared
+
+| Layer | Answers | Where | Owner |
 |---|---|---|---|
-| **1. Contract** | *what shape* must a control have? | `scripts/consistency/golden-controls.json` | **you** — extending it to the other 12 Part O types |
-| **2. Corpus + attribution** | *which files* hold controls, and *which blocks* own each finding? | `scripts/inspector-scan/core/components.js` | **shared — this handover** |
-| **3. Enforcer** | reads (1), applies it over (2) | one file per rule under `rules/` | per-rule |
+| **1. Contract** | *what shape* must a control have? | `scripts/consistency/golden-controls.json` | **you** |
+| **2. Corpus + attribution** | *which files* hold controls, *which blocks* own each finding | `scripts/inspector-scan/core/components.js` | **shared** |
+| **3. Enforcer** | reads (1) over (2) | one file per rule | per-rule |
 
-Rule 31 (`31-golden-colour-control`) has a correct layer 1 and a broken layer 2:
-it reads `path.join( ctx.blocksDir, block.tail, 'edit.js' )` and stops. That is
-why its `openBacklog: 409` is a **floor, not a total** — it has never opened the
-shared wrapper panels that ~30 blocks mount.
+Rule 31 has a correct layer 1 and a broken layer 2 — hence its `openBacklog: 409`
+is a **floor, not a total**. Your goldens are layer 1 and land on top of this
+unchanged.
 
----
-
-## 2. What to call
+### What to call
 
 ```js
 const { resolveComponentFiles } = require( '../core/components' );
-
-// Map<componentName, absoluteFilePath>
 const compFiles = resolveComponentFiles( extraDirs /* optional */ );
+// Map<componentName, absoluteFilePath>
 ```
 
-**Corpus:** `src/components/`, every `src/blocks/*/components/`, and
-`src/blocks/extensions/`.
+- **Corpus:** `src/components/`, every `src/blocks/*/components/`, and
+  `src/blocks/extensions/`.
+- **Keying:** every name a file exports, plus its filename.
+- **Collision rule — load-bearing:** a file that **DECLARES** a name beats one
+  that only **RE-EXPORTS** it, regardless of `readdir` order.
+- **`extraDirs`** adds `ctx`-derived dirs so `--self-test` fixtures resolve.
+  Under self-test `ctx.blocksDir` is a temp copy; without this a fixture
+  resolves against an empty map and its `mustFlag` passes *for the wrong reason*.
 
-**Keying:** every name a file *exports*, plus its filename.
+**Why the collision rule exists.** The 2026-08-17 panel split left
+`ContainerWrapperControls.js` a 268-line façade re-exporting six panels. It sorts
+alphabetically ahead of them, so under first-wins it claimed `LayoutPanel`,
+`WidthPanel`, `WrapperColourPanel` and the rest — while their attribute
+vocabulary had moved out. Measured, façade vs `LayoutPanel.js`: `gapTablet` 0 vs
+2, `flexDirection` 0 vs 2, `gridTemplateRows` 0 vs 6, `justifyItems` 0 vs 3.
+Rule 21 was reporting **50 false positives** as a result.
 
-**Collision rule — this is the load-bearing part.** A file that **DECLARES** a
-name beats one that merely **RE-EXPORTS** it, regardless of `readdir` order.
-Without that, `ContainerWrapperControls.js` (a 268-line façade since the
-2026-08-17 split, sorting alphabetically ahead of the real panels) claims
-`LayoutPanel`, `WidthPanel`, `WrapperColourPanel`, `ShapeDividersPanel` and
-`GridItemDefaultsPanel` while their attribute vocabulary lives elsewhere.
-Measured, façade vs `LayoutPanel.js`: `gapTablet` 0 vs 2, `flexDirection` 0 vs 2,
-`gridTemplateRows` 0 vs 6, `justifyItems` 0 vs 3. That mis-resolution was
-producing **50 false positives** in rule 21.
-
-**`extraDirs`** lets a rule add `ctx`-derived directories so `--self-test`
-fixtures are reachable. Under self-test `ctx.blocksDir` is a temp copy, so
-without it a fixture resolves against an empty map and its `mustFlag` control
-passes *for the wrong reason*. See `rules/27-superseded-link-control.js` for the
-pattern.
-
-### ⛔ Do not widen `discover()`
-
-`discover()` is the *other* function in the same file. It answers "what does this
-file render?" (`wrapsPanel` / `wrapsImage`), is keyed by filename, and is
-consumed by rules 01 and 18, which carry committed backlogs of 58 and 13.
-Widening its corpus silently restages both populations. Rule 21's header had
-already rejected doing that, and it was right. `resolveComponentFiles()` is a
-separate, opt-in map precisely so nothing else moves.
+⛔ **Do not widen `discover()`.** That is the *other* function in the same file —
+"what does this file render?", keyed by filename, consumed by rules 01 and 18
+with committed backlogs of 58 and 13. Widening it restages both. `resolveComponentFiles()`
+is deliberately separate and opt-in.
 
 ---
 
-## 3. Two worked examples, both shipped
+## 3. ⭐ Detect a control by what it DOES, not which primitive renders it
 
-**Rule 21 — advisory (`002a5fcb`).** Its private resolver was promoted into
-`core/components.js` so the tree has one mechanism rather than two. Findings
-250 → 200; the 50 that cleared were false positives, not a backlog reduction.
+**This is the one that will cost you most, because it fires once per control type.**
 
-**Rule 27 — a gate (`bcd19863`).** This is the one closest to your work. It is
-the LinkPopover enforcement, `mode: gate`, `openBacklog: 0`, and it read only
-each block's own `edit.js` — a blind spot it *declared in its own header*.
-
-> ⚠ **A gate at zero with a blind spot is more dangerous than a noisy advisory.**
-> Rule 31's blindness reads as a big backlog. Rule 27's read as *finished*.
-
-Widening it was safe because the population was predicted first: `git grep -ln
-"<SgsLinkControl" -- src/` returns zero files tree-wide, shared components
-included. Predicted 0, measured 0. The value is entirely forward — the next LINK
-field added to a shared panel is caught instead of passing invisibly.
-
----
-
-## 4. Rules earned here — apply them to your scripts
-
-1. **Predict the count before the first live run, by a method independent of the
-   script's own code, then reconcile.** Before widening anything I stated: rules
-   01 and 18 must not move, rule 21 should drop into 130–220. Measured: 58, 13,
-   200. A number that moves unpredicted is indistinguishable from a bug.
-2. **A `mustFlag` fixture is not optional, and it will earn its place.** The
-   first version of rule 27's widening shipped a literal **backspace byte**
-   (`0x08`) where the regex needed `\b`. It matched nothing. The rule was
-   **silently dead — passing while detecting nothing**, which looks exactly like
-   a clean tree. Only the `mustFlag` fixture caught it.
-3. **Pair every positive control with a negative one.** `shared-mount-flags`
-   (component mounts the control → must flag) sits beside
-   `shared-mount-comment-only` (component only *names* it in a docblock → must
-   not). Without the second, the first could pass by matching prose.
-4. **Read `strippedText()`, never raw text.** A docblock mentioning a component
-   is not a mount. This repo has hit that trap repeatedly.
-5. **Attribute a shared-file finding to the component, not thirty times to
-   thirty blocks.** Say "fix it once in `<file>`" in the `fix` string, or you
-   dispatch thirty agents at one file.
-6. **A false positive is a detector bug, never baseline fodder.**
-7. **State current truth; don't append corrections.** Rule 21's `advisoryReason`
-   had four stacked `SUPERSEDED` layers, so a grep hit the oldest number first
-   and stopped. It is rewritten current-first; superseded counts live in git.
-   Please don't reintroduce the pattern in your own metadata.
-
----
-
-## 4b. ⭐ The SECOND gap — counting by primitive instead of by behaviour
-
-Found by the header session on 2026-08-19, verified here, and **it will bite you
-once per control type**. It is a sibling of the visibility gap above, not the
-same bug:
-
-| | The visibility gap (§2) | This gap |
-|---|---|---|
-| Failure | the rule cannot **see** the shared file | it sees it, and **counts it with the wrong primitive** |
-| Symptom | finding attributed to nobody | a visible control counted as **zero** |
-| Fix | `resolveComponentFiles()` | count by **what the control does**, not which primitive renders it |
-
-**The evidence.** `check-simple-surface-cap.js`'s own header (line ~110)
-prescribes: *"resolve the mount to its source file and count its
-`isShownByDefault` items."* Measured against the tree:
+`check-simple-surface-cap.js` prescribed, in its own header: *"resolve the mount
+to its source file and count its `isShownByDefault` items."* Measured:
 
 | Component | `<ToolsPanelItem>` | `isShownByDefault` | `<PanelBody>` |
 |---|---|---|---|
 | `SgsColourPanel` | **0** | **0** | 1 |
 | `ResponsiveBoxControls` | **0** | **0** | 1 |
 
-Both render a `PanelBody` containing plain controls. Following the prescribed fix
-would score **a visible colour panel as contributing nothing**. The correct fix
-is to run the script's existing row visitor over the resolved component's body —
-that visitor already handles collapsed panels, bare controls and ToolsPanelItems
-consistently, which is exactly what a per-primitive count throws away.
+Both render a `PanelBody` of plain controls. That prescription scores **a visible
+colour panel as contributing nothing**. Fixed in `6c3ec1b0` by running the
+existing *row visitor* — which already reconciles ToolsPanelItem disclosure,
+collapsed `PanelBody` and bare controls — over the resolved body.
 
-⛔ **Why this matters more to you than to me.** You are encoding **12 more control
-types**, and they do not share a primitive — link, enum, length/unit, 4-value box,
-media, boolean, icon, shadow and the rest each render differently. A detector that
-keys on one primitive is wrong once per type, and each time it fails as a
-**false absence**, which reads exactly like a clean result. This is the repo's
-own captured rule: *detect a control by what it does, not its component name.*
+Your 12 types do **not** share a primitive: link, enum, length/unit, 4-value box,
+media, boolean, icon, shadow all render differently. A detector keyed on one
+primitive is wrong once per type, and each failure is a **false absence**, which
+reads exactly like a clean result.
 
-## 5. What is still open on my side
+### Two sub-traps that cost me two reverts
 
-- Rule 31 does **not** yet consume `resolveComponentFiles()`. It is next, and it
-  will move its 409 — that number is a floor.
-- The four shared wrapper panels (`BackgroundPanel`, `ShapeDividersPanel`,
-  `GridItemDefaultsPanel`, `WrapperColourPanel`) still need migrating to the
-  golden colour shape. Roughly ten rows across four files makes ~30 blocks
-  conformant. **If your scripts are going to touch those four files, say so —
-  they are single-merge-point files and we should not both be in them.**
-- Six stacked-correction markers remain across rules `roster-drift`, `01`, `03`
-  and `30`.
+**Expand panels, not control primitives.** Expanding *every* resolvable component
+surfaced `ResponsiveOverride`'s per-tier reset `<Button>` as five separate "rows"
+on one block. Excluding `<Button>` globally to compensate then collapsed
+`sgs/site-footer` to **zero** default-visible controls — a detector claiming a
+block with a live inspector has none. The discriminator is what the component
+*contains* (`PanelBody`/`ToolsPanel`/`ToolsPanelItem`), not its name.
+
+**Neither direction may be assumed.** `RowScrollBehaviourControls` was reported
+as "renders THREE `isShownByDefault` toggles, so the mount is UNDER by 2". Those
+three sit inside `<PanelBody initialOpen={false}>`, which counts as progressive
+disclosure — through the visitor it contributes **zero**, so the mount was OVER
+by one. Right diagnosis, backwards arithmetic. Measured before → after:
+`site-header` 5→4, `site-footer` 3→2, `site-header-row` 6→8, `site-footer-row`
+7→8.
+
+---
+
+## 4. Working rules these cost us
+
+1. **Predict the count before the first live run, by a method independent of the
+   script's own code, then reconcile.** Stated before touching anything: rules 01
+   and 18 must not move; rule 21 should land in 130–220. Measured 58, 13, 200.
+2. **A `mustFlag` fixture is not optional, and it will earn its place.** Rule 27's
+   widening shipped a literal **backspace byte** (`0x08`) where the regex needed
+   `\b`. It matched nothing. The rule was **silently dead — passing while
+   detecting nothing**, indistinguishable from a clean tree. Only the fixture
+   caught it. ⚠ The identical byte recurred hours later in the surface-cap fix,
+   where it made expansion silently never fire and every figure stay at baseline.
+   **Twice in one session. Check the bytes (`cat -A`), not the source you think
+   you wrote.**
+3. **Pair every positive control with a negative one.** `shared-mount-flags`
+   (component mounts the control → must flag) beside `shared-mount-comment-only`
+   (component only *names* it in a docblock → must not). Without the second, the
+   first can pass by matching prose.
+4. **Read `strippedText()`, never raw text.** A docblock mentioning a component
+   is not a mount.
+5. **Attribute a shared-file finding to the component.** Say "fix it once in
+   `<file>`" in the `fix` string, or you dispatch thirty agents at one file.
+6. **A false positive is a detector bug, never baseline fodder.**
+7. **State current truth; don't append corrections.** Rule 21's `advisoryReason`
+   had four stacked `SUPERSEDED` layers, so a grep hit the oldest number first and
+   stopped. Rewritten current-first; history lives in git. Please don't
+   reintroduce the pattern in your own metadata.
+
+---
+
+## 5. What is already correct — don't "fix" it
+
+`scripts/surveys/survey-inspector-surface.js` was checked for both traps and has
+**neither**. It descends into composites, scans `src/components/` + subdirs +
+block-local dirs, never uses `isShownByDefault`, and registers components by
+**declaration only** (`FunctionDeclaration` / `VariableDeclarator`), so the façade
+cannot claim a name. It was built at D543 precisely to replace the rejected
+approach. Read its header before extending it.
+
+⚠ My first pass *did* accuse it of the façade bug — because I replicated its
+index with an `export { X }` rule the real builder does not have. Verify against
+the real code, not a reimplementation of it.
+
+---
+
+## 6. Open on my side — coordinate before touching
+
+- **Rule 31 does not yet consume `resolveComponentFiles()`.** It is next, and it
+  will move its 409.
+- **The four shared wrapper panels** (`BackgroundPanel`, `ShapeDividersPanel`,
+  `GridItemDefaultsPanel`, `WrapperColourPanel`) need migrating to the golden
+  colour shape — ~10 rows across four files makes ~30 blocks conformant.
+  **These are single-merge-point files. If your scripts will touch them, say so —
+  we must not both be in there.**
+- **26 blocks let WP core render its own colour UI** (23 double-painting
+  alongside ours, 3 core-only: `buybox`, `site-footer`, `site-header`). Untouched
+  so far; sequencing is per Spec 35 Part O Cross-cutting A, not ad hoc.
+- Six stacked-correction markers remain in `rules.json` (`roster-drift`, `01`,
+  `03`, `30`).
