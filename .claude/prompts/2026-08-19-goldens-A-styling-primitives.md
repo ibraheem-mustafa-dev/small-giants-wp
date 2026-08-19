@@ -22,7 +22,7 @@ O.16 — that misunderstanding produced a 21-item phantom backlog.
 
 ## 1. What you are building
 
-The library has **~24 control types**. Only **colour** is finalised. Your third is the
+The library has **~24 control types**. Only **colour** is finalised, the rest are temp goldens so we need to find the UI example that we want to standardise. Your third is the
 **styling primitives** — the controls that paint, size and space things:
 
 | # | Type | Note from Bean |
@@ -38,6 +38,30 @@ The library has **~24 control types**. Only **colour** is finalised. Your third 
 **Session B owns:** enum/segmented, boolean, free-text, link, icon, multi-select, date.
 **Session C owns:** media, state/hover, responsive wrapper, repeater, animation,
 angle/position, preset picker. Do not write their rows.
+
+### Your main task - Find the different forms of each control type and show them to Bean via /playwright or /chrome-devtools-mcp:chrome-devtools on the Canary's block editor. Then when we decide on a real golden for the control type we can move onto point 2
+
+### ⭐ Your main task — find the UI example worth standardising ON
+
+⛔ **The existing rows for your types are TEMP goldens, not decisions.** Only `colour` is
+finalised. Do NOT treat the current `canonical` entry for a type as settled and merely
+bolt predicates onto it — your job is to look at how that control is ACTUALLY implemented
+across the library today, decide which implementation should become the standard, and
+write the contract from that.
+
+That means, per type:
+1. **Survey the real implementations** — `npm run survey:control-mounts` shows every
+   mount by scope. Where a type has several components doing the same job, they are
+   candidates, not a settled hierarchy.
+2. **Pick the one to standardise on, with a reason** — most adopted is a signal, not the
+   answer. The best implementation is the one that already handles the hard cases
+   (responsive tiers, states, tokens) rather than the one copied most often.
+3. **Name the losers as `bannedLookalikes`** so the census can find every block still on
+   them. A contract that names a canonical without naming what it replaces cannot
+   generate a migration list.
+
+⚠ Where the current row names a canonical that has **zero mounts**, it is pointing at dead
+code — say so explicitly and pick something real.
 
 ## 2. Where your rows go — you do NOT edit golden-controls.json
 

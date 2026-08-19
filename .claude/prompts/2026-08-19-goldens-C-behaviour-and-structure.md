@@ -22,7 +22,7 @@ misunderstanding produced a 21-item phantom backlog.
 
 ## 1. What you are building
 
-The library has **~24 control types**. Only **colour** is finalised. Your third covers
+The library has **~24 control types**. Only **colour** is finalised, the rest are temp goldens so we need to find the UI example that we want to standardise. Your third covers
 **media, state and structure** — and it holds the two most interesting judgement calls
 in the whole roster:
 
@@ -41,6 +41,28 @@ in the whole roster:
 shadow, alignment — and the COMPOSER.
 **Session B owns:** enum/segmented, boolean, free-text, link, icon, multi-select, date.
 Do not write their rows.
+
+### ⭐ Your main task — find the UI example worth standardising ON
+
+⛔ **The existing rows for your types are TEMP goldens, not decisions.** Only `colour` is
+finalised. Do NOT treat the current `canonical` entry for a type as settled and merely
+bolt predicates onto it — your job is to look at how that control is ACTUALLY implemented
+across the library today, decide which implementation should become the standard, and
+write the contract from that.
+
+That means, per type:
+1. **Survey the real implementations** — `npm run survey:control-mounts` shows every
+   mount by scope. Where a type has several components doing the same job, they are
+   candidates, not a settled hierarchy.
+2. **Pick the one to standardise on, with a reason** — most adopted is a signal, not the
+   answer. The best implementation is the one that already handles the hard cases
+   (responsive tiers, states, tokens) rather than the one copied most often.
+3. **Name the losers as `bannedLookalikes`** so the census can find every block still on
+   them. A contract that names a canonical without naming what it replaces cannot
+   generate a migration list.
+
+⚠ Where the current row names a canonical that has **zero mounts**, it is pointing at dead
+code — say so explicitly and pick something real.
 
 ## 2. Where your rows go — you do NOT edit golden-controls.json
 
