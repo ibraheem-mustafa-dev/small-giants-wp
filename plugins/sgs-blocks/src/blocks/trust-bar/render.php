@@ -354,7 +354,6 @@ $tb_badge_offset = ( ! $auto_scroll && '' !== $title_html ) ? 1 : 0;
 
 foreach ( $items as $tb_item_index => $item ) {
 	$item       = is_array( $item ) ? $item : array();
-	$is_pending = ! empty( $item['pending'] );
 	$item_label = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
 	$item_url   = isset( $item['url'] ) ? (string) $item['url'] : '';
 	// Task 2.1) resolved via sgs_link_attributes() — url/linkTarget/linkRel are
@@ -371,10 +370,6 @@ foreach ( $items as $tb_item_index => $item ) {
 		)
 	);
 	$item_attrs      = '';
-
-	if ( 'icon-circle' === $badge_style && $is_pending ) {
-		$item_attrs = ' hidden data-pending="true"';
-	}
 
 	if ( 'icon-circle' === $badge_style ) {
 		// Determine which SVG to render inside the circle.

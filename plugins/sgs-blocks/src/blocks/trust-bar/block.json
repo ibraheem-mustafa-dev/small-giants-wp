@@ -227,9 +227,6 @@
 					"linkRel": {
 						"type": "string"
 					},
-					"pending": {
-						"type": "boolean"
-					},
 					"fillStyle": {
 						"type": "string",
 						"enum": [
@@ -257,23 +254,19 @@
 			"default": [
 				{
 					"icon": "truck",
-					"label": "Fast delivery",
-					"pending": false
+					"label": "Fast delivery"
 				},
 				{
 					"icon": "check",
-					"label": "Certified quality",
-					"pending": false
+					"label": "Certified quality"
 				},
 				{
 					"icon": "star",
-					"label": "Trusted service",
-					"pending": false
+					"label": "Trusted service"
 				},
 				{
 					"icon": "heart",
-					"label": "Loved by customers",
-					"pending": false
+					"label": "Loved by customers"
 				}
 			]
 		},
@@ -749,23 +742,19 @@
 			"items": [
 				{
 					"icon": "truck",
-					"label": "Fast turnaround",
-					"pending": false
+					"label": "Fast turnaround"
 				},
 				{
 					"icon": "check",
-					"label": "Certified quality",
-					"pending": false
+					"label": "Certified quality"
 				},
 				{
 					"icon": "star",
-					"label": "Trusted service",
-					"pending": false
+					"label": "Trusted service"
 				},
 				{
 					"icon": "heart",
-					"label": "Loved by customers",
-					"pending": false
+					"label": "Loved by customers"
 				}
 			]
 		}
