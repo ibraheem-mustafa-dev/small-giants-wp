@@ -121,7 +121,25 @@ function mountedComponents( ast ) {
 /**
  * Components a block reaches, following shared components one hop.
  *
- * One hop, deliberately: `edit.js` -> a shared panel -> the row component it
+ * ⛔ MEASURED LIMITATION (2026-08-19, surveys/compare-reach-depth.py). One hop
+ * UNDER-REPORTS 9 of 17 shared components, several severely:
+ *     ColorPalette                  3 -> 64   (+61 at full depth)
+ *     DesignTokenPicker            18 -> 64   (+45 of it from ALIAS resolution)
+ *     SgsGradientPicker             5 -> 64
+ *     GradientCapableColourControl  0 -> 61   (invisible to a tag scan entirely)
+ * The last is not a depth problem at all: SgsColourPanel picks its row component
+ * at RUNTIME (`const Control = row.gradientCapable ? A : B`), so neither name
+ * appears as a literal JSX tag and this scan reads a component live in 6 blocks
+ * as dead code.
+ *
+ * ⛔ DEPTH AND THE BANNED-LOOKALIKE EXCLUSION MUST MOVE TOGETHER. ColorPalette
+ * is banned, and at full depth it appears in 64 blocks — roughly 61 of them
+ * reaching it legitimately THROUGH DesignTokenPicker. axisBannedLookalikes
+ * excludes a canonical owner but only inspects the first hop, so raising depth
+ * alone trades under-reporting for ~61 false positives. Reproduce before
+ * changing either: `python scripts/surveys/compare-reach-depth.py .`
+ *
+ * One hop, deliberately FOR NOW: `edit.js` -> a shared panel -> the row component it
  * mounts is the real shape (SgsColourPanel renders DesignTokenPicker). An
  * unbounded walk becomes a second import graph nobody can falsify. Each hop
  * records WHERE it came from so a finding can name the file that owns the fix
