@@ -51,6 +51,7 @@
     "inspector-scan:json": "node scripts/inspector-scan/run.js --json",
     "inspector-scan:selftest": "node scripts/inspector-scan/run.js --self-test",
     "survey:inspector-surface": "node scripts/surveys/survey-inspector-surface.js",
+		"survey:golden-conformance": "node scripts/surveys/survey-golden-conformance.js",
     "survey:length": "python scripts/surveys/survey-length-controls.py",
     "survey:colour": "python scripts/surveys/survey-colour-controls.py",
     "survey:typography": "python scripts/surveys/survey-typography-controls.py",
