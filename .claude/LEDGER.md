@@ -211,7 +211,7 @@ bug, never baseline fodder.
 
 ## The header — HANDED TO A SEPARATE SESSION
 
-⭐ **A self-contained prompt exists: `.claude/plans/2026-08-19-header-session-prompt.md`.**
+⭐ **A self-contained prompt exists: `.claude/prompts/2026-08-19-header-session-prompt.md`.**
 Written to the prompt-writing standard (skills, MCP/tools, research approach). Four scoped tasks,
 all decisions already made. Do NOT do this work in the C1-C4 session — it is parallel.
 

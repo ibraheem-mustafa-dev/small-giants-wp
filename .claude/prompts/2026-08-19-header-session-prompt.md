@@ -37,8 +37,29 @@ problem. Work carefully rather than fast.
 - **Which rows disappear when pinned** is each row's own `rowHideOnScroll`; when the header is
   pinned such a row **collapses to height 0** (measured gap: exactly 0.00 at every tier).
 - ⚠ Kadence DOES offer per-row "which row survives", but via JS `position: fixed` + a measured
-  placeholder spacer — **not** CSS sticky. That is a different and much bigger mechanism. It does
-  not contradict D389. Do not treat "Kadence does it" as licence to revisit per-row sticky.
+  placeholder spacer — **not** CSS sticky. It does not contradict D389. Do not treat "Kadence does
+  it" as licence to revisit per-row CSS sticky — the short-parent trap is unchanged.
+
+### ⭐ A HEADER-HEIGHT PRIMITIVE ALREADY EXISTS — do not rebuild it
+
+`initHeightPublisher()` in `src/header-behaviours/view.js` measures the header with a
+**ResizeObserver** and publishes `--sgs-header-height` to `:root` and `body`. It is **gated on the
+COMPUTED position**, publishing an explicit `0` when the header is not actually pinned — which
+correctly handles the case where a header set both sticky AND transparent computes `absolute` and
+is not pinned despite carrying the sticky body class.
+
+**Why it exists:** GSAP pinned sections were placing content in the band BEHIND the sticky header,
+so a heading was invisible for the entire pin. `src/shared/effects/gsap/provider.js`'s
+`chromeOffsetPx()` consumes the published value to start the pin below the chrome. That file also
+records why raising the pinned element's z-index is the WRONG fix — it hides the navigation
+instead, a WCAG 2.4.11 focus-obscured failure. *"The defect is GEOMETRY, not stacking."*
+
+⛔ **D330 (2026-07-14) deliberately DELETED a duplicate `--sgs-header-height` publisher.** Do not
+re-measure the header anywhere else — consume the published custom property. A second publisher is
+a known, named trap. The `80px` literal in the theme's `utilities.css` is only the pre-JS fallback.
+
+This matters for Tasks 1 and 2: anything you build that needs the header's real height already has
+a correct, live, breakpoint-aware and shrink-aware source. Read it before writing any measurement.
 
 ---
 
