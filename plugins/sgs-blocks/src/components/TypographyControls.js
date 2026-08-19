@@ -451,6 +451,7 @@ export default function TypographyControls( {
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 					<UnitControl
 						label={ __( 'Font size', 'sgs-blocks' ) }
+						hideLabelFromVision
 						value={ composeUnitValue( inherited ? undefined : ownValue, currentFontSizeUnit ) }
 						placeholder={ inherited ? composeUnitValue( effectiveValue, currentFontSizeUnit ) : undefined }
 						units={ FONT_SIZE_UNITS }
@@ -467,6 +468,7 @@ export default function TypographyControls( {
 				{ ( breakpoint ) => (
 					<UnitControl
 						label={ __( 'Font size', 'sgs-blocks' ) }
+						hideLabelFromVision
 						value={ composeUnitValue(
 							attributes[ fontSizeAttrMap[ breakpoint ] ],
 							currentFontSizeUnit

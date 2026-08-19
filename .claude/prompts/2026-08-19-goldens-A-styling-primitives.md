@@ -39,8 +39,6 @@ The library has **~24 control types**. Only **colour** is finalised, the rest ar
 **Session C owns:** media, state/hover, responsive wrapper, repeater, animation,
 angle/position, preset picker. Do not write their rows.
 
-### Your main task - Find the different forms of each control type and show them to Bean via /playwright or /chrome-devtools-mcp:chrome-devtools on the Canary's block editor. Then when we decide on a real golden for the control type we can move onto point 2
-
 ### ⭐ Your main task — find the UI example worth standardising ON
 
 ⛔ **The existing rows for your types are TEMP goldens, not decisions.** Only `colour` is

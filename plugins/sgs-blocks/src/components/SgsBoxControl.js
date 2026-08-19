@@ -147,6 +147,7 @@ export default function SgsBoxControl( {
 						max={ max }
 						withInputField={ false }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</FlexBlock>
 				{ ! sideKey && (

@@ -232,6 +232,61 @@ def _iter_js_files(exclude):
         yield p, rel
 
 
+def _mask_comments(text):
+    """Blank every JS comment IN PLACE, preserving length and newlines.
+
+    Length preservation is load-bearing. `scan_axis_a` derives line numbers from
+    character offsets into this text, and `cmd_fix` rewrites spans against the
+    ORIGINAL file bytes. Deleting comment text would shift every span after it
+    and the codemod would rewrite the wrong region.
+
+    Ordering mirrors the in-tag walker below: a comment is recognised BEFORE a
+    quote can open, because comment prose routinely contains apostrophes
+    ("isn't") that would otherwise leave the scanner in a quote state that never
+    closes.
+
+    Caught 2026-08-19. `BorderStyleControl.js`'s docblock reads "the previous
+    hand-rolled `<SelectControl>` this replaces", and the raw-text regex in
+    `_find_opening_tags` read that prose as a live mount - a phantom gate
+    failure on a file whose only real mount was already conformant. A false
+    positive is a detector bug, never baseline fodder.
+
+    Like the walker below, this is not a parser: a `/` opening a regex literal
+    is not tracked. In practice a regex literal begins `/\\` or `/[^...`, never
+    `//` or `/*`, so the two cannot be confused here.
+    """
+    out = list(text)
+    i, n = 0, len(text)
+    quote = None
+    while i < n:
+        ch = text[i]
+        if quote:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == quote:
+                quote = None
+            i += 1
+        elif ch == "/" and i + 1 < n and text[i + 1] == "/":
+            nl = text.find("\n", i)
+            nl = n if nl == -1 else nl
+            for k in range(i, nl):
+                out[k] = " "
+            i = nl
+        elif ch == "/" and i + 1 < n and text[i + 1] == "*":
+            close = text.find("*/", i + 2)
+            close = n if close == -1 else close + 2
+            for k in range(i, close):
+                if out[k] != "\n":
+                    out[k] = " "
+            i = close
+        else:
+            if ch in "\"'`":
+                quote = ch
+            i += 1
+    return "".join(out)
+
+
 def _find_opening_tags(text, name):
     """Yield (start, end, props, self_closing) for every <Name ...> in text.
 
@@ -250,6 +305,9 @@ def _find_opening_tags(text, name):
     self-closing elements are both handled, which is what makes the codemod
     safe to run unattended.
     """
+    # Scan the MASKED copy: same length, same newlines, so every offset yielded
+    # here still indexes the caller's ORIGINAL text exactly.
+    text = _mask_comments(text)
     pat = re.compile(r"<" + name + r"(?![A-Za-z0-9_])")
     for m in pat.finditer(text):
         i = m.end()
@@ -561,6 +619,28 @@ def self_test():
             APOSTROPHE_FIXTURE, encoding="utf-8"
         )
 
+        # REGRESSION - a control named only in PROSE is not a mount. Real case
+        # (2026-08-19): BorderStyleControl.js's docblock says "the previous
+        # hand-rolled <SelectControl> this replaces", and the raw-text regex
+        # reported it as a live control missing the prop - a phantom gate
+        # failure on an already-conformant file.
+        (root / "docblock_mention.js").write_text(
+            "/**\n * The old <SelectControl> this replaces offered nine options.\n */\n"
+            "export default function X() { return null; }\n",
+            encoding="utf-8",
+        )
+
+        # NEGATIVE-CONTROL VACUITY GUARD for the fixture above. Masking comments
+        # must not blind the scanner to a REAL mount sitting beside prose that
+        # names a different control. Exactly one finding, and it must be the
+        # RangeControl - never the commented TextControl or SelectControl.
+        (root / "mixed_comment_and_mount.js").write_text(
+            "// <TextControl label={ 'nope' } />\n"
+            "/**\n * Replaces the hand-rolled <SelectControl>.\n */\n"
+            "<RangeControl\n\tlabel={ 'x' }\n/>\n",
+            encoding="utf-8",
+        )
+
         # REGRESSION - nested JSX in a prop must be AMBIGUOUS, never fixed.
         # A naive non-greedy match ends at the inner '/>' and would rewrite the
         # wrong span; this fixture locks that.
@@ -585,6 +665,12 @@ def self_test():
               [f["status"] for f in by.get("lt_in_string.js", [])] == [STATUS_MISSING])
         check("apostrophe in a // comment stays FIXABLE",
               [f["status"] for f in by.get("apostrophe_comment.js", [])] == [STATUS_MISSING])
+        check("a control named only in a DOCBLOCK is not a mount",
+              "docblock_mention.js" not in by)
+        check("prose beside a real mount flags the mount only (non-vacuous)",
+              [(f["component"], f["status"])
+               for f in by.get("mixed_comment_and_mount.js", [])]
+              == [("RangeControl", STATUS_MISSING)])
         check("nested JSX classified AMBIGUOUS",
               [f["status"] for f in by.get("nested.js", [])] == [STATUS_AMBIGUOUS])
 
