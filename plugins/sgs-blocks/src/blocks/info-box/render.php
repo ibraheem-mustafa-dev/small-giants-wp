@@ -398,7 +398,7 @@ if ( $sgs_wrapper_styles ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $sgs_wrapper_styles ) . '}';
 }
 if ( $sgs_hover_decls ) {
-	$scoped_css[] = $root_sel . ':hover{' . implode( ';', $sgs_hover_decls ) . '}';
+	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $sgs_hover_decls );
 }
 
 // --- Border gradient, hover state (D636 border builder) — masked ::before,

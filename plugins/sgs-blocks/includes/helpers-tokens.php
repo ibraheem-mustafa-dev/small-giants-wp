@@ -1030,6 +1030,52 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
 }
 
 /**
+ * Universal per-instance hover/focus-visible colour-state emitter.
+ *
+ * Generalises the scoped `:hover` rule shape `sgs/info-box` already used
+ * before this helper existed (a per-instance `.{uid}.sgs-x:hover{…}` rule,
+ * specificity 0,3,0, beating the variant base 0,2,0) so other blocks can be
+ * converted to the same shape. Mirrors `sgs_border_gradient_css()` above:
+ * deliberately a NO-OP (returns '') when both `$decls_normal` and
+ * `$decls_hover` are empty — a block with no hover state set renders
+ * byte-identical CSS to before this helper existed. `$decls_normal` /
+ * `$decls_hover` are the caller's ALREADY-RESOLVED, complete CSS declaration
+ * strings (e.g. `'background-color:var(--wp--preset--color--primary)'`) —
+ * this helper only joins + wraps them into rules, it never resolves colours
+ * or reads block attributes itself.
+ *
+ * Pairs `:focus-visible` with `:hover` on the hover rule so keyboard users
+ * reach the same visual state as mouse users — the same accessibility
+ * reasoning `sgs_border_gradient_css()` applies by pairing `:focus-within`.
+ *
+ * ⛔ `sgs/button` is EXEMPT from this helper — do NOT convert it. Its
+ * `--sgs-btn-*-hover` custom properties feed a static rule in
+ * `src/blocks/button/style.css` (around lines 87-98) AND three preset
+ * classes (around lines 104-130) that carry `theme.json` fallback chains.
+ * Routing button's hover colours through this per-instance-selector helper
+ * would break that preset cascade — do not "finish the job" by converting
+ * it later.
+ *
+ * @param string $selector      CSS selector for the element the hover state applies to (already scoped, e.g. "{$root_sel}" or "{$root_sel} .sgs-x__item").
+ * @param array  $decls_normal  Complete CSS declaration strings for the resting state. Empty = no resting-state rule emitted.
+ * @param array  $decls_hover   Complete CSS declaration strings for `:hover`/`:focus-visible`. Empty = no hover rule emitted.
+ * @return string Scoped CSS (zero to two rules), or '' when there is nothing to paint.
+ */
+function sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover ): string {
+	$css = '';
+
+	if ( $decls_normal ) {
+		$css .= "{$selector}{" . implode( ';', $decls_normal ) . '}';
+	}
+
+	if ( $decls_hover ) {
+		$css .= "{$selector}:hover,{$selector}:focus-visible{" . implode( ';', $decls_hover ) . '}';
+	}
+
+	return $css;
+}
+
+/**
  * Resolve a font-size attribute value to a CSS font-size string.
  *
  * If the value starts with a digit (e.g. "16px", "1.5em") or with "clamp(",
