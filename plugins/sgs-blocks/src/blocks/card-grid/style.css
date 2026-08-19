@@ -165,20 +165,12 @@
 	color: var(--wp--preset--color--primary);
 }
 
-/* ===== Custom Hover States (editor-configurable) ===== */
-
-.sgs-card-grid__item:hover {
-	background-color: var(--sgs-hover-bg, transparent);
-	background-image: var(--sgs-hover-bg-image, none);
-}
-
-.sgs-card-grid__item:hover {
-	color: var(--sgs-hover-text, inherit);
-}
-
-.sgs-card-grid__item:hover {
-	border-color: var(--sgs-hover-border, transparent);
-}
+/* Custom hover COLOURS are no longer declared here. render.php emits them as
+   real declarations on this instance's own scoped selector via
+   sgs_emit_state_colour_css(), so there is nothing for a static rule to read
+   back. The old `var(--sgs-hover-*, <fallback>)` indirection is deleted along
+   with its fallbacks; unset now means no hover colour, matching every other
+   SGS block. --sgs-hover-scale / --sgs-hover-shadow below are UNAFFECTED. */
 
 /* ===== Hover Effects ===== */
 
