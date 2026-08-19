@@ -467,6 +467,17 @@ export default function DesignTokenPicker( {
 	linked = false,
 	enableAlpha = true,
 	states,
+	// Border-style icons, opt-in. These MUST be listed here and forwarded
+	// below: this component forwards an EXPLICIT prop list rather than
+	// {...rest}, so a prop the caller passes but this signature omits is
+	// silently dropped on the way to the component that renders it. That is
+	// exactly what shipped on 2026-08-19 — SgsColourStateControl destructured
+	// both and gated <BorderStyleControl> on them, sgs/heading passed both, and
+	// the picker still never rendered because this layer in the middle ate them.
+	// Verified by reading the live React fiber: outer props carried
+	// onBorderStyleChange as a function, inner props had no such key.
+	borderStyle,
+	onBorderStyleChange,
 } ) {
 	const [ colours ] = useSettings( 'color.palette' );
 	// Hook order must stay unconditional (both branches below return from the
@@ -488,6 +499,8 @@ export default function DesignTokenPicker( {
 				clearable={ clearable }
 				enableAlpha={ enableAlpha }
 				colours={ colours }
+				borderStyle={ borderStyle }
+				onBorderStyleChange={ onBorderStyleChange }
 			/>
 		);
 	}
