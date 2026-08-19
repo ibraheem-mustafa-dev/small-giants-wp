@@ -366,25 +366,6 @@ section.sgs-hero {
 	aspect-ratio: auto;
 }
 
-/* ===== Custom Hover States (editor-configurable) — GOTCHA F rewrite =====
- * Same fix as the per-CTA overrides above: the `--sgs-hover-bg` /
- * `--sgs-hover-text` / `--sgs-hover-border` vars now emit as a scoped
- * `.{uid}{…}` rule (Facet B), not an inline `style="--…"` attribute, so the
- * old `[style*="--sgs-hover-…"]` presence gate stopped matching. The hero
- * root has no explicit resting `background-color`, `color`, or `border` of
- * its own (background comes from `background-image`/`.has-background`;
- * colour + border are left to inherit/initial), so the inert fallback per
- * property is: `transparent` (leaves the gradient/background-image visible
- * underneath, matches the brand-strip precedent), `inherit` (colour keeps
- * cascading normally), and `transparent` (border-style is never set, so the
- * colour is inert either way). Merged into one rule since all three now
- * share the identical `.sgs-hero:hover` selector. */
-.sgs-hero:hover,
-.sgs-hero:focus-within {
-	background-color: var(--sgs-hover-bg, transparent);
-	color: var(--sgs-hover-text, inherit);
-	border-color: var(--sgs-hover-border, transparent);
-}
 
 /* ===== Responsive ===== */
 

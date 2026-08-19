@@ -342,16 +342,6 @@ $styles = array();
 // Transition custom properties — consumed by CSS vars on the block and its children.
 $styles = array_merge( $styles, sgs_transition_vars( $attributes ) );
 
-if ( $hover_background_colour ) {
-	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
-}
-if ( $hover_text_colour ) {
-	$styles[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
-}
-if ( $hover_border_colour ) {
-	$styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
-}
-
 // Standard variant: use <img> instead of CSS background-image so the browser can
 // discover the LCP resource early and apply fetchpriority="high".
 $has_standard_bg_image = ! $is_split && ! empty( $bg_image['url'] );
@@ -367,6 +357,22 @@ $root_sel = '.' . $uid . '.wp-block-sgs-hero';
 // Pattern A throughout: base rule first, then tablet(≤1023), then mobile(≤767),
 // all on the SAME selector — cascade order does the overriding, no !important.
 $responsive_css = '';
+
+// Hover colour declarations — emitted as a scoped .uid{…}:hover rule via the
+// shared helper. No fallback values (matches the info-box pattern).
+$hover_decls = array();
+if ( $hover_background_colour ) {
+	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
+}
+if ( $hover_text_colour ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
+}
+if ( $hover_border_colour ) {
+	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
+}
+if ( $hover_decls ) {
+	$responsive_css .= sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
+}
 
 // --- Border gradient, hover state (D636 border builder) — masked ::before,
 // scoped to the ":hover" selector itself so it paints ONLY on hover (the
