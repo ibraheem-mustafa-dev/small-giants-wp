@@ -41,22 +41,63 @@ import { NumberControl } from './primitives';
  *   textarea, etc.).
  */
 export default function SgsFreeTextField( { type = 'text', label, value, onChange, help, ...rest } ) {
-	const common = {
-		label,
-		help,
-		__nextHasNoMarginBottom: true,
-		__next40pxDefaultSize: true,
-		...rest,
-	};
-
+	// __nextHasNoMarginBottom/__next40pxDefaultSize are written literally on
+	// each control below rather than spread from a shared object —
+	// check-control-parity-live.js's build gate verifies these props via a
+	// static JSX scan and cannot trace a value passed through `{...spread}`,
+	// so a spread here would pass at runtime but fail the build (confirmed
+	// 2026-08-19: the gate flagged all three controls when this used a
+	// `common` spread object; it clears once each prop is a literal
+	// attribute, matching how every other control in this codebase writes
+	// them).
 	if ( 'textarea' === type ) {
-		return <TextareaControl value={ value } onChange={ onChange } { ...common } />;
+		return (
+			<TextareaControl
+				label={ label }
+				value={ value }
+				onChange={ onChange }
+				help={ help }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				{ ...rest }
+			/>
+		);
 	}
 	if ( 'number' === type ) {
-		return <NumberControl value={ value } onChange={ onChange } { ...common } />;
+		return (
+			<NumberControl
+				label={ label }
+				value={ value }
+				onChange={ onChange }
+				help={ help }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				{ ...rest }
+			/>
+		);
 	}
 	if ( 'range' === type ) {
-		return <RangeControl value={ value } onChange={ onChange } { ...common } />;
+		return (
+			<RangeControl
+				label={ label }
+				value={ value }
+				onChange={ onChange }
+				help={ help }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				{ ...rest }
+			/>
+		);
 	}
-	return <TextControl value={ value } onChange={ onChange } { ...common } />;
+	return (
+		<TextControl
+			label={ label }
+			value={ value }
+			onChange={ onChange }
+			help={ help }
+			__nextHasNoMarginBottom
+			__next40pxDefaultSize
+			{ ...rest }
+		/>
+	);
 }

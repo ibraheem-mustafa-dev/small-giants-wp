@@ -37,9 +37,15 @@ import { ToggleControl } from '@wordpress/components';
  * @param {string}    [props.help]    Help text.
  * @param {import('react').ReactNode} [props.children] A conditionally-revealed
  *   control (or controls) shown below the toggle — pass them already gated on
- *   the checked state by the caller, e.g.
- *   `{showImage && <SelectControl .../>}`. When present, the toggle keeps its
- *   natural bottom margin so the revealed control isn't flush against it.
+ *   the checked state by the caller (see post-grid/edit.js's Show
+ *   image/Show excerpt/Show read more rows for real examples). When
+ *   present, the toggle keeps its natural bottom margin so the revealed
+ *   control isn't flush against it.
+ *   (JSX-shaped example text deliberately avoided here — check-control-
+ *   parity-live.js's scanner does not exclude JSDoc content from its tag
+ *   search, so a literal `<Component .../>` in a comment reads as a real
+ *   mount and false-flags this file. Confirmed 2026-08-19: removing this
+ *   exact string from the doc comment made the finding disappear.)
  */
 export default function SgsBooleanField( { label, checked, onChange, help, children } ) {
 	const hasReveal = !! children;
