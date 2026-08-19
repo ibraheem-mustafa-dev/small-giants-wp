@@ -127,11 +127,28 @@
       "canonical": {
         "panel": {
           "component": "ToggleControl",
-          "path": "@wordpress/components — no SGS wrapper exists (confirmed 2026-08-19: src/components/ has no Boolean*/Toggle*Control file, and src/components/index.js exports nothing boolean-shaped)",
-          "adoption": "158 live <ToggleControl mounts across src/blocks/*/edit.js (measured 2026-08-19, exhaustive grep count) plus all 4 extension surfaces (conditional-visibility.js, fx.js, hover-effects.js, parallax.js) each import ToggleControl directly from @wordpress/components — no shared wrapper anywhere in the tree"
+          "path": "@wordpress/components — still correct and unchanged as the PRIMARY canonical for a plain standalone toggle. Kept as the census's canonical check target deliberately (see _correction below) so the ~155 already-correct plain mounts are not false-flagged.",
+          "adoption": "158 live <ToggleControl mounts (measured 2026-08-19) — unchanged figure, this correction adds a sub-case, it does not revoke the base rule"
         }
       },
-      "reasoning": "This is a genuine 'most adopted AND correct' case, not a reach-only signal. Unlike colour (state axis) or length (units array), a boolean has no hard case a wrapper would need to solve — the raw primitive, used consistently across 158 mounts including every extension surface, is the correct call, not an unfinished gap. Recorded explicitly so a future reader doesn't mistake 'no wrapper' for 'no one built it yet.'",
+      "predictVsMeasuredReconciliation_2026_08_19": {
+        "predicted": "71 (55 direct mounts + 16 credited to the 4 extension surfaces conditional-visibility.js/fx.js/hover-effects.js/parallax.js, per this row's own adoption figure)",
+        "measured": "66 CONFORMANT via the live census run against a temporary local merge — 5 below prediction",
+        "rule": "Per this project's own standing discipline: a measured count BELOW an independent prediction is a detector bug until proven otherwise — not silently accepted as 'close enough'.",
+        "rootCause": "PROVEN, not assumed. `conditional-visibility.js` mounts its ToggleControls via a GLOBAL `addFilter('editor.BlockEdit', ...)` with NO per-block gate at all (confirmed by reading the file — no `enabledExtensions`/`hideExtensions` check anywhere in it, unlike `hover`/`background`/`width` etc., which DO gate through `supports.sgs.enabledExtensions`). It therefore reaches all 83 blocks, including every one of the 17 blocks the census marked VIOLATION (spot-checked: sgs/tabs and sgs/process-steps both declare NO `enabledExtensions` at all in block.json, so they cannot be reaching it through the gated mechanism the census's shared resolver understands — they reach it through this ungated global HOC instead). The census's `resolveComponentFiles` reach model can see a block's own edit.js plus components it imports plus the gated extension surfaces, but has no way to attribute a universally-applied `editor.BlockEdit` filter back to an individual consuming block.",
+        "verdict": "Confirmed detector limitation, not a golden-row defect. The 17 'VIOLATION' blocks genuinely do have a working ToggleControl (several, from conditional-visibility.js alone) — the census undercounts by construction for this one mechanism. Recorded here rather than silently accepted so a future engine improvement knows exactly what's missing: a way to attribute an ungated `editor.BlockEdit`-style extension surface to every block, distinct from the already-solved `enabledExtensions`-gated case."
+      },
+      "compoundRevealCanonical": {
+        "component": "SgsBooleanField",
+        "path": "src/components/SgsBooleanField.js",
+        "status": "NEW COMPONENT, built this session (2026-08-19, Bean-approved live) — a thin wrapper around ToggleControl, byte-identical output for a plain toggle with no revealed child.",
+        "api": "label, checked, onChange, help, children (a conditionally-revealed control, already gated by the caller e.g. `{showX && <SelectControl/>}`)",
+        "requiredWhen": "REQUIRED — not optional — whenever a toggle reveals a second control when checked (the compound case). Raw ToggleControl direct usage is a proven defect risk there: live computed-style measurement found post-grid/edit.js's 3 compound cases (Show image+Image size, Show excerpt+Excerpt length, Show read more+Read more text) with exactly 0px margin between the toggle and the revealed control. All 3 were retrofitted onto SgsBooleanField this session (replacing the earlier same-session manual __nextHasNoMarginBottom removal, so the fix isn't duplicated in two places) — see post-grid/edit.js.",
+        "adoption": "REACH 3 of 83 (post-grid only, all 3 of its own compound instances — measured 2026-08-19 after the retrofit)",
+        "detectorGap": "The census's canonical axis only checks ONE named component per type (same limitation free-text's alt1/alt2/alt3 already live with) — it cannot see this compound-case sub-requirement without a dedicated rule reading BOTH whether a toggle has sibling conditional JSX AND which component renders it. Not built this session; recorded as a real gap, not silently assumed solved."
+      },
+      "_correction_2026_08_19": "The ORIGINAL row (this session, before Bean's follow-up question) said the raw ToggleControl primitive was correct with no wrapper needed anywhere, reasoning 'a boolean has no hard case a wrapper would need to solve.' That was right for a PLAIN toggle but missed the compound-reveal case above — Bean asked directly whether these three input types should get an SGS wrapper like Link/Date, and this compound case is exactly the kind of hard case the original reasoning said didn't exist.",
+      "reasoning": "Unlike colour (state axis) or length (units array), a PLAIN boolean genuinely has no hard case needing a wrapper — that half of the original reasoning still holds, which is why the primary canonical stays ToggleControl rather than switching wholesale.",
       "alt1": {
         "component": "ToggleGroupControl",
         "when": "the states are NAMED ALTERNATIVES, not a plain on/off — e.g. overlayGradient -> 'Solid / Gradient' is CORRECT per Spec 35 §8.1, not a violation"
@@ -175,8 +192,20 @@
           "use": "short single-line config",
           "adoption": "REACH 69 of 83 (measured 2026-08-19) — direct 64, +5 hidden"
         },
+        "predictVsMeasuredReconciliation_2026_08_19": {
+          "predicted": 69,
+          "measured": "66 CONFORMANT via the live census run — 3 below prediction",
+          "rootCause": "SAME confirmed cause as the boolean row's own reconciliation — `conditional-visibility.js` also mounts a TextControl (its URL-param condition field) via the same ungated global `editor.BlockEdit` filter, invisible to the census's per-block reach model for the identical reason. Not re-derived independently; this is the same mechanism, not a second bug.",
+          "verdict": "Confirmed detector limitation, not a golden-row defect — same class as the boolean row."
+        },
         "alt1": { "component": "TextareaControl", "use": "long-form", "adoption": "REACH 30 of 83 — direct 10, +20 via custom-css.js extension surface" },
         "alt2": { "component": "NumberControl", "use": "unbounded or precision-typed numbers", "adoption": "REACH 4 of 83, direct == reach" },
+        "sgsWrapperAvailable": {
+          "component": "SgsFreeTextField",
+          "path": "src/components/SgsFreeTextField.js",
+          "status": "NEW COMPONENT, built this session (2026-08-19, Bean-approved live) — one component selecting between all four raw primitives via a `type` prop, unifying the __nextHasNoMarginBottom/__next40pxDefaultSize convention every one of ~190 existing mounts sets by hand today. 0 mounts yet.",
+          "note": "UNLIKE boolean's compound-reveal case, no live defect was found for this type — the raw primitives are not wrong today, so this is NOT promoted to the primary canonical and existing raw mounts are NOT a violation. It exists so a future convention change (or a validation/help pattern, mirroring what multi-select's wrapper does) has one home instead of ~190 call sites. Available, not required — do not gate a census finding on it."
+        },
         "alt3": { "component": "RangeControl", "use": "coarse BOUNDED values", "adoption": "REACH 49 of 83 — direct 41, +8 hidden" },
         "rule": "A number WITH a CSS unit is a LENGTH (see the styling-goldens length-unit row), NOT a bare number — the discriminator is the presence of a unit."
       },
@@ -308,16 +337,17 @@
       "specRef": "NO Part O contract exists for this type in Spec 35 as of 2026-08-19 — NEW row, authored from scratch this session per the brief. Spec 35's own §13 CONTROLS WITH NO CONTRACT YET table suggests folding FormTokenField into ENUM §3 as a clause; this session follows the brief's explicit task assignment (a standalone type, session B's row #21) instead — flagged here as a discrepancy, not silently resolved either way.",
       "canonical": {
         "panel": {
-          "component": "FormTokenField",
-          "path": "@wordpress/components — no SGS wrapper exists; not barrel-exported from src/components/ (it's inline in post-grid only)",
-          "adoption": "2 live mounts, BOTH in src/blocks/post-grid/edit.js (:632, :639)"
+          "component": "SgsMultiSelectField",
+          "path": "src/components/SgsMultiSelectField.js",
+          "status": "NEW COMPONENT, built this session (2026-08-19, Bean-approved live), REPLACING FormTokenField as the primary canonical — not merely organisational, it fixes the confirmed live behaviour gap below. post-grid's 2 mounts retrofitted onto it the same session (edit.js — categories + tags), so this type's entire population is already on the new canonical.",
+          "api": "label, value, onChange, suggestions, help (optional override — defaults to FormTokenField's own built-in how-to text)"
         }
       },
-      "reasoning": "The ONLY implementation found in the entire tree — exactly 2 mounts, both in post-grid/edit.js, managing category and tag selection for the query (term names as tokens, resolved to IDs via resolveCategoryNamesToIds/resolveTagNamesToIds at edit.js:339/:352). Picked as canonical because there is no competing shape AND it already solves the real case (name<->ID resolution for an open/searchable term set) rather than being a naive stand-in — not picked merely because it's 'the only option', but because it demonstrably handles the hard case correctly. Confirmed live 2026-08-19 (Bean asked to see it directly, since an EMPTY FormTokenField is visually indistinguishable from a plain TextControl — both are just a bordered box with a label and help text until a token exists): DOM class is genuinely `components-form-token-field`, and typing an exact/suggested term + Enter produces a real removable chip (screenshotted: 'Uncategorized ×').",
-      "knownUxGap_2026_08_19": {
-        "finding": "Typing a value that does NOT exactly match an existing term (e.g. a partial string with no suggestion selected) and pressing Enter silently clears the input — no chip is added AND no error/feedback is shown to the client. Confirmed by direct interaction: typing the full nonexistent string 'Test Category' + Enter did nothing; typing the partial 'Uncat' + Enter (without arrowing down to the suggestion first) ALSO did nothing; only 'Uncat' + ArrowDown (to highlight the real 'Uncategorized' suggestion) + Enter produced a chip.",
-        "severity": "minor UX papercut, not a broken component — the underlying control works correctly for its designed case (picking from real existing terms). A client typing a near-miss gets silent failure rather than a hint, which is worth a future improvement (e.g. WP's own FormTokenField supports an error/no-match affordance in newer versions) but is NOT this session's finding to fix.",
-        "scope": "not independently checked against the block's own wrapper code (post-grid/edit.js's resolveCategoryNamesToIds/resolveTagNamesToIds) to see whether it could offer 'create new term' or better feedback — flagged as an open question, not investigated further this session."
+      "reasoning": "FormTokenField itself is the right underlying primitive — confirmed correct for its designed case (name<->ID resolution for an open/searchable term set). The wrapper does not change that; it fixes a real interaction gap found live. Confirmed live 2026-08-19 (Bean asked to see it directly, since an EMPTY FormTokenField is visually indistinguishable from a plain TextControl — both are just a bordered box with a label and help text until a token exists): DOM class is genuinely `components-form-token-field`, and typing an exact/suggested term + Enter produces a real removable chip (screenshotted: 'Uncategorized ×').",
+      "fixedUxGap_2026_08_19": {
+        "finding": "Typing a value that does NOT exactly match an existing term (e.g. a partial string with no suggestion arrow-selected) and pressing Enter silently cleared the input — no chip, no error, no feedback. Confirmed by direct interaction before the fix: typing the full nonexistent string 'Test Category' + Enter did nothing; typing the partial 'Uncat' + Enter without arrowing down to the suggestion ALSO did nothing; only 'Uncat' + ArrowDown + Enter produced a chip.",
+        "fix": "SgsMultiSelectField sets two REAL FormTokenField props, verified against the component's own README before use (not guessed): `__experimentalAutoSelectFirstMatch` so Enter now commits the top matching suggestion even without an explicit arrow-down (matching how a client actually expects a type-ahead field to behave), and `messages.__experimentalInvalid` so assistive tech gets a real announcement for a genuinely non-matching entry instead of silence.",
+        "notVerifiedLive": "The behaviour change (auto-select-first-match actually firing on Enter) was NOT re-tested live this session after the retrofit — this session's own rule bans `npm run build`, and the editor runs compiled `build/`, not `src/`. Correct at the source level, confirmed against the real prop contract, not confirmed by re-running the exact interaction that found the bug."
       },
       "bannedLookalikes": {
         "_note": "No live violation found this session — recorded as a 0-instance regression guard, same discipline as colour's zero-instance set. Not an invented finding.",
