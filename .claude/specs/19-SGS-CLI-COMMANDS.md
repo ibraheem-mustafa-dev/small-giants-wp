@@ -347,9 +347,10 @@ wp sgs migrations run --target=0003-some-migration --user=1
 
 ---
 
-### 4.14 `wp sgs theme-mod restore` (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.6)
-
-`wp sgs theme-mod restore` and `Sgs_Variation_Picker` are DELETED by Decision 18. The WP style-variation system is removed; there is no legacy `active_theme_style` theme_mod to restore. Per-site branding is managed via `push-theme-snapshot.py` (see §7 below).
+| Command / class | Retired | Reason | Replacement |
+|---|---|---|---|
+| `wp sgs theme-mod restore` / `Sgs_Variation_Picker` | 2026-05-21 (Decision 18) | WP style-variation system deleted; no legacy `active_theme_style` theme_mod to restore | `push-theme-snapshot.py` (§7) |
+| `Sgs_Variation_REST` (`sgs/v1/active-variation`) | 2026-05-21 (Decision 18) | variation system deleted | Stage 10 of `/sgs-clone` calls `push-theme-snapshot.py` |
 
 ---
 
@@ -415,10 +416,6 @@ This spec owns the `wp sgs *` PHP CLI surface (12 commands via WP-CLI). A separa
 - `python stage_attribute_promotion.py status` — promoted vs pending counts
 
 NOT a `wp sgs` subcommand because (a) it mutates source files outside WP runtime, (b) it requires manual operator confirmation gate, (c) it operates on dev-machine artefacts not server state. If future maintenance wants a `wp sgs promote-attribute` wrapper around it, that would belong in this spec.
-
-**Sgs_Variation_REST** (commit `8ceb8787`): REST surface at `sgs/v1/active-variation` (POST + GET; `manage_options` gated) — **RETIRED 2026-05-21 (Decision 18)**. The variation system is deleted. This endpoint is no longer needed; Stage 10 of `/sgs-clone` now calls `push-theme-snapshot.py` instead.
-
----
 
 ## 7. Adjacent CLI scripts (non-wp-sgs)
 
