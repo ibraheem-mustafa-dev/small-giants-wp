@@ -18,7 +18,14 @@
  *
  * @package SGS\Blocks
  */
-import { TextControl, TextareaControl, NumberControl, RangeControl } from '@wordpress/components';
+import { TextControl, TextareaControl, RangeControl } from '@wordpress/components';
+// NumberControl is __experimentalNumberControl at runtime (confirmed 2026-08-19
+// against the live wp.components bundle; bare `NumberControl` does not exist) —
+// this codebase routes every __experimental* import through the compat barrel
+// (src/components/primitives/index.js), enforced by a prebuild gate
+// (survey-experimental-imports.js --check). Importing it bare from
+// '@wordpress/components' here would resolve to undefined and fail the build.
+import { NumberControl } from './primitives';
 
 /**
  * @param {Object}   props
