@@ -65,11 +65,10 @@
  * under the experimental flag in current Gutenberg — imported here as
  * `BorderRadiusControl` via the standard WP aliasing pattern.
  */
-import { BoxControl } from '@wordpress/components';
-
 import { __ } from '@wordpress/i18n';
 import ResponsiveControl from './ResponsiveControl';
 import { BorderRadiusControl } from './primitives';
+import SgsBoxControl from './SgsBoxControl';
 
 /** Map ResponsiveControl's device-switcher breakpoint keys to the contract's tier keys. */
 const TIER_BY_BREAKPOINT = {
@@ -137,37 +136,30 @@ export default function ResponsiveBoxControl( {
 
 	if ( ! showResponsive ) {
 		return (
-			<BoxControl
+			<SgsBoxControl
 				label={ label }
 				values={ tierValues.base }
 				sides={ sides }
 				units={ BOX_UNITS }
-				splitOnAxis={ false }
 				onChange={ ( next ) => onChange( 'base', next ) }
-				__next40pxDefaultSize
 			/>
 		);
 	}
 
 	return (
-		/* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the BoxControl.
-		   Core's BoxControl ignores that prop and always renders its own label via
-		   <BaseControl.VisualLabel> — verified in core source at the SHA WP 7.0.4 pins.
-		   With both set, two labels painted: the wrapper's plain <span> in sentence case
-		   and BoxControl's in WP's uppercase styling. Keep BoxControl's — BaseControl
-		   associates it with the inputs. 9 sites tree-wide carried this; fixed 2026-08-13. */
+		/* NO `label` on the wrapper — SgsBoxControl renders its own BaseControl
+		   label, same reasoning as the pre-rebuild BoxControl usage (9 sites
+		   tree-wide carried a double-label bug from this before 2026-08-13). */
 		<ResponsiveControl>
 			{ ( breakpoint ) => {
 				const tier = TIER_BY_BREAKPOINT[ breakpoint ];
 				return (
-					<BoxControl
+					<SgsBoxControl
 						label={ label }
 						values={ tierValues[ tier ] }
 						sides={ sides }
 						units={ BOX_UNITS }
-						splitOnAxis={ false }
 						onChange={ ( next ) => onChange( tier, next ) }
-						__next40pxDefaultSize
 					/>
 				);
 			} }

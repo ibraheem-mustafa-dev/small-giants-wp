@@ -45,7 +45,8 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import { Button, Flex, FlexItem, SelectControl } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
 import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
@@ -155,6 +156,7 @@ export function typographyAttrName( prefix, base ) {
  */
 export function typographyAttrKeys( prefix ) {
 	return {
+		fontFamily: typographyAttrName( prefix, 'FontFamily' ),
 		fontSize: typographyAttrName( prefix, 'FontSize' ),
 		fontSizeUnit: typographyAttrName( prefix, 'FontSizeUnit' ),
 		fontSizeTablet: typographyAttrName( prefix, 'FontSizeTablet' ),
@@ -249,6 +251,12 @@ function parseUnitValue( raw, currentUnit ) {
  *   scale as a dropdown. OPT-IN: only pass true when the block's
  *   {prefix}FontSize attr is typed ["number","string"] — on a number-only
  *   attr WP discards the stored slug at render (silent-discard class, D338).
+ * @param {boolean}  [props.showFontFamily=false] Offer a font-family picker
+ *   sourced from the theme.json `typography.fontFamilies` preset list (same
+ *   opt-in shape as fontSizePresets). OPT-IN: only pass true when the block
+ *   declares {prefix}FontFamily as a string attr — an undeclared attr is
+ *   silently discarded by WP at render (D338), same trap fontSizePresets
+ *   already guards against.
  * @return {JSX.Element} Controls fragment.
  */
 export default function TypographyControls( {
@@ -261,12 +269,32 @@ export default function TypographyControls( {
 	showLineHeight = true,
 	showResponsive = true,
 	fontSizePresets = false,
+	showFontFamily = false,
 	showDecoration = false,
 	showTransform = false,
 	showLetterSpacing = false,
 	showHover = false,
 } ) {
 	const k = typographyAttrKeys( prefix );
+
+	// Weight / Style / Line height / Letter spacing default COLLAPSED behind a
+	// "More typography options" toggle (Bean-requested compact-by-default
+	// pass, 2026-08-19) — mirrors WP core's own opt-in-via-menu disclosure
+	// pattern rather than rendering all four unconditionally. Local UI state
+	// only: it governs render visibility, never whether the attribute exists
+	// or is reachable — a block that already has a value stored in one of
+	// these four still shows it once expanded, same as before this change.
+	const [ moreOpen, setMoreOpen ] = useState( false );
+	const hasMoreFields = showWeight || showStyle || showLineHeight || showLetterSpacing;
+
+	const [ themeFontFamilies ] = useSettings( 'typography.fontFamilies' );
+	const fontFamilyOptions = [
+		{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+		...( themeFontFamilies ?? [] ).map( ( f ) => ( {
+			label: f.name || f.slug,
+			value: f.fontFamily,
+		} ) ),
+	];
 
 	// Each property's tier shape is read from the CURRENTLY STORED value, not
 	// hardcoded per-block — the tier-object migration runs property-by-property,
@@ -408,178 +436,251 @@ export default function TypographyControls( {
 		} );
 	}
 
+	// Font size, in whichever of the 3 shapes applies (tiered / responsive /
+	// static) — extracted to a variable so it can sit in a FlexItem paired
+	// with Preset size below, instead of each shape owning its own full-width
+	// row (Bean-requested compact pass, 2026-08-19).
+	let fontSizeField = null;
+	if ( showSize && showResponsive && fontSizeIsTiered ) {
+		fontSizeField = (
+			<ResponsiveOverride
+				label={ __( 'Font size', 'sgs-blocks' ) }
+				value={ fontSizeRaw }
+				onChange={ ( obj ) => setAttributes( { [ k.fontSize ]: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<UnitControl
+						label={ __( 'Font size', 'sgs-blocks' ) }
+						value={ composeUnitValue( inherited ? undefined : ownValue, currentFontSizeUnit ) }
+						placeholder={ inherited ? composeUnitValue( effectiveValue, currentFontSizeUnit ) : undefined }
+						units={ FONT_SIZE_UNITS }
+						onChange={ ( val ) => onFontSizeChangeTiered( setOwnValue, val ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
+			</ResponsiveOverride>
+		);
+	} else if ( showSize && showResponsive && ! fontSizeIsTiered ) {
+		fontSizeField = (
+			<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => (
+					<UnitControl
+						label={ __( 'Font size', 'sgs-blocks' ) }
+						value={ composeUnitValue(
+							attributes[ fontSizeAttrMap[ breakpoint ] ],
+							currentFontSizeUnit
+						) }
+						units={ FONT_SIZE_UNITS }
+						onChange={ ( val ) => onFontSizeChange( breakpoint, val ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
+			</ResponsiveControl>
+		);
+	} else if ( showSize && ! showResponsive ) {
+		fontSizeField = (
+			<UnitControl
+				label={ __( 'Font size', 'sgs-blocks' ) }
+				value={ composeUnitValue(
+					fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ],
+					currentFontSizeUnit
+				) }
+				units={ FONT_SIZE_UNITS }
+				onChange={ ( val ) => onFontSizeChange( 'desktop', val ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+		);
+	}
+
 	return (
 		<>
-			{ showSize && fontSizePresets && (
+			{ /* Preset size + Font size share one row, half-width each — both are
+			     measurement/selection controls for the SAME property, so pairing
+			     them (rather than each taking a full-width row) halves the height
+			     this pair costs without losing either field. */ }
+			{ ( ( showSize && fontSizePresets ) || fontSizeField ) && (
+				<Flex gap={ 2 } align="flex-start">
+					{ showSize && fontSizePresets && (
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Preset size', 'sgs-blocks' ) }
+								value={ ( () => {
+									const desktopVal = fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ];
+									return typeof desktopVal === 'string' ? desktopVal : '';
+								} )() }
+								options={ fontSizePresetOptions }
+								onChange={ onFontSizePresetChange }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
+					) }
+					{ fontSizeField && <FlexItem isBlock>{ fontSizeField }</FlexItem> }
+				</Flex>
+			) }
+
+			{ showFontFamily && (
 				<SelectControl
-					label={ __( 'Preset size', 'sgs-blocks' ) }
-					value={ ( () => {
-						const desktopVal = fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ];
-						return typeof desktopVal === 'string' ? desktopVal : '';
-					} )() }
-					options={ fontSizePresetOptions }
-					onChange={ onFontSizePresetChange }
+					label={ __( 'Font family', 'sgs-blocks' ) }
+					value={ attributes[ k.fontFamily ] || '' }
+					options={ fontFamilyOptions }
+					onChange={ ( val ) => setAttributes( { [ k.fontFamily ]: val || undefined } ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
 			) }
 
-			{ showSize && showResponsive && fontSizeIsTiered && (
-				<ResponsiveOverride
-					label={ __( 'Font size', 'sgs-blocks' ) }
-					value={ fontSizeRaw }
-					onChange={ ( obj ) => setAttributes( { [ k.fontSize ]: obj } ) }
+			{ /* Weight / Style / Line height / Letter spacing default COLLAPSED —
+			     see the moreOpen state comment above the function body. Whatever
+			     is already stored keeps working the moment this is expanded; this
+			     toggle only changes what renders by default, never what exists. */ }
+			{ hasMoreFields && (
+				<Button
+					variant="link"
+					onClick={ () => setMoreOpen( ( v ) => ! v ) }
+					aria-expanded={ moreOpen }
+					style={ { marginBottom: '8px' } }
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-						<UnitControl
-							label={ __( 'Font size', 'sgs-blocks' ) }
-							hideLabelFromVision
-							value={ composeUnitValue( inherited ? undefined : ownValue, currentFontSizeUnit ) }
-							placeholder={ inherited ? composeUnitValue( effectiveValue, currentFontSizeUnit ) : undefined }
-							units={ FONT_SIZE_UNITS }
-							onChange={ ( val ) => onFontSizeChangeTiered( setOwnValue, val ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
+					{ moreOpen
+						? __( 'Hide weight, style & spacing', 'sgs-blocks' )
+						: __( 'More typography options', 'sgs-blocks' ) }
+				</Button>
+			) }
+
+			{ moreOpen && ( showWeight || showStyle ) && (
+				<Flex gap={ 2 } align="flex-start">
+					{ showWeight && (
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Weight', 'sgs-blocks' ) }
+								value={ attributes[ k.fontWeight ] || '' }
+								options={ SGS_FONT_WEIGHT_OPTIONS }
+								onChange={ ( val ) => setAttributes( { [ k.fontWeight ]: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
 					) }
-				</ResponsiveOverride>
-			) }
-
-			{ showSize && showResponsive && ! fontSizeIsTiered && (
-				<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
-					{ ( breakpoint ) => (
-						<UnitControl
-							label={ __( 'Font size', 'sgs-blocks' ) }
-							hideLabelFromVision
-							value={ composeUnitValue(
-								attributes[ fontSizeAttrMap[ breakpoint ] ],
-								currentFontSizeUnit
-							) }
-							units={ FONT_SIZE_UNITS }
-							onChange={ ( val ) => onFontSizeChange( breakpoint, val ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
+					{ showStyle && (
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Style', 'sgs-blocks' ) }
+								value={ attributes[ k.fontStyle ] || '' }
+								options={ SGS_FONT_STYLE_OPTIONS }
+								onChange={ ( val ) => setAttributes( { [ k.fontStyle ]: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
 					) }
-				</ResponsiveControl>
+				</Flex>
 			) }
 
-			{ showSize && ! showResponsive && (
-				<UnitControl
-					label={ __( 'Font size', 'sgs-blocks' ) }
-					value={ composeUnitValue(
-						fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ],
-						currentFontSizeUnit
+			{ moreOpen && ( showLineHeight || showLetterSpacing ) && (
+				<Flex gap={ 2 } align="flex-start">
+					{ showLineHeight && (
+						<FlexItem isBlock>
+							<UnitControl
+								label={ __( 'Line height', 'sgs-blocks' ) }
+								value={ composeUnitValue(
+									currentLineHeightValue,
+									currentLineHeightUnit
+								) }
+								units={ LINE_HEIGHT_UNITS }
+								onChange={ onLineHeightChange }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
 					) }
-					units={ FONT_SIZE_UNITS }
-					onChange={ ( val ) => onFontSizeChange( 'desktop', val ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-
-			{ showWeight && (
-				<SelectControl
-					label={ __( 'Font weight', 'sgs-blocks' ) }
-					value={ attributes[ k.fontWeight ] || '' }
-					options={ SGS_FONT_WEIGHT_OPTIONS }
-					onChange={ ( val ) => setAttributes( { [ k.fontWeight ]: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-
-			{ showStyle && (
-				<SelectControl
-					label={ __( 'Font style', 'sgs-blocks' ) }
-					value={ attributes[ k.fontStyle ] || '' }
-					options={ SGS_FONT_STYLE_OPTIONS }
-					onChange={ ( val ) => setAttributes( { [ k.fontStyle ]: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-
-			{ showLineHeight && (
-				<UnitControl
-					label={ __( 'Line height', 'sgs-blocks' ) }
-					value={ composeUnitValue(
-						currentLineHeightValue,
-						currentLineHeightUnit
+					{ showLetterSpacing && (
+						<FlexItem isBlock>
+							<UnitControl
+								label={ __( 'Letter spacing', 'sgs-blocks' ) }
+								value={ composeUnitValue(
+									currentLetterSpacingValue,
+									currentLetterSpacingUnit
+								) }
+								units={ LETTER_SPACING_UNITS }
+								onChange={ onLetterSpacingChange }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
 					) }
-					units={ LINE_HEIGHT_UNITS }
-					onChange={ onLineHeightChange }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				</Flex>
 			) }
 
-			{ showLetterSpacing && (
-				<UnitControl
-					label={ __( 'Letter spacing', 'sgs-blocks' ) }
-					value={ composeUnitValue(
-						currentLetterSpacingValue,
-						currentLetterSpacingUnit
+			{ ( showDecoration || showTransform ) && (
+				<Flex gap={ 2 } align="flex-start">
+					{ showDecoration && (
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Decoration', 'sgs-blocks' ) }
+								value={ attributes[ k.textDecoration ] || '' }
+								options={ SGS_TEXT_DECORATION_OPTIONS }
+								onChange={ ( val ) => setAttributes( { [ k.textDecoration ]: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
 					) }
-					units={ LETTER_SPACING_UNITS }
-					onChange={ onLetterSpacingChange }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-
-			{ showDecoration && (
-				<SelectControl
-					label={ __( 'Text decoration', 'sgs-blocks' ) }
-					value={ attributes[ k.textDecoration ] || '' }
-					options={ SGS_TEXT_DECORATION_OPTIONS }
-					onChange={ ( val ) => setAttributes( { [ k.textDecoration ]: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-
-			{ showTransform && (
-				<SelectControl
-					label={ __( 'Text transform', 'sgs-blocks' ) }
-					value={ attributes[ k.textTransform ] || '' }
-					options={ SGS_TEXT_TRANSFORM_OPTIONS }
-					onChange={ ( val ) => setAttributes( { [ k.textTransform ]: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+					{ showTransform && (
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Transform', 'sgs-blocks' ) }
+								value={ attributes[ k.textTransform ] || '' }
+								options={ SGS_TEXT_TRANSFORM_OPTIONS }
+								onChange={ ( val ) => setAttributes( { [ k.textTransform ]: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
+					) }
+				</Flex>
 			) }
 
 			{ /* Hover typography (D309). Opt-in: only render for a block that
 			     DECLARES + renders the {prop}Hover companions, else the
-			     dead-control gate flags it. */ }
+			     dead-control gate flags it. Paired into one compact row, same
+			     as the base fields above — three narrow SelectControls with
+			     short labels fit comfortably at the standard sidebar width. */ }
 			{ showHover && (
-				<>
-					<SelectControl
-						label={ __( 'Text decoration (hover)', 'sgs-blocks' ) }
-						value={ attributes[ k.textDecorationHover ] || '' }
-						options={ SGS_TEXT_DECORATION_OPTIONS }
-						onChange={ ( val ) => setAttributes( { [ k.textDecorationHover ]: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Text transform (hover)', 'sgs-blocks' ) }
-						value={ attributes[ k.textTransformHover ] || '' }
-						options={ SGS_TEXT_TRANSFORM_OPTIONS }
-						onChange={ ( val ) => setAttributes( { [ k.textTransformHover ]: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Font weight (hover)', 'sgs-blocks' ) }
-						value={ attributes[ k.fontWeightHover ] || '' }
-						options={ SGS_FONT_WEIGHT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { [ k.fontWeightHover ]: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</>
+				<Flex gap={ 2 } align="flex-start">
+					<FlexItem isBlock>
+						<SelectControl
+							label={ __( 'Decoration (hover)', 'sgs-blocks' ) }
+							value={ attributes[ k.textDecorationHover ] || '' }
+							options={ SGS_TEXT_DECORATION_OPTIONS }
+							onChange={ ( val ) => setAttributes( { [ k.textDecorationHover ]: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</FlexItem>
+					<FlexItem isBlock>
+						<SelectControl
+							label={ __( 'Transform (hover)', 'sgs-blocks' ) }
+							value={ attributes[ k.textTransformHover ] || '' }
+							options={ SGS_TEXT_TRANSFORM_OPTIONS }
+							onChange={ ( val ) => setAttributes( { [ k.textTransformHover ]: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</FlexItem>
+					<FlexItem isBlock>
+						<SelectControl
+							label={ __( 'Weight (hover)', 'sgs-blocks' ) }
+							value={ attributes[ k.fontWeightHover ] || '' }
+							options={ SGS_FONT_WEIGHT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { [ k.fontWeightHover ]: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</FlexItem>
+				</Flex>
 			) }
 		</>
 	);

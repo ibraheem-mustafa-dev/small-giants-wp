@@ -84,6 +84,7 @@ import {
 } from './primitives';
 import { ColorPalette } from './colour-picker';
 import SgsGradientPicker from './gradient-picker';
+import BorderStyleControl from './BorderStyleControl';
 
 /**
  * Resolve a stored colour VALUE to a displayable CSS colour.
@@ -209,6 +210,8 @@ function SgsColourStateControl( {
 	clearable,
 	enableAlpha,
 	colours,
+	borderStyle,
+	onBorderStyleChange,
 } ) {
 	const descId = `${ id }-desc`;
 	const hasStates = states.length > 1;
@@ -404,31 +407,39 @@ function SgsColourStateControl( {
 							</HStack>
 						</Button>
 					) }
-					renderContent={ () =>
-						hasStates ? (
-							<TabPanel
-								className="sgs-colour-control__tabs"
-								tabs={ resolved.map( ( s ) => ( {
-									name: s.key,
-									title: s.label,
-								} ) ) }
-							>
-								{ ( tab ) => (
-									<div className="sgs-colour-control__content">
-										{ renderStateContent(
-											resolved.find(
-												( s ) => s.key === tab.name
-											) ?? resolved[ 0 ]
-										) }
-									</div>
-								) }
-							</TabPanel>
-						) : (
-							<div className="sgs-colour-control__content">
-								{ renderStateContent( resolved[ 0 ] ) }
-							</div>
-						)
-					}
+					renderContent={ () => (
+						<>
+							{ typeof onBorderStyleChange === 'function' && (
+								<BorderStyleControl
+									value={ borderStyle }
+									onChange={ onBorderStyleChange }
+								/>
+							) }
+							{ hasStates ? (
+								<TabPanel
+									className="sgs-colour-control__tabs"
+									tabs={ resolved.map( ( s ) => ( {
+										name: s.key,
+										title: s.label,
+									} ) ) }
+								>
+									{ ( tab ) => (
+										<div className="sgs-colour-control__content">
+											{ renderStateContent(
+												resolved.find(
+													( s ) => s.key === tab.name
+												) ?? resolved[ 0 ]
+											) }
+										</div>
+									) }
+								</TabPanel>
+							) : (
+								<div className="sgs-colour-control__content">
+									{ renderStateContent( resolved[ 0 ] ) }
+								</div>
+							) }
+						</>
+					) }
 				/>
 			</Item>
 			{ hasStates && (
