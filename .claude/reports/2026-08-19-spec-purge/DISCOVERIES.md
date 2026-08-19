@@ -12,12 +12,19 @@ slipped both the branch sweep and the coverage gate. The conversion-to-dynamic s
 still true; only the shim clause was dead. Removed the clause at byte level (line endings
 untouched), leaving the sentence intact. This miss is why `residual-check.py` exists.
 
-## D2 — Spec 37:~1736-1737 — lead-in contradicts the block it introduces  [OPEN]
+## D2 — Spec 37:~1736-1737 — reported contradiction  [FALSE ALARM, verified 2026-08-20]
 Reported by apply-37-36. "See the ownership + direction note immediately below; that label is
 currently ownerless…" now disagrees with the condensed K1 block at ~1739, which states Part 2
 is NOT ownerless. This is a SIDE-EFFECT of that row's own edit — the condensed replacement
 changed the fact the lead-in was pointing at. Not in the register, correctly left alone.
-Fix: reword the lead-in to match the block beneath it.
+**NOT a contradiction — I logged the agent's claim without checking it.** Verified by reading
+both: the lead-in says Part 2 is "currently ownerless"; the note beneath says "Assigning Part 2
+a single named owner is a prerequisite before any Part 2 work starts." Those agree — an owner
+still needs assigning, so it is still ownerless. No edit needed, and an edit made on the
+agent's report alone would have introduced an error into correct text.
+
+**Lesson: a subagent's claim of a defect needs verifying exactly like its claim of a fix.**
+I verified every fix the agents reported and took this defect report at face value.
 
 ## D3 — stale `_comment_*` doc-strings in two block.json files  [OPEN, out of scope]
 Reported during the Phase-1 audit: `brand-strip/block.json` and `feature-grid/block.json` carry
@@ -41,3 +48,17 @@ still lands on its answer. Byte-level edit; line endings untouched.
 **Lesson for the remaining collapses:** a K5 tombstone-collapse defined by a D-number RANGE must
 check every member of that range, not just the ones the register happened to enumerate. The
 register listed five; the range contained six.
+
+## D5 — the `deprecation path` cluster  [FIXED]
+Found by `residual-check.py`, not by reading. The same dead mechanism as `deprecated.js` in
+wording none of the four vocabulary passes targeted: "refactored ... with deprecation paths
+preserving existing post content" (02:125), "retained for deprecation back-compat" (02:261),
+"InnerBlocks composition + deprecation paths" (11:5, 11:203). E1/E2 removed every
+`deprecated.js` mention and left the mechanism described under a different name.
+
+## D6 — `palestine-lives` documented as a live deploy target  [FIXED]
+`build-deploy.py` `TARGETS` holds only `sandybrown`. Specs 00-OVERVIEW and 19 documented a
+second target — including a copy-pasteable command that would fail and a guard describing a
+removed code path. **UNANNOTATED staleness**: nobody bolted a note onto it, so no pattern in
+this sweep was aimed at it. It surfaced only because the residual gate flags every surviving
+marker no register row explains. This is the class the whole audit was blind to by design.
