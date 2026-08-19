@@ -52,6 +52,7 @@ const { resolveComponentFiles } = require( '../inspector-scan/core/components' )
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
 const BLOCKS_DIR = path.join( PLUGIN_ROOT, 'src', 'blocks' );
 const GOLDEN_PATH = path.join( PLUGIN_ROOT, 'scripts', 'consistency', 'golden-controls.json' );
+const ROSTER_PATH = path.join( PLUGIN_ROOT, 'scripts', 'consistency', 'roster.json' );
 
 const PARSER_OPTIONS = {
 	sourceType: 'module',
@@ -249,6 +250,37 @@ function canonicalFiles( spec, compFiles ) {
 	return out;
 }
 
+/**
+ * The schema's own scope predicate, honoured rather than ignored.
+ *
+ * `golden-controls.json` `controls.colour.scope.eligible` reads "roster.json
+ * blocks where surfaces.colour === true" — 65 of 83. Applying a colour axis to
+ * the other 18 reports a block with no colour surface at all as a VIOLATION,
+ * which inflates the backlog with work that does not exist. The first run of
+ * this survey did exactly that: 21 canonical "violations" across all 83.
+ *
+ * ⛔ A block ABSENT from roster.json gets `surfaces: null`, and the schema's
+ * nullSurfacesRule is explicit that null means UNKNOWN, NOT CLEAN. Treating it
+ * as ineligible would silently drop it, so it is reported UNCLEAR instead.
+ */
+function colourEligibility() {
+	const map = new Map();
+	try {
+		const roster = JSON.parse( fs.readFileSync( ROSTER_PATH, 'utf8' ) );
+		// ⚠ The list key is `blocks`, not `entries`, and slugs are `sgs/`-prefixed.
+		// Both were guessed wrong first and reported every block UNCLEAR — a
+		// scope gate that fails closed is at least visible, but a lookup keyed on
+		// the wrong shape is indistinguishable from "nothing is eligible".
+		for ( const e of roster.blocks || [] ) {
+			const bare = String( e.slug || '' ).replace( /^sgs\//, '' );
+			map.set( bare, e.surfaces === null ? null : !! ( e.surfaces && e.surfaces.colour ) );
+		}
+	} catch ( e ) {
+		return map;
+	}
+	return map;
+}
+
 function blockSlugs() {
 	return fs
 		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )
@@ -262,6 +294,7 @@ function survey() {
 	const golden = JSON.parse( fs.readFileSync( GOLDEN_PATH, 'utf8' ) );
 	const encoded = ( golden._meta && golden._meta.encoded ) || Object.keys( golden.controls || {} );
 	const compFiles = resolveComponentFiles();
+	const eligible = colourEligibility();
 	const rows = [];
 
 	for ( const slug of blockSlugs() ) {
@@ -277,6 +310,30 @@ function survey() {
 		for ( const type of encoded ) {
 			const spec = ( golden.controls || {} )[ type ];
 			if ( ! spec ) continue;
+			// Scope gate FIRST — an out-of-scope block must not report a
+			// violation of a contract that does not apply to it.
+			const elig = eligible.has( slug ) ? eligible.get( slug ) : null;
+			if ( type === 'colour' && elig === false ) {
+				rows.push( {
+					block: `sgs/${ slug }`,
+					type,
+					axes: {
+						canonical: { verdict: NA, detail: 'roster: no colour surface' },
+						bannedLookalikes: axisBannedLookalikes( spec, reached, canonicalFiles( spec, compFiles ) ),
+						nativeUi: axisNativeUi( spec, blockJson, reached ),
+					},
+				} );
+				continue;
+			}
+			if ( type === 'colour' && elig === null ) {
+				rows.push( {
+					block: `sgs/${ slug }`,
+					type,
+					axes: { canonical: { verdict: UNCLEAR, detail: 'absent from roster.json — UNKNOWN, not clean' } },
+				} );
+				continue;
+			}
+
 			const axes = {
 				canonical: axisCanonical( spec, reached ),
 				bannedLookalikes: axisBannedLookalikes( spec, reached, canonicalFiles( spec, compFiles ) ),
