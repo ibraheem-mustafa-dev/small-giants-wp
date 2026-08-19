@@ -1,0 +1,28 @@
+/**
+ * Editor-only styles for the shared DATE popover control
+ * (`DateTimePickerField.js`). Mirrors `LinkPopoverControl.css`'s two fixes —
+ * the trigger row needs a shrink-to-fit label, and the popover needs its own
+ * padding because `.components-popover__content` computes to `padding: 0`
+ * (verified live for LinkPopoverControl 2026-08-13; the same WP core Popover
+ * base applies here unchanged).
+ */
+
+.sgs-date-picker__row {
+	display: flex;
+	width: 100%;
+}
+
+.sgs-date-picker__row-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+}
+
+.sgs-date-popover__inner {
+	padding: 16px;
+}
+
+.sgs-date-picker__clear {
+	margin-top: 8px;
+}

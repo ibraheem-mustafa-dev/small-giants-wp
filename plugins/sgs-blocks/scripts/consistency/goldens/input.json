@@ -1,0 +1,370 @@
+{
+  "_meta": {
+    "purpose": "INPUT-CONTROL golden contracts — session B of the 2026-08-19 3-way goldens split (LEDGER.md Phase 1). Owns 7 real control types: enum+segmented (merged), boolean, free-text/bare-number, link, icon, multi-select, date. Written to its own file per the brief — golden-controls.json is a single merge point and three sessions (A styling, B input, C behaviour) are live in parallel; Session A owns the composer that merges styling.json + input.json + behaviour.json into golden-controls.json.",
+    "source": ".claude/prompts/2026-08-19-goldens-B-input-controls.md + .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O + two Explore surveys run 2026-08-19 over plugins/sgs-blocks/src + a live Playwright session against the sandybrown canary editor (Icon/Link popovers) and the public Gutenberg Storybook (DateTimePicker). Every figure below was produced by running a command/grep/live-render against the tree on 2026-08-19; none is inherited from prose without being independently re-checked this session.",
+    "version": 1,
+    "encoded": [ "enum", "boolean", "free-text", "link", "icon", "multi-select", "date" ],
+    "notEncoded": "This file does not encode colour, gradient, typography, length-unit, box-4value, state, media, shadow, responsive-wrapper, border (Session A/colour's existing rows) or media/state/responsive-wrapper/repeater/animation/angle-position/preset-picker (Session C's rows) — see golden-controls.json and the sibling goldens/styling.json + goldens/behaviour.json files.",
+    "regenerate": "HAND-MAINTAINED, same discipline as golden-controls.json — this is a contract, not a derivation."
+  },
+  "controls": {
+    "enum": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §3 (ENUM / MODE) — MERGED with the former §9 SEGMENTED concept per the 2026-08-19 session-B brief. The dropdown-vs-segmented threshold below is NEW this session; Spec 35 §3.1 states explicitly 'the threshold is nowhere written down, so it cannot yet be gated.'",
+      "canonical": {
+        "panel": {
+          "component": "SelectControl",
+          "path": "@wordpress/components — no local SGS wrapper exists (confirmed 2026-08-19: src/components/index.js exports nothing enum-shaped)",
+          "api": "options must equal the block.json declared enum array EXACTLY — not a superset, not a subset",
+          "adoption": "SelectControl-over-declared-enum REACH 75 of 83 blocks (measured 2026-08-19, survey-control-reach.py)",
+          "note": "Primary canonical for a plain census reach-check. The REAL choice between this and altSegmented below is governed by the shapeRule field, not a free pick — see shapeRule. A census axis checking only this field's component name (the same limitation this file's own free-text row's alt1/alt2/alt3 already live with) will read a correctly-segmented block as a canonical VIOLATION; that is a known census-engine limitation, not a contract error — the shapeRule field is the authority for which primitive is actually correct per block."
+        }
+      },
+      "altSegmented": {
+        "component": "ToggleGroupControl",
+        "path": "@wordpress/components — no local SGS wrapper exists",
+        "when": "optionCount <= 5 AND every option label.length <= 14 characters — see shapeRule below for the full derivation",
+        "adoption": "ToggleGroupControl REACH 64 of 83 but only 7 blocks / 13 mounts are genuine per-block enum controls — the other 57 are the global responsive-device-toggle extension surface, a different mechanism entirely, not an enum choice"
+      },
+      "altForUnboundedSet": {
+        "component": "ComboboxControl",
+        "path": "@wordpress/components",
+        "adoption": "2 live mounts: product-card/edit.js:183 (WooCommerce product search), card-grid/components/handpicked-panel.js:73 (handpicked item search)",
+        "note": "A THIRD tier, out of this contract's scope — for a live/searchable/unbounded candidate set (a product catalogue, a post search), not a closed small enum. Recorded so a future reviewer doesn't mistake it for a segmented-vs-dropdown violation."
+      },
+      "shapeRule": {
+        "_why": "Spec 35 §3.1 names the threshold as the open gap this row exists to close. Derived 2026-08-19 from every live ToggleGroupControl/SelectControl mount in src/blocks/*/edit.js (excluding the global device toggle), not asserted from feel.",
+        "rule": "ToggleGroupControl (segmented) when optionCount <= 5 AND every option label.length <= 14 characters. SelectControl (dropdown) otherwise.",
+        "derivation": {
+          "toggleGroupControlCeiling": {
+            "maxOptionCountObserved": 5,
+            "distribution": "2 options x6 mounts, 3 options x5, 4 options x2, 5 options x1",
+            "maxLabelLengthObserved": 14,
+            "maxLabelExample": "\"WordPress menu\" — sgs/icon-list.source",
+            "nextLongest": [13, 12, 12],
+            "totalMounts": 13,
+            "totalBlocks": 7,
+            "blocksSurveyed": ["hero", "icon-list", "nav-menu", "nav-drawer", "mega-panel", "mega-aside", "site-header"]
+          },
+          "selectControlCounterEvidence": {
+            "note": "Count alone does not explain the existing split — SelectControl is used at every option count from 2 up, including short 2-3 option cases that COULD be segmented by count alone.",
+            "shortLabelExamplesStillOnSelect": [
+              "audio.audioSource (2 options, max label 14 chars)",
+              "brand-strip.logoFit (2 options, max 7 chars)",
+              "brand-strip.tileShape (3 options, max 6 chars)",
+              "brand-strip.scrollDirection (2 options, max 5 chars)",
+              "pricing-table.billingPeriod (2 options, max 7 chars)",
+              "button.underlineHover (2 options, max 9 chars)"
+            ],
+            "longLabelExamplesCorrectlyOnSelect": [
+              "form (own variant).templateMode — \"Grid section (fields + heading/text)\" = 36 chars",
+              "multi-button.templateMode — \"Grid section (buttons only)\" = 27 chars",
+              "container.tagName — \"Article (self-contained)\" = 24 chars, 8 options",
+              "business-info.labelCollapse — \"On tablet & mobile (below 1024px)\" = 34 chars, 4 options",
+              "business-info.displayType — \"Social Media Links\" = 19 chars, 8 options",
+              "brand-strip.imageEffect — \"None (full colour)\" = 19 chars",
+              "audio.playerStyle — 7 options (no ToggleGroupControl precedent past 5)"
+            ]
+          },
+          "commands": [
+            "python plugins/sgs-blocks/scripts/surveys/survey-control-reach.py . (run from plugins/sgs-blocks) — mount counts",
+            "manual per-mount option/label extraction via grep + read across src/blocks/*/edit.js for every <ToggleGroupControl and <SelectControl JSX mount (excluded src/blocks/extensions/responsive-device-toggle.js)"
+          ]
+        },
+        "informalPrecedent": "A code comment in the nav-menu/icon-list vicinity already gestures at '2-5 short options -> ToggleGroupControl, not a Select' — this rule formalises what was informally known but, per Spec 35 §3.1, never written down or gated."
+      },
+      "bannedLookalikes": {
+        "_note": "TWO DISTINCT violation classes for this type — do not conflate them, they need different detection logic (component identity vs. counting options/label length).",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "a shared aggregator's hardcoded option list diverging from the consuming block's declared enum (set-mismatch)",
+            "why": "Spec 35 §3.6 names 3 live defects on ONE shared control (LayoutPanel): sgs/testimonial-slider (enum full|split vs picker stack|flex|grid — ZERO overlap), sgs/post-grid (enum grid|list|masonry|carousel, only grid overlaps), sgs/feature-grid (render.php:131 hardcodes layout='grid' before calling the wrapper — the control is live, visible and inert)",
+            "liveInstances": "3 confirmed, spec-cited, not independently re-measured this session — plus 9 further blocks with kind=\"layout\" and no enum at all, and 13 attrs/8 blocks PHP-enforced with no declared enum (also spec-cited)",
+            "detection": "set-difference: rendered options vs declared block.json enum"
+          },
+          {
+            "shape": "wrong primitive chosen for the option shape (dropdown-vs-segmented shapeRule violation) — NEW this session",
+            "why": "the shapeRule above is newly formalised; no rule has ever gated it, so live violation counts are unmeasured until a detector exists",
+            "liveInstances": "NOT YET MEASURED — this is a new check, no detector exists yet to run it. Predicted candidates worth a first pass: any 2-5 option SelectControl with all labels <=14 chars (the 'shortLabelExamplesStillOnSelect' list above) are the shapeRule's own counter-evidence set and are the most likely first findings once a detector runs.",
+            "detection": "count block.json declared enum options + compute max label length (from edit.js option/label strings) against the shapeRule thresholds; compare to which primitive is actually mounted"
+          }
+        ],
+        "matchRule": "Set-mismatch check is a value-set diff, not a Set-membership JSX-identifier ban (colour's style). The shapeRule check is a count+length computation against a live mount identity. Neither is a simple component-name ban."
+      },
+      "qualifiesWhen": {
+        "_why": "Colour-row discipline (Spec 35 O.16): the predicate must be code-derived and re-runnable, not descriptive-and-circular.",
+        "declaredEnum": {
+          "source": "block.json attribute type definition",
+          "match": "attribute declares an \"enum\" array",
+          "means": "the attribute has a closed value set a control must render exactly"
+        },
+        "verdicts": "enum declared + options match exactly + correct primitive per shapeRule = CONFORMANT. Enum declared but any mismatch (value-set OR wrong primitive) = VIOLATION. No declared enum at all despite PHP enforcing a closed set (13 attrs/8 blocks, spec-cited) is a DIFFERENT finding class, recorded under bannedLookalikes.patterns, not qualifiesWhen — there is no attribute to scope a predicate against until block.json declares one."
+      },
+      "scope": {
+        "eligible": "no roster.json surface exists for this type — scope is every block.json attribute declaring an enum array",
+        "eligibleCount2026_08_19": 272,
+        "command": "python plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py . (BLOCK.JSON DERIVED section, run from plugins/sgs-blocks)",
+        "note": "superseded from a prior 284 figure — re-run rather than trust either number. 1,372 string rows are the wider search space (Spec 35 §3.5), not the violator count."
+      }
+    },
+    "boolean": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §8 (BOOLEAN)",
+      "canonical": {
+        "panel": {
+          "component": "ToggleControl",
+          "path": "@wordpress/components — no SGS wrapper exists (confirmed 2026-08-19: src/components/ has no Boolean*/Toggle*Control file, and src/components/index.js exports nothing boolean-shaped)",
+          "adoption": "158 live <ToggleControl mounts across src/blocks/*/edit.js (measured 2026-08-19, exhaustive grep count) plus all 4 extension surfaces (conditional-visibility.js, fx.js, hover-effects.js, parallax.js) each import ToggleControl directly from @wordpress/components — no shared wrapper anywhere in the tree"
+        }
+      },
+      "reasoning": "This is a genuine 'most adopted AND correct' case, not a reach-only signal. Unlike colour (state axis) or length (units array), a boolean has no hard case a wrapper would need to solve — the raw primitive, used consistently across 158 mounts including every extension surface, is the correct call, not an unfinished gap. Recorded explicitly so a future reader doesn't mistake 'no wrapper' for 'no one built it yet.'",
+      "alt1": {
+        "component": "ToggleGroupControl",
+        "when": "the states are NAMED ALTERNATIVES, not a plain on/off — e.g. overlayGradient -> 'Solid / Gradient' is CORRECT per Spec 35 §8.1, not a violation"
+      },
+      "alt2": {
+        "component": "CheckboxControl",
+        "when": "a boolean scoped to ONE ITEM in a repeated list only — 8 uses verified correct per Spec 35 §8.1",
+        "adoption": "REACH 6 of 83 (measured 2026-08-19) — direct 5, +1 hidden"
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §8.3 — kept as-is, this session's survey found nothing new to add.",
+        "jsxComponents": [],
+        "patterns": [
+          { "shape": "a 2-option SelectControl driving a boolean", "why": "Spec 35 §8.3", "liveInstances": "3 DB rows (spec-cited)" },
+          { "shape": "a RadioControl with two options", "why": "Spec 35 §8.3 corrects an earlier 'ZERO' claim; the real figure is 1 (heading/edit.js:281)", "liveInstances": 1 },
+          { "shape": "literal 'On/Off' toggle groups", "why": "Spec 35 §8.3", "liveInstances": 0 }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership."
+      },
+      "qualifiesWhen": {
+        "_why": "NEW this session — a clean, code-derived, DB-independent predicate, unlike most other input types.",
+        "declaredBoolean": {
+          "source": "block.json attribute type definition",
+          "match": "attribute type === \"boolean\"",
+          "means": "the block declares a true/false setting that must have a client-reachable control"
+        },
+        "verdicts": "MISSING = a declared boolean attribute with no ToggleControl render AND not legitimately routed to ToggleGroupControl (named-alternative, alt1) or CheckboxControl (repeater-item scope, alt2) — those two are documented alts, not violations."
+      },
+      "scope": {
+        "eligible": "no roster.json surface exists for this type — every block.json attribute typed boolean",
+        "eligibleCount2026_08_19": 252,
+        "note": "252 boolean rows figure is Spec 35 §8.5, spec-cited DB figure, NOT independently re-run this session (roster.json has no boolean surface; the DB lives outside this repo per colour row's whyRosterNotDb note). The qualifiesWhen predicate above is the re-runnable, in-repo alternative."
+      }
+    },
+    "free-text": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §9 (FREE TEXT / BARE NUMBER)",
+      "canonical": {
+        "panel": {
+          "component": "TextControl",
+          "path": "@wordpress/components — no SGS wrapper exists for this family (confirmed 2026-08-19: src/components/index.js exports nothing free-text-shaped; every text/textarea/number/range field found this session imports the raw @wordpress/components primitive directly)",
+          "use": "short single-line config",
+          "adoption": "REACH 69 of 83 (measured 2026-08-19) — direct 64, +5 hidden"
+        },
+        "alt1": { "component": "TextareaControl", "use": "long-form", "adoption": "REACH 30 of 83 — direct 10, +20 via custom-css.js extension surface" },
+        "alt2": { "component": "NumberControl", "use": "unbounded or precision-typed numbers", "adoption": "REACH 4 of 83, direct == reach" },
+        "alt3": { "component": "RangeControl", "use": "coarse BOUNDED values", "adoption": "REACH 49 of 83 — direct 41, +8 hidden" },
+        "rule": "A number WITH a CSS unit is a LENGTH (see the styling-goldens length-unit row), NOT a bare number — the discriminator is the presence of a unit."
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §9.3 — kept as-is; the interesting findings here are attribute-role mismatches, not the component itself.",
+        "jsxComponents": [],
+        "patterns": [
+          { "shape": "free text driving a colour", "why": "sgs/star-rating (Spec 35 §9.3) — a direct breach of the colour type's own canonical shape", "liveInstances": 1 },
+          { "shape": "free text driving typography", "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, R-22-13)", "liveInstances": 7 },
+          { "shape": "product-card.ctaFontSize as a bare unitless NumberControl", "why": "Spec 35 §9.3 names this specific instance as a direct breach of the mandatory TypographyControls rule", "liveInstances": 1 }
+        ],
+        "matchRule": "The violation is which ATTRIBUTE ROLE the text control is bound to (colour/typography), not the component itself — needs a role/css_property cross-reference, not a bare component-name ban."
+      },
+      "qualifiesWhen": {
+        "_why": "This type is the RESIDUAL bucket by construction — almost every string/number attribute is 'free text' unless more specifically shaped. Stated plainly rather than inventing an artificial predicate.",
+        "residualPredicate": "a block.json attribute typed string/number/integer with NONE of: a declared enum (see enum row), a colour-role name or css:color mapping, a link-role name (see link row), a date-shaped name (see date row), an icon-role mapping (see icon row)",
+        "verdicts": "MISSING is only meaningful for the sub-cases already in bannedLookalikes (wrong-family binding) or a genuinely uncontrolled attribute (render-but-no-control). Do NOT report every ordinary TextControl as 'missing' anything — the useful signal is misuse, not absence."
+      },
+      "scope": {
+        "eligible": "no roster.json surface — Spec 35 §9.5: 1,654 string rows, 432 number/integer rows (spec-cited, not independently re-run this session)",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      }
+    },
+    "link": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §2 (LINK) — finalised this session per the brief's explicit instruction",
+      "canonical": {
+        "panel": {
+          "component": "LinkPopoverField",
+          "path": "src/components/LinkPopoverControl.js",
+          "api": "label, value ({url, linkId, linkKind, linkTarget, rel, download} object OR bare string when searchOnly), onChange",
+          "adoption": "REACH 10 of 83 (measured 2026-08-19, direct == reach)"
+        },
+        "sharedPopoverPrimitive": {
+          "component": "LinkPopoverContent",
+          "path": "src/components/LinkPopoverControl.js",
+          "whenToUse": "a block needs MULTIPLE triggers sharing one popover instance (e.g. sgs/button's toolbar button + sidebar row)",
+          "adoption": "1 direct mount (sgs/button) — not separately tracked by survey-control-reach.py"
+        }
+      },
+      "reasoning": "Confirmed correct by a full read of LinkPopoverControl.js this session (304 lines). It is not a bespoke alternative — it wraps WordPress core's own LinkControl (@wordpress/block-editor) directly inside a Popover, triggered by a button row. This is the SAME pattern core itself uses (its own Post Publish panel, core/button, core/navigation-link all use trigger-button -> popover -> LinkControl). The only SGS-specific parts are the trigger row and a few extra fields (rel, download, target). Live-verified 2026-08-19 in the sandybrown canary editor (sgs/icon block): a compact 'Add link' trigger row opens a Popover containing the real core LinkControl search/paste-URL field.",
+      "correction_2026_08_19": {
+        "claim": "golden-controls.json's existing link.knownStaleTrap_link_backlog field records an UNRESOLVED discrepancy: Spec 35 §2.6 claims 7 blocks are still on SgsLinkControl's inline mount (brand-strip, card-grid, form, pricing-table, social-icons, team-member, trust-bar); a prior survey-script run said 0 mounts tree-wide, and the conflict was left open.",
+        "resolution": "RESOLVED this session by reading all 8 files that reference SgsLinkControl. Every single edit.js hit is a CODE COMMENT recording the migration (e.g. \"previously used SgsLinkControl, now LinkPopoverField\") — the live control mounted in every one of those files is <LinkPopoverField>. The migration is DONE, not a live backlog.",
+        "citations": [
+          "brand-strip/edit.js — comment only; live control <LinkPopoverField> at edit.js:129",
+          "card-grid/edit.js — comment at :193; live control at :196",
+          "form/edit.js — comment at :236; live control at :239",
+          "media/edit.js — comment at :761; live control at :765",
+          "pricing-table/edit.js — comment at :766; live control at :770",
+          "social-icons/edit.js — comment at :425-427; live control at :428",
+          "team-member/edit.js — comment at :120; live control at :125",
+          "trust-bar/edit.js — comment at :244; live control at :249"
+        ],
+        "command": "grep -rn \"<SgsLinkControl\" src/blocks/*/edit.js (0 matches) vs grep -rln \"SgsLinkControl\" src/ (17 files, all comment/doc/barrel-export references)"
+      },
+      "bannedLookalikes": {
+        "jsxComponents": [ "URLInput", "SgsLinkControl" ],
+        "patterns": [
+          { "shape": "<TextControl type=\"url\" />", "why": "bypasses the link resolution + popover UX entirely", "liveInstances": "not independently re-measured this session" },
+          { "shape": "SgsLinkControl's inline mount for any NEW consumer", "why": "0 live JSX mounts confirmed 2026-08-19 (see correction above) — kept as a regression guard, same discipline as colour's zero-instance set, not a live backlog", "liveInstances": 0 }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership, never substring.",
+        "cleanupOpportunityNotAFinding": "SgsLinkControl.js is still barrel-exported from src/components/index.js:36 and still textually referenced (comment/doc only) in 8 render.php files. Flagged here as a small follow-up (dead export + stale doc comments), explicitly NOT a golden-schema finding and NOT acted on this session — out of scope."
+      },
+      "nativeUi": { "_note": "No core supports.* flag maps to link fields — not applicable." },
+      "qualifiesWhen": {
+        "primary": {
+          "source": "roster.json blocks[].surfaces.link === true",
+          "eligibleCount2026_08_19": 17,
+          "note": "Spec 35 §2.5 additionally names a 67-block extension-surface reach via hover-effects.js's block-link, invisible to this block-scoped axis — this 17 count is the top-level-attr pool only."
+        },
+        "secondary_notMeasuredThisSession": {
+          "predicate": "the block's render.php emits an <a href=...> built from an attribute value (a paintsLink check, mirroring colour's paintsOwnSurface)",
+          "command": "grep -n 'href=\"<?php echo esc_url(.*\\$attributes\\[' src/blocks/*/render.php",
+          "why": "catches a link surface roster.json's surfaces.link axis might miss (roster's own note already flags it as over/under-inclusive)",
+          "status": "predicate to implement — NOT exhaustively re-run this session, recorded as the next step rather than an already-measured count"
+        }
+      },
+      "scope": {
+        "eligible": "roster.json surfaces.link === true",
+        "eligibleCount2026_08_19": 17,
+        "rosterPath": "scripts/consistency/roster.json"
+      }
+    },
+    "icon": {
+      "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §10 (ICON)",
+      "canonical": {
+        "panel": {
+          "component": "IconPicker",
+          "path": "src/components/IconPicker/IconPicker.js",
+          "api": "value ({source, name}), onChange, label (default 'Icon'), sources (optional enabled-source filter)",
+          "adoption": "REACH 12 of 83 (measured 2026-08-19, direct == reach)"
+        }
+      },
+      "reasoning": "No competitor exists — confirmed by a full-file read this session (477 lines) AND a live check for a core equivalent. WordPress core ships no generic arbitrary-icon-library picker: the nearest thing, core's Social Icons block, only offers a small fixed set of named social platforms, not a general browsable icon library. IconPicker is a genuinely bespoke modal (4 icon libraries — Lucide 1,917, Emoji 1,914, WordPress icons, Dashicons — search, categories, windowed rendering, full keyboard/screen-reader support) built because the gap is real. Live-verified 2026-08-19 in the sandybrown canary editor (sgs/icon block): a 'Choose an icon' modal with library tabs, category sidebar, search box and a live filterable grid.",
+      "shapeRule": {
+        "specRef": "PART O §10 fields 2, 6",
+        "rule1": "label, value, onChange required; id REQUIRED and MISSING — re-verified fresh this session, not just copied forward. Signature at IconPicker.js:143-148 takes no id prop at all; the BaseControl mount at IconPicker.js:335 passes only label and __nextHasNoMarginBottom, no id/htmlFor.",
+        "rule2": "conformance is 0 of 13, not 9 of 9 as an earlier version of this doc carried — every mount passes the component-adoption check but fails the id requirement"
+      },
+      "bannedLookalikes": {
+        "_note": "Spec 35 §10.3 — kept as-is, this session's survey did not surface anything to change.",
+        "jsxComponents": [],
+        "patterns": [
+          { "shape": "a SelectControl over a hardcoded icon-name list", "why": "Spec 35 §10.3", "liveInstances": "not independently re-measured this session" },
+          { "shape": "a TextControl taking a raw icon slug", "why": "Spec 35 §10.3", "liveInstances": "not independently re-measured this session" },
+          { "shape": "an emoji/character field standing in for an icon", "why": "Spec 35 §10.3", "liveInstances": "not independently re-measured this session" },
+          { "shape": "a per-item icon picker inside a repeater that is NOT IconPicker", "why": "Spec 35 §10.3 explicitly clears form-field-tiles and pricing-table — both mount the real component", "liveInstances": 0 }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership."
+      },
+      "qualifiesWhen": {
+        "primary": {
+          "source": "DB block_capabilities capability icon-picker (13 blocks / 15 sites), declared via supports.sgs.iconPicker",
+          "note": "Never scope by role LIKE 'icon-%' — that role family is the CONVERTER's icon-source discriminator (D525 separated the two deliberately)."
+        },
+        "secondary_notVerifiedThisSession": {
+          "predicate": "an attribute whose value is consumed by an icon-rendering path in render.php (svg/lucide output)",
+          "status": "flagged as an open predicate, NOT a measured finding — the actual render.php helper name was not confirmed by a direct read this session, and inventing a function name is exactly the class of mistake this project's CLAUDE.md warns against (the wc_get_price_html() incident). Do not act on this predicate until the real helper name is confirmed."
+        }
+      },
+      "scope": {
+        "eligible": "roster.json has no dedicated icon surface — DB block_capabilities icon-picker (13 blocks/15 sites)",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)",
+        "warning": "the census must scan PAST edit.js — sgs/cart mounts the picker from TriggerSettingsControls.js; a per-block edit.js-only scan reports 12 and looks complete but misses this one (Spec 35 §10.5)."
+      }
+    },
+    "multi-select": {
+      "specRef": "NO Part O contract exists for this type in Spec 35 as of 2026-08-19 — NEW row, authored from scratch this session per the brief. Spec 35's own §13 CONTROLS WITH NO CONTRACT YET table suggests folding FormTokenField into ENUM §3 as a clause; this session follows the brief's explicit task assignment (a standalone type, session B's row #21) instead — flagged here as a discrepancy, not silently resolved either way.",
+      "canonical": {
+        "panel": {
+          "component": "FormTokenField",
+          "path": "@wordpress/components — no SGS wrapper exists; not barrel-exported from src/components/ (it's inline in post-grid only)",
+          "adoption": "2 live mounts, BOTH in src/blocks/post-grid/edit.js (:632, :639)"
+        }
+      },
+      "reasoning": "The ONLY implementation found in the entire tree — exactly 2 mounts, both in post-grid/edit.js, managing category and tag selection for the query (term names as tokens, resolved to IDs via resolveCategoryNamesToIds/resolveTagNamesToIds at edit.js:339/:352). Picked as canonical because there is no competing shape AND it already solves the real case (name<->ID resolution for an open/searchable term set) rather than being a naive stand-in — not picked merely because it's 'the only option', but because it demonstrably handles the hard case correctly.",
+      "bannedLookalikes": {
+        "_note": "No live violation found this session — recorded as a 0-instance regression guard, same discipline as colour's zero-instance set. Not an invented finding.",
+        "jsxComponents": [],
+        "patterns": [
+          { "shape": "a comma-separated-list TextControl standing in for a token field", "why": "would accept unvalidated freeform text for what should be a bounded multi-selection", "liveInstances": 0 }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership."
+      },
+      "qualifiesWhen": {
+        "predicate": "a block.json attribute typed \"array\" with items.type \"string\"/\"integer\" and NO enum declared on the items",
+        "why": "this is what distinguishes it from a closed, small enum (see the enum row above) — representing a repeated selection from an open/larger candidate set (terms, tags, related posts), not a fixed few options",
+        "status": "code-derived and re-runnable; NOT yet measured this session — no other array-typed attribute matching this shape was found during the survey pass, but the survey was not exhaustive across all 83 block.json files for this specific predicate"
+      },
+      "scope": {
+        "eligible": "no roster.json surface exists for this type",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      }
+    },
+    "date": {
+      "specRef": "NO Part O contract exists for this type in Spec 35 as of 2026-08-19 — NEW row, authored from scratch this session. The canonical decision was overridden live by Bean 2026-08-19 mid-session: do not default to whatever happens to be mounted just because it's mounted — check whether core WordPress has the real component first.",
+      "canonical": {
+        "panel": {
+          "component": "DateTimePickerField",
+          "path": "src/components/DateTimePickerField.js",
+          "status": "NEW COMPONENT, built this session (2026-08-19) — modelled directly on LinkPopoverField's own trigger+Popover shape, wrapping core's DateTimePicker. This is a BUILD DECISION, not a reach measurement: 0 mounts exist yet by construction (just created).",
+          "api": "label, value (ISO date/datetime string or ''), onChange, mode ('date'|'datetime' — controls whether the popover shows date-only or date+time, matching the two real consumer shapes found this session)"
+        }
+      },
+      "reasoning": {
+        "problem": "Survey found 5 real date-holding attributes, ALL currently rendered via raw TextControl — a genuine gap, not the ideal shape. 3 are type-constrained (sgs/countdown-timer.targetDate, type=\"datetime-local\", edit.js:181-188; sgs/form-field-date.minDate/.maxDate, type=\"date\", edit.js:99-112). 2 are uncontrolled freeform strings with no type attribute at all (sgs/testimonial.reviewDate, edit.js:712-719; sgs/timeline's repeater-item date field, edit.js:158-165, whose own help text explicitly documents accepting non-ISO freeform text — 'YYYY-MM-DD or e.g. January 2024').",
+        "coreCheck": "@wordpress/components ships DateTimePicker — a real calendar+clock widget (currentDate/onChange/is12Hour props, all optional). Confirmed live 2026-08-19 via the public Gutenberg Storybook (https://wordpress.github.io/gutenberg/iframe.html?id=components-datetimepicker--default, screenshotted): a full month calendar grid plus a TIME/DATE field pair plus a UTC-offset label. Core's own Post Publish panel uses exactly this component behind a trigger-button + Popover, not inline — the identical shape LinkPopoverField already established as precedent in this codebase (confirmed live 2026-08-19 in the sandybrown canary: sgs/icon's Link control is a compact 'Add link' trigger row opening a Popover with core's LinkControl inside).",
+        "whyNotCiteAnUnusedComponentBlindly": "DateTimePicker had 0 mounts anywhere in src/ before this session (confirmed by grep). That is a DIFFERENT situation from StateToggleControl (0 mounts, dead/abandoned code, correctly excluded elsewhere in golden-controls.json from ever being cited as canonical) — DateTimePicker is a live, actively-maintained core component that was simply never reached for. A genuinely correct, real, native control that hasn't been adopted yet is a gap to close, not evidence it's the wrong choice.",
+        "decision": "Bean-approved live 2026-08-19: build DateTimePickerField now (see 'built' status above) rather than leave this as a documented-but-unbuilt target."
+      },
+      "bannedLookalikes": {
+        "_note": "This is the finding this row exists to surface — exactly the brief's framing that a hand-rolled TextControl holding an ISO date is folklore until measured. This session measured 5, all genuinely real.",
+        "jsxComponents": [],
+        "patterns": [
+          {
+            "shape": "TextControl (typed OR freeform) standing in for a date value",
+            "why": "ALL 5 real date-holding attributes in the tree are on this shape today — including the 3 that already carry a type=\"date\"/\"datetime-local\" constraint, which is better than freeform but still a plain text box, not the real picker control",
+            "liveInstances": 5,
+            "citations": [
+              "sgs/countdown-timer.targetDate — edit.js:181-188, type=\"datetime-local\"",
+              "sgs/form-field-date.minDate — edit.js:99-111ish, type=\"date\"",
+              "sgs/form-field-date.maxDate — edit.js:112ish, type=\"date\"",
+              "sgs/testimonial.reviewDate — edit.js:712-719, no type constraint",
+              "sgs/timeline (repeater item) date field — edit.js:158-165, no type constraint, help text explicitly documents accepting non-ISO text too"
+            ]
+          }
+        ],
+        "matchRule": "Exact JSX-identifier Set membership for the component ban; the violation is the component choice itself (TextControl for a date value), not an attribute-role mismatch like free-text's colour/typography findings."
+      },
+      "qualifiesWhen": {
+        "predicate": "an attribute whose name matches a date-shape pattern (date/Date/expiry/Expiry/publish etc., case-insensitive) AND whose declared/example value is date-formatted (ISO YYYY-MM-DD or similar)",
+        "exclusions": [
+          "boolean show*Date-named toggles are NOT date values — found and correctly excluded during survey: google-reviews.showDate, post-grid.showDate, trustpilot-reviews.showDate are all type boolean",
+          "colour-token attributes whose name coincidentally contains 'date' are NOT date values — sgs/timeline.dateColour is a colour-role attribute (styles the date label), not a date value"
+        ],
+        "why": "these two exclusion classes were both found live during this session's survey; stating them explicitly stops a future mechanical grep from reintroducing them as false positives"
+      },
+      "scope": {
+        "eligible": "no roster.json surface exists for this type",
+        "rosterPath": "scripts/consistency/roster.json (no matching surface key)"
+      },
+      "migrationNote": "The 5 existing consumers were deliberately NOT migrated onto DateTimePickerField this session (countdown-timer, form-field-date x2, testimonial, timeline) — that is real per-block work with its own review needs, recorded as the natural next step, not rushed into the same session as the contract authoring and the new component's creation."
+    }
+  }
+}
