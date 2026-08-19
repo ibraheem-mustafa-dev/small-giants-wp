@@ -47,6 +47,16 @@ for c in $COMPONENTS; do
     echo "${c},ok,$(wc -c < "$OUT/${c}.md")"
   else
     rm -f "$OUT/${c}.md"
-    echo "${c},MISSING,0"
+    # No README (toggle-group-control, border-box-control as of 2026-08 trunk) —
+    # fall back to the component's own types.ts, the authoritative TS contract.
+    tspath="packages/components/src/${c}/types.ts"
+    if gh api "repos/WordPress/gutenberg/contents/${tspath}" \
+          --jq '.content' 2>/dev/null | base64 -d > "$OUT/${c}.types.ts" 2>/dev/null \
+       && [ -s "$OUT/${c}.types.ts" ]; then
+      echo "${c},ok-types-ts-fallback,$(wc -c < "$OUT/${c}.types.ts")"
+    else
+      rm -f "$OUT/${c}.types.ts"
+      echo "${c},MISSING,0"
+    fi
   fi
 done

@@ -319,8 +319,17 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * only.
 				 * ⛔ This whole extension is SCHEDULED FOR REMOVAL (design
 				 * §4, Bean 2026-08-08): hover belongs to the element, not to
-				 * a universal filter. 48 blocks rely on it SOLELY, so the
-				 * element-hover capability lands BEFORE any deletion.
+				 * a universal filter. CORRECTED 2026-08-19 — "48 blocks rely
+				 * on it SOLELY" was true only under the PRE-D551 universal/
+				 * opt-out gating this note was written against. D551
+				 * (2026-08-10) flipped `hover` to opt-in via
+				 * `supports.sgs.enabledExtensions`, and MEASURED live reach
+				 * is now **0** — no block.json opts in (verified by scanning
+				 * every block's `enabledExtensions` array, 2026-08-19). The
+				 * element-hover capability this note calls a precondition for
+				 * deletion is therefore no longer blocked on migrating 48
+				 * blocks off this filter; re-check before removal whether
+				 * that precondition still applies at all.
 				 */ }
 				<InspectorControls group="styles">
 					{ ! hideHover && (
@@ -447,10 +456,18 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 					>
 						{ /* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
 						   Bean-approved popover 2026-08-13) — replaces the raw
-						   TextControl (type url) this panel used to render
-						   (67-block reach via this ONE extension; the highest-
-						   leverage single fix in the LINK rollout). `showRel`
-						   stays off + `enableInternalResolution` stays off:
+						   TextControl (type url) this panel used to render.
+						   ⚠ CORRECTED 2026-08-19 — "67-block reach via this ONE
+						   extension" described the PRE-D551 legacy state, when
+						   `blockLink` was still denylist/universal (attached to
+						   every block unless opted out). D551 (2026-08-10) flipped
+						   it to opt-in via `supports.sgs.enabledExtensions`;
+						   MEASURED current reach is **3 blocks** (scan of every
+						   block.json's `enabledExtensions`, 2026-08-19) — this fix
+						   was the highest-leverage single fix in the LINK rollout
+						   at the time it shipped, not a description of today's
+						   reach. `showRel` stays off + `enableInternalResolution`
+						   stays off:
 						   `sgsBlockLink` has no rel attribute and no ID-resolution
 						   consumer in `includes/hover-effects.php` — only
 						   `url`/`linkTarget` exist on the wire. The accessible-

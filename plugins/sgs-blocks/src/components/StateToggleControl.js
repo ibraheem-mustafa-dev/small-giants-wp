@@ -1,6 +1,18 @@
 /**
  * Normal / Hover (state) switch for block sidebar colour controls.
  *
+ * ⚠ ADDED 2026-08-19 — this file currently has **ZERO JSX mounts** anywhere in
+ * the plugin (verified via `grep -rln '<StateToggleControl\b'` across
+ * `src/blocks/` and `src/components/`, 2026-08-19 — the two remaining
+ * plain-text references, `blocks/brand-strip/edit.js` and
+ * `blocks/nav-menu/edit.js`, are both comments documenting its REPLACEMENT,
+ * not mounts). What supersedes it: `SgsColourPanel` rows (which mount
+ * `DesignTokenPicker` per colour) with `DesignTokenPicker`'s own `states`
+ * prop driving the in-popover Normal/Hover tab toggle (Spec 35 PART O §1
+ * field 9b) — states live INSIDE the colour control's popover now, not as a
+ * separate panel-level segmented switch. This file is kept as source but is
+ * currently dead code.
+ *
  * A panel-level segmented toggle — the Kadence/Spectra pattern converged on by
  * the 2026-07-18 inspector-design research council: ONE switch pinned to an
  * element panel scopes every colour control beneath it, rather than a separate

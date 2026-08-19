@@ -39,7 +39,16 @@ import { Picker } from './picker';
 import { useControlledValue } from '../utils/use-controlled-value';
 
 // Stylesheet imported once, globally, from src/blocks/extensions/index.js —
-// NOT here. This component mounts inside every one of 36 blocks' edit.js;
+// NOT here. This component is reached (via DesignTokenPicker → SgsColourPanel
+// and other colour-control paths), not directly mounted per block, so a
+// per-block count here is a REACH figure, not a mount count (MOUNTS != REACH
+// — one-hop resolution undercounts this kind of shared internal component).
+// ⚠ CORRECTED 2026-08-19 — "36 blocks" is stale; `SgsColourPanel` alone now
+// mounts on 61 of 83 blocks (`git grep -c '<SgsColourPanel' -- 'src/blocks/*/
+// edit.js'`, 2026-08-19), each of which reaches this component through
+// DesignTokenPicker. Re-derive via `npm run survey:inspector-surface` (or
+// the equivalent mount census) before quoting an exact figure — the reason
+// this comment exists (CSS bundling scope) holds regardless of the count:
 // importing the stylesheet from here let webpack's per-entry CSS extraction
 // attribute the compiled CSS to an arbitrary block's frontend style.css
 // bundle rather than the editor-only stylesheet it actually is.
