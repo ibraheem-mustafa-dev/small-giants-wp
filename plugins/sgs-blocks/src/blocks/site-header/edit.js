@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useEffect, useRef, useState } from 'react';
 import {
 	useBlockProps,
@@ -11,6 +11,7 @@ import {
 	PanelBody,
 	SelectControl,
 	Notice,
+	Button,
 	BoxControl,
 } from '@wordpress/components';
 // No-inline migration (2026-08-05, D-pending): sgs/site-header no longer uses
@@ -205,6 +206,23 @@ const CONTRAST_SAFE_OPTIONS = [
 	},
 	{ label: __( 'Force solid', 'sgs-blocks' ), value: 'force-solid' },
 ];
+
+// Human labels for the three device tiers, used by the contrast advisory below
+// so it can name exactly which tiers carry the risk rather than warning once
+// for the whole block. 'Phone' (not 'Mobile') matches the wording the global
+// device toggle already shows the client.
+const TIER_LABELS = {
+	desktop: __( 'Desktop', 'sgs-blocks' ),
+	tablet: __( 'Tablet', 'sgs-blocks' ),
+	mobile: __( 'Phone', 'sgs-blocks' ),
+};
+
+// value -> label, derived from the options table above so the two can never
+// drift apart.
+const CONTRAST_SAFE_LABELS = CONTRAST_SAFE_OPTIONS.reduce(
+	( acc, opt ) => ( { ...acc, [ opt.value ]: opt.label } ),
+	{}
+);
 
 // `templateMode` (grid-section/card-grid presets) was removed from block.json —
 // this block already restricts children to exactly `sgs/site-header-row` below,
@@ -445,14 +463,35 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const isStickyOn = isOnAtAnyTier( headerSticky );
 
 	// Contrast safety over hero is similarly a sub-behaviour, but of
-	// TRANSPARENT, not Sticky — confirmed in
-	// includes/class-sgs-header-behaviours.php:234-239, which auto-upgrades
-	// `contrastSafe` from 'none' to 'scrim' whenever Transparent resolves on
-	// at the desktop tier (a WCAG 1.4.3 safety net for exactly this
-	// combination). The control only has a decision to make once Transparent
-	// is on; hidden otherwise for the same reason Shrink is hidden until
-	// Sticky is on.
+	// TRANSPARENT, not Sticky: a header with a solid resting background has no
+	// hero showing through to protect against, so the control has nothing to
+	// decide until Transparent is on. Hidden otherwise, for the same reason
+	// Shrink is hidden until Sticky is on.
+	//
+	// ⚑ This comment used to cite class-sgs-header-behaviours.php's silent
+	// 'none' -> 'scrim' auto-upgrade as the justification. That upgrade was
+	// REMOVED (2026-08-19) — see the advisory immediately below, which replaced
+	// it. The control's visibility rule is unchanged; only its reason is.
 	const isTransparentOn = isOnAtAnyTier( headerTransparent );
+
+	// WCAG 1.4.3 ADVISORY (2026-08-19). Until this change the PHP resolver
+	// SILENTLY rewrote a client's explicit 'none' to 'scrim' whenever
+	// Transparent resolved on (class-sgs-header-behaviours.php). The header was
+	// protected, but the client's own choice was discarded with nothing shown
+	// to say so — which breached the locked project rule that operator
+	// accessibility failures are NOTICES, never enforcement. The rewrite is
+	// gone; this advisory replaces it. We state the risk, offer the fix as one
+	// click, and then honour whatever the client decides. Precedent: WordPress
+	// core's own ContrastChecker warns and never enforces.
+	//
+	// Evaluated PER TIER, not once for the block: contrastSafe is a per-device
+	// object now, so a header transparent on desktop but solid on phone carries
+	// the risk on exactly one tier and should say exactly that.
+	const unprotectedTiers = [ 'desktop', 'tablet', 'mobile' ].filter(
+		( tier ) =>
+			resolveTier( headerTransparent, tier, 'off' ).value === 'on' &&
+			resolveTier( contrastSafe, tier, 'none' ).value === 'none'
+	);
 
 	// Check contrast ratio on attribute changes
 	const [ contrastNotice, setContrastNotice ] = useState( null );
@@ -710,7 +749,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							headerTransparent: {},
 							headerShrink: {},
 							headerHideOnScroll: {},
-							contrastSafe: 'none',
+							contrastSafe: {},
 						} )
 					}
 				>
@@ -756,7 +795,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								'sgs-blocks'
 							) }
 							help={ __(
-								'Header starts see-through over a hero image, then becomes solid once the visitor scrolls. A contrast-safe scrim is applied automatically over the hero so text stays readable — change it below if you need a different look.',
+								'Header starts see-through over a hero image, then becomes solid once the visitor scrolls. Set “Contrast safety over hero” below so text stays readable over the image.',
 								'sgs-blocks'
 							) }
 							value={ headerTransparent }
@@ -765,6 +804,40 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							}
 							defaultValue="off"
 						/>
+
+						{ unprotectedTiers.length > 0 && (
+							<Notice
+								status="warning"
+								isDismissible={ false }
+								className="sgs-contrast-notice"
+							>
+								<p style={ { margin: '0 0 8px' } }>
+									{ sprintf(
+										/* translators: %s: a list of device tiers, e.g. "Desktop, Phone". */
+										__(
+											'On %s this header is see-through with no contrast protection, so text over a hero image may be hard to read. Nothing has been changed for you — this is a suggestion, not a rule.',
+											'sgs-blocks'
+										),
+										unprotectedTiers
+											.map( ( t ) => TIER_LABELS[ t ] )
+											.join( ', ' )
+									) }
+								</p>
+								<Button
+									variant="secondary"
+									size="small"
+									onClick={ () => {
+										const next = { ...( contrastSafe || {} ) };
+										unprotectedTiers.forEach( ( t ) => {
+											next[ t ] = 'scrim';
+										} );
+										setAttributes( { contrastSafe: next } );
+									} }
+								>
+									{ __( 'Apply contrast scrim', 'sgs-blocks' ) }
+								</Button>
+							</Notice>
+						) }
 					</ToolsPanelItem>
 
 					{ /* Conditionally rendered, not just disclosure-hidden — see the
@@ -831,28 +904,82 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								'Contrast safety over hero',
 								'sgs-blocks'
 							) }
-							hasValue={ () => contrastSafe !== 'none' }
+							hasValue={ () =>
+								Object.keys( contrastSafe || {} ).length > 0
+							}
 							onDeselect={ () =>
-								setAttributes( { contrastSafe: 'none' } )
+								setAttributes( { contrastSafe: {} } )
 							}
 						>
-							<SelectControl
-								label={ __(
-									'Contrast safety over hero',
-									'sgs-blocks'
-								) }
-								value={ contrastSafe || 'none' }
-								options={ CONTRAST_SAFE_OPTIONS }
-								onChange={ ( value ) =>
-									setAttributes( { contrastSafe: value } )
+							{ /* PER-DEVICE (2026-08-19). This was the ONLY one of the
+							     five header behaviours still stored flat, which made
+							     "scrim over the desktop hero, nothing on phone" —
+							     the common case — unexpressible.
+
+							     It uses <ResponsiveOverride> and NOT the
+							     <ResponsiveTriStateControl> its four siblings use,
+							     because those are on/off booleans and this is a
+							     FOUR-value enum. The tri-state control renders an
+							     on/off ToggleGroupControl; pointing it at this
+							     attribute would store values it cannot display and
+							     silently flatten the client's choice. Matching the
+							     control primitive to the STORAGE shape is the rule
+							     here, not matching the neighbouring control. */ }
+							<ResponsiveOverride
+								value={ contrastSafe }
+								onChange={ ( obj ) =>
+									setAttributes( { contrastSafe: obj } )
 								}
-								help={ __(
-									'Keeps header text readable when it sits over a hero image (used with Transparent until scrolled).',
-									'sgs-blocks'
+							>
+								{ ( {
+									tier,
+									ownValue,
+									effectiveValue,
+									setOwnValue,
+								} ) => (
+									<SelectControl
+										label={ __(
+											'Contrast safety over hero',
+											'sgs-blocks'
+										) }
+										value={
+											tier === 'desktop'
+												? ownValue || 'none'
+												: ownValue || ''
+										}
+										options={
+											tier === 'desktop'
+												? CONTRAST_SAFE_OPTIONS
+												: [
+														{
+															label: sprintf(
+																/* translators: %s: the setting inherited from the wider device, e.g. "Scrim overlay". */
+																__(
+																	'— same as wider screens (%s) —',
+																	'sgs-blocks'
+																),
+																CONTRAST_SAFE_LABELS[
+																	effectiveValue
+																] ||
+																	CONTRAST_SAFE_LABELS.none
+															),
+															value: '',
+														},
+														...CONTRAST_SAFE_OPTIONS,
+													]
+										}
+										onChange={ ( value ) =>
+											setOwnValue( value || undefined )
+										}
+										help={ __(
+											'Keeps header text readable when it sits over a hero image. Used with Transparent until scrolled.',
+											'sgs-blocks'
+										) }
+										__next40pxDefaultSize
+										__nextHasNoMarginBottom
+									/>
 								) }
-								__next40pxDefaultSize
-								__nextHasNoMarginBottom
-							/>
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 					) }
 				</ToolsPanel>

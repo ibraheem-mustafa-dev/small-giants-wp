@@ -162,6 +162,27 @@ $sh_sticky      = isset( $attributes['headerSticky'] ) ? $attributes['headerStic
 $sh_transparent = isset( $attributes['headerTransparent'] ) ? $attributes['headerTransparent'] : array();
 $sh_shrink      = isset( $attributes['headerShrink'] ) ? $attributes['headerShrink'] : array();
 $sh_hide        = isset( $attributes['headerHideOnScroll'] ) ? $attributes['headerHideOnScroll'] : array();
+$sh_contrast    = isset( $attributes['contrastSafe'] ) ? $attributes['contrastSafe'] : array();
+
+// FORCE-SOLID IS A TRANSPARENT SUPPRESSOR, NOT A COMPETING PAINT (2026-08-19).
+// The retired body-class CSS made 'force-solid' fight Transparent with
+// `background:… !important`. That does not survive being made per-device: a
+// tier that stops being force-solid has no clean way to UNDO an !important
+// background (`revert` would revert past the block's own background too), so
+// the mode would leak across tiers. Resolving it here instead — force-solid
+// simply means "do not go transparent at this tier" — removes the fight
+// entirely: no !important, no cancel declaration, and Transparent's own
+// merge below stays the single writer of `background`/`position` as designed.
+// Every tier is resolved concrete, which the emitters handle identically (the
+// differs-from-the-tier-above minimisation still collapses equal tiers).
+$sh_transparent_effective = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
+	$sh_tier_transparent = sgs_resolve_tier( $sh_transparent, $sh_tier, 'off' );
+	$sh_tier_contrast    = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_transparent_effective[ $sh_tier ] = ( 'force-solid' === $sh_tier_contrast['value'] )
+		? 'off'
+		: $sh_tier_transparent['value'];
+}
 
 // Sticky + Transparent both write to the SAME base selector's `position` /
 // `top` / `z-index` — QC (2026-07-28) proved that emitting each behaviour's
@@ -187,7 +208,7 @@ $css .= sgs_merge_tri_state_declarations(
 			),
 		),
 		array(
-			'raw'   => $sh_transparent,
+			'raw'   => $sh_transparent_effective,
 			'props' => array(
 				'position'   => 'absolute',
 				'top'        => '0',
@@ -216,7 +237,7 @@ $css .= sgs_merge_tri_state_declarations(
 // did. Token-based (theme surface preset), never hardcoded.
 $css .= sgs_emit_tier_rules(
 	$root_sel . '.is-header-scrolled',
-	$sh_transparent,
+	$sh_transparent_effective,
 	'background:var(--wp--preset--color--surface,#ffffff) !important;',
 	'',
 	'off'
@@ -290,6 +311,72 @@ if ( $sh_hide_any_tier ) {
 		'transform:translateY(-100%);',
 		'transform:revert;',
 		'off'
+	);
+}
+
+// Contrast safety over hero — PER TIER (2026-08-19). Reshaped from a flat enum
+// driving a <body> class to a per-device object emitted as per-instance scoped
+// CSS, matching the four behaviours above. A body class is site-wide and simply
+// cannot express "scrim on desktop, none on phone", which is the common case
+// for a header transparent over a desktop hero only. The rules below are the
+// ones retired from assets/css/header-behaviours.css, now uid-scoped.
+//
+// Uses sgs_emit_tier_rules_map(), NOT sgs_emit_tier_rules(): this is a
+// four-value enum, and the binary helper tests `'on' === $state`, so 'scrim',
+// 'shadow' and 'force-solid' would all collapse into its single off branch and
+// paint identically.
+//
+// 'force-solid' is absent here by design — it is resolved above, as a
+// suppressor of Transparent, so it needs no CSS of its own.
+$sh_contrast_modes = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
+	$sh_resolved                = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_contrast_modes[]        = $sh_resolved['value'];
+}
+
+if ( in_array( 'scrim', $sh_contrast_modes, true ) ) {
+	// Containing block for the overlay. Emitted unconditionally (not per tier)
+	// because it is inert on a tier without the scrim: the overlay there is
+	// switched off via `content:none`, so nothing is positioned against it.
+	$css .= $root_sel . '{position:relative;}';
+
+	// The scrim itself. The 'none' fallback CANCELS it, which is what makes a
+	// per-tier difference work at all — a tier that drops the scrim must
+	// actively remove the overlay, not merely decline to add one.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . '::before',
+		$sh_contrast,
+		array(
+			'scrim' => 'content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0.55),rgba(0,0,0,0));',
+		),
+		'content:none;',
+		'none'
+	);
+
+	// Header content sits above the scrim.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . ' > *',
+		$sh_contrast,
+		array( 'scrim' => 'position:relative;z-index:1;' ),
+		'',
+		'none'
+	);
+}
+
+if ( in_array( 'shadow', $sh_contrast_modes, true ) ) {
+	// COSMETIC ONLY — never WCAG-conformant. A text-shadow's contrast against
+	// arbitrary imagery cannot be computed, so this mode must never be
+	// described as meeting a contrast requirement; the inspector label says
+	// "not WCAG-safe" for exactly this reason. Do not upgrade that claim.
+	//
+	// A selector LIST, with no pseudo-element appended — appending one to an
+	// imploded list attaches it to the last selector only.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . ' a,' . $root_sel . ' button',
+		$sh_contrast,
+		array( 'shadow' => 'text-shadow:0 1px 3px rgba(0,0,0,0.6);' ),
+		'text-shadow:none;',
+		'none'
 	);
 }
 
