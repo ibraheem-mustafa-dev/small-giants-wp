@@ -52,6 +52,7 @@ import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
 import { UnitControl } from './primitives';
 import { makeResponsive } from '../utils/responsive';
+import { flattenPresetSetting } from '../utils/presetSettings';
 
 /**
  * Is this stored attribute value the modern {desktop,tablet,mobile} OBJECT
@@ -287,10 +288,14 @@ export default function TypographyControls( {
 	const [ moreOpen, setMoreOpen ] = useState( false );
 	const hasMoreFields = showWeight || showStyle || showLineHeight || showLetterSpacing;
 
+	// MEASURED live on the canary 2026-08-19: this resolves to an origin-keyed
+	// OBJECT ({ theme, custom }), not an array. `?? []` does not guard that —
+	// the object is truthy, so `.map` threw and unmounted the whole inspector.
+	// flattenPresetSetting() always returns an array. See utils/presetSettings.js.
 	const [ themeFontFamilies ] = useSettings( 'typography.fontFamilies' );
 	const fontFamilyOptions = [
 		{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-		...( themeFontFamilies ?? [] ).map( ( f ) => ( {
+		...flattenPresetSetting( themeFontFamilies ).map( ( f ) => ( {
 			label: f.name || f.slug,
 			value: f.fontFamily,
 		} ) ),
@@ -306,12 +311,13 @@ export default function TypographyControls( {
 	const letterSpacingRaw  = attributes[ k.letterSpacing ];
 	const letterSpacingIsTiered = isTieredValue( letterSpacingRaw );
 
-	// Theme preset font-size scale (guard against null before settings load —
-	// same pattern as SpacingControl.js). Hook must run unconditionally.
+	// Theme preset font-size scale. MEASURED live on the canary 2026-08-19:
+	// origin-keyed OBJECT ({ default, theme, custom }), same crash shape as
+	// fontFamilies above. Hook must run unconditionally.
 	const [ themeFontSizes ] = useSettings( 'typography.fontSizes' );
 	const fontSizePresetOptions = [
 		{ label: __( '— none —', 'sgs-blocks' ), value: '' },
-		...( themeFontSizes ?? [] ).map( ( size ) => ( {
+		...flattenPresetSetting( themeFontSizes ).map( ( size ) => ( {
 			label: `${ size.name || size.slug } (${ size.size })`,
 			value: size.slug,
 		} ) ),

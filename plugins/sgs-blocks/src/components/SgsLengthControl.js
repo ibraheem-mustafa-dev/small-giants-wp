@@ -29,6 +29,7 @@ import { __ } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
 import { SelectControl } from '@wordpress/components';
 import { UnitControl } from './primitives';
+import { flattenPresetSetting } from '../utils/presetSettings';
 
 const CUSTOM_VALUE = '__custom__';
 
@@ -47,9 +48,16 @@ const CUSTOM_VALUE = '__custom__';
  *                                        (D338) fontSizePresets already carries.
  */
 export default function SgsLengthControl( { label, value, onChange, units, presets = false } ) {
-	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
+	// useSettings() may hand back an origin-keyed OBJECT rather than an array
+	// (measured on the canary 2026-08-19 for typography.fontFamilies/fontSizes).
+	// Here that failed QUIETLY rather than loudly: `( obj || [] ).length` is
+	// undefined, so the guard below took the early return and the preset
+	// dropdown simply never appeared — a false absence that looks like "the
+	// theme has no spacing scale". Normalise once, then use unguarded.
+	const [ spacingSizesRaw ] = useSettings( 'spacing.spacingSizes' );
+	const spacingSizes = flattenPresetSetting( spacingSizesRaw );
 
-	if ( ! presets || ! ( spacingSizes || [] ).length ) {
+	if ( ! presets || ! spacingSizes.length ) {
 		return (
 			<UnitControl
 				label={ label }
@@ -62,7 +70,7 @@ export default function SgsLengthControl( { label, value, onChange, units, prese
 		);
 	}
 
-	const isPresetValue = ( spacingSizes || [] ).some( ( s ) => s.slug === value );
+	const isPresetValue = spacingSizes.some( ( s ) => s.slug === value );
 	const selectValue = ! value ? '' : isPresetValue ? value : CUSTOM_VALUE;
 
 	const options = [
