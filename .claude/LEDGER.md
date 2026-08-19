@@ -9,188 +9,75 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**You changed the direction of this programme, and it was the right call.**
+**Three parallel sessions all merged into `main`. Branches deleted, both stray worktrees
+removed, tree clean, every gate green.**
 
-The plan was a detector asking *"does this block have a colour panel?"* — a yes/no question. You
-asked for something better first: define the **golden shape** every control should have, then
-measure everything against it. That is now built, and it found **409 conformance gaps across 64
-blocks** in a single pass.
+**The shift that matters.** We stopped fixing violations one at a time and built the machine
+that finds them. There are now **14 control-type contracts** (was 1), a census that reads them,
+and one shared engine underneath. Adding the 15th control type is a paragraph of JSON, not a
+new script.
 
-**What the numbers say about the editor your clients use.** Of roughly 226 colour settings across
-the framework, **83% offer only one state** — no hover. **78% offer no gradient option at all.**
-Exactly **one** setting in the entire library offers three states. And **26 blocks** show
-WordPress's own colour panel alongside ours, so a client sees two different colour interfaces for
-the same block. None of that was visible before today.
+**The headline number was wrong twice, both times in our favour.** "22 blocks need a colour
+panel" was really **3**, then **2**. And the deeper question — *should* a block have a panel? —
+exposed a circular scope rule that excluded exactly the blocks missing one. Fixing it found
+**12 form blocks** whose fields a client cannot colour at all.
 
-**The thing worth remembering.** Twice tonight a file that looked authoritative turned out to be
-read by nothing. You challenged one directly — the shared "state vocabulary" — and you were right:
-four scripts load that file and not one reads the section the new schema had just been pointed at.
-The same pattern caught a spec section naming a component as canonical that has zero uses anywhere
-in the codebase. **This repo has several files that look like sources of truth with no enforcement
-behind them.** Ending that is exactly what the golden-schema work is for.
-
-**Where it stands.** Ten commits: the schema, the detector, the commit-time trigger that makes it
-all run without anyone remembering to, plus two clean-ups you asked for (submenu padding, and the
-state rename). The next step is one shared helper — you cleared its design gate, so it is ready to
-build, and it unblocks roughly 70-80% of the repair work.
+**What to be wary of.** Nearly every wrong number today came from an instrument, not the code:
+a regex matching a backspace character instead of a word boundary (twice), a DB field queried by
+the wrong name, a count including a flag it shouldn't. What saved us each time was predicting the
+number *before* running, then reconciling.
 
 ## Shipped today
 
 | What | Detail |
 |---|---|
-| **The golden control schema** — canonical shape as DATA, colour first | `scripts/consistency/golden-controls.json` |
-| **Rule 31 golden-colour-control** — measures conformance, not presence | **409** findings / 64 blocks, advisory |
-| **Commit-time trigger** — inspector-scan runs when an `edit.js` is staged | there is no CI; it only ran on manual builds |
-| **nav-menu mis-tagged state** — 3 attrs labelled a state they never render in | root cause: classifier last-write-wins |
-| **hero 8 dead `gridItem*` attrs deleted** + rule 21 ratcheted 259 → 253 | 126→118 attrs, 13→12 elements |
-| **Schema corrected** after Bean challenged its source | state vocabulary split real vs notional |
-| **`submenuPadding` tiered** to match nav-drawer/mega-panel | canary had ZERO stored values; fallback proven by executing the helper |
-| **State vocabulary renamed `selected` → `current`, then reseeded** | code-layer rename (13 rows) landed first; tabs + DB reseed + 25 orphan prune followed same session — DB attrs 2440→2415 |
-| **site-header: 6 attrs deleted** that could never render + rule 21 ratcheted 253→250 | no `layout` attr, so the emit gate was unsatisfiable |
-| **surface-cap now scans all 4** header/footer blocks (rows were never measured) | + the composite-undercount limitation documented |
-| **Header session prompt** written · **D670–D679** recorded · **STOP §A15** (9 STOPs, ritual Q15) · programme doc updated | |
+| **One shared hover helper** — `sgs_emit_state_colour_css` | 8 blocks, **live-verified on the canary** |
+| **Shared component resolver** (`core/components.js`) | fixed **50 false positives** in rule 21 (250→200) |
+| **Rule 27's blind spot closed** | a `gate` at openBacklog 0 that could not see shared files |
+| **Shared golden engine** (`core/golden.js`) | rule 31 imports instead of owning; **409 before, 409 after** |
+| **14 control-type contracts** (was 1) | all of Part O + typography |
+| **Golden-conformance census** — schema-driven | per block, per axis; 1,162 rows across 14 types |
+| **Qualification predicate** | splits "not eligible" into MISSING vs NOT-APPLICABLE |
+| **`surface-cap` composite expansion** | + 2 new detectors, 4 npm aliases registered |
+| **Header track** | COMPLETE and live-verified (separate session) |
 
-## This session — two new detectors built, NOT yet wired (2026-08-19)
+## Where conformance actually stands
 
-Verified via `node scripts/inspector-scan/run.js --json`, `python scripts/check-inert-controls.py
---json`, `python scripts/check-undeclared-attrs.py --json`:
+```
+canonical    63 CONFORMANT · 2 VIOLATION · 12 MISSING · 6 NOT-APPLICABLE
+nativeUi    150 VIOLATION  (colour 25 · typography 25 · length-unit 50 · box-4value 50)
+hover         8 CONFORMANT · 9 UNCLEAR
+```
 
-- **`check-inert-controls.py`** — 1 finding: `sgs/feature-grid` `layout` overwritten in
-  `render.php` before use (CONDITIONAL) — the control is visible, the edit is discarded.
-  Required correction before trusting it: its self-test exercised four helpers and never
-  called its own scanner, so breaking the core pattern still passed.
-- **`check-undeclared-attrs.py`** — 3 findings: `sgs/quote.backgroundColourHoverGradient`,
-  `sgs/text.fontSizeMobile`, `sgs/text.fontSizeTablet` — destructured in `edit.js`, absent
-  from `block.json`, WP silently discards the write. First run reported 41 (38 false — gated
-  on non-existent `supports.style`, and wrongly flagged `className`, which WP declares by
-  default).
-- **NOT done:** neither detector is registered in `rules.json` or `package.json`; zero golden
-  rows registered; one duplicate survey pending deletion. Registration is the main agent's job
-  (single-merge-point files, §10 of the programme doc).
-- **State vocabulary is 4 names, not 3.** `sgs-db.py sql "SELECT css_state, COUNT(*) FROM
-  block_attributes GROUP BY css_state"` → `hover` 115 / `current` 13 / **`scrolled` 3**
-  (`sgs/site-header` background/backgroundGradient/text, admitted in the header session) /
-  zero `selected`. No doc previously listed `scrolled` as a vocabulary member in its own right.
+- **2 canonical violations** — `buybox`, `site-footer` (core-only, no SGS panel)
+- **12 MISSING** — the form family; control belongs on `sgs/form`, children inherit
+- **1 inert control + 3 undeclared attrs** — live; detectors written, deliberately unregistered
 
-## Blockers
+## THE FRONT — next session
 
-**None blocking.** C1's design gate was CLEARED by Bean (D677) — it is ready to build.
+**Read `.claude/plans/go-c1-c4-lively-zebra.md` first** — the axis model and the parallel split
+are both in it.
 
-## THE FRONT — START HERE NEXT SESSION: C1 → C2 → C3
+### Blockers: NONE. All branches merged, tree clean, every gate green.
 
-⭐ **C1's design gate is CLEARED (D677). It is ready to build — no decision blocks it.**
+### Ready to run in parallel (disjoint file sets)
 
-**Goal: one shared hover helper, after which the colour rollout becomes mostly mechanical.**
-Read `.claude/plans/2026-08-18-inspector-enforcement-programme.md` FIRST.
+| Track | Work | Owns |
+|---|---|---|
+| **A** | `sgs/form` unified colour, children inherit | `src/blocks/form*` |
+| **B** | native-UI retirement, 25 colour blocks | `block.json` supports only |
+| **C** | `buybox` + `site-footer` canonical panels | those 2 blocks |
+| **D** | 17 gap findings + 4 live detector findings | scattered — shard by file |
 
-### ⛔ MANDATORY READING GATE — read these IN FULL before touching anything
-
-| Read fully | Why |
-|---|---|
-| **`.claude/plans/2026-08-18-inspector-enforcement-programme.md`** | THE brief — what exists, what was measured, what "done" means |
-| **`plugins/sgs-blocks/scripts/consistency/golden-controls.json`** | The contract rule 31 enforces. Read before proposing any colour change |
-| **`.claude/STOP-CATALOGUE.md`** | Structural defences; §A15 is this session's nine |
-| `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part O §1 + §6 | ⚠ Both carry stale claims — check the programme doc's Phase 4 list before quoting either |
-
-**Self-check before Task C1:** can you name the three incompatible ways hover colour is emitted
-today, and say which one is Spec-32-compliant? If not, re-read the programme doc's golden-schema
-phase.
-
----
-
-### Task C1 — unify hover behind one shared helper `[start here]` ⭐ **Bean-ruled**
-
-**What:** `sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover )`,
-modelled on `sgs_border_gradient_css()` (`includes/helpers-tokens.php:1006`, **21 callers**). Then
-back-port `button`, `info-box` and `card-grid` onto it.
-**Why:** there is NO shared helper for flat-colour hover, so three blocks invented three
-mechanisms. This is what moves the conversion from ~30-40% mechanical to ~70-80%.
-**Estimated time:** 45 min for the helper plus back-ports.
-
-- ✅ **DESIGN GATE CLEARED 2026-08-19 (D677).** Bean ruled all three open questions:
-  **(a) emission** — the helper writes `info-box`'s per-instance scoped `:hover` rule, the
-  Spec-32-compliant shape (so back-porting `card-grid` is a compliance fix, not tidying);
-  **(b) `button`** — EXEMPT, with the reason recorded: its hover vars feed three preset
-  classes with `theme.json` fallback chains, so only `info-box` and `card-grid` back-port;
-  **(c) scope** — colour ONLY (`sgs_emit_state_colour_css`), not a general state helper.
-  Widening later is easy; narrowing a shipped helper is not.
-- ⭐ **Canonicalise on `info-box`'s scoped-rule pattern** (`render.php:171-187`) — its own docblock
-  rejects `card-grid`'s inline `--sgs-hover-*` values citing Spec 32 FR-32-4 / D345. So
-  back-porting `card-grid` is a **compliance fix**, not tidying.
-- ⚠ **`button` is EXEMPT per (b) above** — record the exemption in the helper's docblock so the
-  next reader does not "finish the job" and break the preset cascade (`style.css:87-98` + `:104-130`).
-
-### Task C2 — the conversion pass (blocked on C1)
-
-Default 2 states, extended by the element's own declared states; `button` as the template.
-**Mechanical:** new `block.json` attrs (pure suffix derivation), the `states.hover.attrMap`,
-appending a `states[]` sibling (~60% of rows).
-**Judgement-bound — do NOT let a script decide:** whether the property even accepts a gradient
-(text needs `background-clip:text`; shadow has no gradient form — these become declared
-exemptions); rows split across two panel entries (`quote/edit.js:390-450` needs merging, and its
-base reads WP-core `style?.color?.text` while `block.json:89` sets `supports.color.text: false`);
-and "should this element have a hover at all".
-
-### Task C3 — the 22 blocks with no colour panel (assess separately)
-
-`hero`, `container`, `site-header`, `site-footer` have scattered mounts; 18 have nothing. These
-need a panel **created**, not edited — placement, grouping and labels are editorial work. Keep out
-of any scripted pass.
-
-### Task C4 — ⭐ THE CLOSING STAGE: library-wide colour + hover audit
-
-**What:** one auditing script enforcing the now-unified colour AND hover controls across every
-block, with **`sgs/button` as the only exception**.
-
-**Enforces three things:**
-1. **Colour** — every row conforms to `golden-controls.json`: canonical `SgsColourPanel` →
-   `DesignTokenPicker`, minimum 2 states extended by the element's declared states, no banned
-   lookalikes, no core-native double-painting.
-2. **Hover** — every block emitting hover colour goes through the shared
-   `sgs_emit_state_colour_css` helper (C1), never a block-private mechanism.
-3. ⭐ **Gradient, MECHANISM-AWARE.** There are THREE gradient mechanisms and which is correct
-   depends on what the row paints — per-state toggle in `DesignTokenPicker` (background/border/
-   icon), `GradientCapableColourControl` (TEXT only, needs `background-clip:text`),
-   `GradientOverlayControl` (whole-block overlay, single-state by construction). ⛔ A binary "does
-   a gradient path exist?" check is INSUFFICIENT — a text row wired to the background mechanism
-   would PASS while rendering nothing. Rule 31's current `row-missing-gradient` kind is binary and
-   needs this refinement.
-
-**The exception:** `sgs/button` is exempt from the hover-helper rule (D677b) — its
-`--sgs-btn-*-hover` vars feed a static `style.css` rule AND three preset classes with `theme.json`
-fallback chains. ⛔ The exemption must be DECLARED IN DATA with a reason, never a hardcoded block
-name in the script (R-31-1 bans hardcoded dicts).
-
-**Sequencing:** runs AFTER C1 (no unified hover mechanism exists to enforce until the helper does)
-and after C2's conversion pass (or it flags the entire backlog as violations on day one).
-
-**Completion conditions** (programme §9): expected count declared BEFORE the first live run by an
-independent method then reconciled · `--self-test` with a negative control that genuinely fails ·
-registered in `rules.json` in the same commit · ships ADVISORY · a false positive is a detector
-bug, never baseline fodder.
-
-### Independent, slot in anywhere
-
-- **D4 element panels (slot 32)** — 128 qualifying elements, ~110 missing a panel, hero 6/1.
-  Ships honest and complete per Bean's ruling; the count is a work list, not noise.
-
-### Decisions waiting on Bean
-
-1. **`sgs/site-header`'s visible rows** — ⚠ the question changed. Bean's instinct that behaviour
-   belongs on the ROWS is **partly right**: rows own transparent/shrink/hide (FR-37-37/38/39), but
-   sticky is header-level *by Bean's own D389 ruling* (per-row sticky rejected on the short-parent
-   trap), and Layout preset is mandated on the header by FR-37-28. The real finding is that
-   transparent/hide/shrink are implemented on **both** blocks by two different live mechanisms.
-   Retiring either side is a new decision, not a cleanup.
-
-**Order:** C1 → C2 → C3. `submenuPadding` and D4 slot 32 are independent of all three.
+⛔ **Serialised, never parallel:** `rules.json`, `package.json`, `golden-controls.json`,
+`core/*.js` — single merge points.
 
 ## Methodology guardrails (carried forward — all still true)
 
 - ⛔ **COMMIT before dispatching ANY agent, even a read-only one.** A task framing does not
   constrain tool access; only committing does.
 - ⛔ **Before citing a file as a source of truth, grep for a reader of the KEY, not the file.**
-  Three "authoritative" sources proved unread or self-contradicting today.
+  Three "authoritative" sources proved unread or self-contradicting.
 - ⛔ **A measured count BELOW an independent prediction is a detector bug until proven otherwise.**
   Rule 31 undercounted by 33 rows; three blocks scored zero because they build their rows list
   indirectly. A false absence reads exactly like a clean result.
@@ -198,19 +85,17 @@ bug, never baseline fodder.
   the population (`grep -rln` over a directory returned 61 against a true 60).
 - ⛔ **Use a word boundary in a JSX tag pattern, never a trailing character class** — multi-line
   JSX puts the tag at end-of-line and the wrong pattern returns a false absence.
-- ⛔ **Never pipe a population-defining survey through `head -N`.** Count first.
+- ⛔ **Never pipe a population-defining survey through `head -N`.** Count first. (Broken again
+  today by the person quoting it — it hid the live hover CSS during verification.)
 - ⛔ **No detector ships with a hand-counted baseline.** Declare, run, reconcile.
 - ⛔ **A false positive is a detector bug, never baseline fodder.**
-- ⛔ **NOTHING GATES A DB ORPHAN, and the rule alone did not hold.** After deleting attributes from
-  a `block.json`, the DB keeps their rows until Stage 9 runs. D678 recorded that as a rule — and it
-  was violated within hours, by the same session that wrote it, on the very next deletion. The
-  db-consistency suite exits 0 with orphans present (it only flags "rogue seeds" carrying a
-  `css_property`), so nothing catches it. **A gate is needed, not a third restatement of the rule:**
-  fail when a `block_attributes` row has no matching `block.json` attribute. Candidate for the C4
-  audit stage.
+- ⛔ **NOTHING GATES A DB ORPHAN, and the rule alone did not hold.** After deleting attributes
+  from a `block.json`, the DB keeps their rows until Stage 9 runs. The db-consistency suite exits
+  0 with orphans present (it only flags "rogue seeds" carrying a `css_property`), so nothing
+  catches it. **A gate is needed, not a third restatement of the rule:** fail when a
+  `block_attributes` row has no matching `block.json` attribute.
 - ⛔ **`/sgs-update --stage 1` UPDATES BUT DOES NOT PRUNE.** Deleting an attribute from a
-  `block.json` leaves its DB row behind as a "rogue seed"; Stage 9 is the prune. Proven
-  today — 8 deleted hero attrs survived a reseed and the F5/F6 commit gate caught every one.
+  `block.json` leaves its DB row behind as a "rogue seed"; Stage 9 is the prune.
 - ⛔ **The advisory ratchet does NOT self-heal.** It blocks growth past a frozen number; it never
   lowers it. Clearing findings without lowering `openBacklog` creates silent slack.
 - ⛔ **`ctx.cache.json()` returns `{ok, error, data}`** — reading `.attributes` off it yields
@@ -222,109 +107,85 @@ bug, never baseline fodder.
 - ⛔ **Main agent owns `package.json` and `rules.json`** — single-merge-point files.
 - ⛔ **No agent runs a build** (`clean:build` does `rmSync('build')`), edits a shared JSON, or
   mutates a repo file as a fixture (D659).
-- ⛔ **No shared-DB reseed without coordinating** — other sessions are live on this branch.
+- ⛔ **No shared-DB reseed without coordinating** — other sessions are live.
 - ⛔ **`$?` after a pipe reads the LAST command's status.** Redirect first.
 - ⛔ **A pre-commit gate can fail SILENTLY** — never `--no-verify`; use the scoped skip with a
   reason. A command-scanning hook also matches your *script content*, heredocs included — reword
   the prose rather than reaching for a bypass token.
+- ⛔ **`cat -A` THE BYTES.** A literal backspace (`0x08`) replaced a regex word boundary TWICE
+  today. Both times the detector matched nothing, passed clean, and looked exactly like a healthy
+  tree.
+- ⛔ **Axis scope is not uniform.** `canonical` needs the one-hop view THROUGH shared components;
+  `bannedLookalikes` needs it MINUS the canonical components, because the raw primitive
+  legitimately lives inside `DesignTokenPicker`. Getting it wrong produced 5 false positives.
+- ⛔ **Depth and the banned-lookalike exclusion must move TOGETHER.** One hop under-reports 9 of
+  17 components (`ColorPalette` 3→64); raising depth alone trades that for ~61 false positives.
+  Reproduce first: `python scripts/surveys/compare-reach-depth.py .`
+- ⛔ **A derived field is a claim, not a decision.** `surfaces.colour` is computed from what a
+  block ALREADY has, so as a scope predicate it is self-fulfilling — it excludes exactly the
+  blocks that are missing a panel and can therefore never find one.
+- ⛔ **`__experimentalSkipSerialization` is NOT a colour-UI flag.** It is the serialisation opt-out
+  the conformant shape REQUIRES. Counting it reports 50 blocks against a true 25. Two sessions
+  made this mistake independently.
+- ⛔ **A step that swallows its own failures is invisible in the exit code.** `/sgs-update`'s
+  classifier sub-step warns and continues by design — exit 0 whether it worked or not.
+- ⛔ **A regenerated artefact + a shared DB + multiple branches loses entries silently.** The
+  classifier regenerates from the tree it runs in; the DB is shared. A stale branch cannot see
+  another branch's attributes, and re-running cannot help — the input genuinely is not there.
+  **Merge first.**
+- ⛔ **`git commit -- <paths>` only commits TRACKED files.** New files need `git add` first — a
+  rule shipped without its fixtures this way, green locally, broken on a fresh clone.
+- ⛔ **The `[gates-ok:]` token is read from the COMMAND string, not the message file** — and git's
+  own `.githooks/pre-commit` does not honour it at all.
+- ⛔ **Look inside a worktree before removing it.** The stale main worktree held 7 uncommitted
+  audit entries existing nowhere else. Verify `node_modules` is not a junction (LinkType/Target)
+  — a past removal emptied it 962→0.
+- ⛔ **`*/` inside a JS block comment TERMINATES it.** `src/blocks/*/components/` written in a
+  docblock is a syntax error.
 - **A completeness error is invisible to every correctness gate.**
 - **Run builds synchronously, never backgrounded.**
 
-## The header — COMPLETE and LIVE-VERIFIED (2026-08-19)
-
-All five tasks of the header-completeness brief are shipped on `feat/header-completeness`, deployed
-to the canary and verified against the live painted DOM. (The brief itself — `.claude/prompts/` —
-was DELETED once executed: it was a one-off session prompt, its content is preserved in git history,
-and three of its Task 4 assumptions turned out to be wrong, so keeping it live only risked someone
-re-running it against incorrect instructions.)
-Report: `reports/visual-diff/site-header-2026-08-19.md` (17 assertions, `verdict: PASS`).
-Decisions: **D681-D684**. Task 4 was completed by the C1-C4 session instead — see its handover,
-`.claude/reports/2026-08-19-task4-surface-cap-handover.md`.
-
-| Task | Outcome |
-|---|---|
-| 1 contrastSafe | Per-device; the silent `none`->`scrim` override is GONE, replaced by an editor advisory naming the affected tiers with a one-click fix. D402's carve-out superseded, Spec 37 amended. 323 -> 133 lines, incl. a second per-page-load `parse_blocks()` deleted |
-| 2 transparent | Scrolled background + text + gradient are client-set; direction invertible. Header colour migrated off WP-native into one SGS panel; `scrolled` admitted to the real state vocabulary |
-| 3 row naming | Row behaviours renamed by scope (header-row + footer-row) |
-| 4 surface cap | DONE by the C1-C4 session (`6c3ec1b0`) |
-| 5 attributes | `shadow` mounted (declared + rendering, but unreachable); 13 unreachable attrs deleted. **Session net: 49 -> 43 (-6)** — Task 2 ADDED 7 colour/direction attrs first, so the deletion commit's own 56 -> 43 is that commit's before/after, not the session's |
-
-**⭐ The near-miss worth remembering.** Retiring WP-native colour stopped WordPress registering
-`backgroundColor`, and SEVEN header patterns stored their background under that name — all would
-have lost it silently. `check-dead-pattern-attrs.py` MISSED it: it asks whether `supports.color` is
-declared, not whether its sub-flags are on. Since `golden-controls.json` now names
-"declared with every sub-flag false" as the CONFORMANT shape, every block adopting it inherits that
-blind spot. Recorded in D683, not fixed (shared detector).
-
-### Header items — all CLOSED (2026-08-19)
-
-- **DB reseeded + pruned.** `/sgs-update` full 13-stage run, exit 0. Verified in the DB, not
-  assumed: all 7 new `sgs/site-header` attrs present, all 13 deleted ones gone (Stage 9
-  `orphan_attributes_deleted_attr_level: 13`). The seed-history flagged 4 "largest ever" swings —
-  **explained, not waved through**: `block_attributes` 2768 → 2909 splits `sgs 2403 / core 506`,
-  and the other branch changed ZERO block.json attrs, so the rise is Stage 2's core-block refresh
-  (Gutenberg library), not SGS. SGS's own delta is exactly +7/−13.
-- **Simple-surface figures — this IS the ruling now, superseding the 2026-08-13 F2 numbers:**
-  `sgs/site-header` **4**, `sgs/site-footer` **2** (WITHIN), `sgs/site-header-row` **8**,
-  `sgs/site-footer-row` **8**. The ≤3 is a DEFAULT, not a ceiling (P2 §5, Bean-confirmed), and the
-  detector is advisory. Nothing to re-read; these are the numbers.
-- **The colour panel is NOT counted, and that is CORRECT (Bean-ruled 2026-08-19).** `SgsColourPanel`
-  does not appear in any surface-cap listing. It is the standardised colour panel pinned to every
-  block, and its picker is a POPOVER — not a control sitting in the settings panel the cap governs.
-  ⚠ One fact recorded so nobody re-opens this from the other side: the script's own comment at
-  `:297-302` says an isShownByDefault count would wrongly score "a VISIBLE colour panel as
-  contributing nothing", i.e. it reads as though the panel were meant to count. It is not. If that
-  comment is ever acted on, this ruling is the answer.
-- **Row colour defect PROVEN and FIXED.** `sgs/site-header-row` + `sgs/site-footer-row` passed
-  `backgroundColour`/`textColour` RAW to the style engine. Proven on the canary with
-  `wp_style_engine_get_styles(['color'=>['background'=>'primary']])`, which returns the literal
-  `background-color:primary;` — **invalid CSS that the browser silently drops**, so a client picking
-  a palette swatch got nothing at all. Both now route through `sgs_colour_value()`, matching the
-  header.
-- **Recogniser mirror corrected.** `_VALID_HEADER_BEHAVIOURS` claimed to mirror a PHP constant
-  deleted 2026-07-28 and its test compared two hardcoded copies of the same literal, so it could
-  never fail. Both now state the truth: a FROZEN legacy vocabulary for pre-2026-07-28 scrapes, with
-  nothing on the plugin side left to sync against.
-- **Probe page 2522 deleted** from the canary; the measurements live in the verification report.
-
 ## Open — carried
 
-- **`extract-signatures.py` is NON-DETERMINISTIC** — two runs on an unchanged tree differ:
-  `css_tier` cycles between desktop/mobile/tablet, 2-4 lines per run. Low blast radius (`css_tier`
-  ~1% populated, no dedicated consumer) but every regeneration produces a spurious diff. **Never
-  commit a wholesale regeneration inside an unrelated change.**
-- **No `retireWhen` mechanism exists** despite the programme's §9 listing it as a per-detector
-  completion condition. Build it or drop the condition.
-- **`21-render-without-control` self-test FAILS at HEAD** — pre-existing, tier 4, unrelated.
-- **`mistakes.md` is 34 active against a ~30 target** — prune oldest-by-date.
-- **`decisions.md` docscores B- (76.6%)** — pre-existing; all four failures are template-mismatch
-  or false positives.
-- **`text-secondary` is a client-only slug that framework code reads.**
-- **5 blocks have `:hover` with no `:focus-visible`.**
-- **45 attributes a client can never reach** ⚠ NOT RE-DERIVED since 2026-08-19, when this session deleted 13 unreachable `sgs/site-header` attributes — the exact defect class this figure counts. If those 13 were inside the 45 the true figure is now ~32; if the census excluded site-header it still stands. No derivation doc names which attributes it counted, so neither can be confirmed. **Re-derive before citing this number.** (Found by the handoff QC pass — same shape as the 56-vs-49 error it caught: a number true when written, sitting next to a session that changed one of its inputs.) · **2 dead components** · **PR #31** unmerged.
+- **12 form blocks + `sgs/form`** — clients cannot colour form fields at all. The form exposes 4
+  colour rows (focus ring, progress bar, submit); field background, border, text and label are
+  theme-painted and unreachable. Competitive gap vs Kadence/Spectra.
+- **The depth + transitive-exclusion change** — evidence gathered, not applied.
+- **17 "control weaker than its value" findings** (`survey-control-gaps.py`), including 3
+  hand-rolled font-size boxes breaching the mandatory TypographyControls rule.
+- **`sgs/quote` discards every hover gradient a client sets** — control writes it, render reads
+  it, `block.json` never declares it. Same class as D338's 45 bugs.
+- **`sgs/feature-grid` Layout control inert** · **`sgs/text` 2 undeclared per-device font sizes**
+- **F5/F6 commit gate measures the main checkout, not the worktree it runs in.**
+- **handoff-preflight fails in a fresh worktree** — `02-SGS-BLOCKS-REFERENCE.md` is gitignored
+  and generated locally.
+- `extract-signatures.py` is **non-deterministic** — never commit a wholesale regeneration inside
+  an unrelated change.
+- **5 blocks have `:hover` with no `:focus-visible`** (was 7; 2 fixed today).
+- **`survey-control-mounts.py` has no self-test.**
+- **`mistakes.md` is 34 active against a ~30 target** · **`decisions.md` docscores B-**
 
 ## State Snapshot
 
-- **Branch:** `feat/header-completeness` (has `feat/hover-helper` merged into it, so it carries BOTH
-  tracks). ⚠ **Not merged to main** — re-derive with `git rev-list --count main..HEAD`.
+- **Branch:** `main`, in sync with `origin/main`, tree clean. `feat/hover-helper` and
+  `worktree-golden-control-schema` merged and **deleted**. Both stray worktrees removed; main's
+  `node_modules` verified intact at 975 entries after each removal.
 - **D-ceiling:** **D684** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-- **Build:** `inspector-scan --check` exit 0 — 7 gate rules / 0 gating findings, **14 advisory /
-  732 findings**. `npm run build` + `prebuild` exit 0. Deployed to sandybrown; payload-verify
-  confirmed all 83 block.json checksums.
-- **Tests:** no separate suite; the gate chain is the suite.
-- **Uncommitted:** none tracked. Untracked: `plugins/sgs-blocks/reports/{console,cwv,network}/`
-  from another track, plus `.claude/reports/emission-derived-classification-raw-2026-08-19.json`
-  (an accidental artefact of the `--help` run recorded above).
+- **Gates:** inspector-scan `--check` exit 0 · **22/22 self-tests** · `audit-inline-styling`
+  0 violations across 83 blocks · F5/F6 green · cheat-gate green
+- **Canary:** deployed and live-verified today (8 hover blocks).
 
 ## Pointers
 
 | For | Read |
 |---|---|
-| **THE BRIEF — everything about this programme** | **`.claude/plans/2026-08-18-inspector-enforcement-programme.md`** |
-| **The golden control contract (colour)** | **`plugins/sgs-blocks/scripts/consistency/golden-controls.json`** |
-| Structural defences (STOP catalogue + ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| Inspector UX standard + the control contracts | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
+| **THE PLAN — axes + parallel split** | **`.claude/plans/go-c1-c4-lively-zebra.md`** |
+| The programme brief | `.claude/plans/2026-08-18-inspector-enforcement-programme.md` |
+| The 14 control contracts | `plugins/sgs-blocks/scripts/consistency/golden-controls.json` |
+| Handover: shared-component visibility | `.claude/reports/2026-08-19-shared-component-visibility-handover.md` |
+| Handover: surface-cap Task 4 | `.claude/reports/2026-08-19-task4-surface-cap-handover.md` |
+| Structural defences (uncapped, D101) | `STOP-CATALOGUE.md` |
+| Inspector UX standard | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Styling / token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
-| Header/footer division of responsibility | `specs/37-HEADER-FOOTER-BUILDER.md` FR-37-27/37/38/39/40 |
-| Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
+| Build / deploy / credentials | `dev-setup.md` · `build-deploy.py --target sandybrown` |

@@ -1588,6 +1588,71 @@ fields). Therefore:
 > per-block `edit.js` has a blind spot the exact size of the extension roster — now closed by
 > `resolveComponentFiles()`, but only for rules that actually use it.
 
+### O.15 — The three layers, and the two traps between them *(2026-08-19)*
+
+Enforcing this contract is not one job. It is **three layers**, and every detector bug this
+programme has produced sat at a layer boundary rather than inside one:
+
+| Layer | Answers | Lives in |
+|---|---|---|
+| **1. Contract** | *what shape* must a control have? | `scripts/consistency/golden-controls.json` — 14 control types |
+| **2. Corpus + attribution** | *which files* hold controls, *which blocks* own each finding | `inspector-scan/core/components.js` `resolveComponentFiles()` |
+| **3. Enforcer** | reads (1) over (2) | one rule/survey per concern; shared helpers in `core/golden.js` |
+
+⛔ **A rule that hardcodes layer 1 is not generic, however generic its docblock claims to be.**
+`survey-golden-conformance.js`'s native-UI axis checked `supports.color` for EVERY control type
+because it was written when colour was the only encoded row. With 14 types it reported **350**
+violations — 25 blocks × 14 types, one colour answer under thirteen wrong headings. Axes now read
+the support key from each type's own `nativeUi.detectVia`. Only 4 declare one: colour →
+`supports.color`, `length-unit` and `box-4value` → `supports.spacing`, `typography` →
+`supports.typography`.
+
+⛔ **AXIS SCOPE IS NOT UNIFORM.** `canonical` adoption needs the one-hop view THROUGH shared
+components (a block reaches `DesignTokenPicker` via `SgsColourPanel`). `bannedLookalikes` needs
+that view **minus** the canonical components, because the canonical row component legitimately
+wraps the raw primitive — `<ColorPalette>` lives inside `DesignTokenPicker.js` and
+`GradientCapableColourControl.js`. Flagging it there flags the *conformant* shape; it produced 5
+false positives before being scoped. **Every axis added must be asked which scope it wants, and
+pinned by a fixture in both directions.**
+
+⛔ **Resolution depth and that exclusion must move TOGETHER.** One hop under-reports 9 of 17
+shared components (`ColorPalette` 3 → 64 at full depth, `DesignTokenPicker` 18 → 64). But
+`ColorPalette` is banned and ~61 of those 64 reach it legitimately, so raising depth alone trades
+under-reporting for ~61 false positives. Reproduce before changing either:
+`python scripts/surveys/compare-reach-depth.py .`
+
+⚠ **A tag scan cannot see a runtime-selected component.** `SgsColourPanel` picks its row via
+`const Control = row.gradientCapable ? A : B`, so neither name appears as a literal JSX tag and
+`GradientCapableColourControl` reads as dead code while being live in 6 blocks.
+
+### O.16 — Qualification: *should* this block have the control? *(2026-08-19)*
+
+A conformance census can only report a **missing** control if it knows the block should have one.
+⛔ **`roster.json` `surfaces.*` cannot answer this.** `build-roster.py:106` computes
+`colour = "color" in supports or attr_hit("colour","color")` — DESCRIPTIVE, true exactly when the
+block ALREADY has colour. Used as a scope predicate it is **self-fulfilling**: it excludes exactly
+the blocks that are missing a panel.
+
+Each control type therefore declares its own `qualifiesWhen` predicate in `golden-controls.json`.
+**The engine is generic; the evidence is per family** — colour qualifies on painted surfaces,
+typography on rendered text, spacing on a box element, link on an `<a>` or URL attribute. Adding a
+control type is a predicate, not a new check.
+
+Verdicts split what a single "not eligible" used to hide: **MISSING** (qualifies, has none — real
+work) versus **NOT-APPLICABLE** (the control cannot apply — never a backlog item).
+
+⚠ **Qualifying does not always mean the control belongs on THIS block.** Every `sgs/form-field-*`
+declares its elements and paints none of them; `sgs/form` paints all 52 (`.sgs-form-field__input`
+appears in `form/style.css` 36 times). They qualify **collectively**, and the control's home is the
+ancestor with children inheriting — the group-default pattern `sgs/multi-button` proves at D640.
+The verdict carries `home: 'ancestor'` so this is not lost.
+
+⚠ **Feature parity is a resolver, not a qualifier.** A `replaces` entry says which core block is
+superseded, NOT that the core block has the family. `block_supports` holds supports for 122 core
+blocks, so it is evaluable: `core/site-logo`'s colour is `{background:false, text:false,
+gradients:null}` — no colour UI — which is why `sgs/responsive-logo` is NOT-APPLICABLE rather than
+missing a panel it should never have.
+
 Reach is derived, not hardcoded: a block is in an extension's surface when it opts IN via
 `supports.sgs.enabledExtensions` (D551 — was an opt-out `hideExtensions` denylist for `hover` and
 `blockLink` specifically; other extensions may still use the older denylist form). `noOptOutExtensions`
