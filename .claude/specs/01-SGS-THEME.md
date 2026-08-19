@@ -151,9 +151,6 @@ sgs-theme/
 │   └── mega-menu-two-column.php
 │
 └── styles/                         # EMPTIED (RETIRED 2026-05-21 — see §Per-site theme.json model)
-    #                               # Per-client variation files deleted by Decision 18.
-    #                               # Per-client snapshots now live at sites/<client>/theme-snapshot.json
-    #                               # and are pushed to specific sites via push-theme-snapshot.py.
 ```
 
 ---
@@ -593,9 +590,9 @@ Behaviour:
 
 `/sgs-clone` Stage 10 invokes `push-theme-snapshot` automatically via the auto-derived `--client` flag (Decision 16′).
 
-### Live-style precedence: `wp_global_styles` SUPERSEDES `theme.json` (2026-06-03, D156)
+### Live-style precedence (see Spec 26 for the canonical mental model)
 
-> **SUPERSEDED + corrected by [Spec 26 — SGS Global Styles & Per-Client Theming](26-SGS-GLOBAL-STYLES-AND-THEMING.md) (2026-06-03).** The "override precedence" framing below is imprecise: the `wp_global_styles` user layer is simply **where a site's global styles live**; `theme.json` is the factory-default seed. It is a data-layer merge, not a CSS override. Spec 26 is the canonical target architecture (variation-delta per client + `wp_global_styles` REST sync + the corrected mental model). Read Spec 26 for the current design; the note below is retained for continuity.
+> **Framing note:** this section originally called it "override precedence"; [Spec 26](26-SGS-GLOBAL-STYLES-AND-THEMING.md) corrected that to a data-layer merge — `wp_global_styles` is simply where a site's live styles live, `theme.json` is the factory-default seed, not a thing being overridden. The operational facts below (post wins wherever both define a property) are still accurate and still the day-to-day guidance; read Spec 26 for the conceptual model.
 
 **Critical (caught live on sandybrown).** WordPress compiles the page's `global-styles-inline-css` by merging the `wp_global_styles` post (the Site-Editor USER layer) **on top of** `theme.json`. Wherever both define a property, **the post wins**. On sandybrown the post is ID 7. Consequence: a change written ONLY to `theme.json` on disk — including a `push-theme-snapshot.py` push — has **no live effect** for any property the post also defines. (This corrects the "conflicts are rare" framing above: it is not a conflict, it is a deterministic override.)
 
@@ -622,6 +619,4 @@ WP 7.0 (released 2026-05-14) adds native pseudo-element support for `core/button
 
 ### Style variation sections RETIRED
 
-The following sections describing the `active_theme_style` theme_mod and style variation activation flow are retired by Decision 18:
-
-**§ Style Variations (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.2):** The `styles/*.json` per-client overlay system that shipped all client variations to every install is deleted. Replaced by per-site `theme-snapshot.json` + push CLI. The example `styles/indus-foods.json` shown above is now `sites/indus-foods/theme-snapshot.json` and is never shipped in a framework deploy.
+See §Style Variations above (retired 2026-05-21 by Decision 18) — not repeated here.
