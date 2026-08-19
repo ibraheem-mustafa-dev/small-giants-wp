@@ -141,6 +141,25 @@
 				"measuredGap2026_08_19": { "gradientCapableRows": "45 of ~226 (22%)" }
 			},
 
+			"qualifiesWhen": {
+				"_why": "scope.eligible is DESCRIPTIVE and therefore SELF-FULFILLING: build-roster.py:106 computes surfaces.colour as `\"color\" in supports or an attribute named colour/color`, i.e. it is true exactly when the block ALREADY has colour. A block with none is excluded from this contract and can never be reported as MISSING a colour panel — only blocks that have some colour and got the shape wrong are visible. This predicate answers the other question: SHOULD this block have one? Added 2026-08-19.",
+				"_engineIsGeneric_predicateIsPerFamily": "The engine evaluating this is shared; the evidence is not. Colour qualifies on painted surfaces; typography on rendered text; spacing on a box element; layout on multiple children; shadow on a card-like surface; link on an <a> or URL attribute. Each control type declares its own qualifiesWhen here rather than the engine growing a branch per family.",
+				"paintsOwnSurface": {
+					"source": "the block's own style.css",
+					"match": "a CSS declaration of background, background-color, border-color or color",
+					"means": "there is a surface for a colour control to govern"
+				},
+				"paintedByAncestor": {
+					"_note": "⚠ MEASURED 2026-08-19, and it changes WHERE the control belongs, not whether it exists. Every sgs/form-field-* block declares 4 elements (label/input/help/error) and paints ZERO of them; sgs/form paints all 52. So the field blocks qualify for colour COLLECTIVELY, and the control belongs on the ANCESTOR with children inheriting — the group-default pattern sgs/multi-button already proves (--sgs-mb-btn-*-default, D640). A predicate that only looked at the block's own stylesheet would wrongly report 13 form blocks as NOT-APPLICABLE.",
+					"source": "declared supports.sgs.elements with zero own paint declarations",
+					"means": "qualifies, but the control's home is the ancestor that paints it"
+				},
+				"featureParity": {
+					"source": "roster.json blocks[].replaces",
+					"means": "an SGS block replacing a core block must meet or exceed it (standing rule sgs-block-feature-parity-with-replaced-core), so if the replaced core block has colour supports this one qualifies"
+				},
+				"verdicts": "QUALIFIES + has a canonical panel = CONFORMANT. QUALIFIES + none = MISSING (real work). Does NOT qualify = NOT-APPLICABLE (not a backlog item, and must never be counted as one)."
+			},
 			"scope": {
 				"eligible": "roster.json blocks where surfaces.colour === true",
 				"eligibleCount2026_08_19": 65,

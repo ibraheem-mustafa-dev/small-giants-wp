@@ -66,6 +66,17 @@ const OK = 'CONFORMANT';
 const BAD = 'VIOLATION';
 const UNCLEAR = 'UNCLEAR';
 const NA = 'N/A';
+// Split out of the old catch-all N/A (2026-08-19, Bean). "Not eligible" was
+// hiding two opposite answers: a block that SHOULD have this control and does
+// not, and a block the control cannot apply to. Only the first is work.
+const MISSING = 'MISSING';
+const NOT_APPLICABLE = 'NOT-APPLICABLE';
+
+// golden-controls.json control-type names vs the raw WP core `support_name`
+// build-roster.py's `qualifies.replacedCoreSupports` carries (e.g. schema
+// "colour" vs core's own "color"). Only the schema's `encoded` types need an
+// entry; an unmapped type falls back to its own name unchanged.
+const FAMILY_BY_CONTROL_TYPE = { colour: 'color' };
 
 // ---------------------------------------------------------------------------
 // Source helpers
@@ -263,6 +274,150 @@ function canonicalFiles( spec, compFiles ) {
  * nullSurfacesRule is explicit that null means UNKNOWN, NOT CLEAN. Treating it
  * as ineligible would silently drop it, so it is reported UNCLEAR instead.
  */
+/**
+ * The block whose stylesheet paints THIS block's rendered classes, if any.
+ *
+ * Keyed on classes emitted by render.php, cross-referenced against every OTHER
+ * block's style.css — the same "detect by what it does" discipline used
+ * throughout the inspector tooling.
+ */
+let SHEETS = null;
+function ancestorPainter( slug ) {
+	if ( ! SHEETS ) {
+		SHEETS = new Map();
+		for ( const dir of fs.readdirSync( BLOCKS_DIR, { withFileTypes: true } ) ) {
+			if ( ! dir.isDirectory() ) continue;
+			const css = readFile( path.join( BLOCKS_DIR, dir.name, 'style.css' ) );
+			if ( css ) SHEETS.set( dir.name, css );
+		}
+	}
+	const render = readFile( path.join( BLOCKS_DIR, slug, 'render.php' ) );
+	if ( ! render ) return null;
+	const classes = [ ...new Set( render.match( /sgs-[a-z0-9-]+__[a-z0-9-]+/g ) || [] ) ];
+	if ( ! classes.length ) return null;
+
+	for ( const [ other, css ] of SHEETS ) {
+		if ( other === slug ) continue;
+		for ( const c of classes ) {
+			const at = css.indexOf( c );
+			if ( at === -1 ) continue;
+			const rule = css.slice( at, at + 400 ).split( '}' )[ 0 ];
+			if ( /(background(-color)?|border-color|[^-\w]color)\s*:/.test( rule ) ) return other;
+		}
+	}
+	return null;
+}
+
+/**
+ * Does this block QUALIFY for a control type — should it have one?
+ *
+ * ⛔ THIS IS NOT `surfaces.colour`, AND THAT IS THE WHOLE POINT.
+ * build-roster.py:106 computes `colour = "color" in supports or attr_hit(
+ * "colour","color")` — DESCRIPTIVE, true exactly when the block ALREADY has
+ * colour. Used as a scope predicate it is SELF-FULFILLING: a block with no
+ * colour is excluded from the contract and can never be reported as MISSING
+ * one. Only blocks that have some colour and got the shape wrong are visible.
+ *
+ * ⭐ THE ENGINE IS GENERIC; THE PREDICATE IS PER FAMILY. The evidence differs
+ * by control type — colour qualifies on painted surfaces, typography on
+ * rendered text, spacing on a box element, layout on multiple children, link on
+ * an <a> or URL attribute. Each type declares its own `qualifiesWhen` in
+ * golden-controls.json rather than this function growing a branch per family.
+ *
+ * ⚠ QUALIFYING DOES NOT ALWAYS MEAN THE CONTROL BELONGS HERE. Measured
+ * 2026-08-19: every sgs/form-field-* declares 4 elements (label/input/help/
+ * error) and paints ZERO of them, while sgs/form paints all 52. Those blocks
+ * qualify COLLECTIVELY and the control's home is the ancestor, with children
+ * inheriting (the group-default pattern sgs/multi-button proves at D640). A
+ * predicate reading only the block's own stylesheet would wrongly report 13
+ * form blocks NOT-APPLICABLE.
+ *
+ * @return {{qualifies:boolean, why:string, home:string}} home is 'self' or
+ *   'ancestor'.
+ */
+function qualifiesFor( spec, slug, blockJson, rosterEntry, type ) {
+	const when = spec.qualifiesWhen;
+	if ( ! when ) return { qualifies: true, why: 'no qualifiesWhen declared — assume in scope', home: 'self' };
+
+	// (1) paints its own surface
+	let ownPaint = 0;
+	if ( when.paintsOwnSurface ) {
+		const css = readFile( path.join( BLOCKS_DIR, slug, 'style.css' ) );
+		if ( css ) {
+			const m = css.match( /(?:background(?:-color)?|border-color|[^-\w]color)\s*:/g );
+			ownPaint = m ? m.length : 0;
+		}
+	}
+	if ( ownPaint > 0 ) return { qualifies: true, why: `paints ${ ownPaint } own declaration(s)`, home: 'self' };
+
+	// (2) an ancestor paints THIS block's own rendered classes.
+	//
+	// ⛔ Keyed on the BEM classes render.php actually EMITS, never on declared
+	// element NAMES. The first version counted declared elements and qualified
+	// 17 blocks — including sgs/decorative-image, because it declares an element
+	// called "image". Element names like label/input/image are generic BEM parts
+	// that recur across the library, so matching them found a painter for
+	// everything. Measured with rendered classes instead: form-field-* and
+	// form-review are painted by sgs/form (`.sgs-form-field__input` appears in
+	// form/style.css 36 times); decorative-image, image-sequence, mega-group and
+	// responsive-logo are painted by NOBODY.
+	if ( when.paintedByAncestor ) {
+		const painter = ancestorPainter( slug );
+		if ( painter ) {
+			return {
+				qualifies: true,
+				why: `its rendered classes are painted by sgs/${ painter }`,
+				home: 'ancestor',
+			};
+		}
+	}
+
+	// (3) feature parity — now a real verdict, read from `roster.json`'s
+	// `qualifies.replacedCoreSupports` (build-roster.py, Spec 35).
+	//
+	// ⚠ A `replaces` entry says which core block this one supersedes; it does
+	// NOT say the core block has this control family. sgs/responsive-logo
+	// replaces core/site-logo, which core/site-logo's OWN `color` support
+	// declares `enabled:true` but every UI sub-flag (background/text/link/
+	// gradients/button/heading) false or null — no colour UI at all. Treating
+	// `enabled:true` alone as a positive signal wrongly reported responsive-logo
+	// MISSING a colour panel. `replacedCoreSupports` already applied
+	// build-roster.py's `support_enabled()` rule (the same sub-flag test), so
+	// this branch only has to ask "is `color` (or `type`'s family name) in the
+	// list build-roster.py already computed" — never re-derive it here.
+	if ( when.featureParity && rosterEntry && rosterEntry.replaces ) {
+		const qualifiesData = rosterEntry.qualifies;
+		if ( ! qualifiesData || ! Array.isArray( qualifiesData.replacedCoreSupports ) ) {
+			// roster.json predates the `qualifies` key (stale regen) — same
+			// honest fallback as before rather than a false positive/negative.
+			return {
+				qualifies: null,
+				why: `replaces ${ JSON.stringify( rosterEntry.replaces ) } — roster.json has no qualifies.replacedCoreSupports; regenerate build-roster.py`,
+				home: 'self',
+			};
+		}
+		// The schema's control-type name (e.g. "colour") vs the raw WP core
+		// support family name (e.g. "color") differ; only "colour" is encoded
+		// today (golden-controls.json `_meta.encoded`), mapped explicitly rather
+		// than assumed 1:1 with future control types.
+		const coreFamily = FAMILY_BY_CONTROL_TYPE[ type ] || type;
+		const enables = qualifiesData.replacedCoreSupports.includes( coreFamily );
+		return enables
+			? {
+				qualifies: true,
+				why: `replaces ${ JSON.stringify( rosterEntry.replaces ) }, which enables core \`${ coreFamily }\` UI`,
+				home: 'self',
+			}
+			: {
+				qualifies: false,
+				why: `replaces ${ JSON.stringify( rosterEntry.replaces ) }, which does NOT enable core \`${ coreFamily }\` UI`,
+				home: 'self',
+			};
+	}
+
+	return { qualifies: false, why: 'paints nothing, and nothing paints its rendered classes', home: 'self' };
+}
+
 function colourEligibility() {
 	const map = new Map();
 	try {
@@ -295,6 +450,12 @@ function survey() {
 	const encoded = ( golden._meta && golden._meta.encoded ) || Object.keys( golden.controls || {} );
 	const compFiles = resolveComponentFiles();
 	const eligible = colourEligibility();
+	const rosterBySlug = new Map();
+	try {
+		for ( const e of JSON.parse( fs.readFileSync( ROSTER_PATH, 'utf8' ) ).blocks || [] ) {
+			rosterBySlug.set( String( e.slug || '' ).replace( /^sgs\//, '' ), e );
+		}
+	} catch ( e ) { /* reported as absent by colourEligibility */ }
 	const rows = [];
 
 	for ( const slug of blockSlugs() ) {
@@ -314,11 +475,19 @@ function survey() {
 			// violation of a contract that does not apply to it.
 			const elig = eligible.has( slug ) ? eligible.get( slug ) : null;
 			if ( type === 'colour' && elig === false ) {
+				// The block has no colour TODAY. That is descriptive, not a
+				// verdict — ask whether it SHOULD, and split the old catch-all
+				// N/A into the two opposite answers it was hiding.
+				const q = qualifiesFor( spec, slug, blockJson, rosterBySlug.get( slug ), type );
 				rows.push( {
 					block: `sgs/${ slug }`,
 					type,
 					axes: {
-						canonical: { verdict: NA, detail: 'roster: no colour surface' },
+						canonical: null === q.qualifies
+							? { verdict: UNCLEAR, detail: q.why }
+							: q.qualifies
+								? { verdict: MISSING, detail: `qualifies (${ q.why })` + ( 'ancestor' === q.home ? ' — control belongs on the ANCESTOR' : '' ), home: q.home }
+								: { verdict: NOT_APPLICABLE, detail: q.why },
 						bannedLookalikes: axisBannedLookalikes( spec, reached, canonicalFiles( spec, compFiles ) ),
 						nativeUi: axisNativeUi( spec, blockJson, reached ),
 					},
@@ -477,6 +646,48 @@ function selfTest() {
 			new Set( [ '/x/DesignTokenPicker.js' ] )
 		).verdict,
 		BAD
+	);
+
+	// Feature-parity verdict, read from roster.json's qualifies.replacedCoreSupports.
+	// Pins the acceptance test from Spec 35's DB build: sgs/responsive-logo
+	// replaces core/site-logo, whose `color` support is `enabled:true` with
+	// every UI sub-flag false/null — no colour UI. That must resolve to
+	// qualifies:false / NOT-APPLICABLE, never MISSING (a false positive would
+	// dispatch a fix for a panel that has nothing to attach to) and never
+	// UNCLEAR (the old behaviour, before replacedCoreSupports existed).
+	const paritySpec = { qualifiesWhen: { featureParity: true } };
+	check(
+		'core block with color enabled but every UI sub-flag false/null does NOT qualify',
+		qualifiesFor(
+			paritySpec,
+			'responsive-logo',
+			{},
+			{ replaces: 'core/site-logo', qualifies: { replacedCoreSupports: [ 'anchor', 'spacing' ] } },
+			'colour'
+		).qualifies,
+		false
+	);
+	check(
+		'core block that DOES enable the family qualifies true',
+		qualifiesFor(
+			paritySpec,
+			'text',
+			{},
+			{ replaces: 'core/paragraph', qualifies: { replacedCoreSupports: [ 'color', 'spacing', 'typography' ] } },
+			'colour'
+		).qualifies,
+		true
+	);
+	check(
+		'roster.json missing qualifies.replacedCoreSupports falls back to UNCLEAR, not a guess',
+		qualifiesFor(
+			paritySpec,
+			'responsive-logo',
+			{},
+			{ replaces: 'core/site-logo' },
+			'colour'
+		).qualifies,
+		null
 	);
 
 	console.log( '' );
