@@ -218,11 +218,9 @@ gap-logged for one-glance confirmation, never silently dropped (a legit dark-bra
 wrapper) is ignored via the positive signal; a synthetic legit dark-theme draft (`body` dark, no
 harness wrapper) KEEPS its dark background (not discarded).
 
-> **Related, not the same mechanism (2026-08-01 cross-reference):** this FR governs which background
+> **Related, not the same mechanism:** this FR governs which background
 > COUNTS as the theme's `surface`. It does NOT govern whether a distinct `surface-alt` gets derived —
-> that is FR-33-2's role table + the `_synthesise_surface_alt` fallback in `palette.py` (see the
-> 2026-08-01 status_history entry). A prior version of this note mis-cited FR-33-6 as covering
-> surface-alt derivation; corrected here — FR-33-2 is the sole owner of that mechanism.
+> that is FR-33-2's role table + the `_synthesise_surface_alt` fallback in `palette.py`. FR-33-2 is the sole owner of that mechanism.
 
 ### FR-33-7 — Provenance trace + golden fixtures + schema validation ("correct" = a diff, not an opinion)
 The extractor MUST emit a `theme-extract-trace.json`: one row per emitted token — `_source` pass,
@@ -402,7 +400,7 @@ Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft
 - Both drafts carry `.sgs-footer__credit`; Mama's has a credit at all; Mama's tagline maps to `description`, NOT attribution (the exact false-positive a positional rule would produce).
 - A draft with the classifier but no matching text → R1 fires. A legacy draft with the text but no classifier → R2 fires. Neither double-emits.
 - The emitted block renders `.sgs-business-attribution` with the framework URL — never the draft's stale LinkedIn href.
-- `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a legacy path rather than the norm. *(This previously cited a parking slug `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER` that existed in NEITHER `parking.md` nor `memory/parking-archive.md` — a phantom citation, the same class as `P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`, removed 2026-07-30. The pointer is struck rather than re-homed; if this becomes real deferred work it needs a genuine parking entry.)*
+- `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a legacy path rather than the norm. (No live parking entry exists for this; if it becomes real deferred work it needs a genuine parking entry.)
 
 ## Open questions — RESOLVED (baked into the FRs above; recorded here for the audit trail)
 1. **Full snapshot vs Spec-26 delta → FULL now** (matches the deploy path; delta is a clean downstream transform diffing the full output against baseline, not an extractor re-plumb). FR-33-4/7.
