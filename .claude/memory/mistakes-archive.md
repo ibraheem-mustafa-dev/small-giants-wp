@@ -752,3 +752,15 @@ Programmatic translation captures structure + tokens but misses design choices i
 - **Pattern key:** `a-gate-firing-is-evidence-about-your-data`
 - **blub.db row:** `408`
 - **Feedback file:** [feedback_a_gate_firing_is_evidence_about_your_data.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_gate_firing_is_evidence_about_your_data.md)
+
+<!-- Archived 2026-08-19 (header-completeness handoff) to keep mistakes.md level while 2 new entries were added. -->
+
+### [2026-08-06] I misread my own gate's output within minutes of building it
+- **Pattern key:** `a-dead-assignment-is-dead-code-not-a-dead-control`
+- **Evidence:** CHECK 5 (dead assignment) returned 18 findings and I reported them to Bean as "18 client-facing controls that do nothing". Triage against the real consumers: 12 were unused locals whose feature WORKS (`sgs_transition_vars( $attributes )` reads the raw attributes itself), 1 more the same via `SGS_Container_Wrapper`, 2 were abandoned attrs, and only 3 were genuine dead controls. The actionable backlog was 5, not 18 — and the wrong number would have justified a fleet of agents for work that mostly did not exist.
+- **Rule:** A finding count is not a severity. Before handing a gate's list to anyone, check what each row's consumer actually does — especially when the gate is one you just wrote and are inclined to trust.
+
+### [2026-08-06] I deleted a concurrent track's committed files with a careless glob
+- **Pattern key:** `check-what-a-glob-matches-before-deleting`
+- **Evidence:** After a bash-escaping accident produced malformed report files, I ran `rm -f reports/visual-diff/*-2026-08-06.md` to clean up "my" files. That glob also matched 10 TRACKED reports another track had committed the same day (`image-sequence`, `nav-menu`, `site-header`, `trust-bar`, …). Only `git status` showing ` D ` lines revealed it; restored with `git checkout -- reports/visual-diff/`.
+- **Rule:** On a shared worktree a DELETE is a cross-track action exactly as a DB write is. List what a glob matches before removing it, and check `git status` immediately after any bulk delete.

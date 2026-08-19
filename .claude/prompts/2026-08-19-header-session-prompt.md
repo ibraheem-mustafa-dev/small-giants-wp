@@ -1,5 +1,16 @@
 # Session prompt — `sgs/site-header` completion (parallel session)
 
+> # ⛔ EXECUTED AND CLOSED — 2026-08-19. DO NOT RUN THIS AGAIN.
+> All five tasks shipped, deployed and live-verified on the canary. Decisions **D681–D684**;
+> evidence `reports/visual-diff/site-header-2026-08-19.md` (17 assertions, verdict PASS); status in
+> `.claude/LEDGER.md` under "The header — COMPLETE and LIVE-VERIFIED". Task 4 was completed by the
+> C1–C4 session instead — see `.claude/reports/2026-08-19-task4-surface-cap-handover.md`, which also
+> records that three of this prompt's own assumptions about Task 4 were WRONG (the prescribed fix,
+> the predicted direction, and the blast radius).
+>
+> Kept for provenance, not for execution. Re-running it would re-do finished work against
+> instructions now known to be partly incorrect.
+
 > **Paste everything below the line into a fresh session.** It is self-contained.
 > Written 2026-08-19 after a measured audit of both header blocks (D679).
 

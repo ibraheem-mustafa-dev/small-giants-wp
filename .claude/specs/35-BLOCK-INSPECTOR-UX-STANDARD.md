@@ -1307,8 +1307,13 @@ question.
 Where an element cannot be resolved, the control **stays exactly where it is today**
 and the ambiguity is reported — no-worse-than-today is the floor.
 
-**Applies to every state, not just hover.** `states.hover` and `states.current` both render inline
-beside their base value (18 elements declare `hover`, 4 declare `current`). ⚠ **Corrected 2026-08-19
+**Applies to every state, not just hover.** `states.hover`, `states.current` and `states.scrolled`
+all render inline beside their base value (18 elements declare `hover`, 4 `current`, 1 `scrolled`).
+⚠ **`scrolled` ADDED 2026-08-19 (D682)** — admitted to `golden-controls.json`'s REAL state vocabulary
+on the same basis `current` was: a class toggled at RUNTIME (`.is-header-scrolled`, by
+`header-behaviours/view.js`) and painted by CSS in `sgs/site-header/render.php`. It is not notional —
+the mechanism shipped long before the state was named. It lets the header background be ONE two-swatch
+colour row (at rest / once scrolled) rather than two single-state rows. ⚠ **Corrected 2026-08-19
 (D676/D678) — the third state's DB name is `current`, not `selected`.** Bean asked to rename it;
 `css_state` is a derived column (`extract-signatures.py` → `css-property-classifications.json` →
 `/sgs-update`), so the rename was a 9-step migration, applied via `/sgs-update --stage 1` and
@@ -1382,8 +1387,9 @@ document remains the historical derivation; **this section is the schema.**
 `supports.sgs.elements`; 283 elements.** ⚠ Not "83 of 83" — that figure was inherited from the
 design doc and is wrong; 83 is the FILE count, 82 the DECLARING count. Quote the predicate. Key
 frequencies — `label` 283 · `order` 283 · `clusters` 283 · `attrMap` 149 · `prefix` 102 ·
-`isWrapper` 69 · `layer` 57 · `states` 20 (18 `hover`, 4 `current` — renamed from `selected`
-2026-08-19, D676/D678 — 2 elements carry both).
+`isWrapper` 69 · `layer` 57 · `states` 21 (18 `hover`, 4 `current` — renamed from `selected`
+2026-08-19, D676/D678 — 2 elements carry both; plus 1 `scrolled` on `sgs/site-header.wrapper`,
+D682). ⚠ Counts drift — re-derive from the manifests rather than quoting this line.
 
 ```jsonc
 "supports": { "sgs": { "elements": {
@@ -1940,7 +1946,7 @@ its element's panel (TIER 1) regardless of this field.)*
 4. **Placement** — the state value sits **inside the same control group as its base value**. This is
    how `theme.json` nests pseudo-states under the element, and how the block's own PHP helpers
    already build `:hover` from the same `$prefix`.
-5. **Scope** — `attr_name LIKE '%Hover%' OR css_state IN ('hover','current')`, excluding
+5. **Scope** — `attr_name LIKE '%Hover%' OR css_state IN ('hover','current','scrolled')`, excluding
    `sgs/mega-panel.accent` (a colour-scheme picker, mistagged). **23 blocks; 3 conform, 20 do not.**
    ⚠ Use `%Hover%`, not `%Hover` — the suffix form misses `business-info.linkHoverColour`.
    ⚠ `trust-bar.autoScrollPauseOnHover` and `team-member.overlayHover` are **behavioural flags, not
