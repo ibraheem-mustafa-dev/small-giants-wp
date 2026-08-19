@@ -296,18 +296,13 @@ The mechanism already exists and is nearly correct:
   true no-op in core (`synchronizeBlocksWithTemplate` opens `if (!template) return blocks;`).
   Re-application after seeding is separately gated by core's `hasTemplateChanged` ref, verified
   empirically (children added to the template's *empty* rows survive later edits + re-renders).
-- **⚠ The "no uniqueness guard is needed" reasoning below was FALSIFIED by the same defect.**
-  It is retained rather than deleted because its *conclusion* still stands on the corrected
-  mechanism, but its *premise* was wrong and must not be re-cited as evidence.
-- ~~**No `rowSlot` enum or uniqueness guard is needed.** With the container locked, a fourth row
-  or a duplicate `top` cannot be inserted through the UI at all.~~ **FALSE as written:** the
-  corruption above produced trees with **two rows both carrying `rowSlot: 'middle'`** — exactly
-  the duplicate this clause asserted was structurally impossible. The lock governs *operator*
-  insertion; it never governed what the template sync itself writes. With D393's fix the
-  duplicate can no longer occur, so no validator is added — but on the corrected grounds that
-  the sync no longer rewrites a populated container, NOT because "the UI makes it impossible".
-  Adding a schema-level validator would still be a second guard overlapping a working one —
-  forbidden by `~/.claude/rules/prove-the-cause-before-fix.md`.
+- **No `rowSlot` enum or uniqueness guard is added.** D393's template-sync fix
+  (`template: isEmpty ? TEMPLATE : undefined`, latched on first render) means the sync no
+  longer rewrites a populated container, so a duplicate `rowSlot` cannot occur — NOT because
+  the locked UI prevents insertion (that premise was falsified: pre-fix corruption produced
+  two rows both carrying `rowSlot: 'middle'`). A schema-level validator here would be a
+  second guard overlapping a working one — forbidden by
+  `~/.claude/rules/prove-the-cause-before-fix.md`.
 
 **What the converter gets:** a deterministic target — `sgs/site-header > sgs/site-header-row`
 with `rowSlot` ∈ {`top`,`middle`,`bottom`}, and the footer equivalent with `columns` in place of
@@ -391,13 +386,12 @@ the D338 trap §8.2 raised. The two are also not equivalent: the cascade HIDES a
 a tier, whereas `labelCollapse` keeps the element and its link target while collapsing its
 label to icon-only. Hiding is not collapsing.
 
-*(Status corrected 2026-07-28, D400/D405: the cascade MECHANISM — canonical `resolveTier()` +
-`ResponsiveTriStateControl` + scoped emission — is now BUILT and live-proven, `b9c5f6d1`/
-`ac0c30eb`/`eb255f06`. What remains open is the header-CONTENT-hiding FEATURE that would
-*consume* the mechanism to hide `labelCollapse`-equivalent elements per device — that feature
-is owned by this spec (§3.8) and has not been built. The two mechanisms stay non-interchangeable
-regardless: the cascade HIDES an element at a tier, `labelCollapse` KEEPS the element and its
-link while collapsing its label to icon-only.)*
+The cascade mechanism (`resolveTier()` + `ResponsiveTriStateControl` + scoped emission)
+is BUILT and live-proven (`b9c5f6d1`/`ac0c30eb`/`eb255f06`); the header-CONTENT-hiding
+FEATURE that would consume it to hide `labelCollapse`-equivalent elements per device is owned
+by this spec (§3.8) and is NOT built. The two stay non-interchangeable regardless: the cascade
+HIDES an element at a tier, `labelCollapse` KEEPS the element and its link while collapsing
+its label to icon-only.
 
 **Revisit condition (not left open-ended):** if and when Spec 35 ships the cascade, re-test
 whether `labelCollapse` still earns its place. Until then it is a live, supported control.
@@ -630,25 +624,16 @@ double-render;
 (b) **make the behaviour resolver CPT-aware — this is the load-bearing clause.**
 Footer mirrors this exactly.
 
-> **⚠ Corrected 2026-07-21 after an adversarial council; the original text here was wrong and
-> would have shipped a silent failure.** v1.0.0 said to pass the HTML through
-> `apply_filters( 'sgs_header_rule_resolved', … )` because "that filter is where behaviour CSS
-> is injected". **Verified false:** that filter has **zero subscribers** — it appears exactly
-> twice in the codebase, as the `apply_filters` call itself (`class-sgs-header-rules.php:249`)
-> and as a comment asserting it matters (`sgs-blocks.php:296`). Nothing has ever hooked it.
->
-> **The real mechanism, and the real risk.** Header behaviours are resolved by
-> `Sgs_Header_Behaviours`, which hooks **`body_class`** (`class-sgs-header-behaviours.php:81`)
-> — a different hook from `pre_render_block` — and calls
-> `Sgs_Header_Behaviours::resolve_active_header_behaviour()` (`:143`), which reads the header's
-> block markup via `SGS_Nav_Menu_Source::get_header_content()` (`:173`). That function reads the
-> `wp_template_part` post (`class-sgs-nav-menu-source.php:397-399`), falling back to the
-> **`parts/header.html` file** (`:410-412`). It knows nothing about the CPT.
->
-> **Therefore:** the moment FR-37-6 empties `parts/header.html`, `get_header_content()` finds no
-> `sgs/site-header` block, every behaviour flag resolves false, no body classes are emitted, and
-> sticky / transparent / shrink stop working **with no error** — the D338 silent-failure class
-> this spec exists to prevent, reproduced by this spec.
+> **Header behaviours are resolved by `Sgs_Header_Behaviours`**, which hooks `body_class`
+> (`class-sgs-header-behaviours.php:81`) and calls `resolve_active_header_behaviour()` (`:143`),
+> which reads the header's block markup via `SGS_Nav_Menu_Source::get_header_content()` (`:173`).
+> That function reads the `wp_template_part` post (`class-sgs-nav-menu-source.php:397-399`),
+> falling back to `parts/header.html` (`:410-412`) — it knows nothing about the CPT. So the
+> moment FR-37-6 empties `parts/header.html`, `get_header_content()` finds no `sgs/site-header`
+> block, every behaviour flag resolves false, no body classes are emitted, and sticky /
+> transparent / shrink stop working with no error (the D338 silent-failure class this spec
+> exists to prevent). Note: `apply_filters('sgs_header_rule_resolved', …)` has zero
+> subscribers — do not route new logic through it.
 
 **Required:** `SGS_Nav_Menu_Source::get_header_content()` gains an **active-CPT branch as its
 FIRST source**, ahead of the `wp_template_part` post and the file (CPT → template part → file).
@@ -948,40 +933,25 @@ The D375 dead-selector bug is FIXED: `sgs/site-header` now renders a semantic `<
 Live on the canary (CPT 1655): scroll-down hides the header (`translateY(-119px)`), scroll-up returns;
 one banner landmark; F1 height-publisher revived; axe zero NEW hit. Plus the Option B one-header-per-request
 guard + editor `<header>` parity. Drawer-while-scrolled (D323) structurally safe (top-layer `<dialog>`),
-not observable on fixture 1655 (no drawer block). The historical BUILT-BUT-DEAD analysis below is retained
-for context. Two corrections from the D375 live verification (now resolved by fix B):
+not observable on fixture 1655 (no drawer block).
 
-1. **The "no attribute / dormant" note above was STALE.** hide-on-scroll IS wired end to end in code:
-   `site-header/block.json:76` `headerHideOnScroll` (boolean) + an Advanced ToolsPanel control in
-   `site-header/edit.js` + `class-sgs-header-behaviours.php:205,264` emits the
-   `sgs-header-behaviour-hide-on-scroll-down` body class. sticky/transparent/shrink are likewise wired.
-   **⚠ CORRECTED 2026-08-19 (D679 audit).** This note is itself now stale in one respect: it still
-   describes `headerHideOnScroll` as a `boolean` at `site-header/block.json:76`. That is superseded
-   by FR-37-14 (`e4bd72ef`+`eb255f06`, 2026-07-28, T1.4) — the attribute is an OBJECT tri-state
-   (`{desktop,tablet,mobile}`) now, not a flat boolean, and line 76 no longer describes it (the
-   citation was left in place when FR-37-14 shipped). Read FR-37-14 for the current shape; this
-   paragraph is retained only as the historical record of the D375/D376 wiring fix.
-2. **But the JS + CSS layer targets an element no SGS header renders, so ALL THREE scroll behaviours
-   (transparent, shrink, hide-on-scroll) are silently dead.** `header-behaviours/view.js:42`
-   `getHeaderEl()` = `document.querySelector('header.wp-block-template-part')`, and
-   `assets/css/header-behaviours.css:60,108,164` key every state rule on the same
-   `header.wp-block-template-part`. **No SGS-served header produces that element** — the header renders
-   as `<div class="wp-block-sgs-site-header">` (0 `<header>` elements on the page), on BOTH the active-CPT
-   path AND the cleared/immutable-default path (negative control confirmed). So `getHeaderEl()` returns
-   null, `boot()` bails, the scroll listener never wires, and even if it did the CSS would match nothing.
-   Live-proven on the sandybrown canary with header CPT 1655 active: body class present, `is-header-
-   scrolling-down` never toggles on scroll, header `transform` stays `none`. (Sticky is CSS-`position:sticky`
-   only, no JS — unaffected. The header being `position:relative` on CPT 1655 is a separate config point.)
+hide-on-scroll is wired end to end: an Advanced ToolsPanel control in `site-header/edit.js` +
+`class-sgs-header-behaviours.php:205,264` emits the `sgs-header-behaviour-hide-on-scroll-down`
+body class. `headerHideOnScroll` is an OBJECT tri-state (`{desktop,tablet,mobile}`) per
+FR-37-14 — do not cite `site-header/block.json:76` as a boolean shape, that citation is stale.
+sticky/transparent/shrink are likewise wired.
 
-This is the D338 silent-failure class realised, and exactly the "code correct by read, dead on live
-render" trap (R-31-13) — the earlier "chain proven by code-read" note in §5 was the trap talking.
+**Guard rail:** the header must render a real `<header>` element; without it there are zero
+header landmarks and all three scroll behaviours (transparent, shrink, hide-on-scroll) die
+silently (live-proven 2026-07-23, fixed D375) — a regression that could recur if someone
+changes the wrapper tag.
 
 **APPROVED FIX (Bean, 2026-07-23): Option B — render the SGS site header AS a semantic `<header>`
 element** with a stable class both the JS `getHeaderEl()` and the CSS state rules target. This revives
 all three scroll behaviours AND adds the missing banner/`<header>` landmark (a WCAG win — the site
 currently has zero `<header>` landmarks). **Higher blast radius (changes the header root element) →
-design-gate FIRST (`/frontend-design` + `/brainstorming` → Bean sign-off), THEN build.** Queued; not
-yet started. (Rejected alternatives: A = just broaden the JS+CSS selector to `.wp-block-sgs-site-header`
+design-gate FIRST (`/frontend-design` + `/brainstorming` → Bean sign-off), THEN build.**
+(Rejected alternatives: A = just broaden the JS+CSS selector to `.wp-block-sgs-site-header`
 — quick but leaves the header a non-semantic `<div>`; C = park.)
 **Done when:** the SGS header is a semantic `<header>`; all four behaviours are settable from the
 inspector AND observable on the frontend (hide/return on scroll, verified with the drawer opened while
@@ -1057,22 +1027,15 @@ Every responsive property is `{ desktop: <val>, tablet: <val|null>, mobile: <val
 cascading from desktop when a tier is null. Device tiers are 768 / 1024 per
 `~/.claude/rules/visual-standards.md`.
 
-> **⚠ Two corrections, 2026-07-21 (adversarial council + verification).**
+> **Uid hashing does NOT canonicalise attribute key order** (D334, enforced in code —
+> `site-header-row/render.php:49` `// STOP-NO-KSORT`): canonicalisation is a write-time oracle
+> only, kept out of the hash path, because reordering keys would re-key every scoped-CSS
+> selector and break the collector's cross-page dedup.
 >
-> **1. The uid-canonicalisation instruction is STRUCK.** v1.0.0 said "canonicalise attribute key
-> order before the uid md5 (07-13 §8)". That directly reverses **D334**, which is council-gated
-> and enforced in code: `site-header-row/render.php:49` carries
-> `// STOP-NO-KSORT: do not reorder $attributes before hashing`. Canonicalisation exists as a
-> **write-time oracle**, deliberately kept out of the hash path; reordering keys changes every
-> uid, which re-keys every scoped-CSS selector and breaks the collector's cross-page dedup.
-> **D334 governs. 07-13 §8 is superseded on this point.**
->
-> **2. The status was wrong in both directions.** v1.0.0 claimed `BUILT` for "the 17 tiered
-> attrs". Verified counts: **`sgs/site-header` has 0 object-typed attrs and 20 flat suffixed
-> ones** (`maxWidthTablet`, `paddingTopMobile`, …); **`sgs/site-header-row` has 5 object-typed**
-> (`gap`, `maxWidth`, `contentWidth`, `padding`, `margin`) and 0 flat. So the shape is built on
-> the **rows**, not the containers — the opposite of what the FR implied — and "flat for others"
-> concealed a real migration of the two highest-attribute blocks in the spec.
+> **Object-typed tiered attrs live on the ROWS, not the containers:** `sgs/site-header` has
+> 0 object-typed attrs and 20 flat suffixed ones (`maxWidthTablet`, `paddingTopMobile`, …);
+> `sgs/site-header-row` has 5 object-typed (`gap`, `maxWidth`, `contentWidth`, `padding`,
+> `margin`) and 0 flat.
 
 **Status:** `PARTIAL` — object shape on the ROW blocks (5 attrs each); the CONTAINER blocks are
 entirely flat (20 suffixed attrs on `site-header`). Converting the containers is real work, not
@@ -1256,13 +1219,10 @@ control *somewhere* (Advanced satisfies it) and is **WARN-ONLY, always exits 0**
 `check-simple-surface-cap.js` governs only which controls are default-visible.
 `sgs/site-header` already uses `ToolsPanel` disclosure (`site-header/edit.js:116-230`), which is
 the mechanism that reconciles them — it is not a design problem to solve.
-**Status:** `GATE BUILT` — **CORRECTED 2026-08-19 (D679 audit).** This FR previously said
-`NOT-BUILT` — "`check-simple-surface-cap.js` does not exist (verified: 0 files)" — while this
-spec's own §5 build-status table already said `GATE BUILT` for the same script. That was a
-self-contradiction, not a real ambiguity: **the script exists.** As of 2026-08-19 it scans FOUR
-blocks — `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row` — the
-two ROW blocks were added that day; before, half the header surface (the rows) had no computable
-Simple-surface check at all.
+**Status:** `GATE BUILT`. `check-simple-surface-cap.js` scans FOUR blocks —
+`sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row` (the two
+ROW blocks added 2026-08-19; before that, half the header surface had no computable
+Simple-surface check).
 
 **Known limitation, now recorded rather than left implicit:** the script counts a composite
 component mount as **ONE row** without opening the component to see what it actually renders.
@@ -1277,17 +1237,8 @@ stated wherever the script's output is cited, not just here.
 **Done when:** both containers show exactly the Simple controls in the table above by default;
 the lint REPORTS a fourth as over the default — advisory, never a build blocker.
 
-> **⚠ CORRECTED 2026-07-23 (Bean-caught). This FR previously said "the lint fails a build that adds
-> a fourth" — a mis-transcription of its own cited source, and it propagated into shipped code.**
-> P2 §5 states the opposite TWICE, and it is the Bean-confirmed resolution of an objection raised
-> against exactly this reading:
-> - P2:52 — *"the ≤3 lint is the sensible **default, not a ceiling**"*
-> - P2:91 — objection *"Hard cap fights client self-service — ≤3 lint = a ceiling a client can't
->   influence"* → resolution *"Operator pin/unpin; **lint = default not ceiling** (§5). **Bean-confirmed.***"
-> - P2:187 — *"≤3 default; operator-reorderable; **lint = default**"*
->
-> So ≤3 is a design DEFAULT the lint surfaces, not a cap a build dies on. `check-simple-surface-cap.js`
-> was built to the wrong reading and exited 1; it is now WARN-ONLY (exit 0) with an opt-in `--strict`,
+> **≤3 is a design DEFAULT the lint surfaces, not a cap a build dies on** (P2:52, P2:91, P2:187 —
+> Bean-confirmed). `check-simple-surface-cap.js` is WARN-ONLY (exit 0) with an opt-in `--strict`,
 > matching its sibling `check-element-manifest-conformance.js`, which this FR itself notes is
 > "WARN-ONLY, always exits 0".
 >
@@ -1685,14 +1636,10 @@ the architectural inconsistency.
 
 **Status:** `BUILT` 2026-08-19 — pending live canary verification at the Task 1 checkpoint.
 
-⚠ **This requirement's own wording was wrong on one point, corrected here rather than glossed.**
-It asked for a "per-device **tri-state** consistent with `headerSticky`/…". Those four are on/off
-booleans rendered by `ResponsiveTriStateControl`; `contrastSafe` is a FOUR-value enum. Pointing the
-tri-state control at it would store values the control cannot display and silently flatten the
-client's choice — the control primitive must match the STORAGE shape, not the neighbouring control.
-It therefore uses `ResponsiveOverride` (the render-prop per-device wrapper) around the existing
-4-option `SelectControl`. "Consistent per-device model" is met; "tri-state" was the wrong shape and
-is not.
+`contrastSafe` is a FOUR-value enum, not a boolean — it uses `ResponsiveOverride` around the
+existing 4-option `SelectControl`, not `ResponsiveTriStateControl`. The control primitive must
+match the STORAGE shape, not the neighbouring control — pointing a tri-state control at an enum
+attribute would store values the control cannot display and silently flatten the client's choice.
 
 **Done when:** `contrastSafe` is per-device, consistent with the model used by `headerSticky`/
 `headerTransparent`/`headerShrink`/`headerHideOnScroll`; an operator's explicit "None" over a
@@ -1789,45 +1736,11 @@ was previously losing the flip entirely, not by accident.
 - **The header/footer clone walker** — "Spec 33 Part 2". ⚠ **See the ownership + direction note
   immediately below; that label is currently ownerless and its gating is widely mis-stated.**
 
-> ### ⚠ "Spec 33 Part 2" — ownership defect + the CORRECT build direction (recorded 2026-07-23)
->
-> **What it actually is (Bean, 2026-07-23 — this supersedes the "ownerless" framing below).**
-> "Spec 33 Part 2" is **the specialised pipeline that CLONES a draft's header and footer** onto SGS
-> blocks. It is NOT this spec. What Spec 33 hands to **Spec 37** is the *architecture and the BUILD*
-> — the container blocks, the CPT editing home, the binding, the behaviours, and all the blocks that
-> live inside a header or footer. Two distinct pieces of work:
->
-> | | Owner | State |
-> |---|---|---|
-> | Architecture + building the header/footer + its blocks | **Spec 37** (this spec) + **Spec 36** (the nav + element blocks) | ACTIVE — being built now |
-> | The specialised header/footer CLONING pipeline | **"Spec 33 Part 2"** | NOT STARTED — comes after |
->
-> **The doc defect that made this confusing.** Spec 33's own text says *"Part 2 (Spec 37) = clone the
-> draft header/footer"* (`33:34-36`), collapsing the two into one label; this spec's FR-37-22 then
-> points back at "Spec 33 Part 2". Read together they look like a circular pointer with no owner —
-> which is how the build ORDER below came to be stated backwards. It is not ownerless: Spec 37 owns
-> the BUILD, and the CLONING pipeline is separate, unstarted work that consumes it. **Spec 33's
-> wording should be corrected when Part 2 is picked up.**
->
-> **The correct direction (Bean-corrected 2026-07-23, and what the specs actually say).**
-> Spec 36's own frontmatter: *"33 Part 2 (converter — **built AFTER the nav passes its test gate**;
-> see FR-36-15)"*. Spec 36 §7: *"**After Gate-2 passes**, before Phase 3: update Spec 33 Part 2 …
-> the clone pipeline comes after the nav is built + tested."*
->
-> **So: Specs 36 + 37 complete FIRST → then Part 2 is built.** Part 2 is a CONSUMER of this work,
-> not a prerequisite for it.
->
-> **What this corrects.** A 2026-07-23 progress summary claimed FR-36-15, FR-36-18 and FR-36-25 were
-> "gated on Spec 33 Part 2". That was wrong in two of three cases and is struck here:
-> - **FR-36-15** — the reverse. Its job is to DOCUMENT the architecture so Part 2 is easy later. It
->   FEEDS Part 2 and is blocked by nothing.
-> - **FR-36-25** — not related to Part 2 at all; it depends on FR-36-21/22/23.
-> - **FR-36-18** — the cutover MECHANISM is already done (D361). Only the faithful *branded* Indus
->   header waits on Part 2, because that is a cloning output, not a nav capability.
->
-> **Only two items genuinely wait on Part 2:** that branded-header sliver of FR-36-18, and FR-37-22.
-> Everything else in both specs is buildable now. **Assigning Part 2 a single named owner is a
-> prerequisite before any Part 2 work starts** — do not begin it while two specs disclaim it.
+> **"Spec 33 Part 2" is the specialised header/footer CLONING pipeline** — a separate, later
+> consumer of this build's architecture, not this spec's own work and not a blocker on it. Only
+> two items in Specs 36+37 genuinely wait on it: the branded-header sliver of FR-36-18, and
+> FR-37-22. Everything else (including FR-36-15 and FR-36-25) is buildable now. Assigning Part 2
+> a single named owner is a prerequisite before any Part 2 work starts.
 - **The WP Customiser.** Spec 17's `§Customiser Migration` (Decision 21, Phase 5b) is
   **dropped, not deferred.** The classes it named never existed; Spec 17 itself marks that
   block "RETRACTED FICTION". Superseded by FR-37-1.
@@ -1895,18 +1808,10 @@ was previously losing the flip entirely, not by accident.
 
 ### 8.2 Still open
 
-1. ~~**`labelCollapse`'s fate.**~~ **RESOLVED 2026-07-23 → §3.8: RETAINED.** Bean's rule was
-   "keep it if it is an operator toggle, bin it if it is automatic"; code confirms it is a
-   toggle (`button/edit.js:347`, `business-info/edit.js:88` — a `SelectControl` defaulting to
-   `'none'`). The cascade it would have deferred to is Spec 35's and is NOT BUILT, so deleting
-   first would strand the capability — and the two are not equivalent anyway (the cascade
-   HIDES; `labelCollapse` COLLAPSES a label to icon-only while keeping the element and its
-   link). Spec 36 FR-36-8/FR-36-23 amended in the same commit. Revisit if Spec 35 ships the
-   cascade. Full reasoning in §3.8. *(Status corrected 2026-07-28, D400/D405: the cascade
-   MECHANISM — canonical `resolveTier()` + tri-state control + scoped emission — is now BUILT
-   and live-proven, `b9c5f6d1`/`ac0c30eb`/`eb255f06`; the §3.8 header-content-hiding FEATURE
-   that would consume it remains open and is owned by this spec. D363's revisit condition is
-   now ACTIONABLE whenever that feature ships.)*
+1. **`labelCollapse`'s fate — RESOLVED 2026-07-23, RETAINED.** Full reasoning in §3.8. The
+   cascade mechanism it would have deferred to is BUILT (D400/D405); the §3.8 feature that
+   would consume it to hide equivalent elements per device remains open — revisit
+   `labelCollapse` against it whenever that feature ships.
 2. **`sgs/site-header` version.** Both containers are `v0.1.0`. Pre-production policy says no
    version bumps; confirm they stay at `0.1.0` through this work.
 3. **FR-37-20's rule-target limitation.** Rules can only target file-registered patterns, not
