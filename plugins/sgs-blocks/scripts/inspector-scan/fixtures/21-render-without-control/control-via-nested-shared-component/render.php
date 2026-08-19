@@ -1,17 +1,14 @@
 <?php
 /**
- * Paints all five overlay attributes, so each one is a live candidate and only
- * transitive component resolution can clear it.
+ * Paints both overlay attributes, so each is a live candidate that ONLY
+ * transitive component resolution can clear. A resolver that expands one level
+ * lands on BackgroundPanel.js, which names neither attribute, and reports two
+ * false defects.
  */
 
 $overlay  = isset( $attributes['backgroundOverlayColour'] ) ? $attributes['backgroundOverlayColour'] : '';
 $gradient = isset( $attributes['overlayGradient'] ) ? $attributes['overlayGradient'] : false;
-$angle    = isset( $attributes['overlayGradientAngle'] ) ? $attributes['overlayGradientAngle'] : 180;
-$from     = isset( $attributes['overlayGradientFrom'] ) ? $attributes['overlayGradientFrom'] : '';
-$to       = isset( $attributes['overlayGradientTo'] ) ? $attributes['overlayGradientTo'] : '';
 
-$css = $gradient
-	? sprintf( 'linear-gradient(%ddeg, %s, %s)', (int) $angle, $from, $to )
-	: $overlay;
+$css = $gradient ? sprintf( 'linear-gradient(180deg, %s, transparent)', $overlay ) : $overlay;
 
 printf( '<div style="background:%s"></div>', esc_attr( $css ) );

@@ -65,6 +65,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
+const { resolveComponentFiles } = require( '../core/components' );
 
 // Attribute keys that are documentation, not attributes. House convention,
 // mirrored from check-dead-controls.js:342-352 (WordPress would register these
@@ -287,66 +288,24 @@ const REAL_SRC = path.resolve( __dirname, '..', '..', '..', 'src' );
 let COMPONENT_FILE_CACHE = null;
 function allControlComponentFiles() {
 	if ( COMPONENT_FILE_CACHE ) return COMPONENT_FILE_CACHE;
-	const map = new Map();
-
-	// MEASURED 2026-08-08 (second correction): keying only by FILENAME still left
-	// 611 findings, with the whole container/grid family intact even on
-	// `sgs/container` itself. Cause: `ContainerWrapperControls.js` is a single
-	// 57KB file that also declares and EXPORTS the individual panels
-	// (`LayoutPanel`, `WidthPanel`, `BackgroundPanel`, `GridAreaPanel`, …).
-	// Blocks import those named exports and render `<LayoutPanel`, never
-	// `<ContainerWrapperControls` (confirmed: src/blocks/container/edit.js:20
-	// imports FROM that path with no such tag anywhere). A filename-keyed map
-	// has no `LayoutPanel` entry, so the file's attribute vocabulary — which
-	// does contain `gapTablet` (:475), `flexDirection` (:503,511),
-	// `gridTemplateRows*` (:431-433) — was never joined to the block.
+	// PROMOTED to core/components.js resolveComponentFiles() on 2026-08-19 (C0).
+	// The private copy that lived here indexed exported names + filename and took
+	// FIRST-WINS in readdir order. The 2026-08-17 wrapper-panel split made that
+	// wrong: `ContainerWrapperControls.js` became a 268-line facade that
+	// RE-EXPORTS the six panels and sorts alphabetically before them, so it
+	// claimed `LayoutPanel`/`WidthPanel`/`WrapperColourPanel`/… while the
+	// attribute vocabulary those names carry had MOVED OUT of it (measured:
+	// gapTablet 0 vs 2, flexDirection 0 vs 2, gridTemplateRows 0 vs 6,
+	// justifyItems 0 vs 3 against LayoutPanel.js). This rule therefore resolved
+	// `<LayoutPanel` to a file containing none of the controls it asked about and
+	// reported those attributes as uncontrolled — false POSITIVES, which are a
+	// detector bug and never baseline fodder. The shared resolver fixes it by
+	// PRECEDENCE: a file that DECLARES a name beats one that only re-exports it.
 	//
-	// So index every name a file EXPORTS, plus its filename. This is still
-	// "detect by what it does": a block is credited with a component's
-	// attribute vocabulary because its JSX renders a name that component file
-	// exports, cross-referenced against that file's own source.
-	const EXPORT_DECL_RE =
-		/export\s+(?:default\s+)?(?:function|const|let|class)\s+([A-Z]\w*)/g;
-	const EXPORT_LIST_RE = /export\s*\{([^}]*)\}/g;
-
-	const addDir = ( dir ) => {
-		if ( ! fs.existsSync( dir ) ) return;
-		for ( const f of fs.readdirSync( dir ) ) {
-			if ( ! f.endsWith( '.js' ) || f === 'index.js' ) continue;
-			const full = path.join( dir, f );
-			const names = new Set( [ path.basename( f, '.js' ) ] );
-			let src = '';
-			try {
-				src = fs.readFileSync( full, 'utf8' );
-			} catch ( e ) {
-				src = '';
-			}
-			EXPORT_DECL_RE.lastIndex = 0;
-			let m;
-			while ( ( m = EXPORT_DECL_RE.exec( src ) ) ) names.add( m[ 1 ] );
-			EXPORT_LIST_RE.lastIndex = 0;
-			while ( ( m = EXPORT_LIST_RE.exec( src ) ) ) {
-				for ( const raw of m[ 1 ].split( ',' ) ) {
-					const n = raw.trim().split( /\s+as\s+/ ).pop().trim();
-					if ( /^[A-Z]\w*$/.test( n ) ) names.add( n );
-				}
-			}
-			for ( const n of names ) if ( ! map.has( n ) ) map.set( n, full );
-		}
-	};
-
-	// Framework-wide shared components.
-	addDir( path.join( REAL_SRC, 'components' ) );
-	// Block-local shared components (src/blocks/<block>/components/*.js).
-	const blocksRoot = path.join( REAL_SRC, 'blocks' );
-	if ( fs.existsSync( blocksRoot ) ) {
-		for ( const b of fs.readdirSync( blocksRoot ) ) {
-			addDir( path.join( blocksRoot, b, 'components' ) );
-		}
-	}
-
-	COMPONENT_FILE_CACHE = map;
-	return map;
+	// It also widens the corpus to src/blocks/extensions/. discover() and its
+	// exportsMap are deliberately UNTOUCHED, so rules 01 and 18 do not move.
+	COMPONENT_FILE_CACHE = resolveComponentFiles();
+	return COMPONENT_FILE_CACHE;
 }
 
 /**
