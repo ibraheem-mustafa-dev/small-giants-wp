@@ -211,8 +211,11 @@ bug, never baseline fodder.
 
 ## The header — COMPLETE and LIVE-VERIFIED (2026-08-19)
 
-All five tasks from `.claude/prompts/2026-08-19-header-session-prompt.md` are shipped on
-`feat/header-completeness`, deployed to the canary and verified against the live painted DOM.
+All five tasks of the header-completeness brief are shipped on `feat/header-completeness`, deployed
+to the canary and verified against the live painted DOM. (The brief itself — `.claude/prompts/` —
+was DELETED once executed: it was a one-off session prompt, its content is preserved in git history,
+and three of its Task 4 assumptions turned out to be wrong, so keeping it live only risked someone
+re-running it against incorrect instructions.)
 Report: `reports/visual-diff/site-header-2026-08-19.md` (17 assertions, `verdict: PASS`).
 Decisions: **D681-D684**. Task 4 was completed by the C1-C4 session instead — see its handover,
 `.claude/reports/2026-08-19-task4-surface-cap-handover.md`.
