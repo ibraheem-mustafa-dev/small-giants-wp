@@ -391,7 +391,11 @@ Research-backed conclusion: persistent bottom CTA/cart/sale bars belong in the e
 ### P-HEADER-SIMPLICITY-FINDINGS — operator-simplicity test failed; 2 findings + the blind-tester arm still owed
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
 
-The FR-37-26 automated-proxy simplicity test failed on drawer content (since addressed — `sgs/nav-menu` now warns and one-click-fixes a burger with no panel to open) plus two still-open friction findings: (1) selecting the header block in the canvas by clicking is a hidden blocker — it only selects via List View; canvas-click should select it; (2) the header Settings tab shows ~7 default-visible controls against the target roster's 2 — reconsider ordering (move extras to Advanced) rather than hiding anything a client relies on. The test's authoritative half — a real non-coder, screen-recorded — has never been run.
+The FR-37-26 automated-proxy simplicity test failed on drawer content (since addressed — `sgs/nav-menu` now warns and one-click-fixes a burger with no panel to open). RESIDUAL SCOPE, after the 2026-08-19 header-completeness session:
+
+1. **Canvas-click selection — STILL OPEN.** Selecting the header block by clicking in the canvas is a hidden blocker; it only selects via List View. Untouched by that session.
+2. **The blind-tester arm — STILL OPEN, and it is the authoritative half.** A real non-coder, screen-recorded, has never been run. The automated proxy is not a substitute.
+3. ~~The Settings tab shows ~7 default-visible controls against a roster of 2~~ — **SETTLED 2026-08-19, not by reordering.** The "~7" was measured by a detector that counted a composite mount as ONE row without opening it; once that was fixed (Task 4, `6c3ec1b0`) the real figure is **4**, and Bean ruled the re-measured set IS the ruling: header 4, footer 2, header-row 8, footer-row 8. The ≤3 is a DEFAULT, not a ceiling (P2 §5), the detector is advisory, and `SgsColourPanel` is correctly not counted (it is the standardised colour panel; its picker is a popover, not a settings control the cap governs). Nothing to reorder on the header — do not re-open this from the old number.
 
 **Trigger:** a dedicated header-simplicity pass, including the blind-tester arm; not a blocker for the Spec-37 per-row build.
 

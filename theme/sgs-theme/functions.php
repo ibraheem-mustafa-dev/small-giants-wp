@@ -23,8 +23,9 @@ require_once __DIR__ . '/inc/colour-helpers.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
 // Header behaviour is owned by the sgs-blocks plugin (Spec 37 FR-37-13, D330):
-// the sgs/site-header block inspector drives scoped per-tier CSS (FR-37-15;
-// only contrastSafe still uses a body class). The old
+// the sgs/site-header block inspector drives scoped per-tier CSS (FR-37-15).
+// As of 2026-08-19 that covers ALL FIVE behaviours — contrastSafe was the last
+// body-class holdout and moved to scoped CSS too (FR-37-44). The old
 // theme-side header-mode system (inc/class-header-behaviour.php + header-modes.css
 // + header-behaviour.js + header-editor-panel.js) was RETIRED 2026-07-14 to remove
 // the duplicate --sgs-header-height publisher + competing position rules.

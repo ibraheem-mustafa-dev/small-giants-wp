@@ -79,11 +79,26 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$shr_style_engine_args = array();
 
 	$shr_color_args = array();
+	// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
+	// DesignTokenPicker stores a token SLUG ('primary') when a palette swatch is
+	// picked with linked:true. The style engine does NOT resolve a bare slug and
+	// does NOT reject it either — PROVEN on the canary 2026-08-19 via
+	// wp_style_engine_get_styles(['color'=>['background'=>'primary']]), which
+	// returns the literal `background-color:primary;`. That is invalid CSS, so the
+	// browser drops the declaration and the client's chosen colour SILENTLY does
+	// nothing. sgs_colour_value() turns a slug into var(--wp--preset--color--…),
+	// passes a raw hex through untouched, and rejects a declaration breakout.
 	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$shr_color_args['text'] = (string) $attributes['textColour'];
+		$shr_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+		if ( '' !== $shr_text_value ) {
+			$shr_color_args['text'] = $shr_text_value;
+		}
 	}
 	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$shr_color_args['background'] = (string) $attributes['backgroundColour'];
+		$shr_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+		if ( '' !== $shr_bg_value ) {
+			$shr_color_args['background'] = $shr_bg_value;
+		}
 	}
 	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
 		$shr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];

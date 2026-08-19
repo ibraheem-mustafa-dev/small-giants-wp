@@ -12,7 +12,7 @@
 
 ?>
 
-<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface","headerSticky":{"desktop":"on"}} -->
+<!-- wp:sgs/site-header {"align":"full","backgroundColour":"surface","headerSticky":{"desktop":"on"}} -->
 
 <!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"space-between","backgroundColor":"primary","padding":{"desktop":{"top":"8px","bottom":"8px"}},"rowHideOnScroll":{"desktop":"on"}} -->
 <!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","fontSize":"medium"} /-->

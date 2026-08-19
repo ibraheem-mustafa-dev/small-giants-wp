@@ -1026,12 +1026,29 @@ The body-class mechanism is retired or reduced to a JS-state signal only.
 these four is retired (`class-sgs-header-behaviours.php` docblock, line 3: "Sticky / transparent /
 shrink / hide-on-scroll are RESOLVED AND EMITTED ELSEWHERE… per-instance scoped CSS"; scroll-state
 classes in `view.js` stay tier-agnostic JS-state signals only, per the FR-37-15 intent). `contrastSafe`
-is **explicitly untouched by T1.4** (kept as an enum shape, D402 gate) and still drives real
-styling via body classes (`header-behaviours.css:69-98`,
-`.sgs-header-behaviour-contrast-{scrim,shadow,force-solid}`) — this one attribute remains
-body-class-driven CSS, not scoped `#uid` CSS.
+was **explicitly untouched by T1.4** (kept as an enum shape, D402 gate) and drove real styling via
+body classes. **⚠ AMENDED 2026-08-19 — D402's carve-out is SUPERSEDED and this paragraph's former
+claim is no longer true.** `contrastSafe` has joined the other four: it is a per-device object
+attribute emitted as `#uid`-scoped per-tier CSS by `sgs/site-header/render.php`, and the three
+`body.sgs-header-behaviour-contrast-*` rules are deleted from `header-behaviours.css`.
+
+Two things forced it, and both are worth keeping on the record because D402 assumed neither:
+1. **Structural.** FR-37-44 requires it be per-device. A class on `<body>` is site-wide and cannot
+   express "scrim over the desktop hero, nothing on a phone" — the same reason the other four
+   moved at T1.4. Making it responsive and keeping the body class were mutually exclusive.
+2. **Mechanism.** `contrastSafe` is a FOUR-value enum, so it could not go through
+   `sgs_emit_tier_rules()`, which tests `'on' === $state` and would collapse `scrim`, `shadow` and
+   `force-solid` into one off branch. A general N-value form, `sgs_emit_tier_rules_map()`, was
+   added; the binary helper now delegates to it as the 1-entry case, so the tier cascade has one
+   implementation, not two. `sgs_resolve_tier()` needed no change — it was already value-agnostic.
+
+`force-solid` emits no CSS at all now. It previously used `background … !important` to out-rank the
+transparent rule; per tier, that fight has no clean undo (a tier ceasing to be force-solid cannot
+revert an `!important` background without reverting the block's own), so it is resolved earlier, as
+a SUPPRESSOR of the transparent behaviour.
+
 **Done when:** no header behaviour renders an inline `style=""` declaration, and the emitted
-CSS is scoped to the block uid. — met for the four tri-state behaviours; open for `contrastSafe`.
+CSS is scoped to the block uid. — **MET for all five behaviours** as of 2026-08-19.
 
 ### Data model and controls
 
@@ -1665,12 +1682,23 @@ model as its four siblings), AND turn the silent upgrade into a visible notice t
 accept or decline, rather than a value rewritten without their knowledge. Both changes are
 required — responsiveness alone would not fix the policy breach, and a notice alone would not fix
 the architectural inconsistency.
-**Status:** `NOT-BUILT` — ruling recorded 2026-08-19; not yet designed or built.
-**Done when:** `contrastSafe` is a per-device tri-state consistent with `headerSticky`/
+
+**Status:** `BUILT` 2026-08-19 — pending live canary verification at the Task 1 checkpoint.
+
+⚠ **This requirement's own wording was wrong on one point, corrected here rather than glossed.**
+It asked for a "per-device **tri-state** consistent with `headerSticky`/…". Those four are on/off
+booleans rendered by `ResponsiveTriStateControl`; `contrastSafe` is a FOUR-value enum. Pointing the
+tri-state control at it would store values the control cannot display and silently flatten the
+client's choice — the control primitive must match the STORAGE shape, not the neighbouring control.
+It therefore uses `ResponsiveOverride` (the render-prop per-device wrapper) around the existing
+4-option `SelectControl`. "Consistent per-device model" is met; "tri-state" was the wrong shape and
+is not.
+
+**Done when:** `contrastSafe` is per-device, consistent with the model used by `headerSticky`/
 `headerTransparent`/`headerShrink`/`headerHideOnScroll`; an operator's explicit "None" over a
 transparent header is never silently rewritten — the operator sees a notice naming the WCAG 1.4.3
-risk and can accept the suggested `scrim` upgrade or keep "None"; and the choice made is the
-choice that renders.
+risk and the affected device tiers, and can accept the suggested `scrim` upgrade or keep "None";
+and the choice made is the choice that renders.
 
 #### FR-37-45 — Transparent-to-solid scrolled colour is not client-reachable (D679 finding 2, 2026-08-19)
 
@@ -1743,7 +1771,7 @@ was previously losing the flip entirely, not by accident.
 | Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. `sgs/site-header` shows **7 default-visible controls against the P2 §5 DEFAULT of 3** — an advisory nudge toward the roster, **not a defect** (the ≤3 is a default, not a ceiling — see FR-37-27's 2026-07-23 correction). WARN-ONLY, exit 0, opt-in `--strict`; not wired into prebuild |
 | Device-switcher a11y (FR-37-29) | `DEPLOYED (unexercised)` — shared `DeviceTabs` extracted; **fixes 21 blocks at once**. The framework already had a correct tablist in `ResponsiveOverride` (2 consumers) that the widely-used `ResponsiveControl` had never adopted — this was ADOPTION, not new design. Editor-surface only |
 | Tri-state shape (FR-37-14) | `✅ BUILT + LIVE-VERIFIED 2026-07-28` (`e4bd72ef`+`eb255f06`) — all 4 behaviour attrs reshaped to tri-state objects on the canonical `resolveTier()` cascade; single-writer merged `@media` emission; rows unified onto `sgs_resolve_on_tiers()`; `sgs_resolve_tier_booleans()` DELETED |
-| Scoped behaviour CSS (FR-37-15) | `PARTIAL` (upgraded 2026-07-28) — sticky/transparent/shrink/hide-on-scroll now `#uid`-scoped per-tier CSS via `sgs_emit_tier_rules()`; `contrastSafe` still body-class-driven (deliberately untouched by T1.4) |
+| Scoped behaviour CSS (FR-37-15) | `DONE` (2026-08-19) — all FIVE behaviours are `#uid`-scoped per-tier CSS. sticky/transparent/shrink/hide-on-scroll via `sgs_emit_tier_rules()` (2026-07-28); `contrastSafe` via the new N-value `sgs_emit_tier_rules_map()` (2026-08-19, FR-37-44), retiring the last body-class rules |
 | Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`) + orphan client pattern DELETED (`94ab240f`); only the per-site CPT authoring remains (§3.9a) |
 | Starter library (FR-37-8) | `✅ DONE for header/footer` (D377, 2026-07-24) — 14 header/footer starters + 2 scratch shells scoped `core/post-content` + `Post Types:`, surfaced by the FR-37-7 native picker; applying one writes its tree to `post_content` (live-verified). Mega starters NOT-BUILT (Task 3) |
 | Starter picker (FR-37-7) | `✅ BUILT + LIVE-VERIFIED for header/footer` (D377, 2026-07-24; **re-verified properly 2026-07-27, D393**) — WP's NATIVE "Choose a pattern" modal (no bespoke UI); new `sgs_header`/`sgs_footer` each open it with 8 preview cards + a "Start from scratch" card. ⚠ **D377's evidence was INVALID and is superseded:** it banked "chosen card writes the block tree to `post_content`" on the saved post carrying the right `metadata.patternName` — it did, while the tree BENEATH it had been overwritten by the container's own template (D393). The claim is now true, but only since `ae9b1db4`; the 2026-07-24 verification checked metadata, not children. Mega deferred to Task 3 (needs ≥2 mega starters). Custom React picker = non-blocking extension FR-37-36 |

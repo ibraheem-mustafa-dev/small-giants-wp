@@ -66,15 +66,43 @@ $css = '';
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$sh_style_engine_args = array();
 
+	// Colour comes from SGS-OWNED attributes, not the native supports (2026-08-19,
+	// FR-37-44 follow-on). block.json still DECLARES supports.color — the
+	// audit-block-uniformity gate requires the key to be present as a
+	// pipeline/DB contract signal — but every sub-flag is now false, so
+	// WordPress renders no colour panel of its own and never writes
+	// $attributes['style']['color'] at all. Reading it here would be dead code.
+	//
+	// Why the migration: the header was one of only three blocks with core's
+	// colour UI and no SGS panel, while sgs/site-header-row carried the SAME two
+	// colours as SGS attributes. One concept, two mechanisms, two levels. The
+	// header now mirrors the row exactly — same attribute names, same style
+	// engine, same scoped emission — so the two read as one system.
+	// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
+	// DesignTokenPicker stores a token SLUG ('surface') when a palette swatch is
+	// picked with linked:true — see its own docblock — and the style engine does
+	// NOT resolve a bare slug: it would emit the invalid `background-color:surface`.
+	// sgs_colour_value() turns a slug into var(--wp--preset--color--surface),
+	// passes a raw hex through untouched, and rejects a declaration breakout
+	// riding a var() passthrough.
 	$sh_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$sh_color_args['text'] = (string) $attributes['style']['color']['text'];
+	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+		$sh_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+		if ( '' !== $sh_text_value ) {
+			$sh_color_args['text'] = $sh_text_value;
+		}
 	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$sh_color_args['background'] = (string) $attributes['style']['color']['background'];
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+		$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+		if ( '' !== $sh_bg_value ) {
+			$sh_color_args['background'] = $sh_bg_value;
+		}
 	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$sh_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
+		$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );
+		if ( '' !== $sh_gradient_value ) {
+			$sh_color_args['gradient'] = $sh_gradient_value;
+		}
 	}
 	if ( ! empty( $sh_color_args ) ) {
 		$sh_style_engine_args['color'] = $sh_color_args;
@@ -121,16 +149,11 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-$sh_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$sh_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-if ( '' !== $sh_preset_text_slug ) {
-	$classes[] = 'has-text-color';
-	$classes[] = 'has-' . $sh_preset_text_slug . '-color';
-}
-if ( '' !== $sh_preset_bg_slug ) {
-	$classes[] = 'has-background';
-	$classes[] = 'has-' . $sh_preset_bg_slug . '-background-color';
-}
+// The has-*-color / has-*-background-color preset classes were removed with the
+// native colour UI (2026-08-19). WordPress injects the `textColor` /
+// `backgroundColor` slug attributes ONLY while supports.color's sub-flags are
+// true; with them false those attributes are never written, so the classes could
+// only ever have been emitted from stale stored content.
 
 // ── Header-level tri-state behaviours (FR-37-14, Spec 35 T1.4) ──────────────
 // The body-class mechanism (Sgs_Header_Behaviours::add_body_classes) is
@@ -162,6 +185,38 @@ $sh_sticky      = isset( $attributes['headerSticky'] ) ? $attributes['headerStic
 $sh_transparent = isset( $attributes['headerTransparent'] ) ? $attributes['headerTransparent'] : array();
 $sh_shrink      = isset( $attributes['headerShrink'] ) ? $attributes['headerShrink'] : array();
 $sh_hide        = isset( $attributes['headerHideOnScroll'] ) ? $attributes['headerHideOnScroll'] : array();
+$sh_contrast    = isset( $attributes['contrastSafe'] ) ? $attributes['contrastSafe'] : array();
+
+// FORCE-SOLID IS A TRANSPARENT SUPPRESSOR, NOT A COMPETING PAINT (2026-08-19).
+// The retired body-class CSS made 'force-solid' fight Transparent with
+// `background:… !important`. That does not survive being made per-device: a
+// tier that stops being force-solid has no clean way to UNDO an !important
+// background (`revert` would revert past the block's own background too), so
+// the mode would leak across tiers. Resolving it here instead — force-solid
+// simply means "do not go transparent at this tier" — removes the fight
+// entirely: no !important, no cancel declaration, and Transparent's own
+// merge below stays the single writer of `background`/`position` as designed.
+// Every tier is resolved concrete, which the emitters handle identically (the
+// differs-from-the-tier-above minimisation still collapses equal tiers).
+// DIRECTION (2026-08-19). Transparent has always had TWO states — see-through
+// at rest, solid once scrolled — but the pair was hardcoded in that order and a
+// client could not invert it. `headerTransparentDirection` chooses which state
+// is which. It adds NO new CSS mechanism: it swaps which of the two existing
+// rules (the resting one, or the `.is-header-scrolled` one) carries the
+// transparency.
+$sh_direction   = isset( $attributes['headerTransparentDirection'] )
+	? (string) $attributes['headerTransparentDirection']
+	: 'transparent-first';
+$sh_solid_first = ( 'solid-first' === $sh_direction );
+
+$sh_transparent_effective = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
+	$sh_tier_transparent = sgs_resolve_tier( $sh_transparent, $sh_tier, 'off' );
+	$sh_tier_contrast    = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_transparent_effective[ $sh_tier ] = ( 'force-solid' === $sh_tier_contrast['value'] )
+		? 'off'
+		: $sh_tier_transparent['value'];
+}
 
 // Sticky + Transparent both write to the SAME base selector's `position` /
 // `top` / `z-index` — QC (2026-07-28) proved that emitting each behaviour's
@@ -187,7 +242,18 @@ $css .= sgs_merge_tri_state_declarations(
 			),
 		),
 		array(
-			'raw'   => $sh_transparent,
+			// Under solid-first the header RESTS solid, so the resting rule must
+			// not receive the transparent declarations at all — transparency
+			// moves to the scrolled rule below. Passing an all-off object (not
+			// an empty one) keeps every tier concrete, which is what stops a
+			// stored desktop value cascading back in.
+			'raw'   => $sh_solid_first
+				? array(
+					'desktop' => 'off',
+					'tablet'  => 'off',
+					'mobile'  => 'off',
+				)
+				: $sh_transparent_effective,
 			'props' => array(
 				'position'   => 'absolute',
 				'top'        => '0',
@@ -214,13 +280,67 @@ $css .= sgs_merge_tri_state_declarations(
 // one regardless of selector specificity or source order, so the extra
 // `.is-header-scrolled` class here never mattered; the missing `!important`
 // did. Token-based (theme surface preset), never hardcoded.
-$css .= sgs_emit_tier_rules(
-	$root_sel . '.is-header-scrolled',
-	$sh_transparent,
-	'background:var(--wp--preset--color--surface,#ffffff) !important;',
-	'',
-	'off'
-);
+// SCROLLED STATE — the other half of the transparent pair, now client-reachable.
+//
+// Before 2026-08-19 this rule hardcoded the theme surface token, so the client
+// could see the flip happen but never choose the colour it flipped TO. It now
+// reads backgroundColourScrolled / backgroundColourScrolledGradient /
+// textColourScrolled, falling back to the same surface token when unset, so an
+// existing header looks identical until someone actually picks a colour.
+//
+// MUST CARRY `!important`, and this is the root cause of
+// P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING, so do not quietly drop it:
+// sgs_merge_tri_state_declarations() emits every RESTING declaration with
+// `!important`, and an `!important` declaration beats a non-`!important` one
+// regardless of selector specificity or source order. The extra
+// `.is-header-scrolled` class never mattered; the missing `!important` did.
+//
+// Built by hand rather than through wp_style_engine_get_styles() for exactly
+// that reason — the style engine has no way to emit `!important`.
+if ( $sh_solid_first ) {
+	// Inverted pair: solid at rest (emitted above), see-through once scrolled.
+	$css .= sgs_emit_tier_rules(
+		$root_sel . '.is-header-scrolled',
+		$sh_transparent_effective,
+		'background:transparent !important;',
+		'',
+		'off'
+	);
+} else {
+	$sh_scrolled_decls = '';
+
+	$sh_scrolled_bg = isset( $attributes['backgroundColourScrolled'] )
+		? sgs_colour_value( (string) $attributes['backgroundColourScrolled'] )
+		: '';
+	$sh_scrolled_decls .= 'background:' . ( '' !== $sh_scrolled_bg
+		? $sh_scrolled_bg
+		: 'var(--wp--preset--color--surface,#ffffff)' ) . ' !important;';
+
+	// A gradient paints via background-image, so it LAYERS over the colour
+	// above rather than replacing it — the colour stays as the fallback for a
+	// browser that cannot render the gradient value.
+	if ( isset( $attributes['backgroundColourScrolledGradient'] ) && '' !== $attributes['backgroundColourScrolledGradient'] ) {
+		$sh_scrolled_gradient = sgs_colour_value( (string) $attributes['backgroundColourScrolledGradient'] );
+		if ( '' !== $sh_scrolled_gradient ) {
+			$sh_scrolled_decls .= 'background-image:' . $sh_scrolled_gradient . ' !important;';
+		}
+	}
+
+	if ( isset( $attributes['textColourScrolled'] ) && '' !== $attributes['textColourScrolled'] ) {
+		$sh_scrolled_text = sgs_colour_value( (string) $attributes['textColourScrolled'] );
+		if ( '' !== $sh_scrolled_text ) {
+			$sh_scrolled_decls .= 'color:' . $sh_scrolled_text . ' !important;';
+		}
+	}
+
+	$css .= sgs_emit_tier_rules(
+		$root_sel . '.is-header-scrolled',
+		$sh_transparent_effective,
+		$sh_scrolled_decls,
+		'',
+		'off'
+	);
+}
 
 // Shrink — transition/animation setup per tier, THEN the shrunk padding value
 // itself emitted separately (also per tier) keyed to ".is-header-shrunk" so a
@@ -293,6 +413,72 @@ if ( $sh_hide_any_tier ) {
 	);
 }
 
+// Contrast safety over hero — PER TIER (2026-08-19). Reshaped from a flat enum
+// driving a <body> class to a per-device object emitted as per-instance scoped
+// CSS, matching the four behaviours above. A body class is site-wide and simply
+// cannot express "scrim on desktop, none on phone", which is the common case
+// for a header transparent over a desktop hero only. The rules below are the
+// ones retired from assets/css/header-behaviours.css, now uid-scoped.
+//
+// Uses sgs_emit_tier_rules_map(), NOT sgs_emit_tier_rules(): this is a
+// four-value enum, and the binary helper tests `'on' === $state`, so 'scrim',
+// 'shadow' and 'force-solid' would all collapse into its single off branch and
+// paint identically.
+//
+// 'force-solid' is absent here by design — it is resolved above, as a
+// suppressor of Transparent, so it needs no CSS of its own.
+$sh_contrast_modes = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
+	$sh_resolved                = sgs_resolve_tier( $sh_contrast, $sh_tier, 'none' );
+	$sh_contrast_modes[]        = $sh_resolved['value'];
+}
+
+if ( in_array( 'scrim', $sh_contrast_modes, true ) ) {
+	// Containing block for the overlay. Emitted unconditionally (not per tier)
+	// because it is inert on a tier without the scrim: the overlay there is
+	// switched off via `content:none`, so nothing is positioned against it.
+	$css .= $root_sel . '{position:relative;}';
+
+	// The scrim itself. The 'none' fallback CANCELS it, which is what makes a
+	// per-tier difference work at all — a tier that drops the scrim must
+	// actively remove the overlay, not merely decline to add one.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . '::before',
+		$sh_contrast,
+		array(
+			'scrim' => 'content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0.55),rgba(0,0,0,0));',
+		),
+		'content:none;',
+		'none'
+	);
+
+	// Header content sits above the scrim.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . ' > *',
+		$sh_contrast,
+		array( 'scrim' => 'position:relative;z-index:1;' ),
+		'',
+		'none'
+	);
+}
+
+if ( in_array( 'shadow', $sh_contrast_modes, true ) ) {
+	// COSMETIC ONLY — never WCAG-conformant. A text-shadow's contrast against
+	// arbitrary imagery cannot be computed, so this mode must never be
+	// described as meeting a contrast requirement; the inspector label says
+	// "not WCAG-safe" for exactly this reason. Do not upgrade that claim.
+	//
+	// A selector LIST, with no pseudo-element appended — appending one to an
+	// imploded list attaches it to the last selector only.
+	$css .= sgs_emit_tier_rules_map(
+		$root_sel . ' a,' . $root_sel . ' button',
+		$sh_contrast,
+		array( 'shadow' => 'text-shadow:0 1px 3px rgba(0,0,0,0.6);' ),
+		'text-shadow:none;',
+		'none'
+	);
+}
+
 // prefers-reduced-motion: self-contained here (per-instance scoped CSS) rather
 // than relying on the shared stylesheet, since the transition/animation
 // declarations above are now themselves per-instance.
@@ -327,7 +513,13 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
-		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'header',
+		// ALWAYS <header>. The `tagName` attribute (header|div) was deleted
+		// 2026-08-19: no control ever mounted it, so no client could reach it,
+		// and a site header is a page-unique landmark — offering a plain <div>
+		// only lets someone break the page's accessibility landmark structure
+		// from a dropdown. This was already the effective value, since the
+		// attribute's own default was 'header'.
+		'tag'           => 'header',
 		'extra_classes' => $classes,
 		'extra_attrs'   => $sh_extra_attrs,
 	)

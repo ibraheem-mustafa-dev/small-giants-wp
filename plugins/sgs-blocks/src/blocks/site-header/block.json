@@ -23,9 +23,9 @@
 			"full"
 		],
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
@@ -60,6 +60,12 @@
 					"marginMobile"
 				]
 			},
+			"colourExemptions": {
+				"text": {
+					"rule": "gradient",
+					"reason": "A text gradient needs background-clip:text, which hijacks the element's own background box. On the header WRAPPER that would destroy the header background this same block paints. The mechanism is only valid on a leaf text element; this row colours the whole bar."
+				}
+			},
 			"elements": {
 				"wrapper": {
 					"label": "Section wrapper",
@@ -73,8 +79,9 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "native:__experimentalBorder.width",
@@ -90,6 +97,15 @@
 						"css:background-size": "backgroundSize",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"
+					},
+					"states": {
+						"scrolled": {
+							"attrMap": {
+								"css:color": "textColourScrolled",
+								"css:background-color": "backgroundColourScrolled",
+								"css:background-color-gradient": "backgroundColourScrolledGradient"
+							}
+						}
 					},
 					"_note": "The rendered <header>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour/spacing/border ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
 				},
@@ -177,13 +193,39 @@
 			"default": {}
 		},
 		"contrastSafe": {
+			"type": "object",
+			"default": {}
+		},
+		"backgroundColour": {
 			"type": "string",
-			"default": "none",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourScrolled": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourScrolledGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourScrolled": {
+			"type": "string",
+			"default": ""
+		},
+		"headerTransparentDirection": {
+			"type": "string",
+			"default": "transparent-first",
 			"enum": [
-				"none",
-				"scrim",
-				"shadow",
-				"force-solid"
+				"transparent-first",
+				"solid-first"
 			]
 		},
 		"backgroundAttachment": {
@@ -307,62 +349,6 @@
 		},
 		"shadow": {
 			"type": "string"
-		},
-		"shapeDividerBottom": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomColour": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomFlip": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerBottomScale": {
-			"type": "object",
-			"default": { "x": 100, "y": 100 }
-		},
-		"shapeDividerBottomInvert": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerTop": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopColour": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopFlip": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerTopScale": {
-			"type": "object",
-			"default": { "x": 100, "y": 100 }
-		},
-		"shapeDividerTopInvert": {
-			"type": "boolean",
-			"default": false
-		},
-		"tagName": {
-			"type": "string",
-			"enum": [
-				"header",
-				"div"
-			],
-			"default": "header"
 		}
 	},
 	"render": "file:./render.php",

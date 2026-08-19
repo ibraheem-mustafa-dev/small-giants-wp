@@ -6,25 +6,28 @@
  * additional WP stubs / pattern-registry stubs declared in HeaderRulesTest.php
  * (both loaded first alphabetically, and required explicitly below).
  *
- * SOURCE CHANGED (FR-S9-9): the behaviour source moved from a rule `behaviour`
- * field (dormant — Sgs_Header_Rules::add_rule() never stored one) to the
- * active header's `sgs/site-header` block attrs, resolved via
- * resolve_active_header_behaviour(). Since exercising that resolver for real
- * needs a live wp_template_part post + parse_blocks(), these tests instead use
- * the test-only injection hook Sgs_Header_Behaviours::set_test_behaviour() to
- * assert add_body_classes()'s CONTRACT: given a resolved contrast mode, it
- * emits the correct body class.
+ * SCOPE NARROWED TWICE, and this suite shrank with it:
  *
- * SCOPE NARROWED (Spec 35 T1.4, 2026-07-28): sticky / transparent / shrink /
- * hide-on-scroll body classes are RETIRED from this class (they reshaped to
- * tri-state objects resolved per-instance in site-header/render.php instead —
- * see that class's docblock). This suite now covers CONTRAST only, plus the
- * always-on sgs-has-header hook class.
+ *  - 2026-07-28 (Spec 35 T1.4) — sticky / transparent / shrink / hide-on-scroll
+ *    body classes retired; they reshaped into tri-state objects resolved
+ *    per-instance in site-header/render.php.
+ *  - 2026-08-19 — contrastSafe followed them, for the same structural reason
+ *    (it went per-device, and a <body> class is site-wide) plus a policy one:
+ *    the resolver here silently rewrote a client's explicit 'none' to 'scrim',
+ *    which breached the rule that operator accessibility failures are notices,
+ *    never enforcement. Deleted with it: resolve_active_header_behaviour(), its
+ *    second parse_blocks() of the header template part, the per-request cache,
+ *    and the set_test_behaviour() injection hook these tests used to drive.
+ *
+ * The class now emits exactly one body class, so this suite asserts exactly
+ * that — and guards the removal, since the defect being removed was a SILENT
+ * override, the kind that reappears unnoticed.
  *
  * Covers:
  *   - add_body_classes always appends sgs-has-header
- *   - contrast modes emit sgs-header-behaviour-contrast-{mode} + sgs-has-header-behaviour
- *   - contrast === 'none' → only sgs-has-header
+ *   - NO behaviour or contrast class is emitted any more (regression guard —
+ *     contrastSafe moved to per-instance scoped CSS on 2026-08-19, along with
+ *     the silent 'none' -> 'scrim' override that used to live in the resolver)
  *   - add_body_classes preserves existing classes unchanged
  *   - enqueue_assets does not enqueue in admin context
  *
@@ -99,7 +102,6 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 			$GLOBALS['sgs_test_enqueued_styles']  = array();
 			$GLOBALS['sgs_test_enqueued_scripts'] = array();
 			Wp_Options_Stub::reset();
-			Sgs_Header_Behaviours::reset_request_cache();
 		}
 
 		/**
@@ -112,7 +114,6 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 			$GLOBALS['sgs_test_enqueued_styles']  = array();
 			$GLOBALS['sgs_test_enqueued_scripts'] = array();
 			Wp_Options_Stub::reset();
-			Sgs_Header_Behaviours::reset_request_cache();
 		}
 
 		// ------------------------------------------------------------------
@@ -144,77 +145,53 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 		}
 
 		// ------------------------------------------------------------------
-		// add_body_classes — no active flags → only sgs-has-header
+		// add_body_classes — emits sgs-has-header and NOTHING ELSE
+		//
+		// REWRITTEN 2026-08-19. The tests here previously asserted
+		// `sgs-header-behaviour-contrast-{mode}` and `sgs-has-header-behaviour`
+		// via the test-injection hook. All of that is deleted: contrastSafe went
+		// per-device and moved to per-instance scoped CSS in
+		// sgs/site-header/render.php, taking the resolver, its second
+		// parse_blocks() of the header template part, and the injection hook
+		// with it. See the class docblock.
+		//
+		// What replaces them is deliberately a REGRESSION GUARD rather than
+		// nothing. The old contrast path did not merely emit a class — it
+		// SILENTLY overrode the client's explicit choice, which is the defect
+		// this change exists to remove. A test asserting that this class emits
+		// exactly one body class is what would fail if that behaviour, or any
+		// successor to it, were reintroduced here.
 		// ------------------------------------------------------------------
 
 		/**
-		 * No active behaviour flags means no modifier classes are appended.
+		 * add_body_classes appends sgs-has-header and no other class.
 		 *
 		 * @return void
 		 */
-		public function test_no_flags_adds_only_sgs_has_header(): void {
-			Sgs_Header_Behaviours::set_test_behaviour(
-				array(
-					'contrast' => 'none',
-				)
-			);
-
+		public function test_adds_only_the_sgs_has_header_hook_class(): void {
 			$result = Sgs_Header_Behaviours::add_body_classes( array() );
 
-			$this->assertContains( 'sgs-has-header', $result );
+			$this->assertSame( array( 'sgs-has-header' ), $result );
+		}
+
+		/**
+		 * No behaviour or contrast class is emitted by this class any more.
+		 *
+		 * Guards the removal itself: contrastSafe's modes are per-instance
+		 * scoped CSS now, so a body class reappearing here would mean the
+		 * site-wide path (and with it the silent-override defect) had returned.
+		 *
+		 * @return void
+		 */
+		public function test_emits_no_behaviour_or_contrast_body_class(): void {
+			$result = Sgs_Header_Behaviours::add_body_classes( array( 'home' ) );
+
 			$this->assertNotContains( 'sgs-has-header-behaviour', $result );
-		}
-
-		/**
-		 * With no test override injected, the real resolver runs and finds no
-		 * header template part in the test environment — degrades to
-		 * all-false rather than erroring.
-		 *
-		 * @return void
-		 */
-		public function test_no_override_degrades_to_only_sgs_has_header(): void {
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header', $result );
-			$this->assertNotContains( 'sgs-has-header-behaviour', $result );
-		}
-
-		// ------------------------------------------------------------------
-		// add_body_classes — contrast-safe modes
-		// (sticky / transparent / shrink / hide-on-scroll RETIRED from this
-		// class at Spec 35 T1.4 — see class docblock. Their per-tier CSS is
-		// now asserted against sgs/site-header/render.php, not body classes.)
-		// ------------------------------------------------------------------
-
-		/**
-		 * Each valid contrast mode emits its own sgs-header-behaviour-contrast-{mode} class.
-		 *
-		 * @return void
-		 */
-		public function test_contrast_modes_add_correct_class(): void {
-			foreach ( array( 'scrim', 'shadow', 'force-solid' ) as $mode ) {
-				Sgs_Header_Behaviours::reset_request_cache();
-				Sgs_Header_Behaviours::set_test_behaviour( array( 'contrast' => $mode ) );
-
-				$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-				$this->assertContains( 'sgs-header-behaviour-contrast-' . $mode, $result );
-				$this->assertContains( 'sgs-has-header-behaviour', $result );
-			}
-		}
-
-		/**
-		 * Contrast === 'none' emits no contrast class.
-		 *
-		 * @return void
-		 */
-		public function test_contrast_none_adds_no_contrast_class(): void {
-			Sgs_Header_Behaviours::set_test_behaviour( array( 'contrast' => 'none' ) );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
 			foreach ( array( 'scrim', 'shadow', 'force-solid' ) as $mode ) {
 				$this->assertNotContains( 'sgs-header-behaviour-contrast-' . $mode, $result );
+			}
+			foreach ( array( 'sticky', 'transparent', 'shrink', 'hide-on-scroll-down' ) as $slug ) {
+				$this->assertNotContains( 'sgs-header-behaviour-' . $slug, $result );
 			}
 		}
 
