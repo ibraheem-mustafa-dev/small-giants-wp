@@ -747,7 +747,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Show image', 'sgs-blocks' ) }
 							checked={ showImage }
 							onChange={ set( 'showImage' ) }
-							__nextHasNoMarginBottom
 						/>
 						{ showImage && (
 							<SelectControl
@@ -790,7 +789,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Show excerpt', 'sgs-blocks' ) }
 							checked={ showExcerpt }
 							onChange={ set( 'showExcerpt' ) }
-							__nextHasNoMarginBottom
 						/>
 						{ showExcerpt && (
 							<RangeControl
@@ -857,7 +855,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Show read more', 'sgs-blocks' ) }
 							checked={ showReadMore }
 							onChange={ set( 'showReadMore' ) }
-							__nextHasNoMarginBottom
 						/>
 						{ showReadMore && (
 							<TextControl

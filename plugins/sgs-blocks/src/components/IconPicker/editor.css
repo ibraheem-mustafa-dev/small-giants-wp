@@ -177,6 +177,16 @@
 	width: 24px;
 	height: 24px;
 	display: block;
+	/* Every icon in this library (Lucide + the WordPress tab) is stroke-based
+	 * (fill="none" stroke="currentColor" on the source SVG) — but WP core's
+	 * own `.components-button svg { fill: currentColor }` rule wins over that
+	 * inline attribute because the icon always sits inside a Button trigger.
+	 * Restored explicitly here rather than left to the source attribute,
+	 * which core will keep overriding. Confirmed both icon sources share
+	 * this convention (assets/icons/wp-icons.json), so no source branch
+	 * is needed. */
+	fill: none;
+	stroke: currentColor;
 }
 
 .sgs-icon-grid__emoji {
