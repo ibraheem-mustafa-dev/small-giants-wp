@@ -117,4 +117,147 @@ function discover( cache ) {
 	return { ok: true, reason: null, exportsMap };
 }
 
-module.exports = { discover, COMPONENTS_INDEX, COMPONENTS_DIR };
+// ---------------------------------------------------------------------------
+// resolveComponentFiles() — the SHARED name -> file resolver (C0, 2026-08-19).
+// ---------------------------------------------------------------------------
+//
+// WHY THIS EXISTS, AND WHY IT IS NOT discover().
+//
+// discover() answers "what does each file in src/components/ RENDER?"
+// (wrapsPanel/wrapsImage) and is keyed by FILENAME. Rules 01 and 18 consume it
+// and carry committed backlogs. Widening ITS corpus would silently restage both
+// populations — rule 21's own header (:274) rejected exactly that, and it was
+// right. So discover() is deliberately left untouched here and this is a
+// SEPARATE, opt-in map. Rules 01 and 18 must not move by one finding.
+//
+// This function is a PROMOTION of the resolver rule 21 had built privately
+// (21-render-without-control.js allControlComponentFiles()). It is moved here
+// rather than copied so the tree has ONE component-resolution mechanism, not
+// two that can disagree with no way to arbitrate.
+//
+// ⛔ THE BUG THIS FIXES, measured 2026-08-19.
+// Rule 21's version indexed every exported name + filename, then took
+// FIRST-WINS in readdir (alphabetical) order. On 2026-08-17 the wrapper panel
+// monolith was split into one file per panel, leaving
+// `ContainerWrapperControls.js` a 268-line facade that RE-EXPORTS all six
+// panels. It sorts before `LayoutPanel.js`/`WidthPanel.js`/`WrapperColourPanel.js`,
+// so it claimed their names — while the attribute vocabulary those names carry
+// had MOVED OUT of it. Measured in the facade vs LayoutPanel.js: `gapTablet`
+// 0 vs 2, `flexDirection` 0 vs 2, `gridTemplateRows` 0 vs 6, `justifyItems`
+// 0 vs 3. Rule 21 therefore resolved `<LayoutPanel` to a file containing none
+// of the controls it was asking about and reported the attributes as
+// uncontrolled. A false POSITIVE is a detector bug, never baseline fodder.
+//
+// The fix is precedence, not ordering: a file that DECLARES a name beats a file
+// that merely RE-EXPORTS it, regardless of readdir order. Ties fall back to
+// first-wins as before.
+
+const REAL_SRC = path.resolve( __dirname, '..', '..', '..', 'src' );
+
+// `export function X` / `export const X` / `export default function X` — the
+// file that actually defines the component.
+const DECL_EXPORT_RE = /export\s+(?:default\s+)?(?:function|const|let|class)\s+([A-Z]\w*)/g;
+// A local declaration that may be exported further down via an export list.
+const LOCAL_DECL_RE = /(?:^|\n)\s*(?:function|const|let|class)\s+([A-Z]\w*)/g;
+// Any `export { A, B as C }` list, with or without a `from` clause.
+const EXPORT_LIST_RE = /export\s*\{([^}]*)\}/g;
+// Names this file IMPORTS — an imported name re-exported here is NOT its home.
+const IMPORT_NAMED_RE = /import\s*\{([^}]*)\}\s*from/g;
+const IMPORT_DEFAULT_RE = /import\s+([A-Z]\w*)\s+from/g;
+
+function collect( re, src, sink, group ) {
+	re.lastIndex = 0;
+	let m;
+	while ( ( m = re.exec( src ) ) ) {
+		const raw = m[ group || 1 ];
+		if ( undefined === raw ) continue;
+		if ( re === EXPORT_LIST_RE || re === IMPORT_NAMED_RE ) {
+			for ( const part of raw.split( ',' ) ) {
+				const n = part.trim().split( /\s+as\s+/ ).pop().trim();
+				if ( /^[A-Z]\w*$/.test( n ) ) sink.add( n );
+			}
+		} else {
+			sink.add( raw );
+		}
+	}
+}
+
+/**
+ * Resolve every shared control component to the file that DEFINES it.
+ *
+ * Corpus: src/components/ (framework-wide), src/blocks/<block>/components/
+ * (block-local shared panels) and src/blocks/extensions/ (the extension
+ * surface, reachable via ctx.extensionsDir but until now read by no rule).
+ *
+ * Membership is decided by reading each file's OWN SOURCE — never by matching
+ * an import-path string. A caller credits a block with a component because the
+ * block's JSX contains `<ComponentName`, cross-referenced against this map.
+ *
+ * @param {string[]} [extraDirs] Additional absolute directories to index.
+ * @return {Map<string,string>} component name -> absolute file path.
+ */
+function resolveComponentFiles( extraDirs ) {
+	const strong = new Map(); // declared here — authoritative
+	const weak = new Map(); // re-exported or filename-only — fallback
+
+	const addDir = ( dir ) => {
+		if ( ! fs.existsSync( dir ) ) return;
+		for ( const f of fs.readdirSync( dir ) ) {
+			if ( ! f.endsWith( '.js' ) || 'index.js' === f ) continue;
+			const full = path.join( dir, f );
+			let src = '';
+			try {
+				src = fs.readFileSync( full, 'utf8' );
+			} catch ( e ) {
+				src = '';
+			}
+
+			const imported = new Set();
+			collect( IMPORT_NAMED_RE, src, imported );
+			collect( IMPORT_DEFAULT_RE, src, imported );
+
+			const declared = new Set();
+			collect( DECL_EXPORT_RE, src, declared );
+			collect( LOCAL_DECL_RE, src, declared );
+
+			const listed = new Set();
+			collect( EXPORT_LIST_RE, src, listed );
+
+			// STRONG: declared in this file and not merely an imported binding.
+			for ( const n of declared ) {
+				if ( imported.has( n ) ) continue;
+				if ( ! strong.has( n ) ) strong.set( n, full );
+			}
+			// WEAK: the filename itself, plus any name this file only re-exports.
+			const base = path.basename( f, '.js' );
+			if ( /^[A-Z]\w*$/.test( base ) && ! weak.has( base ) ) weak.set( base, full );
+			for ( const n of listed ) {
+				if ( declared.has( n ) && ! imported.has( n ) ) continue;
+				if ( ! weak.has( n ) ) weak.set( n, full );
+			}
+		}
+	};
+
+	addDir( path.join( REAL_SRC, 'components' ) );
+	const blocksRoot = path.join( REAL_SRC, 'blocks' );
+	if ( fs.existsSync( blocksRoot ) ) {
+		for ( const b of fs.readdirSync( blocksRoot ) ) {
+			addDir( path.join( blocksRoot, b, 'components' ) );
+		}
+	}
+	addDir( path.join( REAL_SRC, 'blocks', 'extensions' ) );
+	for ( const d of extraDirs || [] ) addDir( d );
+
+	// Declaration wins; re-export/filename only fills a name nothing declared.
+	const map = new Map( weak );
+	for ( const [ n, full ] of strong ) map.set( n, full );
+	return map;
+}
+
+module.exports = {
+	discover,
+	resolveComponentFiles,
+	COMPONENTS_INDEX,
+	COMPONENTS_DIR,
+	REAL_SRC,
+};

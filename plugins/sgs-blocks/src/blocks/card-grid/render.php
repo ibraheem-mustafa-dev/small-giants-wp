@@ -78,8 +78,8 @@ $hover_text          = $attributes['textColourHover'] ?? '';
 $hover_border        = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient siblings — resolved once here, emitted via
 // sgs_border_gradient_css() masked ::before further down; border-color can
-// never legally hold a gradient value, so these never feed --sgs-hover-border
-// / --sgs-card-border-color above.
+// never legally hold a gradient value, so these never feed the flat
+// border-colour paint above.
 $hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $transition_dur      = $attributes['transitionDuration'] ?? '300';
 $transition_ease     = $attributes['transitionEasing'] ?? 'ease-in-out';
@@ -259,9 +259,50 @@ if ( ! empty( $card_state_vars ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';
 }
 
+// --- Hover COLOUR, via the one shared helper (2026-08-19). Previously this
+// block wrote `--sgs-hover-bg`/`-bg-image`/`-text`/`-border` custom-property
+// VALUES in BOTH the wc-product and the main branch, which a static
+// `style.css` rule read back through `var()`. That indirection is gone: the
+// helper emits the real declarations on this instance's own scoped selector,
+// matching sgs/info-box, sgs/hero, sgs/process-steps, sgs/cta-section and
+// sgs/post-grid. Emitting here rather than per-branch also collapses the two
+// duplicate emission sites into one — both branches resolve the SAME
+// $hover_* variables further up.
+//
+// Colours resolve through sgs_colour_value(), the shared resolver this file
+// already uses for the border-gradient hover paint below. The old inline
+// `var(--wp--preset--color--{sanitize_key})` form could only ever express a
+// preset SLUG — a raw hex was mangled by sanitize_key() into an invalid token
+// that painted nothing. The helper path handles both.
+//
+// The deleted `var()` fallbacks were `transparent`/`none`/`inherit` keywords,
+// so an instance with no hover colour set renders exactly as before.
+$card_grid_hover_decls = array();
+if ( $hover_bg ) {
+	$card_grid_hover_decls[] = 'background-color:' . sgs_colour_value( $hover_bg );
+}
+$card_grid_hover_bg_gradient = sgs_css_gradient_value( $hover_bg_gradient );
+if ( '' !== $card_grid_hover_bg_gradient ) {
+	$card_grid_hover_decls[] = 'background-image:' . $card_grid_hover_bg_gradient;
+}
+if ( $hover_text ) {
+	$card_grid_hover_decls[] = 'color:' . sgs_colour_value( $hover_text );
+}
+if ( $hover_border ) {
+	$card_grid_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border );
+}
+if ( $card_grid_hover_decls ) {
+	$card_grid_native_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-card-grid__item',
+		array(),
+		$card_grid_hover_decls
+	);
+}
+
 // --- Border gradient (D636 border builder) — masked ::before, replaces the
-// flat --sgs-card-border-color / --sgs-hover-border custom-property scheme
-// above when set. ---
+// flat border-colour paint above when set (the resting --sgs-card-border-color
+// var, and the scoped :hover border-color rule sgs_emit_state_colour_css()
+// emits). ---
 if ( '' !== $card_border_gradient ) {
 	$card_grid_native_css .= sgs_border_gradient_css(
 		$root_sel . ' .sgs-card-grid__item',
@@ -446,19 +487,6 @@ if ( 'wc-product' === $source || 'cpt-collection' === $source ) {
 		'--sgs-card-grid-columns-tablet: ' . absint( $columns_tablet ),
 		'--sgs-card-grid-gap: ' . $gap_value_wc,
 	);
-	if ( $hover_bg ) {
-		$wc_style_parts[] = '--sgs-hover-bg: var(--wp--preset--color--' . sanitize_key( $hover_bg ) . ')';
-	}
-	$hover_bg_gradient_value = sgs_css_gradient_value( $hover_bg_gradient );
-	if ( '' !== $hover_bg_gradient_value ) {
-		$wc_style_parts[] = '--sgs-hover-bg-image: ' . $hover_bg_gradient_value;
-	}
-	if ( $hover_text ) {
-		$wc_style_parts[] = '--sgs-hover-text: var(--wp--preset--color--' . sanitize_key( $hover_text ) . ')';
-	}
-	if ( $hover_border ) {
-		$wc_style_parts[] = '--sgs-hover-border: var(--wp--preset--color--' . sanitize_key( $hover_border ) . ')';
-	}
 	if ( $transition_dur ) {
 		$wc_style_parts[] = '--sgs-transition-duration: ' . absint( $transition_dur ) . 'ms';
 	}
@@ -654,19 +682,6 @@ $grid_style_parts = array(
 	'--sgs-card-grid-aspect: ' . esc_attr( $aspect_ratio ),
 );
 
-if ( $hover_bg ) {
-	$grid_style_parts[] = '--sgs-hover-bg: var(--wp--preset--color--' . sanitize_key( $hover_bg ) . ')';
-}
-$hover_bg_gradient_value = sgs_css_gradient_value( $hover_bg_gradient );
-if ( '' !== $hover_bg_gradient_value ) {
-	$grid_style_parts[] = '--sgs-hover-bg-image: ' . $hover_bg_gradient_value;
-}
-if ( $hover_text ) {
-	$grid_style_parts[] = '--sgs-hover-text: var(--wp--preset--color--' . sanitize_key( $hover_text ) . ')';
-}
-if ( $hover_border ) {
-	$grid_style_parts[] = '--sgs-hover-border: var(--wp--preset--color--' . sanitize_key( $hover_border ) . ')';
-}
 if ( $transition_dur ) {
 	$grid_style_parts[] = '--sgs-transition-duration: ' . absint( $transition_dur ) . 'ms';
 }

@@ -282,7 +282,10 @@ if ( $hover_border_colour ) {
 	$slider_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
 if ( $slider_hover_decls ) {
-	$slider_scoped_css .= $root_sel . ':hover{' . implode( ';', $slider_hover_decls ) . '}';
+	// Via the ONE shared hover-colour helper (2026-08-19). Identical output to
+	// the hand-rolled rule this replaces, plus the `:focus-visible` twin a
+	// keyboard user needs — this block had `:hover` alone.
+	$slider_scoped_css .= sgs_emit_state_colour_css( $root_sel, array(), $slider_hover_decls );
 }
 
 // D636 border-colour gradient rollout — masked ::before ring, scoped to

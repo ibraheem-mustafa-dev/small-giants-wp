@@ -414,7 +414,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   Row shape verified against render.php + class-post-grid-rest.php
 			   card_vars_decls() + style.css (2026-08-15):
 			   - cardBgColour/backgroundColourHover pair into ONE row (normal +
-			     hover) — both drive the card's --sgs-card-bg / --sgs-hover-bg,
+			     hover) — normal drives the card's --sgs-card-bg; hover is
+			     emitted as a real scoped declaration by
+			     sgs_emit_state_colour_css() (2026-08-19), not a var.
 			     background-color only.
 			   - titleColour/excerptColour/metaColour/readMoreColour/
 			     categoryBadgeColour/categoryBadgeBgColour are each single-state

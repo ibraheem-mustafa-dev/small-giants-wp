@@ -49,6 +49,8 @@
 
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
+const { resolveComponentFiles } = require( '../core/components' );
+const fsx = require( 'fs' );
 
 function jsxName( openingElement ) {
 	const n = openingElement.name;
@@ -107,16 +109,91 @@ module.exports = {
 			},
 		} );
 		if ( ! ok ) return [];
+
+		// ── SHARED-COMPONENT REACH (2026-08-19, C0) ────────────────────────────
+		// Until today this rule read ONLY the block's own edit.js and said so in
+		// its header: "A component reached indirectly via a block's own local
+		// `components/` subfolder is invisible." That is a DECLARED BLIND SPOT on
+		// a rule running as a GATE at openBacklog 0 — the most dangerous shape a
+		// detector can have, because zero findings reads as "finished" rather than
+		// "never looked". A block whose LINK field lives in a shared panel passed
+		// clean by construction.
+		//
+		// EXPECTED POPULATION, declared before the first run by a method
+		// independent of this code: `git grep -ln "<SgsLinkControl" -- src/`
+		// returns ZERO files tree-wide, shared components included. So this
+		// widening is predicted to add 0 findings and cannot red the gate. Its
+		// value is forward: the next LINK field added to a shared panel is caught
+		// instead of passing invisibly.
+		//
+		// Membership is "detect by what it does": a block is credited with a
+		// component because its OWN JSX renders `<ComponentName`, cross-referenced
+		// against that component's source — never against an import-path string.
+		const mounted = new Set();
+		ctx.cache.traverse( editFile, {
+			JSXOpeningElement( nodePath ) {
+				const n = jsxName( nodePath.node );
+				if ( n && /^[A-Z]/.test( n ) ) mounted.add( n );
+			},
+		} );
+
+		// Resolve against the REAL src tree PLUS ctx-derived dirs, so the
+		// self-test's fixture-local components are reachable too (blocksDir is a
+		// temp dir under --self-test; without the extras the fixture resolves to an
+		// empty map and its mustFlag control passes for the WRONG reason — the
+		// false-green core/selftest.js:44-46 warns about).
+		const extraDirs = [];
+		if ( ctx.componentsDir ) extraDirs.push( ctx.componentsDir );
+		if ( ctx.extensionsDir ) extraDirs.push( ctx.extensionsDir );
+		if ( ctx.blocksDir && fsx.existsSync( ctx.blocksDir ) ) {
+			for ( const e of fsx.readdirSync( ctx.blocksDir, { withFileTypes: true } ) ) {
+				if ( e.isDirectory() ) {
+					extraDirs.push( path.join( ctx.blocksDir, e.name, 'components' ) );
+				}
+			}
+		}
+		const compFiles = resolveComponentFiles( extraDirs );
+
+		for ( const name of mounted ) {
+			const file = compFiles.get( name );
+			if ( ! file ) continue;
+			// strippedText, never raw text: a component whose docblock merely
+			// MENTIONS SgsLinkControl must not flag — the same comment trap this
+			// rule already pins for edit.js via comment-mentions-sgslinkcontrol.
+			const csrc = ctx.cache.strippedText( file );
+			if ( ! csrc || ! /<SgsLinkControl\b/.test( csrc ) ) continue;
+			findings.push(
+				makeFinding( {
+					rule: ruleId,
+					block: block.slug,
+					file,
+					line: 0,
+					severity: 'warn',
+					detail:
+						`${ block.slug } renders <${ name }>, and that component mounts the ` +
+						`SUPERSEDED <SgsLinkControl> (${ file }). The control is invisible in ` +
+						"this block's own edit.js, so it passed clean before 2026-08-19.",
+					fix:
+						`Fix it ONCE in ${ file }, replacing <SgsLinkControl> with ` +
+						'<LinkPopoverField> — every block rendering that component is repaired by ' +
+						'the single edit. Do NOT edit each block. If the shared mount is a reasoned ' +
+						'exception, baseline it once against the component, not once per block.',
+					keyParts: [ 'superseded-sgslinkcontrol-shared', name ],
+				} )
+			);
+		}
+
 		return findings;
 	},
 	selfTest: {
 		fixture: 'fixtures/27-superseded-link-control',
-		mustFlag: [ 'sgslinkcontrol-raw' ],
+		mustFlag: [ 'sgslinkcontrol-raw', 'shared-mount-flags' ],
 		mustNotFlag: [
 			'linkpopoverfield-used',
 			'linkpopovercontent-used',
 			'comment-mentions-sgslinkcontrol',
 			'no-relevant-control',
+			'shared-mount-comment-only',
 		],
 	},
 };
