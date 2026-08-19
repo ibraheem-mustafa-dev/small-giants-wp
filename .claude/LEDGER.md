@@ -55,22 +55,49 @@ hover         8 CONFORMANT · 9 UNCLEAR
 
 ## THE FRONT — next session
 
-**Read `.claude/plans/go-c1-c4-lively-zebra.md` first** — the axis model and the parallel split
-are both in it.
+⭐ **The goldens are NOT finalised.** 14 control types are declared but only **colour**
+is measurable: 1 of 14 has a qualification predicate, 4 of 14 have native-UI detection,
+and 13 of 14 use a `canonical` shape the census cannot read (which is why it reports
+N/A for 1,079 of 1,162 rows). Bean's real roster is **~24 types**, not 14.
 
-### Blockers: NONE. All branches merged, tree clean, every gate green.
+**So the order is: finalise the goldens → measure → then fix.** Fixing first would
+repair colour, declare the axes done, and meet typography/border/media/animation/date
+later — the repeat-the-process-13-times trap.
 
-### Ready to run in parallel (disjoint file sets)
+### Phase 1 — finalise the goldens (3 sessions, run in PARALLEL, start here)
 
-| Track | Work | Owns |
+| Prompt | Owns (7 types each) |
+|---|---|
+| `.claude/prompts/2026-08-19-goldens-A-styling-primitives.md` | gradient, typography, length-unit, 4-value box, border, shadow, alignment — **plus the COMPOSER** |
+| `.claude/prompts/2026-08-19-goldens-B-input-controls.md` | enum+segmented (merged), boolean, free-text, link, icon, multi-select, date |
+| `.claude/prompts/2026-08-19-goldens-C-behaviour-and-structure.md` | media, state/hover, responsive wrapper, repeater, animation, angle/position, preset picker |
+
+Coverage verified: 21 live types, **zero overlap** (#1 colour done, #24 rich text
+excluded as canvas-side). Each session gets **its own worktree** and writes **its own
+`goldens/<name>.json`** — `golden-controls.json` is a single merge point and three
+sessions editing it conflicts on every run. A ships the composer first; B and C tolerate
+its absence rather than blocking.
+
+### Phase 2 — measure
+
+Re-run `npm run survey:golden-conformance`. The true inconsistency list will be
+substantially larger than what a colour-only instrument currently sees.
+
+### Phase 3 — fix, in parallel against a complete list
+
+Known already, and NOT the whole list:
+
+| Work | Size | Shape |
 |---|---|---|
-| **A** | `sgs/form` unified colour, children inherit | `src/blocks/form*` |
-| **B** | native-UI retirement, 25 colour blocks | `block.json` supports only |
-| **C** | `buybox` + `site-footer` canonical panels | those 2 blocks |
-| **D** | 17 gap findings + 4 live detector findings | scattered — shard by file |
+| Native-UI retirement | **58 distinct blocks** (not 150 — `length-unit`/`box-4value` are the same 50, both reading `supports.spacing`) | `block.json` only, mechanical |
+| Form colour | `sgs/form` + 12 field blocks | one design, then mechanical; control belongs on the parent |
+| `buybox` + `site-footer` | 2 blocks | canonical panel **and** native retirement in one pass |
+| Gap findings | 17 across 11 blocks | judgement per finding |
+| Detector findings | 1 inert control, 3 undeclared attrs | small, scattered |
+| Depth + exclusion change | 1 file | ⛔ design-sensitive, single merge point |
 
 ⛔ **Serialised, never parallel:** `rules.json`, `package.json`, `golden-controls.json`,
-`core/*.js` — single merge points.
+`core/*.js`.
 
 ## Methodology guardrails (carried forward — all still true)
 
