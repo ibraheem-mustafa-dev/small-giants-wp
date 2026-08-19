@@ -106,15 +106,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			'--sgs-hover-bg': backgroundColourHover
-				? colourVar( backgroundColourHover )
-				: undefined,
-			'--sgs-hover-text': textColourHover
-				? colourVar( textColourHover )
-				: undefined,
-			'--sgs-hover-border': borderColourHover
-				? colourVar( borderColourHover )
-				: undefined,
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
 				: undefined,
