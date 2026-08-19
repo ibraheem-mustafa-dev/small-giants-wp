@@ -1892,7 +1892,7 @@ Regenerate before building any gate on them.
    (built 2026-08-19, D671) encodes this field's colour contract as DATA — canonical components,
    banned lookalikes, minimum states, gradient-with-declared-exemptions, scope predicate, plus a
    native-core-colour fingerprint — so enforcement measures against data rather than prose.
-   Enforced by `inspector-scan` rule `31-golden-colour-control` (advisory; 409 findings across 64
+   Enforced by `inspector-scan` rule `31-golden-colour-control` (advisory; 408 findings as of 2026-08-19 — was 409 before that day's merges; re-derive with `node scripts/inspector-scan/run.js --check` rather than quoting this line across 64
    blocks at introduction, D674). Read the JSON for the exact figures; do not transcribe them here,
    they will drift the same way this field's own numbers did.
 

@@ -32,9 +32,9 @@ number *before* running, then reconciling.
 | What | Detail |
 |---|---|
 | **One shared hover helper** — `sgs_emit_state_colour_css` | 8 blocks, **live-verified on the canary** |
-| **Shared component resolver** (`core/components.js`) | fixed **50 false positives** in rule 21 (250→200) |
+| **Shared component resolver** (`core/components.js`) | fixed **50 false positives** in rule 21 (250→200; now 199 after the merges) |
 | **Rule 27's blind spot closed** | a `gate` at openBacklog 0 that could not see shared files |
-| **Shared golden engine** (`core/golden.js`) | rule 31 imports instead of owning; **409 before, 409 after** |
+| **Shared golden engine** (`core/golden.js`) | rule 31 imports instead of owning; **409 before, 409 after** — the extraction moved nothing (now 408 after the merges) |
 | **14 control-type contracts** (was 1) | all of Part O + typography |
 | **Golden-conformance census** — schema-driven | per block, per axis; 1,162 rows across 14 types |
 | **Qualification predicate** | splits "not eligible" into MISSING vs NOT-APPLICABLE |
@@ -200,6 +200,9 @@ Known already, and NOT the whole list:
 - **D-ceiling:** **D688** (D685 hover helper · D686 shared resolver · D687 qualification
   predicate · D688 the 3-way goldens split) — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+- **Live counts (re-derived at handoff, after all merges):** rule 21 **199**, rule 31
+  **408**, rule 01 58, rule 18 13. Ratchets in `rules.json` already match — another
+  session lowered them in the merge, so there is no silent slack.
 - **Gates:** inspector-scan `--check` exit 0 · **22/22 self-tests** · `audit-inline-styling`
   0 violations across 83 blocks · F5/F6 green · cheat-gate green
 - **Canary:** deployed and live-verified today (8 hover blocks).
