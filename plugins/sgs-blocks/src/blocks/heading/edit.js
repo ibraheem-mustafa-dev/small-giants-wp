@@ -15,6 +15,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
+	DesignTokenPicker,
 } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 import { UnitControl } from '../../components/primitives';
@@ -68,17 +69,9 @@ const TEXT_ALIGN_OPTIONS = [
 	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
-	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
-	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
-	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
-	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
-];
+// BORDER_STYLE_OPTIONS removed 2026-08-19 — border style now uses
+// BorderStyleControl (inside DesignTokenPicker's border-colour popover),
+// matching native's 3-option icon picker, not this 9-option dropdown.
 
 const LETTER_SPACING_UNITS = [
 	{ value: 'em', label: 'em', default: 0 },
@@ -352,6 +345,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						label: __( 'Border colour', 'sgs-blocks' ),
 						// No hover pair declared for borderColour (block.json has no
 						// borderColourHover attr) — single-state row.
+						// Border-style icons (Bean-directed, 2026-08-19) — same popover
+						// as the compact Border panel's own swatch below, wired to the
+						// same borderStyle attribute so either entry point works.
+						borderStyle,
+						onBorderStyleChange: ( val ) => setAttributes( { borderStyle: val } ),
 						states: [
 							{
 								key: 'normal',
@@ -471,13 +469,27 @@ export default function Edit( { attributes, setAttributes } ) {
 				   serialises scoped, not inline, matching the spacing pattern already
 				   proven on sgs/container + sgs/button). */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Border style', 'sgs-blocks' ) }
-						value={ borderStyle }
-						options={ BORDER_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					{ /* Border colour + style — one swatch, native's icon-picker inside
+					     the same popover as SGS's flat/gradient + state UI (Bean-
+					     directed, 2026-08-19). Wired to the SAME borderColour/borderStyle
+					     attributes as the SgsColourPanel "Border colour" row above —
+					     two mounts, one source of truth, pick whichever grouping suits. */ }
+					<DesignTokenPicker
+						label={ __( 'Border colour', 'sgs-blocks' ) }
+						borderStyle={ borderStyle }
+						onBorderStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
+							},
+						] }
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }

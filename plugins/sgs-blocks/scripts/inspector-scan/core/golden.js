@@ -41,6 +41,79 @@ function loadSchema() {
 	return JSON.parse( fs.readFileSync( GOLDEN_PATH, 'utf8' ) );
 }
 
+// ---------------------------------------------------------------------------
+// Multi-file composer (goldens split, D688 2026-08-19) — additive only.
+// loadSchema() above is UNTOUCHED and still returns golden-controls.json
+// alone; rule 31 (and anything else already calling loadSchema()) keeps
+// reading exactly what it read before this landed. loadMergedSchema() is a
+// new, separate entry point for callers that want the union of the base
+// schema plus whichever per-session goldens files have landed.
+// ---------------------------------------------------------------------------
+
+const GOLDENS_DIR = path.resolve( __dirname, '..', '..', 'consistency', 'goldens' );
+// Fixed allowlist, not a directory glob — a glob would silently adopt any
+// stray/scratch file dropped in goldens/. The three sessions writing here
+// are named explicitly; a fourth peer needs its own line, not an implicit one.
+const PEER_FILES = [ 'styling.json', 'input.json', 'behaviour.json' ];
+
+/**
+ * The union of golden-controls.json + any of PEER_FILES that exist on disk.
+ * A missing peer file is tolerated (ENOENT) since B/C's files may land after
+ * this does — that tolerance is the whole point of writing the composer
+ * first. A peer file that EXISTS but fails to parse throws.
+ *
+ * ⛔ A peer OVERRIDING a base key is EXPECTED, not a collision. Every one of
+ * the 13 non-colour/link keys already in golden-controls.json is a "temp
+ * golden, not a decision" per the session briefs — finalising one of them
+ * IS a peer file replacing the base row for that key, on purpose. Only a
+ * collision BETWEEN TWO PEER FILES (styling vs input vs behaviour both
+ * claiming the same type) is a real bug: the three sessions' domains are
+ * disjoint by design (see the brief's ownership table), so two peers
+ * claiming the same key means a scoping mistake, not a legitimate override.
+ *
+ * @return {{_meta: Object, controls: Object}} Merged schema, same shape as
+ *   loadSchema()'s return value, with `_meta.encoded` concatenated across
+ *   every file that contributed and `_meta.sources` naming which ones did.
+ */
+function loadMergedSchema() {
+	const base = loadSchema();
+	const merged = {
+		_meta: { ...base._meta, encoded: [ ...base._meta.encoded ], sources: [ 'golden-controls.json' ] },
+		controls: { ...base.controls },
+	};
+	const claimedByPeer = Object.create( null ); // control-type key -> which peer file claimed it
+	for ( const file of PEER_FILES ) {
+		const p = path.join( GOLDENS_DIR, file );
+		let peer;
+		try {
+			peer = JSON.parse( fs.readFileSync( p, 'utf8' ) );
+		} catch ( e ) {
+			if ( e.code === 'ENOENT' ) continue; // peer not landed yet — tolerated by design
+			throw new Error( 'goldens/' + file + ' exists but failed to parse: ' + e.message );
+		}
+		const peerKeys = Object.keys( peer.controls || {} );
+		const dupesAcrossPeers = peerKeys.filter( ( k ) => k in claimedByPeer );
+		if ( dupesAcrossPeers.length ) {
+			throw new Error(
+				'goldens/' + file + ' claims control type(s) already claimed by ' +
+					dupesAcrossPeers.map( ( k ) => claimedByPeer[ k ] + ' (' + k + ')' ).join( ', ' ) +
+					' — two sessions scoped the same type, not a base-placeholder override.'
+			);
+		}
+		for ( const k of peerKeys ) claimedByPeer[ k ] = file;
+		Object.assign( merged.controls, peer.controls || {} );
+		merged._meta.encoded.push( ...( ( peer._meta && peer._meta.encoded ) || peerKeys ) );
+		merged._meta.sources.push( 'goldens/' + file );
+	}
+	// A peer overriding a base key legitimately appears in BOTH the base and
+	// the peer's own encoded list above — dedupe here rather than upstream,
+	// so every consumer (survey-golden-conformance.js loops over `encoded`
+	// once per type) sees each control type exactly once regardless of how
+	// many files touched it.
+	merged._meta.encoded = [ ...new Set( merged._meta.encoded ) ];
+	return merged;
+}
+
 /**
  * `supports.color` sub-flags that make WordPress CORE render its own colour UI.
  *
@@ -254,6 +327,7 @@ function slugify( s ) {
 
 module.exports = {
 	loadSchema,
+	loadMergedSchema,
 	GOLDEN_PATH,
 	NATIVE_UI_FLAGS,
 	nativeUiFlags,

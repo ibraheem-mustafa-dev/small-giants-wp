@@ -381,7 +381,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						  are no longer declared in block.json.
 					*/ }
 					<ResponsiveOverride
-						label={ __( 'Justify Content (main axis)', 'sgs-blocks' ) }
+						label={ __( 'Button spacing', 'sgs-blocks' ) }
 						value={ justifyContent }
 						onChange={ ( obj ) => setAttributes( { justifyContent: obj } ) }
 					>
@@ -404,7 +404,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						  no longer declared in block.json.
 					*/ }
 					<ResponsiveOverride
-						label={ __( 'Align Items (cross axis)', 'sgs-blocks' ) }
+						label={ __( 'Button alignment', 'sgs-blocks' ) }
 						value={ alignItems }
 						onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
 					>

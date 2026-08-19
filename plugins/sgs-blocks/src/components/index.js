@@ -54,3 +54,8 @@ export {
 	SGS_FONT_WEIGHT_OPTIONS,
 	SGS_FONT_STYLE_OPTIONS,
 } from './TypographyControls';
+// Three new shared components, 2026-08-19 (Bean-directed box-4value/border/
+// length-unit rebuild — see each file's own docblock for the evidence).
+export { default as SgsBoxControl } from './SgsBoxControl';
+export { default as BorderStyleControl } from './BorderStyleControl';
+export { default as SgsLengthControl } from './SgsLengthControl';

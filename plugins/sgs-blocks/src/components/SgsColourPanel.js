@@ -120,6 +120,8 @@ export default function SgsColourPanel( { rows } ) {
 							key={ row.key }
 							label={ row.label }
 							states={ row.states }
+								borderStyle={ row.borderStyle }
+								onBorderStyleChange={ row.onBorderStyleChange }
 						/>
 					);
 				} ) }

@@ -48,9 +48,14 @@ const path = require( 'path' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const { resolveComponentFiles } = require( '../inspector-scan/core/components' );
+const { loadMergedSchema } = require( '../inspector-scan/core/golden' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
 const BLOCKS_DIR = path.join( PLUGIN_ROOT, 'src', 'blocks' );
+// GOLDEN_PATH kept for reference/back-compat (some helper may still cite it in
+// a message string) — the schema itself is loaded via loadMergedSchema() below,
+// which unions golden-controls.json with any of goldens/{styling,input,behaviour}.json
+// that have landed (D688, 2026-08-19). Never JSON.parse GOLDEN_PATH directly again.
 const GOLDEN_PATH = path.join( PLUGIN_ROOT, 'scripts', 'consistency', 'golden-controls.json' );
 const ROSTER_PATH = path.join( PLUGIN_ROOT, 'scripts', 'consistency', 'roster.json' );
 
@@ -165,8 +170,41 @@ function reachedComponents( editAst, compFiles ) {
 // Axes — every one derived from the schema, none hardcoded
 // ---------------------------------------------------------------------------
 
-/** Canonical component adoption: does the block reach the schema's panel/row? */
-function axisCanonical( spec, reached ) {
+/**
+ * Canonical component adoption: does the block reach the schema's panel/row?
+ *
+ * ⛔ UNREACHED MUST NOT DEFAULT TO BLANKET VIOLATION. That was the bug this
+ * axis shipped with: EVERY block that didn't reach the canonical component
+ * was reported VIOLATION regardless of whether the control even applies to
+ * it. Measured 2026-08-19 for `typography` (26 blocks correctly mount
+ * TypographyControls): 67 of 83 blocks came back VIOLATION — a phantom
+ * backlog, exactly the Spec 35 §O.16 trap (an ungated scope predicate is
+ * self-fulfilling). Fix: when unreached, ask `qualifiesFor()` whether the
+ * block SHOULD have this control before deciding the verdict.
+ *
+ * ⚠ COLOUR IS DELIBERATELY EXCLUDED from the qualifiesFor() fallback below.
+ * `survey()` already runs colour through its own pre-gate (search
+ * `type === 'colour' && elig ===` further down this file), keyed on
+ * roster.json's DESCRIPTIVE `surfaces.colour` flag: elig===false routes to
+ * qualifiesFor() there and never reaches this function at all; elig===true
+ * only reaches this function when the block roster.json ALREADY says has
+ * colour. In that case "reaches none of the canonical components" is a real
+ * shape violation (the block paints colour some other way), not an absence —
+ * converting it to MISSING would misclassify a genuine bug as a gap. Measured
+ * 2026-08-19: routing colour through qualifiesFor() here flips sgs/buybox
+ * (which paints 27 own colour declarations) and sgs/site-footer from
+ * VIOLATION to MISSING/NOT-APPLICABLE, moving colour's count off its
+ * baseline (63 CONFORMANT / 2 VIOLATION / 6 NOT-APPLICABLE / 12 MISSING) —
+ * excluded so that split stays byte-identical to before this fix.
+ *
+ * @param {Object}      spec       golden-controls.json row for this type.
+ * @param {Map}         reached    reachedComponents() result for this block.
+ * @param {Object|null} qualifyCtx { slug, blockJson, rosterEntry, type } —
+ *   omit (or pass type:'colour') to keep the pre-fix blanket-VIOLATION
+ *   behaviour; any other type routes an unreached verdict through
+ *   qualifiesFor().
+ */
+function axisCanonical( spec, reached, qualifyCtx ) {
 	const canonical = spec.canonical || {};
 	const wanted = [ canonical.panel, canonical.row ]
 		.filter( Boolean )
@@ -176,6 +214,22 @@ function axisCanonical( spec, reached ) {
 
 	const hit = wanted.filter( ( w ) => reached.has( w ) );
 	if ( ! hit.length ) {
+		if ( qualifyCtx && qualifyCtx.type !== 'colour' ) {
+			const q = qualifiesFor( spec, qualifyCtx.slug, qualifyCtx.blockJson, qualifyCtx.rosterEntry, qualifyCtx.type );
+			if ( null === q.qualifies ) {
+				return { verdict: UNCLEAR, detail: `reaches none of ${ wanted.join( ' / ' ) } — ${ q.why }` };
+			}
+			if ( q.qualifies ) {
+				return {
+					verdict: MISSING,
+					detail:
+						`reaches none of ${ wanted.join( ' / ' ) } — qualifies (${ q.why })` +
+						( 'ancestor' === q.home ? ' — control belongs on the ANCESTOR' : '' ),
+					home: q.home,
+				};
+			}
+			return { verdict: NOT_APPLICABLE, detail: `reaches none of ${ wanted.join( ' / ' ) } — ${ q.why }` };
+		}
 		return { verdict: BAD, detail: `reaches none of ${ wanted.join( ' / ' ) }` };
 	}
 	const via = hit.map( ( h ) => reached.get( h ) ).find( Boolean );
@@ -364,6 +418,44 @@ function ancestorPainter( slug ) {
 }
 
 /**
+ * The "own paint" CSS-property regex for a `qualifiesWhen.paintsOwnSurface`
+ * declaration.
+ *
+ * ⛔ SCHEMA-DRIVEN, NOT COLOUR-HARDCODED. This function used to be an inline
+ * colour-only pattern (`background(-color)?|border-color|[^-\w]color`)
+ * applied to EVERY control type's `paintsOwnSurface` check — so a non-colour
+ * type (e.g. `typography`, whose evidence is `font-size|font-weight|
+ * line-height`) could declare `qualifiesWhen.paintsOwnSurface` and never once
+ * have it actually detected, because the regex only ever looked for colour
+ * properties. Fix: read the property list from the schema row itself
+ * (`qualifiesWhen.paintsOwnSurface.cssProperties`, an array of bare CSS
+ * property names, e.g. `[ "font-size", "font-weight", "line-height" ]`) and
+ * build the regex from THAT.
+ *
+ * ⚠ FALLBACK REPRODUCES COLOUR'S REGEX BYTE-FOR-BYTE. A schema row with no
+ * `cssProperties` array (colour's own row today — out of scope for this
+ * session to edit) must measure IDENTICALLY to before this function existed,
+ * so the fallback is a verbatim copy of the original pattern, not a
+ * re-derivation of it.
+ *
+ * @param {Object} when `qualifiesWhen` object from the schema row.
+ * @return {RegExp} a fresh `g`-flagged regex (never reused across `.match()`
+ *   calls — a shared `g` regex carries `lastIndex` state between calls).
+ */
+function ownPaintRegex( when ) {
+	const props =
+		when && when.paintsOwnSurface && Array.isArray( when.paintsOwnSurface.cssProperties )
+			? when.paintsOwnSurface.cssProperties.filter( Boolean )
+			: null;
+	if ( ! props || ! props.length ) {
+		// Colour's original hardcoded pattern, unchanged.
+		return /(?:background(?:-color)?|border-color|[^-\w]color)\s*:/g;
+	}
+	const escaped = props.map( ( p ) => String( p ).replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) );
+	return new RegExp( `(?:${ escaped.join( '|' ) })\\s*:`, 'g' );
+}
+
+/**
  * Does this block QUALIFY for a control type — should it have one?
  *
  * ⛔ THIS IS NOT `surfaces.colour`, AND THAT IS THE WHOLE POINT.
@@ -399,7 +491,7 @@ function qualifiesFor( spec, slug, blockJson, rosterEntry, type ) {
 	if ( when.paintsOwnSurface ) {
 		const css = readFile( path.join( BLOCKS_DIR, slug, 'style.css' ) );
 		if ( css ) {
-			const m = css.match( /(?:background(?:-color)?|border-color|[^-\w]color)\s*:/g );
+			const m = css.match( ownPaintRegex( when ) );
 			ownPaint = m ? m.length : 0;
 		}
 	}
@@ -501,7 +593,7 @@ function blockSlugs() {
 }
 
 function survey() {
-	const golden = JSON.parse( fs.readFileSync( GOLDEN_PATH, 'utf8' ) );
+	const golden = loadMergedSchema();
 	const encoded = ( golden._meta && golden._meta.encoded ) || Object.keys( golden.controls || {} );
 	const compFiles = resolveComponentFiles();
 	const eligible = colourEligibility();
@@ -559,7 +651,12 @@ function survey() {
 			}
 
 			const axes = {
-				canonical: axisCanonical( spec, reached ),
+				canonical: axisCanonical( spec, reached, {
+					slug,
+					blockJson,
+					rosterEntry: rosterBySlug.get( slug ),
+					type,
+				} ),
 				bannedLookalikes: axisBannedLookalikes( spec, reached, canonicalFiles( spec, compFiles ) ),
 				nativeUi: axisNativeUi( spec, blockJson, reached ),
 			};
