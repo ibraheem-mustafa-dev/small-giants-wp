@@ -132,14 +132,19 @@ $wrapper_styles = array();
 // Transition custom properties — consumed by CSS vars on the block and its children.
 $wrapper_styles = array_merge( $wrapper_styles, sgs_transition_vars( $attributes ) );
 
+// Hover colour shifts — resolved into complete CSS declaration strings and
+// emitted via sgs_emit_state_colour_css() (below, once $root_sel/$responsive_css
+// exist) rather than pushed onto $wrapper_styles as --sgs-hover-* custom
+// properties. Bean-locked: no hardcoded fallback colour — unset stays unset.
+$hover_decls = array();
 if ( $hover_background_colour ) {
-	$wrapper_styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
+	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
 }
 if ( $hover_text_colour ) {
-	$wrapper_styles[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
 }
 if ( $hover_border_colour ) {
-	$wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
 
 // ── Responsive CSS builder ──────────────────────────────────────────────────
@@ -166,6 +171,13 @@ if ( '' !== $hover_border_gradient ) {
 		$root_sel . ':is(:hover,:focus-within)',
 		$hover_border_gradient
 	);
+}
+
+// Hover colour shifts (background/text/border) — per-instance scoped rule,
+// no resting-state declarations (empty array — the base colours are handled
+// elsewhere), :hover/:focus-visible only. No-op when no hover colour is set.
+if ( $hover_decls ) {
+	$responsive_css .= sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 
 // Class marker replaces the old [style*="background"] attribute sniff
