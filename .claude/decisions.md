@@ -1,5 +1,114 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D684 [ROUTINE] — the row behaviours are renamed by scope, not deleted (2026-08-19)
+
+D679 finding 3. Header and row each carried "Transparent until scrolled", "Hide on scroll" and
+"Shrink on scroll", reading as duplicates. They are not. Header-transparent lifts the WHOLE header out
+of document flow and brings the contrast safeguard into play; row-transparent changes ONE row's
+background and nothing moves. Header-hide translates the entire header; row-hide collapses one row to
+height 0 while the header is pinned. Header-shrink shrinks the header's padding; row-shrink shrinks
+that row's and can hide one chosen non-essential child. Deleting either side loses real capability, so
+the ROW side is renamed to state its scope: "Row background transparent" / "Collapse this row on
+scroll" / "Reduce this row's padding on scroll". One shared component, so header-row and footer-row
+both get it — fixing one alone would be the carve-out R-31-3 forbids. The empty-padding warning notice
+was renamed with them; it still named "Shrink on scroll" and would have pointed at a control that no
+longer exists. Header-level labels deliberately unchanged: they were never the ambiguous half, and a
+client sees one block's inspector at a time.
+
+## D683 [INCIDENT] — a supports.color retirement silently broke 7 patterns, and the gate for that class missed it (2026-08-19)
+
+Setting `supports.color`'s sub-flags false (D682) stops WordPress REGISTERING `backgroundColor`. Seven
+theme header patterns stored their background under exactly that name, so all seven would have had it
+SILENTLY DISCARDED on load — the framework's default header losing its background, with no error, no
+failing test and no failing build. Found by grepping the patterns by hand, not by a gate.
+
+⛔ `check-dead-pattern-attrs.py` did not catch it, and the gap will recur. It keeps
+`backgroundColor`/`textColor`/`gradient` in an always-allowed list (`:56`) and its native-style check
+asks whether `supports.color` is DECLARED, not whether its sub-flags are ON. That was safe while
+declaring the key implied the UI existed. It is not safe now that `golden-controls.json` names
+"declared with every sub-flag false" as the CONFORMANT shape — every block adopting that shape
+inherits this blind spot. NOT fixed here: widening a shared detector restages other rules' committed
+backlogs.
+
+Also in this change: 13 unreachable attributes deleted (12 `shapeDivider*` + `tagName`) and `shadow`
+MOUNTED — it was declared and already rendered by the wrapper, so a working feature was unreachable.
+The header is now permanently a `<header>` landmark. Rule 21 measured 250 → 249 FLAGGED and ratcheted;
+the first measurement counted the raw JSON array, which also serialises BASELINED findings and
+over-reported by 11 — the rule's own header warns of exactly this. Rule 07 raised 0 → 1 deliberately
+with the real fix named: `ShadowControl` stores SHAPE ONLY and needs a caller-owned colour attribute
+composed by `sgs_shadow_value_composed()`, while the wrapper's shadow path is the older shape-only
+`sgs_shadow_value()` — mounting the real builder would ship a colour field the wrapper ignores, and a
+dead control is worse than a preset select that works.
+
+## D682 [ROUTINE] — the transparent header's two states become client-reachable; header colour migrates to SGS; `scrolled` admitted as a real state (2026-08-19)
+
+FR-37-45. Transparent-until-scrolled always had two states but the client could reach neither: the
+scrolled colour was hardcoded to the theme surface token and the pair could not be inverted. Both are
+now controls. `headerTransparentDirection` adds NO CSS mechanism — it swaps which of the two existing
+rules carries the transparency.
+
+The scrolled colour is NOT a new row. It is the scrolled STATE of the header's background, so that row
+carries two swatches. **`scrolled` is admitted to `golden-controls.json`'s REAL state vocabulary** on
+the same basis `current` was: a class toggled at runtime (`.is-header-scrolled`, by view.js) and
+painted by CSS. The mechanism shipped long before the state was named.
+
+**Colour de-duplicated across the two levels (Bean-ruled).** The header showed WordPress's native
+colour panel and had no SGS one — one of only three blocks in that state — while `sgs/site-header-row`
+carried the SAME two colours as SGS attributes. One concept, two mechanisms, two levels. The header
+now mirrors the row exactly. `supports.color` stays DECLARED (a gate reads the key as a pipeline
+contract signal) with every sub-flag false. Both levels KEEP their colour because they are different
+scopes — the header colours the whole bar, a row colours one band inside it; a dark header with a
+lighter top strip needs both. What was actually wrong was the labels. Text gradient is EXEMPT with a
+declared reason (`background-clip:text` hijacks the element's own background box, which on the header
+wrapper would destroy the background this same block paints).
+
+Colour values route through `sgs_colour_value()` before the style engine — `DesignTokenPicker` stores
+a token SLUG and the style engine does not resolve one, so a raw slug would emit the invalid
+`background-color:surface`. ⚠ UNPROVEN, NOT CHANGED: `sgs/site-header-row` passes its colour
+attributes to the style engine RAW, the shape corrected here. It may share the defect.
+
+## D681 [INCIDENT] — contrastSafe stops silently overriding the operator; D402's carve-out is superseded (2026-08-19)
+
+FR-37-44, D679 finding 1. The resolver silently rewrote an operator's explicit `none` to `scrim`
+whenever the header was transparent. The WCAG 1.4.3 reasoning was sound; the mechanism was not — the
+locked rule `a11y-validation-feedback-informational-not-gate` says operator accessibility failures are
+NOTICES, never enforcement. The rewrite is gone; a non-dismissible editor advisory naming the affected
+DEVICE TIERS, with a one-click "Apply contrast scrim", replaces it. Precedent: WordPress core's own
+`ContrastChecker` warns and never enforces.
+
+**Making it responsive FORCED the mechanism change — they were not two independent choices.** A
+`<body>` class is site-wide and cannot express "scrim over the desktop hero, nothing on a phone",
+which is the common case. That is the same reason the other four behaviours left this path at T1.4.
+**D402's carve-out keeping contrastSafe on the body-class path is therefore SUPERSEDED**, and Spec 37
+is amended rather than quietly contradicted; FR-37-15's "done when" is now met for all five
+behaviours.
+
+`sgs_emit_tier_rules()` is binary by construction (`'on' === $state`), so a four-value enum could not
+go through it — `scrim`, `shadow` and `force-solid` would all take the off branch and paint
+identically. Added `sgs_emit_tier_rules_map()`, the general N-value form; the binary helper delegates
+to it as the 1-entry case, so the tier cascade has ONE implementation, not two. `sgs_resolve_tier()`
+needed no change: it was already value-agnostic, treating only `inherit`/null specially.
+
+The control uses `ResponsiveOverride`, NOT the `ResponsiveTriStateControl` its four siblings use —
+those are on/off booleans and this is a four-value enum; pointing the tri-state control at it would
+store values the control cannot display and silently flatten the client's choice. Spec 37 asked for a
+"per-device tri-state" here; that was the wrong shape, and the spec is corrected rather than glossed.
+
+`force-solid` now emits NO CSS. It used `background … !important` to out-rank the transparent rule;
+per tier that fight has no clean undo, so it is resolved earlier as a SUPPRESSOR of transparent.
+
+Deleted as newly-unreachable rather than left standing: `sgs-has-header-behaviour`,
+`VALID_CONTRAST_MODES`, the per-request cache, the test-injection hook, and
+`resolve_active_header_behaviour()` — which ran a SECOND `parse_blocks()` of the whole header template
+part on every page load to read one attribute. 323 → 133 lines. Checked before deleting: the cloning
+recogniser reads `sgs-header-behaviour-{sticky,transparent,hide-on-scroll-down}`, never contrast.
+
+⚠ Found while checking that: the recogniser's `_VALID_HEADER_BEHAVIOURS` claims to mirror a PHP
+constant `Sgs_Header_Behaviours::VALID_BEHAVIOURS` that HAS NOT EXISTED since 2026-07-28. It scans for
+three body classes the plugin stopped emitting a month ago, so that detection is dead against SGS's
+own output — and its test "verifies" the mirror by comparing two hardcoded copies of the same list, so
+it cannot fail. Recorded, not fixed: out of scope.
+
 ## D670 [INCIDENT] — nav-menu's duplicate `selected` state removed (mis-tagged 3 hover attrs) (2026-08-19)
 
 `supports.sgs.elements.item.states` declared `hover` and `selected` with byte-identical attrMaps.

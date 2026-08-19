@@ -209,39 +209,48 @@ bug, never baseline fodder.
 - **A completeness error is invisible to every correctness gate.**
 - **Run builds synchronously, never backgrounded.**
 
-## The header — HANDED TO A SEPARATE SESSION
+## The header — COMPLETE and LIVE-VERIFIED (2026-08-19)
 
-⭐ **A self-contained prompt exists: `.claude/prompts/2026-08-19-header-session-prompt.md`.**
-Written to the prompt-writing standard (skills, MCP/tools, research approach). Four scoped tasks,
-all decisions already made. Do NOT do this work in the C1-C4 session — it is parallel.
+All five tasks from `.claude/prompts/2026-08-19-header-session-prompt.md` are shipped on
+`feat/header-completeness`, deployed to the canary and verified against the live painted DOM.
+Report: `reports/visual-diff/site-header-2026-08-19.md` (17 assertions, `verdict: PASS`).
+Decisions: **D681-D684**. Task 4 was completed by the C1-C4 session instead — see its handover,
+`.claude/reports/2026-08-19-task4-surface-cap-handover.md`.
 
-Findings behind it (nothing broken; all deferred deliberately):
+| Task | Outcome |
+|---|---|
+| 1 contrastSafe | Per-device; the silent `none`->`scrim` override is GONE, replaced by an editor advisory naming the affected tiers with a one-click fix. D402's carve-out superseded, Spec 37 amended. 323 -> 133 lines, incl. a second per-page-load `parse_blocks()` deleted |
+| 2 transparent | Scrolled background + text + gradient are client-set; direction invertible. Header colour migrated off WP-native into one SGS panel; `scrolled` admitted to the real state vocabulary |
+| 3 row naming | Row behaviours renamed by scope (header-row + footer-row) |
+| 4 surface cap | DONE by the C1-C4 session (`6c3ec1b0`) |
+| 5 attributes | `shadow` mounted (declared + rendering, but unreachable); 13 unreachable attrs deleted; 56 -> 43 |
 
-- **`contrastSafe` silently overrides the operator — a POLICY BREACH, not a bug.** If the header
-  is transparent on desktop and the client chose "None", the resolver rewrites it to `scrim`
-  (`class-sgs-header-behaviours.php:236-239`). The WCAG reasoning is sound, but the locked rule
-  `a11y-validation-feedback-informational-not-gate` says operator a11y failures are NOTICES.
-  It is also the ONLY one of the five header behaviours that is flat, not a per-device tri-state.
-  **Bean's fix, ruled: make it responsive AND turn the silent swap into a visible notice.**
-- **Transparent has two states but the client cannot reach them.** Transparent at top → solid past
-  50px already works; the scrolled colour is HARDCODED to `--wp--preset--color--surface`
-  (`site-header/render.php:218`) and the pair cannot be inverted. Bean asked for both: a colour
-  control for the scrolled state, and a direction switch. Mechanism exists; controls do not.
-- **13 unreachable header attributes** — `shadow`, 12 × `shapeDivider*`, `tagName`. Render WOULD
-  honour them; no control exists, so no client can set them. Either mount controls or delete.
-- **Row-level labels still read as duplicates of the header ones.** "Transparent until scrolled"
-  appears on both blocks meaning DIFFERENT things (header lifts out of flow + triggers the WCAG
-  safeguard; row only changes one background colour). ⛔ Renames deliberately HELD until the
-  transparent redesign lands, or they would be renamed twice.
-- **`check-simple-surface-cap.js` counts a composite mount as ONE row.** Measured wrong in both
-  directions on the rows (RowScrollBehaviourControls 1 vs 3; ResponsiveBoxControls 1 vs 0). The
-  figures are a floor for triage, never "what the client sees". Fixing it would move site-header's
-  and site-footer's numbers too, which carry human rulings — so it needs a decision, not a patch.
-- ⭐ **Competitor evidence (Kadence/Astra/Blocksy):** nobody ships the same behaviour toggle on
-  both container and row — each picks ONE level. Kadence does offer "which row survives" via a
-  single enum on the container, implemented with JS `position:fixed` + a measured placeholder, NOT
-  CSS sticky. So D389's rejection of per-row CSS sticky stands; Kadence dodged the trap with a
-  different and bigger mechanism.
+**⭐ The near-miss worth remembering.** Retiring WP-native colour stopped WordPress registering
+`backgroundColor`, and SEVEN header patterns stored their background under that name — all would
+have lost it silently. `check-dead-pattern-attrs.py` MISSED it: it asks whether `supports.color` is
+declared, not whether its sub-flags are on. Since `golden-controls.json` now names
+"declared with every sub-flag false" as the CONFORMANT shape, every block adopting it inherits that
+blind spot. Recorded in D683, not fixed (shared detector).
+
+### Header items still open — all need Bean, none blocking
+
+1. **⛔ DB not reseeded or pruned.** 7 new attrs need seeding; 13 deleted ones leave rogue seed rows
+   (the D678 class). A reseed is a SHARED-DB action and was not run unilaterally.
+2. **Surface-cap figures moved and carry human rulings.** Merged-tree measurement:
+   `site-header` **4** (was 5), `site-footer` **2** (WITHIN), `site-header-row` **8**,
+   `site-footer-row` **8**. Bean's 2026-08-13 F2 ruling was made against the old numbers.
+3. **⚠ `SgsColourPanel` is INVISIBLE to `check-simple-surface-cap.js`.** It is mounted at the top
+   level of `edit.js` and renders its OWN `<InspectorControls>` internally; the script walks
+   InspectorControls regions found in the block's own file, so a composite mounted OUTSIDE any
+   region is never reached. `site-header`'s "4" therefore excludes a whole visible colour panel, and
+   the same holds for every block mounting that panel. Same class as the composite gap Task 4 just
+   fixed, one level up.
+4. **UNPROVEN:** `sgs/site-header-row` passes colour attrs to the style engine RAW (the shape fixed
+   on the header). May share the defect.
+5. **Probe page 2522 left published** on the canary as the evidence; delete after review.
+6. **Recogniser mirror is dead:** `_VALID_HEADER_BEHAVIOURS` mirrors a PHP constant deleted
+   2026-07-28, scans for classes nothing emits, and its test compares two hardcoded copies.
+
 
 ## Open — carried
 
@@ -261,12 +270,13 @@ Findings behind it (nothing broken; all deferred deliberately):
 
 ## State Snapshot
 
-- **Branch:** `feat/inspector-completeness`. ⚠ **Not merged to main** — re-derive the count with
-  `git rev-list --count main..HEAD`.
-- **D-ceiling:** **D680** — verify with
+- **Branch:** `feat/header-completeness` (has `feat/hover-helper` merged into it, so it carries BOTH
+  tracks). ⚠ **Not merged to main** — re-derive with `git rev-list --count main..HEAD`.
+- **D-ceiling:** **D684** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Build:** `inspector-scan --check` exit 0 — 7 gate rules / 0 gating findings, **14 advisory /
-  786 findings** (409 of them rule 31's, newly measured).
+  732 findings**. `npm run build` + `prebuild` exit 0. Deployed to sandybrown; payload-verify
+  confirmed all 83 block.json checksums.
 - **Tests:** no separate suite; the gate chain is the suite.
 - **Uncommitted:** none tracked. Untracked: `plugins/sgs-blocks/reports/{console,cwv,network}/`
   from another track, plus `.claude/reports/emission-derived-classification-raw-2026-08-19.json`
