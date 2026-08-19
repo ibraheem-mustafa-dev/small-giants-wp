@@ -843,6 +843,108 @@ unmerged by SHA; all four were verified content-identical to `main` (rebased/che
 showed a 406-line diff that was **main being ahead**, not stranded work. Compare content and
 behaviour per commit before deleting or re-merging a branch.
 
+### A14 - Session 2026-08-18: five instruments were wrong, two of them mine, shipped the same day
+
+The inspector-enforcement session. Four detectors shipped; along the way FIVE separate measuring
+instruments proved wrong, two of them detectors I had written, verified and committed hours earlier.
+The through-line: every figure produced by RUNNING something was exactly right; every figure produced
+by READING or REASONING was wrong, by 2-3x, in both directions.
+
+- **STOP-NO-DETECTOR-SHIPS-WITH-A-HAND-COUNTED-BASELINE** - declare the expected finding count BEFORE
+  the first live run, run it, then RECONCILE the gap. Reconciliation is where the value is: rule 26
+  predicted 4, measured 8, and reconciling surfaced two real detector bugs a label-grep structurally
+  could not find. Counts corrected by measurement this session: double-painted labels 12 -> 5; raw
+  `BoxControl` 12 -> 0; `BooleanResponsiveControl` mounts 9 -> 7; D4 population ~150/~55 -> 138/50;
+  "178 orphan elements" -> no formula reproduces it, struck. A number in prose is a copy that rots.
+- **STOP-A-JSX-TAG-PATTERN-NEEDS-A-WORD-BOUNDARY-NOT-A-TRAILING-CLASS** - `<BoxControl[\s/>]`
+  returned **1 hit against a true 16**, and `<ToolsPanel[\s
+]` returned **0 against 33**, because
+  multi-line JSX puts `<Component` at END-OF-LINE with no following character on that line. A false
+  ABSENCE reads exactly like a clean result. Use ``, or an AST.
+- **STOP-A-DETECTOR-MUST-OPEN-THE-DATA-IT-CLAIMS-TO-CLASSIFY-BY** - rule 30 flagged 4 false positives
+  because it classified on "is there a `ResponsiveOverride` ancestor?" and never opened `block.json`
+  - despite its OWN DOCBLOCK stating classification must be by storage shape. Doc described the right
+  principle; code did not implement it. Acting on those 4 would have replaced correct controls with
+  ones that silently drop the client's value.
+- **STOP-CTX-CACHE-JSON-RETURNS-A-WRAPPER-NOT-THE-PARSED-OBJECT** - `ctx.cache.json()` returns
+  `{ok, error, data}`. Reading `.attributes` straight off it yields `undefined`, which made every
+  attribute look non-tiered and SILENTLY DISABLED the rule while it still exited 0.
+- **STOP-NEVER-COMPARE-AST-LINE-NUMBERS-AGAINST-STRIPPEDTEXT-LINE-NUMBERS** - `strippedText()` blanks
+  a multi-line comment's ENTIRE CHARACTER RANGE INCLUDING ITS NEWLINES, collapsing them and shifting
+  every subsequent line number. That produced ZERO findings on `sgs/hero` - the one block the rule
+  existed to catch. Character OFFSETS stay aligned between raw and stripped text; line numbers do not.
+  Sibling of D661's comment-stripper incident.
+- **STOP-A-SILENTLY-DISABLED-DETECTOR-RETURNS-ZERO-WHICH-LOOKS-LIKE-A-CLEAN-TREE** - neither of the
+  two bugs above crashed, threw, or failed a lint. Each made a rule return zero findings, which is
+  indistinguishable from success. In BOTH cases the only signal was the rule's own `mustFlag` fixture
+  reporting that it no longer flagged. When a finding count drops, suspect the detector before
+  believing the tree got cleaner.
+- **STOP-A-CLOSED-ACCORDION-IS-PROGRESSIVE-DISCLOSURE** - `check-simple-surface-cap.js` had ZERO
+  occurrences of `initialOpen` and counted controls inside a `<PanelBody initialOpen={false}>` as
+  default-visible, over-reporting `sgs/site-footer` by 3 rows. Its header's claim that a bare control
+  in a PanelBody "is unconditionally shown" holds only for an OPEN panel. It also counted a
+  `<Notice>` - a conditional contrast WARNING - as a control. The cap was never wrong; the counter was.
+- **STOP-A-COMMAND-SCANNING-HOOK-CAN-MATCH-YOUR-COMMIT-MESSAGE-PROSE** - the baseline-update gate
+  blocked a commit because the MESSAGE described a flag (`--update-baseline`) the command never ran.
+  A bypass token existed; using it would have been dishonest. Reword the prose instead.
+
+### A15 - Session 2026-08-19: sources of truth that nothing reads, and a detector that measured its own blind spot
+
+Every figure below was measured by running a command on 2026-08-19; none rounded or softened.
+The through-line: a file, a spec section, or a query can look authoritative while nothing actually
+reads the part being relied on — and a detector can undercount silently the same way a false
+ABSENCE reads as a clean result.
+
+- **STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH** - `cluster-member-sets.json`
+  carries a five-state vocabulary (hover/focus/selected/pressed/disabled) with CSS realisations, and
+  it reads as authoritative. All four consumers of that file - `check-element-manifest-conformance.js`,
+  `check-cluster-coverage.py`, `placement-reach.py`, `extract-signatures.py` - read only its `clusters`
+  and `order` keys. The `states` block has ZERO readers. A golden-schema draft cited it as "the single
+  source" and had to be corrected. Before deferring to a data file, grep for who reads the SPECIFIC KEY
+  you are relying on, not the file. Sibling of `a-column-with-no-writer-and-no-reader-still-looks-like-data`.
+- **STOP-AN-ARGUMENT-BUILT-ON-UNREAD-DATA-IS-AN-ARGUMENT-BUILT-ON-NOTHING** - advice against renaming
+  the `selected` state rested on it colliding with `pressed`. `pressed` has zero DB rows and exists
+  only in that unread block. The real constraint turned out to be different and smaller (a 9-step
+  derived-column migration). Check that the thing you are citing as a constraint actually EXISTS in
+  the enforced layer before treating it as one.
+- **STOP-A-SPEC-CAN-CONTRADICT-ITSELF-IN-THE-SAME-DOCUMENT** - Spec 35 Part O §6 names
+  `StateToggleControl` as the canonical state component and calls it "verified adoptable today" with a
+  live `nav-menu` mount. Spec 35 line 736 of the SAME file says it is dead code with 0 imports and 0
+  JSX mounts. The tree agrees with :736 - 0 JSX mounts across `src/blocks`; the only references are two
+  comments recording where it USED to live. Reading one section is not reading the spec; grep the
+  component name across the whole document before quoting a canonical-component claim.
+- **STOP-A-DETECTOR-THAT-CANNOT-RESOLVE-AN-INDIRECT-VALUE-UNDERCOUNTS-SILENTLY** - rule 31's first live
+  run returned 173 and 164, below an independent regex prediction. Instrumenting rows-processed (206)
+  against a fresh per-block count (239) localised the entire 33-row gap to three blocks -
+  `product-card`, `nav-menu`, `social-icons` - each scoring ZERO rows despite having colour panels,
+  because all three build the `rows` prop indirectly (`.push()`, a separately-declared `const` array,
+  a spread-of-conditional) rather than as an inline array literal. A false ABSENCE reads exactly like
+  a clean result. When a measured count comes in BELOW an independent prediction, instrument the
+  population the detector actually processed before accepting the number.
+- **STOP-A-GREP-OVER-A-DIRECTORY-IS-NOT-A-CENSUS-OF-ONE-FILENAME** - `grep -rln "<SgsColourPanel"
+  src/blocks/` returned 61 and was reported as "61 blocks mount it". Restricting to `edit.js` returns
+  60; the extra hit was a different file in a block directory. Scope the census to the exact filename
+  that defines the population.
+- **STOP-A-CHECKER-THAT-COMPARES-HEAD-TO-STAGED-PROVES-NOTHING-WHEN-NOTHING-IS-STAGED** -
+  `check-blockjson-metadata-only.py hero` was run manually to understand why the visual gate blocked,
+  and exited 0. That exit proved nothing: the checker compares HEAD against the STAGED version, and
+  nothing was staged. A verification method that cannot see the thing it is checking will report
+  success.
+- **STOP-A-SCRIPT-CAN-IGNORE-HELP-AND-EXECUTE** - `extract-signatures.py --help` was run expecting
+  usage text. It ignored the flag, ran the full extraction, and rewrote `css-property-classifications.json`.
+  Check whether a script parses argv before probing it with a flag, or run it somewhere it cannot write.
+- **STOP-A-DERIVED-ARTEFACT-CAN-BE-NON-DETERMINISTIC** - two consecutive runs of `extract-signatures.py`
+  on an unchanged tree produce different output: `css_tier` values cycle between `desktop`/`mobile`/
+  `tablet` on a small number of attributes, 2-4 lines churning per run. That file is described as the
+  "reseed-durable channel". Blast radius is low (`css_tier` is ~1% populated with no dedicated
+  consumer) but every regeneration produces a spurious diff, so never commit a wholesale regeneration
+  as part of an unrelated change - extract only the lines your change actually caused.
+- **STOP-A-COMMAND-SCANNING-HOOK-MATCHES-YOUR-SCRIPT-CONTENT-TOO** - the path-scoped-commit gate
+  blocked a Bash call because the shell-script content being written contained a literal
+  `git commit …` example inside help text. This is the same class as A14's commit-message-prose entry,
+  one layer out: the scanner sees the whole command string including heredoc payloads. Reword the
+  embedded prose; do not reach for the bypass token.
+
 ## B. Domain STOPs — carried VERBATIM from next-session-prompt.md (2026-07-16, D338–D342)
 
 - **STOP-SCROLLBAR-LOCK (D340)** — locking body scroll (`position:fixed`/`overflow:hidden`)
@@ -1343,8 +1445,47 @@ for real before claiming done?
 
 ---
 
+14. **Every number I am about to write - did I MEASURE it in this session, or am I carrying it
+    forward?** Five instruments were wrong on 2026-08-18 and two of them were my own, shipped
+    hours earlier after I had "verified" them. If a figure came from a doc, a prior message, a
+    subagent, or my own earlier reasoning rather than from a command I just ran, it is a claim,
+    not a measurement. State the command beside the number or do not state the number.
+    (STOP-NO-DETECTOR-SHIPS-WITH-A-HAND-COUNTED-BASELINE)
+15. **Is the thing I am about to cite as a source of truth actually READ by anything?** Grep for
+    a consumer of the specific KEY, not the file. Three separate "authoritative" sources proved
+    unread or self-contradicting on 2026-08-19: `cluster-member-sets.json`'s `states` block (zero
+    readers), a spec section naming a dead component as canonical, and my own query that read a
+    JSON file's top-level keys instead of descending into the one that held the data.
+    (STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH)
+
 ## D. D101 count-check receipt
 
+- **2026-08-19 (session, sources-of-truth-that-nothing-reads: nine STOP entries + one ritual
+  question added, §A15):** measured with this file's own canonical commands AFTER writing the new
+  section. Bytes 222,862 -> **228,525** (+5,663). `**STOP-` occurrences (`grep -o '\*\*STOP-' | wc -l`)
+  255 -> **264** (+9). DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 242 -> **251** (+9). Bullet
+  defences (`grep -cE '^- \*\*'`) 308 -> **317** (+9). Unique `STOP-*` tokens
+  (`grep -oE 'STOP-[A-Z0-9-]+' | sort -u | wc -l`) 280 -> **289** (+9). Sections (`## ` headings) 5 ->
+  **5** unchanged (§A15 is a `###` sub-section of §A, matching the §A12/§A13/§A14 pattern). `### A`
+  sub-sections 3 -> **4** (+1, §A15). Pre-flight ritual questions (§C, `^[0-9]+\.` lines) 14 -> **15**
+  (+1 question 15: *"is the thing I am about to cite as a source of truth actually READ by
+  anything?"*, which is the question that would have caught the first three of this session's
+  incidents before a golden-schema draft or a Spec 35 citation relied on unread data). **No category
+  decreased; nothing was dropped, reworded away, or absorbed.** 228,525 >= 222,862. 264 >= 255.
+  251 >= 242. 317 >= 308. 289 >= 280. 5 >= 5. 4 >= 3. 15 >= 14. ALL PASS.
+- **2026-08-18 (handoff, inspector-enforcement session - four detectors shipped, Phase 0 closed, and
+  FIVE measuring instruments proved wrong, two of them detectors written and "verified" hours
+  earlier the same session):** measured with this file's own canonical commands AFTER writing the new
+  section, per session 9's receipt (a self-referential count taken before the write is stale the
+  instant it is written). DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 234 -> **242** (+8, new
+  sub-section §A14). Bullet defences (`grep -cE '^- \*\*'`) 299 -> **308** (+8 new STOP entries, +1 =
+  THIS receipt line, itself a `- **` bullet; the command reported 307 before this line was added).
+  Unique `STOP-*` tokens 272 -> **280**. Sections (`## ` headings) 5 -> **5** unchanged (§A14 is a
+  `###` sub-section of §A, matching the §A12/§A13 pattern). Pre-flight ritual questions (§C) 13 ->
+  **14** (+1 question 14: *"every number I am about to write - did I MEASURE it this session, or am I
+  carrying it forward?"*, which is the question that would have caught four of this session's five
+  instrument bugs before they were written down). **No category decreased; nothing was dropped,
+  reworded away, or absorbed.** 242 >= 234. 308 >= 299. 280 >= 272. 5 >= 5. 14 >= 13. ALL PASS.
 - **2026-08-11 (handoff, session 9 - the `columns` migration (pass 4/6) landed, plus one
   measurement lesson: a bare `document.querySelector` matched the site header's chrome instead
   of the test block):** measured with this file's own canonical commands AFTER writing the new

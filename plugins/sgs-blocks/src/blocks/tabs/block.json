@@ -93,7 +93,7 @@
 						"css:transition-duration": "transitionDuration"
 					},
 					"states": {
-						"selected": {
+						"current": {
 							"attrMap": {
 								"css:color": "tabActiveTextColour",
 								"css:background-color": "tabActiveBgColour",

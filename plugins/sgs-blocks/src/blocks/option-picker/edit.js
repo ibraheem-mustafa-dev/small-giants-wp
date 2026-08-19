@@ -331,9 +331,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   pillBgColour/pillTextColour/pillBorderColour are the RESTING
 			   state (the DB's "hover" css_state label is wrong — there is no
 			   distinct hover-only attribute, :hover reuses the resting vars
-			   as a fallback). The true second state is "selected"
+			   as a fallback). The true second state is "current"
 			   (pillSelected*Colour, driven by :checked). Grouped here as
-			   Normal/Selected pairs per pill property, all `linked: true`. */ }
+			   Normal/Current pairs per pill property, all `linked: true`. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -361,8 +361,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 							{
-								key: 'selected',
-								label: __( 'Selected', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: pillSelectedBgColour,
 								onChange: ( val ) => setAttributes( { pillSelectedBgColour: val ?? '' } ),
 								linked: true,
@@ -381,8 +381,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 							{
-								key: 'selected',
-								label: __( 'Selected', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: pillSelectedTextColour,
 								onChange: ( val ) => setAttributes( { pillSelectedTextColour: val ?? '' } ),
 								linked: true,
@@ -404,8 +404,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { pillBorderColourGradient: val ?? '' } ),
 							},
 							{
-								key: 'selected',
-								label: __( 'Selected', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: pillSelectedBorderColour,
 								onChange: ( val ) => setAttributes( { pillSelectedBorderColour: val ?? '' } ),
 								linked: true,
@@ -761,7 +761,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* Selection appearance — colours moved to the top-level
-				   SgsColourPanel (D619, Normal/Selected states per swatch).
+				   SgsColourPanel (D619, Normal/Current states per swatch).
 				   This ToolsPanel now holds only the non-colour selection
 				   behaviour: selected pill radius + the tick toggle. */ }
 				<PanelBody

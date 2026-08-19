@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-colour-controls",
+	"title": "Fixture: a block with no colour control of any kind and no supports.color declared (must NOT flag anything)",
+	"category": "sgs",
+	"attributes": {
+		"label": { "type": "string", "default": "" }
+	}
+}

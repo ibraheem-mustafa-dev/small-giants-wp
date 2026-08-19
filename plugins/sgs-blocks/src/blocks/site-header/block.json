@@ -186,19 +186,6 @@
 				"force-solid"
 			]
 		},
-		"alignContent": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
-		},
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",
@@ -306,47 +293,9 @@
 		"bgVideoMobile": {
 			"type": "object"
 		},
-		"columns": {
-			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
-		},
 		"contentBandPadding": {
 			"type": "object",
 			"default": { "desktop": {} }
-		},
-		"flexDirection": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"row",
-				"row-reverse",
-				"column",
-				"column-reverse"
-			]
-		},
-		"flexWrap": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"wrap",
-				"nowrap",
-				"wrap-reverse"
-			]
-		},
-		"justifyContent": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"flex-start",
-				"center",
-				"flex-end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
 		},
 		"minHeight": {
 			"type": "object",
@@ -414,10 +363,6 @@
 				"div"
 			],
 			"default": "header"
-		},
-		"alignItems": {
-			"type": "string",
-			"default": ""
 		}
 	},
 	"render": "file:./render.php",

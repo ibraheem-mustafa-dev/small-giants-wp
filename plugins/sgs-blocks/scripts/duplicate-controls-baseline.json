@@ -1,1 +1,136 @@
-{}
+{
+  "accepted": [
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/accordion-item",
+      "attr": "textColour",
+      "severity": "scoped",
+      "keeper": "child sgs/text's own typography/colour controls",
+      "sources": [
+        "sgs/accordion-item edit.js: parent-level control for \"textColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "\"textColour\" (role \"text\") is a parent-level styling attr on sgs/accordion-item, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/cta-section",
+      "attr": "textAlign",
+      "severity": "scoped",
+      "keeper": "child sgs/text's own typography/colour controls",
+      "sources": [
+        "sgs/cta-section edit.js: parent-level control for \"textAlign\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "\"textAlign\" (role \"text\") is a parent-level styling attr on sgs/cta-section, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/cta-section",
+      "attr": "textColor",
+      "severity": "scoped",
+      "keeper": "child sgs/text's own typography/colour controls",
+      "sources": [
+        "sgs/cta-section edit.js: parent-level control for \"textColor\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "\"textColor\" (role \"text\") is a parent-level styling attr on sgs/cta-section, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/hero",
+      "attr": "imageBorderColour",
+      "severity": "scoped",
+      "keeper": "child sgs/media's own typography/colour controls",
+      "sources": [
+        "sgs/hero edit.js: parent-level control for \"imageBorderColour\"",
+        "sgs/media (mounted via this block's InnerBlocks template, role \"image\"): its own native typography/colour controls"
+      ],
+      "reason": "\"imageBorderColour\" (role \"image\") is a parent-level styling attr on sgs/hero, which also mounts a sgs/media InnerBlock for that same role. sgs/media owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/hero",
+      "attr": "mediaOverlayColour",
+      "severity": "scoped",
+      "keeper": "child sgs/media's own typography/colour controls",
+      "sources": [
+        "sgs/hero edit.js: parent-level control for \"mediaOverlayColour\"",
+        "sgs/media (mounted via this block's InnerBlocks template, role \"media\"): its own native typography/colour controls"
+      ],
+      "reason": "\"mediaOverlayColour\" (role \"media\") is a parent-level styling attr on sgs/hero, which also mounts a sgs/media InnerBlock for that same role. sgs/media owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "same-file-duplicate",
+      "block": "sgs/product-card",
+      "attr": "ctaText",
+      "severity": "controlled",
+      "keeper": "<TextControl> at line 569",
+      "sources": [
+        "<TextControl> at line 569",
+        "<TextControl> at line 1357"
+      ],
+      "reason": "\"ctaText\" is written (with a value genuinely derived from the control's own input, not a hardcoded stamp) by 2 distinct JSX controls in the same edit.js that do not share a common conditional branch (<TextControl> at line 569, <TextControl> at line 1357) — the client is shown two knobs for one attribute (or they silently fight over which write wins on re-render)."
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/product-faq-item",
+      "attr": "textColour",
+      "severity": "scoped",
+      "keeper": "child sgs/text's own typography/colour controls",
+      "sources": [
+        "sgs/product-faq-item edit.js: parent-level control for \"textColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "\"textColour\" (role \"text\") is a parent-level styling attr on sgs/product-faq-item, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/site-footer-row",
+      "attr": "textColour",
+      "severity": "scoped",
+      "keeper": "child sgs/text's own typography/colour controls",
+      "sources": [
+        "sgs/site-footer-row edit.js: parent-level control for \"textColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "\"textColour\" (role \"text\") is a parent-level styling attr on sgs/site-footer-row, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/tab",
+      "attr": "textColour",
+      "severity": "scoped",
+      "keeper": "child sgs/text's own typography/colour controls",
+      "sources": [
+        "sgs/tab edit.js: parent-level control for \"textColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "\"textColour\" (role \"text\") is a parent-level styling attr on sgs/tab, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
+    },
+    {
+      "check": "same-file-duplicate",
+      "block": "sgs/tab",
+      "attr": "label",
+      "severity": "controlled",
+      "keeper": "<TextControl> at line 134",
+      "sources": [
+        "<TextControl> at line 134",
+        "<TextControl> at line 152"
+      ],
+      "reason": "\"label\" is written (with a value genuinely derived from the control's own input, not a hardcoded stamp) by 2 distinct JSX controls in the same edit.js that do not share a common conditional branch (<TextControl> at line 134, <TextControl> at line 152) — the client is shown two knobs for one attribute (or they silently fight over which write wins on re-render)."
+    },
+    {
+      "check": "same-file-duplicate",
+      "block": "sgs/trust-bar",
+      "attr": "label",
+      "severity": "controlled",
+      "keeper": "<TextControl> at line 173",
+      "sources": [
+        "<TextControl> at line 173",
+        "<TextControl> at line 235"
+      ],
+      "reason": "\"label\" is written (with a value genuinely derived from the control's own input, not a hardcoded stamp) by 2 distinct JSX controls in the same edit.js that do not share a common conditional branch (<TextControl> at line 173, <TextControl> at line 235) — the client is shown two knobs for one attribute (or they silently fight over which write wins on re-render)."
+    }
+  ]
+}

@@ -165,7 +165,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			       active=tabActiveIndicatorColour (no hover indicator attribute
 			       exists either).
 			   Panel background/border have only ONE colour attribute each
-			   (panelBgColour/panelBorderColour) — `state=selected` per the DB
+			   (panelBgColour/panelBorderColour) — `state=current` per the DB
 			   census, labelled "Active" here because CSS only ever paints the
 			   currently-visible panel (`.sgs-tabs__panel[hidden]` hides the
 			   rest); there is no separate resting-panel colour to pair it
@@ -191,8 +191,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								linked: true,
 							},
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: tabActiveBgColour,
 								onChange: ( val ) => setAttributes( { tabActiveBgColour: val ?? '' } ),
 								linked: true,
@@ -211,8 +211,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								linked: true,
 							},
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: tabActiveTextColour,
 								onChange: ( val ) => setAttributes( { tabActiveTextColour: val ?? '' } ),
 								linked: true,
@@ -234,8 +234,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { tabIndicatorColourGradient: val ?? '' } ),
 							},
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: tabActiveIndicatorColour,
 								onChange: ( val ) => setAttributes( { tabActiveIndicatorColour: val ?? '' } ),
 								linked: true,
@@ -250,8 +250,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label: __( 'Panel background', 'sgs-blocks' ),
 						states: [
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: panelBgColour,
 								onChange: ( val ) => setAttributes( { panelBgColour: val ?? '' } ),
 								linked: true,
@@ -263,8 +263,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label: __( 'Panel border colour', 'sgs-blocks' ),
 						states: [
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: panelBorderColour,
 								onChange: ( val ) => setAttributes( { panelBorderColour: val ?? '' } ),
 								linked: true,

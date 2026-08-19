@@ -1,0 +1,152 @@
+{
+	"_meta": {
+		"purpose": "THE GOLDEN CONTROL SCHEMA — the canonical shape every SGS inspector control must have, expressed as DATA so one file drives enforcement (inspector-scan) and, later, generation. Answers 'does this control match its canonical shape?', not merely 'does a control exist?'.",
+		"source": "Spec 35 PART O (the control-type contract) + Bean rulings 2026-08-19. Every figure below was produced by running a command against the tree on 2026-08-19; none is inherited from prose.",
+		"version": 1,
+		"encoded": [ "colour" ],
+		"notEncoded": "The other 12 Part O contracts (link, enum, length/unit, 4-value box, state, media, boolean, free-text, icon, shadow, responsive-wrapper, border). They get a row WHEN A RULE NEEDS ONE, never speculatively — a schema covering 13 types on day one is 12 untested claims.",
+		"stateVocabulary": {
+			"source": "THIS FILE. Corrected 2026-08-19 — an earlier draft deferred to scripts/consistency/cluster-member-sets.json -> states and called it the single source. IT IS NOT: every consumer of that file (check-element-manifest-conformance.js, check-cluster-coverage.py, placement-reach.py, extract-signatures.py) reads only its `clusters` and `order` keys. Its `states` block has ZERO readers — documentation sitting inside a data file, which is not a source of truth because nothing would notice it drifting.",
+			"real": {
+				"hover": { "cssRealisation": ":hover, :focus-visible", "dbRows": 115 },
+				"current": { "cssRealisation": "[aria-selected=\"true\"], [aria-current], .is-active", "dbRows": 13, "note": "Unifies the tabs case AND the nav case in one state. RENAMED from `selected` 2026-08-19 (D676 ruled it, D678 landed it) — code layer, classifier, 4 block.json manifests, the derived cache, and a /sgs-update reseed. Live DB verified: current 13, selected 0." }
+			},
+			"notional": {
+				"states": [ "focus", "pressed", "disabled" ],
+				"why": "Defined in cluster-member-sets.json's unread `states` block; ZERO rows in block_attributes.css_state (measured 2026-08-19: only NULL 2311, hover 113, selected 16). Treat as aspirational, never as an existing constraint."
+			},
+			"renameResolved": "DONE 2026-08-19. `selected` -> `current`. The original argument for `current` was WEAK (it claimed `active` would collide with a `pressed` state; `pressed` exists only in cluster-member-sets.json's unread block with zero DB rows). The decisive reasons were that `:active` is a real CSS pseudo-class we may still want, and `current` matches `aria-current` — the selector breadcrumbs already emits. Cost was a 9-step derived-column migration ending in a shared-DB reseed, since css_state is DERIVED and a direct UPDATE would be undone by the next reseed."
+		},
+		"regenerate": "HAND-MAINTAINED. Unlike roster.json this is a contract, not a derivation — it states what SHOULD be true, so it cannot be generated from the tree it governs."
+	},
+
+	"controls": {
+		"colour": {
+			"specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 (canonical) + §1 field 9 (the state + shape rule)",
+
+			"canonical": {
+				"panel": {
+					"component": "SgsColourPanel",
+					"path": "src/components/SgsColourPanel.js",
+					"api": "rows={[{ key, label, states, gradientCapable }]}",
+					"adoption": "60 of 83 blocks (measured 2026-08-19)",
+					"note": "The grouped panel. NOT NAMED IN PART O §1 despite being the vehicle for the rule §1 states — spec gap, recorded 2026-08-19."
+				},
+				"row": {
+					"component": "DesignTokenPicker",
+					"path": "src/components/DesignTokenPicker.js",
+					"api": "states={[{ key, label, value, onChange, linked?, gradientValue?, onGradientChange? }]}",
+					"⚠ notTheSpecsNamedComponent": "Part O §6 STATE/HOVER names StateToggleControl as the canonical state component and calls it 'verified adoptable today' with a live nav-menu mount. FALSE, and Spec 35:736 says so itself: StateToggleControl has 0 JSX mounts across src/blocks (measured 2026-08-19); its only references are two comments recording where it USED to live (brand-strip/edit.js:316, nav-menu/edit.js:463) plus its own file. The working mechanism is SgsColourPanel rows -> DesignTokenPicker states, which is what this schema encodes.",
+					"note": "Renders a popover; a TabPanel appears when states.length > 1 (DesignTokenPicker.js:205, :400-416); a per-state Solid/Gradient ToggleGroupControl appears when the state carries onGradientChange (:289-317). Part O §1 field 9's '⚠ NOT YET BUILT — no state axis and no popover' is STALE as of 2026-08-19: all three exist."
+				},
+				"textGradientRow": {
+					"component": "GradientCapableColourControl",
+					"path": "src/components/GradientCapableColourControl.js",
+					"whenToUse": "TEXT gradients only — they need background-clip:text, a genuinely different CSS mechanism from a background/border gradient.",
+					"reachedVia": "a SgsColourPanel row declaring gradientCapable: true. Never mounted directly."
+				},
+				"wholeBlockOverlay": {
+					"component": "GradientOverlayControl",
+					"path": "src/components/GradientOverlayControl.js",
+					"constraint": "SINGLE-STATE BY CONSTRUCTION — it has no states concept. A row needing hover cannot use it."
+				}
+			},
+
+			"bannedLookalikes": {
+				"_note": "ALL FOUR ARE AT ZERO LIVE INSTANCES as of 2026-08-19 (verified in src/blocks/*/edit.js). These are REGRESSION GUARDS, not a backlog. Part O §1's named violator sgs/star-rating was fixed — it now mounts SgsColourPanel (star-rating/edit.js:134), so §1 field 6's '49/50 conform, star-rating violates' is stale.",
+				"jsxComponents": [
+					"ColorPalette",
+					"ColorGradientControl",
+					"GradientPicker",
+					"PanelColorGradientSettings"
+				],
+				"patterns": [
+					{
+						"shape": "<TextControl type=\"color\" />",
+						"why": "a raw browser colour input bypasses the theme token palette entirely",
+						"liveInstances": 0
+					}
+				],
+				"matchRule": "EXACT JSX-identifier match via Set membership, never substring. `MyColorPaletteButton` tokenises to a different identifier and must not flag. Any tag regex uses \\b — multi-line JSX puts `<Component` at end-of-line and `[\\s/>]` returns a false absence."
+			},
+
+			"nativeUi": {
+				"_note": "Bean's addition 2026-08-19: core's own colour UI is a fingerprint to detect and replace. It does NOT arrive via JSX — there are ZERO raw ColorPalette/PanelColorSettings mounts in any of the 83 edit.js files. It arrives through block.json supports.color, from which WordPress renders its own panel in the Styles tab.",
+				"detectVia": "block.json supports.color — any sub-flag set true",
+				"conformantShape": "declared with every sub-flag false (keeps __experimentalSkipSerialization while suppressing core's UI)",
+				"measured2026_08_19": {
+					"declareSupportsColor": 53,
+					"atLeastOneFlagTrue": 26,
+					"allFlagsFalse": 27,
+					"doublePainted": 23,
+					"coreOnlyNoSgsPanel": [ "buybox", "site-footer", "site-header" ]
+				},
+				"sequencingConstraint": "Part O Cross-cutting A: the three-tab bar lands AFTER native-supports retirement, because while a block declares native color, core renders its own Styles tab regardless of what SGS does. DETECT NOW; retire per that existing plan, never ad hoc.",
+				"doNotDuplicate": "Rule 24 (24-raw-canonical-component) already gates the JSX half. It never opens block.json, so this fingerprint does not overlap it."
+			},
+
+			"states": {
+				"minimum": 2,
+				"minimumMeans": "normal + hover. Bean ruling 2026-08-19: every colour row carries at least two states by default.",
+				"derivation": {
+					"rule": "A row's required state set = ['normal'] + the states DECLARED on its element in block.json supports.sgs.elements.<el>.states.",
+					"why": "This needs no new vocabulary and no hardcoded 'is this a nav block' roster — the manifest already declares states per element, and Spec 35 FR-35-5 requires states be DECLARED, never parsed from attribute names (tabActiveTextColour renders as [aria-selected=\"true\"], NOT :active; pauseOnHover/grayscaleHover contain 'Hover' but are booleans).",
+					"measured2026_08_19": {
+						"elementsDeclaringAnyState": 25,
+						"hover": 23,
+						"selected": 3,
+						"selectedElements": [ "option-picker.pill", "table-of-contents.link", "tabs.tab" ]
+					}
+				},
+				"shapeRule": {
+					"specRef": "PART O §1 field 9",
+					"9a": "ONE CONTROL SHAPE EVERYWHERE — a thin row carrying its swatches, showing how many states are pickable, picker in a popover.",
+					"9b": "STATES LIVE INSIDE THE CONTROL — a tab toggle within the popover; never sibling controls, never a second panel.",
+					"9c": "A COLOUR IS NEVER AN OPTIONAL ToolsPanelItem — not behind the '+' menu, not hideable per instance."
+				},
+				"referenceImplementations": {
+					"twoState": "sgs/button — edit.js:381-470, one SgsColourPanel, 5 rows, all 2-state, 3 of 5 gradient-capable. The best 2-state+gradient example in the tree.",
+					"threeState": "sgs/tabs — edit.js:176-199, tab-bg with normal/hover/active. The ONLY 3-state colour row in the entire library (measured 2026-08-19)."
+				},
+				"measuredGap2026_08_19": {
+					"colourRowsTotal": "~226",
+					"singleState": "174 (83%)",
+					"twoOrMore": "~52 (23%)",
+					"threeState": 1
+				}
+			},
+
+			"gradient": {
+				"required": true,
+				"requiredMeans": "Bean ruling 2026-08-19: UNIVERSAL, WITH DECLARED EXEMPTIONS. Every colour row must offer a gradient path unless its block.json declares an exemption with a reason. An absent gradient is a finding; a justified one is data.",
+				"mechanisms": [
+					{
+						"case": "background / border / icon colour",
+						"how": "a per-state gradient toggle inside DesignTokenPicker — the state carries gradientValue + onGradientChange, backed by a sibling {attr}Gradient string attribute"
+					},
+					{
+						"case": "text colour",
+						"how": "GradientCapableColourControl via a row declaring gradientCapable: true — text gradients need background-clip:text"
+					}
+				],
+				"exemption": {
+					"declareAt": "block.json supports.sgs.colourExemptions",
+					"shape": { "<rowKey>": { "rule": "gradient", "reason": "<why this row has no valid gradient form>" } },
+					"expectedFirstExemption": "shadow colour — a box-shadow colour has no gradient form; a gradient control there would produce invalid CSS",
+					"rule": "A reason string is REQUIRED and must not be boilerplate. An exemption without a real reason is itself a finding — same discipline as inspector-scan baselines (core/baseline.js hasRealReason)."
+				},
+				"blockedOnNothing": "The gradient picker crashed every block until 2026-08-19 (fixed in daeec438 + 3fa0ebbd). The parked universal rollout is P-GRADIENT-UNIVERSAL-ROLLOUT.",
+				"⚠ unverifiedSurface": "Because the crash masked it, NO gradient row in the library has ever been seen working. Treat 'it has a gradient toggle' as UNPROVEN until looked at in the live editor.",
+				"measuredGap2026_08_19": { "gradientCapableRows": "45 of ~226 (22%)" }
+			},
+
+			"scope": {
+				"eligible": "roster.json blocks where surfaces.colour === true",
+				"eligibleCount2026_08_19": 65,
+				"rosterPath": "scripts/consistency/roster.json",
+				"whyRosterNotDb": "roster.json is in-repo, DB-derived, regenerated in prebuild and staleness-gated. The canonical DB lives OUTSIDE the repo and two 0-byte decoys sit inside it — a relative resolve lands on an empty file and passes clean forever.",
+				"nullSurfacesRule": "A block on disk but ABSENT from roster.json gets surfaces: null (core/roster.js:170,182), and reading .colour off it throws. An advisory rule that throws is SKIPPED, not failed (run.js:189-201) — it goes dark and green. Treat null surfaces as UNKNOWN, NOT CLEAN: emit an informational finding. Self-test cannot catch this (fixtures always get {}, never null)."
+			}
+		}
+	}
+}

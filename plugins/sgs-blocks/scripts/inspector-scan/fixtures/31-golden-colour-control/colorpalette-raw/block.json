@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/colorpalette-raw",
+	"title": "Fixture: raw <ColorPalette> is a banned lookalike (must flag banned-lookalike)",
+	"category": "sgs",
+	"attributes": {
+		"myColour": { "type": "string", "default": "" }
+	}
+}

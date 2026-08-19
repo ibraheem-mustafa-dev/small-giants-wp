@@ -1,9 +1,73 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-17 (1 entry added — stale-worktree gate failures; 1 oldest by date archived to keep at target — 30 → 31 → 30 active.)
+**Last updated:** 2026-08-19 (2 entries added — a crash masking an older defect, a fork renaming away its inherited CSS. 2 oldest archived to stay level; still ~4 over the ~30 target.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-19] A crash masked a second, older defect — every check I ran was crash-shaped and passed
+- **Pattern key:** `a-crash-masks-every-defect-behind-it`
+- **What happened:** Clicking "Gradient" crashed every SGS block (empty string -> `gradientParser.parse()`
+  returns `[]` instead of throwing, so the forked `try/catch` never fired). I fixed it and verified live:
+  no throw, no error boundary, clean console, component mounted, brand-correct control points. All passed.
+  Bean then sent a screenshot: the gradient panel was visibly broken — no bar, `TYPE` truncated to "L.",
+  collapsed popover — a three-day-old defect nobody had ever seen, because the crash fired first.
+- **The rule:** **A crash is an opaque cover over everything downstream of it.** While it fires, no defect
+  on the surface it guards has ever been observed by anyone. Fixing it does not complete the work — it is
+  the FIRST chance to inspect that surface. Treat newly-reachable code as entirely unverified and check how
+  it LOOKS, not just that it no longer throws. `CRASHED: false` is not "it works".
+- **Feedback file:** [feedback_a_crash_masks_every_defect_behind_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_crash_masks_every_defect_behind_it.md)
+
+### [2026-08-19] A forked component renamed all 17 CSS classes and inherited zero of core's styling
+- **Pattern key:** `a-fork-that-renames-identifiers-inherits-none-of-the-original-behaviour`
+- **What happened:** `SgsGradientPicker` (D636) forked core's `CustomGradientPicker`, copied the JSX
+  faithfully, renamed every class to `sgs-gradient-picker__*`, and no stylesheet for those names was ever
+  written. Core's `.components-custom-gradient-picker__gradient-bar{height:48px;width:100%}` never applied,
+  so the bar was invisible and the popover collapsed. The sibling `colour-picker` fork keeps **20** core
+  classes and looks correct; this one kept **0** of 17. `@wordpress/components` is a webpack EXTERNAL, so
+  there was no local copy to port CSS from — core's real rules had to be read from the live editor.
+- **The rule:** **Forking copies what is in the file, never what the platform binds to the file's
+  IDENTIFIERS** (CSS on class names, hooks on action names, i18n on text domains). Renaming silently
+  unhooks all of it with no error at any layer — it compiles, renders, passes every static gate, and is
+  simply unstyled. Keep upstream identifiers, adding your own alongside. Also: a shared EDITOR component's
+  CSS must NOT be named `style.css` — `wp-scripts` routes that to the FRONTEND bundle; use `editor.css`.
+- **Feedback file:** [feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md)
+
+### [2026-08-18] A read-only-briefed QC subagent ran `git checkout main -- .` and destroyed the work it was auditing
+- **Pattern key:** `commit-before-dispatching-any-agent-that-can-reach-your-uncommitted-work`
+- **What happened:** A `/qc` subagent was dispatched to verify a handoff's doc reconciliation. Its brief
+  said READ-ONLY in the first line. It ran `git checkout main -- .` "by mistake", then
+  `git checkout HEAD -- .` to recover. Both overwrite the WORKING TREE. Three files of uncommitted
+  work — a full `LEDGER.md` rewrite, five `decisions.md` entries, two `mistakes.md` entries — were
+  destroyed.
+- **Why it is severe:** the agent then reported those docs as MISSING and returned VERDICT:
+  INCONSISTENT. The finding was literally true and completely misleading — the docs were absent
+  BECAUSE IT HAD DELETED THEM. A less careful reader would have rewritten work that already existed.
+- **The rule:** **COMMIT before dispatching any agent, even a read-only one.** A task framing does not
+  constrain tool access; only committing does. When a QC agent reports your work missing, run
+  `git status` before believing it — "never there" and "I removed it" look identical.
+
+### [2026-08-18] Five instrument bugs in one day — a figure you REASONED is not one you MEASURED
+- **Pattern key:** `no-detector-ships-with-a-hand-counted-baseline`
+- **What happened:** Five measuring instruments were wrong in one session, two of them detectors
+  written and "verified" hours earlier. `<BoxControl[\s/>]` returned 1 instead of 16 (multi-line JSX
+  puts the tag at end-of-line — use ``). Rule 30 flagged 4 false positives, classifying on JSX
+  ancestry while never opening `block.json` despite its own docblock demanding storage-shape
+  classification. Fixing that exposed `ctx.cache.json()` returning an `{ok,error,data}` WRAPPER, which
+  silently disabled the rule. Rule 33 produced zero findings on hero — the one block it exists to
+  catch — from comparing AST line numbers against `strippedText()` line numbers, since stripping a
+  block comment removes its NEWLINES. And a surface counter had zero occurrences of `initialOpen`.
+- **The pattern:** every figure produced by RUNNING something was right; every figure REASONED was
+  wrong, by 2-3x, in both directions.
+- **The rule:** no detector ships with a hand-counted baseline. Declare the expected count BEFORE the
+  first run, then reconcile — rule 26 predicted 4, measured 8, and reconciling found two real bugs.
+
+### [2026-08-18] A silently-disabled detector returns zero findings, which reads as a clean tree
+- **Pattern key:** `a-negative-control-catches-the-detector-that-stopped-detecting`
+- **What happened:** Two bugs made rules return ZERO findings without crashing, throwing, or failing a
+  lint — indistinguishable from success. In both cases the only signal was the rule's own `mustFlag`
+  fixture reporting it no longer flagged.
+- **The rule:** a rule that cannot fail is not a rule. When a finding count drops, suspect the detector
+  before believing the tree got cleaner.
 ### [2026-08-17] A file's metadata (name, line count, existence) never decides what is inside it — open the file
 - **Pattern key:** `a-files-metadata-never-decides-what-is-inside-it`
 - **Feedback file:** [feedback_a_files_metadata_never_decides_what_is_inside_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_files_metadata_never_decides_what_is_inside_it.md)
@@ -150,14 +214,6 @@
 - **Feedback file:** [feedback_a_metric_that_gets_cheaper_when_you_hide_things.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_metric_that_gets_cheaper_when_you_hide_things.md)
 - **Rule:** a library-wide inspector census (median 12 / max 49 / total 1121) was rejected as a baseline (D543): it scored any composite as ONE row, could not see native `supports` panels (64 of 83 blocks) or `extensions/`, and summed mutually-exclusive branches — error with TWO signs. The live editor then proved it MIS-RANKED (D544): the block scoring 8 shows a client ~50 controls. Ask "what is the cheapest way to make this number fall, and does that help the user?" and validate ORDERING, not just magnitude. Its `--self-test` certified the worst defect as the expected answer, so it could never have caught this.
 
-### [2026-07-28] An unreachable capability is a CONTROL-SURFACE problem, not a capability gap
-- **Pattern key:** `an-unreachable-capability-is-a-control-surface-problem`
-- **blub.db row:** `411`
-- **Feedback file:** [feedback_unreachable_capability_is_a_control_surface_problem.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_unreachable_capability_is_a_control_surface_problem.md)
-### [2026-07-21] A gate firing on NEW findings is evidence about your data — explain every finding before baselining or bypassing
-- **Pattern key:** `a-gate-firing-is-evidence-about-your-data`
-- **blub.db row:** `408`
-- **Feedback file:** [feedback_a_gate_firing_is_evidence_about_your_data.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_gate_firing_is_evidence_about_your_data.md)
 ### [2026-07-30] A budget gate globbed two directories and was structurally blind to the module it was meant to govern
 - **Pattern key:** `a-gate-that-globs-a-directory-is-blind-to-everything-outside-it`
 - **Evidence (D422):** `check-motion-bundle-budget.py` scanned `vendor-modules` + `shared/effects/gsap`. A new module at `shared/effects/smooth-scroll.js` — one level up — built, shipped and enqueued while the gate printed `GATE PASSED`, having never measured it. Fixed by adding `shared/effects` to `_WATCHED_SUBDIRS` and baselining at 5,777 bytes gz.

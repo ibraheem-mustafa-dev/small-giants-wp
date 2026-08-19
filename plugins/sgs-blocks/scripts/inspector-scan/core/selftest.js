@@ -48,6 +48,7 @@ function buildTestCtx( cache, tmpBase ) {
 		// hardcoded real-repo path here would make any such rule untestable
 		// (a gate that cannot fail reads green forever).
 		extensionsDir: path.join( tmpBase, '_extensions' ),
+		componentsDir: path.join( tmpBase, '_components' ),
 		// Same reasoning again for repoRoot: rule 22 asserts that every surface
 		// STATING the placement rule still states the current one. Pointed at the
 		// real repo it could only ever confirm today's tree; pointed inside the

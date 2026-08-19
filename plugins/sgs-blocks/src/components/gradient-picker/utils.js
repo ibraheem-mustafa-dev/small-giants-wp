@@ -33,24 +33,76 @@ function hasUnsupportedLength( item ) {
 	return item.length === undefined || item.length.type !== '%';
 }
 
-export function getGradientAstWithDefault( value ) {
+/**
+ * Parse one gradient string, answering `null` for BOTH failure shapes
+ * `gradient-parser` has — it throws for `undefined`/`null`/malformed input,
+ * but returns an EMPTY ARRAY for an empty or whitespace-only string. Callers
+ * that only guard the throwing shape read `undefined` off the empty array and
+ * crash one line later. Verified against gradient-parser@1.2.0.
+ *
+ * @param {*} candidate Gradient string to try.
+ * @return {Object|null} The parsed AST, or `null` if it could not be parsed.
+ */
+function parseGradientOrNull( candidate ) {
+	try {
+		return gradientParser.parse( candidate )[ 0 ] ?? null;
+	} catch ( error ) {
+		return null;
+	}
+}
+
+/**
+ * @param {string|undefined} value           The stored gradient string.
+ * @param {string|undefined} defaultGradient Gradient to start from when
+ *                                            nothing is stored. SGS passes a
+ *                                            brand-palette seed here (see
+ *                                            `palette-default.js`); core's
+ *                                            `DEFAULT_GRADIENT` is the final
+ *                                            fallback.
+ */
+export function getGradientAstWithDefault( value, defaultGradient = DEFAULT_GRADIENT ) {
 	// gradientAST will contain the gradient AST as parsed by gradient-parser
 	// npm module. Structure: https://www.npmjs.com/package/gradient-parser#ast.
 	let gradientAST;
 	let hasGradient = !! value;
 
-	const valueToParse = value ?? DEFAULT_GRADIENT;
+	gradientAST = parseGradientOrNull( value ?? defaultGradient );
 
-	try {
-		gradientAST = gradientParser.parse( valueToParse )[ 0 ];
-	} catch ( error ) {
-		// eslint-disable-next-line no-console
-		console.warn(
-			'SgsGradientPicker failed to parse the gradient with error',
-			error
-		);
+	// ⛔ DO NOT REMOVE — this recovery is the whole reason the block stopped
+	// crashing. The forked-from-core original only caught the THROWING failure
+	// shape, but `gradientParser.parse()` does NOT throw for an empty or
+	// whitespace-only string: it RETURNS AN EMPTY ARRAY, so `[0]` was
+	// `undefined`, the `catch` never fired, and the `.orientation` read below
+	// threw a TypeError — which React's error boundary turns into "This block
+	// has encountered an error and cannot be previewed."
+	//
+	// Core never hit this because a core gradient attribute is `undefined`
+	// when unset (and `parse(undefined)` DOES throw, so its catch covered it).
+	// Every SGS gradient attribute defaults to `""` instead — 96 of them across
+	// 36 blocks — so this path is the norm here, not an edge case.
+	//
+	// `DEFAULT_GRADIENT` is the terminal fallback deliberately: it is a
+	// known-good literal, so recovery can never itself fail the way a
+	// caller-supplied `defaultGradient` theoretically could.
+	if ( ! gradientAST ) {
+		// Warn only when the operator actually HAD a value that could not be
+		// read — an unset `""`/`undefined` is the normal path and warning on it
+		// would spam the console for every block with no gradient set.
+		// Whitespace-only counts as unset, not as a lost value.
+		const lostAValue =
+			typeof value === 'string' ? value.trim() !== '' : !! value;
 
-		gradientAST = gradientParser.parse( DEFAULT_GRADIENT )[ 0 ];
+		if ( lostAValue ) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'SgsGradientPicker could not parse the stored gradient; falling back to the default.',
+				value
+			);
+		}
+
+		gradientAST =
+			parseGradientOrNull( defaultGradient ) ??
+			gradientParser.parse( DEFAULT_GRADIENT )[ 0 ];
 		hasGradient = false;
 	}
 

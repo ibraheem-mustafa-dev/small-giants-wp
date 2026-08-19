@@ -1,7 +1,161 @@
 {
-  "_meta": {
-    "purpose": "Accepted findings for scripts/audit-block-file-consistency.py — WARN-ONLY tool, this baseline exists for future net-new-only comparison, not to gate a build.",
-    "format": "accepted: [ { type, block, attr, file, reason } ] — same shape as a finding object printed by --json."
-  },
-  "accepted": []
+  "accepted": [
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterImageAlt",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterImageId",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterImageIdMobile",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterImageIdTablet",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterImageUrl",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterImageUrlMobile",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterImageUrlTablet",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterSvgContent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterVideoAlt",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterVideoId",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "afterVideoUrl",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeImageAlt",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeImageId",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeImageIdMobile",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeImageIdTablet",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeImageUrl",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeImageUrlMobile",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeImageUrlTablet",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeSvgContent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeVideoAlt",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeVideoId",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "beforeVideoUrl",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "maxWidthUnit",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-menu",
+      "attr": "_note_nav_fill",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/quote",
+      "attr": "backgroundColourHoverGradient",
+      "file": "render.php",
+      "reason": "render.php reads 'backgroundColourHoverGradient' from attributes but block.json does not declare it \u2014 WP silently discards an undeclared attribute at parse time, so this read is dead"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/quote",
+      "attr": "backgroundColourHoverGradient",
+      "reason": "edit.js binds a control to 'backgroundColourHoverGradient' but block.json does not declare it \u2014 WP silently drops the value on save"
+    }
+  ]
 }

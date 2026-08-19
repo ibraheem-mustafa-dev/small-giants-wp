@@ -81,15 +81,19 @@ these paths (each mirrored from check-dead-controls.js's own hard-won rules):
 
 BASELINE + FLAGS
 -----------------
-  python scripts/audit-block-file-consistency.py            # human report
-  python scripts/audit-block-file-consistency.py --json      # machine-readable
-  python scripts/audit-block-file-consistency.py --check     # same report; still
-                                                               exits 0 (see below)
+  python scripts/audit-block-file-consistency.py                 # human report, always exits 0
+  python scripts/audit-block-file-consistency.py --json           # machine-readable, always exits 0
+  python scripts/audit-block-file-consistency.py --check          # exits 1 if any NET-NEW finding
+                                                                    # (not in the baseline); 0 otherwise
+  python scripts/audit-block-file-consistency.py --update-baseline # accepts every CURRENT finding into
+                                                                    # the baseline and exits 0
 
-WARN-ONLY: this script exits 0 ALWAYS, regardless of findings or --check. It is
-diagnostic, not a build gate. Baseline file (scripts/block-file-consistency-
-baseline.json, default {}) is supported for future net-new-only comparison but
-does not change the exit code. NOT wired into prebuild.
+GATE-CAPABLE (fixed 2026-08-18): `--check` now returns a real non-zero exit code when any
+finding is not already in the baseline (scripts/block-file-consistency-baseline.json). A
+baseline of the count present at the time this gate was made real is committed alongside
+this change so introducing the gate does not red-line the build; only a NEW finding beyond
+that baseline fails `--check`. Plain (no-flag) and `--json` runs remain diagnostic-only and
+always exit 0 — only `--check` is a gate. Still NOT wired into prebuild by this change.
 
 Never crashes: a missing/unparseable file is logged as a per-block problem and
 the run continues over the rest of the roster.
@@ -1023,6 +1027,13 @@ def finding_key(f):
     return f"{f.get('type')}:{f.get('block')}:{f.get('attr', '')}:{f.get('file', '')}"
 
 
+def save_baseline(all_findings):
+    """Write every CURRENT finding into the baseline as 'accepted' (the ONLY
+    sanctioned way to grow the baseline — mirrors the sibling gates' pattern)."""
+    payload = {'accepted': all_findings}
+    BASELINE_FILE.write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
+
+
 # ---------------------------------------------------------------------------
 # SELF-TEST — a gate that cannot fail reads green forever. In-memory fixtures
 # only, no disk access: check_orphan_attrs() only reads plain fields off its
@@ -1123,10 +1134,11 @@ def main():
         sys.exit(self_test())
 
     as_json = '--json' in sys.argv
-    # --check is accepted for CLI-shape consistency with sibling gates, but per
-    # this script's WARN-ONLY design it never changes the exit code (see module
-    # docstring). Left as a no-op flag rather than silently rejected.
-    _check = '--check' in sys.argv  # noqa: F841
+    # --check is a REAL gate (fixed 2026-08-18, see module docstring): exits 1
+    # if any finding is not already in the baseline. --update-baseline accepts
+    # every current finding and exits 0.
+    is_check = '--check' in sys.argv
+    is_update_baseline = '--update-baseline' in sys.argv
 
     slugs, roster_err = load_roster()
     file_problems = []
@@ -1196,6 +1208,11 @@ def main():
         per_block_findings[slug] = {'findings': findings, 'problems': block.problems}
         all_findings.extend(findings)
 
+    if is_update_baseline:
+        save_baseline(all_findings)
+        print(f'[audit-block-file-consistency] Baseline updated — {len(all_findings)} finding(s) accepted.')
+        sys.exit(0)
+
     baseline = load_baseline()
     net_new = [f for f in all_findings if finding_key(f) not in baseline]
     accepted = [f for f in all_findings if finding_key(f) in baseline]
@@ -1220,7 +1237,7 @@ def main():
             'accepted': accepted,
             'per_block': per_block_findings,
         }, indent=2) + '\n')
-        sys.exit(0)
+        sys.exit(1 if (is_check and net_new) else 0)
 
     print('[audit-block-file-consistency] Whole-block cross-file consistency audit (WARN-ONLY)\n')
     if file_problems:
@@ -1267,7 +1284,10 @@ def main():
                 print(f'    - {p}')
         print()
 
-    print('WARN-ONLY: this script always exits 0. Not wired into prebuild.')
+    if is_check and net_new:
+        print(f'[audit-block-file-consistency] --check FAILED: {len(net_new)} net-new finding(s) not in baseline.')
+        sys.exit(1)
+    print('Plain/--json runs are diagnostic-only and always exit 0; --check is the gate. Not wired into prebuild.')
     sys.exit(0)
 
 

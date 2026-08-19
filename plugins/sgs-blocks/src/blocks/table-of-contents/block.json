@@ -100,13 +100,13 @@
 						"css:color": "linkColour"
 					},
 					"states": {
-						"selected": {
+						"current": {
 							"attrMap": {
 								"css:color": "activeLinkColour"
 							}
 						}
 					},
-					"_note": "`activeLinkColour` styles the scroll-spy-active link (render.php:195 `.sgs-toc__link--active`, toggled by view.js) — a SELECTED state per FR-35-5, declared via explicit `states.selected.attrMap` because the naming is a PREFIX (`activeLinkColour`), not the mechanical suffix form, and would otherwise be unreachable by the default convention. No resting-state font-size/weight control exists on the link — honest gap."
+					"_note": "`activeLinkColour` styles the scroll-spy-active link (render.php:195 `.sgs-toc__link--active`, toggled by view.js) — a CURRENT state per FR-35-5, declared via explicit `states.current.attrMap` because the naming is a PREFIX (`activeLinkColour`), not the mechanical suffix form, and would otherwise be unreachable by the default convention. No resting-state font-size/weight control exists on the link — honest gap."
 				}
 			}
 		}

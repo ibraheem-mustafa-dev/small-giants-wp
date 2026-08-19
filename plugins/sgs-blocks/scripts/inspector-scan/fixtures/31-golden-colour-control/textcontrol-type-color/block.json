@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/textcontrol-type-color",
+	"title": "Fixture: raw <TextControl type=\"color\"> bypasses the theme token palette (must flag banned-lookalike)",
+	"category": "sgs",
+	"attributes": {
+		"myColour": { "type": "string", "default": "" }
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/two-state-with-gradient",
+	"title": "Fixture: canonical 2-state colour row with a gradient path on both states (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"colourBackground": { "type": "string", "default": "" },
+		"colourBackgroundGradient": { "type": "string", "default": "" },
+		"colourBackgroundHover": { "type": "string", "default": "" },
+		"colourBackgroundHoverGradient": { "type": "string", "default": "" }
+	}
+}

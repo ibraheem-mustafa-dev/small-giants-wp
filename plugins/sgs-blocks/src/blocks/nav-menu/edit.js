@@ -39,7 +39,7 @@ import {
 	ResponsiveControl,
 	SgsColourPanel,
 } from '../../components';
-import { BoxControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 /**
  * Burger Menu scope presets (Bean 2026-07-28 — no bare px values in the UI).
@@ -1222,38 +1222,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						hasValue={ () =>
-							!! submenuPadding &&
-							Object.keys( submenuPadding ).length > 0
+							Object.keys( submenuPadding?.desktop || {} )
+								.length > 0 ||
+							Object.keys( submenuPadding?.tablet || {} )
+								.length > 0 ||
+							Object.keys( submenuPadding?.mobile || {} )
+								.length > 0
 						}
 						label={ __( 'Inner spacing', 'sgs-blocks' ) }
 						onDeselect={ () =>
 							setAttributes( { submenuPadding: {} } )
 						}
 					>
-						{ /*
-						   WP's NATIVE BoxControl, not ResponsiveBoxControl.
-						   ResponsiveBoxControl stores a tier-shaped
-						   { base, tablet, mobile } object and calls
-						   onChange( tier, next ) — feeding that to a renderer
-						   expecting a flat { top, right, bottom, left } drops
-						   the whole value silently, with nothing to see in the
-						   editor or the markup. A dropdown's inner spacing is
-						   not device-tiered, so the flat shape is correct here
-						   and matches sgs_box_object_shorthand() in render.php.
-						*/ }
-						<BoxControl
+						{ /* Migrated 2026-08-19 to a responsive tier object,
+						   matching nav-drawer's drawerPadding shape. */ }
+						<ResponsiveBoxControl
 							label={ __( 'Inner spacing', 'sgs-blocks' ) }
-							values={ submenuPadding || {} }
-							units={ [
-								{ value: 'px', label: 'px', default: 0 },
-								{ value: 'rem', label: 'rem', default: 0 },
-								{ value: 'em', label: 'em', default: 0 },
-							] }
-							splitOnAxis={ false }
-							onChange={ ( val ) =>
-								setAttributes( { submenuPadding: val || {} } )
-							}
-							__next40pxDefaultSize
+							values={ {
+								base: submenuPadding?.desktop ?? {},
+								tablet: submenuPadding?.tablet ?? {},
+								mobile: submenuPadding?.mobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( {
+									submenuPadding: {
+										...submenuPadding,
+										[ key ]: next,
+									},
+								} );
+							} }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

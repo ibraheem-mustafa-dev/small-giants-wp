@@ -1,0 +1,54 @@
+/**
+ * SgsGradientPicker — the SGS-only styling.
+ *
+ * Everything with a core counterpart (the bar, its background, the markers
+ * container, the control points, the inserter, the ui-line) now ALSO wears
+ * core's `components-custom-gradient-picker__*` class, so core's stylesheet
+ * supplies those rules — WordPress enqueues `wp-components` in the editor.
+ * This file covers only the four elements the fork added that core has no
+ * equivalent for.
+ *
+ * WHY THIS FILE EXISTS: the D636 fork copied core's JSX and renamed every
+ * class to `sgs-gradient-picker__*`, but core's stylesheet was never ported
+ * (and could not be — `@wordpress/components` is a webpack external, so there
+ * is no local copy to port FROM). The result was a gradient bar with no height
+ * or width at all: an invisible bar in a popover collapsed to content width.
+ * Nobody saw it because clicking "Gradient" crashed the block first.
+ */
+
+/*
+ * The popover has no intrinsic width of its own once the swatch grid is
+ * replaced by the bar (the bar is `width: 100%`, which resolves to 0 in a
+ * shrink-to-fit container). Core solves the same problem in its palette editor
+ * with a fixed 260px popover; this is the equivalent floor for our context.
+ */
+.sgs-gradient-picker {
+	min-width: 260px;
+}
+
+/*
+ * TYPE and ANGLE share one row. Without explicit sizing the select collapses
+ * to a few characters wide ("L…" instead of "Linear") and the angle dial gets
+ * squeezed against it.
+ */
+.sgs-gradient-picker__type-wrapper {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.sgs-gradient-picker__angle-wrapper {
+	flex: 0 0 auto;
+}
+
+/*
+ * The SGS divergence (D636 Task 3): each stop's popover offers the theme
+ * palette above the raw colour picker. Give it the same width as the picker
+ * below it so the swatch grid does not dictate a different popover width.
+ */
+.sgs-gradient-picker__stop-editor {
+	min-width: 216px;
+}
+
+.sgs-gradient-picker__stop-editor-palette {
+	padding: 8px 16px 0;
+}

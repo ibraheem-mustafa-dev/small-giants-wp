@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/both-halves-present",
+	"title": "Fixture: Both halves present — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

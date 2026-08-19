@@ -1269,12 +1269,6 @@ foreach (
 			: '',
 		'--sgs-nm-submenu-min-width' => $sgs_nm_css_length( $attributes['submenuMinWidth'] ?? '' ),
 		'--sgs-nm-submenu-radius'    => $sgs_nm_css_length( $attributes['submenuRadius'] ?? '' ),
-		// Object-shaped {top,right,bottom,left} per the Spec 32 box contract —
-		// resolved by the shared helper, never a hand-rolled side regex (which
-		// is exactly what check-box-family-guard.py exists to reject).
-		'--sgs-nm-submenu-padding'   => is_array( $attributes['submenuPadding'] ?? null )
-			? (string) ( sgs_box_object_shorthand( $attributes['submenuPadding'] ) ?? '' )
-			: '',
 	) as $sgs_nm_var => $sgs_nm_val
 ) {
 	if ( '' !== $sgs_nm_val ) {
@@ -1342,12 +1336,36 @@ $css .= $uid_sel . ' [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-me
  * short literal after each token is a last-resort safety net for a theme that
  * defines no palette at all, NOT a design value.
  */
-$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:var(--sgs-nm-submenu-padding, 8px 0);'
+$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:8px 0;'
 	. 'min-width:var(--sgs-nm-submenu-min-width, 200px);'
 	. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 	. 'border:1px solid var(--wp--preset--color--border, transparent);'
 	. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));'
 	. 'box-shadow:var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1));}';
+
+/*
+ * submenuPadding — object box model {desktop:{top,right,bottom,left},
+ * tablet:{…}, mobile:{…}}, migrated 2026-08-19 from a flat box object to
+ * match nav-drawer's drawerPadding shape. Emitted as a tier-aware override
+ * of the base rule above via the shared responsive-object helper (same
+ * selector, same specificity, later in source order — so an unset tier
+ * leaves the `8px 0` fallback in place rather than a custom property that
+ * silently drops the value when read as the wrong shape).
+ */
+if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['submenuPadding'] ?? null ) ) {
+	$css .= sgs_emit_responsive_css(
+		$uid_sel . ' .sgs-nav-menu__submenu',
+		array(
+			array(
+				'value'        => $attributes['submenuPadding'],
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
 $css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
 
 /*

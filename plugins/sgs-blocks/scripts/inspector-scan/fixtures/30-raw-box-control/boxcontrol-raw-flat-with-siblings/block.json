@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/boxcontrol-raw-flat-with-siblings",
+	"title": "Fixture: raw BoxControl on a flat attribute with Tablet/Mobile siblings and no ResponsiveOverride wrapper — the genuine violation (must flag)",
+	"category": "sgs",
+	"attributes": {
+		"itemPadding": { "type": "object", "default": {} },
+		"itemPaddingTablet": { "type": "object", "default": {} },
+		"itemPaddingMobile": { "type": "object", "default": {} }
+	}
+}

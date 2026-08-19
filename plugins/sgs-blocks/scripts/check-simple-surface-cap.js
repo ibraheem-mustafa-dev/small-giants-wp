@@ -93,6 +93,24 @@
  * ≤ its cap; 1 when any block is over cap, any target file is missing, or
  * any target file fails to parse. --self-test exits 1 if its own fixture
  * assertions do not match the expected PASS/FAIL outcome.
+ *
+ * ⛔ KNOWN LIMITATION — A COMPOSITE COMPONENT IS COUNTED AS ONE ROW (2026-08-19).
+ * When a block mounts a shared component rather than inline controls, this script
+ * counts the MOUNT as a single default-visible row. It does not open the component
+ * to see how many controls a client actually gets. That is wrong in BOTH directions
+ * and was measured on sgs/site-header-row the day the row blocks were added to scope:
+ *   - RowScrollBehaviourControls is counted as 1 but renders THREE isShownByDefault
+ *     toggles (Transparent until scrolled / Hide on scroll / Shrink on scroll) -> UNDER by 2
+ *   - ResponsiveBoxControls is counted as 1 but has ZERO isShownByDefault items -> OVER by 1
+ * So site-header-row's reported 6 is really about 7, and every reported figure for a
+ * composite-mounting block is an APPROXIMATION, not a census.
+ *
+ * Treat the number as a floor for triage, never as "what the client sees". Do not
+ * quote it as a measurement (this repo has a standing rule against exactly that).
+ * The fix is to resolve the mount to its source file and count its isShownByDefault
+ * items — deliberately NOT done here, because it would also move the figures for
+ * sgs/site-header and sgs/site-footer, which carry human rulings made against the
+ * current numbers.
  */
 
 'use strict';
@@ -117,6 +135,16 @@ const DEFAULT_TARGETS = [
 		file: path.join( BLOCKS_DIR, 'site-footer', 'edit.js' ),
 		cap: DEFAULT_CAP,
 	},
+	{
+		blockSlug: 'sgs/site-header-row',
+		file: path.join( BLOCKS_DIR, 'site-header-row', 'edit.js' ),
+		cap: DEFAULT_CAP,
+	},
+	{
+		blockSlug: 'sgs/site-footer-row',
+		file: path.join( BLOCKS_DIR, 'site-footer-row', 'edit.js' ),
+		cap: DEFAULT_CAP,
+	},
 ];
 
 const PARSER_OPTIONS = {
@@ -134,6 +162,13 @@ const PARSER_OPTIONS = {
 // Structural wrappers that are never a "row" themselves — the walk descends
 // through them looking for real rows. Kept small + justified (mirrors the
 // house style of check-duplicate-controls.js's own curated allowlists).
+// Components that render INFORMATION, not an editable setting. FR-37-27 counts
+// "one labelled inspector row = one control" — a warning banner is neither a
+// row the operator can set nor a control they can lose. Counting one inflated
+// sgs/site-footer's default-visible surface by a whole row (its contrast
+// <Notice> at edit.js:307 is conditional and non-dismissible).
+const NON_CONTROL_NAMES = new Set( [ 'Notice', 'Tip', 'ExternalLink' ] );
+
 const PASSTHROUGH_NAMES = new Set( [
 	'InspectorControls',
 	'ToolsPanel',
@@ -228,7 +263,7 @@ function resolveGroupBucket( attributes ) {
  * `<InspectorControls>` subtree) that finds every "row" per the counting
  * rules and pushes it to `rows`.
  */
-function makeRowVisitor( rows ) {
+function makeRowVisitor( rows, forcedHidden ) {
 	return {
 		JSXElement( elPath ) {
 			const opening = elPath.node.openingElement;
@@ -247,11 +282,29 @@ function makeRowVisitor( rows ) {
 				rows.push( {
 					kind: 'ToolsPanelItem',
 					label,
-					defaultVisible,
+					defaultVisible: forcedHidden ? false : defaultVisible,
 					dynamic: shown === 'dynamic',
 					line: elPath.node.loc ? elPath.node.loc.start.line : 0,
 				} );
 				elPath.skip(); // the control(s) inside are part of THIS row, not separate rows.
+				return;
+			}
+
+			if ( NON_CONTROL_NAMES.has( name ) ) {
+				elPath.skip(); // information, not a control — never a row.
+				return;
+			}
+
+			// A <PanelBody initialOpen={ false }> is CLOSED on load. Everything
+			// inside it is reached only by the operator clicking the accordion —
+			// that is progressive disclosure, and it is the oldest such mechanism
+			// in the block editor. The module header's claim that a bare control
+			// in a PanelBody 'is unconditionally shown' holds only for an OPEN
+			// panel; for a collapsed one it is simply false, and counting its
+			// contents as default-visible over-reported sgs/site-footer by 3 rows.
+			if ( name === 'PanelBody' && resolveBooleanAttr( opening.attributes, 'initialOpen' ) === false ) {
+				elPath.traverse( makeRowVisitor( rows, true ) );
+				elPath.skip();
 				return;
 			}
 
@@ -276,7 +329,7 @@ function makeRowVisitor( rows ) {
 				kind: 'bare',
 				label,
 				component: name,
-				defaultVisible: true,
+				defaultVisible: ! forcedHidden,
 				dynamic: false,
 				line: elPath.node.loc ? elPath.node.loc.start.line : 0,
 			} );
@@ -567,6 +620,43 @@ export default function Edit( { attributes, setAttributes } ) {
 `;
 
 function runSelfTest() {
+// Added 2026-08-18 with the collapsed-PanelBody / Notice counting fix. Both
+// were real over-counts on the live tree: sgs/site-footer read 7 default-
+// visible rows when the true figure is 3.
+const SELF_TEST_COLLAPSED_FIXTURE = `
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, ToggleControl } from '@wordpress/components';
+export default function Edit() {
+	return (
+		<InspectorControls>
+			<PanelBody title="Open">
+				<ToggleControl label="Visible one" />
+			</PanelBody>
+			<PanelBody title="Closed" initialOpen={ false }>
+				<ToggleControl label="Hidden A" />
+				<ToggleControl label="Hidden B" />
+				<ToggleControl label="Hidden C" />
+			</PanelBody>
+		</InspectorControls>
+	);
+}
+`;
+
+const SELF_TEST_NOTICE_FIXTURE = `
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, Notice, ToggleControl } from '@wordpress/components';
+export default function Edit() {
+	return (
+		<InspectorControls>
+			<Notice status="warning" isDismissible={ false }>Contrast is low</Notice>
+			<PanelBody title="Settings">
+				<ToggleControl label="The only real control" />
+			</PanelBody>
+		</InspectorControls>
+	);
+}
+`;
+
 	const cases = [
 		{
 			name: 'PASS fixture (2 default-visible, cap 3)',
@@ -584,6 +674,21 @@ function runSelfTest() {
 		{
 			name: 'Bare-control fixture (1 opaque composite, no ToolsPanel, cap 3)',
 			src: SELF_TEST_BARE_FIXTURE,
+			expectPass: true,
+			expectCount: 1,
+		},
+		{
+			// A closed accordion IS progressive disclosure. Counting its contents
+			// as default-visible over-reported site-footer by 3 rows.
+			name: 'Collapsed PanelBody fixture (3 controls behind initialOpen={false}, only 1 open)',
+			src: SELF_TEST_COLLAPSED_FIXTURE,
+			expectPass: true,
+			expectCount: 1,
+		},
+		{
+			// A warning banner is not a setting the operator can lose.
+			name: 'Notice fixture (a message must not count as a control row)',
+			src: SELF_TEST_NOTICE_FIXTURE,
 			expectPass: true,
 			expectCount: 1,
 		},

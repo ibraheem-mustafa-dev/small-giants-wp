@@ -334,7 +334,7 @@
       "fields": {
         "css_property": "color",
         "css_element": "item",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -646,7 +646,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "GRID"
       }
     },
@@ -2440,7 +2440,7 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "item",
-        "css_state": "selected"
+        "css_state": "hover"
       }
     },
     {
@@ -2458,7 +2458,7 @@
         "css_property": "color",
         "role": "color",
         "css_element": "item",
-        "css_state": "selected"
+        "css_state": "hover"
       }
     },
     {
@@ -2507,7 +2507,7 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "item",
-        "css_state": "selected"
+        "css_state": "hover"
       }
     },
     {
@@ -2682,7 +2682,7 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "pill",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -2692,7 +2692,7 @@
         "css_property": "border-color",
         "role": "color",
         "css_element": "pill",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -2701,7 +2701,7 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "pill",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -2711,7 +2711,7 @@
         "css_property": "color",
         "role": "color",
         "css_element": "pill",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -3495,7 +3495,7 @@
         "css_property": "color",
         "role": "color",
         "css_element": "link",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -3523,7 +3523,7 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "panel",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -3533,7 +3533,7 @@
         "css_property": "border-color",
         "role": "color",
         "css_element": "panel",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -3543,7 +3543,7 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "tab",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -3553,7 +3553,7 @@
         "css_property": "border-color",
         "role": "color",
         "css_element": "tab",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -3563,7 +3563,7 @@
         "css_property": "color",
         "role": "color",
         "css_element": "tab",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -4516,6 +4516,14 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
@@ -5428,6 +5436,14 @@
       }
     },
     {
+      "slug": "sgs/form-review",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "heading"
+      }
+    },
+    {
       "slug": "sgs/form-step",
       "attr": "backgroundColour",
       "fields": {
@@ -5903,81 +5919,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "gridItemBackground",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridItemBorder",
-      "fields": {
-        "css_property": "border-color,border-style,border-width",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridItemBorderGradient",
-      "fields": {
-        "css_property": "border-color-gradient",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridItemBorderGradientHover",
-      "fields": {
-        "css_property": "border-color-gradient",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridItemBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridItemPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridItemShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "gridItemTextColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_layer": "GRID_AREA",
-        "css_element": "grid-item"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "gridTemplateRows",
       "fields": {
         "css_property": "grid-template-rows",
@@ -6333,7 +6274,7 @@
       "fields": {
         "css_property": "border-color-gradient",
         "css_element": "pill",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -6564,6 +6505,14 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
@@ -6657,6 +6606,14 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "sgsAnimation",
       "fields": {
         "css_property": "anim:preset",
@@ -6703,6 +6660,14 @@
         "css_property": "border-color-gradient",
         "css_element": "cta",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "title"
       }
     },
     {
@@ -7590,7 +7555,7 @@
       "fields": {
         "css_property": "border-color-gradient",
         "css_element": "tab",
-        "css_state": "selected"
+        "css_state": "current"
       }
     },
     {
@@ -7617,6 +7582,14 @@
       "fields": {
         "css_property": "transition-duration",
         "css_element": "tab"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "name"
       }
     },
     {
@@ -7981,6 +7954,14 @@
       }
     },
     {
+      "slug": "sgs/timeline",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "title"
+      }
+    },
+    {
       "slug": "sgs/trust-bar",
       "attr": "alignContent",
       "fields": {
@@ -8222,6 +8203,14 @@
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "headingLevel",
+      "fields": {
+        "css_property": "tag",
+        "css_element": "title"
       }
     },
     {

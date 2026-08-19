@@ -14,9 +14,20 @@
  * measures the block's UNRESCUED intrinsic behaviour — exactly what the
  * Spec 35 T2 shrink-to-fit standard wants proven.
  *
- * WARN-ONLY — this script ALWAYS exits 0. It is not a build gate (it cannot
- * run at prebuild time — it needs a deployed, live page) and is not wired
- * into any CI failure path. Run on-demand / at Phase-4 close.
+ * DEFAULT MODE IS STILL WARN-ONLY (no --url, no --check, or Playwright/network
+ * unavailable all exit 0 — see below). It cannot run at prebuild time (it needs
+ * a deployed, live page) and is not wired into any CI failure path. Run
+ * on-demand / at Phase-4 close.
+ *
+ * GATE-CAPABLE (fixed 2026-08-18): pass BOTH --url and --check to get a real
+ * gate — it exits 1 when overflowCount exceeds the committed baseline
+ * (scripts/shrink-to-fit-baseline.json, default 0) for that URL. Every other
+ * combination (no --url, no --check, no Playwright, a navigation/browser
+ * failure) still exits 0 by design — a live-page dependency + a flaky-network
+ * op must never be able to red-line an unrelated commit; only a DELIBERATE
+ * `--url ... --check` invocation (e.g. a manual pre-release check, or a
+ * future opt-in CI step with network access) can fail. `--update-baseline`
+ * (with --url) records the current overflowCount as the accepted baseline.
  *
  * WHAT IT DOES
  * ------------
@@ -49,7 +60,26 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 
 const ROSTER_PATH = path.resolve( __dirname, 'consistency/roster.json' );
+const BASELINE_PATH = path.resolve( __dirname, 'shrink-to-fit-baseline.json' );
 const DEFAULT_TIERS = [ 375, 768, 1440 ];
+
+function loadBaseline() {
+	if ( ! fs.existsSync( BASELINE_PATH ) ) {
+		return {};
+	}
+	try {
+		const data = JSON.parse( fs.readFileSync( BASELINE_PATH, 'utf8' ) );
+		return data && typeof data === 'object' ? data : {};
+	} catch ( e ) {
+		return {};
+	}
+}
+
+function saveBaseline( url, overflowCount ) {
+	const data = loadBaseline();
+	data[ url ] = overflowCount;
+	fs.writeFileSync( BASELINE_PATH, JSON.stringify( data, null, 2 ) + '\n' );
+}
 
 function printUsage() {
 	console.log( `
@@ -75,7 +105,7 @@ Examples:
 }
 
 function parseArgs( argv ) {
-	const args = { url: null, blocks: [], tiers: DEFAULT_TIERS.slice(), json: false };
+	const args = { url: null, blocks: [], tiers: DEFAULT_TIERS.slice(), json: false, check: false, updateBaseline: false };
 	for ( let i = 0; i < argv.length; i++ ) {
 		const a = argv[ i ];
 		if ( a === '--url' ) {
@@ -89,6 +119,10 @@ function parseArgs( argv ) {
 				.filter( ( n ) => Number.isFinite( n ) && n > 0 );
 		} else if ( a === '--json' ) {
 			args.json = true;
+		} else if ( a === '--check' ) {
+			args.check = true;
+		} else if ( a === '--update-baseline' ) {
+			args.updateBaseline = true;
 		}
 	}
 	return args;
@@ -241,14 +275,24 @@ async function main() {
 	}
 
 	const overflowCount = result.findings.length + result.pageFindings.length;
+	const baseline = loadBaseline();
+	const baselineCount = Object.prototype.hasOwnProperty.call( baseline, args.url ) ? baseline[ args.url ] : 0;
+	const isGated = args.check; // gate only fires when --check was explicitly passed WITH --url (we're past the no-url exit above).
+
+	if ( args.updateBaseline ) {
+		saveBaseline( args.url, overflowCount );
+		console.log( `[audit-shrink-to-fit] Baseline updated for ${ args.url } — overflowCount=${ overflowCount }.` );
+		process.exit( 0 );
+	}
 
 	const report = {
 		_meta: {
 			url: args.url,
 			tiers,
-			warn_only: true,
+			warn_only: ! isGated,
 			blocks_checked: result.blocksChecked.sort(),
 			overflow_count: overflowCount,
+			baseline_count: baselineCount,
 		},
 		page_findings: result.pageFindings,
 		findings: result.findings,
@@ -256,7 +300,7 @@ async function main() {
 
 	if ( args.json ) {
 		console.log( JSON.stringify( report, null, 2 ) );
-		process.exit( 0 );
+		process.exit( isGated && overflowCount > baselineCount ? 1 : 0 );
 	}
 
 	console.log( `\nShrink-to-fit audit — ${ args.url }` );
@@ -286,7 +330,13 @@ async function main() {
 		}
 	}
 
-	console.log( `\nTotal overflow findings: ${ overflowCount } (WARN-ONLY — exiting 0)` );
+	if ( isGated && overflowCount > baselineCount ) {
+		console.log(
+			`\nTotal overflow findings: ${ overflowCount } (baseline ${ baselineCount }) — --check FAILED.`
+		);
+		process.exit( 1 );
+	}
+	console.log( `\nTotal overflow findings: ${ overflowCount }${ isGated ? ` (baseline ${ baselineCount }, within baseline)` : ' (WARN-ONLY — exiting 0)' }` );
 	process.exit( 0 );
 }
 

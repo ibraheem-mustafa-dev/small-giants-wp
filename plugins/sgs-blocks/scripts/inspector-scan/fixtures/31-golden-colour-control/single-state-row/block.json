@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/single-state-row",
+	"title": "Fixture: SgsColourPanel row with only a 'normal' state — below the 2-state floor (must flag row-below-minimum-states)",
+	"category": "sgs",
+	"attributes": {
+		"textColour": { "type": "string", "default": "" },
+		"textColourGradient": { "type": "string", "default": "" }
+	}
+}

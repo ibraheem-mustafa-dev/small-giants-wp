@@ -89,12 +89,6 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
-				],
-				"gridItemPadding": [
-					"gridItemPadding"
-				],
-				"gridItemBorderRadius": [
-					"gridItemBorderRadius"
 				]
 			},
 			"elements": {
@@ -197,36 +191,6 @@
 						"anim:duration": "mediaAnimationDuration"
 					},
 					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (imageBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via mediaParallax/mediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. mediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
-				},
-				"grid-item": {
-					"label": "Grid item",
-					"layer": "GRID_AREA",
-					"order": 6,
-					"clusters": [
-						"text",
-						"fill",
-						"layout"
-					],
-					"prefix": "gridItem",
-					"attrMap": {
-						"css:background-color": "gridItemBackground",
-						"css:padding": "gridItemPadding",
-						"css:border-radius": "gridItemBorderRadius",
-						"css:border-width": "gridItemBorder",
-						"css:border-style": "gridItemBorder",
-						"css:border-color": "gridItemBorder",
-						"css:border-color-gradient": "gridItemBorderGradient",
-						"css:box-shadow": "gridItemShadow",
-						"css:color": "gridItemTextColour"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:border-color-gradient": "gridItemBorderGradientHover"
-							}
-						}
-					},
-					"_note": "Inherited from the sgs/container capability mirror — present on this block's attribute list but not exercised by any hero variant today. Declared so the attrs resolve rather than surface as orphans."
 				},
 				"headline": {
 					"label": "Headline",
@@ -759,40 +723,6 @@
 			"default": {}
 		},
 		"gridAutoRows": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
-		},
-		"gridItemBorderGradientHover": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
-		},
-		"gridItemBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemPadding": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColour": {
 			"type": "string",
 			"default": ""
 		},

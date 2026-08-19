@@ -1,5 +1,352 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D670 [INCIDENT] — nav-menu's duplicate `selected` state removed (mis-tagged 3 hover attrs) (2026-08-19)
+
+`supports.sgs.elements.item.states` declared `hover` and `selected` with byte-identical attrMaps.
+The behavioural classifier records per attribute last-write-wins (`extract-signatures.py:1966-1983`),
+so `selected` iterated second and silently overwrote the correct hover derivation.
+`itemColourHover`/`itemBgHover`/`itemRadiusHover` were tagged `css_state=selected` for a state they
+never render in — `render.php:953-957` wires all three to `:hover, :focus-visible` only;
+current-page styling is a separate path (`render.php:1473-1480`). The block's own `_note` conceded
+this and kept it "for schema consistency", which made the metadata factually wrong rather than
+consistent. Proven by re-deriving: exactly those 3 rows flip selected→hover. 13 `selected` rows
+remain across tabs/option-picker/table-of-contents/breadcrumbs, all correctly tagged. nav-menu was
+the only block with this shape. Commit `4626fb31`.
+
+## D671 [ROUTINE] — the golden control schema, colour, as data (2026-08-19)
+
+New `plugins/sgs-blocks/scripts/consistency/golden-controls.json`. Encodes the canonical SHAPE a
+colour control must have — canonical components, banned lookalikes, the native-core-colour
+fingerprint, minimum states, gradient-with-declared-exemptions, scope predicate — so enforcement
+measures against data rather than prose. Answers "does this control match its canonical shape?", not
+merely "does a control exist?". Only COLOUR encoded in v1; the other 12 Part O contracts get a row
+when a rule needs one, never speculatively. Hand-maintained by design: it is a contract, not a
+derivation, so it cannot be generated from the tree it governs. Bean rulings encoded: gradient
+universal-with-exemptions; minimum 2 states (normal+hover) extended by the element's own DECLARED
+states; native core colour UI is its own fingerprint. Commit `cfd2aa16`.
+
+## D672 [ROUTINE] — hero's 8 dead `gridItem*` attributes deleted, with the rule that found them ratcheted (2026-08-19)
+
+Bean ruling: "We shouldn't have fake or dead shapes or attributes." Removed 8 attributes, 2
+`boxFamilies` entries and the `grid-item` element from `supports.sgs.elements`. 126→118 attributes,
+13→12 elements. Dead proven, not assumed: zero refs in hero's edit.js/render.php/save.js, zero in
+theme patterns, no client could reach them (hero mounts no `GridItemDefaultsPanel`), and render never
+emitted them — the wrapper's grid-item CSS is gated behind `'grid' === $layout`
+(`class-sgs-container-wrapper.php:1034`) and no hero control, pattern or save path writes `layout`.
+NOT a standalone hero fix: rule 21 `render-without-control` was flagging exactly these, so its
+`openBacklog` ratcheted 259→253 in the same commit. Without that the improvement becomes silent
+slack — the ratchet blocks growth past a frozen number but never lowers it on progress. Follow-up
+deliberately deferred: the converter resolves its GRID destination from the out-of-repo DB, so its
+behaviour only changes after a `/sgs-update` reseed (a shared action to coordinate); until then it
+can write `gridItem*` onto a cloned hero and WordPress silently discards it (the D338 pattern).
+Commit `a309638f`.
+
+## D673 [INCIDENT] — the state vocabulary is owned by golden-controls.json, not cluster-member-sets.json (2026-08-19)
+
+Bean challenged whether `cluster-member-sets.json` is reliable as the state-vocabulary source. It is
+not. Measured: all four consumers — `check-element-manifest-conformance.js`,
+`check-cluster-coverage.py`, `placement-reach.py`, `extract-signatures.py` — read only its `clusters`
+and `order` keys. Its `states` block has **zero readers**: documentation inside a data file, which
+cannot be a source of truth because nothing would notice it drifting. `golden-controls.json` now
+carries the vocabulary itself, split honestly — REAL (`hover` 113 DB rows, `selected` 16, both with a
+derivation chain) vs NOTIONAL (`focus`, `pressed`, `disabled` — zero rows anywhere). Second defect
+found while checking: Spec 35 Part O §6 names `StateToggleControl` the canonical state component and
+calls it "verified adoptable today" with a live nav-menu mount; Spec 35:736 contradicts it in the
+same document and the tree agrees with :736 — **0 JSX mounts** across `src/blocks`, the only
+references being two comments recording where it used to live (`brand-strip/edit.js:316`,
+`nav-menu/edit.js:463`). The working mechanism is `SgsColourPanel` rows → `DesignTokenPicker` states.
+Commit `fcbe90de`.
+
+## D674 [ROUTINE] — rule 31 `31-golden-colour-control` shipped advisory (2026-08-19)
+
+First detector that measures a control against its canonical SHAPE. Reads `golden-controls.json`; no
+rule logic restates the contract. Five finding kinds, measured live: `row-missing-gradient` 193,
+`row-below-minimum-states` 190, `native-colour-ui` 26, `banned-lookalike` 0 (regression guard, proven
+failable), `roster-surface-unknown` 0. Total 409 across 64 blocks → `openBacklog: 409`, mode
+advisory. A real detector bug was found and FIXED rather than baselined: the first run returned
+173/164, below an independent prediction; instrumenting rows-processed (206) against a fresh count
+(239) localised the entire 33-row gap to `product-card`, `nav-menu` and `social-icons`, each scoring
+ZERO rows despite having colour panels, because all three build the rows prop indirectly
+(`.push()`, a separately-declared const, a spread-of-conditional). Resolver extended; 239/239 now
+processed. `native-colour-ui`'s 26 agrees with an independent pre-rule count AND with the 26 findings
+keyed on a `block.json` file. Ratchet proven armed by positive control: `openBacklog` 408 → exit 1,
+409 → exit 0. Commit `e5c47704`.
+
+## D675 [ROUTINE] — inspector-scan now runs at commit time (2026-08-19)
+
+One segment added to `.githooks/sgs-gates.sh`. There is no CI on this repo
+(`.github/workflows/` does not exist) and the hook invoked neither `prebuild` nor `inspector-scan`,
+so the whole rule set ran only on a manual `npm run build`. Fires when a staged path matches
+`src/blocks/<block>/edit.js` or `src/components/*.js` — the surface every inspector rule reads.
+Verified by running the hook: staging a `.md` does not trigger it; staging an `edit.js` does;
+lowering an `openBacklog` and staging an `edit.js` makes the hook exit 1 and print COMMIT BLOCKED.
+Three traps honoured: `$?` read after a redirect never a pipe; `node` resolved via `command -v` the
+way Gate A resolves python since D564; the scoped bypass refuses to run without a reason and logs
+every use. Commit `0cd53fdb`.
+
+## D680 [INCIDENT] — the no-prune rule was violated within hours of being written; it needs a gate (2026-08-19)
+
+D678 established the rule: after deleting an attribute from a `block.json`, Stage 1 alone leaves
+the DB inconsistent, so run Stage 9. **The same session then deleted 6 attributes from
+`sgs/site-header` and did not run Stage 9.** Caught during handoff verification, not by any gate —
+6 orphan rows, all six of the just-deleted attributes.
+
+**Why no gate caught it.** The db-consistency suite exits 0 with orphans present: its "rogue seed"
+check only fires for a row carrying a `css_property`, and these six were never classified, so they
+were invisible to it. `check-element-manifest-conformance.js` gates on `orphan_unclassified` and
+`orphan_role_map_stale`, which are different metrics. **Nothing in the chain fails on a plain
+orphan.**
+
+**The conclusion is structural, not behavioural.** A rule that its own author violates within hours
+is not a defence — it is a note. The fix is a gate that fails when a `block_attributes` row has no
+matching attribute in any `block.json`. Recorded as a candidate for the C4 library-wide audit stage.
+
+Fixed for now by running Stage 9: 6 pruned, 0 orphans, 2,409 sgs attrs, db-consistency and
+inspector-scan both exit 0.
+
+## D679 [ROUTINE] — the header audit: 6 dead attrs deleted, 3 findings recorded (2026-08-19)
+
+Bean asked for a header with "no vestigial features or dead functionality". A measured audit of
+`sgs/site-header` + `sgs/site-header-row` (every attribute traced control → attribute → emitted
+output, not just declared → consumed) produced:
+
+**DELETED — 6 attributes that could never render.** `alignContent`/`alignItems`/`columns`/
+`flexDirection`/`flexWrap`/`justifyContent` on `sgs/site-header`, copy-pasted from the row block
+without the `layout` attribute the emit gate requires. `check-dead-controls.js` could not see them
+because it catches the INVERSE class (a control whose attribute nothing renders); these had no
+control at all. Rule 21 ratcheted 253→250 in the same commit.
+
+**FINDING 1 — `contrastSafe` breaches a locked policy.** It silently rewrites a client's explicit
+"None" to `scrim` when the header is transparent. `a11y-validation-feedback-informational-not-gate`
+says operator a11y failures are notices, not enforcement. It is also the only one of the five
+header behaviours that is not a per-device tri-state. Bean ruled: make it responsive, make the
+upgrade a visible notice.
+
+**FINDING 2 — transparent's two states are not client-reachable.** Transparent-at-top →
+solid-on-scroll works, but the scrolled colour is hardcoded to the theme `surface` token and the
+pair cannot be inverted.
+
+**FINDING 3 — the duplication is a NAMING problem, not redundancy.** Header and row versions of
+transparent / shrink / hide-on-scroll produce genuinely different output (the header version lifts
+the header out of document flow and triggers the WCAG safeguard; the row version only changes one
+row's background). Deleting either loses real capability. Competitor research confirms nobody
+ships the same toggle at both levels — but nobody else SPLIT the feature either. Fix is to rename,
+held until the transparent redesign so it is not renamed twice.
+
+**Also:** `check-simple-surface-cap.js` extended to the two ROW blocks (never measured before), with
+its composite-counting limitation documented rather than left to look authoritative.
+
+## D678 [INCIDENT] — Stage 1 reseeds but does not prune; 8 deleted attrs survived as rogue seeds (2026-08-19)
+
+After deleting hero's 8 dead `gridItem*` attributes (D672) and running `/sgs-update --stage 1` to
+apply the `selected`→`current` rename (D676), reconciling the derived cache against the DB left
+ONE `hover` row unaccounted: `sgs/hero.gridItemBorderGradientHover`. Chasing it established that
+**Stage 1 updates existing rows but never removes rows for attributes that no longer exist** —
+all 8 deleted attributes survived the reseed as DB rows.
+
+The F5/F6 DB-as-code consistency gate caught the same thing independently and BLOCKED the commit,
+naming each of hero's 8 as a "rogue seed (would vanish on the next reseed)".
+
+**The judgement error worth recording:** a full orphan census showed 25 rows — hero's 8 plus 17
+pre-existing across nine other blocks — and the decision taken was NOT to prune, reasoning that
+most were not this session's work. That was wrong. The gate distinguishes NEW from baselined, and
+every NEW violation was one of the 8 created tonight. The gate's judgement was better than mine.
+
+Fixed with Stage 9 (the sanctioned prune, dry-run first): 25 attribute-orphan rows deleted, 0
+blocks/supports/capabilities touched. DB attrs 2440 → 2415, orphans 0, gate exit 0. `hover` fell
+116 → 115, and 115 = 89 derived + 26 net overrides — the arithmetic that had been off by one now
+reconciles exactly. **The unexplained +1 was the defect**, not rounding.
+
+Standing rule: after deleting any attribute from a `block.json`, Stage 1 alone leaves the DB
+inconsistent. Run Stage 9, or expect the commit gate to block.
+
+## D677 [ROUTINE] — C1 design gate: the shared hover-colour helper, three rulings (2026-08-19)
+
+Bean cleared the design gate on `sgs_emit_state_colour_css`, the shared helper that unblocks the
+colour rollout. Three questions, three rulings:
+
+**(a) Which emission pattern is canonical.** `info-box`'s per-instance scoped `:hover` rule
+(`render.php:171-187`), NOT `button`'s CSS-variable-values pattern and NOT `card-grid`'s third
+scheme. `info-box`'s own docblock rejects the inline-variable shape citing Spec 32 FR-32-4 / D345,
+so this ruling makes back-porting `card-grid` a **compliance fix** rather than tidying.
+
+**(b) `sgs/button` is EXEMPT, with the reason recorded.** Its `--sgs-btn-*-hover` variables feed a
+static rule (`style.css:87-98`) AND three preset classes (`:104-130`) with fallback chains into
+`theme.json`. Only `info-box` and `card-grid` back-port. The exemption must be stated in the
+helper's docblock so a later reader does not "finish the job" and break the preset cascade.
+
+**(c) Scope is colour ONLY.** `sgs_emit_state_colour_css`, not a general `sgs_emit_state_css`
+covering transform/shadow. Colour is the layer with a measured backlog behind it (rule 31's 190
+`row-below-minimum-states` findings); the other properties have none surveyed. Widening a helper
+later is easy, narrowing a shipped one is not.
+
+**Why this needed a gate at all:** it changes render output on shipped blocks, and three blocks
+currently implement hover three incompatible ways. The only pre-existing shared hover helper is
+`sgs_border_gradient_css()` (`includes/helpers-tokens.php:1006`, 21 callers), which covers gradient
+borders only. Measured impact of landing it: the conversion pass moves from ~30-40% mechanical to
+~70-80%.
+
+## D676 [ROUTINE] — the `selected` → `current`/`active` rename is DEFERRED, and the argument against it was weaker than stated (2026-08-19)
+
+Bean asked to rename the third colour state. Initial advice was to prefer `current` because `active`
+would collide with `pressed` (`:active`). That argument is weak: `pressed` exists only in
+`cluster-member-sets.json`'s unread `states` block with zero DB rows (see D673). The real constraint
+is different and smaller — `selected` has 16 live rows and a derivation chain
+(`extract-signatures.py` → `css-property-classifications.json` → `/sgs-update`), so `css_state` is a
+DERIVED column and a direct UPDATE would be silently undone by the next reseed. The migration is 9
+ordered steps across the classifier, 4 `block.json` files, the classifications cache, the seeder run,
+a survey script, the spec and two `edit.js` UI literals, and step 5 is a shared-DB reseed affecting
+other live sessions. Deferred pending that coordination, not decided against.
+
+## D665 [ROUTINE] — colour placement: an element is anything with its OWN PANEL (2026-08-18)
+
+**Bean-locked.** D622 said element-scoped colour goes in its element's panel; `SgsColourPanel.js`'s
+docblock (a day earlier) said all colours group in one panel. Both are right for different blocks;
+the missing definition was "element". Bean's: *"block equivalents, real concrete pieces."* The rule:
+**root-level colours → the global Colour panel; a piece that HAS its own panel keeps its colour in
+that panel; anything a child block owns never appears in the parent.** Leaf blocks group by
+construction, which is why 60 blocks are already conformant. Hero needs ~7 rows not 12 — its
+headline/sub-headline/CTA are InnerBlocks children owning their own controls. **This replaces the
+308-row manifest as D4's population**: 68 `isWrapper` + ~90 `clusters: []` entries are exactly the
+false positives it excludes, leaving 138 elements across 50 blocks. Per-family placement was
+rejected — it splits one piece's appearance across three panels, which CO-2 bans and which Kadence
+and Spectra both avoid. ⚠ Correct `SgsColourPanel.js:26-32`'s docblock, not the component.
+
+## D666 [ROUTINE] — inspector detectors are RULES, never standalone scripts (2026-08-18)
+
+Three `/adversarial-council` personas converged independently. Verified: `run.js:99-105` throws if a
+rule has no `selfTest`; `run.js:172` hard-fails the build on a rule file absent from `rules.json` —
+so **D493's "built a detector, never wired it" is structurally impossible inside**
+`scripts/inspector-scan/`. Six standalone scripts would re-open it, add six segments to a
+3,491-character single-line `prebuild`, and cost ~4-6s of redundant re-parsing versus under 1s as
+rules sharing the AST cache. Shipped as slots 28/29/30/33. ⛔ Never widen a live gate's corpus in
+place (rule 24's house ruling at `:26-33`) — open a new advisory slot. ⚠ Known consequence: the
+build goes RED between "agent delivers a rule file" and "main registers it". Transient; register
+promptly.
+
+## D667 [ROUTINE] — the advisory ratchet: openBacklog was read by nothing (2026-08-18)
+
+`rules.json` carried `openBacklog` on 19 rule entries and **no code read it**. `computeExit` now
+fails an advisory rule whose flagged count exceeds its declared backlog, so debt may only fall; an
+advisory rule with no numeric backlog also fails, closing the silent opt-out. **Re-baselined FIRST —
+enabling it naively would have red-lined the build on three rules.** What that exposed:
+`21-render-without-control` had grown **129 → 259 unnoticed**; `23` 0 → 1; `22` had no backlog key at
+all; and five others (`18`, `03`, `07`, `26`) had debt that was CLEARED and never recorded. Both
+directions were invisible because nothing compared the two numbers. ⛔ NOT done via
+`core/baseline.js` seeding — that path deliberately refuses to let seeded entries suppress.
+
+## D668 [INCIDENT] — rule 30 flagged 4 false positives: a THIRD box storage shape exists (2026-08-18)
+
+Caught before any of the four were "fixed"; acting on them would have replaced correct controls with
+ones that silently drop the client's value. Spec 35 §12 field 3 names two storage shapes. A third is
+legitimate: a **flat box object** `{top,right,bottom,left}`, deliberately non-tiered, rendered via
+`sgs_box_object_shorthand( array $box )`, for which a plain `BoxControl` is CORRECT —
+`ResponsiveBoxControl` would store a tier object and drop the value. Both read `"type":"object"`
+with an empty default, so the schema cannot separate them; the discriminator is whether
+`Tablet`/`Mobile` SIBLINGS exist. Evidence at source: `nav-menu/edit.js`'s own comment and
+`product-card/render.php:294-295`. The rule classified on "is there a `ResponsiveOverride`
+ancestor?" and never opened `block.json` — **despite its own docblock saying classification must be
+by storage shape.** A second bug surfaced fixing it: **`ctx.cache.json()` returns an
+`{ok, error, data}` WRAPPER**, so reading `.attributes` yields undefined and silently disables the
+rule. Its self-test caught that by reporting the mustFlag fixture as no longer flagging.
+
+## D669 [ROUTINE] — the Simple-surface cap stays at 3; the COUNTER was wrong (2026-08-18)
+
+Bean asked why a cap of 3 exists. It is FR-37-27, Bean-confirmed, with a stated reason (a
+tech-illiterate client can unpin a control they rely on and get a missing setting with no trail).
+**The cap is sound; `check-simple-surface-cap.js` was over-counting.** Two bugs: ZERO occurrences of
+`initialOpen`, so a `<PanelBody initialOpen={false}>` — closed on load, the oldest
+progressive-disclosure mechanism in the editor — had its contents counted as default-visible; and it
+counted a `<Notice>`, a conditional contrast WARNING, as a control. Fixing the counter alone:
+**site-footer 7 → 3, WITHIN cap**; site-header 6 → 5. Two regression fixtures added. site-header's
+remaining 5 is DRIFT, not a cap problem — Bean's 2026-08-13 F2 ruling kept exactly two
+default-visible; `BackgroundPanel`, `minHeight` and `Layout preset` arrived later because nothing
+enforced it. Raising the cap would bless the drift. Which three move behind disclosure is Bean's.
+## D661 [INCIDENT] — CHECK 5's comment stripper swallowed 715 lines; all 24 advisories were false (2026-08-18)
+
+`check-dead-controls.js` printed **24 dead-assignment advisories on every build, every one false,
+all on `sgs/hero`**. `stripPhpCommentsForAssignmentCheck()` stripped `/* */` block comments in a
+pass BEFORE `//` line comments. `hero/render.php:313` is an ordinary line comment reading
+`the *Tablet/*Mobile siblings …` — the `/*` inside it opened a phantom block comment that did not
+close until another `//` comment at `:1028` happened to contain `*/`. ~715 lines were deleted before
+the liveness check ran, including every genuine use of the attributes then reported dead.
+
+**The first diagnosis was wrong and is recorded here because the wrong one is instructive:** the
+liveness logic (Rule 3) was blamed and is in fact correct. Prescribing "make it test variable
+liveness" would have sent someone rewriting working code and left the bug. Fixed with a single
+alternation pass so whichever comment style STARTS FIRST wins — reordering the two passes instead
+would only mirror the defect (a `//` comment containing `*/` would leave an unterminated `/*` and
+leak comment text back in, a false NEGATIVE).
+
+CHECK 4's shared `stripComments()` already carried a regression test for this exact shape; CHECK 5's
+separate *"a simpler pass is sufficient"* stripper never did. It does now (Test G), proven
+non-vacuous — against the old stripper the planted use drops 2 occurrences → 1 and the test fails.
+24 → 0. Test A still passes, so the guard is not merely silenced. **This single bug caused three of
+four wrong findings in the audit wave that ran alongside it.** Commit `a2bdbae7`.
+
+## D662 [ROUTINE] — device-tier breakpoint 599→767 on 4 stylesheets, NOT 9 (2026-08-18)
+
+`SGS_Breakpoints::MOBILE_MAX = 767`, but `info-box`, `tabs` (×2), `gallery` and `post-grid` still
+stacked at 599px — so at 600–767px they kept their wider layout while the shared wrapper had already
+switched to the mobile tier. Fixed, deployed, live-verified on the canary.
+
+Three scoping decisions, each of which a blanket sweep would have got wrong:
+- **`form/style.css:120` deliberately untouched.** Its 599px sits inside
+  `@supports not (container-type: inline-size)` — a container-query fallback, not a device tier.
+- **`post-grid` needed a companion edit.** Its tablet block is an explicit RANGE
+  (`600px <= width <= 1023px`), not a cascading max-width, so raising the mobile ceiling alone would
+  have left 600–767px matching both blocks — tablet wins on source order and silently cancels the fix.
+- **`countdown-timer`, `google-reviews`, `process-steps`, `trust-bar` excluded** — cosmetic rules
+  (font-size/gap/padding/touch-target); two already carry correct 767px tiers elsewhere.
+
+⚠ CLAUDE.md cites "D228, unified 2026-06-16" for the 599 retirement. **That D-number does not
+resolve to that content.** The 767/1023 standard is real and verified in code; the citation is not.
+Commit `efe5c2a3`; evidence `reports/2026-08-18-breakpoint-599-to-767-live-evidence.md`.
+
+## D663 [ROUTINE] — Stage 8 runtime audit: ONE Lighthouse run, not three bespoke scripts (2026-08-18)
+
+`plans/strategy/chrome-devtools-stage-8-integration.md` specified three scripts, each "calling" a
+Chrome DevTools **MCP** tool. Two corrections, both load-bearing:
+
+1. **A Node script cannot invoke an MCP tool** — MCP is an agent-session channel. As specified these
+   would only ever run with Claude driving. Built as real scripts (Playwright/`lighthouse`) so they
+   run in CI unattended.
+2. **Lighthouse already ships two of the three audits** (`errors-in-console`, `network-requests`), so
+   two scripts would have re-implemented Google's own work. One browser run now yields Core Web
+   Vitals + console + network. Found by GitHub research BEFORE building, at Bean's prompting.
+
+Cross-tier review then proved the first cut **reported OVERALL PASS on a page that never loaded** —
+seven scenarios incl. main-document 404/500 — because Lighthouse returns an `lhr` carrying
+`runtimeError` rather than throwing, and nothing read it. Also proved the self-test could not detect
+**8 of 10** injected mutations, including `>` → `>=` on all four CWV thresholds. Fixed: new `error`
+severity ranked worse than `critical` (distinguishing *this page is bad* from *we could not measure
+it*); self-test 24 → 68 assertions with exact-boundary and per-field value checks. A missing
+`favicon.ico` no longer fails the gate — Lighthouse reports network 404s as console errors, and
+console-`critical` now counts genuine JS exceptions only. **Deliberately NOT wired into `prebuild`:
+it needs a live URL, and a gate that silently passes when the target is unreachable is worse than
+none.** PR #31, not merged.
+
+## D664 [ROUTINE] — plans-folder audit: 14 archived, verified against source not status lines (2026-08-18)
+
+38 plan docs audited by checking **code**, not the docs' own `status:` lines — which were wrong in
+both directions. 14 archived (plans root 29→20, strategy 9→4), **58 citations repointed first**.
+
+The load-bearing finding is where the citations were: four `mega-aside` source files carry
+`GROUND-TRUTH: verified against …` headers, eleven strict-`xfail` test decorators name a plan as the
+record for the Spec 39 residual they carry, and `goals.md` — an ACTIVE doc — cites three "dead"
+April docs across four live goal rows. A docs-only sweep would have broken all of it.
+
+⚠ **`handoff-preflight.py`'s dangling-link check does not cover this.** It scans three files and only
+`[text](path.md)` markdown syntax — structurally blind to code comments, spec body text and
+`goals.md`. The repo-wide `git grep` was the real gate; preflight is secondary. Do not cite it as
+proof that a doc move is safe.
+
+Bean's rulings recorded: Spec 31 is superseded by **Spec 39** (archive-and-salvage the current
+converter scripts, do not delete); Snooza remains live; the leftover `scroll-smoother` registry row
+stays (inert, and unrelated to the Lenis desktop smooth-scrolling that is actually shipped).
+Reference docs fold into specs as **Parts** (`Spec 35 Part O` precedent) — decimal `spec_id`s were
+rejected because the spec template mandates `spec_id: <N>  # integer`.
+
 ## D656 [ROUTINE] — Step 1b added: unnumbered normative statements are TRIAGED, never demoted (2026-08-18)
 
 S1 found all six of Spec 32 §3's "hard constraints" were binding, unnumbered and carried no
@@ -3077,36 +3424,6 @@ Measured: **radius** — 12 of 83 blocks ship `…borderRadius{Tablet,Mobile}`, 
 
 **Method note:** the survey's own border output named 2 false-positive preset-`SelectControl` violations (see D561) — a census is an input to a ruling, never the ruling.
 
-## D559 — Per-device VALUES are universal; only the container-query DOM behaviour stays opt-in [INCIDENT]
-
-**2026-08-11, Bean-directed**, verbatim: *"Shouldn't all blocks opt into the responsive-model by default since all have multiple css attributes that are responsive?"* — correct, code now reflects it.
-
-`SGS_Container_Wrapper` gated object-value emission on a per-block `responsive_model=>'object'` opt only THREE blocks set. The flat path blanks an array via its own `is_array()` guard, so migrating `gap` to an object would have left ~15 blocks emitting no gap at all, silently. Entry is now ungated — whichever block carries an object-shaped value gets it emitted, universal by DATA not flag (a per-block opt-in for a framework-wide capability was the R-31-9 carve-out this rule forbids).
-
-⛔ **The flag was NOT deleted; the DOM half stays opt-in**, renamed `container_queries=>true` since it bundled two unrelated things: `container-type`, `$grid_on_inner` (`:622`), and forced `$do_wrap` (`:2297`) relocate grid/flex onto a `__inner` element and make it render — a real layout change only some blocks want. Old name claimed to govern responsiveness generally, which is now false.
-
-**Safe because measured:** both paths emit to `$grid_sel` (`:1284`), `.$uid` unless `$grid_on_inner`, exactly where the flat gap path emitted. `container` passed as `$container_queries` so a non-opted block gets working `@media` tiers without a duplicate `@container` set that could never match. Live positive control on `sgs/container` (never opted in): 64px desktop / 8px mobile, no `__inner` forced.
-
-## D558 — P2: a collapsed tier object carries `css_tier = NULL`; the fossil is cleared at seed time [ROUTINE]
-
-Rule derived from live data: a base attr with per-tier SIBLING ROWS is one tier among several, correctly `css_tier='desktop'` (per `db_lookup.py:1216-1242`, `_base_clause`). A base with NO sibling rows holds every tier inside its value, so `NULL`. Every pre-existing collapsed family (`maxWidth`, `contentWidth` on row blocks) was already NULL — this names the existing convention.
-
-**Why a seeding step is required, systemically:** collapsing a trio retypes the base to `object` and deletes siblings, but nothing clears the base's now-meaningless `css_tier` — Stage 1's UPDATE never touches derived routing columns, Stage 9's prune deletes sibling rows without looking at the base. All 160 planned migrations would leave the fossil. `_reconcile_object_family_tiers` (Stage 1 sub-step C2) clears it.
-
-⚠ **The first version of the rule was WRONG and did live damage:** without an "attr must not itself be a tier sibling" clause it inverted — `contentPaddingMobile` (itself object-typed) always answers "no `…MobileTablet` sibling", so a SIBLING read as a collapsed base and lost the column keeping siblings out of base selection. Cleared 12 rows across hero/label/team-member before the idempotency control caught it (second run must report 0, reported 12). All restored; tier-carrying rows verified 313→342 against session-start snapshot (up, not down).
-
-## D557 — The css-property classifier is wired into `/sgs-update`, and ORDER is load-bearing [ROUTINE]
-
-Task A (`extract_css_property_and_layer`) had to be run BY HAND and evidently hadn't been for a long time — the derived `css_property`/`css_layer`/`css_element` layer was a frozen snapshot, stale where populated, absent for newer blocks. That, not object shape, is why gallery's `maxWidth` kept a `css_property` while both row blocks' had none: a fossil, not a rule. Wired as Stage 1 sub-step B2.
-
-⛔ It MUST run BEFORE sub-step C, which reads the file it regenerates. First placed in the Stage 1 tail (mirroring the Task B seeder) — made the pipeline lag one run behind, needing two runs to converge. Entries 1043→1125; all three object blocks now resolve `max-width`/OUTER/wrapper. Surfaced 7 pre-existing stale rows (attrs deleted at D540) and 2 real hero routing collisions; Stage 9 pruned 94 orphan rows; `db-consistency` went from FAILING to exit 0.
-
-## D556 — `sgs/hero`: two attribute families were writing `height` to the same element [INCIDENT]
-
-`splitImageHeight`/`…Tablet`/`splitImageMobileHeight` and `imageHeight`/`…Tablet`/`…Mobile` both wrote `height` to `.sgs-hero__split-image`, each with its own inspector control. Live resolver silently picks the first by rowid order; column-first resolver raises `AmbiguousLayerAttrError` at clone time. `splitImageHeight` family was added earlier the SAME DAY by Phase 1.4c tier promotion — correct on its own terms, but couldn't see the collision because routing data was stale (D557). Largely a same-day revert.
-
-`imageHeight` survives (configurable unit, no forced `object-fit`, conventional tier names), becomes a tier object. Emission is now UNGATED (matching the removed family) — otherwise a hero setting height without choosing `custom` object-fit would silently lose it. Verified before/after on a real published hero: 39 measurements across 3 viewports, all identical, plus positive control proving the new attr applies (222px). ⚠ An earlier "zero hero instances" safety claim was measured against the WRONG SITE (`feldeluxe.com` of 11 installs). Re-measured: 175 heroes on the canary, 14 affected rows, all revisions or trash, zero published.
-
 ## D555 — The retired Stage 3 is DELETED from `/sgs-update`, not documented around; 14 slots → 13 [ROUTINE]
 
 **2026-08-10, Bean-directed**, verbatim: *"if stage 3 of sgs-update has been retired or merged into stage 2, then it should be removed from the list and leave us with 13 stages instead of constantly wasting time and tokens mentioning and reading on a retired stage"*.
@@ -3226,17 +3543,6 @@ A property may have one, both, or neither.
 
 **Graceful window verified:** wrapper's base-spacing read (`:1056-1076`) isn't gated by `$object_model`, so an un-migrated instance keeps its old padding after deploy instead of losing it instantly.
 
-## D547 — Four measurement reversals during the toggle build, each caught before ship [ROUTINE]
-
-**2026-08-10.** Recorded separately from D546 as durable methodology lessons.
-
-1. **Store-only re-mount trigger was INCOMPLETE.** An earlier draft concluded "no MutationObserver required" from one measured transition (n=1). Toggling distraction-free destroys/recreates the inspector node while `getActiveComplementaryArea` never changes, orphaning a `useSelect`-only portal permanently. Fix: observe `.interface-interface-skeleton`, proven to survive every measured transition.
-2. **First deploy didn't work and every gate said it did.** Unprefixed `ToggleGroupControl` is `undefined` on this WP version (only exported as `__experimentalToggleGroupControl`) → React error #130, but build/gates/stylesheet all green. A CSS-only positive control (red outline) would have passed on a component that never mounted. Fix: pair a CSS positive control with a `data-*` mount-marker positive control, asserted live — neither substitutes for the other.
-3. **`createPortal` appends, not prepends.** Toggle first landed at the bottom of the sidebar below "Advanced" while every automated assertion passed; only the screenshot caught it (R-31-13 — script + eye both required).
-4. **`getBoundingClientRect()` produced three false alarms.** Reports layout box only, ignorant of ancestor `overflow:hidden`/viewport edge — a closed sidebar read 32×106 and looked like it bled over the canvas; `elementFromPoint` at the same coords correctly returned the canvas. Use `elementFromPoint`/`elementsFromPoint` for visibility/paint-order, not `getBoundingClientRect`.
-
-**Fifth, process-level finding:** the plan's inherited edit range for Phase 1.2 ("delete `ResponsiveControl.js:115-129`") would have shipped a `ReferenceError` (`breakpoint` declared in that range, read at six later lines) — passed the build regardless because `lint:js` is not in the `prebuild` chain. Actual edit set derived by listing every reference to every symbol first, not trusting the plan's line numbers. `npm run build` exit 0 is necessary, not sufficient, for a deletion.
-
 ## D546 — The ONE global device toggle ships; ~192 per-control strips deleted; the two remaining device models converge onto it [ROUTINE]
 
 **2026-08-10.** Five commits on `main`: `66ce8502` (Phase 1.1, additive) → `63e8a481` (Bean's Gate 1 review) → `0b1e452e` (pinned to sidebar bottom edge + per-tier cue dismissal) → `d406c73c` (Phase 1.2 — delete per-control strips) → `b202157e` (Phase 1.3 — split-brain components + pill alignment + hover contrast). Design gate: `plans/archive/2026-08-10-global-device-toggle-design.md` (BUILT). Prior research: D545.
@@ -3250,20 +3556,6 @@ A property may have one, both, or neither.
 **Known open item:** the deleted strips marked tiers with no own value as "(inherited)"/"(customised)" — the global toggle can't show this; restoring it needs its own design, must NOT re-add a per-control switcher. Not parked pending Bean's priority call.
 
 **Not started this session:** Phase 1.4a/1.4b/1.4c and Phase 2.1. Items 1.6/1.6b (advisory inspector-scan rule + Playwright detector) BOTH SHIPPED this session (`925fa3da`, `99859d38`) — an earlier draft called them "in progress", caught by QC council; lesson: a parallel-dispatch brief written before branches land goes stale the moment they do.
-
-## D545 — Phase 1 is a judgement problem, not a volume problem; and the ecosystem already agrees with us [ROUTINE]
-
-**2026-08-09.** Three parallel research branches (GitHub prior art, Phase 1 delegability, future-phase automation leverage), every claim re-verified locally.
-
-**Ecosystem convergence:** five competitors (Kadence, Otter, Spectra, Stackable, GenerateBlocks) all read/write device type via `core/editor`'s `getDeviceType`/`setDeviceType` — STABLE not experimental (`packages/editor/src/store/selectors.js:1346`, `actions.js:808-819`, no experimental tags, no rename in flight). GenerateBlocks already ships the exact planned UX (one portalled tab strip + localStorage); no reusable component exists to adopt, every plugin bundles its own thin wrapper. Codemod tooling all MIT-licensed (`ast-grep`, `jscodeshift`, `ts-morph`, `putout`) — no licence problem, Gutenberg ships no codemod package itself. No open-source Gutenberg inspector-surface auditor exists (validates the hand-built `survey-inspector-surface.js`); `@wordpress/e2e-test-utils-playwright` has no device-preview/inspector-enumeration helper (validates D544's hand-rolled calibration).
-
-**Phase 1's real shape, measured, plan wrong twice:** blast radius 73 `<ResponsiveControl>` call sites across 32 files; `<DeviceTabs>` rendered directly in only 4. ⚠ Plan's "~192 switchers/33 files" is a runtime count vs this session's source count — different metrics, quote the unit. ⛔ Item 1.4 names 4 sibling-merge sites; only 2 are that shape — `hero/edit.js:906` and `:1006-1017` are standalone mobile-only settings with no desktop/tablet counterpart. Split into 1.4a/1.4b (SCRIPT) and 1.4c (SENIOR design call).
-
-**Delegation map:** 1.2 (delete DeviceTabs) + 1.3 (two components off local state) = DELEGATE; 1.4a (`image-controls.js`)/1.4b (`ContainerWrapperControls.js`) = SCRIPT (codemod proposes, human signs off — D521-class silent-coercion risk); 1.1/1.5/1.4c = SENIOR. ~25-30% of Phase 1's edit sites are scriptable; the rest is judgement around few edits. Parallelism: 1.2/1.3/1.5/1.6 share a file cluster (one sequential branch); 1.4a/1.4b are file-disjoint (safe to parallelise).
-
-**Automation leverage for later phases:** Phase 3.2a (length migration) highest — survey finished, needs only `--fix`. Phase 2.1 (opt-in inversion, 59% of inspector surface) gated on a derivation — ⛔ `hideExtensions` is NOT a sound basis (it's the denylist being replaced, undercounts: 26/83 opt out but 48 blocks rely on hover solely); sound signal is actual usage in stored `post_content` via `audit-post-content-blocks.py`'s method intersected with `check-universal-fit.js`. Phase 4, 1.5, 3.2b are blocked on decisions not scripts.
-
-**Two citation defects fixed:** `scripts/wp-migrate-oldshape-blocks.js` was claimed not to exist — ⚠⚠ THIS WAS ITSELF FALSE, corrected 2026-08-11 (Bean); it exists at repo root, tracked since `1d13997d`; two sessions independently "verified" it missing while another cited it as real elsewhere in the same file — a false absence propagated for weeks because nothing trips over it. All five survey detectors built this session had zero `package.json` references (repo's own `a-gate-can-be-built-and-never-wired` pattern) — fixed with named `survey:*` commands + `survey:selftest` (40 assertions); deliberately NOT added to `prebuild` (censuses in `--survey` mode, no `--check` yet). Also wired: `audit:post-content`, `audit:element-manifest`, `audit:placement-reach`. ⚠ The rest of `scripts/` absent from `package.json` is not evidence of orphaning — sampled scripts were referenced from docs/siblings, on-demand by design.
 
 ## D544 — The live editor says the dominant term is the EXTENSION LOAD, not the block [INCIDENT]
 
@@ -4552,14 +4844,6 @@ Commits `447af400` · `d58d0d0d` · `ceac2c8d` · `71bbc8dd` · `21144dd4` · `4
 **Bean-carved exclusion (load-bearing): block VISIBILITY does NOT inherit.** Reasoning: per-device hiding is usually device-SPECIFIC content (hidden on desktop because it exists for mobile) — under inheritance a desktop-hide would cascade everywhere and the block could never render. So `sgsHideOnMobile/Tablet/Desktop` keep today's 3 independent switches — no reshape, no tri-state. **Reverses** the D4/D358 plan to reshape responsive-visibility onto the cascade. Scope split: Spec 37 §3.8's header/footer content curation keeps its down-cascade (correct model for header items); general block visibility is independent. Spec 35 D4 + Spec 37 §3.8 amended accordingly. Sequencing: T0.2 contract → T1.1 build → fresh T1.4a header-behaviour inventory → FR-37-14.
 
 **T2.2b approved + landed:** `SGS_Container_Wrapper` routes `shadow` + `gridItemShadow` through `sgs_shadow_value()` (preset slugs unchanged, raw ShadowControl CSS passes through, breakout-guarded post-`ceac2c8d`) — unblocking container/hero/trust-bar's ShadowControl swap and the preset-only-shadow WARN class.
-
-## D399 [INCIDENT] — Gate 3 closed: mega proven live; the panel was a 101px sliver painted UNDER the footer — two z-order/anchor root causes, both draft-grounded fixes (2026-07-28)
-
-Fixture: panel 1745, menu 100 (Home·Brands[mega]·Recipes·Contact), page 1842 `/gate3-mega-nav/`. Full verification bank closed non-vacuously: 6/6 motion effects proven firing (stagger 0/28/56ms, indicator translate+width radius intact, magnet, caret 180°, spotlight tracking, card hover-lift); axe 0 OPEN drawer (openness-guarded, closing 2026-07-23 INCONCLUSIVE — proven vacuous without `--open`); axe 0 OPEN mega; keyboard no-trap + ESC/focus-return; reduced-motion end-state; JS-off crawl; CF-1 recursion live. Real visual-diff reports replace 3 prior INCOMPLETE ones.
-
-**Two root-cause defects, both invisible to every prior probe** (nothing had ever opened the panel on a real page): (1) **Anchor** — wrap anchored to `<li>` (`.sgs-nav-menu__mega{position:relative}`), shrink-to-fit ~101×1371px, vs drafts' centred 1120px band on the header container. Fixed: centre on the bar (`left:50%/translateX(-50%)/width:min(1120px,100vw−56px)`), reposition pins to bar edge on overflow via `--sgs-mm-tx`, mega-only by selector (Bean ruling: plain dropdowns must NOT centre). In-drawer: `position:static;width:100%` accordion push (was overlaying items below). (2) **Stacking** — open panel painted under later page content; `.entry-content`/footer at `z-index:1`, equal-z later-context wins, footer hit-tested above panel, closed it via mouseleave 170ms later ("the unhoverable mega", Bean's exact prediction). Diagnosed by relatedTarget tracing (footer heading), not guessed; first hypothesis (elevate nav root) refuted by injection. Fixed: `site-header` base `position:relative;z-index:100` (matches sticky/transparent behaviours' value and draft's `z-index:200`) + per-instance `.entry-content:has(<uid> [aria-expanded=true]){z-index:2}`. Verified live post-deploy on both navs: slow-diagonal hover survives, leaving closes.
-
-Also fixed: `mega-general-2col-aside.php` supplied 4/5 locked-template children (`sgs/label` missing, D393 class, missed by 2026-07-27 sweep); theme 1.5.47→1.5.48. Recorded in Spec 36 §6a: plain (non-mega) dropdowns are NOT BUILT (render.php flattens submenu children, live-proven) — deferred not dropped per STOP-29. Open, Bean's call: the in-drawer panel inherits the drawer menu's 95px shrink-wrapped list (widening changes the verified drawer look). R-31-13 eye sign-off pending on delivered screenshot trio.
 
 ## D396 [INCIDENT] — Three "built but inert" bugs shipped past every green gate; mega DEFERRED follow-on + a new permanent asset gate (2026-07-27)
 

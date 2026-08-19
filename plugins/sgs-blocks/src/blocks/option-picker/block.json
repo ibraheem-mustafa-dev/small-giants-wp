@@ -85,7 +85,7 @@
 						"css:border-color-gradient": "pillBorderColourGradient"
 					},
 					"states": {
-						"selected": {
+						"current": {
 							"attrMap": {
 								"css:background-color": "pillSelectedBgColour",
 								"css:color": "pillSelectedTextColour",

@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-selectors-declared",
+	"title": "Fixture: declares native typography support but no `selectors` key at all — must NOT flag",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"attributes": {}
+}

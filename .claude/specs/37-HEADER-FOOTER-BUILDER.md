@@ -654,7 +654,11 @@ Footer mirrors this exactly.
 FIRST source**, ahead of the `wp_template_part` post and the file (CPT → template part → file).
 Carry forward the resolver's existing `transparent + contrastSafe='none' → 'scrim'` WCAG upgrade
 (`class-sgs-header-behaviours.php:218-228`) — a tri-state reshape (FR-37-14) plus scoped CSS
-(FR-37-15) drops it silently otherwise.
+(FR-37-15) drops it silently otherwise. **⚠ Superseded 2026-08-19 by FR-37-44:** "carry forward"
+here meant "don't let the FR-37-6 CPT-first change accidentally drop this mechanism" — it was not
+a ruling that the SILENT rewrite itself is correct behaviour. D679 found the silent rewrite is a
+policy breach; FR-37-44 requires it become a visible, declinable notice instead. Carry the
+mechanism's WCAG intent forward; do not carry its silence forward.
 **⛔ FR-37-6 is GATED on this clause landing first.** Emptying the template part before the
 resolver is CPT-aware breaks every behaviour on both sites at once.
 **Status:** `✅ BUILT + CANARY-VERIFIED 2026-07-22` (commits `0da5ef6a` + `9ff24f74`). All four
@@ -793,6 +797,18 @@ composite-mirror. **FAIL, carried as follow-ups (§3-audit-carried below):** §3
 §3.5 promoted-palette, §3.6 container-queries. The §3.6 live overflow gate is FR-37-12 (canary).
 **Done when:** an audit against §3 is recorded per clause with a pass/fail and a `file:line`,
 and every fail is either fixed or carried as a named FR. ✅ met (findings + carried FRs below).
+
+> **D679 audit finding (2026-08-19) — 6 dead attributes DELETED from `sgs/site-header`.**
+> `alignContent`/`alignItems`/`columns`/`flexDirection`/`flexWrap`/`justifyContent` were declared
+> on `sgs/site-header` but could never render: they were copy-pasted from
+> `sgs/site-header-row`'s `block.json` without also copying the `layout` attribute the emit gate
+> requires to act on them. `check-dead-controls.js` could not catch this because it detects the
+> INVERSE class of defect (a control whose attribute renders nothing) — these six had no control
+> at all, so there was nothing for that lint to flag. All 6 are now removed from
+> `sgs/site-header`'s `block.json`.
+> The identical six attributes on `sgs/site-header-row` are UNTOUCHED and remain LIVE — that block
+> genuinely declares `layout` (enum `flex|grid`, default `flex`), so the emit gate's requirement
+> is satisfied and the row's controls render correctly.
 
 #### FR-37-10 — `sgs/site-footer` + `sgs/site-footer-row` conform to §3
 As FR-37-9, against §3.2, §3.3, §3.4, §3.6.
@@ -939,6 +955,12 @@ for context. Two corrections from the D375 live verification (now resolved by fi
    `site-header/block.json:76` `headerHideOnScroll` (boolean) + an Advanced ToolsPanel control in
    `site-header/edit.js` + `class-sgs-header-behaviours.php:205,264` emits the
    `sgs-header-behaviour-hide-on-scroll-down` body class. sticky/transparent/shrink are likewise wired.
+   **⚠ CORRECTED 2026-08-19 (D679 audit).** This note is itself now stale in one respect: it still
+   describes `headerHideOnScroll` as a `boolean` at `site-header/block.json:76`. That is superseded
+   by FR-37-14 (`e4bd72ef`+`eb255f06`, 2026-07-28, T1.4) — the attribute is an OBJECT tri-state
+   (`{desktop,tablet,mobile}`) now, not a flat boolean, and line 76 no longer describes it (the
+   citation was left in place when FR-37-14 shipped). Read FR-37-14 for the current shape; this
+   paragraph is retained only as the historical record of the D375/D376 wiring fix.
 2. **But the JS + CSS layer targets an element no SGS header renders, so ALL THREE scroll behaviours
    (transparent, shrink, hide-on-scroll) are silently dead.** `header-behaviours/view.js:42`
    `getHeaderEl()` = `document.querySelector('header.wp-block-template-part')`, and
@@ -1217,7 +1239,24 @@ control *somewhere* (Advanced satisfies it) and is **WARN-ONLY, always exits 0**
 `check-simple-surface-cap.js` governs only which controls are default-visible.
 `sgs/site-header` already uses `ToolsPanel` disclosure (`site-header/edit.js:116-230`), which is
 the mechanism that reconciles them — it is not a design problem to solve.
-**Status:** `NOT-BUILT` — `check-simple-surface-cap.js` does not exist (verified: 0 files).
+**Status:** `GATE BUILT` — **CORRECTED 2026-08-19 (D679 audit).** This FR previously said
+`NOT-BUILT` — "`check-simple-surface-cap.js` does not exist (verified: 0 files)" — while this
+spec's own §5 build-status table already said `GATE BUILT` for the same script. That was a
+self-contradiction, not a real ambiguity: **the script exists.** As of 2026-08-19 it scans FOUR
+blocks — `sgs/site-header`, `sgs/site-footer`, `sgs/site-header-row`, `sgs/site-footer-row` — the
+two ROW blocks were added that day; before, half the header surface (the rows) had no computable
+Simple-surface check at all.
+
+**Known limitation, now recorded rather than left implicit:** the script counts a composite
+component mount as **ONE row** without opening the component to see what it actually renders.
+Measured wrong in both directions on `sgs/site-header-row`: `RowScrollBehaviourControls` counts as
+1 row but renders THREE `isShownByDefault` toggles (undercounted by 2); `ResponsiveBoxControls`
+counts as 1 row but exposes ZERO default-visible toggles (overcounted by 1). Net effect:
+`site-header-row`'s reported figure of 6 default-visible controls is really about 7 — the two
+errors partially cancel but do not exactly cancel, so the reported number is not exact. **Every
+figure this script produces for a composite-mounting block is an approximation, not a census** —
+per the project's standing rule against quoting a soft number as a measurement, this must be
+stated wherever the script's output is cited, not just here.
 **Done when:** both containers show exactly the Simple controls in the table above by default;
 the lint REPORTS a fourth as over the default — advisory, never a build blocker.
 
@@ -1402,6 +1441,30 @@ always visible.
 unaffected; and — proven — pointing the target at the logo makes the server emit NO
 `data-sgs-row-shrink-hide` and no hide rule, while still emitting `data-sgs-row-shrink`.
 
+> **D679 finding (2026-08-19) against FR-37-37/38/39: header-level and row-level behaviours look
+> duplicated but are NOT redundant.** `transparent`, `shrink`, and `hide-on-scroll` each exist at
+> BOTH the header (D376, FR-37-13/14/15) level and the row (this section's FR-37-37/38/39) level.
+> A measured comparison confirms each pair produces genuinely different rendered output:
+> header-level `transparent` lifts the whole header out of document flow and triggers the WCAG
+> contrast safeguard (FR-37-44), while row-level `rowTransparent` only changes ONE row's
+> background, with no WCAG interaction. Header-level `shrink` shrinks the header's own padding
+> globally; row-level `rowShrink` shrinks that specific row's padding and can additionally hide one
+> chosen non-essential child (FR-37-39) — a capability the header level does not have. Header-level
+> `hide-on-scroll` translates the WHOLE header off-screen; row-level `rowHideOnScroll` collapses
+> ONE row to height 0 while the header is pinned (FR-37-40), leaving the rest of the header intact.
+> **Deleting either layer loses real capability — this is not redundancy to consolidate.** The
+> actual defect is that both layers are LABELLED IDENTICALLY (e.g. "Transparent" appears as a
+> control on both the header and the row), so an operator has no way to tell which layer they are
+> configuring. **Ruling: rename the ROW-level three controls to disambiguate them from the
+> header-level three; do not delete either layer.**
+>
+> **Competitor evidence (supporting context, not the reason for the ruling):** Kadence, Astra and
+> Blocksy each implement a scroll behaviour (transparent/shrink/sticky-style) at ONE structural
+> level only — none of them offers the same toggle at both a container level and a row level.
+> But none of them SPLIT a single behaviour into two genuinely different mechanisms the way SGS
+> did either — this is a real product difference, not a bug to converge toward parity with a
+> competitor.
+
 #### FR-37-40 — Sticky model: HEADER-level, rows collapse
 `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7` scroll-padding gate / D391; `494e5d50`
 collapse + guard / D392). Design gate `plans/archive/2026-07-26-per-row-sticky-mini-design.md`,
@@ -1444,6 +1507,16 @@ reclaims flow space, so a slid-away row still occupies its height and leaves a v
 translating — the header genuinely shrinks with no gap, and its existing ResizeObserver
 re-publishes the height. When the header is NOT pinned, the shipped `translateY(-100%)` behaviour
 is unchanged and must stay byte-identical (the regression test).
+
+> **⚠ D679 correction (2026-08-19) — do not cite Kadence as proof that per-row CSS `sticky` is
+> viable.** Kadence DOES ship a per-row "which row survives while pinned" feature, and a later
+> reader who spots that could mistake it for evidence against this FR's rejection of per-row
+> `position: sticky`. It is not: Kadence implements it with **JS `position: fixed` plus a
+> measured placeholder spacer element**, not CSS `position: sticky`. That is a different and
+> considerably bigger mechanism than the one D389 rejected — it sidesteps the short-parent trap
+> by never relying on `sticky`'s containing-block behaviour at all, at the cost of a JS
+> measurement + spacer layer this spec's approved model does not need. Kadence's existence does
+> not contradict D389; it demonstrates a different, heavier solution to a related problem.
 **The multi-row offset chain is explicitly NOT to be built** — under a single sticky element there
 is nothing to chain.
 **Footer rows get NO sticky.** A strip pinned to the viewport bottom is a **Spec 18 Floating UI**
@@ -1557,6 +1630,68 @@ shape added later needs a measured reference behind it.
 that shape on desktop and stacks to 1 on mobile with no further configuration; the stored value
 is `gridTemplateColumns` and nothing else; and the active-shape indicator is derived, verified
 by hand-editing the value and confirming NO shape shows as active.
+
+#### FR-37-44 — `contrastSafe` silently overrides an operator's explicit choice (D679 finding 1, 2026-08-19)
+
+**Current behaviour is a POLICY BREACH.** If the header is transparent on desktop and the
+operator has explicitly chosen "None" for contrast safety, the resolver silently rewrites that
+choice to `scrim` (`includes/class-sgs-header-behaviours.php:236-239`). The operator's explicit
+selection is discarded with no indication anywhere in the editor or on the frontend that it
+happened.
+
+This violates the locked rule `a11y-validation-feedback-informational-not-gate` — operator
+accessibility failures are NOTICES, never enforcement (see FR-37-19, which already establishes
+this principle for the rest of the header's a11y feedback). The WCAG 1.4.3 contrast reasoning
+behind the code is sound — an operator-chosen "None" over a transparent header genuinely can fail
+contrast — but silently overriding the stored value is the wrong mechanism for enforcing it.
+
+**Architecturally, `contrastSafe` is already the odd one out** among the five header behaviours:
+it is a flat string/enum, while its four siblings (`headerSticky`, `headerTransparent`,
+`headerShrink`, `headerHideOnScroll`) were reshaped to per-device tri-state objects under FR-37-14
+and explicitly left untouched by that reshape (D402 gate — see FR-37-14/FR-37-15). It also
+resolves through a SECOND, independent mechanism: a standalone `parse_blocks()` pass over the
+header template part that injects a BODY CLASS, rather than the scoped per-instance `<style>`
+emission (`sgs_emit_tier_rules()`) the other four behaviours use. This second-mechanism status is
+also why `contrastSafe` has **no editor preview at all** — the body-class path only resolves on
+the rendered frontend page, never inside the block canvas.
+
+All three contrast modes paint real, non-trivial CSS, so none of them is a no-op that could be
+silently dropped without visible effect: `assets/css/header-behaviours.css:79` (`scrim`, a
+pseudo-element `::before` darkening overlay), `:98` (`shadow`, a text-shadow legibility technique),
+`:108` (`force-solid`, drops transparency outright and forces a solid background).
+
+**Bean's ruling (2026-08-19):** make `contrastSafe` responsive (bring it onto the same per-device
+model as its four siblings), AND turn the silent upgrade into a visible notice the operator can
+accept or decline, rather than a value rewritten without their knowledge. Both changes are
+required — responsiveness alone would not fix the policy breach, and a notice alone would not fix
+the architectural inconsistency.
+**Status:** `NOT-BUILT` — ruling recorded 2026-08-19; not yet designed or built.
+**Done when:** `contrastSafe` is a per-device tri-state consistent with `headerSticky`/
+`headerTransparent`/`headerShrink`/`headerHideOnScroll`; an operator's explicit "None" over a
+transparent header is never silently rewritten — the operator sees a notice naming the WCAG 1.4.3
+risk and can accept the suggested `scrim` upgrade or keep "None"; and the choice made is the
+choice that renders.
+
+#### FR-37-45 — Transparent-to-solid scrolled colour is not client-reachable (D679 finding 2, 2026-08-19)
+
+**The mechanism exists but the client cannot reach it.** `sgs/site-header` already supports a
+transparent-at-top → solid-past-50px transition (`site-header/render.php:204-223`, keyed on the
+`.is-header-scrolled` class). What is missing is operator control over the pair: the scrolled
+colour is HARDCODED to `var(--wp--preset--color--surface,#ffffff)` at `render.php:218`, and the
+two states of the pair (which colour is "transparent" and which is "solid") cannot be inverted by
+the operator.
+
+Bean asked for both: a colour control for the scrolled state, and a direction switch so the pair
+can be inverted (e.g. a dark scrolled state instead of the hardcoded light `surface` token).
+
+**Constraint that any fix must preserve.** `render.php:204-217` carries the documented `!important`
+constraint recorded against `P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING` — read that block
+before changing the scrolled-state CSS; the `!important` is there because a lower-specificity rule
+was previously losing the flip entirely, not by accident.
+**Status:** `NOT-BUILT` — gap recorded 2026-08-19, not yet designed.
+**Done when:** the scrolled-background colour is an operator-set control (not the hardcoded
+`surface` token), the transparent/solid pair can be inverted, and the
+`P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING` regression stays fixed under the new control.
 
 ---
 

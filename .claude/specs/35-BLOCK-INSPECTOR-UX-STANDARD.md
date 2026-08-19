@@ -1307,8 +1307,16 @@ question.
 Where an element cannot be resolved, the control **stays exactly where it is today**
 and the ambiguity is reported — no-worse-than-today is the floor.
 
-**Applies to every state, not just hover.** `states.hover` and `states.selected` both render inline
-beside their base value (18 elements declare `hover`, 4 declare `selected`).
+**Applies to every state, not just hover.** `states.hover` and `states.current` both render inline
+beside their base value (18 elements declare `hover`, 4 declare `current`). ⚠ **Corrected 2026-08-19
+(D676/D678) — the third state's DB name is `current`, not `selected`.** Bean asked to rename it;
+`css_state` is a derived column (`extract-signatures.py` → `css-property-classifications.json` →
+`/sgs-update`), so the rename was a 9-step migration, applied via `/sgs-update --stage 1` and
+verified live: `block_attributes.css_state` now reads `current` (13 rows), `hover` (115 rows), no
+`selected` remains anywhere. `block.json` element `states` keys were migrated too (`option-picker`,
+`table-of-contents`, `tabs`, `breadcrumbs`). The canonical vocabulary now lives in
+`golden-controls.json`'s `_meta.stateVocabulary`, not `cluster-member-sets.json` (D673 — that file's
+own `states` block has zero readers and is documentation, not a source of truth).
 
 **Controls with no element** — anything injected by a universal extension in
 `src/blocks/extensions/`, and any block-wide setting — belong to no element by construction. Under
@@ -1374,7 +1382,8 @@ document remains the historical derivation; **this section is the schema.**
 `supports.sgs.elements`; 283 elements.** ⚠ Not "83 of 83" — that figure was inherited from the
 design doc and is wrong; 83 is the FILE count, 82 the DECLARING count. Quote the predicate. Key
 frequencies — `label` 283 · `order` 283 · `clusters` 283 · `attrMap` 149 · `prefix` 102 ·
-`isWrapper` 69 · `layer` 57 · `states` 20 (18 `hover`, 4 `selected`, 2 elements carry both).
+`isWrapper` 69 · `layer` 57 · `states` 20 (18 `hover`, 4 `current` — renamed from `selected`
+2026-08-19, D676/D678 — 2 elements carry both).
 
 ```jsonc
 "supports": { "sgs": { "elements": {
@@ -1393,7 +1402,7 @@ frequencies — `label` 283 · `order` 283 · `clusters` 283 · `attrMap` 149 ·
       "css:padding":   "native:spacing.padding"
     },
     "contentAttrs": [ "headline", "headlineTag" ],   // OPTIONAL — see below
-    "states": {                       // OPTIONAL — hover/selected values, nested INSIDE the element
+    "states": {                       // OPTIONAL — hover/current values, nested INSIDE the element
       "hover": { "attrMap": { "css:color": "colourTextHover" } }
     }
   }
@@ -1623,16 +1632,26 @@ Regenerate before building any gate on them.
 
 ### 1. COLOUR
 
-1. **Canonical** — `src/components/DesignTokenPicker.js`. No competitor exists.
+1. **Canonical** — `src/components/DesignTokenPicker.js`. No competitor exists. **Added 2026-08-19:**
+   `src/components/SgsColourPanel.js` is the grouped per-element PANEL that mounts `DesignTokenPicker`
+   rows (`rows={[{ key, label, states, gradientCapable }]}`) under D621/D622's Styles-tab placement —
+   the vehicle for the rule this whole section states, and the 60-of-83-block adoption route (D665's
+   Track A). It was never named here despite carrying the rule; named now. See
+   `plugins/sgs-blocks/scripts/consistency/golden-controls.json` for its machine-readable shape.
 2. **Required props** — `label`, `value`, `onChange`. `enableAlpha` and `clearable` already
    **default true** (lines 55, 57), so condition 4 was satisfied by construction, not by call sites.
-   `linked` only when the value should track a theme slug (D288). **`id` is REQUIRED and missing** —
-   line 86 passes `label` to `BaseControl` with no `id`, so every colour control in the framework is
-   unnamed to a screen reader.
+   `linked` only when the value should track a theme slug (D288). ✅ **`id` defect FIXED** — corrected
+   2026-08-19. Verified against `DesignTokenPicker.js`: `useInstanceId` (`:456`) generates one, passed
+   to both `BaseControl id={ id }` (`:482`) and the inner control (`:465`), so every colour control is
+   now named. ⚠ The IDENTICAL defect is still TRUE for `IconPicker` (§10) and `ShadowControl` (§11) —
+   verified separately per component; do not assume this fix propagated to either.
 3. **Banned lookalikes** — `ColorPalette`/`ColorGradientControl`/`GradientPicker`/
-   `PanelColorGradientSettings`; `<TextControl type="color">` (`star-rating/edit.js:155-168`);
-   raw `GradientPicker` inside `GradientOverlayControl.js:191`, reaching `container`, `hero`,
-   `trust-bar`, `cta-section` indirectly.
+   `PanelColorGradientSettings`; `<TextControl type="color">` (`star-rating/edit.js:155-168`).
+   ⛔ **Corrected 2026-08-19 — the raw-`GradientPicker`-in-`GradientOverlayControl.js` clause is
+   STALE.** Verified: `GradientOverlayControl.js:60` imports `SgsGradientPicker` (the SGS fork,
+   `src/components/gradient-picker/`), not core's `GradientPicker`, and mounts it at `:144`. The
+   4 wrapper blocks (`container`, `hero`, `trust-bar`, `cta-section`) reach the fork, not the
+   lookalike.
 4. **Tab — SETTLED 2026-08-15 (D621 + D622). Do not re-derive; both halves are now ruled.**
 
    **(a) WHICH TAB — Styles (D621).** The Colour panel renders in the **Styles** tab, first, above
@@ -1659,7 +1678,10 @@ Regenerate before building any gate on them.
  the control looks like.)*
 5. **Scope** — eligibility `surfaces.colour` (64); detection target `role='color'` (50 blocks,
    261 rows). The 14-block gap is a DB-completeness issue, not a control gap.
-6. **Conformance** — 49/50 conform. `sgs/star-rating` violates.
+6. **Conformance** — ✅ **Corrected 2026-08-19: `sgs/star-rating` no longer violates.** It now
+   mounts `SgsColourPanel` (`star-rating/edit.js:134`), so this field's stale "49/50, star-rating
+   violates" reads as 50/50 against the OLD (pre-D609) shape. This figure still measures the legacy
+   single-state shape, not field 9's state+shape rule — see field 9's corrected note on rollout.
 7. **Detection** — extend `inspector-scan/core/components.js` with a `writesColour` flag derived
    from each component's own source, exactly as `wrapsImage` already works for rule 18. This
    resolves indirect/shared-component cases transitively and catches lookalikes by semantic.
@@ -1682,6 +1704,27 @@ Regenerate before building any gate on them.
    exists in Gutenberg core to build against, and Bean ruled a bespoke stop editor 'not worth the
    time' once shown the real cost. So today, gradient stops do NOT route through this contract's
    canonical `DesignTokenPicker` anywhere in the codebase — native only."*
+
+8a. ⭐ **Added 2026-08-19 — gradient is THREE mechanisms, element-dependent, not one.** Prior text in
+   this field can read as a single gradient story; it is not. Which mechanism is correct depends on
+   what the row PAINTS:
+
+   - **Per-state toggle inside `DesignTokenPicker`** — background / border / icon gradients, via a
+     sibling `{attr}Gradient` string attribute carried on the state entry (`gradientValue` +
+     `onGradientChange`). This is field 9's row shape with its Solid/Gradient toggle.
+   - **`GradientCapableColourControl`** — TEXT gradients specifically. Text needs
+     `background-clip:text`, a genuinely different CSS mechanism from a painted background/border, so
+     it cannot reuse the state-toggle path above. Reached only via a `SgsColourPanel` row declaring
+     `gradientCapable: true` — never mounted directly.
+   - **`GradientOverlayControl`** — whole-block background overlay, SINGLE-STATE BY CONSTRUCTION (it
+     has no states concept at all). A row that needs hover cannot use this one.
+
+   **Enforcement must therefore be mechanism-aware, not binary.** Checking merely "does a gradient
+   path exist somewhere for this row" would pass a TEXT row wired to the background mechanism, which
+   renders nothing — the row would show green while the client's gradient never appears. This is a
+   required refinement to rule `31-golden-colour-control`'s `row-missing-gradient` finding kind, not
+   yet built into it. Source: `golden-controls.json`'s `controls.colour.canonical` block, which
+   already separates these three by name.
 
 9. ⭐ **THE STATE + SHAPE RULE — Bean-ruled 2026-08-13. This is the load-bearing addition to this
    section and it binds every colour in the framework, wherever it lives.**
@@ -1721,11 +1764,25 @@ Regenerate before building any gate on them.
    EXPECTED set, so "the same property behaves identically everywhere" is exactly what this clause
    makes checkable.
 
-   ⚠ **NOT YET BUILT. This clause is the target, not a description of the tree.** `DesignTokenPicker`
-   today is a labelled `BaseControl` with no state axis and no popover; delivering 9a–9c is a real
-   build on that component plus a rollout, and it must not be read as already satisfied. Its own
-   conformance figure (field 6, 49/50) measures the OLD shape and does not speak to this clause.
-   ⚠ Field 2's missing `id` defect stands and should be fixed in the same work, not after it.
+   ✅ **BUILT, as of 2026-08-19 — corrected; do not re-read this as "not yet built".** Verified
+   directly against `src/components/DesignTokenPicker.js`: the state axis exists (`hasStates =
+   states.length > 1`, `:205`), a `TabPanel` renders across states when `hasStates` (`:400-416`),
+   and a per-state Solid/Gradient `ToggleGroupControl` renders for any state carrying
+   `onGradientChange` (`:289-317`). All three elements 9a names — the thin swatch row, the in-popover
+   state tab toggle, the popover itself — are live in the component. What remains open is the
+   ROLLOUT, not the component: only 17% of colour rows carry 2+ states (see field 6's corrected
+   figure) — the other 83% still call the component with no `states` prop and render the single-state
+   legacy shape, which this same file continues to serve byte-identically from one default export.
+   The machine-checkable form of this clause now also exists — see field 9d below.
+   ✅ Field 2's missing `id` defect is FIXED — see field 2.
+
+9d. **Machine-checkable form.** `plugins/sgs-blocks/scripts/consistency/golden-controls.json`
+   (built 2026-08-19, D671) encodes this field's colour contract as DATA — canonical components,
+   banned lookalikes, minimum states, gradient-with-declared-exemptions, scope predicate, plus a
+   native-core-colour fingerprint — so enforcement measures against data rather than prose.
+   Enforced by `inspector-scan` rule `31-golden-colour-control` (advisory; 409 findings across 64
+   blocks at introduction, D674). Read the JSON for the exact figures; do not transcribe them here,
+   they will drift the same way this field's own numbers did.
 
 ### 2. LINK
 
@@ -1863,9 +1920,18 @@ its element's panel (TIER 1) regardless of this field.)*
 
 ### 6. STATE / HOVER
 
-1. **Canonical** — `src/components/StateToggleControl.js`. **Verified adoptable today** — it already
-   hosts a mixed group (colour + UnitControl + SelectControl) under one toggle in
-   `nav-menu/edit.js:1407-1545`. No extension needed. `states` is a prop, not hardcoded.
+1. ⛔ **Corrected 2026-08-19 — this field contradicted itself against this same document's PART M
+   (:736) and the tree agrees with :736, not with the claim below.** Prior text, kept for the
+   historical record only, do not act on it: *"**Canonical** — `src/components/StateToggleControl.js`.
+   **Verified adoptable today** — it already hosts a mixed group (colour + UnitControl +
+   SelectControl) under one toggle in `nav-menu/edit.js:1407-1545`. No extension needed. `states` is
+   a prop, not hardcoded."* Verified 2026-08-19: `StateToggleControl` has **0 JSX mounts** across
+   `src/blocks` — the only references are two comments recording where it USED TO live
+   (`brand-strip/edit.js:316`, `nav-menu/edit.js:463`) plus its own file
+   (`components/index.js:45`, `StateToggleControl.js`). It is exported but dead code.
+   **The WORKING mechanism is `SgsColourPanel` rows → `DesignTokenPicker`'s `states` prop** (field 9
+   above) — e.g. `button/edit.js:395-397`. Treat `StateToggleControl` as unadopted, not canonical,
+   until it is either wired up or deleted (D673 flagged the same open decision).
 2. **Required props** — one toggle per logical attr GROUP, not per attribute; the render-prop must
    cover **every** paired attr in both states.
 3. **Banned lookalikes** — a separate "Hover" panel (7 blocks; `post-grid`'s is 145 lines from its
@@ -1874,13 +1940,14 @@ its element's panel (TIER 1) regardless of this field.)*
 4. **Placement** — the state value sits **inside the same control group as its base value**. This is
    how `theme.json` nests pseudo-states under the element, and how the block's own PHP helpers
    already build `:hover` from the same `$prefix`.
-5. **Scope** — `attr_name LIKE '%Hover%' OR css_state IN ('hover','selected')`, excluding
+5. **Scope** — `attr_name LIKE '%Hover%' OR css_state IN ('hover','current')`, excluding
    `sgs/mega-panel.accent` (a colour-scheme picker, mistagged). **23 blocks; 3 conform, 20 do not.**
    ⚠ Use `%Hover%`, not `%Hover` — the suffix form misses `business-info.linkHoverColour`.
    ⚠ `trust-bar.autoScrollPauseOnHover` and `team-member.overlayHover` are **behavioural flags, not
    state pairs** — a name-only rule false-positives on both.
-   ⚠ `table-of-contents.activeLinkColour` is a genuine `selected` state that **name-matching cannot
-   find**. A new semantically-named state with `css_state` NULL would be invisible to every method here.
+   ⚠ `table-of-contents.activeLinkColour` is a genuine `current` state (renamed from `selected`
+   2026-08-19) that **name-matching cannot find**. A new semantically-named state with `css_state`
+   NULL would be invisible to every method here.
 6. **Conformance** — conform: `brand-strip`, `button`, `nav-menu`.
 7. **Detection** — three separate rules, not one: `state-attr-no-toggle`, `state-attr-unreachable`,
    `state-attr-preset-only` (park the third — one instance cannot prove the shape, per R-31-9).
@@ -2491,8 +2558,10 @@ the part that makes it anyone's job. **Enforced by** UNENFORCED. (Corrected 2026
 
 #### CO-15. No duplicated native-supports panel *(was condition 15 — RESTORED 2026-08-08)*
 No bespoke panel re-implements a control a native `supports` panel already provides. This is the
-inspector-UX form of **R-31-9**. **Enforced by** UNENFORCED — `check-duplicate-controls.js` exists
-and is **wired to nothing** (0 refs in `package.json`).
+inspector-UX form of **R-31-9**. **Enforced by** `check-duplicate-controls.js` — ✅ **corrected
+2026-08-19: this IS wired into `prebuild`.** Verified: `grep check-duplicate-controls
+plugins/sgs-blocks/package.json` matches it inside the `prebuild` script chain
+(`node scripts/check-duplicate-controls.js --check`). The "wired to nothing" claim is stale.
 ⛔ **Restored after a QC-council audit, 2026-08-08.** This document's own ABSORPTION MAP claimed it
 was absorbed into Cross-cutting B. It was not: Cross-cutting B is about universal-EXTENSION opt-out
 fit, a different question, and the requirement appeared nowhere in this file. The map cited a target

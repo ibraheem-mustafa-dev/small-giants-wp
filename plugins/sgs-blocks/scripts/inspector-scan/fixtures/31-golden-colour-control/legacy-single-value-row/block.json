@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/legacy-single-value-row",
+	"title": "Fixture: standalone DesignTokenPicker in the legacy value=/onChange= shape, no states prop (must flag both row-below-minimum-states and row-missing-gradient)",
+	"category": "sgs",
+	"attributes": {
+		"dividerColour": { "type": "string", "default": "" }
+	}
+}

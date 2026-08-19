@@ -741,3 +741,14 @@ Programmatic translation captures structure + tokens but misses design choices i
 - **Pattern key:** `two-artefacts-agreeing-is-not-verification-if-they-share-a-source`
 - **Evidence:** I gated superseding the 27-condition checklist on an ABSORPTION MAP and "verified" it by mechanically comparing the contract's table against the tombstone's table. Clean MATCH, 30/30. A council rater then traced each item to its CITED TARGET and found conditions 15 and 18 marked ABSORBED into sections that did not contain their requirement. Both tables carried the identical error because I wrote both.
 - **Rule:** A cross-check only verifies when the two artefacts were produced by INDEPENDENT routes. Verify a claim against the target it cites — does that section actually state the rule? — never against another copy of the claim.
+
+<!-- archived 2026-08-19 to hold the active list level -->
+
+### [2026-07-28] An unreachable capability is a CONTROL-SURFACE problem, not a capability gap
+- **Pattern key:** `an-unreachable-capability-is-a-control-surface-problem`
+- **blub.db row:** `411`
+- **Feedback file:** [feedback_unreachable_capability_is_a_control_surface_problem.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_unreachable_capability_is_a_control_surface_problem.md)
+### [2026-07-21] A gate firing on NEW findings is evidence about your data — explain every finding before baselining or bypassing
+- **Pattern key:** `a-gate-firing-is-evidence-about-your-data`
+- **blub.db row:** `408`
+- **Feedback file:** [feedback_a_gate_firing_is_evidence_about_your_data.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_gate_firing_is_evidence_about_your_data.md)

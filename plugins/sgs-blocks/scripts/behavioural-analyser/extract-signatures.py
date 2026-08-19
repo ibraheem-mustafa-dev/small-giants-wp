@@ -748,8 +748,8 @@ _GRADIENT_FN_RE = re.compile(r"(?:linear|radial|conic)-gradient\s*\(", re.IGNORE
 # State vocabulary is REUSED from the element manifest system (Bean's explicit
 # instruction — no invented state names). Querying every block.json's
 # `supports.sgs.elements.*.states` keys (2026-07-21) found exactly TWO in use across
-# the whole framework: 'hover' and 'selected'. Only those two are mapped here.
-# `[aria-selected="true"]` maps to 'selected' — NOT CSS `:active` (tabActive* is a
+# the whole framework: 'hover' and 'current'. Only those two are mapped here.
+# `[aria-selected="true"]` maps to 'current' — NOT CSS `:active` (tabActive* is a
 # documented example of this: the manifest's own tabs.block.json note says
 # tabActiveIndicatorColour "renders as [aria-selected='true']... NOT CSS :active").
 # `:hover` maps to 'hover'. Other pseudo-classes/attribute-selectors that plainly
@@ -758,7 +758,7 @@ _GRADIENT_FN_RE = re.compile(r"(?:linear|radial|conic)-gradient\s*\(", re.IGNORE
 # unmapped (None) — recorded in `_UNMAPPED_STATE_SELECTORS` for the Task-2 audit
 # rather than inventing new vocabulary unilaterally.
 _STATE_SELECTOR_PATTERNS: tuple[tuple[str, str], ...] = (
-    (r'aria-selected\s*=\s*["\']true["\']', "selected"),
+    (r'aria-selected\s*=\s*["\']true["\']', "current"),
     (r":hover\b", "hover"),
 )
 _UNMAPPED_STATE_PATTERNS: tuple[str, ...] = (
@@ -900,9 +900,7 @@ def _bem_current_state(
     block_short_slug: str,
     sibling_modifiers: "dict[str, set[str]]",
 ) -> "str | None":
-    """A BEM `--current` modifier expresses the manifest 'selected' state — the
-    same word nav-menu already uses for current-page (`itemColourHover` etc.
-    resolve to `css_state='selected'`) — ONLY when `current` is the SOLE modifier
+    """A BEM `--current` modifier expresses the manifest 'current' state — ONLY when `current` is the SOLE modifier
     this stylesheet ever pairs with that element. Added 2026-08-15 as the fix for
     the regression the same day's Class 4 fix (bare `--modifier` stripped from
     the captured element) caused: `sgs/breadcrumbs.linkColour` and
@@ -918,17 +916,17 @@ def _bem_current_state(
     than `current` anywhere in that block's stylesheet.
 
     PROVEN the opposite for two other live blocks — `current` there is a VALUE
-    VARIANT, not a state, and must NOT collect 'selected': `sgs/buybox`'s
+    VARIANT, not a state, and must NOT collect 'current': `sgs/buybox`'s
     `.buybox__price--current` sits alongside `.buybox__price--regular` and
     `.buybox__price--pct-off` (the live selling price vs the struck-through
     original — a display choice, never an interaction/selection state), and
     `sgs/product-card` has the identical `.price--current` / `.price--regular`
-    pair. Tagging either as `css_state='selected'` would fabricate a selection
+    pair. Tagging either as `css_state='current'` would fabricate a selection
     concept on a plain price display.
 
     So the rule is the SIBLING-MODIFIER SET for that element across the whole
     stylesheet, not the word "current" alone: a lone `current` -> state
-    'selected'; `current` plus any other modifier on the same element -> left
+    'current'; `current` plus any other modifier on the same element -> left
     unmapped (falls through exactly as before this fix — base element only, no
     state — the correct behaviour for a variant). Universal (R-31-9): every
     block with this shape is classified by the same rule, no per-block carve-out.
@@ -939,7 +937,7 @@ def _bem_current_state(
         element = m.group(2).lower()
         siblings = sibling_modifiers.get(element, set())
         if siblings <= {"current"}:
-            return "selected"
+            return "current"
     return None
 
 
@@ -1987,7 +1985,7 @@ def _load_element_manifest_reverse(
             if not isinstance(attr_name, str):
                 continue
             _record(attr_name, css_key, None)
-        # Per-state attrMaps (e.g. states.selected.attrMap, states.hover.attrMap).
+        # Per-state attrMaps (e.g. states.current.attrMap, states.hover.attrMap).
         for state_name, state_def in (element_def.get("states") or {}).items():
             if not isinstance(state_def, dict):
                 continue
@@ -3246,7 +3244,7 @@ def _self_test_bem_modifier_is_not_an_element() -> bool:
 
 def _self_test_bem_current_modifier_is_state_aware() -> bool:
     """`--self-test` fixture proving the fix-of-the-fix (2026-08-15): a bare
-    `--current` BEM modifier populates `css_state='selected'` when it's the
+    `--current` BEM modifier populates `css_state='current'` when it's the
     element's ONLY modifier (breadcrumbs shape), but is left unmapped when the
     element ALSO carries a sibling modifier (buybox/product-card shape) — so
     `current` there stays a variant, never a fabricated selection state.
@@ -3259,7 +3257,7 @@ def _self_test_bem_current_modifier_is_state_aware() -> bool:
 
     POSITIVE CONTROL: breadcrumbs' `--sgs-breadcrumbs-current-colour` (fed only
     by `.sgs-breadcrumbs__item--current`, `item` has no other modifier) resolves
-    to `state='selected'`, `element='item'` — now DISTINCT from `linkColour`'s
+    to `state='current'`, `element='item'` — now DISTINCT from `linkColour`'s
     `(item, color, state=None)`, so no collision.
     NEGATIVE CONTROL: a synthetic block reproducing buybox/product-card's own
     shape (a `price` element carrying `--current` PLUS sibling `--regular`/
@@ -3269,7 +3267,7 @@ def _self_test_bem_current_modifier_is_state_aware() -> bool:
     full `sgs-{slug}__el--modifier` convention so the sibling-disambiguation
     branch is genuinely exercised rather than short-circuited by prefix
     mismatch) resolves to `state=None` — `current` stays a variant, never
-    upgraded to a fabricated 'selected' state.
+    upgraded to a fabricated 'current' state.
     """
     ok = True
 
@@ -3282,10 +3280,10 @@ def _self_test_bem_current_modifier_is_state_aware() -> bool:
     )
     link_key = ("--sgs-breadcrumbs-link-colour", "color")
     current_key = ("--sgs-breadcrumbs-current-colour", "color")
-    if state_of.get(current_key) != "selected":
+    if state_of.get(current_key) != "current":
         print(
             "[self-test] FAIL: breadcrumbs POSITIVE CONTROL — "
-            f"currentColour state_of = {state_of.get(current_key)!r}, expected 'selected'",
+            f"currentColour state_of = {state_of.get(current_key)!r}, expected 'current'",
             file=sys.stderr,
         )
         ok = False
@@ -3333,10 +3331,10 @@ def _self_test_bem_current_modifier_is_state_aware() -> bool:
     if ok:
         print(
             "[self-test] PASS: a lone `--current` BEM modifier resolves to "
-            "css_state='selected' (breadcrumbs, no collision with linkColour); "
+            "css_state='current' (breadcrumbs, no collision with linkColour); "
             "a `--current` sharing its element with sibling modifiers "
             "(price--current/--regular/--pct-off) stays unmapped, not "
-            "a fabricated 'selected' state."
+            "a fabricated 'current' state."
         )
     return ok
 
@@ -3404,7 +3402,7 @@ if __name__ == "__main__":
     if _UNMAPPED_STATE_SELECTORS_SEEN:
         print()
         print(f"  UNMAPPED STATE SELECTORS ({len(_UNMAPPED_STATE_SELECTORS_SEEN)}) — genuine state concepts")
-        print("  with NO word in the element-manifest vocabulary (only 'hover'/'selected'")
+        print("  with NO word in the element-manifest vocabulary (only 'hover'/'current'")
         print("  exist today). Detected, NOT guessed a name for (Task 2 audit — report,")
         print("  don't invent):")
         for sel in sorted(_UNMAPPED_STATE_SELECTORS_SEEN):

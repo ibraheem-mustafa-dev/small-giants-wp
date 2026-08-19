@@ -1,0 +1,20 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/exempted-gradient-row",
+	"title": "Fixture: a shadow-colour row with no gradient path, but a declared colourExemptions reason with a real (non-boilerplate) explanation (must NOT flag row-missing-gradient)",
+	"category": "sgs",
+	"attributes": {
+		"shadowColour": { "type": "string", "default": "" },
+		"shadowColourHover": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"sgs": {
+			"colourExemptions": {
+				"shadow": {
+					"rule": "gradient",
+					"reason": "A box-shadow colour has no gradient form; a gradient control here would produce invalid CSS."
+				}
+			}
+		}
+	}
+}

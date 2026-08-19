@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/boxcontrol-in-responsive-override-object-attr",
+	"title": "Fixture: raw BoxControl nested inside ResponsiveOverride, bound to a tiered-object attribute — the mandated Spec 35 §12 field 3 pairing (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"contentBandPadding": { "type": "object", "default": { "desktop": {} } }
+	}
+}

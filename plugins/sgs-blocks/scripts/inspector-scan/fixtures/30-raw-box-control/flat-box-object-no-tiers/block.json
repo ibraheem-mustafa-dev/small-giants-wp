@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/flat-box-object-no-tiers",
+	"title": "Fixture: raw BoxControl on a deliberately NON-tiered flat box object — the THIRD legitimate shape (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"submenuPadding": { "type": "object", "default": {} }
+	}
+}

@@ -185,9 +185,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			{ /* Colour panel FIRST (D618/D619, sgs/button pattern). "Link
 			   colour" pairs linkColour (normal) with activeLinkColour — the
-			   scroll-spy CURRENT-item colour, a SELECTED state per FR-35-5,
+			   scroll-spy CURRENT-item colour, a CURRENT state per FR-35-5,
 			   not a hover — labelled "Active" per block.json's own
-			   `states.selected` naming. "Title colour" stays a separate
+			   `states.current` naming. "Title colour" stays a separate
 			   single-state row. */ }
 			<SgsColourPanel
 				rows={ [
@@ -203,7 +203,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 							{
-								key: 'selected',
+								key: 'current',
 								label: __( 'Active', 'sgs-blocks' ),
 								value: activeLinkColour,
 								onChange: ( val ) => setAttributes( { activeLinkColour: val ?? '' } ),

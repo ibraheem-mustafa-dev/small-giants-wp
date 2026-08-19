@@ -59,15 +59,16 @@
  * reason; to fix one, remove the redundant control (keep the shared/universal
  * one per the `keeper` field) or scope the two controls apart.
  *
- * WARN-ONLY: this script NEVER fails the build. `--check` only changes
- * nothing about the exit code (kept for CLI symmetry with the sibling
- * guards) — exit code is always 0. It is NOT wired into prebuild/prestart;
- * run it manually or from a future opt-in CI step.
+ * GATE-CAPABLE (fixed 2026-08-18): `--check` now exits 1 when any finding is
+ * net-new (not already in the baseline) and 0 otherwise. Plain/--json runs
+ * remain diagnostic-only and always exit 0. It is still NOT wired into
+ * prebuild/prestart; run it manually or from a future opt-in CI step.
  *
  * Usage:
- *   node scripts/check-duplicate-controls.js          # report
- *   node scripts/check-duplicate-controls.js --json    # machine-readable
- *   node scripts/check-duplicate-controls.js --check   # same, exit 0 always
+ *   node scripts/check-duplicate-controls.js                  # report, always exit 0
+ *   node scripts/check-duplicate-controls.js --json             # machine-readable, always exit 0
+ *   node scripts/check-duplicate-controls.js --check             # exit 1 on any net-new finding
+ *   node scripts/check-duplicate-controls.js --update-baseline   # accept every current finding, exit 0
  *   node scripts/check-duplicate-controls.js --self-test  # in-memory fixture assertions, no disk access
  *
  * @package SGS\Blocks
@@ -462,6 +463,25 @@ function resolveWrite( baseKey, valueNode, paramNames ) {
 			}
 		}
 	}
+	// Mutual-exclusion sibling-clear idiom: `otherKey: val ? <literal> : otherKey`
+	// (either branch order) — one branch is a bare Identifier with the SAME
+	// NAME as the key being written, i.e. it just passes the attribute's own
+	// CURRENT value straight through when this particular control isn't the
+	// one being toggled (a "keep as-is unless I'm clearing you" clause, not a
+	// real setting). Verified live shape: sgs/hero's mutually-exclusive
+	// "Media Ken-burns"/"Media parallax" toggles — mediaKenBurns's onChange
+	// writes `{ mediaKenBurns: val, mediaParallax: val ? false : mediaParallax }`
+	// and mediaParallax's onChange does the mirror. Without this exclusion
+	// each toggle is credited as a second "writer" for the OTHER's attr,
+	// producing a false same-file-duplicate finding on a standard toggle-pair
+	// pattern (also present in ContainerWrapperControls.js's own comment).
+	// Do NOT credit this as an independent control-writer for baseKey.
+	if ( valueNode && valueNode.type === 'ConditionalExpression' ) {
+		const isSelfPassthrough = ( n ) => n && n.type === 'Identifier' && n.name === baseKey;
+		if ( isSelfPassthrough( valueNode.consequent ) || isSelfPassthrough( valueNode.alternate ) ) {
+			return { key: baseKey, dynamic: false };
+		}
+	}
 	return { key: baseKey, dynamic: referencesParam( valueNode, paramNames ) };
 }
 
@@ -731,8 +751,8 @@ function findingKey( f ) {
 
 function main() {
 	const asJson = process.argv.includes( '--json' );
-	// --check kept for CLI symmetry with the sibling guards; this script is
-	// WARN-ONLY and never fails the build, so it changes nothing here.
+	const isCheck = process.argv.includes( '--check' );
+	const isUpdateBaseline = process.argv.includes( '--update-baseline' );
 
 	const blockDirs = fs
 		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )
@@ -776,6 +796,14 @@ function main() {
 				unparseable.push( { dir: blockSlug, reason: `same-file-duplicate (AST): ${ e.message }` } );
 			}
 		}
+	}
+
+	if ( isUpdateBaseline ) {
+		fs.writeFileSync( BASELINE_FILE, JSON.stringify( { accepted: findings }, null, 2 ) + '\n' );
+		process.stdout.write(
+			`[check-duplicate-controls] Baseline updated — ${ findings.length } finding(s) accepted.\n`
+		);
+		process.exit( 0 );
 	}
 
 	// Baseline subtraction.
@@ -831,8 +859,9 @@ function main() {
 		}
 	}
 
-	// Always exit 0 — WARN-ONLY by design, no --check enforcement.
-	process.exit( 0 );
+	// Plain/--json runs are diagnostic-only and always exit 0. --check is the
+	// real gate: exit 1 when any finding is not already in the baseline.
+	process.exit( isCheck && netNew.length > 0 ? 1 : 0 );
 }
 
 // ---------------------------------------------------------------------------

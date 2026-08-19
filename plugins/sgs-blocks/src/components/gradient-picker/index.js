@@ -21,10 +21,14 @@
  * behaviour-identical to core.
  */
 import { AnglePickerControl, SelectControl, Flex } from '@wordpress/components';
+import { useSettings } from '@wordpress/block-editor';
+import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import { VStack } from '../primitives';
 import CustomGradientBar from './gradient-bar';
+import './editor.css';
+import { buildPaletteDefaultGradient } from './palette-default';
 import {
 	getGradientAstWithDefault,
 	getLinearGradientRepresentation,
@@ -115,7 +119,20 @@ export default function SgsGradientPicker( {
 	enableAlpha = true,
 	__experimentalIsRenderedInSidebar = false,
 } ) {
-	const { gradientAST, hasGradient } = getGradientAstWithDefault( value );
+	// SGS divergence: when nothing is stored yet, start from the client's own
+	// brand palette rather than core's stock blue->purple `DEFAULT_GRADIENT`.
+	// Seed only — nothing is written to the block until the operator touches
+	// the bar, so `hasGradient` still reads false exactly as in core.
+	const [ palette ] = useSettings( 'color.palette' );
+	const paletteDefault = useMemo(
+		() => buildPaletteDefaultGradient( palette ),
+		[ palette ]
+	);
+
+	const { gradientAST, hasGradient } = getGradientAstWithDefault(
+		value,
+		paletteDefault ?? undefined
+	);
 
 	const background = getLinearGradientRepresentation( gradientAST );
 
@@ -152,7 +169,10 @@ export default function SgsGradientPicker( {
 					);
 				} }
 			/>
-			<Flex gap={ 3 } className="sgs-gradient-picker__ui-line">
+			<Flex
+				gap={ 3 }
+				className="components-custom-gradient-picker__ui-line sgs-gradient-picker__ui-line"
+			>
 				<div className="sgs-gradient-picker__type-wrapper">
 					<GradientTypePicker
 						gradientAST={ gradientAST }
