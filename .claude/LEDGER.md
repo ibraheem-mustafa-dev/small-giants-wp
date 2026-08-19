@@ -232,25 +232,36 @@ declared, not whether its sub-flags are on. Since `golden-controls.json` now nam
 "declared with every sub-flag false" as the CONFORMANT shape, every block adopting it inherits that
 blind spot. Recorded in D683, not fixed (shared detector).
 
-### Header items still open — all need Bean, none blocking
+### Header items — all CLOSED (2026-08-19)
 
-1. **⛔ DB not reseeded or pruned.** 7 new attrs need seeding; 13 deleted ones leave rogue seed rows
-   (the D678 class). A reseed is a SHARED-DB action and was not run unilaterally.
-2. **Surface-cap figures moved and carry human rulings.** Merged-tree measurement:
-   `site-header` **4** (was 5), `site-footer` **2** (WITHIN), `site-header-row` **8**,
-   `site-footer-row` **8**. Bean's 2026-08-13 F2 ruling was made against the old numbers.
-3. **⚠ `SgsColourPanel` is INVISIBLE to `check-simple-surface-cap.js`.** It is mounted at the top
-   level of `edit.js` and renders its OWN `<InspectorControls>` internally; the script walks
-   InspectorControls regions found in the block's own file, so a composite mounted OUTSIDE any
-   region is never reached. `site-header`'s "4" therefore excludes a whole visible colour panel, and
-   the same holds for every block mounting that panel. Same class as the composite gap Task 4 just
-   fixed, one level up.
-4. **UNPROVEN:** `sgs/site-header-row` passes colour attrs to the style engine RAW (the shape fixed
-   on the header). May share the defect.
-5. **Probe page 2522 left published** on the canary as the evidence; delete after review.
-6. **Recogniser mirror is dead:** `_VALID_HEADER_BEHAVIOURS` mirrors a PHP constant deleted
-   2026-07-28, scans for classes nothing emits, and its test compares two hardcoded copies.
-
+- **DB reseeded + pruned.** `/sgs-update` full 13-stage run, exit 0. Verified in the DB, not
+  assumed: all 7 new `sgs/site-header` attrs present, all 13 deleted ones gone (Stage 9
+  `orphan_attributes_deleted_attr_level: 13`). The seed-history flagged 4 "largest ever" swings —
+  **explained, not waved through**: `block_attributes` 2768 → 2909 splits `sgs 2403 / core 506`,
+  and the other branch changed ZERO block.json attrs, so the rise is Stage 2's core-block refresh
+  (Gutenberg library), not SGS. SGS's own delta is exactly +7/−13.
+- **Simple-surface figures — this IS the ruling now, superseding the 2026-08-13 F2 numbers:**
+  `sgs/site-header` **4**, `sgs/site-footer` **2** (WITHIN), `sgs/site-header-row` **8**,
+  `sgs/site-footer-row` **8**. The ≤3 is a DEFAULT, not a ceiling (P2 §5, Bean-confirmed), and the
+  detector is advisory. Nothing to re-read; these are the numbers.
+- **The colour panel is NOT counted, and that is CORRECT (Bean-ruled 2026-08-19).** `SgsColourPanel`
+  does not appear in any surface-cap listing. It is the standardised colour panel pinned to every
+  block, and its picker is a POPOVER — not a control sitting in the settings panel the cap governs.
+  ⚠ One fact recorded so nobody re-opens this from the other side: the script's own comment at
+  `:297-302` says an isShownByDefault count would wrongly score "a VISIBLE colour panel as
+  contributing nothing", i.e. it reads as though the panel were meant to count. It is not. If that
+  comment is ever acted on, this ruling is the answer.
+- **Row colour defect PROVEN and FIXED.** `sgs/site-header-row` + `sgs/site-footer-row` passed
+  `backgroundColour`/`textColour` RAW to the style engine. Proven on the canary with
+  `wp_style_engine_get_styles(['color'=>['background'=>'primary']])`, which returns the literal
+  `background-color:primary;` — **invalid CSS that the browser silently drops**, so a client picking
+  a palette swatch got nothing at all. Both now route through `sgs_colour_value()`, matching the
+  header.
+- **Recogniser mirror corrected.** `_VALID_HEADER_BEHAVIOURS` claimed to mirror a PHP constant
+  deleted 2026-07-28 and its test compared two hardcoded copies of the same literal, so it could
+  never fail. Both now state the truth: a FROZEN legacy vocabulary for pre-2026-07-28 scrapes, with
+  nothing on the plugin side left to sync against.
+- **Probe page 2522 deleted** from the canary; the measurements live in the verification report.
 
 ## Open — carried
 

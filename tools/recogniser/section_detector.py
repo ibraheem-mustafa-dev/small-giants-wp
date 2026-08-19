@@ -190,8 +190,24 @@ def _all_page_level(soup: BeautifulSoup, tag_name: str) -> list[Tag]:
     return out
 
 
-# Valid header behaviour slugs (mirrors Sgs_Header_Behaviours::VALID_BEHAVIOURS).
-# Source of truth: plugins/sgs-blocks/includes/class-sgs-header-behaviours.php
+# Header behaviour slugs recognised on a SCRAPED page's <body>.
+#
+# ⛔ THIS IS NOT A MIRROR ANY MORE, and the comment that said it was, was false.
+# It claimed to mirror `Sgs_Header_Behaviours::VALID_BEHAVIOURS` — a PHP constant
+# that HAS NOT EXISTED since 2026-07-28, when sticky/transparent/shrink/
+# hide-on-scroll moved off the body-class path onto per-instance scoped CSS
+# (Spec 35 T1.4). `contrastSafe` was the last holdout and followed on 2026-08-19
+# (D681), so the plugin now emits exactly ONE body class, `sgs-has-header`.
+#
+# What that means for this detector, stated plainly rather than left to be
+# rediscovered: NONE of the three slugs below is emitted by current SGS output,
+# so `detect_body_header_behaviour()` can only ever match a page built by an
+# OLDER SGS (pre-2026-07-28) or a hand-authored draft that copied those class
+# names. It is kept for exactly that legacy-scrape case, not because it reflects
+# what the framework does today.
+#
+# The set is therefore a FROZEN legacy vocabulary. Do not "resync" it with the
+# plugin — there is nothing on the plugin side to sync with.
 _VALID_HEADER_BEHAVIOURS = frozenset({"transparent", "sticky", "hide-on-scroll-down"})
 
 # Prefix used by Sgs_Header_Behaviours::add_body_classes() on the <body> element.
