@@ -7,7 +7,9 @@
       "The script every 'REACH' figure in golden-controls.json's other 13 rows cites (survey-control-reach.py) does not exist in this repository — verified via git log --all (zero history) and confirmed by two sibling scripts' own docblocks describing it as real. Root cause (per Bean): it was a genuine duplicate of the C1 track's own reach mechanism and was deliberately deleted after C1 merged to main. This session's rows therefore do NOT cite that script; adoption evidence here comes from survey-control-mounts.py (real, committed) plus direct source reads plus live-editor screenshots.",
       "The 'state' type in the pre-existing golden-controls.json temp row covered ONLY the colour-hover mechanism (SgsColourPanel -> DesignTokenPicker). A second, entirely separate universal mechanism exists (hover-effects.js: scale/shadow/zoom/grayscale/focus-ring/click-ripple) and is encoded here as a second named mechanism under the same type.",
       "Animation is not one control type wearing different labels — it is FOUR distinct, independently-wired mechanisms confirmed live in the editor (Animation / Scroll & effects / Element parallax / a block's own bespoke Background-panel toggles), two of which use the exact same UI shape (a SelectControl dropdown) while driving completely different runtimes (Tier V CSS vs Tier G GSAP). Do not collapse these on UI-shape resemblance alone.",
-      "A genuine bug was found and PROVEN (not just asserted) while researching this type: the universal parallax.js extension's 'Background parallax' toggle mounts inside `InspectorControls group=\"color\"` (WordPress's native Colour-panel slot). That slot only renders when a block declares `supports.color` with at least one sub-flag true. sgs/hero declares NO supports.color at all; sgs/container declares `supports.color: false`. On both, the native Colour panel never renders, so the toggle mounted inside it is DEAD UI — present in the tree, unreachable in the editor. This is the confirmed cause behind Bean's live observation that the universal background-parallax toggle 'doesn't connect to anything'. Recorded as a bug finding, not merely a golden-schema note; not fixed this session (scope was the goldens file, not a live block change) — EXCEPT trust-bar's unrelated 'Pending' control, removed this session per an explicit ad hoc Bean request (see decisions.md)."
+      "A genuine bug was found, PROVEN, and FIXED this session: the universal parallax.js extension's 'Background parallax' toggle mounted inside `InspectorControls group=\"color\"` (WordPress's native Colour-panel slot), which only renders when a block declares `supports.color` with at least one sub-flag true. sgs/hero declares NO supports.color at all; sgs/container declares `supports.color: false`. On both, the toggle was DEAD UI — proven by reading the code, not asserted. Bean's fix decision: retire the background half of parallax.js entirely rather than relocate it, since BackgroundPanel already provides a working, reachable bgKenBurns/bgParallax pair. Shipped 2026-08-19 (see decisions.md).",
+      "A second self-correction, caught only because the fix above required re-checking: this file's FIRST pass on the animation type wrongly claimed 5 blocks 'each hand-roll their own Ken-burns/Parallax pair with ZERO shared component' — that was inferred from seeing the same attribute names in each block's live editor, never verified against the actual source. Grepping which files import BackgroundPanel shows it is ONE shared component, mounted by 8 blocks. The bannedLookalikes finding built on the wrong inference has been removed. Lesson: live-editor confirmation proves a control EXISTS and its SHAPE — it does not prove whether the code behind it is shared or duplicated; that needs a source-level check every time, even under time pressure.",
+      "Per Bean's LinkPopoverField-wrapper ruling (see principle_native_controls above): built `FocalPositionField` (src/components/FocalPositionField.js) and routed both existing raw FocalPointPicker mounts (the universal image-controls.js extension and hero's split-media object-position control) through it. The two mounts had two DIFFERENT storage shapes for the same concept (raw {x,y} floats vs a CSS object-position string) — the wrapper owns both via a `format` prop rather than forcing a storage-shape migration on either consumer's PHP side. Shipped 2026-08-19; trust-bar's unrelated 'Pending' control was also removed this session per an explicit ad hoc Bean request (see decisions.md)."
     ]
   },
   "controls": {
@@ -185,36 +187,35 @@
           "verifiedLive": true,
           "note": "Looks like the same kind of dropdown as scrollTriggerReveal above but is architecturally unrelated — confirmed by reading fxOptions' actual values (GSAP easing names like power2.inOut, elastic.out) against AnimationControl's plain preset list."
         },
-        "universalParallaxToggle": {
-          "component": "parallax.js's Element-parallax + Background-parallax toggle pair",
+        "elementParallaxToggle": {
+          "component": "parallax.js's Element-parallax toggle",
           "path": "src/blocks/extensions/parallax.js",
-          "mechanism": "writes a single sgsParallax enum ('none'|'background'|'element'), universal on any block supporting className",
+          "mechanism": "writes the sgsParallax enum ('none'|'element'), universal on any block supporting className, opt-out via supports.sgs.hideExtensions",
           "verifiedLive": true,
-          "confirmedBug": "The 'Background parallax' toggle mounts inside `InspectorControls group=\"color\"` (WordPress's native Colour-panel slot), which only renders when a block declares supports.color with >=1 true sub-flag. sgs/hero declares no supports.color at all; sgs/container declares supports.color:false. On both, this toggle is DEAD UI. Proven by reading parallax.js:147 + both blocks' block.json, not merely asserted. This affects every block that has migrated off native colour per the D640/D683 trend — likely most of the framework going forward."
+          "correction2026_08_19": "This row originally also named a 'Background parallax' half of this same toggle pair and flagged it as a CONFIRMED BUG (mounted inside WordPress's native Colour-panel slot — InspectorControls group=\"color\" — which never renders on a block that has migrated off native colour supports; sgs/hero declares no supports.color at all, sgs/container sets supports.color:false, so the toggle was dead UI). That diagnosis was correct, but the fix decided with Bean was to REMOVE the background half entirely rather than relocate it, because BackgroundPanel (see blockOwnBackgroundMotion below) already does this job correctly and reaches every block that needs it. parallax.js now offers element-parallax only; sgsParallax's 'background' value is retired (still tolerated read-only by includes/parallax.php for defensive symmetry, but no UI writes it any more)."
         },
         "blockOwnBackgroundMotion": {
-          "component": "a block's own bespoke Background-panel toggle pair, e.g. hero's Ken-burns zoom / Parallax scroll",
-          "path": "src/blocks/hero/edit.js (Background panel)",
-          "mechanism": "two mutually-exclusive attrs (bgKenBurns / bgParallax) scoped to the block's own background-image layer only",
+          "component": "BackgroundPanel — a SHARED component, not per-block hand-rolled",
+          "path": "src/blocks/container/components/BackgroundPanel.js",
+          "mechanism": "one Ken-burns/Parallax mutually-exclusive toggle pair (bgKenBurns/bgParallax), scoped to whichever background image/video is active",
           "verifiedLive": true,
-          "note": "Per Bean 2026-08-19: this is the PROPERLY WORKING implementation for background motion, precisely because universalParallaxToggle's background half is unreachable per the confirmedBug above. Do not treat hero's own pair as the duplicate to retire — it is currently the only reachable way to get background parallax on a colour-migrated block. Ken-burns has no universal equivalent at all (not part of parallax.js)."
+          "correction2026_08_19": "The FIRST pass of this row wrongly claimed 5 blocks (hero, container, cta-section, trust-bar, site-header) each independently hand-roll this pair with 'ZERO shared component' — that was never verified, only inferred from seeing the same attribute names appear in each block's live editor. Grepping which files actually IMPORT BackgroundPanel shows 8 blocks (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) all mount the ONE shared component — this is already the correct, working, reachable implementation, not a duplication finding. The bannedLookalikes entry this correction replaces was itself wrong and has been removed."
         }
       },
       "bannedLookalikes": {
-        "_note": "5 blocks (hero, container, cta-section, trust-bar, site-header) each independently hand-roll their own Ken-burns/Parallax-style toggle pair with ZERO shared component between them — same attribute-naming convention, five separate implementations.",
+        "_note": "No live violations found for this type after the correction above — BackgroundPanel is already the single shared implementation for background motion, reached by all 8 eligible blocks.",
         "jsxComponents": [],
-        "patterns": [
-          { "shape": "a per-block bgParallax/bgKenBurns pair reimplemented from scratch", "liveInstances": 5, "why": "no shared component exists; this is real, uncontested duplication at the row-component level even though the universalParallaxToggle mechanism it should route through is currently broken for these blocks" }
-        ]
+        "patterns": []
       },
       "nativeUi": { "_note": "No core supports.* flag maps to scroll animation/parallax — not applicable." },
       "qualifiesWhen": {
         "scrollTriggerReveal": "a block in the extension's shouldHaveAnimation() allow-list without a hideExtensions:[\"animation\"] opt-out",
         "gsapScrollEffects": "same allow-list surface as scrollTriggerReveal (Tier G is layered on the same eligible-block set)",
-        "universalParallaxToggle_and_blockOwnBackgroundMotion": "a block rendering a background image/video element or a split-media element (the same surface the media row's paintsOwnSurface evidence establishes)"
+        "elementParallaxToggle": "any block supporting className, minus hideExtensions opt-outs (not scoped to background — this is whole-block drift, works with or without a background image)",
+        "blockOwnBackgroundMotion": "a block importing BackgroundPanel and rendering a background image/video element or a split-media element (the same surface the media row's paintsOwnSurface evidence establishes)"
       },
       "scope": {
-        "eligible": "no dedicated roster.json surface — scrollTriggerReveal/gsapScrollEffects apply near-universally via opt-out; universalParallaxToggle/blockOwnBackgroundMotion scope to background-bearing blocks only"
+        "eligible": "no dedicated roster.json surface — scrollTriggerReveal/gsapScrollEffects apply near-universally via opt-out; elementParallaxToggle applies near-universally too; blockOwnBackgroundMotion scopes to the 8 blocks importing BackgroundPanel (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar)"
       }
     },
 
@@ -229,10 +230,10 @@
           "recommendedFix": "Per Bean's 2026-08-19 ruling on native controls generally: build a small SGS wrapper mirroring LinkPopoverField's shape (src/components/LinkPopoverControl.js — a thin component owning label/value/onChange plus the native primitive's quirks) if angle is ever needed OUTSIDE the gradient system. Not needed today since it has exactly one legitimate use."
         },
         "position": {
-          "component": "FocalPointPicker (WP-native, raw — NO SGS wrapper exists)",
-          "path": "two disconnected mounts: src/blocks/extensions/image-controls.js (universal, gated by supports.sgs.imageControls) and src/blocks/hero/edit.js:1251 (hero-specific, per-tier split-media object-position)",
-          "note": "No shared wrapper unifies the two mounts today.",
-          "recommendedFix": "Build a small SGS wrapper (e.g. `FocalPositionField`) modelled on LinkPopoverField's shape — self-contained label/value/onChange around FocalPointPicker's quirks — and route BOTH the universal image-controls.js mount and hero's split-media mount through it. This directly follows Bean's 2026-08-19 native-control-wrapper ruling and would also let the two currently-disconnected mounts share bug fixes."
+          "component": "FocalPositionField — SGS wrapper around WP-native FocalPointPicker",
+          "path": "src/components/FocalPositionField.js",
+          "shipped2026_08_19": true,
+          "note": "Built this session per Bean's native-control-wrapper ruling, modelled on LinkPopoverField's shape. BOTH previously-disconnected mounts now route through it: the universal image-controls.js extension (format=\"xy\", its existing raw-{x,y} storage) and hero's split-media object-position control (format=\"css-string\", its existing CSS-string storage). The wrapper owns the format conversion via a `format` prop rather than forcing either consumer's PHP-side storage shape to change — the two mounts share the same component now without a storage migration."
         }
       },
       "bannedLookalikes": {

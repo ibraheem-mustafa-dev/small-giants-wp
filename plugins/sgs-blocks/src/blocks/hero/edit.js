@@ -15,7 +15,6 @@ import {
 	TextareaControl,
 	ToggleControl,
 	BoxControl,
-	FocalPointPicker,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -25,6 +24,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	ShadowControl,
 	GradientOverlayControl,
+	FocalPositionField,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
@@ -32,8 +32,6 @@ import MediaPicker from '../../components/MediaPicker';
 import {
 	resolveShadowPreview,
 	colourVar,
-	objectPositionToFocalPoint,
-	focalPointToObjectPosition,
 } from '../../utils';
 // No-inline migration (2026-07-09): hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
@@ -1248,14 +1246,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											? attributes.imageObjectPosition ?? posDefault
 											: posValue ?? posDefault;
 									return (
-										<FocalPointPicker
+										<FocalPositionField
+											format="css-string"
 											help={ posHelpMap[ breakpoint ] }
 											url={ splitImage?.url || '' }
-											value={ objectPositionToFocalPoint( effectiveValue ) }
+											value={ effectiveValue }
 											onChange={ ( val ) =>
-												setAttributes( {
-													[ posKey ]: focalPointToObjectPosition( val ),
-												} )
+												setAttributes( { [ posKey ]: val } )
 											}
 										/>
 									);

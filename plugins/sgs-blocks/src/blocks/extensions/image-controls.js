@@ -27,14 +27,13 @@ import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
 import {
-	FocalPointPicker,
 	PanelBody,
 	RangeControl,
 	SelectControl,
 	TextControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveControl, FocalPositionField } from '../../components';
 
 /**
  * Return true if the given block supports image controls.
@@ -191,7 +190,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 						title={ __( 'Image Controls', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<FocalPointPicker
+						<FocalPositionField
 							label={ __( 'Object position', 'sgs-blocks' ) }
 							help={ __(
 								'Drag the crosshair to control which part of the image stays visible when it is cropped.',
@@ -199,12 +198,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 							) }
 							url={ focalPointUrl }
 							value={ focalPointValue }
-							onChange={ ( val ) =>
-								setAttributes( {
-									sgsObjectPosition: val || {},
-								} )
-							}
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { sgsObjectPosition: val } ) }
 						/>
 						<SelectControl
 							label={ __( 'Object fit', 'sgs-blocks' ) }
