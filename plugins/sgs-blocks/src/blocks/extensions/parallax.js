@@ -1,22 +1,19 @@
 /**
- * Parallax scroll extension — background parallax and element parallax.
+ * Parallax scroll extension — element parallax.
  *
  * Adds sgsParallax (type) and sgsParallaxStrength (0–100) attributes to ALL
  * Gutenberg blocks that support className. The CSS and JS runtime handle the
- * actual parallax effect; this extension provides the editor controls only.
+ * actual parallax effect; this extension provides the editor control only.
  *
- * The two effects are surfaced as two purpose-built controls, BOTH living in
- * the Styles tab (motion is appearance, not behaviour):
- *   1. Background parallax — a toggle in the native Colour panel
- *      (group="color", which WordPress renders inside the Styles tab),
- *      shown only on blocks that support a background colour. The block's
- *      background moves at a different speed to its content on scroll.
- *   2. Element parallax — a toggle in its own panel (group="styles"),
- *      available on any block. The whole block drifts as the visitor
- *      scrolls, for a subtle sense of depth.
+ * Element parallax is a toggle in its own panel (group="styles"), available
+ * on any block. The whole block drifts as the visitor scrolls, for a subtle
+ * sense of depth. Writes to the sgsParallax enum ('none' | 'element').
  *
- * Both write to the single sgsParallax enum ('none' | 'background' | 'element'),
- * so the two effects are mutually exclusive and the server render is unchanged.
+ * A sibling "Background parallax" option used to live here too, mounted
+ * inside WordPress's native Colour panel (group="color"). REMOVED
+ * 2026-08-19 — see the withParallaxControls docblock below for why, and
+ * BackgroundPanel (container/components/BackgroundPanel.js) for the working
+ * background-motion mechanism (bgKenBurns/bgParallax).
  *
  * Class and data-attribute injection is handled server-side by
  * includes/parallax.php (render_block filter, priority 11). The frontend
@@ -29,7 +26,7 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { getBlockType, getBlockSupport } from '@wordpress/blocks';
+import { getBlockType } from '@wordpress/blocks';
 import { isExtensionHidden } from './hide-extensions';
 import { InspectorControls } from '@wordpress/block-editor';
 import {
@@ -94,28 +91,21 @@ addFilter(
 );
 
 /**
- * Whether a block type supports a background colour.
+ * Higher-order component that renders the element-parallax control in the inspector.
  *
- * The background-parallax toggle only makes sense where the block has a
- * background to move, so it is surfaced only on background-colour-capable
- * blocks and rendered inside the native Colour panel (group="color").
+ * Element parallax: a toggle in its own discoverable panel, on any block.
  *
- * @param {string} name Block name.
- * @return {boolean} True when the block supports color.background.
- */
-function supportsBackgroundColour( name ) {
-	return !! getBlockSupport( name, [ 'color', 'background' ] );
-}
-
-/**
- * Higher-order component that renders the two parallax controls in the inspector.
- *
- * - Background parallax: a toggle inside the Colour panel (group="color"), only
- *   on background-capable blocks.
- * - Element parallax: a toggle in its own discoverable panel, on any block.
- *
- * Both controls drive the single sgsParallax enum, so enabling one disables the
- * other (a block does one kind of parallax).
+ * The sibling "Background parallax" option this used to offer was REMOVED
+ * 2026-08-19 (golden-controls goldens/behaviour.json, controls.animation).
+ * It mounted inside WordPress's native Colour panel (`InspectorControls
+ * group="color"`), gated on `getBlockSupport(name, ['color','background'])`
+ * — which is false on any block that has migrated off native colour supports
+ * (sgs/hero declares none at all; sgs/container sets `supports.color:false`),
+ * so the toggle was confirmed dead UI on exactly the blocks that need
+ * background parallax. `BackgroundPanel` (container/components/
+ * BackgroundPanel.js) already provides a working, reachable Ken-burns/
+ * Parallax pair (bgKenBurns/bgParallax) wherever a background image exists —
+ * that is the real, live mechanism; this extension no longer duplicates it.
  */
 const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
@@ -134,78 +124,29 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		}
 
 		const { sgsParallax, sgsParallaxStrength } = attributes;
-		const isBackground = 'background' === sgsParallax;
 		const isElement = 'element' === sgsParallax;
-		const isActive = isBackground || isElement;
-		const showBackground = supportsBackgroundColour( name );
+		const isActive = isElement;
 
 		return (
 			<>
 				<BlockEdit { ...props } />
 
-				{ showBackground && (
-					<InspectorControls group="color">
-						<ToggleControl
-							label={ __( 'Background parallax', 'sgs-blocks' ) }
-							help={ __(
-								'The background moves at a different speed to the content as visitors scroll. Needs a background image or video to be visible.',
-								'sgs-blocks'
-							) }
-							checked={ isBackground }
-							onChange={ ( on ) =>
-								setAttributes( {
-									sgsParallax: on ? 'background' : 'none',
-								} )
-							}
-							__nextHasNoMarginBottom
-						/>
-
-						{ isBackground && (
-							<RangeControl
-								label={ __( 'Strength', 'sgs-blocks' ) }
-								value={ sgsParallaxStrength ?? 30 }
-								onChange={ ( val ) =>
-									setAttributes( {
-										sgsParallaxStrength: val,
-									} )
-								}
-								min={ 0 }
-								max={ 100 }
-								step={ 5 }
-								help={ __(
-									'How far the background travels on scroll.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</InspectorControls>
-				) }
-
 				{ /*
 				 * FIX (inspector tab placement): this used to be a bare
 				 * <InspectorControls> (no group), which WordPress renders in
-				 * the SETTINGS tab — splitting the one parallax feature
-				 * across both tabs, since the background-parallax toggle
-				 * above is already correctly in the Styles tab via the
-				 * native group="color" (WordPress's named colour/typography/
-				 * border/dimensions groups all render inside the Styles tab,
-				 * not Settings — this is not the same thing as the generic
-				 * "Colour" panel living in Settings). Parallax is injected by
-				 * a runtime filter, so it belongs to no declared element; per
-				 * THE PLACEMENT RULE (TWO TIERS, D537 2026-08-09) it resolves
-				 * to its TIER 2 property-family panel — ANIMATION — not a
-				 * single catch-all block-level panel, the same family as
-				 * animation.js's panel. ANIMATION, not MOTION: `anim:parallax`
-				 * is declared a member of the `animation` cluster in
+				 * the SETTINGS tab. Parallax is injected by a runtime filter,
+				 * so it belongs to no declared element; per THE PLACEMENT RULE
+				 * (TWO TIERS, D537 2026-08-09) it resolves to its TIER 2
+				 * property-family panel — ANIMATION — not a single catch-all
+				 * block-level panel, the same family as animation.js's panel.
+				 * ANIMATION, not MOTION: `anim:parallax` is declared a member
+				 * of the `animation` cluster in
 				 * scripts/consistency/cluster-member-sets.json (suffixes
 				 * Parallax / ParallaxStrength). `motion` in that file is a
 				 * DIFFERENT family holding only css:transition-duration and
-				 * css:transition-timing-function. Element parallax therefore
-				 * joins Background parallax in the Styles tab via
-				 * group="styles", kept as the interim WP-native-group home
-				 * until the ANIMATION family panel is built (unbuilt at D537).
+				 * css:transition-timing-function. group="styles" is kept as
+				 * the interim WP-native-group home until the ANIMATION family
+				 * panel is built (unbuilt at D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason
 				 * only.

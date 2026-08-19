@@ -33,6 +33,7 @@ export {
 	default as GradientCapableColourControl,
 	isGradientValue,
 } from './GradientCapableColourControl';
+export { default as FocalPositionField } from './FocalPositionField';
 export { default as SgsLinkControl } from './SgsLinkControl';
 export {
 	default as LinkPopoverField,

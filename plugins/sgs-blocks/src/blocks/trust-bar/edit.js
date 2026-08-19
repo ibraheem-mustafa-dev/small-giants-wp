@@ -153,17 +153,11 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 			style={ {
 				padding: '12px',
 				marginBottom: '12px',
-				background: item.pending ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.02)',
+				background: 'rgba(0,0,0,0.02)',
 				borderRadius: '4px',
-				border: item.pending ? '1px dashed #ccc' : '1px solid transparent',
-				opacity: item.pending ? 0.75 : 1,
+				border: '1px solid transparent',
 			} }
 		>
-			{ item.pending && (
-				<Notice status="warning" isDismissible={ false } style={ { marginBottom: '8px' } }>
-					{ __( 'Pending — hidden on the frontend until you uncheck "Pending".', 'sgs-blocks' ) }
-				</Notice>
-			) }
 			<IconPicker
 				label={ __( 'Icon', 'sgs-blocks' ) }
 				value={ { source: 'lucide', name: item.icon || 'check' } }
@@ -192,13 +186,6 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 					onChange={ ( val ) => update( 'fillColour', val ) }
 				/>
 			) }
-			<ToggleControl
-				label={ __( 'Pending (hidden on frontend)', 'sgs-blocks' ) }
-				help={ __( 'Keep the slot in the editor but hide it from visitors until the credential is confirmed.', 'sgs-blocks' ) }
-				checked={ !! item.pending }
-				onChange={ ( val ) => update( 'pending', val ) }
-				__nextHasNoMarginBottom
-			/>
 			<Button variant="secondary" isDestructive onClick={ onRemove } size="small" style={ { marginTop: '8px' } }>
 				{ __( 'Remove badge', 'sgs-blocks' ) }
 			</Button>
@@ -364,7 +351,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const addItem = () => {
 		const newItem = badgeStyle === 'icon-circle'
-			? { icon: 'check', label: '', pending: false }
+			? { icon: 'check', label: '' }
 			: { label: '', url: '' };
 		setAttributes( { items: [ ...items, newItem ] } );
 	};
@@ -462,11 +449,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				{ /* ── Badge items repeater (content) ─────────────────────────── */ }
 				<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
-					{ badgeStyle === 'icon-circle' && (
-						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-							{ __( 'Badges marked "Pending" are hidden on the frontend but remain editable.', 'sgs-blocks' ) }
-						</p>
-					) }
 					{ items.map( ( item, index ) => (
 						badgeStyle === 'icon-circle' ? (
 							<IconCircleItemEditor
@@ -901,13 +883,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					) : (
 						items.map( ( item, index ) => {
 							if ( badgeStyle === 'icon-circle' ) {
-								const isPending = !! item.pending;
 								return (
 									<div
 										key={ index }
 										className="sgs-trust-bar__badge"
-										style={ { opacity: isPending ? 0.45 : 1 } }
-										title={ isPending ? __( 'Pending — hidden on frontend', 'sgs-blocks' ) : undefined }
 									>
 										<EditorIconCircle
 											size={ iconCircleSize }
@@ -921,16 +900,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 										/>
 										<span className="sgs-trust-bar__label" style={ { color: textColourValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
-											{ isPending && (
-												<span style={ {
-													marginLeft: '6px', fontSize: '10px', fontWeight: 600,
-													textTransform: 'uppercase', background: '#f0ad4e',
-													color: '#fff', padding: '1px 5px', borderRadius: '3px',
-													letterSpacing: '0.05em',
-												} }>
-													{ __( 'Pending', 'sgs-blocks' ) }
-												</span>
-											) }
 										</span>
 									</div>
 								);
