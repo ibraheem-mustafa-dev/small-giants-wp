@@ -48,7 +48,6 @@ This is the single authoritative spec for the SGS product and WooCommerce layer.
 **FR-27-x IDs** are the variable-product configurator requirements (originally Spec 27).
 Both sets are stable: cross-references elsewhere in the codebase remain valid.
 
-Specs 24 and 25 are superseded by this document. Do not edit them.
 
 ---
 
@@ -119,7 +118,7 @@ Merged from Spec 25's feature-map table and the configurator's phasing. Rows sup
 | Converter emits `sgs/option-picker` for draft pill groups | SHIPPED (commit `c68b8cb6`, Phase D) | `scripts/orchestrator/converter_v2/convert.py`, `seed-slot-synonyms.py` | - | FR-24-15 |
 | Collection query surface (own WP_Query, selection rules) | SHIPPED, then FOLDED into `sgs/card-grid` (2026-08-01) and the standalone block DELETED (2026-08-08, D529) | `src/blocks/card-grid/` + `includes/class-cpt-collection-query.php` | D529 | FR-24-4/5/6 |
 | Pill-to-price/image swap via WP Interactivity API (full live read) | **SHIPPED** (live: 0-XHR multi-axis swap of price/sale/stock/image from the seeded manifest; FR-27-A1/A2 D164/D165) | `src/blocks/product-card/view.js`, `includes/class-product-manifest.php` | D164, D165 | FR-27-A1/A2 |
-| `_sgs_sku_matrix` (multi-SKU variable pricing) | SUPERSEDED - dropped; WC variations are the matrix; see principle 6 above | - | D144 (superseded) | FR-24-14, superseded by FR-27 |
+| `_sgs_sku_matrix` (multi-SKU variable pricing) | SUPERSEDED — see principle 6 | - | D144 (superseded) | FR-24-14, superseded by FR-27 |
 | WC variable-product per-variant pricing/stock via WC-native variations | SUPERSEDED - this is now the primary path (FR-27-A1); the DEFERRED label is retired | - | D151 | FR-27-A1 |
 | WC adapter for the collection surface (now `sgs/card-grid`) | PLANNED - triggers when a real shop client lands | Separate spec when in scope | D149 | FR-24 out-of-scope |
 | `sgs/trust-bar` dual-mode (Typed repeater + Bound InnerBlocks) | **SHIPPED (commit `d6358f32`, 2026-06-01 — FR-24-10; render.php branches on `sourceMode` typed/bound)** | `src/blocks/trust-bar/` | D123 | FR-24-10 |
@@ -322,7 +321,7 @@ The dual-mode card's Typed mode is exactly the FR-31-6 InnerBlocks shape the con
 
 ### FR-24-10 -- Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01)
 
-> **⚠ SUPERSEDED FOR CLONING (2026-06-06):** The `sourceMode='bound'` converter path described below is a **TEST CHEAT** — the converter mirrors the draft DOM by echoing badge InnerBlocks into `$content`, instead of converting to native `items[]` attributes. This violates the convert-not-mirror rule and is being purged per `.claude/reports/2026-06-06-bound-mode-purge-plan.md`. **ONLY the live WC configurator modes (`sourceMode='wc-product'` / `'sgs-cpt'`) are legitimate bound modes.** For cloning, `sgs/trust-bar` MUST be converted to **Typed mode** with a populated `items[]` array. The factual record below is preserved for historical context.
+> **RETIRED FOR CLONING (2026-06-06):** `sgs/trust-bar`'s Bound mode (converter emitting `sourceMode='bound'` by echoing badge InnerBlocks into `$content`) was a convert-not-mirror violation and was purged (`.claude/reports/2026-06-06-bound-mode-purge-plan.md`). Cloning now converts `sgs/trust-bar` to Typed mode with a populated `items[]` array. Live WC configurator modes (`wc-product`/`sgs-cpt`, `sgs/product-card`) are unrelated and unaffected.
 
 The same Typed-vs-Bound split applies to curated-content blocks whose editor is a rich repeater the clone pipeline must also feed. `sgs/trust-bar` is the first case.
 
@@ -332,7 +331,7 @@ The badge children use existing primitives (container + icon + text/label + medi
 
 Acceptance: FR-31-18 structural parity. `.sgs-trust-bar` renders the converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode (editor smoke test, no "unexpected content" warning).
 
-Status: SHIPPED (commit `d6358f32`, 2026-06-01). `render.php` branches on the explicit `sourceMode` (typed = curated repeater / bound = converter's badge InnerBlocks); ~~converter sets `sourceMode='bound'` on cloned trust-bars~~ — **the bound-emit converter path is a cheat; see superseding note above.**
+Status: Typed-mode-only for cloning (bound-emit converter path purged — see the retirement note above). `render.php` still branches on `sourceMode` for the live WC configurator, but the converter never emits `sourceMode='bound'`.
 
 ### FR-24-11 to FR-24-17 -- Variation-sets and `sgs/option-picker`
 
@@ -344,7 +343,7 @@ Design ratified 2026-06-01 via D144. Phase A + Phase B BUILT + SHIPPED 2026-06-0
 
 **FR-24-13 -- Per-instance Interactivity API store.** The card owns the store; option-pickers read/write shared context. (For the full configurator: see the inter-block-state model in the architecture section and FR-27-I-MVP.)
 
-**FR-24-14 -- Phase-1 slot-conflict priority.** First type wins; SKU matrix deferred. `_sgs_sku_matrix` is superseded entirely for WC products (see principle 6). For CPT-only (no-WC) products, multi-variant pricing remains a Phase-2 candidate but the `_sgs_sku_matrix` key is removed from the data model.
+**FR-24-14 -- Phase-1 slot-conflict priority.** First type wins. For CPT-only (no-WC) products, multi-variant pricing remains a Phase-2 candidate, but the `_sgs_sku_matrix` key is removed from the data model (WC products: see principle 6).
 
 **FR-24-15 -- `sgs/option-picker` atomic block.** Radio-group semantics via visually-hidden `<input type=radio>` + `<label>` + pill `<span>`, CSS `:checked` active state, bubbling `sgs:option-selected` event. NOT `sgs/button`. SHIPPED 2026-06-02 (commit `ee6807d3`). Battle-ready for standalone use and converter emit target.
 
@@ -362,7 +361,7 @@ Source toggle (Typed/Bound) appears in both the block toolbar AND the inspector 
 
 **D144 ratified decisions:**
 1. Per-type `display_as`: `pills` (interactive) | `static-list` (renders "Available in N flavours: A, B, C", non-interactive selling point) | `hidden`. PLUS a card-level "price only" toggle that sets all pickers hidden so the card shows just "From £x".
-2. SKU matrix deferred and now superseded for WC products.
+2. SKU matrix — superseded for WC products (see principle 6 / line 225).
 3. Pill style and three CSS states as above.
 4. Clone emit: emit `sgs/option-picker` directly from the clone. The converter outputs the picker block for a pill group via TRUTH-SPEC + slot_synonyms/slots updates.
 5. Source toggle in both toolbar and inspector.
@@ -439,13 +438,13 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 
 ### Non-goals (configurator)
 
-- Rebuilding WC cart/checkout/payments/tax/shipping; mirroring WC commerce data; a combinatorial `_sgs_sku_matrix` in custom meta (superseded); per-instance content migration (clean slate).
+- Rebuilding WC cart/checkout/payments/tax/shipping; mirroring WC commerce data; a combinatorial `_sgs_sku_matrix` in custom meta; per-instance content migration (clean slate).
 - B2B/wholesale role pricing (Indus Foods), subscriptions/bundles, configurator analytics, multi-currency. These are sibling specs.
 
 ### Hard constraints (configurator)
 
 - **WC = single source of truth.** Client sends IDs + an attribute object, never prices. Server recomputes + re-validates price AND stock at add-to-cart.
-- **WC authoritative; SGS holds a seeded read-through CACHE reconciled server-side (reframed 2026-06-03 per the adversarial-council).** No DURABLE custom store of WC commerce data (presentation/config only in term meta / variation postmeta / block attributes). BUT be honest that the SSR-seeded manifest (per-variation price/sale/stock literals in `data-wp-context`) IS a short-lived read-through cache — so the freshness defence is the render-time `get_date_modified()` staleness guard (FR-27-G6), NOT a "we never mirror so nothing can go stale" assumption. The old slogan "never mirrored" made maintainers under-build freshness; the correct framing is "WC is authoritative; SGS reconciles its seeded cache against WC on every render + at add-to-cart".
+- **WC authoritative; SGS holds a seeded read-through CACHE reconciled server-side.** No DURABLE custom store of WC commerce data (presentation/config only in term meta / variation postmeta / block attributes). The SSR-seeded manifest (per-variation price/sale/stock literals in `data-wp-context`) IS a short-lived read-through cache — the freshness defence is the render-time `get_date_modified()` staleness guard (FR-27-G6), not an assumption that nothing can go stale.
 - **All display bindings resolve against server-seeded context whose default equals the SSR literal** (Interactivity directives run server-side; binding to a JS-only getter wipes the SSR value; memory key `wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters`). Per-variation derived values (% off) are seeded as literals, never computed in a client getter.
 - **Pages stay fully cacheable.** Oversell protection is a live add-to-cart-click re-check (a single fragment call), NOT page-uncacheable rendering. Price/stock freshness via targeted purge on stock + sale-schedule hooks (see FR-27-G6).
 - **Tax/currency correctness:** seed display prices from `wc_get_price_to_display()` (never own division); store decimals from `wc_get_price_decimals()` (not assumed 2dp); seed BOTH ex/inc-tax values OR cache-exclude the price fragment + vary on tax context (FR-27-H3).
