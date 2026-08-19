@@ -277,7 +277,7 @@ blind spot. Recorded in D683, not fixed (shared detector).
   or false positives.
 - **`text-secondary` is a client-only slug that framework code reads.**
 - **5 blocks have `:hover` with no `:focus-visible`.**
-- **45 attributes a client can never reach** · **2 dead components** · **PR #31** unmerged.
+- **45 attributes a client can never reach** ⚠ NOT RE-DERIVED since 2026-08-19, when this session deleted 13 unreachable `sgs/site-header` attributes — the exact defect class this figure counts. If those 13 were inside the 45 the true figure is now ~32; if the census excluded site-header it still stands. No derivation doc names which attributes it counted, so neither can be confirmed. **Re-derive before citing this number.** (Found by the handoff QC pass — same shape as the 56-vs-49 error it caught: a number true when written, sitting next to a session that changed one of its inputs.) · **2 dead components** · **PR #31** unmerged.
 
 ## State Snapshot
 
