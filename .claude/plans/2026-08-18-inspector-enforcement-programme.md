@@ -179,6 +179,18 @@ See §2.5. Nothing records that a block *should* have a panel, so "missing" is i
 B — but left the shared wrapper on 2026-07-09. It sits in neither. The roster is wrong on 3
 of its 6 blocks: `cta-section` and `trust-bar` already migrated.
 
+⛔ **Corrected 2026-08-19 — "Track B … never started" is no longer the honest description;**
+**Track B is measured-as-invisible, not unmeasured-and-idle.** The shared wrapper panels
+DO exist — `BackgroundPanel`, `ShapeDividersPanel`, `GridItemDefaultsPanel`,
+`WrapperColourPanel`, all at `plugins/sgs-blocks/src/blocks/container/components/` — but
+rule 31 (`plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js`,
+~line 300) resolves its scan target as `path.join( ctx.blocksDir, block.tail, 'edit.js' )`
+only, so it never reads a shared component directory. Consequently `openBacklog: 409` (§5.4)
+is a FLOOR on the true colour-conformance backlog, not a total — Track B's colour surface has
+never been run through rule 31 at all. Scheduled: extend rule 31 (or add a sibling rule) to
+also scan the shared wrapper panels before Track B can be honestly called measured, let alone
+started or complete.
+
 **The gates could not fail, and mostly did not run.** Five segments were shell-neutralised
 as `(cmd || echo [ADVISORY])`; three parsed `--check` then returned 0; **nine** advisory rules
 carried **372** findings that never gated. (Today it is 13 rules and 383 findings — the four
