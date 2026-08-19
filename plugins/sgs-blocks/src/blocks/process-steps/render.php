@@ -21,8 +21,11 @@
  * never auto-inlines it. Everything is emitted into the block's OWN scoped
  * `.{uid}` <style> tag via `wp_style_engine_get_styles()` (exactly how WP
  * core outputs `layout` support) or hand-built shorthand for the SGS box
- * objects. The root's `--sgs-hover-bg:…` custom-property VALUES are SCOPED
- * inline — a `--var: value` is a value, not a declaration (contract §A).
+ * objects. Hover COLOUR is no longer a custom-property VALUE at all: since
+ * 2026-08-19 it is emitted as a real scoped declaration by the shared
+ * `sgs_emit_state_colour_css()`. The remaining custom properties here
+ * (transition timing, hover scale/shadow) are still scoped values — a
+ * `--var: value` is a value, not a declaration (contract §A).
  *
  * BLOCK-PRIVATE, COMPOSITE-KEEPS-WRAPPER (contract §B3): this block never used
  * `SGS_Container_Wrapper` — it hand-rolls its own root `<div>` — and genuinely
@@ -197,15 +200,6 @@ if ( '' !== $preset_bg_slug ) {
 // `--var: value` is a value, not a declaration (contract §A), so this stays
 // inline. Every real property declaration below moves to the scoped <style>.
 $wrapper_style_parts = array();
-if ( $hover_background_colour ) {
-	$wrapper_style_parts[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
-}
-if ( $hover_text_colour ) {
-	$wrapper_style_parts[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
-}
-if ( $hover_border_colour ) {
-	$wrapper_style_parts[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
-}
 if ( '' !== $transition_duration && null !== $transition_duration ) {
 	$wrapper_style_parts[] = '--sgs-transition-duration:' . intval( $transition_duration ) . 'ms';
 }
@@ -273,6 +267,22 @@ if ( 'none' !== $border_style ) {
 		// hover-only pattern.
 		$scoped_css[] = sgs_border_gradient_css( "{$root_sel}:hover", $hover_border_gradient, null, $border_gradient_width );
 	}
+}
+
+// Hover colour declarations — emitted as a scoped .uid{…}:hover rule via the
+// shared helper. No fallback values (matches the info-box pattern).
+$hover_decls = array();
+if ( $hover_background_colour ) {
+	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
+}
+if ( $hover_text_colour ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
+}
+if ( $hover_border_colour ) {
+	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
+}
+if ( $hover_decls ) {
+	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 
 // --- Base spacing (padding/margin), border-radius, WP colour + typography +

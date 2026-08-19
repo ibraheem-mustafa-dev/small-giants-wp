@@ -159,21 +159,6 @@
 
 /* ===== Hover States ===== */
 
-.sgs-process-steps:hover,
-.sgs-process-steps:focus-within {
-	background-color: var(--sgs-hover-bg, transparent);
-}
-
-.sgs-process-steps:hover,
-.sgs-process-steps:focus-within {
-	color: var(--sgs-hover-text, inherit);
-}
-
-.sgs-process-steps:hover,
-.sgs-process-steps:focus-within {
-	border-color: var(--sgs-hover-border, transparent);
-}
-
 /* Hover effect variants — duration/easing driven by CSS vars set on wrapper */
 .sgs-process-steps--hover-lift .sgs-process-steps__step {
 	transition-property: transform, box-shadow;
