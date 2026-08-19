@@ -480,7 +480,10 @@ if ( $wrapper_vars ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $wrapper_vars ) . '}';
 }
 if ( $hover_decls ) {
-	$scoped_css[] = $root_sel . ':hover{' . implode( ';', $hover_decls ) . '}';
+	// Via the ONE shared hover-colour helper (2026-08-19). Identical output to
+	// the hand-rolled rule this replaces, plus the `:focus-visible` twin a
+	// keyboard user needs — this block had `:hover` alone.
+	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 
 // D636 border-colour gradient rollout — masked ::before ring, scoped to ONLY
