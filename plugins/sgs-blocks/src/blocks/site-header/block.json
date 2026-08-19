@@ -349,62 +349,6 @@
 		},
 		"shadow": {
 			"type": "string"
-		},
-		"shapeDividerBottom": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomColour": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerBottomFlip": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerBottomScale": {
-			"type": "object",
-			"default": { "x": 100, "y": 100 }
-		},
-		"shapeDividerBottomInvert": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerTop": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopColour": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"shapeDividerTopFlip": {
-			"type": "boolean",
-			"default": false
-		},
-		"shapeDividerTopScale": {
-			"type": "object",
-			"default": { "x": 100, "y": 100 }
-		},
-		"shapeDividerTopInvert": {
-			"type": "boolean",
-			"default": false
-		},
-		"tagName": {
-			"type": "string",
-			"enum": [
-				"header",
-				"div"
-			],
-			"default": "header"
 		}
 	},
 	"render": "file:./render.php",

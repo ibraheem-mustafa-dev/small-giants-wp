@@ -78,15 +78,31 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	// colours as SGS attributes. One concept, two mechanisms, two levels. The
 	// header now mirrors the row exactly — same attribute names, same style
 	// engine, same scoped emission — so the two read as one system.
+	// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
+	// DesignTokenPicker stores a token SLUG ('surface') when a palette swatch is
+	// picked with linked:true — see its own docblock — and the style engine does
+	// NOT resolve a bare slug: it would emit the invalid `background-color:surface`.
+	// sgs_colour_value() turns a slug into var(--wp--preset--color--surface),
+	// passes a raw hex through untouched, and rejects a declaration breakout
+	// riding a var() passthrough.
 	$sh_color_args = array();
 	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$sh_color_args['text'] = (string) $attributes['textColour'];
+		$sh_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+		if ( '' !== $sh_text_value ) {
+			$sh_color_args['text'] = $sh_text_value;
+		}
 	}
 	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$sh_color_args['background'] = (string) $attributes['backgroundColour'];
+		$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+		if ( '' !== $sh_bg_value ) {
+			$sh_color_args['background'] = $sh_bg_value;
+		}
 	}
 	if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
-		$sh_color_args['gradient'] = (string) $attributes['backgroundColourGradient'];
+		$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );
+		if ( '' !== $sh_gradient_value ) {
+			$sh_color_args['gradient'] = $sh_gradient_value;
+		}
 	}
 	if ( ! empty( $sh_color_args ) ) {
 		$sh_style_engine_args['color'] = $sh_color_args;
@@ -497,7 +513,13 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
-		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'header',
+		// ALWAYS <header>. The `tagName` attribute (header|div) was deleted
+		// 2026-08-19: no control ever mounted it, so no client could reach it,
+		// and a site header is a page-unique landmark — offering a plain <div>
+		// only lets someone break the page's accessibility landmark structure
+		// from a dropdown. This was already the effective value, since the
+		// attribute's own default was 'header'.
+		'tag'           => 'header',
 		'extra_classes' => $classes,
 		'extra_attrs'   => $sh_extra_attrs,
 	)

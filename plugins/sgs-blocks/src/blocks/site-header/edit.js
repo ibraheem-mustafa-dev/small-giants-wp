@@ -26,6 +26,7 @@ import {
 	WidthPanel,
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
+	SHADOW_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -621,6 +622,27 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     colour, which D621/D622 already placed in Styles. */ }
 			<InspectorControls group="styles">
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+
+				{ /* SHADOW — mounted 2026-08-19. The `shadow` attribute was already
+				     declared AND already honoured by SGS_Container_Wrapper, but no
+				     control had ever been mounted, so no client could reach it: a
+				     working feature that was invisible. Reuses sgs/container's own
+				     SHADOW_OPTIONS rather than a second list, so the header offers
+				     exactly the same shadow vocabulary as every other wrapper. */ }
+				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						value={ attributes.shadow || '' }
+						options={ SHADOW_OPTIONS }
+						onChange={ ( val ) => setAttributes( { shadow: val } ) }
+						help={ __(
+							'Casts a shadow beneath the header, lifting it off the page content below.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<InspectorControls>
