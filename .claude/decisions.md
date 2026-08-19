@@ -1,5 +1,66 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D688 [ROUTINE] — the goldens are finalised in 3 parallel sessions, each owning its own file (2026-08-19)
+
+`golden-controls.json` is a single merge point; three sessions editing it conflicts on every run. Each
+session instead writes its own `scripts/consistency/goldens/<name>.json` and Session A ships a composer
+in `core/golden.js` that merges base + the three, TOLERATING absent peers so nobody blocks on anybody.
+That also makes the 15th control type free. Split 7/7/7 across Bean's ~24-type roster with zero overlap,
+verified by extracting type numbers per file: A styling primitives (gradient, typography, length-unit,
+4-value box, border, shadow, alignment), B input controls (enum+segmented MERGED, boolean, free-text,
+link, icon, multi-select, date), C media/state/structure (media, state, responsive wrapper, repeater,
+animation, angle, preset picker). #1 colour is done; #24 rich text excluded — it happens in the canvas.
+Sequencing is finalise -> measure -> fix: fixing first would repair colour, declare the axes done, and
+meet the other 13 types later, which is the repeat-13-times trap the generic engine exists to prevent.
+
+## D687 [INCIDENT] — a derived field used as a scope predicate is self-fulfilling (2026-08-19)
+
+The colour census scoped itself on `roster.json` `surfaces.colour`, which `build-roster.py:106` computes
+as `"color" in supports or attr_hit("colour","color")` — true exactly when the block ALREADY has colour.
+As a scope rule that is CIRCULAR: a block with none is excluded from the contract and can never be
+reported as MISSING a panel. The census could report non-conformance but was structurally incapable of
+reporting absence. Bean caught it from the output alone. Fixed by giving each control type its own
+`qualifiesWhen` predicate keyed on INDEPENDENT evidence — what the block renders or paints — and by
+splitting the verdict into MISSING (qualifies, hasn't got it) vs NOT-APPLICABLE (cannot apply); a single
+"not eligible" bucket hid both. ⚠ Qualifying does not always mean the control belongs on THAT block:
+every `sgs/form-field-*` declares elements and paints none while `sgs/form` paints all 52, so they
+qualify collectively and the control's home is the ancestor — the verdict carries `home: 'ancestor'`.
+Corrected figures: the canonical backlog was reported as 22, then 3, and is 2; native-UI retirement is
+58 DISTINCT blocks, not 150 findings, because length-unit and box-4value are the same 50 blocks both
+reading `supports.spacing`.
+
+## D686 [INCIDENT] — one shared component resolver; rule 21's 50 findings were false positives (2026-08-19)
+
+The 2026-08-17 wrapper-panel split (D655) left `ContainerWrapperControls.js` a 268-line facade
+re-exporting six panels. Rule 21's private resolver indexed exported names + filename and took
+FIRST-WINS in readdir order, so the facade — alphabetically ahead of `LayoutPanel.js` et al — claimed
+their names while the attribute vocabulary had MOVED OUT of it (facade vs LayoutPanel.js: gapTablet 0
+vs 2, flexDirection 0 vs 2, gridTemplateRows 0 vs 6). It therefore resolved `<LayoutPanel` to a file
+containing none of the controls it asked about: 250 -> 200, and the 50 were false positives, which are a
+detector bug and never baseline fodder. Fixed by PRECEDENCE — a file that DECLARES a name beats one that
+only RE-EXPORTS it — and the resolver was promoted to `core/components.js resolveComponentFiles()` so
+the tree has one mechanism rather than two that can disagree. `discover()`/`exportsMap` deliberately
+untouched: rules 01 and 18 carry committed backlogs and widening it would silently restage both;
+verified unmoved at 58 and 13. The same visibility gap was closed on rule 27, a GATE sitting at
+openBacklog 0 that could not see shared files — the most dangerous shape a detector can have, because
+zero reads as finished rather than never-looked.
+
+## D685 [ROUTINE] — one shared hover-colour emitter; sgs/button exempt (2026-08-19)
+
+`sgs_emit_state_colour_css( $selector, $decls_normal, $decls_hover )` in `helpers-tokens.php`, modelled
+on `sgs_border_gradient_css()`, is the canonical emitter for hover colour (Spec 32 FR-32-3). Eight blocks
+converted and live-verified on the canary. It emits real declarations on the block's own scoped selector
+and pairs `:focus-visible` with `:hover` — two of the converted blocks had `:hover` alone, so a keyboard
+user could not reach the state at all. ⛔ `sgs/button` is EXEMPT: its `--sgs-btn-*-hover` vars feed a
+static `style.css` rule AND three preset classes with `theme.json` fallback chains, i.e. the very
+mechanism FR-32-3 describes; the exemption is recorded in the helper's own docblock so a later reader
+does not "finish the job" and break the preset cascade. The hardcoded `var(…, <fallback>)` defaults on
+`cta-section` (`primary-dark`) and `post-grid` (`--sgs-card-bg`) were DELETED rather than preserved
+(Bean-ruled): pre-production, an injected default that overrides the operator's own setting is a cheat to
+remove. One shape the helper does not cover — descendant-hover, where hovering a parent recolours
+children carrying their own explicit resting colour — stays hand-built and pairs `:focus-within`, because
+the element receiving focus is a descendant.
+
 ## D684 [ROUTINE] — the row behaviours are renamed by scope, not deleted (2026-08-19)
 
 D679 finding 3. Header and row each carried "Transparent until scrolled", "Hide on scroll" and

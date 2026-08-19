@@ -197,7 +197,8 @@ Known already, and NOT the whole list:
 - **Branch:** `main`, in sync with `origin/main`, tree clean. `feat/hover-helper` and
   `worktree-golden-control-schema` merged and **deleted**. Both stray worktrees removed; main's
   `node_modules` verified intact at 975 entries after each removal.
-- **D-ceiling:** **D684** — verify with
+- **D-ceiling:** **D688** (D685 hover helper · D686 shared resolver · D687 qualification
+  predicate · D688 the 3-way goldens split) — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Gates:** inspector-scan `--check` exit 0 · **22/22 self-tests** · `audit-inline-styling`
   0 violations across 83 blocks · F5/F6 green · cheat-gate green
