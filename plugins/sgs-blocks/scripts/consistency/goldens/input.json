@@ -35,20 +35,54 @@
         "_why": "Spec 35 §3.1 names the threshold as the open gap this row exists to close.",
         "_corrected_2026_08_19_v1": "The FIRST version of this rule (flat 'optionCount<=5 AND every label<=14 chars') was WRONG — caught live by Bean looking at a real 5-option ToggleGroupControl screenshot (sgs/icon-list Marker Type: Icon/Emoji/Bullet/Numbered/None) where 'Bullet', 'Numbered' and 'None' visibly ran together. Root cause confirmed via live DOM measurement: ToggleGroupControl divides its available width EQUALLY by option count (at 5 options, each segment is only 47px), so the same label length that fits comfortably at 2 options does not fit at 5.",
         "_corrected_2026_08_19_v2": "The SECOND version (a strict px-per-character formula extrapolated from that ONE 'Numbered' data point — predicting only ~3-4 chars fit at 5 options) was ALSO too strict, per Bean's own live judgement after seeing it: 'I think 6 or 7 characters fits fine with 5 options.' A second real example confirmed this is the right read: sgs/container's 'Content band width' control (Normal/Wide/'Full (no cap)'/'Custom…', 4 options) shows 'Custom…' (7 chars, an intentionally-authored label with its ellipsis baked into the source text, not CSS truncation — confirmed by reading WidthPanel.js:29, NOT a bug) rendering CLEANLY with zero overflow, while 'Full (no cap)' (13 chars, two words) wraps to two lines. A single fixed px-per-character constant derived from one word ('Numbered') does not transfer cleanly to a different word ('Custom…') — real rendered text width varies per-character, not by a flat average. Rather than manufacture false precision from 2-3 data points, this row now states the rule as Bean calibrated it directly, with both confirming and refuting real examples as evidence.",
-        "rule": "Up to 5 options. Segmented (ToggleGroupControl) is safe when every label is a short single word or a compact phrase, roughly 6-7 characters or less (confirmed live-safe: 'Bullet' 6 chars at n=5, 'Custom…' 7 chars at n=4). It breaks — as either visible text collision (single-word labels with no space to wrap at, e.g. 'Numbered') or ugly 2-line wrapping (multi-word labels, e.g. 'Full (no cap)') — when ONE label in the set is a disproportionately longer outlier than its siblings, even if the others are comfortably short. The failure is about the LONGEST label in a set relative to its equal-width slot, not an average or a strict formula. SelectControl (dropdown) is correct whenever any option is a clear outlier by this read, or count exceeds 5.",
-        "explicitlyNotAFormula": "A first attempt at a precise px-per-character width-budget formula was tried and abandoned this session (see _corrected_2026_08_19_v2) — it does not generalise from a small number of real examples to a reliable per-character constant. A future detector should measure ACTUAL rendered text width per label (canvas measureText or a live DOM check against the real control, the same method used to find both confirmed violations below) rather than trust any fixed px/char number.",
+        "_corrected_2026_08_19_v3": "The THIRD and current version adds the LINE-COUNT ceiling Bean identified after seeing the deployed control: 'if the text also goes to 3 lines in a single box it should switch to the dropdown version too. In the example it's touching the top and bottom borders of the box.' v2 described 'Full (no cap)' as wrapping to TWO lines — that was an eyeball estimate and it was WRONG. Measured live 2026-08-19 via Range.getClientRects() on the real deployed control (the only method that returns true rendered line boxes; element height does not, because the span stretches to fill its segment): it renders THREE lines. That is the difference between 'a bit tight' and 'physically cannot fit', and it makes the rule mechanically checkable instead of a judgement call.",
+        "rule": "Segmented (ToggleGroupControl) requires ALL THREE: (a) at most 5 options; (b) NO label renders on 3+ lines inside its segment (vertical overflow); (c) NO label's rendered line is wider than its segment (horizontal overflow). Any single label failing (b) or (c) forces SelectControl (dropdown) for the WHOLE control. Both are measured on the rendered control, not predicted from character count — character count only hints at the risk, geometry decides it. As a rough authoring guide, a short single unbroken word of ~6-7 characters reliably fits (confirmed live: 'Bullet' 6 chars at n=5; 'Custom…' 7 chars at n=4 with only 4px horizontal spare, so treat 7 as the practical ceiling).",
+        "twoDistinctFailureModes": {
+          "_why": "⛔ These are NOT the same defect and a detector checking only one will miss half the violations. Both of this contract's confirmed live violations were measured 2026-08-19 and they fail on OPPOSITE axes — a rule covering only line-wrapping would clear sgs/icon-list as healthy, and a rule covering only text width would clear sgs/container as healthy.",
+          "vertical_wrapsTooManyLines": {
+            "cause": "a MULTI-WORD label breaks at its spaces and stacks into 3+ lines, exceeding the fixed 38px segment height",
+            "example": "sgs/container 'Full (no cap)' — 13 chars, 3 words, 3 rendered lines, 43px of text in a 38px box, crossing the top border by 3px and the bottom by 2px",
+            "detect": "Range.getClientRects().length >= 3"
+          },
+          "horizontal_singleWordTooWide": {
+            "cause": "a SINGLE UNBREAKABLE word has no space to wrap at, so instead of stacking it spills sideways past its segment into its neighbours",
+            "example": "sgs/icon-list 'Numbered' — 8 chars, 1 word, 1 rendered line, 62px of text in a 47px segment, overflowing by 15px. This is the visual collision originally reported as the labels 'running together'.",
+            "detect": "max(rect.width for rect in Range.getClientRects()) > segment.getBoundingClientRect().width"
+          },
+          "counterIntuitiveConsequence": "A LONGER label can be safe while a SHORTER one fails. 'Full (no cap)' (13 chars) and 'Numbered' (8 chars) both fail; 'Custom…' (7 chars) passes at a comparable segment width. What matters is the longest UNBREAKABLE run of characters and how many break-points exist, never the total length."
+        },
+        "measuredGeometry_2026_08_19": {
+          "_source": "Range.getClientRects() against the live deployed sgs/container 'Content band width' control on the sandybrown canary — real rendered line boxes, not computed element heights",
+          "segmentWidthPx": 58,
+          "segmentHeightPx": 38,
+          "fontSizePx": 13,
+          "lineHeightPx": 13,
+          "oneLineTextBlockPx": 17,
+          "oneLineClearance": "10px top / 11px bottom — comfortable",
+          "twoLineTextBlockPx": "~30 (17 + 13) — fits with ~4px clearance each side; tight but inside the box, hence the at-most-2-lines ceiling rather than at-most-1",
+          "threeLineTextBlockPx": 43,
+          "threeLineClearance": "-3px top / -2px bottom — text crosses BOTH borders. This is the exact defect Bean reported.",
+          "perLabel": [
+            { "label": "Normal", "chars": 6, "renderedLines": 1, "widestLinePx": 43, "verdict": "OK" },
+            { "label": "Wide", "chars": 4, "renderedLines": 1, "widestLinePx": 30, "verdict": "OK" },
+            { "label": "Full (no cap)", "chars": 13, "renderedLines": 3, "widestLinePx": 24, "verdict": "VIOLATION — overflows the 38px box by 5px total" },
+            { "label": "Custom…", "chars": 7, "renderedLines": 1, "widestLinePx": 54, "verdict": "OK — 4px horizontal spare in a 58px segment, the practical single-line ceiling" }
+          ]
+        },
+        "howADetectorShouldCheckThis": "Measure, do not estimate, and check BOTH axes in one pass. Element height/width are USELESS here — every segment span reports the full segment box (38px tall) regardless of what it contains, because it stretches to fill its slot; that is exactly what made an earlier 'two lines' reading wrong. Use Range.selectNodeContents(textNode).getClientRects(), which returns one rect per RENDERED LINE: `rects.length >= 3` is the vertical violation, `max(r.width) > segment.width` is the horizontal one. A static source-only detector CANNOT do this — wrapping and text width depend on font metrics, segment width and option count together, so it needs a real browser against the real rendered control. Not built this session; both known violations were found by running this measurement by hand.",
+        "explicitlyNotAFormula": "Two attempts at a precise px-per-character width-budget formula were tried and abandoned this session (see _corrected_2026_08_19_v2) — a per-character constant derived from one word does not transfer to another. The line-count ceiling in rule (b) replaces that entirely: it is directly measurable, needs no constant, and does not care how the characters are distributed.",
         "knownLiveViolations": [
           {
             "block": "sgs/icon-list",
             "attribute": "markerType",
-            "finding": "Its own 5-option ToggleGroupControl (Icon/Emoji/Bullet/Numbered/None) breaches this rule — 'Numbered' (8 chars) is the outlier against its 4-6 char siblings and visibly collides with its neighbours (no space to wrap at).",
-            "fixDirection": "NOT decided or applied this session — options include a shorter label, fewer options, or moving to SelectControl. Left as an open finding; needs a wording decision, not a mechanical swap."
+            "finding": "Its own 5-option ToggleGroupControl (Icon/Emoji/Bullet/Numbered/None) breaches rule (c) — HORIZONTAL overflow. Measured live 2026-08-19: 'Numbered' renders 62px wide on a single line inside a 47px segment, spilling 15px into its neighbours. It stays on 1 line precisely BECAUSE it is one unbreakable word, so a line-count-only check would wrongly clear it. Siblings measured healthy with 14-22px of spare width ('Icon' 24px, 'Emoji' 32px, 'Bullet' 32px, 'None' 32px).",
+            "fixDirection": "NOT decided or applied this session — a shorter single word (e.g. 'Number') would satisfy rule (c) at this segment width without changing the control type. Copy decision for Bean, not a mechanical swap."
           },
           {
             "block": "sgs/container",
             "attribute": "contentWidth (WidthPanel.js's CONTENT_WIDTH_OPTIONS)",
-            "finding": "Its own 4-option ToggleGroupControl (Normal/Wide/'Full (no cap)'/'Custom…') breaches this rule — 'Full (no cap)' (13 chars, two words) is the outlier against 'Normal'(6)/'Wide'(4)/'Custom…'(7) and wraps to two visual lines. Confirmed live 2026-08-19 (Bean's own screenshot), root-caused via DOM read of WidthPanel.js:28.",
-            "fixDirection": "NOT decided or applied this session — same open-finding treatment as icon-list's markerType."
+            "finding": "Its own 4-option ToggleGroupControl (Normal/Wide/'Full (no cap)'/'Custom…') breaches rule (b) — 'Full (no cap)' (13 chars, three words) renders on THREE lines in a 38px segment (43px of text), crossing the top border by 3px and the bottom border by 2px. Its siblings are all 1 line with ~10px clearance, so this is a single-outlier failure, not a control-wide sizing problem. Measured live on the deployed canary via Range.getClientRects(); source is WidthPanel.js:28. ⚠ An earlier version of this entry said 'wraps to two visual lines' — that was an eyeball estimate from a screenshot and it was wrong; the measurement says three.",
+            "fixDirection": "NOT decided or applied this session — same open-finding treatment as icon-list's markerType. Shortening the label to a single short word (e.g. 'Full') would satisfy rule (b) without changing the control type, and is likely the cheaper fix here, but it is a copy decision for Bean rather than a mechanical swap."
           }
         ],
         "derivation": {
