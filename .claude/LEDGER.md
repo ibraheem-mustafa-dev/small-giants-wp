@@ -223,7 +223,7 @@ Decisions: **D681-D684**. Task 4 was completed by the C1-C4 session instead — 
 | 2 transparent | Scrolled background + text + gradient are client-set; direction invertible. Header colour migrated off WP-native into one SGS panel; `scrolled` admitted to the real state vocabulary |
 | 3 row naming | Row behaviours renamed by scope (header-row + footer-row) |
 | 4 surface cap | DONE by the C1-C4 session (`6c3ec1b0`) |
-| 5 attributes | `shadow` mounted (declared + rendering, but unreachable); 13 unreachable attrs deleted; 56 -> 43 |
+| 5 attributes | `shadow` mounted (declared + rendering, but unreachable); 13 unreachable attrs deleted. **Session net: 49 -> 43 (-6)** — Task 2 ADDED 7 colour/direction attrs first, so the deletion commit's own 56 -> 43 is that commit's before/after, not the session's |
 
 **⭐ The near-miss worth remembering.** Retiring WP-native colour stopped WordPress registering
 `backgroundColor`, and SEVEN header patterns stored their background under that name — all would

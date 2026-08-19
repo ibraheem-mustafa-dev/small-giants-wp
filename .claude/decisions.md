@@ -34,7 +34,13 @@ Also in this change: 13 unreachable attributes deleted (12 `shapeDivider*` + `ta
 MOUNTED — it was declared and already rendered by the wrapper, so a working feature was unreachable.
 The header is now permanently a `<header>` landmark. Rule 21 measured 250 → 249 FLAGGED and ratcheted;
 the first measurement counted the raw JSON array, which also serialises BASELINED findings and
-over-reported by 11 — the rule's own header warns of exactly this. Rule 07 raised 0 → 1 deliberately
+over-reported by 11 — the rule's own header warns of exactly this. ⚠ SUPERSEDED POST-MERGE: 250/249
+was correct for THIS commit's tree; once `feat/hover-helper` merged in (its shared-component resolver
+cleared ~50 more) the live figure is **199**, which `rules.json` now carries. Two other rules were
+left stale by exactly 1 the same way and were ratcheted with it (`24-raw-canonical-component` 1 -> 0,
+`31-golden-colour-control` 409 -> 408). All three were found by an INDEPENDENT QC pass, not by me:
+I asserted the ratchet in a commit message without re-reading the file afterwards, which is the
+verify-the-effect-landed rule broken by its own author. Rule 07 raised 0 → 1 deliberately
 with the real fix named: `ShadowControl` stores SHAPE ONLY and needs a caller-owned colour attribute
 composed by `sgs_shadow_value_composed()`, while the wrapper's shadow path is the older shape-only
 `sgs_shadow_value()` — mounting the real builder would ship a colour field the wrapper ignores, and a

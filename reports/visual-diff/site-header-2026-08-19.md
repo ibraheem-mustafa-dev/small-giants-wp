@@ -82,5 +82,10 @@ are the durable evidence; the images are corroboration.
 
 ## Cleanup
 
-Probe page 2522 is left published deliberately as the evidence behind this report.
-Delete it once this is reviewed.
+Probe page 2522 was DELETED from the canary (`wp post delete 2522 --force`; confirmed by
+`Could not find the post with ID 2522`). The measured values in the table above are the durable
+evidence — the page itself was scaffolding.
+
+⚠ This paragraph originally read "left published deliberately". It was already gone by then, and an
+independent QC pass on the handoff caught this report contradicting the LEDGER, which said deleted.
+Corrected rather than left as two committed docs disagreeing about the same fact.
