@@ -177,14 +177,8 @@
 			"default": {}
 		},
 		"contrastSafe": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"scrim",
-				"shadow",
-				"force-solid"
-			]
+			"type": "object",
+			"default": {}
 		},
 		"backgroundAttachment": {
 			"type": "string",
