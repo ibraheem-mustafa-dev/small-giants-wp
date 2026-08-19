@@ -99,13 +99,14 @@ $hover_shadow        = sanitize_text_field( $attributes['shadowHover'] ?? '' );
 $hover_shadow_colour = sanitize_text_field( $attributes['shadowHoverColour'] ?? '' );
 $hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? true );
 
-// Hover colour shifts — resolved from token slug or raw CSS colour. Emitted as
-// CSS custom properties on the wrapper (inherited by the card) and consumed by
-// the `.sgs-post-grid__card:hover` rules in style.css. Mirrors the info-box
-// `--sgs-hover-bg/text/border` pattern.
-$hover_bg       = ! empty( $attributes['backgroundColourHover'] ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
-$hover_text     = ! empty( $attributes['textColourHover'] ) ? sgs_colour_value( $attributes['textColourHover'] ) : '';
-$hover_border   = ! empty( $attributes['borderColourHover'] ) ? sgs_colour_value( $attributes['borderColourHover'] ) : '';
+// Hover colour shifts — resolved from token slug or raw CSS colour. Emitted
+// further down (once $root_sel exists) as real declarations via
+// sgs_emit_state_colour_css() / a hand-built ancestor-hover rule for text
+// (see the comment at the emission site), scoped to `.sgs-post-grid__card`.
+// Bean-locked: no hardcoded fallback colour — unset stays unset.
+$hover_bg     = ! empty( $attributes['backgroundColourHover'] ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
+$hover_text   = ! empty( $attributes['textColourHover'] ) ? sgs_colour_value( $attributes['textColourHover'] ) : '';
+$hover_border = ! empty( $attributes['borderColourHover'] ) ? sgs_colour_value( $attributes['borderColourHover'] ) : '';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -194,9 +195,6 @@ $extra_styles = array_filter(
 			$card_bg ? '--sgs-card-bg:' . $card_bg : '',
 			$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
 			$hover_shadow ? '--sgs-hover-shadow:' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour ) : '',
-			$hover_bg ? '--sgs-hover-bg:' . $hover_bg : '',
-			$hover_text ? '--sgs-hover-text:' . $hover_text : '',
-			$hover_border ? '--sgs-hover-border:' . $hover_border : '',
 		),
 		sgs_transition_vars( $attributes )
 	)
@@ -511,6 +509,63 @@ if ( '' !== $post_grid_preset_bg_slug ) {
 // after the stylesheet was parsed. Built by the same helper the card renderer
 // documents, so the two cannot drift apart.
 $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . Post_Grid_REST::card_vars_decls( $card_params ) . '}';
+
+// Hover colour shifts (background/text/border) — converted from the
+// --sgs-hover-bg/text/border custom-property + static-CSS-fallback pattern
+// (info-box's original shape) to per-instance scoped rules via
+// sgs_emit_state_colour_css(), same as sgs/info-box and sgs/cta-section.
+// Bean-locked: no hardcoded fallback colour — an unset hover colour now
+// renders NO hover change at all (previously it silently fell back to a
+// theme colour via the static CSS's `var(--x, <fallback>)`).
+$post_grid_card_sel = $root_sel . ' .sgs-post-grid__card';
+
+// Background: the two variant rules that used to exist here (minimal vs
+// non-minimal) differed ONLY in their fallback colour (--sgs-card-bg vs
+// transparent) — the OVERRIDE value was always the same --sgs-hover-bg.
+// With the fallback deleted the two rules are byte-identical but for their
+// selector, so they collapse into one rule covering every card style.
+if ( $hover_bg ) {
+	$responsive_css .= sgs_emit_state_colour_css( $post_grid_card_sel, array(), array( 'background-color:' . $hover_bg ) );
+}
+
+// Border: card/overlay/flat all set `border-color` on hover (their fallbacks
+// differed — transparent vs the theme border colour — but the override value
+// was always the same --sgs-hover-border, so those three collapse into one
+// rule). The `minimal` card style is genuinely different: it has no side
+// border at rest, only a 2px TOP accent border, so it must keep setting
+// `border-top-color` on its own — that is a real property difference, not
+// just a fallback difference, so it cannot collapse with the other three.
+if ( $hover_border ) {
+	$responsive_css .= sgs_emit_state_colour_css( $post_grid_card_sel . ':not(.sgs-post-grid__card--minimal)', array(), array( 'border-color:' . $hover_border ) );
+	$responsive_css .= sgs_emit_state_colour_css( $post_grid_card_sel . '.sgs-post-grid__card--minimal', array(), array( 'border-top-color:' . $hover_border ) );
+}
+
+// Text: NOT routed through sgs_emit_state_colour_css() — that helper's fixed
+// template only supports "this selector's own :hover" (it appends `:hover`
+// directly onto $selector). The original text-hover CSS is the OPPOSITE
+// shape: hovering the CARD changes the colour of four DESCENDANT elements
+// (title link / excerpt / meta / read-more), each of which already carries
+// its own explicit resting `color` declaration — an explicit declaration on
+// an element always beats an inherited value regardless of specificity, so
+// setting `color` on the card itself would not reach them. Hand-built here
+// instead, but following the same contract as the helper: real declarations
+// only, no hardcoded fallback, emitted only when the operator has actually
+// set a hover text colour. `:focus-within` (not `:focus-visible`) is the
+// correct pseudo-class for this ancestor-hover shape, since the element that
+// receives focus (the read-more link) is a descendant, not the card itself.
+if ( $hover_text ) {
+	$post_grid_hover_text_targets = array(
+		' .sgs-post-grid__title a',
+		' .sgs-post-grid__excerpt',
+		' .sgs-post-grid__meta',
+		' .sgs-post-grid__readmore',
+	);
+	foreach ( $post_grid_hover_text_targets as $post_grid_hover_text_target ) {
+		$responsive_css .= $post_grid_card_sel . ':hover' . $post_grid_hover_text_target . ','
+			. $post_grid_card_sel . ':focus-within' . $post_grid_hover_text_target
+			. '{color:' . $hover_text . '}';
+	}
+}
 
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
