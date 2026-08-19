@@ -3,13 +3,13 @@ doc_type: spec
 spec_id: 38
 spec_version: 1.0
 status: active
-title: SGS Motion System — the two-tier motion doctrine + the GSAP (Tier G) effects layer
+title: SGS Motion System — the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
 created: 2026-07-29
 depends_on: [31, 32, 35, 37, "02 §Animation", "src/shared/effects/ house runtime"]
 decision_refs: [D406, D407, D408, D409]
 ---
 
-# Spec 38 — SGS Motion System: the two-tier motion doctrine + the GSAP (Tier G) effects layer
+# Spec 38 — SGS Motion System: the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
 
 > **Design-gate status: SIGNED OFF — Bean approved 2026-07-29, conditional on a `/qc-council`
 > pass. The council ran same day (3 code-grounded raters: WP-mechanics / header-forensics /
@@ -200,18 +200,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 > `overflow-x: auto; scroll-snap-type: x mandatory`, and the panel `<section>` elements are
 > themselves valid Tab stops for keyboard-driven scrolling.
 >
-> ⚠ **SUPERSEDED 2026-08-01 (D453) — this was proven FALSE the moment a fixture with real
-> interactive content existed** (the very re-verification this block records as owed). A control
-> inside a `pin-scrub`/`scrub`/`split-reveal` section is focusable while at `opacity: 0`, because
-> `fromTo` immediate-renders the hidden FROM state before any scroll. That is a WCAG 2.4.11
-> failure and it DOES need additional wiring: `fx-pin-scrub.js` and `fx-scrub.js` now hold the
-> reveal on `gsap.ticker` while focus is inside; `fx-split-reveal.js` uses a one-shot (no scrub,
-> so no per-frame race). The horizontal panel is the ONLY one where native reachability suffices,
-> and even there by accident — see D458.
->
-> **Content restriction: none required.** *(Original text, retained for the record.)* A block
-> author placing links, buttons or form fields inside a `pin-scrub` section or a horizontal panel
-> needs no additional wiring — reachability is inherited from the browser's native focus-scroll.
+> **Content restriction:** a control inside a `pin-scrub`/`scrub`/`split-reveal` section is
+> focusable while at `opacity:0` (WCAG 2.4.11), because `fromTo` immediate-renders the hidden FROM
+> state before any scroll. `fx-pin-scrub.js`/`fx-scrub.js` hold the reveal on `gsap.ticker` while
+> focus is inside; `fx-split-reveal.js` uses a one-shot. The horizontal panel is the only one where
+> native reachability suffices, and only by accident (see D458).
 >
 > **Owed:** the canary fixtures contain no focusable element INSIDE a pin, so the case the
 > accessibility audit actually worried about — Tab landing on a control within an active pin — is
@@ -223,10 +216,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   asset pipeline (frame export from video, compression, resolution ladder, lazy chunked
   fetch) is a named Wave C work item — the block is NOT done when the canvas draws; it is done
   when a client can produce usable frames with the documented tooling. Editor shows the poster
-  frame only. **The block itself exists** (`src/blocks/image-sequence/`, agency-only, hidden
-  from the inserter) — `scripts/generate-fx-qualifying-blocks.py`'s `EXACT_MATCH_BLOCKS` table
-  carried a stale comment claiming the directory didn't exist yet; corrected 2026-08-02
-  (register item 4) to the real roster `{"sgs/image-sequence"}`.
+  frame only. The block itself exists (`src/blocks/image-sequence/`, agency-only, hidden
+  from the inserter), matching `generate-fx-qualifying-blocks.py`'s `EXACT_MATCH_BLOCKS` roster
+  `{"sgs/image-sequence"}`.
 
 ### 3.2 Text
 
@@ -302,23 +294,19 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   exercised on four of the five — 9 real cards / 27 with clones / **9 dots** on post-grid, and the
   same shape on the rest.
 
-  **⚠ THE ROSTER PREDICATE IN THIS SPEC WAS WRONG, and is corrected here.** This section previously
-  said to re-derive the roster from `supports.sgs.fx.draggable`. That predicate returns
-  `{ before-after, gallery }` — two blocks, one of which has no scroller at all. **The correct
-  predicate is "owns a native horizontal scroller"**, which is precisely what
-  `isNativeHorizontalScroller()` gates on at runtime. Measured, that is `buybox`, `gallery`,
-  `google-reviews`, `post-grid`, `trustpilot-reviews`.
+  **Roster predicate: "owns a native horizontal scroller"** — what `isNativeHorizontalScroller()`
+  gates on at runtime. Measured: `buybox`, `gallery`, `google-reviews`, `post-grid`,
+  `trustpilot-reviews`.
 
-  Two blocks are deliberately EXCLUDED, with reasons, so neither is re-proposed cold:
-  - **`sgs/before-after`** declares `fx.draggable` but has no `overflow-x` anywhere — its drag is a
-    divider handle, not a scroller. Looping would no-op.
-  - **`sgs/testimonial-slider`** has a `dragToScroll` attr but its track is `overflow:hidden` +
-    transform-driven, so `isNativeHorizontalScroller()` rejects it (as `fx-draggable.js` already
-    did — `render.php` records that removal as inert). Giving it looping means converting the track
-    to a native scroller and moving its arrows/dots/autoplay onto `scrollLeft`: a behavioural change
-    to that block, not a rollout step. **Bean ruled it out of scope 2026-08-02.**
-  - `sgs/timeline` is a genuine horizontal scroller with no fx declaration at all — an unclaimed
-    candidate needing a new control surface, not a rollout.
+  Deliberately EXCLUDED, so neither is re-proposed cold:
+  - `sgs/before-after` — `fx.draggable` drives a divider handle, not a scroller; no `overflow-x`,
+    looping would no-op.
+  - `sgs/testimonial-slider` — track is `overflow:hidden` + transform-driven, not a native
+    scroller; adding looping means converting the track and moving arrows/dots/autoplay onto
+    `scrollLeft` — a behavioural change, not a rollout step. Bean ruled out of scope 2026-08-02.
+
+  `sgs/timeline` is a genuine horizontal scroller with no fx declaration — an unclaimed candidate
+  needing a new control surface, not a rollout.
 
   **`sgs/buybox` was the non-mechanical one** (thumbnail strip + the product-card Interactivity
   store) and drove a UNIVERSAL hardening of `neutraliseClone()` in `fx-carousel-loop.js`: clones now
@@ -326,38 +314,15 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   descendant. `inert` + `aria-hidden` stop a human reaching a clone; they do NOT stop a framework
   hydrating it. Proven live: **0 live attributes across 20 clone subtrees**, with a negative control
   confirming the assertion fails when one is re-planted.
-  2. **CLOSED 2026-08-02 (register item M2).** Reduced motion for the LOOP is now measured, not
-     assumed — see §10's new `Carousel loop (FR-38-26)` row. Confirmed on 4 of 5 rollout blocks
-     with a real `reducedMotion:'reduce'` browser context: clones, neutralisation, and boundary
-     re-seat all behave identically under reduce, because the correction is an instantaneous
-     `scrollLeft` write, never a tween — there is genuinely nothing for `prefers-reduced-motion`
-     to gate in this module. A negative control (each block's OWN arrow-click, a separate code
-     path) proved the emulated context was real: `sgs/gallery`/`sgs/post-grid` correctly branch
-     `auto`/`smooth`; `sgs/trustpilot-reviews` and `sgs/google-reviews` hardcoded `'smooth'`
-     regardless of preference — a genuine defect in those two blocks' own arrow-click code,
-     separate from the loop module. ✅ **BOTH FIXED 2026-08-02 (`5c45f879`, `ba28ab92`).** Each now
-     reads the media query FRESH per call rather than caching it at module load, so toggling the OS
-     setting takes effect during a visit. The sweep also caught a THIRD instance the measurement had
-     not: `sgs/post-grid` had a SECOND `scrollIntoView` still passing the British spelling
-     `behaviour`, which the browser silently discards — one of two occurrences had been fixed and
-     the other missed. Only one hardcoded `'smooth'` survives, in `google-reviews`' autoplay, which
-     early-returns under reduce (WCAG 2.3.3) and is therefore correctly gated, not a defect.
-  3. **CLOSED 2026-08-02 (register item M2), with ONE genuine defect found.** Keyboard arrow-wrap
-     was exercised live (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 2 — focus the next-arrow,
-     press Enter repeatedly past the boundary) on all 4 arrow-bearing blocks (`sgs/buybox` has no
-     arrows to test). `sgs/gallery`, `sgs/post-grid`, `sgs/trustpilot-reviews` all wrap correctly —
-     the arrow never disables AND the active position genuinely returns to its starting point
-     (gallery/post-grid in exactly N presses via their internal counted `currentIndex`; trustpilot
-     in N+1, because its dot-sync is nearest-scroll-position rather than a counter, and spends one
-     press "inside" the clone region before the loop module's own correction re-seats it — a real
-     mechanism difference, not a defect). `sgs/google-reviews` WAS genuinely broken: its
-     `nextSlide()` computed an absolute scroll target by scanning only REAL (non-clone) items for
-     one past the current position; once `scrollLeft` moved into clone territory it had no further
-     real item to target and dead-ended at the last real card forever — the arrow never disabled
-     (satisfying the letter of "must never disable") but functionally could not progress past the
-     last real card via repeated keyboard activation, failing WCAG 2.5.7's actual requirement that
-     the alternative WORK. Satisfying a rule's wording while defeating its purpose is the failure
-     shape worth remembering here.
+  2. Reduced motion for the carousel LOOP is confirmed identical under reduce on 4 of 5 rollout
+     blocks — the correction is an instantaneous `scrollLeft` write, never a tween, so there is
+     nothing for `prefers-reduced-motion` to gate in this module. Full detail + the fix for the two
+     blocks whose own arrow-click code hardcoded `'smooth'`: §10's `Carousel loop (FR-38-26)` row.
+  3. Keyboard arrow-wrap verified live on all 4 arrow-bearing carousel-loop blocks
+     (`probe-carousel-loop.mjs` Arm 2). `sgs/google-reviews` had a genuine WCAG 2.5.7 defect — its
+     `nextSlide()` could dead-end in clone territory with no further real item to target, so the
+     arrow never disabled but the user could not actually progress. Fixed. **Satisfying a rule's
+     wording while defeating its purpose is the failure shape worth remembering.**
      ✅ **FIXED 2026-08-02 (`ba28ab92`) and PROVEN LIVE.** Both directions now treat "no real item
      that way" as the WRAP POINT instead of clamping to a card already on screen. `prevSlide()` had
      the SAME defect mirrored — its fallback re-scrolled to the first real card from inside the
@@ -509,33 +474,14 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   **KNOWN RESIDUALS (recorded, not assumed away).** Tracked as Step R-residual of
   `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
 
-  1. **THE MULTI-LIST DRIFT — the single most expensive defect class this spec has produced.**
-     ✅ **GATED 2026-08-02** by `plugins/sgs-blocks/scripts/check-fx-list-drift.py`, wired into
-     `prebuild` immediately after the motion-fx generator chain. Six invariants, each traced to a
-     real defect it would have caught; `--self-test` breaks all six in turn plus a vacuity case and
-     proves each is caught. Deleting `'cursor-field'` from any one of the three lists now fails the
-     build — verified by doing it, three times, and restoring. The gate reads NO database (committed
-     source + generated artefacts only), so a clean checkout still builds. `fx_effects` gained an
-     **`in_picker`** column (same shape as `creates_panel`, D459) because nothing else distinguished
-     a picker effect from a block-private one — `creates_panel` does not (`cursor-field` is 0 and IS
-     in the picker). The paragraph below describes the situation that existed BEFORE that gate.
-
-     An fx effect must join THREE hand-maintained lists to work at all, and **no gate cross-checks
-     any of them**: `SHIPPED_EFFECTS` (`fx.js`, gates the editor picker), `FX_ATTR_MAP`
-     (`fx-attributes.php`, attr → data-attribute for DYNAMIC blocks), and
-     `sgs_fx_effect_param_scope()` (`fx-attributes.php`, per-effect param allowlist).
-     **Two of the three were missed on `cursor-field` in one session, and neither failed a build.**
-     Missing the first made the entire feature unreachable from the editor while every other layer
-     was correctly wired; missing the third rendered a page that looked completely healthy —
-     emitter marked, stylesheet and module enqueued — while the client's chosen colour and radius
-     were silently dropped. The third only surfaced by LIVE verification, after the other fixes had
-     already shipped.
-     A FOURTH list of the same shape governs field types: `FX_FIELD_TYPE_OPTIONS` (`fx.js`) ×
-     `SGS_FX_CURSOR_FIELD_TYPES` (`fx-cursor-field.php`) × the painting rules in
-     `fx-cursor-field.css`. A type in the picker with no CSS rule silently paints nothing.
-     ✅ That triad is invariant **I6** of the same gate, checked all three ways.
-     Two hand-maintained lists diverging silently is a failure this codebase has met before (see
-     the `TRANSITION_STYLES` note in `class-sgs-motion-registry.php`) — this is now four.
+  1. **THE MULTI-LIST DRIFT** — GATED 2026-08-02 by `check-fx-list-drift.py` (wired into
+     `prebuild`). An fx effect must join THREE hand-maintained lists (`SHIPPED_EFFECTS`,
+     `FX_ATTR_MAP`, `sgs_fx_effect_param_scope()`), plus a fourth triad governing field types; the
+     gate cross-checks all of them (6 invariants + I6), `--self-test`-proven by deleting
+     `cursor-field` from each list in turn and confirming the build fails. **Two hand-maintained
+     lists diverging silently is a failure this codebase has met before (`TRANSITION_STYLES`,
+     `class-sgs-motion-registry.php`) — this is now four,** which is why the gate reads no
+     database and cross-checks committed source only.
   2. **`floating-objects` is spec'd, not built** (see the field-type table above).
   3. **A participant carrying its own `background-image` is deliberately not marked**, because our
      layer would replace it; that child keeps a visible seam. Clobbering a client's chosen image is
@@ -716,15 +662,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   cross-origin iframe are swallowed and the page stops scrolling wherever the pointer sits over
   an `sgs/media` or `sgs/business-info` embed.
 
-  > **Condition (c)'s former clause about the theme's `smooth-scroll.js` is STRUCK (D422).** It
-  > required suppressing a file that **no longer exists in the enqueue path** —
-  > `theme/sgs-theme/functions.php` retired it ("Smooth scroll now handled by CSS… The JS file is
-  > no longer needed"), and nothing in the repo enqueues it. The live competing driver is instead
-  > `html { scroll-behavior: smooth }` (`core-blocks-critical.css`), and **that conflict did not
-  > reproduce when measured** on the canary with Lenis running: a long smooth scroll eased
-  > cleanly to target with zero reversals, and an anchor click landed exactly clear of the sticky
-  > header. No suppression is therefore specified — per `prove-the-cause-before-fix.md`, a fix for
-  > a cause that does not reproduce is not shipped. Re-open only with a reproduction.
+  > No suppression of `smooth-scroll.js` is needed — the file no longer exists in the enqueue path
+  > (retired in `theme/sgs-theme/functions.php`). The competing `scroll-behavior:smooth` CSS
+  > driver (`core-blocks-critical.css`) was measured live with Lenis running and did not reproduce
+  > a conflict: long smooth scrolls eased cleanly, anchor clicks landed clear of the sticky header.
+  > Re-open only with a reproduction.
 - **FR-38-19 Page transitions — Tier V, cross-document View Transitions API.**
   `✅ BUILT + LIVE-VERIFIED 2026-07-30` (`984f2944`, D424). Evidence:
   `reports/2026-07-30-motion-waveB-page-transitions-verification.md`.
@@ -788,80 +730,29 @@ shipped migrates). **In-flight track work is UNAFFECTED:** Spec 36's burger-morp
 and trigger-anchor geometry are logic/geometry, not motion-system scope (Bean D404), and stay
 the house way.
 
-### 4.2 ScrollSmoother × Spec 37 header sticky (D407) — ⛔ SUPERSEDED BY D422 (2026-07-30)
+### 4.2 ScrollSmoother × Spec 37 header sticky — SUPERSEDED BY D422 (2026-07-30)
 
-> **⛔ THIS CONFLICT NO LONGER EXISTS. DO NOT BUILD ANYTHING IN THIS SECTION.**
->
-> D407 resolved a conflict created *entirely* by ScrollSmoother's mechanism: it wraps page
-> content in `#smooth-wrapper > #smooth-content` and **transforms** the content element, and a
-> transformed ancestor silently stops `position: sticky` from pinning. Every artefact below —
-> the header relocation, the output filter that was to insert the wrapper, the per-tier edge
-> rule, the `findStickyBreakingAncestor()` tripwire — exists only to work around that.
->
-> **D422 replaced the smoother with Lenis (Tier H), which eases the real document scroll and
-> creates no wrapper and no transform.** There is nothing to sit outside of, nothing to trap the
-> header in, and no template to restructure. **Measured on the canary before the swap**, with
-> Lenis running: no wrapper element created; the header's entire ancestor chain
-> (`div.wp-site-blocks` → `body`) reported `transform: none`; the header held
-> `getBoundingClientRect().top === 0.00` at every scroll position **including mid-flight**;
-> `--sgs-header-height` unchanged at 93px; every header and row state class toggled identically
-> to baseline; `document.scrollHeight` unchanged; no inline height forced onto `<body>`.
+> **This conflict no longer exists.** D422 replaced ScrollSmoother with Lenis (Tier H), which
+> eases the real document scroll and creates no wrapper and no transform — there is nothing for
+> the header to sit outside of. Measured on the canary: no wrapper element, header's ancestor
+> chain reports `transform:none`, header pins correctly including mid-flight.
 >
 > **Consequences, stated so they are not silently dropped (STOP-29):**
-> · The Wave B "output filter / wrapper insertion" build item is **CANCELLED**, not deferred.
-> · The `findStickyBreakingAncestor()` tripwire extension is **CANCELLED** — the existing
->   warn-only guard in `src/header-behaviours/view.js` stays exactly as shipped, untouched.
-> · FR-38-18's former condition (d) (the sticky-header resolution) is **struck**; the header
->   verification survives as a *regression check*, not an engineering task (§8 Wave B).
-> · Spec 37 FR-37-40 is **not modified by this spec in any way.**
+> The Wave B wrapper-insertion filter is CANCELLED (not deferred). The
+> `findStickyBreakingAncestor()` tripwire extension is CANCELLED — the existing warn-only guard
+> stays exactly as shipped, untouched. FR-38-18's former condition (d) is struck; the header
+> verification survives as a regression check, not an engineering task. Spec 37 FR-37-40 is
+> untouched.
 >
-> The text below is retained as the historical record of why the ScrollSmoother route was
-> rejected. It is not an instruction.
+> **Why ScrollSmoother was rejected (retained as the reason, not as a build guide):** it wraps
+> and transforms page content, and a transformed ancestor silently stops `position:sticky` from
+> pinning — the exact mechanism the shipped header sticky/collapse system depends on.
 
-**Ground truth correction:** Spec 37's per-row sticky was REJECTED (FR-37-40 short-parent
-trap); what shipped is HEADER-level `position:sticky` + row COLLAPSE, a measured pinned-gate
-(`getComputedStyle(header).position`), and `findStickyBreakingAncestor()` — which already
-detects exactly what ScrollSmoother creates (a transformed ancestor → "computes sticky but
-never pins").
-
-**Resolution — (c) the header sits OUTSIDE the smoothed wrapper**, chosen over (a) reimplement
-via ScrollTrigger pinning and (b) blanket mutual exclusion:
-
-- ScrollSmoother keeps NATIVE document scroll (it counter-transforms `#smooth-content`; the
-  document retains its real scroll height), so a sticky header placed as a SIBLING of the
-  wrapper — containing block still `<body>`, the exact FR-37-40 model — pins natively with
-  **zero rework** of the shipped system. This is also GSAP's own documented guidance (fixed/
-  pinned elements outside the wrapper). In the block theme the FACT is verified: all 9
-  templates share one flat top-level shape (header part / `<main>` container / footer part —
-  siblings, uniformly). **The insertion mechanism is a named Wave B build item** (qc-council
-  2026-07-29 — no shared wrapper filter exists today): ONE output filter that wraps everything
-  between the header and the end of the footer in `#smooth-wrapper > #smooth-content` when the
-  smoother setting is ON (the natural fit is a template-output buffer keyed on the
-  header/footer template-part boundaries, consistent with the house `render_block` chokepoint
-  style) — never 9 hand-edited template forks; setting OFF must leave templates byte-identical.
-- Under (c): `headerSticky` pins natively and the measured gate stays truthful;
-  `headerShrink`/`headerHideOnScroll` keep working unchanged (their listeners fire on the
-  still-native window scroll); `headerTransparent` unchanged (header z-index sits above the
-  wrapper; `--sgs-header-height` publication already handles content offset); row COLLAPSE is
-  height-based, not sticky-based — unaffected.
-- Why not (a): it reimplements a BUILT + LIVE-VERIFIED system inside ScrollTrigger and forks
-  every future header behaviour into two code paths — maximum rework, permanent double
-  maintenance. Why not (b) alone: it forces clients to choose between the two most-requested
-  premium features when they compose cleanly under (c).
-- **(b) survives as the runtime tripwire, not the primary:** if a custom template puts the
-  header inside the wrapper anyway, the smoother is DISABLED for that page and a warning
-  names the element — never sticky. **Build note (qc-council 2026-07-29): the existing
-  `findStickyBreakingAncestor()` (`src/header-behaviours/view.js:127-152`) currently only
-  `console.warn`s ("advisory, never a gate") — Wave B EXTENDS it with the disable action;
-  the detection half exists, the enforcement half is new.** Failure degrades toward Tier V
-  (R-31-9: the universal thing wins).
-- **Edge rule (amended post qc-council — `headerSticky` is a per-tier TRI-STATE, not a
-  boolean, and the header's DOM position cannot flip per breakpoint):** the header sits
-  OUTSIDE the smoothed wrapper whenever `headerSticky` is truthy on **ANY tier**; on tiers
-  where sticky is off, the header then scrolls at native (unsmoothed) speed — a documented,
-  accepted trade-off, visually minor because an unpinned header leaves the viewport within
-  the first scroll. Only when sticky is off on EVERY tier does the header stay INSIDE
-  `#smooth-content` (outside it would tear against the smoothed content for the whole page).
+Resolution that WAS chosen for ScrollSmoother, had it shipped — kept for one line each: (a)
+reimplement sticky via ScrollTrigger pinning — rejected, forks every future header behaviour
+into two permanently-maintained code paths; (b) blanket mutual exclusion between smoother and
+sticky header — rejected, forces clients to choose between two most-requested features; (c)
+header sits outside the smoothed wrapper — the one that would have shipped, made moot by D422.
 
 ### 4.3 Entrance (Tier V `sgsAnimation`) × scroll-scrub on the same block
 
@@ -922,7 +813,7 @@ modules; per-plugin webpack chunks with `gsap`/`gsap/*` as shared externals.**
 |---|---|---|
 | gsap core | ~26 KB | any Tier G effect on the page |
 | ScrollTrigger | ~14 KB | any scroll-driven G effect |
-| ~~ScrollSmoother~~ → **Lenis** (Tier H, D422) | **5,777 bytes gzip (~5.6 KiB) — MEASURED, not an estimate** (`shared/effects/smooth-scroll.js`, includes the bundled library; the figure is the budget baseline in `scripts/motion-bundle-baseline.json`) | site setting ON |
+| **Lenis** (Tier H, D422) | 5,777 bytes gzip (~5.6 KiB) — MEASURED, not an estimate (`shared/effects/smooth-scroll.js`, includes the bundled library; the figure is the budget baseline in `scripts/motion-bundle-baseline.json`) | site setting ON |
 | SplitText | ~9 KB | text reveals present |
 | Flip | ~7 KB | filtered-grid pairing ON |
 | Draggable + Inertia | ~15 + 6 KB | drag roster block opted in |
@@ -1230,12 +1121,12 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Physics easings | Follow their host effect's row |
 | DrawSVG | **Simplify:** rendered fully drawn (no animated stroke) — upgrades Vivus's non-canonical 1ms-draw arm |
 | MorphSVG | **Suppress:** final shape only |
-| MotionPath | **Suppress:** rests at the client-chosen resting position (D441, 2026-08-01 — CSS applies `--sgs-fx-motion-path-rest-y` unconditionally under `prefers-reduced-motion: reduce`, the same custom property the normal-motion handoff uses; superseded the earlier "matches existing decorative-image reduced-motion arm" wording, which predated the resting-position control and meant "wherever the server rendered it") |
+| MotionPath | **Suppress:** rests at the client-chosen resting position (D441 — CSS applies `--sgs-fx-motion-path-rest-y` unconditionally under `prefers-reduced-motion: reduce`, the same custom property the normal-motion handoff uses) |
 | Smooth scrolling (Lenis, Tier H) | **Suppress:** native scroll. Live AND reactive — the instance is destroyed on a mid-session change to `reduce`, and rebuilt on a change back (FR-38-18 condition b) |
 | Page transitions | **Suppress:** instant navigation |
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
 | Cursor-reactive field — `floating-objects` type (FR-38-25, once built) | **Simplify to a fixed resting transform, never suppress the object.** Differs from the `glow`/`spotlight-mask` SIMPLIFY case above: those rest as a static PAINT (a legitimate finished state); an autonomously-moving OBJECT has no equivalent "just stop tracking" answer, because the object is content an operator placed deliberately (`degrade-to-more-content-never-less`). Under `prefers-reduced-motion: reduce` the object renders at its AUTHORED static position (`transform: none`), identical to the fail-open no-JS state — the reduced-motion state and the no-JS state are the SAME state, needing no separate code path. |
-| Carousel loop (FR-38-26) | **Measured 2026-08-02 (register item M2).** Unstated in this spec until now — the module's own docblock only argued by analogy that it should be a no-op. **Confirmed identical under reduce**, by direct measurement on 4 of 5 rollout blocks with a real `reducedMotion:'reduce'` browser context (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 1): clones still insert, still neutralise (`inert`+`aria-hidden`), and the boundary `scrollLeft` re-seat still fires — because the correction is an instantaneous position WRITE, never a tween, so there is no animation for `prefers-reduced-motion` to gate either way. Negative control (proves the emulated context is real, not self-reported): each block's own arrow-click DOES branch on reduce where implemented — `sgs/gallery`/`sgs/post-grid` pass `auto` vs `smooth` to `scrollIntoView` correctly (post-grid's `behavior` was misspelled `behaviour`, a silent no-op discovered and fixed live this session, `plugins/sgs-blocks/src/blocks/post-grid/view.js`); `sgs/trustpilot-reviews` and `sgs/google-reviews` passed a HARDCODED `'smooth'` regardless of `prefers-reduced-motion` — a real defect in those two blocks' own arrow-click code, NOT in the loop module. ✅ BOTH FIXED same day (`5c45f879`, `ba28ab92`): each now reads the media query fresh per call. The sweep caught a third instance the measurement missed — a SECOND `scrollIntoView` in post-grid still spelled `behaviour`. The one remaining hardcoded `'smooth'` (google-reviews autoplay) is correctly gated by an early return under reduce. |
+| Carousel loop (FR-38-26) | **Suppress-equivalent (measured 2026-08-02):** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. Confirmed identical under reduce on 4 of 5 rollout blocks. Two blocks' own arrow-click code hardcoded `'smooth'` regardless of the preference — a defect in those blocks, not the loop module — fixed same day (`5c45f879`, `ba28ab92`); the one remaining hardcoded case (google-reviews autoplay) is correctly gated by an early return. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
 
@@ -1332,11 +1223,10 @@ data-sgs-fx-disable-tablet="true" / data-sgs-fx-disable-mobile="true"
 
 > **AMENDMENT 2026-07-31 (D427) — the morph / motion-path CONTROL SURFACE, Bean-signed.**
 >
-> ⚠ **CORRECTED 2026-08-01 (D452) — the claim below was FALSE WHEN WRITTEN.** Morph had NEVER
-> animated on any block: `fx-shape-routes.php` emitted `data-sgs-fx="morph"` on the injected
-> `<svg>` wrapper, and MorphSVGPlugin refuses an `<svg>` container outright. Measured: the `d`
-> attribute unchanged across 148 animation frames. Read "both engines working" below as "both
-> engines SHIPPED" — motion-path worked, morph did not.
+> Morph never animated pre-fix: `fx-shape-routes.php` emitted `data-sgs-fx="morph"` on the
+> injected `<svg>` wrapper, and MorphSVGPlugin refuses an `<svg>` container outright (measured:
+> `d` attribute unchanged across 148 frames). "Both engines working" below means both SHIPPED —
+> motion-path worked, morph did not, until the preset render-layer expansion below fixed it.
 >
 > **The problem this closes.** Wave C shipped both engines working, but with no way for a
 > client to reach them. `fx-morph.js` and `fx-motion-path.js` each resolve a CSS SELECTOR
@@ -1370,8 +1260,7 @@ data-sgs-fx-disable-tablet="true" / data-sgs-fx-disable-mobile="true"
 > arbitrary drafts cannot have a fixed shape ceiling); a CSS-selector textbox (what the Wave C
 > agents implicitly assumed — fails §7 outright).
 >
-> **Status: BUILT + SHIPPED — CORRECTED 2026-08-02 (register item 2).** The line above ("DESIGN
-> SIGNED, NOT YET BUILT") is stale and was false when re-checked this session. All five owed
+> **Status: BUILT + SHIPPED (2026-08-02).** All five owed
 > items exist: the preset data files (`includes/fx-path-routes.json`,
 > `includes/fx-shape-routes.json`), the render-layer expansion (`includes/fx-path-routes.php`,
 > `includes/fx-shape-routes.php`), the `block_attributes` rows under `fx:*` (`fxPath`,
@@ -1446,7 +1335,7 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
   Both npm-bundled, never CDN, both conditionally loaded so a page using neither ships zero
   bytes of either.
   **Spec 02 §Animation** — the Tier V baseline this spec bounds (its performance budget
-  unchanged; its "sgsParallax pending" line is stale — parallax shipped).
+  unchanged; parallax shipped).
 - **Parking:** P-10 (revived by FR-38-16), P-TIMELINE-ADVANCED-VISUAL-EFFECTS (first
   ScrollTrigger-scrub client use-case — the `sgs/timeline` progressive fill lands as an
   FR-38-7 consumer), P-NO-INLINE-GATE-COVERAGE-GAPS (FR-38-24 canary obligation),
