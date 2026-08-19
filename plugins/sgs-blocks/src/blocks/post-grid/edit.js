@@ -22,12 +22,13 @@ import {
 	ToggleControl,
 	TextControl,
 	RadioControl,
-	FormTokenField,
 	Spinner,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import SgsColourPanel from '../../components/SgsColourPanel';
 import ShadowControl from '../../components/ShadowControl';
+import SgsBooleanField from '../../components/SgsBooleanField';
+import SgsMultiSelectField from '../../components/SgsMultiSelectField';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -629,19 +630,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<FormTokenField
+					<SgsMultiSelectField
 						label={ __( 'Categories', 'sgs-blocks' ) }
 						value={ selectedCatNames }
 						suggestions={ catSuggestions }
 						onChange={ onCategoriesChange }
-						__nextHasNoMarginBottom
 					/>
-					<FormTokenField
+					<SgsMultiSelectField
 						label={ __( 'Tags', 'sgs-blocks' ) }
 						value={ selectedTagNames }
 						suggestions={ tagSuggestions }
 						onChange={ onTagsChange }
-						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Offset', 'sgs-blocks' ) }
@@ -743,22 +742,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { showImage: true } ) }
 						isShownByDefault
 					>
-						<ToggleControl
+						<SgsBooleanField
 							label={ __( 'Show image', 'sgs-blocks' ) }
 							checked={ showImage }
 							onChange={ set( 'showImage' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ showImage && (
-							<SelectControl
-								label={ __( 'Image size', 'sgs-blocks' ) }
-								value={ imageSize }
-								options={ IMAGE_SIZE_OPTIONS }
-								onChange={ set( 'imageSize' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						>
+							{ showImage && (
+								<SelectControl
+									label={ __( 'Image size', 'sgs-blocks' ) }
+									value={ imageSize }
+									options={ IMAGE_SIZE_OPTIONS }
+									onChange={ set( 'imageSize' ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</SgsBooleanField>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Show title', 'sgs-blocks' ) }
@@ -786,23 +785,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						isShownByDefault
 					>
-						<ToggleControl
+						<SgsBooleanField
 							label={ __( 'Show excerpt', 'sgs-blocks' ) }
 							checked={ showExcerpt }
 							onChange={ set( 'showExcerpt' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ showExcerpt && (
-							<RangeControl
-								label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
-								value={ excerptLength }
-								onChange={ set( 'excerptLength' ) }
-								min={ 5 }
-								max={ 80 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						>
+							{ showExcerpt && (
+								<RangeControl
+									label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
+									value={ excerptLength }
+									onChange={ set( 'excerptLength' ) }
+									min={ 5 }
+									max={ 80 }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</SgsBooleanField>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Show date', 'sgs-blocks' ) }
@@ -853,21 +852,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							} )
 						}
 					>
-						<ToggleControl
+						<SgsBooleanField
 							label={ __( 'Show read more', 'sgs-blocks' ) }
 							checked={ showReadMore }
 							onChange={ set( 'showReadMore' ) }
-							__nextHasNoMarginBottom
-						/>
-						{ showReadMore && (
-							<TextControl
-								label={ __( 'Read more text', 'sgs-blocks' ) }
-								value={ readMoreText }
-								onChange={ set( 'readMoreText' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						>
+							{ showReadMore && (
+								<TextControl
+									label={ __( 'Read more text', 'sgs-blocks' ) }
+									value={ readMoreText }
+									onChange={ set( 'readMoreText' ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</SgsBooleanField>
 					</ToolsPanelItem>
 				</ToolsPanel>
 

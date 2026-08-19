@@ -28,7 +28,7 @@ import {
 	Spinner,
 } from '@wordpress/components';
 import IconGrid from './IconGrid';
-import IconPreview from './IconPreview';
+import IconPreview, { withInlineFillStroke } from './IconPreview';
 import { loadLucide, loadEmoji, loadWpIcons, ICON_SOURCES, DASHICONS } from './icon-data';
 import './editor.css';
 
@@ -255,7 +255,7 @@ export default function IconPicker( {
 					<span
 						className="sgs-icon-grid__svg"
 						// eslint-disable-next-line react/no-danger
-						dangerouslySetInnerHTML={ { __html: map[ n ] } }
+						dangerouslySetInnerHTML={ { __html: withInlineFillStroke( map[ n ] ) } }
 					/>
 				),
 			} ) );
@@ -282,7 +282,7 @@ export default function IconPicker( {
 						<span
 							className="sgs-icon-grid__svg"
 							// eslint-disable-next-line react/no-danger
-							dangerouslySetInnerHTML={ { __html: wpIcons[ s ] } }
+							dangerouslySetInnerHTML={ { __html: withInlineFillStroke( wpIcons[ s ] ) } }
 						/>
 					),
 				} )

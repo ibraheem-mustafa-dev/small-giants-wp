@@ -10,6 +10,45 @@ import { useState, useEffect } from '@wordpress/element';
 import { loadLucide, loadWpIcons } from './icon-data';
 
 /**
+ * Every icon in `lucide-icons.json`/`wp-icons.json` carries its own explicit
+ * `fill`/`stroke` presentation attributes on the root `<svg>` tag — the
+ * library is NOT uniformly stroke-based: 1,965 of 1,966 icons are
+ * `fill="none" stroke="currentColor"`, but `wp-icons.json`'s `star-filled`
+ * is deliberately the opposite, `fill="currentColor" stroke="none"`
+ * (confirmed 2026-08-19 via a full scan of both JSON files, not a sample).
+ *
+ * WordPress core's own `.components-button svg { fill: currentColor }` rule
+ * overrides these presentation attributes whenever the icon sits inside a
+ * button (which it always does here). Re-declaring `fill`/`stroke` as an
+ * inline STYLE (not just leaving the attribute) restores each icon's own
+ * value, because an inline `style` attribute outranks any external
+ * stylesheet rule that isn't `!important` — unlike a bare presentation
+ * attribute, which core's rule always beats. Per-icon, not a blanket
+ * `fill:none` — that would make `star-filled` invisible.
+ *
+ * Exported so `IconPicker.js`'s grid-cell rendering can apply the same fix —
+ * it renders the raw SVG maps directly, a second code path this component
+ * does not cover on its own.
+ *
+ * @param {string} svgString Raw SVG markup with `fill="..."`/`stroke="..."`
+ *   attributes on its root element.
+ * @return {string} The same markup with those two values also present as an
+ *   inline `style`, so they survive being mounted inside a Button.
+ */
+export function withInlineFillStroke( svgString ) {
+	const fillMatch = svgString.match( /<svg[^>]*\bfill="([^"]*)"/ );
+	const strokeMatch = svgString.match( /<svg[^>]*\bstroke="([^"]*)"/ );
+	if ( ! fillMatch && ! strokeMatch ) {
+		return svgString;
+	}
+	const declarations = [
+		fillMatch ? `fill:${ fillMatch[ 1 ] }` : null,
+		strokeMatch ? `stroke:${ strokeMatch[ 1 ] }` : null,
+	].filter( Boolean ).join( ';' );
+	return svgString.replace( /<svg/, `<svg style="${ declarations }"` );
+}
+
+/**
  * @param {Object} props
  * @param {string} props.source One of lucide | emoji | wp-icon | dashicon.
  * @param {string} props.name   Icon identifier (lucide/wp slug, dashicon slug, or emoji char).
@@ -23,11 +62,11 @@ export default function IconPreview( { source, name, size = 24 } ) {
 		setSvg( '' );
 		if ( 'lucide' === source && name ) {
 			loadLucide()
-				.then( ( { map } ) => active && setSvg( map[ name ] || '' ) )
+				.then( ( { map } ) => active && setSvg( withInlineFillStroke( map[ name ] || '' ) ) )
 				.catch( () => {} );
 		} else if ( 'wp-icon' === source && name ) {
 			loadWpIcons()
-				.then( ( map ) => active && setSvg( map[ name ] || '' ) )
+				.then( ( map ) => active && setSvg( withInlineFillStroke( map[ name ] || '' ) ) )
 				.catch( () => {} );
 		}
 		return () => {

@@ -177,6 +177,23 @@
 	width: 24px;
 	height: 24px;
 	display: block;
+	/* CORRECTED 2026-08-19 — this rule used to claim "every icon in this
+	 * library is stroke-based" and hardcoded fill:none/stroke:currentColor
+	 * for all of them. FALSE: a full scan of assets/icons/wp-icons.json
+	 * found `star-filled` is deliberately fill="currentColor" stroke="none"
+	 * — the opposite convention. That blanket rule would have made
+	 * star-filled invisible. The REAL, per-icon fix now lives in JS
+	 * (IconPreview.js's `withInlineFillStroke`, applied by both
+	 * IconPreview.js and IconPicker.js's grid cells): it re-declares each
+	 * icon's own fill/stroke as an inline `style` attribute, which beats
+	 * WP core's `.components-button svg { fill: currentColor }` rule
+	 * without assuming one convention for every icon. The two properties
+	 * below are now a defensive DEFAULT for the (currently theoretical) case
+	 * of an icon rendered through neither fixed code path — every live
+	 * render site already carries its own correct inline style, which wins
+	 * regardless of what's declared here. */
+	fill: none;
+	stroke: currentColor;
 }
 
 .sgs-icon-grid__emoji {
