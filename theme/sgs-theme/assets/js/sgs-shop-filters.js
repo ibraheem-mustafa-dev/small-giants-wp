@@ -76,6 +76,15 @@
 		// so a persistent sheet-footer can sit outside the scroll area.
 		const scrollWrap = document.createElement( 'div' );
 		scrollWrap.className = 'sgs-shop-filters__scroll';
+		/* The site runs Lenis smooth scrolling (<html class="lenis">), which
+		   intercepts wheel events document-wide and drives the PAGE. Inside the
+		   open sheet that meant the wheel scrolled the page behind the modal
+		   while the sheet's own overflow never moved - the filter list simply did
+		   not respond to a scroll wheel. `data-lenis-prevent` is Lenis's own
+		   opt-out attribute: it hands wheel events inside this subtree back to
+		   native scrolling. Set here rather than in the template because this
+		   element is created at runtime. */
+		scrollWrap.setAttribute( 'data-lenis-prevent', '' );
 		while ( originalAside.firstChild ) {
 			scrollWrap.appendChild( originalAside.firstChild );
 		}
@@ -207,7 +216,13 @@
 			// Focus the heading (not the close button) per the APG pattern.
 			if ( heading ) {
 				requestAnimationFrame( function () {
-					heading.focus();
+					/* preventScroll: focusing an element inside a freshly
+					   opened modal makes the browser scroll it into view, which
+					   scrolled the PAGE behind the sheet - the "opens and jumps
+					   down" behaviour. The sheet is already in the top layer and
+					   the heading is already visible, so there is nothing to
+					   scroll to. */
+					heading.focus( { preventScroll: true } );
 				} );
 			}
 		}
@@ -223,7 +238,7 @@
 			modalOpen = false;
 			toggle.setAttribute( 'aria-expanded', 'false' );
 			document.body.classList.remove( 'sgs-scroll-locked' );
-			toggle.focus();
+			toggle.focus( { preventScroll: true } );
 			onScroll(); // Re-evaluate whether the sticky trigger should show again.
 		}
 

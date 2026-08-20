@@ -477,7 +477,20 @@ h2.wc-block-mini-cart__title {
 .sgs-shop-filters {
 	position: sticky;
 	top: var(--wp--preset--spacing--40, 1.5rem);
-	background: var(--sgs-elevation-1);
+
+	/* ── Filter skin (brand-derived, palette-agnostic) ──
+	 * Every value is mixed FROM the client's own primary/surface tokens, so a
+	 * law firm's navy palette and a bakery's pink palette both get a panel that
+	 * reads as theirs. No client hex appears here — this file is framework.
+	 * `--sgs-elevation-*` (P1-7) stays the generic elevation system and still
+	 * supplies the shadow; the panel FILL is brand-tinted rather than the
+	 * near-invisible neutral it was. */
+	--sgs-filter-surface: color-mix(in oklab, var(--wp--preset--color--primary) 12%, var(--wp--preset--color--surface));
+	--sgs-filter-line: color-mix(in oklab, var(--wp--preset--color--primary) 42%, var(--wp--preset--color--surface));
+	--sgs-filter-heading: var(--wp--preset--color--text);
+	--sgs-filter-label: 0.9375rem;
+
+	background: var(--sgs-filter-surface);
 	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
@@ -624,6 +637,15 @@ dialog.sgs-shop-filters {
 	max-width: none;
 	max-height: none;
 	color: inherit;
+
+	/* The UA stylesheet gives <dialog> `margin: auto`. As a GRID ITEM that
+	   resolves to auto margins on both axes, which centres the sidebar in its
+	   track and silently overrides the parent's `align-items: start` - measured
+	   live 2026-08-20 at 1309px: the filter panel's top sat 112px BELOW the
+	   first product card. It is not a spacing bug and no amount of align-items
+	   fixes it; auto margins win. Introduced by the <aside> -> <dialog>
+	   conversion, so it is corrected here at the source. */
+	margin: 0;
 }
 
 .sgs-shop-filters__scroll {
@@ -638,12 +660,19 @@ dialog.sgs-shop-filters {
 		margin: 0;
 		width: 100%;
 		max-width: 100vw;
-		height: auto;
-		max-height: 85vh;
+		/* FULL height, not 85vh (Bean, 2026-08-20). The sheet is anchored to the
+		   bottom edge and the filter set is tall enough to fill the screen, so a
+		   15vh letterbox of dimmed page above it bought nothing and cost a whole
+		   filter group of visible space. `dvh` not `vh` so the mobile browser's
+		   collapsing address bar does not leave a gap or force an inner scroll. */
+		height: 100dvh;
+		max-height: 100dvh;
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-		border-radius: var(--wp--custom--border-radius--medium, 8px) var(--wp--custom--border-radius--medium, 8px) 0 0;
+		/* No top rounding at full height - a rounded corner against the very top
+		   of the viewport reads as a rendering fault, not a sheet. */
+		border-radius: 0;
 		padding: var(--wp--preset--spacing--40, 1.5rem) var(--wp--preset--spacing--40, 1.5rem) 0;
 	}
 
@@ -1254,6 +1283,41 @@ body.woocommerce-cart .with-empty-cart-icon,
 	margin: 0;
 }
 
+/* ── Group headings ──
+ * WooCommerce does NOT render the `heading` attribute set on each filter block
+ * in the template; it renders `<legend class="screen-reader-text">Flavour</legend>`
+ * instead, so the labels existed but were spoken only to screen readers and were
+ * invisible on screen (verified live 2026-08-20 — every group except Price).
+ * Revealing the legend reuses the text WooCommerce already considers the
+ * accessible name, so the visible label and the announced label cannot drift.
+ * Scoped to a direct fieldset child so nested filter blocks (an attribute group
+ * contains a chips group carrying the SAME legend) cannot double up. */
+.sgs-shop-filters .sgs-shop-filters__group-heading {
+	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
+	font-family: inherit;
+	font-size: var(--sgs-filter-label, 0.9375rem);
+	font-weight: 700;
+	line-height: 1.3;
+	color: var(--sgs-filter-heading, var(--wp--preset--color--text));
+}
+
+.sgs-shop-filters fieldset > legend.screen-reader-text {
+	position: static;
+	width: auto;
+	height: auto;
+	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
+	padding: 0;
+	overflow: visible;
+	clip: auto;
+	clip-path: none;
+	white-space: normal;
+	font-family: inherit;
+	font-size: var(--sgs-filter-label, 0.9375rem);
+	font-weight: 700;
+	line-height: 1.3;
+	color: var(--sgs-filter-heading, var(--wp--preset--color--text));
+}
+
 /* ── Individual filter group headings ── */
 .sgs-shop-filters h3.wp-block-heading,
 .sgs-shop-filters .wc-block-product-filter__title,
@@ -1274,7 +1338,10 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wp-block-woocommerce-product-filter-status,
 .sgs-shop-filters .wp-block-woocommerce-product-filter-rating {
 	padding-top: var(--wp--preset--spacing--30, 1rem);
-	border-top: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
+	/* Was `surface-alt` - on a warm cream panel that is near-white on near-white
+	   and effectively invisible. `--sgs-filter-line` is mixed from the client's
+	   own primary, so the separator is visible against the panel it sits on. */
+	border-top: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
 	margin-top: var(--wp--preset--spacing--20, 0.75rem);
 }
 
@@ -1288,9 +1355,20 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wc-block-price-filter__range-input-wrapper {
 	position: relative;
 	height: 4px;
-	background: var(--wp--preset--color--surface-alt, #e0e0e0);
+	/* Was `surface-alt` (near-white) - invisible on the panel. */
+	background: color-mix(in oklab, var(--wp--preset--color--primary) 22%, var(--wp--preset--color--surface));
 	border-radius: 9999px;
 	margin: 1.5rem 0 0.5rem;
+}
+
+/* WooCommerce paints its OWN track on `__range` (the element carrying the
+ * --low/--high custom properties) in an unthemed near-black. Left alone it sits
+ * directly under ours: that is the "doubled up" slider, two bars, one branded
+ * and one black. Ours is the themed one, so theirs is made transparent - the
+ * element is KEPT because it is the positioning context for the thumbs and the
+ * filled region, and removing it would break both. */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range {
+	background: transparent;
 }
 
 /* Filled track region (WC uses inline style on the progress element) */
@@ -1382,41 +1460,78 @@ body.woocommerce-cart .with-empty-cart-icon,
 	list-style: none;
 }
 
+/* SELECTOR CORRECTION 2026-08-20 - the selectors below assumed a <button>
+ * NESTED INSIDE `.wc-block-product-filter-chips__item`. WooCommerce 11 puts the
+ * class ON the button itself (`<button class="wc-block-product-filter-chips__item"
+ * role="checkbox" aria-checked="false">`), so the descendant selector matched
+ * NOTHING and every chip fell back to UA styling - measured live: 2px radius,
+ * transparent background, 12.8px text. That single mismatch is why the chips
+ * looked unstyled. Both shapes are kept: the element-qualified form catches the
+ * current markup, the descendant form stays for older WooCommerce.
+ *
+ * Colour comes from the SAME six custom properties `sgs/button` uses
+ * (src/blocks/button/style.css), so a filter chip and a real SGS button cannot
+ * drift apart, and a client who re-skins their buttons re-skins these for free. */
+.sgs-shop-filters button.wc-block-product-filter-chips__item,
+.sgs-shop-filters button.wc-block-components-product-filter-chips__item,
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button,
 .sgs-shop-filters .wc-block-product-filter-chips__item button,
 .sgs-shop-filters .wc-block-components-product-filter-chips__button {
+	/* Unselected = the `outline` preset's token set. */
+	--sgs-btn-color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
+	--sgs-btn-bg: var(--wp--custom--button-presets--outline--background, transparent);
+	--sgs-btn-border: var(--wp--custom--button-presets--outline--border, var(--sgs-filter-line));
+
 	display: inline-flex;
 	align-items: center;
 	gap: 0.3em;
 	min-height: 44px;
-	padding: 0.375em 0.875em;
-	background: var(--wp--preset--color--surface-alt, #f5f5f5);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 25%, transparent);
-	border-radius: 9999px;
-	font-size: 0.8125rem;
-	color: var(--wp--preset--color--text, #1e1e1e);
+	padding: 0.375em 1em;
+	background: var(--sgs-btn-bg);
+	border: 1px solid var(--sgs-btn-border);
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	font-family: inherit;
+	font-size: 0.875rem;
+	line-height: 1.2;
+	color: var(--sgs-btn-color);
 	cursor: pointer;
 	white-space: nowrap;
 	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
+.sgs-shop-filters button.wc-block-product-filter-chips__item:hover,
+.sgs-shop-filters button.wc-block-components-product-filter-chips__item:hover,
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button:hover,
 .sgs-shop-filters .wc-block-product-filter-chips__item button:hover,
 .sgs-shop-filters .wc-block-components-product-filter-chips__button:hover {
-	background: color-mix(in srgb, var(--wp--preset--color--primary) 10%, transparent);
-	border-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--primary);
+	background: var(--wp--custom--button-presets--outline--hover-background, color-mix(in oklab, var(--wp--preset--color--primary) 14%, transparent));
+	border-color: var(--wp--custom--button-presets--outline--hover-border, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
 }
 
-/* Selected chip — primary fill, white text (verify contrast ≥4.5:1 per client palette — theme.json default primary #1F7A7A vs white = 4.8:1 ✓) */
+/* Selected chip = the `primary` preset's token set.
+ *
+ * STATE-SELECTOR CORRECTION 2026-08-20 - the previous rule keyed on
+ * `[aria-pressed="true"]` and `.is-active`. The live chip is `role="checkbox"`
+ * and reports `aria-checked`, NEVER aria-pressed, so the selected style could
+ * not apply and a chosen filter looked identical to an unchosen one.
+ * `aria-checked` is listed FIRST as the real one; the others are retained only
+ * as legacy fallbacks.
+ *
+ * Text colour comes from the preset token rather than a literal #ffffff, so
+ * contrast tracks whatever the client sets their primary button text to instead
+ * of assuming white is legible on their brand colour. */
+.sgs-shop-filters button.wc-block-product-filter-chips__item[aria-checked="true"],
+.sgs-shop-filters button.wc-block-components-product-filter-chips__item[aria-checked="true"],
+.sgs-shop-filters .wc-block-product-filter-chips__item button[aria-checked="true"],
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button[aria-pressed="true"],
 .sgs-shop-filters .wc-block-product-filter-chips__item button[aria-pressed="true"],
 .sgs-shop-filters .wc-block-components-product-filter-chips__button[aria-pressed="true"],
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button.is-active,
 .sgs-shop-filters .wc-block-product-filter-chips__item button.is-active {
-	background: var(--wp--preset--color--primary);
-	border-color: var(--wp--preset--color--primary);
-	color: #ffffff;
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	border-color: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
 }
 
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button:focus-visible,
@@ -1477,6 +1592,15 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wc-block-product-filter-checkbox-list input[type="checkbox"]:checked {
 	background: var(--wp--preset--color--primary);
 	border-color: var(--wp--preset--color--primary);
+}
+
+/* WooCommerce renders its OWN check mark (an unstyled near-black SVG) as a
+ * sibling of the input, and the rule below draws a second, themed one on the
+ * input itself — so a ticked box showed TWO ticks stacked, one black and one
+ * white. Ours is the themed one and wins the design call; theirs is removed
+ * rather than both being left to overlap. */
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__mark {
+	display: none;
 }
 
 /* Checkmark via pseudo-element on the checked input */
