@@ -113,6 +113,7 @@
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:box-shadow": "shadow",
+						"css:border-color-gradient": "borderColourGradient",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"
 					},
@@ -123,7 +124,7 @@
 							}
 						}
 					},
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D636 border-colour gradient sweep (remaining-block batch): `borderColourHoverGradient` is a HOVER-ONLY sibling to `borderColourHover` — the wrapper has no resting border-colour attribute at all (border-style is never set at rest), so only a `states.hover` entry exists, no base-level attrMap entry."
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D701 (2026-08-20): `borderColourGradient` (resting) added as the base-level sibling to `borderColourHoverGradient` — the wrapper's resting border colour comes from WP-native `__experimentalBorder.color` (already mapped above at `css:border-color`), and this new gradient wins over that native solid colour at render time when set (mirrors `borderColourHover`/`borderColourHoverGradient` and `sgs/quote`'s `borderColour`/`borderColourGradient` pair). See render.php for the emission order that makes the override work without `!important`."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -398,6 +399,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the hover border instead of a flat colour. Non-empty wins over borderColourHover at render time (D636)."
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting (non-hover) border instead of a flat colour. Non-empty wins over the WP-native __experimentalBorder.color at render time (D701)."
 		},
 		"transitionDuration": {
 			"type": "string",

@@ -242,6 +242,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		imageBorderWidth,
 		imageBorderColour,
 		imageBorderColourGradient,
+		// D701 — resting (non-hover) border-colour gradient. Sibling to the
+		// WP-native __experimentalBorder.color support (attributes.style.border.color),
+		// wins over it at render time when set. No `borderColourHover`/
+		// `borderColourHoverGradient` editor control exists yet on this block (a
+		// separate, pre-existing gap — see edit.js's absence of any "Hover" panel);
+		// this row is deliberately added independent of that gap.
+		borderColourGradient,
 		imagePadding,
 		imagePaddingTablet,
 		imagePaddingMobile,
@@ -1429,6 +1436,37 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				   since hero already has its own min-height ResponsiveControl above. */ }
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+					{ /* D701 — resting border-colour gradient, symmetric with the hover
+					   sibling attribute (borderColourHoverGradient) already declared on
+					   this block. The solid "Normal" value reads/writes the WP-native
+					   Border colour (attributes.style.border.color) — the same value WP's
+					   own native Border panel (Styles tab, __experimentalBorder support)
+					   already controls — so an operator can set either the flat colour or
+					   switch this row's toggle to Gradient; render.php makes a non-empty
+					   gradient win over the native flat colour (mirrors sgs/quote's
+					   borderColour/borderColourGradient pair and this block's own
+					   borderColourHover/borderColourHoverGradient hover pair). */ }
+					<DesignTokenPicker
+						label={ __( 'Border colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.style?.border?.color,
+								onChange: ( val ) =>
+									setAttributes( {
+										style: {
+											...attributes.style,
+											border: { ...attributes.style?.border, color: val || undefined },
+										},
+									} ),
+								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
+							},
+						] }
+					/>
 				</PanelBody>
 
 				{ /* Content band (Layer 2 __inner) — box-object family, rendered

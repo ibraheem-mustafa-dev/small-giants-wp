@@ -210,6 +210,12 @@ $hover_text_colour       = $attributes['textColourHover'] ?? '';
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $hover_border_colour when set.
 $hover_border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
+// D701 — RESTING border-colour gradient. Sibling to the WP-native
+// __experimentalBorder.color (read from $attributes['style']['border']['color']
+// further down, at the "WP-native color/border/typography supports" block) —
+// wins over that native flat colour when set, the same relationship
+// borderColourHoverGradient already has with borderColourHover above.
+$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -875,6 +881,26 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
 		$responsive_css .= $root_sel . ' .sgs-hero__headline{text-align:' . $attributes['textAlign'] . '}';
 	}
+}
+
+// --- Resting border gradient (D701) — masked ::before ring, mirrors the
+// existing hover-only mechanism above (line ~382). sgs_border_gradient_css()
+// emits `border-color:transparent` on $root_sel in THIS SAME scoped <style>,
+// appended AFTER the native border-colour rule just emitted above (identical
+// selector, same specificity) — cascade order alone makes the gradient win,
+// no !important needed. Only the resting solid COLOUR is overridden; native
+// border-width/style (read into $border_args above) stay in effect — the
+// mask ring paints its own ring using $width below, independent of them. ---
+if ( '' !== $border_colour_gradient ) {
+	$native_border_width_val = isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width']
+		? $sgs_css_length( $attributes['style']['border']['width'] )
+		: '';
+	$responsive_css         .= sgs_border_gradient_css(
+		$root_sel,
+		$border_colour_gradient,
+		null,
+		'' !== $native_border_width_val ? $native_border_width_val : '1px'
+	);
 }
 
 // Skip-serialised `color` support also stops WP auto-adding the standard

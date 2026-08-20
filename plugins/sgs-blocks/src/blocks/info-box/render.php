@@ -90,6 +90,11 @@ $sgs_hover_text          = isset( $attributes['textColourHover'] ) ? $attributes
 $sgs_hover_border        = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
 // D636 border-colour gradient — sibling attribute, wins over $sgs_hover_border when set.
 $sgs_hover_border_gradient = sgs_css_gradient_value( isset( $attributes['borderColourHoverGradient'] ) ? $attributes['borderColourHoverGradient'] : '' );
+// RESTING border-colour gradient — sibling to the native __experimentalBorder.color
+// flat colour (style.border.color, read into $style_border_args below). Wins over
+// the native flat colour when set — same "gradient sibling wins over flat" contract
+// as the hover pair above and as sgs/quote's borderColour/borderColourGradient pair.
+$sgs_border_gradient = sgs_css_gradient_value( isset( $attributes['borderColourGradient'] ) ? $attributes['borderColourGradient'] : '' );
 $sgs_hover_scale         = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
 $sgs_hover_shadow        = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
 $sgs_hover_shadow_colour = isset( $attributes['shadowHoverColour'] ) ? $attributes['shadowHoverColour'] : '';
@@ -326,6 +331,23 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$scoped_css[] = $link_styles['css'];
 		}
 	}
+}
+
+// --- Border gradient, RESTING state (D636 border builder, base counterpart to
+// the hover emission below) — masked ::before ring, emitted AFTER the base
+// style-engine rule above so it wins the cascade over that rule's flat
+// `border-color` (native style.border.color), same later-wins-in-source
+// trick sgs/quote uses for its own base border-color/border-color-gradient
+// pair. Width reads the native border width the style engine already
+// resolved (style.border.width) so the ring matches whatever width the
+// operator set in the native Border panel; '1px' is the fallback for "no
+// width set" (matches the hover emission's own fallback below). ---
+$sgs_border_width_native = isset( $style_border_args['width'] ) && is_string( $style_border_args['width'] )
+	? $sgs_css_length( $style_border_args['width'] )
+	: '';
+if ( '' !== $sgs_border_gradient ) {
+	$sgs_border_gradient_width = '' !== $sgs_border_width_native ? $sgs_border_width_native : '1px';
+	$scoped_css[]               = sgs_border_gradient_css( $root_sel, $sgs_border_gradient, null, $sgs_border_gradient_width );
 }
 
 // --- Width (kept-scalar, base only) ---

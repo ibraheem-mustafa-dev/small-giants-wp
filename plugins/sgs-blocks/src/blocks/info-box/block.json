@@ -82,6 +82,7 @@
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:box-shadow": "native:shadow",
+						"css:border-color-gradient": "borderColourGradient",
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing"
@@ -180,6 +181,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the hover border instead of a flat colour. Non-empty wins over borderColourHover at render time (D636)."
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING border instead of the native __experimentalBorder.color flat colour. Non-empty wins over the native border colour at render time (mirrors the borderColourHoverGradient pattern, D636)."
 		},
 		"transitionDuration": {
 			"type": "string",

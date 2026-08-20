@@ -11,7 +11,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { ResponsiveBoxControl, SgsColourPanel, ShadowControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl } from '../../components';
 import { UnitControl } from '../../components/primitives';
 
 /**
@@ -251,9 +251,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		textColourHover,
 		borderColourHover,
 		borderColourHoverGradient,
+		borderColourGradient,
 		shadowHover,
 		shadowHoverColour,
 	} = attributes;
+
+	// (The resting border-gradient row's Solid/Gradient mode is owned by
+	// DesignTokenPicker and derived from the stored value — there is deliberately
+	// no local useState mirror of it here. See the note at that control.)
 
 	// -------------------------------------------------------------------------
 	// Read the inner blocks of THIS info-box so we can derive the current
@@ -429,6 +434,62 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					},
 				] }
 			/>
+			{ /* Resting border gradient — the missing base counterpart to the
+			   "Border colour (hover)" row above. Solid resting colour stays the
+			   native `__experimentalBorder.color` control (WP's own Border panel
+			   in the Styles tab, left untouched) — this control ONLY owns the
+			   gradient sibling attribute, so there is no second control that can
+			   disagree with the native one about what the solid colour is. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Border gradient', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* ⛔ CANONICAL CONTROL, NOT A HAND-ROLLED ONE — and the first
+					   version of this row was hand-rolled, which is why this note
+					   exists. It mounted <SgsGradientPicker> (the low-level primitive
+					   the canonical controls are built ON) behind a bespoke
+					   ToggleGroupControl, plus a component-local `useState` mode flag.
+					   Three things wrong with that, none of which any gate catches:
+					     1. SgsGradientPicker is not in golden-controls.json's canonical
+					        set for colour (DesignTokenPicker / SgsColourPanel /
+					        GradientCapableColourControl / GradientOverlayControl). It is
+					        not a BANNED lookalike either, so it slips through silently —
+					        non-canonical without being flagged.
+					     2. The local `useState` mode flag is the exact defect a design
+					        council flagged in GradientOverlayControl.js:93 the same day:
+					        UI state that can disagree with the stored value.
+					     3. sgs/hero fixed the IDENTICAL defect with DesignTokenPicker in
+					        the same dispatch, so the framework would have carried two
+					        different shapes for one problem.
+					   The stated reason for hand-rolling was that no shared component
+					   could express "native solid stays native, only the gradient is
+					   new". It can, and hero proves it: a single `normal` state whose
+					   value/onChange write the nested WP-native style.border.color and
+					   whose gradientValue/onGradientChange write the SGS sibling. */ }
+					<DesignTokenPicker
+						label={ __( 'Border colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.style?.border?.color,
+								onChange: ( val ) =>
+									setAttributes( {
+										style: {
+											...attributes.style,
+											border: {
+												...attributes.style?.border,
+												color: val || undefined,
+											},
+										},
+									} ),
+								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
 			<InspectorControls>
 				{ /* ===== Media type (convenience swap — first child only) ===== */ }
 				<PanelBody title={ __( 'Media', 'sgs-blocks' ) } initialOpen={ true }>
