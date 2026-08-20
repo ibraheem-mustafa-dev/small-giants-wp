@@ -439,7 +439,7 @@ extensions/
 
 ## Deployment process
 
-**Canary — the ONLY deploy target:** `https://sandybrown-nightingale-600381.hostingersite.com` (WP 7.0 as of 2026-05-22)
+**Canary — the ONLY deploy target:** `https://sandybrown-nightingale-600381.hostingersite.com` (WP 7.1 as of 2026-08-20)
 **Reference site (READ ONLY):** `https://lightsalmon-tarsier-683012.hostingersite.com`
 
 **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
