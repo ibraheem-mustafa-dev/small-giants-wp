@@ -1312,6 +1312,48 @@ body.woocommerce-cart .with-empty-cart-icon,
  * screen-reader-only and remains the accessible name; the heading is the visual
  * one. They carry identical text, so they cannot disagree. */
 
+/* The group label itself.
+ *
+ * Specificity note: `sgs/heading` emits its own scoped rule
+ * (`.sgs-hdg-<uid>.wp-block-sgs-heading`, two classes) which set these labels to
+ * 24px Fraunces in primary pink - correct for a page heading, far too loud for a
+ * filter label. The element-qualified `h3.` here outweighs it without resorting
+ * to !important. The theme's heading FONT is deliberately kept: it is what makes
+ * the panel read as part of the brand rather than as plugin chrome.
+ *
+ * ⛔ Do not fold this into the rule below it - that one styles WooCommerce's own
+ * `h3.wp-block-heading` output, which this block replaced. */
+.sgs-shop-filters h3.sgs-shop-filters__group-heading {
+	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--sgs-filter-heading, var(--wp--preset--color--text));
+}
+
+/* The divider belongs BETWEEN groups, never between a group's heading and its
+ * own controls. `sgs/heading` sits as a sibling immediately BEFORE each filter
+ * group, so that group's `border-top` otherwise draws a line directly under the
+ * label and above its own slider or chips - which reads as a broken rule rather
+ * than a separator. */
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-price,
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-attribute,
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-rating {
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+/* ...but the SPACE between groups still has to come from somewhere, so the
+ * heading that now starts each group carries it, and draws the divider itself.
+ * `:not(:first-of-type)` keeps the first group flush under the panel header -
+ * a divider immediately below "Filters" separates nothing. */
+.sgs-shop-filters h3.sgs-shop-filters__group-heading:not(:first-of-type) {
+	margin-top: var(--wp--preset--spacing--30, 1rem);
+	padding-top: var(--wp--preset--spacing--30, 1rem);
+	border-top: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
 /* ── Individual filter group headings ── */
 .sgs-shop-filters h3.wp-block-heading,
 .sgs-shop-filters .wc-block-product-filter__title,
