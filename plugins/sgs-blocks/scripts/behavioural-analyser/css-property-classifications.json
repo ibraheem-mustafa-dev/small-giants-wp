@@ -646,7 +646,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "GRID"
       }
     },
@@ -1048,7 +1048,7 @@
       "slug": "sgs/form",
       "attr": "formFocusRingOpacity",
       "fields": {
-        "css_property": "opacity",
+        "css_property": "box-shadow-color",
         "css_element": "focus-ring"
       }
     },
@@ -1116,7 +1116,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2778,6 +2778,22 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "shadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow",
@@ -3317,8 +3333,9 @@
       "slug": "sgs/quote",
       "attr": "boxShadowColour",
       "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER"
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3335,8 +3352,10 @@
       "slug": "sgs/quote",
       "attr": "boxShadowHoverColour",
       "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER"
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -3617,8 +3636,9 @@
       "slug": "sgs/team-member",
       "attr": "cardShadowColour",
       "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER"
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4103,7 +4123,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -4309,6 +4329,15 @@
         "css_property": "color",
         "role": "color",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/audio",
+      "attr": "spectrumColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "spectrum"
       }
     },
     {
@@ -6682,6 +6711,14 @@
       }
     },
     {
+      "slug": "sgs/product-card",
+      "attr": "tagFullWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "tag"
+      }
+    },
+    {
       "slug": "sgs/product-faq",
       "attr": "backgroundColour",
       "fields": {
@@ -6792,6 +6829,14 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "lineGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
         "css_element": "wrapper"
       }
     },
@@ -8073,6 +8118,14 @@
         "css_property": "grid-template-rows",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "iconCircleShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "icon-badge"
       }
     },
     {

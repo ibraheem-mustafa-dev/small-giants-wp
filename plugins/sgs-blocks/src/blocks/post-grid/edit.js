@@ -282,6 +282,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourHover,
 		borderColourHover,
 		scaleHover,
+		shadow,
+		shadowColour,
 		shadowHover,
 		shadowHoverColour,
 		imageZoomHover,
@@ -438,14 +440,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			     block.json note on the "card" element). Verified: NEITHER
 			     hover attr also touches `background-color`/`box-shadow` as the
 			     DB census suggested.
-			   - shadowHoverColour (added 2026-08-16, shadow-architecture
-			     migration off the preset-only picker — D621/D622 pattern) is
-			     its OWN hover-only row, same shape as borderColourHover — no
-			     resting/normal shadow-colour attribute (this block has no
-			     static card shadow). Pairs with the shape-only shadowHover
-			     attribute (still in the non-colour Hover Effects panel below
+			   - shadowColour/shadowHoverColour share ONE row (normal +
+			     hover), same shape as sgs/card-grid's 'card-shadow' row —
+			     shadowColour added 2026-08-20 alongside the new resting
+			     `shadow` shape attribute to close a STATE_WITHOUT_BASE
+			     conformance gap (client could style the hover shadow but not
+			     the resting one). Pairs with the shape attributes (shadow +
+			     shadowHover, both in the non-colour Hover Effects panel below
 			     via ShadowControl); render.php composes shape + colour via
-			     sgs_shadow_value_composed(). */ }
+			     sgs_shadow_value_composed() for each state independently. An
+			     unset shadow leaves the cardStyle preset's own shadow
+			     unchanged (see style.css `--sgs-card-shadow` default). */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -573,9 +578,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'shadow-hover',
-						label: __( 'Shadow hover colour', 'sgs-blocks' ),
+						key: 'shadow',
+						label: __( 'Shadow colour', 'sgs-blocks' ),
 						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: shadowColour,
+								onChange: ( val ) => setAttributes( { shadowColour: val ?? '' } ),
+								linked: true,
+							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
@@ -909,13 +921,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* Panel 6: Hover Effects — colours moved to the top-level
-				   SgsColourPanel (D619/D621). This ToolsPanel now holds only
-				   the non-colour hover behaviours. */ }
+				   SgsColourPanel (D619/D621). This ToolsPanel holds the
+				   non-colour hover behaviours PLUS the resting shadow shape
+				   (shadow/shadowColour, added 2026-08-20 to close a
+				   STATE_WITHOUT_BASE gap — mirrors the shadowHover pair,
+				   ordered rest-then-hover so the reading order matches the
+				   render.php/style.css cascade). */ }
 				<ToolsPanel
 					label={ __( 'Hover Effects', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
 							scaleHover: '',
+							shadow: '',
+							shadowColour: '',
 							shadowHover: '',
 							shadowHoverColour: '',
 							imageZoomHover: true,
@@ -938,6 +956,23 @@ export default function Edit( { attributes, setAttributes } ) {
 							step={ 0.01 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						hasValue={ () => !! shadow }
+						onDeselect={ () =>
+							setAttributes( { shadow: '', shadowColour: '' } )
+						}
+					>
+						<ShadowControl
+							label={ __( 'Shadow', 'sgs-blocks' ) }
+							value={ shadow }
+							onChange={ ( val ) => setAttributes( { shadow: val } ) }
+							colour={ shadowColour }
+							onColourChange={ ( val ) =>
+								setAttributes( { shadowColour: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

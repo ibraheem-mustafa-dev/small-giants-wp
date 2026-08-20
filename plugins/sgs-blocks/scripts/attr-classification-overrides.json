@@ -2736,6 +2736,15 @@
 			"_why": "2026-08-16 shadow colour-architecture migration — sgs/post-grid's shadowHover moved off its preset-only SelectControl onto ShadowControl (Spec 35 Part F banned-anti-pattern fix), following the SAME D621/D622 pattern as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation of why the static extractor mis-derives this attr without the override). css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card') — the shape sibling shadowHover is now declared in that element's states.hover.attrMap as 'css:box-shadow', so this colour override mirrors its css_element/css_state so cloning scopes both to the same element."
 		},
 		{
+			"slug": "sgs/post-grid",
+			"attr": "shadowColour",
+			"fields": {
+				"css_property": "box-shadow-color",
+				"css_element": "card"
+			},
+			"_why": "2026-08-20 — companion override for the new resting `shadow` attribute (added to close a STATE_WITHOUT_BASE conformance gap: the client could style shadowHover but had no resting shadow). Same D621/D622 shadow colour-architecture pattern as the shadowHoverColour override directly above — the static extractor mis-derives a shadow-colour attr without an explicit override, same as every other companion entry in this file. css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card'), where the shape sibling `shadow` is now declared on the BASE attrMap as 'css:box-shadow' (no css_state, unlike the hover companion above, since this is the resting state)."
+		},
+		{
 			"slug": "sgs/media",
 			"attr": "boxShadowColour",
 			"fields": {

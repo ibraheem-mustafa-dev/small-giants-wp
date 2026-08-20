@@ -95,6 +95,8 @@ $show_filters    = (bool) ( $attributes['showFilters'] ?? false );
 $filter_taxonomy = sanitize_key( $attributes['filterTaxonomy'] ?? 'category' );
 
 $hover_scale         = sanitize_text_field( $attributes['scaleHover'] ?? '' );
+$shadow              = sanitize_text_field( $attributes['shadow'] ?? '' );
+$shadow_colour       = sanitize_text_field( $attributes['shadowColour'] ?? '' );
 $hover_shadow        = sanitize_text_field( $attributes['shadowHover'] ?? '' );
 $hover_shadow_colour = sanitize_text_field( $attributes['shadowHoverColour'] ?? '' );
 $hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? true );
@@ -193,6 +195,14 @@ $extra_styles = array_filter(
 			'--sgs-columns-mobile:' . $columns_mobile,
 			'--sgs-gap:' . $gap_css,
 			$card_bg ? '--sgs-card-bg:' . $card_bg : '',
+			// Resting shadow: --sgs-card-shadow already carries a hardcoded
+			// preset default in style.css (scoped to .sgs-post-grid, the
+			// same class this inline style attaches to), consumed by the
+			// card/overlay cardStyle variants' box-shadow. Only emit here
+			// when set, so an unset shadow leaves that preset default (and
+			// therefore the cardStyle look) untouched — same gating as the
+			// hover pair below.
+			$shadow ? '--sgs-card-shadow:' . sgs_shadow_value_composed( $shadow, $shadow_colour ) : '',
 			$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
 			$hover_shadow ? '--sgs-hover-shadow:' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour ) : '',
 		),

@@ -364,9 +364,27 @@ function analyseStates( elementKeys, elements, blockJson, memberIndex, claimedAt
 				// isn't (card-grid's card-tile: clusters: [] but states.hover declared).
 				const baseResult = resolveMember( element, member, blockJson );
 
+				// A state member may declare that it legitimately has NO resting
+				// counterpart, via `states.<state>.noBaseByDesign: [ "css:…" ]`.
+				// This is the STATE-axis equivalent of ORPHAN:BY-DESIGN, and it
+				// exists because some properties have an implicit resting value
+				// that a control would only clutter: `css:transform` scale rests
+				// at 1, so a "resting scale" control is noise, not capability
+				// (Bean-ruled 2026-08-20 on sgs/post-grid's scaleHover).
+				// ⛔ It is NOT a suppression hatch. Use it ONLY where the resting
+				// state is genuinely implicit. A property whose resting value the
+				// client would actually want to set — a shadow, a border colour —
+				// is a REAL defect: build the base control instead.
+				const noBaseByDesign = Array.isArray( stateSpec.noBaseByDesign )
+					&& stateSpec.noBaseByDesign.includes( memberKey );
+
 				let status;
 				if ( stateResult.resolved ) {
-					status = baseResult.resolved ? 'state-ok' : 'state-without-base';
+					if ( baseResult.resolved ) {
+						status = 'state-ok';
+					} else {
+						status = noBaseByDesign ? 'state-by-design' : 'state-without-base';
+					}
 					if ( stateResult.attr ) claimedAttrs.add( stateResult.attr );
 				} else {
 					status = 'state-gap';
@@ -576,7 +594,7 @@ function printHuman( meta, findings ) {
 			` — by design: ${ meta.orphan_by_design } | style-property defects: ${ meta.orphan_style_defect } | UNCLASSIFIED: ${ meta.orphan_unclassified }\n`
 	);
 	process.stdout.write(
-		`States (FR-35-5, separate from base): STATE_OK: ${ meta.total_state_ok } | STATE_GAP: ${ meta.total_state_gap } | STATE_WITHOUT_BASE: ${ meta.total_state_without_base }\n\n`
+		`States (FR-35-5, separate from base): STATE_OK: ${ meta.total_state_ok } | STATE_GAP: ${ meta.total_state_gap } | STATE_WITHOUT_BASE: ${ meta.total_state_without_base } | STATE_BY_DESIGN: ${ meta.total_state_by_design }\n\n`
 	);
 
 	// A stale role map inflates UNCLASSIFIED and points at the wrong fix ("classify
@@ -711,6 +729,7 @@ function main() {
 	const totalStateOk = findings.filter( ( f ) => f.status === 'state-ok' ).length;
 	const totalStateGap = findings.filter( ( f ) => f.status === 'state-gap' ).length;
 	const totalStateWithoutBase = findings.filter( ( f ) => f.status === 'state-without-base' ).length;
+	const totalStateByDesign = findings.filter( ( f ) => f.status === 'state-by-design' ).length;
 
 	const meta = {
 		audit: 'element-manifest-conformance',
@@ -731,6 +750,7 @@ function main() {
 		total_state_ok: totalStateOk,
 		total_state_gap: totalStateGap,
 		total_state_without_base: totalStateWithoutBase,
+		total_state_by_design: totalStateByDesign,
 	};
 
 	if ( process.argv.includes( '--json' ) ) {
@@ -765,6 +785,7 @@ function main() {
 		const baseline = loadJson( BASELINE_PATH, null ) || {
 			orphan_style_defect: 0,
 			total_state_without_base: 0,
+			total_state_by_design: 0,
 		};
 		const breaches = [];
 		if ( meta.orphan_unclassified > 0 ) {

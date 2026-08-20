@@ -23,6 +23,10 @@
 	--sgs-gap: 30px;
 	--sgs-card-bg: var( --wp--preset--color--surface, #ffffff );
 	--sgs-card-radius: 8px;
+	/* cardStyle preset default (card/overlay variants). render.php overrides
+	   this same property inline, on this same element, only when the
+	   `shadow` attribute is set — so an unset shadow leaves this default,
+	   and therefore the preset's look, untouched. */
 	--sgs-card-shadow: 0 2px 12px rgba( 0, 0, 0, 0.08 );
 	--sgs-hover-scale: 1;
 	--sgs-hover-shadow: none;
