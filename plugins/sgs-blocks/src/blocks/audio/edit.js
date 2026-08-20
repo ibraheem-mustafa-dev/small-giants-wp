@@ -5,10 +5,15 @@ import {
 	SelectControl,
 	TextControl,
 	ToggleControl,
+	RangeControl,
 	Button,
+	ButtonGroup,
 	Notice,
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken } from '../../components';
+
+// Shared with isReactive below so the two can't drift apart.
+const REACTIVE_STYLES = [ 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse' ];
 
 const STYLE_OPTIONS = [
 	{ value: 'minimal', label: __( 'Minimal Pill', 'sgs-blocks' ), hint: __( 'Quiet: play + progress + timecode', 'sgs-blocks' ) },
@@ -19,6 +24,17 @@ const STYLE_OPTIONS = [
 	{ value: 'gradient-pulse', label: __( 'Gradient Pulse', 'sgs-blocks' ), hint: __( 'Background shifts colour to the sound', 'sgs-blocks' ) },
 	{ value: 'hidden', label: __( 'Hidden', 'sgs-blocks' ), hint: __( 'Plays with no visible player', 'sgs-blocks' ) },
 ];
+const STATIC_STYLES = STYLE_OPTIONS.filter( ( opt ) => ! REACTIVE_STYLES.includes( opt.value ) );
+const REACTIVE_STYLE_OPTIONS = STYLE_OPTIONS.filter( ( opt ) => REACTIVE_STYLES.includes( opt.value ) );
+
+// Quick-pick presets snap the same 0-100 slider value used for fine-tuning —
+// one attribute, two ways to set it. 50 is the pre-control default (matches
+// view.js's SENSITIVITY 'medium' band exactly).
+const SENSITIVITY_PRESETS = [
+	{ value: 20, label: __( 'Calm', 'sgs-blocks' ) },
+	{ value: 50, label: __( 'Balanced', 'sgs-blocks' ) },
+	{ value: 80, label: __( 'Punchy', 'sgs-blocks' ) },
+];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -26,6 +42,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		audioSource,
 		audioId,
 		playerStyle,
+		reactiveSensitivity,
 		audioControls,
 		audioLoop,
 		audioAutoplay,
@@ -57,7 +74,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		},
 	} );
 	const hasAudio = audioUrl || audioId;
-	const isReactive = [ 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse' ].includes( playerStyle );
+	const isReactive = REACTIVE_STYLES.includes( playerStyle );
 
 	const onSelectAudio = ( media ) => {
 		setAttributes( {
@@ -103,8 +120,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Player style', 'sgs-blocks' ) } initialOpen={ true }>
+					<p className="sgs-audio-style-group-label">{ __( 'Static styles', 'sgs-blocks' ) }</p>
 					<div className="sgs-audio-style-grid">
-						{ STYLE_OPTIONS.map( ( opt ) => (
+						{ STATIC_STYLES.map( ( opt ) => (
 							<button
 								key={ opt.value }
 								type="button"
@@ -117,6 +135,52 @@ export default function Edit( { attributes, setAttributes } ) {
 							</button>
 						) ) }
 					</div>
+
+					<p className="sgs-audio-style-group-label">{ __( 'Audio-reactive styles', 'sgs-blocks' ) }</p>
+					<p className="sgs-audio-style-group-hint">
+						{ __( 'These react live to the real audio via the Web Audio API.', 'sgs-blocks' ) }
+					</p>
+					<div className="sgs-audio-style-grid">
+						{ REACTIVE_STYLE_OPTIONS.map( ( opt ) => (
+							<button
+								key={ opt.value }
+								type="button"
+								className={ `sgs-audio-style-btn${ playerStyle === opt.value ? ' is-selected' : '' }` }
+								aria-pressed={ playerStyle === opt.value }
+								onClick={ () => setAttributes( { playerStyle: opt.value } ) }
+							>
+								<span className="sgs-audio-style-btn__name">{ opt.label }</span>
+								<span className="sgs-audio-style-btn__hint">{ opt.hint }</span>
+							</button>
+						) ) }
+					</div>
+
+					{ isReactive && (
+						<div className="sgs-audio-sensitivity">
+							<ButtonGroup className="sgs-audio-sensitivity__presets">
+								{ SENSITIVITY_PRESETS.map( ( preset ) => (
+									<Button
+										key={ preset.value }
+										variant={ ( reactiveSensitivity ?? 50 ) === preset.value ? 'primary' : 'secondary' }
+										size="small"
+										onClick={ () => setAttributes( { reactiveSensitivity: preset.value } ) }
+									>
+										{ preset.label }
+									</Button>
+								) ) }
+							</ButtonGroup>
+							<RangeControl
+								label={ __( 'Reactivity', 'sgs-blocks' ) }
+								help={ __( 'How snappy the visualiser feels — low is calmer, high is punchier.', 'sgs-blocks' ) }
+								value={ reactiveSensitivity ?? 50 }
+								onChange={ ( value ) => setAttributes( { reactiveSensitivity: value } ) }
+								min={ 0 }
+								max={ 100 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</div>
+					) }
 				</PanelBody>
 
 				<PanelBody title={ __( 'Audio source', 'sgs-blocks' ) } initialOpen={ true }>

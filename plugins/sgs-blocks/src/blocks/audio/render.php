@@ -41,6 +41,14 @@ $allowed_styles = array( 'minimal', 'waveform', 'spectrum', 'radial', 'oscillosc
 $player_style   = $attributes['playerStyle'] ?? 'minimal';
 $player_style   = in_array( $player_style, $allowed_styles, true ) ? $player_style : 'minimal';
 
+// 0-100, "how snappy the reactive visualisers feel" — a continuous slider
+// (§ discoverability review) rather than a 3-value enum, mapped to the two
+// underlying AnalyserNode params in view.js. 50 reproduces the exact values
+// this block shipped with before the control existed (fftSize 512 /
+// smoothingTimeConstant 0.8) — see view.js's SENSITIVITY comment.
+$reactive_sensitivity = isset( $attributes['reactiveSensitivity'] ) ? (float) $attributes['reactiveSensitivity'] : 50;
+$reactive_sensitivity = max( 0, min( 100, $reactive_sensitivity ) );
+
 $audio_url    = isset( $attributes['audioUrl'] ) ? (string) $attributes['audioUrl'] : '';
 $audio_source = isset( $attributes['audioSource'] ) ? (string) $attributes['audioSource'] : 'external';
 $audio_id     = isset( $attributes['audioId'] ) ? absint( $attributes['audioId'] ) : 0;
@@ -231,10 +239,11 @@ $wrapper_classes = array(
 );
 $wrapper_attrs   = get_block_wrapper_attributes(
 	array(
-		'class'             => implode( ' ', $wrapper_classes ),
-		'data-player-style' => $player_style,
-		'data-loop'         => $loop ? '1' : '0',
-		'data-autoplay'     => $autoplay ? '1' : '0',
+		'class'                     => implode( ' ', $wrapper_classes ),
+		'data-player-style'         => $player_style,
+		'data-reactive-sensitivity' => $reactive_sensitivity,
+		'data-loop'                 => $loop ? '1' : '0',
+		'data-autoplay'             => $autoplay ? '1' : '0',
 	)
 );
 ?>

@@ -2,10 +2,36 @@
  * SGS Audio — editor-only styles (inspector style picker + canvas preview).
  */
 
+.sgs-audio-style-group-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	opacity: 0.75;
+	margin: 16px 0 6px;
+}
+.sgs-audio-style-group-label:first-child {
+	margin-top: 0;
+}
+.sgs-audio-style-group-hint {
+	font-size: 11px;
+	opacity: 0.65;
+	margin: -2px 0 6px;
+}
+
 .sgs-audio-style-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 6px;
+}
+
+.sgs-audio-sensitivity {
+	margin-top: 16px;
+	padding-top: 12px;
+	border-top: 1px solid #e0e0e0;
+}
+.sgs-audio-sensitivity__presets {
+	margin-bottom: 8px;
 }
 
 .sgs-audio-style-btn {

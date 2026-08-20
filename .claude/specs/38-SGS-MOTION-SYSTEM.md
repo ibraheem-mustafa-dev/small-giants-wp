@@ -240,6 +240,27 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   spec'd surface; card-grid is merely its first implementation. No-GSAP fallback: instant
   re-layout (today's behaviour); same-document View Transitions crossfade MAY be offered as a
   Tier V "lite" option where supported.
+
+  ⚠ **D426 AMENDMENT (2026-08-02) — the pairing as written above CANNOT be built against
+  today's `filter-search`/`card-grid`.** `sgs/filter-search`'s `view.js` only toggles the
+  `hidden` attribute on filter chip options — it never touches a product/card and emits no
+  event. `sgs/card-grid` has no `view.js` at all (filtering is server-side PHP) — there is no
+  client-side re-layout for `Flip.from()` to animate. This is a spec-premise gap, not a bug in
+  either block. Bean's ruling: **stays live as a design gate + research point, NOT parked** —
+  real client-side re-filtering belongs with WooCommerce's own Product Filter/Collection
+  blocks, a different pairing with a different blast radius than the one defined above. Do NOT
+  attempt to build the `filter-search`↔`card-grid` pairing as literally specified. See
+  `decisions.md` D426 for the full finding.
+
+  ✅ **REDIRECT DESIGN-GATED + APPROVED (2026-08-20).** The `filter-search`↔`card-grid`
+  pairing above is dead; the real target is WooCommerce's **Product Collection** block.
+  Full design + Bean's decisions: `.claude/plans/2026-08-20-flip-woocommerce-product-collection-design-gate.md`.
+  Summary: `MutationObserver` on the block's public wrapper (`.wp-block-woocommerce-product-collection`)
+  — NOT WC's Interactivity API router, whose internal markup WC documents as private/unstable
+  — captures Flip state and animates on mutation; opt-in via a site-level toggle (same surface
+  as FR-38-18/19), injected by a `render_block_woocommerce/product-collection` PHP filter
+  following the codebase's existing injector pattern; v1 scope is Product Collection only, no
+  core Query Loop. No-GSAP/reduced-motion fallback is unchanged (instant re-layout).
 - **FR-38-13 Draggable + Inertia — curated roster + opt-in mechanism.** Roster v1:
   `sgs/gallery` (drag-to-scroll carousel upgrade), `sgs/testimonial-slider` (same),
  **`sgs/before-after` (NET-NEW block — DB-verified absent, Wave C)**, `sgs/hero` decorative
@@ -1080,8 +1101,9 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   > hold). The `header-behaviours.css` comment should be corrected to match the real DOM.
 - **Wave C — interaction + SVG + toys.**
   Draggable roster (FR-38-13) incl. **NET-NEW `sgs/before-after`** (needs Draggable — cannot
-  come earlier), Flip pairing (FR-38-12 — the one place Wave C edits shipped blocks:
-  filter-search + card-grid), DrawSVG + **Vivus retirement** (FR-38-15), MorphSVG (FR-38-16,
+  come earlier), Flip pairing (FR-38-12 — **premise ruled FALSE by D426, see §3.3; not built,
+  stays open as a design gate/research point, not the "one place Wave C edits shipped blocks"
+  it reads as below**), DrawSVG + **Vivus retirement** (FR-38-15), MorphSVG (FR-38-16,
   P-10 revival), MotionPath scrubbed mode (FR-38-17 — its Tier V `offset-path` variant may ship
   any time, no GSAP needed), ScrambleText (FR-38-11), `sgs/image-sequence` + asset-pipeline
   tooling (FR-38-9). Stretch: Tier V asset migration onto the registry (FR-38-24).

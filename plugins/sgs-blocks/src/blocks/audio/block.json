@@ -123,6 +123,10 @@
 				"hidden"
 			]
 		},
+		"reactiveSensitivity": {
+			"type": "number",
+			"default": 50
+		},
 		"audioControls": {
 			"type": "boolean",
 			"default": true
