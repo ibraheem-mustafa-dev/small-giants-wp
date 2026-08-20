@@ -18,6 +18,9 @@
 	"supports": {
 		"anchor": true,
 		"className": true,
+		"interactivity": {
+			"clientNavigation": true
+		},
 		"html": false,
 		"color": false,
 		"spacing": {
