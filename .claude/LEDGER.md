@@ -18,72 +18,91 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read IN FULL if touching the
    converter/walker/pipeline surface (session rule).
 
-## ▶ LIVE STATUS — 2026-08-20, end of first execution session
+## ▶ LIVE STATUS — 2026-08-20 (shop-archive + R-3 track)
 
-**Everything below is committed and pushed to `origin/main`. Working tree clean, no divergence.**
-Commits: `3224db10` · `03fd4247` · `b562c6d2` · `631e97a3` · `44d03825` · `21131a98` · `25cc0188`.
+**All pushed to `origin/main`. Working tree clean. `npm run build` GREEN, all gates.**
+Commits: `3224db10` `03fd4247` `b562c6d2` `631e97a3` `44d03825` `21131a98` `25cc0188` `a7026181`.
 
-**Per-step plan status is single-sourced to the executable plan** —
-`.claude/plans/phase-shop-container-remediation.md` § "EXECUTION PROGRESS". Do not duplicate it here.
+Per-step plan status is single-sourced to
+`.claude/plans/phase-shop-container-remediation.md` § "EXECUTION PROGRESS". Not duplicated here.
 
-### Headline
+### Where the plan stands
 
 - **Phase 1 Wave 1: SHIPPED, DEPLOYED, LIVE-VERIFIED.** Instant filtering works on the canary
   `/shop/` — proven behaviourally (a stamped `window` var survived a filter click, so no reload;
   URL updated client-side; products 5→4; 2 `fetch` requests). **D702**
-- **Phase 1 Wave 2: NOT STARTED.** **Phase 2: NOT STARTED** (both design gates closed, ready).
-- **R-3 workstream: substantially DONE** (a/d/e/f/g complete; c partial; b deliberately blocked).
+- **R-3 workstream: COMPLETE** (all 7 items).
+- **Phase 1 Wave 2: NOT STARTED** — this is the next session's work.
+- **Phase 2: NOT STARTED.** Both design gates (G1/G2) closed and ready.
 
-### Three plan claims REFUTED by implementation — do not work from the old text
+### ▶ NEXT SESSION — Wave 2, and P1-6 FIRST
+
+Wave 2 is four independent steps, no design gate, can start cold. **Do P1-6 first: executed as
+written it would cause damage.**
+
+| Task | Execution | Gate after |
+|---|---|---|
+| **P1-6** colour on 3 blocks (NOT 4) | delegate ×3, sonnet, parallel — one per block, file-disjoint | `/qc-inline` |
+| **P1-5** template validity (7 named WC leaves + stray comments) | delegate, haiku | none |
+| **P1-7** theme CSS (panel visibility, fallbacks, search width) | delegate, sonnet | `/qc-inline` |
+| **P1-8** mobile filter sheet + a11y | delegate, sonnet — ⚠ SEQUENTIAL after P1-7, shares `woocommerce.css` | live check at 390px |
+| **QC GATE 2** | inline — build, deploy, verify at 1440/768/390 | closes Phase 1 |
+
+**Acceptance for P1-6:** the client picks a colour in the editor and the computed style changes on
+the frontend, on each block. Not "attrs declared".
+
+### ⛔ THREE PLAN CLAIMS REFUTED — do not work from the old plan text
 
 1. `sgs/text`'s root cause is a block-REGISTRY check on `supports.interactivity`
-   (`ProductCollection/Controller.php:125-134`), **not** a namespace check. `sgs/product-card` in the
-   same collection never tripped it — that counter-example killed the namespace theory.
-2. **P1-6 is wrong for 3 of its 4 blocks.** `sgs/testimonial-slider` was already correct — drop it.
-   `sgs/site-header-row`, the named "proven recipe", has no hover pair at all. Copy
-   `sgs/testimonial-slider` instead.
+   (`ProductCollection/Controller.php:125-134`), **not** a namespace check. `sgs/product-card` sits
+   in the same collection and never tripped it — that counter-example killed the namespace theory.
+2. **P1-6 is wrong for 3 of its 4 blocks.** `sgs/testimonial-slider` was ALREADY correct — **drop
+   it**. `sgs/site-header-row`, named as the "proven recipe", has **no hover pair at all**. Copy
+   `sgs/testimonial-slider` instead (explicit `attrMap` + `states.hover.attrMap` bound to its root).
 3. "~60 orphaned colour authorings" → the enumerated figure is **42**.
 
 ### ⚠ Open, unresolved — FR-38-12 Flip does NOT animate
 
-Root-caused, fixed, opus-reviewed (two Critical findings fixed, including a per-frame layout read
-that would have breached the Core Web Vitals budget), deployed. On a VALID test case (3-column grid,
-filter removes the middle product, two products genuinely reflow) it produced **zero** Flip frames.
-Eliminated: attribute present · module + GSAP loaded · reduced-motion off · product list resolved
-correctly · `<ul>` same object and morphing in place · arm listeners present in the shipped bundle.
-The remaining failure point is unfound. **`animate_product_filtering` left OFF** so it is not
-shipping GSAP for no effect. ⚠ Two earlier "it doesn't animate" readings were INVALID (a cached page,
-then a single-column layout where nothing moves) — re-test only on a multi-column grid where a
-middle item is removed.
+Root-caused, fixed, opus-reviewed (two Critical findings fixed, incl. a per-frame layout read that
+would have breached the CWV budget), deployed. On a VALID test (3-column grid, filter removes the
+middle product, two products genuinely reflow) it produced **zero** Flip frames. Eliminated:
+attribute present · module + GSAP loaded · reduced-motion off · list resolved correctly · `<ul>` same
+object and morphing in place · arm listeners in the shipped bundle. Cause unfound.
+`animate_product_filtering` left **OFF**.
+⚠ Two earlier negative readings were INVALID setups (a cached page; then a single-column layout where
+nothing moves). Re-test only on a multi-column grid where a MIDDLE item is removed.
 
 ### Off-plan work completed (Bean-directed)
 
-- **Element-manifest style-defect debt 12 → 0**; baseline dropped to zero, which is now the FLOOR.
-  Two shared-model gaps caused nearly all of it: `css:box-shadow-color` did not exist (a member
-  claims exactly ONE attribute, so the shadow VALUE always won), and no `css:outline-*` member
-  existed at all.
+- **Element-manifest style-defect 12 → 0**; baseline dropped to zero, now the FLOOR. Two
+  shared-model gaps caused nearly all of it: `css:box-shadow-color` did not exist (a member claims
+  exactly ONE attribute, so the shadow VALUE always won) and no `css:outline-*` member existed.
 - **`STATE_WITHOUT_BASE` 4 → 2.** `sgs/post-grid` gained a resting shadow control (built, not
-  exempted); `scaleHover` reclassified via a new `noBaseByDesign` mechanism + `STATE_BY_DESIGN`
-  counter. The remaining 2 (`sgs/hero`, `sgs/info-box` `borderColourHoverGradient`) are handed over.
-- **WP 7.1** — canary upgraded 2026-08-20; three stale doc references corrected.
-- **DB reseeded** via `/sgs-update`; `attr-role-map.json` regenerated AFTER it (order is
-  load-bearing — regenerating first loses rows).
+  exempted); `scaleHover` reclassified via a new `noBaseByDesign` mechanism.
+- **WP 7.1** — canary upgraded; three stale doc references corrected.
+- **DB reseeded** via `/sgs-update`; role map regenerated AFTER it (order is load-bearing).
 
 ### Handed to the colour-golden track (Bean copies these across)
 
 1. `.claude/reports/2026-08-20-HANDOVER-to-colour-golden-track.md`
 2. `.claude/reports/2026-08-20-HANDOVER-2-to-colour-golden-track.md`
+3. `.claude/reports/2026-08-20-HANDOVER-3-R3-complete.md`
 
-⛔ **The item worth reading twice** (handover 2 §3): a subagent cleared a finding by remapping
-`formFocusRingWidth` from `css:outline-width` to `css:box-shadow`. The gate went green and the
-manifest became a lie — the width drives `outline`; the box-shadow is hardcoded. Reverted. "Make the
-finding go away" and "make the manifest correct" are different instructions.
+⛔ **Read twice** (handover 2 §3): a subagent cleared a finding by remapping `formFocusRingWidth`
+from `css:outline-width` to `css:box-shadow`. The gate went green and the manifest became a lie.
+"Make the finding go away" and "make the manifest correct" are different instructions.
 
-### Needs Bean
+### Methodology guardrails (do not skip)
 
-- **`sgs/hero` + `sgs/info-box` resting border gradient** — handed over, but if the other track
-  declines it, it comes back here.
-- Nothing else is blocked.
+- **Deploy before measure.** A test against a live URL before deploying measures stale output.
+- **A cached page is not a measurement.** Always cache-bust; two false readings this session.
+- **Measure with the flag the gate is actually wired with** — several scripts exit 0 without
+  `--check` and 1 with it. Two agents reported "0 → 0" having measured the wrong invocation.
+- **Enumerate, don't reason.** Every figure reasoned to this session was wrong; every figure derived
+  by listing the items was right.
+- **Never regenerate `attr-role-map.json` on a shared worktree** without `/sgs-update` first or a
+  row-count diff — it reads the DB, not the tree, and silently drops rows.
+- **/qc multi-rater before any commit** touching converter / pipeline / SGS block logic.
 
 ---
 **The rest of this file is the previous session's handoff, still valid for Phase 2.**

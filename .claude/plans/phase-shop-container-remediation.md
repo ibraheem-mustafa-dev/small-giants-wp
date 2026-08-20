@@ -28,7 +28,7 @@ as every commit**.
 ## ▶ EXECUTION PROGRESS (updated 2026-08-20, end of first execution session)
 
 **Phase 1 Wave 1 SHIPPED + DEPLOYED + LIVE-VERIFIED. Wave 2 NOT STARTED. Phase 2 NOT STARTED.**
-The R-3 workstream is substantially done. Commits: `3224db10`, `03fd4247`, `b562c6d2`, `631e97a3`,
+**The R-3 workstream is COMPLETE (all 7 items).** Commits: `3224db10`, `03fd4247`, `b562c6d2`, `631e97a3`,
 `21131a98`, `25cc0188` (all on `main`, pushed).
 
 | Step | Status | Notes |
@@ -50,8 +50,8 @@ The R-3 workstream is substantially done. Commits: `3224db10`, `03fd4247`, `b562
 | Item | Status |
 |---|---|
 | **R3-a** adopt the shared resolver in 5 gates | ✅ **DONE** — plus a `--dump-json` entry point so the Python gates reuse the SAME resolver. `contentWidth` now visible (dead-controls 1→56, inert-controls 3→59). |
-| **R3-b** wire 2 unwired detectors into `prebuild` | ⛔ **BLOCKED ON PURPOSE** — both exit 1 under `--check`. `.claude/reports/2026-08-20-r3b-blocked-real-defects.md` |
-| **R3-c** promote accidental advisories | 🟡 **PARTIAL** — `prestart`'s `\|\| echo [ADVISORY]` wrapper removed so it agrees with `prebuild`. The parity gate's blocking flags stay off pending triage of R3-a's widening. |
+| **R3-b** wire 2 unwired detectors into `prebuild` | ✅ **DONE** — both now exit 0 and are WIRED. `check-undeclared-attrs` unblocked itself (its last finding was `sgs/quote`'s, fixed). `check-inert-controls`' sole finding was a FALSE POSITIVE — fixed the detector: it now understands `show<Prop>={ false }` suppression, derived from source, with a negative control proving it doesn't over-match. `check-device-toggle` deliberately NOT wired (live canary test). |
+| **R3-c** promote accidental advisories | ✅ **DONE** — `prestart` aligned with `prebuild`. Parity CHECK B flipped to BLOCKING (0 net-new, starts green); CHECK A stays advisory with its 176 recorded. The report label now DERIVES from the flag (it was hardcoded "advisory" and would have lied after a flip). `check-dead-controls` CHECK 4 + 5 given dated promotion triggers naming their exact blockers. |
 | **R3-d** baseline anti-rot convention | ✅ **DONE** — 6 baselines. One took a loader code-comment because its gate iterates every key. |
 | **R3-e** the "biggest hole" | ✅ **DONE** — new advisory `inspector-scan` rule `34-declared-attr-unrendered`, 415 findings / 46 of 83 blocks. |
 | **R3-f** stale docstrings | ✅ **DONE** |
