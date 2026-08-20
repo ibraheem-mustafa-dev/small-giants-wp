@@ -1,5 +1,109 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D702 [INCIDENT] — sgs/text disabled WooCommerce instant filtering: cause is `supports.interactivity`, NOT block namespace (2026-08-20)
+
+**Shop-archive Phase 1, step P1-1. Proven live, then fixed, deployed and verified on the canary.**
+
+**The defect.** The `/shop/` archive reloaded the whole page on every filter click. A prior
+session proved by single-variable swap that `sgs/text` inside
+`woocommerce/product-collection-no-results` was the trigger (`clientNavigationDisabled`
+flipped true→absent when swapped for `wp:paragraph`), but never found the mechanism.
+
+**A subagent's proposed cause was WRONG and was rejected.** It concluded WooCommerce
+disables enhanced pagination for any block outside the `core/` namespace, citing WP core's
+`block_core_query_disable_enhanced_pagination()` docblock from a php-stubs file. That theory
+is refuted by our own template: `sgs/product-card` sits INSIDE the same
+`product-collection` (`archive-product.html:96`, collection spans `:92-110`) and has never
+tripped the flag. A cause contradicted by the evidence it was built on is not a cause.
+
+**The real mechanism**, read from the running canary's own WooCommerce source —
+`wp-content/plugins/woocommerce/src/Blocks/BlockTypes/ProductCollection/Controller.php:125-134`:
+
+```php
+private function is_block_compatible( $block_name ) {
+    $block_type = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+    $supports_interactivity     = isset( $block_type->supports['interactivity'] ) && true === $block_type->supports['interactivity'];
+    $supports_client_navigation = isset( $block_type->supports['interactivity']['clientNavigation'] ) && true === $block_type->supports['interactivity']['clientNavigation'];
+    return $supports_interactivity || $supports_client_navigation;
+}
+```
+
+It is a **block-registry declaration check, not a namespace check**. Any descendant of
+`product-collection` that declares neither form marks the query dirty (`:199-207`), which
+sets `wp_interactivity_config('core/router', ['clientNavigationDisabled' => true])`.
+
+Every observation now fits: `sgs/product-card` declares `supports.interactivity: true` →
+compatible. `core/paragraph` declares `interactivity.clientNavigation: true` → compatible,
+which is exactly why the proven swap worked. `sgs/text` declared neither.
+
+**The fix.** Three lines in `plugins/sgs-blocks/src/blocks/text/block.json` —
+`"interactivity": { "clientNavigation": true }`, the same shape core uses for
+paragraph/heading/group (read from the canary's `wp-includes/blocks/*/block.json`). The
+declaration is honest: `sgs/text` renders statically, with zero `data-wp-*` directives, no
+`viewScript`, and no `wp_interactivity_*` calls.
+
+**Live verification (R-31-11, on the canary `/shop/`):**
+- `core/router` key ABSENT from the Interactivity config. Probe positively controlled — it
+  parses the config successfully and reads two live `woocommerce` keys, so the absence is a
+  real reading and not a broken selector. (My first probe used the stale
+  `wp-interactivity-data` id and found nothing at all; the config actually lives in
+  `wp-script-module-data-@wordpress/interactivity`. Checking the probe caught that.)
+- Behavioural proof: a `window` variable stamped before a filter click SURVIVED the click —
+  no document navigation. URL updated client-side to `?filter_stock_status=instock`,
+  products went 5 → 4, and 2 `fetch` requests were issued.
+
+**Scope — enumerated, not estimated.** 9 of 83 SGS blocks declare `supports.interactivity`;
+**74 do not**. Any of those inside a product collection reproduces this defect. A blanket
+sweep is REFUSED: the declaration is a claim that the block is safe for client-side
+navigation, and asserting it for a block that isn't breaks navigation silently. The
+remaining 73 need a per-block judgement pass.
+
+**Not fixed by this, and not claimed:** the FR-38-12 Flip animation is still dormant —
+GSAP/Flip loaded 0 resources on `/shop/` after the fix. Unblocking client-side navigation
+was necessary but not sufficient; the module is not being enqueued on this page. Recorded as
+an open finding, not a win.
+
+**Commit gate note.** The visual-diff pre-commit gate blocked this correctly and was passed
+using its own scoped, logged `SGS_VISUAL_GATE_SKIP` escape hatch (never `--no-verify`): a
+before/after visual diff of a registration-only declaration is identical by construction, and
+the live capture could not exist before deploy, which itself requires a clean tree.
+`check-blockjson-metadata-only.py` handles `supports.sgs` (CASE 1) and
+`supports.color.gradients` (CASE 2) but has no case for `supports.interactivity` — the
+73-block follow-on pass will hit this gate every time, so adding CASE 3 is the structural fix.
+
+Commit `3224db10`.
+
+## D703 [ROUTINE] — colour-preset orphans made visible: `check-dead-pattern-attrs.py` allowlist fixed (2026-08-20)
+
+**Shop-archive Phase 1, step P1-2.**
+
+`backgroundColor`, `textColor`, `gradient`, `fontSize`, `fontFamily` and `borderColor` sat on
+an UNCONDITIONAL allowlist (`NATIVE`, `:55-58`, tested at `:222`), so the gate never asked
+whether the block's `supports` actually registered them. Orphaned authorings — a pattern
+setting a colour on a block that cannot render it — passed silently. The same file already
+solved this correctly for `style.*` in `_native_style_family_declared()` (`:170-186`); that
+approach is now reused for the preset attrs via `NATIVE_PRESET_ATTR_MAP` +
+`_native_preset_attr_declared()`.
+
+Findings emit under a NEW THIRD advisory finding-kind `native-preset-undeclared`, following
+the `native-style-undeclared` precedent at `:303-318`. This is load-bearing: the script runs
+UNWRAPPED inside package.json's build-FAILING `prebuild` chain, so emitting ~40 new findings
+under `undeclared` would have redded the build for the whole phase. `--check` still exits 0
+for the new kind; `undeclared` and `shape-mismatch` still hard-gate at exit 1.
+
+**42 findings, not the ~60 the plan predicted.** The first pass reported 168; blocks such as
+`sgs/heading` declare their OWN custom attribute named `fontSize`, unrelated to native
+`typography.fontSize`, and those were false positives. Threading the block's declared schema
+into the resolver removed them. The plan's ~60 was a reasoned estimate; 42 is the enumerated
+figure — quote 42.
+
+Self-test extended with three controls: mustFlag on an all-false opt-out, mustNotFlag on a
+genuinely-enabled support, mustNotFlag on a block's own declared attribute. Verified:
+`--self-test` exit 0, real scan 42 findings, `--check` exit 0, `npm run build` exit 0.
+
+Commit `3224db10`.
+
+
 ## D701 [ROUTINE] — colour master table QC-council-verified against ground truth; 2 real bugs found, root-caused, fixed (2026-08-20)
 
 Follow-up to D700. Bean's own correction mid-session: "re-running a tool and getting the

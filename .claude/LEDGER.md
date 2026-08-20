@@ -18,7 +18,68 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read IN FULL if touching the
    converter/walker/pipeline surface (session rule).
 
-**Nothing was implemented this session. It was all investigation, decisions and planning.**
+## ▶ LIVE STATUS — Phase 1 Wave 1 SHIPPED (2026-08-20, commit `3224db10`, deployed + live-verified)
+
+**P1-1 DONE — instant filtering WORKS on the canary `/shop/`.** Root cause was NOT what the
+plan assumed and NOT what the subagent proposed: WooCommerce's
+`ProductCollection/Controller.php:125-134` checks each inner block's REGISTERED
+`supports.interactivity`, not its namespace. `sgs/text` declared neither form; three lines of
+`block.json` fixed it. Live-verified: `core/router` absent (probe positively controlled), a
+stamped `window` variable survived a filter click (no reload), URL updated client-side,
+products 5→4, 2 `fetch` requests. Full evidence: **D702**.
+
+⚠ **FR-38-12 Flip is STILL DORMANT — do not record it as unblocked.** GSAP/Flip loaded 0
+resources on `/shop/` after the fix. Client-side navigation was necessary but not sufficient;
+the module is not enqueued on this page. Open finding, needs its own diagnosis.
+
+**P1-2 DONE — 42 orphaned colour authorings now visible** (advisory kind
+`native-preset-undeclared`, `--check` exit 0, build green). Not ~60: that was a reasoned
+estimate; 42 is enumerated, after false positives from blocks with their own `fontSize` attr
+were removed. **D703**.
+
+**P1-3 DONE (read-only)** — `brand-strip`'s `backgroundColourHover`/`textColourHover` paint
+the INNER TILE (`--sgs-tile-hover-*`), not the root. Root rows must not reuse those names.
+
+**QC GATE 1: PASSED** (build exit 0 · 42 findings under the advisory kind · cause proven).
+**P1-4: PASSED** (deployed, payload-verify matched all 83 block.json).
+
+### ⛔ WAVE 2 IS BLOCKED ON BEAN — and P1-6 must be REWRITTEN before it dispatches
+
+Bean's mid-session instruction: *"We have a standardised colour setup that you need to abide
+by."* The standard is **Spec 35 PART O §1** (D621 tab / D622 panel / clause 9a-c shape):
+one thin swatch row, states as TABS INSIDE its popover (9b explicitly retires side-by-side
+`*Hover` controls), never behind a "+" menu, and placement resolved by
+`placement-reach.py` + `check-element-manifest-conformance.js` — the spec forbids inventing a
+bespoke colour-placement rule.
+
+**P1-6 as written in the plan is defective.** Ground truth resolved per block:
+
+| Block | Reality vs the plan's premise |
+|---|---|
+| `testimonial-slider` | **Already correct — REMOVE from P1-6.** All four attrs declared AND explicitly bound to root element `slider` with a `hover` state. |
+| `hero` | hover pair declared, bound to NO element; base pair missing |
+| `brand-strip` | hover pair declared, paints the inner tile |
+| `trust-bar` | `textColour` declared, bound to no element |
+| `site-header-row` (the plan's "proven recipe") | has **no hover pair at all** — a bad template for this job |
+
+**Use `testimonial-slider` as the template, not `site-header-row`** — it is the block that
+already meets the standard (explicit `attrMap` + `states.hover.attrMap` binding to root).
+
+**OPEN QUESTION FOR BEAN (Wave 2 gate):** `brand-strip` root naming — (A) distinct `root*`
+names, non-breaking *(recommended)*; (B) rename tile attrs to the `tile` prefix the block
+already declares, cleaner but silently drops stored authorings; (C) skip brand-strip.
+
+### Other open follow-ons (NOT parked — Bean has not been asked)
+1. **73 blocks lack `supports.interactivity`.** Any inside a product collection reproduce
+   D702. Needs a per-block judgement pass — a blanket sweep is refused, the declaration is a
+   safety claim.
+2. **`check-blockjson-metadata-only.py` needs a CASE 3** for `supports.interactivity`. The
+   73-block pass will hit the visual-diff gate every single time otherwise.
+
+---
+
+**The rest of this file is the previous session's handoff, still valid for Phase 2.**
+
 The plan is fly-through ready: every step has a model, exact files, a pre-written cold prompt,
 and a four-layer test block.
 
@@ -36,7 +97,10 @@ WAVE 1 (4 parallel)  → QC-1 → WAVE 2 (parallel) → QC-2   ← Phase 1 ends 
 `sgs/container` is the bottleneck — four steps touch its files and must run in sequence.
 Everything else parallelises around it. Phase 1 needs no design gate and can start cold.
 
-## ✅ No open questions — Phase 1 AND Phase 2 are both unblocked
+## ✅ Phase 2's design gates (G1/G2) are closed — superseded note: Phase 1 Wave 2 IS blocked
+
+⚠ The heading below was written before Wave 1 ran. It refers to the PHASE 2 gates only. Phase 1
+Wave 2 has a live open question (brand-strip colour naming) — see LIVE STATUS at the top.
 
 The G1 council's "third option" was **superseded by Bean's own better answer (R-1)**: the
 shared wrapper stays blank (→ CSS `row`), and individual blocks declare their own defaults in
