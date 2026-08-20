@@ -1294,56 +1294,23 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 /* ── Group headings ──
  * WooCommerce does NOT render the `heading` attribute set on each filter block
- * in the template; it renders `<legend class="screen-reader-text">Flavour</legend>`
+ * in the template. It emits `<legend class="screen-reader-text">Flavour</legend>`
  * instead, so the labels existed but were spoken only to screen readers and were
- * invisible on screen (verified live 2026-08-20 — every group except Price).
- * Revealing the legend reuses the text WooCommerce already considers the
- * accessible name, so the visible label and the announced label cannot drift.
- * Scoped to a direct fieldset child so nested filter blocks (an attribute group
- * contains a chips group carrying the SAME legend) cannot double up. */
-/* The group divider belongs BETWEEN groups, never between a group's heading and
- * its own controls. `sgs/heading` sits as a sibling BEFORE the price group, so
- * that group's `border-top` drew a line directly under the word "Price" and
- * above its slider, which read as a broken rule rather than a separator. The
- * price group is also the FIRST group - the panel header already separates it,
- * so it needs no divider at all. */
-.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-price {
-	border-top: 0;
-	padding-top: 0;
-	margin-top: 0;
-}
-
-.sgs-shop-filters .sgs-shop-filters__group-heading {
-	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
-	font-family: inherit;
-	font-size: var(--sgs-filter-label, 0.9375rem);
-	font-weight: 700;
-	line-height: 1.3;
-	color: var(--sgs-filter-heading, var(--wp--preset--color--text));
-}
-
-.sgs-shop-filters fieldset > legend.screen-reader-text {
-	position: static;
-	/* WooCommerce sets the fieldset to `display: contents`, so it generates NO
-	   box and the legend becomes a direct flex sibling of the chip list. Left to
-	   size itself it took a 55px slot on the SAME row and sat on top of the first
-	   chip (measured live 2026-08-20). Forcing a full-width basis makes it claim
-	   its own line, which is what a group label has to do. */
-	flex: 0 0 100%;
-	width: 100%;
-	height: auto;
-	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
-	padding: 0;
-	overflow: visible;
-	clip: auto;
-	clip-path: none;
-	white-space: normal;
-	font-family: inherit;
-	font-size: var(--sgs-filter-label, 0.9375rem);
-	font-weight: 700;
-	line-height: 1.3;
-	color: var(--sgs-filter-heading, var(--wp--preset--color--text));
-}
+ * invisible on screen (verified live 2026-08-20 on every group except Price,
+ * which gets no label at all).
+ *
+ * ⛔ DO NOT try to reveal that legend - it was tried and reverted on 2026-08-20.
+ * WordPress core declares `.screen-reader-text { position: absolute !important }`,
+ * so a plain `position: static` loses: every other property applied (clip, width,
+ * flex all took effect and were measured doing so) and ONLY position did not,
+ * leaving the label absolutely positioned on top of the first chip. Winning it
+ * back needs `!important` purely to fight core, and the legend must stay the
+ * accessible name regardless.
+ *
+ * So the visible label is authored explicitly as `sgs/heading` in
+ * templates/archive-product.html, one before each filter group. The legend stays
+ * screen-reader-only and remains the accessible name; the heading is the visual
+ * one. They carry identical text, so they cannot disagree. */
 
 /* ── Individual filter group headings ── */
 .sgs-shop-filters h3.wp-block-heading,

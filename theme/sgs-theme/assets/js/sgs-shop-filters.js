@@ -99,7 +99,12 @@
 			if ( ! heading.id ) {
 				heading.id = 'sgs-shop-filters-heading';
 			}
-			heading.tabIndex = -1;
+			/* tabindex is deliberately NOT set here. It is applied in openDrawer()
+			   and removed in finishClose(), because dialog.show() - the desktop,
+			   non-modal path - moves focus into the dialog and would land on a
+			   permanently-focusable heading, painting a focus ring around the
+			   word "Filters" on page load for a mouse user who never interacted.
+			   aria-labelledby does not require the target to be focusable. */
 			dialog.setAttribute( 'aria-labelledby', heading.id );
 		}
 
@@ -222,6 +227,13 @@
 					   down" behaviour. The sheet is already in the top layer and
 					   the heading is already visible, so there is nothing to
 					   scroll to. */
+					/* tabindex is set HERE and removed on close, never left on
+					   the element. dialog.show() (the desktop, non-modal path)
+					   moves focus into the dialog and would land on a
+					   permanently-focusable heading, painting a focus ring
+					   around the word "Filters" on page load for a mouse user
+					   who had not interacted at all. */
+					heading.setAttribute( 'tabindex', '-1' );
 					heading.focus( { preventScroll: true } );
 				} );
 			}
@@ -236,6 +248,9 @@
 
 		function finishClose() {
 			modalOpen = false;
+			if ( heading ) {
+				heading.removeAttribute( 'tabindex' );
+			}
 			toggle.setAttribute( 'aria-expanded', 'false' );
 			document.body.classList.remove( 'sgs-scroll-locked' );
 			toggle.focus( { preventScroll: true } );
