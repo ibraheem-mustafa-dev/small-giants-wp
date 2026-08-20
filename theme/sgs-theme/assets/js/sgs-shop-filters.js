@@ -134,7 +134,14 @@
 			// Delegate to WC's own clear-filters control rather than
 			// re-implementing filter-reset logic — find and click it.
 			const realClear = dialog.querySelector(
-				'.wc-block-product-filter-clear-button, .wc-block-components-filter-reset-button'
+				/* Click the element WooCommerce actually BOUND, not the block
+				   wrapper. ProductFilterClearButton::render() finds the first tag
+				   carrying `wp-block-button__link` and puts
+				   `data-wp-on--click="actions.removeAll"` on THAT element - which
+				   is now our sgs/button, not the wrapper div. Clicking the
+				   wrapper would do nothing. The old wrapper selectors are kept as
+				   trailing fallbacks for other markup shapes. */
+				'[data-wp-on--click="actions.removeAll"], .wc-block-product-filter-clear-button, .wc-block-components-filter-reset-button'
 			);
 			if ( realClear ) {
 				realClear.click();
