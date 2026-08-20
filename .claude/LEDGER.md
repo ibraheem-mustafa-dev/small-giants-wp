@@ -32,8 +32,18 @@ Per-step plan status is single-sourced to
   `/shop/` — proven behaviourally (a stamped `window` var survived a filter click, so no reload;
   URL updated client-side; products 5→4; 2 `fetch` requests). **D702**
 - **R-3 workstream: COMPLETE** (all 7 items).
-- **Phase 1 Wave 2: NOT STARTED** — this is the next session's work.
-- **Phase 2: NOT STARTED.** Both design gates (G1/G2) closed and ready.
+- **Phase 1 Wave 2: CODE-COMPLETE + COMMITTED + PUSHED (`fe078c2f`), NOT DEPLOYED, NOT
+  LIVE-VERIFIED.** All four steps done (P1-5/6/7/8). Build green, `exit 0`.
+  **QC GATE 2 IS THE NEXT ACTION** — nothing in Wave 2 has been seen running. Deploy was
+  blocked at commit time by a red gate (since reconciled), so it is now possible.
+- **Phase 2: NOT STARTED BY THIS TRACK — but partly shipped by the parallel colour-golden
+  session** (`20332725`, `1905257e`): `sgs/container` base background plus 38 theme attr
+  renames, i.e. P2-6-shaped work. ⚠ **Re-scope Phase 2 against the tree before starting it.**
+- ⚠ **Shared worktree.** Two sessions committed to `main` within seconds of each other.
+  Commit path-scoped (the repo's own pre-commit gate enforces this) and never trust a
+  subagent's "not my block" attribution on a moving tree — three did exactly that this
+  session and all three were wrong.
+- **Handover 3** → `.claude/reports/2026-08-20-HANDOVER-3-shop-wave-2-to-colour-golden-track.md`
 
 ### ▶ NEXT SESSION — Wave 2, and P1-6 FIRST
 
