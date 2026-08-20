@@ -482,7 +482,7 @@
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "full"}
+			"default": {"desktop": "normal"}
 		},
 		"padding": {
 			"type": "object",

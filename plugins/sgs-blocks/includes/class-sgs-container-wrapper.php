@@ -427,8 +427,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$max_width = $attributes['maxWidth'] ?? '';
 			$max_width = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
-			$content_width = $attributes['contentWidth'] ?? '';
-			$content_width = is_array( $content_width ) ? '' : $content_width;
+			//
+			// `contentWidth` is a TIER OBJECT ({desktop,tablet,mobile}), same shape as
+			// `minHeight` above (:450) — resolved the same way, via the shared
+			// `sgs_responsive_normalise_object()` helper, so a plain string (older/
+			// other callers) still degrades to today's desktop-only behaviour and a
+			// tier object no longer collapses to ''.
+			//
+			// ⛔ REGRESSION FIXED (2026-08-20): the old `is_array( $content_width )
+			// ? '' : $content_width` unconditionally emptied the value on EVERY
+			// render, because `contentWidth` has been a tier object (not a scalar)
+			// since commit 163f9fa7 migrated 96 core/group instances to
+			// sgs/container. That silently defeated `$has_band_props` below, which
+			// meant `.sgs-container__inner` never rendered and every container's
+			// max-width landed on the OUTER element instead of the content band.
+			// Proven live: `/shop/` had `max-width:1280px` on the outer element with
+			// no `.sgs-container__inner` child.
+			$content_width_obj = sgs_responsive_normalise_object( $attributes['contentWidth'] ?? null );
+			$content_width     = $content_width_obj['desktop'] ?? '';
 			// minHeight is a TIER OBJECT {desktop,tablet,mobile} (Spec 35 migration,
 			// 2026-08-11); `minHeightTablet` / `minHeightMobile` are no longer
 			// declared by any block.json.
