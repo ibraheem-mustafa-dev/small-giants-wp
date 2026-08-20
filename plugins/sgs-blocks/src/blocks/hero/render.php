@@ -13,8 +13,9 @@
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, backgroundOverlayColour, overlayOpacity,
  *   splitImage, splitImageMobile, splitImageMobileObjectPosition,
- *   imageObjectPositionTablet, minHeight*, background/text/border
- *   colourHover, transitionDuration, transitionEasing, bgParallax, bgKenBurns,
+ *   imageObjectPositionTablet, minHeight*, background/text/border colour
+ *   (resting + Hover, each with a {attr}Gradient sibling — D702),
+ *   transitionDuration, transitionEasing, bgParallax, bgKenBurns,
  *   bgVideo*, splitImageBleed,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
  *   imageObjectFit/Position, imageWidth*, imageHeight (TIER OBJECT), imageBorderStyle/Colour,
@@ -205,9 +206,21 @@ $min_height_mobile = $sgs_css_length( $min_height_obj['mobile'] ?? '360px' );
 // element (`.sgs-hero__split-image`). See the consolidation note at the emission
 // site. Height for the split image now comes solely from the `imageHeight` object.
 
-$hover_background_colour = $attributes['backgroundColourHover'] ?? '';
-$hover_text_colour       = $attributes['textColourHover'] ?? '';
-$hover_border_colour     = $attributes['borderColourHover'] ?? '';
+// D702 — root background/text colour, resting + hover, each with a sibling
+// `{attr}Gradient` (D636 storage shape: two attributes, gradient wins when
+// set+valid, mirrors borderColour/borderColourHover above). Distinct from the
+// decorative `.sgs-hero__overlay` dimming layer (backgroundOverlayColour/
+// overlayGradient) — this paints the SECTION's own background-color, which
+// the overlay sits on top of.
+$resting_background_colour          = $attributes['backgroundColour'] ?? '';
+$resting_background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
+$resting_text_colour                = $attributes['textColour'] ?? '';
+$resting_text_colour_gradient       = $attributes['textColourGradient'] ?? '';
+$hover_background_colour            = $attributes['backgroundColourHover'] ?? '';
+$hover_background_colour_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
+$hover_text_colour                  = $attributes['textColourHover'] ?? '';
+$hover_text_colour_gradient         = $attributes['textColourHoverGradient'] ?? '';
+$hover_border_colour                = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $hover_border_colour when set.
 $hover_border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 // D701 — RESTING border-colour gradient. Sibling to the WP-native
@@ -364,20 +377,59 @@ $root_sel = '.' . $uid . '.wp-block-sgs-hero';
 // all on the SAME selector — cascade order does the overriding, no !important.
 $responsive_css = '';
 
-// Hover colour declarations — emitted as a scoped .uid{…}:hover rule via the
-// shared helper. No fallback values (matches the info-box pattern).
-$hover_decls = array();
-if ( $hover_background_colour ) {
-	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
+// D702 — root background/text colour declarations, resting + hover, each
+// emitted as a scoped `.uid{…}` / `.uid:hover,.uid:focus-visible{…}` rule via
+// the shared helper (single call below). Gradient siblings win over the flat
+// colour via sgs_background_paint_decl()/sgs_resolve_text_colour_or_gradient()
+// (D636 storage shape) — mirrors heading/render.php's own text-colour builder.
+$resting_decls           = array();
+$resting_background_decl = sgs_background_paint_decl( $resting_background_colour, $resting_background_colour_gradient );
+if ( '' !== $resting_background_decl ) {
+	$resting_decls[] = $resting_background_decl;
 }
-if ( $hover_text_colour ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
+$resting_text_colour_effective = sgs_resolve_text_colour_or_gradient( $resting_text_colour, $resting_text_colour_gradient );
+if ( '' !== $resting_text_colour_effective ) {
+	$resting_text_colour_decl = sgs_text_colour_decl( $resting_text_colour_effective );
+	if ( '' !== $resting_text_colour_decl ) {
+		$resting_decls[] = $resting_text_colour_decl;
+	}
+}
+
+// Hover colour declarations — emitted as a scoped .uid{…}:hover rule via the
+// shared helper. No fallback values for border-colour (matches the info-box
+// pattern, unchanged) — background/text now go through the gradient-aware
+// resolvers above.
+$hover_decls           = array();
+$hover_background_decl = sgs_background_paint_decl( $hover_background_colour, $hover_background_colour_gradient );
+if ( '' !== $hover_background_decl ) {
+	$hover_decls[] = $hover_background_decl;
+}
+$hover_text_colour_effective = sgs_resolve_text_colour_or_gradient( $hover_text_colour, $hover_text_colour_gradient );
+if ( '' !== $hover_text_colour_effective ) {
+	$hover_text_colour_decl = sgs_text_colour_decl( $hover_text_colour_effective );
+	if ( '' !== $hover_text_colour_decl ) {
+		$hover_decls[] = $hover_text_colour_decl;
+	}
 }
 if ( $hover_border_colour ) {
 	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
+if ( $resting_decls || $hover_decls ) {
+	$responsive_css .= sgs_emit_state_colour_css( $root_sel, $resting_decls, $hover_decls );
+}
+// Old-browser fallback for a gradient backgroundColour/textColour text-colour
+// path (background-clip: text) — a no-op ('') when the flat colour applies
+// (no gradient sibling set), matching heading/render.php's identical pattern.
+$resting_text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $resting_text_colour_effective );
+if ( '' !== $resting_text_colour_fallback_rule ) {
+	$responsive_css .= $resting_text_colour_fallback_rule;
+}
 if ( $hover_decls ) {
-	$responsive_css .= sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
+	$hover_sel                       = "{$root_sel}:hover,{$root_sel}:focus-visible";
+	$hover_text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $hover_sel, $hover_text_colour_effective );
+	if ( '' !== $hover_text_colour_fallback_rule ) {
+		$responsive_css .= $hover_text_colour_fallback_rule;
+	}
 }
 
 // --- Border gradient, hover state (D636 border builder) — masked ::before,

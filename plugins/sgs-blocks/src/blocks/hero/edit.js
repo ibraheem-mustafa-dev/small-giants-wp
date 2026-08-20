@@ -27,6 +27,7 @@ import {
 	FocalPositionField,
 	BOX_UNITS,
 	normaliseResponsiveBox,
+	SgsColourPanel,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import {
@@ -249,6 +250,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		// separate, pre-existing gap — see edit.js's absence of any "Hover" panel);
 		// this row is deliberately added independent of that gap.
 		borderColourGradient,
+		// D702 — root background/text colour, resting + hover pairs. The
+		// wrapper element's manifest `css:background-color`/`css:color` were
+		// pointed at a `native:color.background` attribute WordPress never
+		// registered (supports.color was absent), so backgroundColourHover/
+		// textColourHover were declared + rendered (render.php:208-211,
+		// 370-378) but bound to nothing on the editor side, and had no resting
+		// counterpart at all. Mirrors sgs/testimonial-slider's `slider`
+		// element (backgroundColour/textColour + Hover siblings) — TWO states
+		// per row (normal + hover), gradient-capable on both rows.
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
+		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
 		imagePadding,
 		imagePaddingTablet,
 		imagePaddingMobile,
@@ -462,6 +480,74 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	return (
 		<>
+			{ /* D702 — ONE grouped, SGS-OWNED colour panel for the root element,
+			   rendered FIRST (SgsColourPanel's own contract: it must mount
+			   before any other same-group `<InspectorControls group="styles">`
+			   Fill in this file, since WordPress concatenates same-group Fills
+			   in mount order — the "Section (outer)" panel further down also
+			   uses group="styles"). Mirrors sgs/testimonial-slider's `slider`
+			   element and sgs/button's own top-level SgsColourPanel: TWO states
+			   per row (normal + hover), both gradient-capable. Background uses
+			   the in-row per-state gradient shape (DesignTokenPicker's own
+			   `gradientValue`/`onGradientChange`); text uses the row-level
+			   `gradientCapable: true` shape (GradientCapableColourControl's
+			   `gradientValue`/`gradientOnChange`) since text-colour gradients
+			   paint via `background-clip: text`, matching sgs/heading. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourHoverGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+				] }
+			/>
 			{/* ── Settings tab (default InspectorControls group) — behaviour: variant,
 			   media selection/data-source, content. ── */}
 			<InspectorControls>
@@ -1467,6 +1553,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						] }
 					/>
+
 				</PanelBody>
 
 				{ /* Content band (Layer 2 __inner) — box-object family, rendered

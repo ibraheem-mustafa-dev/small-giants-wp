@@ -27,9 +27,37 @@
 				"parallax"
 			],
 			"elements": {
+				"root": {
+					"label": "Block root",
+					"order": 1,
+					"layer": "OUTER",
+					"_layer_note": "Root IS the block-private `.wp-block-sgs-brand-strip` element (render.php $root_sel, no SGS_Container_Wrapper -- this block is block-private per D294, not a section/layout composite). Mirrors sgs/testimonial-slider's 'slider' root.",
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "New ROOT colour panel (2026-08-20) -- background+text colour/gradient with hover, mirroring sgs/testimonial-slider's root attrMap shape (css:background-color/css:background-image/css:color) extended with the D636 css:color-gradient text-clip mechanism (sgs/heading precedent). Paints the block's own root <div>, distinct from tileBackgroundColour (the 'tile' element below) and the item*Hover attrs (the 'item' element, the nested hover surface)."
+				},
 				"tile": {
 					"label": "Tile",
-					"order": 1,
+					"order": 2,
 					"clusters": [
 						"fill",
 						"layout"
@@ -48,13 +76,13 @@
 				},
 				"logo": {
 					"label": "Logo image",
-					"order": 2,
+					"order": 3,
 					"clusters": [],
 					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares none."
 				},
 				"caption": {
 					"label": "Caption",
-					"order": 3,
+					"order": 4,
 					"clusters": [
 						"text"
 					],
@@ -67,28 +95,28 @@
 				},
 				"name": {
 					"label": "Caption text-align",
-					"order": 3,
+					"order": 4,
 					"clusters": [],
 					"prefix": "",
 					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'caption' to 'name', which was WRONG - the DB tags 8 attrs (nameFontSize/nameFontWeight/nameColour/nameFontStyle/nameLineHeight/nameLetterSpacing/nameTextTransform/nameTextDecoration) css_element='caption' (matching the ORIGINAL key) and only 1 attr (nameTextAlign) css_element='name'. Renaming would have cleared 1 orphan while creating 8 new ones. 'caption' is restored above; this bare 'name' element exists purely so the audit script's exact-key-match sees 'name' declared too. nameTextAlign already resolves fine functionally under 'caption' (prefix 'name' + suffix TextAlign, default convention) regardless of this element's own (empty) clusters - this entry exists only to satisfy the drift audit's separate, independent key-existence check. Found live 2026-08-15: DB tagged 1 attr css_element='name', undeclared until now."
 				},
 				"item": {
 					"label": "Tile hover surface",
-					"order": 4,
+					"order": 5,
 					"clusters": [],
 					"prefix": "",
 					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/padding/shadow/gap), a genuinely different DOM node. itemBackgroundColourHover/itemTextColourHover/itemBorderColourHover/itemBorderColourHoverGradient carry the 'item' prefix (renamed 2026-08-20 from the former bare backgroundColourHover/textColourHover/borderColourHover/borderColourHoverGradient) so the plain unprefixed names are freed for a future root-level colour panel. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now. ⚠ PREFIX HELD AT \"\" PENDING BEAN'S SIGN-OFF (2026-08-20). The /sgs-update reseed HAS taught attr-role-map.json the four item* names, so the earlier ORPHAN:UNCLASSIFIED blocker is gone and prefix:\"item\" now resolves cleanly. What stops it is different: with the prefix set, the four are scanned and classified as ORPHAN:STYLE-DEFECT, pushing that count 12 -> 16. element-manifest-baseline.json states raising a baseline is STOP-THE-LINE and needs Bean's sign-off. Flip to \"item\" together with either that sign-off or, better, declaring the colour cluster member on this element so the four are CLAIMED rather than orphaned."
 				},
 				"track": {
 					"label": "Marquee track",
-					"order": 5,
+					"order": 6,
 					"clusters": [],
 					"prefix": "",
 					"_note": "The scrolling marquee track (.sgs-brand-strip__track, render.php line 538). scrollSpeed drives --sgs-scroll-speed, but the CSS animation declaration that consumes it only applies on the compound .sgs-brand-strip__track--ready selector (style.css line 315-316) - a JS-toggled 'measurement complete' state (view.js line 91), not a CSS pseudo-class, so it has no home in the states taxonomy (hover-shaped only). The DB's css_element='track--ready' therefore remains a residual, undeclared drift finding after this fix: declaring a literal --ready-suffixed element key would be the first BEM-modifier-shaped top-level key anywhere in this framework (checked, no precedent), so this manifest declares the real container ('track') honestly instead of inventing one to force a clean audit pass. Accepted debt, not silently worked around."
 				},
 				"strip-spacing": {
 					"label": "Strip spacing",
-					"order": 4,
+					"order": 5,
 					"clusters": [
 						"layout"
 					],
@@ -348,6 +376,42 @@
 			"type": "string",
 			"default": "",
 			"description": "Hover-state sibling of tileBorderColourGradient. Non-empty wins over itemBorderColourHover on :hover/:focus-within."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the block ROOT background instead of a flat colour. Non-empty wins over backgroundColour at render time (D636)."
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of backgroundColourGradient. Non-empty wins over backgroundColourHover on :hover/:focus-within."
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the block ROOT text via background-clip:text. Non-empty wins over textColour at render time (D636)."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-within."
 		},
 		"effectHover": {
 			"type": "string",

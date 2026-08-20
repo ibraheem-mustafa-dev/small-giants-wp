@@ -22,6 +22,13 @@
 		],
 		"anchor": true,
 		"html": false,
+		"color": {
+			"text": false,
+			"background": false,
+			"gradients": false,
+			"link": false,
+			"__experimentalSkipSerialization": true
+		},
 		"typography": {
 			"fontSize": true,
 			"lineHeight": true,
@@ -103,7 +110,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
@@ -120,11 +128,13 @@
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:color": "textColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient"
 							}
 						}
 					},
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D701 (2026-08-20): `borderColourGradient` (resting) added as the base-level sibling to `borderColourHoverGradient` — the wrapper's resting border colour comes from WP-native `__experimentalBorder.color` (already mapped above at `css:border-color`), and this new gradient wins over that native solid colour at render time when set (mirrors `borderColourHover`/`borderColourHoverGradient` and `sgs/quote`'s `borderColour`/`borderColourGradient` pair). See render.php for the emission order that makes the override work without `!important`."
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D701 (2026-08-20): `borderColourGradient` (resting) added as the base-level sibling to `borderColourHoverGradient` — the wrapper's resting border colour comes from WP-native `__experimentalBorder.color` (already mapped above at `css:border-color`), and this new gradient wins over that native solid colour at render time when set (mirrors `borderColourHover`/`borderColourHoverGradient` and `sgs/quote`'s `borderColour`/`borderColourGradient` pair). See render.php for the emission order that makes the override work without `!important`. D702 (2026-08-20): `css:background-color`/`css:color` retargeted from the dead `native:color.background` reference (WordPress never registered that attribute — `supports.color` was absent) to the plain `backgroundColour`/`textColour` string attrs, mirroring `sgs/testimonial-slider`'s `slider` element. The hover pair (`backgroundColourHover`/`textColourHover`) was already declared on this block but bound to nothing until now."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -383,13 +393,43 @@
 				"mobile": "360px"
 			}
 		},
+		"backgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting (non-hover) root background colour, bound to the wrapper element's css:background-color (D702). Distinct from the decorative backgroundOverlayColour/overlayGradient dimming layer."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting root background instead of a flat colour. Non-empty wins over backgroundColour at render time (mirrors the borderColour/borderColourGradient pair)."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover root background instead of a flat colour. Non-empty wins over backgroundColourHover at render time."
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting (non-hover) root text colour, bound to the wrapper element's css:color (D702)."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColour at render time."
+		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hover root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColourHover at render time."
 		},
 		"borderColourHover": {
 			"type": "string",

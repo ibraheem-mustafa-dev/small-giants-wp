@@ -256,6 +256,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		itemTextColourHover,
 		itemBorderColourHover,
 		itemBorderColourHoverGradient,
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
+		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
 		effectHover,
 		transitionDuration,
 		transitionEasing,
@@ -321,6 +329,55 @@ export default function Edit( { attributes, setAttributes } ) {
 			   counterpart of the caption's nameColour). */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'rootBackground',
+						label: __( 'Block background colour (root)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'rootText',
+						label: __( 'Block text colour (root)', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								gradientValue: textColourHoverGradient,
+							},
+						],
+					},
 					{
 						key: 'tileBackground',
 						label: __( 'Tile background colour', 'sgs-blocks' ),

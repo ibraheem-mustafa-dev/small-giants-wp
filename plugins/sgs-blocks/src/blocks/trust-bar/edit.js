@@ -279,6 +279,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		badgeImageShadowColour,
 		badgeImageObjectFit,
 		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
 		columns,
 		gap,
 		layout,
@@ -366,6 +373,55 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				DesignTokenPicker rows, left untouched (out of scope here). */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'root-background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'root-text',
+						label: __( 'Root text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourHoverGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
 					badgeStyle === 'icon-circle' && iconCircleShadow && {
 						key: 'icon-circle-shadow',
 						label: __( 'Icon circle shadow colour', 'sgs-blocks' ),

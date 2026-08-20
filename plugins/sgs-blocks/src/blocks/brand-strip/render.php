@@ -98,6 +98,19 @@ $tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
 $hover_bg_colour     = $attributes['itemBackgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['itemTextColourHover'] ?? '';
 $hover_border_colour = $attributes['itemBorderColourHover'] ?? '';
+// Root-element colour + gradient + hover (2026-08-20) -- paints the block's OWN
+// root `<div>` (see $root_sel below), distinct from tileBackgroundColour (the
+// 'tile' element) and the item*Hover attrs above (the 'item' element, the
+// nested hover surface). D636 sibling-attribute shape: gradient wins over the
+// flat colour when set+valid (sgs_background_paint_decl() / sgs_resolve_text_colour_or_gradient()).
+$root_bg_colour            = $attributes['backgroundColour'] ?? '';
+$root_bg_colour_gradient   = $attributes['backgroundColourGradient'] ?? '';
+$root_bg_hover_colour      = $attributes['backgroundColourHover'] ?? '';
+$root_bg_hover_gradient    = $attributes['backgroundColourHoverGradient'] ?? '';
+$root_text_colour          = $attributes['textColour'] ?? '';
+$root_text_colour_gradient = $attributes['textColourGradient'] ?? '';
+$root_text_hover_colour    = $attributes['textColourHover'] ?? '';
+$root_text_hover_gradient  = $attributes['textColourHoverGradient'] ?? '';
 $hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
@@ -301,6 +314,51 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		if ( ! empty( $base_scoped_styles['css'] ) ) {
 			$scoped_css[] = $base_scoped_styles['css'];
 		}
+	}
+}
+
+// --- Root background + text colour (client-controlled, SgsColourPanel
+// 'rootBackground'/'rootText' rows, 2026-08-20). Background: gradient (via
+// background-image) wins over the flat colour when set+valid
+// (sgs_background_paint_decl()). Text: resolved through the same
+// gradient-wins-flat rule then painted via sgs_text_colour_decl() -- a
+// gradient text value uses background-clip:text, needing the accompanying
+// @supports fallback rule for browsers without clip-text support. Mirrors
+// sgs/heading's root typography + hover block exactly. ---
+$root_decls   = array();
+$root_bg_decl = sgs_background_paint_decl( $root_bg_colour, $root_bg_colour_gradient );
+if ( '' !== $root_bg_decl ) {
+	$root_decls[] = $root_bg_decl;
+}
+$root_text_effective = sgs_resolve_text_colour_or_gradient( $root_text_colour, $root_text_colour_gradient );
+$root_text_decl      = sgs_text_colour_decl( $root_text_effective );
+if ( '' !== $root_text_decl ) {
+	$root_decls[] = $root_text_decl;
+}
+if ( $root_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+}
+$root_text_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $root_text_effective );
+if ( '' !== $root_text_fallback_rule ) {
+	$scoped_css[] = $root_text_fallback_rule;
+}
+
+$root_hover_decls   = array();
+$root_bg_hover_decl = sgs_background_paint_decl( $root_bg_hover_colour, $root_bg_hover_gradient );
+if ( '' !== $root_bg_hover_decl ) {
+	$root_hover_decls[] = $root_bg_hover_decl;
+}
+$root_text_hover_effective = sgs_resolve_text_colour_or_gradient( $root_text_hover_colour, $root_text_hover_gradient );
+$root_text_hover_decl      = sgs_text_colour_decl( $root_text_hover_effective );
+if ( '' !== $root_text_hover_decl ) {
+	$root_hover_decls[] = $root_text_hover_decl;
+}
+if ( $root_hover_decls ) {
+	$root_hover_sel = "{$root_sel}:hover,{$root_sel}:focus-within";
+	$scoped_css[]    = "{$root_hover_sel}{" . implode( ';', $root_hover_decls ) . ';}';
+	$root_text_hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_hover_sel, $root_text_hover_effective );
+	if ( '' !== $root_text_hover_fallback_rule ) {
+		$scoped_css[] = $root_text_hover_fallback_rule;
 	}
 }
 

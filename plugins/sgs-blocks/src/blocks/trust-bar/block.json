@@ -81,7 +81,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
 						"css:background-attachment": "backgroundAttachment",
 						"css:background-position": "backgroundPosition",
 						"css:background-repeat": "backgroundRepeat",
@@ -105,6 +106,14 @@
 						"css:align-content": "alignContent",
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:color": "textColourHover"
+							}
+						}
 					},
 					"_note": "gridTemplateColumns/Rows, gap, justify-*/align-content/flex-* are consumed by SGS_Container_Wrapper via the universal wrapper mechanism (render.php:214-220 comment). No alignItems/display/overflow/aspect-ratio/width/height/max-height attrs exist — honest gaps."
 				},
@@ -190,7 +199,7 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"text": true,
+			"text": false,
 			"background": false,
 			"gradients": false,
 			"__experimentalSkipSerialization": true
@@ -404,6 +413,34 @@
 		"textColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"columns": {
 			"type": "object",

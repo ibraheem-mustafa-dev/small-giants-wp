@@ -59,6 +59,17 @@ $tb_stroke_grad            = sgs_svg_stroke_gradient( $icon_colour_gradient, $ui
 $tb_stroke_grad_defs_used  = false;
 $text_colour               = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
+
+// --- Root-element background/text colour (+ hover), D636-style gradient siblings.
+// Mirrors sgs/testimonial-slider's `slider` wrapper element exactly (css:background-color
+// -> backgroundColour, css:color -> textColour, states.hover -> the Hover pair).
+$root_background_colour          = $attributes['backgroundColour'] ?? '';
+$root_background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
+$root_background_colour_hover    = $attributes['backgroundColourHover'] ?? '';
+$root_background_colour_hover_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
+$root_text_colour_gradient       = $attributes['textColourGradient'] ?? '';
+$root_text_colour_hover          = $attributes['textColourHover'] ?? '';
+$root_text_colour_hover_gradient = $attributes['textColourHoverGradient'] ?? '';
 $icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
 $icon_circle_shadow_colour = isset( $attributes['iconCircleShadowColour'] ) ? (string) $attributes['iconCircleShadowColour'] : '';
 
@@ -159,20 +170,6 @@ $tb_extra_scoped_css = '';
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$tb_style_engine_args = array();
 
-	$tb_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$tb_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$tb_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$tb_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $tb_color_args ) ) {
-		$tb_style_engine_args['color'] = $tb_color_args;
-	}
-
 	$tb_border_args = array();
 	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
 		$tb_border_args['color'] = (string) $attributes['style']['border']['color'];
@@ -214,20 +211,52 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// Skip-serialised `color` support also stops WP auto-adding the standard
-// has-*-color / has-*-background-color classes onto the wrapper — re-add them
-// manually (mirrors sgs/hero + sgs/quote) so preset palette colours still
-// resolve visually.
-$tb_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$tb_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-if ( '' !== $tb_preset_text_slug ) {
-	$tb_extra_classes[] = 'has-text-color';
-	$tb_extra_classes[] = 'has-' . $tb_preset_text_slug . '-color';
+// --- Root-element background + text colour (+ hover), no-inline contract. ----
+// supports.color is now ALL-FALSE (native colour UI retired in favour of the
+// SgsColourPanel rows below), so the has-*-color / has-*-background-color
+// native-class re-add that used to live here is gone with it — those classes
+// existed only to keep WP's OWN preset-palette CSS resolving; this block now
+// paints background/text itself via scoped CSS, mirrors
+// sgs/site-header-row's colour block + sgs/text's gradient-capable text-colour
+// mechanism (D636 — the sibling `{attr}Gradient` wins over the flat value).
+$tb_root_colour_decls = array();
+
+$tb_bg_decl = sgs_background_paint_decl( $root_background_colour, $root_background_colour_gradient );
+if ( '' !== $tb_bg_decl ) {
+	$tb_root_colour_decls[] = $tb_bg_decl;
 }
-if ( '' !== $tb_preset_bg_slug ) {
-	$tb_extra_classes[] = 'has-background';
-	$tb_extra_classes[] = 'has-' . $tb_preset_bg_slug . '-background-color';
+
+$tb_text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $root_text_colour_gradient );
+if ( '' !== $tb_text_colour_effective ) {
+	$tb_text_colour_decl = sgs_text_colour_decl( $tb_text_colour_effective );
+	if ( '' !== $tb_text_colour_decl ) {
+		$tb_root_colour_decls[] = $tb_text_colour_decl;
+	}
 }
+
+$tb_root_colour_hover_decls = array();
+
+$tb_bg_hover_decl = sgs_background_paint_decl( $root_background_colour_hover, $root_background_colour_hover_gradient );
+if ( '' !== $tb_bg_hover_decl ) {
+	$tb_root_colour_hover_decls[] = $tb_bg_hover_decl;
+}
+
+$tb_text_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $root_text_colour_hover, $root_text_colour_hover_gradient );
+if ( '' !== $tb_text_colour_hover_effective ) {
+	$tb_text_colour_hover_decl = sgs_text_colour_decl( $tb_text_colour_hover_effective );
+	if ( '' !== $tb_text_colour_hover_decl ) {
+		$tb_root_colour_hover_decls[] = $tb_text_colour_hover_decl;
+	}
+}
+
+if ( $tb_root_colour_decls || $tb_root_colour_hover_decls ) {
+	$tb_extra_scoped_css .= sgs_emit_state_colour_css( $root_sel, $tb_root_colour_decls, $tb_root_colour_hover_decls );
+}
+
+// `@supports not (background-clip: text)` fallback rules — no-op ('') for a
+// flat colour, only emit real CSS when the effective value was a gradient.
+$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $tb_text_colour_effective );
+$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $tb_text_colour_hover_effective );
 
 $tb_extra_attrs = array(
 	'aria-label' => __( 'Trust signals', 'sgs-blocks' ),

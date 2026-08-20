@@ -9,6 +9,15 @@
 	position: relative;
 }
 
+/* Inline-bar mode only — icon/overlay/cmdk roots are just a small trigger
+   button and already cap their own popover/dialog surfaces (__panel /
+   __dialog below), so they're excluded here. Without this, the inline bar's
+   __input (flex: 1) has no width ceiling and stretches to eat the full
+   content band (matches the existing 320px/480px/600px sibling caps below). */
+.sgs-product-search:not(.sgs-product-search--icon):not(.sgs-product-search--overlay):not(.sgs-product-search--cmdk) {
+	max-width: min( 680px, 100% );
+}
+
 .sgs-product-search__form {
 	display: flex;
 	flex-direction: column;
