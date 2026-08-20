@@ -500,6 +500,15 @@ h2.wc-block-mini-cart__title {
 }
 
 /* Filters heading */
+/* `dialog.show()` (the desktop, non-modal path) moves focus INTO the dialog, so
+ * the heading - which carries tabindex="-1" so the mobile sheet can focus it -
+ * received focus on page load and painted a ring around the word "Filters" for
+ * mouse users who had not interacted at all. Suppressed only for
+ * :focus-without-:focus-visible, so a keyboard user still gets the ring. */
+.sgs-shop-filters__heading:focus:not(:focus-visible) {
+	outline: none;
+}
+
 .sgs-shop-filters__heading {
 	font-size: 1rem;
 	font-weight: 700;
@@ -1292,6 +1301,18 @@ body.woocommerce-cart .with-empty-cart-icon,
  * accessible name, so the visible label and the announced label cannot drift.
  * Scoped to a direct fieldset child so nested filter blocks (an attribute group
  * contains a chips group carrying the SAME legend) cannot double up. */
+/* The group divider belongs BETWEEN groups, never between a group's heading and
+ * its own controls. `sgs/heading` sits as a sibling BEFORE the price group, so
+ * that group's `border-top` drew a line directly under the word "Price" and
+ * above its slider, which read as a broken rule rather than a separator. The
+ * price group is also the FIRST group - the panel header already separates it,
+ * so it needs no divider at all. */
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-price {
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 0;
+}
+
 .sgs-shop-filters .sgs-shop-filters__group-heading {
 	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
 	font-family: inherit;
@@ -1303,7 +1324,13 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 .sgs-shop-filters fieldset > legend.screen-reader-text {
 	position: static;
-	width: auto;
+	/* WooCommerce sets the fieldset to `display: contents`, so it generates NO
+	   box and the legend becomes a direct flex sibling of the chip list. Left to
+	   size itself it took a 55px slot on the SAME row and sat on top of the first
+	   chip (measured live 2026-08-20). Forcing a full-width basis makes it claim
+	   its own line, which is what a group label has to do. */
+	flex: 0 0 100%;
+	width: 100%;
 	height: auto;
 	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
 	padding: 0;
