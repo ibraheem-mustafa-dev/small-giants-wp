@@ -47,7 +47,7 @@ import { UnitControl } from '../../components/primitives';
  * legacy-link controls were removed. They were dead — the child blocks
  * (sgs/icon, sgs/heading, sgs/text, sgs/multi-button) own their own colour,
  * font size and link, so the parent controls set attributes render.php never
- * read. The removed attrs survive only in deprecated.js for back-compat.
+ * read. The removed attrs survive only in block.json as historical schema; no deprecated.js exists (D271).
  */
 
 const LENGTH_UNITS = [

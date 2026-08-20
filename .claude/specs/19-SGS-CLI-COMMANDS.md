@@ -347,9 +347,10 @@ wp sgs migrations run --target=0003-some-migration --user=1
 
 ---
 
-### 4.14 `wp sgs theme-mod restore` (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.6)
-
-`wp sgs theme-mod restore` and `Sgs_Variation_Picker` are DELETED by Decision 18. The WP style-variation system is removed; there is no legacy `active_theme_style` theme_mod to restore. Per-site branding is managed via `push-theme-snapshot.py` (see §7 below).
+| Command / class | Retired | Reason | Replacement |
+|---|---|---|---|
+| `wp sgs theme-mod restore` / `Sgs_Variation_Picker` | 2026-05-21 (Decision 18) | WP style-variation system deleted; no legacy `active_theme_style` theme_mod to restore | `push-theme-snapshot.py` (§7) |
+| `Sgs_Variation_REST` (`sgs/v1/active-variation`) | 2026-05-21 (Decision 18) | variation system deleted | Stage 10 of `/sgs-clone` calls `push-theme-snapshot.py` |
 
 ---
 
@@ -415,10 +416,6 @@ This spec owns the `wp sgs *` PHP CLI surface (12 commands via WP-CLI). A separa
 - `python stage_attribute_promotion.py status` — promoted vs pending counts
 
 NOT a `wp sgs` subcommand because (a) it mutates source files outside WP runtime, (b) it requires manual operator confirmation gate, (c) it operates on dev-machine artefacts not server state. If future maintenance wants a `wp sgs promote-attribute` wrapper around it, that would belong in this spec.
-
-**Sgs_Variation_REST** (commit `8ceb8787`): REST surface at `sgs/v1/active-variation` (POST + GET; `manage_options` gated) — **RETIRED 2026-05-21 (Decision 18)**. The variation system is deleted. This endpoint is no longer needed; Stage 10 of `/sgs-clone` now calls `push-theme-snapshot.py` instead.
-
----
 
 ## 7. Adjacent CLI scripts (non-wp-sgs)
 
@@ -515,7 +512,7 @@ one DB, one query tool.
 
 ### `build-deploy.py` (D3, 2026-05-30 — commit `a23ff53f`)
 
-Canary-fast-cycle deploy script (367 LOC) at `plugins/sgs-blocks/scripts/build-deploy.py`. Complementary to (NOT replacing) the `/wp-sgs-deploy` skill — that skill targets `palestine-lives.org` with full Check+Build+Execute+Cache+Verify ceremony. This script targets `sandybrown` by default for fast iteration.
+Canary-fast-cycle deploy script (367 LOC) at `plugins/sgs-blocks/scripts/build-deploy.py`. Complementary to (NOT replacing) the `/wp-sgs-deploy` skill — that skill carries the full Check+Build+Execute+Cache+Verify ceremony. This script targets `sandybrown` by default for fast iteration.
 
 ```bash
 # Default: build + deploy plugin + theme to sandybrown
@@ -535,20 +532,16 @@ python plugins/sgs-blocks/scripts/build-deploy.py --dry-run
 # 2026-07-14 outage. Only after READING the paths it lists.
 python plugins/sgs-blocks/scripts/build-deploy.py --allow-dirty
 
-# Production target (requires explicit opt-in)
-python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
-
 # Verify a specific page instead of the target homepage (verify is ON by default)
 python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrown-nightingale-600381.hostingersite.com/
 ```
 
-**Args:** `--target {sandybrown,palestine-lives}` (default sandybrown), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--skip-verify`, `--verify-url <URL>`.
+**Args:** `--target {sandybrown}` (the only target; palestine-lives removed 2026-08-10), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--skip-verify`, `--verify-url <URL>`.
 
 **Guards (hardened 2026-07-14 after the outage below):**
 - **Dirty-deploy guard.** Refuses when a file that BOTH ships in the tarball AND executes in WordPress (`.php/.js/.css/.html/.json` under `theme/sgs-theme/` or `plugins/sgs-blocks/`, minus `src/`, `_retired/`, `styles/`, `scripts/`, `tests/`, minus lockfiles + the generated `lucide-icons.php`) is uncommitted — unless `--allow-dirty`. **Deliberately scoped:** it previously checked the WHOLE repo, which is permanently dirty, so every documented command carried `--allow-dirty` and the guard protected nothing.
 - **Post-deploy smoke test.** Runs BY DEFAULT (opt out: `--skip-verify`). Cache-busted GET of the target; **fails the run** on 5xx/4xx or a WordPress fatal in the body. It was previously opt-in AND warn-only ("never aborts"), so a deploy that broke the site still reported `[DONE]`.
 - **One-generation rollback.** The previous copy is rotated to `<dir>.bak` instead of being `rm -rf`'d, so a bad deploy is one `mv` from recovery.
-- Refuses `palestine-lives` target without explicit opt-in (no default-to-production footgun).
 - Refuses if `plugins/sgs-blocks/build/` missing and `--skip-build` set.
 
 > **Why (2026-07-14):** an unfinished, uncommitted edit (a missing `use SGS\Blocks\Sgs_Site_Info;` — a RUNTIME class-resolution error that `php -l` passes cleanly) was deployed to **both** live client sites and 500'd them for ~2.5 hours, while the deploy reported success. All three defences above were inert at the time. This is also why `build-deploy.py` is now the deploy path for EVERY target — see `.claude/dev-setup.md`; the raw tar/scp sequence has been removed from the docs.

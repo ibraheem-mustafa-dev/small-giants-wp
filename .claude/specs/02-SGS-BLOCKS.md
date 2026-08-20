@@ -30,7 +30,7 @@ status_history:
 >
 > **Last block-architecture update: 2026-05-22.** Phase 1.5 of the architecture programme added inserter-discoverable variations + block styles + default-style declarations to 12 composite blocks (hero, card-grid, cta-section, testimonial, team-member, pricing-table, accordion, tabs, gallery, post-grid, form, info-box). 40 variations + 30 styles total. Registered via PHP sibling files under `plugins/sgs-blocks/includes/variations/sgs-<block>-variations.php` auto-discovered by `class-sgs-block-variations.php` loader. Variations register via `add_filter('get_block_type_variations', ...)` (WP 6.5+ canonical PHP path); block styles via `register_block_style()`. Each variation declares default style via `className` attribute. See "Block Variation + Style Registration" section below. Also (2026-05-22): `core/button` double-`is_default` bug fixed in `theme/sgs-theme/functions.php` — `sgs-accent` no longer claims default, leaving WP's native `fill` as the single default.
 >
-> **Previous architecture update (2026-05-19):** All 10 previously-static SGS blocks (certification-bar / counter / heading / label / feature-grid / multi-button / mobile-nav / notice-banner / process-steps / trust-bar) converted to dynamic — save returns null, render.php drives 100% of frontend output, each with `deprecated.js` shim for backward compat on existing posts. `_STILL_STATIC_SGS_BLOCKS = frozenset()` (cv2 A1 guard is now a no-op). Container block extended with advanced backgrounds (4 modes: image / video / parallax+ken-burns / gradient-overlay; 15 new attrs; view.js + render.php + style.css). Hero block.json defaults removed (Section H6 dual-cascade anti-pattern fix). Framework deployed to palestine-lives.org (commit `a9083ca9`). Per-block attribute counts in `02-SGS-BLOCKS-REFERENCE.md` regenerate on every `/sgs-update`.
+> **Previous architecture update (2026-05-19):** All 10 previously-static SGS blocks (certification-bar / counter / heading / label / feature-grid / multi-button / mobile-nav / notice-banner / process-steps / trust-bar) converted to dynamic — save returns null, render.php drives 100% of frontend output. `_STILL_STATIC_SGS_BLOCKS = frozenset()` (cv2 A1 guard is now a no-op). Container block extended with advanced backgrounds (4 modes: image / video / parallax+ken-burns / gradient-overlay; 15 new attrs; view.js + render.php + style.css). Hero block.json defaults removed (Section H6 dual-cascade anti-pattern fix). Framework deployed to palestine-lives.org (commit `a9083ca9`). Per-block attribute counts in `02-SGS-BLOCKS-REFERENCE.md` regenerate on every `/sgs-update`.
 
 ## Purpose
 
@@ -66,9 +66,7 @@ sgs-blocks/
 │   │   ├── accordion/            # Expandable FAQ/content sections
 │   │   ├── tabs/                 # Tabbed content panels
 │   │   ├── brand-strip/          # Logo/brand carousel strip
-│   │   # certification-bar/ — RETIRED 2026-05-29 D95, merged into trust-bar (badgeStyle variants)
 │   │   ├── notice-banner/        # Inline banner — now supports displayMode=announcement (D209, absorbs retired announcement-bar)
-│   │   # announcement-bar/ — RETIRED D209 (2026-06-11). Use notice-banner displayMode=announcement instead.
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
@@ -124,7 +122,7 @@ Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUT
 - **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + alignment. Gap is provided by the shared `ContainerWrapperControls` gap control (raw-px free-input, `sgs_container_gap_value()`) — no separate per-block gap control.
 - **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes. **RECORDED EXCEPTION (Bean sign-off 2026-06-10, FP-H design gate):** `sgs/product-card` is a BUILT-IN-ELEMENT card — its CTA (and every other commerce element) renders from the block's own typed attributes via the element-MIRROR pattern (the CTA mirrors `sgs/button`'s control set through shared helpers; auto-propagation: a new `sgs/button` capability is a gap candidate on the mirror), with ZERO InnerBlocks in typed mode (no deprecation path needed — Bean 2026-06-10: the typed card is not yet used in any content). CTA model (approved): max 2 text buttons (1 primary + 1 secondary), behaviours add-to-basket / buy-now / learn-more, express-pay as a phase-2 gateway-rendered toggle. See `.claude/reports/wave2/FP-E-FP-H-DESIGN-GATE-2026-06-10.md`.
 - **Preset binding** via `inheritStyle: 'primary' | 'secondary' | 'outline' | 'custom'` reads from `wp_options.sgs_button_presets`, mirrored to `theme.json` `settings.custom.buttonPresets`. Three editing paths (Settings page, Site Editor block-style-variations, theme.json) write the same backing store.
-- **Existing CTA-rendering blocks** (sgs/hero etc.) are refactored to InnerBlocks composition with deprecation paths preserving existing post content. See spec 11 §5.
+- **Existing CTA-rendering blocks** (sgs/hero etc.) are refactored to InnerBlocks composition. No deprecation path — D271/D293, pre-production policy. See spec 11 §5.
 - **Render-time sanitisation (XS-9.2):** `sgs/button` `render.php` uses a tightened `wp_kses` allowlist that **excludes `<a>`** — the wrapper anchor is emitted by the render path itself, so any nested `<a>` inside button content is a malformed input. URL scheme allowlisting (`http`, `https`, `mailto`, `tel`) is enforced at the converter layer when the button is composed from a mockup. Prevents nested-anchor markup and javascript:/data: URI injection.
 
 ## Pipeline / extraction
@@ -202,7 +200,7 @@ block-name/
 | `layout` | Inner layout wrapper — grid/flex arrangement + width/contentWidth + gap. No background/overlay/SVG/shape layers. | Layout + Width panels only |
 | `content` | Content-level composite — width/contentWidth + inner padding/spacing only. No grid/bg layers. | Width + Spacing panels only |
 
-`containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/mobile-nav` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container). **`sgs/site-header` and `sgs/site-footer` (DESIGN-APPROVED 2026-07-13, build-pending) ARE on this roster as `containerKind: section`; `sgs/adaptive-nav` as `containerKind: layout`** — see "Header / Footer / Navigation System" section below.
+`containerKind` is declared in each composite block's `block.json` as `supports.sgs.containerKind`. It gates which `ContainerWrapperControls` panels render in the editor and which layers the shared `SGS_Container_Wrapper::render()` PHP helper emits at runtime. `sgs/modal` and `sgs/nav-drawer` carry `supports.sgs.containerMirror: false` and are excluded from the roster entirely (their outer shell is a Popover/dialog, not a container). **`sgs/site-header` and `sgs/site-footer` (DESIGN-APPROVED 2026-07-13, build-pending) ARE on this roster as `containerKind: section`; `sgs/nav-menu` as `containerKind: layout`** — see "Header / Footer / Navigation System" section below.
 
 **Composite-mirror rule (R-31-9 / D152, BLOCK-SIDE COMPLETE D167 2026-06-04):** Every composite block in the DB container-mirror roster (query: `SELECT block_slug FROM block_composition WHERE container_kind IS NOT NULL`) mirrors `sgs/container`'s wrapper capabilities via the shared helper `includes/class-sgs-container-wrapper.php`. No per-block reimplementation — the helper handles all rendering. When `sgs/container` gains a new capability, `/sgs-update` Stage 11 propagates it to all roster blocks. Canonical procedure: Spec 22 §FR-31-21 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md`.
 
@@ -260,7 +258,7 @@ block-name/
 - `mediaType` — icon | emoji | image (default: icon)
 - `icon` — SVG slug from icon library (default: `star-filled`)
 - `mediaEmoji` — string (when `mediaType=emoji`)
-- `boxMedia` — media object (when `mediaType=image`; `image` retained for deprecation back-compat)
+- `boxMedia` — media object (when `mediaType=image`; `image` retained for back-compat)
 - `iconPosition` — top | left | right (default: top)
 - `heading` — string (RichText, `role: content`)
 - `subtitle` — string (RichText, `role: content`)
@@ -303,9 +301,7 @@ block-name/
 
 1. **ORIGINAL composite** (counter + badge) — retired: counter use-cases → `sgs/counter`; badge use-cases → universal-nesting (`sgs/container` + `sgs/label`/`sgs/icon` children).
 
-2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). As of 2026-06-01 it is **dual-mode (FR-24-10, SHIPPED)**: `sourceMode='typed'` (curated repeater) OR `sourceMode='bound'` (echoes `$content` → renders the converter's emitted badge InnerBlocks). render.php branches on the explicit `sourceMode` (R-31-14, never `empty($content)`).
-
-   **⚠ `sourceMode='bound'` is PURGED FROM CLONING (D182, 2026-06-06):** the bound-emit path was a test cheat (mirrored the draft DOM structure instead of converting to native `items[]` attributes). The converter now emits `sourceMode='typed'` with native `items[]` populated by the icon-identity resolver (`converter/services/icon_resolver.py`) — badges clone to the correct icon slugs (home/check/truck/star). The live WC configurator modes (`wc-product`/`sgs-cpt`) are unaffected and remain legitimate.
+2. **CURRENT block** — **`sgs/trust-badges` was rebuilt then renamed → `sgs/trust-bar` (D123, 2026-05-31)**; it absorbed `certification-bar` (D95, `badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee). `sgs/trust-bar` is **typed-only** — the `sourceMode` attribute was removed entirely at v0.5.1 ('Rule 3 de-plumb'; `render.php:6,11`, verified live 2026-07-16, 0 `sourceMode` occurrences in `block.json`). D182 (2026-06-06) purged the cloning pipeline's `sourceMode='bound'` emit (it mirrored draft DOM instead of converting to native attrs) before the attribute itself was later deleted; the converter emits typed `items[]` via the icon-identity resolver (`converter/services/icon_resolver.py`), resolving to correct icon slugs (home/check/truck/star). The live WC configurator modes (`wc-product`/`sgs-cpt`) belong to `sgs/product-card`, not this block.
 
    **Wave-1 bug fixes (D209):** trust-bar icon circle was invisible (white-on-white — fixed with an overridable default border); title placeholder leak fixed (trim guard); badge-size hidden for icon-circle mode now surfaced (`iconCircleSize` governs). Typography controls migrated to the shared `TypographyControls` component (D209).
 
@@ -327,7 +323,7 @@ block-name/
 
 **Inner blocks:** No — uses structured attributes.
 
-**Render:** Dynamic `render.php` (save returns null; converted static→dynamic 2026-05-19, commit `a9083ca9`, with a `deprecated.js` shim for existing posts). `viewScriptModule` drives the count-up animation.
+**Render:** Dynamic `render.php` (save returns null; converted static→dynamic 2026-05-19, commit `a9083ca9`). `viewScriptModule` drives the count-up animation.
 
 **Responsive:** Wraps to 2x2 grid on mobile, stays horizontal on desktop.
 
@@ -368,7 +364,7 @@ block-name/
 
 ### 7. Testimonial (`sgs/testimonial`)
 
-**Purpose:** Single testimonial card. **REBUILT D206 (2026-06-11) — typed-attr, 7-variant block.** All content rendered from typed attributes; no InnerBlocks in production (legacy InnerBlocks shapes preserved via `deprecated.js` v8).
+**Purpose:** Single testimonial card. **REBUILT D206 (2026-06-11) — typed-attr, 7-variant block.** All content rendered from typed attributes; no InnerBlocks in production.
 
 **Variants:**
 - `classic-card` — Avatar + quote + name/role (default)
@@ -394,7 +390,7 @@ block-name/
 - `sourcePlatform` — string (review source platform name)
 - Per-element typography via shared `TypographyControls` component (D209)
 
-**Render:** Dynamic `render.php` (`save.js` returns `null`). `deprecated.js` v8 migrates BOTH legacy shapes (old InnerBlocks children + old scalar attrs). Live-verified migrating 3 real testimonials on page 8 (D206).
+**Render:** Dynamic `render.php` (`save.js` returns `null`). Live-verified migrating 3 real testimonials on page 8 (D206).
 
 **Converter routing:** `scalarContentLift` capability declared in `block.json` (`supports.sgs.scalarContentLift: true`). The universal scalar-content-lift path (D212, 2026-06-12, main commit `3938a7b0`) routes `quote`/`reviewerName`/`ratingStars` from draft BEM elements to these typed attrs via `derived_selector` DB rows — no bespoke handler. Live-verified on canary page 8 (quote/name/5★ render at 1440/768/~500px). `has_inner_blocks` is 0 for this block (TYPED leaf — the slider parent has `has_inner_blocks=1`; the leaf emits scalar attrs only).
 
@@ -522,9 +518,14 @@ block-name/
 
 ---
 
-### 15. Certification Bar (`sgs/certification-bar`) — RETIRED 2026-05-29 D95
+### 15. Retired blocks
 
-> **RETIRED.** Block merged into `sgs/trust-bar` as `badgeStyle: 'text-only'` and `badgeStyle: 'image-badge'` variants. Existing posts auto-migrate via `trust-bar/deprecated.js` v2 `isEligible()` + `migrate()` entry. All certification-bar attributes (`title`, `titleColour`, `titleFontSize`, `labelColour`, `labelFontSize`, `badgeSize`, `items`, `badgeStyle`) are present on `sgs/trust-bar`. Source deleted: `src/blocks/certification-bar/`. DB rows deleted from both `sgs-framework.db` copies. Use `sgs/trust-bar` with `badgeStyle: 'text-only'` or `'image-badge'` for all new builds.
+| Block | Status | Notes |
+|---|---|---|
+| `sgs/certification-bar` | RETIRED 2026-05-29 (D95) | merged into `sgs/trust-bar` as `badgeStyle: text-only` / `image-badge` |
+| `sgs/announcement-bar` | RETIRED D209 (2026-06-11) | replaced by `sgs/notice-banner` `displayMode=announcement`; 1 live homepage instance still flagged for re-clone/swap |
+| `sgs/svg-background` | RETIRED 2026-05-28 (D93) | merged into `sgs/container` (`bgSvgContent`/`bgSvgAnimation`/`bgSvgPosition` attrs) |
+| `sgs/mega-menu` (old block-based design) | SUPERSEDED — moved to Spec 36 | banned `role="menu"` + template-part panel approach; canonical home is now `specs/36-SGS-NAVIGATION-SYSTEM.md` (`sgs_mega_menu` CPT) |
 
 ---
 
@@ -551,7 +552,7 @@ block-name/
 - `borderRadius` — preset slug (default: medium)
 - `position` — top | bottom (announcement mode only, default: top)
 
-**Render:** Dynamic `render.php` echoes `$content` (the `sgs/text` InnerBlocks child carrying the notice message). `save.js` returns `<InnerBlocks.Content />` — WordPress serialises the child block into `post_content`; render.php drives all frontend output. FR-31-6 InnerBlocks migration shipped 2026-06-02; `deprecated.js` v3 preserves existing posts (prior null-save shape). Dead `dismissible` button (no control, no JS handler) removed in D206 (v0.7.0).
+**Render:** Dynamic `render.php` echoes `$content` (the `sgs/text` InnerBlocks child carrying the notice message). `save.js` returns `<InnerBlocks.Content />` — WordPress serialises the child block into `post_content`; render.php drives all frontend output. FR-31-6 InnerBlocks migration shipped 2026-06-02. Dead `dismissible` button (no control, no JS handler) removed in D206 (v0.7.0).
 
 **Indus Foods usage:** The MOV banner ("Minimum order just £75 — lower than most wholesalers...") uses `success` variant with truck icon and centred text.
 
@@ -561,13 +562,13 @@ block-name/
 
 ### 17. Announcement Bar (`sgs/announcement-bar`) — RETIRED D209 (2026-06-11)
 
-> **RETIRED — TOMBSTONE.** `sgs/announcement-bar` was deleted in D209 (`/sgs-update` Stage-10 pruned it + 25 orphan attrs). Its dismissible-banner / countdown / rotating-message use-cases are now served by `sgs/notice-banner` with `displayMode=announcement` (see §16). Existing page content carrying `wp:sgs/announcement-bar` shows the WordPress "block has been deleted" placeholder (1 live homepage instance flagged for re-clone/swap). Use `sgs/notice-banner displayMode=announcement` for all new builds. The block's source, build output, and DB rows no longer exist — its former attribute/interactivity spec is intentionally not retained here.
+See the Retired blocks table at §15.
 
 ---
 
-### 18. ~~SVG Background (`sgs/svg-background`) — RETIRED 2026-05-28 (D93)~~
+### 18. SVG Background (`sgs/svg-background`) — RETIRED 2026-05-28 (D93)
 
-Merged into `sgs/container`. Use `bgSvgContent` + `bgSvgAnimation` + `bgSvgPosition` attrs on `sgs/container` instead. Existing posts auto-migrate via `deprecated.js` v2 entry.
+See the Retired blocks table at §15.
 
 ---
 
@@ -717,7 +718,7 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 
 ### 23. Mega Menu — SUPERSEDED (moved to Spec 36)
 
-> The `sgs/mega-menu` block documented here used `role="menu"` + template-part panels — both **banned** by the SGS Navigation System (Spec 36 FR-36-10 / FR-36-5). The mega system is now a block-based `sgs_mega_menu` **CPT** attached via native WP menus. Canonical home: **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** (competitive positioning carried into FR-36-5). This section is retained as a pointer only; the old architecture is not built.
+See the Retired blocks table at §15. Canonical home: **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`**.
 
 ---
 
@@ -1002,13 +1003,13 @@ Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#e7d768` must me
 |---|---|---|---|---|
 | `sgs/site-header` | BUILT + LIVE (P1) | section | `SGS_Container_Wrapper` | `sgs-layout` |
 | `sgs/site-footer` | BUILT + LIVE (P3) | section | `SGS_Container_Wrapper` | `sgs-layout` |
-| `sgs/adaptive-nav` | BUILT + LIVE (P2) | layout | `SGS_Container_Wrapper` + nav logic | `sgs-layout` |
-| `sgs/mobile-nav` (existing, reworked) | P0 drawer bug FIX SHIPPED + live-verified 2026-07-13; a11y hardening in progress | — (Popover/dialog, `containerMirror: false` — excluded from the container-mirror roster, same as `sgs/modal`) | own render.php | (unchanged) |
+| `sgs/nav-menu` | BUILT + LIVE (replaced `sgs/adaptive-nav`, DELETED at Spec 36 Phase-1 close 2026-07-20) | layout | `SGS_Container_Wrapper` + nav logic | `sgs-layout` |
+| `sgs/nav-drawer` (replaced `sgs/mobile-nav`, DELETED at D336 2026-07-14) | BUILT + LIVE; see Spec 36 for the current drawer contract | — (Popover/dialog, `containerMirror: false` — excluded from the container-mirror roster, same as `sgs/modal`) | own render.php | (unchanged) |
 
 - **`sgs/site-header`** — header shell: 3 optional named rows (top utility strip / middle primary row with logo+nav+CTA / bottom message row), each independently configurable; an empty row emits zero output (no wrapper, no padding-bleed). Typed element palette (logo, adaptive-nav, search, cart, account, button/CTA, contact, social, HTML, widget-area) — not freeform.
 - **`sgs/site-footer`** — footer shell: named rows (top CTA/newsletter, middle columns row splitting to up to N columns collapsing to 1 below mobile tier, bottom trademark/terms bar). Same typed element palette as the header.
-- **`sgs/adaptive-nav`** — ONE menu source renders a desktop nav bar and collapses to a burger at a breakpoint set across 4 tiers (Desktop/Tablet/Mobile/custom-px). Default = one-tree-restyled; escape hatch = independent mobile tree via the `sgs/mobile-nav` drawer. Mega-menu drill-down + auto back-link on mobile with AJAX lazy-load for heavy content. Desktop overflow auto-collapses into a "more" menu.
-- **`sgs/mobile-nav` fix (P0, SHIPPED 2026-07-13):** root cause was `view.js` applying `inert` to `.wp-site-blocks` while the drawer (`#sgs-mobile-nav`) was a DOM **descendant** of that element, so the drawer froze itself even though the Popover top-layer painted it as open. Fix: the drawer is re-parented to be a direct child of `<body>` (sibling of `.wp-site-blocks`) before `showPopover()`. Live-verified via `elementFromPoint` returning the link (not `BODY`). The full GOV.UK-grade a11y contract (focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels, published keyboard contract, 44px targets) is being built out on top of this fix — see Spec 36 for the FR-level detail.
+- **`sgs/nav-menu`** (replaced `sgs/adaptive-nav`, DELETED 2026-07-20; Spec 36 is canonical) — ONE menu source renders a desktop nav bar and collapses to a burger at a breakpoint set across 4 tiers (Desktop/Tablet/Mobile/custom-px). Default = one-tree-restyled; escape hatch = independent mobile tree via the `sgs/nav-drawer`. Mega-menu drill-down + auto back-link on mobile with AJAX lazy-load for heavy content. Desktop overflow auto-collapses into a "more" menu.
+- **`sgs/mobile-nav` drawer fix (P0, SHIPPED 2026-07-13; that block was later DELETED at D336 — retained for the failure mode, which recurs):** root cause was `view.js` applying `inert` to `.wp-site-blocks` while the drawer (`#sgs-mobile-nav`) was a DOM **descendant** of that element, so the drawer froze itself even though the Popover top-layer painted it as open. Fix: the drawer is re-parented to be a direct child of `<body>` (sibling of `.wp-site-blocks`) before `showPopover()`. Live-verified via `elementFromPoint` returning the link (not `BODY`). The full GOV.UK-grade a11y contract (focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels, published keyboard contract, 44px targets) is being built out on top of this fix — see Spec 36 for the FR-level detail.
 
 ### Customisation-standard extensions that apply to these 3 new blocks
 
@@ -1016,7 +1017,7 @@ These blocks follow the Block Customisation Standard (below) plus:
 
 - **Composite-mirror (R-31-9 / D152):** `sgs/site-header` and `sgs/site-footer` delegate ALL outer rendering to `SGS_Container_Wrapper::render()` — no per-block reimplementation of grid/section/background machinery, same rule as `sgs/hero`/`sgs/card-grid`. See "Composite-mirror rule" under `sgs/container` above.
 - **No-inline scoped styling (Spec 32):** same no-inline-`style=""` contract as every other SGS block — values land in a scoped `<style id="uid">` block, not inline declarations.
-- **Per-breakpoint override model — NEW-BLOCKS-ONLY:** these 3 blocks (and no existing block — avoids Gutenberg invalid-content errors, honours the no-deprecations rule) get a `{desktop, tablet, mobile}` (`null` = inherit from the tier above) per-property override data model, PLUS a separately-configurable custom-px 4th breakpoint tier (used by the `sgs/adaptive-nav` collapse setting) — the custom-px tier is NOT a 4th key merged into every per-property value object. Full data model, cascade rules, and editor UX are owned by Spec 37 (FR-37-16) — not duplicated here.
+- **Per-breakpoint override model — NEW-BLOCKS-ONLY:** these 3 blocks (and no existing block — avoids Gutenberg invalid-content errors, honours the no-deprecations rule) get a `{desktop, tablet, mobile}` (`null` = inherit from the tier above) per-property override data model, PLUS a separately-configurable custom-px 4th breakpoint tier (used by the `sgs/nav-menu` collapse setting) — the custom-px tier is NOT a 4th key merged into every per-property value object. Full data model, cascade rules, and editor UX are owned by Spec 37 (FR-37-16) — not duplicated here.
 - **Global defaults + Site Info access (Bean requirement 2026-07-13):** every element/setting in `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` defaults from (1) the site's `theme.json`/`wp_global_styles` tokens (or, for cloned sites, the Spec 33 `theme-snapshot.json`) and (2) the shared SGS Site Info store (Spec 36 — logo/phone/email/address/hours/socials/copyright via `sgs/site-info` block-bindings). A value set once in Site Info renders identically in header AND footer with no re-entry — never a hardcoded per-block literal (R-31-1). Owning FRs: Spec 37 (FR-37-17, §3.7); Site Info store: Spec 36.
 - **Never-overflow layout (D455, 2026-08-01):** the header Cluster row is locked `flex-wrap: nowrap` and never wraps or stacks; `min-width:0` on children lets flexbox shrink them proportionally, each stopping at its own floor (44px controls, logo `min-width: min(100%, var(--sgs-header-logo-min, 7.5rem))`) — guarantees no overflow down to 320px by construction. ⚠ the logo's `flex-shrink:0` was REMOVED (it overflows 320px once wrapping is gone). Fluid `clamp()` spacing IS shipped (D461/D462, 2026-08-02): the gap default is `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`, live-verified varying 16px→8.8px. Both CSS-length paths now share one validator, `sgs_css_length_value()` (`includes/helpers-css-safety.php`), which accepts `var|calc|min|max|minmax|clamp|repeat` via WP core's recursive balanced-paren grammar and fails CLOSED. Container-query tiers remain. Owning FRs: Spec 37 (FR-37-12, §3.6).
 
@@ -1426,7 +1427,7 @@ SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--s
 
 Retired: the legacy sgs/icon-block slug (was a backward-compat shim) was deleted in commit 8a587e10.
 
-**2026-06-02 enhancements:** shape backgrounds (circle / square / rounded-square variants with background colour + padding attrs), clickable mode (wraps icon in `<a>` with `linkUrl` / `linkTarget` / `linkRel` attrs), and hover effects (lift / scale / colour-shift via the universal hover extension). These bring sgs/icon to parity with the converter's emit needs for icon slots within `sgs/trust-bar` Bound mode and `sgs/info-box` icon areas.
+**2026-06-02 enhancements:** shape backgrounds (circle / square / rounded-square variants with background colour + padding attrs), clickable mode (wraps icon in `<a>` with `linkUrl` / `linkTarget` / `linkRel` attrs), and hover effects (lift / scale / colour-shift via the universal hover extension). These bring sgs/icon to parity with the converter's emit needs for icon slots within `sgs/trust-bar` and `sgs/info-box` icon areas.
 
 ### sgs/option-picker (2026-06-02, theme thread; C7 group-label controls D206)
 

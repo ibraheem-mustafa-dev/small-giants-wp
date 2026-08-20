@@ -181,18 +181,7 @@ The correct design already existed pre-D283 (Spec 11 Decision 24, 2026-05-22): a
      value can close the `<style>` element and open a `<script>`.
   *Done when:* every block emitting a scoped rule from a free-text attr applies (1), and every
   `<style>` emit site applies (2). ⚠ No gate enforces this yet — it is a code-review rule today.
-- **Accessibility:** every hover rule MUST have a keyboard-reachable counterpart. **Which pseudo-class is not a free choice — it follows the element (amended 2026-08-18, Bean-ruled):**
-  - the hover target is itself focusable (a link, button, or `tabindex` element) → **`:focus-visible`**;
-  - the hover target is a CONTAINER whose focusable content sits inside it (a card, a list item, a section) → **`:focus-within`**.
-
-  *Rationale, and why the earlier blanket `:focus-visible` wording was wrong:* a `:focus-visible` rule
-  on a non-focusable `<section>` or card `<div>` **can never match**. It reads as compliant in source
-  and delivers nothing to a keyboard user — the same class of defect as a CSS rule that is perfectly
-  written and structurally incapable of working. Measured 2026-08-18 across all blocks: 27 hover
-  rules in 5 blocks lacked a counterpart under the old wording, but `sgs/mega-panel` already used
-  `:focus-within` correctly and was a **false positive of a `:focus-visible`-only search** — the real
-  gap was 4 blocks (`hero`, `icon-list`, `process-steps`, `testimonial`), all now fixed to match
-  `mega-panel`'s existing pattern. Contrast remains a snapshot-data concern, kept correctable because
+- **Accessibility:** every hover rule MUST have a keyboard-reachable counterpart. Which pseudo-class is not a free choice — it follows the element: the hover target is itself focusable (link/button/tabindex) → `:focus-visible`; the hover target is a CONTAINER whose focusable content sits inside it (card, list item, section) → `:focus-within`. A `:focus-visible` rule on a non-focusable container can never match — it reads as compliant in source while delivering nothing to a keyboard user. Contrast remains a snapshot-data concern, kept correctable because
   overrides are low-specificity var values, not an ID/`!important` ceiling.
 
 ## 6. Architecture
@@ -223,26 +212,21 @@ Key decisions:
 
 ## 6.1 Geometry token families / box-object contract (added 2026-07-09, `no-inline-styling-design-gate` + `box-object-interface-contract`; ROLLOUT COMPLETE — ⚠ ROSTER STALE, see box below)
 
-> ⚠ **Heading corrected 2026-08-17.** It read "ROLLOUT ONGOING" while root `CLAUDE.md` said "Rollout
-> COMPLETE (D346)". The rollout IS complete — verified by running the gate, not by reading either doc:
-> `node scripts/audit-inline-styling.js --check` → **0 inline styling violations across 83 blocks**,
-> exit 0. **Zero `sgs/*` blocks emit an inline `style` property declaration today.**
+> **ROLLOUT COMPLETE** — verified live: `node scripts/audit-inline-styling.js --check` → 0 inline
+> styling violations across 83 blocks, exit 0. Zero `sgs/*` blocks emit an inline `style` property
+> declaration.
 >
-> ⛔ **But read D405 before quoting D346.** D405 records that D346's original inline-zero win was
-> *partly an accident* — four `render_block` injectors were having their inline writes silently
-> stripped, so the gate passed while the features were dead. That was root-cause-fixed afterwards
-> (`helpers-scoped-instance-vars.php` + the 2026-07-30 sweep). **The zero-inline claim is true today
-> because it was earned, not because the masking bug still hides it** — which is a different and
-> stronger statement than either doc previously made.
+> ⚠ Cite with D405's caveat (mirrored in root `CLAUDE.md`): the original D346 win was partly
+> accidental — four `render_block` injectors had their inline writes silently stripped, masking dead
+> features until root-cause-fixed (`helpers-scoped-instance-vars.php`, 2026-07-30 sweep). The claim is
+> true today because it was earned, not because the masking bug still hides it.
 >
-> ⚠ **The family roster below was STALE; corrected 2026-08-18, each figure re-derived at the moment
-> of writing.** It claimed "a universal scan of all 74 blocks". Live count is **83**
-> (`ls plugins/sgs-blocks/src/blocks/*/block.json | wc -l` → 83). The per-family counts were also
-> stale and are corrected in-table below. **Still owed:** `mega-panel.borderRadius`, a flat
-> `{"type":"string","default":"20px"}` scalar appearing in neither the MERGE nor the KEEP-SCALAR
-> table — it postdates both and remains untriaged.
+> Family roster below is re-derived over the current **83**-block count (was 74 at original scan).
+> Live count: 83 (`ls plugins/sgs-blocks/src/blocks/*/block.json | wc -l`). **Still owed:**
+> `mega-panel.borderRadius`, a flat `{"type":"string","default":"20px"}` scalar appearing in neither
+> the MERGE nor the KEEP-SCALAR table — it postdates both and remains untriaged.
 
-**Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **ROLLOUT COMPLETE (D346, 2026-07-18).** The framework-wide inline-zero drive is DONE. ⚠ **Evidence base corrected 2026-08-18:** the original claim cited "both live sites (palestine-lives Indus + sandybrown Mama's)". **`palestine-lives.org` no longer exists** — removed from `TARGETS` 2026-08-10 — so half that evidence base is permanently unreachable and must not be re-quoted. The **sandybrown** half is confirmed and was re-verified live this session: `audit-inline-styling.js --check` → **0 violations across 83 blocks**, and a live DOM sweep of `/s1-probe-spec32/` found **0 inline `style` attributes across 150 `sgs-` elements** (page-wide `style="--"`=0, empty `style=""`=0). The remaining surface was cleared by (a) the two-facet shared-`SGS_Container_Wrapper` change (Facet A: emit the `style` key only when non-empty → kills empty `style=""` on every content-KIND composite + header/footer; Facet B: route `$styles` `--var` VALUES to a scoped `.$uid{…}` rule) and (b) block-private conversions of the residual blocks (info-box/icon/testimonial/button/cart/option-picker/audio/collapsible-text/responsive-logo/mega-menu). Every affected `[style*="--sgs-*"]` presence-selector was rewritten to `var(--x,<resting>)` inert fallbacks (GOTCHA F). See D346 + `reports/visual-diff/*-2026-07-18.md`. Only remaining follow-up: a structural anti-regression prebuild gate (deferred to a new session). `P-NOINLINE-ROSTER-RECOUNT` resolved.
+**Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **ROLLOUT COMPLETE (D346, 2026-07-18).** The framework-wide inline-zero drive is DONE. Evidence base: only sandybrown (`palestine-lives.org` no longer exists, removed from `TARGETS` 2026-08-10 — do not re-quote it as evidence). Re-verified live this session: `audit-inline-styling.js --check` → **0 violations across 83 blocks**, and a live DOM sweep of `/s1-probe-spec32/` found **0 inline `style` attributes across 150 `sgs-` elements** (page-wide `style="--"`=0, empty `style=""`=0). The remaining surface was cleared by (a) the two-facet shared-`SGS_Container_Wrapper` change (Facet A: emit the `style` key only when non-empty → kills empty `style=""` on every content-KIND composite + header/footer; Facet B: route `$styles` `--var` VALUES to a scoped `.$uid{…}` rule) and (b) block-private conversions of the residual blocks (info-box/icon/testimonial/button/cart/option-picker/audio/collapsible-text/responsive-logo/mega-menu). Every affected `[style*="--sgs-*"]` presence-selector was rewritten to `var(--x,<resting>)` inert fallbacks (GOTCHA F). See D346 + `reports/visual-diff/*-2026-07-18.md`. Only remaining follow-up: a structural anti-regression prebuild gate (deferred to a new session). `P-NOINLINE-ROSTER-RECOUNT` resolved.
 
 **Box-family completeness (2026-07-23, `77703100`):** `sgs/product-card` was the last block still expressing padding as an ad-hoc AXIS PAIR (`ctaPaddingX`/`ctaPaddingY`, two scalars) rather than the `{top,right,bottom,left}` object standard — migrated to a single `ctaPadding` object attr in `supports.sgs.boxFamilies` (mirrors `sgs/button`). Non-visual (empty-object default falls through to the `.sgs-button` base 14px 24px). Every SGS block now uses the box-object standard for multi-side box props. This also fed the cloning-pipeline seeding work (`css_layer` L1-L4 declarative seeding + `css_element`→`wrapper` normalisation + the P3a/P4 declarative resolvers — see Spec 31 §4) which depends on box-family consistency to route padding without collision.
 
@@ -273,15 +257,15 @@ A merged box family is ONE attribute of `"type": "object"` holding named keys �
 
 | Class | Family | Blocks | Destination |
 |---|---|---|---|
-| WP-native root (4-side) | `padding{side}` | ~~9~~ **39** | base → `style.spacing.padding` object (existing, D250); tiers → SGS `paddingTablet`/`paddingMobile` object |
-| WP-native root (4-side) | `margin{side}` | ~~8~~ **41** | base → `style.spacing.margin` object; tiers → `marginTablet`/`marginMobile` object |
+| WP-native root (4-side) | `padding{side}` | **39** | base → `style.spacing.padding` object (existing, D250); tiers → SGS `paddingTablet`/`paddingMobile` object |
+| WP-native root (4-side) | `margin{side}` | **41** | base → `style.spacing.margin` object; tiers → `marginTablet`/`marginMobile` object |
 | SGS custom (4-side) | `borderWidth{side}` | 8 (button/heading/icon-list/option-picker/process-steps/quote/text/timeline) | SGS object `borderWidth:{...}` — colour/style stay single scalar attrs (no per-side colour/style family exists) |
-| SGS custom (4-side) | `contentBandPadding{side}` | ~~4~~ **7** | SGS object + tiers + BoxControl (per-band, not root). The 7: `container`, `cta-section`, `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` |
+| SGS custom (4-side) | `contentBandPadding{side}` | **7** | SGS object + tiers + BoxControl (per-band, not root). The 7: `container`, `cta-section`, `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` |
 | SGS custom (4-side) | `contentPadding{side}` | 1 (hero) | SGS object + tiers + BoxControl |
 | SGS custom (4-side) | `mediaPadding{side}` | 1 (hero) | SGS object + tiers + BoxControl |
 | SGS custom (4-side) | `imagePadding{side}` | 1 (hero) | SGS object + tiers + BoxControl |
 | SGS custom (4-side) | `imageBorderWidth{side}` | 1 (hero) | SGS object + BoxControl |
-| WP-native root (4-corner) | `borderRadius{TL,TR,BL,BR}` | ~~5~~ **11** | base → `style.border.radius` object `{topLeft,…}`; tiers → `borderRadiusTablet`/`borderRadiusMobile` object |
+| WP-native root (4-corner) | `borderRadius{TL,TR,BL,BR}` | **11** | base → `style.border.radius` object `{topLeft,…}`; tiers → `borderRadiusTablet`/`borderRadiusMobile` object |
 | SGS custom (4-corner) | `imageBorderRadius{TL,TR,BL,BR}` | 1 (hero) | SGS custom corner object + corner control |
 
 > **Counts re-derived 2026-08-18** by counting blocks declaring the tier sibling
@@ -289,14 +273,10 @@ A merged box family is ONE attribute of `"type": "object"` holding named keys �
 > `borderRadiusTablet` → 11). **The families are real and unchanged — only the counts had drifted**,
 > because the roster was written over 74 blocks and never re-run as the library grew to 83.
 
-**KEEP scalar — **4** families (not box properties, or single-side):**
+**KEEP scalar — 4 families (not box properties, or single-side):**
 
-> ⚠ **Both the old header AND the first correction of it were wrong; the TABLE was always right.**
-> The 2026-07-09 original said "10 families" while its own table listed 6 — miscounted from
-> inception. On 2026-08-18 two genuinely-retired rows were deleted and the header was mechanically
-> dropped 10→8 (subtracting from a number that was never right) instead of being recounted against
-> the table it heads. Recounted 2026-08-18: **4 rows, 4 families.** A count in prose is a copy with
-> no invalidation — recount against the table, never arithmetic off the previous figure.
+> (Recounted directly against the table, 2026-08-18 — a header count must be re-derived from its
+> table, never adjusted by arithmetic off a prior figure.)
 
 | Family | Blocks | Why not an object |
 |---|---|---|
@@ -349,26 +329,15 @@ Implemented as a **single `render_block` chokepoint**, NOT ~60 per-block emit-si
 > block. Completed properly with a new shared helper, `includes/helpers-scoped-instance-vars.php`
 > (reuse-or-mint a scope class + append a scoped `.{class}{--var:…}` rule to the collector, same
 > pattern as §6.1(e)), consumed by all three var-writing injectors; `parallax.js` swapped
-> `el.style` reads for `getComputedStyle` (cascade-aware). `team-member` (block-private per D294,
-> no wrapper) was migrated onto its own scoped rule in `a367836b` — a roster sweep of all 8
-> `sgs_transition_vars()` consumers found the other 7 already correct. Live-proven on the canary:
-> root `style` attribute null, computed var still present via the lifted CSS.
+> `el.style` reads for `getComputedStyle` (cascade-aware).
 >
-> ⚠ **CORRECTED 2026-07-30 — `team-member` was NOT "the last render-level inline writer".** That
-> claim was true only of the sweep that produced it, which was scoped to one helper's 8 consumers.
-> A later unscoped sweep across ALL plugin PHP found **14 further sites**: 11 in block `render.php`
-> files (the 2026-07-30 audit, `reports/2026-07-30-track1-verification-audit.md`) plus **3 the
-> render.php-scoped grep structurally could not see** — `class-sgs-container-wrapper.php` (inline
-> `--sgs-svg-opacity` on the SVG-background layer), `class-post-grid-rest.php` (inline card vars on
-> every REST-rendered card), and `shape-dividers.php` (inline `height`/`color` — real PROPERTY
-> declarations, the more serious FR-32-1 breach). All 14 were migrated to scoped rules the same
-> day. **The lesson is the scope of the sweep, not the count:** a claim of "last one" is only as
-> wide as the grep that produced it, and the audit's own grep was `render.php`-only.
-> **Parked, not silently dropped — `P-NO-INLINE-GATE-COVERAGE-GAPS`:** (1) the live no-inline
-> gate's `CANARY_URLS` never exercised a hover/animation-attributed instance, so this whole defect
-> class passed the gate **vacuously** for the life of the D346 migration — fix is a permanent
-> seeded gate-canary page. (2) the three **non-injector** inline writers
-> (container-wrapper, post-grid-rest, shape-dividers) are the ones fixed 2026-07-30 above.
+> All inline instance-var writers across plugin PHP are migrated to scoped rules (2026-07-30 sweep,
+> including 3 sites a `render.php`-only grep could not see: `class-sgs-container-wrapper.php`,
+> `class-post-grid-rest.php`, `shape-dividers.php`). **The lesson is the scope of the sweep, not the
+> count:** a claim of "last one" is only as wide as the grep that produced it. Parked:
+> `P-NO-INLINE-GATE-COVERAGE-GAPS` — the live no-inline gate's canary URLs never exercise a
+> hover/animation-attributed instance, so this defect class passed vacuously for the life of the
+> D346 migration.
 
 ### (b) Head placement + output modes (operator-selectable; BUILT + LANDED 2026-07-12)
 Delivery is a **single output buffer** (`template_redirect`) that places the consolidated CSS into the `<head>` (right before `</head>`, so it follows the block `style.css` links → per-instance overrides win by source order) on EVERY front-end render. Placing it every render makes the output **self-consistent under full-page caching** — the cached HTML always carries the matching link/style — so there is **NO pointer, NO cold/warm transition, and NO cache-freeze** (an earlier generate-then-serve design was **reproduced failing live under the LiteSpeed page cache 2026-07-12** — it froze the cold inline response — and replaced by this unified buffer). Two modes, chosen on **SGS → CSS Output** (`sgs_css_output_mode` option, default `file`; still `apply_filters`-able):
@@ -423,10 +392,6 @@ WP var derivation: `settings.custom.buttonPresets.primary.hover-background` → 
 - Spec 11 §3/§4 styling model is now historical; this spec is the operative styling contract. Spec 11 remains the button's attribute-surface / feature reference.
 
 ## 11. Open Questions — ✅ ALL THREE ANSWERED IN SHIPPED CODE (verified 2026-08-17)
-
-⚠ **These sat marked "open" with a `Due: Phase 1/Phase 2` long after both phases closed. Every one was
-in fact resolved by the implementation; the table was never updated.** Verified directly against the
-tree, not inferred from prose.
 
 | Question | Owner | Answer, as shipped | Evidence |
 |---|---|---|---|
@@ -656,19 +621,12 @@ rename did not change any client's VALUE, only the slug it lives under:
 | eye-care-ward-end | `#C9A84C` named "Border Subtle (Gold)" | Role violation |
 | helping-doctors | `#d4e8e4` named plain "Border Subtle" (no colour suffix — the only one that doesn't name itself after a brand hue) | **Correct — the one snapshot that gets this right** |
 
-**(b) Missing slots.** ~~No snapshot is missing a slot.~~ **That claim was FALSE when written, and is
-TRUE now — both halves matter (corrected 2026-08-18).**
+**(b) Missing slots.** Closed: 20 slugs seeded, `text-primary` migrated to `text`; re-derived as
+**0 clients missing any framework slug**, enforced by `check-palette-slug-refs.py` (ships a
+`--self-test` that plants a violation and asserts rejection).
 
-- **As audited (2026-08-01) it was wrong:** re-derived on 2026-08-18, **7 of 8 client snapshots were
-  missing framework slugs**, and `text` — which has 303 references across the framework — was absent
-  from 5 of them. Every one of those references was silently resolving to its hardcoded fallback, so
-  nothing looked broken while the properties could not re-skin per client.
-- **The gap is now closed:** 20 slugs seeded, `text-primary` migrated to `text`, and re-derived as
-  **0 clients missing any framework slug**.
 - **Why the original check passed a real defect:** the verdict function ran the right command and
-  returned DONE *without asserting the output was empty* — a check that could not fail. Enforced
-  since by `check-palette-slug-refs.py`, which ships a `--self-test` that plants a violation and
-  asserts rejection.
+  returned DONE *without asserting the output was empty* — a check that could not fail.
 
 ⚠ **Client palettes legitimately carry MORE than the framework roster — a longer palette is not
 drift.** Measured 2026-08-18: `indus-foods` 21 · `eye-care-ward-end`/`sgs-construction`/

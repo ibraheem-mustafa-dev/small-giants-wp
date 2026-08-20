@@ -291,7 +291,7 @@ $allowed_text_align = array( 'left', 'center', 'right', 'start', 'end', 'justify
 
 // Layout grid (split variant). splitColumnRatio* was retired (Step 6 / D-next,
 // 2026-06-11) — render.php now reads gridTemplateColumns* exclusively.
-// deprecated.js v7 migrate() maps splitColumnRatio→gridTemplateColumns before resave.
+// The former deprecated.js v7 migrate() mapped splitColumnRatio→gridTemplateColumns; deprecations were deleted at D271, so un-migrated posts keep the legacy attr.
 // R-22-14: no legacy read-time fallback for splitColumnRatio.
 // block.json defaults gridTemplateColumns to '' (unlike the retired
 // splitColumnRatio whose default was '1fr 1fr') — ?? alone would let the

@@ -9,7 +9,7 @@ import { InnerBlocks } from '@wordpress/block-editor';
  *
  * IMPORTANT: returning null here would cause WordPress to DROP InnerBlocks
  * from post_content on re-save, leaving render.php with an empty $content.
- * The null shape is preserved in deprecated.js (v2) for existing posts.
+ * The null shape is NOT preserved - all deprecations were deleted at D271.
  *
  * @return {JSX.Element}
  */

@@ -1,8 +1,8 @@
 # SGS Button Architecture
 
-> **⚠ 2026-07-07 — STYLING MODEL SUPERSEDED BY SPEC 32.** The D283 preset-as-seed INLINE-ATTR styling model (2026-07-06 update below) is retired: it baked colours into the element `style=""`, which killed `:hover` (inline beats `:hover`) and made the block un-reskinnable. [Spec 32 — Component Styling Token Contract](32-COMPONENT-STYLING-TOKEN-CONTRACT.md) is now the operative styling contract: semantic BEM class (`.sgs-button--{preset}`) consuming `--wp--custom--button-presets--*` tokens (the pre-D283 Decision-24 design, restored + generalised framework-wide), zero inline property declarations, `:hover` in the stylesheet. This spec (11) remains the button's **attribute-surface / feature** reference; for **how it is styled**, read Spec 32.
+> **Styling model: read [Spec 32](32-COMPONENT-STYLING-TOKEN-CONTRACT.md), not this spec.** D283's inline-`style=` preset model (2026-07-06) is retired — it broke `:hover` (inline beats `:hover`) and made the block un-reskinnable; Spec 32's semantic-BEM-class + custom-property model is current. Spec 11 (this doc) stays the attribute-surface/feature reference only.
 
-**Status:** ✅ SHIPPED 2026-05-04 to sandybrown. Spec'd 2026-05-03. All sections implemented end-to-end. Built blocks: `sgs/button` (87 attrs) + `sgs/multi-button` (container). Built admin: Settings → SGS Button Presets. theme.json mirror landed. Composite block refactors (sgs/hero, sgs/cta-section, sgs/product-card) replaced hand-coded CTAs with InnerBlocks composition + deprecation paths. **Critical correctness fix discovered during deployment:** dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />` — see B4 in `common-wp-styling-errors.md`. Original spec retained below for reference. Live URL: https://sandybrown-nightingale-600381.hostingersite.com/
+**Status:** ✅ SHIPPED 2026-05-04 to sandybrown. Spec'd 2026-05-03. All sections implemented end-to-end. Built blocks: `sgs/button` (87 attrs) + `sgs/multi-button` (container). Built admin: Settings → SGS Button Presets. theme.json mirror landed. Composite block refactors (sgs/hero, sgs/cta-section, sgs/product-card) replaced hand-coded CTAs with InnerBlocks composition. **Critical correctness fix discovered during deployment:** dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />` — see B4 in `common-wp-styling-errors.md`. Original spec retained below for reference. Live URL: https://sandybrown-nightingale-600381.hostingersite.com/
 
 > **2026-05-30 update — XS-9.2 rich-text label hardening (commit `40a6f8ab`).** `sgs/button` `label` attribute now renders via `wp_kses($label, [...])` instead of `esc_html($label)`. Allowlist: `<br>`, `<strong>`, `<b>`, `<em>`, `<i>`, `<span class="...">`, `<code>` — **deliberately EXCLUDES `<a>`** because nested anchors are invalid HTML and a phishing vector. `block.json` version bumped 1.0.0 → 1.1.0. Converter side: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` `_atomic_attrs_for()` sgs/button branch swapped `node.get_text(strip=True)` for `_rich_text_content(node)` so the harvest path preserves inline markup. Additional hardening: `_safe_href()` applied at the converter to block `javascript:`, `data:`, and `vbscript:` URL schemes BEFORE `render.php` runs — defence-in-depth alongside `render.php`'s `esc_url()`. 11 adversarial smoke tests (script injection, nested anchor, scheme abuse) all PASS.
 
@@ -90,15 +90,14 @@ When `inheritStyle !== 'custom'`, `render.php` outputs only the variant class (`
 
 This is the same pattern Kadence uses (`inheritStyles`) — renamed from our earlier draft `stylePreset` for naming-convention parity.
 
-### Three editing paths — REVISED by Decision 22 (2026-05-21)
+### Two editing paths (Decision 22, 2026-05-21)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.3 — Decision 22.
+| Path | Audience | UX |
+|------|----------|-----|
+| **Site Editor → Styles → Buttons** | Site owners + power users | Native WP UI, live preview, full pseudo-element support in WP 7.0 |
+| **`sites/<client>/theme-snapshot.json`** | Developers shipping a new client | Code-first, version-controlled, per-site push CLI (replaces the old `theme/sgs-theme/styles/<client>.json`, retired by Decision 18/19) |
 
-| Path | Audience | UX | Status |
-|------|----------|-----|--------|
-| **Settings → SGS Button Presets admin page** (was primary) | Site owners | Admin form, ~30 seconds to set up | **DELETED by Decision 22** — see below |
-| **Site Editor → Styles → Buttons** (new primary) | Site owners + power users | Native WP UI, live preview, full pseudo-element support in WP 7.0 | **New canonical path** |
-| **`sites/<client>/theme-snapshot.json`** | Developers shipping a new client | Code-first, version-controlled, per-site push CLI | **Replaces** `theme/sgs-theme/styles/<client>.json` (retired by Decision 18/19) |
+The former **Settings → SGS Button Presets admin page** path was deleted by Decision 22 (Phase 5b, commit `60220b13`, 2026-05-22) — `class-button-presets-admin.php` no longer exists (confirmed on disk).
 
 ### Decision 22 — Move button presets to native theme.json (WP 7.0)
 
@@ -190,16 +189,8 @@ For Mama's: primary = coral-pink-filled-with-charcoal-text mockup `.btn-primary`
 For each affected block:
 
 1. **Add InnerBlocks slot** with default template `[['sgs/multi-button', {}, [['sgs/button', { inheritStyle: 'primary', label: '...' }], ['sgs/button', { inheritStyle: 'secondary', label: '...' }]]]]`.
-2. **Mark old CTA attributes deprecated** in block.json — keep them in the schema so existing posts don't lose data on save.
-3. **Add `deprecated.js` v1** with `save: () => null` and a `migrate()` function that:
-   - Reads the deprecated `ctaPrimary*` attributes
-   - Constructs equivalent `sgs/button` block instances inside an `sgs/multi-button` parent
-   - Returns `[newAttributes, [newInnerBlocks]]`
-4. **Update render.php** to render from InnerBlocks output when present, falling back to deprecated attrs only if InnerBlocks is empty (transition period only — eventually remove).
 
-### Why the deprecation path matters
-
-Without `deprecated.js`, existing post_content with old CTA attributes will trigger "block contains unexpected content" errors on every editor open. The deprecation path silently migrates old content to the new structure on first edit, preserving every post.
+No `deprecated.js` and no version bumps pre-production (D271/D293). Attribute changes ship without a deprecation path; see `plugins/sgs-blocks/CLAUDE.md` §block deprecations.
 
 ## 6. Build phases
 
@@ -207,11 +198,11 @@ Without `deprecated.js`, existing post_content with old CTA attributes will trig
 |-------|-----------|------|--------------|--------|
 | P1.A | Build `sgs/button` block (block.json + edit.js + render.php + style.css) | 2–3h | None — independent | SHIPPED 2026-05-04 |
 | P1.B | Build `sgs/multi-button` block (container restricted to sgs/button children) | 2–3h | None — independent | SHIPPED 2026-05-04 |
-| P1.C | Build button-presets settings page (`class-button-presets-admin.php`) | 1–1.5h | None — independent | SHIPPED 2026-05-04 — **PENDING DELETION by Decision 22 in Phase 5b** |
+| P1.C | Build button-presets settings page (`class-button-presets-admin.php`) | 1–1.5h | None — independent | SHIPPED 2026-05-04 — **DELETED per Decision 22** (Phase 5b, commit `60220b13`, 2026-05-22) |
 | P2 | theme.json mirror — emit CSS custom properties from preset values | 30min | Needs P1.C complete | SHIPPED 2026-05-04 — **SUPERSEDED by native WP 7.0 theme.json in Phase 5b** |
-| P3 | Refactor sgs/hero, sgs/cta-section, sgs/product-card to InnerBlocks composition + deprecation paths | 3–4h | Needs P1.A + P1.B complete | SHIPPED 2026-05-04 |
+| P3 | Refactor sgs/hero, sgs/cta-section, sgs/product-card to InnerBlocks composition | 3–4h | Needs P1.A + P1.B complete | SHIPPED 2026-05-04 |
 | P4 | Build + deploy + visual diff vs mockup | 1h | Needs P1+P2+P3 complete | SHIPPED 2026-05-04 |
-| P5 (new) | Decision 22 — Move values to theme.json native; delete admin page + wp_options bridge; verify WP 7.0 coverage gate | ~45min | Phase 5b of architecture-staging.md | PENDING |
+| P5 | Decision 22 — Move values to theme.json native; delete admin page + wp_options bridge; verify WP 7.0 coverage gate | ~45min | Phase 5b of architecture-staging.md | SHIPPED 2026-05-22 (commit `60220b13`) |
 | **Total** | | **~10–13h shipped + ~45min pending** | | |
 
 ## 7. Parking items related to button architecture
