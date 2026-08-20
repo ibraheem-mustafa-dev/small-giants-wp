@@ -645,12 +645,63 @@ dialog.sgs-shop-filters {
 		overflow: hidden;
 		border-radius: var(--wp--custom--border-radius--medium, 8px) var(--wp--custom--border-radius--medium, 8px) 0 0;
 		padding: var(--wp--preset--spacing--40, 1.5rem) var(--wp--preset--spacing--40, 1.5rem) 0;
-		animation: sgs-sheet-in 0.28s ease;
 	}
 
-	dialog.sgs-shop-filters:modal::backdrop {
-		background: rgba(0, 0, 0, 0.45);
-		animation: sgs-sheet-fade-in 0.28s ease;
+	/* ── Sheet motion: enter AND exit (Tier V — CSS only, no JS, no library) ──
+	 *
+	 * A keyframe `animation` can only play on ENTER: by the time the dialog
+	 * closes the element is already `display:none`, so the old
+	 * `animation: sgs-sheet-in` gave a sheet that slid up gracefully and then
+	 * vanished instantly. The pair that makes exit possible is `@starting-style`
+	 * (the state to animate FROM on first paint) plus `transition-behavior:
+	 * allow-discrete` on `display`/`overlay`, which keeps the element painted in
+	 * the top layer for the duration of the transition.
+	 *
+	 * Keyed on `[open]` rather than `:modal` deliberately — `:modal` stops
+	 * matching the instant `close()` is called, which would kill the exit
+	 * transition. Inside this media query `[open]` implies modal anyway, because
+	 * the non-modal `show()` path only runs at >=782px.
+	 *
+	 * Easing is a decelerate curve, not `ease`: a bottom sheet should arrive fast
+	 * and settle, the way a physical panel does. */
+	dialog.sgs-shop-filters {
+		translate: 0 100%;
+		opacity: 0;
+		transition:
+			translate 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+			opacity 0.2s ease,
+			display 0.32s allow-discrete,
+			overlay 0.32s allow-discrete;
+	}
+
+	dialog.sgs-shop-filters[open] {
+		translate: 0 0;
+		opacity: 1;
+	}
+
+	@starting-style {
+		dialog.sgs-shop-filters[open] {
+			translate: 0 100%;
+			opacity: 0;
+		}
+	}
+
+	dialog.sgs-shop-filters::backdrop {
+		background: rgb(0 0 0 / 0);
+		transition:
+			background 0.32s ease,
+			display 0.32s allow-discrete,
+			overlay 0.32s allow-discrete;
+	}
+
+	dialog.sgs-shop-filters[open]::backdrop {
+		background: rgb(0 0 0 / 0.45);
+	}
+
+	@starting-style {
+		dialog.sgs-shop-filters[open]::backdrop {
+			background: rgb(0 0 0 / 0);
+		}
 	}
 
 	dialog.sgs-shop-filters:modal .sgs-shop-filters__scroll {
@@ -662,24 +713,6 @@ dialog.sgs-shop-filters {
 
 	body.is-enhanced .sgs-shop-filters__close {
 		display: inline-flex;
-	}
-}
-
-@keyframes sgs-sheet-in {
-	from {
-		transform: translateY(100%);
-	}
-	to {
-		transform: translateY(0);
-	}
-}
-
-@keyframes sgs-sheet-fade-in {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
 	}
 }
 
@@ -888,8 +921,11 @@ body.sgs-scroll-locked {
 /* ── 8f. Reduced motion — drawer + backdrop transitions ── */
 
 @media ( prefers-reduced-motion: reduce ) {
-	dialog.sgs-shop-filters:modal,
-	dialog.sgs-shop-filters:modal::backdrop,
+	/* Keyed WITHOUT :modal — the sheet's transition now also runs on EXIT, when
+	   :modal has already stopped matching, so a :modal-scoped guard would let the
+	   close animation play at full duration for a reduced-motion user. */
+	dialog.sgs-shop-filters,
+	dialog.sgs-shop-filters::backdrop,
 	.sgs-shop-filters__toggle,
 	.sgs-shop-filters__sticky-trigger {
 		transition-duration: 0.01ms !important;
@@ -1190,9 +1226,20 @@ body.woocommerce-cart .with-empty-cart-icon,
 	display: none;
 }
 
-/* The overlay wrapper: render as normal flow, not a fixed dialog */
+/* The overlay wrapper: render as normal flow, not a fixed dialog.
+ *
+ * ⛔ `pointer-events` is LOAD-BEARING, do not drop it. WooCommerce ships
+ * `:where(.wc-block-product-filters) .wc-block-product-filters__overlay {
+ * pointer-events: none }` and only re-enables it by adding `is-overlay-opened`
+ * from its OWN overlay trigger — which we hide, because the SGS drawer owns the
+ * mobile UX. Without this line every filter control inside the drawer is inert:
+ * proven live on the canary 2026-08-20, where the label for the "Out of stock"
+ * filter computed `pointer-events: none` at 390px and `auto` at 1440px, and no
+ * click could reach it. The block above neutralised WC's overlay POSITIONING but
+ * never its pointer-events, so the drawer looked perfect and filtered nothing. */
 .sgs-shop-filters .wc-block-product-filters__overlay,
 .sgs-shop-filters .wc-block-product-filters__overlay-dialog {
+	pointer-events: auto;
 	position: static;
 	inset: auto;
 	width: auto;
