@@ -56,14 +56,32 @@ this thread, called here rather than continuing indefinitely (session-sprawl dis
   cache (fresh `X-Litespeed-Cache: miss` + cache-busting query param, same empty result) — the gap
   is somewhere between the Store API's live count and whatever this block reads at render time.
 
-**Still true:** the `Flip.from()` animation itself has never been observed running. The blocker is
-no longer "can this trigger client-side navigation at all" (answered: yes, confirmed) — it's
-narrowed to "why don't these specific filter blocks show live options on this sparse 6-product
-canary." **Next step, not done here:** either test against a richer/real product catalogue (more
-stock variance, more attributes, real price spread across many SKUs) where WC's own filter data
-naturally isn't degenerate, or investigate why `product-filter-status`/`product-filter-price` aren't
-picking up Store API data that demonstrably exists. Do not mark this FR closed until the actual
-animation is observed.
+**Same-day second follow-up — root cause narrowed decisively, filtering itself CONFIRMED working.**
+Bean pushed back correctly: a small catalogue was never the real blocker — it was the earlier
+hand-built canary's `inherit:false` custom query never being linked to a Product Filters block.
+Tested on the SITE'S OWN real Shop archive (`/shop/`, WC/theme-provided `archive-product.html`,
+`inherit:true`) with the actual 6-product catalogue, no custom canary needed:
+
+- Price slider and stock-status checkbox render correctly with REAL data (2 slider handles, "In
+  stock" option) — the earlier empty/hidden filters were specific to the hand-built page's broken
+  query link, not a catalogue-size or Store API problem.
+- **Filtering itself works end-to-end and is CONFIRMED CORRECT**: clicking the "In stock" checkbox
+  produces the right URL (`?filter_stock_status=instock`) and the right filtered result set.
+- **But it's a HARD page reload, not the client-side navigation Flip depends on** — confirmed via
+  network log (`list_network_requests --includePreservedRequests`): zero `fetch`/`xhr` request was
+  attempted before the `document`-type navigation. The checkbox's `data-wp-on--change="actions.toggle"`
+  and the collection's `data-wp-router-region="wc-product-collection-0"` are both correctly present
+  — WordPress's own Interactivity Router simply never attempts a soft navigation for this
+  interaction on this environment. No relevant WC feature flag found in `woocommerce_feature_*`
+  options. Root cause not yet isolated further (candidates: a WC/WP core version interaction, a
+  security/cache layer intercepting fetch differently than document requests, or a genuine
+  requirement this investigation didn't reach) — this is now a WELL-SCOPED, separate WooCommerce/
+  WordPress-core investigation, not an SGS code question and not a data/catalogue question.
+
+**Status: filtering/sorting mechanism CONFIRMED WORKING. Client-side navigation (the one thing Flip
+needs) CONFIRMED NOT FIRING, root cause narrowed to "Interactivity Router never attempts a fetch for
+this interaction" — needs its own dedicated session to resolve before Flip can be live-tested.
+Setting reverted OFF. FR-38-12 remains open.**
 
 ## D697 [ROUTINE] — D452's morph fix CONFIRMED live, closing its outstanding item (2026-08-20)
 
