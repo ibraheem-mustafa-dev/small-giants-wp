@@ -94,10 +94,12 @@ body-level backdrop → backdrop paints over the panel; confirmed by hit-test).
   overlay + `z-index:-1` on the overlay, scoped via `:has(> .sgs-container__overlay)`.
   Feature-scoped equivalents already exist at `style.css:128, 144-145, 238, 244`.
 - **Seat 4's blocking caveat:** the blanket rule currently gives every container child a
-  free `position:relative`. **43 block `style.css` files contain `position:absolute|fixed|sticky`**
-  (measured). Removing it re-anchors those to the next positioned ancestor. This is a
-  WILL-break class; pixel-diff under-reports it (small badge drift inside a large section
-  scores under threshold).
+  free `position:relative`. **43 CSS files under `blocks/` contain `position:absolute|fixed|sticky`**
+  — ✅ **independently re-verified**: 43 when counting all `.css` recursively (including
+  component subfolders), 33 for top-level `blocks/*/style.css` only. Seat 4's scope is the
+  correct one. Removing the rule re-anchors those elements to the next positioned ancestor.
+  This is a WILL-break class; pixel-diff under-reports it (small badge drift inside a large
+  section scores under threshold).
 - **Seat 2's alternative — sidesteps the fight entirely:** use native
   `<dialog>.showModal()`. Top-layer rendering sits above *every* stacking context, so the
   drawer needs no z-index war and no change to `container/style.css` at all. Also delivers
@@ -188,11 +190,36 @@ Also: the panel border uses `surface-alt` (a *fill* token) as a *line*. theme.js
 `surface #FAF9F6` / `surface-alt #F1F0EC` = **1.08:1**. Ship a monochrome client on the stock
 palette and the panel vanishes too.
 
-**Text on primary — see §5.A/B for corrections. Design:** no static foreground can serve both
-rest and hover states (proven below), so the pairing must be **derived**, not hand-typed.
-Spec 33's extractor should compute `primary-text` / `primary-dark-text` by WCAG maths from
-the client's palette and **fail the run closed** if neither candidate reaches 4.5:1. Delete
-`--sgs-product-card-btn-text` (a client token doing framework work).
+**Text on primary — BEAN'S DECISION, 2026-08-20 (overrides the council's recommendation):**
+Bean wants **white on primary / primary-dark** and has explicitly accepted the contrast
+tradeoff: *"I don't care about the WCAG score as it looks great and is not difficult to
+read."* This is a legitimate brand call on his own site and is **not to be re-litigated.**
+
+Design implications of that decision:
+- **Per-client, never a framework default.** White-on-pink is set in
+  `sites/mamas-munches/theme-snapshot.json`. The FRAMEWORK default must remain a compliant
+  derived pairing, because SGS ships to other clients — UK charities and public-sector
+  bodies frequently carry accessibility as a *contractual* obligation (PSBAR 2018 mandates
+  AA). A client must never silently inherit a non-compliant default they did not choose.
+- **Advisory, not a gate.** `push-theme-snapshot.py` WARNS on a sub-4.5:1 pairing and
+  proceeds. This matches the project's existing captured rule
+  `a11y-validation-feedback-informational-not-gate` ("operator a11y fails are notices").
+  Do NOT fail the run closed — that was the council's proposal and Bean has overruled it.
+- **Free win worth surfacing to Bean before he settles:** the two pinks differ sharply.
+  `#c56a7a` (primary-dark) + white = **3.67:1**, which PASSES AA at large text
+  (≥18.66px bold / 24px) — so a slightly larger/bolder button label gives white AND
+  compliance with no aesthetic cost. `#e68a95` (primary) + white = **2.49:1**, which fails
+  at every size and cannot be rescued by sizing.
+- Still delete `--sgs-product-card-btn-text` (a client-scoped token doing framework work)
+  and replace with the proper framework pair; the *values* a client puts in it are their
+  choice, the plumbing is the framework's.
+
+⚠ Also fix, regardless: `blocks/product-card/style.css:27` carries a stale comment asserting
+*"#8B3A47 + white = 7.52:1 ✓ PASS"*. `#8B3A47` is not this client's colour (live
+`primary-dark` = `#c56a7a`) and the CSS fallback on the next line is a third value
+(`#0F4C4C`, teal). Three disagreeing values in four lines. This comment already misled a
+council seat into computing contrast against a colour the site never uses; it will mislead
+the next reader identically.
 
 **Teal fallbacks — remove all 47.** Seat 3's sharpened finding: they are not another brand's
 palette, they are a *third* stale teal matching neither the current client nor theme.json's
@@ -211,7 +238,11 @@ stated end-state uses a *different* class name (`.sgs-button--{preset}`).
 The council was fact-checked against live measurement. Four claims were wrong:
 
 **A. `primary-dark` is `#c56a7a`, not `#8B3A47`.** Seat 3 computed the hover flip from a
-phantom value. Recomputed against the REAL token — and the finding gets *worse*, not better:
+value that is not live. ⚠ **Refined after a source audit — Seat 3 did NOT invent it.**
+`#8B3A47` is genuinely in `src/`, in a comment at `blocks/product-card/style.css:27`
+asserting *"#8B3A47 + white = 7.52:1 ✓ PASS"*. The seat trusted stale in-repo documentation.
+The defect is the comment, not the seat's rigour. Recomputed against the REAL token — and
+the finding gets *worse*, not better:
 
 | Foreground | on `#e68a95` (rest) | on `#c56a7a` (hover) |
 |---|---|---|
