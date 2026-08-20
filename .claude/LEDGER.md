@@ -9,7 +9,20 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 # ▶ NEXT SESSION STARTS HERE
 
-**Invoke `/autopilot` first. Then read, in this order:**
+**Invoke `/autopilot` first.**
+
+⚠ **TWO TRACKS ARE LIVE ON `main`. Establish which one you are before reading anything else.**
+The shop-archive / R-3 track owns the sections immediately below. The **colour-golden track**
+owns `## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-21` further down, and that section
+SUPERSEDES two claims in the shop track's status (gradients, and the container gutter) — both
+are marked inline. A count taken while both tracks are running has a timestamp, not a value:
+re-measure before acting on any number here.
+
+**If you are continuing the COLOUR-GOLDEN track**, your single next task is the one open
+defect in that section: move the container's padding default from the OUTER layer to the
+CONTENT-BAND layer. Read `.claude/plans/2026-08-20-unified-colour-panel-DESIGN.md` first.
+
+**If you are continuing the SHOP-ARCHIVE track**, read, in this order:
 
 1. `.claude/plans/phase-shop-container-remediation.md` — **the executable plan. Start at
    Phase 1, Wave 1.**
@@ -41,6 +54,10 @@ Per-step plan status is single-sourced to
   the colour-golden track: pick a colour on `sgs/hero` / `sgs/trust-bar` / `sgs/brand-strip`
   and confirm the computed style changes at rest AND on hover. Gradients have never been
   observed working on these blocks — a dead gradient toggle is a finding, not a pass.
+  ⛔ **SUPERSEDED 2026-08-21 by the colour-golden track: gradients DO work.** Gate 2 was run
+  behaviourally on `sgs/brand-strip` — colour set in the editor, frontend paints the resting
+  colour, the hover state and a `linear-gradient`, on a paired `:hover, :focus-within` rule.
+  `sgs/hero` and `sgs/trust-bar` remain untested. See the colour-golden section below.
 - ⛔ **Framework-wide defect found and fixed (`d3e98700`): theme assets were served STALE to
   any warm browser cache.** Every theme CSS/JS URL carried the theme version, which is never
   bumped, so an asset deployed between releases kept an identical URL. Same URL returned
@@ -58,6 +75,27 @@ Per-step plan status is single-sourced to
   background still capped at content width (P2-1), and `sgs/container` now gives NO horizontal
   gutter — at 355px product cards and the filter toggle sit flush at `left: 0`, which looks
   like a regression from this evening's container work.
+  ⛔ **SUPERSEDED 2026-08-21 — both root-caused and fixed by the colour-golden track, and it
+  was NOT that evening's container work.** Neither container commit contained a padding line.
+  Real cause: `163f9fa7` migrated 96 `core/group` instances to `sgs/container`, correctly
+  translating WordPress's `layout:{"type":"constrained"}` (which is what had been supplying
+  the gutter AND the content cap) into `contentWidth:"normal"` — and
+  `class-sgs-container-wrapper.php:431` then discarded the tier object on every render, so
+  `.sgs-container__inner` never rendered. Fixed in `f9f4368b` + `2d291992`; the band now
+  renders (0 → 15 on `/shop/`). ONE residual, described in the colour-golden section below:
+  the gutter default sits on the OUTER layer and compounds per nesting level.
+- ⚠️ **CORRECTION to two commits pushed 2026-08-21 (`29c0fcb1`, and PR #35).** Both claimed
+  American-spelled `backgroundColor` authorings "never painted", citing D338. **D704 corrects
+  D338**: WP drops undeclared attrs from the EDITOR schema, but PHP does NOT drop them before
+  `render.php` runs — and several blocks read `$attributes['backgroundColor']` anyway to
+  re-add `has-*` preset classes. So of 21 authorings renamed: **16 were genuinely dead**
+  (`hero`, `trust-bar` — zero such reads), **5 were already painting**
+  (`site-header-row` ×3 at `render.php:154`, `brand-strip:147`, `testimonial-slider:251`).
+  The renames still stand — they move authorings onto the canonical `sgs_colour_value()`
+  path instead of `has-*` classes that skip-serialisation exists to remove — but they were
+  not all bug fixes. PR #35's description is corrected in place; the commit messages are
+  pushed and cannot be. **Rule: "not declared" does NOT mean "does nothing" — check whether
+  `render.php` reads it anyway.**
 - **Handover 3** → `.claude/reports/2026-08-20-HANDOVER-3-shop-wave-2-to-colour-golden-track.md`
 
 ### ▶ NEXT SESSION — Wave 2, and P1-6 FIRST
@@ -227,63 +265,83 @@ defects in the first plan draft, including one that would have broken ~280 patte
 
 ---
 
-## Also shipped today (separate golden-builder / colour-audit thread — parallel, not the
-## shop-archive track above; continued through the rest of the day, D700)
+## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-21 (this is the OTHER track; shop-archive is above)
 
-Three golden-builder sessions were merged into `main` but never *proved*. Running them found
-four real defects, three invisible to every gate:
+**16 commits, all on `origin/main`, all gate-verified. Deployed `--blocks-only` x3.**
+`0c44b0c6` `ed517135` `70c88348` `e81ea92a` `6bbd0c7c` `ebad91df` `20332725` `1905257e`
+`231df3be` `52b96e68` `f9f4368b` `79969443` `2d291992`
 
-- **`sgs/heading` inspector crash FIXED** — the redesigned typography panel blanked the whole
-  sidebar. Cause: `useSettings()` returns origin-keyed objects, not arrays. Shipped through a
-  green build because a green build never opens the editor.
-- **Border-style picker made reachable** — wired correctly at both ends, dead in the middle: an
-  intermediate layer forwards a hand-written prop list nobody had extended.
-- **Shared `flattenPresetSetting()`** — 3rd recurrence of one class; one function now.
-- **Duplicate "Font size" label removed.**
+### Shipped, with the two that were verified in a REAL BROWSER marked
 
-**Continued later the same day (D700, commits `f805a400`/`9daf35f6`/`78120ed2`) — the colour
-control-type audit's POC is now a single fact-checked artefact, not 8 disconnected reports:**
+| What | Evidence |
+|---|---|
+| **`ShadowControl` crash on 5 mounts** — picking a shadow colour threw `onColourChange is not a function` and blanked the inspector | `70c88348`. Wrapper now consumes `shadowColour`/`gridItemShadowColour` or it would have been 4 dead controls |
+| **D338 CORRECTED framework-wide** — PHP KEEPS undeclared attrs (`prepare_attributes_for_render()` `continue`s past them), JS DROPS them (`getBlockAttributes()` iterates the registered schema) | `e81ea92a`. 5 scripts + `plugins/sgs-blocks/CLAUDE.md` reworded. The gate said "the value never reaches render at all" — it does |
+| **Rule 31 sees shared files** — one finding per (owner file, rowKey) with a machine-readable `mountedBy` array | `20332725`. 409 → 420 → **418** |
+| **Container background finally editable** + 38 theme authorings migrated by script | `1905257e`. **LIVE-VERIFIED**: paints via `sgs-cst-` uid, 0 ghost classes |
+| **`contentWidth` regression fixed** — the band never rendered | `2d291992`. **LIVE-VERIFIED**: `.sgs-container__inner` 0 → **15** on `/shop/` |
+| **Gate 2 behavioural PASS on `sgs/brand-strip`** | **LIVE**: colour picked in editor → frontend paints resting colour, hover state AND gradient |
+| resting border gradient x2 (`STATE_WITHOUT_BASE` 2→0) · 3 unreachable hover-extension colours deleted · colour declares own `cssProperties` | `6bbd0c7c` `ebad91df` `0c44b0c6` |
 
-- Full master traceability table, 24 rows, all 8 colour scanners — every number carries its
-  exact source script/command/field and how it was verified. `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
-- `bannedLookalikes` axis depth+exclusion fix — real ~34-block reach now, not ~3-18 — plus a
-  real-file self-test.
-- **4-rater `/qc-council` ground-truth validation** (source code, live Playwright on
-  sandybrown, DB cross-check, independent re-trace): 21 of 24 rows confirmed directly, 2 more
-  resolved via `/systematic-debugging`, 1 residual named honestly.
-- **Two real bugs found + root-caused + fixed + deployed:** `sgs/feature-grid`'s misleading
-  "Layout type" dropdown (removed, live on canary) and `compare-reach-depth.py`'s own
-  non-deterministic LIFO-traversal race (fixed to BFS, self-tested with a negative control
-  that genuinely fails 3-of-5 runs against the old code — proof the bug was real, not
-  imagined).
+### ⛔ CORRECTIONS TO STALE CLAIMS ABOVE — the shop track's section is out of date on these
 
-Their standing warning matches this session's: *the instrument, not the code.* A gate failed on
-a sentence inside a comment; a survey reported "nothing to see" for 49 real problems because
-its pattern could not match an underscore. Determinism is not accuracy either — re-running a
-tool and getting the same number twice proved nothing until ground-truth-checked.
+1. **"Gradients have never been observed working on these blocks" — REFUTED.** Gate 2 run
+   behaviourally on `sgs/brand-strip`: a `linear-gradient` hover rule paints, paired
+   `:hover, :focus-within`. That was an untested assumption, not a measured failure.
+2. **"`sgs/container` now gives NO horizontal gutter … looks like a regression from this
+   evening's container work" — NOT MINE, and now fixed.** Neither container commit contained a
+   padding line. Root cause: `163f9fa7` migrated 96 `core/group` instances to `sgs/container`,
+   correctly translating `layout:{"type":"constrained"}` (WordPress's own gutter) into
+   `contentWidth:"normal"` — and `class-sgs-container-wrapper.php:431` discarded it. Fixed in
+   `f9f4368b` + `2d291992`.
+3. **P2-6 is PARTIAL BY DESIGN, not incomplete.** 39 container authorings renamed. The
+   remaining `sgs/site-footer` (7) and `sgs/site-header-row` (3) MUST NOT be renamed until
+   those blocks migrate off native colour — renaming now makes WP discard them and the
+   footer loses its background silently. The 152 `fontSize` authorings are WP-native
+   typography and out of scope entirely.
 
-### Colour-golden track — what's next (does not block the shop-archive track above)
+### 🔴 THE ONE OPEN DEFECT — handed to a fresh session
 
-The POC is honest now, not finished. In priority order:
+**The default gutter is on the WRONG LAYER.** `padding` defaults to `{left:24px,right:24px}` on
+the OUTER layer, so it COMPOUNDS per nesting level. Measured live at 355px on `/shop/`:
 
-1. **Switch rule 31 to the wider resolver (`resolveComponentFiles()`).** The single biggest
-   remaining gap — its 409-finding count is still blind to ~30 blocks reached only through
-   shared wrapper panels, so it's a floor, not a ceiling. Deliberately NOT done same-session:
-   it's a load-bearing advisory-gate count change needing its own predicted-vs-measured pass,
-   not a bolt-on. Read `.claude/plans/go-c1-c4-lively-zebra.md`'s "C0" section first — the
-   wider resolver already exists and is proven; this is wiring it in, not building it.
-2. **Gradient mechanism-awareness.** `row-missing-gradient` (193 findings) currently checks
-   "does *a* gradient path exist," not "is it the mechanism-correct one for what this row
-   paints" — a text row wired to the background mechanism would pass clean while rendering
-   nothing. The 3-mechanism model is already specified in the report's ADDENDUM section.
-3. **Defect-level matching** between rule 31's 409 and colour-coverage's 120 (block-level
-   overlap — 33 of 34 — is done; whether specific findings describe the same bug is not).
-4. **Declare colour's own `qualifiesWhen.paintsOwnSurface.cssProperties`** in
-   `golden-controls.json` — colour still runs on the hardcoded-regex fallback every other
-   undeclared type inherits, backwards from "colour is the reference implementation."
+- `h1 "Shop"` left `0` → **`48`** (two nested containers x 24px — should be 24)
+- `sgs-container-174e6951`: outer width **92px**, inner content squeezed to **44px** — real
+  unintended narrowing on a small nested container
+- product cards + filter toggle STILL at `left: 0` — they sit OUTSIDE any `sgs-container`,
+  so no container-level fix can reach them (shop template structure)
 
-Full detail + exact commands for all four: `.claude/reports/2026-08-20-colour-golden-scan-set.md`
-(top status block) and `.claude/decisions.md` D700.
+**Fix: move the padding default from the OUTER layer to the CONTENT-BAND layer**, where it
+applies once per band instead of stacking. The band now renders (15 on `/shop/`), so it has
+somewhere to go. ⚠ **15 new DOM elements just appeared site-wide and only `/shop/` was
+checked** — pages that already looked correct must be checked for unintended narrowing.
+
+### Still open on this track (not started)
+
+1. **Gradient mechanism-awareness** — `row-missing-gradient` (193) checks "does *a* gradient
+   path exist", not "is it mechanism-correct". A text row wired to the background mechanism
+   passes clean while rendering nothing. 3-mechanism model specified in the report's ADDENDUM.
+2. **Defect-level matching** rule 31 ↔ colour-coverage. Both sides compute `attrName` and
+   both DISCARD it — that is the join key.
+3. **Gate 2 on `sgs/hero` + `sgs/trust-bar`** — only brand-strip was tested.
+4. **`textColour` parent/child ruling** — HC2's carve-out PERMITS a root-scoped inheritable
+   default (hero's paints the root, verified); needs the full parent list enumerated, not two
+   examples.
+5. **Theme-snapshot slug-valued palette entries** — `sites/mamas-munches/theme-snapshot.json`
+   has 2 (`client-surface-pink: "surface-pink"`, `client-text: "text"`). Confirmed, not fixed.
+6. **`css:box-shadow-color` canonical shape** — registry says a `DesignTokenPicker` row inside
+   `SgsColourPanel`, not a lone field on the shadow builder. Rule 31's widened scan
+   independently flagged the same thing.
+
+### Method note that earned its keep this session
+
+**Every one of my three measurement errors was the same bug: matching a pattern without
+checking what produced it.** A grep that hit comments; a `render.php` bracket-style mismatch
+(`['x']` vs `[ 'x' ]`) that produced a false "not consumed"; an `innerHTML` regex that caught a
+WordPress *core* search button and made me wrongly announce my own commit wasn't deployed. The
+fix is structural, not care: **resolve every match back to its owner before concluding.** That
+is exactly what `mountedBy` does in the rule-31 work, which is why it is the one number here
+worth trusting.
 
 ---
 
