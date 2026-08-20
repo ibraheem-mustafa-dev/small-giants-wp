@@ -9,7 +9,7 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColour":"surface","contentWidth":{"desktop":"normal"}} -->
 
 	<!-- wp:sgs/heading {"content":"What We Offer","textAlign":"center","fontSize":{"desktop":"xx-large"}} /-->
 
@@ -18,21 +18,21 @@
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"},"fx":"scrub","fxStart":"top 70%","fxEnd":"top center","fxScrub":0.8} -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColour":"surface-alt"} -->
 				<!-- wp:sgs/heading {"content":"🎨 Design","level":"h3","textColour":"primary","fontSize":{"desktop":"x-large"}} /-->
 				<!-- wp:sgs/text {"text":"Beautiful, user-centred designs that engage your audience and reflect your brand identity.","textColour":"text-muted"} /-->
 			<!-- /wp:sgs/container -->
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColour":"surface-alt"} -->
 				<!-- wp:sgs/heading {"content":"⚡ Development","level":"h3","textColour":"primary","fontSize":{"desktop":"x-large"}} /-->
 				<!-- wp:sgs/text {"text":"Fast, secure, and scalable web solutions built with modern technologies and best practices.","textColour":"text-muted"} /-->
 			<!-- /wp:sgs/container -->
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColour":"surface-alt"} -->
 				<!-- wp:sgs/heading {"content":"📈 Growth","level":"h3","textColour":"primary","fontSize":{"desktop":"x-large"}} /-->
 				<!-- wp:sgs/text {"text":"Data-driven strategies to increase your online presence and convert more visitors into customers.","textColour":"text-muted"} /-->
 			<!-- /wp:sgs/container -->

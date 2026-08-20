@@ -82,7 +82,7 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:font-weight": "native:typography.fontWeight",
 						"css:line-height": "native:typography.lineHeight",
@@ -508,6 +508,10 @@
 		"contentBandPadding": {
 			"type": "object",
 			"default": { "desktop": {} }
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"providesContext": {

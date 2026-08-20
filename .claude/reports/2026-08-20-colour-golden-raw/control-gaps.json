@@ -1,0 +1,172 @@
+[
+  {
+    "block": "audio",
+    "file": ".\\src\\blocks\\audio\\edit.js",
+    "line": 212,
+    "control": "TextControl",
+    "valueKind": "url",
+    "why": "a navigational URL belongs in the LINK contract, not a bare text field",
+    "matched": "https?://",
+    "visibleText": "Audio URL | https://example.com/audio.mp3"
+  },
+  {
+    "block": "countdown-timer",
+    "file": ".\\src\\blocks\\countdown-timer\\edit.js",
+    "line": 181,
+    "control": "TextControl",
+    "valueKind": "date",
+    "why": "an ISO date/time typed by hand; one wrong character and the value silently fails",
+    "matched": "YYYY-MM-DD",
+    "visibleText": "Target date/time | Format: YYYY-MM-DDTHH:MM"
+  },
+  {
+    "block": "icon",
+    "file": ".\\src\\blocks\\icon\\edit.js",
+    "line": 326,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Shape padding | A spacing slug (e.g. 30) or a CSS value (e.g. 12px, 0.75rem). Leave empty for the theme default."
+  },
+  {
+    "block": "image-sequence",
+    "file": ".\\src\\blocks\\image-sequence\\edit.js",
+    "line": 140,
+    "control": "TextControl",
+    "valueKind": "url",
+    "why": "a navigational URL belongs in the LINK contract, not a bare text field",
+    "matched": "https?://",
+    "visibleText": "https://example.com/wp-content/uploads/sequence/desktop"
+  },
+  {
+    "block": "multi-button",
+    "file": ".\\src\\blocks\\multi-button\\edit.js",
+    "line": 459,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Button border radius | A CSS length, e.g. 8px or 999px for a pill shape. Leave blank to use the framework default."
+  },
+  {
+    "block": "multi-button",
+    "file": ".\\src\\blocks\\multi-button\\edit.js",
+    "line": 467,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Button font size | A CSS length, e.g. 16px. Leave blank to use the framework default."
+  },
+  {
+    "block": "option-picker",
+    "file": ".\\src\\blocks\\option-picker\\edit.js",
+    "line": 653,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Label margin bottom | CSS value, e.g. 8px or 0.5rem. Empty = default."
+  },
+  {
+    "block": "product-card",
+    "file": ".\\src\\blocks\\product-card\\edit.js",
+    "line": 2020,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Max width | Enter any CSS value (e.g. 320px, 50%, 28rem). Leave empty to use the theme default (380px). | 380px"
+  },
+  {
+    "block": "product-card",
+    "file": ".\\src\\blocks\\product-card\\edit.js",
+    "line": 2034,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Image height | Height of the product image box (e.g. 180px, 16rem). Leave empty to use the theme default (220px). | 220p"
+  },
+  {
+    "block": "product-card",
+    "file": ".\\src\\blocks\\product-card\\edit.js",
+    "line": 2091,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Picker label font size | Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default."
+  },
+  {
+    "block": "testimonial",
+    "file": ".\\src\\blocks\\testimonial\\edit.js",
+    "line": 891,
+    "control": "TextControl",
+    "valueKind": "css-value",
+    "why": "raw CSS typed by a client; Spec 35 \u00a711.3 bans it for shadow and it generalises",
+    "matched": "\\bCSS\\s+(shorthand|value)\\b",
+    "visibleText": "Quote font size | A token slug (e.g. medium) or a CSS value (e.g. 1.25rem). Leave empty for the variant default."
+  },
+  {
+    "block": "testimonial",
+    "file": ".\\src\\blocks\\testimonial\\edit.js",
+    "line": 933,
+    "control": "TextControl",
+    "valueKind": "css-value",
+    "why": "raw CSS typed by a client; Spec 35 \u00a711.3 bans it for shadow and it generalises",
+    "matched": "\\bCSS\\s+(shorthand|value)\\b",
+    "visibleText": "Quote line height | CSS value (e.g. 1.6, 2em). Leave empty for the variant default."
+  },
+  {
+    "block": "testimonial",
+    "file": ".\\src\\blocks\\testimonial\\edit.js",
+    "line": 954,
+    "control": "TextControl",
+    "valueKind": "length",
+    "why": "a CSS length behind free text; Spec 35 \u00a74.3 bans a TextControl standing in for UnitControl",
+    "matched": "e\\.g\\.\\s*\\d+\\s*(px|rem|em|%|vh|vw)\\b",
+    "visibleText": "Quote spacing below | A spacing slug (e.g. 30) or a CSS value (e.g. 16px, 1.5rem). Leave empty for the theme default."
+  },
+  {
+    "block": "timeline",
+    "file": ".\\src\\blocks\\timeline\\edit.js",
+    "line": 157,
+    "control": "TextControl",
+    "valueKind": "date",
+    "why": "an ISO date/time typed by hand; one wrong character and the value silently fails",
+    "matched": "YYYY-MM-DD",
+    "visibleText": "Date | Used as the visible label and the datetime attribute. | YYYY-MM-DD or e.g. January 2024"
+  },
+  {
+    "block": "trustpilot-reviews",
+    "file": ".\\src\\blocks\\trustpilot-reviews\\edit.js",
+    "line": 250,
+    "control": "TextControl",
+    "valueKind": "url",
+    "why": "a navigational URL belongs in the LINK contract, not a bare text field",
+    "matched": "https?://",
+    "visibleText": "Trustpilot business URL | https://uk.trustpilot.com/review/example.com"
+  },
+  {
+    "block": "trustpilot-reviews",
+    "file": ".\\src\\blocks\\trustpilot-reviews\\edit.js",
+    "line": 569,
+    "control": "TextControl",
+    "valueKind": "date",
+    "why": "an ISO date/time typed by hand; one wrong character and the value silently fails",
+    "matched": "\\bISO\\s*8601\\b",
+    "visibleText": "Date (ISO 8601)"
+  },
+  {
+    "block": "(extension)",
+    "file": ".\\src\\blocks\\extensions\\image-controls.js",
+    "line": 217,
+    "control": "TextControl",
+    "valueKind": "css-value",
+    "why": "raw CSS typed by a client; Spec 35 \u00a711.3 bans it for shadow and it generalises",
+    "matched": "\\bCSS\\s+(shorthand|value)\\b",
+    "visibleText": "Max width | Constrain the image width \u2014 CSS value like 640px or 80%. | 100%"
+  }
+]

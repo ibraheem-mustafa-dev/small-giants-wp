@@ -11,7 +11,7 @@ import {
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, BOX_UNITS, normaliseResponsiveBox } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox } from "../../components";
 import { resolveShadowPreview, resolveResponsiveTier } from "../../utils";
 import {
   LayoutPanel,
@@ -105,6 +105,7 @@ export default function Edit({ attributes, setAttributes, name }) {
     justifyItems = "stretch",
     alignContent = "stretch",
     templateMode = "free",
+    backgroundColour,
   } = attributes;
 
   // Active device tier for the preview, read from the SAME source the inspector's
@@ -237,6 +238,31 @@ export default function Edit({ attributes, setAttributes, name }) {
           Styles on cta-section/hero — the same panel in two different tabs
           depending on which block the client had selected. */}
       <InspectorControls group="styles">
+        {/* Base background colour — the OUTER-most paint layer, BELOW the
+            background image/video/SVG (::before), the overlay colour/gradient
+            (backgroundOverlayColour/overlayGradient, painted on the
+            .sgs-container__overlay span) and content. Deliberately a
+            SEPARATE attribute + control from the overlay pair below — the
+            overlay tints/covers media, this paints when there is none.
+            Mirrors sgs/site-header's SgsColourPanel pattern (D294/D684):
+            its own panel, not nested inside BackgroundPanel's PanelBody. */}
+        <SgsColourPanel
+          rows={ [
+            {
+              key: 'background',
+              label: __( 'Background colour', 'sgs-blocks' ),
+              states: [
+                {
+                  key: 'normal',
+                  label: __( 'Normal', 'sgs-blocks' ),
+                  value: backgroundColour,
+                  onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+                  linked: true,
+                },
+              ],
+            },
+          ] }
+        />
         <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
       </InspectorControls>
 

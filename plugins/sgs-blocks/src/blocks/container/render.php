@@ -61,6 +61,23 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( ! empty( $sgs_container_style_group['color'] ) && is_array( $sgs_container_style_group['color'] ) ) {
 		$sgs_container_style_engine_input['color'] = $sgs_container_style_group['color'];
 	}
+
+	// SGS-OWNED base background colour (D294 pattern, mirrors sgs/site-header /
+	// sgs/site-header-row) — the OUTER-most paint layer, BELOW the media ::before
+	// (z-index:-1), the overlay span (z-index:0, backgroundOverlayColour/
+	// overlayGradient — a DIFFERENT, deliberately untouched attribute) and content
+	// (z-index:1). See class-sgs-container-wrapper.php's z-index doc (~L948-950).
+	// ⚠ EVERY value goes through sgs_colour_value() before the style engine:
+	// DesignTokenPicker stores a token SLUG ('surface') when linked:true, and the
+	// style engine does not resolve a bare slug — it would emit the invalid
+	// `background-color:surface` (proven live defect, D684, site-header-row).
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+		$sgs_container_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+		if ( '' !== $sgs_container_bg_value ) {
+			$sgs_container_style_engine_input['color']['background'] = $sgs_container_bg_value;
+		}
+	}
+
 	if ( ! empty( $sgs_container_style_group['border'] ) && is_array( $sgs_container_style_group['border'] ) ) {
 		$sgs_container_style_engine_input['border'] = $sgs_container_style_group['border'];
 	}
@@ -83,25 +100,31 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// Preset colour/gradient/font-size slugs — skip-serialisation drops WP's
-// automatic has-* classes, so re-add them manually (mirrors sgs/label).
-$sgs_container_preset_text     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$sgs_container_preset_bg       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-$sgs_container_preset_gradient = isset( $attributes['gradient'] ) ? sanitize_html_class( $attributes['gradient'] ) : '';
+// Preset font-size slug — skip-serialisation drops WP's automatic has-*-font-size
+// class, so re-add it manually (mirrors sgs/label). fontSize IS declared/supported
+// on this block (typography.fontSize), unlike the two ghosts removed below.
+//
+// ⛔ REMOVED 2026-08-20 (base-background-colour build, this session): the
+// $attributes['backgroundColor'] / ['textColor'] / ['gradient'] reads that used
+// to live here were a GHOST — none of the three is declared in block.json
+// (supports.color is false, no matching attribute schema), so WP's editor drops
+// them from getBlockAttributes() (no client could ever see or edit them) while
+// PHP's WP_Block_Type::prepare_attributes_for_render() does NOT drop an
+// undeclared key before render.php runs — it `continue`s past it rather than
+// unsetting it. The result was a REAL painting background (via the has-*-
+// background-color preset class WP's global-styles CSS renders for any
+// matching class, independent of block support declarations) with no client-
+// facing control. Fixed at the ROOT — `backgroundColour` (British spelling) is
+// now a real declared+painted attribute (see the style-engine block above,
+// mirrors sgs/site-header) and every theme authoring of `backgroundColor` was
+// renamed to it via `scripts/migrate-theme-attr-rename.py` (38 instances, 23
+// files). `textColor`'s single theme authoring (templates/single.html:11) was
+// deliberately LEFT — container has no textColour equivalent control today and
+// none is invented here; it is now correctly editor-invisible AND render-inert
+// (was previously editor-invisible but render-active, which is worse). `gradient`
+// had zero authorings anywhere and was never wired to any control — pure debt.
 $sgs_container_preset_fontsize = isset( $attributes['fontSize'] ) ? sanitize_html_class( $attributes['fontSize'] ) : '';
 
-if ( '' !== $sgs_container_preset_text ) {
-	$sgs_container_supports_classes[] = 'has-text-color';
-	$sgs_container_supports_classes[] = 'has-' . $sgs_container_preset_text . '-color';
-}
-if ( '' !== $sgs_container_preset_bg ) {
-	$sgs_container_supports_classes[] = 'has-background';
-	$sgs_container_supports_classes[] = 'has-' . $sgs_container_preset_bg . '-background-color';
-}
-if ( '' !== $sgs_container_preset_gradient ) {
-	$sgs_container_supports_classes[] = 'has-background';
-	$sgs_container_supports_classes[] = 'has-' . $sgs_container_preset_gradient . '-gradient-background';
-}
 if ( '' !== $sgs_container_preset_fontsize ) {
 	$sgs_container_supports_classes[] = 'has-' . $sgs_container_preset_fontsize . '-font-size';
 }

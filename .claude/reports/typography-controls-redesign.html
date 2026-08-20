@@ -1,0 +1,422 @@
+<title>Typography Panel Redesign</title>
+<style>
+  :root {
+    --bg: #f7f5f2;
+    --bg-elevated: #ffffff;
+    --text: #1c1a17;
+    --text-muted: #635c53;
+    --border: #e4dfd7;
+    --accent: #b5502f;
+    --accent-soft: #f3e2da;
+    --good: #2a6b4a;
+    --good-soft: #e5f1ea;
+    --bad: #a13a3a;
+    --bad-soft: #f7e6e6;
+    --wp-bg: #ffffff;
+    --wp-border: #dddddd;
+    --wp-border-strong: #cccccc;
+    --wp-text: #1e1e1e;
+    --wp-label: #757575;
+    --wp-focus: #3858e9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171512;
+      --bg-elevated: #211f1b;
+      --text: #f1ede6;
+      --text-muted: #b3aa9c;
+      --border: #38332c;
+      --accent: #e08a63;
+      --accent-soft: #3a271e;
+      --good: #7fce9f;
+      --good-soft: #1c3327;
+      --bad: #e29494;
+      --bad-soft: #3a2020;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171512;
+    --bg-elevated: #211f1b;
+    --text: #f1ede6;
+    --text-muted: #b3aa9c;
+    --border: #38332c;
+    --accent: #e08a63;
+    --accent-soft: #3a271e;
+    --good: #7fce9f;
+    --good-soft: #1c3327;
+    --bad: #e29494;
+    --bad-soft: #3a2020;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.5;
+  }
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+  }
+  header {
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 600;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  header p {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  .col-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    width: fit-content;
+  }
+  .col-label.before { background: var(--bad-soft); color: var(--bad); }
+  .col-label.after { background: var(--good-soft); color: var(--good); }
+  .col-label .metric {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-weight: 500;
+    opacity: 0.85;
+  }
+
+  /* ---- WP admin sidebar chrome (always light — this is the real product) ---- */
+  .wp-panel {
+    background: var(--wp-bg);
+    border: 1px solid var(--wp-border);
+    border-radius: 2px;
+    width: 100%;
+    max-width: 320px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--wp-text);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .wp-panel-header {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--wp-border);
+  }
+  .wp-section {
+    padding: 16px;
+    border-bottom: 1px solid var(--wp-border);
+  }
+  .wp-section:last-child { border-bottom: none; }
+  .wp-row { margin-bottom: 16px; }
+  .wp-row:last-child { margin-bottom: 0; }
+  .wp-row-pair {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .wp-row-pair:last-child { margin-bottom: 0; }
+  .wp-row-pair > div { flex: 1; min-width: 0; }
+  .wp-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--wp-label);
+    margin-bottom: 8px;
+  }
+  .wp-field {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid var(--wp-border-strong);
+    border-radius: 2px;
+    font-size: 13px;
+    color: var(--wp-text);
+    background: #fff;
+    justify-content: space-between;
+  }
+  .wp-field .chev {
+    color: var(--wp-label);
+    font-size: 10px;
+  }
+  .wp-field.unit-split {
+    padding: 0;
+  }
+  .wp-field.unit-split .num {
+    flex: 1;
+    padding: 0 10px;
+  }
+  .wp-field.unit-split .unit {
+    border-left: 1px solid var(--wp-border);
+    padding: 0 10px;
+    color: var(--wp-label);
+    font-size: 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .wp-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    color: var(--bad);
+    background: var(--bad-soft);
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin-top: 6px;
+  }
+  .after .wp-flag { color: var(--good); background: var(--good-soft); }
+
+  .wp-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--wp-focus);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .wp-toggle.open { color: var(--wp-label); }
+
+  .after-note {
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .after-note strong { color: var(--text); }
+
+  .findings {
+    margin-top: 56px;
+    max-width: 780px;
+  }
+  .findings h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 18px;
+  }
+  .findings ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .findings li {
+    display: flex;
+    gap: 12px;
+    font-size: 15px;
+    color: var(--text-muted);
+    align-items: baseline;
+  }
+  .findings li::before {
+    content: "—";
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .findings strong { color: var(--text); font-weight: 600; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SGS Blocks — Session A</div>
+    <h1>TypographyControls, before and after</h1>
+    <p>Same fields, same attributes, same responsive-tier and hover mechanism underneath — only the layout changed. Compiled and verified against the real component; not a redrawn approximation.</p>
+  </header>
+
+  <div class="compare">
+    <div>
+      <div class="col-label before">Before <span class="metric">8 stacked rows</span></div>
+      <div class="wp-panel before">
+        <div class="wp-panel-header">Heading — Typography</div>
+        <div class="wp-section">
+          <div class="wp-row">
+            <span class="wp-label">Preset size</span>
+            <div class="wp-field">— none — <span class="chev">▾</span></div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Font size</span>
+            <div class="wp-field unit-split"><span class="num">18</span><span class="unit">px ▾</span></div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Font weight</span>
+            <div class="wp-field">— inherit — <span class="chev">▾</span></div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Font style</span>
+            <div class="wp-field">— inherit — <span class="chev">▾</span></div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Line height</span>
+            <div class="wp-field unit-split"><span class="num">—</span><span class="unit">— ▾</span></div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Text transform</span>
+            <div class="wp-field">— inherit — <span class="chev">▾</span></div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Text decoration</span>
+            <div class="wp-field">— inherit — <span class="chev">▾</span></div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Letter spacing</span>
+            <div class="wp-field unit-split"><span class="num">—</span><span class="unit">em ▾</span></div>
+          </div>
+        </div>
+        <div class="wp-flag">8 full-width rows · 1 field each · no font-family control at all</div>
+      </div>
+      <div class="after-note">
+        Device tier (Desktop/Tablet/Mobile) was never a per-row control here — it reads from
+        the ONE global toggle docked at the bottom of the inspector. An earlier draft of this
+        mockup mistakenly drew a per-field icon switcher on the Font size row; that never
+        existed in the real component and <code>inspector-scan</code> rule 25 actively forbids
+        re-adding one. Corrected below.
+      </div>
+    </div>
+
+    <div class="after">
+      <div class="col-label after">After <span class="metric">3 rows visible · 2 more behind a toggle</span></div>
+      <div class="wp-panel">
+        <div class="wp-panel-header">Heading — Typography</div>
+        <div class="wp-section">
+          <div class="wp-row-pair">
+            <div>
+              <span class="wp-label">Preset size</span>
+              <div class="wp-field">— none — <span class="chev">▾</span></div>
+            </div>
+            <div>
+              <span class="wp-label">Font size</span>
+              <div class="wp-field unit-split"><span class="num">18</span><span class="unit">px ▾</span></div>
+            </div>
+          </div>
+          <div class="wp-row">
+            <span class="wp-label">Font family</span>
+            <div class="wp-field">— inherit — <span class="chev">▾</span></div>
+          </div>
+          <div class="wp-row">
+            <button class="wp-toggle">More typography options ▾</button>
+          </div>
+          <div class="wp-row-pair">
+            <div>
+              <span class="wp-label">Decoration</span>
+              <div class="wp-field">Inherit <span class="chev">▾</span></div>
+            </div>
+            <div>
+              <span class="wp-label">Transform</span>
+              <div class="wp-field">Inherit <span class="chev">▾</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="wp-flag">3 rows visible by default (Preset+Size paired, Font family, Decoration+Transform paired)</div>
+      </div>
+
+      <div class="col-label after" style="margin-top:20px;">After the toggle is clicked <span class="metric">+2 rows</span></div>
+      <div class="wp-panel">
+        <div class="wp-panel-header">Heading — Typography</div>
+        <div class="wp-section">
+          <div class="wp-row">
+            <button class="wp-toggle open">Hide weight, style &amp; spacing ▴</button>
+          </div>
+          <div class="wp-row-pair">
+            <div>
+              <span class="wp-label">Weight</span>
+              <div class="wp-field">Inherit <span class="chev">▾</span></div>
+            </div>
+            <div>
+              <span class="wp-label">Style</span>
+              <div class="wp-field">Inherit <span class="chev">▾</span></div>
+            </div>
+          </div>
+          <div class="wp-row-pair">
+            <div>
+              <span class="wp-label">Line height</span>
+              <div class="wp-field unit-split"><span class="num">—</span><span class="unit">— ▾</span></div>
+            </div>
+            <div>
+              <span class="wp-label">Letter spacing</span>
+              <div class="wp-field unit-split"><span class="num">—</span><span class="unit">em ▾</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="wp-flag">Weight/Style + Line height/Letter spacing — still there, just opt-in to view</div>
+      </div>
+
+      <div class="after-note">
+        <strong>What changed:</strong> Preset size and Font size now share one row (they're the same
+        property, so pairing them halves that row's height rather than stacking two full-width
+        fields). Font family is a genuinely new control — SGS's typography panel had none before;
+        it's sourced from the theme's registered font families, same opt-in pattern as the
+        existing font-size presets. Weight, Style, Line height and Letter spacing default
+        collapsed behind a toggle (WordPress's own native panel does the same thing via its ⋮
+        menu). No per-field device switcher anywhere — that's the one global toggle at the bottom
+        of the sidebar, unchanged. Every attribute, <code>onChange</code> handler, and the
+        responsive-tier/hover mechanism underneath is unchanged; this is layout + one new opt-in
+        field, not a rebuild.
+      </div>
+    </div>
+  </div>
+
+  <div class="findings">
+    <h2>Evidence, not guesswork</h2>
+    <ul>
+      <li><strong>The "before" panel is the real live component</strong> — captured from the SGS Heading block's Typography panel on the sandybrown canary, not a guess from the source.</li>
+      <li><strong>WordPress's own native panel</strong> (core Paragraph block) is already compact by default — a single "Font size" row plus a ⋮ options menu where every other sub-control is opt-in. SGS's version renders all 8 unconditionally.</li>
+      <li><strong>Confirmed in the real component's source</strong> — <code>ResponsiveControl.js</code> explicitly documents that it renders no switcher at all ("Spec 35 Phase 1.2") and that <code>inspector-scan</code> rule 25 exists specifically to catch anyone re-adding a per-control one. The device tier comes from one global toggle only.</li>
+      <li><strong>Two build passes compiled clean</strong> — <code>npx wp-scripts build</code> against the edited <code>TypographyControls.js</code>, zero errors both times, run locally in an isolated worktree (no shared build/ touched, no deploy to the canary).</li>
+      <li><strong>Nothing behind the existing fields changed</strong> — same attribute keys, same <code>onChange</code> logic, same tiered/responsive/hover branches. Font family is the one genuinely new attribute (<code>{prefix}FontFamily</code>), opt-in only — no block gets it unless it declares the attr and passes <code>showFontFamily</code>.</li>
+    </ul>
+  </div>
+
+  <footer>plugins/sgs-blocks/src/components/TypographyControls.js — feat/goldens-styling</footer>
+</div>
