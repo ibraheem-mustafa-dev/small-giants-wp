@@ -76,14 +76,93 @@ function axisIsMeasurable( row, axis ) {
 	const a = row && row[ axis ];
 	if ( ! a || typeof a !== 'object' ) return false;
 	if ( axis === 'canonical' ) {
-		return Boolean(
-			( a.panel && a.panel.component ) || ( a.row && a.row.component )
-		);
+		return canonicalComponentNames( row ).length > 0;
 	}
 	if ( axis === 'bannedLookalikes' ) {
 		return Array.isArray( a.jsxComponents ) && a.jsxComponents.length > 0;
 	}
-	return typeof a.detectVia === 'string' && a.detectVia.length > 0;
+	// A `detectVia` string the family regex cannot READ is not measurable, even
+	// though the field is present and non-empty. Checking mere presence is what
+	// let `border` report "measured" while resolving to null — the MEASURABILITY
+	// table would then have vouched for an axis producing N/A on all 83 blocks.
+	return supportFamilyFromDetectVia( a.detectVia ) !== null;
+}
+
+/**
+ * A JSX component identifier, as opposed to a prose description of a pattern.
+ *
+ * Load-bearing. Finalised goldens rows describe their canonical shape in two
+ * different registers and both live under a `component` key:
+ *
+ *   "MediaPicker"                                  <- a real, resolvable component
+ *   "ResponsiveOverride + SelectControl (tier-…)"  <- a description of a PATTERN
+ *   "trust-bar's per-item editor shape … NOT YET extracted to a shared component"
+ *
+ * Only the first can ever appear in a block's reached-component set. Treating
+ * the other two as component names would score six control types against names
+ * that can never match, turning an honest "this type has no single canonical
+ * component" into a library-wide false VIOLATION/MISSING sweep.
+ */
+const COMPONENT_IDENTIFIER = /^[A-Z][A-Za-z0-9]*$/;
+
+/**
+ * Every canonical component identifier a row declares, at any nesting depth.
+ *
+ * ⛔ DO NOT narrow this back to `canonical.panel` + `canonical.row`. That was
+ * the original shape, written when only `colour` was encoded, and it silently
+ * mis-scored every row that names its component under a different key. Measured
+ * 2026-08-19 across the finalised goldens: `media` uses `single`/`bulk`,
+ * `responsive-wrapper` uses `tierPrimitive`/`objectPrimitive`, `border` uses
+ * `widthSlot`/`radiusSlot`/`styleSlot`/`colourSlot`. All three named real,
+ * verified-live components and all three reported N/A on all 83 blocks — 249
+ * rows scored as "no contract to check" when the contract was right there.
+ * Same defect class as the `__experimental` family regex, one axis over.
+ *
+ * @param {Object} row One control-type row.
+ * @return {string[]} De-duplicated component identifiers; empty when the row
+ *   describes a pattern in prose rather than naming a component.
+ */
+function canonicalComponentNames( row ) {
+	const out = new Set();
+	( function walk( node, depth ) {
+		if ( depth > 4 || ! node || typeof node !== 'object' ) return;
+		// A slot the contract marks `independentlySufficient: false` names a real
+		// component but cannot on its own prove the block adopted the canonical
+		// shape — it is reached THROUGH the primary component, or it covers a
+		// narrower case. Measured 2026-08-20: without this, sgs/site-footer
+		// flipped VIOLATION -> CONFORMANT for colour because it reaches
+		// GradientOverlayControl via BackgroundPanel while still having no
+		// SgsColourPanel at all. A widening that turns a real violation into a
+		// pass is a loosened detector, not a fixed one.
+		if ( node.independentlySufficient !== false && typeof node.component === 'string' ) {
+			const name = node.component.trim();
+			if ( COMPONENT_IDENTIFIER.test( name ) ) out.add( name );
+		}
+		for ( const v of Object.values( node ) ) {
+			if ( v && typeof v === 'object' ) walk( v, depth + 1 );
+		}
+	} )( row && row.canonical, 0 );
+	return [ ...out ];
+}
+
+/**
+ * The `supports.*` family a `detectVia` string names, or null when none.
+ *
+ * ⛔ The leading `_` in the character class is REQUIRED — WordPress ships real
+ * support families under `__experimental*` names. Without it `border`'s
+ * declared `supports.__experimentalBorder` resolved to null and its native-UI
+ * axis reported N/A across all 83 blocks: 49 real violations reading exactly
+ * like a clean result. ONE definition, shared by the survey's axis scorer and
+ * by axisIsMeasurable() above, so the two can never disagree about whether a
+ * row is readable.
+ *
+ * @param {string} detectVia The row's `nativeUi.detectVia` prose.
+ * @return {string|null} The support-family key, or null when unreadable.
+ */
+function supportFamilyFromDetectVia( detectVia ) {
+	if ( ! detectVia || typeof detectVia !== 'string' ) return null;
+	const m = detectVia.match( /supports\.(_*[A-Za-z][A-Za-z0-9_]*)/ );
+	return m ? m[ 1 ] : null;
 }
 
 /**
@@ -395,6 +474,8 @@ module.exports = {
 	loadMergedSchema,
 	axisIsMeasurable,
 	MEASURABLE_AXES,
+	canonicalComponentNames,
+	supportFamilyFromDetectVia,
 	GOLDEN_PATH,
 	NATIVE_UI_FLAGS,
 	nativeUiFlags,

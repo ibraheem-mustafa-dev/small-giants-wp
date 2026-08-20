@@ -48,7 +48,13 @@ const path = require( 'path' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const { resolveComponentFiles } = require( '../inspector-scan/core/components' );
-const { loadMergedSchema, axisIsMeasurable: schemaAxisIsMeasurable } = require( '../inspector-scan/core/golden' );
+const {
+	loadMergedSchema,
+	axisIsMeasurable: schemaAxisIsMeasurable,
+	MEASURABLE_AXES,
+	canonicalComponentNames,
+	supportFamilyFromDetectVia,
+} = require( '../inspector-scan/core/golden' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
 const BLOCKS_DIR = path.join( PLUGIN_ROOT, 'src', 'blocks' );
@@ -205,11 +211,11 @@ function reachedComponents( editAst, compFiles ) {
  *   qualifiesFor().
  */
 function axisCanonical( spec, reached, qualifyCtx ) {
-	const canonical = spec.canonical || {};
-	const wanted = [ canonical.panel, canonical.row ]
-		.filter( Boolean )
-		.map( ( c ) => c.component )
-		.filter( Boolean );
+	// Every canonical component the row declares, at any key — NOT just
+	// `panel`/`row`. See canonicalComponentNames() in core/golden.js: three
+	// finalised types name their components under other keys and were reporting
+	// N/A across all 83 blocks as a result.
+	const wanted = canonicalComponentNames( spec );
 	if ( ! wanted.length ) return { verdict: NA, detail: 'schema declares no canonical component' };
 
 	const hit = wanted.filter( ( w ) => reached.has( w ) );
@@ -307,8 +313,7 @@ function nativeUiSupportKey( spec ) {
 	// records 52 blocks with `supports.__experimentalBorder` sub-flags TRUE —
 	// none of which this axis could see. Covered by the selfTest fixture
 	// 'an __experimental support family is readable, not silently N/A'.
-	const m = via.match( /supports\.(_*[A-Za-z][A-Za-z0-9_]*)/ );
-	return m ? m[ 1 ] : null;
+	return supportFamilyFromDetectVia( via );
 }
 
 /**
@@ -750,7 +755,7 @@ function report( result ) {
 	console.log( '' );
 	console.log( 'MEASURABILITY — which axes each control type can be scored on' );
 	console.log( '  (UNMEASURED = the row declares no field for that axis; NOT a clean result)' );
-	const MEASURED_AXES = [ 'canonical', 'bannedLookalikes', 'nativeUi' ];
+	const MEASURED_AXES = MEASURABLE_AXES; // one list, imported — never a second copy that can drift
 	const unmeasured = [];
 	for ( const type of result.encoded ) {
 		const spec = ( result.schemaControls || {} )[ type ] || {};
