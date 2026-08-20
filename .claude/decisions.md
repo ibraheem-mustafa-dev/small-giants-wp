@@ -1,5 +1,46 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D701 [ROUTINE] — colour master table QC-council-verified against ground truth; 2 real bugs found, root-caused, fixed (2026-08-20)
+
+Follow-up to D700. Bean's own correction mid-session: "re-running a tool and getting the
+same result twice is not verification of accuracy." A 4-rater `/qc-council` was dispatched
+to fact-check random samples from D700's master traceability table against REAL ground
+truth (source code, live Playwright on the sandybrown canary, `sgs-framework.db`, and an
+independent re-trace with no access to the original code) — not by re-deriving from the
+same instruments. 21 of 24 table rows confirmed directly. Two needed real work:
+
+1. **`sgs/feature-grid`'s "Layout type" editor control was genuinely misleading, root-caused
+   via `/systematic-debugging` (commit `f805a400`).** It offered a live Stack/Flex/Grid
+   choice via `ContainerWrapperControls`'s `LayoutPanel` (default `showLayout=true`), but
+   every one of `feature-grid`'s three render branches always emits `display:grid`, and
+   `render.php:156` silently overwrote the attribute whenever an explicit grid template was
+   present. Fix: `showLayout={false}` — the block owns its own real selector (`layoutMode`)
+   and never needed the generic one. **Deployed to sandybrown and live-verified** (editor:
+   dropdown gone, `layoutMode` still works; frontend: correct render at 1440px, zero
+   console errors).
+2. **`compare-reach-depth.py` (the reference tool D700's depth-fix section leans on) had its
+   own bug, root-caused via `/systematic-debugging` (commit `78120ed2`).** `reach()` used a
+   LIFO stack, not a breadth-first queue — a component reachable via two paths of different
+   depth (e.g. `DesignTokenPicker`, both a direct mount and a one-hop alias-resolved child of
+   `SgsColourPanel`'s runtime dispatch) could have its deeper duplicate processed first,
+   permanently capping its depth and silently blocking its own children from ever being
+   found within a tight `max_depth`. Also explains the run-to-run inconsistency Bean's
+   correction was aimed at: Python randomises string-hash order per process, which shuffled
+   which duplicate won the race. **Fix:** LIFO → FIFO (`collections.deque`), giving BFS's
+   shortest-path guarantee. **Verified:** 3 fresh process runs now byte-identical; a
+   negative control (the same self-test against the pre-fix code) genuinely fails 3 of 5
+   runs, proving the bug was real and non-deterministic, not imagined. A permanent
+   `--self-test` mode ships with the fix.
+
+Also: a stale, self-contradicting comment in `sgs/site-footer/edit.js` (claimed "no control
+mounted" directly above code that mounts exactly that control 120 lines earlier) was found
+by a QC rater and removed — no functional change.
+
+Every number this session's report cites is now either directly ground-truth-verified or
+explicitly named as still-open (rule 31's Track A/B blindness; defect-level 409-vs-120
+matching; gradient mechanism-awareness; colour's own undeclared `cssProperties`) — none
+silently assumed solved. Full detail: `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
+
 ## D700 [ROUTINE] — banned-lookalike depth+exclusion fix applied + colour's 409-vs-120 gap given a real block-level number (2026-08-20)
 
 First draft of this session's task was a new standalone script merging 8 colour scanners'
