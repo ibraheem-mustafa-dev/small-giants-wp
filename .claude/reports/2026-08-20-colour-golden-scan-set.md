@@ -192,8 +192,18 @@ ambiguous. Root cause (proven against real source, not inferred):
 the misleading dropdown; `render.php`'s force-grid line is now honest internal plumbing
 with nothing left to silently override.
 
-**Verified:** build + deploy to sandybrown canary, live editor + frontend check (§ result
-below this line once the verification agent returns).
+**Verified live, both surfaces, on the sandybrown canary (commit `f805a400`):**
+- Build exit 0, deployed via `build-deploy.py --target sandybrown --blocks-only --skip-build`
+  (the one sanctioned path), payload-verify PASS (83/83 block.json match), smoke-test HTTP 200.
+- **Editor:** the generic "Layout type" dropdown is confirmed GONE from the Container/Wrapper
+  panel. The block's own "Layout mode" (Auto-flex / Fixed columns) control still works —
+  switched to `auto-flex`, saved, reloaded cold, value persisted correctly, zero
+  block-validation errors.
+- **Frontend:** published and viewed live at 1440px — genuine 4-up auto-flex wrap grid
+  rendered correctly, 24px gap, all content intact, zero console errors. Confirms `layoutMode`
+  drives `render.php` end-to-end, not just the editor preview.
+
+Committed and deployed — not a local-only fix.
 
 ⛔ **Not yet built: automated staleness detection.** Nothing currently re-runs these 8
 commands and diffs against the table automatically when one of the 8 scripts changes — the
