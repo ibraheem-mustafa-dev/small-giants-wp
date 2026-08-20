@@ -53,6 +53,7 @@ const {
 	axisIsMeasurable: schemaAxisIsMeasurable,
 	MEASURABLE_AXES,
 	canonicalComponentNames,
+	declaredAxes,
 	supportFamilyFromDetectVia,
 } = require( '../inspector-scan/core/golden' );
 
@@ -402,6 +403,77 @@ function axisHoverMechanism( slug ) {
  * Absolute paths of the schema's own canonical components. A banned primitive
  * reached through one of these is the CONFORMANT shape, not a violation.
  */
+/**
+ * Rule 31's live findings, grouped by block slug, for the axes that are
+ * ROW-LEVEL rather than block-level.
+ *
+ * ⛔ THIS SURVEY MUST NOT RE-RESOLVE ROWS. Rule 31 already walks a panel's
+ * `rows` prop through .push(), separately-declared consts, spreads and
+ * ternaries — a resolver that cost a real 33-row undercount to get right. This
+ * file's own header forbids building a second one, because two resolvers give
+ * the repo two answers to one question with no way to arbitrate. So the
+ * gradient axis CONSUMES rule 31 instead of re-deriving it.
+ *
+ * ⚠ The header claimed this integration already existed ("Row-level axes
+ * (state minimum, gradient) are read from rule 31's live output"). It did not —
+ * measured 2026-08-20, the survey referenced rule 31 nowhere. Aspiration
+ * written as fact; now actually built.
+ *
+ * @return {Map<string, {gradient: number}>|null} Per-slug counts, or null when
+ *   rule 31 could not be run (the axis then reports UNCLEAR, never a false pass).
+ */
+function ruleThirtyOneFindings() {
+	try {
+		const out = require( 'child_process' ).execFileSync(
+			process.execPath,
+			[ path.join( PLUGIN_ROOT, 'scripts', 'inspector-scan', 'run.js' ), '--json' ],
+			{ encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }
+		);
+		const parsed = JSON.parse( out );
+		const rule = ( parsed.rules || [] ).find( ( r ) => String( r.id || '' ).startsWith( '31' ) );
+		if ( ! rule ) return null;
+		const bySlug = new Map();
+		for ( const f of rule.findings || [] ) {
+			// FLAGGED only — core/report.js serialises BASELINED findings into the
+			// same array, and counting them over-reports (rule 21 reads 208 by
+			// array length against a true 197).
+			if ( f.status && f.status !== 'FLAGGED' ) continue;
+			const slug = String( f.block || '' ).replace( /^sgs\//, '' );
+			if ( ! slug ) continue;
+			const rec = bySlug.get( slug ) || { gradient: 0 };
+			if ( /no gradient path/.test( f.detail || '' ) ) rec.gradient += 1;
+			bySlug.set( slug, rec );
+		}
+		return bySlug;
+	} catch ( e ) {
+		return null;
+	}
+}
+
+/**
+ * GRADIENT axis — every colour row must offer a gradient path unless the block
+ * declares an exemption with a real reason (golden-controls.json
+ * `controls.colour.gradient.required`, Bean ruling 2026-08-19).
+ *
+ * Block-level verdict derived from rule 31's row-level findings: a block with
+ * one or more unmet gradient rows VIOLATES; a block with none CONFORMS.
+ *
+ * @param {Object}   spec     The control-type row.
+ * @param {Object}   ctx      { slug, ruleFindings }.
+ * @return {{verdict: string, detail: string}} Axis verdict.
+ */
+function axisGradient( spec, ctx ) {
+	if ( ! spec.gradient ) return { verdict: NA, detail: 'schema declares no gradient contract' };
+	if ( ! ctx || ! ctx.ruleFindings ) {
+		return { verdict: UNCLEAR, detail: 'rule 31 could not be run — gradient rows not counted' };
+	}
+	const rec = ctx.ruleFindings.get( ctx.slug );
+	const n = rec ? rec.gradient : 0;
+	return n > 0
+		? { verdict: BAD, detail: `${ n } colour row(s) offer no gradient path and declare no exemption` }
+		: { verdict: OK, detail: 'every colour row offers a gradient path or a declared exemption' };
+}
+
 function canonicalFiles( spec, compFiles ) {
 	const out = new Set();
 	const c = spec.canonical || {};
@@ -661,6 +733,8 @@ function survey() {
 	const golden = loadMergedSchema();
 	const encoded = ( golden._meta && golden._meta.encoded ) || Object.keys( golden.controls || {} );
 	const compFiles = resolveComponentFiles();
+	// One rule-31 run per census, shared by every row-level axis.
+	const ruleFindings = ruleThirtyOneFindings();
 	const rosterBySlug = new Map();
 	try {
 		for ( const e of JSON.parse( fs.readFileSync( ROSTER_PATH, 'utf8' ) ).blocks || [] ) {
@@ -696,19 +770,23 @@ function survey() {
 				continue;
 			}
 
-			const axes = {
-				canonical: axisCanonical( spec, reached, {
-					slug,
-					blockJson,
-					rosterEntry: rosterBySlug.get( slug ),
-					type,
-				} ),
-				bannedLookalikes: axisBannedLookalikes( spec, reached, canonicalFiles( spec, compFiles ) ),
-				nativeUi: axisNativeUi( spec, blockJson, reached ),
+			// Run only the axes THIS TYPE DECLARES (core/golden.js declaredAxes).
+			// A declared axis with no evaluator built is reported as OWED, never
+			// omitted — the old fixed axis list collapsed "does not apply",
+			// "nothing measured it" and "not built yet" into one silent N/A.
+			const evaluators = {
+				canonical: () => axisCanonical( spec, reached, { slug, blockJson, rosterEntry: rosterBySlug.get( slug ), type } ),
+				bannedLookalikes: () => axisBannedLookalikes( spec, reached, canonicalFiles( spec, compFiles ) ),
+				nativeUi: () => axisNativeUi( spec, blockJson, reached ),
+				hoverMechanism: () => axisHoverMechanism( slug ),
+				gradient: () => axisGradient( spec, { slug, ruleFindings } ),
 			};
-			// The hover axis belongs to the colour contract specifically; it is
-			// applied only when the schema's own scope covers a paintable state.
-			if ( spec.states ) axes.hoverMechanism = axisHoverMechanism( slug );
+			const axes = {};
+			for ( const axis of declaredAxes( spec ) ) {
+				axes[ axis ] = evaluators[ axis ]
+					? evaluators[ axis ]()
+					: { verdict: UNCLEAR, detail: 'axis DECLARED by the contract but no evaluator built', owed: true };
+			}
 
 			rows.push( { block: `sgs/${ slug }`, type, axes } );
 		}
@@ -730,7 +808,7 @@ function survey() {
 // ---------------------------------------------------------------------------
 
 function report( result ) {
-	const AXES = [ 'canonical', 'nativeUi', 'bannedLookalikes', 'hoverMechanism' ];
+	const AXES = [ 'canonical', 'nativeUi', 'bannedLookalikes', 'hoverMechanism', 'gradient' ];
 	console.log( '' );
 	console.log( 'GOLDEN CONFORMANCE SURVEY — per block, per axis' );
 	console.log( `control types encoded in golden-controls.json: ${ result.encoded.join( ', ' ) }` );
@@ -932,6 +1010,45 @@ function selfTest() {
 		).qualifies,
 		true
 	);
+	// ── AXIS REGISTRY + gradient axis (2026-08-20) ─────────────────────────
+	// The registry's whole purpose is that a type is scored on the axes IT
+	// declares, so these pin both directions: declared and not-declared.
+	check(
+		'a row carrying `gradient` declares the gradient axis',
+		declaredAxes( { canonical: {}, gradient: { required: true } } ).includes( 'gradient' ),
+		true
+	);
+	check(
+		'…and a row without it does NOT declare that axis',
+		declaredAxes( { canonical: {} } ).includes( 'gradient' ),
+		false
+	);
+	check(
+		'gradient: rows with unmet gradient paths read VIOLATION',
+		axisGradient( { gradient: { required: true } }, { slug: 'x', ruleFindings: new Map( [ [ 'x', { gradient: 3 } ] ] ) } ).verdict,
+		BAD
+	);
+	// PAIRED NEGATIVE — same evaluator, same shape, zero findings. Without this
+	// the check above could pass on a function that always returned VIOLATION.
+	check(
+		'…and a block with zero gradient findings reads CONFORMANT',
+		axisGradient( { gradient: { required: true } }, { slug: 'x', ruleFindings: new Map() } ).verdict,
+		OK
+	);
+	// FAIL TOWARD UNCLEAR, NEVER TOWARD A PASS. If rule 31 cannot be run the
+	// axis must not report every block clean — that is the false-absence shape
+	// this whole session has been removing.
+	check(
+		'gradient: rule 31 unavailable reads UNCLEAR, not CONFORMANT',
+		axisGradient( { gradient: { required: true } }, { slug: 'x', ruleFindings: null } ).verdict,
+		UNCLEAR
+	);
+	check(
+		'gradient: a type with no gradient contract reads N/A',
+		axisGradient( {}, { slug: 'x', ruleFindings: new Map() } ).verdict,
+		NA
+	);
+
 	check(
 		'a block whose family core paints QUALIFIES (not NOT-APPLICABLE)',
 		qualifiesFor(
