@@ -9,7 +9,7 @@
  *
  * MIGRATION NOTE: this REPLACES the previous FR-22-6 shape where save returned
  * <InnerBlocks.Content />. That shape is preserved as a deprecation entry (v8)
- * in deprecated.js with a migrate() that HOISTS the child-block quote/name/role
+ * in NO deprecation (deleted at D271); the migrate() that HOISTED the child-block quote/name/role
  * text back into the typed attrs and drops the children. Existing posts must be
  * round-tripped via the WP-CLI batch migrate after deploy.
  */

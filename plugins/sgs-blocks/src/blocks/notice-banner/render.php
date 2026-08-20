@@ -2,7 +2,7 @@
 /**
  * Server-side render for sgs/notice-banner.
  *
- * Dynamic render (save.js returns null; deprecated.js v2/v1 round-trip older
+ * Dynamic render (save.js returns null; the former deprecated.js v2/v1 round-tripped older
  * static instances). The icon is the variant's ideal default (Lucide) unless the
  * operator picks an override via the shared IconPicker (any of the four sources).
  *
@@ -52,7 +52,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
 // FR-22-6: $text is no longer rendered here — the text content slot is now
 // an InnerBlocks child (sgs/text), emitted via $content below.
-// Retained in block.json for deprecated.js back-compat only. R-22-14: no fallback.
+// Retained in block.json as historical schema only (no deprecated.js, D271). R-22-14: no fallback.
 $variant           = $attributes['variant'] ?? 'info';
 $icon_source       = $attributes['iconSource'] ?? '';
 $icon_name         = $attributes['iconName'] ?? '';

@@ -968,7 +968,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ /* Media background/padding controls live in the "Image" panel's
 						     "Outer padding" section below (mediaBackground/mediaPadding*
 						     box-object attrs) — the legacy mediaBackgroundColour control
-						     was removed (one control per setting); deprecated.js v7
+						     was removed (one control per setting); the former deprecated.js v7
 						     migrates the legacy value. */ }
 
 						<ToolsPanelItem

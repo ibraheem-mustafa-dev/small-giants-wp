@@ -4,7 +4,7 @@
  *
  * FR-22-6 migration: the content column (headline, body text, and buttons) is
  * now rendered via InnerBlocks ($content). Scalar content attrs (headline, body)
- * are NO LONGER read here — they are retained in block.json for deprecated.js
+ * are NO LONGER read here — they are retained in block.json as historical schema (no deprecated.js,
  * back-compat only. R-22-14: NO legacy scalar fallback.
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
@@ -64,10 +64,10 @@ $sgs_css_length = static function ( $value ) {
 };
 
 // FR-22-6: scalar content attrs (headline, body) are intentionally NOT read here.
-// They are retained in block.json for deprecated.js back-compat only. R-22-14.
+// They are retained in block.json as historical schema only (no deprecated.js, D271). R-22-14.
 $ribbon = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
 // WS-4: `layout` renamed to `contentLayout` (the container owns `layout` = grid/flex).
-// Read the new name; fall back to the legacy `layout` for un-migrated posts (belt-and-braces alongside deprecated.js).
+// Read the new name; fall back to the legacy `layout` for un-migrated posts (the ONLY back-compat path now - deprecations were deleted at D271).
 $content_layout           = $attributes['contentLayout'] ?? ( $attributes['layout'] ?? 'centred' );
 $background_image         = $attributes['backgroundImage'] ?? null;
 $background_media         = $attributes['backgroundMedia'] ?? null;

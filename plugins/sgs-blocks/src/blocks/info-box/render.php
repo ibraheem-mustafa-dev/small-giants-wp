@@ -36,7 +36,7 @@
  *
  * Scalar CONTENT attributes (heading, subtitle, description, icon, mediaType,
  * image, boxMedia, mediaEmoji) are no longer read here. They are retained in
- * block.json for deprecated.js back-compat only. Rendering from those scalars
+ * block.json as historical schema only (no deprecated.js exists, D271). Rendering from those scalars
  * was removed in the FR-22-6 migration. R-22-14: NO legacy fallback hack.
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
