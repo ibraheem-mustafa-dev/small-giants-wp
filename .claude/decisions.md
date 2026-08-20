@@ -1,5 +1,63 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D699 [ROUTINE] — client-side-nav root cause: WP core's own kill switch, narrowed to product-collection-no-results in full context (2026-08-20)
+
+Follow-up to D698. A 4-rater `/qc-council` diagnostic (GH-research, live code-path trace, infra rater,
+docs rater) converged on a TRUSTED root cause with direct live evidence: WordPress core writes
+`"core/router":{"clientNavigationDisabled":true}` into the page's own Interactivity config JSON.
+The code-path tracer read the live `interactivity-router` JS and confirmed `navigate()` checks this
+flag FIRST and falls to a hard `window.location` navigation before any fetch — exactly matching the
+symptom (zero network request, no console error). WooCommerce's own filter code (`actions.toggle` →
+`navigate()`) is behaving correctly; something on the page tells WP core to disable client-side nav
+site-wide for this page load.
+
+**Bean then did a live 20-round bisection** (DB-level `wp_template`/`wp_template_part` overrides on
+the sandybrown canary Shop page, each round: deploy variant → curl the live interactivity-config
+JSON → check the flag → revert) to find WHICH element sets it, since the council named 3 candidate
+WC/WP-core call sites but couldn't pin the exact trigger without adding debug tracing.
+
+**Ruled out with reliable evidence** (regex-edited copies of the REAL template content — the
+trustworthy method; hand-reconstructed minimal variants proved unreliable, see below):
+- The legacy "Products (Beta)" `core/query` block — not present anywhere in this template.
+- `query-pagination`, `query-title`, `woocommerce/breadcrumbs`, `sgs/product-search` — removed
+  individually and in combination from the real page, flag persisted every time.
+- The entire toolbar template part, header, footer (each tested alone and together) — flag persisted
+  with them removed, and stayed clean when added back to a minimal reconstruction alone.
+- `sgs/container` wrapper blocks, `sgs/collapsible-text`, the two hand-authored `wp:html` blocks
+  (mobile filter toggle, filters panel header) — removed from the real page, flag persisted.
+- `sgs/product-card` (swapped for plain `wp:post-title` in the real page) — flag persisted. SGS's
+  own product-card block is NOT the cause, despite carrying its own `loadOnClientNavigation:true`
+  script-module flag (a real, separate, non-blocking finding from the council).
+- Our own SGS PHP/JS codebase does not call `wp_interactivity_config()` or reference
+  `clientNavigationDisabled` anywhere (`grep -r` across `plugins/sgs-blocks`) — this is not SGS code
+  setting the flag directly.
+
+**Narrowed to, with the single most reliable A/B pair in the investigation:** removing
+`woocommerce/product-collection-no-results` (with its `sgs/text` child, exact real attributes) from
+the REAL page content via regex — same technique that reliably reproduced every ruled-out result
+above — flipped the flag from `true` to absent. Re-adding it (same method) restored `true`.
+
+**Caveat, stated plainly:** hand-reconstructed MINIMAL variants (filters + no-results built fresh,
+not edited from the real page) could NOT reproduce the dirty state — suggesting the trigger needs
+either the full real filter set (all 6: active/price/attribute×2/status/rating, with their real
+`heading`/`headingLevel`/`queryType`/`showCounts` attributes) or something about attribute richness
+that simplified reconstructions kept dropping. **Do not treat "product-collection-no-results is the
+fix target" as validated** — per this project's `prove-the-cause-before-fix` rule, this is the
+narrowest, best-evidenced remaining suspect, not a proven single-cause diagnosis. A fix-shape based
+on this needs its own Stage 5 empirical validation (the qc-council hard gate) before anyone builds
+against it — e.g. try removing/restructuring `product-collection-no-results` on the REAL page (not
+a reconstruction) and confirm client-side filtering starts working end-to-end, not just that the
+config flag flips.
+
+**Site fully restored** — every DB template/template-part override created during the bisection was
+deleted (confirmed via `wp post list --post_type=wp_template[_part]` returning empty); the live Shop
+page is back to its theme-file-default state, verified dirty (as before) and rendering real filters.
+
+**Status: root MECHANISM confirmed (WP core's own client-nav kill switch). Trigger narrowed from
+"somewhere on the page" to one specific block, with real but incomplete confidence. Next step:
+retest against the real page (not reconstructions) with the no-results block restructured, before
+treating this as a validated fix.**
+
 ## D698 [ROUTINE] — FR-38-12 Flip-on-WooCommerce built + deployed; live-triggered verification INCONCLUSIVE, left OFF pending it (2026-08-20)
 
 Built per the Bean-approved design gate (`.claude/plans/2026-08-20-flip-woocommerce-product-collection-design-gate.md`):
