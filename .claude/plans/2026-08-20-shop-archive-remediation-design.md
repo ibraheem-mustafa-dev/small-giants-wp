@@ -333,3 +333,147 @@ Every step: its own commit, its own `build-deploy.py --target sandybrown`, never
   delete as follow-up.
 - **Chip horizontal-scroll row ≤481px** (`woocommerce.css:648`) — `nowrap` hides active
   filters off-screen with no affordance. Real defect, low priority.
+
+---
+
+# ADDENDUM — container width/background forensics (2026-08-20, later)
+
+Triggered by Bean's own investigation + his test page `/2562-2/`. Three agents + live
+verification. **Two of Bean's hypotheses disproven, one bigger problem found.**
+
+## A. The wrapper split did NOT break this — DISPROVEN
+
+Commit `e61b2f52` (2026-08-17) split `ContainerWrapperControls.js` 1,888 → 269 lines + 6
+sibling panels. Verified **mechanically**, not from the commit message: pre-split file
+reconstructed, all 7 post-split files concatenated, imports/exports/comments/whitespace
+stripped, sorted, diffed. **Zero behavioural lines changed** — only import plumbing plus
+deletion of a dead constant. `class-sgs-container-wrapper.php` was never split and was not
+touched by it. **Rule it out.**
+
+## B. Background is NOT wired to the wrong layer — Bean's diagnosis is INVERTED
+
+Background colour paints on `<span class="sgs-container__overlay">` — a direct child of the
+**outer** tag, sibling of `__inner`, `position:absolute; inset:0` (`style.css:40-45`;
+assembled `class-sgs-container-wrapper.php:1327, 2776-2778`). Background media → the outer's
+`::before`. **No background is emitted against `__inner` anywhere.** The retirement rule IS
+honoured by the emission code.
+
+**What IS mis-wired: the band max-width lands on the OUTER element.** Chain
+(`class-sgs-container-wrapper.php`): `:424-425` object-shaped `contentWidth` blanks the flat
+var → `:836-842` `$has_band_props` false → `:2689` `$do_wrap` false, **no `__inner` renders**
+→ `:1628` `$grid_sel` falls back to `.{uid}` → `:2344-2354` contentWidth max-width emitted on
+the outer. The band cap shrinks the box the background fills.
+
+⚠ `contentWidth` default is `{"desktop":"full"}` — an OBJECT — so **every** container takes
+this path.
+
+**LIVE CONFIRMED** on `/shop/`:
+`.sgs-container-db2a20e3{max-width:var(--wp--style--global--content-size,1200px)}`
+(uid-scoped, resolving 1280px) with `hasInnerBandChild: false`.
+
+## C. `contentWidth: full` — NOT a regression (agents disagreed; resolved)
+
+Agent 2 called it a bug; agent 3 disproved that and is right on the narrow point: `full` →
+`''` → the `'' !== $content_width` guard suppresses the emit → **no band cap, by design**,
+continuously since D231 (2026-06-18). It cannot remove an *ancestor* cap.
+
+Bean's symptom is real but the cause is authoring: `archive-product.html:4`'s outer container
+has `contentWidth:{"desktop":"normal"}` → a 1280px band (live value from
+`sites/mamas-munches/theme-snapshot.json:371`, overriding the repo's 1200px). The inner
+container at `:6` has **no `align`**, so it cannot break out. Compare `single-product.html:9`
+and `:33`, which DO carry `"align":"full"` and work.
+**Fix = `align:"full"` on the instance, not a wrapper change.** B and C are both real and
+independent.
+
+Also found: `narrow` is unhandled by the resolver → emits `max-width:narrow` (invalid,
+silently dropped). Legacy stored values hit this.
+
+## D. The real regression — 60 orphaned colour authorings, framework AND client
+
+`ce6a5d72` (2026-08-12) set `supports.color:false` on `sgs/container` (+ background false on
+hero/cta-section/trust-bar). **Its impact census measured canary POSTS only** — quote:
+*"container has 3 published QA-probe pages, none with a stored `style.color` value"*.
+Templates, parts and patterns were never in scope. **Orphaning by omission, not decision.**
+
+| Block | Attr | Count | Status |
+|---|---|---|---|
+| `sgs/container` | `backgroundColor` | 38 | orphaned |
+| `sgs/container` | `textColor` | 1 | orphaned |
+| `sgs/hero` | `backgroundColor` | 9 | orphaned |
+| `sgs/trust-bar` | `backgroundColor` | 7 | orphaned |
+| `sgs/site-header-row` | `backgroundColor` | 3 | orphaned (D683, still live) |
+| `sgs/brand-strip` | `backgroundColor` | 1 | orphaned |
+| `sgs/testimonial-slider` | `backgroundColor` | 1 | orphaned |
+| `sgs/cta-section` | `backgroundColor`/`textColor` | 15 | **SURVIVES** — declared explicitly |
+
+Framework: 7 templates/parts + ~30 pattern occurrences. **Client: 18 occurrences in
+`sites/indus-foods/`** — not confined to the shop, or to Mama's.
+
+**The gate is wired but wrong.** `check-dead-pattern-attrs.py:55-58` puts `backgroundColor`,
+`textColor`, `gradient` on an **unconditional allowlist with no supports cross-check**. Its
+sibling `native-style-undeclared` path (added `09604777`) DOES cross-reference `style.*`
+against supports; the three top-level preset shorthands bypass it. One targeted fix surfaces
+all 60.
+
+## E. Editor "invalid content" — my hypothesis was WRONG; real cause found
+
+I asserted the undeclared `backgroundColor` caused it. **Disproven live**: WP strips it before
+the editor sees it (`bgVal: null`, `containersWithBg: []`), so it cannot be the cause.
+
+**Real causes — 17 invalid blocks in `archive-product.html`, two independent authoring bugs:**
+1. **4 × `sgs/container`** — hand-written HTML comments sit inside container inner-content.
+   `save.js` emits `<InnerBlocks.Content/>` (no comments); the post body has them →
+   *"Expected end of content, instead saw [comment]"*.
+2. **13 × WooCommerce filter blocks** — authored self-closing (`/-->`) but their `save()`
+   emits a `<div>` → *"Expected `<div…>`, instead saw end of content"*.
+
+This also explains Bean's point 1 (settings do nothing on canvas) — compounded by E below.
+
+## F. Frontend/editor asymmetry — VERIFIED, mechanism NOT fully explained
+
+Deployed `build/blocks/container/block.json` confirmed **current** (`supports.color:false`, no
+`backgroundColor` attr, `contentWidth` default `{"desktop":"full"}`) — not stale. Yet the
+**frontend paints** (`has-background has-surface-alt-background-color`, computed
+`rgb(255,249,240)`) while the **editor strips** the same attribute.
+
+⚠ This contradicts D338's stated rule that undeclared attrs are stripped before `render.php`.
+**Behaviour verified; WP-core mechanism NOT established.** Do not build on an assumed
+explanation.
+
+**Practical consequence regardless of mechanism:** the setting is invisible and uneditable to
+the client but still paints — an uncontrollable ghost setting. That alone justifies fixing it.
+
+## G. Where Bean's reading was corrected
+
+- **Layout default `stacked` → `flex`:** keep `stacked`. `flex` would add
+  `display:flex;flex-wrap:wrap` and collapse block-level children to content width. The
+  declaration is `{"type":"string","default":""}` and has **never been edited** (verified at
+  every revision since 2026-06-11) — not a regression. **Real bug next door:** block.json `""`
+  vs panel `'stack'` → untouched blocks emit a broken class `sgs-container--`.
+- **Two panels:** keep both — **zero attribute overlap** (`edit.js:299` writes outer
+  padding/margin; `:351` writes only `contentBandPadding`). Introduced together in `764ab2e6`
+  (2026-07-09), predating the split by 6 weeks. The Content-band panel is a **vestigial shell**
+  since `6c4b5087` hollowed it to padding-only. **Its help text is FALSE** — it claims "Only
+  active when Content width is set"; band padding alone already creates the band.
+- **Editor preview does nothing (point 1):** `edit.js:224` uses a hand-built
+  `useBlockProps` approximation, **not** `ServerSideRender`. It applies max-width, gap,
+  min-height, shadow, bg-image custom props and grid/flex — and **none** of overlay colour,
+  contentWidth, band padding, or padding/margin. Most of the inspector genuinely cannot move
+  the canvas.
+- **Inner band layer:** survives every proposal. All fixes ADD band emission or RESTORE
+  `__inner`. L1–L4 cloning cascade intact — hard constraint respected.
+
+## H. Fix shapes — NOT approved; B needs a Rule 7 design gate
+
+1. **B (shared wrapper, HIGH blast radius — needs Bean's explicit go-ahead):**
+   (a) make `$has_band_props` object-aware so `$do_wrap` flips and `__inner` renders;
+   (b) give `contentWidth` its own band selector so it can never fall back to `.{uid}`.
+2. **C:** add `align:"full"` to `archive-product.html:6`. Instance-level, zero blast radius.
+3. **D:** fix the gate allowlist FIRST (so the tool enumerates, not a one-off script), then
+   remediate. For container/hero/trust-bar, removing the attr **loses the background** — they
+   need a declared British `backgroundColour` attribute (mirroring `sgs/site-header-row`)
+   before the markup can be cleaned. `site-header-row`'s 3 are a pure spelling fix.
+4. **E:** strip the comments out of container inner-content; give the WC filter blocks their
+   save markup (or re-insert via the editor).
+5. **G:** align block.json `layout` default to `"stack"`; correct the Content-band help text;
+   consider `ServerSideRender` for the canvas.
