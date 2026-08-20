@@ -67,7 +67,7 @@ apply, never completely walled off from areas of potential.
    the bounded set; filing a non-GSAP library under "Tier G" would have made that tier mean
    "any library", which is precisely the unbounded state §1 exists to prevent. A third tier
    states the exception instead of blurring the second one.
-   **Admission test — all four must hold, or it is not Tier H:** (i) the capability is real and
+ **Admission test — all four must hold, or it is not Tier H:** (i) the capability is real and
    Tier V genuinely cannot reach it; (ii) GSAP either cannot do it, or can only do it by a
    mechanism that damages a shipped SGS system — *the Lenis case: ScrollSmoother transforms a
    wrapper around page content, and a transformed ancestor silently stops `position: sticky`
@@ -84,13 +84,13 @@ apply, never completely walled off from areas of potential.
    cosmetic — **OGL fails Tier H's own admission test at part (iii), which requires SINGLE-PURPOSE.**
    Lenis does one thing; a WebGL wrapper is a general-purpose rendering engine. Filing it under H
    would make "single-purpose" meaningless, which is the exact unbounded state §1 exists to prevent.
-   **Admission test — all five must hold, or it is not Tier W:** (i) Tier V genuinely cannot reach it
+ **Admission test — all five must hold, or it is not Tier W:** (i) Tier V genuinely cannot reach it
    — CSS moves and recolours whole elements, it cannot warp the inside of one; (ii) **GSAP cannot
    reach it either** — GSAP animates VALUES, it does not rasterise pixels, so if GSAP can drive it,
    it is Tier G; (iii) the effect is bounded to ONE surface (a hero, a gallery, a configurator), never
    page-wide chrome; (iv) it degrades to something meaningful with no WebGL, no JS, or reduced
    motion; (v) its admission is a D-numbered decision naming the effect it enables.
-   **Bean's four decisions (D479), do not re-litigate:**
+ **Bean's four decisions (D479), do not re-litigate:**
    - **Byte allowance:** a NAMED **120KB JS allowance for Tier W pages only**. The 50KB/page rule is
      untouched everywhere else. A budget quietly breached is a budget abandoned, so this is explicit.
    - **Library: OGL**, wrapped behind an SGS-side `init / setUniform / destroy` interface so the
@@ -101,17 +101,17 @@ apply, never completely walled off from areas of potential.
      the same block** — never a blank canvas, never a hidden section.
    - **Scope: a CLOSED LIST of effects**, exactly as Tier H is a closed list of libraries. First entry
      is the fluid cursor field. "We have WebGL now" is precisely how a byte budget dies.
-   **Three house contracts Tier W carries ON TOP of §1.6** (which binds it identically otherwise):
-   **context-loss recovery** (the single most-reported WebGL complaint across every major library's
+ **Three house contracts Tier W carries ON TOP of §1.6** (which binds it identically otherwise):
+ **context-loss recovery** (the single most-reported WebGL complaint across every major library's
    issue tracker — iOS Safari discards the GPU context under memory pressure; never leave a dead
    black rectangle), **explicit GPU disposal** (textures and buffers are not garbage-collected like
    DOM nodes; leaks compound across navigations), and **power/thermal awareness** (pause off-screen
    and when the tab is hidden).
-   **Cloning: permanently unclonable, stated plainly.** The pipeline reads computed CSS; a shader has
+ **Cloning: permanently unclonable, stated plainly.** The pipeline reads computed CSS; a shader has
    none — `getComputedStyle()` on a `<canvas>` says nothing about what the GPU drew. It is DECLARED
    via a BEM signal resolved to a block attribute, never inferred, and its fidelity is Bean's eye
    alone with no numeric score behind it (R-31-13's second half without the first).
-   **Tier W must never become:** a 3D engine (three.js is 182KB gzip — 3.6× the whole page budget —
+ **Tier W must never become:** a 3D engine (three.js is 182KB gzip — 3.6× the whole page budget —
    and "since we're doing WebGL anyway" is the single most likely way this goes over), or the default
    for anything merely difficult. The doctrine is a ratchet TOWARD cheap: a Tier W effect whose CSS
    equivalent later becomes viable gets DEMOTED, exactly as Tier G does.
@@ -242,7 +242,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   Tier V "lite" option where supported.
 - **FR-38-13 Draggable + Inertia — curated roster + opt-in mechanism.** Roster v1:
   `sgs/gallery` (drag-to-scroll carousel upgrade), `sgs/testimonial-slider` (same),
-  **`sgs/before-after` (NET-NEW block — DB-verified absent, Wave C)**, `sgs/hero` decorative
+ **`sgs/before-after` (NET-NEW block — DB-verified absent, Wave C)**, `sgs/hero` decorative
   layers (draggable ornaments, desktop fine-pointer only). **Opt-in mechanism:** a block joins
   the roster by declaring `supports.sgs.fx.draggable` in its block.json — `/sgs-update` seeds it
   to `block_capabilities` (§6); the runtime + registry read the DB, never a hardcoded roster
@@ -254,15 +254,15 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   A native horizontal scroller with looping ON clones leading/trailing items and re-seats
   `scrollLeft` at the boundary within one frame, so the track never dead-stops at the last card.
 
-  **NOT a drag setting, and this is the load-bearing part of the requirement.** Bean's ruling:
+ **NOT a drag setting, and this is the load-bearing part of the requirement.** Bean's ruling:
   *"looping should not be tied to the drag effect — they should be independent controls"*, and
   *"we're not setting the default behaviour in all carousels, just making the functionality
   available to those who want it."* So looping has its **own grammar** (`data-sgs-loop="1"`),
   never a `data-sgs-fx` value, and an element may carry BOTH `data-sgs-fx="draggable"` and
   `data-sgs-loop="1"` at once — a single-valued `fx` slot could not express that pair.
-  **Default OFF, opt-in per instance.**
+ **Default OFF, opt-in per instance.**
 
-  **Why a separate module rather than an addition to `fx-draggable.js`.** That file's own docblock
+ **Why a separate module rather than an addition to `fx-draggable.js`.** That file's own docblock
   records a prior decision rejecting exactly it — *"re-deriving such a block's own wrap-around
   maths inside a block-agnostic module is exactly the per-block hyperfocus R-31-9 forbids"* —
   alongside a contract that it never creates a wrapper, never transforms, and never reorders DOM,
@@ -270,23 +270,23 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   owns the DOM work as its explicit job; **`fx-draggable.js` is not modified at all**, so that
   contract is honoured rather than overturned.
 
-  **Eligibility** is the same STRUCTURAL question the drag module already answers — a genuine
+ **Eligibility** is the same STRUCTURAL question the drag module already answers — a genuine
   native horizontal scroller (`isNativeHorizontalScroller`, extracted to `motion-utils.js` as a
   deliberate documented duplicate, because sharing it would have required adding an `export` to
   the frozen file, itself a modification). Never a block name (R-31-9).
 
-  **Accessibility is part of the requirement, not a follow-up.** A loop has no last item, so
+ **Accessibility is part of the requirement, not a follow-up.** A loop has no last item, so
   "next" never disables and the dot count has no natural end. Clones are `inert` + `aria-hidden`
   with focusables neutralised and are excluded from the block's item selection, so **the dot count
   keys to the REAL card count** and the active dot tracks modulo position. Verified live: 6 real
   cards, 18 with clones, **6 dots**.
 
-  **Control home is PER-BLOCK, not the shared fx panel** — the same constraint that already forced
+ **Control home is PER-BLOCK, not the shared fx panel** — the same constraint that already forced
   `draggable` block-private: the scroller is a DESCENDANT, and both `fx.js`'s save filter (static
   blocks only) and `fx-attributes.php`'s injector only ever stamp the block ROOT.
   `fx_effects.creates_panel = 0` records that decision rather than driving it.
 
-  **STATUS — ROLLOUT COMPLETE, 2026-08-02.** Five blocks now carry `loopCarousel`, each proven live
+ **STATUS — ROLLOUT COMPLETE, 2026-08-02.** Five blocks now carry `loopCarousel`, each proven live
   by `scripts/motion-qa/probe-carousel-loop.mjs` against its own fixture with drag AND loop both on:
   `sgs/gallery` (exemplar, 9/9), `sgs/post-grid` (9/9), `sgs/trustpilot-reviews` (9/9),
   `sgs/google-reviews` (9/9), `sgs/buybox` (8/8 + 1 not-exercised). Per-block evidence in
@@ -294,7 +294,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   exercised on four of the five — 9 real cards / 27 with clones / **9 dots** on post-grid, and the
   same shape on the rest.
 
-  **Roster predicate: "owns a native horizontal scroller"** — what `isNativeHorizontalScroller()`
+ **Roster predicate: "owns a native horizontal scroller"** — what `isNativeHorizontalScroller()`
   gates on at runtime. Measured: `buybox`, `gallery`, `google-reviews`, `post-grid`,
   `trustpilot-reviews`.
 
@@ -308,7 +308,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `sgs/timeline` is a genuine horizontal scroller with no fx declaration — an unclaimed candidate
   needing a new control surface, not a rollout.
 
-  **`sgs/buybox` was the non-mechanical one** (thumbnail strip + the product-card Interactivity
+ **`sgs/buybox` was the non-mechanical one** (thumbnail strip + the product-card Interactivity
   store) and drove a UNIVERSAL hardening of `neutraliseClone()` in `fx-carousel-loop.js`: clones now
   have `data-wp-*` directives plus `data-index`/`aria-current` stripped, on the clone root and every
   descendant. `inert` + `aria-hidden` stop a human reaching a clone; they do NOT stop a framework
@@ -352,7 +352,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   GSAP adds nothing the doctrine's §1.3 ratchet would accept. **Measured at build: 982 bytes gzip,
   no GSAP dependency**, so a page using this effect and no Tier G effect ships zero GSAP bytes.
 
-  **THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT.** Everything below about coordinates and
+ **THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT.** Everything below about coordinates and
   `background-attachment` is load-bearing and unchanged by the widening. What changed is that the
   thing painted at the published position is selected rather than hard-coded. A field type sets ONE
   custom property on the emitter — `--sgs-cursor-field-layer` (the image), optionally
@@ -366,7 +366,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   | `spotlight-mask` | the same gradient as a `mask-image`, revealing a pattern beneath rather than adding light | SHIPPED — deliberately paints by a DIFFERENT CSS property, so the extensibility seam is demonstrated rather than asserted |
   | `floating-objects` | individual `transform: translate()` per marked object, reading the SAME viewport-space `--sgs-cursor-x`/`--sgs-cursor-y` custom properties the emitter already publishes | **TIER V ARGUED (2026-08-02), STILL NOT BUILT.** See below — the tier question is answered but the opt-in surface is a separate, design-gated decision this residual work deliberately did not make. |
 
-  **`floating-objects` — resolved to Tier V, but deliberately still not built (2026-08-02).**
+ **`floating-objects` — resolved to Tier V, but deliberately still not built (2026-08-02).**
   The FR's own open question — *"it is the first type needing per-object JS rather than a
   single custom-property write"* — turns out to be avoidable. A pure-CSS design clears the same
   bar `glow`/`spotlight-mask` clear, with **zero new JS runtime**: a floating object reads the
@@ -378,7 +378,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   the same relationship `spotlight-mask` already has to it. §1.3 test (i) capability real, Tier V
   reaches it — yes, by the above; (ii)-(iv) are the Tier H test, not applicable here.
 
-  **Why it still isn't built despite the tier question closing.** `floating-objects` breaks the
+ **Why it still isn't built despite the tier question closing.** `floating-objects` breaks the
   load-bearing sentence *"THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT"* — every other field
   type is a shared BACKGROUND LAYER (`background-image`/`mask-image`, painted identically by
   emitter and participants via `background-attachment: fixed`). `floating-objects` paints
@@ -397,15 +397,15 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   is — declared in `block.json` `supports.sgs`, never hand-listed. Do not default it on for any
   existing block.
 
-  **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1\R-31-9). Two roles:
+ **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1\R-31-9). Two roles:
 
-  **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1/R-31-9). Two roles:
+ **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1/R-31-9). Two roles:
   - **EMITTER** — publishes the pointer coordinates and paints the base field. Eligible: any
     block with `supports.sgs.containerKind` set, or declaring a background-image attribute.
   - **PARTICIPANT** — paints its own share of the SAME field so the glow reads as continuous
     across an opaque child. Eligible: any block with a background-colour capability.
 
-  **Why two roles rather than one.** Bean's ruling, verbatim: *"it'd look a bit janky for the
+ **Why two roles rather than one.** Bean's ruling, verbatim: *"it'd look a bit janky for the
   effect to either be covered behind a button or just completely turn off when I hover on a
   button so it should be able to go over any surface seamlessly."* Investigation established
   that the second half does not occur — `mousemove` bubbles from descendants, and `mouseleave`
@@ -414,7 +414,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   to `z-index: 1` (`mega-panel/style.css:193-211`), so an opaque child occludes its slice. A
   participant role fixes the occlusion without a blend layer over the client's own colours.
 
-  **Mechanism — viewport-space coordinates + `background-attachment: fixed`.** The emitter
+ **Mechanism — viewport-space coordinates + `background-attachment: fixed`.** The emitter
   publishes the pointer position in VIEWPORT pixels; custom properties inherit, so every
   descendant reads the same pair with no ancestry wiring. Each participant paints the identical
   gradient with `background-attachment: fixed`, which resolves a background against the viewport
@@ -424,11 +424,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   optional coordinate-space option rather than a second module (its export contract stays
   backwards-compatible for the existing consumer).
 
-  **Gated to fine pointers** — `@media (hover: hover) and (pointer: fine)`. A cursor effect has
+ **Gated to fine pointers** — `@media (hover: hover) and (pointer: fine)`. A cursor effect has
   no meaning on touch, and this also sidesteps `background-attachment: fixed` being ignored on
   iOS Safari.
 
-  **⚠ TWO RISKS THAT MUST BE MEASURED BEFORE WIDENING, NOT REASONED ABOUT:**
+ **⚠ TWO RISKS THAT MUST BE MEASURED BEFORE WIDENING, NOT REASONED ABOUT:**
   1. **Paint cost.** A `radial-gradient` background repaints every frame the pointer moves, and
      N participants means N repaints. The house rule ("transition only `transform`/`opacity`")
      does not name `background-image`, but the cost class is the same. Measure frame cost on a
@@ -438,7 +438,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      Bean's own standing finding applies: a mid-luminance brand accent fails as an indicator
      against both grounds.
 
-  **Unlike the mega-menu's version this is NOT always-on** — that one has no control at all
+ **Unlike the mega-menu's version this is NOT always-on** — that one has no control at all
   (`mega-panel/view.js` applies `data-spotlight` unconditionally). This ships with an inspector
   control, per the framework rule that a capability without an editor control is not done.
   Three controls on the EMITTER: field style, field colour (`DesignTokenPicker`, storing a palette
@@ -446,14 +446,14 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   opaque child paints its own share automatically, and a per-child opt-out would add a setting to
   ~51 blocks that almost nobody would open.
 
-  **`fx_effects.creates_panel` — a THIRD class of effect, added by this FR (D459).** The
+ **`fx_effects.creates_panel` — a THIRD class of effect, added by this FR (D459).** The
   qualifying-blocks generator previously had two: `requires='none'` (permissive — offered wherever
   a panel already exists, never creates one, which is what stops all ~80 blocks acquiring a panel
   from `scrub` alone) and `requires=<specific>` (creates the panel on any block providing that
   token). `cursor-field` fits neither: it is genuinely inert on a block with no paintable
   background, so it cannot be `none`.
 
-  **This was MEASURED before the code was written, and the measurement is why the column exists.**
+ **This was MEASURED before the code was written, and the measurement is why the column exists.**
   Letting `cursor-field` create panels puts a brand-new fx panel on **11 blocks** — `nav-menu`,
   `site-header`, `site-header-row`, `site-footer`, `site-footer-row`, `form`, `modal`, `nav-drawer`,
   `mega-panel`, `feature-grid`, `testimonial-slider` — and because `offered = specific + permissive`,
@@ -471,7 +471,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   participants are detected at RUNTIME from computed background — the fact that actually decides
   occlusion — never from a declared capability.
 
-  **KNOWN RESIDUALS (recorded, not assumed away).** Tracked as Step R-residual of
+ **KNOWN RESIDUALS (recorded, not assumed away).** Tracked as Step R-residual of
   `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
 
   1. **THE MULTI-LIST DRIFT** — GATED 2026-08-02 by `check-fx-list-drift.py` (wired into
@@ -486,7 +486,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   3. **A participant carrying its own `background-image` is deliberately not marked**, because our
      layer would replace it; that child keeps a visible seam. Clobbering a client's chosen image is
      plainly worse. A `::before` fallback for that narrow case is possible if the seam is reported.
-  4. ~~The participant walk runs at init only~~ **FIXED 2026-08-02.** `cursor-field.js` gained a
+  4. **FIXED 2026-08-02.** `cursor-field.js` gained a
      bounded `MutationObserver` on the emitter (`childList` + `subtree` +
      `attributeFilter: ['style', 'class']`) that re-runs the SAME `isParticipant()` test against
      added nodes and mutated existing nodes, debounced to one pass per animation frame regardless
@@ -505,7 +505,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   the one place in the framework where those guarantees are knowingly waived. Renamed
   `sandbox` → `canvas` at the same ruling.
 
-  **What the council established, kept here because the earlier text asserted the opposite.** This
+ **What the council established, kept here because the earlier text asserted the opposite.** This
   FR originally justified itself by claiming the block *dissolves* WCAG 2.5.7 — a thrown object has
   no discrete single-pointer alternative, so the argument ran that restricting bodies to
   non-interactive decorative content means nothing operable is ever throwable and no alternative is
@@ -515,7 +515,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   carries WP's own `linkTo`. An operator can place operable content inside with no code. The
   `aria-hidden="true"` on the arena does not compensate — it removes content from the accessibility
   tree while leaving it in the tab order.
-  **That was a category error in this FR, not a build defect: "decorative" was written as a property
+ **That was a category error in this FR, not a build defect: "decorative" was written as a property
   of a block TYPE when it is a property of a block's CONFIGURATION.** Bean's ruling above accepts
   the consequence for this surface rather than requiring the guarantee. **Do NOT cite this FR as
   evidence that any other SGS surface clears 2.5.7** — every other drag effect earns that separately
@@ -524,34 +524,34 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   throwable by pointer while removing the keyboard trap. ⛔ `inert` is the WRONG primitive — it
   blocks pointer interaction on the whole subtree and would disable the block.
 
-  **This is the ONE named exception to FR-38-14**, which says physics are easing FLAVOURS and
+ **This is the ONE named exception to FR-38-14**, which says physics are easing FLAVOURS and
   *never standalone toggles*. FR-38-14 continues to govern every other use; this canvas is the single
   surface where physics is the point rather than the easing. Do not read this as reopening
   FR-38-14 generally.
 
-  **Capability was never the objection** — Physics2DPlugin and InertiaPlugin are already bundled
+ **Capability was never the objection** — Physics2DPlugin and InertiaPlugin are already bundled
   and free.
 
-  **Autonomous motion.** An object still moving *after release* is autonomous, so the
+ **Autonomous motion.** An object still moving *after release* is autonomous, so the
   "drag survives reduced motion" reasoning behind `fx-draggable`'s SIMPLIFY contract does not
   carry here. Reduced motion disables the physics outright — see the contract below.
 
-  **KNOWN CEILING (council, 2026-08-02) — it is a throwable layer, not a physics engine.**
+ **KNOWN CEILING (council, 2026-08-02) — it is a throwable layer, not a physics engine.**
   Physics2DPlugin has no collision detection; bodies bounce off the arena's edges only and pass
   straight through each other. There is also no rotation (`type: 'x,y'`) and no resize handling
   (bodies take fixed pixel `left/top/width/height` at init). Award-tier "physics playground" sections
   use Matter.js/Rapier for pile-up and stacking. Accepted for a decorative canvas; do NOT describe
   this block as a physics engine to a client.
 
-  **Shape (Bean's call, asked and answered in-session): a dedicated container-equivalent block
+ **Shape (Bean's call, asked and answered in-session): a dedicated container-equivalent block
   whose children become bodies — NOT a physics toggle bolted onto existing blocks with preset
   shapes.** A preset-shape toggle locks operators into whatever shapes we happened to imagine; a
   container-kind block gives them anything they can put in a container. It therefore inherits the
-  **composite-mirror rule** (project CLAUDE.md, D152) and MUST mirror `sgs/container`'s wrapper
+ **composite-mirror rule** (project CLAUDE.md, D152) and MUST mirror `sgs/container`'s wrapper
   capabilities rather than diverging — its `container_kind` follows from that, and any missing
   capability is a gap to add to the block, never a converter workaround.
 
-  **Reduced-motion contract — degrade to MORE content, never less.** Under
+ **Reduced-motion contract — degrade to MORE content, never less.** Under
   `prefers-reduced-motion: reduce` the physics are disabled and **the children still render, static,
   in their authored positions**. The surface does not vanish. "Disables the surface outright" in
   D447 means *disables the motion*, not *removes the content*: hiding decorative children would be
@@ -566,7 +566,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   and `carousel-loop` rows, and a same-file collision would clobber one of them. Add it with the
   block's build session.
 
-  **Nearest existing anchor:** FR-38-13's still-unbuilt *"hero decorative layers (draggable
+ **Nearest existing anchor:** FR-38-13's still-unbuilt *"hero decorative layers (draggable
   ornaments)"* roster entry — a sandbox is that idea generalised to a container.
 
 ### 3.4 SVG
@@ -593,7 +593,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   GSAP. **Tier G only when scroll-scrubbed** (path progress mapped to scroll → MotionPathPlugin
   + ScrollTrigger). The inspector exposes one control surface; the tier fork is an
   implementation detail invisible to the client.
-  **Resting position (D441, 2026-08-01, owner-approved design amendment).** Measured live on
+ **Resting position (D441, 2026-08-01, owner-approved design amendment).** Measured live on
   the canary: the "arc" route's route-box sizing defect (documented in `fx-motion-path.css`)
   produced a locked end-of-scrub transform that carried the traveller through the sticky
   header's screen band and off the top of the viewport before the tween settled — the designed
@@ -602,7 +602,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `getBoundingClientRect()` clamp was considered and rejected as the wrong layer (ad hoc pixel
   maths against a value the CSS layer can resolve declaratively, per-frame layout reads for a
   static value, and a second reduced-motion code path). The shipped fix is a client-facing
-  **"Resting position" control** — four named presets (`below-header` / `middle` / `lower-third`
+ **"Resting position" control** — four named presets (`below-header` / `middle` / `lower-third`
   / `custom`, DEFAULT `middle` — industry convention for "settle and read": viewport centre,
   never `top top`, which is for pinning mechanics) plus a 5vh-stepped fine-tune slider for
   `custom`. Values resolve **declaratively in CSS** via `calc()`/`max()` against the existing
@@ -628,7 +628,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `6c204981` — the last closed the row-collapse verification leg).
   Evidence: `reports/2026-07-30-motion-waveB-commit1-live-verification.md`; narrative:
   `memory/session-2026-07-30-motion-waveB-commit1.md`. Owner-tuned to strength 3.
-  **Both previously-owed gaps on this FR are now CLOSED (2026-07-30, D424):**
+ **Both previously-owed gaps on this FR are now CLOSED (2026-07-30, D424):**
   · **Long-distance anchor — CLOSED.** Proven over **2,211px**, not the skip link's 24px: the
   journey eased (269 → 1295 → 2009 → 2190, not a teleport), was **not** clamped at the document
   end, and the target landed **0.21px clear** of the sticky header — the same offset the 24px
@@ -642,7 +642,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   SITE setting on the **SGS → Motion** page, default OFF. Lenis eases the REAL document scroll
   rather than transforming a wrapper, so there is no `#smooth-wrapper`/`#smooth-content` markup,
   no template change, and no interaction with the Spec 37 header (§4.2, superseded).
-  **Mandatory conditions:** (a) disabled in the editor and all of wp-admin — server-side by the
+ **Mandatory conditions:** (a) disabled in the editor and all of wp-admin — server-side by the
   enqueue (`is_admin()`), plus a runtime gate for the editor's iframed canvas; (b) disabled under
   `prefers-reduced-motion`, checked LIVE and **reactively** — a mid-session OS change tears the
   instance down and a change back rebuilds it, without a reload; (c) anchor links + `:target` +
@@ -652,7 +652,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   momentum is what a visitor's muscle memory expects, and this must be set EXPLICITLY, never left
   to the vendor default. An operator-facing opt-in with its own strength exists (D422 addendum,
   owner-requested 2026-07-30) but is **default OFF and documented as not recommended**:
-  **tested on a real phone at the lightest setting (touch strength 1) and rejected by the owner as
+ **tested on a real phone at the lightest setting (touch strength 1) and rejected by the owner as
   "abrupt and janky" — worse than off, not better.** That is a measured device result, not a
   preference; do not re-propose touch smoothing as an improvement without new evidence from a
   real device; (e) keyboard/programmatic scrolling (find-in-page, focus scrolling)
@@ -672,11 +672,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `reports/2026-07-30-motion-waveB-page-transitions-verification.md`.
   SITE setting + per-template overrides on the **SGS → Motion** page, default OFF, sharing the
   existing `sgs_motion_settings` option. CSS-first (`@view-transition`), progressive enhancement,
-  **no GSAP, no router, and zero frontend JS** (verified: the feature ships one stylesheet and
+ **no GSAP, no router, and zero frontend JS** (verified: the feature ships one stylesheet and
   nothing else). **Fallback where unsupported:** navigation behaves exactly as today — the
   feature is presentation-only, so absence of support IS the fallback, with nothing to build.
   Named transition styles (fade / slide / none), site-wide and per template.
-  **Mandatory conditions, all live-verified:**
+ **Mandatory conditions, all live-verified:**
   (a) OFF ships zero bytes, and this holds **per template** — a template set to `none` enqueues
   no stylesheet and no rule, not a stylesheet that animates nothing;
   (b) reduced motion SUPPRESSES by gating the **opt-in itself** inside
@@ -704,7 +704,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   > banding. The safety was therefore *accidental*; it is now stated, so restoring the "platform
   > default" later cannot silently reintroduce the artefact.
 
-  **Independent corroboration of the reduced-motion shape:** WordPress 7.0.2 core ships the same
+ **Independent corroboration of the reduced-motion shape:** WordPress 7.0.2 core ships the same
   construction in its own admin CSS (`wp-view-transitions-admin-inline-css`:
   `@media (prefers-reduced-motion:no-preference){@view-transition{navigation:auto}…}`), observed
   on this canary. The pattern is core's, not an invention of this spec.
@@ -1035,17 +1035,17 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   scrub), pin+scrub (FR-38-6), element timelines (FR-38-7), horizontal panel (FR-38-8),
   SplitText (FR-38-10 — validates plugin-splitting with a non-scroll plugin), canaries for all
   of the above (FR-38-24).
-  **Blast radius: ADDITIVE ONLY** — no existing Tier V system, shipped block, or template is
+ **Blast radius: ADDITIVE ONLY** — no existing Tier V system, shipped block, or template is
   modified; the only shared-file touches are the new registry include + webpack externals.
 - **Wave B — site level: smooth scrolling (Tier H) + page transitions.**
   FR-38-18 (Lenis, D422), FR-38-19 (cross-document View Transitions).
-  **Blast radius REDUCED BY D422 — this wave no longer touches the Spec 37 header system or any
+ **Blast radius REDUCED BY D422 — this wave no longer touches the Spec 37 header system or any
   theme template.** The wrapper-insertion filter and the header relocation were the entire
   reason this wave was "the highest-risk surface, deliberately quarantined"; with a smoother
   that creates no wrapper, both are cancelled (§4.2). What remains is additive: one script
   module + one stylesheet + one settings page, plus template-level `@view-transition` CSS for
   FR-38-19.
-  **The FR-37-40 regression gate is RETAINED, deliberately, and reduced in scope.** It is now a
+ **The FR-37-40 regression gate is RETAINED, deliberately, and reduced in scope.** It is now a
   *regression check* rather than a verification of engineering this wave performed: smoothing
   changes scroll TIMING, and shrink / hide-on-scroll / row-collapse / the transparent flip are
   all driven by scroll listeners, so they must still be observed with the setting OFF **and**
@@ -1085,7 +1085,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   P-10 revival), MotionPath scrubbed mode (FR-38-17 — its Tier V `offset-path` variant may ship
   any time, no GSAP needed), ScrambleText (FR-38-11), `sgs/image-sequence` + asset-pipeline
   tooling (FR-38-9). Stretch: Tier V asset migration onto the registry (FR-38-24).
-  **Blast radius: per-block.** The two shipped-block touches (pairing contract; responsive-logo
+ **Blast radius: per-block.** The two shipped-block touches (pairing contract; responsive-logo
   runtime swap) each get a before/after live check; everything else is new blocks/modules.
   If C needs splitting, cut along the pairing seam: C1 = Flip + Draggable + before-after;
   C2 = SVG + text toys + image sequence.
@@ -1334,7 +1334,7 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
 - **npm dependencies introduced by this spec:** `gsap` (Tier G) and `lenis` (Tier H, D422).
   Both npm-bundled, never CDN, both conditionally loaded so a page using neither ships zero
   bytes of either.
-  **Spec 02 §Animation** — the Tier V baseline this spec bounds (its performance budget
+ **Spec 02 §Animation** — the Tier V baseline this spec bounds (its performance budget
   unchanged; parallax shipped).
 - **Parking:** P-10 (revived by FR-38-16), P-TIMELINE-ADVANCED-VISUAL-EFFECTS (first
   ScrollTrigger-scrub client use-case — the `sgs/timeline` progressive fill lands as an

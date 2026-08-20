@@ -46,7 +46,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   the content it modifies; 8 blocks were hand-sorted on it on 2026-08-08 and Bean rejected the result.
   Full rule: **PART O** (this spec) §"THE PLACEMENT RULE".
   ⭐ **COLOUR SETTLED 2026-08-15 (D621 + D622) — it is no longer an open exception to A3/A4.** ⚠
-  **Genuinely shipped as of `a5b74bd1` (2026-08-15)** — `SgsColourPanel.js` had no `group` prop
+ **Genuinely shipped as of `a5b74bd1` (2026-08-15)** — `SgsColourPanel.js` had no `group` prop
   until that commit. See Part M's dated entry for the same date for the lesson this earned. The
   Colour panel renders in the **Styles** tab (Styles = root CSS + visuals; the framework uses NO
   native colour supports, only their look). **Placement of an individual colour follows A4 and the
@@ -57,7 +57,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   spacing); core's property-keyed slots exist as an **extensibility contract** (Gutenberg #67814), a
   requirement SGS's own blocks do not have.
 - **A4. Element-first grouping** for composite blocks (panels by block PART, not property type) —
-  **derived from `supports.sgs.elements`, never hand-sorted.** One element = one panel titled by its
+ **derived from `supports.sgs.elements`, never hand-sorted.** One element = one panel titled by its
   `label`, holding that element's content (`contentAttrs`) + style clusters + its states **inline
   beside each base value**. Hover is never its own panel. Unresolved element → the control does not
   move. Kadence, Spectra, Stackable, Otter and Essential Blocks all converge on this grouping
@@ -70,7 +70,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   framing that block-root/no-element controls needed a single catch-all "block-level panel" still
   to be designed. A control that styles **nothing** (`variant`, `templateMode`, `tagName`, `layout`,
   `autoplay`, `showDots`, `required`) takes **one `Settings` panel, pinned first.** Full rule:
-  **PART O** (this spec) §"THE PLACEMENT RULE".
+ **PART O** (this spec) §"THE PLACEMENT RULE".
 - **A5. Progressive disclosure with `ToolsPanel`/`ToolsPanelItem`** once a panel hits ~6+ controls:
   optional controls behind the "+" menu, 1–3 `isShownByDefault`, `resetAll`. THE anti-clutter tool.
   - ⛔ **NAMED EXCEPTION — COLOUR IS NEVER OPTIONAL (Bean-ruled 2026-08-13).** A colour control must
@@ -189,7 +189,7 @@ that narrower question is the real residual, not "no control exists" · schema �
 - **D4. Per-device CONTENT cascade (added 2026-07-21, re-homed from Spec 37 FR-37-24).** D3's
   inheritance applies to content **presence**, not only to property values. Desktop is the base;
   tablet inherits desktop; mobile inherits tablet. Hiding a block at a tier applies to that tier
-  **and every tier below**, never above; a tier that is explicitly edited stops inheriting.
+ **and every tier below**, never above; a tier that is explicitly edited stops inheriting.
   - **HIDE, never REMOVE.** The cascade hides via CSS and never forks the block tree per tier.
     `includes/device-visibility.php:10,15` already generates `display:none` media queries and
     states *"Content remains in the DOM for SEO (display:none only hides visually)"*. A
@@ -986,7 +986,7 @@ above + **PART O** (this spec) §THE PLACEMENT RULE.
   46.1% figure hid) are **0 library-wide** — the last 9 were all `sgs/nav-menu`, resolved by its
   wrapper exit below. `inspector-scan` rule 21 (`render-without-control`) fell 243 → 130 in the
   same work (re-derived: `node plugins/sgs-blocks/scripts/inspector-scan/run.js`, at the time
-  **130 flagged, 12 baselined**). ⛔ **RE-MEASURED 2026-08-09 at `a09226e8`: 129 flagged, 12
+ **130 flagged, 12 baselined**). ⛔ **RE-MEASURED 2026-08-09 at `a09226e8`: 129 flagged, 12
   baselined.** 130 was correct when written; `0fb1507d` (the `sgs/physics-canvas` `tagName` wiring)
   cleared its last finding. ⚠ Count `status:"FLAGGED"` — `core/report.js:96-101` puts BASELINED
   entries in the `--json` array too, so a raw array length reads 141.
@@ -1040,7 +1040,7 @@ custom-property split, the four measurement controls): ****PART O** (this spec)
   shipped as data-driven `prop_map` rows (layout set), 8 named as Stage 2 (the `gridItem*` custom-
   property set plus `shadow`/`contentBandBackground`, STILL OPEN per D549's STOP-29 flag — do not
   treat these as shipped).
-  **Stage 2 is SEVEN properties** (D589, 2026-08-12): `contentBandBackground` is RETIRED, not
+ **Stage 2 is SEVEN properties** (D589, 2026-08-12): `contentBandBackground` is RETIRED, not
 pending — a background always fills its container's max-width and is never clipped to the inner
 band, so this was a design error, not a plumbing gap. The attribute, its 5 editor controls, its
 element-manifest mappings and all four wrapper emission sites are deleted (0 stored instances on the
@@ -1366,7 +1366,7 @@ machine-checkable, and read by the inspector to gather an element's content cont
 4. **Absence means no move.** Until an element declares `contentAttrs`, its content controls stay
    exactly where they are. That is the no-worse-than-today floor.
 5. **Ships with `--check`** so drift fails the build rather than waiting to be noticed, and is
-   **re-runnable and idempotent** — a block changing shape must not need hand-repair.
+ **re-runnable and idempotent** — a block changing shape must not need hand-repair.
 
 ⚠ **Named risk:** inference from `render.php` is weakest exactly where render is variant-driven
 (`hero`, `testimonial`, `product-card`). Condition 3 is what keeps that from becoming silent damage —
@@ -1630,7 +1630,7 @@ Regenerate before building any gate on them.
    Track A). It was never named here despite carrying the rule; named now. See
    `plugins/sgs-blocks/scripts/consistency/golden-controls.json` for its machine-readable shape.
 2. **Required props** — `label`, `value`, `onChange`. `enableAlpha` and `clearable` already
-   **default true** (lines 55, 57), so condition 4 was satisfied by construction, not by call sites.
+ **default true** (lines 55, 57), so condition 4 was satisfied by construction, not by call sites.
    `linked` only when the value should track a theme slug (D288). ✅ **`id` defect FIXED** — corrected
    2026-08-19. Verified against `DesignTokenPicker.js`: `useInstanceId` (`:456`) generates one, passed
    to both `BaseControl id={ id }` (`:482`) and the inner control (`:465`), so every colour control is
@@ -1643,16 +1643,16 @@ Regenerate before building any gate on them.
 wrapper blocks (`container`, `hero`, `trust-bar`, `cta-section`) reach the fork, not the lookalike.
 4. **Tab — SETTLED 2026-08-15 (D621 + D622). Do not re-derive; both halves are now ruled.**
 
-   **(a) WHICH TAB — Styles (D621).** The Colour panel renders in the **Styles** tab, first, above
+ **(a) WHICH TAB — Styles (D621).** The Colour panel renders in the **Styles** tab, first, above
    Background. ⛔ D618's earlier "Settings" placement is superseded: it reasoned that Styles is
    reserved for genuine native supports, but the framework **never uses native colour supports** — it
    replicates the native control's look and sets `supports.color` sub-flags `false`. The real rule is
    that **Styles holds root CSS and visuals**, which is why the Background panel (media uploads
    included) lives there. A colour is a visual.
 
-   **(b) WHICH PANEL — the D533/D537 resolver, exactly like every other property family (D622).**
+ **(b) WHICH PANEL — the D533/D537 resolver, exactly like every other property family (D622).**
    An element-scoped colour goes in **its element's panel**; a colour no element claims falls to its
-   **property-family panel**. ⛔ There is no bespoke colour-placement rule, and one must not be
+ **property-family panel**. ⛔ There is no bespoke colour-placement rule, and one must not be
    invented — colour was the last family still placed by hand, and any separate rule would build a
    second placement system beside the working one. `placement-reach.py` resolves all 2,262 declared
    attributes with zero human judgement; `check-element-manifest-conformance.js --check` gates it in
@@ -1705,7 +1705,7 @@ table); detection target `role='color'` (50 blocks, 261 rows). ⚠ The "14-block
    - **`GradientOverlayControl`** — whole-block background overlay, SINGLE-STATE BY CONSTRUCTION (it
      has no states concept at all). A row that needs hover cannot use this one.
 
-   **Enforcement must therefore be mechanism-aware, not binary.** Checking merely "does a gradient
+ **Enforcement must therefore be mechanism-aware, not binary.** Checking merely "does a gradient
    path exist somewhere for this row" would pass a TEXT row wired to the background mechanism, which
    renders nothing — the row would show green while the client's gradient never appears. This is a
    required refinement to rule `31-golden-colour-control`'s `row-missing-gradient` finding kind, not
@@ -1733,7 +1733,7 @@ table); detection target `role='color'` (50 blocks, 261 rows). ⚠ The "14-block
      tab toggle **within the popover**, not by separate sibling controls and not by a second panel.
      ⛔ This RETIRES the pattern of a distinct `*Hover` colour control mounted next to its resting
      twin. It also means a compound property's colour half (shadow colour being the named case) is set
-     **in the colour row**, where the state toggle already handles hover — not as a lone field on the
+ **in the colour row**, where the state toggle already handles hover — not as a lone field on the
      shadow builder.
    - **9c. ⛔ A COLOUR IS NEVER AN OPTIONAL `ToolsPanelItem`.** It must not sit behind the "+"
      disclosure menu, and it must not be hideable per instance. Bean, verbatim: *"Never should be set
@@ -1742,7 +1742,7 @@ table); detection target `role='color'` (50 blocks, 261 rows). ⚠ The "14-block
      it. A client hunting a "+" menu to find a colour is the defect A5 was meant to prevent, arriving
      by A5's own mechanism.
 
-   **Why it is a contract clause and not a tidy-up.** The framework currently ships several different
+ **Why it is a contract clause and not a tidy-up.** The framework currently ships several different
    colour controls and 101 hand-rolled `*Hover` attributes across 24 blocks against a shared state
    extension with live reach 0 (measured 2026-08-13; ⚠ a competing count of 93/20 exists and the
    population must be re-measured before any migration — see §9.9-N4 of
@@ -1811,7 +1811,7 @@ EXTENSION SURFACE axis correction above.
    `sgs/button` (dual-trigger, `LinkPopoverContent` direct), the `blockLink` extension (**3-block
    reach**, superseded from 67 — see field 5, `LinkPopoverField` + `renderExtraFields` for its bespoke
    accessible-label field), `sgs/icon`, `sgs/media`, `sgs/product-card` (3 fields, `searchOnly`).
-   **`SgsLinkControl`'s inline-mount backlog is DISCHARGED — 0 blocks.** Measured 2026-08-19
+ **`SgsLinkControl`'s inline-mount backlog is DISCHARGED — 0 blocks.** Measured 2026-08-19
 (`survey-control-mounts.py .`): `SgsLinkControl` has 0 JSX mounts tree-wide. Rule 27
 (`27-superseded-link-control.js`) was promoted from advisory to `mode: gate` at `openBacklog: 0` on
 2026-08-14 — the last of the 7 (`social-icons`) migrated 2026-08-14, commit `f6b26866`.
@@ -1867,8 +1867,7 @@ its element's panel (TIER 1) regardless of this field.)*
    family declares Tablet/Mobile siblings. **Label association REQUIRED and missing** — see §10.
 3. **Banned lookalikes** — raw-px `RangeControl` (**0 live violations found** — the only hits are the
    shadow builder's sliders, which are correct); `SelectControl` writing a `*Unit` attr (already
-   gated); a `TextControl` standing in for `UnitControl` — ~~`sgs/card-grid.cardRadius`, help text
-   *"e.g. 8px"*, accepts invalid CSS~~ ✅ **FIXED 2026-08-11 (D561)**; see §14 field 6 for the full
+   gated); a `TextControl` standing in for `UnitControl` — ✅ **FIXED 2026-08-11 (D561)**; see §14 field 6 for the full
    raw-text census (3 found, 3 fixed, 0 remaining). **Phase 3.2a must not re-list `cardRadius`.**
 4. **Tab** — `typography` for font-size/line-height, `dimensions` for spacing, `layout` for grid
    geometry. All Styles.
@@ -1877,8 +1876,7 @@ lands in the pinned `Settings` panel (D537). A control that has a real property 
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `is_responsive=1 AND css_property IN (<length set>)` → 36 blocks.
-6. **Conformance** — the `TypographyControls` consumers conform. Violators: ~~`cardRadius`~~
-   (fixed 2026-08-11, D561); 79 of 85 blocks with no tab split; **12 attributes declared + rendered
+6. **Conformance** — the `TypographyControls` consumers conform. Violators: (fixed 2026-08-11, D561); 79 of 85 blocks with no tab split; **12 attributes declared + rendered
    with no control** (below).
 7. **Detection** — join `css_property` against a length allowlist, then assert the innermost control
    is a `UnitControl`.
@@ -2038,7 +2036,7 @@ the real conformance figure is 0.
    `inspector-scan/core/components.js`, derived from the component's own source (the `writesColour`
    pattern), so an indirect mount through a shared wrapper resolves transitively.
 8. **Open** — does the `icon-*` role widen, or does a new declarative flag carry "uses IconPicker"?
-   **This is Tier 0 (d) and it is a design gate, not a backfill.**
+ **This is Tier 0 (d) and it is a design gate, not a backfill.**
 
 ### 11. SHADOW
 
@@ -2158,7 +2156,7 @@ its element's panel (TIER 1) regardless of this field.)*
    wrote a STRING into an object-typed attr, which coerces to the default and **destroys the whole
    setting**. Nothing failed, nothing warned, and it shipped to the canary.
 
-   **Therefore, whenever a family's storage shape changes, every control writing it changes in the
+ **Therefore, whenever a family's storage shape changes, every control writing it changes in the
    SAME commit, and the result is proven in the LIVE EDITOR** — register, render, write, assert the
    stored shape, assert no flat siblings, assert zero console errors. A frontend check cannot find
    this, because a programmatically-set value is already the right shape and never exercises the
@@ -2231,7 +2229,7 @@ cross-check — do not treat this guard as complete.
    `SelectControl` + token-aware colour picker). Radius is a **separate** control from width and
    style — that separation is the condition, not an implementation detail.
 
-   **Resolved by evidence, not by building it (D566, 2026-08-11):**
+ **Resolved by evidence, not by building it (D566, 2026-08-11):**
    - The only live demand was `gridItemBorder` (container / cta-section / hero / trust-bar, one
      control in `ContainerWrapperControls.js` serving all four) — a raw `TextControl` taking a CSS
      shorthand, i.e. §14.3's own banned lookalike. That is now the composed builder above.
@@ -2291,7 +2289,7 @@ its element's panel (TIER 1) regardless of this field.)*
    remaining limitation of static attribution, disclosed rather than silently counted.
    | **Per-side scalars** (§14.3 migration) | — | — | **0 — §14.3's "migration COMPLETE" claim reproduces independently** |
 
-   **Fixed this session (raw `TextControl` taking free CSS → `UnitControl`, §14.3 → §14.1/§14.2):**
+ **Fixed this session (raw `TextControl` taking free CSS → `UnitControl`, §14.3 → §14.1/§14.2):**
    `sgs/card-grid.cardRadius`, `sgs/trust-bar.iconCircleBorderRadius`,
    `sgs/trust-bar.badgeImageBorderRadius`. All three are `type: string` and their `render.php` reads
    a plain string, so the value domain is unchanged; the canary carried **0** stored instances
@@ -2351,7 +2349,7 @@ raw-text population was 3, now 0. `cardRadius` is also discharged under LENGTH �
      production at 17 mounts. **No build owed** — the responsive wrapper question was answered by
      someone shipping one.
    - **WIDTH / STYLE / COLOUR are desktop-only in practice.** `borderWidth{Tablet,Mobile}` matches
-     **0 of 83** `block.json` files; `border{Style,Colour,Color}{Tablet,Mobile}` likewise **0**. The
+ **0 of 83** `block.json` files; `border{Style,Colour,Color}{Tablet,Mobile}` likewise **0**. The
      11 `borderWidth` object attrs and 31 `border-color` attrs carry no tier sibling anywhere. The
      one apparent counter-example, `sgs/separator.thickness`, is a **scalar** `border-width` whose
      3 tiers are a flat→object migration candidate (Phase 1.6), not a per-side border builder.
@@ -2582,7 +2580,7 @@ governing document** — the precise inversion of the failure this contract exis
 - **22. Silence is not rejection — and never resolve a conflict by POSITION.** A detector's absence
   from a supporting list and its presence-with-a-negative-verdict are different facts. Generalised
   after three independent recurrences: whenever a script merges evidence from more than one source,
-  **the tie-break must be STATED in the script's own logic or comments** — never left to whatever the
+ **the tie-break must be STATED in the script's own logic or comments** — never left to whatever the
   data structure's default ordering produces. Correctness by accident of iteration order breaks the
   moment input order changes.
 - **24. A report's named artefact must exist on disk** — mechanically checkable, not asserted. (Two
