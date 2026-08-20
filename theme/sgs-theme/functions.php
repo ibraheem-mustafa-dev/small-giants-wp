@@ -226,6 +226,39 @@ function preload_fonts(): void {
 add_action( 'wp_head', __NAMESPACE__ . '\preload_fonts', 1 );
 
 /**
+ * Cache-busting version for a theme asset.
+ *
+ * ⛔ DO NOT revert this to the bare theme version. Every theme CSS/JS URL used to carry
+ * `?ver=<theme version>`, which is only bumped on a theme release — so an edited asset
+ * deployed between releases kept an IDENTICAL URL, and every browser holding that URL in
+ * its HTTP cache went on serving the OLD file indefinitely. Proven live on the canary
+ * 2026-08-20: the same URL returned 10,199 bytes when fetched with `cache: 'reload'` and
+ * 5,079 stale bytes from cache, so a shipped <dialog> rewrite of the shop filter drawer
+ * simply never ran, and the shop filter panel kept a background identical to the page.
+ * A server-side cache purge does NOT fix this — the stale copy is in the visitor's browser.
+ *
+ * filemtime() changes whenever the file changes, so the URL changes exactly when the
+ * bytes do. Falls back to the theme version if the file is unreadable.
+ *
+ * @param string $relative_path Theme-relative asset path, e.g. 'assets/css/woocommerce.css'.
+ * @param string $fallback      Version to use when the file cannot be stat'd.
+ * @return string
+ */
+function asset_version( string $relative_path, string $fallback ): string {
+	$file = get_theme_file_path( $relative_path );
+
+	if ( is_readable( $file ) ) {
+		$mtime = filemtime( $file );
+
+		if ( false !== $mtime ) {
+			return (string) $mtime;
+		}
+	}
+
+	return $fallback;
+}
+
+/**
  * Enqueue frontend stylesheets.
  */
 function enqueue_styles(): void {
@@ -236,7 +269,7 @@ function enqueue_styles(): void {
 		'sgs-core-blocks-critical',
 		get_theme_file_uri( 'assets/css/core-blocks-critical.css' ),
 		array(),
-		$theme_version
+		asset_version( 'assets/css/core-blocks-critical.css', $theme_version )
 	);
 
 	// Non-critical block styles — deferred via defer_non_critical_css() below.
@@ -244,14 +277,14 @@ function enqueue_styles(): void {
 		'sgs-core-blocks',
 		get_theme_file_uri( 'assets/css/core-blocks.css' ),
 		array( 'sgs-core-blocks-critical' ),
-		$theme_version
+		asset_version( 'assets/css/core-blocks.css', $theme_version )
 	);
 
 	wp_enqueue_style(
 		'sgs-utilities',
 		get_theme_file_uri( 'assets/css/utilities.css' ),
 		array(),
-		$theme_version
+		asset_version( 'assets/css/utilities.css', $theme_version )
 	);
 
 	// Per-variation stylesheet enqueue DELETED 2026-05-22 (Phase 5a Decision 18).
@@ -268,14 +301,14 @@ function enqueue_styles(): void {
 			'sgs-dark-mode',
 			get_theme_file_uri( 'assets/css/dark-mode.css' ),
 			array(),
-			$theme_version
+			asset_version( 'assets/css/dark-mode.css', $theme_version )
 		);
 
 		wp_enqueue_script(
 			'sgs-dark-mode',
 			get_theme_file_uri( 'assets/js/dark-mode.js' ),
 			array(),
-			$theme_version,
+			asset_version( 'assets/js/dark-mode.js', $theme_version ),
 			true // Load in footer — inline head script handles flash prevention.
 		);
 	}
@@ -285,7 +318,7 @@ function enqueue_styles(): void {
 		'sgs-nav-accessibility',
 		get_theme_file_uri( 'assets/js/nav-accessibility.js' ),
 		array(),
-		$theme_version,
+		asset_version( 'assets/js/nav-accessibility.js', $theme_version ),
 		true // Load in footer — runs after DOM is available.
 	);
 
@@ -299,7 +332,7 @@ function enqueue_styles(): void {
 		'sgs-viewport-width',
 		get_theme_file_uri( 'assets/js/viewport-width.js' ),
 		array(),
-		$theme_version,
+		asset_version( 'assets/js/viewport-width.js', $theme_version ),
 		array(
 			'in_footer' => false,
 			'strategy'  => 'defer',
@@ -329,7 +362,7 @@ function enqueue_styles(): void {
 			'sgs-woocommerce',
 			get_theme_file_uri( 'assets/css/woocommerce.css' ),
 			array( 'sgs-core-blocks-critical' ),
-			$theme_version
+			asset_version( 'assets/css/woocommerce.css', $theme_version )
 		);
 	}
 
@@ -343,7 +376,7 @@ function enqueue_styles(): void {
 			'sgs-shop-filters',
 			get_theme_file_uri( 'assets/js/sgs-shop-filters.js' ),
 			array(),
-			$theme_version,
+			asset_version( 'assets/js/sgs-shop-filters.js', $theme_version ),
 			true // Load in footer — no DOM dependency at parse time.
 		);
 	}
