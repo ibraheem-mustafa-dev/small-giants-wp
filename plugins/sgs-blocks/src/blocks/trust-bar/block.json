@@ -75,7 +75,10 @@
 					"layer": "OUTER",
 					"_layer_note": "section-KIND composite rendered via SGS_Container_Wrapper (D294 — keeps the wrapper, genuine grid/section). This element is both the block root and the grid definition, mirroring sgs/card-grid's grid element.",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -108,7 +111,11 @@
 				"icon-badge": {
 					"label": "Icon badge (icon-circle variant)",
 					"order": 2,
-					"clusters": [ "fill", "layout", "text" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"text"
+					],
 					"prefix": "icon",
 					"attrMap": {
 						"css:background-color": "iconCircleBackground",
@@ -117,29 +124,38 @@
 						"css:border-radius": "iconCircleBorderRadius",
 						"css:box-shadow": "iconCircleShadow",
 						"css:color": "iconColour",
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:box-shadow-color": "iconCircleShadowColour"
 					},
 					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
 				},
 				"label": {
 					"label": "Badge label",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "label",
 					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node."
 				},
 				"badge-label": {
 					"label": "Badge label colour (text-only / image-badge variants)",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "",
-					"attrMap": { "css:color": "labelColour" },
+					"attrMap": {
+						"css:color": "labelColour"
+					},
 					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names."
 				},
 				"title": {
 					"label": "Title",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title"
 				},
 				"badge-item": {
@@ -151,7 +167,10 @@
 				"badge-img": {
 					"label": "Badge image (image-badge variant)",
 					"order": 6,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "badgeImage",
 					"attrMap": {
 						"css:width": "badgeImageSize",
@@ -388,11 +407,17 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 4, "tablet": 4, "mobile": 2}
+			"default": {
+				"desktop": 4,
+				"tablet": 4,
+				"mobile": 2
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "0.5rem"},
+			"default": {
+				"desktop": "0.5rem"
+			},
 			"_comment": "Was the bare number \"20\", which the old flat path read as WordPress spacing-scale SLUG 20 = 0.5rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 20px. This block is pure-wrapper (render.php:86 — gap is handled entirely by the shared wrapper), so it had no render.php fallback shielding it."
 		},
 		"autoScroll": {
@@ -418,7 +443,11 @@
 		},
 		"gridTemplateColumns": {
 			"type": "object",
-			"default": {"desktop": "repeat(4, 1fr)", "tablet": "repeat(4, 1fr)", "mobile": "1fr 1fr"}
+			"default": {
+				"desktop": "repeat(4, 1fr)",
+				"tablet": "repeat(4, 1fr)",
+				"mobile": "1fr 1fr"
+			}
 		},
 		"backgroundImage": {
 			"type": "object"
@@ -520,7 +549,10 @@
 		},
 		"shapeDividerTopScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerTopFlip": {
 			"type": "boolean",
@@ -544,7 +576,10 @@
 		},
 		"shapeDividerBottomScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerBottomFlip": {
 			"type": "boolean",
@@ -599,7 +634,9 @@
 		},
 		"gridItemPadding": {
 			"type": "object",
-			"default": {"desktop": {}}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"gridItemBackground": {
 			"type": "string",
@@ -718,7 +755,9 @@
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"tagName": {
 			"type": "string",

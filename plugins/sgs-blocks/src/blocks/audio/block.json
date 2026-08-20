@@ -65,9 +65,12 @@
 				"spectrum": {
 					"label": "Spectrum colour",
 					"order": 3,
-					"clusters": [],
+					"clusters": [ "fill" ],
 					"prefix": "spectrum",
-					"_note": "spectrumColour drives the reactive spectrum/oscilloscope visualiser accent (--sgs-audio-spectrum) — a functional signal colour, not a styled element. Same ORPHAN treatment as accent."
+					"attrMap": {
+						"css:background-color": "spectrumColour"
+					},
+					"_note": "spectrumColour drives the reactive spectrum/oscilloscope visualiser accent (--sgs-audio-spectrum) — a functional signal colour, not a styled element. Declared via fill cluster + explicit attrMap (Spec 35 vocabulary fix, 2026-08-20), mirroring the accent element above."
 				}
 			}
 		}

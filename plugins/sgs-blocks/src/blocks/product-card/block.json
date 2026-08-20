@@ -140,7 +140,10 @@
 					"label": "Tag (trial/featured badge)",
 					"order": 9,
 					"clusters": [ "text", "fill", "layout" ],
-					"prefix": "tag"
+					"prefix": "tag",
+					"attrMap": {
+						"css:width": "tagFullWidth"
+					}
 				},
 				"pill": {
 					"label": "Option-picker pill",

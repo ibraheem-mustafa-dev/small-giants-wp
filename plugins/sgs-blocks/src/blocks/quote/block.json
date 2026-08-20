@@ -23,7 +23,10 @@
 				"box": {
 					"label": "Quote box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
@@ -36,14 +39,16 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:box-shadow": "boxShadow",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:box-shadow-color": "boxShadowColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
 								"css:background-image": "backgroundColourHoverGradient",
-								"css:box-shadow": "boxShadowHover"
+								"css:box-shadow": "boxShadowHover",
+								"css:box-shadow-color": "boxShadowHoverColour"
 							}
 						}
 					}
@@ -57,7 +62,10 @@
 				"attribution": {
 					"label": "Attribution",
 					"order": 3,
-					"clusters": [ "text", "layout" ],
+					"clusters": [
+						"text",
+						"layout"
+					],
 					"prefix": "attribution",
 					"attrMap": {
 						"css:color": "attributionColour",

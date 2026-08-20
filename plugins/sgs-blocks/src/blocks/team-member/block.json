@@ -46,13 +46,22 @@
 			"imageControls": true,
 			"imageControlsExplicit": true,
 			"scalarContentLift": true,
-			"presetSelectors": [ "cardStyle" ],
-			"enabledExtensions": [ "blockLink" ],
+			"presetSelectors": [
+				"cardStyle"
+			],
+			"enabledExtensions": [
+				"blockLink"
+			],
 			"elements": {
 				"card": {
 					"label": "Card",
 					"order": 1,
-					"clusters": [ "layout", "fill", "text", "motion" ],
+					"clusters": [
+						"layout",
+						"fill",
+						"text",
+						"motion"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:padding": "native:spacing.padding",
@@ -68,7 +77,8 @@
 						"css:text-align": "native:typography.textAlign",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing",
-						"css:box-shadow": "cardShadow"
+						"css:box-shadow": "cardShadow",
+						"css:box-shadow-color": "cardShadowColour"
 					},
 					"states": {
 						"hover": {
@@ -88,7 +98,9 @@
 				"name": {
 					"label": "Name",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "name",
 					"attrMap": {
 						"tag": "headingLevel"
@@ -98,7 +110,9 @@
 				"role": {
 					"label": "Role",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "role",
 					"_note": "css:color resolves via the default convention (roleColour, default 'text-muted'). No per-element font-size/weight — honest gaps."
 				},
@@ -148,7 +162,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"role": {
