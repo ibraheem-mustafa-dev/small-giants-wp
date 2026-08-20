@@ -33,9 +33,37 @@ both blocked by WooCommerce configuration/version questions unrelated to the SGS
    but not proof of our own mechanism either way.
 
 **Decision:** left the site-level setting OFF (code shipped, capability inert until proven).
-**Next step, not done here:** build a genuine `woocommerce/product-filters` + real filter control
-(price/attribute/rating) canary — that is the actual WC-native trigger this FR targets, not
-pagination — and re-attempt live verification. Do not mark this FR closed until that's run.
+
+**Follow-up attempt, same day — real progress, still not closed.** Bean asked whether hand-authoring
+the canary via `wp_update_post` (bypassing the editor/REST publish path) was the actual cause.
+Rebuilt through the REAL editor — `wp.data.dispatch('core/block-editor')` + `core/editor.savePost()`,
+same reducer/REST path a real client build uses — with an actual `woocommerce/product-filters` block
+present (not just pagination). Result: **`data-wp-router-region="wc-product-collection-0"` DID
+appear** — WC 11.0.0's actual client-side-navigation marker (not `data-wc-navigation-id`, which is
+the OLDER attribute name; that's what earlier web research surfaced and it no longer matches this
+WC version — traced to `ProductCollection/Renderer.php`). This is a genuine, confirmed improvement
+over the first attempt.
+
+**Where it stalled: the filter controls themselves never populate options on this canary**, for
+reasons that are now WooCommerce catalog/cache questions, not SGS code questions — out of scope for
+this thread, called here rather than continuing indefinitely (session-sprawl discipline):
+- `woocommerce/product-filter-price` renders empty/hidden (`minRange:0,maxRange:0` server-side)
+  despite the Store API confirming a real price range (`£4.99–£59.99`) — the filter block isn't
+  reading it.
+- `woocommerce/product-filter-status` (stock) showed `items:[]` server-side even AFTER marking one
+  of the 6 test products out-of-stock and confirming via `GET /wp-json/wc/store/v1/products/collection-data`
+  that the Store API itself sees the real 4-in-stock/1-out-of-stock split. Ruled out page/object
+  cache (fresh `X-Litespeed-Cache: miss` + cache-busting query param, same empty result) — the gap
+  is somewhere between the Store API's live count and whatever this block reads at render time.
+
+**Still true:** the `Flip.from()` animation itself has never been observed running. The blocker is
+no longer "can this trigger client-side navigation at all" (answered: yes, confirmed) — it's
+narrowed to "why don't these specific filter blocks show live options on this sparse 6-product
+canary." **Next step, not done here:** either test against a richer/real product catalogue (more
+stock variance, more attributes, real price spread across many SKUs) where WC's own filter data
+naturally isn't degenerate, or investigate why `product-filter-status`/`product-filter-price` aren't
+picking up Store API data that demonstrably exists. Do not mark this FR closed until the actual
+animation is observed.
 
 ## D697 [ROUTINE] — D452's morph fix CONFIRMED live, closing its outstanding item (2026-08-20)
 
