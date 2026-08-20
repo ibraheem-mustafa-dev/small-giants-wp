@@ -619,8 +619,27 @@ function ownPaintRegex( when ) {
 		// Colour's original hardcoded pattern, unchanged.
 		return /(?:background(?:-color)?|border-color|[^-\w]color)\s*:/g;
 	}
-	const escaped = props.map( ( p ) => String( p ).replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) );
-	return new RegExp( `(?:${ escaped.join( '|' ) })\\s*:`, 'g' );
+	const escaped = props
+		.map( ( p ) => String( p ).replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) )
+		// Longest alternative first. Alternation is leftmost-first, so `background`
+		// listed ahead of `background-color` matches, then fails on the `\s*:` and
+		// has to backtrack. JS backtracks correctly, so this is not a correctness
+		// fix — it makes the ordering a non-question rather than something the next
+		// reader has to re-derive from first principles.
+		.sort( ( a, b ) => b.length - a.length );
+	// ⛔ THE LOOKBEHIND IS LOAD-BEARING, NOT COSMETIC. `(?<![-\w])` reproduces the
+	// fallback pattern's `[^-\w]` guard WITHOUT consuming a character. Drop it and a
+	// bare `color` alternative also matches inside `--brand-color:` and
+	// `-webkit-text-fill-color:`, silently inflating every count derived from this
+	// regex. That matters more here than a boolean would: qualifiesFor() reads the
+	// MATCH COUNT ( `m.length` ), not a truthiness, and prints it into the survey's
+	// `why` string — so a semantic change is visible in the JSON and is caught by
+	// the byte-identical gate rather than passing quietly.
+	//
+	// A lookbehind also fixes a latent edge the consuming class has: `[^-\w]` cannot
+	// match at byte 0 of a file for want of a preceding character, so a stylesheet
+	// opening literally with `color:` was invisible to the fallback.
+	return new RegExp( `(?<![-\\w])(?:${ escaped.join( '|' ) })\\s*:`, 'g' );
 }
 
 /**
@@ -1242,6 +1261,56 @@ function selfTest() {
 			new Map()
 		).verdict,
 		OK
+	);
+
+	// -----------------------------------------------------------------------
+	// ownPaintRegex — the declared-cssProperties path vs the hardcoded fallback.
+	//
+	// ⛔ THESE EXIST BECAUSE THE GUARD IS DELETABLE WITHOUT ANYTHING NOTICING.
+	// Colour moved off the fallback onto declared `cssProperties` on 2026-08-20.
+	// The only thing keeping that migration measurement-neutral is the
+	// `(?<![-\w])` lookbehind in the generated branch. Remove it and every count
+	// derived from this function inflates silently — a custom property named
+	// `--brand-colour` would read as a painted surface. A silently-inflated count
+	// looks exactly like real backlog, so it needs a control that genuinely fails.
+	// -----------------------------------------------------------------------
+	const countPaint = ( when, css ) => ( css.match( ownPaintRegex( when ) ) || [] ).length;
+	const declaredColour = {
+		paintsOwnSurface: { cssProperties: [ 'background', 'background-color', 'border-color', 'color' ] },
+	};
+	const fallbackColour = { paintsOwnSurface: { source: 'prose only, no cssProperties array' } };
+
+	check(
+		'ownPaint: declared colour props count real declarations',
+		countPaint( declaredColour, '.a{color:red}.b{background-color:blue}.c{border-color:#000}.d{background:none}' ),
+		4
+	);
+	// NEGATIVE CONTROL — fails loudly if the lookbehind is ever removed.
+	check(
+		'ownPaint NEGATIVE CONTROL: a custom property is not a painted surface',
+		countPaint( declaredColour, ':root{--brand-colour:red;--x-background-color:blue}' ),
+		0
+	);
+	check(
+		'ownPaint NEGATIVE CONTROL: a longer property ending in -color does not count twice',
+		countPaint( declaredColour, '.a{-webkit-text-fill-color:red}' ),
+		0
+	);
+	// EQUIVALENCE — the claim item 4 rests on. Declaring colour's properties must
+	// measure what the fallback measured, or the migration moved the census.
+	const realisticCss =
+		'.sgs-x{background:var(--a);color:#111}\n' +
+		'.sgs-x__y{background-color:#fff;border-color:#eee}\n' +
+		// Deliberately AMERICAN-spelled: a `--sgs-brand-colour` custom property ends
+		// in "colour" and could never match a bare `color` alternative, so it would
+		// leave this assertion vacuous — green whether or not the guard is present.
+		// `--brand-color` is the shape that actually distinguishes the two regexes.
+		':root{--brand-color:#f0f}\n' +
+		'.sgs-x:hover{color:#222}\n';
+	check(
+		'ownPaint EQUIVALENCE: declared colour props measure what the fallback measured',
+		countPaint( declaredColour, realisticCss ),
+		countPaint( fallbackColour, realisticCss )
 	);
 
 	console.log( '' );

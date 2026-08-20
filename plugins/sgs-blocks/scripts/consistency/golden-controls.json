@@ -191,6 +191,8 @@
         "paintsOwnSurface": {
           "source": "the block's own style.css",
           "match": "a CSS declaration of background, background-color, border-color or color",
+          "cssProperties": [ "background", "background-color", "border-color", "color" ],
+          "cssPropertiesNote": "Added 2026-08-20. Bare CSS property names, matched literally against the block's own style.css by survey-golden-conformance.js's ownPaintRegex(). Until this field existed colour was the ONLY styling type still resolving through that function's hardcoded-regex fallback — backwards for the type that is meant to be the reference implementation for the other twelve. ⛔ The fallback's `[^-\\w]` guard is NOT optional and was reproduced as a `(?<![-\\w])` lookbehind in the same commit BEFORE this field was added: without it a bare `color` alternative also matches inside `--brand-color:` and `-webkit-text-fill-color:`, and qualifiesFor() reads the MATCH COUNT rather than a boolean, so the inflation would propagate into the census. Verified by the gate that governs this change: survey-golden-conformance.js --json is byte-identical before and after, diffed against .claude/reports/2026-08-20-colour-golden-raw/golden-conformance.json.",
           "means": "there is a surface for a colour control to govern"
         },
         "paintedByAncestor": {
