@@ -220,23 +220,51 @@ function axisCanonical( spec, reached, qualifyCtx ) {
 
 	const hit = wanted.filter( ( w ) => reached.has( w ) );
 	if ( ! hit.length ) {
-		if ( qualifyCtx && qualifyCtx.type !== 'colour' ) {
-			const q = qualifiesFor( spec, qualifyCtx.slug, qualifyCtx.blockJson, qualifyCtx.rosterEntry, qualifyCtx.type );
-			if ( null === q.qualifies ) {
-				return { verdict: UNCLEAR, detail: `reaches none of ${ wanted.join( ' / ' ) } — ${ q.why }` };
-			}
-			if ( q.qualifies ) {
+		// ⛔ NO PER-TYPE CARVE-OUT. `colour` used to skip this branch entirely
+		// and take a blanket VIOLATION, because routing it through
+		// qualifiesFor() flipped sgs/buybox and sgs/site-footer — which paint
+		// colour themselves — from VIOLATION to MISSING, understating a real
+		// bug as a gap. The carve-out preserved the right answer by the wrong
+		// mechanism: it pinned colour to roster.json's `surfaces.colour`, the
+		// DERIVED field this repo already records as self-fulfilling (it is
+		// computed from what a block ALREADY has, so it can never find a block
+		// that is missing one).
+		//
+		// The distinction the carve-out was protecting is real, so it is now
+		// made UNIVERSALLY, from the predicate's own evidence rather than from
+		// a block's identity:
+		//
+		//   basis 'own-paint'  -> the block paints this surface ITSELF and
+		//                         offers no canonical control. The styling
+		//                         exists and the client cannot reach it. That
+		//                         is a VIOLATION, not an absence.
+		//   qualifies via an ancestor / feature parity -> the control SHOULD
+		//                         exist here and does not: MISSING.
+		//   does not qualify   -> NOT-APPLICABLE.
+		//
+		// Every control type now answers the same question the same way, and
+		// `surfaces.colour` is no longer consulted anywhere.
+		const q = qualifiesFor( spec, qualifyCtx.slug, qualifyCtx.blockJson, qualifyCtx.rosterEntry, qualifyCtx.type );
+		if ( null === q.qualifies ) {
+			return { verdict: UNCLEAR, detail: `reaches none of ${ wanted.join( ' / ' ) } — ${ q.why }` };
+		}
+		if ( q.qualifies ) {
+			if ( 'own-paint' === q.basis ) {
 				return {
-					verdict: MISSING,
-					detail:
-						`reaches none of ${ wanted.join( ' / ' ) } — qualifies (${ q.why })` +
-						( 'ancestor' === q.home ? ' — control belongs on the ANCESTOR' : '' ),
+					verdict: BAD,
+					detail: `reaches none of ${ wanted.join( ' / ' ) } — but ${ q.why }: styling exists with no client control`,
 					home: q.home,
 				};
 			}
-			return { verdict: NOT_APPLICABLE, detail: `reaches none of ${ wanted.join( ' / ' ) } — ${ q.why }` };
+			return {
+				verdict: MISSING,
+				detail:
+					`reaches none of ${ wanted.join( ' / ' ) } — qualifies (${ q.why })` +
+					( 'ancestor' === q.home ? ' — control belongs on the ANCESTOR' : '' ),
+				home: q.home,
+			};
 		}
-		return { verdict: BAD, detail: `reaches none of ${ wanted.join( ' / ' ) }` };
+		return { verdict: NOT_APPLICABLE, detail: `reaches none of ${ wanted.join( ' / ' ) } — ${ q.why }` };
 	}
 	const via = hit.map( ( h ) => reached.get( h ) ).find( Boolean );
 	return {
@@ -500,7 +528,7 @@ function ownPaintRegex( when ) {
  */
 function qualifiesFor( spec, slug, blockJson, rosterEntry, type ) {
 	const when = spec.qualifiesWhen;
-	if ( ! when ) return { qualifies: true, why: 'no qualifiesWhen declared — assume in scope', home: 'self' };
+	if ( ! when ) return { qualifies: true, why: 'no qualifiesWhen declared — assume in scope', home: 'self', basis: 'no-predicate' };
 
 	// (1) paints its own surface
 	let ownPaint = 0;
@@ -511,7 +539,36 @@ function qualifiesFor( spec, slug, blockJson, rosterEntry, type ) {
 			ownPaint = m ? m.length : 0;
 		}
 	}
-	if ( ownPaint > 0 ) return { qualifies: true, why: `paints ${ ownPaint } own declaration(s)`, home: 'self' };
+	// basis:'own-paint' is load-bearing — see axisCanonical(). A block that
+	// paints this surface ITSELF and reaches no canonical control is not
+	// MISSING a control, it is VIOLATING the contract: the styling exists and
+	// the client cannot reach it.
+	if ( ownPaint > 0 ) return { qualifies: true, why: `paints ${ ownPaint } own declaration(s)`, home: 'self', basis: 'own-paint' };
+
+	// (1b) WordPress CORE paints this surface for the block, because the block
+	// declares the family with a live sub-flag. The surface demonstrably
+	// applies — it is simply delivered by core's UI instead of the canonical
+	// SGS control, which is the definition of MISSING, not NOT-APPLICABLE.
+	//
+	// Measured 2026-08-20: without this branch sgs/site-footer read
+	// NOT-APPLICABLE for colour. Its own style.css is 473 bytes and paints
+	// almost nothing, so the own-paint test found nothing — yet the block is
+	// one of the 25 blocks the nativeUi axis reports as letting core render
+	// its own colour panel. "This block has no colour surface" was flatly
+	// false. Schema-driven via the same detectVia the nativeUi axis reads, so
+	// it generalises to every type that declares one, with no per-type branch.
+	const nativeKey = nativeUiSupportKey( spec );
+	if ( nativeKey && blockJson && blockJson.supports && nativeKey in blockJson.supports ) {
+		const live = liveNativeFlags( blockJson.supports[ nativeKey ] );
+		if ( live.length ) {
+			return {
+				qualifies: true,
+				why: `declares supports.${ nativeKey } with live sub-flag(s) ${ live.join( ', ' ) } — core paints it`,
+				home: 'self',
+				basis: 'native-supports',
+			};
+		}
+	}
 
 	// (2) an ancestor paints THIS block's own rendered classes.
 	//
@@ -531,6 +588,7 @@ function qualifiesFor( spec, slug, blockJson, rosterEntry, type ) {
 				qualifies: true,
 				why: `its rendered classes are painted by sgs/${ painter }`,
 				home: 'ancestor',
+				basis: 'ancestor-paint',
 			};
 		}
 	}
@@ -557,6 +615,7 @@ function qualifiesFor( spec, slug, blockJson, rosterEntry, type ) {
 				qualifies: null,
 				why: `replaces ${ JSON.stringify( rosterEntry.replaces ) } — roster.json has no qualifies.replacedCoreSupports; regenerate build-roster.py`,
 				home: 'self',
+				basis: 'feature-parity',
 			};
 		}
 		// The schema's control-type name (e.g. "colour") vs the raw WP core
@@ -570,34 +629,24 @@ function qualifiesFor( spec, slug, blockJson, rosterEntry, type ) {
 				qualifies: true,
 				why: `replaces ${ JSON.stringify( rosterEntry.replaces ) }, which enables core \`${ coreFamily }\` UI`,
 				home: 'self',
+				basis: 'feature-parity',
 			}
 			: {
 				qualifies: false,
 				why: `replaces ${ JSON.stringify( rosterEntry.replaces ) }, which does NOT enable core \`${ coreFamily }\` UI`,
 				home: 'self',
+				basis: 'feature-parity',
 			};
 	}
 
-	return { qualifies: false, why: 'paints nothing, and nothing paints its rendered classes', home: 'self' };
+	return { qualifies: false, why: 'paints nothing, and nothing paints its rendered classes', home: 'self', basis: 'none' };
 }
 
-function colourEligibility() {
-	const map = new Map();
-	try {
-		const roster = JSON.parse( fs.readFileSync( ROSTER_PATH, 'utf8' ) );
-		// ⚠ The list key is `blocks`, not `entries`, and slugs are `sgs/`-prefixed.
-		// Both were guessed wrong first and reported every block UNCLEAR — a
-		// scope gate that fails closed is at least visible, but a lookup keyed on
-		// the wrong shape is indistinguishable from "nothing is eligible".
-		for ( const e of roster.blocks || [] ) {
-			const bare = String( e.slug || '' ).replace( /^sgs\//, '' );
-			map.set( bare, e.surfaces === null ? null : !! ( e.surfaces && e.surfaces.colour ) );
-		}
-	} catch ( e ) {
-		return map;
-	}
-	return map;
-}
+// colourEligibility() DELETED 2026-08-20 (Decision B). It read roster.json's
+// DERIVED `surfaces.colour` flag, which is computed from what a block ALREADY
+// has and is therefore self-fulfilling as a scope predicate — it excluded
+// exactly the blocks that were missing a colour panel. Every type, colour
+// included, now scopes through qualifiesFor()'s evidence instead.
 
 function blockSlugs() {
 	return fs
@@ -612,13 +661,12 @@ function survey() {
 	const golden = loadMergedSchema();
 	const encoded = ( golden._meta && golden._meta.encoded ) || Object.keys( golden.controls || {} );
 	const compFiles = resolveComponentFiles();
-	const eligible = colourEligibility();
 	const rosterBySlug = new Map();
 	try {
 		for ( const e of JSON.parse( fs.readFileSync( ROSTER_PATH, 'utf8' ) ).blocks || [] ) {
 			rosterBySlug.set( String( e.slug || '' ).replace( /^sgs\//, '' ), e );
 		}
-	} catch ( e ) { /* reported as absent by colourEligibility */ }
+	} catch ( e ) { /* absent roster is reported by the universal roster-presence gate below */ }
 	const rows = [];
 
 	for ( const slug of blockSlugs() ) {
@@ -634,30 +682,12 @@ function survey() {
 		for ( const type of encoded ) {
 			const spec = ( golden.controls || {} )[ type ];
 			if ( ! spec ) continue;
-			// Scope gate FIRST — an out-of-scope block must not report a
-			// violation of a contract that does not apply to it.
-			const elig = eligible.has( slug ) ? eligible.get( slug ) : null;
-			if ( type === 'colour' && elig === false ) {
-				// The block has no colour TODAY. That is descriptive, not a
-				// verdict — ask whether it SHOULD, and split the old catch-all
-				// N/A into the two opposite answers it was hiding.
-				const q = qualifiesFor( spec, slug, blockJson, rosterBySlug.get( slug ), type );
-				rows.push( {
-					block: `sgs/${ slug }`,
-					type,
-					axes: {
-						canonical: null === q.qualifies
-							? { verdict: UNCLEAR, detail: q.why }
-							: q.qualifies
-								? { verdict: MISSING, detail: `qualifies (${ q.why })` + ( 'ancestor' === q.home ? ' — control belongs on the ANCESTOR' : '' ), home: q.home }
-								: { verdict: NOT_APPLICABLE, detail: q.why },
-						bannedLookalikes: axisBannedLookalikes( spec, reached, canonicalFiles( spec, compFiles ) ),
-						nativeUi: axisNativeUi( spec, blockJson, reached ),
-					},
-				} );
-				continue;
-			}
-			if ( type === 'colour' && elig === null ) {
+			// UNIVERSAL roster-presence gate. A block absent from roster.json is
+			// UNKNOWN, not clean — previously this honesty was given to `colour`
+			// alone; every type gets it now. (Today roster/disk/union all
+			// reconcile at 83, so this fires for nothing — it is a tripwire, not
+			// a live branch.)
+			if ( ! rosterBySlug.has( slug ) ) {
 				rows.push( {
 					block: `sgs/${ slug }`,
 					type,
@@ -901,6 +931,57 @@ function selfTest() {
 			'colour'
 		).qualifies,
 		true
+	);
+	check(
+		'a block whose family core paints QUALIFIES (not NOT-APPLICABLE)',
+		qualifiesFor(
+			{
+				canonical: { panel: { component: 'SgsColourPanel' } },
+				nativeUi: { detectVia: 'block.json supports.color — any sub-flag set true' },
+				qualifiesWhen: { paintsOwnSurface: { cssProperties: [ 'color' ] } },
+			},
+			'__fixture-native-supports',
+			{ supports: { color: { text: true } } },
+			null,
+			'colour'
+		).basis,
+		'native-supports'
+	);
+	// PAIRED NEGATIVE — same spec, same code path, family declared but every
+	// sub-flag off. Without this the check above could pass on a function that
+	// always returned 'native-supports'. Real case it pins: sgs/site-footer
+	// read NOT-APPLICABLE for colour because its own style.css paints almost
+	// nothing, while core was painting the block's colour the whole time.
+	check(
+		'…and the same family with every sub-flag false does NOT qualify on that basis',
+		qualifiesFor(
+			{
+				canonical: { panel: { component: 'SgsColourPanel' } },
+				nativeUi: { detectVia: 'block.json supports.color — any sub-flag set true' },
+				qualifiesWhen: { paintsOwnSurface: { cssProperties: [ 'color' ] } },
+			},
+			'__fixture-native-supports-off',
+			{ supports: { color: { text: false, __experimentalSkipSerialization: true } } },
+			null,
+			'colour'
+		).basis,
+		'none'
+	);
+	// The verdict mapping the basis drives: own-paint is a VIOLATION (styling
+	// exists, client cannot reach it), everything else that qualifies is
+	// MISSING. This is what replaced the `type !== 'colour'` carve-out.
+	check(
+		'a qualifying block that core paints reads MISSING, not VIOLATION',
+		axisCanonical(
+			{
+				canonical: { panel: { component: 'SgsColourPanel' } },
+				nativeUi: { detectVia: 'block.json supports.color — any sub-flag set true' },
+				qualifiesWhen: { paintsOwnSurface: { cssProperties: [ 'color' ] } },
+			},
+			new Map(),
+			{ slug: '__fixture-native-supports', blockJson: { supports: { color: { text: true } } }, rosterEntry: null, type: 'colour' }
+		).verdict,
+		MISSING
 	);
 	check(
 		'roster.json missing qualifies.replacedCoreSupports falls back to UNCLEAR, not a guess',
