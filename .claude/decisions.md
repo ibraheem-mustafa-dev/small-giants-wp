@@ -1,5 +1,52 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D697 [ROUTINE] — D452's morph fix CONFIRMED live, closing its outstanding item (2026-08-20)
+
+D452 (2026-08-06) found morph had NEVER animated on any block: the `data-sgs-fx="morph"`
+attrs were emitted on the `<svg>` wrapper, not the inner `<path>` MorphSVGPlugin actually
+requires. The fix moved the attrs onto the `<path>` (`fx-shape-routes.php:397-403`) but D452's
+own closing line flagged it "unverified live — cause proven, emit shape confirmed locally, no
+live morph yet observed." No later decision closed it.
+
+**Verified live today** on `morph-fx-qa-canary` (sandybrown):
+
+- Server-rendered HTML (fetched raw, pre-JS) confirms the FROM path's authored `d` is a
+  circle preset (`M 50 6 A 44 44 0 0 1 50 94 A 44 44 0 0 1 50 6 Z`) and the TO path's `d` is a
+  square (`M 10 10 L 90 10 L 90 90 L 10 90 Z`) — genuinely distinct shapes, not a degenerate
+  no-op fixture.
+- After page load (trigger="load", well past the 0.8s default duration), the FROM path's
+  LIVE `d` attribute exactly matches the TO square — the circle→square morph ran to
+  completion on the correct element (the `<path>`, confirming the fix).
+- Fail-safe case (a second instance with a deliberately nonexistent target selector)
+  produced exactly one `console.warn` (`[sgs-fx-morph] data-sgs-fx-morph-target "#sgs-morph-qa-missing-target"
+  matched no element — morph skipped, element stays at its rendered shape.`), no crash, no
+  further errors.
+
+D452 CLOSED. No code changed — this closes the verification gap only.
+
+## D696 [ROUTINE] — D451's motion-path fix CONFIRMED live, closing its outstanding item (2026-08-20)
+
+D451 (2026-08-01) fixed a scrub trigger that disabled itself on `onLeave` with only
+`onEnterBack` (itself gated on `enabled`) able to re-enable it — motion-path animated once
+per page load and never again. The fix (delete the `disable()`/`enable()` pair) shipped in
+source but D451's own closing line flagged it "not verified on live canary — harness proves
+the mechanism in isolation, not real-page sizing." That item sat open through D452–D695.
+
+**Verified live today** on `qa-motion-path-resting-position-v2` (sandybrown), via
+`getComputedStyle().transform` + the `sgs-fx-motion-path--resting` class sampled at fixed
+scroll positions (1200ms settle per sample, past Lenis's smoothing window — an under-slept
+first attempt gave noisy non-reproducible readings and was discarded before trusting any
+number, per `measurement-vs-eye`/`prove-the-cause` discipline):
+
+- 3 full down→up→down cycles (top → y=3000 → top → y=3000 → top → y=3000): resting-class
+  toggle and transform matrix were **byte-identical across all 3 repeats** at each position —
+  proves the trigger fires every cycle, not once.
+- A 5-point mid-scroll sample (top → 200 → 500 → 800 → 3000) showed the rotation component
+  progressing monotonically (0.343 → 0.565 → 0.738 → 0.821 → 0.865, i.e. genuinely riding the
+  path each re-entry, not a two-state snap).
+
+D451 CLOSED. No code changed — this closes the verification gap only.
+
 ## D695 [ROUTINE] — a canonical slot declares whether it can independently prove conformance (2026-08-20)
 
 Widening the canonical axis to read every declared component (D694) flipped `sgs/site-footer` from
