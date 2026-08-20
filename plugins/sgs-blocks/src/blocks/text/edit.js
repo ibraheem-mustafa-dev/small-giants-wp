@@ -329,8 +329,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColour,
 		fontSize,
 		fontSizeUnit,
-		fontSizeTablet,
-		fontSizeMobile,
 		fontWeight,
 		lineHeight,
 		lineHeightUnit,
@@ -479,7 +477,12 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					{ /*
 					 * Font size + line height via shared TypographyControls.
-					 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
+					 * Handles: fontSize/fontSizeUnit (fontSize is a TIER OBJECT here
+					 *           — {desktop,tablet,mobile} — so the responsive values
+					 *           live inside it. The legacy flat fontSizeTablet/
+					 *           fontSizeMobile pair does NOT apply to this block and
+					 *           must not be re-added; TypographyControls' tiered
+					 *           branch never writes them.)
 					 *           lineHeight/lineHeightUnit
 					 *           fontWeight / fontStyle
 					 */ }

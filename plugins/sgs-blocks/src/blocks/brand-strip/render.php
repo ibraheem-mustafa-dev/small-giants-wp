@@ -84,7 +84,7 @@ $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
 // D636 border-colour gradient siblings — non-empty wins over the flat colour
 // above at render time (helpers-tokens.php sgs_border_gradient_css()).
 $tile_border_gradient       = sgs_css_gradient_value( $attributes['tileBorderColourGradient'] ?? '' );
-$hover_border_gradient      = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
+$hover_border_gradient      = sgs_css_gradient_value( $attributes['itemBorderColourHoverGradient'] ?? '' );
 // Raw CSS box-shadow VALUE (or theme shadow-preset slug) from the shared
 // ShadowControl builder — replaces the old none/small/medium enum SelectControl
 // (Spec 35 Task 2 element-first rebuild). A pre-migration legacy string such as
@@ -95,9 +95,9 @@ $hover_border_gradient      = sgs_css_gradient_value( $attributes['borderColourH
 // deprecation needed (D270 no-deprecations policy).
 $tile_shadow         = $attributes['tileShadow'] ?? '';
 $tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
-$hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
-$hover_text_colour   = $attributes['textColourHover'] ?? '';
-$hover_border_colour = $attributes['borderColourHover'] ?? '';
+$hover_bg_colour     = $attributes['itemBackgroundColourHover'] ?? '';
+$hover_text_colour   = $attributes['itemTextColourHover'] ?? '';
+$hover_border_colour = $attributes['itemBorderColourHover'] ?? '';
 $hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).

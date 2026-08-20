@@ -252,10 +252,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileBorderColourGradient,
 		tileShadow,
 		tileShadowColour,
-		backgroundColourHover,
-		textColourHover,
-		borderColourHover,
-		borderColourHoverGradient,
+		itemBackgroundColourHover,
+		itemTextColourHover,
+		itemBorderColourHover,
+		itemBorderColourHoverGradient,
 		effectHover,
 		transitionDuration,
 		transitionEasing,
@@ -314,10 +314,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			   panel, rendered FIRST. Replaces the scattered DesignTokenPicker
 			   rows previously inline inside the Styles-tab "Tile colours"
 			   StateToggleControl and the Caption panel below. Hover pairs:
-			   tileBackgroundColour⇆backgroundColourHover,
-			   tileBorderColour⇆borderColourHover,
-			   nameColour⇆textColourHover (verified via render.php/style.css —
-			   textColourHover feeds --sgs-tile-hover-text, the hover
+			   tileBackgroundColour⇆itemBackgroundColourHover,
+			   tileBorderColour⇆itemBorderColourHover,
+			   nameColour⇆itemTextColourHover (verified via render.php/style.css —
+			   itemTextColourHover feeds --sgs-tile-hover-text, the hover
 			   counterpart of the caption's nameColour). */ }
 			<SgsColourPanel
 				rows={ [
@@ -334,8 +334,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val } ),
+								value: itemBackgroundColourHover,
+								onChange: ( val ) => setAttributes( { itemBackgroundColourHover: val } ),
 							},
 						],
 					},
@@ -355,11 +355,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val } ),
-								gradientValue: borderColourHoverGradient,
+								value: itemBorderColourHover,
+								onChange: ( val ) => setAttributes( { itemBorderColourHover: val } ),
+								gradientValue: itemBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+									setAttributes( { itemBorderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -376,8 +376,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val } ),
+								value: itemTextColourHover,
+								onChange: ( val ) => setAttributes( { itemTextColourHover: val } ),
 							},
 						],
 					},
@@ -552,10 +552,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							tileBorderWidth: 0,
 							tileBorderColour: '',
 							tileBorderColourGradient: '',
-							backgroundColourHover: '',
-							borderColourHover: '',
-							borderColourHoverGradient: '',
-							textColourHover: '',
+							itemBackgroundColourHover: '',
+							itemBorderColourHover: '',
+							itemBorderColourHoverGradient: '',
+							itemTextColourHover: '',
 							effectHover: 'none',
 							transitionDuration: '300',
 							transitionEasing: 'ease-in-out',

@@ -2,66 +2,72 @@
 doc_type: report
 project: small-giants-wp
 created: 2026-08-20
-subject: R3-b — why the two unwired detectors were NOT wired, and the 4 real defects they found
+revised: 2026-08-20 (same day — the four "defects" were re-diagnosed properly; only ONE was real)
+subject: R3-b — why the two unwired detectors were NOT wired, and what their findings actually were
 ---
 
-# R3-b is BLOCKED — deliberately, on evidence
+# R3-b — the detectors are honest; my first reading of their findings was not
 
-The R-3 register's R3-b says: *"Add to `prebuild`: `check:inert-controls`, `check:undeclared-attrs`,
-`check:device-toggle:gate`. Mechanical. May fail the build on day one → land with a recorded baseline."*
+## ⚠ READ THIS FIRST — this report's original conclusion was WRONG
 
-**Measured, like-for-like, with the `--check` flag they would actually be wired with:**
+The first version of this report claimed all four findings were "REAL, live defects with
+client-visible consequences" and refused to baseline them on that basis. **Re-diagnosed against
+source: only ONE of the four is a real defect.** The refusal to wire was still right, but for a
+weaker reason than originally stated.
 
-| Script | `--check` exit | Findings |
-|---|---|---|
-| `check-inert-controls.py` | **1** | 1 inert control (0 unconditional, 1 conditional) |
-| `check-undeclared-attrs.py` | **1** | 3 undeclared attributes |
+The error was the classic one this project has a rule against: I read a detector's output and
+described it as a defect **without opening the code it pointed at**. The detectors were correct in
+every case — they reported exactly what they claim to report ("declared/destructured here, not
+declared there"). The false step was mine, in translating each finding into a client-facing
+consequence I had not verified.
 
-⚠ Measurement note: run WITHOUT `--check` both exit 0. The exit codes only diverge under the flag —
-comparing the two invocations would manufacture a false "safe to wire" reading.
+## The four findings, properly diagnosed
 
-Wiring them today therefore **reds the build immediately.**
-
-## Why they were NOT baselined instead
-
-The register's fallback is "land with a recorded baseline". **Refused here, deliberately.** All four
-findings are REAL, live defects with client-visible consequences — not historical noise. Baselining
-four genuine bugs to turn a build green is how a gate becomes decoration. Fix the defects, then wire
-the gates; the gates then start life green and meaningful.
-
-## The 4 defects (fix these, then wire)
-
-| # | Block | Defect | Consequence |
+| # | Finding | Verdict | Reality |
 |---|---|---|---|
-| 1 | `sgs/text` | `fontSizeMobile` destructured in `edit.js`, **not declared in `block.json`** | The EDITOR drops it, so the value can never be stored — **a client setting a mobile font size gets nothing.** ⚠ See the mechanism correction below. |
-| 2 | `sgs/text` | `fontSizeTablet` — same | Same, for tablet. |
-| 3 | `sgs/quote` | `backgroundColourHoverGradient` — same | The hover-gradient control does nothing. |
+| 1 | `sgs/text` :: `fontSizeMobile` | **NOT a defect — dead code** | `fontSize` on this block is a **TIER OBJECT** (`{"type":"object"}`, `{desktop,tablet,mobile}`) per the Spec 35 tier-object migration. `TypographyControls`' tiered branch (`TypographyControls.js:335-340`) writes the tier object and **never** writes the flat legacy pair. The two names were destructured at `text/edit.js:332-333` and used **nowhere** in the file (grep: 3 hits total, 2 being the destructure itself and 1 a comment). Responsive font size WORKS. |
+| 2 | `sgs/text` :: `fontSizeTablet` | **NOT a defect — dead code** | Same. |
+| 3 | `sgs/quote` :: `backgroundColourHoverGradient` | ✅ **REAL DEFECT** | `edit.js:431-433` writes it via `setAttributes`; `render.php:155` reads it; `block.json:45` maps it as the hover state's `css:background-image`. But it was **absent from `attributes`**, while all three siblings (`backgroundColour`, `backgroundColourGradient`, `backgroundColourHover`) were declared `{"type":"string","default":""}`. The editor cannot carry an undeclared key, so the value never persisted and the hover gradient did nothing. |
+| 4 | `sgs/feature-grid` :: `layout` (conditional) | **NOT a defect — deliberate** | `render.php:156` does `$attributes['layout'] = 'grid';` inside a branch, with a comment explaining why: it forces the shared wrapper's grid engine to run for the explicit-template case. The gate correctly classifies it CONDITIONAL/MEDIUM. It is a documented override, not an inert control. |
 
-## ⚠ MECHANISM CORRECTION (2026-08-20, same day — commit `e81ea92a`, parallel session)
+**Fixed:** #1 and #2 — the two dead destructure lines deleted, and the misleading comment at
+`text/edit.js:482` rewritten to state that `fontSize` is a tier object here and the flat pair must
+not be re-added. #3 — declared, matching its siblings. #4 — no change; it is correct as written.
 
-An earlier version of this report said WordPress "silently discards" an undeclared attribute,
-citing D338. **That rule is only half true, and the half this report leaned on was the false half.**
+## The mechanism, stated correctly (this was also wrong first time)
 
-Per WP core `WP_Block_Type::prepare_attributes_for_render()`, an undeclared attribute is skipped over,
-not `unset()` — so it reaches `$attributes` in `render.php` VERBATIM. It is the **editor** that drops
-it, because `getBlockAttributes()` builds its result by iterating the registered schema, so an
-undeclared key cannot appear there.
+The original report said WordPress "silently discards" an undeclared attribute, citing D338.
+**Half true, and it leaned on the false half.** Per the parallel session's `e81ea92a`, verified in WP
+core: `WP_Block_Type::prepare_attributes_for_render()` *skips over* an unregistered key rather than
+`unset()`-ing it, so an undeclared attribute reaches `$attributes` in `render.php` verbatim. It is
+the **editor** that drops it, because `getBlockAttributes()` builds its result by iterating the
+registered schema.
 
-**The four defects above still stand**, because the editor is the surface that matters here: the
-control writes a value the editor cannot carry, so nothing is ever persisted for `render.php` to
-receive. But the reason is "the editor cannot hold it", NOT "WordPress discards it at render". Do not
-repeat the discarded-at-render wording — it will send someone hunting in the wrong file.
-| 4 | `sgs/feature-grid` | `layout` is a CONDITIONAL inert control (`feature-grid/render.php:156`) | A control that cannot always affect output. Note this block's *separate* misleading "Layout type" dropdown was already removed at D700 — check whether these are the same root cause before fixing. |
+For finding #3 the outcome is the same — the editor can never hold the value, so `render.php` never
+receives one — but the reason is "the editor cannot carry it", NOT "WordPress discards it at render".
+Do not repeat the discarded-at-render wording; it sends people hunting in the wrong file.
 
-⚠ **Do NOT "fix" 1-3 by declaring the attributes and stopping there.** Declaring an attribute only
-stops WordPress discarding it; it does not make `render.php` consume it. Verify the render side
-consumes each one — that is exactly the edge the new R3-e rule was built to check. A declare-only fix
-would move the defect from "silently discarded" to "declared and still ignored", which is worse
-because it then looks correct.
+## Is R3-b still blocked?
 
-## `check-device-toggle:gate` — also not wired, different reason
+**Yes, but re-check before assuming.** The refusal to wire was originally justified by "these are four
+real defects". That justification is now down to one, and it has been fixed. Re-measure both scripts'
+`--check` exit codes: if they are now 0, wire them; if they still exit 1, read what remains and
+diagnose it **by opening the code**, not by paraphrasing the finding text.
 
-It is a LIVE editor test (it drives a real block-editor canvas and resizes the iframe). Per the
+⚠ Measurement note that caused a separate error today: run WITHOUT `--check` these scripts exit 0;
+only under `--check` do they exit 1. Two subagents reported "exit 0 → 0" having measured without the
+flag, and one of those changes redded the build. **Always measure with the flag the gate is actually
+wired with.**
+
+## `check-device-toggle:gate` — still not wired, unchanged reason
+
+It is a LIVE editor test (it drives a real block-editor canvas and resizes the iframe). Per the R-3
 register's own "explicitly NOT doing" list, gating on a check that warns-and-passes when the canary is
 unreachable proves nothing. It PASSES today — see
 `.claude/reports/2026-08-20-r3g-unwired-detectors-first-run.md`.
+
+## The lesson worth keeping
+
+A detector's finding is a **pointer**, not a diagnosis. "Declared here, not declared there" is a fact
+about two files; what it MEANS for a client requires opening both. Three of four findings here were
+true facts and false defects. Baselining them would have been wrong; so was calling them bugs.

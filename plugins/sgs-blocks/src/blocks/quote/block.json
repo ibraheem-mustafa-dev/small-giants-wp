@@ -251,6 +251,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"paddingTablet": {
 			"type": "object",
 			"default": {}
