@@ -174,3 +174,83 @@ Bean's axis table, for the record:
 | qualifiesWhen | 1 of 14 (declared by 21, real for 4) |
 | native-UI detection | 4 of 14 |
 | states | 1 of 14 |
+
+---
+
+# ADDENDUM — from the programme doc (`.claude/plans/2026-08-18-inspector-enforcement-programme.md`)
+
+Read in full 2026-08-20. Four things it carries that the scan set above did not.
+
+## ⛔ 1. `row-missing-gradient` is BINARY and that is INSUFFICIENT — the 193 is soft
+
+The programme doc (§Phase 5, point 3) is explicit and it changes how to read Layer 1:
+
+> There are THREE gradient mechanisms and which is correct depends on what the row paints:
+> a per-state toggle inside `DesignTokenPicker` (background / border / icon);
+> `GradientCapableColourControl` (**TEXT only** — needs `background-clip:text`);
+> `GradientOverlayControl` (whole-block overlay, single-state by construction).
+> ⛔ A binary "does a gradient path exist?" check is INSUFFICIENT: **a text row wired to
+> the background mechanism would PASS while rendering nothing.** Rule 31's current
+> `row-missing-gradient` kind is binary and needs this refinement.
+
+So **193 is a floor with an unknown false-PASS rate**: it counts rows with no gradient path
+at all, and cannot see a row that has the WRONG mechanism for its painted property. Closing
+colour properly means making that axis mechanism-aware, not just counting absences.
+
+## 2. Two roster detectors were never built
+
+| ID | Rule | Catches | State |
+|---|---|---|---|
+| D4 | `check-element-panels` | one element, one panel | ⬜ **not built** |
+| D5 | `capture-inspector-surface` | live editor oracle | ⬜ **not built, never a gate** |
+
+⭐ **D5 is the answer to a question nothing else asks.** Per the doc: *"D1–D4 all ask does
+the right JSX exist, never CAN A CLIENT REACH IT. Hero's split-media dead end is the proof:
+the picker exists, correctly typed, and stays unreachable."* **D5 must WALK STATES, not
+snapshot one.** Every static layer in this report shares that blind spot.
+
+(D2 `check-panel-expectations` was deliberately SUPERSEDED by rule 31, not skipped: a binary
+"does a panel exist?" conflates three unrelated defects, proven on its own 5-block candidate
+list — `buybox`/`site-footer`/`site-header` have core's native UI as their only colour
+control, while `container`/`hero` have neither. One finding would have pointed at the wrong
+fix for three of five.)
+
+## 3. Governance constraints that bind any new detector
+
+- **Three tiers.** T1 fingerprint (gates) · T2 schema (gates once baselined) · **T3 shape
+  heuristic — ⛔ ADVISORY FOREVER.** A heuristic promoted to a gate taxes legitimate work;
+  that is how nine advisory rules accumulated 383 findings nobody reads.
+- **Per-detector completion:** self-test with a negative control that genuinely fails ·
+  `--survey` over all 83 blocks with **no `head -N`** · expected count declared BEFORE the
+  first live run, then reconciled · registered in `rules.json` in the SAME commit as the
+  rule file · ships advisory, never promoted on its introducing run.
+- **`sgs/button`'s hover exemption must be DECLARED IN DATA** with a reason — never a
+  hardcoded block name in a script (R-31-1 bans hardcoded dicts).
+- ⛔ **`retireWhen` is a STALE completion condition** — the doc self-checks that no such
+  mechanism exists anywhere in `scripts/` and no rule has ever had one. Either build it or
+  drop the condition; do not keep asserting a condition nothing enforces.
+
+## 4. Sequencing, and what is still open
+
+⛔ **Phase 5 (the closing audit) runs AFTER C1 and AFTER C2's conversion pass** — before
+that it would flag the entire backlog as violations on day one. C1 (the shared
+`sgs_emit_state_colour_css` helper) is DONE, live-verified on 8 blocks. C2's conversion pass
+is not.
+
+Open, from §8:
+- **`sgs/site-header` shows 5 default-visible rows against FR-37-27's cap of 3.** Which
+  three move behind disclosure is a client-facing UX call, still Bean's. D679's separate
+  audit of the same block did NOT resolve it.
+- **WP 7.1 landed 19 Aug 2026.** T1 fingerprints pin to core internals (`BoxControl`'s
+  unconditional label, `.components-tools-panel-header > h2`). Needs a `wpVersionVerified`
+  field and a re-check.
+- **The cloning converter still writes `gridItem*`** (`converter/resolvers/grid.py:187`,
+  `services/arrangement.py:154`), so a cloned hero still receives attrs WordPress silently
+  discards until the DB-derived GRID destination is reseeded via `/sgs-update`.
+
+## The programme's own completion condition
+
+> **Bean stops finding these by photographing his own screen.**
+
+⛔ **Never close a step on a green exit code** — on this repo an aborted deploy and a
+dropped stash both reported success.
