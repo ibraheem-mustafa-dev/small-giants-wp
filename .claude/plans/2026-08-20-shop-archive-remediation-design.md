@@ -1,6 +1,8 @@
 # Shop archive — full remediation design
 
-**Status:** DESIGN ONLY — nothing implemented. Awaiting Bean's decisions on the 4 open questions in §6.
+**Status:** DESIGN + DECISIONS TAKEN. Bean ruled on all open questions 2026-08-20 — see the
+"BEAN'S DECISIONS" section at the end, which is BINDING and supersedes the council where they
+conflict. Nothing implemented yet; next step is /phase-planner.
 **Date:** 2026-08-20
 **Method:** 4 parallel evidence agents → live measurement/fact-check → 4-seat design council → live fact-check of council claims.
 
@@ -477,3 +479,111 @@ the client but still paints — an uncontrollable ghost setting. That alone just
    save markup (or re-insert via the editor).
 5. **G:** align block.json `layout` default to `"stack"`; correct the Content-band help text;
    consider `ServerSideRender` for the canvas.
+
+---
+
+# BEAN'S DECISIONS — 2026-08-20 (BINDING; supersede the council where they conflict)
+
+## D-1. `align:"full"` workaround — REJECTED
+
+Bean: *"This is literally a patchwork awful suggestion and doesn't fix the actual issue that
+bg colour shouldn't be constrained to content width."*
+
+**He is right and the earlier §C recommendation is withdrawn.** Adding `align:"full"` per
+instance is authoring around a broken default, not fixing it. The binding principle:
+
+> **A container's background fills the container's own box. Content width constrains the
+> CONTENT only. A background must NEVER be capped by content width — on any block, on any
+> client, by default, with no per-instance attribute required.**
+
+This is the same rule the 2026-08-12 retirement note already states. The code does not honour
+it. **The fix is §B (the wrapper), not an instance attribute.** Do not reintroduce
+`align:"full"` as the remedy; it may still be used where a section genuinely wants full-bleed
+CONTENT, which is a different intent.
+
+## D-2. `flex` becomes the container's default layout
+
+Bean: *"Flex should be default, obviously specialised blocks like hero may need stacked but
+that is a block-specific setting. Flex is the default, stacked and row are specific patterns
+and grid is a rigid structure."*
+
+**Two corrections to what was previously recorded here, both mine:**
+
+1. **The council's reasoning was wrong and I relayed it.** It claimed flex "would collapse
+   block-level children to content width". That conflates two independent axes. `contentWidth`
+   constrains WIDTH; `layout` controls FLOW. Bean's point stands: if children shouldn't be
+   constrained, that is what `contentWidth` is for.
+2. **The real constraint, verified in source:** SGS `flex` emits
+   `display:flex; flex-wrap:wrap` (`class-sgs-container-wrapper.php:1003-1005`) and
+   `flexDirection` defaults to `''` (`:774`) — CSS's own default, i.e. **row**. The panel
+   confirms `'— default (row) —'` (`LayoutPanel.js:165`).
+
+⚠ **OPEN SUB-DECISION (needs Bean, cheap):** flipping the default to `flex` alone makes every
+container lay children out in a **row**. If the intent is "flex as the modern default with
+children still stacking", the `flexDirection` default must move to `column` in the same
+change. Recommend: `layout: "flex"` + `flexDirection: "column"` as the paired default.
+Otherwise every existing container's children go side-by-side on next render.
+
+**Also fix in the same change (pre-existing bug, unrelated to the default choice):**
+`block.json` declares `layout` default `""` while `LayoutPanel.js:50` destructures
+`layout = 'stack'`. Untouched blocks therefore emit a malformed class `sgs-container--`.
+Align the two.
+
+**Premise note, for accuracy:** WordPress core's `core/group` defaults to `constrained`
+(flow), not flex — the flex variants are separate block variations. Page builders
+(Elementor, Bricks) do default to flex. So "flex is the standard default" holds for builders,
+not for WP core. This does not change the decision; it is recorded so the rationale is honest.
+
+## D-3. Gate fix + template comments — APPROVED, proceed
+
+- Fix `check-dead-pattern-attrs.py:55-58` so `backgroundColor`/`textColor`/`gradient` are
+  cross-checked against each block's `supports` sub-flags instead of being unconditionally
+  allowlisted.
+- Move the hand-authored HTML comments out of container inner-content in
+  `archive-product.html` (4 blocks), and give the 13 WooCommerce filter blocks their save
+  markup. Fixes the 17 "unexpected or invalid content" errors.
+
+## D-4. The 60 orphans — full colour-panel standardisation, NOT a minimal attribute add
+
+Bean: *"All of those blocks actually just need an sgs colour panel added and to have a
+background colour and text colour in there by default with options to set normal and hover
+state. (Use the standardised golden colour control with the gradient setup for the correct
+element, there are 3 gradient setups for different elements that need painting in different
+ways.)"*
+
+**Supersedes the earlier "add a `backgroundColour` attribute" plan.** Per target block
+(`sgs/container`, `sgs/hero`, `sgs/trust-bar`, `sgs/brand-strip`, `sgs/testimonial-slider`):
+- Add the standardised `SgsColourPanel`
+- Background colour AND text colour present by default
+- Normal AND hover states for each
+- Use the golden colour control contract
+- Use **the correct one of the 3 gradient setups** for the element that block paints
+
+`sgs/site-header-row` (3) stays a pure American→British spelling fix. `sgs/cta-section` (15)
+needs nothing — it declares its colour attrs explicitly.
+
+Precedent to follow: the `sgs/site-header` / `sgs/site-header-row` migration off WP-native
+colour onto `SgsColourPanel` (D683/D684). ⚠ Carry forward D684's gotcha: a `DesignTokenPicker`
+value fed RAW to `wp_style_engine_get_styles()` emits a bare slug as literal invalid CSS —
+route through `sgs_colour_value()`.
+
+## D-5. Editor/frontend parity — fix it, and audit the enforcement gap
+
+Bean confirmed the diagnosis (editor renders from `edit.js`, frontend from `render.php`;
+the container hand-builds an incomplete approximation) and asked for it to be fixed alongside
+the rest. Project memory already carries the rule: **`ssr-fixes-hand-built-preview-drift`**.
+
+He also asked: *"I thought we had an enforcement script that kept the 3 areas consistent so if
+a setting exists it checked to make sure it's wired up in the editor and on the live page
+too?"* — under investigation. The three axes are (1) declared in `block.json`,
+(2) controlled in the editor **and reflected on the canvas**, (3) consumed by `render.php`.
+Existing gates cover control↔render; **canvas parity is the suspected gap.**
+
+## Status of the four earlier open questions
+
+| Q | Outcome |
+|---|---|
+| Q1 container rule | **BOTH** — `<dialog>` route-around ships first; the rule rewrite follows behind its offsetParent census. Parallelised, neither blocks the other. |
+| Q2 filter pattern | **Slide-up sheet.** Locked. |
+| Q3 full-bleed band | **Superseded by D-1** — not an authoring fix; the wrapper must stop capping backgrounds. |
+| Q4 grid column floor | **250px, and exposed as an editor setting** (`minColumnWidth`), not hardcoded — per the project's own "no feature is complete without editor controls" rule. |
