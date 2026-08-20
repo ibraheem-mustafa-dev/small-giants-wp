@@ -119,6 +119,7 @@
 		"marginTablet": { "type": "object", "default": {} },
 		"marginMobile": { "type": "object", "default": {} },
 		"shadow": { "type": "string" },
+		"shadowColour": { "type": "string" },
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",

@@ -88,6 +88,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 		gridItemBorderGradient = '',
 		gridItemBorderGradientHover = '',
 		gridItemShadow = '',
+		gridItemShadowColour = '',
 		gridItemTextColour = '',
 	} = attributes;
 
@@ -233,6 +234,8 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				label={ __( 'Shadow', 'sgs-blocks' ) }
 				value={ gridItemShadow }
 				onChange={ ( val ) => setAttributes( { gridItemShadow: val } ) }
+				colour={ gridItemShadowColour }
+				onColourChange={ ( val ) => setAttributes( { gridItemShadowColour: val } ) }
 			/>
 			<DesignTokenPicker
 				label={ __( 'Text colour', 'sgs-blocks' ) }

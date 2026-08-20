@@ -267,6 +267,9 @@
 		"shadow": {
 			"type": "string"
 		},
+		"shadowColour": {
+			"type": "string"
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
@@ -397,6 +400,10 @@
 			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
 		},
 		"gridItemShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemShadowColour": {
 			"type": "string",
 			"default": ""
 		},

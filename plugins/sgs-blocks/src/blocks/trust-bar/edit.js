@@ -625,6 +625,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						value={ attributes.shadow || '' }
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
+						colour={ attributes.shadowColour }
+						onColourChange={ ( val ) => setAttributes( { shadowColour: val } ) }
 					/>
 				</PanelBody>
 

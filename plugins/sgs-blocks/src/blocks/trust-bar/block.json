@@ -491,6 +491,9 @@
 		"shadow": {
 			"type": "string"
 		},
+		"shadowColour": {
+			"type": "string"
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
@@ -621,6 +624,10 @@
 			"default": {}
 		},
 		"gridItemShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemShadowColour": {
 			"type": "string",
 			"default": ""
 		},

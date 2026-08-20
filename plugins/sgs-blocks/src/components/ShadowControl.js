@@ -106,6 +106,20 @@ const DEFAULT_COLOUR = 'rgba(0,0,0,0.1)';
  * @param {Function} props.onColourChange  Setter for the externally-owned colour attribute.
  */
 export default function ShadowControl( { label, value, onChange, colour, onColourChange } ) {
+	// Defensive fallback (incident 2026-08-20): 5 of 22 mount sites passed no
+	// `onColourChange`, so picking a shadow colour threw `TypeError:
+	// onColourChange is not a function` and blanked the whole inspector
+	// sidebar. The five sites are now wired with a real backing attribute —
+	// but this default keeps a FUTURE unwired mount a no-op (control does
+	// nothing, logged) instead of crashing the sidebar again.
+	const safeOnColourChange =
+		onColourChange ||
+		( () => {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'ShadowControl: onColourChange prop is missing — the colour field will not update the block. Pass `colour` + `onColourChange` from the caller (see cta-section/edit.js for the reference wiring).'
+			);
+		} );
 	// `useSettings( 'shadow.presets' )` can resolve to EITHER a flat array
 	// (already-merged) OR WordPress's origin-keyed object
 	// `{ default: [...], theme: [...], custom: [...] }` (raw feature shape,
@@ -198,7 +212,7 @@ export default function ShadowControl( { label, value, onChange, colour, onColou
 					<DesignTokenPicker
 						label={ __( 'Shadow colour', 'sgs-blocks' ) }
 						value={ colour }
-						onChange={ ( v ) => onColourChange( v || DEFAULT_COLOUR ) }
+						onChange={ ( v ) => safeOnColourChange( v || DEFAULT_COLOUR ) }
 						enableAlpha
 					/>
 					<ToggleControl

@@ -418,6 +418,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// every render, not just a warning. Same shape as the $grid_auto_rows
 			// guard at :448.
 			$shadow    = is_array( $shadow ) ? '' : $shadow;
+			// Shadow COLOUR is a separate attribute (D621/D622 colour-panel split);
+			// ShadowControl stores SHAPE only. Composed back together at emission
+			// via sgs_shadow_value_composed(). Same is_array guard rationale as the
+			// shape above — a tiered object would TypeError-fatal the ?string hint.
+			$shadow_colour = $attributes['shadowColour'] ?? '';
+			$shadow_colour = is_array( $shadow_colour ) ? '' : $shadow_colour;
 			$max_width = $attributes['maxWidth'] ?? '';
 			$max_width = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
@@ -717,6 +723,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$grid_item_background  = is_array( $grid_item_background ) ? '' : $grid_item_background;
 			$grid_item_border      = is_array( $grid_item_border ) ? '' : $grid_item_border;
 			$grid_item_shadow      = is_array( $grid_item_shadow ) ? '' : $grid_item_shadow;
+			// Grid-item shadow COLOUR — same SHAPE/colour split as the outer shadow
+			// above, same is_array guard rationale.
+			$grid_item_shadow_colour = $attributes['gridItemShadowColour'] ?? '';
+			$grid_item_shadow_colour = is_array( $grid_item_shadow_colour ) ? '' : $grid_item_shadow_colour;
 			$grid_item_text_colour = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
 
 			// QB-1 advanced grid attrs (section + layout kinds only).
@@ -889,7 +899,21 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// the old behaviour) AND raw box-shadow strings from ShadowControl
 				// render. The old hardcoded preset wrap mangled raw CSS into an
 				// invalid var() and shadows silently vanished.
-				$shadow_value = sgs_shadow_value( $shadow );
+				// 2026-08-20: composed, not shape-only. ShadowControl has always
+				// rendered a "Shadow colour" picker, but four blocks routing through
+				// this wrapper (container, hero, physics-canvas, trust-bar) passed it
+				// no handler at all — picking a colour threw
+				// `onColourChange is not a function` and blanked the inspector. The
+				// control is now wired to a real `shadowColour` attribute, and this is
+				// the consumer that makes it render rather than a dead control.
+				// Preset slugs are unaffected: sgs_shadow_value_composed() delegates
+				// straight to sgs_shadow_value() for anything that is not a raw shape.
+				// ⚠ VISIBLE CHANGE, declared not slipped in: a RAW shape with no
+				// colour set previously emitted no colour at all, so the browser used
+				// `currentColor` — i.e. the shadow tracked the TEXT colour and went
+				// near-invisible on dark sections. It now defaults to rgba(0,0,0,0.1),
+				// matching cta-section (render.php:125), which has composed since D621.
+				$shadow_value = sgs_shadow_value_composed( $shadow, $shadow_colour );
 				if ( '' !== $shadow_value ) {
 					$base_outer_decls[] = 'box-shadow:' . $shadow_value;
 				}
@@ -1047,8 +1071,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gi[]        = '--sgs-gi-border:' . esc_attr( trim( $safe_border ) );
 				}
 				if ( '' !== $grid_item_shadow ) {
-					// T2.2b: same preset-or-raw routing as the outer shadow above.
-					$gi_shadow_value = sgs_shadow_value( $grid_item_shadow );
+					// T2.2b: same preset-or-raw routing as the outer shadow above —
+					// and, since 2026-08-20, the same SHAPE+colour composition, so
+					// GridItemDefaultsPanel's "Shadow colour" picker is a live control
+					// rather than a dead one. See the outer-shadow note above for the
+					// declared currentColor → rgba(0,0,0,0.1) default change.
+					$gi_shadow_value = sgs_shadow_value_composed( $grid_item_shadow, $grid_item_shadow_colour );
 					if ( '' !== $gi_shadow_value ) {
 						$gi[] = '--sgs-gi-shadow:' . $gi_shadow_value;
 					}

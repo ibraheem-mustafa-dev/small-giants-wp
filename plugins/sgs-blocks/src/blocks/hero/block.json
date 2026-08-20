@@ -759,6 +759,9 @@
 		"shadow": {
 			"type": "string"
 		},
+		"shadowColour": {
+			"type": "string"
+		},
 		"shapeDividerBottom": {
 			"type": "string",
 			"default": ""
