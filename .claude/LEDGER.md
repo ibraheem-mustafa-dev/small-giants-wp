@@ -39,57 +39,62 @@ editor all measured the wrong thing. Every real answer today came from reading a
 | **Border-style picker made REACHABLE** | was dead UI; verified it renders AND writes (`none -> dashed`) |
 | **Duplicate "Font size" label removed** | rule 29 back to its backlog of 8 |
 | **control-parity false positive fixed** | comment-masking + paired fixtures, 14 -> 16 assertions |
-| **Golden census: 21 types measurable** | was 14; composer loads all three peer files |
+| **Golden census made honest** | Session A shipped the 21-type composer; this session fixed what it could not MEASURE |
 | **49 border native-UI violations recovered** | regex could not match `__experimentalBorder` |
 | **MEASURABILITY + capability-loss reporting** | the census now says what it CANNOT measure |
 | **2 worktrees pruned safely** | both `node_modules` were junctions INTO main's — unlinked first |
 
 ## Where conformance actually stands
 
+Re-measured 2026-08-20 after the census fixes. Every figure below is reconciled
+against an independent pass over the block.json files.
+
 ```
-21 control types x 83 blocks = 1743 rows scored (was 14 types)
-MEASURABILITY   21 types x 3 axes = 63 cells - 45 UNMEASURED
-colour.canonical   63 CONFORMANT · 12 MISSING · 6 NOT-APPLICABLE · 2 VIOLATION
-colour.nativeUi    58 CONFORMANT · 25 VIOLATION
-border.nativeUi    34 CONFORMANT · 49 VIOLATION   <- recovered today, was N/A x83
+21 control types x 83 blocks = 1743 rows      MEASURABILITY 40 of 63 cells UNMEASURED (was 45)
+
+canonical    colour   63 CONFORMANT ·  1 VIOLATION · 13 MISSING ·  6 N-A
+             border   52 CONFORMANT ·  6 VIOLATION ·  8 MISSING · 17 N-A   <- was N/A x83
+             resp-wrap 59 CONFORMANT ·                            24 N-A   <- was N/A x83
+             media     9 CONFORMANT ·                            74 N-A   <- was N/A x83
+             typography 16 CONFORMANT · 33 VIOLATION · 18 MISSING · 16 N-A
+             length-unit            · 48 VIOLATION · 11 MISSING · 24 N-A
+
+nativeUi     colour 25 VIOL · border 49 VIOL · box-4value 50 VIOL · length-unit 50 VIOL
 ```
 
-**45 of 63 cells UNMEASURED is the real size of the goldens gap**, and it was invisible
-before today — it printed as a column of N/A that reads exactly like coverage.
+**VIOLATION vs MISSING now means something.** VIOLATION = the block paints the
+surface itself and the client cannot reach it. MISSING = it should have the
+control and does not. Colour's old "2 violations" resolve into buybox
+(VIOLATION — 27 own declarations) and site-footer (MISSING — core paints it, no
+SGS panel). Neither became clean.
 
 ## THE FRONT — next session
 
-⭐ **Two decisions are waiting for Bean. Both move numbers, so neither was taken.**
+**Both open decisions are now TAKEN and measured** (A: native-UI detection restored
+for length-unit + box-4value; B: colour carve-out and the circular `surfaces.colour`
+predicate removed). `/qc`: 14 of 14 scenarios pass, confidence 90/100, grade PASS.
 
-1. **Three types lost native-UI detection in the merge** — `typography`, `box-4value`,
-   `length-unit`. Session A replaced their base rows with finalised rows carrying no
-   `detectVia`, each with stated reasoning. typography's reads soundly. **`box-4value`'s own
-   note says "not independently re-measured ... flagged as a gap, not silently assumed
-   clean"** — and the Phase 3 table below sizes native-UI retirement partly from
-   `supports.spacing`, which now nothing detects. Restore those two, or accept the gap?
-2. **The last colour carve-out** — `axisCanonical()` skips `qualifiesFor()` when
-   `type === 'colour'`. Session A gated it deliberately because routing colour through it
-   moves colour's counts. Remove it (and re-baseline), or keep it documented?
+### 1. Close the remaining 40 UNMEASURED cells
 
-### Then: close the 45 UNMEASURED cells
+Run `node scripts/surveys/survey-golden-conformance.js` and read the MEASURABILITY
+table — it names them. Six types (`state`, `alignment`, `repeater`, `animation`,
+`angle-position`, `preset`) describe a PATTERN in prose rather than naming a
+component; their N/A is honest and closing them means either extracting a real
+shared component or accepting the type has none.
 
-The census now names them precisely — run
-`node scripts/surveys/survey-golden-conformance.js` and read the MEASURABILITY table.
-9 types declare no canonical component at all (`state`, `media`, `repeater`,
-`responsive-wrapper`, `animation`, `preset`, `angle-position`, `alignment`, `border`).
-Some are honest N/A (alignment is a pattern, not a component); others have a real component
-named in their own handover that was never put in the `canonical` field.
-
-### Then: fix, in parallel against a complete list
+### 2. Fix, in parallel, against a list that is finally complete
 
 | Work | Size | Shape |
 |---|---|---|
+| Native-UI retirement — **spacing** (box-4value + length-unit) | **50 blocks** | `block.json` only, mechanical, newly visible |
 | Native-UI retirement — **border** | **49 blocks** | `block.json` only, mechanical, newly visible |
 | Native-UI retirement — colour | 25 blocks | `block.json` only, mechanical |
-| Form colour | `sgs/form` + 12 field blocks | one design, then mechanical; control belongs on the parent |
-| `buybox` + `site-footer` | 2 blocks | canonical panel **and** native retirement in one pass |
+| Typography hardcoding | **33 VIOLATION** | blocks painting their own type with no client control |
+| length-unit hardcoding | **48 VIOLATION** | same shape |
+| Form colour | `sgs/form` + 12 field blocks | one design, then mechanical |
+| `sgs/buybox` | 1 block | 27 own colour declarations, no panel |
+| `sgs/site-footer` | 1 block | core paints it; needs the SGS panel |
 | `sgs/heading` borderColourHover | 1 attr | clears BOTH rule-31 heading findings, 409 -> 407 |
-| Gap findings | 17 across 11 blocks | judgement per finding |
 
 ⛔ **Serialised, never parallel:** `rules.json`, `package.json`, `golden-controls.json`,
 `core/*.js`.
@@ -200,6 +205,23 @@ named in their own handover that was never put in the `canonical` field.
   `loadMergedSchema()` records it on `_meta.capabilityLoss`; the census prints it.
 - ⛔ **The stored-content gate catches YOUR test fixture too.** A verification page carrying
   an attr `sgs/text` does not declare aborted the deploy — correctly (D338 class).
+- ⛔ **A DECLARED predicate the engine cannot READ is the worst shape a detector takes.**
+  Twice in one day: a family regex that could not match `__experimentalBorder` (49 real
+  violations), and a canonical reader that looked at 2 keys of many (249 rows). Both
+  reported N/A, which is indistinguishable from clean. When an axis reads N/A
+  library-wide, suspect the READER before believing the contract is silent.
+- ⛔ **A widening that turns a VIOLATION into a PASS is a loosened detector, not a fix.**
+  Caught only by diffing per-BLOCK; the per-count totals looked like an improvement.
+  Diff identities, not tallies.
+- ⛔ **PROSE UNDER A `component` KEY IS NOT A COMPONENT NAME.** Six goldens rows describe
+  a pattern there. Treating them as identifiers would have scored six types against names
+  that can never match. Gate on `/^[A-Z][A-Za-z0-9]*$/`.
+- ⛔ **Scoping a contract by a DERIVED field is circular.** `surfaces.colour` is computed
+  from what a block already has, so it excluded exactly the blocks missing a panel.
+  Deleted. Scope on evidence the predicate gathers itself.
+- ⛔ **Never mutate a repo file as a test fixture (D659).** The composer's three failure
+  modes were tested by copying `core/golden.js` into a scratch tree — it requires only
+  `fs`/`path`, so a standalone copy works. Repo verified clean afterwards.
 - **A completeness error is invisible to every correctness gate.**
 - **Run builds synchronously, never backgrounded.**
 
@@ -225,22 +247,22 @@ named in their own handover that was never put in the `canonical` field.
 
 ## State Snapshot
 
-- **Branch:** `main`, in sync with `origin/main`, tree clean. All three goldens branches
-  merged, deleted locally AND on origin; both stray worktrees removed after unlinking their
-  `node_modules` junctions — main's verified intact at **975** entries after each removal.
-- **D-ceiling:** **D692** (D689 census measurability + capability-loss · D690 useSettings
-  preset shape · D691 explicit-prop-list drop · D692 detector comment masking) — verify with
+- **Branch:** work landed on `main` via an isolated worktree — the shared checkout was on
+  another session's `fix/spec-staleness-purge` throughout and was never disturbed.
+- **D-ceiling:** **D695** (D693 colour scopes on evidence · D694 canonical read 2 keys of
+  many · D695 independentlySufficient) — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-- **Live counts (re-derived this session):** rule 21 **197 FLAGGED** + 11 baselined (⚠ the
-  `--json` array is 208 — it includes baselined; the old "199" here was the backlog, not the
-  count), rule 31 **409**, rule 29 **8**, rule 01 58, rule 18 13. rule 31's ratchet was
-  raised 408 -> 409 to match the figure its own `advisoryReason` records as MEASURED.
-- **Gates:** `npm run build` exit 0, full postbuild chain green · inspector-scan `--check`
-  exit 0, zero ratchet lines · golden-conformance self-test PASS · control-parity **16/16**
-  self-test and `--check` PASS · cheat-gate / F5 / F6 green (baselined only).
-- **Canary:** deployed at HEAD and **live-verified in the block editor** — zero console
-  errors, border-style picker renders and writes, no duplicate label, background-parallax
-  gone, element parallax intact, trust-bar "Pending" control gone. Test page deleted.
+- **Live counts:** rule 21 **197 FLAGGED** + 11 baselined (⚠ the `--json` array reads 208 —
+  it includes baselined), rule 31 **409**, rule 29 **8**, rule 01 58, rule 18 13. All
+  unmoved across every census change.
+- **Gates:** `npm run build` exit 0, no ratchets · inspector-scan `--check` exit 0 ·
+  golden-conformance self-test **20/20** · control-parity 16/16 · cheat-gate / F5 / F6 green.
+- **`/qc`:** 14 of 14 scenarios PASS — determinism (byte-identical reruns), closed verdict
+  vocabulary, no missing verdicts, prose-only types stay N/A, all three composer failure
+  modes (absent / malformed / duplicate-key peer), measurability table matches reality, and
+  four independent reconciliations. Confidence **90/100**, grade **PASS**.
+- **Canary:** deployed and live-verified earlier this session (editor fixes). The census
+  changes are tooling only — nothing shipped to the site since.
 
 ## Pointers
 

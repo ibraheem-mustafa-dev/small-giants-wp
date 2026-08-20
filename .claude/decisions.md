@@ -1,5 +1,49 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D695 [ROUTINE] — a canonical slot declares whether it can independently prove conformance (2026-08-20)
+
+Widening the canonical axis to read every declared component (D694) flipped `sgs/site-footer` from
+VIOLATION to CONFORMANT for colour: it reaches `GradientOverlayControl` via `BackgroundPanel` while
+having no `SgsColourPanel` at all. A widening that turns a real violation into a pass is a loosened
+detector, not a fixed one. `golden-controls.json` now marks such slots
+`independentlySufficient: false` — a universal, additive contract field, not a per-type carve-out —
+and `canonicalComponentNames()` skips them. Two slots carry it, both justified by their own existing
+prose: `textGradientRow` ("never mounted directly", reached THROUGH the panel) and
+`wholeBlockOverlay` ("single-state by construction"). Caught by diffing per-BLOCK, not per-count.
+
+## D694 [INCIDENT] — the canonical axis read 2 keys of many, hiding 249 rows (2026-08-20)
+
+`axisCanonical()` read only `canonical.panel.component` and `canonical.row.component` — the shape
+from when `colour` was the only encoded type. Three finalised rows name their components elsewhere
+(`media`: single/bulk; `responsive-wrapper`: tierPrimitive/objectPrimitive; `border`: widthSlot/
+radiusSlot/styleSlot/colourSlot) and all three reported N/A across all 83 blocks. Same defect class
+as the `__experimental` family regex (D689), one axis over: a declared predicate the engine cannot
+read is indistinguishable from a clean result.
+
+⛔ PROSE IS NOT AN IDENTIFIER. Six rows describe a PATTERN under `component`
+("ResponsiveOverride + SelectControl (tier-object attribute)"). Collecting those would score six
+types against names that can never match — a library-wide false sweep. Only `/^[A-Z][A-Za-z0-9]*$/`
+counts; those six correctly remain N/A. Decision A (Bean) restored `nativeUi.detectVia` for
+`length-unit` and `box-4value`, which lost it in the styling.json merge; `typography` stays off, its
+reasoning (0 raw core typography mounts) holding.
+
+## D693 [ROUTINE] — colour scopes on evidence, not on a self-fulfilling derived field (2026-08-20)
+
+Decision B. The canonical axis skipped `qualifiesFor()` when `type === 'colour'`, pinning colour to
+roster.json's `surfaces.colour` — the derived field this repo already records as self-fulfilling
+(computed from what a block ALREADY has, so it can never find one that is missing a panel). The
+distinction the carve-out protected is real and is now made universally from the predicate's own
+evidence: `qualifiesFor()` returns a `basis`, and own-paint (styling exists, no client control)
+reads VIOLATION while ancestor/core-painted reads MISSING.
+
+The change exposed a MISSING BRANCH: `sgs/site-footer` first read NOT-APPLICABLE — "no colour
+surface" — though its 473-byte style.css paints almost nothing while it declares `supports.color`
+with live sub-flags and is one of the 25 blocks the nativeUi axis already flags. Added branch (1b),
+schema-driven off the same `detectVia`. `colourEligibility()` DELETED; nothing reads
+`surfaces.colour`. NOT-APPLICABLE fell across types (length-unit 35->24, border 24->17) — the
+circular predicate no longer excluding blocks from a contract for not already satisfying it.
+
+
 ## D692 [INCIDENT] — a detector's own false positive is fixed in the detector, never baselined (2026-08-20)
 
 `survey-control-parity.py` failed the build on `BorderStyleControl.js:14` — a sentence in a docblock
