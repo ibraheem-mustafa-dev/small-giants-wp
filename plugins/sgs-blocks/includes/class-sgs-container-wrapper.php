@@ -1461,16 +1461,49 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// no !important needed, source order alone lets the existing @media tier
 			// rules (below) win at narrower viewports.
 			// ----------------------------------------------------------------
-			$base_spacing_padding = array();
-			if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+			// D555 (2026-08-10) — sgs/container migrated its BASE padding/margin off
+			// WP-native `supports.spacing` onto block-owned box-object attrs
+			// (`padding`/`margin`, shape { top, right, bottom, left } — same shape as
+			// the pre-existing `paddingTablet`/`paddingMobile` legacy siblings read
+			// below), because a WP-native support cannot carry a framework default and
+			// the block needed one (no horizontal gutter → flush-to-viewport-edge bug).
+			// ⛔ ADDITIVE ONLY — 37 other blocks still declare `supports.spacing` and
+			// rely on the native `style.spacing.padding`/`margin` read; that path is
+			// untouched below. Prefer the owned attr when the block actually declares
+			// it (non-empty), else fall back to native.
+			// ⚠ `$attributes['padding']` is NOT this shape on every block: the
+			// container-query blocks (site-header-row / site-footer-row / gallery,
+			// `$container_queries` true) use `padding` as a TIER object
+			// `{desktop,tablet,mobile}`, each tier itself a box — a different shape
+			// entirely. Gate this read to `! $container_queries` so it can never
+			// misread that tier object as a flat box.
+			$owned_spacing_padding = array();
+			if ( ! $container_queries && isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+				foreach ( $attributes['padding'] as $spacing_side => $spacing_value ) {
+					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+						$owned_spacing_padding[ $spacing_side ] = $spacing_value;
+					}
+				}
+			}
+			$owned_spacing_margin = array();
+			if ( ! $container_queries && isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
+				foreach ( $attributes['margin'] as $spacing_side => $spacing_value ) {
+					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+						$owned_spacing_margin[ $spacing_side ] = $spacing_value;
+					}
+				}
+			}
+
+			$base_spacing_padding = $owned_spacing_padding;
+			if ( empty( $base_spacing_padding ) && isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
 				foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
 					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 						$base_spacing_padding[ $spacing_side ] = $spacing_value;
 					}
 				}
 			}
-			$base_spacing_margin = array();
-			if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+			$base_spacing_margin = $owned_spacing_margin;
+			if ( empty( $base_spacing_margin ) && isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
 				foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
 					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 						$base_spacing_margin[ $spacing_side ] = $spacing_value;

@@ -332,27 +332,27 @@ export default function Edit({ attributes, setAttributes, name }) {
           </ResponsiveOverride>
         </PanelBody>
 
-        {/* Responsive spacing (padding + margin) — box-object interface contract
-            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
-            writes to the WP-native style.spacing object (also visible in the Styles >
-            Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
-            and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */}
+        {/* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default
+            migration. `padding`/`margin` are now block-OWNED object attrs (no
+            `supports.spacing` — a WP-native support cannot carry a framework
+            default, which is exactly why `sgs/container` had no horizontal
+            gutter and rendered flush to the viewport edge; see D555). Base tier
+            now writes to the owned `padding`/`margin` attrs directly, matching
+            the tablet/mobile legs' already-owned `paddingTablet`/`paddingMobile`
+            and `marginTablet`/`marginMobile` — one system, not a native+SGS
+            split. Mirrors the D548 `sgs/gallery` precedent (its own base tier
+            is likewise owned, not native). */}
         <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
           <ResponsiveBoxControl
             label={ __( "Padding", "sgs-blocks" ) }
             values={ {
-              base: attributes.style?.spacing?.padding ?? {},
+              base: attributes.padding ?? {},
               tablet: attributes.paddingTablet ?? {},
               mobile: attributes.paddingMobile ?? {},
             } }
             onChange={ ( tier, next ) => {
               if ( tier === "base" ) {
-                setAttributes( {
-                  style: {
-                    ...attributes.style,
-                    spacing: { ...attributes.style?.spacing, padding: next },
-                  },
-                } );
+                setAttributes( { padding: next } );
               } else {
                 setAttributes( {
                   [ tier === "tablet" ? "paddingTablet" : "paddingMobile" ]: next,
@@ -364,18 +364,13 @@ export default function Edit({ attributes, setAttributes, name }) {
           <ResponsiveBoxControl
             label={ __( "Margin", "sgs-blocks" ) }
             values={ {
-              base: attributes.style?.spacing?.margin ?? {},
+              base: attributes.margin ?? {},
               tablet: attributes.marginTablet ?? {},
               mobile: attributes.marginMobile ?? {},
             } }
             onChange={ ( tier, next ) => {
               if ( tier === "base" ) {
-                setAttributes( {
-                  style: {
-                    ...attributes.style,
-                    spacing: { ...attributes.style?.spacing, margin: next },
-                  },
-                } );
+                setAttributes( { margin: next } );
               } else {
                 setAttributes( {
                   [ tier === "tablet" ? "marginTablet" : "marginMobile" ]: next,

@@ -34,11 +34,6 @@
 			"fontStyle": true,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
@@ -90,8 +85,8 @@
 						"css:font-style": "native:typography.fontStyle",
 						"css:text-transform": "native:typography.textTransform",
 						"css:text-align": "native:typography.textAlign",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
@@ -488,6 +483,15 @@
 		"contentWidth": {
 			"type": "object",
 			"default": {"desktop": "full"}
+		},
+		"padding": {
+			"type": "object",
+			"default": {"left": "24px", "right": "24px"},
+			"description": "Base (desktop) padding, owned outright (no supports.spacing — D555 gutter-default migration). Left/right only default to a horizontal gutter matching theme.json settings.spacing.spacingSizes slug 40 (1.5rem/24px at the 16px root), the same value site-header's own patterns already hardcode for padding-left/right. Top/bottom default to unset (0) so this migration changes only the axis that was broken (sgs/container previously had no gutter default at all and rendered flush to the viewport edge)."
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
 		},
 		"paddingTablet": {
 			"type": "object",
