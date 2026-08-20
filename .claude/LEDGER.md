@@ -18,66 +18,74 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read IN FULL if touching the
    converter/walker/pipeline surface (session rule).
 
-## ▶ LIVE STATUS — Phase 1 Wave 1 SHIPPED (2026-08-20, commit `3224db10`, deployed + live-verified)
+## ▶ LIVE STATUS — 2026-08-20, end of first execution session
 
-**P1-1 DONE — instant filtering WORKS on the canary `/shop/`.** Root cause was NOT what the
-plan assumed and NOT what the subagent proposed: WooCommerce's
-`ProductCollection/Controller.php:125-134` checks each inner block's REGISTERED
-`supports.interactivity`, not its namespace. `sgs/text` declared neither form; three lines of
-`block.json` fixed it. Live-verified: `core/router` absent (probe positively controlled), a
-stamped `window` variable survived a filter click (no reload), URL updated client-side,
-products 5→4, 2 `fetch` requests. Full evidence: **D702**.
+**Everything below is committed and pushed to `origin/main`. Working tree clean, no divergence.**
+Commits: `3224db10` · `03fd4247` · `b562c6d2` · `631e97a3` · `44d03825` · `21131a98` · `25cc0188`.
 
-⚠ **FR-38-12 Flip is STILL DORMANT — do not record it as unblocked.** GSAP/Flip loaded 0
-resources on `/shop/` after the fix. Client-side navigation was necessary but not sufficient;
-the module is not enqueued on this page. Open finding, needs its own diagnosis.
+**Per-step plan status is single-sourced to the executable plan** —
+`.claude/plans/phase-shop-container-remediation.md` § "EXECUTION PROGRESS". Do not duplicate it here.
 
-**P1-2 DONE — 42 orphaned colour authorings now visible** (advisory kind
-`native-preset-undeclared`, `--check` exit 0, build green). Not ~60: that was a reasoned
-estimate; 42 is enumerated, after false positives from blocks with their own `fontSize` attr
-were removed. **D703**.
+### Headline
 
-**P1-3 DONE (read-only)** — `brand-strip`'s `backgroundColourHover`/`textColourHover` paint
-the INNER TILE (`--sgs-tile-hover-*`), not the root. Root rows must not reuse those names.
+- **Phase 1 Wave 1: SHIPPED, DEPLOYED, LIVE-VERIFIED.** Instant filtering works on the canary
+  `/shop/` — proven behaviourally (a stamped `window` var survived a filter click, so no reload;
+  URL updated client-side; products 5→4; 2 `fetch` requests). **D702**
+- **Phase 1 Wave 2: NOT STARTED.** **Phase 2: NOT STARTED** (both design gates closed, ready).
+- **R-3 workstream: substantially DONE** (a/d/e/f/g complete; c partial; b deliberately blocked).
 
-**QC GATE 1: PASSED** (build exit 0 · 42 findings under the advisory kind · cause proven).
-**P1-4: PASSED** (deployed, payload-verify matched all 83 block.json).
+### Three plan claims REFUTED by implementation — do not work from the old text
 
-### ⛔ WAVE 2 IS BLOCKED ON BEAN — and P1-6 must be REWRITTEN before it dispatches
+1. `sgs/text`'s root cause is a block-REGISTRY check on `supports.interactivity`
+   (`ProductCollection/Controller.php:125-134`), **not** a namespace check. `sgs/product-card` in the
+   same collection never tripped it — that counter-example killed the namespace theory.
+2. **P1-6 is wrong for 3 of its 4 blocks.** `sgs/testimonial-slider` was already correct — drop it.
+   `sgs/site-header-row`, the named "proven recipe", has no hover pair at all. Copy
+   `sgs/testimonial-slider` instead.
+3. "~60 orphaned colour authorings" → the enumerated figure is **42**.
 
-Bean's mid-session instruction: *"We have a standardised colour setup that you need to abide
-by."* The standard is **Spec 35 PART O §1** (D621 tab / D622 panel / clause 9a-c shape):
-one thin swatch row, states as TABS INSIDE its popover (9b explicitly retires side-by-side
-`*Hover` controls), never behind a "+" menu, and placement resolved by
-`placement-reach.py` + `check-element-manifest-conformance.js` — the spec forbids inventing a
-bespoke colour-placement rule.
+### ⚠ Open, unresolved — FR-38-12 Flip does NOT animate
 
-**P1-6 as written in the plan is defective.** Ground truth resolved per block:
+Root-caused, fixed, opus-reviewed (two Critical findings fixed, including a per-frame layout read
+that would have breached the Core Web Vitals budget), deployed. On a VALID test case (3-column grid,
+filter removes the middle product, two products genuinely reflow) it produced **zero** Flip frames.
+Eliminated: attribute present · module + GSAP loaded · reduced-motion off · product list resolved
+correctly · `<ul>` same object and morphing in place · arm listeners present in the shipped bundle.
+The remaining failure point is unfound. **`animate_product_filtering` left OFF** so it is not
+shipping GSAP for no effect. ⚠ Two earlier "it doesn't animate" readings were INVALID (a cached page,
+then a single-column layout where nothing moves) — re-test only on a multi-column grid where a
+middle item is removed.
 
-| Block | Reality vs the plan's premise |
-|---|---|
-| `testimonial-slider` | **Already correct — REMOVE from P1-6.** All four attrs declared AND explicitly bound to root element `slider` with a `hover` state. |
-| `hero` | hover pair declared, bound to NO element; base pair missing |
-| `brand-strip` | hover pair declared, paints the inner tile |
-| `trust-bar` | `textColour` declared, bound to no element |
-| `site-header-row` (the plan's "proven recipe") | has **no hover pair at all** — a bad template for this job |
+### Off-plan work completed (Bean-directed)
 
-**Use `testimonial-slider` as the template, not `site-header-row`** — it is the block that
-already meets the standard (explicit `attrMap` + `states.hover.attrMap` binding to root).
+- **Element-manifest style-defect debt 12 → 0**; baseline dropped to zero, which is now the FLOOR.
+  Two shared-model gaps caused nearly all of it: `css:box-shadow-color` did not exist (a member
+  claims exactly ONE attribute, so the shadow VALUE always won), and no `css:outline-*` member
+  existed at all.
+- **`STATE_WITHOUT_BASE` 4 → 2.** `sgs/post-grid` gained a resting shadow control (built, not
+  exempted); `scaleHover` reclassified via a new `noBaseByDesign` mechanism + `STATE_BY_DESIGN`
+  counter. The remaining 2 (`sgs/hero`, `sgs/info-box` `borderColourHoverGradient`) are handed over.
+- **WP 7.1** — canary upgraded 2026-08-20; three stale doc references corrected.
+- **DB reseeded** via `/sgs-update`; `attr-role-map.json` regenerated AFTER it (order is
+  load-bearing — regenerating first loses rows).
 
-**OPEN QUESTION FOR BEAN (Wave 2 gate):** `brand-strip` root naming — (A) distinct `root*`
-names, non-breaking *(recommended)*; (B) rename tile attrs to the `tile` prefix the block
-already declares, cleaner but silently drops stored authorings; (C) skip brand-strip.
+### Handed to the colour-golden track (Bean copies these across)
 
-### Other open follow-ons (NOT parked — Bean has not been asked)
-1. **73 blocks lack `supports.interactivity`.** Any inside a product collection reproduce
-   D702. Needs a per-block judgement pass — a blanket sweep is refused, the declaration is a
-   safety claim.
-2. **`check-blockjson-metadata-only.py` needs a CASE 3** for `supports.interactivity`. The
-   73-block pass will hit the visual-diff gate every single time otherwise.
+1. `.claude/reports/2026-08-20-HANDOVER-to-colour-golden-track.md`
+2. `.claude/reports/2026-08-20-HANDOVER-2-to-colour-golden-track.md`
+
+⛔ **The item worth reading twice** (handover 2 §3): a subagent cleared a finding by remapping
+`formFocusRingWidth` from `css:outline-width` to `css:box-shadow`. The gate went green and the
+manifest became a lie — the width drives `outline`; the box-shadow is hardcoded. Reverted. "Make the
+finding go away" and "make the manifest correct" are different instructions.
+
+### Needs Bean
+
+- **`sgs/hero` + `sgs/info-box` resting border gradient** — handed over, but if the other track
+  declines it, it comes back here.
+- Nothing else is blocked.
 
 ---
-
 **The rest of this file is the previous session's handoff, still valid for Phase 2.**
 
 The plan is fly-through ready: every step has a model, exact files, a pre-written cold prompt,

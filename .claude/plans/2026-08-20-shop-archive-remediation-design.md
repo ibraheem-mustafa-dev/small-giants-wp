@@ -1,8 +1,20 @@
 # Shop archive — full remediation design
 
-**Status:** DESIGN + DECISIONS TAKEN. Bean ruled on all open questions 2026-08-20 — see the
-"BEAN'S DECISIONS" section at the end, which is BINDING and supersedes the council where they
-conflict. Nothing implemented yet; next step is /phase-planner.
+**Status:** ⚠ **PARTIALLY IMPLEMENTED — this line was "Nothing implemented yet" and is now stale.**
+Phase 1 Wave 1 is SHIPPED, DEPLOYED and LIVE-VERIFIED (2026-08-20); Wave 2 has not started; Phase 2
+has not started. **Per-step status lives in the executable plan, not here** —
+`.claude/plans/phase-shop-container-remediation.md` § "EXECUTION PROGRESS". Do not track status in
+two places; this doc is the evidence + decisions record.
+
+⚠ **Three claims in the body below were REFUTED by implementation and are corrected in the
+executable plan's progress section — read it before trusting a §-numbered claim here:** the
+`sgs/text` root cause (it is a block-registry `supports.interactivity` check, NOT the namespace
+theory), the P1-6 premise (`sgs/testimonial-slider` was already correct; `sgs/site-header-row` is
+the wrong template to copy), and the "~60 orphaned colour authorings" figure (the enumerated count
+is 42).
+
+Bean ruled on all open questions 2026-08-20 — see the "BEAN'S DECISIONS" section at the end, which
+is BINDING and supersedes the council where they conflict.
 **Date:** 2026-08-20
 **Method:** 4 parallel evidence agents → live measurement/fact-check → 4-seat design council → live fact-check of council claims.
 

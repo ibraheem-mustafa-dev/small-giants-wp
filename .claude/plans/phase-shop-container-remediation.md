@@ -25,6 +25,63 @@ as every commit**.
 
 ---
 
+## ▶ EXECUTION PROGRESS (updated 2026-08-20, end of first execution session)
+
+**Phase 1 Wave 1 SHIPPED + DEPLOYED + LIVE-VERIFIED. Wave 2 NOT STARTED. Phase 2 NOT STARTED.**
+The R-3 workstream is substantially done. Commits: `3224db10`, `03fd4247`, `b562c6d2`, `631e97a3`,
+`21131a98`, `25cc0188` (all on `main`, pushed).
+
+| Step | Status | Notes |
+|---|---|---|
+| **P1-1** `sgs/text` kills client-side nav | ✅ **DONE, live-verified** | Root cause was NOT the plan's assumption. WooCommerce's `ProductCollection/Controller.php:125-134` `is_block_compatible()` checks the block REGISTRY for `supports.interactivity`; it is not a namespace check. Fixed with 3 lines of `block.json`. **D702** |
+| **P1-2** gate allowlist fix | ✅ **DONE** | **42** findings under a new advisory kind, not the predicted ~60 (that was a reasoned estimate; 42 is enumerated after false positives removed). `--check` still exits 0. **D703** |
+| **P1-3** brand-strip colour trace | ✅ **DONE** | Confirmed the hover names paint `__item`, not the root. |
+| **QC GATE 1** | ✅ **PASS** | Build exit 0; findings surface; cause proven with file:line. |
+| **P1-4** deploy + live-verify | ✅ **PASS** | Instant filtering CONFIRMED working: a stamped `window` var survived a filter click (no reload), URL updated client-side, products 5→4, 2 `fetch` requests. |
+| **P1-5** template validity fixes | ⬜ **NOT STARTED** | |
+| **P1-6** colour on 4 non-container blocks | 🟡 **SPEC CORRECTED, BUILD NOT STARTED** | The plan's premise was wrong — see the correction below. Prep done: `sgs/brand-strip`'s four bare hover attrs renamed with an `item` prefix, freeing the plain names for a root panel (Bean-ruled option B). |
+| **P1-7** theme CSS (panel visibility, fallbacks, search width) | ⬜ **NOT STARTED** | |
+| **P1-8** mobile filter sheet + a11y | ⬜ **NOT STARTED** | |
+| **QC GATE 2** | ⬜ **NOT REACHED** | |
+| **Phase 2** (P2-1…P2-9) | ⬜ **NOT STARTED** | Both design gates (G1/G2) remain closed and ready. |
+
+### R-3 batch enforcement-script workstream
+
+| Item | Status |
+|---|---|
+| **R3-a** adopt the shared resolver in 5 gates | ✅ **DONE** — plus a `--dump-json` entry point so the Python gates reuse the SAME resolver. `contentWidth` now visible (dead-controls 1→56, inert-controls 3→59). |
+| **R3-b** wire 2 unwired detectors into `prebuild` | ⛔ **BLOCKED ON PURPOSE** — both exit 1 under `--check`. `.claude/reports/2026-08-20-r3b-blocked-real-defects.md` |
+| **R3-c** promote accidental advisories | 🟡 **PARTIAL** — `prestart`'s `\|\| echo [ADVISORY]` wrapper removed so it agrees with `prebuild`. The parity gate's blocking flags stay off pending triage of R3-a's widening. |
+| **R3-d** baseline anti-rot convention | ✅ **DONE** — 6 baselines. One took a loader code-comment because its gate iterates every key. |
+| **R3-e** the "biggest hole" | ✅ **DONE** — new advisory `inspector-scan` rule `34-declared-attr-unrendered`, 415 findings / 46 of 83 blocks. |
+| **R3-f** stale docstrings | ✅ **DONE** |
+| **R3-g** run the never-run detectors | ✅ **DONE** — `.claude/reports/2026-08-20-r3g-unwired-detectors-first-run.md`. 2 worth wiring, 2 not. |
+
+### ⚠ THREE PLAN CLAIMS REFUTED BY IMPLEMENTATION — correct these before working from them
+
+1. **P1-1's root cause.** A subagent proposed that WooCommerce rejects any non-`core/` block. **Refuted
+   by our own template:** `sgs/product-card` sits inside the same collection and never tripped it,
+   because it declares `supports.interactivity: true`. The real gate is a registry check.
+2. **P1-6's premise is wrong for 3 of its 4 blocks.** `sgs/testimonial-slider` was ALREADY correct
+   (all four attrs declared AND bound to its root with a hover state) — **drop it from the step**.
+   `sgs/site-header-row`, named as the "proven recipe" to copy, has **no hover pair at all**. **Use
+   `sgs/testimonial-slider` as the template instead.** `sgs/hero` and `sgs/trust-bar` have hover attrs
+   bound to no element; `sgs/brand-strip`'s painted the inner tile (now renamed).
+3. **"~60 orphaned colour authorings"** — the enumerated figure is **42**.
+
+### Off-plan work completed the same session (Bean-directed, not in this plan)
+
+- **FR-38-12 Flip** — root-caused, fixed, opus-reviewed (two Critical findings fixed, incl. a
+  per-frame layout read that would have breached the CWV budget), deployed. ⚠ **It still does not
+  animate** on a valid test case; eight causes eliminated, the ninth unfound. Toggle left OFF.
+- **Element-manifest style-defect debt 12 → 0** and the baseline dropped to zero.
+- **`STATE_WITHOUT_BASE` 4 → 2** — `sgs/post-grid` gained a resting shadow control; `scaleHover`
+  reclassified via a new `noBaseByDesign` mechanism. Remaining 2 handed to the colour-golden track.
+- **WP 7.1** — canary upgraded; three stale doc references corrected.
+- **Two cross-track handovers** written for the parallel colour-golden session.
+
+---
+
 ## ⚠ CHANGELOG — 8 defects found by the Hidden Decisions pass and fixed
 
 Two cold reviewers independently reviewed the first draft. Every finding below was verified
