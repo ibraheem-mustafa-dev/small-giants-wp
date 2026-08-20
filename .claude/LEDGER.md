@@ -34,8 +34,31 @@ Per-step plan status is single-sourced to
 - **R-3 workstream: COMPLETE** (all 7 items).
 - **Phase 1 Wave 2: CODE-COMPLETE + COMMITTED + PUSHED (`fe078c2f`), NOT DEPLOYED, NOT
   LIVE-VERIFIED.** All four steps done (P1-5/6/7/8). Build green, `exit 0`.
-  **QC GATE 2 IS THE NEXT ACTION** — nothing in Wave 2 has been seen running. Deploy was
-  blocked at commit time by a red gate (since reconciled), so it is now possible.
+  **DEPLOYED + PARTLY LIVE-VERIFIED 2026-08-20.** P1-7 PASSES live (filter panel now
+  visibly distinct; elevation tokens resolve; search capped). P1-8 PASSES structurally
+  (real `<dialog>`, closed = `display:none`, 0 focusable, focus lands on the heading,
+  desktop still an in-flow 260px sidebar).
+  ✅ **P1-8 NOW PASSES FUNCTIONALLY (`8772643f`, deployed + live-verified).** Ticking a
+  filter in the sheet works: products 5 → 1, URL gains `filter_stock_status=outofstock`.
+  Open/close animates both ways (sampled mid-exit: translate 0% → 78% → 96% → 100% while
+  still painted, then `display:none`). Real Escape closes, focus returns to the toggle,
+  scroll lock releases, `aria-expanded` syncs both ways.
+  ⚠ **STILL OPEN — WooCommerce ships its own mobile filter drawer**, so the site now
+  carries two. We hide WC's trigger and drive ours. Left as a deliberate decision to make,
+  not silently entrenched.
+  ~~🔴 P1-8 FAILED functionally — filters inert~~ (FIXED, kept for the mechanism: Proven:
+  the controls sit inside WooCommerce's OWN `.wc-block-product-filters__overlay`, which
+  WC styles `pointer-events:none` until IT adds `is-overlay-opened`. Our dialog never sets
+  that state. ⚠ **WooCommerce already ships its own mobile filter drawer** (its
+  open-overlay button exists in the DOM) — P1-8 built a second drawer on top of theirs.
+  The neutralisation block had reset WC's overlay POSITIONING but never its
+  `pointer-events`.)
+  🔴 **P1-6 colour NOT yet verified** — needs an editor login; that is the remaining gate item.
+  ⛔ **`fix(theme)` d3e98700 — theme assets are now versioned by filemtime.** Every theme
+  CSS/JS URL previously carried the theme version, so any asset deployed between releases
+  kept an identical URL and warm browser caches served the OLD bytes indefinitely. Proven
+  live: same URL, 10,199 fresh bytes vs 5,079 cached. This had silently affected EVERY
+  theme asset deploy. A server cache purge does not fix it.
 - **Phase 2: NOT STARTED BY THIS TRACK — but partly shipped by the parallel colour-golden
   session** (`20332725`, `1905257e`): `sgs/container` base background plus 38 theme attr
   renames, i.e. P2-6-shaped work. ⚠ **Re-scope Phase 2 against the tree before starting it.**
