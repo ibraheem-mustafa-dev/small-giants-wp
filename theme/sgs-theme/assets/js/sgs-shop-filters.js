@@ -223,6 +223,15 @@
 			   happened inside showModal() before we run.
 			   So the position is captured before and restored after. */
 			const scrollBefore = window.scrollY;
+
+			/* Lenis (the site's smooth-scroll layer, exposed as window.lenis)
+			   runs its own RAF loop and keeps driving the page toward ITS target,
+			   so a plain window.scrollTo() restore gets overwritten a frame later
+			   - measured: the 669px jump only fell to 348px with the restore
+			   alone. Stopping Lenis for the duration of the modal is the actual
+			   fix, and it doubles as the background-scroll lock. Guarded so the
+			   drawer still works if Lenis is ever removed or fails to load. */
+			lenisStop();
 			dialog.showModal();
 			restoreScroll( scrollBefore );
 
@@ -250,6 +259,18 @@
 		   showModal() and again after the focus lands, because the browser can
 		   scroll at either point. Written as an absolute restore rather than a
 		   delta so a second call is harmless. */
+		function lenisStop() {
+			if ( window.lenis && 'function' === typeof window.lenis.stop ) {
+				window.lenis.stop();
+			}
+		}
+
+		function lenisStart() {
+			if ( window.lenis && 'function' === typeof window.lenis.start ) {
+				window.lenis.start();
+			}
+		}
+
 		function restoreScroll( y ) {
 			if ( Math.abs( window.scrollY - y ) > 1 ) {
 				window.scrollTo( { top: y, left: 0, behavior: 'instant' } );
@@ -265,6 +286,7 @@
 
 		function finishClose() {
 			modalOpen = false;
+			lenisStart();
 			if ( heading ) {
 				heading.removeAttribute( 'tabindex' );
 			}
