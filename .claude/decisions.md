@@ -1,5 +1,57 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D692 [INCIDENT] — a detector's own false positive is fixed in the detector, never baselined (2026-08-20)
+
+`survey-control-parity.py` failed the build on `BorderStyleControl.js:14` — a sentence in a docblock
+reading "the previous hand-rolled `<SelectControl>` this replaces". `_find_opening_tags()` ran its
+regex over the RAW file text; the comment-skipping it already had only applied INSIDE a tag span.
+Added `_mask_comments()`, which blanks comments IN PLACE preserving length and newlines, because
+`scan_axis_a` derives line numbers from offsets into that text and `cmd_fix` rewrites spans against
+the ORIGINAL bytes — deleting comment text would shift every later span and the codemod would
+rewrite the wrong region. Paired fixtures: docblock-only must not flag; prose beside a real mount
+must still flag the mount and only the mount.
+
+## D691 [INCIDENT] — a prop wired at both ends is still dead if the middle layer forwards an explicit list (2026-08-20)
+
+Session A's border-style icon picker never rendered. `heading/edit.js` passed
+`borderStyle`/`onBorderStyleChange`, `SgsColourPanel` forwarded them, and `SgsColourStateControl`
+destructured them and gated `<BorderStyleControl>` on them — but `DesignTokenPicker`'s default
+export destructures an EXPLICIT prop list and forwards that list, so both keys were dropped in
+transit. Proven by walking the live React fiber on the canary: outer props carried
+`onBorderStyleChange: function`, the inner rendering component had no such key. Three prior guesses
+(wrong component, wrong popover, wrong tab) were discarded once the fiber gave the actual answer.
+A component that forwards an explicit list must name every new prop or it eats it silently.
+
+## D690 [INCIDENT] — `useSettings()` preset shape varies BY FEATURE, and `?? []` does not guard it (2026-08-20)
+
+`sgs/heading`'s inspector crashed on the canary (`(S ?? []).map is not a function`) the moment the
+Typography panel opened. Measured live: `typography.fontFamilies` and `typography.fontSizes` return
+origin-keyed OBJECTS (`{theme, custom}` / `{default, theme, custom}`) while `color.palette` returns
+a flat ARRAY — on ONE site, so it is not a WP-version question. Nullish coalescing only fires on
+null/undefined; a truthy object sails through and `.map` throws, unmounting the inspector.
+
+THIRD recurrence of one class: `ShadowControl.js` hit it live 2026-07-20 and `StateToggleControl.js`
+documented it again, each with a local fix, so the next component written from scratch met it again.
+Fixed by adding the shared `src/utils/presetSettings.js` `flattenPresetSetting()` (custom -> theme ->
+default, deduped by slug, always returns an array) and routing the three broken call sites through
+it. The third site, `SgsLengthControl.js`, failed QUIETLY rather than loudly: `( obj || [] ).length`
+is undefined, so its guard took the early return and the preset dropdown simply never rendered.
+
+## D689 [ROUTINE] — the golden census reports what it CANNOT measure, and names capability a merge deleted (2026-08-20)
+
+Two silences removed from `survey-golden-conformance.js`. (1) `nativeUiSupportKey()` matched the
+support family with `[A-Za-z][A-Za-z0-9]*`, which cannot match a leading underscore, so `border`'s
+declared `supports.__experimentalBorder` resolved to null and reported N/A across all 83 blocks.
+Widened; the axis now reports 49 VIOLATION / 34 CONFORMANT, reconciled exactly against an
+independent block.json pass (Session A's handover figure of 52 is wrong by 3). (2) N/A was hiding
+"axis does not apply" and "row declares no field, so nothing measured it" under one label. The
+report now prints a MEASURABILITY table — 21 types x 3 axes = 63 cells, **45 UNMEASURED** — and
+`loadMergedSchema()` records on `_meta.capabilityLoss` any axis a peer row drops that its base row
+declared. Three found: typography / box-4value / length-unit each lost `nativeUi.detectVia` in the
+styling.json merge. Recorded, not thrown: a genuine finalisation may drop an axis, but it must be a
+decision rather than an accident.
+
+
 ## D688 [ROUTINE] — the goldens are finalised in 3 parallel sessions, each owning its own file (2026-08-19)
 
 `golden-controls.json` is a single merge point; three sessions editing it conflicts on every run. Each

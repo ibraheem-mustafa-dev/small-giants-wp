@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-19
+last_updated: 2026-08-20
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -9,92 +9,87 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Three parallel sessions all merged into `main`. Branches deleted, both stray worktrees
-removed, tree clean, every gate green.**
+**All three golden-builder sessions were already merged into `main` when this session
+started. What was NOT done was proving they work.** Sessions A and C had never run the full
+build, and A's work had never been opened in a real editor. Running it found **four real
+defects**, three of them invisible to every gate in the chain.
 
-**The shift that matters.** We stopped fixing violations one at a time and built the machine
-that finds them. There are now **14 control-type contracts** (was 1), a census that reads them,
-and one shared engine underneath. Adding the 15th control type is a paragraph of JSON, not a
-new script.
+**The one that mattered most.** Session A's redesigned typography panel **crashed
+`sgs/heading`'s inspector** — open the Typography panel and the whole sidebar disappeared.
+It shipped through a green build because a green build never opens the editor.
 
-**The headline number was wrong twice, both times in our favour.** "22 blocks need a colour
-panel" was really **3**, then **2**. And the deeper question — *should* a block have a panel? —
-exposed a circular scope rule that excluded exactly the blocks missing one. Fixing it found
-**12 form blocks** whose fields a client cannot colour at all.
+**A control that existed, was wired at both ends, and did nothing.** The new border-style
+picker (Solid / Dashed / Dotted) was passed correctly by the block and read correctly by the
+component that draws it — but the layer in between forwards a hand-written list of
+properties, and nobody added the two new ones to that list. Both ends looked finished.
 
-**What to be wary of.** Nearly every wrong number today came from an instrument, not the code:
-a regex matching a backspace character instead of a word boundary (twice), a DB field queried by
-the wrong name, a count including a flag it shouldn't. What saved us each time was predicting the
-number *before* running, then reconciling.
+**What to be wary of, again: the instrument, not the code.** A gate failed on a sentence
+inside a code comment. A survey reported "nothing to see" for 49 real problems because its
+pattern could not match an underscore. My own first three attempts to inspect the live
+editor all measured the wrong thing. Every real answer today came from reading actual state
+— the React tree, the block.json files — never from reasoning about what should be true.
 
 ## Shipped today
 
 | What | Detail |
 |---|---|
-| **One shared hover helper** — `sgs_emit_state_colour_css` | 8 blocks, **live-verified on the canary** |
-| **Shared component resolver** (`core/components.js`) | fixed **50 false positives** in rule 21 (250→200; now 199 after the merges) |
-| **Rule 27's blind spot closed** | a `gate` at openBacklog 0 that could not see shared files |
-| **Shared golden engine** (`core/golden.js`) | rule 31 imports instead of owning; **409 before, 409 after** — the extraction moved nothing (now 408 after the merges) |
-| **14 control-type contracts** (was 1) | all of Part O + typography |
-| **Golden-conformance census** — schema-driven | per block, per axis; 1,162 rows across 14 types |
-| **Qualification predicate** | splits "not eligible" into MISSING vs NOT-APPLICABLE |
-| **`surface-cap` composite expansion** | + 2 new detectors, 4 npm aliases registered |
-| **Header track** | COMPLETE and live-verified (separate session) |
+| **3 sessions verified, not just merged** | build + gates + canary deploy + live editor |
+| **`sgs/heading` inspector crash FIXED** | `useSettings()` returns origin-keyed objects, not arrays |
+| **Shared `flattenPresetSetting()`** | 3rd recurrence of one class — one function now, not a 4th local copy |
+| **Border-style picker made REACHABLE** | was dead UI; verified it renders AND writes (`none -> dashed`) |
+| **Duplicate "Font size" label removed** | rule 29 back to its backlog of 8 |
+| **control-parity false positive fixed** | comment-masking + paired fixtures, 14 -> 16 assertions |
+| **Golden census: 21 types measurable** | was 14; composer loads all three peer files |
+| **49 border native-UI violations recovered** | regex could not match `__experimentalBorder` |
+| **MEASURABILITY + capability-loss reporting** | the census now says what it CANNOT measure |
+| **2 worktrees pruned safely** | both `node_modules` were junctions INTO main's — unlinked first |
 
 ## Where conformance actually stands
 
 ```
-canonical    63 CONFORMANT · 2 VIOLATION · 12 MISSING · 6 NOT-APPLICABLE
-nativeUi    150 VIOLATION  (colour 25 · typography 25 · length-unit 50 · box-4value 50)
-hover         8 CONFORMANT · 9 UNCLEAR
+21 control types x 83 blocks = 1743 rows scored (was 14 types)
+MEASURABILITY   21 types x 3 axes = 63 cells - 45 UNMEASURED
+colour.canonical   63 CONFORMANT · 12 MISSING · 6 NOT-APPLICABLE · 2 VIOLATION
+colour.nativeUi    58 CONFORMANT · 25 VIOLATION
+border.nativeUi    34 CONFORMANT · 49 VIOLATION   <- recovered today, was N/A x83
 ```
 
-- **2 canonical violations** — `buybox`, `site-footer` (core-only, no SGS panel)
-- **12 MISSING** — the form family; control belongs on `sgs/form`, children inherit
-- **1 inert control + 3 undeclared attrs** — live; detectors written, deliberately unregistered
+**45 of 63 cells UNMEASURED is the real size of the goldens gap**, and it was invisible
+before today — it printed as a column of N/A that reads exactly like coverage.
 
 ## THE FRONT — next session
 
-⭐ **The goldens are NOT finalised.** 14 control types are declared but only **colour**
-is measurable: 1 of 14 has a qualification predicate, 4 of 14 have native-UI detection,
-and 13 of 14 use a `canonical` shape the census cannot read (which is why it reports
-N/A for 1,079 of 1,162 rows). Bean's real roster is **~24 types**, not 14.
+⭐ **Two decisions are waiting for Bean. Both move numbers, so neither was taken.**
 
-**So the order is: finalise the goldens → measure → then fix.** Fixing first would
-repair colour, declare the axes done, and meet typography/border/media/animation/date
-later — the repeat-the-process-13-times trap.
+1. **Three types lost native-UI detection in the merge** — `typography`, `box-4value`,
+   `length-unit`. Session A replaced their base rows with finalised rows carrying no
+   `detectVia`, each with stated reasoning. typography's reads soundly. **`box-4value`'s own
+   note says "not independently re-measured ... flagged as a gap, not silently assumed
+   clean"** — and the Phase 3 table below sizes native-UI retirement partly from
+   `supports.spacing`, which now nothing detects. Restore those two, or accept the gap?
+2. **The last colour carve-out** — `axisCanonical()` skips `qualifiesFor()` when
+   `type === 'colour'`. Session A gated it deliberately because routing colour through it
+   moves colour's counts. Remove it (and re-baseline), or keep it documented?
 
-### Phase 1 — finalise the goldens (3 sessions, run in PARALLEL, start here)
+### Then: close the 45 UNMEASURED cells
 
-| Prompt | Owns (7 types each) |
-|---|---|
-| `.claude/prompts/2026-08-19-goldens-A-styling-primitives.md` | gradient, typography, length-unit, 4-value box, border, shadow, alignment — **plus the COMPOSER** |
-| `.claude/prompts/2026-08-19-goldens-B-input-controls.md` | enum+segmented (merged), boolean, free-text, link, icon, multi-select, date |
-| `.claude/prompts/2026-08-19-goldens-C-behaviour-and-structure.md` | media, state/hover, responsive wrapper, repeater, animation, angle/position, preset picker |
+The census now names them precisely — run
+`node scripts/surveys/survey-golden-conformance.js` and read the MEASURABILITY table.
+9 types declare no canonical component at all (`state`, `media`, `repeater`,
+`responsive-wrapper`, `animation`, `preset`, `angle-position`, `alignment`, `border`).
+Some are honest N/A (alignment is a pattern, not a component); others have a real component
+named in their own handover that was never put in the `canonical` field.
 
-Coverage verified: 21 live types, **zero overlap** (#1 colour done, #24 rich text
-excluded as canvas-side). Each session gets **its own worktree** and writes **its own
-`goldens/<name>.json`** — `golden-controls.json` is a single merge point and three
-sessions editing it conflicts on every run. A ships the composer first; B and C tolerate
-its absence rather than blocking.
-
-### Phase 2 — measure
-
-Re-run `npm run survey:golden-conformance`. The true inconsistency list will be
-substantially larger than what a colour-only instrument currently sees.
-
-### Phase 3 — fix, in parallel against a complete list
-
-Known already, and NOT the whole list:
+### Then: fix, in parallel against a complete list
 
 | Work | Size | Shape |
 |---|---|---|
-| Native-UI retirement | **58 distinct blocks** (not 150 — `length-unit`/`box-4value` are the same 50, both reading `supports.spacing`) | `block.json` only, mechanical |
+| Native-UI retirement — **border** | **49 blocks** | `block.json` only, mechanical, newly visible |
+| Native-UI retirement — colour | 25 blocks | `block.json` only, mechanical |
 | Form colour | `sgs/form` + 12 field blocks | one design, then mechanical; control belongs on the parent |
 | `buybox` + `site-footer` | 2 blocks | canonical panel **and** native retirement in one pass |
+| `sgs/heading` borderColourHover | 1 attr | clears BOTH rule-31 heading findings, 409 -> 407 |
 | Gap findings | 17 across 11 blocks | judgement per finding |
-| Detector findings | 1 inert control, 3 undeclared attrs | small, scattered |
-| Depth + exclusion change | 1 file | ⛔ design-sensitive, single merge point |
 
 ⛔ **Serialised, never parallel:** `rules.json`, `package.json`, `golden-controls.json`,
 `core/*.js`.
@@ -169,6 +164,42 @@ Known already, and NOT the whole list:
   — a past removal emptied it 962→0.
 - ⛔ **`*/` inside a JS block comment TERMINATES it.** `src/blocks/*/components/` written in a
   docblock is a syntax error.
+- ⛔ **A green build never opens the editor.** Session A's typography redesign crashed
+  `sgs/heading`'s inspector and passed every one of ~50 gates. The editor is a separate
+  surface no static gate covers — open it.
+- ⛔ **`?? []` guards NULL, not the WRONG TYPE.** `useSettings()` returns an origin-keyed
+  OBJECT for `typography.fontFamilies`/`fontSizes` and a flat ARRAY for `color.palette` — on
+  the SAME site. A truthy object sails through the guard and `.map` throws. Use
+  `flattenPresetSetting()` (`src/utils/presetSettings.js`); never write a fourth local copy.
+- ⛔ **A component forwarding an EXPLICIT prop list eats any prop you forget to name.**
+  `DesignTokenPicker` dropped `borderStyle`/`onBorderStyleChange` between a correct caller
+  and a correct receiver. Both ends looked finished.
+- ⛔ **Read the live React fiber instead of guessing which component rendered.** Three
+  successive guesses (wrong component, wrong popover, wrong tab) were all wrong; the fiber
+  answered it in one call. Names are MINIFIED in a production build — detect an element by
+  the props it HAS, never by its name.
+- ⛔ **`querySelector` returns the FIRST match, not your instance** — a page-wide selector
+  inside `.block-editor-block-inspector` can hit the block TOOLBAR popover. Identify a probe
+  by CONTENT (a swatch, a known class), never by document order.
+- ⛔ **An inspector probe reading the wrong TAB measures nothing.** "Background parallax is
+  gone" was vacuous until re-run on the Styles tab — it could not have seen a presence
+  either. The tabs are ICON-ONLY, so matching a tab by its text finds nothing.
+- ⛔ **`--json` array length is NOT the finding count.** `core/report.js` serialises
+  BASELINED findings into the array while the gate counts FLAGGED only — rule 21 reads 208
+  by array length and 197 by the gate. Nearly reported as a phantom regression.
+- ⛔ **A regex over RAW file text reads prose as code.** `<SelectControl>` inside a docblock
+  failed the control-parity gate. Mask comments IN PLACE (preserving length + newlines) so
+  line numbers and rewrite spans stay valid.
+- ⛔ **A character class without `_` cannot match a WP `__experimental*` support family.**
+  `border`'s declared detectVia silently resolved to null and reported N/A on all 83 blocks
+  — 49 real violations reading as a clean result.
+- ⛔ **A worktree's `node_modules` is a JUNCTION into main's.** `git worktree remove --force`
+  follows it and empties main. `cmd /c rmdir` the junction FIRST, then re-count main's
+  entries (975) after every removal.
+- ⛔ **A peer golden row overriding a base row can DELETE an axis silently.** Three did.
+  `loadMergedSchema()` records it on `_meta.capabilityLoss`; the census prints it.
+- ⛔ **The stored-content gate catches YOUR test fixture too.** A verification page carrying
+  an attr `sgs/text` does not declare aborted the deploy — correctly (D338 class).
 - **A completeness error is invisible to every correctness gate.**
 - **Run builds synchronously, never backgrounded.**
 
@@ -194,18 +225,22 @@ Known already, and NOT the whole list:
 
 ## State Snapshot
 
-- **Branch:** `main`, in sync with `origin/main`, tree clean. `feat/hover-helper` and
-  `worktree-golden-control-schema` merged and **deleted**. Both stray worktrees removed; main's
-  `node_modules` verified intact at 975 entries after each removal.
-- **D-ceiling:** **D688** (D685 hover helper · D686 shared resolver · D687 qualification
-  predicate · D688 the 3-way goldens split) — verify with
+- **Branch:** `main`, in sync with `origin/main`, tree clean. All three goldens branches
+  merged, deleted locally AND on origin; both stray worktrees removed after unlinking their
+  `node_modules` junctions — main's verified intact at **975** entries after each removal.
+- **D-ceiling:** **D692** (D689 census measurability + capability-loss · D690 useSettings
+  preset shape · D691 explicit-prop-list drop · D692 detector comment masking) — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-- **Live counts (re-derived at handoff, after all merges):** rule 21 **199**, rule 31
-  **408**, rule 01 58, rule 18 13. Ratchets in `rules.json` already match — another
-  session lowered them in the merge, so there is no silent slack.
-- **Gates:** inspector-scan `--check` exit 0 · **22/22 self-tests** · `audit-inline-styling`
-  0 violations across 83 blocks · F5/F6 green · cheat-gate green
-- **Canary:** deployed and live-verified today (8 hover blocks).
+- **Live counts (re-derived this session):** rule 21 **197 FLAGGED** + 11 baselined (⚠ the
+  `--json` array is 208 — it includes baselined; the old "199" here was the backlog, not the
+  count), rule 31 **409**, rule 29 **8**, rule 01 58, rule 18 13. rule 31's ratchet was
+  raised 408 -> 409 to match the figure its own `advisoryReason` records as MEASURED.
+- **Gates:** `npm run build` exit 0, full postbuild chain green · inspector-scan `--check`
+  exit 0, zero ratchet lines · golden-conformance self-test PASS · control-parity **16/16**
+  self-test and `--check` PASS · cheat-gate / F5 / F6 green (baselined only).
+- **Canary:** deployed at HEAD and **live-verified in the block editor** — zero console
+  errors, border-style picker renders and writes, no duplicate label, background-parallax
+  gone, element parallax intact, trust-bar "Pending" control gone. Test page deleted.
 
 ## Pointers
 
@@ -213,7 +248,9 @@ Known already, and NOT the whole list:
 |---|---|
 | **THE PLAN — axes + parallel split** | **`.claude/plans/go-c1-c4-lively-zebra.md`** |
 | The programme brief | `.claude/plans/2026-08-18-inspector-enforcement-programme.md` |
-| The 14 control contracts | `plugins/sgs-blocks/scripts/consistency/golden-controls.json` |
+| The 21 control contracts | `golden-controls.json` + `consistency/goldens/{styling,input,behaviour}.json` |
+| Handover: session B (input) | `.claude/reports/2026-08-19-session-b-input-goldens-handover.md` |
+| Handover: session C (behaviour) | `.claude/reports/2026-08-19-session-c-behaviour-goldens-handover.md` |
 | Handover: shared-component visibility | `.claude/reports/2026-08-19-shared-component-visibility-handover.md` |
 | Handover: surface-cap Task 4 | `.claude/reports/2026-08-19-task4-surface-cap-handover.md` |
 | Structural defences (uncapped, D101) | `STOP-CATALOGUE.md` |

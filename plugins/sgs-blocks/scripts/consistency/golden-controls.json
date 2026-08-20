@@ -72,12 +72,16 @@
         },
         "textGradientRow": {
           "component": "GradientCapableColourControl",
+   "independentlySufficient": false,
+   "independentlySufficientWhy": "Reached ONLY through a SgsColourPanel row declaring gradientCapable:true, never mounted directly — so reaching it proves the panel is already there and it can never independently prove conformance.",
           "path": "src/components/GradientCapableColourControl.js",
           "whenToUse": "TEXT gradients only — they need background-clip:text, a genuinely different CSS mechanism from a background/border gradient.",
           "reachedVia": "a SgsColourPanel row declaring gradientCapable: true. Never mounted directly."
         },
         "wholeBlockOverlay": {
           "component": "GradientOverlayControl",
+   "independentlySufficient": false,
+   "independentlySufficientWhy": "Single-state by construction, a whole-block overlay rather than the block's colour panel. sgs/site-footer reaches it via BackgroundPanel while still having NO SgsColourPanel — scoring that CONFORMANT hid a real violation (measured 2026-08-20).",
           "path": "src/components/GradientOverlayControl.js",
           "constraint": "SINGLE-STATE BY CONSTRUCTION — it has no states concept. A row needing hover cannot use it."
         }
