@@ -10,7 +10,6 @@
  * This mirrors the SCALE_SHADOW_DEFAULT_BLOCKS logic in hover-effects.js.
  *
  * Handles:
- * - sgsHoverBgColour / sgsHoverTextColour / sgsHoverBorderColour
  * - sgsHoverScale (fine-grained %) + sgsHoverScalePreset (named preset)
  * - sgsHoverShadow (subtle/raised/floating/glow)
  * - sgsHoverDuration (string slug — instant/fast/medium/slow/extra-slow)
@@ -120,9 +119,6 @@ function inject_hover_effects( string $block_content, array $block ): string {
 
 	$attrs = $block['attrs'] ?? array();
 
-	$hover_bg           = $attrs['sgsHoverBgColour'] ?? '';
-	$hover_text         = $attrs['sgsHoverTextColour'] ?? '';
-	$hover_border       = $attrs['sgsHoverBorderColour'] ?? '';
 	$hover_scale        = (int) ( $attrs['sgsHoverScale'] ?? 0 );
 	$hover_scale_preset = $attrs['sgsHoverScalePreset'] ?? $defaults['scale_preset'];
 	$hover_shadow       = $attrs['sgsHoverShadow'] ?? $defaults['shadow'];
@@ -142,9 +138,8 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$click_ripple_duration = absint( $attrs['sgsClickRippleDuration'] ?? 600 );
 
 	$has_ripple       = 'ripple' === $click_effect;
-	$has_colour_hover = $hover_bg || $hover_text || $hover_border;
 	$has_scale_hover  = $hover_scale || $hover_scale_preset;
-	$has_hover        = $has_colour_hover || $has_scale_hover || $hover_shadow;
+	$has_hover        = $has_scale_hover || $hover_shadow;
 
 	// Bail early if nothing is active (respects per-block defaults above).
 	if (
@@ -192,16 +187,6 @@ function inject_hover_effects( string $block_content, array $block ): string {
 
 	// --- Build CSS custom properties. ---
 	$css_vars = array();
-
-	if ( $hover_bg ) {
-		$css_vars[] = '--sgs-hover-bg:' . \sgs_colour_value( $hover_bg );
-	}
-	if ( $hover_text ) {
-		$css_vars[] = '--sgs-hover-text:' . \sgs_colour_value( $hover_text );
-	}
-	if ( $hover_border ) {
-		$css_vars[] = '--sgs-hover-border:' . \sgs_colour_value( $hover_border );
-	}
 
 	// Fine-grained scale takes priority over named preset.
 	if ( $hover_scale ) {
@@ -281,26 +266,21 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	// Un-gating alone would have been a REGRESSION, not a fix. The early bail
 	// above is per-BLOCK, not per-PROPERTY: a block that set only a hover SCALE
 	// still carries `sgs-has-hover`, so an unconditional
-	// `background-color: var(--sgs-hover-bg, transparent)` would fade away a
-	// resting background it never asked to change, and
 	// `box-shadow: var(--sgs-hover-shadow, none)` would strip a resting shadow
 	// on hover. CSS cannot express "declare this only if the var exists" —
 	// var() ALWAYS declares, and no fallback value means "don't declare me".
 	// So the gate has to come from the class list, which is what the
-	// pre-existing `sgs-has-hover-scale` already did for scale. These four
-	// extend that same proven pattern to the properties that lacked it.
+	// pre-existing `sgs-has-hover-scale` already did for scale. This extends
+	// that same proven pattern to the shadow property.
 	//
 	// Each condition MIRRORS its `$css_vars[]` guard above exactly — if a var is
 	// emitted, its class is emitted, and neither without the other.
-	if ( $hover_bg ) {
-		$add_classes[] = 'sgs-has-hover-bg';
-	}
-	if ( $hover_text ) {
-		$add_classes[] = 'sgs-has-hover-text';
-	}
-	if ( $hover_border ) {
-		$add_classes[] = 'sgs-has-hover-border';
-	}
+	//
+	// sgs-has-hover-bg/text/border were REMOVED 2026-08-20: sgsHoverBgColour/
+	// TextColour/BorderColour were dead attrs (Bean, D-pending) — gated behind
+	// the 'hover' opt-in extension that zero blocks declare, and duplicative
+	// of each block's own element-owned backgroundColourHover/textColourHover/
+	// borderColourHover controls. See hover-effects.js for the full removal.
 	if ( $hover_shadow && in_array( $hover_shadow, array( 'subtle', 'raised', 'floating', 'glow' ), true ) ) {
 		// Mirrors the allowlist on the --sgs-hover-shadow var above: an
 		// out-of-list value emits NO var, so it must emit no class either.

@@ -172,10 +172,6 @@ addFilter(
 		// hideExtensions DENYLIST until its own usage derivation lands.
 		const hoverAttributes = isExtensionEnabled( settings, 'hover' )
 			? {
-				// Colour overrides on hover.
-				sgsHoverBgColour:     { type: 'string',  default: '' },
-				sgsHoverTextColour:   { type: 'string',  default: '' },
-				sgsHoverBorderColour: { type: 'string',  default: '' },
 				// Scale transform — fine-grained slider (0 = off).
 				sgsHoverScale:        { type: 'number',  default: 0 },
 				// Named scale preset — resolved from opt-in list.
@@ -260,9 +256,6 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		const hideClick = isExtensionHidden( name, 'clickEffects' );
 
 		const {
-			sgsHoverBgColour,
-			sgsHoverTextColour,
-			sgsHoverBorderColour,
 			sgsHoverScale,
 			sgsHoverShadow,
 			sgsHoverDuration,
@@ -337,27 +330,6 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						title={ __( 'Hover Effects', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						{ DesignTokenPicker ? (
-							<>
-								<DesignTokenPicker
-									label={ __( 'Hover background', 'sgs-blocks' ) }
-									value={ sgsHoverBgColour }
-									onChange={ ( val ) => setAttributes( { sgsHoverBgColour: val || '' } ) }
-								/>
-								<DesignTokenPicker
-									label={ __( 'Hover text colour', 'sgs-blocks' ) }
-									value={ sgsHoverTextColour }
-									onChange={ ( val ) => setAttributes( { sgsHoverTextColour: val || '' } ) }
-								/>
-								<DesignTokenPicker
-									label={ __( 'Hover border colour', 'sgs-blocks' ) }
-									value={ sgsHoverBorderColour }
-									onChange={ ( val ) => setAttributes( { sgsHoverBorderColour: val || '' } ) }
-								/>
-							</>
-						) : (
-							<p>{ __( 'Colour controls not available.', 'sgs-blocks' ) }</p>
-						) }
 						<SelectControl
 							label={ __( 'Hover scale', 'sgs-blocks' ) }
 							help={ __( 'Scale the block up on hover using a preset value.', 'sgs-blocks' ) }
