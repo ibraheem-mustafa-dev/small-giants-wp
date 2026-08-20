@@ -1,0 +1,304 @@
+# Shop archive — full remediation design
+
+**Status:** DESIGN ONLY — nothing implemented. Awaiting Bean's decisions on the 4 open questions in §6.
+**Date:** 2026-08-20
+**Method:** 4 parallel evidence agents → live measurement/fact-check → 4-seat design council → live fact-check of council claims.
+
+---
+
+## 1. Context
+
+Bean reported ~20 defects on the WooCommerce Shop archive (`/shop/`). Separately, an
+unresolved WordPress-core issue was disabling client-side navigation, forcing a full page
+reload on every filter interaction and blocking the FR-38-12 Flip feature.
+
+**Both are now root-caused.** Every claim below was verified against the live canary
+(`sandybrown-nightingale-600381.hostingersite.com`), not inferred from source.
+
+---
+
+## 2. THE HEADLINE FINDING — `sgs/text` disables client-side navigation
+
+**Bean's hypothesis ("it's our product filter setup / mixed-up architecture") was correct.**
+
+Single-variable test on the REAL template: swapped `sgs/text` → core `wp:paragraph` inside
+`woocommerce/product-collection-no-results`. Everything else byte-identical.
+
+| Variant | no-results contents | `clientNavigationDisabled` |
+|---|---|---|
+| Q | present, with `sgs/text` | `true` |
+| R | block removed entirely | ABSENT |
+| **U** | **present, `sgs/text` → `wp:paragraph`** | **ABSENT** |
+
+Three consistent data points, one variable. Mechanism: `sgs/text` rendered inside
+WooCommerce's no-results slot pollutes query/postdata state → WP marks the enhanced query
+"dirty" (`ProductCollection/Controller.php:184` / `wp-includes/blocks/query.php:123`) →
+`wp_interactivity_config('core/router', ['clientNavigationDisabled' => true])` → the router
+bails to a hard navigation before any fetch.
+
+**Consequences:** fixing this restores instant filtering AND unblocks FR-38-12 Flip (which
+needs a DOM mutation to animate — no sorting element required, contrary to the earlier
+assumption). It also removes Seat 4's main objection to the drawer pattern (§4.2).
+
+⚠ **Not yet done:** the precise line in `sgs/text`'s render path that dirties the query is
+NOT identified. Needed before a fix: diff `sgs/text` render.php against `wp:paragraph` for
+global `$post`/`$wp_query` interaction, `setup_postdata`, or a secondary query.
+**This is the single highest-value next investigation.**
+
+---
+
+## 3. Root causes — all verified live
+
+| # | Bean's report | Root cause (verified) |
+|---|---|---|
+| C3 | Search bar too wide | `product-search/style.css` — the `inline` mode has NO max-width; `input{flex:1}`. Sibling modes DO have caps (`min(320px,90vw)`, `min(480px,92vw)`, `min(600px,92vw)`). Pure omission. |
+| C4 | No side padding | Template authors only `padding.top/bottom`. Theme's root padding reaches elements via `.has-global-padding`, which `sgs/container` **never emits** (repo-wide: 0 hits). |
+| C5 | BG stops short of edges | LIVE: `max-width:1280px` on the element **carrying** the background. Object-shaped `contentWidth:{desktop:"normal"}` bypasses the inner-band emit (`class-sgs-container-wrapper.php:424-425, 836-842, 2689` — `$do_wrap` false, no `.sgs-container__inner`), so the cap lands on the outer element. |
+| D1 | Cards cover filters | LIVE: panel renders **413px inside a 260px grid track**. ⚠ Diagnosis contaminated — see §5 note. |
+| D2 | Tablet keeps 3 columns | **Zero theme CSS governs product columns.** Comes entirely from WC's legacy `is-flex-container columns-3`. Theme owns ONE breakpoint (781px) which only stacks the sidebar. LIVE: 3×239px at 768px. |
+| E1/E2 | Panel looks unstyled | **CSS exists and applies correctly (~330 lines).** LIVE: `--wp--preset--color--surface` = `#fbf3dc` = **identical to body background**. Border uses `surface-alt` (`#fff9f0`) → **1.06:1**. Painted, but invisible. |
+| F1 | Black button text | Toggle uses `color: var(--sgs-product-card-btn-text, #3A2E26)` — a product-card token **never defined framework-side** (only `sites/mamas-munches/theme-snapshot.json:641`). |
+| G1/G3/G6 | Drawer broken 3 ways | **ONE cause** — see §4.1. |
+| G4 | Slider h-scroll | **NOT REPRODUCED** at 390px (`scrollWidth === clientWidth`). Unconfirmed. Do not fix blind. |
+| G5 | Apply colours hardcoded | **CORRECTED — see §5.C.** The rule is dead CSS; the real button passes at 8.77:1. |
+| — | *(not reported — found by us)* | **26 focusable controls reachable inside the CLOSED drawer.** LIVE: `focusSucceededWhileClosed: true`, `display:block`, no `hidden`/`inert`/`aria-hidden`. WCAG 2.4.3 + 2.4.7 failure. |
+| — | *(not reported)* | **No `<main>` landmark.** `archive-product.html:3` requests `tagName:"main"`; enum rejects it (D647) → renders `<section>`. |
+
+---
+
+## 4. The design
+
+### 4.1 The container rule — one fix, three bugs
+
+`plugins/sgs-blocks/src/blocks/container/style.css:63-66`:
+```css
+.sgs-container > *:not(…)×6 { position: relative; z-index: 1; }
+```
+Specificity (0,7,0). Beats `.sgs-shop-filters{position:sticky}` (0,1,0) AND
+`body.is-enhanced .sgs-shop-filters{position:fixed;z-index:9999}` (0,2,1).
+LIVE CONFIRMED: panel computes `position:relative; z-index:1`. `.sgs-shop-layout` gets the
+same → **creates a stacking context**, so no descendant z-index can escape it.
+
+This single rule causes **G1** (stays in flow → pushes content down, 768px tall while
+"closed"; auto-margin offsets the translate leaving part on screen), **G3** (`inset:0`
+ignored on a relative element → never full-width) and **G6** (z-1 panel vs z-9998
+body-level backdrop → backdrop paints over the panel; confirmed by hit-test).
+
+**Council split — genuinely unresolved, needs Bean's call (§6 Q1):**
+
+- **Seats 1 + 4 (aligned):** the rule's *shape* is wrong. Its purpose is to lift children
+  above `.sgs-container__overlay` — a *conditional* problem solved *unconditionally*. The
+  `:not()` list has grown 1→6 in ~10 days (its own comments record it breaking the hero
+  overlay and FX decorations); a 7th entry is the per-block carve-out Rule 3 forbids.
+  Proposal: delete the blanket rule; use `isolation:isolate` on containers that own an
+  overlay + `z-index:-1` on the overlay, scoped via `:has(> .sgs-container__overlay)`.
+  Feature-scoped equivalents already exist at `style.css:128, 144-145, 238, 244`.
+- **Seat 4's blocking caveat:** the blanket rule currently gives every container child a
+  free `position:relative`. **43 block `style.css` files contain `position:absolute|fixed|sticky`**
+  (measured). Removing it re-anchors those to the next positioned ancestor. This is a
+  WILL-break class; pixel-diff under-reports it (small badge drift inside a large section
+  scores under threshold).
+- **Seat 2's alternative — sidesteps the fight entirely:** use native
+  `<dialog>.showModal()`. Top-layer rendering sits above *every* stacking context, so the
+  drawer needs no z-index war and no change to `container/style.css` at all. Also delivers
+  focus trap, Escape, focus restoration and `inert` background for free, and fixes the
+  26-tabbable bug structurally (a `<dialog>` without `open` is `display:none` by UA
+  stylesheet). Requires adding `dialog` to the container `tagName` enum.
+
+**Seat 4's ship condition if the rule IS rewritten** (strongly endorsed): an
+**offsetParent census** — Playwright probe enumerating every `position:absolute|fixed`
+element across block demo pages, recording `el.offsetParent`'s selector path, before/after.
+Any changed offsetParent is a hit regardless of visible pixels. Plus a negative control
+proving the census can fail. Its own commit, its own deploy, Bean's visual sign-off.
+Existing gates (`audit-inline-styling.js`, `no-inline/check-no-inline.py`) are **structurally
+blind** to this class — do not cite a green run as evidence.
+
+### 4.2 Mobile filter pattern
+
+**Recommendation: bottom sheet, one DOM / two presentations** — WooCommerce's own
+architecture. One `<aside id="sgs-shop-filters">`; below ~600-782px it presents as a sheet,
+above it is neutralised into an ordinary sidebar. No duplicate markup, no JS branch.
+
+This directly answers Bean's stated objection (*"it shouldn't need to be in the page at all
+if it's a pop-up"*) — nothing is added to make it a pop-up; it is one in-page element
+presented two ways. Bean's real fear (a duplicated filter UI) is architecturally excluded.
+
+Evidence: Baymard (25 rounds testing, 344 sites benchmarked) — *"Trying to squeeze a sidebar
+into a mobile viewport doesn't work"*; filters should occupy *"either a full-screen overlay
+or a bottom sheet"*; sticky trigger; deliberate Apply.
+
+**Seat 4's objection, and why it no longer holds:** Seat 4 argued Baymard assumes instant
+filtering, and with a full page reload per click a drawer's state is destroyed each time —
+making Bean's inline accordion evidence-correct. **§2 removes that premise.** Once `sgs/text`
+is fixed, filtering is instant and Baymard's assumption holds.
+
+**If Bean still prefers the inline accordion** it is defensible (IKEA ships one) but must be
+a proper APG Disclosure with the same `hidden`/`inert` discipline, and deliberate-Apply
+regardless.
+
+**A11y contract (APG Dialog Modal):** trigger `aria-expanded` + `aria-controls` +
+`aria-haspopup="dialog"`, ≥44px; dialog `aria-labelledby` → the existing visible `<h2>`
+(not `aria-label`); focus moves to the heading (`tabindex="-1"`), not the close button;
+Escape + backdrop-click + close button all restore focus to trigger; background inert;
+scroll lock retained; reduced-motion suppression retained (`woocommerce.css:704`).
+
+**Regression gate (mandatory):** Playwright assertion —
+`document.querySelectorAll('#sgs-shop-filters :is(a,button,input,select,textarea,[tabindex]):not([tabindex="-1"])').length === 0` while closed. This bug shipped once; without a gate it returns.
+
+### 4.3 Responsive product grid
+
+Adopt WooCommerce's own construction from `product-template/style.scss`:
+```scss
+grid-template-columns: repeat(auto-fill, minmax(max($floor, (100% - $gaps)/$N), 1fr));
+```
+Preserves the author's chosen desktop column count, then auto-drops 5→4→3→2→1 with **zero
+media queries**. `auto-fill` **not** `auto-fit` (auto-fit stretches a lone last card to full
+width — bad for ragged product rows; MDN + Defensive CSS).
+
+Floor: WC ships 150px; Shopify's house reference is 250px. **Seat 1 recommends 260px** for a
+card carrying image + title + price + CTA.
+
+**Placement:** Seat 1 argues this belongs in the `sgs/container` grid primitive (the block
+already declares a grid engine, `container/block.json:521`), making it universal rather than
+shop-specific. Interim scoping under `.sgs-shop-layout` acceptable only with a named
+deletion criterion.
+
+**Container queries: NOT needed.** `minmax()` already resolves against the grid's own content
+box, not the viewport — the sidebar problem is solved by the intrinsic grid alone. Reserve
+container queries for card-*internal* layout only. (94% support, Baseline Feb 2023; WC
+already uses them for carousels in the same file.)
+
+### 4.4 Tokens + colour
+
+**Panel invisibility — derive, don't declare (Seat 3):**
+```css
+--sgs-elevation-1:    color-mix(in oklab, var(--…--surface) 92%, var(--…--text) 8%);
+--sgs-elevation-line: color-mix(in oklab, var(--…--surface) 78%, var(--…--text) 22%);
+```
+Mixing toward `text` (not black) works automatically for dark palettes and stays in the
+brand's temperature. Pair with a non-colour channel —
+`box-shadow: 0 1px 3px rgb(0 0 0/.08), 0 0 0 1px var(--sgs-elevation-line)` — because colour
+alone can never be guaranteed. **Do NOT add a `surface-elevated` palette slug** (a per-client
+field someone will forget, silently reproducing today's bug).
+
+Also: the panel border uses `surface-alt` (a *fill* token) as a *line*. theme.json defines
+`border` (`#e8d5c0` live) and `border-light`. Free fix, do it first.
+
+**This is a framework-default bug, not a client bug:** theme.json's own defaults are
+`surface #FAF9F6` / `surface-alt #F1F0EC` = **1.08:1**. Ship a monochrome client on the stock
+palette and the panel vanishes too.
+
+**Text on primary — see §5.A/B for corrections. Design:** no static foreground can serve both
+rest and hover states (proven below), so the pairing must be **derived**, not hand-typed.
+Spec 33's extractor should compute `primary-text` / `primary-dark-text` by WCAG maths from
+the client's palette and **fail the run closed** if neither candidate reaches 4.5:1. Delete
+`--sgs-product-card-btn-text` (a client token doing framework work).
+
+**Teal fallbacks — remove all 47.** Seat 3's sharpened finding: they are not another brand's
+palette, they are a *third* stale teal matching neither the current client nor theme.json's
+own primary (`#1F7A7A`). A fallback that differs from the default is a silent brand-override
+waiting for one missing token. A fallback must be either identical to the theme.json default
+(a genuine no-op) or absent. `currentColor` where a bare `var()` feels risky.
+
+**Dead `btn btn-primary` — delete** (Seat 3, against the in-file comment). Zero rules matched
+since written; the comment already had to be corrected once because a reader was misled; the
+stated end-state uses a *different* class name (`.sgs-button--{preset}`).
+
+---
+
+## 5. Corrections I made to council claims
+
+The council was fact-checked against live measurement. Four claims were wrong:
+
+**A. `primary-dark` is `#c56a7a`, not `#8B3A47`.** Seat 3 computed the hover flip from a
+phantom value. Recomputed against the REAL token — and the finding gets *worse*, not better:
+
+| Foreground | on `#e68a95` (rest) | on `#c56a7a` (hover) |
+|---|---|---|
+| `#3A2E26` dark brown | **5.28:1 PASS** | **3.58:1 FAIL** |
+| `#ffffff` white | **2.49:1 FAIL** | **3.67:1 FAIL** |
+
+**At the real hover colour NEITHER foreground passes 4.5:1.** The toggle's hover state is a
+genuine, currently-shipping failure. Seat 3's conclusion ("no static token survives both
+states") stands and is strengthened.
+
+**B. The framework's own `primary-text` token is `#fffaf5`** (near-white) → ~2.42:1 on
+`primary`. Seat 3 recommended consuming it; doing so would **ship a failure**. The token
+itself must be fixed/derived, not merely consumed.
+
+**C. The Apply button is NOT a live WCAG failure.** Both Seat 2 and Seat 3 asserted
+`woocommerce.css:1280`'s hardcoded `color:#ffffff` is a shipping 2.49:1 breach. LIVE:
+`.wc-block-product-filters__apply-button` **does not exist in the DOM**. The real rendered
+Apply button is `color: rgb(58,46,38)` on `bg: rgb(245,208,80)` — dark brown on gold, **8.77:1,
+comfortably passing**. The rule is **dead CSS targeting selectors that never mount.** The
+finding is "dead CSS to delete", not "accessibility breach to fix".
+
+**D. Empty filters degrade cleanly.** Answering Bean's data-variance question: the Rating
+filter (0 reviews → `items:[]`) renders `display:none`, height 0 — **no bare heading, no
+visual defect**. WooCommerce suppresses filters with no discriminating power by design. The
+stock filter behaved identically before Bean added variance. Not a bug.
+
+Earlier, two agents also claimed the toolbar's `backgroundColor` is "silently discarded and
+never paints" — **disproven live** (element carries `has-background has-surface-alt-background-color`,
+computes `rgb(255,249,240)`). The real cause is the `max-width` cap (C5).
+
+---
+
+## 6. Open questions — need Bean's decision
+
+**Q1. The container rule.** Three options: (a) rewrite it universally (Seats 1+4 — best
+architecture, highest risk, requires the offsetParent census across 43 files); (b) native
+`<dialog>` top-layer, leaving the rule untouched (Seat 2 — sidesteps the risk entirely,
+fixes the a11y bug structurally, but leaves the rule to break block 84); (c) 7th `:not()`
+entry (fastest, violates Rule 3, doesn't fix the parent stacking context).
+**My recommendation: (b) now, (a) as a separate governed programme later.**
+
+**Q2. Filter pattern** — bottom sheet (recommended, evidence-backed, and now viable since §2
+removes the reload objection) vs your inline accordion. Your call; both are defensible.
+
+**Q3. Full-bleed band (C5).** Seat 4 argues CUT: `class-sgs-container-wrapper.php:603-620`
+records a band-scoped background capability **deliberately retired 2026-08-12** with "Do NOT
+reintroduce". Seat 1 argues the correct pattern is the inverse and needs no retired
+capability — make the object-shaped `contentWidth` emit the inner band like the scalar shape
+does, then the template adds `align:"full"`. **Seat 1's route respects the retirement; I
+lean to it**, but it is a wrapper code-path change and needs your gate.
+
+**Q4. Grid column floor** — 150px (WC), 250px (Shopify), 260px (Seat 1). Affects when cards
+drop from 3→2 per row.
+
+---
+
+## 7. Sequencing
+
+1. **`sgs/text` root cause + fix** (§2) — highest value, unblocks instant filtering AND Flip.
+   Gate: `clientNavigationDisabled` absent + a filter click issues a fetch, no document nav.
+2. **A11y quick wins, zero blast radius** — `inert`/`hidden` on closed drawer; `<main>`
+   landmark. Gate: axe + the tab-order assertion (§4.2).
+3. **Token fixes** — border token; `--sgs-elevation-*`; derived `primary-text`; delete teal
+   fallbacks + dead classes + dead Apply CSS. Gate: contrast assertions in
+   `push-theme-snapshot.py`, fail-closed.
+4. **Search max-width** (block-local, zero risk).
+5. **Responsive grid** (§4.3). Gate: 375/768/1024/1440 screenshots + lone-last-card check.
+6. **Drawer mechanism** per Q1/Q2 outcome.
+7. **Re-measure D1** — ⚠ its 413px diagnosis was taken *while* the container rule was
+   flattening layout. Seat 1 is right that it must be re-measured after the drawer/container
+   work, not designed against now.
+8. **Full-bleed band** (Q3), last — judged by eye.
+
+Every step: its own commit, its own `build-deploy.py --target sandybrown`, never
+`--allow-dirty`/`--skip-verify` (D336 = 2.5h outage from a hand-rolled path).
+
+---
+
+## 8. Cut / deferred
+
+- **G4 slider overflow** — not reproduced; do not fix blind. Would confirm: 320px + 360px
+  viewport, drag max thumb to a 4-digit value, re-check `scrollWidth`.
+- **Container queries for columns** — redundant; `minmax()` is already container-relative.
+- **Dark-mode token layer** — not in scope, no evidence needed.
+- **Wholesale hardcode-lint baseline regen** — remove only the entries that become real token
+  consumers.
+- **Per-tier `columns-mobile`/`columns-tablet`** — becomes dead weight once §4.3 lands;
+  delete as follow-up.
+- **Chip horizontal-scroll row ≤481px** (`woocommerce.css:648`) — `nowrap` hides active
+  filters off-screen with no affordance. Real defect, low priority.
