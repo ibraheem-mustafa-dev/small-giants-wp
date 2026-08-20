@@ -87,10 +87,11 @@ final class Sgs_Motion_Settings {
 				'type'              => 'array',
 				'sanitize_callback' => array( __CLASS__, 'sanitise' ),
 				'default'           => array(
-					'smooth_scroll'          => false,
-					'smooth_scroll_strength' => 3,
-					'page_transitions'       => false,
-					'page_transition_style'  => 'fade',
+					'smooth_scroll'             => false,
+					'smooth_scroll_strength'    => 3,
+					'page_transitions'          => false,
+					'page_transition_style'     => 'fade',
+					'animate_product_filtering' => false,
 				),
 			)
 		);
@@ -149,6 +150,9 @@ final class Sgs_Motion_Settings {
 			'page_transition_templates' => SGS_Motion_Registry::sanitise_template_styles(
 				$value['page_transition_templates'] ?? array()
 			),
+			// FR-38-12 (redirected 2026-08-20). A plain checkbox presence
+			// test, same as every other boolean setting on this page.
+			'animate_product_filtering' => ! empty( $value['animate_product_filtering'] ),
 		);
 	}
 
@@ -445,6 +449,34 @@ final class Sgs_Motion_Settings {
 				<p style="max-width:46rem">
 					<?php \esc_html_e( 'Page transitions are switched off automatically for visitors whose device asks for reduced motion, and they never run in the block editor or admin screens.', 'sgs-blocks' ); ?>
 				</p>
+
+				<h2><?php \esc_html_e( 'WooCommerce product filtering', 'sgs-blocks' ); ?></h2>
+				<p style="max-width:46rem">
+					<?php \esc_html_e( 'When a visitor narrows a Product Collection block by price, attribute or rating, the product cards animate to their new positions instead of snapping instantly. Requires WooCommerce. Off by default.', 'sgs-blocks' ); ?>
+				</p>
+
+				<table class="form-table" role="presentation">
+					<tbody>
+						<tr>
+							<th scope="row"><?php \esc_html_e( 'Animate product re-filtering', 'sgs-blocks' ); ?></th>
+							<td>
+								<label>
+									<input
+										type="checkbox"
+										id="sgs-animate-product-filtering-toggle"
+										name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[animate_product_filtering]"
+										value="1"
+										<?php \checked( true, $settings['animate_product_filtering'] ); ?>
+									/>
+									<?php \esc_html_e( 'Animate WooCommerce product re-filtering', 'sgs-blocks' ); ?>
+								</label>
+								<p class="description" style="max-width:44rem">
+									<?php \esc_html_e( 'Applies only to the Product Collection block. Switched off automatically for visitors whose device asks for reduced motion.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 
 				<?php \submit_button(); ?>
 			</form>

@@ -53,15 +53,15 @@ class SGS_Motion_Registry {
 	 * @var array<string, array{path: string, deps: string[]}>
 	 */
 	private const MODULES = array(
-		'@sgs/gsap'               => array(
+		'@sgs/gsap'                => array(
 			'path' => 'build/vendor-modules/gsap-core.js',
 			'deps' => array(),
 		),
-		'@sgs/gsap-scrolltrigger' => array(
+		'@sgs/gsap-scrolltrigger'  => array(
 			'path' => 'build/vendor-modules/gsap-scrolltrigger.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-splittext'     => array(
+		'@sgs/gsap-splittext'      => array(
 			'path' => 'build/vendor-modules/gsap-splittext.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
@@ -77,11 +77,11 @@ class SGS_Motion_Registry {
 		 * without dropping drag, because Spec 38 §10 keeps drag working under
 		 * reduced motion while switching physics off.
 		 */
-		'@sgs/gsap-draggable'     => array(
+		'@sgs/gsap-draggable'      => array(
 			'path' => 'build/vendor-modules/gsap-draggable.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-inertia'       => array(
+		'@sgs/gsap-inertia'        => array(
 			'path' => 'build/vendor-modules/gsap-inertia.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
@@ -96,35 +96,45 @@ class SGS_Motion_Registry {
 		 * uses) — NOT via the fx_effects DB sniff route, because this is a
 		 * dedicated block, not a data-sgs-fx attribute on an arbitrary block.
 		 */
-		'@sgs/gsap-physics2d'     => array(
+		'@sgs/gsap-physics2d'      => array(
 			'path' => 'build/vendor-modules/gsap-physics2d.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-drawsvg'       => array(
+
+		/*
+		 * Flip (FR-38-12, redirected 2026-08-20 to WooCommerce Product
+		 * Collection — see `src/shared/effects/gsap/fx-flip.js`'s docblock and
+		 * `.claude/plans/2026-08-20-flip-woocommerce-product-collection-design-gate.md`).
+		 */
+		'@sgs/gsap-flip'           => array(
+			'path' => 'build/vendor-modules/gsap-flip.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
+		'@sgs/gsap-drawsvg'        => array(
 			'path' => 'build/vendor-modules/gsap-drawsvg.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-morphsvg'      => array(
+		'@sgs/gsap-morphsvg'       => array(
 			'path' => 'build/vendor-modules/gsap-morphsvg.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-motionpath'    => array(
+		'@sgs/gsap-motionpath'     => array(
 			'path' => 'build/vendor-modules/gsap-motionpath.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/gsap-scramble'      => array(
+		'@sgs/gsap-scramble'       => array(
 			'path' => 'build/vendor-modules/gsap-scrambletext.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/motion-provider'    => array(
+		'@sgs/motion-provider'     => array(
 			'path' => 'build/shared/effects/gsap/provider.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
-		'@sgs/fx-scrub'           => array(
+		'@sgs/fx-scrub'            => array(
 			'path' => 'build/shared/effects/gsap/fx-scrub.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
 		),
-		'@sgs/fx-pin-scrub'       => array(
+		'@sgs/fx-pin-scrub'        => array(
 			'path' => 'build/shared/effects/gsap/fx-pin-scrub.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
 		),
@@ -141,7 +151,7 @@ class SGS_Motion_Registry {
 		 * ScrollTrigger — a slower, undeclared fetch. The DB row was corrected
 		 * to match on 2026-07-29; the two must stay in step.
 		 */
-		'@sgs/fx-split-reveal'    => array(
+		'@sgs/fx-split-reveal'     => array(
 			'path' => 'build/shared/effects/gsap/fx-split-reveal.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -158,7 +168,7 @@ class SGS_Motion_Registry {
 		 * later, slower fetch. That silent-but-slower failure is why the
 		 * split-reveal row above was corrected rather than left alone.
 		 */
-		'@sgs/fx-draggable'       => array(
+		'@sgs/fx-draggable'        => array(
 			'path' => 'build/shared/effects/gsap/fx-draggable.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -173,7 +183,7 @@ class SGS_Motion_Registry {
 		 * `fx-draw.js:214` registers it. See the fx-scramble note below for why
 		 * an omission would be silent rather than fatal.
 		 */
-		'@sgs/fx-draw'            => array(
+		'@sgs/fx-draw'             => array(
 			'path' => 'build/shared/effects/gsap/fx-draw.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -181,11 +191,11 @@ class SGS_Motion_Registry {
 				'@sgs/gsap-scrolltrigger',
 			),
 		),
-		'@sgs/fx-morph'           => array(
+		'@sgs/fx-morph'            => array(
 			'path' => 'build/shared/effects/gsap/fx-morph.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-morphsvg' ),
 		),
-		'@sgs/fx-motion-path'     => array(
+		'@sgs/fx-motion-path'      => array(
 			'path' => 'build/shared/effects/gsap/fx-motion-path.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -203,7 +213,7 @@ class SGS_Motion_Registry {
 		 * late. That is the same silent-but-slower defect the split-reveal row
 		 * above was corrected for on 2026-07-29.
 		 */
-		'@sgs/fx-scramble'        => array(
+		'@sgs/fx-scramble'         => array(
 			'path' => 'build/shared/effects/gsap/fx-scramble.js',
 			'deps' => array(
 				'@sgs/motion-provider',
@@ -211,9 +221,19 @@ class SGS_Motion_Registry {
 				'@sgs/gsap-scrolltrigger',
 			),
 		),
-		'@sgs/fx-image-sequence'  => array(
+		'@sgs/fx-image-sequence'   => array(
 			'path' => 'build/shared/effects/gsap/fx-image-sequence.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
+		),
+
+		/*
+		 * Flip (FR-38-12, redirected 2026-08-20). No ScrollTrigger dependency —
+		 * this effect is MutationObserver-triggered, not scroll-triggered, so
+		 * `fx-flip.js` never imports it.
+		 */
+		'@sgs/fx-flip'             => array(
+			'path' => 'build/shared/effects/gsap/fx-flip.js',
+			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-flip' ),
 		),
 
 		/*
@@ -223,7 +243,7 @@ class SGS_Motion_Registry {
 		 * off ScrollSmoother. It is enqueued from the site SETTING rather than
 		 * from a block sniff, which is the second enqueue route §4.4 allows.
 		 */
-		'@sgs/smooth-scroll'      => array(
+		'@sgs/smooth-scroll'       => array(
 			'path' => 'build/shared/effects/smooth-scroll.js',
 			'deps' => array(),
 		),
@@ -240,7 +260,7 @@ class SGS_Motion_Registry {
 		 * the module ID still follows '@sgs/fx-' . <fx_effects.effect> so the
 		 * generic enqueue_effect() lookup finds it with no special case.
 		 */
-		'@sgs/fx-cursor-field'    => array(
+		'@sgs/fx-cursor-field'     => array(
 			'path' => 'build/shared/effects/fx-cursor-field.js',
 			'deps' => array(),
 		),
@@ -258,7 +278,7 @@ class SGS_Motion_Registry {
 		 * `data-sgs-loop="1"` at once, and `data-sgs-fx` can only ever hold
 		 * one value.
 		 */
-		'@sgs/fx-carousel-loop'  => array(
+		'@sgs/fx-carousel-loop'    => array(
 			'path' => 'build/shared/effects/fx-carousel-loop.js',
 			'deps' => array(),
 		),
@@ -388,6 +408,9 @@ class SGS_Motion_Registry {
 		'MorphSVG'      => '@sgs/gsap-morphsvg',
 		'MotionPath'    => '@sgs/gsap-motionpath',
 		'ScrambleText'  => '@sgs/gsap-scramble',
+		// Flip (FR-38-12, redirected 2026-08-20). Matches the `fx_effects` DB
+		// row's `plugin_set: ["Flip"]`.
+		'Flip'          => '@sgs/gsap-flip',
 	);
 
 	/**
@@ -490,6 +513,13 @@ class SGS_Motion_Registry {
 			'page_transition_templates' => self::sanitise_template_styles(
 				$raw['page_transition_templates'] ?? array()
 			),
+
+			/*
+			 * FR-38-12 (redirected 2026-08-20) — WooCommerce Product Collection
+			 * re-filter animation. Default OFF, same as every other site-level
+			 * motion capability: a site not using it serves zero Flip bytes.
+			 */
+			'animate_product_filtering' => ! empty( $raw['animate_product_filtering'] ),
 		);
 	}
 
@@ -723,7 +753,7 @@ class SGS_Motion_Registry {
 	 * @return array
 	 */
 	public static function smooth_scroll_module_data( $data ): array {
-		$data = \is_array( $data ) ? $data : array();
+		$data     = \is_array( $data ) ? $data : array();
 		$settings = self::settings();
 
 		$data['strength']      = $settings['smooth_scroll_strength'];

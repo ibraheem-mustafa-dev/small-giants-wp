@@ -101,6 +101,15 @@ final class SGS_Blocks {
 		// (Spec 32 forbids the inline declarations those would otherwise be).
 		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
 
+		// Flip on WooCommerce Product Collection re-filtering (Spec 38
+		// FR-38-12, redirected 2026-08-20 — see the design gate this file's
+		// docblock points to). A `render_block_woocommerce/product-collection`
+		// filter, not the shared `render_block` p10 slot above: SGS does not
+		// own that block's block.json, so the opt-in is a site-level setting
+		// rather than a per-block attribute, and there is nothing here for
+		// the p10/p11 dynamic-block attribute-injection siblings to share.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-flip-woocommerce.php';
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();

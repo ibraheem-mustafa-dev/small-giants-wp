@@ -80,6 +80,11 @@ if ( moduleConfig ) {
 		// Physics sandbox (FR-38-27 / D447) — the one named exception to
 		// FR-38-14's "physics are an easing flavour" rule.
 		'gsap/Physics2DPlugin': '@sgs/gsap-physics2d',
+		// Flip (FR-38-12, redirected 2026-08-20 to WooCommerce Product
+		// Collection — see fx-flip.js's docblock). Same shape as every other
+		// plugin here: it never imports core, so it must be externalised or a
+		// bare `gsap/Flip` import would silently bundle a second GSAP graph.
+		'gsap/Flip': '@sgs/gsap-flip',
 		// The Tier G provider is externalised too, for the same reason as GSAP
 		// itself: it holds the plugin-registration set and the shared
 		// matchMedia context. Bundled per-effect, each effect would get its own
@@ -123,6 +128,9 @@ if ( moduleConfig ) {
 					'gsap-scrambletext',
 					// Physics sandbox (FR-38-27 / D447).
 					'gsap-physics2d',
+					// Flip (FR-38-12, redirected 2026-08-20). Also shipped inside
+					// the installed gsap 3.15.0, free since the Webflow acquisition.
+					'gsap-flip',
 				].map( ( name ) => [
 					`vendor-modules/${ name }`,
 					path.resolve(
@@ -224,6 +232,12 @@ if ( moduleConfig ) {
 					'fx-motion-path',
 					'fx-scramble',
 					'fx-image-sequence',
+					// Flip (FR-38-12, redirected 2026-08-20 to WooCommerce Product
+					// Collection — see fx-flip.js's docblock). Name is load-bearing
+					// exactly like its siblings: the PHP registry derives a module
+					// ID as '@sgs/fx-' . <fx_effects.effect>, and the DB effect key
+					// is `flip`.
+					'fx-flip',
 				].map( ( name ) => [
 					`shared/effects/gsap/${ name }`,
 					path.resolve(
