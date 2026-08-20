@@ -33,9 +33,24 @@ the gates; the gates then start life green and meaningful.
 
 | # | Block | Defect | Consequence |
 |---|---|---|---|
-| 1 | `sgs/text` | `fontSizeMobile` destructured in `edit.js`, **not declared in `block.json`** | WordPress silently DISCARDS it (D338 class). **A client setting a mobile font size gets nothing.** |
+| 1 | `sgs/text` | `fontSizeMobile` destructured in `edit.js`, **not declared in `block.json`** | The EDITOR drops it, so the value can never be stored — **a client setting a mobile font size gets nothing.** ⚠ See the mechanism correction below. |
 | 2 | `sgs/text` | `fontSizeTablet` — same | Same, for tablet. |
 | 3 | `sgs/quote` | `backgroundColourHoverGradient` — same | The hover-gradient control does nothing. |
+
+## ⚠ MECHANISM CORRECTION (2026-08-20, same day — commit `e81ea92a`, parallel session)
+
+An earlier version of this report said WordPress "silently discards" an undeclared attribute,
+citing D338. **That rule is only half true, and the half this report leaned on was the false half.**
+
+Per WP core `WP_Block_Type::prepare_attributes_for_render()`, an undeclared attribute is skipped over,
+not `unset()` — so it reaches `$attributes` in `render.php` VERBATIM. It is the **editor** that drops
+it, because `getBlockAttributes()` builds its result by iterating the registered schema, so an
+undeclared key cannot appear there.
+
+**The four defects above still stand**, because the editor is the surface that matters here: the
+control writes a value the editor cannot carry, so nothing is ever persisted for `render.php` to
+receive. But the reason is "the editor cannot hold it", NOT "WordPress discards it at render". Do not
+repeat the discarded-at-render wording — it will send someone hunting in the wrong file.
 | 4 | `sgs/feature-grid` | `layout` is a CONDITIONAL inert control (`feature-grid/render.php:156`) | A control that cannot always affect output. Note this block's *separate* misleading "Layout type" dropdown was already removed at D700 — check whether these are the same root cause before fixing. |
 
 ⚠ **Do NOT "fix" 1-3 by declaring the attributes and stopping there.** Declaring an attribute only
