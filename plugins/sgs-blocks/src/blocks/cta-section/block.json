@@ -55,7 +55,7 @@
 					"clusters": [ "fill", "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColor",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "native:__experimentalBorder.width",
