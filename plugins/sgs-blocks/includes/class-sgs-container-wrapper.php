@@ -1131,6 +1131,48 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$classes = array( 'sgs-container' );
 
+			// ----------------------------------------------------------------
+			// Global padding (the horizontal gutter) — WordPress core's own
+			// mechanism, re-adopted 2026-08-21 after a hand-rolled copy of it
+			// regressed every nested container.
+			//
+			// HISTORY, because the shape of this fix is only obvious with it:
+			// before 163f9fa7 (2026-07-16) these were `core/group` blocks with
+			// `layout:{"type":"constrained"}`. Core gave every constrained group
+			// `.has-global-padding`, which supplies the gutter from
+			// `--wp--style--root--padding-*` AND — critically — carries core's own
+			// nesting reset, so a constrained group inside a constrained group
+			// pays the gutter ONCE. That migration carried the max-width cap
+			// (`layout.constrained` -> `contentWidth`) across but NOT the gutter,
+			// so content rendered flush to the viewport edge. f9f4368b then fixed
+			// that symptom by giving EVERY container instance a 24px `padding`
+			// default — a PER-INSTANCE default has no nesting reset, so it
+			// compounded: measured live on /shop/ at 323px, 19 of 22 containers
+			// were nested and a product card sat at left:72px (3 x 24px) with only
+			// 165px of its 309px viewport left. The footer-links container was
+			// 48px wide with 48px of padding — zero content.
+			//
+			// So this is a RE-CONNECTION, not a new mechanism: core's four
+			// `.has-global-padding` rules were already shipped and live on the page
+			// with ZERO elements using them, and `--wp--style--root--padding-left`
+			// already computes to 1.5rem/24px — the very number f9f4368b hardcoded.
+			//
+			// GATE — `$has_band_props`, and no carve-out is needed:
+			//   * a real content band == the old constrained group -> gutter.
+			//   * `contentWidth:"full"` resolves to '' (see $sgs_resolve_content_width),
+			//     so the 5 full-bleed blocks that default it (site-header/-row,
+			//     site-footer/-row, physics-canvas) have no band and are excluded —
+			//     which is exactly how core excludes full-width from global padding.
+			//   * a caller that explicitly suppresses the band via
+			//     $opts['wrap_inner'] => false (hero-split, product-card) is left
+			//     byte-identical.
+			// Deliberately NOT gated on $do_wrap: the $container_queries and
+			// fx:horizontal-panel forces further down emit a band ELEMENT without
+			// band PROPS, i.e. no constrained cap, so they must not gain a gutter.
+			if ( $has_band_props && false !== $opt_wrap_inner ) {
+				$classes[] = 'has-global-padding';
+			}
+
 			// Composite block class (e.g. 'sgs-hero') is appended directly after the
 			// base class so composites carry both sgs-container + their own class.
 			if ( '' !== $opt_block_class ) {

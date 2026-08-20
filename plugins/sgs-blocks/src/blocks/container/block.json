@@ -486,8 +486,8 @@
 		},
 		"padding": {
 			"type": "object",
-			"default": {"left": "24px", "right": "24px"},
-			"description": "Base (desktop) padding, owned outright (no supports.spacing — D555 gutter-default migration). Left/right only default to a horizontal gutter matching theme.json settings.spacing.spacingSizes slug 40 (1.5rem/24px at the 16px root), the same value site-header's own patterns already hardcode for padding-left/right. Top/bottom default to unset (0) so this migration changes only the axis that was broken (sgs/container previously had no gutter default at all and rendered flush to the viewport edge)."
+			"default": {},
+			"description": "Base (desktop) padding, owned outright (no supports.spacing — D555 box-object migration). NO DEFAULT: the horizontal gutter is supplied by WordPress core's own .has-global-padding, which the shared wrapper applies whenever the container renders a content band (class-sgs-container-wrapper.php, search has-global-padding). A 24px default lived here from f9f4368b until 2026-08-21 and was REVERTED: a per-instance default has no nesting reset, so it compounded to 72px on a 3-deep nest and left a 48px-wide footer container with zero content. Core's mechanism carries the nesting reset; a hand-rolled copy cannot. Do NOT reintroduce a default here."
 		},
 		"margin": {
 			"type": "object",
