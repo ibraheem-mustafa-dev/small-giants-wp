@@ -1,0 +1,1 @@
+{ "name": "sgs/rendered-directly", "attributes": { "fooAttr": { "type": "string", "default": "" } } }

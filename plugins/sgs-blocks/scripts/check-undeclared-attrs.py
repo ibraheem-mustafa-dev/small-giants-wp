@@ -70,12 +70,47 @@ each block's block.json `supports` section (no hardcoded allowlist).
 import json
 import pathlib
 import re
+import subprocess
 import sys
-from typing import Set, Tuple, Optional
+from typing import Dict, Set, Tuple, Optional
 
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 EXTENSIONS_DIR = BLOCKS_DIR / 'extensions'
+
+# R3-a (2026-08-20): the shared name -> file resolver
+# (`inspector-scan/core/components.js`) is the JS-side fix for the whole
+# "blind to a control living in a shared component file" class of bug (see
+# `.claude/plans/phase-shop-container-remediation.md` R-3 register). This
+# script is Python, so it cannot `require()` that module directly — it
+# spawns `node components.js --dump-json` once and reuses the result, rather
+# than reimplementing the resolver's declaration-precedence logic here as a
+# SECOND mechanism that could silently drift from the JS one.
+COMPONENTS_JS = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'inspector-scan' / 'core' / 'components.js'
+JSX_TAG_RE = re.compile(r'<([A-Z]\w*)\b')
+
+_component_file_map_cache: Optional[Dict[str, str]] = None
+
+
+def load_component_file_map() -> Dict[str, str]:
+    """Resolve every shared component name -> defining file, via the JS resolver.
+
+    Returns {} (never raises) if node or the resolver script is unavailable, so a
+    missing Node toolchain degrades this script to its pre-R3-a edit.js-only
+    behaviour rather than crashing.
+    """
+    global _component_file_map_cache
+    if _component_file_map_cache is not None:
+        return _component_file_map_cache
+    try:
+        result = subprocess.run(
+            ['node', str(COMPONENTS_JS), '--dump-json'],
+            capture_output=True, text=True, timeout=30, check=True,
+        )
+        _component_file_map_cache = json.loads(result.stdout)
+    except Exception:
+        _component_file_map_cache = {}
+    return _component_file_map_cache
 
 # Map of `supports` keys to the attributes WordPress injects when each is declared.
 # Built from WP documentation + survey-native-supports.py findings in this codebase.
@@ -258,6 +293,15 @@ def parse_destructuring_pattern(pattern_str: str) -> Tuple[Set[str], Optional[st
         return set(), 'rest pattern (...rest) is unclear'
     if '{' in s or '}' in s:
         return set(), 'nested destructuring { ... { ... } } is unclear'
+    # Computed/dynamic key: `[ attrNames.gradient ]: local = default`. The real
+    # attribute name is chosen at RUNTIME from a caller-supplied variable (e.g.
+    # GradientOverlayControl.js's `attrNames` prop, surfaced by R3-a's shared-
+    # component corpus widening) — the LHS text is a JS expression, not a
+    # literal attribute name, so treating "[ attrNames.gradient ]" as a name
+    # string would be a false positive. Refuse rather than guess, same
+    # discipline as the rest/nested cases above.
+    if re.search(r'\[\s*[^\[\]]+\s*\]\s*:', s):
+        return set(), 'computed/dynamic key ([expr]: ...) is unclear'
 
     # Split on commas, but be careful with spaces around colons/defaults.
     # Pattern: name [ : alias ] [ = default ]
@@ -296,6 +340,26 @@ def scan_edit_file(edit_file: pathlib.Path, block_name: str) -> Tuple[Set[str], 
     Returns (destructured_names, parse_error).
     """
     src = edit_file.read_text(encoding='utf-8', errors='replace')
+
+    # R3-a (2026-08-20): widen the corpus past edit.js alone. A local
+    # `const { ... } = attributes;` destructure can live entirely inside a
+    # SHARED component file that edit.js only mounts via JSX (e.g.
+    # `<WidthPanel .../>`) — that destructure was previously invisible here
+    # because only edit.js's own text was ever read. Resolve every
+    # capitalised JSX tag referenced in edit.js to the file that DEFINES it
+    # (via the JS resolver, `components.js` — never by import-path string
+    # matching) and fold its source in too.
+    component_map = load_component_file_map()
+    seen_files = {str(edit_file.resolve())}
+    for tag_name in set(JSX_TAG_RE.findall(src)):
+        component_path = component_map.get(tag_name)
+        if not component_path or component_path in seen_files:
+            continue
+        seen_files.add(component_path)
+        try:
+            src += '\n' + pathlib.Path(component_path).read_text(encoding='utf-8', errors='replace')
+        except OSError:
+            pass
 
     # Strip comments: LINE first, then BLOCK.
     src = re.sub(r'//.*$', '', src, flags=re.MULTILINE)
@@ -494,6 +558,46 @@ def self_test() -> int:
     # After stripping, we should still be able to find the destructuring patterns.
     if 'text' not in test_content or 'gap' not in test_content:
         failures.append('CRASH-GUARD control failed: comment stripping broke destructuring detection.')
+
+    # Test 7: R3-a widening regression test (2026-08-20), against the REAL
+    # tree — the resolver walks the real filesystem, so it can't be exercised
+    # via a synthetic fixture. NEGATIVE CONTROL: sgs/gallery's edit.js never
+    # names 'contentWidth' as literal text — it lives entirely inside the
+    # shared `ResponsiveBoxControls.js`'s own local
+    # `const { padding, margin, maxWidth, contentWidth } = attributes;`,
+    # mounted via `<ResponsiveBoxControls .../>` JSX. Proves the widened
+    # scan_edit_file() now sees it where the old edit.js-only regex could not.
+    gallery_dir = BLOCKS_DIR / 'gallery'
+    gallery_edit = gallery_dir / 'edit.js'
+    if gallery_edit.is_file():
+        old_narrow_src = gallery_edit.read_text(encoding='utf-8', errors='replace')
+        old_narrow_has_content_width = bool(
+            re.search(r'const\s+\{\s*[^}]*\bcontentWidth\b[^}]*\}\s*=\s*attributes\s*;', old_narrow_src)
+        )
+        widened_destructured, widened_error = scan_edit_file(gallery_edit, 'sgs/gallery')
+        if old_narrow_has_content_width or widened_error or 'contentWidth' not in widened_destructured:
+            failures.append(
+                f'R3-a WIDENING: old-narrow-has-contentWidth={old_narrow_has_content_width} '
+                f'(expected False), widened-error={widened_error!r} (expected None), '
+                f'widened-has-contentWidth={"contentWidth" in widened_destructured} (expected True). '
+                'The resolver-based JSX-component widening in scan_edit_file() is not working.')
+    else:
+        failures.append('R3-a WIDENING: src/blocks/gallery/edit.js not found — fixture block for this test is gone.')
+
+    # Test 8: R3-a computed-key false-positive guard. sgs/hero mounts
+    # GradientOverlayControl.js via JSX, which uses a COMPUTED destructuring
+    # key (`[ attrNames.gradient ]: ...`) — the real attribute name is chosen
+    # at runtime, not a literal. Before the computed-key guard was added,
+    # widening the corpus made this parse as the literal (wrong) name
+    # "[ attrNames.gradient ]"; it must instead report as unclear.
+    hero_edit = BLOCKS_DIR / 'hero' / 'edit.js'
+    if hero_edit.is_file():
+        _, hero_error = scan_edit_file(hero_edit, 'sgs/hero')
+        if not hero_error or 'computed' not in hero_error:
+            failures.append(
+                f'R3-a COMPUTED-KEY GUARD: sgs/hero (mounts GradientOverlayControl.js, which uses a '
+                f'computed destructuring key) returned error={hero_error!r} — expected an "unclear: '
+                'computed/dynamic key" reason, not a silent pass or a different error.')
 
     if failures:
         print('[check-undeclared-attrs --self-test] FAILED:\n')

@@ -65,12 +65,73 @@ import json
 import os
 import pathlib
 import re
+import subprocess
 import sys
+from typing import Dict, Optional
 
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 INCLUDES_DIR = REPO / 'plugins' / 'sgs-blocks' / 'includes'
 SHARED_CONTROLS_JS = BLOCKS_DIR / 'container' / 'components' / 'ContainerWrapperControls.js'
+
+# R3-a (2026-08-20): the shared name -> file resolver
+# (`inspector-scan/core/components.js`) is the JS-side fix for the "control
+# lives in a shared component file" blind spot (`.claude/plans/phase-shop-
+# container-remediation.md` R-3 register). This script is Python, so it
+# spawns `node components.js --dump-json` once rather than reimplementing
+# the resolver's declaration-precedence logic here as a second mechanism.
+COMPONENTS_JS = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'inspector-scan' / 'core' / 'components.js'
+LOCAL_IMPORT_RE = re.compile(r"import\s*\{([^}]*)\}\s*from\s*['\"]\./[^'\"]+['\"]")
+
+_component_file_map_cache: Optional[Dict[str, str]] = None
+
+
+def load_component_file_map() -> Dict[str, str]:
+    """Resolve every shared component name -> defining file, via the JS resolver.
+
+    Returns {} (never raises) if node or the resolver script is unavailable, so a
+    missing Node toolchain degrades this script to its pre-R3-a facade-only
+    behaviour rather than crashing.
+    """
+    global _component_file_map_cache
+    if _component_file_map_cache is not None:
+        return _component_file_map_cache
+    try:
+        result = subprocess.run(
+            ['node', str(COMPONENTS_JS), '--dump-json'],
+            capture_output=True, text=True, timeout=30, check=True,
+        )
+        _component_file_map_cache = json.loads(result.stdout)
+    except Exception:
+        _component_file_map_cache = {}
+    return _component_file_map_cache
+
+
+def resolve_facade_sources(facade_path: pathlib.Path) -> str:
+    """Facade file text + every locally-imported file it resolves to via the
+    shared resolver (declaration wins over mere re-export). Mirrors
+    check-dead-controls.js's collectFacadeResolvedSources() — same fix, same
+    reason: ContainerWrapperControls.js merely RE-EXPORTS its six panels
+    since the 2026-08-17 split and no longer contains their control code."""
+    if not facade_path.exists():
+        return ''
+    facade_src = facade_path.read_text(encoding='utf-8', errors='replace')
+    names = set()
+    for m in LOCAL_IMPORT_RE.finditer(facade_src):
+        for part in m.group(1).split(','):
+            n = part.strip().split(' as ')[-1].strip()
+            if re.match(r'^[A-Z]\w*$', n):
+                names.add(n)
+    component_map = load_component_file_map()
+    out = facade_src
+    for n in names:
+        file_path = component_map.get(n)
+        if file_path:
+            try:
+                out += '\n' + pathlib.Path(file_path).read_text(encoding='utf-8', errors='replace')
+            except OSError:
+                pass
+    return out
 
 
 def load_block_schemas() -> dict:
@@ -91,18 +152,33 @@ def load_block_schemas() -> dict:
 
 def load_shared_controls() -> set:
     """Extract control names from ContainerWrapperControls.js by pattern.
-    Returns set of attribute names that have controls in the shared component."""
-    if not SHARED_CONTROLS_JS.exists():
+    Returns set of attribute names that have controls in the shared component.
+
+    R3-a (2026-08-20): reads the facade PLUS every panel file it locally
+    imports (via the shared resolver), not the facade text alone — the
+    facade merely re-exports its six panels post-split (2026-08-17) and by
+    itself measured 0 hits for `contentWidth`/`gapTablet`/etc."""
+    src = resolve_facade_sources(SHARED_CONTROLS_JS)
+    if not src:
         return set()
-    src = SHARED_CONTROLS_JS.read_text(encoding='utf-8')
-    # Rough pattern: look for setAttributes calls writing attributes.
-    # Example: setAttributes( { layout: value, gap: value2 } )
-    # More robust: look for attribute prop names in control definitions.
-    # Pattern: name="layout" or name: 'gap' in the component source.
     controls = set()
-    # Detect control declarations: name="X" or name: 'X' or name: "X"
+    # Pattern A: name="X" / name: 'X' (a JSX prop literally named "name", e.g. a
+    # TabPanel tab identity) — kept for back-compat with the original detector,
+    # though measured (R3-a) to mostly catch UI-identity strings ("svg",
+    # "image", "video"), not attribute names.
     for m in re.finditer(r'name\s*[=:]\s*["\']([a-zA-Z_][a-zA-Z0-9_]*)["\']', src):
         controls.add(m.group(1))
+    # Pattern B (R3-a, 2026-08-20): setAttributes( { attrName: ... } ) object-key
+    # writes — the ACTUAL shape every panel uses to write an attribute (e.g.
+    # WidthPanel.js's `setAttributes( { contentWidth: obj } )`). Without this,
+    # widening the file corpus alone (Pattern A only) still measured 0 hits for
+    # `contentWidth` even after resolving WidthPanel.js's real source, because
+    # Pattern A never matches a `setAttributes({...})` object-key shape at all.
+    # Same regex convention as check-dead-controls.js's collectControlledAttrs.
+    for setattr_match in re.finditer(r'setAttributes\(\s*\{\s*([^}]*)\}', src):
+        body = setattr_match.group(1)
+        for key_match in re.finditer(r'(?:^|[\s,])(?:[\'"]?)([A-Za-z_$][\w$]*)(?:[\'"]?)\s*:', body):
+            controls.add(key_match.group(1))
     return controls
 
 
@@ -121,13 +197,14 @@ def has_control_in_edit_js(block_dir: pathlib.Path, attr_name: str) -> bool:
     # Strip comments to avoid false positives from commented-out controls.
     src = strip_comments(src)
 
-    # Pattern 0: ContainerWrapperControls with kind attribute (covers many attributes)
-    # This matches controls registered by the shared container component.
-    if re.search(r'ContainerWrapperControls\s+[\s\S]*?\bkind\s*=', src, re.MULTILINE):
-        # Container controls provide layout, gap, maxWidth, contentWidth, etc. depending on kind.
-        # For now, assume layout/gap/maxWidth/contentWidth are provided by any ContainerWrapperControls mount.
-        if attr_name in {'layout', 'gap', 'maxWidth', 'contentWidth', 'alignContent', 'alignItems', 'justifyContent', 'justifyItems'}:
-            return True
+    # Pattern 0 (REMOVED 2026-08-20): a hardcoded set of 8 names
+    # {layout, gap, maxWidth, contentWidth, alignContent, alignItems, justifyContent, justifyItems}
+    # was hard-coded here. As of R3-a, load_shared_controls() now resolves these and ~51 more
+    # via the shared JS resolver (inspector-scan/core/components.js), which walks the
+    # ContainerWrapperControls.js facade + all locally-imported panel files. The hardcoded
+    # allowlist became redundant bloat and a maintenance trap (R-31-1: no hardcoded dicts).
+    # All 8 names are now covered by load_shared_controls() and detected via Pattern 1-3 below
+    # (or via the shared_controls check in scan()).
 
     # Pattern 1: setAttributes( { attr_name: ... } )
     if re.search(rf'setAttributes\s*\(\s*\{{[\s\S]*?\b{re.escape(attr_name)}\s*:', src):
@@ -374,6 +451,23 @@ def self_test() -> int:
             'CORE MATCHER: a COMMENTED-OUT assignment was flagged (%r).'
             % [a for _, a, _, _ in hits])
 
+    # 8. R3-a widening regression test (2026-08-20), against the REAL tree —
+    # the resolver walks the real filesystem, so a synthetic fixture can't
+    # exercise it. NEGATIVE CONTROL: the OLD facade-text-only read of
+    # ContainerWrapperControls.js never sees 'contentWidth' (it lives in
+    # WidthPanel.js, which the facade only re-exports post-2026-08-17-split).
+    old_narrow_src = SHARED_CONTROLS_JS.read_text(encoding='utf-8', errors='replace') if SHARED_CONTROLS_JS.exists() else ''
+    old_narrow_has_content_width = bool(
+        re.search(r'setAttributes\(\s*\{[^}]*\bcontentWidth\s*:', old_narrow_src)
+    )
+    widened_controls = load_shared_controls()
+    if old_narrow_has_content_width or 'contentWidth' not in widened_controls:
+        failures.append(
+            f'R3-a WIDENING: old-narrow-has-contentWidth={old_narrow_has_content_width} '
+            f'(expected False), widened-has-contentWidth='
+            f'{"contentWidth" in widened_controls} (expected True). The resolver-based '
+            'facade widening in load_shared_controls() is not working.')
+
     if failures:
         print('[inert-controls --self-test] FAILED:\n')
         for f in failures:
@@ -381,7 +475,7 @@ def self_test() -> int:
         return 1
 
     print('[inert-controls --self-test] OK — all test cases passed (7 controls, '
-          '3 of them end-to-end over the real matcher).')
+          '3 of them end-to-end over the real matcher, 1 R3-a widening negative control).')
     return 0
 
 

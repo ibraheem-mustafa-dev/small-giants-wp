@@ -213,6 +213,9 @@ def scan_css_dir(css_dir: Path) -> list[Finding]:
 
 
 def load_baseline() -> dict:
+    # CRITICAL: baseline entries suppress findings with a recorded reason. Never raise
+    # the baseline silently — any increase must include a written reason (see
+    # check-element-manifest-conformance.js:796-798).
     if not BASELINE_PATH.exists():
         return {}
     with open(BASELINE_PATH, "r", encoding="utf-8") as f:

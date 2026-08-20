@@ -1,0 +1,1 @@
+{ "name": "sgs/system-attr-not-flagged", "attributes": { "sgsAnimationType": { "type": "string", "default": "" } } }

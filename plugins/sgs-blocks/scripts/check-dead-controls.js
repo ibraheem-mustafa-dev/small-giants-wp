@@ -97,6 +97,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { resolveComponentFiles } = require( './inspector-scan/core/components' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -107,6 +108,99 @@ const SHARED_CONTROLS_JS = path.join(
 	'components',
 	'ContainerWrapperControls.js'
 );
+
+// R3-a (2026-08-20): the shared name -> file resolver (components.js), used
+// two ways below to close the "control lives in a shared component file"
+// blind spot documented in the R-3 register (`.claude/plans/phase-shop-
+// container-remediation.md` R3-a). Computed once — resolveComponentFiles()
+// walks the filesystem, so caching it avoids re-reading every component file
+// per block during a single run.
+const COMPONENT_FILE_MAP = resolveComponentFiles();
+
+// Any capitalised JSX tag referenced in a source file, e.g. `<WidthPanel`.
+const JSX_TAG_RE = /<([A-Z]\w*)\b/g;
+
+/**
+ * Given a source file's text (typically a block's edit.js), find every
+ * capitalised JSX tag it references, resolve each name to the FILE that
+ * DEFINES it via the shared resolver, and return the concatenated source of
+ * every resolved file. This is how a control living in a shared component
+ * (e.g. `container/components/WidthPanel.js`, mounted via `<WidthPanel .../>`
+ * in edit.js) becomes visible to the text-based `collectControlledAttrs()`
+ * scan below, instead of being invisible because it never appears as literal
+ * text inside edit.js itself.
+ *
+ * Deliberately resolves by JSX TAG NAME, cross-referenced against a
+ * component whose own source was read — never by import-path string
+ * matching (components.js's own documented discipline).
+ *
+ * @param {string} src Source text to scan for JSX tags.
+ * @return {string} Concatenated source of every resolved component file (may be empty).
+ */
+function collectReferencedComponentSources( src ) {
+	if ( ! src ) {
+		return '';
+	}
+	const names = new Set();
+	JSX_TAG_RE.lastIndex = 0;
+	let m;
+	while ( ( m = JSX_TAG_RE.exec( src ) ) !== null ) {
+		names.add( m[ 1 ] );
+	}
+	const seen = new Set();
+	let out = '';
+	for ( const name of names ) {
+		const file = COMPONENT_FILE_MAP.get( name );
+		if ( file && ! seen.has( file ) ) {
+			seen.add( file );
+			out += '\n' + readIfExists( file );
+		}
+	}
+	return out;
+}
+
+/**
+ * Resolve the set of files a "facade" component file (one that only
+ * re-exports its real implementation files, e.g. ContainerWrapperControls.js
+ * after the 2026-08-17 panel split) actually brings in, by reading its own
+ * local `import { Name } from './Name'` statements and resolving each Name
+ * to the file that DEFINES it. Replaces the old single-hardcoded-file read
+ * (`readIfExists( SHARED_CONTROLS_JS )` alone), which measured 0 hits for
+ * `contentWidth`/`gapTablet`/etc. because those controls moved OUT of the
+ * facade into per-panel files it merely re-exports (R3-a register).
+ *
+ * @param {string} facadePath Absolute path to the facade file.
+ * @return {string} Concatenated source: the facade itself + every locally-imported file it resolves to.
+ */
+function collectFacadeResolvedSources( facadePath ) {
+	const facadeSrc = readIfExists( facadePath );
+	if ( ! facadeSrc ) {
+		return '';
+	}
+	const localImportRe = /import\s*\{([^}]*)\}\s*from\s*['"]\.\/[^'"]+['"]/g;
+	const names = new Set();
+	let m;
+	while ( ( m = localImportRe.exec( facadeSrc ) ) !== null ) {
+		for ( const part of m[ 1 ].split( ',' ) ) {
+			const n = part.trim().split( /\s+as\s+/ ).pop().trim();
+			if ( /^[A-Z]\w*$/.test( n ) ) {
+				names.add( n );
+			}
+		}
+	}
+	const files = new Set();
+	for ( const n of names ) {
+		const file = COMPONENT_FILE_MAP.get( n );
+		if ( file ) {
+			files.add( file );
+		}
+	}
+	let out = facadeSrc;
+	for ( const file of files ) {
+		out += '\n' + readIfExists( file );
+	}
+	return out;
+}
 // CHECK 3 target (Step L, 2026-08-01): src/blocks/extensions/*.js registers
 // attributes on other blocks via `blocks.registerBlockType` JS filters, not a
 // block.json — so CHECK 1 (which iterates block DIRECTORIES and explicitly
@@ -608,7 +702,10 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 	const findings = [];
 	const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
 
-	const controlled = collectControlledAttrs( editJs );
+	// R3-a: widen the corpus to include any shared component file edit.js
+	// mounts via JSX (e.g. `<WidthPanel .../>`) — a control living entirely
+	// inside that component's own source is otherwise invisible here.
+	const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
 
 	// Consumption corpus for this block: its own render/save/view source plus the
 	// shared includes corpus (forms engine, container wrapper, helpers).
@@ -752,7 +849,8 @@ function checkSharedControls( wrapperControlled, sharedCorpus, declaredAnywhere 
 function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 	const findings = [];
 	const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
-	const controlled = collectControlledAttrs( editJs );
+	// R3-a: same widening as checkBlock() above — see its comment.
+	const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
 	const corpus = block.ownCorpus + '\n' + sharedCorpus;
 	const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
 	const dynamicPrefixSuffixes = collectDynamicPrefixSuffixes( corpus );
@@ -1250,7 +1348,8 @@ function tierAudit( blocks, sharedCorpus, wrapperControlled ) {
 	const rows = [];
 	for ( const block of blocks ) {
 		const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
-		const controlled = collectControlledAttrs( editJs );
+		// R3-a: same widening as checkBlock() above.
+		const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
 		const corpus = block.ownCorpus + '\n' + sharedCorpus;
 		for ( const attr of block.attrs ) {
 			const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
@@ -1289,7 +1388,13 @@ function main() {
 
 	EXTENSION_ATTRS = loadExtensionAttrs();
 	const sharedCorpus = stripComments( loadSharedCorpus() );
-	const wrapperControlled = collectControlledAttrs( readIfExists( SHARED_CONTROLS_JS ) );
+	// R3-a: resolve the facade's own locally-imported panel files (WidthPanel.js,
+	// LayoutPanel.js, etc.) via the shared resolver instead of reading only the
+	// facade file's text — the facade RE-EXPORTS those panels post-split
+	// (2026-08-17) and no longer contains their control code itself.
+	const wrapperControlled = collectControlledAttrs(
+		collectFacadeResolvedSources( SHARED_CONTROLS_JS )
+	);
 
 	const blockDirs = fs
 		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )
@@ -2096,6 +2201,28 @@ function runCheck5SelfTest( log ) {
 		for ( const f of liveFindings ) {
 			log( `  - ${ f.block } :: ${ f.attr }` );
 		}
+	}
+
+	// R3-a widening regression test (2026-08-20). NEGATIVE CONTROL against the
+	// OLD narrow corpus: `collectControlledAttrs( readIfExists( SHARED_CONTROLS_JS ) )`
+	// (facade text alone) genuinely misses `contentWidth` — it lives entirely
+	// in WidthPanel.js, which ContainerWrapperControls.js only re-exports
+	// since the 2026-08-17 panel split. Proves the widened
+	// `collectFacadeResolvedSources()` path finds it where the old path does not.
+	log( '\n[check-dead-controls --self-test] R3-a resolver-widening regression test' );
+	const oldNarrowControlled = collectControlledAttrs( readIfExists( SHARED_CONTROLS_JS ) );
+	const widenedControlled = collectControlledAttrs( collectFacadeResolvedSources( SHARED_CONTROLS_JS ) );
+	if ( ! oldNarrowControlled.has( 'contentWidth' ) && widenedControlled.has( 'contentWidth' ) ) {
+		log(
+			'PASS — Test H (negative control): the old facade-only read does NOT see ' +
+				"'contentWidth' (it moved to WidthPanel.js); the resolver-widened read DOES."
+		);
+	} else {
+		log(
+			`FAIL — Test H: old-narrow has contentWidth=${ oldNarrowControlled.has( 'contentWidth' ) } ` +
+				`(expected false), widened has contentWidth=${ widenedControlled.has( 'contentWidth' ) } (expected true).`
+		);
+		pass = false;
 	}
 
 	log(

@@ -261,3 +261,21 @@ module.exports = {
 	COMPONENTS_DIR,
 	REAL_SRC,
 };
+
+// ---------------------------------------------------------------------------
+// --dump-json — JSON entry point for Python consumers (R3-a, 2026-08-20).
+// ---------------------------------------------------------------------------
+//
+// `check-inert-controls.py` and `check-undeclared-attrs.py` need the SAME
+// name -> file resolution resolveComponentFiles() provides, but they run in
+// a separate Python process with no access to this module's JS internals.
+// Rather than reimplement the resolver in Python (a SECOND mechanism that
+// can silently drift from this one — exactly what R-3's register warns
+// against), those scripts spawn `node components.js --dump-json` and parse
+// its stdout. Only invoked when this file is run directly (`require.main
+// === module`), so it never fires as a side effect of the many JS scripts
+// that `require()` this module for resolveComponentFiles() itself.
+if ( require.main === module && process.argv.includes( '--dump-json' ) ) {
+	const map = resolveComponentFiles();
+	process.stdout.write( JSON.stringify( Object.fromEntries( map ) ) + '\n' );
+}

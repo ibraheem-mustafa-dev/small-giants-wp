@@ -1,4 +1,29 @@
 {
-	"_comment": "Accepted dead-control findings (HC2 guard, check-dead-controls.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { check, block, attr, reason }. To accept a finding add it here with a reason; to fix one, wire or remove the control and delete the entry. Empty `accepted` = zero tolerance.",
-	"accepted": []
+	"_comment": "Accepted dead-control findings (HC2 guard, check-dead-controls.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { check, block, attr, reason }. To accept a finding add it here with a reason; to fix one, wire or remove the control and delete the entry. Empty `accepted` = zero tolerance. CRITICAL: never raise the baseline silently — any increase must include a written reason (see check-element-manifest-conformance.js:796-798).",
+	"accepted": [
+		{
+			"check": "block",
+			"block": "sgs/container",
+			"attr": "shadowColour",
+			"reason": "REAL DEFECT, recorded not excused (2026-08-20, R3-a). Exposed — not caused — by widening this gate's corpus to resolve shared component files via resolveComponentFiles(); the narrow edit.js-only corpus could never see these. VERIFIED genuinely dead, not a computed-key false positive: `shadowColour` appears in block.json + edit.js for container/hero/physics-canvas/trust-bar but in NO render.php and nowhere in includes/ (grep: 0 hits in class-sgs-container-wrapper.php). sgs/cta-section is the ONE block that wired it correctly — use it as the reference when fixing. Client impact: picking a shadow colour on these blocks does nothing. FIX by wiring the attr into render (mirroring cta-section) or removing the control; then DELETE this entry. Do not extend this baseline to new blocks."
+		},
+		{
+			"check": "block",
+			"block": "sgs/hero",
+			"attr": "shadowColour",
+			"reason": "REAL DEFECT, recorded not excused (2026-08-20, R3-a). Exposed — not caused — by widening this gate's corpus to resolve shared component files via resolveComponentFiles(); the narrow edit.js-only corpus could never see these. VERIFIED genuinely dead, not a computed-key false positive: `shadowColour` appears in block.json + edit.js for container/hero/physics-canvas/trust-bar but in NO render.php and nowhere in includes/ (grep: 0 hits in class-sgs-container-wrapper.php). sgs/cta-section is the ONE block that wired it correctly — use it as the reference when fixing. Client impact: picking a shadow colour on these blocks does nothing. FIX by wiring the attr into render (mirroring cta-section) or removing the control; then DELETE this entry. Do not extend this baseline to new blocks."
+		},
+		{
+			"check": "block",
+			"block": "sgs/physics-canvas",
+			"attr": "shadowColour",
+			"reason": "REAL DEFECT, recorded not excused (2026-08-20, R3-a). Exposed — not caused — by widening this gate's corpus to resolve shared component files via resolveComponentFiles(); the narrow edit.js-only corpus could never see these. VERIFIED genuinely dead, not a computed-key false positive: `shadowColour` appears in block.json + edit.js for container/hero/physics-canvas/trust-bar but in NO render.php and nowhere in includes/ (grep: 0 hits in class-sgs-container-wrapper.php). sgs/cta-section is the ONE block that wired it correctly — use it as the reference when fixing. Client impact: picking a shadow colour on these blocks does nothing. FIX by wiring the attr into render (mirroring cta-section) or removing the control; then DELETE this entry. Do not extend this baseline to new blocks."
+		},
+		{
+			"check": "block",
+			"block": "sgs/trust-bar",
+			"attr": "shadowColour",
+			"reason": "REAL DEFECT, recorded not excused (2026-08-20, R3-a). Exposed — not caused — by widening this gate's corpus to resolve shared component files via resolveComponentFiles(); the narrow edit.js-only corpus could never see these. VERIFIED genuinely dead, not a computed-key false positive: `shadowColour` appears in block.json + edit.js for container/hero/physics-canvas/trust-bar but in NO render.php and nowhere in includes/ (grep: 0 hits in class-sgs-container-wrapper.php). sgs/cta-section is the ONE block that wired it correctly — use it as the reference when fixing. Client impact: picking a shadow colour on these blocks does nothing. FIX by wiring the attr into render (mirroring cta-section) or removing the control; then DELETE this entry. Do not extend this baseline to new blocks."
+		}
+	]
 }

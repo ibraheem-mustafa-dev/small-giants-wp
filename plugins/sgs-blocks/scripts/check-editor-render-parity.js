@@ -387,6 +387,15 @@ const path = require( 'path' );
 const os = require( 'os' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
+const { resolveComponentFiles } = require( './inspector-scan/core/components' );
+
+// R3-a (2026-08-20): the shared name -> file resolver, used to widen CHECK
+// A's corpus past `edit.js` alone to also cover any shared component file it
+// mounts via JSX (e.g. `<WidthPanel .../>`) — see the R-3 register
+// (`.claude/plans/phase-shop-container-remediation.md` R3-a). Computed once;
+// resolveComponentFiles() walks the filesystem.
+const COMPONENT_FILE_MAP = resolveComponentFiles();
+const JSX_TAG_RE = /<([A-Z]\w*)\b/g;
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -2356,6 +2365,44 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	const excludedRanges = collectExcludedRanges( ast );
 	const usedOutsideControls = collectUsedIdentifiersOutsideExcluded( ast, excludedRanges );
 
+	// R3-a: a control can be destructured + written entirely inside a SHARED
+	// component file (e.g. `container/components/WidthPanel.js` destructures
+	// and setAttributes()-writes `contentWidth`, but edit.js only mounts
+	// `<WidthPanel .../>` and never names the attribute itself). Resolve every
+	// capitalised JSX tag in edit.js to the file that DEFINES it and fold its
+	// destructured/written sets in too, so such an attribute is correctly
+	// recognised as a real candidate for this check instead of silently never
+	// appearing in `destructured` at all. Deliberately NOT folded into
+	// `usedOutsideControls` — a shared component mounted via JSX is always
+	// InspectorControls content in the parent, so its own internal usage of
+	// the attribute doesn't prove the EDITOR CANVAS shows the attribute's
+	// effect (the exact distinction this check exists to make).
+	const jsxTagNames = new Set();
+	JSX_TAG_RE.lastIndex = 0;
+	let tagMatch;
+	while ( ( tagMatch = JSX_TAG_RE.exec( src ) ) !== null ) {
+		jsxTagNames.add( tagMatch[ 1 ] );
+	}
+	for ( const tagName of jsxTagNames ) {
+		const componentFile = COMPONENT_FILE_MAP.get( tagName );
+		if ( ! componentFile ) {
+			continue;
+		}
+		const componentSrc = readIfExists( componentFile );
+		if ( ! componentSrc ) {
+			continue;
+		}
+		const componentAst = safeParse( componentSrc );
+		if ( componentAst ) {
+			for ( const n of collectDestructuredFromAttributes( componentAst ) ) {
+				destructured.add( n );
+			}
+		}
+		for ( const n of collectSetAttributesWrites( componentSrc ) ) {
+			written.add( n );
+		}
+	}
+
 	// Exemption-signal plumbing (2026-08-13 refinement — see file header).
 	const phpSrc = readIfExists( path.join( dir, 'render.php' ) );
 	const phpMask = phpSrc ? buildStringMask( phpSrc ) : null;
@@ -3458,6 +3505,45 @@ function runSelfTest() {
 	}
 
 	fs.rmSync( tmpRoot, { recursive: true, force: true } );
+
+	// R3-a widening regression test (2026-08-20), against the REAL tree (not a
+	// synthetic fixture — resolveComponentFiles() indexes the real filesystem,
+	// so a tmp-dir fixture can't exercise it). NEGATIVE CONTROL: the OLD
+	// edit.js-only corpus genuinely misses `bgSvgContent` — it is destructured
+	// and setAttributes()-written entirely inside
+	// `container/components/BackgroundPanel.js`, mounted via `<BackgroundPanel
+	// .../>` in container/edit.js, and never named as literal text in edit.js
+	// itself. Proves the widened corpus (edit.js + resolved JSX component
+	// files) sees it where the old edit.js-only read does not.
+	log( '\n[check-editor-render-parity --self-test] R3-a resolver-widening regression test' );
+	const containerDir = path.join( BLOCKS_DIR, 'container' );
+	const containerEditSrc = readIfExists( path.join( containerDir, 'edit.js' ) );
+	const containerEditAst = safeParse( containerEditSrc );
+	const oldNarrowDestructured = containerEditAst
+		? collectDestructuredFromAttributes( containerEditAst )
+		: new Set();
+	const oldNarrowWritten = collectSetAttributesWrites( containerEditSrc );
+	const widenedMeta = readDeclaredAttrs( containerDir );
+	const widenedFindings = widenedMeta
+		? checkEditorCanvasDesync( widenedMeta.name, containerDir, widenedMeta.attrs, widenedMeta.providesContextAttrs )
+		: [];
+	// The widened corpus must at minimum RECOGNISE bgSvgContent as destructured
+	// + written (whether or not it ends up in the findings list depends on
+	// exemption signals, which is not what this test is proving).
+	const bgSvgVisibleOld = oldNarrowDestructured.has( 'bgSvgContent' ) && oldNarrowWritten.has( 'bgSvgContent' );
+	const bgSvgFlaggedNew = widenedFindings.some( ( f ) => f.attr === 'bgSvgContent' );
+	if ( ! bgSvgVisibleOld && bgSvgFlaggedNew ) {
+		log(
+			"PASS — Test I (negative control): the old edit.js-only corpus does NOT see 'bgSvgContent' " +
+				"(it lives in BackgroundPanel.js, only mounted via JSX); the resolver-widened scan flags it."
+		);
+	} else {
+		log(
+			`FAIL — Test I: old-narrow sees bgSvgContent=${ bgSvgVisibleOld } (expected false), ` +
+				`widened flags bgSvgContent=${ bgSvgFlaggedNew } (expected true).`
+		);
+		pass = false;
+	}
 
 	return pass ? 0 : 1;
 }

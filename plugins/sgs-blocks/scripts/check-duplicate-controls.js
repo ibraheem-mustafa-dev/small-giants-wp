@@ -80,6 +80,15 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
+const { resolveComponentFiles } = require( './inspector-scan/core/components' );
+
+// R3-a (2026-08-20): the shared name -> file resolver, used to widen
+// loadBlockOwnSrc() below past a block's own components/ dir to also cover
+// FRAMEWORK-WIDE shared components (src/components/) it mounts via JSX —
+// see the R-3 register (`.claude/plans/phase-shop-container-remediation.md`
+// R3-a). Computed once; resolveComponentFiles() walks the filesystem.
+const COMPONENT_FILE_MAP = resolveComponentFiles();
+const JSX_TAG_RE = /<([A-Z]\w*)\b/g;
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -229,13 +238,39 @@ function collectControlledAttrs( src ) {
  * @return {string} Concatenated, comment-stripped source.
  */
 function loadBlockOwnSrc( blockDir ) {
-	let src = readIfExists( path.join( blockDir, 'edit.js' ) );
+	const editJsPath = path.join( blockDir, 'edit.js' );
+	let src = readIfExists( editJsPath );
+	const readPaths = new Set( [ path.resolve( editJsPath ) ] );
 	const componentsDir = path.join( blockDir, 'components' );
 	if ( fs.existsSync( componentsDir ) ) {
 		for ( const f of fs.readdirSync( componentsDir ) ) {
 			if ( f.endsWith( '.js' ) ) {
-				src += '\n' + readIfExists( path.join( componentsDir, f ) );
+				const p = path.join( componentsDir, f );
+				src += '\n' + readIfExists( p );
+				readPaths.add( path.resolve( p ) );
 			}
+		}
+	}
+	// R3-a: the loop above only covers the block's OWN components/ dir. A
+	// control living in a FRAMEWORK-WIDE shared component (src/components/,
+	// mounted via a JSX tag like `<WidthPanel .../>`) was previously invisible
+	// here. Resolve every capitalised JSX tag referenced anywhere in the
+	// source collected so far to the file that DEFINES it, and fold in any
+	// not already read above (block-own components are already in `src`, so
+	// this mainly picks up the framework-wide + extensions surfaces). Tracked
+	// by resolved PATH, not a text substring match, so a file is never read
+	// (and its content never duplicated) twice.
+	const tagNames = new Set();
+	JSX_TAG_RE.lastIndex = 0;
+	let m;
+	while ( ( m = JSX_TAG_RE.exec( src ) ) !== null ) {
+		tagNames.add( m[ 1 ] );
+	}
+	for ( const name of tagNames ) {
+		const file = COMPONENT_FILE_MAP.get( name );
+		if ( file && ! readPaths.has( path.resolve( file ) ) ) {
+			readPaths.add( path.resolve( file ) );
+			src += '\n' + readIfExists( file );
 		}
 	}
 	return stripComments( src );
@@ -959,6 +994,38 @@ function runSelfTest() {
 				`         found=[${ gotAttrs.join( ', ' ) }] (expected [${ expectAttrs.join( ', ' ) }])\n`
 		);
 	}
+
+	// R3-a widening regression test (2026-08-20), against the REAL tree (a
+	// tmp-dir fixture can't exercise resolveComponentFiles(), which indexes
+	// the real filesystem). NEGATIVE CONTROL: sgs/button has NO block-own
+	// `components/` directory at all, so the old corpus (edit.js text + an
+	// empty components/ loop) could never see a control living inside the
+	// FRAMEWORK-WIDE shared `TypographyControls.js`, even though button
+	// mounts it via `<TypographyControls .../>` JSX.
+	const buttonDir = path.join( BLOCKS_DIR, 'button' );
+	const buttonEditSrc = readIfExists( path.join( buttonDir, 'edit.js' ) );
+	const buttonComponentsDir = path.join( buttonDir, 'components' );
+	const oldNarrowHadNoLocalDir = ! fs.existsSync( buttonComponentsDir );
+	const widenedButtonSrc = loadBlockOwnSrc( buttonDir );
+	const typographyControlsResolved = COMPONENT_FILE_MAP.get( 'TypographyControls' );
+	// stripComments() runs inside loadBlockOwnSrc(), so compare against the
+	// SAME comment-stripped text rather than the raw file, or a real defect
+	// (widening working) could spuriously read as a false comment-only match.
+	const strippedTypographySrc = typographyControlsResolved
+		? stripComments( readIfExists( typographyControlsResolved ) )
+		: '';
+	const widenedIncludesSharedFile =
+		strippedTypographySrc.length > 0 &&
+		widenedButtonSrc.includes( strippedTypographySrc.slice( 0, 200 ) );
+	const buttonJsxMountsTypographyControls = /<TypographyControls\b/.test( buttonEditSrc );
+	const widenedTest =
+		oldNarrowHadNoLocalDir && buttonJsxMountsTypographyControls && widenedIncludesSharedFile;
+	process.stdout.write(
+		`\n  [${ widenedTest ? 'OK' : 'FAIL' }] R3-a negative control: sgs/button has no own components/ dir ` +
+			'(old corpus could not see TypographyControls.js) but mounts it via JSX; the widened ' +
+			`loadBlockOwnSrc() now includes that shared file's source\n`
+	);
+	allOk = allOk && widenedTest;
 
 	process.stdout.write( `\n[check-duplicate-controls] self-test ${ allOk ? 'PASSED' : 'FAILED' }.\n` );
 	process.exit( allOk ? 0 : 1 );
