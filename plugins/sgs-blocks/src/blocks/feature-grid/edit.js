@@ -175,7 +175,17 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
+				{ /* showLayout={false}: this block owns its OWN layout selector
+				     (layoutMode, below) — every one of its three render.php branches
+				     (auto-flex / fixed-columns / explicit-grid-template) always emits
+				     display:grid, so the generic Stack/Flex/Grid dropdown never
+				     offered a real choice. render.php:156 force-sets attributes.layout
+				     to 'grid' whenever an explicit template is present, silently
+				     discarding whatever this dropdown showed — root-caused via
+				     /systematic-debugging 2026-08-20; card-grid, the sibling using
+				     the same kind="layout" pattern, never exposes this dropdown
+				     conflict because it has no competing bespoke selector. */ }
+				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" showLayout={ false } />
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Layout mode', 'sgs-blocks' ) }

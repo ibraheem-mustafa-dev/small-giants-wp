@@ -1,5 +1,56 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D700 [ROUTINE] — banned-lookalike depth+exclusion fix applied + colour's 409-vs-120 gap given a real block-level number (2026-08-20)
+
+First draft of this session's task was a new standalone script merging 8 colour scanners'
+JSON. Run through `/adversarial-council` (6 personas) before building — 5 of 6 independently
+converged NO-GO: it would have contradicted the C1-C4 programme's own explicit instruction
+for this layer of work ("do NOT write a standalone `check-*.js`"), landed in the directory
+that programme is actively retiring scripts out of, and reproduced C4's own named failure
+condition ("we have built the colour audit again, just later"). Revised scope: apply the
+one fix that was already diagnosed, compute the one number that was actually missing, no
+new script.
+
+**1. `bannedLookalikes` axis depth fix.** `reachedComponents()` in
+`survey-golden-conformance.js` walked one hop only; the exclusion logic (don't flag a banned
+primitive reached THROUGH a canonical component) was already correct at the unit-test level
+but was never exercised on real reach, because the scan couldn't see far enough to find most
+of the population. Extended to a bounded 4-hop walk (cycle-guarded, not unbounded). Measured
+before/after with `compare-reach-depth.py`'s reference: `ColorPalette` reach 3→34,
+`DesignTokenPicker` 18→34, `SgsGradientPicker` 4→35, `ShadowControl` 15→30 (30 = full depth
+exactly, out of 83 blocks). Axis verdict unchanged (83 CONFORMANT / 0 VIOLATION) — but now a
+meaningfully clean result over the real population it actually inspected, not an
+accidentally-clean one over a population it couldn't see past. Pinned by a real-file
+self-test (`accordion/edit.js` → `ContainerWrapperControls` → `BackgroundPanel` →
+`GradientOverlayControl` → `DesignTokenPicker` → `ColorPalette`), not only synthetic maps.
+
+**Residual gap named, not hidden:** reach plateaus at 4 hops = 6 hops (measured both), still
+short of full depth (34 vs 64). Root cause checked, not assumed — `SgsColourPanel.js:115`
+picks its row control at RUNTIME (`const Control = row.gradientCapable ? A : B`), so any
+block that only reaches `SgsColourPanel` dead-ends there regardless of depth. This is the
+same already-documented blind spot that makes `GradientCapableColourControl` read as dead
+code while live in 6 blocks — not fixed this session, not folded into this fix.
+
+**2. Block-level overlap between rule 31 (409 findings) and `survey-colour-coverage.py` (120
+findings), computed for the first time.** Of colour-coverage's 34 flagged blocks, 33 (97%)
+are ALSO flagged by rule 31 — the two scanners overwhelmingly describe the same block
+population, not disjoint ones. The one exception, `sgs/container`, is consistent with rule
+31's known Track A/B blindness (it never opens shared wrapper panels). This is
+population-level overlap ONLY — whether specific findings in each are the same underlying
+defect (defect-level matching) remains genuinely open, stated as such, not silently assumed
+solved.
+
+**Explicitly deferred, not silently dropped:** switching rule 31 itself to the wider
+resolver (`resolveComponentFiles()`) to close its Track A/B blindness — a load-bearing
+advisory-gate count change (`openBacklog: 409`) needing its own predicted-vs-measured pass;
+defect-level 409-vs-120 matching; gradient mechanism-awareness (three mechanisms vs a binary
+path-exists check); generalising any of this to the other 20 control types (explicitly the
+programme's own C4 stage's job).
+
+Full detail + the status block: `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
+Council transcript context: 6-persona `/adversarial-council` run this session on the
+rejected standalone-script draft.
+
 ## D699 [ROUTINE] — client-side-nav root cause: WP core's own kill switch, narrowed to product-collection-no-results in full context (2026-08-20)
 
 Follow-up to D698. A 4-rater `/qc-council` diagnostic (GH-research, live code-path trace, infra rater,

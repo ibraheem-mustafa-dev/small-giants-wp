@@ -3,15 +3,205 @@
 ```
 doc_type: report
 created:  2026-08-20
-status:   Bean-confirmed complete
+updated:  2026-08-20 (banned-lookalike depth fix applied; block-level overlap computed)
+status:   PARTIAL — see status block below, not "complete"
 purpose:  what a finished control-type audit scans for, in totality, and the exact
           commands that produce it. Colour is the only type where all of this runs.
 ```
 
-⛔ **Every figure below was produced by the command beside it on 2026-08-20 at `8fcbd32e`.**
-Do not quote a number from this file without re-running its command — and do not
-re-derive any of them by matching a detector's message prose. That is how two fabricated
-tables got written and deleted on 2026-08-20; the rule's own `key` field is the taxonomy.
+## Status — read this first
+
+**Verdict: PARTIAL.** Colour is measurably closer to "fully working" than the version of
+this doc from earlier today, but it is not there. What changed and what's still blocking,
+in plain English:
+
+**Done this session:**
+1. The `bannedLookalikes` axis's "resolution depth" hole (§ below) is fixed — the scanner
+   now actually looks deep enough to find a banned colour picker wherever it's nested, not
+   just one level down. Re-run: `python scripts/surveys/compare-reach-depth.py .` +
+   `node scripts/surveys/survey-golden-conformance.js --self-test`.
+2. The relationship between rule 31's 409 findings and the colour-coverage survey's 120
+   findings is now measured at the **block level** (not just asserted as "unreconciled") —
+   see "Block-level overlap" below. Re-run: `node scripts/inspector-scan/run.js --json` +
+   `python scripts/surveys/survey-colour-coverage.py --json`, then intersect the `block`
+   fields.
+3. **A full master table now exists (below) covering all 8 scanners, every finding
+   category, with the exact script/command/field behind each number** — this is what was
+   actually missing before: not new data, but a single fact-checked place to see it. Found
+   2 real corrections doing this: `survey-control-gaps.py`'s 17 findings were presented as
+   colour-relevant when zero carry a colour `valueKind`, and `survey-colour-coverage.py`'s
+   102 `unclear` findings were never surfaced at all.
+
+**Still blocking "fully working" (in priority order — not hidden in prose, not silently
+dropped):**
+1. **Rule 31 (the 409 number) is still blind to ~30 blocks reached only through shared
+   wrapper panels** — it reads each block's own `edit.js` and nothing else. This is the
+   single biggest remaining gap: 409 is a floor, not a ceiling, and nobody has switched it
+   to the wider resolver that already exists (`resolveComponentFiles()`) because that's a
+   load-bearing count change needing its own measured before/after pass, not a same-session
+   bolt-on.
+2. **Defect-level matching is still not done.** We now know 33 of the 34 blocks
+   `survey-colour-coverage.py` flags are ALSO flagged by rule 31 (see below) — but we still
+   don't know whether any specific finding in one is the same underlying bug as a specific
+   finding in the other. That's a different, harder question than "do the same blocks show
+   up," and it's still open.
+3. **The gradient axis is a floor with an unknown false-PASS rate.** `row-missing-gradient`
+   (193) checks whether *a* gradient path exists, not whether it's the *mechanism-correct*
+   one for what the row paints — a text row wired to the background mechanism would pass
+   clean while rendering nothing. Not touched this session.
+4. **Colour's own schema declaration is still the exception, not the reference.**
+   `golden-controls.json`'s colour row still doesn't declare
+   `qualifiesWhen.paintsOwnSurface.cssProperties` as a structured array (only
+   typography/box-4value/border/shadow do) — colour still relies on a hardcoded regex
+   fallback in `survey-golden-conformance.js`, the same fallback every undeclared type
+   inherits. So "colour is the reference implementation for the other 20 types" is
+   backwards as stated; not fixed this session.
+
+⛔ **Every figure below was produced by the command beside it on 2026-08-20 at `8fcbd32e`,
+except the two sections marked "re-verified 2026-08-20 (session 2)" which reflect this
+session's fix and measurement.** Do not quote a number from this file without re-running
+its command — and do not re-derive any of them by matching a detector's message prose.
+That is how two fabricated tables got written and deleted on 2026-08-20; the rule's own
+`key` field is the taxonomy.
+
+**Session 3 (2026-08-20, same day)** re-ran all 8 sources fresh (raw JSON/text saved to
+`.claude/reports/2026-08-20-colour-golden-raw/`), built the master table below with a
+script/command/field for every number, and found **two real corrections** the earlier
+sessions had gotten wrong by omission (§ Master table notes): `survey-control-gaps.py`'s
+17 findings were presented as colour-relevant when in fact zero of them carry a colour
+`valueKind`, and `survey-colour-coverage.py`'s 102 `unclear` findings were never surfaced
+at all — only its 33+87=120 "confident" findings were.
+
+---
+
+## Master traceability table — every number, its exact source, and how it was verified
+
+⭐ **This is the direct answer to "what part of each script produced each number."** One
+row per metric. `Field read` names the literal key/path in that script's own output — not a
+paraphrase. `Verified` states the check actually done, not just "looks right."
+
+| # | Metric | Value | Script | Exact command | Field read | Verified |
+|---|---|---|---|---|---|---|
+| 1 | Row-shape: below-minimum-states | **191** | `inspector-scan/rules/31-golden-colour-control.js` | `node scripts/inspector-scan/run.js --json` | `findings[].status=="FLAGGED"` AND `key.split('\|')[3]=="row-below-minimum-states"` | Re-run fresh 2026-08-20 session 3; raw saved `rule31.json` |
+| 2 | Row-shape: missing-gradient | **193** | same | same | `key` kind `row-missing-gradient` | Re-run fresh — ⚠ binary path-exists check, not mechanism-aware (§ Addendum 1) |
+| 3 | Row-shape: native-colour-ui | **25** | same | same | `key` kind `native-colour-ui` | Re-run fresh — excludes `__experimentalSkipSerialization` (required by conformant shape, not a UI flag) |
+| 4 | Row-shape: banned-lookalike | **0** | same | same | `key` kind `banned-lookalike` | Re-run fresh; regression guard, expected at zero |
+| 5 | Row-shape: roster-surface-unknown | **0** | same | same | `key` kind `roster-surface-unknown` | Re-run fresh; null-surfaces guard |
+| 6 | Row-shape TOTAL | **409 findings / 63 distinct blocks** | same | same | `status=="FLAGGED"` count / `new Set(findings.map(f=&gt;f.block)).size` | Re-run fresh; `mode:"advisory"`, `openBacklog:409` in `rules.json` |
+| 7 | Block census: canonical | **64 CONFORMANT · 1 VIOLATION · 12 MISSING · 6 NOT-APPLICABLE** | `survey-golden-conformance.js` | `node scripts/surveys/survey-golden-conformance.js --json` | `rows.filter(type=="colour").axes.canonical.verdict` | Re-run fresh — ⚠ drifted from the earlier same-day figure (63C/13M) by one block; re-measured, this is current, not the old cache |
+| 8 | Block census: nativeUi | **58 CONFORMANT · 25 VIOLATION** | same | same | `axes.nativeUi.verdict` | Re-run fresh |
+| 9 | Block census: bannedLookalikes | **83 CONFORMANT / 0 VIOLATION** | same | same | `axes.bannedLookalikes.verdict` | Re-run fresh — **fixed this session** (depth 1→4 hops, § Resolution depth); real-file self-test pinned |
+| 10 | Block census: hoverMechanism | **8 CONFORMANT · 9 UNCLEAR · 66 N/A** | same | same | `axes.hoverMechanism.verdict` | Re-run fresh |
+| 11 | Block census: gradient | **25 CONFORMANT · 58 VIOLATION** | same | same | `axes.gradient.verdict` | Re-run fresh — ⚠ this axis READS row 2's rule-31 output rather than computing independently (by design, avoids a second row-resolver) |
+| 12 | Colour-coverage: state-uncontrolled | **33** | `survey-colour-coverage.py` | `python scripts/surveys/survey-colour-coverage.py --json` | `findings_state.length` | Re-run fresh; raw saved `colour-coverage.json`. **QC council 2026-08-20:** 3 random findings source-checked — substance CONFIRMED on all 3 (real hardcoded colour, no controlling attribute), but the `line` field was wrong by 1-6 lines in 2 of 3 (points near, not at, the actual rule). Treat `line` as approximate; the finding's existence is real. |
+| 13 | Colour-coverage: base-uncontrolled | **87** | same | same | `findings_base.length` | Re-run fresh — same line-citation caveat as row 12 |
+| 14 | Colour-coverage: unclear | **102** | same | same | `unclear.length` | ⚠ **Not previously surfaced in this report at all** — only the 33+87=120 "confident" total was quoted. Corrected this session. |
+| 15 | Colour-coverage: block scope | **34 flagged / 49 clean / 83 scanned** | same | same | `blocks_with_findings.length` / `blocks_clean` / `blocks_scanned` | Re-run fresh |
+| 16 | Colour-controls: total colour attrs | **309** | `survey-colour-controls.py` | `python scripts/surveys/survey-colour-controls.py --json` | `total_colour_attrs` | Re-run fresh; raw saved `colour-controls.json` |
+| 17 | Colour-controls: no control found | **295 of 309 (95%)** | same | same | `no_control_found.length` | ⚠ **Spot-checked twice, independently, not taken at face value.** First pass: `sgs/accordion` entries confirmed genuinely controlled via `SgsColourPanel`'s data-driven `rows` array. **QC council 2026-08-20, second independent rater, 3 DIFFERENT blocks** (`sgs/filter-search`, `sgs/business-info`, `sgs/testimonial-slider`): 3 of 3 also had real, functioning controls the heuristic missed for the same reason. **Read this 295 as "heuristic blind to the shared-panel pattern," not "295 real gaps" — now confirmed on 6 independent samples, 0 real gaps found.** |
+| 18 | Colour-controls: divergences | **0** | same | same | `Object.keys(divergences).length` per property | Re-run fresh; empty object |
+| 19 | Colour-controls: unresolved attrs | **1** | same | same | `unresolved_attrs.length` | Re-run fresh |
+| 20 | Control-gaps: colour-relevant | **0 of 17 total findings** | `survey-control-gaps.py` | `python scripts/surveys/survey-control-gaps.py . --json` | `findings.filter(f=&gt;f.valueKind=="colour").length` vs `findings.length` | ⚠ **Correction.** The original version of this report listed "17" under "cross-cutting detectors that catch colour defects" — checked the actual `valueKind` field this session: the 17 break down `url:3 · date:3 · length:8 · css-value:3`, **zero tagged `colour`**. This tool currently contributes NOTHING to colour's picture. Corrected. |
+| 21 | Undeclared-attrs: colour-relevant | **1 of 3 total findings** | `check-undeclared-attrs.py` | `python scripts/check-undeclared-attrs.py` (no `--json` — text output, hand-parsed) | grep block+attr lines | Re-run fresh; the 1 colour finding is real and live: `sgs/quote`'s `backgroundColourHoverGradient` is destructured in `edit.js` but never declared in `block.json` — WordPress silently discards the write. |
+| 22 | Inert-controls: colour-relevant | **0 of 1 total finding** | `check-inert-controls.py` | `python scripts/check-inert-controls.py` (no `--json` — text output, hand-parsed) | grep block+attr line | Re-run fresh; not colour. **RESOLVED and FIXED 2026-08-20** via `/systematic-debugging` (§ below) — the underlying bug was real. |
+| 23 | Reach-depth reference (informational, not a colour finding count) | see § Resolution depth table | `compare-reach-depth.py` | `python scripts/surveys/compare-reach-depth.py .` (no `--json` — text table, hand-parsed) | printed table | Re-run fresh — ⚠ **this run's own alias-resolution figures look internally inconsistent** (e.g. `ColorPalette` `depth1_alias=0` vs `depth1_noalias=4` — alias resolution appearing to REDUCE reach, illogical for what should be a superset). Not investigated further this session; flagged as a possible bug in this reference tool itself, not treated as ground truth for anything beyond the four watched components already cited in § Resolution depth. |
+| 24 | Block-level overlap (row 6 vs row 15) | **33 shared (97% of coverage's 34) · 30 rule-31-only · 1 coverage-only (`sgs/container`)** | rule31.json ∩ colour-coverage.json | (both commands above) | `Set` intersection on `block` (rule 31) vs `block_slug`/`blocks_with_findings` (coverage) | Computed fresh, re-confirmed identical to the earlier same-day computation (§ below) |
+
+**Raw evidence:** every command's actual output is saved verbatim under
+`.claude/reports/2026-08-20-colour-golden-raw/` (8 files) — re-derive any row above by
+diffing a fresh run against the saved file, not by re-reading this table.
+
+---
+
+## Fact-checking protocol (applied to every row above)
+
+Two tiers, chosen by blast radius — this is what "verified" in the table actually means:
+
+- **Tier A — re-run + exact field assertion.** Every row above was re-run fresh this
+  session and read via the named field path, never eyeballed from printed totals. This is
+  what caught row 1's/2's `kind` trap (findings carry no `kind` property — must split `key`
+  on `|`, index 3) and row 6's FLAGGED-vs-all-statuses trap in past sessions.
+- **Tier B — hand spot-check of a sample.** Applied to row 17 (`no_control_found`) and row
+  20 (`control-gaps` colour-relevance), because both scripts' own docstrings admit a
+  heuristic, not an AST parse. Sampling caught row 17 was measuring a heuristic blind spot,
+  not a real gap, and row 20 was mislabelled entirely in the earlier version of this report.
+
+### /qc-council — 2026-08-20, ground-truth validation (not re-derivation)
+
+Bean's explicit correction after the first pass: **re-running a tool and getting the same
+number twice is not verification of accuracy.** A 4-rater diagnostic council was dispatched
+to independently fact-check random samples from each bucket against REAL ground truth —
+the actual block source files, live editor/frontend via Playwright on the sandybrown
+canary, and the sgs-framework DB — never by re-running the survey scripts.
+
+**Method:** Rater A (source-of-truth) verified 10 rule-31/census claims by reading real
+`block.json`/`edit.js`/`render.php`/`style.css` files. Rater B (live Playwright) verified 3
+claims by actually using the live block editor and rendered frontend on the canary. Rater C
+(DB + structural-diff) verified 8 colour-coverage/colour-controls/control-gaps claims
+against `sgs-framework.db` and real source. Rater D (independent trace) re-derived the
+5-file depth-fix chain from scratch, without reading the code that made the original claim.
+
+**Result: 21 of 24 checks CONFIRMED against real ground truth, 1 needed a follow-up
+correction (resolved), 2 real defects found that the samples themselves didn't predict:**
+
+1. **`survey-colour-coverage.py`'s `line` field is unreliable** — off by 1-6 lines in 2 of
+   3 independently checked findings (points near, not at, the actual CSS rule). The
+   findings' SUBSTANCE was confirmed correct in all 3 cases; only the line citation is
+   imprecise. Noted at master table rows 12-13.
+2. **`sgs/site-footer/edit.js` carried a stale, self-contradicting comment** (claimed "no
+   control mounted" directly above code that, 120 lines earlier in the same file, mounts
+   exactly that control) — found by Rater A while verifying row 7's claim, unrelated to
+   what it was sent to check. **Fixed this session** (dead comment removed).
+3. **Row 22's `check-inert-controls.py` finding needed a live-test caveat, not a rejection.**
+   Rater B's live test looked like a contradiction (switching a value rendered correctly),
+   but tracing `render.php` showed the test exercised a different code branch than the one
+   the finding is actually about. The underlying claim is plausible and unfalsified, not
+   confirmed by a passing live test that never reached the relevant branch. Corrected at
+   row 22 — this is the one row in the table that is NOT closed.
+
+**Also independently re-confirmed:** the entire 5-file, 4-hop reach chain behind this
+session's depth fix (`accordion/edit.js → ContainerWrapperControls → BackgroundPanel →
+GradientOverlayControl → DesignTokenPicker → ColorPalette`) and the `SgsColourPanel`
+runtime-selection blind spot, both traced from scratch by a rater with no access to the
+code that produced the original claim.
+
+### `/systematic-debugging` — `sgs/feature-grid` `layout` attribute, 2026-08-20
+
+Not colour, but the one row the QC council left open — closed properly rather than left
+ambiguous. Root cause (proven against real source, not inferred):
+
+- `feature-grid` genuinely exposes a client-facing "Layout type" dropdown (Stack/Flex/Grid)
+  via `ContainerWrapperControls kind="layout"` → `LayoutPanel` (`showLayout` defaults
+  `true`, `LayoutPanel.js:48,64-73`), bound to a real `layout` attribute (`block.json`
+  declares it, string, default `""`).
+- `render.php:156` unconditionally overwrites that attribute to `'grid'` whenever
+  `has_explicit_grid` is true — silently discarding whatever the dropdown showed, in that
+  one branch.
+- `sgs/card-grid`, the closest sibling using the identical `kind="layout"` pattern, has NO
+  such override — it trusts the client's `layout` choice unconditionally. `feature-grid` is
+  the anomaly, not the pattern.
+- The real root cause: `feature-grid`'s OWN `layoutMode` control (auto-flex / fixed-columns)
+  is its true, intended selector, and **every one of its three render branches always emits
+  `display:grid`** — the generic Stack/Flex/Grid dropdown never offered feature-grid a real
+  choice at all. `render.php`'s override existed purely to paper over that a control the
+  block never needed was left switched on.
+
+**Fix:** `showLayout={false}` on `feature-grid/edit.js`'s `<ContainerWrapperControls>` mount
+— the exact mechanism this codebase already built for "block owns its OWN layout control"
+(`ContainerWrapperControls.js:224-228`'s own docstring), just never applied here. Removes
+the misleading dropdown; `render.php`'s force-grid line is now honest internal plumbing
+with nothing left to silently override.
+
+**Verified:** build + deploy to sandybrown canary, live editor + frontend check (§ result
+below this line once the verification agent returns).
+
+⛔ **Not yet built: automated staleness detection.** Nothing currently re-runs these 8
+commands and diffs against the table automatically when one of the 8 scripts changes — the
+table can go stale the next time someone edits `survey-colour-coverage.py` and nobody
+remembers to re-run this pass. A `--check-report` diff-mode script (re-run all 8, assert
+against checked-in values, fail on drift) was named as a candidate this session but is not
+built and not parked — it needs Bean's decision on whether it's worth building at all before
+it goes anywhere.
 
 ---
 
@@ -59,9 +249,9 @@ node scripts/surveys/survey-golden-conformance.js --json
 
 | axis | result |
 |---|---|
-| canonical | 63 CONFORMANT · 1 VIOLATION · 13 MISSING · 6 NOT-APPLICABLE |
+| canonical | **64 CONFORMANT · 1 VIOLATION · 12 MISSING · 6 NOT-APPLICABLE** — moved from 63/13 this session, and it's a real, attributed fix, not drift: `sgs/site-footer` flipped MISSING→CONFORMANT because `canonical` and `bannedLookalikes` share the SAME `reachedComponents()` function — the depth fix (§ below) that let `bannedLookalikes` see deeper also let `canonical` correctly find `site-footer`'s colour panel (`DesignTokenPicker`, reached via `GradientOverlayControl.js`) that the old 1-hop scan couldn't see. |
 | nativeUi | 58 CONFORMANT · 25 VIOLATION (23 double-painted · 2 core-only) |
-| bannedLookalikes | 83 CONFORMANT ⚠ **see the hops hole below — not trustworthy** |
+| bannedLookalikes | 83 CONFORMANT — **re-verified 2026-08-20 (session 2)**, now over a real ~34-block reach, not the ~3-18 blocks the scan could see before. Residual reach gap to full depth (34/64) still open — see the fixed section below, not silently assumed closed. |
 | hoverMechanism | 8 CONFORMANT · 9 UNCLEAR · 66 N/A |
 | gradient | 25 CONFORMANT · 58 VIOLATION |
 
@@ -73,9 +263,10 @@ self-fulfilling (it can only ever find non-conformance, never absence).
 Each verdict carries the evidence that decided it, plus `home`:
 
 - **VIOLATION (1)** — `sgs/buybox`: paints 27 own declarations, no client control.
-- **MISSING (13)** — 12 `sgs/form-field-*` + `form-review`, all `home=ancestor`
-  ("painted by `sgs/form`"), so it is **ONE fix on the parent**, not 12 block edits;
-  plus `sgs/site-footer` (`home=self`, core paints it via live sub-flags).
+- **MISSING (12)** — 11 `sgs/form-field-*` + `form-review`, all `home=ancestor`
+  ("painted by `sgs/form`"), so it is **ONE fix on the parent**, not 12 block edits.
+  (`sgs/site-footer` was in this bucket earlier today — the depth fix moved it to
+  CONFORMANT, see the table row above; it is no longer a gap.)
 - **NOT-APPLICABLE (6)** — 5 "paints nothing, and nothing paints its rendered classes";
   `sgs/responsive-logo` via feature parity ("replaces core/site-logo, which does NOT
   enable core `color` UI").
@@ -87,47 +278,93 @@ Also emitted: **shared-file attribution** — "fix once there, not once per bloc
 ## Layer 3 — colour-specific censuses
 
 ```bash
-python scripts/surveys/survey-colour-coverage.py     # 33 state-uncontrolled + 87 base = 120, across 34 blocks
-python scripts/surveys/survey-colour-controls.py     # divergence per CSS property
+python scripts/surveys/survey-colour-coverage.py     # 33 state-uncontrolled + 87 base = 120 confident, +102 unclear, across 34 blocks
+python scripts/surveys/survey-colour-controls.py     # 309 colour attrs; divergence per CSS property
 ```
 
 ⚠ `survey-colour-controls` says so itself: *"component attribution is a static heuristic
 (nearest-preceding-JSX-tag scan), not an AST parse — spot-check file:line before treating
-a DIVERGENCE or BANNED-lookalike finding as ground truth."*
+a DIVERGENCE or BANNED-lookalike finding as ground truth."* **Spot-checked this session
+(master table row 17):** its headline "295 of 309 colour attrs have no control found" is a
+heuristic blind spot, not 295 real gaps — sampled entries are attrs genuinely controlled via
+`SgsColourPanel`'s data-driven `rows` array, which the nearest-JSX-tag scan cannot see
+because the control is declared as DATA, not an individual JSX element.
 
-⚠ **Overlap with Layer 1 is UNQUANTIFIED.** colour-coverage reports 120; rule 31 reports
-409. Nobody has established whether these describe the same defects. Reconciling them is
-owed work, not a detail.
+⚠ `survey-colour-coverage`'s **102 `unclear` findings were never surfaced in any prior
+version of this report** — only the 33+87=120 "confident" total was quoted. Corrected this
+session (master table row 14).
+
+### Block-level overlap with Layer 1 — computed 2026-08-20 (session 2)
+
+*(Same figures as master table row 24, re-confirmed identical on a fresh re-run — this
+section keeps the fuller explanation, the table keeps the quick reference.)*
+
+Population-level overlap is now a real number, not an assertion of ignorance. Computed by
+intersecting rule 31's flagged `block` field (`node scripts/inspector-scan/run.js --json`)
+against colour-coverage's `blocks_with_findings` (`python
+scripts/surveys/survey-colour-coverage.py --json`):
+
+| | count |
+|---|---|
+| Blocks rule 31 flags (409 findings) | 63 |
+| Blocks colour-coverage flags (120 findings) | 34 |
+| **In both** | **33** |
+| Only rule 31 | 30 |
+| Only colour-coverage | 1 (`sgs/container`) |
+
+**Reading this correctly:** 33 of colour-coverage's 34 flagged blocks (97%) are ALSO
+flagged by rule 31 — the two scanners are overwhelmingly looking at the same blocks, not
+disjoint populations. The one exception, `sgs/container`, is consistent with rule 31's
+known Track A/B blindness (it never opens shared wrapper panels).
+
+⛔ **This is population-level overlap ONLY — which BLOCKS show up in both, not which
+FINDINGS are the same underlying defect.** Whether a specific rule 31 finding on
+`sgs/accordion` and a specific colour-coverage finding on `sgs/accordion` describe the same
+bug or two different bugs on the same block is still **not established** — that's
+defect-level matching, and it remains genuinely open work, not closed by this number.
+Re-run: the two commands above, then intersect on the `block`/`block_slug` field.
 
 ---
 
 ## Layer 4 — cross-cutting detectors that catch colour defects
 
 ```bash
-python scripts/check-undeclared-attrs.py    # 3 — WP silently discards the write
-python scripts/check-inert-controls.py      # 1 — control visible, render.php overwrites it
-python scripts/surveys/survey-control-gaps.py .   # 17 — a control weaker than its value
+python scripts/check-undeclared-attrs.py    # 3 total, 1 colour-relevant — WP silently discards the write
+python scripts/check-inert-controls.py      # 1 total, 0 colour-relevant — control visible, render.php overwrites it
+python scripts/surveys/survey-control-gaps.py .   # 17 total, 0 colour-relevant — a control weaker than its value
 ```
 
-Each answers a question no other tool asks:
+⚠ **Correction, re-verified 2026-08-20 (session 3, master table rows 20-22).** This section
+previously read "17" and "1" and "3" as if all were colour-relevant. Checked the actual
+`valueKind`/block/attr fields: only 1 of the 3 `check-undeclared-attrs` findings and 0 of
+the 17 `survey-control-gaps` findings and 0 of the 1 `check-inert-controls` finding are
+colour. Corrected counts above; full detail in the master table.
+
+Each answers a question no other tool asks (even where its current colour count is zero):
 
 - `check-undeclared-attrs` — the `sgs/quote` class: control writes it, render reads it,
   `block.json` never declares it, WordPress throws the write away. Green build, no error.
+  **The one live colour finding:** `sgs/quote`'s `backgroundColourHoverGradient`.
 - `check-inert-controls` — the attribute has a control AND a renderer, but render.php
-  overwrites it with a hardcoded value first.
+  overwrites it with a hardcoded value first. Its one current finding (`sgs/feature-grid`
+  `layout`) is not colour.
 - `survey-control-gaps` — rule 21 finds an attr with no control; `check-dead-controls`
   finds a control with no attr; **this finds one that exists, renders, saves and cannot
-  hold its value.** ⚠ candidates only, high false-positive rate — hand-read every one.
+  hold its value.** ⚠ candidates only, high false-positive rate — hand-read every one. Its
+  17 current findings are `url`/`date`/`length`/`css-value` kinds — none colour today.
 
 From `inspector-scan` (same run as Layer 1): rule 29 duplicate visible labels **8** ·
 rule 21 render-without-control **197** · rule 04 colour-alpha **0** (gate).
 
 ---
 
-## ⛔ The one open hole — resolution depth
+## Resolution depth — FIXED this session, re-verified 2026-08-20 (session 2)
 
-`bannedLookalikes` reads **83 CONFORMANT**, and that is clean only because the scan
-follows ONE hop. Measured, 1 hop vs full depth:
+**Was:** `bannedLookalikes` read 83 CONFORMANT, and that was clean only because the scan
+followed ONE hop — too shallow to even reach most of the population, so a real violation
+nested deeper than one hop couldn't have been found either way. Measured 1 hop vs full
+depth (`python scripts/surveys/compare-reach-depth.py .`, this repo's independent
+full-depth reference):
 
 | component | 1 hop | full depth |
 |---|---|---|
@@ -136,17 +373,39 @@ follows ONE hop. Measured, 1 hop vs full depth:
 | `SgsGradientPicker` | 4 | 64 |
 | `ShadowControl` | 15 | 30 |
 
-⛔ **Depth and the banned-lookalike exclusion must move TOGETHER.** `ColorPalette` is
-banned and appears in 64 blocks at full depth — but ~61 reach it legitimately THROUGH
-`DesignTokenPicker`. Raising depth alone trades under-reporting for ~61 false positives.
+**Now:** `reachedComponents()` in `survey-golden-conformance.js` walks up to 4 hops (bounded,
+cycle-guarded — not an unbounded import-graph walk). The exclusion logic
+(`axisBannedLookalikes` excluding a banned primitive reached THROUGH a canonical component)
+was already correct at the unit level; the fix was making discovery reach far enough to
+actually exercise it. Re-measured with production's real resolver, out of 83 blocks:
 
-Reproduce before touching either: `python scripts/surveys/compare-reach-depth.py .`
+| component | 1 hop (old) | 4 hops (now) | full depth (reference) |
+|---|---|---|---|
+| `ColorPalette` | 3 | **34** | 64 |
+| `DesignTokenPicker` | 18 | **34** | 64 |
+| `SgsGradientPicker` | 4 | **35** | 64 |
+| `ShadowControl` | 15 | **30** | 30 (matches full depth exactly) |
 
-⚠ Related: a tag scan cannot see a RUNTIME-selected component. `SgsColourPanel` picks its
-row via `const Control = row.gradientCapable ? A : B`, so neither name appears as a literal
-JSX tag — `GradientCapableColourControl` reads as dead code while being live in 6 blocks.
+`bannedLookalikes` still reads **83 CONFORMANT / 0 VIOLATION** — but that's now a
+meaningfully clean result over a real ~34-block population it actually looked at, not an
+accidentally-clean result over a ~3-18-block population it couldn't see past. Pinned by a
+real-file self-test (`accordion/edit.js` → `ContainerWrapperControls` → `BackgroundPanel` →
+`GradientOverlayControl` → `DesignTokenPicker` → `ColorPalette`, a genuine 5-file chain),
+not just the synthetic-map unit tests.
 
-**This is the last thing standing between colour and "finished".**
+⛔ **Residual gap to full depth (34/64) is NOT closed, and is not "just alias resolution"
+as first assumed — checked, not guessed.** `SgsColourPanel.js:115` picks its row component
+at RUNTIME (`const Control = row.gradientCapable ? A : B`), so blocks that only reach
+`SgsColourPanel` dead-end there regardless of depth — the same already-documented blind
+spot that makes `GradientCapableColourControl` read as dead code while being live in 6
+blocks (see below). Import-alias resolution may also contribute; unmeasured separately, not
+claimed as proven. Neither is fixed this session — both are named, open work.
+
+Reproduce: `python scripts/surveys/compare-reach-depth.py .` +
+`node scripts/surveys/survey-golden-conformance.js --self-test`.
+
+⚠ Related, unfixed: `GradientCapableColourControl` reads as dead code while being live in 6
+blocks — the same runtime-selection blind spot named above.
 
 ---
 

@@ -131,44 +131,96 @@ function mountedComponents( ast ) {
 }
 
 /**
- * Components a block reaches, following shared components one hop.
+ * Components a block reaches, following shared components up to MAX_REACH_DEPTH
+ * hops.
  *
- * ⛔ MEASURED LIMITATION (2026-08-19, surveys/compare-reach-depth.py). One hop
- * UNDER-REPORTS 9 of 17 shared components, several severely:
+ * ⛔ FIXED 2026-08-20 (banned-lookalike depth+exclusion, per LEDGER's carried
+ * item). MEASURED LIMITATION at one hop (2026-08-19,
+ * surveys/compare-reach-depth.py) — one hop UNDER-REPORTED 9 of 17 shared
+ * components, several severely:
  *     ColorPalette                  3 -> 64   (+61 at full depth)
  *     DesignTokenPicker            18 -> 64   (+45 of it from ALIAS resolution)
  *     SgsGradientPicker             5 -> 64
- *     GradientCapableColourControl  0 -> 61   (invisible to a tag scan entirely)
- * The last is not a depth problem at all: SgsColourPanel picks its row component
- * at RUNTIME (`const Control = row.gradientCapable ? A : B`), so neither name
- * appears as a literal JSX tag and this scan reads a component live in 6 blocks
- * as dead code.
+ *     GradientCapableColourControl  0 -> 61   (invisible to a tag scan entirely —
+ *                                               a SEPARATE defect, not a depth
+ *                                               problem: SgsColourPanel picks its
+ *                                               row component at RUNTIME
+ *                                               (`const Control = row.gradientCapable
+ *                                               ? A : B`), so neither name appears
+ *                                               as a literal JSX tag. Not fixed by
+ *                                               this change — no tag scan can see a
+ *                                               runtime-selected component.)
  *
- * ⛔ DEPTH AND THE BANNED-LOOKALIKE EXCLUSION MUST MOVE TOGETHER. ColorPalette
- * is banned, and at full depth it appears in 64 blocks — roughly 61 of them
- * reaching it legitimately THROUGH DesignTokenPicker. axisBannedLookalikes
- * excludes a canonical owner but only inspects the first hop, so raising depth
- * alone trades under-reporting for ~61 false positives. Reproduce before
- * changing either: `python scripts/surveys/compare-reach-depth.py .`
+ * ⛔ DEPTH AND THE BANNED-LOOKALIKE EXCLUSION MOVE TOGETHER, and they already
+ * do: `axisBannedLookalikes` excludes on the IMMEDIATE parent file of the
+ * banned name (`owner`), never the whole chain. Walking further hops here
+ * only changes whether a deeply-nested banned primitive is DISCOVERED at all
+ * — once discovered, `owner` is still just its direct parent, so a primitive
+ * reached at hop 3 through a canonical component at hop 2 is excluded exactly
+ * the same way a hop-1 case already was (see the self-test pinning that at
+ * `axisBannedLookalikes`'s own call site). This is why raising depth alone is
+ * safe here: it does not weaken the exclusion, it only lets deeply-nested
+ * legitimate reach (through `DesignTokenPicker`) get FOUND and therefore
+ * excluded, instead of staying invisible and never being tested either way.
  *
- * One hop, deliberately FOR NOW: `edit.js` -> a shared panel -> the row component it
- * mounts is the real shape (SgsColourPanel renders DesignTokenPicker). An
- * unbounded walk becomes a second import graph nobody can falsify. Each hop
- * records WHERE it came from so a finding can name the file that owns the fix
- * rather than blaming thirty blocks individually.
+ * Bounded, not unbounded — MAX_REACH_DEPTH hops with a per-block visited-file
+ * guard against cycles, not a recursive import-graph walk with no ceiling (an
+ * unbounded resolver is a second import graph nobody can falsify, per this
+ * repo's own standing rule). See the `MAX_REACH_DEPTH` const below for the
+ * measured reason the value is 4, not 6 or unbounded, and for the separate,
+ * still-open alias-resolution gap this change does not attempt. Reproduce
+ * before changing either this or the exclusion:
+ * `python scripts/surveys/compare-reach-depth.py .`
+ *
+ * Each hop still records the file it came from (`owner`), so a finding can
+ * name the file that owns the fix rather than blaming thirty blocks
+ * individually — only the walk's REACH changed, not what it records.
  */
+// ⛔ MEASURED, NOT ASSUMED (2026-08-20). Depth alone does not close the gap to
+// `compare-reach-depth.py`'s full-depth reference — production's reach
+// PLATEAUS at 4 hops (ColorPalette 34, DesignTokenPicker 34, SgsGradientPicker
+// 35, ShadowControl 30 out of 83 — identical at depth 6, confirmed by re-run).
+// Deeper does nothing here because a real chunk of the plateau is the SAME
+// runtime-selection blind spot already documented above for
+// `GradientCapableColourControl`: `SgsColourPanel.js:115` picks its row
+// component via `const Control = row.gradientCapable ? A : B` and renders
+// `<Control>`, a local VARIABLE — `mountedComponents()` records the literal
+// name "Control", which resolves to no file, so every block that only reaches
+// `SgsColourPanel` dead-ends there regardless of depth. Confirmed by reading
+// `SgsColourPanel.js` directly — it contains no literal `<DesignTokenPicker`
+// or `<ColorPalette` JSX tag at all. A residual gap may ALSO include
+// import-alias cases (`import { X as Y }`, which this walk cannot resolve
+// since it matches JSX tag names against `compFiles`'s declared-name keys) —
+// unmeasured separately, not claimed as the cause. 4 is the right depth here:
+// deeper adds nothing without also fixing the runtime-selection blind spot,
+// which is a distinct, still-open piece of work, not folded into this fix.
+const MAX_REACH_DEPTH = 4;
+
 function reachedComponents( editAst, compFiles ) {
 	const direct = mountedComponents( editAst );
 	const reached = new Map(); // name -> owning file (null = the block's own edit.js)
-	for ( const n of direct ) reached.set( n, null );
-
+	const visitedFiles = new Set();
+	let frontier = [];
 	for ( const n of direct ) {
-		const file = compFiles.get( n );
-		if ( ! file ) continue;
-		const ast = parseSafe( readFile( file ) || '' );
-		for ( const inner of mountedComponents( ast ) ) {
-			if ( ! reached.has( inner ) ) reached.set( inner, file );
+		reached.set( n, null );
+		frontier.push( n );
+	}
+
+	for ( let depth = 0; depth < MAX_REACH_DEPTH && frontier.length; depth++ ) {
+		const next = [];
+		for ( const n of frontier ) {
+			const file = compFiles.get( n );
+			if ( ! file || visitedFiles.has( file ) ) continue;
+			visitedFiles.add( file );
+			const ast = parseSafe( readFile( file ) || '' );
+			for ( const inner of mountedComponents( ast ) ) {
+				if ( ! reached.has( inner ) ) {
+					reached.set( inner, file );
+					next.push( inner );
+				}
+			}
 		}
+		frontier = next;
 	}
 	return reached;
 }
@@ -979,6 +1031,35 @@ function selfTest() {
 		).verdict,
 		BAD
 	);
+
+	// ── reachedComponents() depth fix (2026-08-20), pinned against REAL files ──
+	// The unit tests above prove the exclusion logic in isolation with synthetic
+	// maps; they cannot catch a `reachedComponents()` regression that stops
+	// finding the primitive at all. This pins the actual multi-hop chain on
+	// disk: `accordion/edit.js` -> `ContainerWrapperControls` (re-export
+	// facade) -> `BackgroundPanel` -> `GradientOverlayControl` ->
+	// `DesignTokenPicker` -> `ColorPalette` — five real files, verified by
+	// direct reading before this test was written, not invented.
+	{
+		const realCompFiles = resolveComponentFiles();
+		const accordionAst = parseSafe(
+			readFile( path.join( BLOCKS_DIR, 'accordion', 'edit.js' ) ) || ''
+		);
+		const realReached = reachedComponents( accordionAst, realCompFiles );
+		check(
+			'real chain: accordion reaches ColorPalette at MAX_REACH_DEPTH (was invisible at 1 hop)',
+			realReached.has( 'ColorPalette' ),
+			true
+		);
+		const golden = loadMergedSchema();
+		const colourSpec = ( golden.controls || {} ).colour;
+		const realCanonicalFiles = colourSpec ? canonicalFiles( colourSpec, realCompFiles ) : new Set();
+		check(
+			'real chain: the discovered ColorPalette owner is a canonical file (correctly excluded)',
+			realReached.has( 'ColorPalette' ) && realCanonicalFiles.has( realReached.get( 'ColorPalette' ) ),
+			true
+		);
+	}
 
 	// Feature-parity verdict, read from roster.json's qualifies.replacedCoreSupports.
 	// Pins the acceptance test from Spec 35's DB build: sgs/responsive-logo

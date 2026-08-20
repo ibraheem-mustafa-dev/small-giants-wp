@@ -65,8 +65,13 @@ nativeUi     colour 25 VIOL · border 49 VIOL · box-4value 50 VIOL · length-un
 **VIOLATION vs MISSING now means something.** VIOLATION = the block paints the
 surface itself and the client cannot reach it. MISSING = it should have the
 control and does not. Colour's old "2 violations" resolve into buybox
-(VIOLATION — 27 own declarations) and site-footer (MISSING — core paints it, no
-SGS panel). Neither became clean.
+(VIOLATION — 27 own declarations, still a real gap) and site-footer — **CORRECTED
+2026-08-20 (D700): NOT actually MISSING.** The census's 1-hop reach couldn't see
+that site-footer already mounts a colour panel (`DesignTokenPicker`, via
+`GradientOverlayControl.js`); the depth+exclusion fix that widened
+`reachedComponents()` to 4 hops found it. Site-footer already has an SGS panel —
+it was a false MISSING, not a real gap. See
+`.claude/reports/2026-08-20-colour-golden-scan-set.md` master table row 7.
 
 ## THE FRONT — next session
 
@@ -93,7 +98,6 @@ shared component or accepting the type has none.
 | length-unit hardcoding | **48 VIOLATION** | same shape |
 | Form colour | `sgs/form` + 12 field blocks | one design, then mechanical |
 | `sgs/buybox` | 1 block | 27 own colour declarations, no panel |
-| `sgs/site-footer` | 1 block | core paints it; needs the SGS panel |
 | `sgs/heading` borderColourHover | 1 attr | clears BOTH rule-31 heading findings, 409 -> 407 |
 
 ⛔ **Serialised, never parallel:** `rules.json`, `package.json`, `golden-controls.json`,
@@ -230,7 +234,10 @@ shared component or accepting the type has none.
 - **12 form blocks + `sgs/form`** — clients cannot colour form fields at all. The form exposes 4
   colour rows (focus ring, progress bar, submit); field background, border, text and label are
   theme-painted and unreachable. Competitive gap vs Kadence/Spectra.
-- **The depth + transitive-exclusion change** — evidence gathered, not applied.
+- **The depth + transitive-exclusion change — APPLIED 2026-08-20 (D700).** Bounded 4-hop
+  walk, reach 3-18→30-35 out of 83 blocks (real self-test, not just synthetic). Residual gap
+  to full depth (34/64 for `ColorPalette`) is `SgsColourPanel`'s runtime-selected-control
+  blind spot (measured, not assumed) — still open, named in `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
 - **17 "control weaker than its value" findings** (`survey-control-gaps.py`), including 3
   hand-rolled font-size boxes breaching the mandatory TypographyControls rule.
 - **`sgs/quote` discards every hover gradient a client sets** — control writes it, render reads
