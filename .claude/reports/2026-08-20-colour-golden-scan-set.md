@@ -31,6 +31,13 @@ in plain English:
    2 real corrections doing this: `survey-control-gaps.py`'s 17 findings were presented as
    colour-relevant when zero carry a colour `valueKind`, and `survey-colour-coverage.py`'s
    102 `unclear` findings were never surfaced at all.
+4. **Every row of the master table is now ground-truth-verified via a 4-rater QC council**
+   (source code, live Playwright on the sandybrown canary, DB cross-check, independent
+   re-trace) — not just re-run and trusted. Found and fixed 2 real bugs the numbers alone
+   never would have surfaced: `sgs/feature-grid`'s misleading "Layout type" control (root-
+   caused via `/systematic-debugging`, deployed live) and `compare-reach-depth.py`'s own
+   non-deterministic LIFO-traversal race (root-caused, fixed to BFS, self-tested with a
+   negative control that genuinely fails 3-of-5 runs against the old code).
 
 **Still blocking "fully working" (in priority order — not hidden in prose, not silently
 dropped):**
@@ -104,7 +111,7 @@ paraphrase. `Verified` states the check actually done, not just "looks right."
 | 20 | Control-gaps: colour-relevant | **0 of 17 total findings** | `survey-control-gaps.py` | `python scripts/surveys/survey-control-gaps.py . --json` | `findings.filter(f=&gt;f.valueKind=="colour").length` vs `findings.length` | ⚠ **Correction.** The original version of this report listed "17" under "cross-cutting detectors that catch colour defects" — checked the actual `valueKind` field this session: the 17 break down `url:3 · date:3 · length:8 · css-value:3`, **zero tagged `colour`**. This tool currently contributes NOTHING to colour's picture. Corrected. |
 | 21 | Undeclared-attrs: colour-relevant | **1 of 3 total findings** | `check-undeclared-attrs.py` | `python scripts/check-undeclared-attrs.py` (no `--json` — text output, hand-parsed) | grep block+attr lines | Re-run fresh; the 1 colour finding is real and live: `sgs/quote`'s `backgroundColourHoverGradient` is destructured in `edit.js` but never declared in `block.json` — WordPress silently discards the write. |
 | 22 | Inert-controls: colour-relevant | **0 of 1 total finding** | `check-inert-controls.py` | `python scripts/check-inert-controls.py` (no `--json` — text output, hand-parsed) | grep block+attr line | Re-run fresh; not colour. **RESOLVED and FIXED 2026-08-20** via `/systematic-debugging` (§ below) — the underlying bug was real. |
-| 23 | Reach-depth reference (informational, not a colour finding count) | see § Resolution depth table | `compare-reach-depth.py` | `python scripts/surveys/compare-reach-depth.py .` (no `--json` — text table, hand-parsed) | printed table | Re-run fresh — ⚠ **this run's own alias-resolution figures look internally inconsistent** (e.g. `ColorPalette` `depth1_alias=0` vs `depth1_noalias=4` — alias resolution appearing to REDUCE reach, illogical for what should be a superset). Not investigated further this session; flagged as a possible bug in this reference tool itself, not treated as ground truth for anything beyond the four watched components already cited in § Resolution depth. |
+| 23 | Reach-depth reference (informational, not a colour finding count) | see § Resolution depth table | `compare-reach-depth.py` | `python scripts/surveys/compare-reach-depth.py .` (no `--json` — text table, hand-parsed) | printed table | **RESOLVED and FIXED 2026-08-20 via `/systematic-debugging` — see § below.** Root cause proven (LIFO-stack traversal race, non-deterministic per Python's per-process hash seed), fixed (BFS/FIFO), self-tested with a negative control that genuinely fails 3-of-5 runs against the old code. 3 fresh runs post-fix are byte-identical, and the monotonic superset property (`depth1_alias ≥ depth1_noalias`) now holds for every watched component. |
 | 24 | Block-level overlap (row 6 vs row 15) | **33 shared (97% of coverage's 34) · 30 rule-31-only · 1 coverage-only (`sgs/container`)** | rule31.json ∩ colour-coverage.json | (both commands above) | `Set` intersection on `block` (rule 31) vs `block_slug`/`blocks_with_findings` (coverage) | Computed fresh, re-confirmed identical to the earlier same-day computation (§ below) |
 
 **Raw evidence:** every command's actual output is saved verbatim under
@@ -416,6 +423,62 @@ Reproduce: `python scripts/surveys/compare-reach-depth.py .` +
 
 ⚠ Related, unfixed: `GradientCapableColourControl` reads as dead code while being live in 6
 blocks — the same runtime-selection blind spot named above.
+
+### `compare-reach-depth.py` itself was buggy — root-caused and fixed, 2026-08-20 (session 4)
+
+The reference tool this whole section leans on had its own bug, found when the QC council
+flagged its alias-resolution figures as internally inconsistent (`ColorPalette`
+`depth1_alias` reading LOWER than `depth1_noalias` — impossible if alias resolution is a
+superset, which it must be by construction).
+
+**Root cause, proven via a debug trace, not inferred:** `reach()`'s traversal used a LIFO
+stack (`queue.pop()`), not a proper breadth-first queue. A name reachable via TWO paths of
+different depth in the same walk (the real case: `DesignTokenPicker` is both a direct
+`d=0` mount AND a `d=1` child of `SgsColourPanel` via its runtime `const Control = cond ?
+A : B` dispatch) could have its DEEPER duplicate popped and marked `seen` before its
+SHALLOWER original, permanently capping that node's effective depth and silently blocking
+its own children (`ColorPalette`, in the real case) from ever being explored within a tight
+`max_depth`. Traced directly on `sgs/heading`: `DesignTokenPicker` was processed at `d=1`
+instead of `d=0` in the alias run, so `ColorPalette` — genuinely one hop inside
+`DesignTokenPicker.js` — was never reached. **Also explains why the numbers looked
+inconsistent run to run**: Python randomises string-hash order per process by default,
+which shuffles the set-iteration order feeding the queue, making which duplicate "wins"
+non-deterministic.
+
+**Fix:** LIFO stack → FIFO queue (`collections.deque`, `popleft()`), giving BFS's standard
+guarantee — every node is first visited via its minimum depth, by construction, no race
+possible. One-line traversal-order change, nothing else touched.
+
+**Verified:** 3 fresh process runs (different hash seed each time, since that's exactly
+what varied before) are now byte-identical. A negative control — the same self-test run
+against the pre-fix code — genuinely **fails 3 of 5 runs** (proving both that the test is
+real and that the old bug really was non-deterministic, not a one-off fluke). A permanent
+`--self-test` mode ships with the fix, with a synthetic fixture reproducing the exact
+`DesignTokenPicker`/`SgsColourPanel` race shape abstractly, so this can't silently regress.
+
+⚠ **Because the fix changes `reach()` for ALL calls, not just alias ones, no number this
+tool EVER printed before this fix should be treated as reliable** — including the
+"1 hop (old)" baseline table above, which came from the same buggy tool. Post-fix,
+deterministically-confirmed numbers, out of 83 blocks:
+
+| component | depth1_noalias | depth1_alias | depth6_alias (full depth) |
+|---|---|---|---|
+| `ColorPalette` | 6 | 6 | 64 |
+| `DesignTokenPicker` | 19 | 63 | 64 |
+| `SgsGradientPicker` | 7 | 7 | 64 |
+| `ShadowControl` | 15 | 15 | 30 |
+| `GradientCapableColourControl` | 0 | 61 | 61 |
+
+Every row now satisfies the required monotonic property (`noalias ≤ alias ≤ full depth`) —
+the earlier "3/18/4/15" and "34/34/35/30" figures cited above in this section came from the
+buggy tool and are superseded by this table. The `survey-golden-conformance.js` depth fix
+(4-hop BFS-safe walk, described above this subsection) is unaffected — it never used
+`compare-reach-depth.py`'s traversal code, only its numbers as an external reference point,
+so its own fix and self-test stand independent of this correction.
+
+Reproduce: `python scripts/surveys/compare-reach-depth.py . --self-test` +
+`python scripts/surveys/compare-reach-depth.py .` (run 2-3 times fresh to confirm
+determinism, since that's exactly what this fix guarantees).
 
 ---
 
