@@ -2854,8 +2854,17 @@ function runSurvey() {
 	return { findingsA, findingsB, blockCount: scanned };
 }
 
-function printReport( title, netNew, accepted ) {
-	process.stdout.write( `${ title } — advisory, does not fail the build:\n` );
+function printReport( title, netNew, accepted, blocksBuild = false ) {
+	// The label is DERIVED from the flag, not hardcoded. It used to read "advisory"
+	// unconditionally, so flipping a check to blocking would have left the output
+	// confidently stating the opposite of what the gate now does (R3-c, 2026-08-20).
+	process.stdout.write(
+		`${ title } — ${
+			blocksBuild
+				? 'BLOCKING: a net-new finding fails the build'
+				: 'advisory, does not fail the build'
+		}:\n`
+	);
 	if ( accepted.length ) {
 		process.stdout.write( `  ${ accepted.length } baselined finding(s) (accepted with reason).\n` );
 	}
@@ -3572,8 +3581,20 @@ function main() {
 
 	// ADVISORY-FIRST (2026-08-13) — see file header. Flip either to `true` only
 	// after that check's backlog is triaged (fixed or baselined).
+	// R3-c, 2026-08-20 — flipped INDEPENDENTLY, on measurement, not together.
+	//
+	// CHECK B is now BLOCKING: measured 0 net-new findings immediately after R3-a widened
+	// this script's corpus to resolve shared component files, so it starts life green and
+	// any future invalid-CSS-keyword passthrough is a real regression that fails the build.
+	//
+	// CHECK A stays advisory, deliberately and with the number recorded: the SAME R3-a
+	// widening took it to 176 net-new findings (plus 27 baselined). Flipping it would red
+	// the build on the very next run. Those 176 are newly VISIBLE, not newly broken — this
+	// gate simply could not see shared-component controls before. They need per-block triage
+	// first; the register's instruction was "land behind its existing baseline, then trim".
+	// Flip this to `true` once the net-new count is 0 (or genuinely baselined with reasons).
 	const CHECK_A_BLOCKS_BUILD = false;
-	const CHECK_B_BLOCKS_BUILD = false;
+	const CHECK_B_BLOCKS_BUILD = true;
 
 	if ( isJson ) {
 		process.stdout.write(
@@ -3589,8 +3610,8 @@ function main() {
 		);
 	} else {
 		process.stdout.write( `[check-editor-render-parity] surveyed ${ blockCount } blocks.\n\n` );
-		printReport( 'CHECK A (editor-canvas desync)', netNewA, acceptedA );
-		printReport( 'CHECK B (invalid CSS keyword passthrough)', netNewB, acceptedB );
+		printReport( 'CHECK A (editor-canvas desync)', netNewA, acceptedA, CHECK_A_BLOCKS_BUILD );
+		printReport( 'CHECK B (invalid CSS keyword passthrough)', netNewB, acceptedB, CHECK_B_BLOCKS_BUILD );
 	}
 
 	if ( isCheck && ( ( CHECK_A_BLOCKS_BUILD && netNewA.length ) || ( CHECK_B_BLOCKS_BUILD && netNewB.length ) ) ) {

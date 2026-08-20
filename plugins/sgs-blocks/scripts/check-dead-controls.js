@@ -1579,6 +1579,15 @@ function main() {
 					'fully-dead finding(s) (accepted with reason).\n'
 			);
 		}
+		// PROMOTION TRIGGER (R3-c, dated 2026-08-20) — CHECK 4 stays advisory ONLY while
+		// real net-new findings exist. As of 2026-08-20 there are exactly TWO:
+		//   sgs/before-after :: maxWidthUnit   sgs/button :: fontFamily
+		// Both are fully dead — no control anywhere AND no render consumption anywhere.
+		// ⏱ TRIGGER: when `--check` reports 0 net-new for CHECK 4, make this BLOCKING in the
+		// same commit that clears the last one. Do NOT baseline them to reach zero — a
+		// fully-dead attribute has nothing to preserve; delete it or wire it. An advisory
+		// with no stated promotion condition is how a gate quietly becomes decoration, which
+		// is the exact failure R3-c exists to end.
 		if ( fullyDeadNetNew.length ) {
 			process.stdout.write(
 				`[check-dead-controls] CHECK 4 (ADVISORY — does not fail the build): ` +
@@ -1606,6 +1615,15 @@ function main() {
 					'dead-assignment finding(s) (accepted with reason).\n'
 			);
 		}
+		// PROMOTION TRIGGER (R3-c, dated 2026-08-20) — CHECK 5 measured **0 net-new** on
+		// 2026-08-20, immediately after R3-a widened this script's corpus to resolve shared
+		// component files. It is therefore ALREADY at the state CHECK 4 is working towards.
+		// ⏱ TRIGGER: promote to BLOCKING on the next deliberate pass over this file, which
+		// is safe precisely because it starts green — any future finding is a real
+		// regression. It was left advisory here only because flipping it means re-plumbing
+		// the exit path, and that deserves its own commit with its own self-test rather
+		// than riding along at the end of a long session. Do not let this note outlive the
+		// next such pass.
 		if ( deadAssignNetNew.length ) {
 			process.stdout.write(
 				`[check-dead-controls] CHECK 5 (ADVISORY — does not fail the build): ` +

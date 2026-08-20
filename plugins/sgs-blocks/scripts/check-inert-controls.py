@@ -182,6 +182,55 @@ def load_shared_controls() -> set:
     return controls
 
 
+def suppressed_shared_controls(block_dir):
+    """Attributes whose only control is a SHARED panel row this block switched OFF.
+
+    A block can mount the shared wrapper controls and turn individual rows off, e.g.
+    `<ContainerWrapperControls ... showLayout={ false } />` when it owns a bespoke selector
+    of its own. sgs/feature-grid does exactly that, and its own comment explains why: all
+    three of its render branches emit display:grid, so the generic Stack/Flex/Grid dropdown
+    never offered a real choice.
+
+    Without this, the gate reports "this attribute has a control (edit.js/shared)" for a
+    control the client cannot see, then flags render.php for overwriting it — a false
+    positive unfixable from the block's side. sgs/feature-grid's `layout` was exactly that,
+    and it was the SOLE finding standing between this gate and being wireable into prebuild.
+
+    DERIVED FROM SOURCE, not hardcoded (R-31-1): for each `show<Prop>={ false }` the block
+    passes, find the matching `show<Prop> &&` guarded regions in the shared panel files and
+    collect the attributes written inside them. Add a new suppression prop to a panel and
+    this picks it up with no edit here.
+    """
+    edit_js = block_dir / 'edit.js'
+    if not edit_js.exists():
+        return set()
+    off = set(re.findall(r'(show[A-Z]\w*)\s*=\s*\{\s*false\s*\}',
+                         strip_comments(edit_js.read_text(encoding='utf-8'))))
+    if not off:
+        return set()
+
+    suppressed = set()
+    for panel_path in load_component_file_map().values():
+        panel_file = pathlib.Path(panel_path)
+        if not panel_file.exists():
+            continue
+        panel_text = strip_comments(panel_file.read_text(encoding='utf-8', errors='replace'))
+        for prop in off:
+            # The guarded region ENDS at the `) }` closing that JSX expression at the
+            # guard's own indent level. A fixed-size window instead of this over-matches:
+            # measured on LayoutPanel.js, a 4000-char window swallowed the `gap` control at
+            # :136, which sits AFTER both guards close and is still perfectly reachable —
+            # suppressing it would have blinded this gate to a real inert `gap` control.
+            guard_re = re.compile(r'([ \t]*)\{ ' + re.escape(prop) + r'[^\n]*&&')
+            for guard in guard_re.finditer(panel_text):
+                indent = guard.group(1)
+                rest = panel_text[guard.end():]
+                close = re.search(r'\n' + re.escape(indent) + r'\) \}', rest)
+                region = rest[:close.start()] if close else rest
+                suppressed.update(re.findall(r'setAttributes\s*\(\s*\{\s*(\w+)\s*:', region))
+    return suppressed
+
+
 def has_control_in_edit_js(block_dir: pathlib.Path, attr_name: str) -> bool:
     """Check if edit.js has a control for the given attribute.
     Looks for patterns like:
@@ -323,9 +372,11 @@ def scan() -> list:
             if attr_name not in declared_attrs:
                 continue
 
-            # Must have a control somewhere (edit.js or shared).
+            # Must have a control somewhere (edit.js or shared) that the client can
+            # ACTUALLY SEE — a shared row the block switched off is not a control.
+            suppressed = suppressed_shared_controls(block_dir)
             has_control = (has_control_in_edit_js(block_dir, attr_name) or
-                          attr_name in shared_controls)
+                          (attr_name in shared_controls and attr_name not in suppressed))
             if not has_control:
                 continue
 
