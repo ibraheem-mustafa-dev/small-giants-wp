@@ -185,7 +185,7 @@ SGS thin layer
   +-- sgs_product CPT -- no-WooCommerce fallback ONLY
 ```
 
-**Inter-block state (load-bearing).** The `sgs/product-card` is the single Interactivity store and the one shared `data-wp-context` (manifest + selection). Child `sgs/option-pickers` (one per axis) read the shared context and write their selection back; the card derives price/image/availability. Option-pickers own no commerce state.
+**Inter-block state (load-bearing).** The `sgs/product-card` is the single Interactivity store and the one shared `data-wp-context` (manifest + selection). Child `sgs/option-picker` blocks (one per axis) read the shared context and write their selection back; the card derives price/image/availability. Option-pickers own no commerce state.
 
 **Manifest payload.** Seeded inline at SSR: (a) a sparse valid-combinations set (list of valid attribute-tuples + per-variation price as display-minor-int + a stock flag + a `pctOff` int, NOT a dense per-variation grid) and (b) the default variation's image/price/copy as concrete literals. The fast path holds to approximately 200-300 variations within the cap. Above the cap, the matrix is prefetched once on first interaction with the card (`pointerenter`/`focusin`), not on a pill `change`, so the first selection is still local (no per-select XHR). Per-variation galleries/long-copy are prefetched the same way. Cap: the `data-wp-context` JSON is at most 24 KB AND the JSON-LD `<script>` is at most 16 KB (measured separately); `hasVariant` has at most 50 representative children with `AggregateOffer.offerCount` equal to the true total. Above either cap, the configurator switches to the prefetch path.
 

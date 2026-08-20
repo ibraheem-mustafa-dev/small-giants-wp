@@ -1601,7 +1601,7 @@ draft, caused by compiling the list from `edit.js` instead of checking `attr_typ
 4. **`block_capabilities`** — TWO different problems under one table name (council, 2026-08-07):
    - **The 3 "lift" capabilities** (`scalar-content-lift`, `scalar-styling-lift`,
      `array-content-lift`) are class (d) — read declaratively from `supports.sgs.*` in block.json,
-     written idempotently, mechanism healthy. `sgs/testimonial-slider` and `sgs/content-collection`
+     written idempotently, mechanism healthy. `sgs/testimonial-slider` and `sgs/card-grid` (collection mode)
      have real content arrays and are genuine omissions. ⛔ **`sgs/post-grid` is NOT one** — its
      arrays (`categories`, `tags`) are config filters, its content comes from `WP_Query`, and the
      capability's own docstring excludes exactly this case. Adding it would be actively wrong.

@@ -94,7 +94,7 @@ SELECT block_slug, container_kind FROM block_composition
 WHERE wraps_block = 'sgs/container' AND container_kind IS NOT NULL;
 ```
 
-`block_composition.container_kind` (∈ `section`/`layout`/`content`) is the converter's roster axis. It gates **panel/render-layer exposure** (which editor controls + PHP layers the block shows) — it is **NOT** a routing input (§2, §8 below; D194). A couple of blocks have render-side wrapper nuances — e.g. `sgs/modal` and `sgs/mobile-nav` are excluded from the wrapper-mirror (`containerMirror:false`, §13.6.1 below) — but that render-side axis is **separate** and does not remove a block from the converter roster (`container_kind`). Full roster + KIND meanings: §13.6.1 below (canonical, folded from the former Spec 29).
+`block_composition.container_kind` (∈ `section`/`layout`/`content`) is the converter's roster axis. It gates **panel/render-layer exposure** (which editor controls + PHP layers the block shows) — it is **NOT** a routing input (§2, §8 below; D194). A couple of blocks have render-side wrapper nuances — e.g. `sgs/modal` and `sgs/nav-drawer` are excluded from the wrapper-mirror (`containerMirror:false`, §13.6.1 below) — but that render-side axis is **separate** and does not remove a block from the converter roster (`container_kind`). Full roster + KIND meanings: §13.6.1 below (canonical, folded from the former Spec 29).
 
 **Container-equivalent blocks appear at BOTH levels, treated identically:**
 - **Section-class level** — a top-level page section (`sgs/hero`, or a slug-None `<section>` → `sgs/container`).
@@ -667,7 +667,7 @@ This is the **single authoritative content fork** for §3.B (it supersedes §3.B
 - **`layout`** — inner grid/flex arrangement of children, width/contentWidth capping, no background layer. For blocks whose job is arranging children (card-grid, feature-grid, gallery) inside a parent section.
 - **`content`** — self-contained content unit with its own chrome, width cap + inner padding, no grid/background engine. For blocks that are a card/box/unit inside someone else's grid (info-box, quote, team-member).
 
-**Excluded from mirroring** (`supports.sgs.containerMirror: false`) despite structurally wrapping `sgs/container`: `sgs/modal` (outer shell is a `<dialog>`, no background/grid/gap layers) and `sgs/mobile-nav` (off-canvas Popover overlay, container mapping doesn't apply to fixed-position overlays).
+**Excluded from mirroring** (`supports.sgs.containerMirror: false`) despite structurally wrapping `sgs/container`: `sgs/modal` (outer shell is a `<dialog>`, no background/grid/gap layers) and `sgs/nav-drawer` (off-canvas Popover overlay, container mapping doesn't apply to fixed-position overlays).
 
 **Live roster (DB-authoritative, do not hardcode a count or list here):**
 ```bash

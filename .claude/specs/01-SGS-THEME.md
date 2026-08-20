@@ -353,7 +353,7 @@ Standard header with:
 - Sticky behaviour via `header-behaviour.js` (adds `.is-scrolled` class for shrink/shadow effect; supports modes: static, sticky, transparent, transparent-sticky, smart-reveal, shrink, hidden — see legacy header-system-design spec for full mode reference)
 - Mobile: hamburger menu with slide-out drawer (`sgs/nav-drawer`; the old `sgs/mobile-nav` was deleted at D336, 2026-07-14)
 - Announcement bar slot above header (optional, toggled via customiser or block)
-- **Once P1/P2 land** (design-approved 2026-07-13, build-pending), the header content will be composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/adaptive-nav` inside it — see §Header/Footer/Nav Block System.
+- **Once P1/P2 land** (design-approved 2026-07-13, build-pending), the header content will be composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/nav-menu` inside it (`sgs/adaptive-nav` was DELETED 2026-07-20) — see §Header/Footer/Nav Block System.
 
 ### Footer Template Part (`parts/footer.html`)
 
@@ -385,7 +385,7 @@ A block that *subsumes* the template-part/Site-Info/rules system remains forbidd
 
 ### Theme-owned defaults — global styles + Site Info
 
-Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
+Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-menu` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
 
 1. **Global style tokens** — this file's `theme.json` settings (§Design Tokens above) and, for cloned sites, the Spec 33 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
 2. **SGS Site Info store** (Spec 36, `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, hours, socials, copyright, attribution link. Both header and footer bind to the same store.

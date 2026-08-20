@@ -1038,7 +1038,7 @@ so the check is otherwise vacuous). Cache: clear the CDN/LiteSpeed cache FIRST (
 `wp litespeed-purge all`) or you measure the stale `?ver`.
 
 ### FR-36-18 — Cutover for the LIVE production instances (mirror P2 §6c) + light rollback
-`sgs/adaptive-nav` is live on Mama's (sandybrown) + Indus (palestine-lives). Before deleting the old blocks:
+**Historical — the pre-deletion checklist.** At the time, `sgs/adaptive-nav` was live on both client sites. It was DELETED at Phase-1 close (2026-07-20); `sgs/nav-menu` + `sgs/nav-drawer` replace it. The checks that were run before deleting:
 re-author both live headers onto the new blocks **via the editor** (never WP-CLI `post_content` — D270),
 **canary-first**, before/after computed check both menus render + collapse. **Light rollback (do not
 over-engineer):** keep the retired block registrations **DORMANT briefly post-cutover** (a fast revert path if
