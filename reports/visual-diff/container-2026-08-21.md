@@ -63,9 +63,56 @@ measurements of real rendered elements, and the mechanism they exercise
 confirmed already present and live on the page with zero elements using it,
 computing to 1.5rem/24px — the same value the hand-rolled default hardcoded.
 
-**Follow-up, not optional:** re-measure the same five rows against the deployed
-build immediately after `build-deploy.py`, and correct this report if any row
-moves.
+**Follow-up DONE — deployed re-measurement, canary `/shop/` @323px, commit
+`865e6d8e` deployed, cache-busted:**
+
+| Measure | Predicted | Deployed actual | |
+|---|---|---|---|
+| Product card `left` | 24px | **24px** | ✅ |
+| Product card width | 261px | **261px** | ✅ |
+| `h1` "Shop" `left` | 24px | **24px** | ✅ |
+| Horizontal overflow | 0 | **0** | ✅ |
+
+Every predicted row held against the deployed build. No row moved.
+
+## ⚠ RESIDUAL FOUND BY THE DEPLOYED ENUMERATION — not present in the prediction
+
+Enumerating (not estimating) every container that still pays a gutter: of 22
+containers, 9 carry `has-global-padding` and 7 pay a gutter — of which **5 are
+nested and still pay**. Resolved back to their owners, all 5 sit inside the
+HEADER or FOOTER template parts:
+
+| uid | class | width | padding | content |
+|---|---|---|---|---|
+| `9a61c7e5` | `sgs-header-icons` | 92px | 48px | 44px |
+| `dee41160` | `sgs-site-footer__links` | 48px | 48px | **0px** |
+| `72cfa1f8` | `sgs-site-footer__brand` | 309px | 48px | 261px ✅ correct |
+| `2b8476f3` | `sgs-shop-filters` | 0px (hidden at this width) | 48px | — |
+
+**Why core's nesting reset does not fire here, and it is not a bug in the fix:**
+core's reset requires a `.has-global-padding` ANCESTOR. `sgs/site-header` and
+`sgs/site-footer` default `contentWidth:"full"`, so they render no band and
+correctly carry no `has-global-padding` — meaning the first banded container
+INSIDE them legitimately pays the gutter once. That is exactly core's own
+behaviour for a constrained group inside a full-width section.
+
+**The real defect is one layer down, and it is an AUTHORING/default problem:**
+`sgs-header-icons` is authored as
+`{"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap"}` — with NO
+`contentWidth`. It therefore inherits `sgs/container`'s block.json default of
+`{"desktop":"normal"}`, i.e. **a 92px row of header icons declares itself a
+page-level content band.** `sgs-site-footer__links` is the same shape and is the
+worst case: 48px wide, 48px of padding, zero content.
+
+This is the SAME class of error as the padding default this commit reverts — a
+page-level concern applied per-instance by default. It is NOT fixed here:
+changing `contentWidth`'s default is a larger blast-radius call (that default is
+what makes the band render at all, which `2d291992` had just repaired), so it is
+a Rule 7 design-gate decision for Bean, not a drive-by.
+
+`sgs-site-footer__links` at 48px/0px content is **pre-existing**, measured at
+48px wide with 48px padding BEFORE this change too. It is not a regression
+introduced here.
 
 ## Residual, named not hidden
 
