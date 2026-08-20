@@ -41,12 +41,35 @@ P2-6 work independently while Wave 2 was running.**
 | **P1-3** brand-strip colour trace | ✅ **DONE** | Confirmed the hover names paint `__item`, not the root. |
 | **QC GATE 1** | ✅ **PASS** | Build exit 0; findings surface; cause proven with file:line. |
 | **P1-4** deploy + live-verify | ✅ **PASS** | Instant filtering CONFIRMED working: a stamped `window` var survived a filter click (no reload), URL updated client-side, products 5→4, 2 `fetch` requests. |
-| **P1-5** template validity fixes | ✅ **DONE** (`fe078c2f`) | ⚠ Plan figures were wrong twice: **6** leaves, not 7 — `product-filter-clear-button` is NOT a leaf (its `save()` is `InnerBlocks.Content`) and was left untouched rather than guessed at. **10** stray comments, not 4. Classes verified against WooCommerce 11.0.0 `save.tsx`. |
+| **P1-5** template validity fixes | ✅ **DONE** (`fe078c2f`, clear button closed in `7e2d6eba`) | ⚠ Plan figures were wrong twice: **6** leaves, not 7 — `product-filter-clear-button` is NOT a leaf (its `save()` is `InnerBlocks.Content`) and was left untouched rather than guessed at. **10** stray comments, not 4. Classes verified against WooCommerce 11.0.0 `save.tsx`. |
 | **P1-6** colour on **3** non-container blocks | ✅ **BUILT + DEPLOYED** (`fe078c2f`); editor-side check outstanding | hero / trust-bar / brand-strip. testimonial-slider dropped (already correct) and used as the TEMPLATE. Two blocks had their root background mapped to a native colour attr that was switched OFF, so it could never have worked. `sgs/brand-strip` had **no root element in its manifest at all** — one was added and the others renumbered. `sgs/hero` needed a duplicate-control baseline (`709bf066`) — handed to the colour track. |
 | **P1-7** theme CSS (panel visibility, fallbacks, search width) | ✅ **DONE** (`fe078c2f`) | Dead teal fallbacks **enumerated at 47** (45× `#0f7e80`, 2× `#0b6668`), now 0. 15 of them sat on focus outlines and took `currentColor` rather than deletion — not in the brief, and correct. |
 | **P1-8** mobile filter sheet + a11y | ✅ **DONE + LIVE-VERIFIED** (`fe078c2f` + 6 follow-ups) | Native `<dialog>` bottom sheet. ⚠ Deviation flagged by the agent and accepted: sticky trigger built as `position:fixed` + scroll listener, not `position:sticky` — sticky would pin to its own containing block and sit near the page bottom, not follow the grid. |
 | **QC GATE 2** | 🟡 **PARTIAL — frontend PASSES, editor half outstanding** | Nothing in Wave 2 has been seen running. Build is green (`exit 0`) so a deploy is now possible; it was blocked at commit time by a red ratchet. Four visual-gate skips logged honestly in `reports/visual-diff/manual-skips.log`, no fabricated PASS. |
 | **Phase 2** (P2-1…P2-9) | ⬜ **NOT STARTED** | Both design gates (G1/G2) remain closed and ready. |
+
+### ✅ CLEAR-FILTERS BUTTON — closed (`7e2d6eba`), the last P1-5 residual
+
+The block was authored self-closing and rendered nothing, so the shop had no visible way to
+clear filters. It now contains an `sgs/button`, NOT core.
+
+Two facts read from `ProductFilterClearButton::render()` rather than assumed, both
+load-bearing:
+
+1. WooCommerce finds the first tag carrying **`wp-block-button__link`** and attaches
+   `data-wp-on--click="actions.removeAll"` to THAT element. An `sgs/button` without that
+   class renders perfectly and does nothing. Adding it was verified safe: the only bare rule
+   for that class in the theme sets `background-image:none` inside a contrast context; every
+   other rule is scoped under `.wp-block-button` or a named wrapper, neither of which a
+   standalone `sgs/button` has.
+2. It then str_replaces the anchor tag for a button tag. `sgs/button` with no `url` already
+   renders `<button>` (`render.php:65`), so the swap is a no-op rather than a corruption.
+
+**Verified live at the markup level** — the rendered element is
+`<button data-wp-on--click="actions.removeAll" class="sgs-button sgs-button--primary …
+wp-block-button__link">`. ⚠ **The behavioural click test (does it actually clear?) was NOT
+run** — the Playwright browser profile was locked by the parallel session. The binding is
+present and it is WooCommerce's own action, so confidence is high, but it is unproven.
 
 ### ▶ THIRD SESSION (2026-08-20 evening) — Wave 2 closed on the frontend
 
