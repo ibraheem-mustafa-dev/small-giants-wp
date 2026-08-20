@@ -1,5 +1,42 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D698 [ROUTINE] — FR-38-12 Flip-on-WooCommerce built + deployed; live-triggered verification INCONCLUSIVE, left OFF pending it (2026-08-20)
+
+Built per the Bean-approved design gate (`.claude/plans/2026-08-20-flip-woocommerce-product-collection-design-gate.md`):
+`fx-flip.js` (MutationObserver + debounced `Flip.from`), `fx-flip-woocommerce.php`
+(`render_block_woocommerce/product-collection` injector), a new site-level "Animate WooCommerce
+product re-filtering" setting (default OFF). Clean build (webpack + all prebuild gates), deployed
+to sandybrown.
+
+**Verified live:**
+- The PHP injector correctly stamps `data-sgs-fx="flip"` on the block's root wrapper ONLY when
+  the setting is ON and only on a real frontend render (confirmed via raw HTML fetch).
+- Both `gsap-flip.js` and `fx-flip.js` are correctly conditionally-enqueued by the registry's
+  `render_block` sniff, load with zero console errors, and `reducedMotion` is correctly read as
+  `false` in a normal browser context.
+- `fx-flip.js`'s `:scope li` selector correctly matches WooCommerce's real product `<li>` markup.
+
+**NOT verified — genuinely inconclusive, not a fabricated pass:** could not get a REAL WooCommerce
+client-side re-filter/re-paginate to fire against this specific hand-authored canary within
+reasonable time, so the actual `Flip.from()` animation was never observed running. Two attempts,
+both blocked by WooCommerce configuration/version questions unrelated to the SGS code:
+1. `woocommerce/catalog-sorting` rendered nothing at all when placed standalone (likely requires
+   a `woocommerce/product-filters` ancestor or archive-page context this hand-built page lacked).
+2. Pagination caused a full page reload rather than a client-side Interactivity API navigation —
+   traced into WC 11.0.0's `ProductCollection/Renderer.php`: `data-wp-router-region` is gated on
+   `$is_enhanced_pagination_enabled` (`! forcePageReload`, true by default) AND `isset( $this->parsed_block )`,
+   but the attribute never appeared live — the exact WC-side condition under which it fires
+   (possibly only during an already-in-progress client-side navigation request, not the initial
+   page load) was not fully traced before time was called on this thread.
+3. A hand-simulated DOM mutation (moving `<li>` elements via JS) was silently reverted, suggesting
+   WooCommerce's own Interactivity-managed region reconciles unexpected DOM edits — informative,
+   but not proof of our own mechanism either way.
+
+**Decision:** left the site-level setting OFF (code shipped, capability inert until proven).
+**Next step, not done here:** build a genuine `woocommerce/product-filters` + real filter control
+(price/attribute/rating) canary — that is the actual WC-native trigger this FR targets, not
+pagination — and re-attempt live verification. Do not mark this FR closed until that's run.
+
 ## D697 [ROUTINE] — D452's morph fix CONFIRMED live, closing its outstanding item (2026-08-20)
 
 D452 (2026-08-06) found morph had NEVER animated on any block: the `data-sgs-fx="morph"`
