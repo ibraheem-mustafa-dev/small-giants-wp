@@ -587,3 +587,107 @@ Existing gates cover control↔render; **canvas parity is the suspected gap.**
 | Q2 filter pattern | **Slide-up sheet.** Locked. |
 | Q3 full-bleed band | **Superseded by D-1** — not an authoring fix; the wrapper must stop capping backgrounds. |
 | Q4 grid column floor | **250px, and exposed as an editor setting** (`minColumnWidth`), not hardcoded — per the project's own "no feature is complete without editor controls" rule. |
+
+---
+
+# IMPLEMENTATION INPUTS (2026-08-20) — planner-facing
+
+Two final investigations. **Both corrected a premise**; read the corrections before planning.
+
+## I. Editor/frontend parity gate — Bean was RIGHT, a gate exists
+
+`plugins/sgs-blocks/scripts/check-editor-render-parity.js` **CHECK A** (built 2026-08-13,
+D613) IS the editor-canvas-parity gate. It failed to catch `sgs/container` for two reasons:
+
+1. **Advisory-only.** `:3489-3490` — `CHECK_A_BLOCKS_BUILD = false`. It runs in `prebuild`
+   and can never fail it. Current: 10 net-new, 27 accepted, 0 for container.
+2. **Cross-file blind.** It requires the attr to be **destructured in `edit.js`** (`:74-76`).
+   The container's colour/width controls live in `components/ContainerWrapperControls.js` and
+   `components/WidthPanel.js`, so `backgroundOverlayColour`, `overlayGradient` and
+   `contentWidth` appear **zero times** in `edit.js`. Its own blind-spot #3 (`:113-117`)
+   documents this as out-of-scope by design.
+
+**The missing check was already named and never built:** the baseline's `sgs/site-header`
+`headerShrink` entry identifies a **5th structural signal — "no-ServerSideRender + no
+scoped-CSS mirror"** — which is exactly this defect class.
+
+**SCALE — the real headline: 71 of 83 blocks (86%) hand-build their editor preview.** Only 12
+use `ServerSideRender` (`before-after, brand-strip, business-info, buybox, card-grid,
+mega-panel, nav-drawer, nav-menu, post-grid, product-card, responsive-logo,
+trustpilot-reviews`). ~61 blocks have never been proven either way.
+
+**Recommended order:** build the 5th signal (structural, static, ~1 day, catches container) →
+widen CHECK A's corpus to the block's own `components/*.js` (~half day) → flip
+`CHECK_A_BLOCKS_BUILD = true` once the 10 findings are triaged.
+⛔ `ServerSideRender` is NOT viable for `sgs/container` — it is a `useInnerBlocksProps` host.
+
+**Recurring wiring failure, AGAIN (D338/D643 pattern):** two real detectors have npm aliases
+but are absent from `prebuild` — **`check:inert-controls`** (written 2026-08-19) and
+**`check:undeclared-attrs`**. Wire them.
+
+## II. Colour standardisation — the premise was WRONG; scope is narrower and different
+
+⚠ **All five target blocks ALREADY mount `SgsColourPanel`.** The gap is not "add a panel" —
+it is that they lack **root-element background/text colour attributes**.
+
+| Block | `supports.color` today | Root `backgroundColour`/`textColour` | Actual defect |
+|---|---|---|---|
+| `container` | `false` (scalar) | NEITHER | `render.php:88-99` reads `textColor`/`backgroundColor` — attrs WP never registers. 38 pattern authorings write into a void. |
+| `hero` | **ABSENT** | NEITHER (only `*Hover`) | `elements.wrapper.attrMap` maps to `native:color.background` which is never declared. Manifest orphan. |
+| `trust-bar` | `{text:true,…}` | `textColour` ✔, no `backgroundColour` | `text:true` = live D683 double-paint (core Styles panel renders alongside `SgsColourPanel`). |
+| `brand-strip` | all-false ✔ | NEITHER | Root surface unpaintable; only `tile*`/`name*` rows exist. |
+| `testimonial-slider` | `{gradients:true,…}` | BOTH ✔ | Closest to done — needs `gradients:false` + hover + gradient siblings. |
+
+### THE THREE GRADIENT SETUPS (`golden-controls.json:66-87`) — selection is unambiguous
+
+| # | Setup | Paints | Hover? | Use for |
+|---|---|---|---|---|
+| **1** | **In-row per-state gradient** — `DesignTokenPicker` state carrying `gradientValue`/`onGradientChange`; sibling attr `{attr}Gradient`; PHP `sgs_css_gradient_value()` | background / border / icon-stroke | **YES** | **Every new `backgroundColour` row** |
+| **2** | **`textGradientRow`** — `GradientCapableColourControl` via row `gradientCapable: true`; PHP `sgs_resolve_text_colour_or_gradient()` | **TEXT only** (`background-clip:text`) | YES | **Every `textColour` row** |
+| **3** | **`wholeBlockOverlay`** — `GradientOverlayControl`, stores a complete CSS gradient string (D636) | whole-block overlay above bg image/video | **NO — single-state by construction** | Already mounted on all 5. **Do NOT use for the new root rows.** |
+
+On `hero`, setup 1 sits **under** the existing setup-3 overlay — they stack, they don't compete.
+
+### Golden contract (`inspector-scan/rules/31-golden-colour-control.js`)
+- Conformant `nativeUi` = `supports.color` declared with **every sub-flag false** +
+  `__experimentalSkipSerialization: true` (key retained for the uniformity gate).
+- `states.minimum: 2` — normal + hover by default (Bean, 2026-08-19). Never parse state from
+  the attribute name.
+- `gradient.required: true`, exemptions declared at
+  `supports.sgs.colourExemptions.<rowKey> = {rule, reason}`; a boilerplate reason is itself a
+  finding.
+- ⚠ `survey:colour`'s `scope.eligible` is **self-fulfilling** (`build-roster.py:106` computes
+  it as "has colour already"), so a block with none can never be reported MISSING. Use
+  `qualifiesWhen.paintsOwnSurface` as the real predicate.
+
+### Target attribute set (per block, root element)
+`backgroundColour`, `backgroundColourGradient`, `backgroundColourHover`,
+`backgroundColourHoverGradient`, `textColour`, `textColourGradient`, `textColourHover`,
+`textColourHoverGradient` — all `{"type":"string","default":""}`, omitting any that exist.
+Plus two `SgsColourPanel` rows (setup 1 background, setup 2 text), each 2-state.
+
+**Reference implementation to copy verbatim: `sgs/button` `edit.js:381-470`** (5 rows, all
+2-state, 3 gradient-capable). Migration precedent: `sgs/site-header-row`, commit `0b62caf9`.
+
+### ⛔ Three gotchas that WILL bite
+1. **D684** — never pass a `DesignTokenPicker` value RAW to `wp_style_engine_get_styles()`.
+   Proven on canary: it emits the literal `background-color:primary;`, which the browser
+   drops — the client's colour silently does nothing. Route through **`sgs_colour_value()`**
+   (`includes/helpers-tokens.php:580`). Pattern: `site-header-row/render.php:78-107`.
+2. **D683** — retiring native colour breaks patterns **silently**. **283 `wp:sgs/{target}`
+   authorings exist** across `theme/sgs-theme/{patterns,templates,parts}`. Every
+   `"backgroundColor"`/`"textColor"` on a target block must be rewritten to the British
+   spelling **in the same commit**. ⚠ Scope the rename **inside `wp:sgs/*` comments only** —
+   American spelling is correct on core blocks.
+3. **`/sgs-update` reseed is cross-track** — it fails every *other* worktree's DB gate until
+   the classifier lands there too. Sequence it deliberately.
+
+### Undetermined — need Bean or a measurement
+- **`sgs/container`'s root colour: `SGS_Container_Wrapper` or block-private CSS?** D294's
+  selector says section/layout-KIND keeps the wrapper — but container *is* the wrapper.
+  **Rule 7 design gate.**
+- **`brand-strip`** — `backgroundColourHover`/`textColourHover` already exist but belong to
+  the **tile**, not the root. Reusing the names may silently drive tile CSS. Trace
+  `render.php` before naming the root attrs.
+- **Gradients have never been observed working in the live editor** (`golden-controls.json`
+  `⚠ unverifiedSurface`). Treat "it has a gradient toggle" as unproven until seen.
