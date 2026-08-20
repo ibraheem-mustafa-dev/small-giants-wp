@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-08-19 15:26:49 UTC
+# Stage 3 Style Variation Sync — 2026-08-20 19:02:08 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 5 | Inserted: 32 | Skipped: 165 | Conflicts: 130
+Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 171 | Conflicts: 130
 
 ## Per-client results
 
@@ -12,7 +12,7 @@ _(theme-snapshot.json not found)_
 
 ### eye-care-ward-end
 
-Inserted: 9 | Skipped: 25 | Conflicts: 8
+Inserted: 0 | Skipped: 31 | Conflicts: 8
 
 - CONFLICT: color-text (framework='#1a1a1a', client='#0D1B2A') → inserted as eye-care-ward-end-color-text
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as eye-care-ward-end-color-accent-text
@@ -25,7 +25,7 @@ Inserted: 9 | Skipped: 25 | Conflicts: 8
 
 ### helping-doctors
 
-Inserted: 3 | Skipped: 9 | Conflicts: 16
+Inserted: 0 | Skipped: 9 | Conflicts: 16
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#2d6e5e') → inserted as helping-doctors-color-primary
 - CONFLICT: color-primary-text (framework='#FFFFFF', client='#ffffff') → inserted as helping-doctors-color-primary-text
@@ -50,7 +50,7 @@ _(theme-snapshot.json not found)_
 
 ### indus-foods
 
-Inserted: 1 | Skipped: 17 | Conflicts: 13
+Inserted: 0 | Skipped: 17 | Conflicts: 13
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#0A7EA8') → inserted as indus-foods-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#075E80') → inserted as indus-foods-color-primary-dark
@@ -68,7 +68,7 @@ Inserted: 1 | Skipped: 17 | Conflicts: 13
 
 ### mamas-munches
 
-Inserted: 3 | Skipped: 27 | Conflicts: 24
+Inserted: 0 | Skipped: 27 | Conflicts: 24
 
 - CONFLICT: color-accent (framework='#C9A84C', client='#f5d050') → inserted as mamas-munches-color-accent
 - CONFLICT: color-border (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border
@@ -101,7 +101,7 @@ _(theme-snapshot.json not found)_
 
 ### sgs-construction
 
-Inserted: 4 | Skipped: 21 | Conflicts: 18
+Inserted: 0 | Skipped: 21 | Conflicts: 18
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#0A0A0A') → inserted as sgs-construction-color-primary-dark
@@ -124,7 +124,7 @@ Inserted: 4 | Skipped: 21 | Conflicts: 18
 
 ### sgs-healthcare
 
-Inserted: 4 | Skipped: 22 | Conflicts: 17
+Inserted: 0 | Skipped: 22 | Conflicts: 17
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A5F6B') → inserted as sgs-healthcare-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#124550') → inserted as sgs-healthcare-color-primary-dark
@@ -146,7 +146,7 @@ Inserted: 4 | Skipped: 22 | Conflicts: 17
 
 ### sgs-mosque
 
-Inserted: 4 | Skipped: 22 | Conflicts: 17
+Inserted: 0 | Skipped: 22 | Conflicts: 17
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A3D2B') → inserted as sgs-mosque-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#102519') → inserted as sgs-mosque-color-primary-dark
@@ -168,7 +168,7 @@ Inserted: 4 | Skipped: 22 | Conflicts: 17
 
 ### sgs-professional
 
-Inserted: 4 | Skipped: 22 | Conflicts: 17
+Inserted: 0 | Skipped: 22 | Conflicts: 17
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#131D3E') → inserted as sgs-professional-color-primary-dark
