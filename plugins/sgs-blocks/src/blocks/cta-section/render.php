@@ -67,8 +67,11 @@ $sgs_css_length = static function ( $value ) {
 // They are retained in block.json as historical schema only (no deprecated.js, D271). R-22-14.
 $ribbon = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
 // WS-4: `layout` renamed to `contentLayout` (the container owns `layout` = grid/flex).
-// Read the new name; fall back to the legacy `layout` for un-migrated posts (the ONLY back-compat path now - deprecations were deleted at D271).
-$content_layout           = $attributes['contentLayout'] ?? ( $attributes['layout'] ?? 'centred' );
+// No legacy fallback (R-31-14). The old `$attributes['layout']` branch was removed as
+// unreachable: `contentLayout` declares default 'centred' in block.json, so WP always
+// populates it and the `??` never reached the legacy read. Un-migrated posts already
+// rendered 'centred'; removing the branch changes no output.
+$content_layout           = $attributes['contentLayout'] ?? 'centred';
 $background_image         = $attributes['backgroundImage'] ?? null;
 $background_media         = $attributes['backgroundMedia'] ?? null;
 $background_image_opacity = $attributes['backgroundImageOpacity'] ?? 30;
