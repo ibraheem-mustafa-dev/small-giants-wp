@@ -63,6 +63,49 @@ const PEER_FILES = [ 'styling.json', 'input.json', 'behaviour.json' ];
 const MEASURABLE_AXES = [ 'canonical', 'bannedLookalikes', 'nativeUi' ];
 
 /**
+ * AXIS REGISTRY — which audit axes a control type DECLARES.
+ *
+ * ⭐ THE POINT. The census used to run a FIXED list of axes over every type:
+ * canonical / bannedLookalikes / nativeUi, plus hoverMechanism when a row
+ * happened to carry `states`. That list is COLOUR'S shape generalised outward,
+ * and it is why 17 of 21 types had at least one axis reading N/A across all 83
+ * blocks — the engine was asking questions their contracts never posed, and
+ * never asking the ones they did. `colour.gradient` is the starkest case: a
+ * required, Bean-ruled contract with 193 live findings that the census scored
+ * ZERO of, because `gradient` was not in the fixed list.
+ *
+ * An axis is DECLARED when the row carries its field. Declaring is separate
+ * from being MEASURABLE (see axisIsMeasurable) and separate again from having
+ * an EVALUATOR built — a type can declare an axis the engine cannot yet score,
+ * and that must surface as OWED WORK rather than as silence. Those three states
+ * are exactly what the old fixed list collapsed into one undifferentiated N/A.
+ *
+ * Adding an axis is: one entry here + one evaluator in the survey + the rows
+ * that want it. It is NOT a new per-type scanner — 21 private scanners would be
+ * 21 places for the same false-absence bug to hide, and this file exists so the
+ * five questions are asked once. (2026-08-19 found two such bugs in ONE shared
+ * engine; each fix repaired every type at once.)
+ */
+const AXIS_FIELD = {
+	canonical: 'canonical',
+	bannedLookalikes: 'bannedLookalikes',
+	nativeUi: 'nativeUi',
+	hoverMechanism: 'states',
+	gradient: 'gradient',
+};
+
+/**
+ * The axis names a row declares, in AXIS_FIELD order.
+ *
+ * @param {Object} row One control-type row.
+ * @return {string[]} Declared axis names.
+ */
+function declaredAxes( row ) {
+	if ( ! row || typeof row !== 'object' ) return [];
+	return Object.keys( AXIS_FIELD ).filter( ( axis ) => Boolean( row[ AXIS_FIELD[ axis ] ] ) );
+}
+
+/**
  * Can this axis be measured for this row, i.e. does the row carry the field
  * the engine reads? A row whose axis object exists but holds only prose
  * (`_note`) is NOT measurable — that shape is exactly how a capability goes
@@ -473,6 +516,8 @@ module.exports = {
 	loadSchema,
 	loadMergedSchema,
 	axisIsMeasurable,
+	declaredAxes,
+	AXIS_FIELD,
 	MEASURABLE_AXES,
 	canonicalComponentNames,
 	supportFamilyFromDetectVia,
