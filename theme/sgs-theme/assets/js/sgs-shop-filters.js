@@ -222,36 +222,45 @@
 			   focus call does NOT prevent it, because the scroll has already
 			   happened inside showModal() before we run.
 			   So the position is captured before and restored after. */
-			const scrollBefore = window.scrollY;
+			/* ── Why `autofocus` is set here, and why it is load-bearing ──
+			 *
+			 * PROVEN 2026-08-20 on the canary, by calling showModal() directly
+			 * with none of this file's code running: the page scrolled 348px.
+			 * showModal()'s focusing steps pick the first focusable descendant,
+			 * which is the SCROLL CONTAINER (a scrollable div is focusable), and
+			 * the browser then scrolls the document to reveal it. The theme sets
+			 * `html { scroll-behavior: smooth }`, so it animates - which is the
+			 * "opens and scrolls the page down randomly" report.
+			 *
+			 * An explicit `autofocus` target makes the focusing steps choose the
+			 * heading at the TOP of the sheet instead, and the jump measures 0.
+			 *
+			 * Two earlier attempts are deliberately NOT kept, because both were
+			 * aimed at unproven causes and neither worked: focus({preventScroll})
+			 * (the scroll happens inside showModal, before our code runs) and a
+			 * capture/restore of window.scrollY (it ran a frame too early - the
+			 * scroll is animated and had not started yet, so 669px only became
+			 * 348px). Keeping a fix that does nothing next to one that works makes
+			 * it impossible to tell later which is load-bearing. */
+			heading.setAttribute( 'tabindex', '-1' );
+			heading.setAttribute( 'autofocus', '' );
 
-			/* Lenis (the site's smooth-scroll layer, exposed as window.lenis)
-			   runs its own RAF loop and keeps driving the page toward ITS target,
-			   so a plain window.scrollTo() restore gets overwritten a frame later
-			   - measured: the 669px jump only fell to 348px with the restore
-			   alone. Stopping Lenis for the duration of the modal is the actual
-			   fix, and it doubles as the background-scroll lock. Guarded so the
-			   drawer still works if Lenis is ever removed or fails to load. */
+			/* Lenis (the smooth-scroll layer, exposed as window.lenis) is stopped
+			   for the duration of the modal. This is the REAL background-scroll
+			   lock: the `sgs-scroll-locked` body class alone does not lock
+			   anything - body still computes `overflow: auto` (measured live). */
 			lenisStop();
 			dialog.showModal();
-			restoreScroll( scrollBefore );
 
 			toggle.setAttribute( 'aria-expanded', 'true' );
 			stickyTrigger.hidden = true;
 			document.body.classList.add( 'sgs-scroll-locked' );
 
-			// Focus the heading (not the close button) per the APG pattern.
-			if ( heading ) {
-				requestAnimationFrame( function () {
-					/* tabindex is applied HERE and removed in finishClose(),
-					   never left on the element: dialog.show() - the desktop,
-					   non-modal path - moves focus into the dialog and would
-					   land on a permanently-focusable heading, painting a focus
-					   ring around the word "Filters" on page load for a mouse
-					   user who had not interacted at all. */
-					heading.setAttribute( 'tabindex', '-1' );
-					heading.focus( { preventScroll: true } );
-					restoreScroll( scrollBefore );
-				} );
+			/* Belt-and-braces only: `autofocus` above already lands focus on the
+			   heading (verified), but a browser that ignores autofocus inside a
+			   dialog would otherwise leave focus on the scroll container. */
+			if ( heading && document.activeElement !== heading ) {
+				heading.focus( { preventScroll: true } );
 			}
 		}
 
@@ -271,12 +280,6 @@
 			}
 		}
 
-		function restoreScroll( y ) {
-			if ( Math.abs( window.scrollY - y ) > 1 ) {
-				window.scrollTo( { top: y, left: 0, behavior: 'instant' } );
-			}
-		}
-
 		function closeDrawer() {
 			if ( ! modalOpen || ! dialog.open ) {
 				return;
@@ -289,6 +292,7 @@
 			lenisStart();
 			if ( heading ) {
 				heading.removeAttribute( 'tabindex' );
+				heading.removeAttribute( 'autofocus' );
 			}
 			toggle.setAttribute( 'aria-expanded', 'false' );
 			document.body.classList.remove( 'sgs-scroll-locked' );
