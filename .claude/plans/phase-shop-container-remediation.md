@@ -25,7 +25,7 @@ as every commit**.
 
 ---
 
-## ▶ EXECUTION PROGRESS (updated 2026-08-20, end of SECOND execution session)
+## ▶ EXECUTION PROGRESS (updated 2026-08-20, end of THIRD execution session)
 
 **Phase 1 Wave 1 SHIPPED + DEPLOYED + LIVE-VERIFIED. Wave 2 CODE-COMPLETE + COMMITTED, NOT
 DEPLOYED, NOT LIVE-VERIFIED (QC GATE 2 OPEN). Phase 2 NOT STARTED BY THIS TRACK — but see the
@@ -42,11 +42,75 @@ P2-6 work independently while Wave 2 was running.**
 | **QC GATE 1** | ✅ **PASS** | Build exit 0; findings surface; cause proven with file:line. |
 | **P1-4** deploy + live-verify | ✅ **PASS** | Instant filtering CONFIRMED working: a stamped `window` var survived a filter click (no reload), URL updated client-side, products 5→4, 2 `fetch` requests. |
 | **P1-5** template validity fixes | ✅ **DONE** (`fe078c2f`) | ⚠ Plan figures were wrong twice: **6** leaves, not 7 — `product-filter-clear-button` is NOT a leaf (its `save()` is `InnerBlocks.Content`) and was left untouched rather than guessed at. **10** stray comments, not 4. Classes verified against WooCommerce 11.0.0 `save.tsx`. |
-| **P1-6** colour on **3** non-container blocks | ✅ **BUILT + COMMITTED** (`fe078c2f`), **NOT live-verified** | hero / trust-bar / brand-strip. testimonial-slider dropped (already correct) and used as the TEMPLATE. Two blocks had their root background mapped to a native colour attr that was switched OFF, so it could never have worked. `sgs/brand-strip` had **no root element in its manifest at all** — one was added and the others renumbered. `sgs/hero` needed a duplicate-control baseline (`709bf066`) — handed to the colour track. |
+| **P1-6** colour on **3** non-container blocks | ✅ **BUILT + DEPLOYED** (`fe078c2f`); editor-side check outstanding | hero / trust-bar / brand-strip. testimonial-slider dropped (already correct) and used as the TEMPLATE. Two blocks had their root background mapped to a native colour attr that was switched OFF, so it could never have worked. `sgs/brand-strip` had **no root element in its manifest at all** — one was added and the others renumbered. `sgs/hero` needed a duplicate-control baseline (`709bf066`) — handed to the colour track. |
 | **P1-7** theme CSS (panel visibility, fallbacks, search width) | ✅ **DONE** (`fe078c2f`) | Dead teal fallbacks **enumerated at 47** (45× `#0f7e80`, 2× `#0b6668`), now 0. 15 of them sat on focus outlines and took `currentColor` rather than deletion — not in the brief, and correct. |
-| **P1-8** mobile filter sheet + a11y | ✅ **BUILT + COMMITTED** (`fe078c2f`), **NOT live-verified** | Native `<dialog>` bottom sheet. ⚠ Deviation flagged by the agent and accepted: sticky trigger built as `position:fixed` + scroll listener, not `position:sticky` — sticky would pin to its own containing block and sit near the page bottom, not follow the grid. |
-| **QC GATE 2** | 🔴 **OPEN — THE NEXT ACTION** | Nothing in Wave 2 has been seen running. Build is green (`exit 0`) so a deploy is now possible; it was blocked at commit time by a red ratchet. Four visual-gate skips logged honestly in `reports/visual-diff/manual-skips.log`, no fabricated PASS. |
+| **P1-8** mobile filter sheet + a11y | ✅ **DONE + LIVE-VERIFIED** (`fe078c2f` + 6 follow-ups) | Native `<dialog>` bottom sheet. ⚠ Deviation flagged by the agent and accepted: sticky trigger built as `position:fixed` + scroll listener, not `position:sticky` — sticky would pin to its own containing block and sit near the page bottom, not follow the grid. |
+| **QC GATE 2** | 🟡 **PARTIAL — frontend PASSES, editor half outstanding** | Nothing in Wave 2 has been seen running. Build is green (`exit 0`) so a deploy is now possible; it was blocked at commit time by a red ratchet. Four visual-gate skips logged honestly in `reports/visual-diff/manual-skips.log`, no fabricated PASS. |
 | **Phase 2** (P2-1…P2-9) | ⬜ **NOT STARTED** | Both design gates (G1/G2) remain closed and ready. |
+
+### ▶ THIRD SESSION (2026-08-20 evening) — Wave 2 closed on the frontend
+
+**Deployed and checked on the canary.** The deploy itself exposed a framework-wide defect
+first: every theme CSS/JS URL was versioned by the THEME version, which is never bumped, so
+warm browser caches served old bytes indefinitely (same URL: 10,199 fresh vs 5,079 cached).
+Both P1-7 and P1-8 looked broken until that was fixed — the server had the right files all
+along. Now versioned by `filemtime` (`d3e98700`). A server-side cache purge does NOT fix it.
+
+**P1-8 needed six follow-up fixes after the first live look.** Recorded because the pattern
+matters more than the individual bugs: *the drawer was structurally perfect and functionally
+dead.* Every control inside it was inert — the controls sit inside WooCommerce's own
+`.wc-block-product-filters__overlay`, which WC holds at `pointer-events: none` until IT sets
+`is-overlay-opened`. Our own neutralisation block had reset WC's overlay POSITIONING years
+earlier and never its pointer-events.
+
+⚠ **WooCommerce already ships a mobile filter drawer of its own** (its open-overlay button is
+in the DOM; we hide it). The site now carries two. **Left as a decision, deliberately not
+entrenched.**
+
+**A methodology failure worth not repeating:** the "sheet scrolls the page down" bug got
+THREE fixes aimed at an unproven cause, two of which did nothing (669px → 348px → 348px).
+Only instrumenting it settled it — calling `showModal()` with none of our code running still
+jumped 348px, because its focusing steps land on the scroll container and
+`html { scroll-behavior: smooth }` animates the browser scrolling to it. An `autofocus`
+target at the top of the sheet measures 0px. **Both failed fixes were removed rather than
+left stacked**, per the prove-the-cause rule.
+
+**Filter UI rebuild (Bean review).** Most of the "looks disgusting" complaints shared ONE
+cause: CSS written against markup WooCommerce 11 no longer emits, so it matched nothing and
+the controls fell back to UA styling — chips measured 2px radius / transparent / 12.8px. The
+selected-chip rule keyed on `aria-pressed` while the live element reports `aria-checked`, so
+a chosen filter looked identical to an unchosen one. Chips now consume the same six custom
+properties as `sgs/button`; panel, separators and slider derive from the client's primary via
+`color-mix`, so no client hex sits in framework CSS. Group labels existed only as
+`<legend class="screen-reader-text">`; revealing them is impossible without `!important`
+(core declares `position: absolute !important`), so each group now carries a real
+`sgs/heading`. The Availability filter was removed entirely — WooCommerce offers no attribute
+to drop just the out-of-stock option.
+
+### ⚠ CROSS-TRACK: what the OTHER session completed (do not re-do)
+
+Verified from the tree, not assumed:
+
+- **P2-3 (container root colour) — DONE by them** (`1905257e`, `52b96e68`). Their first pass
+  shipped a single-state, no-gradient row that failed their own golden shape; they found and
+  fixed it after our handover flagged the arithmetic.
+- **P2-6 (pattern rename) — PARTIAL.** ENUMERATED, not estimated: **38 done** across 23 theme
+  files; **39 remain** — 10 SGS authorings in `theme/` (footer patterns) and 29 in `sites/`
+  (php/html only; the raw string also appears in extraction artefacts that are NOT authorings
+  and must not be counted).
+- **Rule 31 ratchet** reconciled to 420 and then to 418.
+
+### 🔴 HANDED TO THE COLOUR-GOLDEN TRACK (3 items, in the handover doc)
+
+1. QC Gate 2's **editor half** — pick a colour, confirm the computed style changes at rest AND
+   on hover, on each of the 3 blocks. Gradients have never been observed working.
+2. **P2-1** — `sgs/container` background still capped at content width. Re-confirmed live this
+   session: `max-width: 1280px` on the OUTER element, `.sgs-container__inner` absent.
+3. **`sgs/container` gives no horizontal gutter** (NEW, not previously in this plan). At 355px
+   every ancestor of a product card computes `padding-left: 0`, so cards and the filter toggle
+   sit flush at `left: 0`. The template only ever declared top/bottom padding, so the gutter
+   came from the container default. Bean reports it used to exist → likely a regression from
+   this evening's container work.
 
 ### ⚠ CROSS-TRACK COLLISION — read before trusting any gate number in this doc
 

@@ -32,40 +32,32 @@ Per-step plan status is single-sourced to
   `/shop/` — proven behaviourally (a stamped `window` var survived a filter click, so no reload;
   URL updated client-side; products 5→4; 2 `fetch` requests). **D702**
 - **R-3 workstream: COMPLETE** (all 7 items).
-- **Phase 1 Wave 2: CODE-COMPLETE + COMMITTED + PUSHED (`fe078c2f`), NOT DEPLOYED, NOT
-  LIVE-VERIFIED.** All four steps done (P1-5/6/7/8). Build green, `exit 0`.
-  **DEPLOYED + PARTLY LIVE-VERIFIED 2026-08-20.** P1-7 PASSES live (filter panel now
-  visibly distinct; elevation tokens resolve; search capped). P1-8 PASSES structurally
-  (real `<dialog>`, closed = `display:none`, 0 focusable, focus lands on the heading,
-  desktop still an in-flow 260px sidebar).
-  ✅ **P1-8 NOW PASSES FUNCTIONALLY (`8772643f`, deployed + live-verified).** Ticking a
-  filter in the sheet works: products 5 → 1, URL gains `filter_stock_status=outofstock`.
-  Open/close animates both ways (sampled mid-exit: translate 0% → 78% → 96% → 100% while
-  still painted, then `display:none`). Real Escape closes, focus returns to the toggle,
-  scroll lock releases, `aria-expanded` syncs both ways.
-  ⚠ **STILL OPEN — WooCommerce ships its own mobile filter drawer**, so the site now
-  carries two. We hide WC's trigger and drive ours. Left as a deliberate decision to make,
-  not silently entrenched.
-  ~~🔴 P1-8 FAILED functionally — filters inert~~ (FIXED, kept for the mechanism: Proven:
-  the controls sit inside WooCommerce's OWN `.wc-block-product-filters__overlay`, which
-  WC styles `pointer-events:none` until IT adds `is-overlay-opened`. Our dialog never sets
-  that state. ⚠ **WooCommerce already ships its own mobile filter drawer** (its
-  open-overlay button exists in the DOM) — P1-8 built a second drawer on top of theirs.
-  The neutralisation block had reset WC's overlay POSITIONING but never its
-  `pointer-events`.)
-  🔴 **P1-6 colour NOT yet verified** — needs an editor login; that is the remaining gate item.
-  ⛔ **`fix(theme)` d3e98700 — theme assets are now versioned by filemtime.** Every theme
-  CSS/JS URL previously carried the theme version, so any asset deployed between releases
-  kept an identical URL and warm browser caches served the OLD bytes indefinitely. Proven
-  live: same URL, 10,199 fresh bytes vs 5,079 cached. This had silently affected EVERY
-  theme asset deploy. A server cache purge does not fix it.
-- **Phase 2: NOT STARTED BY THIS TRACK — but partly shipped by the parallel colour-golden
-  session** (`20332725`, `1905257e`): `sgs/container` base background plus 38 theme attr
-  renames, i.e. P2-6-shaped work. ⚠ **Re-scope Phase 2 against the tree before starting it.**
-- ⚠ **Shared worktree.** Two sessions committed to `main` within seconds of each other.
-  Commit path-scoped (the repo's own pre-commit gate enforces this) and never trust a
-  subagent's "not my block" attribution on a moving tree — three did exactly that this
-  session and all three were wrong.
+- **Phase 1 Wave 2: COMPLETE ON THE FRONTEND, DEPLOYED, LIVE-VERIFIED.** P1-5/6/7/8 all
+  shipped. The mobile filter sheet works end to end: filters apply (products 5 → 1), the
+  sheet animates in and out, opens with 0px page jump, scrolls internally, Escape closes,
+  focus returns, and the closed drawer exposes 0 focusable controls (was 26 — a real WCAG
+  fix).
+- **QC GATE 2: PARTIAL.** Frontend PASSES. The EDITOR half is outstanding and is handed to
+  the colour-golden track: pick a colour on `sgs/hero` / `sgs/trust-bar` / `sgs/brand-strip`
+  and confirm the computed style changes at rest AND on hover. Gradients have never been
+  observed working on these blocks — a dead gradient toggle is a finding, not a pass.
+- ⛔ **Framework-wide defect found and fixed (`d3e98700`): theme assets were served STALE to
+  any warm browser cache.** Every theme CSS/JS URL carried the theme version, which is never
+  bumped, so an asset deployed between releases kept an identical URL. Same URL returned
+  10,199 fresh bytes vs 5,079 cached. This silently affected EVERY theme asset deploy ever
+  made, and a server cache purge does NOT fix it. Now versioned by `filemtime`.
+  **If you concluded a theme-side change "didn't work" before this commit, re-test it.**
+- ⚠ **The site now carries TWO mobile filter drawers.** WooCommerce ships its own (we hide
+  its trigger and run ours). Ours is better on accessibility — native top layer, real focus
+  trap, hidden-by-construction when closed. **This is a decision to make, not a bug to patch.**
+- **Phase 2: P2-3 DONE by the other session** (`1905257e`, `52b96e68`). **P2-6 PARTIAL —
+  enumerated: 38 renames done, 39 remain** (10 SGS authorings in `theme/` footer patterns, 29
+  in `sites/`; the raw string also appears in extraction artefacts which are NOT authorings).
+  **P2-1, P2-2, P2-4, P2-5, P2-7, P2-9 NOT STARTED.** QC Gates 3 and 4 not reached.
+- 🔴 **Two container defects handed over, no temp patch applied (Bean's explicit call):**
+  background still capped at content width (P2-1), and `sgs/container` now gives NO horizontal
+  gutter — at 355px product cards and the filter toggle sit flush at `left: 0`, which looks
+  like a regression from this evening's container work.
 - **Handover 3** → `.claude/reports/2026-08-20-HANDOVER-3-shop-wave-2-to-colour-golden-track.md`
 
 ### ▶ NEXT SESSION — Wave 2, and P1-6 FIRST
