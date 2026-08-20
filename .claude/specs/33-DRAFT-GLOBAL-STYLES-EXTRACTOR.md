@@ -7,7 +7,7 @@ thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
 last_verified: 2026-07-13 (D322 — ALL 13 FRs shipped + live-proven on Mama's page 8; component-CSS migrated out of the snapshot; focus-visible + buttons + rule-9 verified clean; header/footer/nav design-gate cross-reference added same day, no FR change)
-status: COMPLETE (v1.1.1 — Part 1 done: all 13 FRs shipped + live-verified. Deferred: other-5-client rollout behind per-client reclone (FR-33-11); Part 2 = header/footer clone, now emitting `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` per the 2026-07-13 header/footer/nav design-gate)
+status: COMPLETE (v1.1.1 — Part 1 done: all 13 FRs shipped + live-verified. Deferred: other-5-client rollout behind per-client reclone (FR-33-11); Part 2 = header/footer clone, now emitting `sgs/site-header`/`sgs/site-footer`/`sgs/nav-menu`+`sgs/nav-drawer` per the 2026-07-13 header/footer/nav design-gate)
 status_history:
   - 2026-07-13 — v0.1.0 authored (corpus-grounded, 10 FRs).
   - 2026-07-13 — v0.2.0 after a 6-persona /adversarial-council (Cynic/Spec-Lawyer/Ship-PM/Extraction-Correctness/Support-Realist/Systems-Integration; all C-band, GO-conditional). Applied every convergent must-fix. Bean-directed shape: keep the COMPLETE spine (all DECLARED value types in v1 — colour/typography/spacing/radius/shadow/buttons/layout), because the cost/risk is the DERIVATION mechanism, not the breadth of value types. The declared-vs-derived line is the trust boundary: declared (Pass A) auto-applies after computed-validation; derived (Pass B) is PROVISIONAL/advisory, never auto-pushed to a live theme. Fixed the FR-33-1 precedence contradiction that would have re-shipped D303; defined the role-inference rule table; pinned ΔE + determinism; reuse-by-composition (freeze the live hex-only helper); added provenance trace + golden fixtures + deploy-safety gates + bootstrap-ordering + forward contracts. All 4 open questions RESOLVED into FRs.
@@ -35,11 +35,11 @@ status_history:
     name this fallback explicitly; a cross-reference note is added to FR-33-6 (which governs the
     surface/dark-theme discard decision, a related but DIFFERENT mechanism — corrects an earlier
     mis-citation that conflated the two).
-  - 2026-07-13 — v1.1.1 (post-D322, no FR change, additive): the header/footer/nav design-gate (`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean-approved) named the concrete Part-2 emit target and a new consumer relationship for Part 1's output. **Consumer link (new):** `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` — the specialised container blocks the design-gate approved for inside the header/footer template parts — default their colours/typography/spacing from the SAME `theme-snapshot.json` this spec generates (global-styles consumer, no new extraction surface; see design-gate §4b). **Part 2 emit target (concrete):** Part 2 (draft header/footer → WP) now emits these three named blocks, not `core/group` — this spec's role stays unchanged (it still only produces the token source Part 2 and the new blocks read). **FR-33-13 linkage (noted, not resolved):** the reserved `settings.custom.header`/`.footer` namespace is one candidate source for the new blocks' header-specific settings; the design-gate leaves the tokenise-vs-Customiser choice as a Part 2 design-gate item (§15 Q1 area) — not decided here. No FR text changed; this is a forward-reference update only.
+  - 2026-07-13 — v1.1.1 (post-D322, no FR change, additive): the header/footer/nav design-gate (`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean-approved) named the concrete Part-2 emit target and a new consumer relationship for Part 1's output. **Consumer link (new):** `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-menu`+`sgs/nav-drawer` — the specialised container blocks the design-gate approved for inside the header/footer template parts — default their colours/typography/spacing from the SAME `theme-snapshot.json` this spec generates (global-styles consumer, no new extraction surface; see design-gate §4b). **Part 2 emit target (concrete):** Part 2 (draft header/footer → WP) now emits these three named blocks, not `core/group` — this spec's role stays unchanged (it still only produces the token source Part 2 and the new blocks read). **FR-33-13 linkage (noted, not resolved):** the reserved `settings.custom.header`/`.footer` namespace is one candidate source for the new blocks' header-specific settings; the design-gate leaves the tokenise-vs-Customiser choice as a Part 2 design-gate item (§15 Q1 area) — not decided here. No FR text changed; this is a forward-reference update only.
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
   - 37-HEADER-FOOTER-BUILDER.md (Part 2 sibling — the header/footer converter, built AFTER this; reserves the header/footer token namespace, FR-33-13; formerly 17-HEADER-FOOTER-ARCHITECTURE.md)
-  - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md (Bean-approved 2026-07-13 — names Part 2's concrete emit target as `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, and makes those blocks a consumer of this spec's `theme-snapshot.json` for global-style defaults, §4b)
+  - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md (Bean-approved 2026-07-13 — names Part 2's concrete emit target — as `sgs/adaptive-nav` at the time; that block was DELETED at Spec 36 Phase-1 close (2026-07-20) and the current target is `sgs/nav-menu`+`sgs/nav-drawer`, and makes those blocks a consumer of this spec's `theme-snapshot.json` for global-style defaults, §4b)
   - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE reused; the converter reads the snapshot this generates → bootstrap ordering FR-33-12)
   - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked idea this formalises)
   - ../parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
@@ -59,7 +59,7 @@ absorbed_by: none
 >
 > **Part 2's emit target is now concrete (2026-07-13 header/footer/nav design-gate, Bean-approved):**
 > Part 2 clones a draft's header/footer rows onto the new specialised container blocks
-> `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` (`.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`)
+> `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-menu`+`sgs/nav-drawer` (`.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`)
 > — NOT `core/group`. Those blocks also become a downstream CONSUMER of this spec's output: every
 > element/setting on them defaults its colours/typography/spacing from the `theme-snapshot.json` Part 1
 > generates (the design-gate's §4b "global defaults + Site Info access" requirement), so a client's
@@ -115,7 +115,7 @@ against the draft's **actual computed `documentElement` font-size**, never a har
 
 **Out of scope (the NOT list):**
 - NOT the header/footer converter (Part 2 / Spec 37) — but reserves its token namespace now (FR-33-13).
-  Part 2's concrete emit target (`sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, per the
+  Part 2's concrete emit target (`sgs/site-header`/`sgs/site-footer`/`sgs/nav-menu`+`sgs/nav-drawer`, per the
   2026-07-13 header/footer/nav design-gate) is named here for cross-reference only; building those
   blocks, and deciding whether their header-specific settings live in the reserved
   `settings.custom.header`/`.footer` namespace or a Customiser/JS-var channel, is a Part 2 decision
@@ -299,7 +299,7 @@ message; a run after a fresh extraction proceeds.
   mobile-nav breakpoint) are Part 2's, in a reserved `settings.custom.header`/`.footer` namespace —
   declared now so Part 2 does not force a Part 1 re-spec (Bean Q6).
   **2026-07-13 update:** Part 2's owner is now concretely `sgs/site-header`/`sgs/site-footer`/
-  `sgs/adaptive-nav` (header/footer/nav design-gate). Those blocks' GLOBAL defaults (brand colour/
+  `sgs/nav-menu`+`sgs/nav-drawer` (header/footer/nav design-gate). Those blocks' GLOBAL defaults (brand colour/
   typography/spacing) come from Part 1's `theme-snapshot.json` output directly — that linkage needs
   no namespace decision, it is the existing global-styles consumption every block already gets.
   Whether the blocks' HEADER-SPECIFIC settings (sticky bg, header height, etc.) land in this reserved
@@ -444,7 +444,7 @@ border/border-width/border-radius/padding/font-size/font-weight/min-height/hover
 (small/medium/large/pill), transition/duration/easing, focus-ring}`; `settings.layout.{contentSize
 1200, wideSize 1400}`; `styles.typography` (base body); `styles.elements.{h1..h6, heading, link,
 button}`. **NEW namespace this spec reserves:** `settings.custom.header`/`.footer` (Part 2, FR-33-13; Part 2's
-concrete owner is `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` per the 2026-07-13
+concrete owner is `sgs/site-header`/`sgs/site-footer`/`sgs/nav-menu`+`sgs/nav-drawer` per the 2026-07-13
 header/footer/nav design-gate — those blocks' GLOBAL colour/typography/spacing defaults read the
 `settings.color.palette`/`settings.typography.*`/`settings.spacing.*` slots above directly; whether
 their header-specific settings use this reserved namespace is still open, see FR-33-13).

@@ -73,7 +73,7 @@ sgs-theme/
 │   └── single-product.html      # WooCommerce PDP — composes sgs-pdp-* template parts (Spec 30, D210)
 │
 ├── parts/
-│   ├── header.html                 # Consolidated site header — search-free default. Already hosts sgs/site-header (+ sgs/adaptive-nav), BUILT + LIVE (D323-D333, §S9 11/11; see §Header/Footer/Nav Block System below; Spec 37 owns the block FRs)
+│   ├── header.html                 # Consolidated site header — search-free default. Already hosts sgs/site-header (+ sgs/nav-menu; `sgs/adaptive-nav` was DELETED at Spec 36 Phase-1 close 2026-07-20), BUILT + LIVE (D323-D333, §S9 11/11; see §Header/Footer/Nav Block System below; Spec 37 owns the block FRs)
 │   ├── header-shrink.html          # Header variant: shrink-on-scroll
 │   ├── header-sticky.html          # Header variant: always sticky
 │   ├── header-transparent.html     # Header variant: transparent with scroll reveal
@@ -351,7 +351,7 @@ Standard header with:
 - Navigation menu (centre or right, configurable via block settings)
 - CTA button (right, accent colour)
 - Sticky behaviour via `header-behaviour.js` (adds `.is-scrolled` class for shrink/shadow effect; supports modes: static, sticky, transparent, transparent-sticky, smart-reveal, shrink, hidden — see legacy header-system-design spec for full mode reference)
-- Mobile: hamburger menu with slide-out drawer (`sgs/mobile-nav`, off-canvas drawer)
+- Mobile: hamburger menu with slide-out drawer (`sgs/nav-drawer`; the old `sgs/mobile-nav` was deleted at D336, 2026-07-14)
 - Announcement bar slot above header (optional, toggled via customiser or block)
 - **Once P1/P2 land** (design-approved 2026-07-13, build-pending), the header content will be composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/adaptive-nav` inside it — see §Header/Footer/Nav Block System.
 
@@ -378,8 +378,8 @@ The theme continues to provide the header/footer as WordPress **template parts**
 |---|---|---|
 | `sgs/site-header` | Header shell — 3 optional named rows (top utility / middle primary / bottom message) | `SGS_Container_Wrapper` (KIND: section) |
 | `sgs/site-footer` | Footer shell — named rows + up-to-N columns | `SGS_Container_Wrapper` (KIND: section) |
-| `sgs/adaptive-nav` | One nav-bar↔burger menu, 4-tier breakpoint | `SGS_Container_Wrapper` (KIND: layout) + nav logic |
-| `sgs/mobile-nav` (reused) | Off-canvas drawer — P0 unclickable-drawer bug fixed 2026-07-13 | existing block, hardened |
+| `sgs/nav-menu` | One nav-bar↔burger menu, 4-tier breakpoint (replaced `sgs/adaptive-nav`, DELETED 2026-07-20) | `SGS_Container_Wrapper` (KIND: layout) + nav logic |
+| `sgs/nav-drawer` | Off-canvas drawer (replaced `sgs/mobile-nav`, DELETED at D336 2026-07-14) | own render.php |
 
 A block that *subsumes* the template-part/Site-Info/rules system remains forbidden (the `no-header-footer-block.py` hook still blocks bare `header`/`footer`/`nav` block slugs); it now allow-lists `src/blocks/{site-header,site-footer,adaptive-nav}/` for these three specialised containers only.
 
