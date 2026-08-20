@@ -106,6 +106,9 @@ export default function Edit({ attributes, setAttributes, name }) {
     alignContent = "stretch",
     templateMode = "free",
     backgroundColour,
+    backgroundColourGradient,
+    backgroundColourHover,
+    backgroundColourHoverGradient,
   } = attributes;
 
   // Active device tier for the preview, read from the SAME source the inspector's
@@ -258,6 +261,18 @@ export default function Edit({ attributes, setAttributes, name }) {
                   value: backgroundColour,
                   onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
                   linked: true,
+                  gradientValue: backgroundColourGradient,
+                  onGradientChange: ( val ) =>
+                    setAttributes( { backgroundColourGradient: val ?? '' } ),
+                },
+                {
+                  key: 'hover',
+                  label: __( 'Hover', 'sgs-blocks' ),
+                  value: backgroundColourHover,
+                  onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+                  gradientValue: backgroundColourHoverGradient,
+                  onGradientChange: ( val ) =>
+                    setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
                 },
               ],
             },

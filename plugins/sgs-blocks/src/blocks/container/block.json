@@ -512,6 +512,18 @@
 		"backgroundColour": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"providesContext": {

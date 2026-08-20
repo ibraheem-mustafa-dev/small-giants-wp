@@ -71,7 +71,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	// DesignTokenPicker stores a token SLUG ('surface') when linked:true, and the
 	// style engine does not resolve a bare slug — it would emit the invalid
 	// `background-color:surface` (proven live defect, D684, site-header-row).
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	// RESTING flat colour goes through the style engine as before. The GRADIENT
+	// sibling and the HOVER state cannot: the style engine has no state axis and
+	// would emit a gradient as a flat colour. Both are emitted below as a scoped
+	// `.uid{…}` / `.uid:hover,.uid:focus-visible{…}` pair via the shared
+	// sgs_emit_state_colour_css(), exactly as sgs/hero does (render.php:386-419).
+	//
+	// ⛔ WHY THE PAIR EXISTS AT ALL (2026-08-20): this row shipped earlier the same
+	// day with ONE state and NO gradient, and rule 31 correctly flagged it twice —
+	// a non-conformant colour row added while enforcing the colour standard. It is
+	// completed here rather than exempted. A row with a resting colour but no hover
+	// is not a smaller feature, it is an asymmetric one: the same STATE_WITHOUT_BASE
+	// shape in reverse.
+	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour']
+		&& empty( $attributes['backgroundColourGradient'] ) ) {
 		$sgs_container_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
 		if ( '' !== $sgs_container_bg_value ) {
 			$sgs_container_style_engine_input['color']['background'] = $sgs_container_bg_value;
@@ -98,6 +111,54 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$sgs_container_supports_classes[] = $sgs_container_supports_uid;
 		}
 	}
+}
+
+// ── Background colour: GRADIENT sibling + HOVER state ────────────────────────
+// The style engine above handles only a resting FLAT colour. It has no state
+// axis and would emit a gradient as a flat colour, so both are emitted here as
+// a scoped `.uid{…}` / `.uid:hover,.uid:focus-visible{…}` pair through the same
+// shared helper sgs/hero uses (render.php:386-419) — one emitter, not a second
+// mechanism. `sgs_background_paint_decl()` returns background-image for a
+// gradient and background-color for a flat value, so a gradient wins over its
+// flat sibling exactly as it does on hero and sgs/quote.
+$sgs_container_resting_decls = array();
+$sgs_container_hover_decls   = array();
+
+$sgs_container_resting_bg = sgs_background_paint_decl(
+	(string) ( $attributes['backgroundColour'] ?? '' ),
+	(string) ( $attributes['backgroundColourGradient'] ?? '' )
+);
+// Only emit the resting declaration here when a GRADIENT is in play — the flat
+// case already went through the style engine above, and emitting it twice would
+// duplicate the declaration for no benefit.
+if ( '' !== $sgs_container_resting_bg && ! empty( $attributes['backgroundColourGradient'] ) ) {
+	$sgs_container_resting_decls[] = $sgs_container_resting_bg;
+}
+
+$sgs_container_hover_bg = sgs_background_paint_decl(
+	(string) ( $attributes['backgroundColourHover'] ?? '' ),
+	(string) ( $attributes['backgroundColourHoverGradient'] ?? '' )
+);
+if ( '' !== $sgs_container_hover_bg ) {
+	$sgs_container_hover_decls[] = $sgs_container_hover_bg;
+}
+
+if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
+	// The uid is normally minted by the style-engine branch above, but that
+	// branch does not run when the ONLY colour set is a gradient or a hover —
+	// mint it here in that case, using the identical derivation so a block that
+	// has both paths still gets exactly one uid and one class.
+	if ( empty( $sgs_container_supports_uid ) ) {
+		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
+	}
+	$sgs_container_state_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
+
+	$sgs_container_supports_css = ( $sgs_container_supports_css ?? '' ) . sgs_emit_state_colour_css(
+		$sgs_container_state_sel,
+		$sgs_container_resting_decls,
+		$sgs_container_hover_decls
+	);
 }
 
 // Preset font-size slug — skip-serialisation drops WP's automatic has-*-font-size
