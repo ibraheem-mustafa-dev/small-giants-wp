@@ -614,3 +614,135 @@ plus a coverage question:
 Audit dispatched; register lands as its own Phase 1 workstream. Expected to share a root cause
 across several scripts (each hand-rolling its own "find this block's controls" logic), in which
 case the fix is one shared resolver, not N patches.
+
+---
+
+# R-3 BATCH ENFORCEMENT-SCRIPT FIX — the register
+
+~60 gates audited. Wiring is mostly good; the two flaws are **narrower than feared but real**.
+
+## ⭐ The headline: the fix for FLAW B already exists in-tree
+
+`plugins/sgs-blocks/scripts/inspector-scan/core/components.js` → **`resolveComponentFiles()`**
+(`:199`, exported `:259`) is already a shared name→file resolver covering `src/components/`,
+`src/blocks/*/components/` and `src/blocks/extensions/` (`:186-196`).
+
+**Only 4 call sites use it** — `check-simple-surface-cap.js:142`, `inspector-scan/rules/21:68`,
+`rules/27:52`, `core/golden.js:28`.
+
+**Every FLAW-B-blind script is a missing ADOPTER, not a missing mechanism.** This is one shared
+fix, not N patches — exactly the outcome hoped for.
+
+*Probe used throughout:* `contentWidth` — 0 hits in `container/edit.js`; defined in
+`container/components/WidthPanel.js` + `ContainerWrapperControls.js`; declared
+`container/block.json:481`; consumed `class-sgs-container-wrapper.php:188,228`.
+
+## R3-a — Adopt the existing resolver (root cause; 5 scripts, one fix)
+*Mechanical + light judgement. Low risk.*
+
+| Script | What to replace |
+|---|---|
+| `check-editor-render-parity.js` | the `edit.js`-only corpus at `:74-76` |
+| `check-dead-controls.js` | CHECK 4/5 corpus `:59`, `:1365`; hardcoded `ContainerWrapperControls.js` literal at `:108` |
+| `check-duplicate-controls.js` | block-own-`components/` only, `:232-234` |
+| `check-inert-controls.py` | hardcoded literal `:73` — needs a Python equivalent or a JSON dump from the JS resolver |
+| `check-undeclared-attrs.py` | `edit.js`-only `:336-355` |
+
+⚠ **Finding counts WILL jump.** Land each behind its existing baseline, then trim (R3-d).
+Two hardcoded `ContainerWrapperControls.js` literals become resolver lookups and stop missing
+`WidthPanel.js` entirely.
+
+## R3-b — Wire the genuinely-unwired detectors
+*Mechanical. May fail the build on day one → land with a recorded baseline.*
+
+Add to `prebuild`: `check:inert-controls`, `check:undeclared-attrs`, `check:device-toggle:gate`.
+⚠ `check-unresolvable-token-refs.py` needs its hardcoded `return 0` at `:355` replaced with a
+real exit path **first** — as written it cannot fail even if wired.
+
+## R3-c — Promote or delete the ACCIDENTAL advisories (not the deliberate ones)
+
+**Fix:**
+- `check-editor-render-parity.js:3489-3490` — `CHECK_A_BLOCKS_BUILD` / `CHECK_B_BLOCKS_BUILD`
+  both `false`; flip **after** R3-a re-baselines. Copy `check-dead-controls.js:1823-1834`'s
+  Test F, which already proves a flip works both ways.
+- `check-dead-controls.js:1420,1427` — give each a dated trigger or flip.
+- `prestart`'s `(python scripts/check-dead-api-calls.py --check || echo [ADVISORY]…)` — drop the
+  `|| echo`. `prebuild` already hard-gates the same script, so the two chains disagree.
+
+**⛔ LEAVE ALONE — deliberately advisory with a documented promotion path:**
+`check-dead-pattern-attrs.py:303-318` (named trigger) · `check-wrapper-capability-preconditions.js`
+severity tiers · `wp-pre-merge-gate --soft` · every skip-classifier
+(`check-editor-only.py`, `check-editor-canvas-css.py`, `check-markup-neutral.py`, …) — those
+authorise a visual-diff skip and are not detectors at all.
+
+## R3-d — Stale baselines hiding real regressions
+
+| Baseline | Entries | Last touched | Concern |
+|---|---|---|---|
+| `dead-controls-baseline.json` | 387 | **2026-06-12** | 10 weeks stale, across an entire no-inline programme. **Highest risk.** |
+| `editor-render-parity-baseline.json` | 783 | 2026-08-19 | current — **but the gate that reads it cannot fail, so all 783 are inert** |
+| `consistency/box-flat-baseline.json` | 627 | 2026-08-03 | largest in the tree |
+| `shared-css-state-rules-baseline.json` | 491 | 2026-07-26 | large + stale |
+| `oldshape-audit-baseline.json` | 469 | 2026-08-19 | current, never trimmed toward 0 |
+| `lints/lint-theme-css-hardcodes-baseline.json` | 132 | 2026-07-17 | stale |
+
+Only `check-element-manifest-conformance.js:796-798` carries a "never raise it silently"
+convention. Copying that one comment line to the six above is the whole fix — one line each,
+not a process.
+
+## R3-e — The biggest hole: nothing checks block.json → render.php
+
+| Edge | Covered? |
+|---|---|
+| block.json declares → editor has a control | covered, **but the gating half is `edit.js`-blind**; the shared-aware half (`survey-control-gaps.py`) is unwired |
+| editor control → **editor canvas reflects it** | `check-editor-render-parity.js` CHECK A only — advisory + `edit.js`-only ⇒ **effectively uncovered** |
+| **block.json declares → `render.php` consumes it** | **LARGELY UNCOVERED — the biggest hole.** No gate asserts a declared attr is read by `render.php` *or* the wrapper. This is the edge that would have caught the `contentWidth` class of defect. |
+| render.php emits → value valid / reaches DOM | partially covered |
+
+**Build the missing edge as an `inspector-scan` RULE, not as script #61** — it inherits the
+resolver and the baseline machinery for free.
+
+## ⛔ Explicitly NOT doing (ceremony that catches nothing — per R-2)
+- Promoting the `survey-*` censuses to gates — they are deliberate censuses; gating them fails
+  every build
+- Wiring the live/DOM audits (`audit-scoped-selector-live.js`, `audit-post-content-blocks.py`)
+  into `prebuild` — they need a reachable canary and warn-and-pass when disconnected, which
+  proves nothing
+- A 4th roster/registry of gates
+
+## R3-f — Stale docstrings (zero risk)
+`check-tier-storage-shape.py:55-58` claims it is unwired pending promotion; it **is** in
+`prebuild`. `check-simple-surface-cap.js` runs bare (no `--check`) — harmless, inconsistent.
+
+## R3-g — "BUILT AND USEFUL, BUT WIRED TO NOTHING" (Bean's angle, 2026-08-20)
+
+A category distinct from FLAW A. These are not *mis*-configured — they simply never run, so
+whatever they detect has never been looked at. Two earlier audits plus this one found **14
+scripts with zero `package.json` reference**. Triage into three buckets:
+
+**Bucket 1 — genuinely unwired detectors, likely worth wiring:**
+- `surveys/check-control-parity-live.js`
+- `surveys/survey-wrapper-capability.js`
+- `check-device-toggle.js` (has both `:gate` and `:selftest` aliases and still runs nowhere)
+- `check-unresolvable-token-refs.py` ⚠ needs its hardcoded `return 0` (`:355`) fixed first, or
+  wiring it achieves nothing
+
+**Bucket 2 — ⭐ the one that matters most: `surveys/survey-control-gaps.py`.**
+It is **shared-component-aware already** (explicit globs at `:178-184`) — i.e. it is the
+*non-blind* half of the exact edge that `check-dead-controls.js` covers blindly. It has been
+sitting unwired while the blind gate ran on every build. Wiring this may be cheaper than
+fixing the blind one, and should be evaluated first in R3-a.
+
+**Bucket 3 — correctly unwired, leave alone:**
+- The six skip-classifiers (`check-editor-only.py`, `check-editor-canvas-css.py`,
+  `check-markup-neutral.py`, `check-interaction-only-css.py`,
+  `check-blockjson-metadata-only.py`, `check-token-rename-neutral.py`) — invoked by
+  `.githooks/sgs-gates.sh`, not build gates
+- Live/DOM audits needing a reachable canary (`audit-scoped-selector-live.js`,
+  `audit-post-content-blocks.py`, `audit-shrink-to-fit.js`, `placement-reach.py`) — they
+  warn-and-pass when disconnected, so gating them proves nothing
+- Census-by-design surveys
+
+**First action for this bucket:** run each Bucket-1/2 script once and record what it actually
+finds. A detector nobody has ever run may be reporting a real defect class today — or may be
+stale and broken. **Cheap to determine, and it decides whether wiring is worth anything.**

@@ -36,16 +36,32 @@ WAVE 1 (4 parallel)  → QC-1 → WAVE 2 (parallel) → QC-2   ← Phase 1 ends 
 `sgs/container` is the bottleneck — four steps touch its files and must run in sequence.
 Everything else parallelises around it. Phase 1 needs no design gate and can start cold.
 
-## ⚠ One open question before Phase 2 (Phase 1 is unblocked)
+## ✅ No open questions — Phase 1 AND Phase 2 are both unblocked
 
-The G1 council surfaced a **third option nobody had considered**, and Bean has not ruled on it:
+The G1 council's "third option" was **superseded by Bean's own better answer (R-1)**: the
+shared wrapper stays blank (→ CSS `row`), and individual blocks declare their own defaults in
+their own `block.json` where their semantics require it. Sharing a render mechanism does not
+mean sharing defaults.
 
-> Keep the `layout` default as `""` and have the **editor insert `layout:"flex"` explicitly on
-> newly-inserted containers.** New authorings get flex; every stored instance — repo *and*
-> database — keeps its current rendering; the converter path is untouched. Same goal, **zero
-> retroactivity.**
+**Bean's decisive argument, which no council seat raised:** matching CSS defaults keeps the
+cloning pipeline's mapping honest both ways — a draft silent on direction maps to a container
+silent on direction, and a draft that stacks must *say* `flex-direction: column`, because
+column is not the language default either. Deviating would bake a permanent translation error
+into every clone.
 
-Bean's `row` ruling settled *direction*, not *whether to change the default at all*. Ask him.
+**Verification ceremony was CUT (R-2, Bean's call):** no DB census, no formal before/after
+capture, no rollback triggers, no blocking triage queue. Pre-production, nothing to preserve.
+Kept only what saves time: `npm run build`, one live look after deploy, the one-line
+closed-drawer tabbable assertion, and `build-deploy.py` with no bypass flags.
+
+**NEW Phase 1 workstream (R-3): batch enforcement-script fix.** Full register at the end of
+`phase-shop-container-remediation.md`. ~60 gates audited. Headline: **the fix already exists
+in-tree** — `inspector-scan/core/components.js` `resolveComponentFiles()` already resolves
+shared components, and only 4 call sites use it. Every blind script is a missing adopter, not
+a missing mechanism. Biggest hole found: **nothing asserts a declared attr is consumed by
+`render.php` or the wrapper** — that is the edge that would have caught the `contentWidth`
+defect. Also: `editor-render-parity-baseline.json` holds 783 accepted findings that are all
+**inert**, because the gate reading them is hardcoded to never fail.
 
 ---
 
@@ -95,7 +111,8 @@ defects in the first plan draft, including one that would have broken ~280 patte
 
 ---
 
-## Also shipped today (separate golden-builder thread — carried forward, not mine)
+## Also shipped today (separate golden-builder / colour-audit thread — parallel, not the
+## shop-archive track above; continued through the rest of the day, D700)
 
 Three golden-builder sessions were merged into `main` but never *proved*. Running them found
 four real defects, three invisible to every gate:
@@ -108,9 +125,49 @@ four real defects, three invisible to every gate:
 - **Shared `flattenPresetSetting()`** — 3rd recurrence of one class; one function now.
 - **Duplicate "Font size" label removed.**
 
+**Continued later the same day (D700, commits `f805a400`/`9daf35f6`/`78120ed2`) — the colour
+control-type audit's POC is now a single fact-checked artefact, not 8 disconnected reports:**
+
+- Full master traceability table, 24 rows, all 8 colour scanners — every number carries its
+  exact source script/command/field and how it was verified. `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
+- `bannedLookalikes` axis depth+exclusion fix — real ~34-block reach now, not ~3-18 — plus a
+  real-file self-test.
+- **4-rater `/qc-council` ground-truth validation** (source code, live Playwright on
+  sandybrown, DB cross-check, independent re-trace): 21 of 24 rows confirmed directly, 2 more
+  resolved via `/systematic-debugging`, 1 residual named honestly.
+- **Two real bugs found + root-caused + fixed + deployed:** `sgs/feature-grid`'s misleading
+  "Layout type" dropdown (removed, live on canary) and `compare-reach-depth.py`'s own
+  non-deterministic LIFO-traversal race (fixed to BFS, self-tested with a negative control
+  that genuinely fails 3-of-5 runs against the old code — proof the bug was real, not
+  imagined).
+
 Their standing warning matches this session's: *the instrument, not the code.* A gate failed on
 a sentence inside a comment; a survey reported "nothing to see" for 49 real problems because
-its pattern could not match an underscore.
+its pattern could not match an underscore. Determinism is not accuracy either — re-running a
+tool and getting the same number twice proved nothing until ground-truth-checked.
+
+### Colour-golden track — what's next (does not block the shop-archive track above)
+
+The POC is honest now, not finished. In priority order:
+
+1. **Switch rule 31 to the wider resolver (`resolveComponentFiles()`).** The single biggest
+   remaining gap — its 409-finding count is still blind to ~30 blocks reached only through
+   shared wrapper panels, so it's a floor, not a ceiling. Deliberately NOT done same-session:
+   it's a load-bearing advisory-gate count change needing its own predicted-vs-measured pass,
+   not a bolt-on. Read `.claude/plans/go-c1-c4-lively-zebra.md`'s "C0" section first — the
+   wider resolver already exists and is proven; this is wiring it in, not building it.
+2. **Gradient mechanism-awareness.** `row-missing-gradient` (193 findings) currently checks
+   "does *a* gradient path exist," not "is it the mechanism-correct one for what this row
+   paints" — a text row wired to the background mechanism would pass clean while rendering
+   nothing. The 3-mechanism model is already specified in the report's ADDENDUM section.
+3. **Defect-level matching** between rule 31's 409 and colour-coverage's 120 (block-level
+   overlap — 33 of 34 — is done; whether specific findings describe the same bug is not).
+4. **Declare colour's own `qualifiesWhen.paintsOwnSurface.cssProperties`** in
+   `golden-controls.json` — colour still runs on the hardcoded-regex fallback every other
+   undeclared type inherits, backwards from "colour is the reference implementation."
+
+Full detail + exact commands for all four: `.claude/reports/2026-08-20-colour-golden-scan-set.md`
+(top status block) and `.claude/decisions.md` D700.
 
 ---
 
@@ -120,6 +177,8 @@ its pattern could not match an underscore.
 |---|---|
 | Executable plan | `.claude/plans/phase-shop-container-remediation.md` |
 | Full evidence + decisions | `.claude/plans/2026-08-20-shop-archive-remediation-design.md` |
+| Colour-golden master table + status | `.claude/reports/2026-08-20-colour-golden-scan-set.md` |
+| Colour-golden raw evidence (8 scanners) | `.claude/reports/2026-08-20-colour-golden-raw/` |
 | Structural defences / STOP catalogue | `.claude/STOP-CATALOGUE.md` |
 | D-numbered log | `.claude/decisions.md` (ceiling verified via the `^## D[0-9]+` anchored grep) |
 | Parked work | `.claude/parking.md` |
