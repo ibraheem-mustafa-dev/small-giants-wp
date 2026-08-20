@@ -61,8 +61,9 @@ Rule 7 gates. No subagent can take these.
 | ~~G1~~ | `flexDirection` default | ~~P2-2~~ | ✅ **CLOSED — Bean ruled `row`** (CSS default). Council CONFIRMED it correct on two grounds the recommendation missed: `stack` is already flex-column, and `row` is LESS retroactive than `column`. See "G1 design council" below. |
 | ~~G2~~ | `sgs/container` root colour routing | ~~P2-3~~ | ✅ **CLOSED — Bean ruled `SGS_Container_Wrapper`.** Rule 7 gate satisfied. |
 
-**Both gates are now CLOSED.** ⚠ ONE NEW question was raised by the council and is NOT yet
-answered — see "THIRD OPTION" below: whether to change the `layout` default at ALL, versus
+**Both gates are CLOSED, and so is the council's third option** (superseded by R-1 below:
+blank wrapper + per-block defaults). ~~ONE NEW question was raised by the council and is NOT yet
+answered~~ — see "THIRD OPTION" below: whether to change the `layout` default at ALL, versus
 having the editor write `layout:"flex"` explicitly on newly-inserted containers (zero
 retroactivity). Bean's ruling settled DIRECTION, not whether to change the default.
 Phase 1 does not depend on it and can start immediately.
@@ -535,3 +536,81 @@ itself has no kind, so the discriminator never reaches the 138); per-client
 3. Before/after `computed-parity.json` at 375 / 768 / 1440.
 4. **Rollback trigger:** any container whose children's `getBoundingClientRect().top` values
    become equal where they previously differed. One instance = revert.
+
+---
+
+# FINAL RULINGS — Bean, 2026-08-20 (supersede everything above where they conflict)
+
+## R-1. Flex default: `row`, via a BLANK wrapper — CLOSED, do not reopen
+
+`layout` default → `flex`. `flexDirection` stays **blank in the wrapper**, which resolves to
+CSS `row`. Bean's three arguments — the third is the one that actually settles it and none of
+the council seats raised it:
+
+1. **Core parity.** `core/group` with a flex layout defaults to row. Matching it means one
+   less framework-specific rule to carry.
+2. **Per-block defaults are allowed.** Sharing the wrapper does NOT mean sharing defaults. Each
+   `block.json` owns its own default even when the render mechanism is shared. So the wrapper
+   staying neutral costs nothing.
+3. **⭐ The cloning pipeline — the decisive argument.** If SGS defaults match CSS defaults, the
+   converter's mapping is honest in both directions: a draft silent on direction → a container
+   silent on direction → row, matching. A draft that stacks must *say* `flex-direction: column`,
+   because column is not the language default either. Deviating from CSS would put a permanent
+   translation error between every draft and its clone.
+
+### The architecture that follows (this resolves the council's "third option" better than it did)
+
+> **The shared wrapper imposes nothing. Individual blocks declare their own defaults in their
+> own `block.json` where their semantics require it.**
+
+- `sgs/container` (the generic primitive) → `layout: flex`, `flexDirection` blank → row.
+- Composites and container-equivalents whose semantics are vertical (hero, cta-section, and
+  any other section-shaped block) → **explicitly declare their own appropriate default in their
+  own block.json.**
+- ⚠ Implementation note: `sgs/hero`, `sgs/feature-grid` and `sgs/form` currently declare
+  `"layout": {"default": ""}`, identical to the container, so they inherit the same behaviour
+  today. Under this ruling each is reviewed and given its own explicit default if its semantics
+  call for one. That is the per-block customisation Bean is describing — not a wrapper change.
+- The council's "editor writes `layout:flex` explicitly on insert" option is **superseded**.
+
+## R-2. Verification scope: CUT the ceremony — Bean's explicit instruction
+
+> *"we're not even live yet and are still developing now, lets not waste time on your strict
+> before and after check conditions, rollback triggers etc — we have nothing to preserve but we
+> have everything to lose if we waste too much time because I'm not earning anything before we
+> get this done"*
+
+**DROPPED from the plan** (all were seat-3 requirements written for a production posture that
+does not exist):
+- DB census across every live install before shipping a default change
+- Formal before/after `computed-parity.json` capture at 3 widths as a gate
+- Named rollback triggers (`getBoundingClientRect().top` equality tests, one-instance-revert)
+- Treating the 76 multi-child containers as a blocking triage queue
+
+**KEPT — the cheap checks that SAVE time by catching mistakes before they compound:**
+- `npm run build` green (it is one command and it gates ~50 real checks)
+- "Did the thing actually work?" — a single live look at the canary after a deploy
+- The closed-drawer tabbable-count assertion (one line, catches a real WCAG regression)
+- Deploy via `build-deploy.py` only, never `--allow-dirty`/`--skip-verify` (this is not
+  ceremony — it is the guard that stopped a 2.5h outage, D336)
+
+**The distinction being applied:** ceremony that protects production data → dropped, there is
+no production. Cheap checks that catch a mistake in 30 seconds instead of 3 hours → kept,
+because those *buy* time rather than cost it.
+
+## R-3. Batch enforcement-script fix — NEW WORKSTREAM
+
+Bean: fix the whole class in one batch rather than one script at a time. Two systemic flaws
+plus a coverage question:
+
+- **FLAW A** — scripts that are advisory-by-accident or never wired, especially those in
+  `prebuild` / `/sgs-update` / deploy. (Deliberately-advisory-with-a-promotion-path is fine and
+  must be distinguished from advisory-by-accident.)
+- **FLAW B** — scripts blind to attributes/controls arriving from a shared extension or helper
+  file, the way `check-editor-render-parity.js` CHECK A cannot see `sgs/container`'s controls
+  because they live in `components/`.
+- **Coverage** — make editor and live sides both consistent with the block's declared settings.
+
+Audit dispatched; register lands as its own Phase 1 workstream. Expected to share a root cause
+across several scripts (each hand-rolling its own "find this block's controls" logic), in which
+case the fix is one shared resolver, not N patches.
