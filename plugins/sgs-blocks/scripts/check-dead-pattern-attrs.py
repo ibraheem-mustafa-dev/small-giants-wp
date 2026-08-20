@@ -1,11 +1,39 @@
 #!/usr/bin/env python3
-"""Find block attributes in theme patterns/parts that WordPress silently DISCARDS.
+"""Find block attributes in theme patterns/parts that WordPress silently DISCARDS
+from the EDITOR — while it may still be painting on the frontend right now.
 
 WHY THIS EXISTS
 ---------------
-WordPress drops any block attribute the block.json does not declare. No error, no
-warning, no test failure, no build failure — the value simply never reaches render.
-Nothing in the existing gate set catches it:
+⚠ CORRECTED 2026-08-20. This file (and several of its siblings) used to claim
+WordPress drops an undeclared block attribute "before render" — full stop. That
+is only half right, and the wrong half is dangerous: it reads as "safe to
+delete", when the attribute may be painting live on the frontend today.
+
+The two surfaces behave DIFFERENTLY (confirmed by reading WP core source —
+Gutenberg `packages/blocks/src/api/parser/get-block-attributes.ts`; the PHP
+side is analysed rather than locally read, no `class-wp-block-type.php` copy
+was found under this repo's `node_modules`/vendor trees — flag any correction
+to this note if that changes):
+
+  * EDITOR / JS (`getBlockAttributes()`): builds the block's `attributes`
+    object by iterating the REGISTERED schema, so an undeclared key is simply
+    never produced. The client cannot see it or edit it — it is an
+    uneditable ghost setting in the inspector.
+  * PHP / FRONTEND RENDER (`WP_Block_Type::prepare_attributes_for_render()`):
+    iterates the incoming attributes and `continue`s past any key the schema
+    doesn't recognise — it does NOT `unset()` that key. `unset()` only fires
+    for a DECLARED attribute that fails JSON-schema validation. So an
+    undeclared attribute written directly into a pattern/template's block
+    comment (as every finding below is) reaches `render.php`'s `$attributes`
+    array UNCHANGED and can be consumed there.
+
+**Practical effect: a finding here is a value the client can no longer see or
+edit, NOT a value proven dead at render.** Before removing an authoring, or
+removing a render.php read of one, check whether that block's render.php
+actually consumes the key (e.g. `sgs/container/render.php` reads
+`backgroundColor` and emits a real `has-{slug}-background-color` class from
+it) — if it does, this is a VISUAL change requiring a before/after check, not
+a safe cleanup. Nothing in the existing gate set catches this class:
 
   * check-dead-controls.js   catches control-WITHOUT-render (the inverse).
   * check-hardcoded-render-defaults.js only fires when a block DECLARES the attr.
@@ -61,8 +89,11 @@ THEME_DIR = REPO / 'theme' / 'sgs-theme'
 # `color.text`, `color.gradients`, `typography.fontSize`,
 # `typography.__experimentalFontFamily`, `__experimentalBorder.color`/
 # `border.color`). A pattern authoring e.g. `"backgroundColor": "primary"` on a
-# block that never declared `supports.color` gets it silently discarded at
-# render, identical in class to the style.* bug this file already catches.
+# block that never declared `supports.color` gets it dropped from the EDITOR
+# schema — the client can't see or edit it — but the value still reaches
+# render.php's `$attributes` array unchanged (PHP keeps an unrecognised key;
+# see the module docstring's PHP-vs-JS split), identical in class to the
+# style.* bug this file already catches.
 # These six are now resolved via NATIVE_PRESET_ATTR_MAP / find_dead_native_
 # preset_attrs() below, reusing the same declared-vs-truthy logic as
 # _native_style_family_declared(). They stay OUT of NATIVE (unconditional) but
@@ -395,28 +426,34 @@ def main() -> int:
     shape = [f for f in findings if f[4] == 'shape-mismatch']
     native_style = [f for f in findings if f[4] == 'native-style-undeclared']
     native_preset = [f for f in findings if f[4] == 'native-preset-undeclared']
-    print(f'[dead-pattern-attrs] {len(findings)} SILENTLY-DISCARDED attribute(s) '
+    print(f'[dead-pattern-attrs] {len(findings)} EDITOR-INVISIBLE attribute(s) '
           f'({len(undeclared)} undeclared, {len(shape)} shape-mismatch, '
           f'{len(native_style)} native-style-undeclared, '
           f'{len(native_preset)} native-preset-undeclared):\n')
     for rel, line, name, key, kind in findings:
         print(f'  {rel}:{line}')
         if kind == 'undeclared':
-            print(f'      {name} -> "{key}" is not declared in its block.json — WP drops it at render.\n')
+            print(f'      {name} -> "{key}" is not declared in its block.json — WP drops it from the '
+                  f'EDITOR schema (uneditable ghost setting), but PHP does NOT drop it before '
+                  f'render.php runs. Check whether render.php actually reads "{key}" before assuming '
+                  f'it is dead.\n')
         elif kind == 'shape-mismatch':
             print(f'      {name} -> "{key}" is declared type:"object" but the stored value is a '
                   f'scalar/list — WP coerces it to the default at render.\n')
         elif kind == 'native-style-undeclared':
             print(f'      {name} -> "{key}" is a native WP style family this block\'s `supports` '
-                  f'section does not declare at all — WP silently discards the value at render '
-                  f'(same class as an undeclared custom attr, native path instead).\n')
+                  f'section does not declare at all — WP drops it from the EDITOR schema, but PHP '
+                  f'does NOT drop it before render.php runs (same class as an undeclared custom '
+                  f'attr, native path instead).\n')
         else:  # native-preset-undeclared
             print(f'      {name} -> "{key}" is a native WP preset attr (backgroundColor/textColor/'
                   f'gradient/fontSize/fontFamily/borderColor) this block\'s `supports` section does '
-                  f'not actually register — WP silently discards the value at render (flat-attribute '
-                  f'sibling of native-style-undeclared).\n')
-    print('Fix the attr name (check the block.json), or declare it. A discarded attr is')
-    print('not a style bug — the value never reaches render at all.')
+                  f'not actually register — WP drops it from the EDITOR schema, but PHP does NOT '
+                  f'drop it before render.php runs (flat-attribute sibling of '
+                  f'native-style-undeclared).\n')
+    print('Fix the attr name (check the block.json), or declare it. An "editor-invisible" attr is')
+    print('not proven dead at render — check render.php before deleting the authoring or the read;')
+    print('a class="has-{slug}-background-color" or similar may be painting on the frontend today.')
     # `native-style-undeclared` (2026-08-12) and `native-preset-undeclared`
     # (2026-08-20) are ADVISORY finding kinds — held back from the hard gate
     # per this project's own promotion discipline (E6 point 9: never gate a

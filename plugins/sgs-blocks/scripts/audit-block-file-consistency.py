@@ -926,15 +926,39 @@ def check_undeclared_render_refs(block, extension_attrs):
                 continue
             if attr in NATIVE_ATTRS or attr in block.support_injected or is_extension_attr(attr, extension_attrs):
                 continue
+            if filename == 'render.php':
+                # ⚠ CORRECTED 2026-08-20 — PHP does NOT discard an undeclared
+                # attribute before render.php runs (WP_Block_Type::
+                # prepare_attributes_for_render() `continue`s past an
+                # unrecognised key, it does not `unset()` it — unset is only
+                # for a DECLARED attr failing schema validation). A value
+                # hand-authored into a theme pattern/template block comment
+                # (as opposed to saved through the block editor, which filters
+                # to the registered schema before writing post_content)
+                # genuinely reaches this read. This is NOT proven dead —
+                # sgs/container's own `backgroundColor` read is the live
+                # counter-example (undeclared, still paints a real class).
+                # Flagged as a schema-authoring gap (the attr should probably
+                # be declared, or the read removed with a verified before/
+                # after), not as a confirmed-dead read.
+                reason = (
+                    f'{filename} reads {attr!r} from attributes but block.json does not declare it — '
+                    'PHP does NOT drop an undeclared attribute before render.php runs, so this read '
+                    'may still be live (e.g. from a hand-authored theme pattern/template); verify '
+                    'against the actual render before treating it as dead'
+                )
+            else:
+                reason = (
+                    f'{filename} reads {attr!r} from attributes but block.json does not declare it — '
+                    "the editor's getBlockAttributes() only builds the registered schema, so this "
+                    'value never reaches the JS attributes object and this read is dead'
+                )
             findings.append({
                 'type': 'undeclared_render_ref',
                 'block': block.slug,
                 'attr': attr,
                 'file': filename,
-                'reason': (
-                    f'{filename} reads {attr!r} from attributes but block.json does not declare it — '
-                    'WP silently discards an undeclared attribute at parse time, so this read is dead'
-                ),
+                'reason': reason,
             })
     return findings
 

@@ -511,7 +511,8 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
     the LOCAL block.json schemas (i.e. the code about to be deployed) for:
       * stranded content — old scalar shapes an InnerBlocks render no longer reads
         (the empty-Indus-homepage class), and
-      * undeclared attrs — silently discarded at parse, DELETED on next editor save.
+      * undeclared attrs — dropped from the EDITOR schema (not from render.php's
+        `$attributes`; PHP keeps an unrecognised key), DELETED on next editor save.
 
     Read-only on the site (`wp post get` — the guard-sanctioned route). Findings
     already dispositioned in the casualty register live in

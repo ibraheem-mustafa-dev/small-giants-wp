@@ -11,9 +11,15 @@ palestine-lives.org, 2026-07-14/15):
      in the old self-closing shape renders an empty shell — every word intact in
      wp_posts.post_content, unreadable to the renderer. No error, no failing test.
 
-  2. UNDECLARED ATTRS (the D338 class): WordPress silently DISCARDS any block
-     attribute the block.json does not declare — worse, the first editor save
-     round-trip deletes it from post_content permanently.
+  2. UNDECLARED ATTRS (the D338 class): a block attribute the block.json does
+     not declare is silently DROPPED FROM THE EDITOR (the schema JS builds
+     `attributes` from never includes it — the client can't see or edit it),
+     but PHP does NOT drop it before render.php runs, so it may render fine
+     right now (see check-dead-pattern-attrs.py's module docstring for the
+     PHP-vs-JS mechanism). The danger is the FIRST editor save round-trip:
+     that re-serialises the block from the JS-side (schema-filtered) state
+     and permanently deletes the value from post_content — silent, no error,
+     no failing test.
 
 This scanner is READ-ONLY: it takes post_content text (exported via the guard-
 sanctioned `wp post get <id> --field=post_content`) and reports findings against

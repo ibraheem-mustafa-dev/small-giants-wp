@@ -634,10 +634,15 @@ def render_minimums(blk: dict, props: list[str]) -> dict:
 
     Each filter is a recorded silent-failure mode:
 
-    (a) NOT DECLARED — WordPress silently DISCARDS any attribute a block.json
-        does not declare: no error, no warning, no failing build (D338, which
-        found 45 live in shipped patterns). Writing one is dead weight that
-        also trips the deploy's stored-content audit.
+    (a) NOT DECLARED — WordPress drops an undeclared attribute from the EDITOR
+        schema (uneditable, invisible in the inspector), but PHP does NOT drop
+        it before render.php runs — no error, no warning, no failing build
+        (D338, which found 45 live in shipped patterns; several were still
+        painting the frontend, so "not declared" is NOT proof of "dead at
+        render"). Excluded from this fixture regardless, because it also
+        trips the deploy's stored-content audit — the exclusion is about
+        keeping this generator's own output clean, not a claim the value
+        can never render.
 
     (b) UNDER TEST — the `default` variant exists to measure what the block does
         with the property UNSET; that is the regression surface the gate is
