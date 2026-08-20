@@ -68,11 +68,39 @@
 //     supplies `surfaces: {}` to a fixture block, never `null` (documented trap, core/
 //     selftest.js:118-124), so a mustFlag fixture for this kind cannot exist by construction.
 //
+// ── SHARED-OWNER SCAN (C4 step 2, 2026-08-20) — the edit.js-only boundary immediately below is
+// now PARTIALLY closed, not fully. `row-below-minimum-states` and `row-missing-gradient` are
+// widened to follow the SAME shared-component reach walk as the survey (`core/golden.js`
+// `reachedComponents()` over `core/components.js` `resolveComponentFiles()`), so a colour row
+// defined in `GridItemDefaultsPanel.js`/any other reached `components/` file is now found. THIS
+// AXIS ALONE is widened — `banned-lookalike` stays edit.js-only DELIBERATELY (see its own check
+// below): the canonical row components (`DesignTokenPicker.js`, `GradientCapableColourControl.js`)
+// legitimately wrap `<ColorPalette>` internally, and widening banned-lookalike's reach would flag
+// that conformant shape, destroying its own regression guard (0 live). `native-colour-ui` and
+// `roster-surface-unknown` are untouched (they read block.json/roster, not JSX reach, by
+// construction). A shared-owner row is attributed to the FILE that owns it, not to every block
+// that mounts it — one FLAGGED finding per (owner file, rowKey), carrying `mountedBy: [block
+// slugs]` as the per-block worklist. Computed ONCE per ctx (memoised on ctx itself — `run()` is
+// invoked once per block by the harness, so a fresh ctx per real run / per self-test fixture run
+// keeps this correctly scoped) and EMITTED ONCE overall (guarded by a ctx flag), regardless of
+// which block's call happens to run first. A shared file nothing mounts is never in the reach map
+// at all, so it is skipped by construction (dead code is not a client-facing defect).
+//
 // ── BLIND SPOTS (declared, not fixed here) ───────────────────────────────────────────────────
-//   - Same per-block-edit.js-text boundary as rules 04/08/18/24/30: a colour control reached
-//     indirectly via a block's own local `components/` subfolder, or a shared `src/components/
-//     *.js` file, is invisible. `src/components/SgsColourPanel.js`/`GradientOverlayControl.js`
-//     themselves are correctly excluded by this same boundary, not by a name exemption.
+//   - Same per-block-edit.js-text boundary as rules 04/08/18/24/30 for `banned-lookalike` and for
+//     the DIRECT edit.js scan: a colour control reached indirectly via a block's own local
+//     `components/` subfolder, or a shared `src/components/*.js` file, is invisible to THAT axis
+//     alone. `src/components/SgsColourPanel.js`/`GradientOverlayControl.js` themselves are
+//     correctly excluded from `banned-lookalike` by this boundary, not by a name exemption.
+//   - A shared-owner row's REQUIRED-states count always uses the schema's floor of 2, never a
+//     derived higher minimum — `requiredStatesFor()` needs ONE mounting block's own
+//     `supports.sgs.elements` to derive a higher floor, and a shared row can be mounted by several
+//     blocks with different elements maps, so there is no single correct per-block answer for one
+//     owner-scoped finding. This can only ever UNDER-count, same direction as the existing
+//     nested-object-access blind spot below.
+//   - A shared-owner row is never checked against `colourExemptions` — that field lives on a
+//     MOUNTING block's own block.json, and is equally ambiguous across multiple mounting blocks
+//     with potentially different exemptions. A shared row missing a gradient always flags.
 //   - A `rows` array built as `rows={ colourRows }` where `colourRows` is populated via
 //     `const colourRows = []; colourRows.push({...})` calls IS resolved (product-card, nav-menu,
 //     social-icons all use exactly this shape per their own D618/D619 header comments — a
@@ -105,9 +133,11 @@
 //   - `extensions/` is out of scope for the same structural reason as rules 24/30 (`core/
 //     roster.js`'s `scanDisk` admits only directories with a `block.json`).
 
+const fs = require( 'fs' );
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 const { hasRealReason } = require( '../core/baseline' );
+const { resolveComponentFiles } = require( '../core/components' );
 
 const RAW_COLOUR_COMPONENT_NAMES = new Set( [
 	'ColorPalette',
@@ -146,7 +176,241 @@ const {
 	statesArrayHasGradient,
 	requiredStatesFor,
 	slugify,
+	reachedComponents,
 } = require( '../core/golden' );
+
+// ── Shared-owner scan helpers (C4 step 2, 2026-08-20) ────────────────────
+// See the header SHARED-OWNER SCAN note above for what this closes and why
+// it is scoped the way it is.
+
+/**
+ * Every subdirectory of ctx.blocksDir that has its own block.json — i.e. the
+ * SAME "is this a block" test core/selftest.js's own harness uses (`if ( !
+ * fs.existsSync( path.join( full, 'block.json' ) ) ) continue;`). Reads
+ * ctx.blocksDir directly rather than ctx.roster.entries because self-test's
+ * ctx carries `roster: { entries: [] }` (buildTestCtx, deliberately empty —
+ * per-block fixtures are driven by directory names, not a roster). A reach
+ * walk keyed on ctx.roster.entries would silently find zero blocks and never
+ * exercise this axis in self-test at all.
+ */
+function discoverBlockDirNames( ctx ) {
+	if ( ! fs.existsSync( ctx.blocksDir ) ) return [];
+	return fs.readdirSync( ctx.blocksDir ).filter( ( name ) => {
+		const full = path.join( ctx.blocksDir, name );
+		return fs.statSync( full ).isDirectory() && fs.existsSync( path.join( full, 'block.json' ) );
+	} );
+}
+
+/**
+ * Every shared-component file reached by ANY on-disk block, mapped to the
+ * set of block slugs that reach it. Memoised on `ctx` itself (not module
+ * state) so a fresh ctx — one real run.js invocation, or one self-test
+ * fixture run — gets a correctly-scoped, independent computation; ctx is the
+ * SAME object across every per-block call within one run, so this only runs
+ * once per run.
+ *
+ * `resolveComponentFiles` is passed `[ ctx.componentsDir ]` as an extra
+ * search directory — a no-op duplicate against the real tree in a live run
+ * (ctx.componentsDir === the real src/components already scanned by
+ * default), but load-bearing for self-test: buildTestCtx points
+ * ctx.componentsDir at the fixture's own isolated `_components/` copy, so a
+ * fixture can declare its own shared panel without depending on any real,
+ * actively-edited framework file.
+ */
+function getSharedOwnerScan( ctx ) {
+	if ( ctx.__rule31SharedOwnerScan ) return ctx.__rule31SharedOwnerScan;
+
+	const compFiles = resolveComponentFiles( ctx.componentsDir ? [ ctx.componentsDir ] : [] );
+	const ownerMountedBy = new Map(); // ownerFile -> Set(blockSlug)
+	const parseFile = ( f ) => {
+		const p = ctx.cache.parse( f );
+		return p.ok ? p.ast : null;
+	};
+
+	for ( const name of discoverBlockDirNames( ctx ) ) {
+		const entryEditFile = path.join( ctx.blocksDir, name, 'edit.js' );
+		const parsed = ctx.cache.parse( entryEditFile );
+		if ( ! parsed.ok ) continue;
+		const reached = reachedComponents( parsed.ast, compFiles, parseFile );
+		for ( const ownerFile of reached.values() ) {
+			if ( ! ownerFile ) continue; // null = the block's own edit.js — already covered per-block
+			if ( ! ownerMountedBy.has( ownerFile ) ) ownerMountedBy.set( ownerFile, new Set() );
+			ownerMountedBy.get( ownerFile ).add( `sgs/${ name }` );
+		}
+	}
+
+	const result = { ownerMountedBy };
+	ctx.__rule31SharedOwnerScan = result;
+	return result;
+}
+
+/**
+ * Scans ONE owner file for colour rows — SgsColourPanel `rows` (resolved via
+ * the SAME `collectIndirectRowSources`/`resolveArrayLike` mechanism the
+ * per-block scan below uses, so a `.push()`-built or spread-conditional rows
+ * array in a shared panel is resolved identically) and standalone
+ * `DesignTokenPicker`. Deliberately does NOT check `banned-lookalike` — see
+ * the header note. Emits ONE finding per rowKey, `block: null`, carrying
+ * `mountedBy` for the per-block worklist.
+ */
+function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
+	const findings = [];
+
+	const { pushedRows, declaredArrays } = collectIndirectRowSources(
+		( visitors ) => ctx.cache.traverse( file, visitors ),
+		unwrapRowObject
+	);
+
+	function resolveArrayLike( node, depth ) {
+		if ( ! node || depth > 6 ) return [];
+		if ( node.type === 'ArrayExpression' ) {
+			return node.elements.flatMap( ( el ) =>
+				el && el.type === 'SpreadElement' ? resolveArrayLike( el.argument, depth + 1 ) : [ el ]
+			);
+		}
+		if ( node.type === 'Identifier' ) {
+			if ( pushedRows[ node.name ] ) return pushedRows[ node.name ];
+			if ( declaredArrays[ node.name ] ) return resolveArrayLike( declaredArrays[ node.name ], depth + 1 );
+			return [];
+		}
+		if ( node.type === 'ConditionalExpression' ) {
+			return resolveArrayLike( node.consequent, depth + 1 ).concat(
+				resolveArrayLike( node.alternate, depth + 1 )
+			);
+		}
+		if (
+			node.type === 'CallExpression' &&
+			node.callee &&
+			node.callee.type === 'MemberExpression' &&
+			node.callee.property &&
+			node.callee.property.name === 'filter'
+		) {
+			return resolveArrayLike( node.callee.object, depth + 1 );
+		}
+		return [];
+	}
+
+	function resolveRowObjects( rowsExpr ) {
+		return resolveArrayLike( rowsExpr, 0 ).map( unwrapRowObject ).filter( Boolean );
+	}
+
+	function emitSharedRow( { rowKey, statesArray, gradientCapable, line } ) {
+		const statesCount =
+			statesArray && statesArray.type === 'ArrayExpression' ? statesArray.elements.length : 1;
+		// Shared-owner rows use the schema's floor of 2 — see the header note:
+		// a per-mounting-block derived minimum has no single correct answer
+		// for one owner-scoped finding, so this never attempts to derive one.
+		const required = 2;
+		const mountedByText = mountedByList.join( ', ' );
+
+		if ( statesCount < required ) {
+			findings.push( {
+				...makeFinding( {
+					rule: ruleId,
+					block: null,
+					file,
+					line,
+					severity: 'warn',
+					detail:
+						`${ file }:${ line } — SHARED colour row "${ rowKey }" (mounted by ${
+							mountedByList.length
+						} block(s): ${ mountedByText }) carries ${ statesCount } state${
+							statesCount === 1 ? '' : 's'
+						}, below the required 2 (golden-controls.json controls.colour.states — a shared row ` +
+						'always uses the schema floor, never a per-block derived minimum).',
+					fix:
+						`Add the missing state(s) to this row's states array in ${ path.basename(
+							file
+						) } (a "hover" state at minimum — see sgs/button edit.js:381-399). This is a SHARED ` +
+						'file: fixing it here clears the finding for every block in mountedBy at once, but ' +
+						"each mounting block's own block.json must already declare the sibling attribute " +
+						'this state writes to, or WordPress silently discards it on save.',
+					keyParts: [ 'shared-row-below-minimum-states', rowKey, String( line ) ],
+				} ),
+				mountedBy: mountedByList,
+			} );
+		}
+
+		const hasGradient = gradientCapable === true || statesArrayHasGradient( statesArray );
+		if ( ! hasGradient ) {
+			findings.push( {
+				...makeFinding( {
+					rule: ruleId,
+					block: null,
+					file,
+					line,
+					severity: 'warn',
+					detail:
+						`${ file }:${ line } — SHARED colour row "${ rowKey }" (mounted by ${
+							mountedByList.length
+						} block(s): ${ mountedByText }) has no gradient path and no exemption is checked for ` +
+						'a shared row (golden-controls.json controls.colour.gradient — exemptions are ' +
+						'declared per mounting block\'s own block.json, which is ambiguous for one ' +
+						'owner-scoped finding, so this always flags).',
+					fix:
+						`Add a per-state gradient toggle (gradientValue + onGradientChange) to this row in ${ path.basename(
+							file
+						) } — see sgs/button edit.js:410-420. This is a SHARED file: fixing it here clears ` +
+						"the finding for every block in mountedBy at once, but each mounting block's own " +
+						'block.json must already declare the sibling {attr}Gradient attribute this state ' +
+						'writes to, or WordPress silently discards it on save.',
+					keyParts: [ 'shared-row-missing-gradient', rowKey, String( line ) ],
+				} ),
+				mountedBy: mountedByList,
+			} );
+		}
+	}
+
+	const ok = ctx.cache.traverse( file, {
+		JSXOpeningElement( nodePath ) {
+			const node = nodePath.node;
+			const name = jsxName( node );
+			if ( ! name ) return;
+			const line = node.loc ? node.loc.start.line : 0;
+
+			// Deliberately NO banned-lookalike check here — see header note.
+
+			if ( name === 'SgsColourPanel' ) {
+				const rowsExpr = jsxAttrExpr( node, 'rows' );
+				if ( ! rowsExpr ) return;
+				const rowObjs = resolveRowObjects( rowsExpr );
+				for ( const rowObj of rowObjs ) {
+					const rowKey = stringLiteralValue( objProp( rowObj, 'key' ) ) || `row-line-${ line }`;
+					const statesArray = objProp( rowObj, 'states' );
+					const gradientCapable = booleanLiteralValue( objProp( rowObj, 'gradientCapable' ) );
+					const rowLine = rowObj.loc ? rowObj.loc.start.line : line;
+					emitSharedRow( { rowKey, statesArray, gradientCapable, line: rowLine } );
+				}
+				return;
+			}
+
+			if ( name === 'DesignTokenPicker' ) {
+				const statesExpr = jsxAttrExpr( node, 'states' );
+				const labelExpr = jsxAttrExpr( node, 'label' );
+				let labelText = null;
+				if (
+					labelExpr &&
+					labelExpr.type === 'CallExpression' &&
+					labelExpr.arguments[ 0 ] &&
+					labelExpr.arguments[ 0 ].type === 'StringLiteral'
+				) {
+					labelText = labelExpr.arguments[ 0 ].value;
+				}
+				const rowKey = labelText ? slugify( labelText ) : `standalone-line-${ line }`;
+
+				if ( statesExpr && statesExpr.type === 'ArrayExpression' ) {
+					emitSharedRow( { rowKey, statesArray: statesExpr, gradientCapable: false, line } );
+				} else {
+					const hasDirectGradient =
+						!! findJsxAttr( node, 'gradientValue' ) || !! findJsxAttr( node, 'onGradientChange' );
+					emitSharedRow( { rowKey, statesArray: null, gradientCapable: hasDirectGradient, line } );
+				}
+			}
+		},
+	} );
+	if ( ! ok ) return findings; // parse-error on the owner file itself; keep whatever was found before it
+	return findings;
+}
 
 module.exports = {
 	id: '31-golden-colour-control',
@@ -525,6 +789,20 @@ module.exports = {
 				}
 			},
 		} );
+
+		// ── Shared-owner scan, emitted ONCE overall regardless of which block's
+		// call happens to run first (see header SHARED-OWNER SCAN note). Runs
+		// even when this block's OWN edit.js failed to parse (`! ok` above) —
+		// the two are independent files.
+		if ( ! ctx.__rule31SharedOwnerFindingsEmitted ) {
+			ctx.__rule31SharedOwnerFindingsEmitted = true;
+			const { ownerMountedBy } = getSharedOwnerScan( ctx );
+			for ( const [ ownerFile, mountedBySet ] of ownerMountedBy ) {
+				const mountedByList = Array.from( mountedBySet ).sort();
+				findings.push( ...scanSharedOwnerRows( ctx, ruleId, ownerFile, mountedByList ) );
+			}
+		}
+
 		if ( ! ok ) return findings; // parse-error is its own first-class finding via core/sources.js cache; keep the block.json-derived findings gathered above
 		return findings;
 	},
@@ -537,6 +815,12 @@ module.exports = {
 			'single-state-row',
 			'no-gradient-row',
 			'legacy-single-value-row',
+			// Shared-owner scan (C4 step 2, 2026-08-20) — matched by the owner
+			// FILE's basename (findingMatchesName), since a shared finding
+			// carries block: null. Proves a colour row reached only via a
+			// component mount, in a file outside any block's own edit.js, is
+			// found.
+			'FixtureSharedRowPanel',
 		],
 		mustNotFlag: [
 			'two-state-with-gradient',
@@ -545,6 +829,10 @@ module.exports = {
 			'exempted-gradient-row',
 			'native-color-all-false',
 			'no-colour-controls',
+			// Shared-owner scan negative control — a fully conformant row
+			// reached the same way as FixtureSharedRowPanel above must not
+			// flag.
+			'FixtureCleanSharedRowPanel',
 		],
 	},
 };

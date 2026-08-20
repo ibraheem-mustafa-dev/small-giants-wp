@@ -34,6 +34,25 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 
+// GROUND-TRUTH: same undeclared-transitive-dependency risk as core/sources.js
+// (@babel/parser + @babel/traverse resolve only via @wordpress/scripts today,
+// not a declared devDependency of plugins/sgs-blocks/package.json). Guarded
+// the same way — a rule/survey that reaches mountedComponents()/
+// reachedComponents() below fails closed (empty Set / unchanged Map) rather
+// than throwing, exactly like core/sources.js's SourceCache does for AST-based
+// rules when babel is unavailable.
+let babelParser = null;
+let babelTraverseFn = null;
+try {
+	babelParser = require( '@babel/parser' );
+	const traverseModule = require( '@babel/traverse' );
+	babelTraverseFn = typeof traverseModule === 'function' ? traverseModule : traverseModule.default;
+	if ( typeof babelTraverseFn !== 'function' ) throw new Error( 'no callable default export' );
+} catch ( e ) {
+	babelParser = null;
+	babelTraverseFn = null;
+}
+
 const GOLDEN_PATH = path.resolve( __dirname, '..', '..', 'consistency', 'golden-controls.json' );
 
 /** The contract, read from disk. Never inline a copy of it in a rule. */
@@ -320,6 +339,118 @@ function nativeUiFlags( blockJson ) {
 	return NATIVE_UI_FLAGS.filter( ( f ) => colour[ f ] === true );
 }
 
+// ---------------------------------------------------------------------------
+// Shared component-reach walk (C4 step 1, 2026-08-20) — extracted VERBATIM
+// from scripts/surveys/survey-golden-conformance.js so rule 31 and the survey
+// read the SAME shared-panel reach, never two resolvers that can disagree.
+// Regression check on the extraction: the survey's own `--json` output must
+// not move by a single row when it switches to importing these instead of
+// owning them (survey-golden-conformance.js's own header documents the
+// MAX_REACH_DEPTH=4 plateau measurement this preserves unchanged).
+// ---------------------------------------------------------------------------
+
+const REACH_PARSER_OPTIONS = {
+	sourceType: 'module',
+	plugins: [ 'jsx', 'classProperties', 'objectRestSpread', 'optionalChaining', 'nullishCoalescingOperator' ],
+};
+
+// Default file->AST resolver: read + parse from disk, no caching. A caller
+// that already owns a parse cache (rule 31 via ctx.cache.parse) should pass
+// its own `parseFile` to reachedComponents() instead of using this — see the
+// third parameter below.
+function defaultParseFile( file ) {
+	if ( ! babelParser ) return null;
+	let src;
+	try {
+		src = fs.readFileSync( file, 'utf8' );
+	} catch ( e ) {
+		return null;
+	}
+	try {
+		return babelParser.parse( src, REACH_PARSER_OPTIONS );
+	} catch ( e ) {
+		return null;
+	}
+}
+
+/**
+ * Every capitalised component a source file MOUNTS in JSX.
+ *
+ * Membership is decided by the JSX containing `<ComponentName`, never by an
+ * import-path string — the same "detect by what it does" discipline the
+ * shared resolver (core/components.js) documents.
+ */
+function mountedComponents( ast ) {
+	const names = new Set();
+	if ( ! ast || ! babelTraverseFn ) return names;
+	babelTraverseFn( ast, {
+		JSXOpeningElement( p ) {
+			const n = p.node.name;
+			const name = n && n.type === 'JSXIdentifier' ? n.name : null;
+			if ( name && /^[A-Z]/.test( name ) ) names.add( name );
+		},
+	} );
+	return names;
+}
+
+// MAX_REACH_DEPTH=4 is a MEASURED plateau, not an arbitrary ceiling — see
+// survey-golden-conformance.js's own header (compare-reach-depth.py) for the
+// full derivation: reach is identical at depth 4 and depth 6, and the
+// remaining gap beyond it is a runtime-selection blind spot
+// (`SgsColourPanel.js`'s `const Control = row.gradientCapable ? A : B`) that
+// no amount of extra depth can close. Do not raise this without re-running
+// that measurement.
+const MAX_REACH_DEPTH = 4;
+
+/**
+ * Components a block reaches, following shared components up to
+ * MAX_REACH_DEPTH hops, bounded with a per-block visited-file guard against
+ * cycles (not an unbounded import-graph walk).
+ *
+ * @param {Object}        editAst   Parsed AST of the block's own edit.js (or
+ *                                   a per-component file's AST, for a hop).
+ * @param {Map}            compFiles resolveComponentFiles() result — name ->
+ *                                   absolute file path.
+ * @param {Function}       [parseFile] Optional file->AST resolver. Defaults to
+ *                                   an uncached read+parse from disk. Pass a
+ *                                   cache-backed resolver (e.g. a wrapper
+ *                                   around ctx.cache.parse) to reuse an
+ *                                   existing parse cache instead of
+ *                                   re-reading files this walk has already
+ *                                   seen via another rule.
+ * @return {Map<string,string|null>} name -> owning file (null = the caller's
+ *                                   own edit.js).
+ */
+function reachedComponents( editAst, compFiles, parseFile ) {
+	const resolveAst = parseFile || defaultParseFile;
+	const direct = mountedComponents( editAst );
+	const reached = new Map(); // name -> owning file (null = the block's own edit.js)
+	const visitedFiles = new Set();
+	let frontier = [];
+	for ( const n of direct ) {
+		reached.set( n, null );
+		frontier.push( n );
+	}
+
+	for ( let depth = 0; depth < MAX_REACH_DEPTH && frontier.length; depth++ ) {
+		const next = [];
+		for ( const n of frontier ) {
+			const file = compFiles.get( n );
+			if ( ! file || visitedFiles.has( file ) ) continue;
+			visitedFiles.add( file );
+			const ast = resolveAst( file );
+			for ( const inner of mountedComponents( ast ) ) {
+				if ( ! reached.has( inner ) ) {
+					reached.set( inner, file );
+					next.push( inner );
+				}
+			}
+		}
+		frontier = next;
+	}
+	return reached;
+}
+
 /**
  * Resolve `rows`/`states` arrays that are NOT bare inline literals.
  *
@@ -524,6 +655,9 @@ module.exports = {
 	GOLDEN_PATH,
 	NATIVE_UI_FLAGS,
 	nativeUiFlags,
+	MAX_REACH_DEPTH,
+	mountedComponents,
+	reachedComponents,
 	collectIndirectRowSources,
 	jsxName,
 	findJsxAttr,

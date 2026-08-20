@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/shared-row-mount",
+	"title": "Fixture: mounts the SHARED FixtureSharedRowPanel — its row (1 state, no gradient) lives outside this block's own edit.js and must still be flagged (mustFlag: 'FixtureSharedRowPanel')",
+	"category": "sgs",
+	"attributes": {
+		"fixtureSharedColour": { "type": "string", "default": "" }
+	}
+}

@@ -46,7 +46,6 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const parser = require( '@babel/parser' );
-const traverse = require( '@babel/traverse' ).default;
 const { resolveComponentFiles } = require( '../inspector-scan/core/components' );
 const {
 	loadMergedSchema,
@@ -55,6 +54,9 @@ const {
 	canonicalComponentNames,
 	declaredAxes,
 	supportFamilyFromDetectVia,
+	mountedComponents,
+	reachedComponents,
+	MAX_REACH_DEPTH,
 } = require( '../inspector-scan/core/golden' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
@@ -110,120 +112,14 @@ function parseSafe( src ) {
 	}
 }
 
-/**
- * Every capitalised component a source file MOUNTS in JSX.
- *
- * Membership is decided by the JSX containing `<ComponentName`, never by an
- * import-path string — the same "detect by what it does" discipline the shared
- * resolver documents.
- */
-function mountedComponents( ast ) {
-	const names = new Set();
-	if ( ! ast ) return names;
-	traverse( ast, {
-		JSXOpeningElement( p ) {
-			const n = p.node.name;
-			const name = n && n.type === 'JSXIdentifier' ? n.name : null;
-			if ( name && /^[A-Z]/.test( name ) ) names.add( name );
-		},
-	} );
-	return names;
-}
-
-/**
- * Components a block reaches, following shared components up to MAX_REACH_DEPTH
- * hops.
- *
- * ⛔ FIXED 2026-08-20 (banned-lookalike depth+exclusion, per LEDGER's carried
- * item). MEASURED LIMITATION at one hop (2026-08-19,
- * surveys/compare-reach-depth.py) — one hop UNDER-REPORTED 9 of 17 shared
- * components, several severely:
- *     ColorPalette                  3 -> 64   (+61 at full depth)
- *     DesignTokenPicker            18 -> 64   (+45 of it from ALIAS resolution)
- *     SgsGradientPicker             5 -> 64
- *     GradientCapableColourControl  0 -> 61   (invisible to a tag scan entirely —
- *                                               a SEPARATE defect, not a depth
- *                                               problem: SgsColourPanel picks its
- *                                               row component at RUNTIME
- *                                               (`const Control = row.gradientCapable
- *                                               ? A : B`), so neither name appears
- *                                               as a literal JSX tag. Not fixed by
- *                                               this change — no tag scan can see a
- *                                               runtime-selected component.)
- *
- * ⛔ DEPTH AND THE BANNED-LOOKALIKE EXCLUSION MOVE TOGETHER, and they already
- * do: `axisBannedLookalikes` excludes on the IMMEDIATE parent file of the
- * banned name (`owner`), never the whole chain. Walking further hops here
- * only changes whether a deeply-nested banned primitive is DISCOVERED at all
- * — once discovered, `owner` is still just its direct parent, so a primitive
- * reached at hop 3 through a canonical component at hop 2 is excluded exactly
- * the same way a hop-1 case already was (see the self-test pinning that at
- * `axisBannedLookalikes`'s own call site). This is why raising depth alone is
- * safe here: it does not weaken the exclusion, it only lets deeply-nested
- * legitimate reach (through `DesignTokenPicker`) get FOUND and therefore
- * excluded, instead of staying invisible and never being tested either way.
- *
- * Bounded, not unbounded — MAX_REACH_DEPTH hops with a per-block visited-file
- * guard against cycles, not a recursive import-graph walk with no ceiling (an
- * unbounded resolver is a second import graph nobody can falsify, per this
- * repo's own standing rule). See the `MAX_REACH_DEPTH` const below for the
- * measured reason the value is 4, not 6 or unbounded, and for the separate,
- * still-open alias-resolution gap this change does not attempt. Reproduce
- * before changing either this or the exclusion:
- * `python scripts/surveys/compare-reach-depth.py .`
- *
- * Each hop still records the file it came from (`owner`), so a finding can
- * name the file that owns the fix rather than blaming thirty blocks
- * individually — only the walk's REACH changed, not what it records.
- */
-// ⛔ MEASURED, NOT ASSUMED (2026-08-20). Depth alone does not close the gap to
-// `compare-reach-depth.py`'s full-depth reference — production's reach
-// PLATEAUS at 4 hops (ColorPalette 34, DesignTokenPicker 34, SgsGradientPicker
-// 35, ShadowControl 30 out of 83 — identical at depth 6, confirmed by re-run).
-// Deeper does nothing here because a real chunk of the plateau is the SAME
-// runtime-selection blind spot already documented above for
-// `GradientCapableColourControl`: `SgsColourPanel.js:115` picks its row
-// component via `const Control = row.gradientCapable ? A : B` and renders
-// `<Control>`, a local VARIABLE — `mountedComponents()` records the literal
-// name "Control", which resolves to no file, so every block that only reaches
-// `SgsColourPanel` dead-ends there regardless of depth. Confirmed by reading
-// `SgsColourPanel.js` directly — it contains no literal `<DesignTokenPicker`
-// or `<ColorPalette` JSX tag at all. A residual gap may ALSO include
-// import-alias cases (`import { X as Y }`, which this walk cannot resolve
-// since it matches JSX tag names against `compFiles`'s declared-name keys) —
-// unmeasured separately, not claimed as the cause. 4 is the right depth here:
-// deeper adds nothing without also fixing the runtime-selection blind spot,
-// which is a distinct, still-open piece of work, not folded into this fix.
-const MAX_REACH_DEPTH = 4;
-
-function reachedComponents( editAst, compFiles ) {
-	const direct = mountedComponents( editAst );
-	const reached = new Map(); // name -> owning file (null = the block's own edit.js)
-	const visitedFiles = new Set();
-	let frontier = [];
-	for ( const n of direct ) {
-		reached.set( n, null );
-		frontier.push( n );
-	}
-
-	for ( let depth = 0; depth < MAX_REACH_DEPTH && frontier.length; depth++ ) {
-		const next = [];
-		for ( const n of frontier ) {
-			const file = compFiles.get( n );
-			if ( ! file || visitedFiles.has( file ) ) continue;
-			visitedFiles.add( file );
-			const ast = parseSafe( readFile( file ) || '' );
-			for ( const inner of mountedComponents( ast ) ) {
-				if ( ! reached.has( inner ) ) {
-					reached.set( inner, file );
-					next.push( inner );
-				}
-			}
-		}
-		frontier = next;
-	}
-	return reached;
-}
+// mountedComponents() / reachedComponents() / MAX_REACH_DEPTH — MOVED to
+// core/golden.js verbatim (C4 step 1, 2026-08-20) and imported below, so rule
+// 31 and this survey share ONE shared-panel reach walk instead of two that
+// can silently disagree. All of the depth-4 measurement history (the
+// banned-lookalike exclusion interaction, the compare-reach-depth.py plateau,
+// the SgsColourPanel runtime-selection blind spot) now lives in that module's
+// own header — read it there, not here. This survey's own regression check
+// on the move: `--json` output must not shift by a single row.
 
 // ---------------------------------------------------------------------------
 // Axes — every one derived from the schema, none hardcoded
