@@ -58,10 +58,14 @@ Rule 7 gates. No subagent can take these.
 
 | # | Gate | Blocks | Recommendation |
 |---|---|---|---|
-| **G1** | `flexDirection` default when `layout` becomes `flex` | P2-2 | `flex` + `column` as a pair — row would put every container's children side-by-side on every client site |
-| **G2** | `sgs/container` root colour: `SGS_Container_Wrapper` or block-private? | **P2-3** | The wrapper — container IS the canonical wrapper; block-private forks the mechanism permanently |
+| ~~G1~~ | `flexDirection` default | ~~P2-2~~ | ✅ **CLOSED — Bean ruled `row`** (CSS default). Council CONFIRMED it correct on two grounds the recommendation missed: `stack` is already flex-column, and `row` is LESS retroactive than `column`. See "G1 design council" below. |
+| ~~G2~~ | `sgs/container` root colour routing | ~~P2-3~~ | ✅ **CLOSED — Bean ruled `SGS_Container_Wrapper`.** Rule 7 gate satisfied. |
 
-Phase 1 needs neither. It can start immediately.
+**Both gates are now CLOSED.** ⚠ ONE NEW question was raised by the council and is NOT yet
+answered — see "THIRD OPTION" below: whether to change the `layout` default at ALL, versus
+having the editor write `layout:"flex"` explicitly on newly-inserted containers (zero
+retroactivity). Bean's ruling settled DIRECTION, not whether to change the default.
+Phase 1 does not depend on it and can start immediately.
 
 ---
 
@@ -348,7 +352,7 @@ run **strictly sequentially**.
 | **P2-5** | sonnet | Responsive grid: `repeat(auto-fill, minmax(max(var(--min-col,250px), computed), 1fr))` + `minColumnWidth` as an editor-settable attr | none (PARALLEL with P2-1..4) |
 | **P2-6** | sonnet | **Pattern rename — MOVED HERE.** ~280 `wp:sgs/*` authorings American→British. ⚠ Must run AFTER P2-3 or container patterns lose their background | **P2-3** |
 | **P2-7** | inline | `/sgs-update` reseed. ⚠ Cross-track — breaks other worktrees' DB gate until their classifier lands. Announce first | P2-6 |
-| **P2-8** | sonnet | Editor-parity gate: build the "5th structural signal"; widen CHECK A to `components/*.js`. ⚠ Sequenced AFTER P2-4, which changes the tree it measures | **P2-4** |
+| ~~P2-8~~ | — | **MOVED TO PHASE 1 as P1-1b** per D542 ("if an item touches more than ~3 blocks, the first deliverable is the detector, not the edit" — this touches 71). Building it first means it FLAGS the container, then P2-4 fixes it, then the count drops by one — a real before/after instead of an eyeball. | — |
 | **P2-9** | haiku | `<main>` landmark — re-admit `main` to the tagName enum or wrap the template, whichever P2-1's outcome makes cleaner. **Orchestrator decides which; do not hand this choice to the agent** | P2-1 |
 
 **QC GATE 3** (after P2-4): container behaviour — background paints edge-to-edge with NO
@@ -384,3 +388,150 @@ gates; **Bean's eye (R-31-13)**. **📝 DOCS + `/handoff`.**
 - **P2-9's landmark route is an orchestrator decision**, not a haiku agent's. *(reviewer A)*
 - **Branch discipline** — `main` for framework; `sites/indus-foods/` portion of P2-6 on its own
   branch; verify branch in the same command as every commit. *(reviewer B)*
+
+---
+
+# G1 + G2 CLOSED — Bean's rulings, 2026-08-20
+
+## G2 — container root colour routing: **SGS_Container_Wrapper** ✅ DECIDED
+
+Bean chose the shared wrapper. Container IS the canonical wrapper; a block-private path would
+fork the colour mechanism permanently, which the composite-mirror rule exists to prevent.
+Rule 7 gate is hereby SATISFIED for P2-3.
+
+## G1 — flex direction default: **`row`** ✅ DECIDED (Bean overruled the recommendation)
+
+Bean's ruling, verbatim intent: *leave the default direction as the CSS default, which is
+`row`, and allow this setting to be changed based on what a person wants.*
+
+**This overrules the earlier `column` recommendation.** Do not re-litigate in implementation.
+A design council was commissioned to stress-test it — findings appended below when they land;
+they inform mitigation, they do not reopen the decision.
+
+### Measured blast radius (nesting-aware parse of the real repo, supersedes an earlier crude grep)
+
+| Figure | Value |
+|---|---|
+| `sgs/container` instances in `theme/sgs-theme/{patterns,templates,parts}` | **138** |
+| ...inheriting the layout default (no explicit `layout` key) | **113** |
+| ...of those, 0 or 1 direct child → direction visually irrelevant | **37** |
+| ...of those, **2+ direct children → would visibly flip to side-by-side** | **76** |
+| breakdown of the 76 | 35×2 children · 17×3 · 11×4 · 13×5+ |
+| client-site containers in `sites/` | **additional, uncounted** |
+| containers stored in the WP database (live/edited pages) | **not measurable from the repo** |
+
+⚠ An earlier figure of "276 authorings / 251 inheriting" was a crude grep that double-counted
+closing tags. **138 / 113 is the accurate, nesting-aware count.** Use these numbers.
+
+**Mechanism (the load-bearing fact):** WordPress only writes an attribute into block markup
+when it differs from the default. An unset `layout` means no `layout` key exists, so
+block.json's default applies at render — every time. A default change is therefore
+**retroactive across every instance that never set it**, including content in the database
+that no repo grep can see.
+
+### Implementation consequence
+
+`layout` default → `"flex"`; `flexDirection` default stays `""` (→ CSS `row`).
+**76 known theme sections will need a visual triage pass**, plus an unknown number on client
+sites and in the DB. That triage is a required, scheduled step — not a "watch and see".
+
+## Settled flex decisions (full set)
+
+| Item | Decision |
+|---|---|
+| `layout` default | **`flex`** |
+| `flexDirection` default | **`row`** (CSS default) — Bean, overruling `column` |
+| `flex-wrap` | **unchanged** — keep SGS's forced `wrap` override |
+| `align-content` in flex mode | **ADD** — currently grid-only (control gated at `LayoutPanel.js:207`, emission in the grid branch only). Per the CSS-Tricks guide it is valid on multi-line flex containers, and since SGS forces `wrap` every flex container IS multi-line. Real missing capability. |
+| child `flex` grow/shrink/basis controls | **DROPPED** — Bean correctly identified this as duplicating the existing `columns` (`{desktop:2,tablet:2,mobile:1}`) and `gridTemplateColumns` attributes. Division of labour: **grid** = explicit tracks/controlled widths; **flex** = items size to content and wrap. |
+| margin-collapsing | flex does not collapse margins; expect small vertical shifts. Folded into the same triage pass. |
+
+**Parked (not building):** one child absorbing leftover space while siblings stay
+content-sized (e.g. fixed logo + filling nav). Genuinely not expressible via `columns`, but
+niche — revisit only if a real build needs it.
+
+## G1 design council — 3 seats, findings
+
+Commissioned because Bean overruled the `column` recommendation. **Outcome: Bean's `row`
+choice is CORRECT, confirmed on two independent grounds neither the recommendation nor the
+column seat had identified.**
+
+### Vindication 1 — `stack` is ALREADY flex-column (verified live)
+
+`plugins/sgs-blocks/src/blocks/container/style.css:75-78`:
+```css
+.sgs-container--stack { display: flex; flex-direction: column; }
+```
+Class emitted as `sgs-container--{layout}` (`class-sgs-container-wrapper.php:1104`).
+
+**So `flex` defaulting to `column` would render IDENTICALLY to `stack`** — two names, one
+behaviour, unreadable authoring intent. Bean's vocabulary is the coherent one:
+`stack` = column · `flex` = row · `grid` = tracks. Orthogonal and self-documenting.
+
+⚠ **CORRECTION TO THIS DOC'S OWN EARLIER CLAIM:** it stated (repeatedly, from an agent report)
+that `stack` = "plain block flow, no display emitted". **That is FALSE.** `stack` has always
+been flex-column via the class. That error is precisely what made `column` look sensible.
+
+### Vindication 2 — `row` is LESS retroactive than `column`, not more
+
+`class-sgs-container-wrapper.php:1003-1015` emits `display:flex` + `flex-wrap:wrap`
+unconditionally, but `flex-direction` **only when `'' !== $flex_direction`**.
+
+- **`row`** → leave `flexDirection` default at `""`. **ONE** retroactive change (`layout`).
+- **`column`** → requires a **SECOND** retroactive change (`flexDirection` `""` → `"column"`),
+  which additionally flips **every existing explicit `layout:flex` container that never set a
+  direction — 7 of 9 in the theme** — plus every converter-emitted one. `row` leaves those
+  entirely alone.
+
+Column was the *more* dangerous option. Both the recommendation and the column seat had this
+backwards.
+
+### The real risk is NOT the repo — it is the database
+
+| Surface | Count | In repo? |
+|---|---|---|
+| `theme/sgs-theme/` container instances | 138 (22 with explicit `layout`) | yes |
+| `sites/` client instances | **2** — negligible | yes |
+| **Canary DB posts containing `wp:sgs/container`** | **32 of 171 posts** | **NO** |
+| Canary DB posts containing `sgs/hero` / `sgs/feature-grid` | **37** | **NO** |
+
+One canary alone carries DB-resident authorings comparable to the entire theme count. Every
+client site multiplies it. Per-instance counts could not be extracted cleanly (Hostinger's
+`wp db query` swallowed the aggregate) — **deliberately not estimated.**
+
+### The composite-mirror rule widens the blast radius
+
+Also declare `"layout": {"default": ""}` and are therefore pulled in by R-31-9:
+**`sgs/hero`, `sgs/feature-grid`, `sgs/form`**.
+Immune (non-empty defaults): `trust-bar` (`grid`), `site-header-row` (`flex`),
+`site-footer-row` (`grid`), `testimonial-slider` (`full`).
+
+### ⚠ This is NOT a one-time migration — the converter makes it permanent
+
+`plugins/sgs-blocks/scripts/orchestrator/converter/services/arrangement.py:82-91` returns `{}`
+for any node that is not an arrangement layer. **Every future clone of a plain block-flow draft
+section emits no `layout` attribute and silently inherits the new default.** This is a
+permanent behaviour change in the core cloning product, not a migration with an end date.
+
+### THIRD OPTION the framing excluded — "bump the attribute, not the default"
+
+Keep `layout` default `""`; have the **editor insert `"layout":"flex"` explicitly on
+newly-inserted containers**. New authorings get flex; every stored instance (repo AND
+database) keeps its current rendering; the converter path is untouched. **Achieves the stated
+goal with zero retroactivity.**
+→ **NEEDS BEAN'S RULING — his `row` decision answered direction, not whether to change the
+default at all.**
+
+Other options assessed and rejected on evidence: `containerKind`-aware default (container
+itself has no kind, so the discriminator never reaches the 138); per-client
+`theme-snapshot.json` opt-in (violates R-31-3/R-31-9, two behaviours forever).
+
+### Required before shipping ANY default change
+
+1. **DB census across every live install**, not just the canary — total and
+   default-inheriting counts. Ship nothing until that number exists.
+2. `arrangement.py` explicitly emits `layout` for non-arrangement nodes, or the default change
+   is refused.
+3. Before/after `computed-parity.json` at 375 / 768 / 1440.
+4. **Rollback trigger:** any container whose children's `getBoundingClientRect().top` values
+   become equal where they previously differed. One instance = revert.
