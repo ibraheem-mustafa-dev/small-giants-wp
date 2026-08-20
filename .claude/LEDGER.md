@@ -7,282 +7,120 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 # small-giants-wp — LEDGER (the one living status)
 
-## Human Summary — FOR BEAN, plain English (read this first)
+# ▶ NEXT SESSION STARTS HERE
 
-**All three golden-builder sessions were already merged into `main` when this session
-started. What was NOT done was proving they work.** Sessions A and C had never run the full
-build, and A's work had never been opened in a real editor. Running it found **four real
-defects**, three of them invisible to every gate in the chain.
+**Invoke `/autopilot` first. Then read, in this order:**
 
-**The one that mattered most.** Session A's redesigned typography panel **crashed
-`sgs/heading`'s inspector** — open the Typography panel and the whole sidebar disappeared.
-It shipped through a green build because a green build never opens the editor.
+1. `.claude/plans/phase-shop-container-remediation.md` — **the executable plan. Start at
+   Phase 1, Wave 1.**
+2. `.claude/plans/2026-08-20-shop-archive-remediation-design.md` — the 693-line spec behind it.
+   Its "BEAN'S DECISIONS" section is BINDING.
+3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — read IN FULL if touching the
+   converter/walker/pipeline surface (session rule).
 
-**A control that existed, was wired at both ends, and did nothing.** The new border-style
-picker (Solid / Dashed / Dotted) was passed correctly by the block and read correctly by the
-component that draws it — but the layer in between forwards a hand-written list of
-properties, and nobody added the two new ones to that list. Both ends looked finished.
+**Nothing was implemented this session. It was all investigation, decisions and planning.**
+The plan is fly-through ready: every step has a model, exact files, a pre-written cold prompt,
+and a four-layer test block.
 
-**What to be wary of, again: the instrument, not the code.** A gate failed on a sentence
-inside a code comment. A survey reported "nothing to see" for 49 real problems because its
-pattern could not match an underscore. My own first three attempts to inspect the live
-editor all measured the wrong thing. Every real answer today came from reading actual state
-— the React tree, the block.json files — never from reasoning about what should be true.
+## The shape of the work
 
-## Shipped today
+Main agent orchestrates, QCs, deploys and tests — **it writes no implementation code.**
 
-| What | Detail |
+```
+WAVE 1 (4 parallel)  → QC-1 → WAVE 2 (parallel) → QC-2   ← Phase 1 ends here
+  investigate + gates         independent fixes
+                                    ↓
+                            CONTAINER SPINE (sequential) → QC-3/4   ← Phase 2
+```
+
+`sgs/container` is the bottleneck — four steps touch its files and must run in sequence.
+Everything else parallelises around it. Phase 1 needs no design gate and can start cold.
+
+## ⚠ One open question before Phase 2 (Phase 1 is unblocked)
+
+The G1 council surfaced a **third option nobody had considered**, and Bean has not ruled on it:
+
+> Keep the `layout` default as `""` and have the **editor insert `layout:"flex"` explicitly on
+> newly-inserted containers.** New authorings get flex; every stored instance — repo *and*
+> database — keeps its current rendering; the converter path is untouched. Same goal, **zero
+> retroactivity.**
+
+Bean's `row` ruling settled *direction*, not *whether to change the default at all*. Ask him.
+
+---
+
+## Shipped this session (docs only — no code)
+
+| What | Where |
 |---|---|
-| **3 sessions verified, not just merged** | build + gates + canary deploy + live editor |
-| **`sgs/heading` inspector crash FIXED** | `useSettings()` returns origin-keyed objects, not arrays |
-| **Shared `flattenPresetSetting()`** | 3rd recurrence of one class — one function now, not a 4th local copy |
-| **Border-style picker made REACHABLE** | was dead UI; verified it renders AND writes (`none -> dashed`) |
-| **Duplicate "Font size" label removed** | rule 29 back to its backlog of 8 |
-| **control-parity false positive fixed** | comment-masking + paired fixtures, 14 -> 16 assertions |
-| **Golden census made honest** | Session A shipped the 21-type composer; this session fixed what it could not MEASURE |
-| **49 border native-UI violations recovered** | regex could not match `__experimentalBorder` |
-| **MEASURABILITY + capability-loss reporting** | the census now says what it CANNOT measure |
-| **2 worktrees pruned safely** | both `node_modules` were junctions INTO main's — unlinked first |
+| **Root-caused the client-side-navigation failure** | `sgs/text` inside `product-collection-no-results` sets `clientNavigationDisabled`. Proved by single-variable swap; 3 consistent variants. **Unblocks instant filtering AND the built-but-dormant FR-38-12 Flip.** Exact line NOT yet found — that is Phase 1 step 1. |
+| **Closed D451 + D452** | Both motion fixes live-verified on the canary; outstanding items closed after sitting open since 2026-08-01/06. |
+| **Full shop-archive diagnosis** | ~20 reported defects root-caused + 2 found by us (26 keyboard-reachable controls in the closed drawer; no `<main>` landmark). |
+| **60 orphaned colour authorings found** | 7 block types, framework + `sites/indus-foods/`. The gate that should catch them runs on every build but has the 3 preset attrs on an unconditional allowlist. |
+| **Design doc + phase plan** | `2026-08-20-shop-archive-remediation-design.md` (693 lines) · `phase-shop-container-remediation.md` |
 
-## Where conformance actually stands
+## Decisions taken (all BINDING — do not re-litigate)
 
-Re-measured 2026-08-20 after the census fixes. Every figure below is reconciled
-against an independent pass over the block.json files.
+| # | Decision |
+|---|---|
+| **D-1** | A background fills its container's own box and must **NEVER** be capped by content width. `align:"full"` was rejected as patchwork; the fix is the wrapper. |
+| **D-2** | `layout` default → `flex`; `flexDirection` stays `""` → **`row`** (CSS default). Bean overruled a `column` recommendation and the council confirmed him right. |
+| **D-3** | Gate allowlist fix + template comment/save-markup fixes approved. |
+| **D-4** | The 60 orphans get full `SgsColourPanel` standardisation — bg + text, normal + hover, gradient setup 1 for background / setup 2 for text. |
+| **D-5** | Editor/frontend parity to be fixed; the parity gate moved to **Phase 1** per D542 (detector first when >3 blocks — this touches 71). |
+| **G2** | Container root colour routes through `SGS_Container_Wrapper`. Rule 7 gate satisfied. |
+| **Colour** | White-on-pink is Bean's brand call, accepted with the contrast tradeoff. **Per-client only** — the framework default stays compliant; snapshot push WARNS, never gates. |
+| **Grid** | Column floor 250px, exposed as an editor setting (`minColumnWidth`), not hardcoded. |
+| **Filters** | Mobile = slide-up sheet, one DOM / two presentations. |
+| **Dropped** | Child `flex` grow/shrink/basis controls — Bean correctly identified they duplicate `columns`/`gridTemplateColumns`. |
 
-```
-21 control types x 83 blocks = 1743 rows      MEASURABILITY 40 of 63 cells UNMEASURED (was 45)
+## Corrections made to my own claims (read before trusting older notes)
 
-canonical    colour   63 CONFORMANT ·  1 VIOLATION · 13 MISSING ·  6 N-A
-             border   52 CONFORMANT ·  6 VIOLATION ·  8 MISSING · 17 N-A   <- was N/A x83
-             resp-wrap 59 CONFORMANT ·                            24 N-A   <- was N/A x83
-             media     9 CONFORMANT ·                            74 N-A   <- was N/A x83
-             typography 16 CONFORMANT · 33 VIOLATION · 18 MISSING · 16 N-A
-             length-unit            · 48 VIOLATION · 11 MISSING · 24 N-A
+Five claims stated confidently this session turned out **wrong** and were retracted on evidence:
 
-nativeUi     colour 25 VIOL · border 49 VIOL · box-4value 50 VIOL · length-unit 50 VIOL
-```
+1. **`stack` is NOT plain block flow.** `.sgs-container--stack` has always been
+   `display:flex; flex-direction:column` (`container/style.css:75-78`). Repeating that error
+   is what made the `column` recommendation look sensible.
+2. **`backgroundColor` is not "silently discarded".** It renders — verified live via
+   `has-surface-alt-background-color` + computed style.
+3. **The editor "invalid content" error is not the colour attribute.** It is 17 blocks with two
+   template authoring bugs (stray comments; self-closing WC leaves).
+4. **The Apply button is not a WCAG breach.** That CSS targets selectors that never mount; the
+   real button passes at 8.77:1.
+5. **The wrapper split did not break the container.** Verified mechanically — a pure move.
 
-**VIOLATION vs MISSING now means something.** VIOLATION = the block paints the
-surface itself and the client cannot reach it. MISSING = it should have the
-control and does not. Colour's old "2 violations" resolve into buybox
-(VIOLATION — 27 own declarations, still a real gap) and site-footer — **CORRECTED
-2026-08-20 (D700): NOT actually MISSING.** The census's 1-hop reach couldn't see
-that site-footer already mounts a colour panel (`DesignTokenPicker`, via
-`GradientOverlayControl.js`); the depth+exclusion fix that widened
-`reachedComponents()` to 4 hops found it. Site-footer already has an SGS panel —
-it was a false MISSING, not a real gap. See
-`.claude/reports/2026-08-20-colour-golden-scan-set.md` master table row 7.
+**Method note that earned its keep:** every figure derived by *running* something was right;
+several derived by *reasoning* were wrong. The Hidden-Decisions pass alone caught 8 real
+defects in the first plan draft, including one that would have broken ~280 patterns.
 
-## THE FRONT — next session
+---
 
-**Both open decisions are now TAKEN and measured** (A: native-UI detection restored
-for length-unit + box-4value; B: colour carve-out and the circular `surfaces.colour`
-predicate removed). `/qc`: 14 of 14 scenarios pass, confidence 90/100, grade PASS.
+## Also shipped today (separate golden-builder thread — carried forward, not mine)
 
-### 1. Close the remaining 40 UNMEASURED cells
+Three golden-builder sessions were merged into `main` but never *proved*. Running them found
+four real defects, three invisible to every gate:
 
-Run `node scripts/surveys/survey-golden-conformance.js` and read the MEASURABILITY
-table — it names them. Six types (`state`, `alignment`, `repeater`, `animation`,
-`angle-position`, `preset`) describe a PATTERN in prose rather than naming a
-component; their N/A is honest and closing them means either extracting a real
-shared component or accepting the type has none.
+- **`sgs/heading` inspector crash FIXED** — the redesigned typography panel blanked the whole
+  sidebar. Cause: `useSettings()` returns origin-keyed objects, not arrays. Shipped through a
+  green build because a green build never opens the editor.
+- **Border-style picker made reachable** — wired correctly at both ends, dead in the middle: an
+  intermediate layer forwards a hand-written prop list nobody had extended.
+- **Shared `flattenPresetSetting()`** — 3rd recurrence of one class; one function now.
+- **Duplicate "Font size" label removed.**
 
-### 2. Fix, in parallel, against a list that is finally complete
+Their standing warning matches this session's: *the instrument, not the code.* A gate failed on
+a sentence inside a comment; a survey reported "nothing to see" for 49 real problems because
+its pattern could not match an underscore.
 
-| Work | Size | Shape |
-|---|---|---|
-| Native-UI retirement — **spacing** (box-4value + length-unit) | **50 blocks** | `block.json` only, mechanical, newly visible |
-| Native-UI retirement — **border** | **49 blocks** | `block.json` only, mechanical, newly visible |
-| Native-UI retirement — colour | 25 blocks | `block.json` only, mechanical |
-| Typography hardcoding | **33 VIOLATION** | blocks painting their own type with no client control |
-| length-unit hardcoding | **48 VIOLATION** | same shape |
-| Form colour | `sgs/form` + 12 field blocks | one design, then mechanical |
-| `sgs/buybox` | 1 block | 27 own colour declarations, no panel |
-| `sgs/heading` borderColourHover | 1 attr | clears BOTH rule-31 heading findings, 409 -> 407 |
-
-⛔ **Serialised, never parallel:** `rules.json`, `package.json`, `golden-controls.json`,
-`core/*.js`.
-
-## Methodology guardrails (carried forward — all still true)
-
-- ⛔ **COMMIT before dispatching ANY agent, even a read-only one.** A task framing does not
-  constrain tool access; only committing does.
-- ⛔ **Before citing a file as a source of truth, grep for a reader of the KEY, not the file.**
-  Three "authoritative" sources proved unread or self-contradicting.
-- ⛔ **A measured count BELOW an independent prediction is a detector bug until proven otherwise.**
-  Rule 31 undercounted by 33 rows; three blocks scored zero because they build their rows list
-  indirectly. A false absence reads exactly like a clean result.
-- ⛔ **`git grep` only, never `grep -r`** — and scope a census to the exact filename that defines
-  the population (`grep -rln` over a directory returned 61 against a true 60).
-- ⛔ **Use a word boundary in a JSX tag pattern, never a trailing character class** — multi-line
-  JSX puts the tag at end-of-line and the wrong pattern returns a false absence.
-- ⛔ **Never pipe a population-defining survey through `head -N`.** Count first. (Broken again
-  today by the person quoting it — it hid the live hover CSS during verification.)
-- ⛔ **No detector ships with a hand-counted baseline.** Declare, run, reconcile.
-- ⛔ **A false positive is a detector bug, never baseline fodder.**
-- ⛔ **NOTHING GATES A DB ORPHAN, and the rule alone did not hold.** After deleting attributes
-  from a `block.json`, the DB keeps their rows until Stage 9 runs. The db-consistency suite exits
-  0 with orphans present (it only flags "rogue seeds" carrying a `css_property`), so nothing
-  catches it. **A gate is needed, not a third restatement of the rule:** fail when a
-  `block_attributes` row has no matching `block.json` attribute.
-- ⛔ **`/sgs-update --stage 1` UPDATES BUT DOES NOT PRUNE.** Deleting an attribute from a
-  `block.json` leaves its DB row behind as a "rogue seed"; Stage 9 is the prune.
-- ⛔ **The advisory ratchet does NOT self-heal.** It blocks growth past a frozen number; it never
-  lowers it. Clearing findings without lowering `openBacklog` creates silent slack.
-- ⛔ **`ctx.cache.json()` returns `{ok, error, data}`** — reading `.attributes` off it yields
-  undefined and silently disables a rule.
-- ⛔ **Never compare AST line numbers against `strippedText()` line numbers** — use character
-  offsets.
-- ⛔ **Read a gate's header before calling it broken**, and check whether a script parses argv
-  before probing it with `--help` (`extract-signatures.py` ignores flags and runs).
-- ⛔ **Main agent owns `package.json` and `rules.json`** — single-merge-point files.
-- ⛔ **No agent runs a build** (`clean:build` does `rmSync('build')`), edits a shared JSON, or
-  mutates a repo file as a fixture (D659).
-- ⛔ **No shared-DB reseed without coordinating** — other sessions are live.
-- ⛔ **`$?` after a pipe reads the LAST command's status.** Redirect first.
-- ⛔ **A pre-commit gate can fail SILENTLY** — never `--no-verify`; use the scoped skip with a
-  reason. A command-scanning hook also matches your *script content*, heredocs included — reword
-  the prose rather than reaching for a bypass token.
-- ⛔ **`cat -A` THE BYTES.** A literal backspace (`0x08`) replaced a regex word boundary TWICE
-  today. Both times the detector matched nothing, passed clean, and looked exactly like a healthy
-  tree.
-- ⛔ **Axis scope is not uniform.** `canonical` needs the one-hop view THROUGH shared components;
-  `bannedLookalikes` needs it MINUS the canonical components, because the raw primitive
-  legitimately lives inside `DesignTokenPicker`. Getting it wrong produced 5 false positives.
-- ⛔ **Depth and the banned-lookalike exclusion must move TOGETHER.** One hop under-reports 9 of
-  17 components (`ColorPalette` 3→64); raising depth alone trades that for ~61 false positives.
-  Reproduce first: `python scripts/surveys/compare-reach-depth.py .`
-- ⛔ **A derived field is a claim, not a decision.** `surfaces.colour` is computed from what a
-  block ALREADY has, so as a scope predicate it is self-fulfilling — it excludes exactly the
-  blocks that are missing a panel and can therefore never find one.
-- ⛔ **`__experimentalSkipSerialization` is NOT a colour-UI flag.** It is the serialisation opt-out
-  the conformant shape REQUIRES. Counting it reports 50 blocks against a true 25. Two sessions
-  made this mistake independently.
-- ⛔ **A step that swallows its own failures is invisible in the exit code.** `/sgs-update`'s
-  classifier sub-step warns and continues by design — exit 0 whether it worked or not.
-- ⛔ **A regenerated artefact + a shared DB + multiple branches loses entries silently.** The
-  classifier regenerates from the tree it runs in; the DB is shared. A stale branch cannot see
-  another branch's attributes, and re-running cannot help — the input genuinely is not there.
-  **Merge first.**
-- ⛔ **`git commit -- <paths>` only commits TRACKED files.** New files need `git add` first — a
-  rule shipped without its fixtures this way, green locally, broken on a fresh clone.
-- ⛔ **The `[gates-ok:]` token is read from the COMMAND string, not the message file** — and git's
-  own `.githooks/pre-commit` does not honour it at all.
-- ⛔ **Look inside a worktree before removing it.** The stale main worktree held 7 uncommitted
-  audit entries existing nowhere else. Verify `node_modules` is not a junction (LinkType/Target)
-  — a past removal emptied it 962→0.
-- ⛔ **`*/` inside a JS block comment TERMINATES it.** `src/blocks/*/components/` written in a
-  docblock is a syntax error.
-- ⛔ **A green build never opens the editor.** Session A's typography redesign crashed
-  `sgs/heading`'s inspector and passed every one of ~50 gates. The editor is a separate
-  surface no static gate covers — open it.
-- ⛔ **`?? []` guards NULL, not the WRONG TYPE.** `useSettings()` returns an origin-keyed
-  OBJECT for `typography.fontFamilies`/`fontSizes` and a flat ARRAY for `color.palette` — on
-  the SAME site. A truthy object sails through the guard and `.map` throws. Use
-  `flattenPresetSetting()` (`src/utils/presetSettings.js`); never write a fourth local copy.
-- ⛔ **A component forwarding an EXPLICIT prop list eats any prop you forget to name.**
-  `DesignTokenPicker` dropped `borderStyle`/`onBorderStyleChange` between a correct caller
-  and a correct receiver. Both ends looked finished.
-- ⛔ **Read the live React fiber instead of guessing which component rendered.** Three
-  successive guesses (wrong component, wrong popover, wrong tab) were all wrong; the fiber
-  answered it in one call. Names are MINIFIED in a production build — detect an element by
-  the props it HAS, never by its name.
-- ⛔ **`querySelector` returns the FIRST match, not your instance** — a page-wide selector
-  inside `.block-editor-block-inspector` can hit the block TOOLBAR popover. Identify a probe
-  by CONTENT (a swatch, a known class), never by document order.
-- ⛔ **An inspector probe reading the wrong TAB measures nothing.** "Background parallax is
-  gone" was vacuous until re-run on the Styles tab — it could not have seen a presence
-  either. The tabs are ICON-ONLY, so matching a tab by its text finds nothing.
-- ⛔ **`--json` array length is NOT the finding count.** `core/report.js` serialises
-  BASELINED findings into the array while the gate counts FLAGGED only — rule 21 reads 208
-  by array length and 197 by the gate. Nearly reported as a phantom regression.
-- ⛔ **A regex over RAW file text reads prose as code.** `<SelectControl>` inside a docblock
-  failed the control-parity gate. Mask comments IN PLACE (preserving length + newlines) so
-  line numbers and rewrite spans stay valid.
-- ⛔ **A character class without `_` cannot match a WP `__experimental*` support family.**
-  `border`'s declared detectVia silently resolved to null and reported N/A on all 83 blocks
-  — 49 real violations reading as a clean result.
-- ⛔ **A worktree's `node_modules` is a JUNCTION into main's.** `git worktree remove --force`
-  follows it and empties main. `cmd /c rmdir` the junction FIRST, then re-count main's
-  entries (975) after every removal.
-- ⛔ **A peer golden row overriding a base row can DELETE an axis silently.** Three did.
-  `loadMergedSchema()` records it on `_meta.capabilityLoss`; the census prints it.
-- ⛔ **The stored-content gate catches YOUR test fixture too.** A verification page carrying
-  an attr `sgs/text` does not declare aborted the deploy — correctly (D338 class).
-- ⛔ **A DECLARED predicate the engine cannot READ is the worst shape a detector takes.**
-  Twice in one day: a family regex that could not match `__experimentalBorder` (49 real
-  violations), and a canonical reader that looked at 2 keys of many (249 rows). Both
-  reported N/A, which is indistinguishable from clean. When an axis reads N/A
-  library-wide, suspect the READER before believing the contract is silent.
-- ⛔ **A widening that turns a VIOLATION into a PASS is a loosened detector, not a fix.**
-  Caught only by diffing per-BLOCK; the per-count totals looked like an improvement.
-  Diff identities, not tallies.
-- ⛔ **PROSE UNDER A `component` KEY IS NOT A COMPONENT NAME.** Six goldens rows describe
-  a pattern there. Treating them as identifiers would have scored six types against names
-  that can never match. Gate on `/^[A-Z][A-Za-z0-9]*$/`.
-- ⛔ **Scoping a contract by a DERIVED field is circular.** `surfaces.colour` is computed
-  from what a block already has, so it excluded exactly the blocks missing a panel.
-  Deleted. Scope on evidence the predicate gathers itself.
-- ⛔ **Never mutate a repo file as a test fixture (D659).** The composer's three failure
-  modes were tested by copying `core/golden.js` into a scratch tree — it requires only
-  `fs`/`path`, so a standalone copy works. Repo verified clean afterwards.
-- **A completeness error is invisible to every correctness gate.**
-- **Run builds synchronously, never backgrounded.**
-
-## Open — carried
-
-- **12 form blocks + `sgs/form`** — clients cannot colour form fields at all. The form exposes 4
-  colour rows (focus ring, progress bar, submit); field background, border, text and label are
-  theme-painted and unreachable. Competitive gap vs Kadence/Spectra.
-- **The depth + transitive-exclusion change — APPLIED 2026-08-20 (D700).** Bounded 4-hop
-  walk, reach 3-18→30-35 out of 83 blocks (real self-test, not just synthetic). Residual gap
-  to full depth (34/64 for `ColorPalette`) is `SgsColourPanel`'s runtime-selected-control
-  blind spot (measured, not assumed) — still open, named in `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
-- **17 "control weaker than its value" findings** (`survey-control-gaps.py`), including 3
-  hand-rolled font-size boxes breaching the mandatory TypographyControls rule.
-- **`sgs/quote` discards every hover gradient a client sets** — control writes it, render reads
-  it, `block.json` never declares it. Same class as D338's 45 bugs.
-- **`sgs/feature-grid` Layout control inert** · **`sgs/text` 2 undeclared per-device font sizes**
-- **F5/F6 commit gate measures the main checkout, not the worktree it runs in.**
-- **handoff-preflight fails in a fresh worktree** — `02-SGS-BLOCKS-REFERENCE.md` is gitignored
-  and generated locally.
-- `extract-signatures.py` is **non-deterministic** — never commit a wholesale regeneration inside
-  an unrelated change.
-- **5 blocks have `:hover` with no `:focus-visible`** (was 7; 2 fixed today).
-- **`survey-control-mounts.py` has no self-test.**
-- **`mistakes.md` is 34 active against a ~30 target** · **`decisions.md` docscores B-**
-
-## State Snapshot
-
-- **Branch:** work landed on `main` via an isolated worktree — the shared checkout was on
-  another session's `fix/spec-staleness-purge` throughout and was never disturbed.
-- **D-ceiling:** **D695** (D693 colour scopes on evidence · D694 canonical read 2 keys of
-  many · D695 independentlySufficient) — verify with
-  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-- **Live counts:** rule 21 **197 FLAGGED** + 11 baselined (⚠ the `--json` array reads 208 —
-  it includes baselined), rule 31 **409**, rule 29 **8**, rule 01 58, rule 18 13. All
-  unmoved across every census change.
-- **Gates:** `npm run build` exit 0, no ratchets · inspector-scan `--check` exit 0 ·
-  golden-conformance self-test **20/20** · control-parity 16/16 · cheat-gate / F5 / F6 green.
-- **`/qc`:** 14 of 14 scenarios PASS — determinism (byte-identical reruns), closed verdict
-  vocabulary, no missing verdicts, prose-only types stay N/A, all three composer failure
-  modes (absent / malformed / duplicate-key peer), measurability table matches reality, and
-  four independent reconciliations. Confidence **90/100**, grade **PASS**.
-- **Canary:** deployed and live-verified earlier this session (editor fixes). The census
-  changes are tooling only — nothing shipped to the site since.
+---
 
 ## Pointers
 
 | For | Read |
 |---|---|
-| **THE PLAN — axes + parallel split** | **`.claude/plans/go-c1-c4-lively-zebra.md`** |
-| The programme brief | `.claude/plans/2026-08-18-inspector-enforcement-programme.md` |
-| The 21 control contracts | `golden-controls.json` + `consistency/goldens/{styling,input,behaviour}.json` |
-| Handover: session B (input) | `.claude/reports/2026-08-19-session-b-input-goldens-handover.md` |
-| Handover: session C (behaviour) | `.claude/reports/2026-08-19-session-c-behaviour-goldens-handover.md` |
-| Handover: shared-component visibility | `.claude/reports/2026-08-19-shared-component-visibility-handover.md` |
-| Handover: surface-cap Task 4 | `.claude/reports/2026-08-19-task4-surface-cap-handover.md` |
-| Structural defences (uncapped, D101) | `STOP-CATALOGUE.md` |
-| Inspector UX standard | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
-| Styling / token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
-| Build / deploy / credentials | `dev-setup.md` · `build-deploy.py --target sandybrown` |
+| Executable plan | `.claude/plans/phase-shop-container-remediation.md` |
+| Full evidence + decisions | `.claude/plans/2026-08-20-shop-archive-remediation-design.md` |
+| Structural defences / STOP catalogue | `.claude/STOP-CATALOGUE.md` |
+| D-numbered log | `.claude/decisions.md` (ceiling verified via the `^## D[0-9]+` anchored grep) |
+| Parked work | `.claude/parking.md` |
+| Deploy | `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — never `--allow-dirty`, never `--skip-verify` (D336) |
