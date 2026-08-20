@@ -25,9 +25,12 @@ as every commit**.
 
 ---
 
-## ▶ EXECUTION PROGRESS (updated 2026-08-20, end of first execution session)
+## ▶ EXECUTION PROGRESS (updated 2026-08-20, end of SECOND execution session)
 
-**Phase 1 Wave 1 SHIPPED + DEPLOYED + LIVE-VERIFIED. Wave 2 NOT STARTED. Phase 2 NOT STARTED.**
+**Phase 1 Wave 1 SHIPPED + DEPLOYED + LIVE-VERIFIED. Wave 2 CODE-COMPLETE + COMMITTED, NOT
+DEPLOYED, NOT LIVE-VERIFIED (QC GATE 2 OPEN). Phase 2 NOT STARTED BY THIS TRACK — but see the
+cross-track note below: the parallel colour-golden session shipped P2-3-adjacent and
+P2-6 work independently while Wave 2 was running.**
 **The R-3 workstream is COMPLETE (all 7 items).** Commits: `3224db10`, `03fd4247`, `b562c6d2`, `631e97a3`,
 `21131a98`, `25cc0188` (all on `main`, pushed).
 
@@ -38,12 +41,35 @@ as every commit**.
 | **P1-3** brand-strip colour trace | ✅ **DONE** | Confirmed the hover names paint `__item`, not the root. |
 | **QC GATE 1** | ✅ **PASS** | Build exit 0; findings surface; cause proven with file:line. |
 | **P1-4** deploy + live-verify | ✅ **PASS** | Instant filtering CONFIRMED working: a stamped `window` var survived a filter click (no reload), URL updated client-side, products 5→4, 2 `fetch` requests. |
-| **P1-5** template validity fixes | ⬜ **NOT STARTED** | |
-| **P1-6** colour on 4 non-container blocks | 🟡 **SPEC CORRECTED, BUILD NOT STARTED** | The plan's premise was wrong — see the correction below. Prep done: `sgs/brand-strip`'s four bare hover attrs renamed with an `item` prefix, freeing the plain names for a root panel (Bean-ruled option B). |
-| **P1-7** theme CSS (panel visibility, fallbacks, search width) | ⬜ **NOT STARTED** | |
-| **P1-8** mobile filter sheet + a11y | ⬜ **NOT STARTED** | |
-| **QC GATE 2** | ⬜ **NOT REACHED** | |
+| **P1-5** template validity fixes | ✅ **DONE** (`fe078c2f`) | ⚠ Plan figures were wrong twice: **6** leaves, not 7 — `product-filter-clear-button` is NOT a leaf (its `save()` is `InnerBlocks.Content`) and was left untouched rather than guessed at. **10** stray comments, not 4. Classes verified against WooCommerce 11.0.0 `save.tsx`. |
+| **P1-6** colour on **3** non-container blocks | ✅ **BUILT + COMMITTED** (`fe078c2f`), **NOT live-verified** | hero / trust-bar / brand-strip. testimonial-slider dropped (already correct) and used as the TEMPLATE. Two blocks had their root background mapped to a native colour attr that was switched OFF, so it could never have worked. `sgs/brand-strip` had **no root element in its manifest at all** — one was added and the others renumbered. `sgs/hero` needed a duplicate-control baseline (`709bf066`) — handed to the colour track. |
+| **P1-7** theme CSS (panel visibility, fallbacks, search width) | ✅ **DONE** (`fe078c2f`) | Dead teal fallbacks **enumerated at 47** (45× `#0f7e80`, 2× `#0b6668`), now 0. 15 of them sat on focus outlines and took `currentColor` rather than deletion — not in the brief, and correct. |
+| **P1-8** mobile filter sheet + a11y | ✅ **BUILT + COMMITTED** (`fe078c2f`), **NOT live-verified** | Native `<dialog>` bottom sheet. ⚠ Deviation flagged by the agent and accepted: sticky trigger built as `position:fixed` + scroll listener, not `position:sticky` — sticky would pin to its own containing block and sit near the page bottom, not follow the grid. |
+| **QC GATE 2** | 🔴 **OPEN — THE NEXT ACTION** | Nothing in Wave 2 has been seen running. Build is green (`exit 0`) so a deploy is now possible; it was blocked at commit time by a red ratchet. Four visual-gate skips logged honestly in `reports/visual-diff/manual-skips.log`, no fabricated PASS. |
 | **Phase 2** (P2-1…P2-9) | ⬜ **NOT STARTED** | Both design gates (G1/G2) remain closed and ready. |
+
+### ⚠ CROSS-TRACK COLLISION — read before trusting any gate number in this doc
+
+Wave 2 ran in a worktree **shared with the live colour-golden session**, which was editing
+and committing concurrently. Consequences that matter to whoever reads this next:
+
+1. **Three subagents each reported the same failing gate and each blamed the others' blocks.**
+   All three were wrong. The cause was the other track rewriting rule 31's own engine
+   (`core/golden.js` gaining `reachedComponents()`), with its reconciling `rules.json` edit
+   still unstaged — so the build read a stale backlog. **The measuring instrument changed
+   underneath the measurement.** Do not accept a subagent's "not my block" on a shared tree.
+2. **Commits are path-scoped and split by track.** `fe078c2f` = Wave 2 (this track).
+   `20332725` + `1905257e` = the colour-golden track, authored and committed by *them*.
+   The repo's own pre-commit gate blocks bare commits for exactly this reason — it fired.
+3. **The colour-golden track shipped P2-6-shaped work already**: 38 `backgroundColor` →
+   `backgroundColour` renames across 23 theme files, plus `sgs/container`'s own base
+   background. That overlaps P2-1..P2-6 below. **Re-scope Phase 2 against the tree before
+   starting it — parts of it may already be done, and the plan's ordering constraint
+   (P2-6 must follow P2-3) was satisfied by them, not by us.**
+4. **Handover written:** `.claude/reports/2026-08-20-HANDOVER-3-shop-wave-2-to-colour-golden-track.md`
+   asks that track to QC Wave 2's colour work, rule on `sgs/hero`'s duplicate text-colour
+   control and on D6's partial reversal, and reconcile a +10/+11 discrepancy in their own
+   rule-31 reason.
 
 ### R-3 batch enforcement-script workstream
 
