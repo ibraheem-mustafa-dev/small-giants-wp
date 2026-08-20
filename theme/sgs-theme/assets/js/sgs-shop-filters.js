@@ -213,7 +213,19 @@
 				return; // Sidebar is already open/static on desktop.
 			}
 			modalOpen = true;
+
+			/* showModal() runs the dialog focusing steps, which focus the FIRST
+			   focusable descendant - here a filter control far down a tall sheet
+			   - and scroll the page to bring it into view. Measured live at
+			   390px: opening the sheet scrolled the page 669px, which is the
+			   "opens and jumps down randomly" report. `preventScroll` on our own
+			   focus call does NOT prevent it, because the scroll has already
+			   happened inside showModal() before we run.
+			   So the position is captured before and restored after. */
+			const scrollBefore = window.scrollY;
 			dialog.showModal();
+			restoreScroll( scrollBefore );
+
 			toggle.setAttribute( 'aria-expanded', 'true' );
 			stickyTrigger.hidden = true;
 			document.body.classList.add( 'sgs-scroll-locked' );
@@ -221,21 +233,26 @@
 			// Focus the heading (not the close button) per the APG pattern.
 			if ( heading ) {
 				requestAnimationFrame( function () {
-					/* preventScroll: focusing an element inside a freshly
-					   opened modal makes the browser scroll it into view, which
-					   scrolled the PAGE behind the sheet - the "opens and jumps
-					   down" behaviour. The sheet is already in the top layer and
-					   the heading is already visible, so there is nothing to
-					   scroll to. */
-					/* tabindex is set HERE and removed on close, never left on
-					   the element. dialog.show() (the desktop, non-modal path)
-					   moves focus into the dialog and would land on a
-					   permanently-focusable heading, painting a focus ring
-					   around the word "Filters" on page load for a mouse user
-					   who had not interacted at all. */
+					/* tabindex is applied HERE and removed in finishClose(),
+					   never left on the element: dialog.show() - the desktop,
+					   non-modal path - moves focus into the dialog and would
+					   land on a permanently-focusable heading, painting a focus
+					   ring around the word "Filters" on page load for a mouse
+					   user who had not interacted at all. */
 					heading.setAttribute( 'tabindex', '-1' );
 					heading.focus( { preventScroll: true } );
+					restoreScroll( scrollBefore );
 				} );
+			}
+		}
+
+		/* Restores the page's scroll position if something moved it. Called after
+		   showModal() and again after the focus lands, because the browser can
+		   scroll at either point. Written as an absolute restore rather than a
+		   delta so a second call is harmless. */
+		function restoreScroll( y ) {
+			if ( Math.abs( window.scrollY - y ) > 1 ) {
+				window.scrollTo( { top: y, left: 0, behavior: 'instant' } );
 			}
 		}
 
