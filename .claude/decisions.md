@@ -172,6 +172,21 @@ blocks: `cta-section`, `hero`, `modal`, `site-footer`, `site-header`, `trust-bar
 `modal` still lacks `textColour` entirely, and `cta-section` + `site-header` lack
 `textColourGradient`.
 
+⛔ **`sgs/modal` is EXCLUDED — Bean, same day, after the work was built and reverted.** A
+modal is a UI SHELL, not a page section: its content is placed per-use and frequently sits
+over a different background from the page, so a colour inherited from the shell fights the
+content rather than defaulting it. **Set colours directly on each block placed inside the
+modal.** This is a principled boundary, not a carve-out — the test is "is this a page
+section whose children are page content", and a modal fails it.
+
+Corroborating structural signal, found while building it: **modal is the only one of the six
+`container_kind='section'` blocks with no `isWrapper`/`layer` marker on ANY element in its
+manifest.** It never modelled a root wrapper the way the page sections do, so the
+implementation had to pick an element by judgement. That was the manifest saying modal is a
+different shape, before anyone noticed. The `textColour` work on modal was implemented,
+reviewed, then reverted in full (block.json / edit.js / render.php back to HEAD, baseline
+entry removed) — recorded here so it is not re-added as an obvious gap.
+
 ⚠ **`sgs/container` was ABSENT from that roster** and is the trap worth remembering: its
 `container_kind` is NULL in the DB and it declared no `supports.sgs.containerKind`, because
 it only resolves to 'section' by render-time FALLBACK in `resolve_kind()`. Any rollout
@@ -179,6 +194,155 @@ scoped by "where container_kind = 'section'" therefore silently excludes the mos
 section block — a derived field used as a scope predicate, excluding exactly the block with
 the gap. `containerKind: "section"` is now declared (`0f2c167f`); the DB row still needs
 seeding via `/sgs-update`, deferred because a shared-DB reseed is a cross-track action.
+
+<!-- D714-D716 pasted 2026-08-21 from .claude/scratch/2026-08-21-tier-w-decisions-PENDING.md
+     on behalf of the motion/Tier-W session, which deliberately kept out of this file all
+     session because it was carrying the colour track's uncommitted work. Renumbered from
+     the placeholders D<next>/D<next+1>/D<next+2> against the ceiling AT PASTE TIME (713),
+     not the 708 recorded in the scratch file — a co-active track took numbers in between,
+     which is exactly why that file told the paster to re-check. -->
+
+## D714 — Tier W is built: a WebGL substrate and surface treatments as its first effect [ROUTINE]
+
+**2026-08-21.** Spec 38 §1.2b admitted Tier W on 2026-08-03 (D479). Eighteen days later it
+had **zero implementation** — verified three ways: no `src/shared/effects/webgl/`, no `ogl`
+dependency, and a repo-wide grep for WebGL/shader code returning only a single *comment* in
+`nav-drawer/variations.js:13`. Spec 38, `specs/README.md`, the gap register and fourteen
+session-memory files all described the tier as part of the system. That is the gap
+register's own closing caution firing: *"a stale doc is not untidiness; it is a trap that
+fires on the next reader."*
+
+**Built:** `src/shared/effects/webgl/` (`renderer.js` / `capability.js` / `index.js` +
+a `README.md` carrying the contract), `src/shared/effects/surface-treatments/`
+(grain / halftone / duotone shaders + a typed preset manifest), the boot module
+`fx-surface-treatment.js`, the render-layer injector `includes/fx-surface-treatment.php`,
+`assets/css/fx-surface-treatment.css`, editor controls in `fx.js`, and a real `fx_effects`
+DB row. Commit `af2d7cdf`, branch `feat/tier-w-surface-treatments`.
+
+**The effect chosen is NOT the one D479 named first, and that was Bean's call at the design
+gate (2026-08-21).** D479 decision 4 named the fluid cursor field as the closed list's first
+entry. An adversarial council (6 seats) killed that choice on four independent grounds, each
+verified in source before the swap:
+
+1. **The interface could not express it.** A real fluid simulation is multi-pass (advection →
+   divergence → Jacobi pressure → gradient subtract, across ping-pong framebuffers). The
+   §1.2b-conformant single-pass contract structurally cannot run it. Two parallel agents
+   would have integrated at ~03:00 and failed a gate that could not detect the mismatch.
+2. **It is invisible to most visitors.** `fx-cursor-field.css:150-167` sets
+   `::before{display:none}` and clears participants on a coarse pointer, with the comment
+   *"the block renders exactly as it would with the effect off."* On phones — the majority of
+   SME/charity traffic — the whole effect is nothing.
+3. **No SC 2.2.2 answer.** A dissipating dye field keeps moving after the pointer stops. The
+   gap register's own standing rule requires a Pause/Stop/Hide answer for any roster effect
+   that moves autonomously; `prefers-reduced-motion` is not that answer.
+4. **Wrong target.** The register ranks surface treatments *"⭐ the most undervalued item in
+   this register — cheap shaders … makes stock photography look art-directed"*, applying to
+   every client photo on every site.
+
+Swapping the first entry dissolved all four at once, because a static image filter has no
+pointer gate, no autonomous motion and no per-frame cost. **The substrate is unchanged and
+fluid remains admissible later** — but it needs the multi-pass interface question answered
+first, and at that point OGL's pass/FBO machinery is exactly what it sells (see below).
+
+**Measured, not reasoned:**
+- **4,325 bytes gzip** — 3.5% of D479's named 120KB Tier W page allowance.
+- **Panel roster: 32 blocks before, 32 after.** Offered on 15 image-bearing blocks.
+- **`creates_panel=1` was measured and rejected.** It grew the roster to 39 — seven blocks
+  gaining a brand-new fx panel, and per D459's mechanism also silently inheriting
+  `motion-path` and `scrub`. Five of those seven were `sgs/form-field-tiles`,
+  `sgs/option-picker`, `sgs/social-icons`, `sgs/star-rating` and `sgs/card-grid` — a form
+  field with a scroll-scrub panel is exactly the "13 panels where none makes sense"
+  containment failure D459 exists to prevent. `creates_panel=0` stands.
+
+**Fail-open by construction, not by a fallback branch.** The original `<img>` is hidden only
+after a successful first draw, and `data-sgs-webgl-active="1"` is set at the same moment. No
+WebGL2, a program that fails to LINK, a cross-origin (tainting) texture, a shader that fails
+to compile, or JS never running all end with the untreated photograph visible. There is no
+second code path to keep in sync — which also means a silently-dead shader is detectable
+(the flag is absent) rather than indistinguishable from success.
+
+**New gates, each proven able to fail:** `check-shader-sources.py` (structural GLSL check —
+single template literal, `#version 300 es` first line, `void main`, `out vec4`, **no backtick
+inside the template**, anti-vacuity floor; wired into `postbuild`); a `--page-budget` mode on
+`check-motion-bundle-budget.py` that **sums** a page's enqueue set by walking the registry
+dependency graph and enforces the 120KB Tier W allowance as DATA (`page_budgets` in the
+baseline JSON) rather than as a comment; and a new invariant in `check-fx-list-drift.py`
+cross-checking the PHP treatment allowlist × the JS preset manifest × the shader files on
+disk.
+
+**Spec refs:** Spec 38 §1.2b (closed list), §2 (taxonomy), §3 (new FR — allocate the next
+free number; the spec's highest is FR-38-27), §9, §10, §11.
+
+---
+
+## D715 — Tier W ships a zero-dependency renderer, amending D479 decision 2 (OGL) [ROUTINE]
+
+**2026-08-21. ⚠ This amends a Bean decision and is flagged for ratification — overrule it
+freely; it is reversible in one file.**
+
+D479 decision 2 named **OGL**, wrapped behind an SGS `init / setUniform / destroy` interface
+"so it is swappable". This phase shipped the interface exactly as specified but implemented
+it with **raw WebGL2 and no dependency at all**.
+
+**The honest reason is sufficiency, not licensing.** An earlier draft of this argument leaned
+on the gap register's OGL licence caveat and was caught quoting it selectively by a
+spec-lawyer council seat. The register's row reads in full: *"Directionally public-domain and
+**still the Tier W pick**, but this was stated as 'verified' on weaker evidence than that word
+implies."* The register's own verdict is to KEEP OGL. Quoting the caveat while dropping the
+conclusion, in order to override a locked decision, was exactly the
+`factcheck-your-own-brief-before-a-council-decides-on-it` failure this project has a captured
+rule about. Recorded here rather than quietly corrected.
+
+**The argument that does stand:** this effect family is one program, one fullscreen quad, one
+source texture, one draw. That is genuinely ~150 lines of raw WebGL2. OGL's ~34KB buys a
+scene graph, a camera and a render loop — every one of which §1.2b explicitly forbids this
+tier from growing ("Tier W must never become a 3D engine"). Paying 34KB for an abstraction
+over the one thing the tier is banned from doing is the wrong trade. The measured result is
+**4,325 bytes gzip for the entire effect**, against 34KB for the library alone.
+
+**Reversibility is CHECKED, not asserted.** QA Gate A greps that nothing outside `webgl/`
+imports `renderer` directly; only `index.js` is imported by consumers. Swapping to OGL means
+rewriting one file.
+
+**The revisit trigger, stated so it is not forgotten:** if a future Tier W effect needs
+multi-pass rendering or framebuffers — the fluid field being the obvious candidate — that
+machinery *is* what OGL sells, and this decision should reopen with the register's "still the
+Tier W pick" as the starting position.
+
+**Honest limit on the word "swappable":** the interface takes raw GLSL, so it is swappable
+across WebGL2 libraries (OGL, twgl, regl, picogl) — none of which we need. It is **not**
+swappable across a move to WebGPU/WGSL, which would rewrite every shader in
+`surface-treatments/`. Current shader count: 3. That is the accepted cost, recorded now
+rather than discovered later.
+
+---
+
+## D716 — `image` eligibility is derived structurally, not from a declared capability [ROUTINE]
+
+**2026-08-21.** The new `image` provision token in `generate-fx-qualifying-blocks.py` was
+first derived from `supports.sgs.imageControls === true`, which project CLAUDE.md mandates on
+every block rendering an `<img>`.
+
+**Measured, that declaration is not applied consistently.** `sgs/media` and
+`sgs/decorative-image` both render an `<img>` in their `render.php` and `edit.js` and
+**neither declares `imageControls`**. Deriving eligibility from the flag alone therefore
+excluded the framework's two most obvious image blocks — a scope predicate computed from a
+field that is itself inconsistently applied is self-fulfilling, and excludes exactly the
+blocks the capability is missing from (memory:
+`a-derived-field-used-as-a-scope-predicate-is-self-fulfilling`).
+
+The token is now a **union**: the declared flag OR the block genuinely rendering an `<img>`
+(`_raster_image_blocks()`, mirroring `_richtext_blocks()`). This is the same correction the
+`svg` → `svg-subtree` split already made — widen to the structural fact, keep the declaration
+in the union. Measured effect: blocks offered the treatment went **5 → 15**.
+
+**Two follow-ups this exposes, neither actioned:**
+1. `sgs/media` and `sgs/decorative-image` should declare `imageControls: true` — they violate
+   a stated project rule today.
+2. Neither can use the treatment yet regardless, because both render the `<img>` as the block
+   ROOT and the boot module looks for a nested one. Fixing that needs either a re-parent or a
+   wrapper, and `decorative-image`'s responsive tiers use compound selectors on the img
+   itself — so it is a design decision, not a patch.
 
 ## D708 [ROUTINE] — an extension may own a colour intrinsic to its own effect, never one the colour panel owns (2026-08-21)
 
