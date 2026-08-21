@@ -168,17 +168,10 @@ attribute WP discards. Their warning is met, not violated.
 `0c44b0c6` `ed517135` `70c88348` `e81ea92a` `6bbd0c7c` `ebad91df` `20332725` `1905257e`
 `231df3be` `52b96e68` `f9f4368b` `79969443` `2d291992`
 
-### Shipped, with the two that were verified in a REAL BROWSER marked
+### Shipped earlier on this track
 
-| What | Evidence |
-|---|---|
-| **`ShadowControl` crash on 5 mounts** — picking a shadow colour threw `onColourChange is not a function` and blanked the inspector | `70c88348`. Wrapper now consumes `shadowColour`/`gridItemShadowColour` or it would have been 4 dead controls |
-| **D338 CORRECTED framework-wide** — PHP KEEPS undeclared attrs (`prepare_attributes_for_render()` `continue`s past them), JS DROPS them (`getBlockAttributes()` iterates the registered schema) | `e81ea92a`. 5 scripts + `plugins/sgs-blocks/CLAUDE.md` reworded. The gate said "the value never reaches render at all" — it does |
-| **Rule 31 sees shared files** — one finding per (owner file, rowKey) with a machine-readable `mountedBy` array | `20332725`. 409 → 420 → **418** |
-| **Container background finally editable** + 38 theme authorings migrated by script | `1905257e`. **LIVE-VERIFIED**: paints via `sgs-cst-` uid, 0 ghost classes |
-| **`contentWidth` regression fixed** — the band never rendered | `2d291992`. **LIVE-VERIFIED**: `.sgs-container__inner` 0 → **15** on `/shop/` |
-| **Gate 2 behavioural PASS on `sgs/brand-strip`** | **LIVE**: colour picked in editor → frontend paints resting colour, hover state AND gradient |
-| resting border gradient x2 (`STATE_WITHOUT_BASE` 2→0) · 3 unreachable hover-extension colours deleted · colour declares own `cssProperties` | `6bbd0c7c` `ebad91df` `0c44b0c6` |
+`70c88348` ShadowControl crash (5 mounts) · `e81ea92a` D338 corrected framework-wide (PHP keeps / JS drops) · `20332725` rule 31 sees shared files (409→418) · `1905257e` container background editable + 38 authorings migrated · `2d291992` contentWidth regression · `6bbd0c7c` `ebad91df` `0c44b0c6` resting border gradients + dead colour cleanup. Full detail in the commits and in the colour-golden scan-set report.
+
 
 ### ⛔ CORRECTIONS TO STALE CLAIMS ABOVE — the shop track's section is out of date on these
 
@@ -216,6 +209,23 @@ container's OUTER box. Fixed by routing band properties to a dedicated band sele
 the band render for the first time (0 → 15). Its own note warned only `/shop/` was checked;
 `/shop/` at DESKTOP was the unchecked case.
 
+### ✅ COLOUR SURFACE — text colour landed on the two blocks that needed it (2026-08-21)
+
+- **`sgs/container`** (`0f2c167f`) — had NO reachable text control at all: its manifest mapped
+  `css:color` to `native:color.text` while `supports.color` is FALSE, a binding pointing at a
+  mechanism that cannot exist. Four owned attrs via the shared emitters + a panel row.
+  **DEPLOYED + VERIFIED**: resting and hover both paint as TOKENS, child `sgs/text` inherits.
+- **`sgs/cta-section`** (`7b9357cc`) — `textColour`/`textColourHover` were rendered but
+  EDITOR-UNREACHABLE (zero refs in edit.js). Now exposed + gradients; `supports.color.text`
+  off (0 authorings affected) so native UI doesn't compete (rule 31). **DEPLOYED + VERIFIED.**
+- **`sgs/site-header`** — correctly NOT changed. Its `colourExemptions.text` gradient exemption
+  is gate-enforced and names the real reason: `background-clip:text` would hijack the wrapper's
+  background box and destroy the header background this same block paints.
+- **Help text fix** — the shipped wording told clients to LOWER THE ALPHA, which is the exact
+  token-corrupting step 4 exists to fix. Rewritten. ⛔ The RENAME half of step 3 was CANCELLED:
+  it came from D2b, which the design doc marks superseded.
+- **D714–D716 pasted** for the Tier-W session, renumbered against the ceiling at paste time.
+
 ### ✅ QC GATE 2 — CLOSED on all three blocks (2026-08-21)
 
 `sgs/hero` and `sgs/trust-bar` verified in the EDITOR with a real login, then on the
@@ -224,7 +234,21 @@ survives), resting colour paints, and a **real pointer hover** repaints
 (hero primary→accent, trust-bar success→cookie-brown). Zero console errors, `isValid:true`.
 Fixture page 2588 — safe to delete.
 
-### 🔵 TWO DECISIONS WAITING ON BEAN
+### 🔵 NEXT SESSION'S FIRST TASK — step 4, APPROVED BY BEAN 2026-08-21
+
+**`backgroundOverlayOpacity`.** ⚠ It is a DECISION REVERSAL, not a gap-fill. The bug is real
+and reachable: `DesignTokenPicker.js:139-140` stores a palette SLUG only on exact string
+equality, and `enableAlpha` defaults to `true` (`:468`) — so lowering alpha stores a RAW HEX
+and silently unlinks the client's brand token. ⛔ But `class-sgs-container-wrapper.php` carries
+an explicit in-code prohibition from D581 (2026-08-11): *"`backgroundOverlayOpacity` no longer
+exists as an attribute … do not reintroduce it here."* Scope is NOT the 40 min the plan says:
+8 block.json + the shared wrapper (Rule 7 gate) + removing that prohibition + a new D-number
+superseding D581's D5 + a ruling on whether `enableAlpha` stays true. Full brief in
+`.claude/plans/2026-08-20-unified-colour-panel-DESIGN.md` § "STEP 4 — APPROVED".
+⭐ Frame the supersede as "D581 was right about simplicity, wrong about which mechanism" — the
+alpha side effect was not known when it was made.
+
+### 🔵 STILL WAITING ON BEAN
 
 1. **Sticky filter sidebar** — `position:sticky` applies but does nothing (no travel room:
    panel 1154px is the tallest grid item AND taller than the viewport). ⛔ The obvious
@@ -242,25 +266,27 @@ Fixture page 2588 — safe to delete.
    passes clean while rendering nothing. 3-mechanism model specified in the report's ADDENDUM.
 2. **Defect-level matching** rule 31 ↔ colour-coverage. Both sides compute `attrName` and
    both DISCARD it — that is the join key.
-3. **Gate 2 on `sgs/hero` + `sgs/trust-bar`** — only brand-strip was tested.
-4. **`textColour` parent/child ruling** — HC2's carve-out PERMITS a root-scoped inheritable
-   default (hero's paints the root, verified); needs the full parent list enumerated, not two
-   examples.
+3. ~~Gate 2 on hero + trust-bar~~ — ✅ **CLOSED 2026-08-21.** Verified with a real editor
+   login: colour picked, stored as a SLUG, resting paints, REAL POINTER HOVER repaints
+   (hero primary→accent, trust-bar success→cookie-brown). Zero console errors.
+4. ~~`textColour` parent/child ruling~~ — ✅ **SETTLED 2026-08-21, D713.** A section-class
+   block parents any non-section block with no forced parent, so a parent-level textColour is
+   the INHERITABLE cascade default; the child's control overrides one instance. Keep both.
+   Applied to all 8 baseline entries. ⛔ `sgs/modal` is EXCLUDED (a UI shell, not a page
+   section) — built, then reverted in full on Bean's call.
 5. **Theme-snapshot slug-valued palette entries** — `sites/mamas-munches/theme-snapshot.json`
    has 2 (`client-surface-pink: "surface-pink"`, `client-text: "text"`). Confirmed, not fixed.
 6. **`css:box-shadow-color` canonical shape** — registry says a `DesignTokenPicker` row inside
    `SgsColourPanel`, not a lone field on the shadow builder. Rule 31's widened scan
    independently flagged the same thing.
 
-### Method note that earned its keep this session
+### Method note (colour track)
 
-**Every one of my three measurement errors was the same bug: matching a pattern without
-checking what produced it.** A grep that hit comments; a `render.php` bracket-style mismatch
-(`['x']` vs `[ 'x' ]`) that produced a false "not consumed"; an `innerHTML` regex that caught a
-WordPress *core* search button and made me wrongly announce my own commit wasn't deployed. The
-fix is structural, not care: **resolve every match back to its owner before concluding.** That
-is exactly what `mountedBy` does in the rule-31 work, which is why it is the one number here
-worth trusting.
+**Resolve every match back to its owner before concluding.** Every measurement error across
+this track's sessions was the same bug — matching a pattern without checking what produced it:
+greps hitting comments; a specificity computed from a `selectorText` sliced to 70 chars; a
+16-class list read through `head -6` and reported as a missing class. Full write-ups in
+`memory/feedback_resolve_every_match_back_to_its_owner.md` and the visual-diff reports.
 
 ---
 

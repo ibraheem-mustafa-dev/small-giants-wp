@@ -279,8 +279,8 @@ Element-colours region, correctly wired, once. Do not mount it.
 |---|---|---|
 | 1 | Shadow-colour crash | ✅ `70c88348` — 5 mounts wired + wrapper consumption (or it was 4 dead controls) |
 | 2 | Correct the false gate diagnostic | ✅ `e81ea92a` — D704, PHP keeps / JS drops |
-| 3 | Rename + help text ("Overlay colour" → "Background colour") | ❌ **not done** |
-| 4 | `backgroundOverlayOpacity` attr + slider | ❌ **not done** — still the highest-severity open item, see D3 |
+| 3 | ~~Rename~~ + help text | ⚠ **SPLIT 2026-08-21 — half of this step was STALE.** The RENAME is CANCELLED: it came from D2b, which this doc marks *(superseded)*. Under D2 revised the overlay names are correct, and `sgs/container` now has a real separate `backgroundColour` base layer (`1905257e`) — so renaming would leave TWO controls both labelled "Background colour", which is the actual duplicate. ✅ The HELP TEXT is DONE: the shipped wording claimed this colour "is the background", said "there is no separate overlay to set up", and told clients to LOWER ITS ALPHA — the instruction that silently converts a brand token into a raw hex. All three were false or harmful; rewritten. |
+| 4 | `backgroundOverlayOpacity` attr + slider | 🔵 **APPROVED BY BEAN 2026-08-21, NEXT SESSION'S FIRST TASK.** ⚠ It is a DECISION REVERSAL, not a gap-fill — see the block below. Scope is NOT the 40 min this doc estimates. |
 | 5 | Mechanism-C adapter + prop-name unification | ❌ not done |
 | 6 | Hover + tier siblings | ❌ **not started for the OVERLAY layer** — verified 2026-08-21: 0 of 10 `BackgroundPanel` blocks declare `backgroundOverlayColourHover`/`overlayGradientHover`. `52b96e68` added the BASE layer's `backgroundColourHover` to the container, which is a different attribute |
 | 7 | Merge the panels + type selector; delete `WrapperColourPanel.js` | ❌ not done — re-verified 2026-08-21 that `WrapperColourPanel.js` still has ZERO JSX mounts (the only hit is a comment at `BackgroundPanel.js:499` saying so), so deleting it remains safe |
@@ -369,6 +369,52 @@ parent, not per block.
 **Still missing on the section-kind roster** (enumerated from `block_composition`, not
 estimated): `sgs/modal` has no `textColour` at all; `sgs/cta-section` and `sgs/site-header`
 have no `textColourGradient`.
+
+### 🔵 STEP 4 — APPROVED, AND IT IS A DECISION REVERSAL
+
+**Bean approved it 2026-08-21 as next session's first task.** Before building, read this — the
+doc's own framing of step 4 as a 40-minute gap-fill is wrong in a way that matters.
+
+**The bug is REAL and REACHABLE, verified in code (not inferred):**
+```js
+const match = ( colours || [] ).find( ( c ) => c.color === picked );
+onChange( match ? match.slug : picked );          // DesignTokenPicker.js:139-140
+```
+Exact string equality, and `enableAlpha` defaults to **`true`** (`DesignTokenPicker.js:468`).
+So a client CAN lower alpha, the value stops matching the palette entry, and a **raw hex** is
+stored instead of the slug. Their brand token silently unlinks; a later rebrand leaves that
+colour behind.
+
+⛔ **BUT THE FIX WAS DELIBERATELY RETIRED, AND THE CODE SAYS SO.**
+`class-sgs-container-wrapper.php`, in the overlay branch:
+
+> *"D5 (Background panel redesign, 2026-08-11): the separate opacity-percentage control is
+> REMOVED — the colour/gradient picker's own alpha channel is the one place transparency is
+> set now. `backgroundOverlayOpacity` no longer exists as an attribute (see block.json);
+> **do not reintroduce it here.**"*
+
+That is `D581` (2026-08-11), and `spec-39-seed-requirements.md` records the attribute as
+RETIRED with the converter's write removed. **Verified 2026-08-21: no block declares it (0 of
+83), and `_OVERLAY_SOLID_OPACITY` in `converter/services/pseudo_overlay.py:72` is a FOSSIL —
+defined, never used.** (I first read that constant as proof the converter still wrote it. It
+does not. A constant's existence is not a call site.)
+
+**So the two decisions are in direct conflict, and nobody reconciled them:**
+
+| | Position |
+|---|---|
+| D581 / redesign-D5 (11 Aug) | Alpha IS the transparency mechanism. Opacity control removed. |
+| This doc's D3 (20 Aug) | Alpha DESTROYS the palette token. Add a real opacity attribute. |
+
+⭐ **Frame the supersede carefully.** D581 was not wrong about SIMPLICITY — one transparency
+mechanism genuinely beats two. It was wrong about WHICH mechanism, because alpha's
+token-destroying side effect was not known when the call was made. Write it up that way, or
+the next reader dismisses D581 wholesale and loses its real point.
+
+**REAL SCOPE (not 40 min):** 8 `block.json` · the shared wrapper (Rule 7 design gate) ·
+REMOVING an explicit in-code prohibition · superseding D581's D5 with a new D-number · and a
+decision on whether `enableAlpha` should stay `true` once a real opacity control exists —
+leaving both reopens the same trap.
 
 ## Build order
 
