@@ -648,14 +648,17 @@ h2.wc-block-mini-cart__title {
 		font-size: 0.9375rem;
 		cursor: pointer;
 		background: var(--wp--preset--color--primary, #E68A95);
-		/* ⚠ WAS `--sgs-product-card-btn-text` (#3A2E26, brown). On the pink
-		   primary that matched no other primary control on the site — the search
-		   submit and call buttons both use the near-white inverse. Measured 5.28:1
-		   against the pink either way, so this is a consistency fix, not a
-		   contrast one. The client's own button-presets--primary--text token
-		   carries the same brown; that wider inconsistency is flagged, not
-		   patched here. */
-		color: var(--wp--preset--color--text-inverse, #fffaf5);
+		/* Text ON the primary fill, so it takes the palette's own `primary-text`
+		   (#fffaf5) — the token that exists for exactly this pairing. Was
+		   `--sgs-product-card-btn-text` (#3A2E26), which is body-text brown and
+		   matched no other primary control on the site.
+		   ⚠ CORRECTION to an earlier comment here, which claimed the client's
+		   tokens were inconsistent because `button-presets--primary--text` is
+		   also brown. That was a misreading, not a defect: `primary` is the brand
+		   colour itself, `primary-text` is the text that sits on it, and the
+		   button-preset entry is a separate setting again. Nothing to fix in the
+		   theme snapshot. */
+		color: var(--wp--preset--color--primary-text, #fffaf5);
 		border: 2px solid var(--wp--preset--color--primary, #E68A95);
 		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 	}
