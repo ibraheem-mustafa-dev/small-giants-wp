@@ -9,7 +9,7 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColour":"surface","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 
 	<!-- wp:sgs/heading {"content":"Meet Our Team","textAlign":"center","fontSize":{"desktop":"xx-large"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
@@ -18,7 +18,7 @@
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"}} -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColour":"surface-alt"} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"border":{"radius":"12px"}},"backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/0F7E80/FFFFFF?text=AJ","imageAlt":"Alex Johnson","alignment":"center","maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"style":{"border":{"radius":"100%"}}} /-->
 				<!-- wp:sgs/heading {"content":"Alex Johnson","textAlign":"center","level":"h3","fontSize":{"desktop":"large"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} /-->
 				<!-- wp:sgs/text {"text":"Creative Director","textAlign":"center","textColour":"primary","fontSize":{"desktop":"small"},"textTransform":"uppercase","letterSpacing":{"desktop":0.05},"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"top":"0"}}}} /-->
@@ -27,7 +27,7 @@
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColour":"surface-alt"} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"border":{"radius":"12px"}},"backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/F87A1F/FFFFFF?text=SP","imageAlt":"Sarah Patel","alignment":"center","maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"style":{"border":{"radius":"100%"}}} /-->
 				<!-- wp:sgs/heading {"content":"Sarah Patel","textAlign":"center","level":"h3","fontSize":{"desktop":"large"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} /-->
 				<!-- wp:sgs/text {"text":"Lead Developer","textAlign":"center","textColour":"primary","fontSize":{"desktop":"small"},"textTransform":"uppercase","letterSpacing":{"desktop":0.05},"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"top":"0"}}}} /-->
@@ -36,7 +36,7 @@
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container -->
-			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColour":"surface-alt"} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"border":{"radius":"12px"}},"backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/2E7D4F/FFFFFF?text=ML","imageAlt":"Marcus Lee","alignment":"center","maxWidth":{"desktop":"120px"},"height":{"desktop":"120px"},"style":{"border":{"radius":"100%"}}} /-->
 				<!-- wp:sgs/heading {"content":"Marcus Lee","textAlign":"center","level":"h3","fontSize":{"desktop":"large"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} /-->
 				<!-- wp:sgs/text {"text":"Strategy Lead","textAlign":"center","textColour":"primary","fontSize":{"desktop":"small"},"textTransform":"uppercase","letterSpacing":{"desktop":0.05},"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"top":"0"}}}} /-->

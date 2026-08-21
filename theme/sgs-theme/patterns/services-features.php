@@ -9,11 +9,11 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColour":"surface","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 
 	<!-- wp:sgs/heading {"content":"Why Choose Us","textAlign":"center","textColour":"text","fontSize":{"desktop":"xx-large"}} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}} -->
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/heading {"content":"01","level":"h3","textColour":"text","fontSize":{"desktop":"hero"}} /-->
 			<!-- wp:sgs/heading {"content":"Fast Delivery","level":"h4","textColour":"text","fontSize":{"desktop":"large"}} /-->
