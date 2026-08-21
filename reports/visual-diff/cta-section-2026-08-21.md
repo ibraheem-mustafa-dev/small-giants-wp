@@ -30,16 +30,29 @@ shared resolver; and a **new `text` row in the block's `SgsColourPanel`**.
   with the support disabled it would have become exactly the dead binding fixed on
   `sgs/container` in `0f2c167f`.
 
-## Live result
+## Live result — DEPLOYED AND VERIFIED
 
-⚠ **NOT YET MEASURED ON A DEPLOYED BUILD.** Filed at commit time; the deployed check follows
-and this file is updated with the numbers. Nothing here claims a capture that was not taken.
+Deployed `--blocks-only`, measured from the served bytes on fixture page 2595
+(`/text-colour-verification/`), cache-busted. ⚠ SGS lifts block CSS into
+`uploads/sgs-css/` — the page HTML carries none of it, so the lifted stylesheet is what to read.
 
-Verified at commit time:
-- `php -l` clean on `render.php`.
-- `npm run build` exit **0**, all blocking gates passing, **no net-new duplicate-control
-  findings** (cta-section already carries a baselined `textColour` entry from the D713 sweep).
-- A1's zero-hit grep and A2's zero-authoring count were both re-run, not recalled.
+**Resting colour — via the preset class, as designed (A4):**
+`class="… wp-block-sgs-cta-section has-text-color has-success-color has-background
+has-accent-background-color …"` ✅
+
+**Hover — via a declaration, correctly paired:**
+```css
+.sgs-cta-section-d1531775.wp-block-sgs-cta-section:hover,
+.sgs-cta-section-d1531775.wp-block-sgs-cta-section:focus-visible{color:var(--wp--preset--color--cookie-brown)}
+```
+✅ Both as TOKENS, not hexes.
+
+⚠ **A false alarm worth recording, because the mechanism recurs.** On first check I reported
+the preset classes MISSING and suspected my own `supports.color.text: false` change had
+disabled them. It had not — I had piped the class list through `head -6` and the list is 16
+classes long, so `has-text-color` was simply below the cut. Fourth truncation-induced
+misreading in this session, same family as computing a selector's specificity from a
+70-character slice. **Never conclude an absence from a truncated view.**
 
 ## Why `intent_capture` and not `first_paint_capture`
 

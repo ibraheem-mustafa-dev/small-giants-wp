@@ -155,17 +155,24 @@ second row in the block's existing `SgsColourPanel`. It also declares
 - **A4.** No regression to the container's background colour path, which shares the same
   `$sgs_container_resting_decls` / `$sgs_container_hover_decls` arrays.
 
-## Live result
+## Live result — DEPLOYED AND VERIFIED
 
-⚠ **NOT YET MEASURED ON A DEPLOYED BUILD.** This report is filed at commit time; the
-deployed re-measurement follows immediately after `build-deploy.py` and this file is
-updated with the numbers. Nothing here claims a deployed capture that has not been taken.
+Deployed `--blocks-only` (83/83 block.json payload-verified), then measured from the SERVED
+bytes. ⚠ Note the method: SGS **lifts block CSS into `uploads/sgs-css/`**, so grepping the
+page HTML finds nothing and proves nothing — the lifted stylesheet is the thing to read.
+Fixture page 2595 (`/text-colour-verification/`), cache-busted.
 
-Verified at commit time, from source and from the gates:
-- `supports.color` is `false` on this block (read from `block.json`) — A1 holds.
-- The conformance gate's own output lists `[GAP] text/css:color` and
-  `[GAP] text/css:color-gradient` for this block — A2 holds.
-- `php -l` clean; `npm run build` exit 0 with all blocking gates passing.
+```css
+.sgs-cst-ba635bd3.wp-block-sgs-container{background-color:var(--wp--preset--color--surface-alt);}
+.sgs-cst-ba635bd3.wp-block-sgs-container{color:var(--wp--preset--color--primary)}
+.sgs-cst-ba635bd3.wp-block-sgs-container:hover,
+.sgs-cst-ba635bd3.wp-block-sgs-container:focus-visible{color:var(--wp--preset--color--accent)}
+```
+
+- Resting text colour paints ✅, as a TOKEN (`var(--wp--preset--color--…)`), not a hex.
+- Hover paints ✅, on a correctly paired `:hover, :focus-visible` rule.
+- The nested `sgs/text` child carries no colour of its own, so it INHERITS the root colour —
+  which is D713's inheritable-cascade-default working as ruled, observed rather than asserted.
 
 ## Why this is `intent_capture` and not `first_paint_capture`
 
