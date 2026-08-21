@@ -421,7 +421,7 @@ export default function Edit({ attributes, setAttributes, name }) {
             / WidthPanel; this panel is scoped to band padding only. */}
         <PanelBody title={ __( "Content band", "sgs-blocks" ) } initialOpen={ false }>
           <p className="components-base-control__help">
-            { __( "Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.", "sgs-blocks" ) }
+            { __( "Styles the inner content band (the max-width wrapper set by Content width). The band exists by default — set Content width to Full to remove it.", "sgs-blocks" ) }
           </p>
           {/* ⛔ "Band background colour" (contentBandBackground) was REMOVED
               2026-08-12, and the attribute retired framework-wide. Bean's rule:

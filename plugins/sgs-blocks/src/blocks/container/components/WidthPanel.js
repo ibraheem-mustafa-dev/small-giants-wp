@@ -19,7 +19,7 @@ import { LENGTH_UNITS } from './_shared';
  * Content-band token options (v0.5 model).
  *   normal → var(--wp--style--global--content-size) (~1200px on this theme)
  *   wide   → var(--wp--style--global--wide-size) (~1400px on this theme)
- *   full   → no inner cap (default)
+ *   full   → no inner cap
  *   custom → reveals a UnitControl for a literal value
  */
 const CONTENT_WIDTH_PRESET_OPTIONS = [
@@ -70,7 +70,10 @@ function contentWidthPreset( v ) {
  *   Tiers: the single object attr `maxWidth` = {desktop,tablet,mobile}.
  *
  * CONTENT BAND: ToggleGroupControl with tokens normal / wide / full / custom.
- *   Default is 'full' (no band cap — content fills outer maxWidth).
+ *   DEFAULT IS 'normal' (~1200px band), changed from 'full' on 2026-08-21 by D706's
+ *   fix commit 2d291992. Every container that does not say 'full' therefore RENDERS a
+ *   .sgs-container__inner band AND takes core's .has-global-padding gutter. This
+ *   docblock said 'full' for the whole of that day; do not trust it over block.json.
  *   When custom is selected a UnitControl for the literal value is revealed.
  *   Tiers: the single object attr `contentWidth` = {desktop,tablet,mobile}.
  *
@@ -238,7 +241,7 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 			     non-technical client is told what the tokens mean, and inside the
 			     render prop it would show on one tier at a time. */ }
 			<p className="components-base-control__help">
-				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size), Wide ≈ 1400px (wide-size), Full = no cap (default).', 'sgs-blocks' ) }
+				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size) is the default, Wide ≈ 1400px (wide-size), Full = no cap.', 'sgs-blocks' ) }
 			</p>
 				</>
 			) }
