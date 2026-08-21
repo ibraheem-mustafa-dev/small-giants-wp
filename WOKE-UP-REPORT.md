@@ -26,8 +26,9 @@ the server, and the pre-deploy stored-content audit passed.
 
 # What is merged
 
-**Merged and pushed to `main`** — `4eeedb73`, four commits, deployed and re-verified from
-`main` afterwards (19/19 probe assertions, second run).
+**Merged and pushed to `main`** — everything, including the scroll reveal you asked for.
+Deployed and re-verified from `main` afterwards: **23/23 probe assertions**, one honestly
+skipped.
 
 `main` had not moved while I worked, so the merge was clean with nothing to resolve.
 
@@ -105,8 +106,8 @@ Cost: +1,349 bytes. The whole effect is 5,674 bytes — **4.6% of the 120KB you 
 
 Grain and halftone I'm happy with. Duotone came out muddy on the first render — the
 shader was mapping the photo's brightness onto the colour ramp without stretching it
-first, so a normally-lit photo only ever reached the dark end. I fixed that and the fix
-is in the branch. **Look at `tier-w-C-duotone.png` and tell me if it's there yet.**
+first, so a normally-lit photo only ever reached the dark end. That's fixed and live. **Look at
+`tier-w-C-duotone.png` and tell me if it's there yet.**
 
 If it's still not right, that's a preset-tuning job, not a rebuild — the numbers live in
 one small file (`src/shared/effects/surface-treatments/presets.js`) and changing them is
@@ -117,15 +118,17 @@ you.
 
 # The exact command to resume
 
+Nothing to resume — it's merged, pushed and live. To pick the work back up:
+
 ```bash
 cd /c/Users/Bean/Projects/small-giants-wp
-git checkout feat/tier-w-surface-treatments
+git pull
 ```
 
-Then, if you're happy with the look:
+To re-run the live verification yourself at any time:
 
 ```bash
-git checkout main && git merge --no-ff feat/tier-w-surface-treatments && git push origin main
+node plugins/sgs-blocks/scripts/motion-qa/probe-tier-w-surface.mjs   https://sandybrown-nightingale-600381.hostingersite.com/tier-w-surface-canary/
 ```
 
 ---
@@ -145,7 +148,8 @@ Tier W now exists:
   colours from your palette. No numbers unless you open "Advanced".
 - offered on **15 image-bearing blocks**, measured — not guessed
 
-**It costs 4,325 bytes gzipped. That's 3.5% of the 120KB you allowed for Tier W pages.**
+**It costs 5,674 bytes gzipped — 4.6% of the 120KB you allowed for Tier W pages.**
+(4,325 for the treatments, +1,349 for the scroll reveal.)
 
 ## Three things worth knowing
 
