@@ -39,8 +39,23 @@ in plain English:
    non-deterministic LIFO-traversal race (root-caused, fixed to BFS, self-tested with a
    negative control that genuinely fails 3-of-5 runs against the old code).
 
-**Still blocking "fully working" (in priority order — not hidden in prose, not silently
-dropped):**
+⛔ **STATUS UPDATED 2026-08-21 — items 1 and 4 below are now DONE. Read this block before
+the list, which is preserved for its reasoning, not its status.**
+
+| Was blocking | Now |
+|---|---|
+| 1. Rule 31 blind to shared panels | ✅ **DONE** `20332725`. 409 → 420 → **418**. One finding per (owner file, rowKey) with a machine-readable `mountedBy` array (D705). `banned-lookalike` deliberately stays `edit.js`-only and still reads 0 |
+| 2. Defect-level matching | ❌ still open — but the join key is now identified: BOTH sides compute `attrName` and BOTH discard it |
+| 3. Gradient axis is a floor | ❌ still open, unchanged |
+| 4. Colour's own `cssProperties` | ✅ **DONE** `0c44b0c6`. Required a `(?<![-\w])` lookbehind in `ownPaintRegex()` first, or a bare `color` alternative would also have matched `--brand-color:` and moved the census. Measurement proven unchanged |
+
+⚠ **The 409 figure is superseded — it is 418.** The +9 net is honestly composed: +10 shared-owner,
++2 from a non-conformant container row this track shipped and then fixed, −1 from the shop track
+flipping `sgs/trust-bar`'s `supports.color.text` false, −2 as that container row was completed.
+A total that matches a prediction for the wrong reasons is a false confirmation; see `rules.json`'s
+`advisoryReason`, which records the arithmetic rather than the headline.
+
+**Original list (reasoning preserved, status superseded by the table above):**
 1. **Rule 31 (the 409 number) is still blind to ~30 blocks reached only through shared
    wrapper panels** — it reads each block's own `edit.js` and nothing else. This is the
    single biggest remaining gap: 409 is a floor, not a ceiling, and nobody has switched it
