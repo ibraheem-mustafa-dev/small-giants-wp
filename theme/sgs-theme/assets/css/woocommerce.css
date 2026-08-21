@@ -815,8 +815,13 @@ dialog.sgs-shop-filters {
 		flex-shrink: 0;
 		padding: var(--wp--preset--spacing--30, 1rem) 0;
 		padding-bottom: calc(var(--wp--preset--spacing--30, 1rem) + env(safe-area-inset-bottom, 0px));
-		border-top: 1px solid var(--sgs-elevation-line);
-		background: var(--sgs-elevation-1);
+		/* The footer sits INSIDE the sheet, so it takes the sheet's own surface.
+		   It previously used --sgs-elevation-1, the generic neutral introduced
+		   before the panel had a brand skin — against the now brand-tinted panel
+		   that read as a grey slab pasted onto pink. The border still separates
+		   it; the fill no longer contradicts it. */
+		border-top: 1px solid var(--sgs-filter-line, var(--sgs-elevation-line));
+		background: var(--sgs-filter-surface, var(--sgs-elevation-1));
 	}
 }
 
@@ -1840,6 +1845,13 @@ body.woocommerce-cart .with-empty-cart-icon,
  * scrollable, unlike the carousels elsewhere in the framework, which hide theirs
  * precisely because they have their own arrows and snap points. */
 .sgs-shop-filters__scroll {
+	/* A 2px horizontal overflow (scrollWidth 342 vs clientWidth 340, measured
+	   live) was enough to paint a full-width horizontal scrollbar across the
+	   panel — the grey bar under the last filter group. No child is actually
+	   wider than the container; it is sub-pixel rounding, so there is nothing to
+	   "fix" upstream. A filter panel never scrolls sideways by design, so the
+	   axis is simply turned off. */
+	overflow-x: hidden;
 	scrollbar-width: thin;
 	scrollbar-color: var(--sgs-filter-line, var(--wp--preset--color--border)) transparent;
 }
