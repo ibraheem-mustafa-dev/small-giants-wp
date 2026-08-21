@@ -157,6 +157,48 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayColourTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayColourMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
 		"bgVideo": {
 			"type": "object"
 		},

@@ -405,13 +405,26 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// validated through sgs_css_gradient_value() at the point of emission
 			// below — replaces the old 4-attr bool/angle/from/to shape, which could
 			// only ever express a straight two-stop gradient.
-			$overlay_gradient      = $attributes['overlayGradient'] ?? '';
-			$bg_video              = $attributes['bgVideo'] ?? null;
-			$bg_video_tablet       = $attributes['bgVideoTablet'] ?? null;
-			$bg_video_mobile       = $attributes['bgVideoMobile'] ?? null;
-			$bg_parallax           = ! empty( $attributes['bgParallax'] );
-			$bg_ken_burns          = ! empty( $attributes['bgKenBurns'] );
-			$bg_animation_duration = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
+			$overlay_gradient = $attributes['overlayGradient'] ?? '';
+			// D6 (2026-08-22) — hover + responsive-tier siblings for the overlay
+			// paint pair, plus Step 8's blend mode. Null/absent on a block that
+			// has not adopted the sibling (WordPress drops an undeclared attr on
+			// the editor surface — D338/D704) is handled downstream exactly like
+			// $overlay_opacity above: sgs_overlay_decls() simply emits nothing
+			// extra for that state/tier.
+			$overlay_colour_hover    = $attributes['backgroundOverlayColourHover'] ?? '';
+			$overlay_gradient_hover  = $attributes['overlayGradientHover'] ?? '';
+			$overlay_colour_tablet   = $attributes['backgroundOverlayColourTablet'] ?? '';
+			$overlay_colour_mobile   = $attributes['backgroundOverlayColourMobile'] ?? '';
+			$overlay_gradient_tablet = $attributes['overlayGradientTablet'] ?? '';
+			$overlay_gradient_mobile = $attributes['overlayGradientMobile'] ?? '';
+			$overlay_blend_mode      = $attributes['backgroundOverlayBlendMode'] ?? '';
+			$bg_video                = $attributes['bgVideo'] ?? null;
+			$bg_video_tablet         = $attributes['bgVideoTablet'] ?? null;
+			$bg_video_mobile         = $attributes['bgVideoMobile'] ?? null;
+			$bg_parallax             = ! empty( $attributes['bgParallax'] );
+			$bg_ken_burns            = ! empty( $attributes['bgKenBurns'] );
+			$bg_animation_duration   = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
 
 			$shadow = $attributes['shadow'] ?? '';
 			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
@@ -422,15 +435,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// arrays never coerce to a scalar type-hint, so this is a hard fatal on
 			// every render, not just a warning. Same shape as the $grid_auto_rows
 			// guard at :448.
-			$shadow    = is_array( $shadow ) ? '' : $shadow;
+			$shadow = is_array( $shadow ) ? '' : $shadow;
 			// Shadow COLOUR is a separate attribute (D621/D622 colour-panel split);
 			// ShadowControl stores SHAPE only. Composed back together at emission
 			// via sgs_shadow_value_composed(). Same is_array guard rationale as the
 			// shape above — a tiered object would TypeError-fatal the ?string hint.
 			$shadow_colour = $attributes['shadowColour'] ?? '';
 			$shadow_colour = is_array( $shadow_colour ) ? '' : $shadow_colour;
-			$max_width = $attributes['maxWidth'] ?? '';
-			$max_width = is_array( $max_width ) ? '' : $max_width;
+			$max_width     = $attributes['maxWidth'] ?? '';
+			$max_width     = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
 			//
 			// `contentWidth` is a TIER OBJECT ({desktop,tablet,mobile}), same shape as
@@ -762,8 +775,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// existed.
 			$grid_item_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradient'] ?? '' ) ) : '';
 			$grid_item_border_gradient_hover = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) ( $attributes['gridItemBorderGradientHover'] ?? '' ) ) : '';
-			$grid_item_shadow        = $attributes['gridItemShadow'] ?? '';
-			$grid_item_text_colour   = $attributes['gridItemTextColour'] ?? '';
+			$grid_item_shadow                = $attributes['gridItemShadow'] ?? '';
+			$grid_item_text_colour           = $attributes['gridItemTextColour'] ?? '';
 			// is_array guards (Spec 35 Phase 1.4b, STAGE 2): these four ARE being made
 			// tier-capable below. A tiered object reaching these legacy scalar vars
 			// would TypeError-fatal sgs_colour_value()/sgs_shadow_value() (both
@@ -773,14 +786,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// preg_replace on an array SUBJECT returns an array, and trim() then
 			// TypeErrors on that array). Same shape as the $grid_auto_rows guard
 			// at :448.
-			$grid_item_background  = is_array( $grid_item_background ) ? '' : $grid_item_background;
-			$grid_item_border      = is_array( $grid_item_border ) ? '' : $grid_item_border;
-			$grid_item_shadow      = is_array( $grid_item_shadow ) ? '' : $grid_item_shadow;
+			$grid_item_background = is_array( $grid_item_background ) ? '' : $grid_item_background;
+			$grid_item_border     = is_array( $grid_item_border ) ? '' : $grid_item_border;
+			$grid_item_shadow     = is_array( $grid_item_shadow ) ? '' : $grid_item_shadow;
 			// Grid-item shadow COLOUR — same SHAPE/colour split as the outer shadow
 			// above, same is_array guard rationale.
 			$grid_item_shadow_colour = $attributes['gridItemShadowColour'] ?? '';
 			$grid_item_shadow_colour = is_array( $grid_item_shadow_colour ) ? '' : $grid_item_shadow_colour;
-			$grid_item_text_colour = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
+			$grid_item_text_colour   = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
 
 			// QB-1 advanced grid attrs (section + layout kinds only).
 			// is_array guard (Spec 35 pass 3b, 2026-08-11) — SAME shape as
@@ -1535,7 +1548,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// unified the declaration building but left this gating hand-written at both
 				// call sites, which is exactly how sgs/hero kept a divergent overlay policy
 				// through that change. hero now gates identically.
-				$overlay_decls_computed = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity );
+				// D6/Step 8 (2026-08-22): blend mode joins the same call — one shared
+				// owner for the whole overlay declaration set, not a second emitter
+				// appended after this one (the exact gap D718 named and closed for
+				// opacity/existence; blend mode does not reopen it).
+				$overlay_decls_computed = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity, $overlay_blend_mode );
 
 				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
 				// — a colour or gradient set with NO media rendered nothing at all,
@@ -1899,7 +1916,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$grid_item_border_width = function_exists( 'sgs_grid_border_parts' )
 					? sgs_grid_border_parts( $grid_item_border )['width']
 					: '';
-				$responsive_css .= sgs_border_gradient_css(
+				$responsive_css        .= sgs_border_gradient_css(
 					'.' . $uid . '.sgs-container--grid > .sgs-container',
 					$grid_item_border_gradient,
 					'' !== $grid_item_border_gradient_hover ? $grid_item_border_gradient_hover : null,
@@ -1981,6 +1998,46 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// (sgs_colour_value + esc_attr on the opacity/angle).
 			if ( '' !== $overlay_decls && $uid ) {
 				$responsive_css .= '.' . $uid . ' .sgs-container__overlay{' . $overlay_decls . '}';
+
+				// Overlay HOVER state (D6, 2026-08-22) — same shared owner
+				// (sgs_overlay_decls()), NOT a hand-rolled second emitter. Opacity
+				// and blend mode are deliberately not re-passed here: the base
+				// rule above already declared them, and the more specific
+				// `:hover`/`:focus-visible` selector only needs to override the
+				// properties that actually change — colour/gradient. Gated on the
+				// span existing at all (the `'' !== $overlay_decls` outer check):
+				// a hover-only value with no resting paint has nothing to select,
+				// matching D717/D718's "no colour set means no overlay" rule.
+				if ( '' !== $overlay_colour_hover || '' !== $overlay_gradient_hover ) {
+					$overlay_hover_paint = sgs_overlay_decls( $overlay_colour_hover, $overlay_gradient_hover );
+					if ( '' !== $overlay_hover_paint ) {
+						$responsive_css .= sgs_emit_state_colour_css(
+							'.' . $uid . ' .sgs-container__overlay',
+							array(),
+							array( $overlay_hover_paint )
+						);
+					}
+				}
+
+				// Overlay responsive TIERS (D6, 2026-08-22) — project-standard
+				// 768/1024 breakpoints (tablet max-width:1023px, mobile
+				// max-width:767px). Emitted only when a tier explicitly sets its
+				// own colour/gradient; an unset tier inherits the desktop rule
+				// above via ordinary cascade — no hand-rolled fallback value
+				// needed, matching every other tier in this file (e.g. the
+				// background-image tiers a few lines up).
+				if ( '' !== $overlay_colour_tablet || '' !== $overlay_gradient_tablet ) {
+					$overlay_tablet_paint = sgs_overlay_decls( $overlay_colour_tablet, $overlay_gradient_tablet );
+					if ( '' !== $overlay_tablet_paint ) {
+						$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-container__overlay{' . $overlay_tablet_paint . '}}';
+					}
+				}
+				if ( '' !== $overlay_colour_mobile || '' !== $overlay_gradient_mobile ) {
+					$overlay_mobile_paint = sgs_overlay_decls( $overlay_colour_mobile, $overlay_gradient_mobile );
+					if ( '' !== $overlay_mobile_paint ) {
+						$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-container__overlay{' . $overlay_mobile_paint . '}}';
+					}
+				}
 			}
 
 			// Base content-band scoped rule (Spec 32, D293 no-inline contract) —

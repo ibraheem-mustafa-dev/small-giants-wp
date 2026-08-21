@@ -199,8 +199,13 @@ function makeChangeHandler( { linked, colours, onChange } ) {
  *                                    (D636): a non-empty gradient string on the sibling attr
  *                                    wins over the flat `value` at render time — see
  *                                    `sgs_background_paint_value()` in `helpers-tokens.php`.
- * @param {boolean} props.clearable   Forwarded to `ColorPalette`.
- * @param {boolean} props.enableAlpha Forwarded to `ColorPalette`.
+ * @param {boolean} props.clearable          Forwarded to `ColorPalette`.
+ * @param {boolean} props.enableAlpha        Forwarded to the solid `ColorPalette`.
+ * @param {boolean} [props.gradientEnableAlpha] Forwarded to the gradient bar's stop editor
+ *                                            instead of `enableAlpha` when a caller needs the
+ *                                            two paths to differ (D4 adapter rollout — see the
+ *                                            comment on this prop below). Falls back to
+ *                                            `enableAlpha` when omitted.
  * @param {Array}   props.colours     Active theme colour palette (from `useSettings( 'color.palette' )`).
  */
 function SgsColourStateControl( {
@@ -209,6 +214,16 @@ function SgsColourStateControl( {
 	states,
 	clearable,
 	enableAlpha,
+	// Independent alpha policy for the gradient bar's stop editor, falling
+	// back to `enableAlpha` when omitted (byte-identical behaviour for every
+	// existing caller). Added for the D4 GradientOverlayControl adapter
+	// (2026-08-22): that control's solid swatch has alpha OFF by D717 (an
+	// alpha edit there breaks the palette-slug match and silently unlinks
+	// the client's brand token — see GradientOverlayControl.js), but its
+	// gradient stops never carried that risk (a gradient stop is stored as
+	// part of a full CSS gradient string, never slug-matched), so its alpha
+	// stayed ON. One shared `enableAlpha` cannot express both at once.
+	gradientEnableAlpha,
 	colours,
 	borderStyle,
 	onBorderStyleChange,
@@ -337,7 +352,7 @@ function SgsColourStateControl( {
 							} ) );
 							s.onGradientChange( newGradient ?? '' );
 						} }
-						enableAlpha={ enableAlpha }
+						enableAlpha={ gradientEnableAlpha ?? enableAlpha }
 						__experimentalIsRenderedInSidebar
 					/>
 				) : (
@@ -466,6 +481,7 @@ export default function DesignTokenPicker( {
 	clearable = true,
 	linked = false,
 	enableAlpha = true,
+	gradientEnableAlpha,
 	states,
 	// Border-style icons, opt-in. These MUST be listed here and forwarded
 	// below: this component forwards an EXPLICIT prop list rather than
@@ -498,6 +514,7 @@ export default function DesignTokenPicker( {
 				states={ states }
 				clearable={ clearable }
 				enableAlpha={ enableAlpha }
+				gradientEnableAlpha={ gradientEnableAlpha }
 				colours={ colours }
 				borderStyle={ borderStyle }
 				onBorderStyleChange={ onBorderStyleChange }

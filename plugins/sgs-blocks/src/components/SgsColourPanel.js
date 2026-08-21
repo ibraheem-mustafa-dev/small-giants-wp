@@ -83,12 +83,20 @@
  *                             (`background-clip: text`). Its states carry two
  *                             ADDITIONAL fields on top of the normal
  *                             `value`/`onChange`/`linked` shape —
- *                             `gradientValue`/`gradientOnChange`, the
+ *                             `gradientValue`/`onGradientChange`, the
  *                             SIBLING `{attr}Gradient` attribute's pair
  *                             (mirrors `sgs/container`'s shipped
  *                             `backgroundOverlayColour`/`overlayGradient`
  *                             precedent — two attributes, not one shared
- *                             slot). Every existing row (no `gradientCapable`)
+ *                             slot). `onGradientChange` is the canonical
+ *                             name across BOTH gradient-capable mechanisms
+ *                             (D5) and now the ONLY one: the legacy
+ *                             `gradientOnChange` spelling and the
+ *                             compatibility alias that briefly accepted it
+ *                             are both gone, so a state entry using the old
+ *                             key silently does nothing. Write
+ *                             `onGradientChange`.
+ *                             Every existing row (no `gradientCapable`)
  *                             is unaffected.
  */
 import { __ } from '@wordpress/i18n';

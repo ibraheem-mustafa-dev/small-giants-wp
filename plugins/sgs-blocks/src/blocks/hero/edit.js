@@ -491,7 +491,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   the in-row per-state gradient shape (DesignTokenPicker's own
 			   `gradientValue`/`onGradientChange`); text uses the row-level
 			   `gradientCapable: true` shape (GradientCapableColourControl's
-			   `gradientValue`/`gradientOnChange`) since text-colour gradients
+			   `gradientValue`/`onGradientChange`) since text-colour gradients
 			   paint via `background-clip: text`, matching sgs/heading. */ }
 			<SgsColourPanel
 				rows={ [
@@ -533,7 +533,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -542,7 +542,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
-								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

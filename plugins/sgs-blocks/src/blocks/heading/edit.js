@@ -301,7 +301,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -310,7 +310,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
-								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

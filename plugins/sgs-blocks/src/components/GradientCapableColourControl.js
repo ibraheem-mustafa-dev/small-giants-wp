@@ -16,13 +16,23 @@
  * `sgs/container`'s existing, shipped `backgroundOverlayColour` /
  * `overlayGradient` precedent exactly: each state carries a `value`/
  * `onChange` pair (the flat colour, UNCHANGED shape from `DesignTokenPicker`)
- * PLUS a `gradientValue`/`gradientOnChange` pair (the sibling `{attr}Gradient`
+ * PLUS a `gradientValue`/`onGradientChange` pair (the sibling `{attr}Gradient`
  * attribute). The gradient sibling wins when non-empty — resolved server-side
  * by `sgs_resolve_text_colour_or_gradient()` (`includes/helpers-tokens.php`).
  * Switching the toggle to Solid clears the gradient sibling (mirrors
  * `GradientOverlayControl`'s "the two paths never disagree about which is
  * current" rule); switching to Gradient never touches the flat sibling — it
  * simply stops being read until the operator switches back.
+ *
+ * ⛑ PROP-NAME UNIFICATION (D5, unified-colour-panel design, 2026-08-22) —
+ * this file used to read `state.gradientOnChange` while `DesignTokenPicker`'s
+ * own state shape (mechanism A) reads `state.onGradientChange`. Two names
+ * for the same concept on the two colour-gradient mechanisms leaks onto
+ * every future detector and every maintainer, so this file now reads and
+ * documents `onGradientChange` as canonical — matching mechanism A and the
+ * React `on<Event>` convention. Every call site across `blocks/*\/edit.js`
+ * has been migrated to `onGradientChange`; the legacy `gradientOnChange`
+ * alias has been removed — `onGradientChange` is the only key read.
  *
  * `DesignTokenPicker` itself needs no changes for this (LEDGER Task 1b
  * correction 1) — this is a sibling control, not an edit to that file.
@@ -98,7 +108,7 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 					value={ state.gradientValue || '' }
 					onChange={ ( newGradient ) => {
 						setLocalMode( true );
-						state.gradientOnChange( newGradient ?? '' );
+						state.onGradientChange( newGradient ?? '' );
 					} }
 					enableAlpha={ enableAlpha }
 					__experimentalIsRenderedInSidebar
@@ -112,7 +122,7 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 						// Switching to Solid clears the gradient sibling so the
 						// two paths never disagree about which is current —
 						// mirrors GradientOverlayControl exactly.
-						state.gradientOnChange( '' );
+						state.onGradientChange( '' );
 						if ( ! state.linked ) {
 							state.onChange( picked ?? '' );
 							return;
@@ -139,14 +149,15 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 /**
  * @param {Object}   props
  * @param {string}   props.label              Row label (e.g. "Heading colour").
- * @param {Array}    [props.states]           `[{ key, label, value, onChange, gradientValue, gradientOnChange, linked? }]`.
+ * @param {Array}    [props.states]           `[{ key, label, value, onChange, gradientValue, onGradientChange, linked? }]`.
  *                                             `value`/`onChange`/`linked` are the SAME shape `DesignTokenPicker` uses
- *                                             for the flat colour — unchanged. `gradientValue`/`gradientOnChange`
- *                                             are the sibling `{attr}Gradient` attribute's pair.
+ *                                             for the flat colour — unchanged. `gradientValue`/`onGradientChange`
+ *                                             are the sibling `{attr}Gradient` attribute's pair — CANONICAL name per
+ *                                             D5 (2026-08-22); every call site has been migrated to it.
  * @param {string}   [props.value]            Single-state convenience form (no tabs) — flat colour, paired with `onChange`.
  * @param {Function} [props.onChange]         Paired with `value` for the single-state form.
  * @param {string}   [props.gradientValue]    Single-state convenience form — the sibling gradient value.
- * @param {Function} [props.gradientOnChange] Paired with `gradientValue` for the single-state form.
+ * @param {Function} [props.onGradientChange] Paired with `gradientValue` for the single-state form (canonical name).
  * @param {boolean}  [props.clearable=true]
  * @param {boolean}  [props.enableAlpha=true]
  */
@@ -156,7 +167,7 @@ export default function GradientCapableColourControl( {
 	value,
 	onChange,
 	gradientValue,
-	gradientOnChange,
+	onGradientChange,
 	clearable = true,
 	enableAlpha = true,
 } ) {
@@ -170,7 +181,16 @@ export default function GradientCapableColourControl( {
 	const resolvedStates =
 		states && states.length > 0
 			? states
-			: [ { key: 'normal', label, value, onChange, gradientValue, gradientOnChange } ];
+			: [
+					{
+						key: 'normal',
+						label,
+						value,
+						onChange,
+						gradientValue,
+						onGradientChange,
+					},
+			  ];
 
 	const hasStates = resolvedStates.length > 1;
 	const descId = `${ id }-desc`;

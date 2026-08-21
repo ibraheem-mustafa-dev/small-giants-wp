@@ -94,6 +94,18 @@ $overlay_opacity = $attributes['backgroundOverlayOpacity'] ?? null;
 // CSS gradient value, validated through sgs_css_gradient_value() at the point of
 // emission below.
 $overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient'] ?? '' );
+// D6/Step 8 (2026-08-22) — hover + responsive-tier siblings, plus blend mode,
+// for the same overlay pair. Raw (undefaulted) values, exactly like
+// $overlay_colour_raw above — resolved once, at the point of emission, by
+// sgs_overlay_decls() itself (the same shared owner SGS_Container_Wrapper
+// calls), never a second hand-rolled resolver here.
+$overlay_colour_hover_raw    = $attributes['backgroundOverlayColourHover'] ?? '';
+$overlay_gradient_hover_raw  = $attributes['overlayGradientHover'] ?? '';
+$overlay_colour_tablet_raw   = $attributes['backgroundOverlayColourTablet'] ?? '';
+$overlay_colour_mobile_raw   = $attributes['backgroundOverlayColourMobile'] ?? '';
+$overlay_gradient_tablet_raw = $attributes['overlayGradientTablet'] ?? '';
+$overlay_gradient_mobile_raw = $attributes['overlayGradientMobile'] ?? '';
+$overlay_blend_mode          = $attributes['backgroundOverlayBlendMode'] ?? '';
 // The split column's sources are TYPED, one family per media kind:
 // splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a
 // per-tier splitMediaType* saying which kind that tier uses.
@@ -1014,10 +1026,49 @@ $overlay_html = '';
 // nothing to paint, so "is there an overlay?" and "what does it paint?" are one
 // decision in one place. SGS_Container_Wrapper gates the identical way, so the
 // two sites cannot drift apart on policy.
-$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, $overlay_gradient_value, $overlay_opacity );
+// D6/Step 8 (2026-08-22): blend mode joins the same call — one shared owner,
+// not a second emitter appended after it (the exact divergence D718 closed
+// for existence/opacity; blend mode does not reopen it).
+$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, $overlay_gradient_value, $overlay_opacity, $overlay_blend_mode );
 if ( '' !== $overlay_decls ) {
 	$overlay_html    = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
 	$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{' . $overlay_decls . '}';
+
+	// Overlay HOVER state (D6, 2026-08-22) — same shared owner
+	// (sgs_overlay_decls()), same pattern as SGS_Container_Wrapper. Opacity
+	// and blend mode are not re-passed: the base rule above already declared
+	// them, and the more specific `:hover`/`:focus-visible` selector only
+	// needs to override colour/gradient. Gated on the span existing at all
+	// (the outer `'' !== $overlay_decls` check) — a hover-only value with no
+	// resting paint has nothing to select, matching D717/D718's "no colour
+	// set means no overlay" rule.
+	if ( '' !== $overlay_colour_hover_raw || '' !== $overlay_gradient_hover_raw ) {
+		$overlay_hover_paint = sgs_overlay_decls( $overlay_colour_hover_raw, $overlay_gradient_hover_raw );
+		if ( '' !== $overlay_hover_paint ) {
+			$responsive_css .= sgs_emit_state_colour_css(
+				'.' . $uid . ' .sgs-hero__overlay',
+				array(),
+				array( $overlay_hover_paint )
+			);
+		}
+	}
+
+	// Overlay responsive TIERS (D6, 2026-08-22) — project-standard 768/1024
+	// breakpoints. Emitted only when a tier explicitly sets its own colour/
+	// gradient; an unset tier inherits the desktop rule above via ordinary
+	// cascade.
+	if ( '' !== $overlay_colour_tablet_raw || '' !== $overlay_gradient_tablet_raw ) {
+		$overlay_tablet_paint = sgs_overlay_decls( $overlay_colour_tablet_raw, $overlay_gradient_tablet_raw );
+		if ( '' !== $overlay_tablet_paint ) {
+			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__overlay{' . $overlay_tablet_paint . '}}';
+		}
+	}
+	if ( '' !== $overlay_colour_mobile_raw || '' !== $overlay_gradient_mobile_raw ) {
+		$overlay_mobile_paint = sgs_overlay_decls( $overlay_colour_mobile_raw, $overlay_gradient_mobile_raw );
+		if ( '' !== $overlay_mobile_paint ) {
+			$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__overlay{' . $overlay_mobile_paint . '}}';
+		}
+	}
 }
 
 // FR-22-6: all content (label, headline, sub-headline, CTAs) is rendered via

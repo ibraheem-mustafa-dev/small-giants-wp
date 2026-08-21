@@ -271,7 +271,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
 								linked: true,
 								gradientValue: priceColourGradient,
-								gradientOnChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
 							},
 						],
 					},

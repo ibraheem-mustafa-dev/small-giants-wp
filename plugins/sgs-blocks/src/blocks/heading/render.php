@@ -112,6 +112,8 @@ $font_size_unit = $attributes['fontSizeUnit'] ?? 'px';
 // No '700' fallback (D338): that duplicated theme.json's styles.elements.heading
 // fontWeight and forced an emit that beat it, so a client could never change heading
 // weight. Empty => the emitter below writes no declaration => the theme wins.
+// Enforced by scripts/check-hardcoded-render-defaults.js F3b (block.json
+// default-value divergence scan) — --check.
 $font_weight         = $attributes['fontWeight'] ?? '';
 $line_height         = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
 $line_height_unit    = $attributes['lineHeightUnit'] ?? 'em';
@@ -121,6 +123,8 @@ $text_transform      = isset( $attributes['textTransform'] ) ? $attributes['text
 // '' = inherit (D343). NEVER default this to a colour: the scoped rule it emits
 // is (0,2,0) and beats the theme's own `h1..h6 { color: … }` (0,0,1), so a
 // default here silently disables the client's heading colour on every heading.
+// Enforced by scripts/check-hardcoded-render-defaults.js F3b (block.json
+// default-value divergence scan) — --check.
 $text_colour = $attributes['textColour'] ?? '';
 // D636 — sibling-attribute shape, mirrors sgs/container's shipped
 // backgroundOverlayColour/overlayGradient: TWO attributes, gradient wins

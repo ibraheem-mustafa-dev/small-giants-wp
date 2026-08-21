@@ -838,7 +838,15 @@ function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string
 
 /**
  * Resolve an overlay LAYER's complete CSS declaration set — colour/gradient
- * paint plus its own opacity (D717, 2026-08-21).
+ * paint plus its own opacity (D717, 2026-08-21) plus its own blend mode
+ * (D6/Step 8, 2026-08-22).
+ *
+ * BLEND MODE IS OWNED HERE FOR THE SAME REASON OPACITY IS (D718's lesson,
+ * applied on purpose rather than repeated): extracting a shared helper for
+ * the VALUE while leaving a second overlay capability hand-rolled at each
+ * call site is exactly how sgs/hero's overlay drifted from the wrapper's
+ * before. Every future overlay capability goes through THIS function, not a
+ * second emitter appended after it.
  *
  * WHY THIS EXISTS, and why it is a layer ABOVE sgs_background_paint_value()
  * rather than a widening of it: that helper answers one narrow question —
@@ -873,18 +881,25 @@ function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string
  * NO-INLINE CONTRACT (Spec 32): the caller splices this into its own scoped
  * `.{uid} .sgs-*__overlay` rule. Nothing here rides inline on an element.
  *
- * @param string|null    $colour   Flat overlay colour (palette slug or CSS colour).
- * @param string|null    $gradient Sibling gradient attribute (complete CSS gradient string).
- * @param int|float|null $opacity  Overlay opacity as a 0-100 PERCENTAGE (the attribute's
- *                                 stored shape). Null/absent emits no opacity declaration,
- *                                 so a block that has not adopted the attribute is unchanged.
- *                                 Clamped to 0-100; 100 emits nothing (it is the CSS default,
- *                                 and a redundant declaration is noise in every scoped rule).
+ * @param string|null    $colour     Flat overlay colour (palette slug or CSS colour).
+ * @param string|null    $gradient   Sibling gradient attribute (complete CSS gradient string).
+ * @param int|float|null $opacity    Overlay opacity as a 0-100 PERCENTAGE (the attribute's
+ *                                   stored shape). Null/absent emits no opacity declaration,
+ *                                   so a block that has not adopted the attribute is unchanged.
+ *                                   Clamped to 0-100; 100 emits nothing (it is the CSS default,
+ *                                   and a redundant declaration is noise in every scoped rule).
+ * @param string|null    $blend_mode `backgroundOverlayBlendMode` attribute value. Null/empty/
+ *                                   'normal'/anything outside the allowed enum emits no
+ *                                   declaration — 'normal' is the CSS default and an
+ *                                   out-of-enum value is refused rather than passed through
+ *                                   (the attribute's block.json enum is the source of truth;
+ *                                   this allowlist mirrors it so a corrupted/hand-authored
+ *                                   value can never reach the stylesheet unescaped).
  * @return string Declarations joined by `;`, no trailing semicolon (e.g.
- *                `background-color:var(--wp--preset--color--primary);opacity:0.3`),
+ *                `background-color:var(--wp--preset--color--primary);opacity:0.3;mix-blend-mode:multiply`),
  *                or `''` when there is no paint at all.
  */
-function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null ): string {
+function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null, ?string $blend_mode = null ): string {
 	$paint = sgs_background_paint_decl( $colour, $gradient );
 
 	if ( '' === $paint ) {
@@ -898,6 +913,25 @@ function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null 
 		if ( 100.0 !== $pct ) {
 			// rtrim keeps `0.3` rather than `0.300000`; a bare `0` stays `0`.
 			$decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.', '' ), '0' ), '.' );
+		}
+	}
+
+	if ( null !== $blend_mode && '' !== $blend_mode && 'normal' !== $blend_mode ) {
+		static $allowed_blend_modes = array(
+			'multiply',
+			'screen',
+			'overlay',
+			'darken',
+			'lighten',
+			'color-dodge',
+			'color-burn',
+			'soft-light',
+			'hard-light',
+			'difference',
+			'exclusion',
+		);
+		if ( in_array( $blend_mode, $allowed_blend_modes, true ) ) {
+			$decls[] = 'mix-blend-mode:' . $blend_mode;
 		}
 	}
 

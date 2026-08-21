@@ -419,7 +419,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { quoteColour: val ?? '' } ),
 								linked: true,
 								gradientValue: quoteColourGradient,
-								gradientOnChange: ( val ) =>
+								onGradientChange: ( val ) =>
 									setAttributes( { quoteColourGradient: val ?? '' } ),
 							},
 						],

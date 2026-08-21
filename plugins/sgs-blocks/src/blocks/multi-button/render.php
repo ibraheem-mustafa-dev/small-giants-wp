@@ -261,13 +261,12 @@ $mb_style = '<style>' . wp_strip_all_tags( $css ) . '</style>';
 
 // ⛔ kind MUST stay 'content'. Do NOT set kind='layout' here (STOP-43).
 // 'layout' makes SGS_Container_Wrapper emit its own display:flex / flex-wrap /
-// align-items / flex-direction as an INLINE style on this same element, from the
-// separate non-responsive $attributes['flexDirection']. An inline style beats the
-// #uid.sgs-multi-button <style> rule above regardless of specificity or @media, so
-// a non-empty flexDirection (the cloning converter sets one) pins flex-direction at
-// every viewport and this block's own direction/directionTablet/directionMobile
-// system silently stops working — proven live on the hero CTAs, row at 375/768/1440
-// alike, never column.
+// align-items / flex-direction as an INLINE style on this same element, built from
+// the separate non-responsive $attributes['flexDirection']. An inline style always
+// beats the #uid.sgs-multi-button <style> rule above regardless of specificity or
+// @media, so ANY non-empty flexDirection (the cloning converter always sets one)
+// pins flex-direction at every viewport and permanently disables this block's own
+// direction/directionTablet/directionMobile responsive system.
 // 'content' is correct because multi-button already owns display/flex-wrap/gap/
 // justify-content/align-items/flex-direction responsively above and needs only the
 // width/contentWidth mirror (align/maxWidth/contentWidth + padding/spacing) — the

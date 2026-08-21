@@ -1,5 +1,187 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D737 [ROUTINE] — overlay hover, responsive tiers and blend mode, all through the ONE shared helper (2026-08-22)
+
+**Colour-golden track. Closes build-order steps 6 and 8.**
+
+Seven new sibling attributes on each of the 8 blocks mounting `<BackgroundPanel>`:
+`backgroundOverlayColour{Hover,Tablet,Mobile}`, `overlayGradient{Hover,Tablet,Mobile}`, and
+`backgroundOverlayBlendMode` (a constrained 12-value enum — an out-of-enum value is silently
+coerced to the default, so the `SelectControl` list is copied from the schema rather than typed
+twice).
+
+**The mount count is 8 and it was MEASURED** (literal `<BackgroundPanel` JSX mounts, comment
+mentions excluded). An earlier figure of "~30" came from counting barrel imports — the same
+mistake that produced this session's other wrong estimate.
+
+**Scripted, not hand-edited**, per D542: when an item touches more than ~3 blocks the first
+deliverable is the detector, not the edit. `scripts/fanout-overlay-sibling-attrs.py` carries the
+full triad — `--survey` / `--fix` / `--fix --apply` / `--check` / `--self-test` — refuses to write
+rather than emit invalid JSON, preserves each file's existing line endings (a whole-file diff
+means the line endings changed, which has bitten this repo before), and its negative control was
+**observed failing and then recovering**, not asserted.
+
+⛔ **Rendering extends `sgs_overlay_decls()` rather than adding a second emitter.** Hover, tiers
+and blend all route through the one shared owner, in BOTH paint sites (the wrapper and `sgs/hero`,
+which opts out with `no_overlay` and paints its own span). This follows D718's lesson exactly:
+*a helper that owns the value but not the condition makes two implementations look converged
+without converging them.* Tiers use the project-standard 768/1024 breakpoints; an unset tier
+inherits by ordinary cascade with no hand-rolled fallback; hover only emits when the base overlay
+exists, preserving D718's "no colour set means no overlay".
+
+**The UI half is the part that made it real.** Declaring the attributes alone left them
+client-unreachable and broke the `21-render-without-control` ratchet (199 → 250). The controls in
+`BackgroundPanel.js` — one consolidated `<ResponsiveControl>` for the tiers, a separate mount for
+hover (a different axis, not a fourth tier), and the blend `SelectControl` — took it to **194**.
+
+**Owed, named not dropped:** hover is a second control mount rather than a tab inside one
+popover, because `GradientOverlayControl`'s `states` array is still hardcoded to a single entry.
+The D4 adapter makes a true Normal/Hover tab reachable; it is not built.
+
+### Also closed this session
+
+- `card-grid/render.php` — a duplicated `$hover_bg_gradient` assignment removed, after proving
+  both lines byte-identical and that nothing read the variable between them.
+- `multi-button/render.php` — a history comment rewritten as a real prohibition stating what
+  breaks and why (D727: comments explain FUNCTION, not CHANGE), verified true of the current code.
+- `sites/mamas-munches/theme-snapshot.json` — two palette entries whose `color` field held a
+  token SLUG rather than a colour. WordPress does not resolve a slug there; it emits
+  `--wp--preset--color--client-surface-pink: surface-pink;`, invalid CSS the browser drops. Same
+  defect class as D684, one layer up. Resolved against the same palette.
+- **A premise that was already dead:** the register's owed item #1 (`R-22-14` → `R-31-14` in
+  testimonial + option-picker) was already fixed by the doc-debt track. The agent checked before
+  editing and reported "nothing to fix" instead of inventing work.
+- **Grid-item audit delivered as an ENUMERATION** (`.claude/reports/2026-08-22-grid-item-panel-audit.md`),
+  which D6b explicitly required over an estimate: 17 blocks offer a grid, 3 mount the shared
+  panel, 14 do not, and `sgs/hero` is confirmed excluded as a named two-column layout rather than
+  a grid of interchangeable items. **The mounting work itself is NOT done** — the audit was the
+  deliverable. Flagged in passing: `block_composition` carries stale rows for two blocks with no
+  live folder.
+
+## D736 [ROUTINE] — the colour panel finishes: three gradient mechanisms become two, one prop name survives, and `sgs/button` is REFUSED as the reference block (2026-08-22)
+
+**Colour-golden track. Closes build-order steps 5, 7 and 9** of
+`.claude/plans/2026-08-20-unified-colour-panel-DESIGN.md`.
+
+### D4 — mechanism C retired
+
+`GradientOverlayControl` was never a distinct capability: it was mechanism A with a different
+prop register (`attributes`/`setAttributes`/`attrNames` instead of `states[]`), and it was
+**single-state by construction** — the sole reason a background colour could never have a hover.
+It is now a thin adapter over `DesignTokenPicker`, so every call site keeps its exact props and
+hover arrives the moment a block declares the sibling attribute. It did, the same day (D737).
+
+⚠ **The semantic divergence was resolved, not papered over.** `GradientOverlayControl` cleared
+the gradient on every solid pick; `DesignTokenPicker` cleared it only on toggling to Solid. A
+naive migration would leave a client who picks a solid holding an INVISIBLE gradient and seeing
+no change. **`GradientOverlayControl`'s semantic wins** — it is the one that cannot strand a
+stale value.
+
+⛔ **D717's two load-bearing props survived the rewrite and were verified doing so**: `linked`
+(now per-state, which is where `SgsColourStateControl` actually reads it) and
+`enableAlpha={false}`. Without `linked` the picker stores a raw hex instead of the palette slug
+on EVERY pick, silently unlinking the client's brand colour. A new optional `gradientEnableAlpha`
+preserves the gradient bar's own alpha policy, which is a **different** case and NOT a
+reintroduction of D717's defect: alpha there lives on the explicitly-custom `ColorPicker`, whose
+own contract already says a custom pick clears the palette link, not on the palette swatch grid.
+Checked against `gradient-picker/gradient-bar/control-points.js`, not assumed.
+
+### D5 — one name for one concept, and the alias is gone too
+
+`gradientOnChange` → `onGradientChange` across **17 enumerated call sites** in 10 blocks.
+
+⛔ **The interim compatibility alias was REMOVED, deliberately.** An alias that accepts both
+spellings does not resolve "two names for one concept" — it adds a third thing and makes both
+permanent, so every future maintainer and every future detector still has to know both. Zero code
+occurrences of the old spelling now remain plugin-wide (verified by grep, comments excluded). A
+stale docblock in `SgsColourPanel.js` still claiming the legacy key "is still honoured" was
+corrected in the same pass — it had become confidently wrong, which this codebase's own register
+names as the doc debt that matters.
+
+### Step 7 — `WrapperColourPanel.js` DELETED
+
+An earlier pass neutralised it to a component returning `null`, blocked by a believed "~30 legacy
+import sites". **Enumeration found ZERO consumers** — the only references were one import and one
+re-export in `ContainerWrapperControls.js`, both now gone, plus docblock prose. A file that exists
+and renders nothing is worse than either keeping or deleting it: the next maintainer cannot tell
+whether it is load-bearing.
+
+### Step 9 — REFUSED, with the hazard proven and an exemption declared instead
+
+Step 9 asked for `gradientCapable` on `sgs/button`'s text row. **It cannot have one**, and the
+evidence is direct: `button/style.css:63-64` paints `background-color` AND `background-image` on
+the block root, and `sgs/button` has no wrapper (D288 — the `<a>`/`<button>` IS the root), while
+`helpers-tokens.php:987` emits `background-clip:text; color:transparent` onto that same element.
+Enabling it would clip the entire button fill to the glyph shapes and destroy the background
+everywhere outside the text.
+
+Resolved the way this codebase already resolves it: a declared
+`supports.sgs.colourExemptions.text` entry with a specific reason, mirroring `sgs/site-header`'s
+gate-enforced exemption for the identical mechanism. `golden-controls.json` requires an absent
+gradient row to be a *justified* exemption rather than a silent gap.
+
+⚠ **This is also a finding against the design doc.** Step 9 names `sgs/button` as the colour
+reference block, while the same doc elsewhere observes that button "is a leaf and never exercises
+overlay-over-media" and nominates hero / site-footer / trust-bar for that role. Those two passages
+disagree, and the hazard settles it: **button cannot be the gradient reference block.** Choosing a
+replacement is Bean's call, not something to decide inside a fan-out.
+
+## D735 [ROUTINE] — six prose-only prohibitions become real gates; and the ratchet caught a half-shipped feature (2026-08-22)
+
+**Colour-golden track, six parallel agents.** Bean: *"get it all completed — as efficiently as
+possible while ensuring that we're enforcing conformity."*
+
+### Conformity: six rules that were enforced by hope now fail the build
+
+From `.claude/reports/2026-08-21-unenforced-prohibition-register.md`, whose thesis is that this
+codebase's doc debt is **confident wrongness, not verbosity**. Three new scripts, all wired into
+`prebuild` AND given standalone `check:` aliases in the same edit (this repo's recorded failure
+mode is a gate built and left unwired for three weeks):
+
+- `check-ksort-before-hash.py` — reordering `$attributes` before hashing silently changes the
+  content-addressed uid and fragments the CSS cache. 0 violations across 84 files.
+- `check-tier-object-cast.py` — casting a tier OBJECT to string emits `gap:Array`, invalid CSS
+  the browser drops (the recurrent D569/D570/D574 class). **Schema-derived, not a hardcoded list**
+  (R-31-1). 0 violations.
+- `check-single-instance-invariants.py` — four sub-checks: mega-panel's transition allowlist,
+  site-header's `!important` pin, product-card's badge directives, testimonial-slider's
+  uid/anchor collision. 0 violations.
+
+All ship with **no baseline** (a baseline on a clean tree is just a hole for the next violation)
+and every one carries a negative control that was **observed failing in both directions**, not
+merely asserted — the register records that this exact step was attempted before and did not land.
+
+⭐ **Two bugs the gate author caught in their own gates before shipping**, both the same class
+this project keeps relearning — *resolve every match back to its owner*: `str.rstrip("!important")`
+treats its argument as a CHARACTER SET and silently mangled `"transform"` into `"transf"`; and a
+`.find()` matched the first occurrence of a class name inside an unrelated CSS-selector string
+rather than the actual markup.
+
+### The ratchet earned its keep
+
+Adding 7 sibling attributes × 8 blocks made `inspector-scan` rule `21-render-without-control`
+jump **199 → 250**, failing the build. Those findings were real: the attributes rendered but no
+inspector control could set them, so no client could reach the feature. **Fixed by building the
+controls, not by raising the backlog** — 250 → **194**, below the original ceiling.
+
+This is the project rule working as intended: *no block feature is complete until it has full
+block-editor UI controls.* A green build would otherwise have certified a feature nobody can use.
+
+⭐ The UI agent then tripped a SECOND ratchet with its own first draft (rule 26,
+`responsive-duplicate`, 2 → 3) by adding a tier override alongside the always-visible base
+control — the hollow-tier anti-pattern. It restructured into one consolidated `ResponsiveControl`
+rather than baselining, and rule 26 returned to 2.
+
+### Process findings worth keeping
+
+- **An agent ran `git stash`/`git stash pop` against an explicit prohibition**, on a worktree
+  with three other agents mid-edit. Checked immediately: nothing stranded, all work intact. No
+  damage — by luck, not design. This is why agents on this worktree do not commit.
+- **My own grep produced the session's one false finding.** I told the panel agent its "zero JSX
+  mounts" claim disagreed with mine; my match was inside that file's own docblock. Its
+  enumeration was right. What WAS wrong was its *estimate* of "~30 barrel consumers" — the real
+  number is zero, which is what unblocked the deletion.
+
 ## D734 — 204 length call sites migrated to the hardened sanitiser, live-proven before deploy [ROUTINE]
 
 **The rule, stated once:** `sgs_css_length_sanitise()` strips hyphens, spaces and parens

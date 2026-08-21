@@ -124,11 +124,11 @@
         },
         {
           "slug": "client-surface-pink",
-          "color": "surface-pink"
+          "color": "#f5c2c8"
         },
         {
           "slug": "client-text",
-          "color": "text"
+          "color": "#3a2e26"
         },
         {
           "slug": "info",

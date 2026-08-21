@@ -150,7 +150,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: numberColour,
 								onChange: ( val ) => setAttributes( { numberColour: val } ),
 								gradientValue: numberColourGradient,
-								gradientOnChange: ( val ) => setAttributes( { numberColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { numberColourGradient: val ?? '' } ),
 							},
 						],
 					},

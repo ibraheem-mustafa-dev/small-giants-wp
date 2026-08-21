@@ -63,7 +63,6 @@ $title_colour        = $attributes['titleColour'] ?? '';
 $subtitle_colour     = $attributes['subtitleColour'] ?? '';
 $hover_bg            = $attributes['backgroundColourHover'] ?? '';
 $hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
-$hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text          = $attributes['textColourHover'] ?? '';
 $hover_border        = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient siblings — resolved once here, emitted via
