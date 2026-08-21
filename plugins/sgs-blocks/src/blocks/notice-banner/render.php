@@ -52,7 +52,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
 // FR-22-6: $text is no longer rendered here — the text content slot is now
 // an InnerBlocks child (sgs/text), emitted via $content below.
-// Retained in block.json as historical schema only (no deprecated.js, D271). R-22-14: no fallback.
+// Retained in block.json as historical schema only (no deprecated.js, D271). R-31-14: no fallback.
 $variant           = $attributes['variant'] ?? 'info';
 $icon_source       = $attributes['iconSource'] ?? '';
 $icon_name         = $attributes['iconName'] ?? '';
@@ -344,7 +344,7 @@ if ( $is_announcement ) {
 
 // -------------------------------------------------------------------------
 // Interior HTML — icon + InnerBlocks content + optional close button.
-// FR-22-6: text content is $content (sgs/text InnerBlock). R-22-14: no fallback.
+// FR-22-6: text content is $content (sgs/text InnerBlock). R-31-14: no fallback.
 // The icon <span> carries NO inline style any more — iconColour is scoped above.
 // -------------------------------------------------------------------------
 $sgs_inner_html = '';

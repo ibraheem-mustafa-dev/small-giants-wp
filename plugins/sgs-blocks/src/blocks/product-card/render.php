@@ -2,7 +2,7 @@
 /**
  * Server-side render for the SGS Product Card block.
  *
- * Two modes, branched on the explicit `sourceMode` attribute (R-22-14 — never
+ * Two modes, branched on the explicit `sourceMode` attribute (R-31-14 — never
  * `empty( $content )`):
  *
  *  - 'typed' (default): renders the card's built-in elements directly from

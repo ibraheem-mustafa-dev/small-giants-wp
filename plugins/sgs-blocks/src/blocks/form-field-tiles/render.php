@@ -10,7 +10,7 @@
  * conditional-logic data-attrs and the sgs-form-field BEM classes essential to the
  * forms system.
  *
- * R-22-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
+ * R-31-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
  *
  * Renders a grid of clickable tile cards backed by hidden radio/checkbox inputs.
  * selectedStyle controls the visual selected state: border | background | checkmark.

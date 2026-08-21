@@ -9,7 +9,7 @@
  * toggle, per-plan icons (Lucide), per-plan ribbons, per-feature
  * included/excluded markers, and an optional savings badge for yearly billing.
  *
- * R-22-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
+ * R-31-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
  *
  * @var array    $attributes Block attributes (sanitised by block.json defaults).
  * @var string   $content    Inner block content (unused — dynamic block).

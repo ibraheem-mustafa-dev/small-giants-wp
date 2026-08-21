@@ -236,7 +236,7 @@ if ( '' !== $preset_bg_slug ) {
 // ---------------------------------------------------------------------------
 // Toggle attrs: `open` is an HTML boolean attribute on <details>.
 // Pass as extra_attrs so SGS_Container_Wrapper merges it into get_block_wrapper_attributes().
-// R-22-14: explicit $is_open discriminator — never empty($content).
+// R-31-14: explicit $is_open discriminator — never empty($content).
 // ---------------------------------------------------------------------------
 $extra_attrs = array();
 if ( $is_open ) {

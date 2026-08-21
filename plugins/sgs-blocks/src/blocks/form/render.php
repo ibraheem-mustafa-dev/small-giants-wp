@@ -12,7 +12,7 @@
  * The block's own class (sgs-form) rides in `extra_classes`.
  * The interior (progress bar + <form> + success/error messages) is $inner_html.
  *
- * R-22-14: explicit discriminators only — never branch on empty($content).
+ * R-31-14: explicit discriminators only — never branch on empty($content).
  *
  * NO-INLINE (contract §A, 2026-07-09): color/typography/spacing/
  * __experimentalBorder all declare __experimentalSkipSerialization in

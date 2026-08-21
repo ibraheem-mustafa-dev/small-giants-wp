@@ -32,7 +32,7 @@
  * draft's static `--active` modifier class (the mockup shows one pill
  * selected by baking the modifier class directly into the markup).
  *
- * R-22-14: explicit discriminators, never empty($content).
+ * R-31-14: explicit discriminators, never empty($content).
  * No WP Interactivity API store — plain DOM events via view.js (untouched).
  *
  * ── Swatch rendering (FR-27-B2 + FR-27-I2) ────────────────────────────

@@ -12,7 +12,7 @@
  * rating-led, avatar-spotlight, corporate-logo, case-study-media, minimal-quote.
  * The wrapper carries `sgs-testimonial--{variant}`; per-variant layout is CSS-only.
  *
- * R-22-14: NO server-side legacy fallback hack. The ONE legacy read below
+ * R-31-14: NO server-side legacy fallback hack. The ONE legacy read below
  * (avatar.url → avatarMedia) is synthesise-on-read for un-migrated posts only —
  * it is NOT an `if ( empty( $content ) )` scalar-render branch.
  *
@@ -767,7 +767,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 
 // ---------------------------------------------------------------------------
 // 4. Render.
-// R-22-14: no empty($content) branching — all nodes are explicitly gated above.
+// R-31-14: no empty($content) branching — all nodes are explicitly gated above.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: text via wp_kses_post()/esc_html(); media via sgs_render_media(); attrs via esc_attr()/sanitize_html_class(); schema via wp_json_encode(); CSS via wp_strip_all_tags() + the sanitisers above.
 // ---------------------------------------------------------------------------
 ?>

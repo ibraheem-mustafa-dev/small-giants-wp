@@ -12,7 +12,7 @@
  * All three are carried via extra_attrs so the parent form's Interactivity
  * API store can find and show/hide steps by class query.
  *
- * R-22-14: explicit discriminators, never empty($content).
+ * R-31-14: explicit discriminators, never empty($content).
  *
  * NO-INLINE (contract §A, 2026-07-09): color + __experimentalBorder declare
  * __experimentalSkipSerialization in block.json (spacing already did). The

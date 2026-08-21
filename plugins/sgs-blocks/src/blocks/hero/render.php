@@ -5,7 +5,7 @@
  * FR-22-6: the content column (label, headline, sub-headline, CTAs) is
  * rendered via InnerBlocks ($content). CTAs are child sgs/multi-button >
  * sgs/button blocks (D270/D293).
- * R-22-14: NO legacy scalar fallback.
+ * R-31-14: NO legacy scalar fallback.
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, backgroundOverlayColour, overlayOpacity,
@@ -86,7 +86,7 @@ $sgs_radius_shorthand = static function ( array $box ) {
 
 // ── Shell / layout attributes (still scalar — drive the wrapper + media column).
 // FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
-// ctaSecondary*) are deliberately NOT read here. R-22-14: no fallback.
+// ctaSecondary*) are deliberately NOT read here. R-31-14: no fallback.
 $variant   = $attributes['variant'] ?? 'standard';
 $alignment = $attributes['alignment'] ?? 'left';
 $bg_image  = $attributes['backgroundImage'] ?? null;
@@ -122,7 +122,7 @@ $overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient']
 // synthesise/hydrate bridges that kept it in sync with splitImage were DELETED
 // 2026-08-13 (Bean: no legacy elements as fallbacks; the framework is
 // pre-production, so there is nothing to migrate). They also contradicted this
-// file's own R-22-14 contract at the top — "NO legacy scalar fallback" — and
+// file's own R-31-14 contract at the top — "NO legacy scalar fallback" — and
 // R-31-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
 $split_image        = $attributes['splitImage'] ?? null;
 $split_image_tablet = $attributes['splitImageTablet'] ?? null;
@@ -274,7 +274,7 @@ $allowed_text_align = array( 'left', 'center', 'right', 'start', 'end', 'justify
 // Layout grid (split variant). splitColumnRatio* was retired (Step 6 / D-next,
 // 2026-06-11) — render.php now reads gridTemplateColumns* exclusively.
 // The former deprecated.js v7 migrate() mapped splitColumnRatio→gridTemplateColumns; deprecations were deleted at D271, so un-migrated posts keep the legacy attr.
-// R-22-14: no legacy read-time fallback for splitColumnRatio.
+// R-31-14: no legacy read-time fallback for splitColumnRatio.
 // block.json defaults gridTemplateColumns to '' (unlike the retired
 // splitColumnRatio whose default was '1fr 1fr') — ?? alone would let the
 // empty string through, so default explicitly.
@@ -1049,7 +1049,7 @@ if ( '' !== $overlay_decls ) {
 // contract (§A): display/flex-direction/justify-content/background-color are
 // ALL emitted scoped (.uid .sgs-hero__content{...}) above — this element
 // carries NO style="" attribute any more.
-// R-22-14: no scalar content rendering. $content = full InnerBlocks output
+// R-31-14: no scalar content rendering. $content = full InnerBlocks output
 // (sgs/label + sgs/heading + sgs/text + sgs/button(s) supplied by converter).
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
 $content_html = '<div class="sgs-hero__content">' . $content . '</div>';

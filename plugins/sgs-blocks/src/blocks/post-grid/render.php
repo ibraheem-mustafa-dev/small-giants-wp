@@ -8,7 +8,7 @@
  * Card markup is produced by Post_Grid_REST::render_card() — the same method
  * the REST endpoint uses — so there is exactly one place where card HTML is defined.
  *
- * R-22-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
+ * R-31-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
  *
  * NOTE: class-post-grid-rest.php (REST controller) is NOT touched — wrapper only.
  *

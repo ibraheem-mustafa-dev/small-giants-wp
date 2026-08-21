@@ -5,7 +5,7 @@
  * FR-22-6 migration: the content column (headline, body text, and buttons) is
  * now rendered via InnerBlocks ($content). Scalar content attrs (headline, body)
  * are NO LONGER read here — they are retained in block.json as historical schema (no deprecated.js,
- * back-compat only. R-22-14: NO legacy scalar fallback.
+ * back-compat only. R-31-14: NO legacy scalar fallback.
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   ribbon, layout, gradientPreset, backgroundImage, backgroundMedia,
@@ -51,7 +51,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // CSS length/unit sanitiser — for free-text attrs (border width/radius)
 // concatenated into raw CSS declarations. Mirrors sgs/hero's sanitiser.
 // FR-22-6: scalar content attrs (headline, body) are intentionally NOT read here.
-// They are retained in block.json as historical schema only (no deprecated.js, D271). R-22-14.
+// They are retained in block.json as historical schema only (no deprecated.js, D271). R-31-14.
 $ribbon = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
 // `contentLayout` (the container owns `layout` = grid/flex). No legacy fallback (R-31-14) —
 // `contentLayout` declares default 'centred' in block.json, so WP always populates it.
@@ -466,7 +466,7 @@ if ( ! empty( $stats ) ) {
 // sgs/multi-button children). Wrap in __content to preserve CSS layout.
 // Stats remain scalar — they are a shell-level data primitive (not plain text
 // that a child block replicates), kept per FR-22-19 discriminator.
-// R-22-14: no scalar headline/body fallback.
+// R-31-14: no scalar headline/body fallback.
 
 // Build ribbon HTML — content escaped with esc_html() at construction time.
 $ribbon_html = '';
