@@ -71,6 +71,42 @@ if ( ! function_exists( 'sgs_box_object_shorthand' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_corner_object_shorthand' ) ) {
+	/**
+	 * Build a 4-CORNER CSS shorthand ("top-left top-right bottom-right bottom-left")
+	 * from a corner-keyed box object, filling any unset corner with '0'. Returns null
+	 * when every corner is empty so the caller can skip the declaration entirely.
+	 *
+	 * Sibling to sgs_box_object_shorthand(), which is keyed top/right/bottom/left and
+	 * therefore CANNOT accept a corner-keyed object. This is the shared form of the
+	 * per-block `$sgs_corner_shorthand` / `$sgs_radius_shorthand` closures.
+	 *
+	 * The parameter is deliberately UNTYPED with an internal is_array() guard: callers
+	 * legitimately pass a raw null (e.g. `$attributes['borderRadiusTablet'] ?? null` in
+	 * before-after/render.php). A typed `array` would throw TypeError and fatal the page.
+	 *
+	 * @param mixed $box Box object with optional topLeft/topRight/bottomRight/bottomLeft
+	 *                   keys, or null/non-array when the attribute is unset.
+	 * @return string|null Shorthand, or null when the box is empty or not an array.
+	 */
+	function sgs_corner_object_shorthand( $box ): ?string {
+		if ( ! is_array( $box ) ) {
+			return null;
+		}
+		$top_left     = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+		$top_right    = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+		$bottom_right = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+		$bottom_left  = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
+		if ( '' === $top_left && '' === $top_right && '' === $bottom_right && '' === $bottom_left ) {
+			return null;
+		}
+		return ( '' !== $top_left ? $top_left : '0' ) . ' '
+			. ( '' !== $top_right ? $top_right : '0' ) . ' '
+			. ( '' !== $bottom_right ? $bottom_right : '0' ) . ' '
+			. ( '' !== $bottom_left ? $bottom_left : '0' );
+	}
+}
+
 if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 	/**
 	 * Build the SCOPED CSS for a label-style box on ONE selector.

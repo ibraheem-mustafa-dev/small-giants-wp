@@ -219,24 +219,11 @@ if ( '' !== $mwm_safe ) {
 }
 
 // Border-radius tiers (box family).
-$sgs_radius_shorthand = static function ( $box ) {
-	if ( ! is_array( $box ) ) {
-		return null;
-	}
-	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
-	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
-	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
-	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
-	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
-		return null;
-	}
-	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
-};
-$radius_tab_val       = $sgs_radius_shorthand( $attributes['borderRadiusTablet'] ?? null );
+$radius_tab_val = sgs_corner_object_shorthand( $attributes['borderRadiusTablet'] ?? null );
 if ( null !== $radius_tab_val ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$radius_tab_val};}}";
 }
-$radius_mob_val = $sgs_radius_shorthand( $attributes['borderRadiusMobile'] ?? null );
+$radius_mob_val = sgs_corner_object_shorthand( $attributes['borderRadiusMobile'] ?? null );
 if ( null !== $radius_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$radius_mob_val};}}";
 }

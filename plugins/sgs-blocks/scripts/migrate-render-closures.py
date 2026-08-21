@@ -7,22 +7,30 @@ WHAT THIS DOES
     Only 4 blocks ever adopted them; ~52 still declare their own copy. This
     completes that migration:
 
-        $sgs_css_length( … )    -> sgs_css_length_sanitise( … )
-        $sgs_css_keyword( … )   -> sgs_css_keyword_sanitise( … )
-        $sgs_box_shorthand( … ) -> sgs_box_object_shorthand( … )
+        $sgs_css_length( … )       -> sgs_css_length_sanitise( … )
+        $sgs_css_keyword( … )      -> sgs_css_keyword_sanitise( … )
+        $sgs_box_shorthand( … )    -> sgs_box_object_shorthand( … )
+        $sgs_corner_shorthand( … ) -> sgs_corner_object_shorthand( … )
+        $sgs_radius_shorthand( … ) -> sgs_corner_object_shorthand( … )
 
     Renamed forks are covered too ($sgs_pt_css_length, $sgs_nd_css_keyword, …) —
     every body in each family was verified byte-identical, so this is a
     zero-behaviour-change refactor.
 
+THE CORNER FAMILY (un-carved 2026-08-21)
+    `$sgs_corner_shorthand` / `$sgs_radius_shorthand` are CORNER-keyed
+    (topLeft/topRight/bottomRight/bottomLeft) — structurally a different function
+    from sgs_box_object_shorthand()'s top/right/bottom/left, which is why they
+    were carved out until a corner-keyed helper existed. `includes/helpers-box.php`
+    now provides `sgs_corner_object_shorthand()` and they are migrated here.
+
+    ⛔ WHY THE SHARED HELPER IS UNTYPED. before-after's radius closure is UNTYPED
+    and is called with a raw null (`$attributes['borderRadiusTablet'] ?? null`),
+    relying on its own is_array() guard. A typed `array` helper would throw
+    TypeError and fatal the page. sgs_corner_object_shorthand() therefore takes a
+    mixed value and guards internally — matching the riskiest existing caller.
+
 WHAT IT DELIBERATELY DOES NOT DO
-    * `$sgs_corner_shorthand` / `$sgs_radius_shorthand` are CORNER-keyed
-      (topLeft/topRight/bottomRight/bottomLeft) — structurally a different
-      function from sgs_box_object_shorthand()'s top/right/bottom/left. No
-      shared helper exists. They are LEFT IN PLACE; only their dependency on
-      the deleted length closure is rewritten to call the shared function.
-      ⛔ before-after's radius closure is UNTYPED and is called with a raw
-      null; routing it through a typed-array helper would fatal the page.
     * It does NOT migrate to the hardened `sgs_css_length_value()`. That has
       four real behaviour deltas (bare "10" becomes a spacing-preset var;
       "-10px" currently loses its sign; calc() currently corrupts; "16px 12px"
@@ -42,11 +50,19 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCKS = os.path.join(ROOT, 'src', 'blocks', '*', 'render.php')
 
 FAMILIES = {
-    'css_length':    ('sgs_css_length_sanitise',   r"return preg_replace\( '/\[\^A-Za-z0-9\.%\]/', '', \(string\) \$value \);"),
-    'css_keyword':   ('sgs_css_keyword_sanitise',  r"return preg_replace\( '/\[\^a-zA-Z-\]/', '', \(string\) \$value \);"),
-    'box_shorthand': ('sgs_box_object_shorthand',  None),
+    'css_length':       ('sgs_css_length_sanitise',    r"return preg_replace\( '/\[\^A-Za-z0-9\.%\]/', '', \(string\) \$value \);"),
+    'css_keyword':      ('sgs_css_keyword_sanitise',   r"return preg_replace\( '/\[\^a-zA-Z-\]/', '', \(string\) \$value \);"),
+    'box_shorthand':    ('sgs_box_object_shorthand',   None),
+    # CORNER-keyed family (un-carved 2026-08-21, once sgs_corner_object_shorthand()
+    # existed). Two variable spellings, ONE shared target — the bodies were verified
+    # byte-identical bar before-after's extra is_array() guard, which the shared
+    # helper now owns internally.
+    'corner_shorthand': ('sgs_corner_object_shorthand', None),
+    'radius_shorthand': ('sgs_corner_object_shorthand', None),
 }
-CARVED = re.compile(r'\$sgs[a-z_]*(?:corner_shorthand|radius_shorthand)\s*=\s*static function')
+# Column headers for --survey, in FAMILIES order.
+COLS = {'css_length': 'len', 'css_keyword': 'kwd', 'box_shorthand': 'box',
+        'corner_shorthand': 'cnr', 'radius_shorthand': 'rad'}
 REQUIRE = "require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';"
 
 
@@ -97,7 +113,7 @@ def scan():
             continue
         rows.append({
             'file': f, 'block': os.path.basename(os.path.dirname(f)),
-            'counts': counts, 'carved': bool(CARVED.search(t)),
+            'counts': counts,
             'has_require': REQUIRE in t,
         })
     return rows
@@ -119,8 +135,17 @@ $sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
 	return $tl;
 };
 
+$sgs_radius_shorthand  = static function ( $box ) {
+	if ( ! is_array( $box ) ) {
+		return null;
+	}
+	return $box['topLeft'] ?? '';
+};
+
 $w = $sgs_css_length( $attributes['w'] ?? '' );
 $d = $sgs_css_keyword( $attributes['d'] ?? '' );
+$r = $sgs_corner_shorthand( $border_radius_tablet_obj );
+$q = $sgs_radius_shorthand( $attributes['borderRadiusTablet'] ?? null );
 """
 
 
@@ -140,12 +165,19 @@ def self_test():
     check('call sites rewritten (length)', 'sgs_css_length_sanitise( $attributes' in out)
     check('call sites rewritten (keyword)', 'sgs_css_keyword_sanitise( $attributes' in out)
     check('require injected', REQUIRE in out)
-    # The carved-out corner closure SURVIVES, but loses its dead `use` clause and
-    # calls the shared function instead.
-    check('carved-out corner closure survives', '$sgs_corner_shorthand = static function' in out)
     check('dangling use() clause removed', 'use ( $sgs_css_length )' not in out)
-    check('corner body calls shared fn', 'sgs_css_length_sanitise( $box[' in out)
     check('no dangling closure var remains', '$sgs_css_length(' not in out)
+
+    # CORNER family (un-carved 2026-08-21) — the closures must now be REMOVED and
+    # both variable spellings routed to the one shared corner-keyed helper.
+    check('corner closure removed', '$sgs_corner_shorthand = static function' not in out)
+    check('radius closure removed (ALIGNED =)', '$sgs_radius_shorthand  = static function' not in out)
+    check('corner call site rewritten',
+          'sgs_corner_object_shorthand( $border_radius_tablet_obj )' in out)
+    check('radius call site rewritten to the SAME helper',
+          "sgs_corner_object_shorthand( $attributes['borderRadiusTablet'] ?? null )" in out)
+    check('no corner closure var remains', '$sgs_corner_shorthand(' not in out)
+    check('no radius closure var remains', '$sgs_radius_shorthand(' not in out)
 
     # NEGATIVE CONTROL: a file with nothing to migrate must come back untouched,
     # otherwise a "clean" result proves nothing.
@@ -178,16 +210,15 @@ def main():
 
     if a.survey or (not a.fix and not a.check):
         tot = {f: 0 for f in FAMILIES}
-        print(f'{"block":<22}{"len":>4}{"kwd":>4}{"box":>4}  carved  require')
+        print(f'{"block":<22}' + ''.join(f'{COLS[f]:>5}' for f in FAMILIES) + '  require')
         for r in rows:
             for f in FAMILIES:
                 tot[f] += r['counts'][f]
-            print(f'{r["block"]:<22}{r["counts"]["css_length"]:>4}{r["counts"]["css_keyword"]:>4}'
-                  f'{r["counts"]["box_shorthand"]:>4}  {"YES" if r["carved"] else "-":<6}  {"ok" if r["has_require"] else "MISSING"}')
+            print(f'{r["block"]:<22}' + ''.join(f'{r["counts"][f]:>5}' for f in FAMILIES)
+                  + f'  {"ok" if r["has_require"] else "MISSING"}')
         print(f'\n{len(rows)} files | closures: ' + ' '.join(f'{k}={v}' for k, v in tot.items())
               + f' | total={sum(tot.values())}')
-        print(f'carved-out entanglement: {sum(1 for r in rows if r["carved"])} files'
-              f' | missing require: {sum(1 for r in rows if not r["has_require"])} files')
+        print(f'missing require: {sum(1 for r in rows if not r["has_require"])} files')
         return 0
 
     if a.check:

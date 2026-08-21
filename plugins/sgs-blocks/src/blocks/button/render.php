@@ -524,23 +524,12 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // cascade (no !important needed) lets the narrower tier win.
 // CSS border-radius shorthand order is top-left top-right bottom-right
 // bottom-left (NOT the box-model top/right/bottom/left order).
-$sgs_corner_shorthand = static function ( array $box ) {
-	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
-	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
-	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
-	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
-	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
-		return null;
-	}
-	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
-};
-
 $padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
 $padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
 $margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
 $margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
-$radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
-$radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
+$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {

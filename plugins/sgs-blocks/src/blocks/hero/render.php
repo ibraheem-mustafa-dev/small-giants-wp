@@ -64,23 +64,6 @@ $sgs_css_object_position = static function ( $value ) {
 	return preg_replace( '/[^A-Za-z0-9%.\-\s]/', '', (string) $value );
 };
 
-// Box-object shorthand builder — { top, right, bottom, left } → a CSS
-// `padding`/`border-width`-style 4-value shorthand string, each side
-// sanitised. Returns null when every side is empty (nothing to emit).
-// Border-radius object shorthand builder — { topLeft, topRight, bottomLeft,
-// bottomRight } → CSS `border-radius` 4-value shorthand (TL TR BR BL order).
-// Returns null when every corner is empty.
-$sgs_radius_shorthand = static function ( array $box ) {
-	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
-	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
-	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
-	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
-	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
-		return null;
-	}
-	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
-};
-
 // ── Shell / layout attributes (still scalar — drive the wrapper + media column).
 // FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
 // ctaSecondary*) are deliberately NOT read here. R-31-14: no fallback.
@@ -572,15 +555,15 @@ if ( $is_split ) {
 // Gated on $is_split to match the old inline emission (which only ran inside
 // the split-image branch).
 if ( $is_split ) {
-	$img_radius_base = $sgs_radius_shorthand( $image_border_radius_obj );
+	$img_radius_base = sgs_corner_object_shorthand( $image_border_radius_obj );
 	if ( null !== $img_radius_base ) {
 		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{border-radius:' . $img_radius_base . '}';
 	}
-	$img_radius_tab = $sgs_radius_shorthand( $image_border_radius_tablet_obj );
+	$img_radius_tab = sgs_corner_object_shorthand( $image_border_radius_tablet_obj );
 	if ( null !== $img_radius_tab ) {
 		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $img_radius_tab . '}}';
 	}
-	$img_radius_mob = $sgs_radius_shorthand( $image_border_radius_mobile_obj );
+	$img_radius_mob = sgs_corner_object_shorthand( $image_border_radius_mobile_obj );
 	if ( null !== $img_radius_mob ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $img_radius_mob . '}}';
 	}
