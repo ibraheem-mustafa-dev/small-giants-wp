@@ -1,5 +1,23 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D729 — Three motion claims verified live; two were already deployed and one page had rotted [ROUTINE]
+
+Gap-register rows 4, 5 and 7 had sat UNVERIFIED. Each now carries a dated verdict and an evidence path, and each probe was proven able to FAIL before its pass was believed.
+
+**No deploy was needed, and checking that first avoided an unnecessary outward-facing action.** Both D451's and D452's fixes were already live: the morph attributes are on the `<path>` with a clean `<svg>` wrapper (curl), and the deployed `fx-motion-path.js` contains zero `.disable(`/`.enable(` calls. The deployed module was positively identified as the real one (motionPath / onEnterBack / scrollTrigger / 9× `sgs-fx-motion-path`) before that absence was trusted — a grep finding nothing proves nothing if the file is the wrong file.
+
+**Row 4 — `fx-morph` CLOSED.** 46 distinct `d` values across 121 frames on page 2113, circle→square, ending elsewhere than it started, no console errors. D452's pre-fix measurement was 148 frames at ONE value. Control: the never-animated target path reported exactly 1 through the same sampler.
+
+**Row 5 — D451 motion-path CLOSED.** Down→up→down at 375px: pass 1 = 7 distinct transforms, pass 2 = 7. The trigger re-arms. Control: a static element reported 1 through the identical cycle.
+
+⚠ **D451's named page 2083 is a 404.** Two live successors exist (2109, 2107); 2109 was used. A verification pointer rots like any other cached fact — the register recorded the substitution rather than making it silently.
+
+**Row 7 — "good by default" PARTIAL, and the claim needed splitting.** "Good" has a mechanical half and an aesthetic half, and only one is a script's business. Mechanical = does dropping the effect on a page untuned leave content VISIBLE — the failure competitors ship, where an element animating from `opacity:0` strands content for anyone landing mid-page. `scrub`, `scramble`, `split-reveal` all PASS on page 2103 (effective opacity 1.0 computed up the whole ancestor chain, since CSS opacity does not inherit as a computed value and a per-element check is the blind spot that hid D453). **`pin` is UNANSWERED — no page on the canary uses it at all.** Recorded as unknown, not folded into the pass. The aesthetic half stays with Bean (R-31-13).
+
+**Every probe carries a negative control that was itself verified.** The good-by-default control is measured through the SAME `page.evaluate( VISIBILITY, … )` call as the real checks rather than a re-implementation — a control exercising a different code path is not a control.
+
+Probes: `plugins/sgs-blocks/scripts/motion-qa/probe-{morph-geometry,motion-path-repeat,good-by-default}.mjs`.
+
 ## D728 — Two vacuous gates closed: an undefined-variable gate for render.php, and I4/I5's stale self-test anchors [INCIDENT]
 
 **Both items are the same defect in different clothes: a check that cannot fail, and therefore proves nothing.**
