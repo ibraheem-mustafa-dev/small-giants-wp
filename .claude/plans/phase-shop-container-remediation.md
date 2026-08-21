@@ -25,7 +25,7 @@ as every commit**.
 
 ---
 
-## ▶ EXECUTION PROGRESS (updated 2026-08-20, end of THIRD execution session)
+## ▶ EXECUTION PROGRESS (updated 2026-08-21, end of FOURTH execution session)
 
 **Phase 1 Wave 1 SHIPPED + DEPLOYED + LIVE-VERIFIED. Wave 2 CODE-COMPLETE + COMMITTED, NOT
 DEPLOYED, NOT LIVE-VERIFIED (QC GATE 2 OPEN). Phase 2 NOT STARTED BY THIS TRACK — but see the
@@ -42,10 +42,10 @@ P2-6 work independently while Wave 2 was running.**
 | **QC GATE 1** | ✅ **PASS** | Build exit 0; findings surface; cause proven with file:line. |
 | **P1-4** deploy + live-verify | ✅ **PASS** | Instant filtering CONFIRMED working: a stamped `window` var survived a filter click (no reload), URL updated client-side, products 5→4, 2 `fetch` requests. |
 | **P1-5** template validity fixes | ✅ **DONE** (`fe078c2f`, clear button closed in `7e2d6eba`) | ⚠ Plan figures were wrong twice: **6** leaves, not 7 — `product-filter-clear-button` is NOT a leaf (its `save()` is `InnerBlocks.Content`) and was left untouched rather than guessed at. **10** stray comments, not 4. Classes verified against WooCommerce 11.0.0 `save.tsx`. |
-| **P1-6** colour on **3** non-container blocks | ✅ **BUILT + DEPLOYED** (`fe078c2f`); editor-side check outstanding | hero / trust-bar / brand-strip. testimonial-slider dropped (already correct) and used as the TEMPLATE. Two blocks had their root background mapped to a native colour attr that was switched OFF, so it could never have worked. `sgs/brand-strip` had **no root element in its manifest at all** — one was added and the others renumbered. `sgs/hero` needed a duplicate-control baseline (`709bf066`) — handed to the colour track. |
+| **P1-6** colour on **3** non-container blocks | ✅ **DONE + EDITOR-VERIFIED** (`fe078c2f`) | hero / trust-bar / brand-strip. testimonial-slider dropped (already correct) and used as the TEMPLATE. Two blocks had their root background mapped to a native colour attr that was switched OFF, so it could never have worked. `sgs/brand-strip` had **no root element in its manifest at all** — one was added and the others renumbered. `sgs/hero` needed a duplicate-control baseline (`709bf066`) — handed to the colour track. |
 | **P1-7** theme CSS (panel visibility, fallbacks, search width) | ✅ **DONE** (`fe078c2f`) | Dead teal fallbacks **enumerated at 47** (45× `#0f7e80`, 2× `#0b6668`), now 0. 15 of them sat on focus outlines and took `currentColor` rather than deletion — not in the brief, and correct. |
 | **P1-8** mobile filter sheet + a11y | ✅ **DONE + LIVE-VERIFIED** (`fe078c2f` + 6 follow-ups) | Native `<dialog>` bottom sheet. ⚠ Deviation flagged by the agent and accepted: sticky trigger built as `position:fixed` + scroll listener, not `position:sticky` — sticky would pin to its own containing block and sit near the page bottom, not follow the grid. |
-| **QC GATE 2** | 🟡 **PARTIAL — frontend PASSES, editor half outstanding** | Nothing in Wave 2 has been seen running. Build is green (`exit 0`) so a deploy is now possible; it was blocked at commit time by a red ratchet. Four visual-gate skips logged honestly in `reports/visual-diff/manual-skips.log`, no fabricated PASS. |
+| **QC GATE 2** | ✅ **CLOSED 2026-08-21 — PHASE 1 COMPLETE** | Closed by the colour-golden track BEHAVIOURALLY, which is the bar Bean set: a swatch picked in the editor, then the computed style confirmed changed on the frontend at rest AND under a real pointer hover, with a negative control (hero returned to its resting colour when unhovered). Frontend separately verified live at 1440/768/390. The four visual-gate skips in `reports/visual-diff/manual-skips.log` remain an honest record — no PASS was ever fabricated. |
 | **Phase 2** (P2-1…P2-9) | ⬜ **NOT STARTED** | Both design gates (G1/G2) remain closed and ready. |
 
 ### ✅ CLEAR-FILTERS BUTTON — closed (`7e2d6eba`), the last P1-5 residual
@@ -70,6 +70,54 @@ load-bearing:
 wp-block-button__link">`. ⚠ **The behavioural click test (does it actually clear?) was NOT
 run** — the Playwright browser profile was locked by the parallel session. The binding is
 present and it is WooCommerce's own action, so confidence is high, but it is unproven.
+
+### ▶ FOURTH SESSION (2026-08-21) — PHASE 1 COMPLETE, and the real Phase 2 question found
+
+**QC GATE 2 CLOSED by the colour-golden track**, behaviourally: a swatch picked in the editor,
+computed style confirmed on the frontend at rest AND under a real pointer hover, with a
+negative control (hero returned to its resting colour when unhovered). **Phase 1 is complete.**
+
+**Shipped here:** the filter accordion (panel 1154px → 505px, which is what finally made
+`position:sticky` work — measured holding at its 24px offset through a 300px scroll); ten
+review defects; the `<main>` landmark restored sitewide; `sgs/site-footer` migrated off the
+native colour path atomically with its 7 authorings; `sgs/cta-section` renamed British + 11
+client authorings (PR #35).
+
+⛔ **THE THEME-ASSET STALENESS DEFECT.** Every theme CSS/JS URL carried the theme version,
+which is never bumped, so assets deployed between releases kept identical URLs and warm caches
+served old bytes indefinitely — 10,199 fresh vs 5,079 cached on the same URL. Two shipped
+features looked completely broken while the server had the right files. Fixed by `filemtime`
+versioning (`d3e98700`). **Anything theme-side judged before that commit needs re-testing.**
+
+### 🔬 P2-1/P2-4 REFRAMED BY RESEARCH — read before touching the container
+
+Three research legs (2 web + 1 reading core's source) independently established:
+
+- WordPress caps a constrained container's **CHILDREN** via
+  `.is-layout-constrained > :where(:not(.alignfull)) { max-width: … }` — `.alignfull` excluded
+  BY NAME, at zero specificity. Verified from `lib/block-supports/layout.php` and core's own
+  PHPUnit stylesheet assertions, not from documentation prose.
+- Canonical themes never put `max-width` on `<main>`. TT4 ships
+  `{"tagName":"main","align":"full","layout":{"type":"constrained"}}` — full-bleed AND
+  constrained at once, because those words describe different things.
+- Archive intro copy sits DIRECTLY inside `<main>` with no wrapper, because cap-the-children
+  gives it content width automatically.
+
+**Consequence for us:** `sgs/container` injects `.sgs-container__inner` carrying `max-width`
+on ITSELF, so a child cannot opt out. "Full-bleed child of a constrained parent" is
+inexpressible in our model. Unconstraining `<main>` on this template was a workaround for that
+gap, not the structural answer — and the gap is the same work the colour-golden track scoped
+as their §4b.
+
+**Ruled out on evidence, so nobody re-investigates:** moving the band outside `<main>` is
+accessibility-wrong (W3C excludes only REPEATED chrome from `<main>`; a page-specific title is
+page content); and the `calc(50% - 50vw)` full-bleed trick still carries its horizontal
+scrollbar bug. ⚠ `sgs/container` emits NO `.is-layout-constrained`, so
+`useRootPaddingAwareAlignments` cannot help for free — that option is weaker, not stronger,
+than it first appears.
+
+Full findings, options table and honest costs:
+`~/.claude/memory/research/2026-08-21-wp-block-theme-main-width-and-full-bleed-bands.md`
 
 ### ▶ THIRD SESSION (2026-08-20 evening) — Wave 2 closed on the frontend
 
@@ -239,6 +287,37 @@ retroactivity). Bean's ruling settled DIRECTION, not whether to change the defau
 Phase 1 does not depend on it and can start immediately.
 
 ---
+
+## Pre-conditions
+
+Phase 1: none — it needed no design gate and could start cold. **It is now COMPLETE.**
+
+Phase 2 (the live front), all three must hold before any container code is written:
+
+1. **Bean's ruling on the width model** (Rule 7 — shared-mechanism change). The choice is
+   whether `sgs/container` adopts core's cap-the-children selector for
+   `container_kind='content'`, keeping the injected node only where `@container` queries,
+   `data-sgs-fx-track` and grid-on-inner structurally require it.
+2. **`inspector-scan/rules/23-content-width-needs-inner-band.js` widened FIRST.** Its regex
+   expects a dot-class after `>`, so core's `:where(...)` shape makes it report "no band" for
+   every correctly migrated block — it goes silently wrong, not red. Widening it after the
+   migration would mean migrating against a gate that cannot see the target shape.
+3. **The parallel colour-golden track's container work settled**, since it owns those files.
+   Its P2-3 and gutter/contentWidth fixes have landed; confirm nothing is mid-flight before
+   editing `class-sgs-container-wrapper.php`.
+
+## Parking lot
+
+No new parking.md entries were opened by this plan — deferred work is tracked as named tasks
+in `.claude/LEDGER.md`'s next-session section, which is the live front, rather than duplicated
+into parking.md. (Per the standing rule, a parking entry is a commitment and is never opened
+without asking Bean first.)
+
+Deliberate debt with a named trigger, recorded so it is not mistaken for drift:
+
+- `templates/archive-product.html` holds `<main>` at `contentWidth:"full"` and wraps
+  `sgs/collapsible-text`. Both exist ONLY as workarounds for the container gap above, and both
+  should be reverted the day pre-condition 1 lands. Bean ruled on keeping them for now.
 
 ## Entry context
 

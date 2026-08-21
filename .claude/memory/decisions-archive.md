@@ -5850,3 +5850,9 @@ Rule derived from live data: a base attr with per-tier SIBLING ROWS is one tier 
 
 **Safe because measured:** both paths emit to `$grid_sel` (`:1284`), `.$uid` unless `$grid_on_inner`, exactly where the flat gap path emitted. `container` passed as `$container_queries` so a non-opted block gets working `@media` tiers without a duplicate `@container` set that could never match. Live positive control on `sgs/container` (never opted in): 64px desktop / 8px mobile, no `__inner` forced.
 
+## 2026-08-21 — Sweep: uncited D-numbers in the none span
+
+Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), per-project/client CLAUDE.md files, and scripts/*.py. 0 entries moved verbatim. Cross-referenced-by-a-kept-entry list (informational, not excluded from sweep): 
+
+---
+

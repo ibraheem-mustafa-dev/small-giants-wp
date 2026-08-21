@@ -1,5 +1,166 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D704 [INCIDENT] — WordPress does NOT discard undeclared attributes before render.php; D338 was half true (2026-08-21)
+
+**Colour-golden track.** This repo has operated on D338: *"WordPress silently discards any
+block attribute the block.json does not declare."* It is true for ONE surface and false for
+the other, and the false half was written into a gate's own advice.
+
+**The mechanism, two independent attestations.** (1) WP core source:
+`WP_Block_Type::prepare_attributes_for_render()` iterates the incoming attributes and
+`continue`s past any key not in the registered schema — it never `unset`s it; `unset()` happens
+only for a DECLARED attribute failing schema validation. The editor's `getBlockAttributes()`
+instead builds its result by iterating `blockType.attributes`, so an undeclared key cannot
+appear. **PHP keeps undeclared attributes; JavaScript drops them.** (2) Live measurement taken
+independently by the shop-archive session before any mechanism was known: the canary element
+carried `has-background has-surface-alt-background-color` with a matching computed style, and
+that session honestly logged *"Behaviour verified; WP-core mechanism NOT established."*
+
+**Why it mattered.** `check-dead-pattern-attrs.py` reported 42 live authorings and told the
+reader "the value never reaches render at all". Acting on that would have deleted 42 live
+backgrounds as a safe cleanup. The FINDING was right; the stated MECHANISM was wrong, in the
+most dangerous available direction. Fixed in `e81ea92a` across 5 scripts +
+`plugins/sgs-blocks/CLAUDE.md`; detection unchanged (43 findings, exit 0, before and after).
+
+## D705 [ROUTINE] — Rule 31 attributes a shared colour row to its OWNER FILE, with a machine-readable `mountedBy` (2026-08-21)
+
+**Bean-ruled.** A colour row living in a shared panel is ONE edit but many blocks'
+client-facing surface. Emitting it per mounting block produces hundreds of findings that one
+commit clears at once, swinging the advisory ratchet and inviting many agents to edit one file.
+Emitting it with no reach information hides that the fix is a TWO-part job: the shared file
+gains the state, and every mounting block must then declare the sibling attribute or WP
+discards it in the editor (D704).
+
+**Ruling:** one FLAGGED finding per `(owner file, rowKey)`, carrying a machine-readable
+`mountedBy: [block slugs]` array — that array IS the per-block worklist. A shared file nothing
+mounts is skipped as dead code. `banned-lookalike` stays `edit.js`-only DELIBERATELY: widening
+it would flag `DesignTokenPicker.js`'s own conformant internal `<ColorPalette>` mounts across
+every block reaching them, destroying a regression guard that reads 0. **Axis scope is not
+uniform — every axis must be asked which view it wants.** `20332725`, 409 → 420 → 418.
+
+## D706 [INCIDENT] — sgs/container discarded `contentWidth` on every render; the content band never existed (2026-08-21)
+
+**Root cause of the shop archive's "background capped at content width" AND its missing mobile
+gutter — one defect, not two.** `class-sgs-container-wrapper.php:430-431` read `contentWidth`
+then did `is_array( $x ) ? '' : $x`. `contentWidth` has been a TIER OBJECT since Spec 35 pass 2,
+so that guard emptied it unconditionally, every render: `$has_band_props` false → `$do_wrap`
+never flips → `.sgs-container__inner` NEVER RENDERS → `max-width` lands on the OUTER element.
+
+**Why nobody saw it.** `163f9fa7` migrated 96 `core/group` instances to `sgs/container`,
+correctly translating WordPress's `layout:{"type":"constrained"}` — which is what had been
+supplying both the content cap and the gutter, inherited core behaviour, never an SGS default —
+into `contentWidth:"normal"`. **The translation was correct.**
+`templates/archive-product.html:20,22` still declare it today and it had never taken effect.
+The template asks, the block declares, and only the PHP silently empties it, so nothing in the
+markup looks wrong. The defect lives in the SEAM between a correct migration and a defensible
+`is_array()` guard — where tier-object migration fallout always lands.
+
+**Fixed** (`2d291992`) by matching the file's own precedent (`minHeight`:450 uses
+`sgs_responsive_normalise_object()`); default changed `full` → `normal` (Bean's ruling: `full`
+makes the band identical to the outer width, wanted only in specific cases). `full` SEMANTICS
+unchanged. Live: `.sgs-container__inner` 0 → 15 on `/shop/`.
+
+## D707 [ROUTINE] — padding/margin become block-owned box objects so a framework gutter default is POSSIBLE (2026-08-21)
+
+**Bean-ruled.** `sgs/container`'s spacing was SPLIT: base from WP-native `supports.spacing`,
+tablet/mobile as SGS object attrs. **A WP-native support cannot carry a framework default**, so
+"a container with no explicit padding still gets a gutter" was unimplementable — the gutter had
+to be authored by every template author forever, and forgetting it is what produced text flush
+to the viewport edge at 355px. Migrated to block-owned object attrs following the shipped D548
+`sgs/gallery` precedent. 38 blocks still use the split model; container is the proof-of-shape
+for a later scripted migration.
+
+⚠ **RESIDUAL, OPEN:** the default landed on the OUTER layer and therefore COMPOUNDS per nesting
+level — measured 48px instead of 24px on a two-deep container, and a 92px nested container
+squeezed to 44px of content. **It belongs on the CONTENT-BAND layer**, which now exists thanks
+to D706. Handed to a fresh session.
+
+## D709 [INCIDENT] — theme assets were served STALE to every warm browser cache (2026-08-21)
+
+Every theme CSS/JS URL carried `?ver=<theme version>`, which is only bumped on a theme
+release. An asset edited and deployed between releases therefore kept an IDENTICAL URL, and
+any browser holding it cached served the OLD bytes indefinitely. Proven on the canary: the
+same URL returned 10,199 bytes with `cache:'reload'` and 5,079 stale bytes from cache.
+
+Two shipped features (a `<dialog>` drawer rewrite, a panel restyle) appeared completely
+broken while the server had the correct files throughout. A server-side cache purge does NOT
+fix this — the stale copy is in the visitor's browser.
+
+Fixed by versioning all 9 theme enqueues with `filemtime` (`d3e98700`). ⚠ Any theme-side
+change judged "not working" before that commit needs re-testing; the verdict may have been
+against old bytes.
+
+## D710 [ROUTINE] — `main` is re-admitted to the container tagName, with a singleton guard (2026-08-21)
+
+All NINE theme templates authored `tagName:"main"`, and ZERO pages rendered a `<main>`:
+`main` was absent from both the block.json enum and the wrapper allowlist, so every page
+silently coerced to `section`. The site shipped no main landmark at all — breaking every
+"skip to content" target and the landmark screen readers jump to (WCAG 2.4.1).
+
+This REVERSES a deliberate earlier removal rather than ignoring it. That removal's reasoning
+was sound — a repeatable layout block offering `main` let a client produce 2-3 landmarks on
+one page — but it traded one defect for a worse one. Both properties are now kept: `main` is
+allowed, and a static per-request guard means the FIRST container claiming it renders `<main>`
+while any later one falls back to `section`. Duplicating a container cannot produce a second
+landmark.
+
+## D711 [ROUTINE] — SGS's container cannot express a full-bleed child; core's model can (2026-08-21)
+
+Established by three independent research legs against fetched theme markup and core's own
+PHPUnit stylesheet assertions — not documentation prose.
+
+WordPress caps a constrained container's CHILDREN:
+`.is-layout-constrained > :where(:not(.alignfull)) { max-width: … }` — `.alignfull` excluded
+BY NAME, at zero specificity. Canonical themes never put `max-width` on `<main>`; TT4 ships
+`{"tagName":"main","align":"full","layout":{"type":"constrained"}}`, full-bleed AND constrained
+at once. Archive intro copy sits directly inside `<main>` with no wrapper.
+
+`sgs/container` instead injects `.sgs-container__inner` carrying `max-width` on ITSELF, so a
+child is inside a physical box with no opt-out. "Full-bleed child of a constrained parent" is
+therefore INEXPRESSIBLE in our model, which is why the shop template had to unconstrain
+`<main>` — a workaround, not the structural answer. Same work as the colour-golden track's §4b.
+
+⚠ `sgs/container` emits NO `.is-layout-constrained` class, so `useRootPaddingAwareAlignments`
+cannot apply to it for free — that option is weaker than it appears, not stronger.
+
+RULED OUT ON EVIDENCE: moving a page-header band outside `<main>` (accessibility-wrong — W3C
+excludes only REPEATED chrome; a page-specific title is page content), and the
+`calc(50% - 50vw)` full-bleed trick (horizontal-scrollbar bug, still current).
+
+Research: `~/.claude/memory/research/2026-08-21-wp-block-theme-main-width-and-full-bleed-bands.md`
+
+## D712 [INCIDENT] — D338 is only half true, and 5 of 21 renamed authorings were alive (2026-08-21)
+
+Per D704, WordPress drops undeclared attributes from the EDITOR schema but PHP does NOT drop
+them before `render.php` runs. Several blocks exploit exactly that, reading
+`$attributes['backgroundColor']` to re-add `has-*` preset classes.
+
+Consequence for this session's rename work: of 21 authorings renamed British, **16 were
+genuinely dead** (`hero`, `trust-bar` — zero such reads) but **5 were already painting**
+(`site-header-row` ×3, `brand-strip`, `testimonial-slider`). The renames still stand, because
+they move authorings onto the canonical `sgs_colour_value()` path instead of depending on
+`has-*` classes that skip-serialisation exists to remove — but they were NOT all bug fixes,
+and two commit messages claim otherwise.
+
+RULE: "the block does not declare this attribute" does NOT imply "this attribute does
+nothing". Check whether `render.php` reads it anyway.
+
+## D708 [ROUTINE] — an extension may own a colour intrinsic to its own effect, never one the colour panel owns (2026-08-21)
+
+**Bean-ruled**, after asking why the hover-effects extension deals with colours and shadows
+that live in other panels. Background, text and border colour are ELEMENT colours — they belong
+on a colour row as a `hover` STATE, which is what the states model exists for. A ripple colour
+or an FX field colour has no home in the colour panel and stays with its effect.
+
+`sgsHoverBgColour`/`TextColour`/`BorderColour` were also DEAD: zero blocks list `hover` in
+`supports.sgs.enabledExtensions`, and the file's own comment records zero stored hover
+attributes across 194 canary pages. Deleted with their CSS emission in the same commit
+(`ebad91df`) — an orphaned rule matching nothing is the defect rule 28 exists to catch.
+`sgsHoverShadow` KEPT: `resolve_hover_defaults()` gives ~10 blocks a live PHP-side default that
+fires regardless of JS registration, so deleting it changes rendered output — a visual change
+needing a DOM check, not a dead-code deletion.
+
+
 ## D702 [INCIDENT] — sgs/text disabled WooCommerce instant filtering: cause is `supports.interactivity`, NOT block namespace (2026-08-20)
 
 **Shop-archive Phase 1, step P1-1. Proven live, then fixed, deployed and verified on the canary.**
