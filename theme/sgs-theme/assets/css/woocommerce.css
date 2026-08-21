@@ -1319,6 +1319,18 @@ body.woocommerce-cart .with-empty-cart-icon,
  * filter computed `pointer-events: none` at 390px and `auto` at 1440px, and no
  * click could reach it. The block above neutralised WC's overlay POSITIONING but
  * never its pointer-events, so the drawer looked perfect and filtered nothing. */
+/* ⛔ THE SECOND SCROLLBAR. WooCommerce ships
+ * `.wc-block-product-filters__overlay-content { overflow-y: scroll }` — `scroll`,
+ * not `auto`, so it paints a scrollbar permanently even with nothing to scroll,
+ * nested INSIDE our own `.sgs-shop-filters__scroll`. Two containers, two bars.
+ * They reset it to `visible` themselves at >=601px, which is why it only ever
+ * showed on mobile. We own the scrolling here, so it is neutralised at every
+ * width and the padding comes back to us too. */
+.sgs-shop-filters .wc-block-product-filters__overlay-content {
+	overflow: visible;
+	padding: 0;
+}
+
 .sgs-shop-filters .wc-block-product-filters__overlay,
 .sgs-shop-filters .wc-block-product-filters__overlay-dialog {
 	pointer-events: auto;
@@ -1388,15 +1400,12 @@ body.woocommerce-cart .with-empty-cart-icon,
 	margin-top: 0;
 }
 
-/* ...but the SPACE between groups still has to come from somewhere, so the
- * heading that now starts each group carries it, and draws the divider itself.
- * `:not(:first-of-type)` keeps the first group flush under the panel header -
- * a divider immediately below "Filters" separates nothing. */
-.sgs-shop-filters h3.sgs-shop-filters__group-heading:not(:first-of-type) {
-	margin-top: var(--wp--preset--spacing--30, 1rem);
-	padding-top: var(--wp--preset--spacing--30, 1rem);
-	border-top: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
-}
+/* The divider between groups is owned by `.sgs-shop-filters__group` (the
+ * <details> wrapper the accordion builds), NOT by the heading. It used to live
+ * here, on `:not(:first-of-type)`. When the accordion landed, the wrapper gained
+ * its own border-top and the two stacked into a double rule. One owner only —
+ * and the wrapper is the right one, because it is the thing being separated.
+ * Kept as a note rather than deleted silently, so nobody re-adds it here. */
 
 /* ── Individual filter group headings ── */
 .sgs-shop-filters h3.wp-block-heading,
@@ -1747,4 +1756,111 @@ body.woocommerce-cart .with-empty-cart-icon,
 	.sgs-shop-filters .wc-block-product-filter-clear-button {
 		transition-duration: 0.01ms !important;
 	}
+}
+
+/* ── 8g. Filter-group accordion + the panel's own scrollbar ──
+ * Built at runtime by sgs-shop-filters.js (see buildAccordion). Styling lives
+ * here rather than inline so both presentations — desktop sidebar and mobile
+ * sheet — share exactly one source. */
+
+.sgs-shop-filters__group {
+	border-top: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+	padding-top: var(--wp--preset--spacing--20, 0.75rem);
+	margin-top: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+/* The first group sits directly under the panel header, which already separates
+   it — a divider there would be separating nothing. */
+.sgs-shop-filters__group:first-of-type {
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+.sgs-shop-filters__group-summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+	/* 44px keeps the tap target at the WCAG 2.2 / SGS floor even though the
+	   heading text alone is shorter. */
+	min-height: 44px;
+	cursor: pointer;
+	list-style: none;
+	user-select: none;
+}
+
+/* Both halves are required: `display:none` on the WebKit pseudo-element and
+   `list-style:none` above kill Safari's and Firefox's default markers
+   respectively. Removing either brings one browser's triangle back. */
+.sgs-shop-filters__group-summary::-webkit-details-marker {
+	display: none;
+}
+
+/* The heading keeps its own type styles; the summary only lays it out. */
+.sgs-shop-filters__group-summary .sgs-shop-filters__group-heading {
+	margin: 0;
+}
+
+/* Chevron drawn in CSS rather than shipped as an icon — it is two borders, and
+   an inline SVG per group would be bytes for no gain. currentColor so it tracks
+   the heading colour on any palette. */
+.sgs-shop-filters__group-summary::after {
+	content: "";
+	flex: 0 0 auto;
+	width: 0.5em;
+	height: 0.5em;
+	margin-right: 0.25em;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg) translate(-0.125em, -0.125em);
+	transition: transform 0.18s ease;
+}
+
+.sgs-shop-filters__group[open] > .sgs-shop-filters__group-summary::after {
+	transform: rotate(-135deg) translate(-0.2em, -0.2em);
+}
+
+.sgs-shop-filters__group-summary:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-shop-filters__group-summary::after {
+		transition-duration: 0.01ms;
+	}
+}
+
+/* ── The panel's scrollbar ──
+ * Brand-derived like the rest of the panel: mixed from the client's own primary,
+ * so a navy palette gets a navy thumb without a line of per-client CSS. Styled
+ * rather than hidden — this is a scroll region a shopper needs to know is
+ * scrollable, unlike the carousels elsewhere in the framework, which hide theirs
+ * precisely because they have their own arrows and snap points. */
+.sgs-shop-filters__scroll {
+	scrollbar-width: thin;
+	scrollbar-color: var(--sgs-filter-line, var(--wp--preset--color--border)) transparent;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar {
+	width: 8px;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar-thumb {
+	background: var(--sgs-filter-line, var(--wp--preset--color--border));
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	/* Inset the thumb from the track edge without a second element. */
+	border: 2px solid transparent;
+	background-clip: padding-box;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar-thumb:hover {
+	background: var(--wp--preset--color--primary, currentColor);
+	background-clip: padding-box;
 }
