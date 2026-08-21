@@ -342,11 +342,11 @@ dropped):
 - **Probe arm 7's GPU-tally assertion is unverifiable on a live page** and reports SKIPPED,
   never PASS.
 
-**D-entries are NOT in `decisions.md`** — that file was carrying 91 uncommitted lines from
-the colour-golden track all session, and committing it by path would have swept their work
-into this branch. The three entries are written and waiting at
-`.claude/scratch/2026-08-21-tier-w-decisions-PENDING.md`. **Paste them in and renumber
-against the live D-ceiling** (it was 708 at 02:37 UTC 2026-08-21).
+**D-entries: LANDED as D714 / D715 / D716.** They were staged in a scratch file during the
+build rather than written straight into `decisions.md`, because that file was carrying 91
+uncommitted lines from the colour-golden track all session and committing it by path would
+have swept their work into this branch. The colour-golden track merged them in on
+2026-08-21; verified present and complete, and the scratch file is deleted.
 
 **FR numbering:** FR-38-29, not 28 — `FR-38-28` is reserved by the Bean-signed but unbuilt
 pointer-reactive-backgrounds design gate (`plans/2026-07-31-step7-cursor-follow-background-design-gate.md`).
