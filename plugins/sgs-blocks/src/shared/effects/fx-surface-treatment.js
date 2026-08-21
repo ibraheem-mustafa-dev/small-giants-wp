@@ -83,6 +83,29 @@ function datasetKeyForUniform( uniformName ) {
  * @return {number[]} `[r, g, b]` in 0-1 float space.
  */
 function resolveColourVec3( root, name, fallback ) {
+	// ⛔ ASK WHETHER THE PROPERTY IS SET **BEFORE** PROBING IT. Without this
+	// guard the `fallback` argument below is UNREACHABLE, and the bug is
+	// silent and plausible-looking rather than loud.
+	//
+	// Measured on the canary 2026-08-21: with `--sgs-fx-shadow` unset, the
+	// probe returned `rgb(58, 46, 38)` — byte-identical to the page's
+	// INHERITED text colour. CSS makes a declaration referencing an unset
+	// custom property "invalid at computed-value time", and the specified
+	// behaviour for that is to INHERIT, not to fail. So `getComputedStyle`
+	// hands back a perfectly well-formed `rgb()`, the regex below matches
+	// happily, and the preset default is never applied.
+	//
+	// The visible consequence: a client picking "Duotone" without choosing
+	// colours — which is the DEFAULT path, not an edge case — got both
+	// shadow and highlight resolved to the body text colour, so
+	// `mix( shadow, highlight, lum )` collapsed to a single flat tone and
+	// the image merely looked darkened. It rendered, the liveness flag was
+	// set, and every automated check passed.
+	const declared = getComputedStyle( root ).getPropertyValue( name ).trim();
+	if ( '' === declared ) {
+		return fallback;
+	}
+
 	const probe = document.createElement( 'span' );
 	probe.className = 'sgs-fx-colour-probe';
 	probe.style.setProperty( 'color', 'var(' + name + ')' );
