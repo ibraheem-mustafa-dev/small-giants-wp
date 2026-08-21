@@ -63,25 +63,14 @@ $classes  = array( 'sgs-site-footer', $uid );
 
 $css = '';
 
-// ── WP-native colour / border supports — no-inline contract (Spec 32). ──────────
+// ── WP-native border supports — no-inline contract (Spec 32). ──────────────
 // Mirrors sgs/site-header + sgs/site-footer-row: skip-serialised supports are
 // read from $attributes['style'] and emitted into this block's scoped <style>.
+// Colour is NO LONGER native (D-pending, this migration) — see the SGS-OWNED
+// backgroundColour/textColour block below, which replaces the native
+// style.color.* read that used to sit here.
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$sf_style_engine_args = array();
-
-	$sf_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$sf_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$sf_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$sf_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $sf_color_args ) ) {
-		$sf_style_engine_args['color'] = $sf_color_args;
-	}
 
 	$sf_border_args = array();
 	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
@@ -124,15 +113,87 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-$sf_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$sf_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-if ( '' !== $sf_preset_text_slug ) {
-	$classes[] = 'has-text-color';
-	$classes[] = 'has-' . $sf_preset_text_slug . '-color';
+// ── SGS-OWNED background + text colour (D294/D684 pattern) ─────────────────
+// Replaces the native supports.color path entirely — supports.color's
+// sub-flags are now false, so WordPress generates no native colour UI and
+// never auto-inlines a colour style, and no `has-*-color`/
+// `has-*-background-color` preset class is auto-added either. This block
+// used to re-add those classes by reading the UNDECLARED `textColor`/
+// `backgroundColor` attrs (the D684 trap: PHP does not drop an undeclared
+// attribute before render.php runs, so a hand-authored theme pattern using
+// the old American-spelled native attrs would still have painted — see
+// class CLAUDE.md's "WordPress silently DROPS…" note). That read is deleted
+// here, not left in place: the 7 theme pattern authorings that fed it are
+// renamed to `backgroundColour` in the SAME change (see decisions.md), so
+// there is no live authoring left for the old attr to catch, and keeping a
+// dead read of an American-spelled key around would only invite a future
+// regression back onto the retired path.
+//
+// EVERY value goes through sgs_colour_value() / sgs_text_colour_decl() /
+// sgs_background_paint_decl() before reaching CSS — DesignTokenPicker
+// stores a bare token SLUG when `linked:true`, and passing that raw to
+// wp_style_engine_get_styles() emits the invalid `background-color:primary`
+// (D684). Both attribute pairs have a GRADIENT sibling and a HOVER state,
+// neither of which the style engine can express (no state axis, and a
+// gradient would be flattened to a solid colour) — so both are emitted here
+// as a scoped `.uid{…}` / `.uid:hover,.uid:focus-visible{…}` pair via the
+// shared sgs_emit_state_colour_css() helper, exactly as sgs/container and
+// sgs/heading already do.
+$sf_resting_decls = array();
+$sf_hover_decls   = array();
+
+$sf_bg_decl = sgs_background_paint_decl(
+	(string) ( $attributes['backgroundColour'] ?? '' ),
+	(string) ( $attributes['backgroundColourGradient'] ?? '' )
+);
+if ( '' !== $sf_bg_decl ) {
+	$sf_resting_decls[] = $sf_bg_decl;
 }
-if ( '' !== $sf_preset_bg_slug ) {
-	$classes[] = 'has-background';
-	$classes[] = 'has-' . $sf_preset_bg_slug . '-background-color';
+
+$sf_text_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+if ( '' !== $sf_text_effective ) {
+	$sf_text_decl = sgs_text_colour_decl( $sf_text_effective );
+	if ( '' !== $sf_text_decl ) {
+		$sf_resting_decls[] = $sf_text_decl;
+	}
+}
+
+$sf_bg_hover_decl = sgs_background_paint_decl(
+	(string) ( $attributes['backgroundColourHover'] ?? '' ),
+	(string) ( $attributes['backgroundColourHoverGradient'] ?? '' )
+);
+if ( '' !== $sf_bg_hover_decl ) {
+	$sf_hover_decls[] = $sf_bg_hover_decl;
+}
+
+$sf_text_hover_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+if ( '' !== $sf_text_hover_effective ) {
+	$sf_text_hover_decl = sgs_text_colour_decl( $sf_text_hover_effective );
+	if ( '' !== $sf_text_hover_decl ) {
+		$sf_hover_decls[] = $sf_text_hover_decl;
+	}
+}
+
+if ( $sf_resting_decls || $sf_hover_decls ) {
+	$css .= sgs_emit_state_colour_css( $root_sel, $sf_resting_decls, $sf_hover_decls );
+
+	$sf_text_fallback = sgs_text_colour_gradient_fallback_rule( $root_sel, $sf_text_effective );
+	if ( '' !== $sf_text_fallback ) {
+		$css .= $sf_text_fallback;
+	}
+	if ( $sf_hover_decls ) {
+		$sf_hover_sel           = "{$root_sel}:hover,{$root_sel}:focus-visible";
+		$sf_text_hover_fallback = sgs_text_colour_gradient_fallback_rule( $sf_hover_sel, $sf_text_hover_effective );
+		if ( '' !== $sf_text_hover_fallback ) {
+			$css .= $sf_text_hover_fallback;
+		}
+	}
 }
 
 if ( '' !== $css ) {

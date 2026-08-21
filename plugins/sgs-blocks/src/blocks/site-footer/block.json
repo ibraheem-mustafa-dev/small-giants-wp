@@ -23,9 +23,9 @@
 			"full"
 		],
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
@@ -72,8 +72,9 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "native:__experimentalBorder.width",
@@ -90,7 +91,16 @@
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"
 					},
-					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour/spacing/border ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour is now SGS-OWNED (backgroundColour/textColour + Gradient/Hover siblings, D294/D684 pattern — mirrors sgs/site-header's already-migrated shape) rather than riding native WP supports; spacing/border still ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -135,6 +145,38 @@
 		"sgs/site-footer-row"
 	],
 	"attributes": {
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}

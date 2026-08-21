@@ -15,7 +15,7 @@
 
 ?>
 
-<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"footer-bg","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/site-footer {"align":"full","backgroundColour":"footer-bg","contentWidth":{"desktop":"normal"}} -->
 
 <!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":{"desktop":3},"padding":{"desktop":{"top":"var(--wp--preset--spacing--60)"}}} -->
 

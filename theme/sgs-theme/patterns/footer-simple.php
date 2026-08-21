@@ -12,7 +12,7 @@
 
 ?>
 
-<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"primary-dark","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/site-footer {"align":"full","backgroundColour":"primary-dark","contentWidth":{"desktop":"normal"}} -->
 
 <!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--50)","bottom":"var(--wp--preset--spacing--50)"}}} -->
 

@@ -21,7 +21,7 @@ import {
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel } from '../../components';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
@@ -214,6 +214,22 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const blockProps = useBlockProps( { className: 'sgs-site-footer' } );
 	const refEl = useRef( null );
 
+	// SGS-owned colour (D294/D684 pattern, mirrors sgs/site-header's already-
+	// migrated shape) — supports.color sub-flags are false so WordPress
+	// generates no native colour UI; these two attribute pairs (background +
+	// text, each with a gradient sibling and a hover state) are the ONLY
+	// colour surface for this block now.
+	const {
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
+		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
+	} = attributes;
+
 	// ⛔ Seed the three rows ONLY into a genuinely EMPTY container.
 	//
 	// WP core re-applies a block's template on EVERY mount when templateLock is
@@ -292,6 +308,66 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	return (
 		<>
+			{ /* D294/D684 — ONE grouped, SGS-OWNED colour panel, rendered FIRST
+			     (before any other same-group InspectorControls Fill) so it sits
+			     at the top of the Styles tab. Replaces the native supports.color
+			     UI (now fully disabled — supports.color sub-flags are false). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourHoverGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+				] }
+			/>
+
 			{ /* Background renders in the STYLES tab, not Settings (standardised
 			     2026-08-16, Bean-ruled). Same shared panel, same tab, on every
 			     wrapper block — it used to land in Settings here and in Styles on
