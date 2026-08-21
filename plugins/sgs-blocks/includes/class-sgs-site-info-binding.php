@@ -44,14 +44,9 @@ final class Sgs_Site_Info_Binding {
 	/**
 	 * Registers the block bindings source with WordPress core.
 	 *
-	 * Requires WP 6.5+. The function_exists guard ensures graceful no-op
-	 * on older installs instead of a fatal error.
+	 * Requires WP 6.5+ (plugin floor is 6.7 — always available).
 	 */
 	public static function register_source(): void {
-		if ( ! \function_exists( 'register_block_bindings_source' ) ) {
-			return;
-		}
-
 		// NOTE: do NOT pass 'can_user_edit_value' — it is NOT a recognised key in
 		// WP core's register_block_bindings_source() (WP 6.5–7.0). Passing it makes
 		// core reject the ENTIRE registration (returns false), which is why this
@@ -127,8 +122,8 @@ final class Sgs_Site_Info_Binding {
 	 * capability gate matching the exact capability that gates the Site Info
 	 * admin page itself (Sgs_Site_Info_Admin::CAP = 'edit_theme_options') —
 	 * belt-and-braces so a hint can never surface to a user who couldn't act
-	 * on it anyway. WP 6.9–7.0 floor: `wp_is_serving_rest_request()` is
-	 * native (WP 6.5+) but still function_exists-guarded for safety.
+	 * on it anyway. `wp_is_serving_rest_request()` is native since WP 6.5,
+	 * always available at the plugin's 6.7 floor.
 	 *
 	 * @return bool
 	 */
@@ -139,7 +134,7 @@ final class Sgs_Site_Info_Binding {
 		if ( \is_admin() ) {
 			return true;
 		}
-		if ( \function_exists( 'wp_is_serving_rest_request' ) && \wp_is_serving_rest_request() ) {
+		if ( \wp_is_serving_rest_request() ) {
 			return true;
 		}
 		if ( \defined( 'REST_REQUEST' ) && \REST_REQUEST ) {

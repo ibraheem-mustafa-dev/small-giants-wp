@@ -339,28 +339,14 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 						// two nav-menus bound to the SAME menu can't collide (axe
 						// duplicate-id-aria). $uid already carries the sgs-nav-menu- prefix.
 						$panel_dom_id = $this->uid . '-mega-' . (int) $item['object_id'];
-						$mega_ctx     = function_exists( 'wp_interactivity_data_wp_context' )
-							? wp_interactivity_data_wp_context(
-								array(
-									'isOpen'      => false,
-									'megaId'      => (string) (int) $item['object_id'],
-									'intentDelay' => 300,
-									'closeGrace'  => 170,
-								)
+						$mega_ctx     = wp_interactivity_data_wp_context(
+							array(
+								'isOpen'      => false,
+								'megaId'      => (string) (int) $item['object_id'],
+								'intentDelay' => 300,
+								'closeGrace'  => 170,
 							)
-							: sprintf(
-								"data-wp-context='%s'",
-								esc_attr(
-									wp_json_encode(
-										array(
-											'isOpen'      => false,
-											'megaId'      => (string) (int) $item['object_id'],
-											'intentDelay' => 300,
-											'closeGrace'  => 170,
-										)
-									)
-								)
-							);
+						);
 						$caret = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-menu__item--mega">'
@@ -371,7 +357,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
-							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
+							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 							esc_attr( $panel_dom_id ),
 							esc_html( $item['label'] ),
 							$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
@@ -437,28 +423,14 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 					 */
 					if ( '' !== $child_html ) {
 						$sub_dom_id = $this->uid . '-sub-' . substr( md5( $item['identifier'] ), 0, 8 );
-						$sub_ctx    = function_exists( 'wp_interactivity_data_wp_context' )
-							? wp_interactivity_data_wp_context(
-								array(
-									'isOpen'      => false,
-									'megaId'      => $sub_dom_id,
-									'intentDelay' => 300,
-									'closeGrace'  => $this->submenu['close_grace'],
-								)
+						$sub_ctx    = wp_interactivity_data_wp_context(
+							array(
+								'isOpen'      => false,
+								'megaId'      => $sub_dom_id,
+								'intentDelay' => 300,
+								'closeGrace'  => $this->submenu['close_grace'],
 							)
-							: sprintf(
-								"data-wp-context='%s'",
-								esc_attr(
-									wp_json_encode(
-										array(
-											'isOpen'      => false,
-											'megaId'      => $sub_dom_id,
-											'intentDelay' => 300,
-											'closeGrace'  => $this->submenu['close_grace'],
-										)
-									)
-								)
-							);
+						);
 						$sub_caret  = '';
 						if ( $this->submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) ) {
 							$sub_caret = '<span class="sgs-nav-menu__caret" aria-hidden="true">'
@@ -505,7 +477,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							. '</div></li>',
 							esc_attr( $li_class ),
 							esc_attr( $this->submenu['align'] ),
-							$sub_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
+							$sub_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 							$trigger_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
 							esc_attr( $sub_dom_id ),
 							$child_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
@@ -741,32 +713,23 @@ if ( class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) ) {
 	\SGS\Blocks\Sgs_Drawer_Render::note_burger( $drawer_ref );
 }
 
-$burger_context = wp_json_encode(
+$burger_icon = sgs_get_lucide_icon( 'menu' );
+
+// wp_interactivity_data_wp_context() is the WP-canonical compact single-quoted
+// emitter (avoids the &quot; bloat get_block_wrapper_attributes() would add) —
+// mirrors the SGS_Container_Wrapper opts doc for `extra_attr_html`.
+$burger_context_attr = wp_interactivity_data_wp_context(
 	array(
 		'isOpen'    => false,
 		'drawerRef' => $drawer_ref,
 	)
 );
 
-$burger_icon = sgs_get_lucide_icon( 'menu' );
-
-// wp_interactivity_data_wp_context() is the WP-canonical compact single-quoted
-// emitter (avoids the &quot; bloat get_block_wrapper_attributes() would add) —
-// mirrors the SGS_Container_Wrapper opts doc for `extra_attr_html`.
-$burger_context_attr = function_exists( 'wp_interactivity_data_wp_context' )
-	? wp_interactivity_data_wp_context(
-		array(
-			'isOpen'    => false,
-			'drawerRef' => $drawer_ref,
-		)
-	)
-	: sprintf( "data-wp-context='%s'", esc_attr( $burger_context ) );
-
 $toggle_html = sprintf(
 	'<div class="sgs-nav-menu__toggle-wrap" data-wp-interactive="sgs/nav" %s data-wp-init="callbacks.pruneDanglingAriaControls">' .
 	'<button type="button" class="sgs-nav-menu__burger" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%s" aria-label="%s">%s</button>' .
 	'</div>',
-	$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch above esc_attr()s the JSON.
+	$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 	esc_attr( $drawer_ref ),
 	esc_attr__( 'Open menu', 'sgs-blocks' ),
 	$burger_icon // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
@@ -800,7 +763,7 @@ $toggle_html = sprintf(
 // `navLabel` to default to '' in block.json — a non-empty default makes the
 // menu-name branch below unreachable dead code (it was, until 2026-07-23).
 $nav_label = trim( (string) ( $attributes['navLabel'] ?? '' ) );
-if ( '' === $nav_label && $ref > 0 && function_exists( 'wp_get_nav_menu_object' ) ) {
+if ( '' === $nav_label && $ref > 0 ) {
 	$nav_menu_obj = wp_get_nav_menu_object( $ref );
 	if ( $nav_menu_obj && ! empty( $nav_menu_obj->name ) ) {
 		// Strip a trailing "menu"/"navigation"/"nav" from the DERIVED name only.

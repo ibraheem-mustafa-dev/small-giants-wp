@@ -754,10 +754,6 @@ class SGS_Motion_Registry {
 			return;
 		}
 
-		if ( ! \function_exists( 'wp_enqueue_script_module' ) ) {
-			return;
-		}
-
 		$settings = self::settings();
 		if ( empty( $settings['smooth_scroll'] ) ) {
 			// The whole point of FR-38-18's default-OFF: a site not using this
@@ -818,10 +814,6 @@ class SGS_Motion_Registry {
 	 * @return void
 	 */
 	public static function register_modules(): void {
-		if ( ! \function_exists( 'wp_register_script_module' ) ) {
-			return;
-		}
-
 		foreach ( self::MODULES as $id => $module ) {
 			$file = SGS_BLOCKS_PATH . $module['path'];
 			if ( ! \file_exists( $file ) ) {
@@ -1036,10 +1028,6 @@ class SGS_Motion_Registry {
 					)
 				);
 			}
-			return;
-		}
-
-		if ( ! \function_exists( 'wp_enqueue_script_module' ) ) {
 			return;
 		}
 

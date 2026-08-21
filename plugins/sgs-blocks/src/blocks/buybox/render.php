@@ -375,9 +375,7 @@ $card_type = WP_Block_Type_Registry::get_instance()->get_registered( 'sgs/produc
 if ( $card_type ) {
 	$module_ids = isset( $card_type->view_script_module_ids ) ? (array) $card_type->view_script_module_ids : array();
 	foreach ( $module_ids as $module_id ) {
-		if ( function_exists( 'wp_enqueue_script_module' ) ) {
-			wp_enqueue_script_module( $module_id );
-		}
+		wp_enqueue_script_module( $module_id );
 	}
 }
 

@@ -47,11 +47,6 @@ class Font_Collection {
 	 * @return void
 	 */
 	public function register(): void {
-		if ( ! function_exists( 'wp_register_font_collection' ) ) {
-			// WordPress < 6.5 — Font Library API not available.
-			return;
-		}
-
 		// WP_Font_Collection's lazy-load contract: pass the JSON file path under
 		// the `font_families` key (NOT `src`). When `font_families` is a string,
 		// core treats it as a path/URL to lazy-load via ::get_data(); when it's

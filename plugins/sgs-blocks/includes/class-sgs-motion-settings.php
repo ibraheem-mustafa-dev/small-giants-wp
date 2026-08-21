@@ -186,10 +186,6 @@ final class Sgs_Motion_Settings {
 	private static function palette_slugs(): array {
 		$out = array();
 
-		if ( ! \function_exists( 'wp_get_global_settings' ) ) {
-			return $out;
-		}
-
 		$palette = \wp_get_global_settings( array( 'color', 'palette' ) );
 
 		// wp_get_global_settings() may return the palette keyed by origin
@@ -268,10 +264,6 @@ final class Sgs_Motion_Settings {
 	 * @return array<string, string>
 	 */
 	private static function templates(): array {
-		if ( ! \function_exists( 'get_block_templates' ) ) {
-			return array();
-		}
-
 		$templates = \get_block_templates( array(), 'wp_template' );
 		$out       = array();
 

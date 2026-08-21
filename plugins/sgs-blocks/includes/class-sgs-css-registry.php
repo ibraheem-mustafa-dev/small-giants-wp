@@ -63,9 +63,10 @@ function sgs_is_frontend_render(): bool {
 	if ( \is_admin() ) {
 		return false;
 	}
-	// WP 6.5+ native (site floor is 6.9–7.0); REST_REQUEST constant is the
+	// wp_is_serving_rest_request() is native since WP 6.5, always available
+	// at the plugin's 6.7 floor; REST_REQUEST constant is the
 	// belt-and-braces fallback for the block-renderer REST route.
-	if ( \function_exists( 'wp_is_serving_rest_request' ) && \wp_is_serving_rest_request() ) {
+	if ( \wp_is_serving_rest_request() ) {
 		return false;
 	}
 	if ( \defined( 'REST_REQUEST' ) && \REST_REQUEST ) {

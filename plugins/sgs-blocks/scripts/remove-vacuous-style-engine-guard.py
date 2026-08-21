@@ -59,6 +59,54 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCKS = os.path.join(ROOT, 'src', 'blocks', '*', 'render.php')
 
 FN = "function_exists( 'wp_style_engine_get_styles' )"
+
+def _plugin_floor():
+    """Read "Requires at least" from the plugin header.
+
+    Deliberately PARSED, never hardcoded. This whole gate's claim is "the floor
+    guarantees these functions exist" - so if the floor is ever LOWERED (a client
+    stuck on 6.5, say), a hardcoded constant would keep asserting three guards are
+    vacuous when they had become load-bearing, AND would fail the build for
+    reintroducing a correct guard. Reading it makes the gate self-correcting.
+    """
+    header = os.path.join(ROOT, 'sgs-blocks.php')
+    try:
+        with open(header, encoding='utf-8', errors='ignore') as fh:
+            m = re.search(r'Requires at least:\s*([0-9.]+)', fh.read(8192))
+        if m:
+            return m.group(1)
+    except OSError:
+        pass
+    return None
+
+
+def _below_floor(since, floor):
+    """True when `since` is strictly older than `floor` (so the guard is vacuous)."""
+    def parts(v):
+        return [int(x) for x in v.split('.')]
+    return parts(since) < parts(floor)
+
+# Core functions guarded somewhere in this tree, with the @since read from the
+# WordPress core source (NOT from memory - each was confirmed against
+# WordPress/wordpress-develop, tracing the @since block to its owning function
+# rather than trusting document order).
+#
+# --fix only ever rewrites wp_style_engine_get_styles: the other two appeared in
+# five DIFFERENT shapes across ten sites (ternary-with-fallback, leading /
+# middle conjunct, standalone if, and a NEGATED early-return using a namespaced
+# `\function_exists`). A codemod for four one-off shapes would be more code than
+# the edit and needs paren-matching a regex gets wrong, so those were migrated by
+# hand. --check still gates all three, which is the half that prevents a
+# regression.
+VACUOUS_GUARDS = {
+    'wp_style_engine_get_styles':      '6.1',
+    'wp_interactivity_data_wp_context': '6.5',
+    'wp_enqueue_script_module':         '6.5',
+}
+# Namespaced files write `\function_exists`; match both spellings.
+GUARD_ANY = re.compile(
+    r'\\?function_exists\(\s*.(' + '|'.join(VACUOUS_GUARDS) + r').\s*\)'
+)
 STANDALONE = re.compile(r"^(\t*)if \( " + re.escape(FN) + r" \) \{\s*$")
 # Compound forms: the dead conjunct sits before or after a real condition.
 LEADING = re.compile(r"\( " + re.escape(FN) + r" && ")
@@ -216,6 +264,28 @@ def self_test():
     inert = "<?php\ndefined( 'ABSPATH' ) || exit;\n$x = 1;\n"
     same, n2 = transform(inert)
     check('negative control: inert file untouched', same == inert and not n2)
+
+    # ---- The --check gate's own logic (added after a QC review, 2026-08-21) ----
+    # The floor must be READ, not assumed, or a lowered floor silently turns this
+    # gate into a false claim. Version comparison is numeric, not lexicographic:
+    # '6.10' > '6.9' is FALSE as strings, which would misjudge a future floor.
+    check('floor: 6.1 is below 6.7 (vacuous)', _below_floor('6.1', '6.7'))
+    check('floor: 6.5 is below 6.7 (vacuous)', _below_floor('6.5', '6.7'))
+    check('floor: 7.0 is NOT below 6.7 (load-bearing)', not _below_floor('7.0', '6.7'))
+    check('floor: equal version is NOT below (load-bearing)', not _below_floor('6.7', '6.7'))
+    check('floor: 6.9 is below 6.10 numerically, not lexicographically',
+          _below_floor('6.9', '6.10'))
+    check('floor: parsed from the real plugin header', _plugin_floor() is not None)
+
+    # The exemption for polyfill DEFINITIONS must not swallow a real call guard -
+    # especially the negated `if ( ! function_exists(…) ) { return; }` shape, which
+    # is the one that most resembles a polyfill.
+    poly = re.compile(r'\s*\)\s*\{\s*(?://[^\n]*\n\s*)*function\s')
+    check('polyfill definition is exempt', bool(poly.match(" ) {\n\tfunction wp_x( $a ) {")))
+    check('negated early-return is NOT exempt (no overmatch)',
+          not poly.match(" ) ) { return; }"))
+    check('plain call guard is NOT exempt (no overmatch)',
+          not poly.match(" ) ) {\n\t$args = array();"))
     return fails
 
 
@@ -246,12 +316,57 @@ def main():
         return 0
 
     if a.check:
-        if rows:
-            print(f'FAIL: {sum(r["n"] for r in rows)} vacuous style-engine guard(s) in {len(rows)} file(s)')
-            for r in rows[:10]:
-                print(f'   {r["block"]}')
+        # Gate ALL THREE vacuous families, across src/ AND includes/. Scoping this
+        # to src/blocks/*/render.php is exactly how the first count of the two
+        # sibling families came in at 4 and 3 when the real figures were 5 and 5 -
+        # every missed site lived in includes/.
+        floor = _plugin_floor()
+        if not floor:
+            print('FAIL: could not read "Requires at least" from sgs-blocks.php - '
+                  'the floor is what makes a guard vacuous, so this gate cannot judge without it.')
             return 1
-        print('PASS: no vacuous style-engine guards remain')
+
+        # Only the families genuinely BELOW the current floor are vacuous. If the
+        # floor is ever lowered, the affected family drops out of the gate on its
+        # own rather than the gate asserting a stale claim.
+        live = {fn: since for fn, since in VACUOUS_GUARDS.items() if _below_floor(since, floor)}
+        skipped = {fn: s for fn, s in VACUOUS_GUARDS.items() if fn not in live}
+        for fn, since in skipped.items():
+            print(f'NOTE: {fn}() is @since {since}, NOT below the {floor} floor - '
+                  f'its guard is load-bearing and is NOT gated.')
+        if not live:
+            print(f'PASS: no family is below the {floor} floor; nothing to gate.')
+            return 0
+        guard_re = re.compile(r'\\?function_exists\(\s*.(' + '|'.join(live) + r').\s*\)')
+
+        # Scan the plugin AND the theme. The theme declares the same floor and is a
+        # legitimate style-engine consumer, so a guard introduced there would
+        # otherwise pass this gate silently.
+        theme = os.path.join(os.path.dirname(os.path.dirname(ROOT)), 'theme', 'sgs-theme')
+        roots = [os.path.join(ROOT, 'src'), os.path.join(ROOT, 'includes'), theme]
+        found = []
+        for base in roots:
+            for path in sorted(glob.glob(os.path.join(base, '**', '*.php'), recursive=True)):
+                text = open(path, encoding='utf-8', errors='ignore').read()
+                for m in guard_re.finditer(text):
+                    line_no = text[:m.start()].count('\n') + 1
+                    # A POLYFILL definition (`if ( ! function_exists(…) ) { function …`)
+                    # is correct code, not a vacuous call guard - never flag one.
+                    tail = text[m.end():m.end() + 200]
+                    if re.match(r'\s*\)\s*\{\s*(?://[^\n]*\n\s*)*function\s', tail):
+                        continue
+                    found.append((os.path.relpath(path, ROOT).replace('\\', '/'), line_no, m.group(1)))
+        if found:
+            print(f'FAIL: {len(found)} vacuous core-function guard(s) - the plugin declares '
+                  f'"Requires at least: {floor}", so each tests for a function already guaranteed:')
+            for path, line, fn in found[:15]:
+                print(f'   {path}:{line}  {fn}()  @since {VACUOUS_GUARDS[fn]}')
+            if len(found) > 15:
+                print(f'   ... and {len(found) - 15} more')
+            return 1
+        print(f'PASS: no vacuous core-function guards remain '
+              f'({len(live)} famil{"y" if len(live) == 1 else "ies"} checked against the {floor} floor, '
+              f'plugin src/ + includes/ + theme)')
         return 0
 
     changed = 0

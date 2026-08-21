@@ -1918,7 +1918,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// below) so source order lets a narrower-viewport tier win without needing
 			// !important. wp_style_engine_get_styles() produces the same CSS WP's own
 			// style engine would have inlined, just scoped to .$uid instead.
-			if ( $has_base_spacing && $uid && function_exists( 'wp_style_engine_get_styles' ) ) {
+			if ( $has_base_spacing && $uid ) {
 				$base_spacing_style_args = array();
 				if ( ! empty( $base_spacing_padding ) ) {
 					$base_spacing_style_args['padding'] = $base_spacing_padding;

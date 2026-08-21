@@ -374,10 +374,10 @@ final class Sgs_Footer_Rules {
 		$value = (string) ( $condition['value'] ?? '' );
 		switch ( $type ) {
 			case 'post_type':
-				return function_exists( 'get_post_type' ) && (string) \get_post_type() === $value;
+				return (string) \get_post_type() === $value;
 
 			case 'template':
-				return function_exists( 'get_page_template_slug' ) && (string) \get_page_template_slug() === $value;
+				return (string) \get_page_template_slug() === $value;
 
 			case 'url_match':
 				$raw  = isset( $_SERVER['REQUEST_URI'] ) ? \sanitize_text_field( \wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
@@ -421,6 +421,6 @@ final class Sgs_Footer_Rules {
 		if ( empty( $pattern ) || empty( $pattern['content'] ) ) {
 			return null;
 		}
-		return function_exists( 'do_blocks' ) ? \do_blocks( (string) $pattern['content'] ) : (string) $pattern['content'];
+		return \do_blocks( (string) $pattern['content'] );
 	}
 }

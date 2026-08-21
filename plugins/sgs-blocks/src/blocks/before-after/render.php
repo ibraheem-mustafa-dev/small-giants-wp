@@ -464,7 +464,7 @@ foreach ( array(
 // code at all.
 // ---------------------------------------------------------------------------
 
-if ( $fx_draggable && ! is_admin() && function_exists( 'wp_enqueue_script_module' ) ) {
+if ( $fx_draggable && ! is_admin() ) {
 	wp_enqueue_script_module( '@sgs/motion-provider' );
 	wp_enqueue_script_module( '@sgs/gsap-draggable' );
 }

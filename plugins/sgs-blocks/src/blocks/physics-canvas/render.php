@@ -163,7 +163,7 @@ if ( '' !== $sgs_ps_supports_css ) {
 
 $sgs_ps_is_frontend = ! function_exists( 'SGS\\Blocks\\sgs_is_frontend_render' ) || \SGS\Blocks\sgs_is_frontend_render();
 
-if ( $sgs_ps_is_frontend && function_exists( 'wp_enqueue_script_module' ) && trim( $content ) !== '' ) {
+if ( $sgs_ps_is_frontend && trim( $content ) !== '' ) {
 	wp_enqueue_script_module( '@sgs/gsap' );
 	wp_enqueue_script_module( '@sgs/motion-provider' );
 	wp_enqueue_script_module( '@sgs/gsap-draggable' );

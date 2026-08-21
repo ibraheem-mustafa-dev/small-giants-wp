@@ -412,9 +412,7 @@ if ( $sgs_ps_is_dialog_mode ) {
 		'drawerRef' => $dialog_id,
 	);
 
-	$overlay_context_attr = function_exists( 'wp_interactivity_data_wp_context' )
-		? wp_interactivity_data_wp_context( $overlay_context )
-		: sprintf( "data-wp-context='%s'", esc_attr( (string) wp_json_encode( $overlay_context ) ) );
+	$overlay_context_attr = wp_interactivity_data_wp_context( $overlay_context );
 
 	// command-palette's trigger carries the same aria-label as full-screen-
 	// overlay's, plus a spoken keyboard-shortcut hint (Ctrl/Cmd+K), since it
