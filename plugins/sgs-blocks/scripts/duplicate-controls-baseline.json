@@ -143,6 +143,30 @@
 				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
 			],
 			"reason": "ACCEPTED 2026-08-20 (shop-archive Wave 2, P1-6). Introduced deliberately: sgs/hero's root previously mapped css:background-color to native:color.background while declaring no supports.color at all, so the mapping pointed at an attribute WordPress never registers and the block's existing textColourHover was bound to nothing. Adding root backgroundColour/textColour repairs that. This finding is the SAME CLASS already accepted for sgs/accordion-item (identical attr, identical keeper) - consistent treatment, not new slack. Substantively the two controls are not the same control: hero's root textColour sets an INHERITED cascade default for every text descendant (including non-sgs/text children), whereas the child sgs/text control overrides one instance. The duplication the gate objects to is real as a UX question - two places in the inspector reading as 'text colour'. HANDED TO the colour-golden track: it owns colour standardisation and should rule on this pattern once, across every parent that mounts sgs/text, rather than per block. See .claude/reports/2026-08-20-HANDOVER-3-shop-wave-2-to-colour-golden-track.md item 2."
+		},
+		{
+			"check": "parent-child-duplicate",
+			"block": "sgs/cta-section",
+			"attr": "textColour",
+			"severity": "scoped",
+			"keeper": "child sgs/text's own typography/colour controls",
+			"sources": [
+				"sgs/cta-section edit.js: parent-level control for \"textColour\"",
+				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+			],
+			"reason": "ACCEPTED 2026-08-21. Surfaced by the American-to-British rename of this block's own textColor -> textColour, which is what made the gate recognise it as a colour attr; the control itself is unchanged and predates the rename. Same class already accepted for sgs/accordion-item and sgs/hero: a parent-level textColour on a block that also mounts sgs/text children. Substantively the two are not the same control - the parent sets an INHERITED cascade default for every text descendant, the child overrides one instance - but the UX objection is real, and the pattern should be ruled on once across every parent that mounts sgs/text rather than per block."
+		},
+		{
+			"check": "parent-child-duplicate",
+			"block": "sgs/site-footer",
+			"attr": "textColour",
+			"severity": "scoped",
+			"keeper": "child sgs/text's own typography/colour controls",
+			"sources": [
+				"sgs/site-footer edit.js: parent-level control for \"textColour\"",
+				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+			],
+			"reason": "ACCEPTED 2026-08-21. Introduced by retiring this block from WordPress's native colour path: it previously had supports.color.text true, so the same duplication existed via the NATIVE control and was invisible to this gate. Making the colour SGS-owned did not create the overlap, it made it visible. Same class as sgs/accordion-item, sgs/hero and sgs/cta-section; belongs to the single cross-block ruling on parents that mount sgs/text."
 		}
 	]
 }
