@@ -7,16 +7,15 @@
  * continue to work without modification.
  * Optionally outputs FAQ Schema JSON-LD.
  *
- * NO-INLINE (contract §A, 2026-07-10): block.json declares color/typography/
- * spacing/__experimentalBorder ALL with __experimentalSkipSerialization so
- * get_block_wrapper_attributes() (called inside SGS_Container_Wrapper::render()
- * below) never auto-inlines them. The resolved values are read from
- * $attributes['style'] here and emitted into ACCORDION'S OWN scoped `.{uid}`
- * <style> tag (composite caveat — matches sgs/hero: does NOT ride through the
- * wrapper's `extra_styles`, which would inline). Base padding/margin/border-
- * radius stay the wrapper's own scoped mechanism; paddingTablet/paddingMobile/
- * marginTablet/marginMobile object attrs (contract §B) are read + emitted by
- * the wrapper for every kind, so no duplicate handling here.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. The resolved values are read from $attributes['style'] here and
+ * emitted into ACCORDION'S OWN scoped `.{uid}` <style> tag (composite caveat
+ * — matches sgs/hero: does NOT ride through the wrapper's `extra_styles`,
+ * which would inline). Base padding/margin/border-radius stay the wrapper's
+ * own scoped mechanism; paddingTablet/paddingMobile/marginTablet/
+ * marginMobile object attrs are read + emitted by the wrapper for every
+ * kind, so no duplicate handling here.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (accordion items).

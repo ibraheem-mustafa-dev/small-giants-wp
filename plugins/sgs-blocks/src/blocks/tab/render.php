@@ -16,10 +16,10 @@
  *
  * R-31-14: explicit discriminators, never empty($content).
  *
- * NO-INLINE (contract §A, 2026-07-09): color/__experimentalBorder both declare
- * __experimentalSkipSerialization in block.json (tab has no spacing/typography
- * supports). Width/padding stay the wrapper's own scoped mechanism ('content'
- * kind). This block owns emitting its WP color + border supports into ITS OWN
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * Width/padding stay the wrapper's own scoped mechanism ('content' kind).
+ * This block owns emitting its WP color + border supports into ITS OWN
  * scoped `.{uid}` <style> (composite caveat — must NOT ride through the
  * wrapper's `extra_styles`, which inlines). Mirrors sgs/hero + sgs/tabs.
  * Because the panel's own `id` is reserved for the ARIA panel_id (consumed by
@@ -87,10 +87,10 @@ if ( '' !== $tab_preset_bg_slug ) {
 	$extra_classes[] = 'has-' . $tab_preset_bg_slug . '-background-color';
 }
 
-// ─── WP-native color / border supports — no-inline contract (§A) ─────────────
-// Read the resolved values from $attributes['style'] (still populated — skip-
-// serialisation only stops the AUTO-INLINE) and emit into THIS TAB'S OWN
-// scoped <style> via the stable core API. Mirrors sgs/hero + sgs/tabs.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] and emit into THIS
+// TAB'S OWN scoped <style> via the stable core API. Mirrors sgs/hero + sgs/tabs.
 $tab_responsive_css = '';
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$tab_style_engine_args = array();

@@ -13,9 +13,10 @@
  * Menu source: the shared SGS_Nav_Menu_Source resolver (one-source rule,
  * Spec 36 FR-36-1) — the SAME resolver the drawer content uses.
  *
- * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline CSS property
- * declarations. Colour / hover / typography / featured styling are emitted
- * into this block's own scoped <style> (custom-property VALUES / var()
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Colour / hover / typography / featured styling are emitted into
+ * this block's own scoped <style> (custom-property VALUES / var()
  * references only ride inline, and only inside the wrapper's own mechanism).
  *
  * `aria-current="page"` is intentionally NOT computed here — the stack sits

@@ -3,10 +3,10 @@
  * Server-side render for the SGS Decorative Image block.
  *
  * Outputs an absolute-positioned image. Positioning, rotation, opacity, and
- * z-index are emitted into the block's OWN scoped `<style>` tag — NOTHING is
- * emitted as an inline `style="property:…"` declaration on the rendered
- * element (no-inline styling contract, Spec 32 /
- * `.claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md`).
+ * z-index are emitted into the block's OWN scoped `<style>` tag.
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * Scoping: this block declares `supports.anchor` — the scope token is
  * therefore a CLASS (`.sgs-di-XXXXXXXX`), never an id, so it can never

@@ -19,8 +19,8 @@
  * @var string   $content    Inner block content (unused — dynamic block).
  * @var \WP_Block $block     Block instance (passed to SGS_Container_Wrapper for uid derivation).
  *
- * NO-INLINE (contract §A, 2026-07-09): color + __experimentalBorder are declared
- * with __experimentalSkipSerialization in block.json. field_open() (shared helper,
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * field_open() (shared helper,
  * off-limits to edit — used by every other form-field-* block) never calls
  * get_block_wrapper_attributes(), so these supports were never auto-inlined onto
  * its div in the first place; they were dead controls. This migration wires them:

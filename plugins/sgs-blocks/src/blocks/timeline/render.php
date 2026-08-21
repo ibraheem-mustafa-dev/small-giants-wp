@@ -6,13 +6,7 @@
  * Vertical and horizontal orientations supported. When revealOnScroll is
  * false, all entries are pre-revealed (is-revealed baked in, no JS dep).
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-10):
- * the block-private LEAF pattern (mirrors sgs/label/sgs/quote). The rendered
- * `<ol>` root AND every descendant carry ZERO inline CSS property
- * declarations — every declaration is emitted into the block's OWN scoped
- * `.{uid}` <style> tag. The `color`/`typography`/`spacing`/`shadow`/
- * `__experimentalBorder` WP supports all declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. Block-private LEAF pattern (mirrors sgs/label/sgs/quote).
  * The `--sgs-connector-colour` / `--sgs-date-colour` / `--sgs-reveal-stagger`
  * custom-property VALUES route to the scoped `.{uid}` rule like everything
  * else — inline `--var` was FORBIDDEN by the FR-32-4 amendment (2026-07-18,

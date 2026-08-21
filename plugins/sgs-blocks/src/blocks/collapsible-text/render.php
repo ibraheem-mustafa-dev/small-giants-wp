@@ -21,12 +21,10 @@
  * Typography: sgs_typography_css_rule() (includes/helpers-typography.php)
  * emits a scoped <style> block for font-size/weight/style/line-height.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
- * the rendered wrapper carries ZERO inline CSS property declarations. The
- * `color`/`spacing` WP supports declare `__experimentalSkipSerialization` in
- * block.json so get_block_wrapper_attributes() never auto-inlines them; every
- * declaration is emitted into the block's OWN scoped `.{uid}` <style> tag via
- * the stable core API `wp_style_engine_get_styles()`.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * Every declaration is emitted into the block's OWN scoped `.{uid}` <style>
+ * tag via the stable core API `wp_style_engine_get_styles()`.
  *
  * BOX-GROUP (contract §B): `padding`/`margin` are the WP-native
  * `style.spacing.padding`/`margin` objects (already `{top,right,bottom,left}`

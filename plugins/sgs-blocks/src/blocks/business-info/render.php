@@ -388,16 +388,11 @@ if ( '' === $html && ! $sgs_is_editor_render ) {
 }
 
 // ---------------------------------------------------------------------------
-// NO-INLINE (per-block no-inline migration contract §A, 2026-07-10): the
-// rendered subtree carries ZERO inline CSS property declarations. The colour
-// bridge (--sgs-bi-icon-colour/--sgs-bi-text-colour/--sgs-bi-label-colour,
-// consumed by style.css) and the WP `spacing`/`color`/`typography` supports
-// (all three declare __experimentalSkipSerialization in block.json so
-// get_block_wrapper_attributes() never auto-inlines them) are all emitted
-// into the block's own scoped
-// `.{uid}` <style> tag instead. This is a content-KIND single-container
-// block (box+width only, no grid/section machinery) — block-private per the
-// D294 pattern, mirroring sgs/heading's mechanism.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+// --check. This is a content-KIND single-container block (box+width only,
+// no grid/section machinery) — block-private per the D294 pattern,
+// mirroring sgs/heading's mechanism.
 //
 // BOX-GROUP (contract §B): base padding/margin come from WP-native
 // style.spacing.* (skip-serialised, emitted scoped via the core style

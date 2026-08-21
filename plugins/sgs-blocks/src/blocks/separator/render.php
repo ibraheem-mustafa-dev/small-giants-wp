@@ -13,11 +13,9 @@
  *     it is structurally required to lay out two independent line segments
  *     either side of the content, which a single element cannot express.
  *
- * BLOCK-PRIVATE, NO-INLINE (contract §A/§B): the rendered subtree carries
- * ZERO inline CSS property declarations. The WP-native `spacing` support
- * (padding/margin) declares `__experimentalSkipSerialization` and is emitted
- * scoped via `wp_style_engine_get_styles()` (exactly how WP core outputs
- * `layout` support), alongside the paddingTablet/paddingMobile/marginTablet/
+ * BLOCK-PRIVATE. NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. The WP-native `spacing` support
+ * (padding/margin) is emitted scoped via `wp_style_engine_get_styles()` (exactly how WP core outputs `layout` support),
+ * alongside the paddingTablet/paddingMobile/marginTablet/
  * marginMobile object-attr tiers (contract §B2: @media 1023/767).
  *
  * The visible "line" is rendered as a `border-bottom` (NOT a background bar)

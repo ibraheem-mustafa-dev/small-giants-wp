@@ -8,16 +8,13 @@
  * the minimum number of times needed for seamless infinite scroll.
  * CSS @keyframes handles the animation on the GPU compositor thread.
  *
- * NO-INLINE, BLOCK-PRIVATE (LOCKED per-block no-inline migration contract
- * §A/§B, 2026-07-10): the rendered root `<div>` carries ZERO inline CSS
- * property declarations — every WP-native styling support (color/spacing/
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Every WP-native styling support (color/spacing/
  * __experimentalBorder) declares `__experimentalSkipSerialization` in
  * block.json, and every value is emitted scoped into the block's OWN
  * `.{uid}` <style> tag via the stable core API `wp_style_engine_get_styles()`
- * (exactly how WP core outputs `layout` support). A `--var: value` custom
- * property VALUE on the root (scroll speed, logo max-height, fade width,
- * hover colours, transition duration/easing) is a VALUE, not a property
- * declaration, so it stays on the element per contract §A.
+ * (exactly how WP core outputs `layout` support).
  *
  * BOX-GROUP (contract §B): padding/margin/border-radius are WP-native
  * `style.spacing.*` / `style.border.radius` objects (already object-shaped) —

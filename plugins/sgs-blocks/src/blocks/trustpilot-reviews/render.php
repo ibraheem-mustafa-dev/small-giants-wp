@@ -227,15 +227,12 @@ if ( '' !== $tp_preset_bg_slug ) {
 	$tp_extra_classes[] = 'has-' . $tp_preset_bg_slug . '-background-color';
 }
 
-// ── WP-native color / border supports — no-inline contract (§A). ──────────
-// block.json declares color/__experimentalBorder with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Read the resolved values from $attributes['style'] here and emit
-// them into this block's OWN scoped <style> (composite caveat, per the
-// migration contract: do NOT pass these as wrapper `extra_styles` — that
-// path inlines). This block declares no spacing/typography supports, so
-// only color + border are re-emitted here.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// this block's OWN scoped <style> (composite caveat: do NOT pass these as
+// wrapper `extra_styles` — that path inlines). This block declares no
+// spacing/typography supports, so only color + border are re-emitted here.
 $tp_responsive_css = '';
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$tp_style_engine_args = array();

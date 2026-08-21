@@ -9,13 +9,11 @@
  * Works without JS; enhanced with smooth animation via the parent
  * sgs/accordion viewScriptModule.
  *
- * NO-INLINE (contract §A, 2026-07-10): block.json declares color +
- * __experimentalBorder with __experimentalSkipSerialization so
- * get_block_wrapper_attributes() (called inside SGS_Container_Wrapper::render()
- * below) never auto-inlines them. The header text/background colour + the
- * open/close icon colour — both formerly inline `style="…"` attributes sourced
- * from parent block context — are now emitted as scoped rules in this item's
- * OWN `.{uid}` <style> tag (was: per-element inline style attrs).
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * The header text/background colour + the open/close icon colour — both
+ * formerly inline `style="…"` attributes sourced from parent block context —
+ * are now emitted as scoped rules in this item's OWN `.{uid}` <style> tag.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks.
@@ -92,7 +90,8 @@ if ( '' !== $sgs_ai_stroke_grad['css'] ) {
 	$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open svg,' . $root_sel . ' .sgs-accordion-item__icon-close svg{' . $sgs_ai_stroke_grad['css'] . '}';
 }
 
-// WP-native color / border supports — no-inline contract (§A).
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$style_engine_args = array();
 

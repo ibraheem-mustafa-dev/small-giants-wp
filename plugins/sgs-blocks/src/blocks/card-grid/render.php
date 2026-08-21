@@ -99,15 +99,13 @@ $query_category      = absint( $attributes['queryCategory'] ?? 0 );
 $uid      = 'sgs-cg-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-card-grid';
 
-// ── WP-native color / border / typography / shadow supports — no-inline
-// contract. block.json declares color/typography/spacing/__experimentalBorder/
-// shadow ALL with __experimentalSkipSerialization:true, so
-// get_block_wrapper_attributes() (called inside SGS_Container_Wrapper::render())
-// never auto-inlines them. Read the resolved values from $attributes['style']
-// here and emit them into THIS block's OWN scoped <style> (composite caveat —
-// do NOT pass these as wrapper `extra_styles`, that path inlines). Base
-// spacing (padding/margin) is a separate mechanism the wrapper already
-// handles scoped internally — not duplicated here.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+// --check. Values are read from $attributes['style'] and emitted into THIS
+// block's OWN scoped <style> (composite caveat — do NOT pass these as
+// wrapper `extra_styles`, that path inlines). Base spacing (padding/margin)
+// is a separate mechanism the wrapper already handles scoped internally —
+// not duplicated here.
 $card_grid_native_css = '';
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$cg_style_engine_args = array();

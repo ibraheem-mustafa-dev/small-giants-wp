@@ -20,13 +20,11 @@
  * pattern as sgs/button + sgs/heading + sgs/text.
  *
  * The <blockquote> IS the block root (single semantic element, no wrapper div,
- * §B3), built via get_block_wrapper_attributes(). The rendered subtree carries
- * ZERO inline CSS property declarations — every declaration (outer box/border/
- * background/shadow/width, the WP color/typography supports, AND the
- * attribution slot's typography) is emitted into the block's OWN scoped
- * `.{uid}` <style> tag. WP styling supports (color/typography/spacing/
- * __experimentalBorder) all declare `__experimentalSkipSerialization` in
- * block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * §B3), built via get_block_wrapper_attributes().
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * Because the root element also carries the anchor `id` (ToC), the scoped uid
  * is a CLASS (`sgs-quote-{md5}`, container/heading-style), never an `id`, to

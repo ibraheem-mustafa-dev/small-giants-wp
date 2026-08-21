@@ -11,13 +11,11 @@
  * sgs/heading + sgs/button + sgs/text.
  *
  * The <nav> IS the block root (single semantic element, no wrapper div, §B3),
- * built via get_block_wrapper_attributes(). The rendered subtree carries ZERO
- * inline CSS property declarations — every declaration (base padding/margin,
- * WP color/typography supports, AND the SGS link/separator/current colour
- * custom-property values) is emitted into the block's OWN scoped `.{uid}`
- * <style> tag. WP styling supports (color/typography/spacing) all declare
- * `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines them.
+ * built via get_block_wrapper_attributes().
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * The scoped uid is a CLASS (`sgs-bcr-{md5}`, container/heading/quote-style),
  * never an `id`, so the element's single `id` attribute stays free for the

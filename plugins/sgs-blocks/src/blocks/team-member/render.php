@@ -12,19 +12,10 @@
  * sgs/quote + sgs/button + sgs/heading + sgs/text (D294).
  *
  * The root <div> IS the block root, built via get_block_wrapper_attributes().
- * The rendered subtree carries ZERO inline CSS property declarations —
- * every declaration (base padding/margin/border/radius, the WP color/
- * typography supports, tablet/mobile box tiers, maxWidth, and
- * the per-element nameColour/roleColour) is emitted into the block's OWN
- * scoped `.{uid}` <style> tag. WP styling supports (color/typography/
- * spacing/__experimentalBorder) all declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
  *
- * Hover transition/scale/shadow custom properties (--sgs-*) are emitted into
- * the block's OWN scoped `.{uid}` <style> rule, NOT as an inline style
- * attribute on the root (post-D345 contract, class-sgs-container-wrapper.php
- * ~L1081-1082). The static hover rules in style.css read these vars via
- * var(), unaffected by which channel emits the declaration.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * Social links are driven by the socialLinks scalar attribute (array of
  * {platform, url} objects) — NOT InnerBlocks. This block is a pure typed leaf:

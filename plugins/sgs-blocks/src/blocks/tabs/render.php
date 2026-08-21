@@ -10,13 +10,14 @@
  * from the inner sgs/tab child blocks. Handles deep linking via data attributes
  * consumed by view.js.
  *
- * NO-INLINE (contract §A, 2026-07-09): color/spacing/__experimentalBorder all
- * declare __experimentalSkipSerialization in block.json. Base spacing/border-
- * radius/max-width/grid stay the WRAPPER's own scoped mechanism (SGS_Container_
- * Wrapper already emits those scoped internally — do NOT duplicate here). This
- * block owns emitting its WP color + border supports into ITS OWN scoped
- * `.{uid}` <style> (composite caveat: these must NOT ride through the wrapper's
- * `extra_styles`, which inlines). Mirrors sgs/hero exactly.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Base spacing/border-radius/max-width/grid stay the WRAPPER's own
+ * scoped mechanism (SGS_Container_Wrapper already emits those scoped
+ * internally — do NOT duplicate here). This block owns emitting its WP color
+ * + border supports into ITS OWN scoped `.{uid}` <style> (composite caveat:
+ * these must NOT ride through the wrapper's `extra_styles`, which inlines).
+ * Mirrors sgs/hero exactly.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (not used — we render manually).

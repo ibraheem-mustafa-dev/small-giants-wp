@@ -161,10 +161,10 @@ if ( 'draw-on-load' === $animation_style ) {
 }
 
 // ── No-inline scoped box CSS (padding/margin, base + tablet/mobile tiers) ────
-// uid is a CLASS (matches sgs/heading/sgs/container/sgs/label scoped pattern);
-// the root's ONLY inline declaration remains the pre-existing var-only
-// `--logo-width` custom property (allowed by the no-inline contract — CSS
-// custom-property VALUES are not property declarations).
+// uid is a CLASS (matches sgs/heading/sgs/container/sgs/label scoped pattern).
+// The root carries NO inline declaration at all: `--logo-width` moved into the
+// scoped uid-class rule below at D345 (see the emit a few lines down, and the
+// note near the end of this file).
 
 $uid      = 'sgs-rl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sel      = '.' . $uid . '.wp-block-sgs-responsive-logo';

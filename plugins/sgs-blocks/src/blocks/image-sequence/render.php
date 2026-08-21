@@ -14,9 +14,10 @@
  *      ScrollTrigger + `@sgs/fx-image-sequence` — no per-block view module
  *      is registered (mirrors `sgs/responsive-logo`'s DrawSVG wiring).
  *
- * No inline CSS property declarations (Spec 32): `aspectRatio` is a
- * per-instance value, so it is emitted into the block's OWN scoped `<style>`
- * tag rather than a `style="aspect-ratio:…"` attribute.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * `aspectRatio` is a per-instance value, so it is emitted into the block's
+ * OWN scoped `<style>` tag rather than a `style="aspect-ratio:…"` attribute.
  *
  * Frame source config (resolution ladder + filename convention) is passed to
  * the runtime as a JSON blob in `data-sgs-image-sequence-frames` — the same

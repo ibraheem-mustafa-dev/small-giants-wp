@@ -2,12 +2,7 @@
 /**
  * Server-side render for the SGS WhatsApp CTA block.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract, 2026-07-10):
- * the rendered subtree carries ZERO inline CSS property declarations. Button
- * colour/background and every wrapper box/border declaration are emitted
- * into the block's own scoped `.{uid}` <style> tag. WP styling supports
- * (spacing / __experimentalBorder) declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  * (`color` support is declared false/false — inert; skip-serialised too for
  * forward-compat, but no native colour is ever emitted by it.)
  *

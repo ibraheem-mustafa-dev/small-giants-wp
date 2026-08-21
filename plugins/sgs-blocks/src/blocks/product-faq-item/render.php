@@ -9,18 +9,15 @@
  * to build the FAQPage JSON-LD, so structured data always mirrors what the
  * visitor sees (anti-cloaking). UNCHANGED by this migration.
  *
- * NO-INLINE, BLOCK-PRIVATE, NO-WRAPPER (per-block no-inline migration
- * contract §A/§B/§B3, 2026-07-10): this block never used
- * SGS_Container_Wrapper — it already called get_block_wrapper_attributes()
- * directly on the <details> root. The <details> root carries ZERO inline CSS
- * property declarations — WP colour + border supports declare
- * `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() no longer auto-inlines them; every
- * declaration is emitted into the block's OWN scoped `.{uid}` <style> tag via
- * `wp_style_engine_get_styles()` (matches sgs/quote + sgs/brand-strip).
- * Border is passed WHOLESALE (radius/width/colour/style — this block declares
- * full native border support, not just radius), so no sub-property is
- * silently dropped by the skip-serialisation flip.
+ * BLOCK-PRIVATE, NO-WRAPPER: this block never used SGS_Container_Wrapper —
+ * it already called get_block_wrapper_attributes() directly on the
+ * <details> root.
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Border is passed WHOLESALE (radius/width/colour/style — this
+ * block declares full native border support, not just radius), so no
+ * sub-property is silently dropped by the skip-serialisation flip.
  *
  * Dead `contentWidth`/`maxWidth` attrs REMOVED from block.json (2026-07-10):
  * neither was ever read here or in edit.js — no editor control existed for

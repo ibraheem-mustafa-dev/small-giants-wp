@@ -15,12 +15,8 @@
  * threshold is met (it does not depend on JS to appear). view.js only wires
  * the filtering interaction.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract, 2026-07-10): the
- * rendered wrapper carries ZERO inline CSS property declarations. `margin`
- * is a WP-native style.spacing.margin object; `spacing` declares
- * `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines it — it is instead
- * emitted scoped via wp_style_engine_get_styles() into this block's own
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. `margin`
+ * is a WP-native style.spacing.margin object, emitted scoped via wp_style_engine_get_styles() into this block's own
  * `.{uid}` <style> tag. marginTablet / marginMobile are SGS custom object
  * attrs (not WP-native), scoped @media(max-width:1023px)/767px on the same
  * selector.

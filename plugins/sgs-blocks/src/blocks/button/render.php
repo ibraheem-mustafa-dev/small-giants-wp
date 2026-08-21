@@ -75,9 +75,8 @@ $has_explicit_aria = isset( $attributes['ariaLabel'] ) && '' !== trim( (string) 
 // Icon.
 $icon          = isset( $attributes['icon'] ) ? sanitize_text_field( $attributes['icon'] ) : '';
 $icon_position = isset( $attributes['iconPosition'] ) ? sanitize_text_field( $attributes['iconPosition'] ) : 'after';
-// iconSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — one attr holding
-// {desktop,tablet,mobile}; the iconSizeTablet/iconSizeMobile sibling attrs are
-// no longer declared by block.json, so reading them directly would read nothing.
+// iconSize is a TIER OBJECT (Spec 35) — one attr holding {desktop,tablet,mobile}.
+// ⛔ There are no iconSizeTablet/iconSizeMobile attrs; reading them reads nothing.
 $icon_size_obj = sgs_responsive_normalise_object( $attributes['iconSize'] ?? null );
 $icon_size     = null !== $icon_size_obj['desktop'] ? absint( $icon_size_obj['desktop'] ) : null;
 $icon_size_tab = null !== $icon_size_obj['tablet'] ? absint( $icon_size_obj['tablet'] ) : null;
@@ -90,10 +89,9 @@ $icon_title    = isset( $attributes['iconTitle'] ) ? esc_html( $attributes['icon
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
 
 // Width.
-// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
-// migration, 2026-08-11) — each ONE attr holding {desktop,tablet,mobile}; the
-// old …Tablet/…Mobile sibling attrs are no longer declared by block.json.
-// '' (tablet/mobile) = inherit desktop, matching the pre-migration sentinel.
+// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35) — each ONE
+// attr holding {desktop,tablet,mobile}. '' on tablet/mobile = inherit desktop.
+// ⛔ There are no …Tablet/…Mobile sibling attrs; reading them reads nothing.
 $width_type_obj        = sgs_responsive_normalise_object( $attributes['widthType'] ?? null );
 $width_type            = null !== $width_type_obj['desktop'] ? sanitize_text_field( $width_type_obj['desktop'] ) : 'fit';
 $custom_width_obj      = sgs_responsive_normalise_object( $attributes['customWidth'] ?? null );
@@ -110,7 +108,7 @@ $custom_width_tab   = null !== $custom_width_obj['tablet'] ? absint( $custom_wid
 $custom_width_mob   = null !== $custom_width_obj['mobile'] ? absint( $custom_width_obj['mobile'] ) : null;
 $custom_width_tab_u = '%' === ( $custom_width_unit_obj['tablet'] ?? '' ) ? '%' : 'px';
 $custom_width_mob_u = '%' === ( $custom_width_unit_obj['mobile'] ?? '' ) ? '%' : 'px';
-// minHeight is a TIER OBJECT (Spec 35 migration, 2026-08-11) — {desktop,
+// minHeight is a TIER OBJECT (Spec 35) — {desktop,
 // tablet,mobile}; the old …Tablet/…Mobile sibling attrs are no longer
 // declared by block.json. minHeightUnit/minHeightTabletUnit/minHeightMobileUnit
 // are a SEPARATE, still-flat family (each tier's own unit) — untouched here,
@@ -196,7 +194,7 @@ $font_weight     = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $at
 $font_style_attr = isset( $attributes['fontStyle'] ) ? sgs_css_keyword_sanitise( $attributes['fontStyle'] ) : 'normal';
 $text_transform  = isset( $attributes['textTransform'] ) ? sgs_css_keyword_sanitise( $attributes['textTransform'] ) : '';
 $text_decoration = isset( $attributes['textDecoration'] ) ? sgs_css_keyword_sanitise( $attributes['textDecoration'] ) : '';
-// fontSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — same shape as
+// fontSize is a TIER OBJECT (Spec 35) — same shape as
 // lineHeight/letterSpacing below; the old …Tablet/…Mobile sibling attrs are
 // no longer declared by block.json.
 $font_size_obj  = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
@@ -204,9 +202,9 @@ $font_size      = null !== $font_size_obj['desktop'] ? (float) $font_size_obj['d
 $font_size_tab  = null !== $font_size_obj['tablet'] ? (float) $font_size_obj['tablet'] : null;
 $font_size_mob  = null !== $font_size_obj['mobile'] ? (float) $font_size_obj['mobile'] : null;
 $font_size_unit = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
-// lineHeight / letterSpacing are TIER OBJECTS (Spec 35 migration, 2026-08-11)
+// lineHeight / letterSpacing are TIER OBJECT (Spec 35)
 // — each ONE attr holding {desktop,tablet,mobile}; the old …Tablet/…Mobile
-// sibling attrs are no longer declared by block.json. The *Unit attrs were
+// sibling attrs are not declared by block.json. The *Unit attrs were
 // NOT part of this migration and stay flat/shared across tiers.
 $line_height_obj  = sgs_responsive_normalise_object( $attributes['lineHeight'] ?? null );
 $line_height      = null !== $line_height_obj['desktop'] ? (float) $line_height_obj['desktop'] : null;
@@ -261,8 +259,8 @@ $colour_border_hover      = isset( $attributes['colourBorderHover'] ) ? $attribu
 $colour_border_gradient       = isset( $attributes['colourBorderGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderGradient'] ) : '';
 $colour_border_hover_gradient = isset( $attributes['colourBorderHoverGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderHoverGradient'] ) : '';
 
-// WP-native `color` support (skip-serialised — Spec 32 no-inline contract):
-// get_block_wrapper_attributes() no longer auto-inlines these, but
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 // $attributes['style']['color'] / textColor / backgroundColor are still
 // populated by core when an operator (or a clone) sets a colour via the
 // native Styles panel. Custom hex/rgb values are emitted into the block's
@@ -718,9 +716,10 @@ if ( $icon ) {
 			);
 		}
 
-		// Icon size + resting colour are CLIENT controls, but they must NOT
-		// serialise as inline property declarations (no-inline contract,
-		// Spec 32). Route them to the block's own scoped <style> (emitted at
+		// Icon size + resting colour are CLIENT controls. NO-INLINE: this
+		// block emits zero inline style property declarations. Contract +
+		// mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+		// --check. Route them to the block's own scoped <style> (emitted at
 		// step-4 below), mirroring the hover-icon-colour rule above. When no
 		// explicit size is set, style.css's `.sgs-button__icon svg{width:1em}`
 		// default already applies — so the size path emits nothing.

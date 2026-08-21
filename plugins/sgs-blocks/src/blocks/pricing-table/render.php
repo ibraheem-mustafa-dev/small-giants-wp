@@ -382,15 +382,13 @@ foreach ( $plans as $plan_index => $plan ) {
 	);
 }
 
-// ── WP-native color / border / typography supports — no-inline contract (§A). ──
-// block.json declares color/typography/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Read the resolved values from $attributes['style'] here and emit
-// them into THIS BLOCK'S OWN scoped <style> (composite caveat, mirrors
-// sgs/hero: do NOT pass these as wrapper `extra_styles` — that path
-// inlines). Base spacing (padding/margin) is a SEPARATE mechanism the
-// wrapper already handles scoped internally — not duplicated here.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// THIS BLOCK'S OWN scoped <style> (composite caveat, mirrors sgs/hero: do NOT
+// pass these as wrapper `extra_styles` — that path inlines). Base spacing
+// (padding/margin) is a SEPARATE mechanism the wrapper already handles
+// scoped internally — not duplicated here.
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$pt_style_engine_args = array();
 

@@ -14,13 +14,14 @@
  *
  * R-31-14: explicit discriminators, never empty($content).
  *
- * NO-INLINE (contract §A, 2026-07-09): color + __experimentalBorder declare
- * __experimentalSkipSerialization in block.json (spacing already did). The
- * wrapper handles base padding scoped internally; color/border are block-
- * private here (mirrors sgs/container's render.php pattern exactly) — the
- * values are extracted from $attributes['style'], emitted into a scoped
- * `<style>` keyed to a content-hash uid CLASS, and the uid + re-added preset
- * has-* classes ride into the wrapper via the existing `extra_classes` opt.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. The wrapper handles base padding scoped internally; color/border
+ * are block-private here (mirrors sgs/container's render.php pattern
+ * exactly) — the values are extracted from $attributes['style'], emitted
+ * into a scoped `<style>` keyed to a content-hash uid CLASS, and the uid +
+ * re-added preset has-* classes ride into the wrapper via the existing
+ * `extra_classes` opt.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.

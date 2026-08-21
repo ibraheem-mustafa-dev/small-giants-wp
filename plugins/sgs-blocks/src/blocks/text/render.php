@@ -7,10 +7,8 @@
  * sgs/button: base padding/margin/border-radius route to WP-native
  * style.spacing.* / style.border.radius (skipSerialization — never
  * auto-inlined); border-width is an SGS custom object attr `borderWidth`
- * (base only, no tiers). Every plain CSS declaration is emitted in an
- * id-scoped <style> block, never as an inline style="" attribute (Spec 32
- * no-inline styling contract) — tablet/mobile margin/padding overrides stay
- * flat per-side attrs for this block (contract exception: base only migrates
+ * (base only, no tiers). NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * Tablet/mobile margin/padding overrides stay flat per-side attrs for this block (contract exception: base only migrates
  * to the object model; the tiers were not merged).
  *
  * Responsive per-viewport overrides are emitted as a scoped <style> block
@@ -164,7 +162,7 @@ $custom_width_unit = $attributes['customWidthUnit'] ?? 'px';
 // Inherit-style escape hatch.
 $inherit_style = ! empty( $attributes['inheritStyle'] );
 
-// FIX C (P-HEADING-TRANSITION-ATTRS 2026-05-17): configurable hover transition.
+// Configurable hover transition.
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
 $transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
@@ -179,7 +177,7 @@ if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
 	return;
 }
 
-// FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set.
+// Full CSS border-style set.
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 if ( ! in_array( $border_style, $allowed_border_styles, true ) ) {
 	$border_style = 'none';
@@ -190,9 +188,8 @@ $allowed_units     = array( 'px', 'em', 'rem', '%', 'vw', 'vh' );
 $custom_width_unit = in_array( $custom_width_unit, $allowed_units, true ) ? $custom_width_unit : 'px';
 
 // ---------------------------------------------------------------------------
-// 4. Box-object interface contract / Spec 32 no-inline styling: every plain
-// CSS declaration below is emitted in the id-scoped <style> block (step 6),
-// NEVER as an inline style="" attribute. When inheritStyle is true, suppress
+// 4. NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// When inheritStyle is true, suppress
 // all block-default styles and emit only the wrapper element — the theme/
 // parent cascade takes over.
 // ---------------------------------------------------------------------------
@@ -200,7 +197,7 @@ $custom_width_unit = in_array( $custom_width_unit, $allowed_units, true ) ? $cus
 // Early-return path for inheritStyle — emit a bare element with class only.
 if ( $inherit_style ) {
 	$anchor = $attributes['anchor'] ?? '';
-	// FIX D: hash-based id (stable across fragment-cached renders).
+	// Hash-based id (stable across fragment-cached renders).
 	$uid          = $anchor ? esc_attr( $anchor ) : 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 	$wrapper_args = array( 'class' => 'wp-block-sgs-text' );
 	if ( $anchor ) {
@@ -312,7 +309,7 @@ if ( $box_shadow ) {
 
 $anchor = $attributes['anchor'] ?? '';
 if ( ! $anchor ) {
-	// FIX D (P-WP-UNIQUE-ID-CACHE-COLLISION 2026-05-17): content-derived hash —
+	// Content-derived hash —
 	// stable across fragment-cached renders. Same attrs → same id on every request.
 	$anchor = 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 }
@@ -523,7 +520,7 @@ if ( $has_hover ) {
 	}
 
 	if ( $hover_decls ) {
-		// FIX C: operator-supplied duration + easing replace the hardcoded 200ms/ease.
+		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
 		$css_hover  = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
 		$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
 		$css_hover .= sgs_text_colour_gradient_fallback_rule( $scope . ':hover,' . $scope . ':focus-visible', $hover_colour_effective );
@@ -562,7 +559,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 // ---------------------------------------------------------------------------
 // 8. Output.
 //
-// FIX E audit (P-WP-AUTOP-INTERACTION 2026-05-17):
+// 
 // wpautop() is hooked to 'the_content' filter (priority 10). Block render output
 // does NOT pass through 'the_content' — WordPress calls render_block() before the
 // filter chain, and render_block output is stitched back into the already-filtered

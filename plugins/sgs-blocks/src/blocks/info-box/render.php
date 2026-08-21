@@ -7,22 +7,20 @@
  * echoes $content (InnerBlocks) for all card content — icon/media, heading,
  * subtitle, text body, and button.
  *
- * NO-INLINE, BLOCK-PRIVATE, NO-SGS-CONTAINER-WRAPPER (LOCKED per-block no-inline
- * migration contract §A/§B/§B3, 2026-07-10; matches the D294 content-KIND
+ * BLOCK-PRIVATE, NO-SGS-CONTAINER-WRAPPER (matches the D294 content-KIND
  * composite pattern proven on sgs/quote): sgs/info-box is CONTENT-kind (box +
  * width only) — it never used the shared wrapper's grid/section/background/
  * overlay/SVG/shape machinery (its own card background/border/shadow ride on
  * the static `sgs-info-box--{cardStyle}` BEM classes in style.css, and its
  * content is InnerBlocks-only), so `SGS_Container_Wrapper::render()` was
  * dropped. The block's OWN root `<div>` is built directly via
- * `get_block_wrapper_attributes()`; ALL styling support declarations
- * (color/typography/spacing/__experimentalBorder/shadow) now carry
- * `__experimentalSkipSerialization: true` and are emitted into the block's OWN
- * scoped `.{uid}` <style> tag via `wp_style_engine_get_styles()` (the exact
+ * `get_block_wrapper_attributes()`.
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Values are emitted via `wp_style_engine_get_styles()` (the exact
  * wholesale-passthrough pattern already proven on sgs/container's no-inline
- * residual + sgs/process-steps + sgs/timeline) — nothing lands in the rendered
- * root's `style="…"` attribute except `--var:value` custom-property VALUES
- * (hover colours + transition timing, contract §A allows these).
+ * residual + sgs/process-steps + sgs/timeline).
  *
  * BOX-GROUP (contract §B): base padding/margin = WP-native style.spacing.*
  * objects (skip-serialised, emitted scoped); tiers = paddingTablet/

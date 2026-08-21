@@ -8,16 +8,8 @@
  * Uses WordPress's block parser for reliable heading extraction
  * rather than raw regex on post_content.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-10):
- * the rendered `<nav>` root and every descendant carry ZERO inline CSS
- * property declarations. Every declared WP styling support
- * (`color`/`typography`/`spacing`/`__experimentalBorder`) carries
- * `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines them; this file reads
- * the resolved values from `$attributes['style'][...]` (still populated by
- * WP) and emits them into the block's OWN scoped `.{uid}` <style> tag via
- * the stable core API `wp_style_engine_get_styles()` — exactly how WP core
- * outputs `layout` support (mirrors sgs/label + sgs/media).
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * Uses wp_style_engine_get_styles() to build the scoped output — exactly how WP core outputs `layout` support (mirrors sgs/label + sgs/media).
  *
  * BOX-GROUP (contract §B): base padding/margin/border-radius are the
  * WP-native `style.spacing.padding` / `style.spacing.margin` /

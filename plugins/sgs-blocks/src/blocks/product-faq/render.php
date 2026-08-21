@@ -8,22 +8,18 @@
  * sgs/product-faq block instances appear on the same page (spec: one FAQPage
  * per page, all Q&A in a single mainEntity array, sibling of Product JSON-LD).
  *
- * NO-INLINE, BLOCK-PRIVATE, NO-WRAPPER (per-block no-inline migration contract
- * §A/§B/§B3, 2026-07-10): sgs/product-faq is CONTENT-kind (box + width only)
- * — it never used SGS_Container_Wrapper's grid/section/background/overlay
- * machinery (content-kind gates gap/band-tier CSS off entirely — see
+ * BLOCK-PRIVATE, NO-WRAPPER: sgs/product-faq is CONTENT-kind (box + width
+ * only) — it never used SGS_Container_Wrapper's grid/section/background/
+ * overlay machinery (content-kind gates gap/band-tier CSS off entirely — see
  * class-sgs-container-wrapper.php), so the wrapper was dead weight for this
  * block. Converter CSS routing keys on block_attributes by block_slug
  * (block.json-derived), not on wraps_block/container_kind, so dropping the
  * wrapper does not affect cloning (same reasoning as sgs/quote, D294).
  *
  * The `<section>` IS the block root, built via get_block_wrapper_attributes().
- * The rendered subtree carries ZERO inline CSS property declarations — every
- * declaration (WP color/typography/spacing/border supports) is emitted into
- * the block's OWN scoped `.{uid}` <style> tag via the stable core style-engine
- * API `wp_style_engine_get_styles()`. WP styling supports all declare
- * `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
- * never auto-inlines them.
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * BOX-GROUP: base padding/margin/border-radius/border-width/border-color/
  * border-style = WP-native style.spacing / style.border objects (emitted

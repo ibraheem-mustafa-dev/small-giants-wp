@@ -390,10 +390,8 @@ echo Grid_Pagination::render(
 $inner_html = ob_get_clean();
 
 // -------------------------------------------------------------------------
-// No-inline contract (Spec 32): block.json declares color/typography/spacing/
-// __experimentalBorder ALL with __experimentalSkipSerialization:true, so
-// get_block_wrapper_attributes() (called inside SGS_Container_Wrapper::render()
-// below) never auto-inlines them. Read the resolved values from
+// NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from
 // $attributes['style'] here and emit them into POST-GRID'S OWN scoped <style>
 // (composite caveat: do NOT pass these as wrapper `extra_styles` — that path
 // inlines). Base spacing (padding/margin) is a SEPARATE mechanism the wrapper

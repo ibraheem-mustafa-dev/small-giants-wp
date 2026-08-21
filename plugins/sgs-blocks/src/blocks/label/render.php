@@ -12,11 +12,8 @@
  * already-published posts continue to round-trip via their stored save
  * HTML; only new (cv2-emitted) instances flow through this renderer.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
- * the rendered `<span>` carries ZERO inline CSS property declarations. Every
- * declaration is emitted into the block's OWN scoped `.{uid}` <style> tag.
- * The `color`/`spacing` WP supports declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * BOX-GROUP (contract §B): `padding` is a SGS custom object attr (this block
  * has no WP-native `spacing.padding` support — padding is pill-gated, so it

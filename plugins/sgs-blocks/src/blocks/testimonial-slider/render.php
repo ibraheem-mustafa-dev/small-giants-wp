@@ -15,16 +15,16 @@
  * attributes (read from $inner_block->parsed_block['attrs']) so structured
  * data is preserved without requiring the scalar testimonials array.
  *
- * NO-INLINE (contract §A, 2026-07-10): the rendered subtree carries ZERO inline
- * CSS property declarations. color/typography/spacing/__experimentalBorder all
- * declare __experimentalSkipSerialization in block.json; the block's own color
- * + typography values are emitted into THIS BLOCK'S OWN scoped `.{uid}` <style>
- * (composite caveat — mirrors sgs/hero — these do NOT ride through the shared
- * wrapper's `extra_styles`, which would inline them). Base spacing/border-radius/
- * max-width remain the wrapper's own scoped mechanism (unchanged). The transition
- * + hover-colour CSS custom-property VALUES ($css_vars below) are allowed inline
- * (a `--x:y` var value is not a property declaration) and continue to ride the
- * wrapper's `extra_styles`.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * The block's own color + typography values are emitted into THIS BLOCK'S
+ * OWN scoped `.{uid}` <style> (composite caveat — mirrors sgs/hero — these do
+ * NOT ride through the shared wrapper's `extra_styles`, which would inline
+ * them). Base spacing/border-radius/max-width remain the wrapper's own
+ * scoped mechanism (unchanged). The transition + hover-colour CSS
+ * custom-property VALUES ($css_vars below) are allowed inline (a `--x:y` var
+ * value is not a property declaration) and continue to ride the wrapper's
+ * `extra_styles`.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — we iterate inner_blocks directly).
@@ -104,7 +104,7 @@ if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-testimonial-slider--hover-' . esc_attr( $safe_hover_effect );
 }
 
-// ── Scoped-style uid (no-inline contract §A) ───────────────────────────────
+// ── Scoped-style uid (NO-INLINE contract — Spec 32) ─────────────────────────
 // Own uid, independent of the wrapper's internal responsive-CSS uid — used to
 // scope THIS BLOCK'S color/typography <style> below (mirrors sgs/hero). This
 // is a CLASS (contract §B3-style scoping) — the root also carries the WP
@@ -113,13 +113,11 @@ $uid      = 'sgs-testimonial-slider-' . substr( md5( wp_json_encode( $attributes
 $root_sel = '.' . $uid . '.wp-block-sgs-testimonial-slider';
 $classes[] = $uid;
 
-// ── Own WP-native color/typography/border supports — no-inline contract (§A). ──
-// block.json declares color/typography/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Read the resolved values from $attributes['style'] here and emit them
-// into THIS BLOCK'S OWN scoped <style> (composite caveat — do NOT pass these
-// as wrapper `extra_styles`, that path inlines). Base spacing/border-radius/
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// THIS BLOCK'S OWN scoped <style> (composite caveat — do NOT pass these as
+// wrapper `extra_styles`, that path inlines). Base spacing/border-radius/
 // max-width is a SEPARATE mechanism the wrapper already handles scoped
 // internally — not duplicated here.
 $slider_scoped_css = '';

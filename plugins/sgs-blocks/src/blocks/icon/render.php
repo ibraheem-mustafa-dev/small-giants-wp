@@ -21,19 +21,14 @@
  *   .sgs-icon__dashicon (dashicon span)
  *   .sgs-icon__emoji    (emoji span)
  *
- * NO-INLINE (per-block no-inline migration contract, 2026-07-10; ZERO-INLINE
- * amendment Spec 32 FR-32-4 / D345, 2026-07-18): the rendered subtree carries
- * ZERO inline `style="…"` of any kind — not even `--custom-property:value`
- * VALUES. Every custom property this block uses (--sgs-icon-size /
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Every custom property this block uses (--sgs-icon-size /
  * --sgs-icon-hover-* / --sgs-icon-outline-colour / --sgs-icon-shape-padding)
  * plus the two literal declarations (icon `color`, shape `background-color`)
- * all move into the block's own scoped `.{uid}.wp-block-sgs-icon` <style> tag,
- * alongside the skip-serialised WP `color`/`spacing` supports (base padding/
- * margin/colour — emitted via wp_style_engine_get_styles, matching
- * sgs/heading + sgs/button) and the paddingTablet/paddingMobile/
- * marginTablet/marginMobile tiers (scoped @media 1023/767). The block's root
- * `<div>` carries a `class` attribute only — no `style` key is ever passed to
- * `get_block_wrapper_attributes()`.
+ * all move into the block's own scoped `.{uid}.wp-block-sgs-icon` <style> tag.
+ * The block's root `<div>` carries a `class` attribute only — no `style` key
+ * is ever passed to `get_block_wrapper_attributes()`.
  *
  * `backgroundPadding` is a SINGLE uniform value, not a 4-side box family
  * (Spec 32 §6.1c) — it stays a scalar attribute, emitted into the scoped

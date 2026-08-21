@@ -19,25 +19,20 @@
  * Schema.org Review JSON-LD is emitted (gated by schemaEnabled) reading the
  * typed scalar attrs.
  *
- * BLOCK-PRIVATE, NO-INLINE, NO-WRAPPER (LOCKED per-block no-inline migration
- * contract §A/§B/§B3, 2026-07-09; ZERO-INLINE tightened 2026-07-18 per Spec 32
- * FR-32-4 as amended / D345 — inline `--var` VALUES are now FORBIDDEN too):
- * sgs/testimonial is a CONTENT-kind composite that only ever used the shared
- * wrapper's box+width machinery (WS-4 container-mirror = width/spacing only —
- * no grid/section/background/overlay), so SGS_Container_Wrapper is dropped —
- * the same block-private pattern proven on sgs/quote. The block's OWN root
- * `<div>` is built via get_block_wrapper_attributes(); the rendered root
- * carries NO `style="…"` attribute at all. Every declaration (native color/
- * typography/spacing/border/shadow supports, the outer width, every
- * per-element typography override, AND the hover/transition/scale/shadow/
- * stagger custom-property VALUES) is emitted into the block's OWN scoped
- * `.{uid}` <style> tag. Hover COLOUR shifts render as a scoped
+ * BLOCK-PRIVATE, NO-WRAPPER: sgs/testimonial is a CONTENT-kind composite that
+ * only ever used the shared wrapper's box+width machinery (WS-4
+ * container-mirror = width/spacing only — no grid/section/background/
+ * overlay), so SGS_Container_Wrapper is dropped — the same block-private
+ * pattern proven on sgs/quote. The block's OWN root `<div>` is built via
+ * get_block_wrapper_attributes().
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * Hover COLOUR shifts render as a scoped
  * `.{uid}.wp-block-sgs-testimonial:hover{…}` rule with real background-color/
  * color/border-color declarations — NOT a `[style*="--sgs-hover-*"]:hover`
  * presence-selector reading an inline var (D345 GOTCHA F; matches
- * sgs/info-box). WP styling supports all declare
- * `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines them.
+ * sgs/info-box).
  *
  * BOX-GROUP (contract §B): base padding/margin route to WP-native
  * style.spacing.* (skip-serialised, emitted scoped via the style engine);

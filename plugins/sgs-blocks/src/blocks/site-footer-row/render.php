@@ -62,12 +62,10 @@ if ( '' !== $slot_class ) {
 
 $css = '';
 
-// ── WP-native colour / border supports — no-inline contract (Spec 32). ──────────
-// block.json declares color/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes() (called
-// inside SGS_Container_Wrapper::render() below) never auto-inlines them. Read the
-// resolved values from $attributes['style'] and emit them into this block's own
-// scoped <style>. Mirrors sgs/site-header-row exactly.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] and emit them into this
+// block's own scoped <style>. Mirrors sgs/site-header-row exactly.
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$sfr_style_engine_args = array();
 

@@ -134,13 +134,11 @@ $css .= 'justify-content:' . $justify_content_mobile . ';';
 $css .= 'align-items:' . $align_items_mobile . ';';
 $css .= '}}';
 
-// NO-INLINE (2026-07-10, extended 2026-08-13 for spacing.margin): `color` +
-// `__experimentalBorder` + `spacing` supports are declared
-// `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render()) never auto-inlines them as a
-// `style="…"` attribute on the wrapper. Emit them scoped to the SAME
-// `#{uid}.sgs-multi-button` selector the flex CSS already targets, via the
-// stable core style engine (mirrors sgs/label's pattern).
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Emit them scoped to the SAME `#{uid}.sgs-multi-button` selector the flex
+// CSS already targets, via the stable core style engine (mirrors sgs/label's
+// pattern).
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$mb_color_border = array();
 	// D635-pattern migration: background/text now read from the flat
@@ -262,22 +260,19 @@ if ( isset( $attributes['childBtnFontWeight'] ) && '' !== $attributes['childBtnF
 // from sanitised scalars above or the output of wp_style_engine_get_styles().
 $mb_style = '<style>' . wp_strip_all_tags( $css ) . '</style>';
 
-// H6 fix (2026-07-05, proven live -- STOP-43): kind was 'layout', which also makes
-// SGS_Container_Wrapper emit ITS OWN display:flex / flex-wrap / align-items /
-// flex-direction (from the separate, non-responsive $attributes['flexDirection'])
-// as an INLINE style on this same wrapper element. An inline style always beats
-// the #uid.sgs-multi-button <style> rule above regardless of specificity or
-// @media, so whenever flexDirection is non-empty (e.g. set by the cloning
-// converter) it permanently pins flex-direction at every viewport, hiding this
-// block's own responsive direction/directionTablet/directionMobile system
-// entirely -- confirmed live on the hero CTAs (flex-direction:row at 375/768/
-// 1440 alike, never column). multi-button already fully owns display/flex-wrap/
-// gap/justify-content/align-items/flex-direction responsively above, so it does
-// not need the wrapper's grid/flex layer at all -- only the width/contentWidth
-// capability mirror. kind='content' keeps that (align/maxWidth/contentWidth +
-// padding/spacing -- an already-exercised pattern, e.g. sgs/quote, sgs/testimonial,
-// sgs/product-card) and drops the wrapper's flex/grid + duplicate-gap emission,
-// which multi-button never used. Zero shared-file edit.
+// ⛔ kind MUST stay 'content'. Do NOT set kind='layout' here (STOP-43).
+// 'layout' makes SGS_Container_Wrapper emit its own display:flex / flex-wrap /
+// align-items / flex-direction as an INLINE style on this same element, from the
+// separate non-responsive $attributes['flexDirection']. An inline style beats the
+// #uid.sgs-multi-button <style> rule above regardless of specificity or @media, so
+// a non-empty flexDirection (the cloning converter sets one) pins flex-direction at
+// every viewport and this block's own direction/directionTablet/directionMobile
+// system silently stops working — proven live on the hero CTAs, row at 375/768/1440
+// alike, never column.
+// 'content' is correct because multi-button already owns display/flex-wrap/gap/
+// justify-content/align-items/flex-direction responsively above and needs only the
+// width/contentWidth mirror (align/maxWidth/contentWidth + padding/spacing) — the
+// same pattern as sgs/quote, sgs/testimonial and sgs/product-card.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $mb_style CSS is wp_strip_all_tags()'d; SGS_Container_Wrapper::render() escapes its output internally; $content is WP-rendered inner blocks.
 echo $mb_style . SGS_Container_Wrapper::render(
 	$attributes,

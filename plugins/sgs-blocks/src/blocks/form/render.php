@@ -14,9 +14,8 @@
  *
  * R-31-14: explicit discriminators only — never branch on empty($content).
  *
- * NO-INLINE (contract §A, 2026-07-09): color/typography/spacing/
- * __experimentalBorder all declare __experimentalSkipSerialization in
- * block.json. The wrapper handles base+tier padding/margin scoped internally
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * The wrapper handles base+tier padding/margin scoped internally
  * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs, new
  * this migration — box-group contract §B). color/typography/border are
  * block-private (mirrors sgs/container's render.php pattern): extracted from

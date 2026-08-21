@@ -9,12 +9,11 @@
  * grid/background/overlay/shape-divider machinery) and it already renders a
  * single semantic root (`<fieldset>`), so the shared wrapper was dead weight —
  * same proven pattern as sgs/quote (D294). The `<fieldset>` IS the block root,
- * built via get_block_wrapper_attributes(); the rendered subtree carries ZERO
- * inline CSS property declarations — every declaration (root box/border/width,
- * WP color/spacing/border supports, pill resting/selected state, legend
- * typography) is emitted into the block's OWN scoped `.{uid}` <style> tag. WP
- * styling supports declare `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines them.
+ * built via get_block_wrapper_attributes().
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * Because the root can carry the anchor `id` (ToC), the scoped uid is a CLASS
  * (`sgs-op-{md5}`, container/quote-style), never an `id`.

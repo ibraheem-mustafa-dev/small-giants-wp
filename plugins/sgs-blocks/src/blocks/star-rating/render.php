@@ -2,17 +2,11 @@
 /**
  * Server-side render for the SGS Star Rating block.
  *
- * NO-INLINE (per-block no-inline migration contract, 2026-07-10): the rendered
- * subtree carries ZERO inline CSS property declarations. The WP `color` and
- * `spacing` supports declare `__experimentalSkipSerialization` in block.json
- * so `get_block_wrapper_attributes()` never auto-inlines them; base padding /
- * margin / colour are instead emitted into the block's own scoped `.{uid}`
- * <style> tag (mirrors sgs/heading), and the paddingTablet/paddingMobile/
- * marginTablet/marginMobile object attrs add the responsive tiers as scoped
- * media rules (breakpoints 1023/767, contract §B2). Star fill/size/gap are
- * SVG/markup attributes (width/height/fill on <svg>), not CSS `style=`
- * declarations, so they are left untouched — content-KIND composite,
- * block-private (D294).
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Star fill/size/gap are SVG/markup attributes (width/height/fill
+ * on <svg>), not CSS `style=` declarations, so they are left untouched —
+ * content-KIND composite, block-private (D294).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.

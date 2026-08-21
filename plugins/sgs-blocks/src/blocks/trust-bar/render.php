@@ -150,12 +150,8 @@ $uid_scope = '.' . esc_attr( $uid );
 $root_sel  = $uid_scope . '.wp-block-sgs-trust-bar';
 
 // --- No-inline contract (§A): WP-native color + border supports. -------------
-// block.json declares color/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Read the resolved values from $attributes['style'] here and emit them
-// into trust-bar's OWN scoped <style> (mirrors sgs/hero). Base spacing
-// (padding/margin) is a SEPARATE mechanism the wrapper already handles scoped
+// NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Base spacing (padding/margin) is a SEPARATE mechanism the wrapper already handles scoped
 // internally (reads $attributes['style']['spacing'] directly) — not duplicated
 // here.
 $tb_extra_scoped_css = '';

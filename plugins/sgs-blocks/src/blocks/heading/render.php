@@ -10,13 +10,9 @@
  * BEM modifier class for fontWeight (400) and textColour (text-muted) when
  * the attrs are still at their schema defaults.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
- * the rendered subtree carries ZERO inline CSS property declarations. Every
- * declaration — wrapper box/border/background/shadow/width/text-align, the WP
- * `color` support, AND the text element's typography — is emitted into the
- * block's OWN scoped `.{uid}` <style> tag. WP styling supports (spacing /
- * color / __experimentalBorder) all declare `__experimentalSkipSerialization`
- * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * BOX-GROUP (contract §B): padding / margin / border-width are box objects.
  * Base padding/margin/border-radius = WP-native style.spacing.* /

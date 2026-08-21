@@ -188,11 +188,8 @@ $context_data = wp_json_encode( [
 ] );
 
 // -------------------------------------------------------------------------
-// NO-INLINE contract — scoped uid + WP-native color/border re-emit.
-// block.json declares color/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Spacing (padding/margin) is already handled scoped by the wrapper
+// NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Spacing (padding/margin) is already handled scoped by the wrapper
 // itself; color + border are re-emitted here into the gallery's OWN scoped
 // <style> (composite caveat — never via wrapper `extra_styles`, which
 // inlines). Mirrors sgs/hero.

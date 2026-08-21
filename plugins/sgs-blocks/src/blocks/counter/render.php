@@ -12,12 +12,9 @@
  * already-published posts continue to round-trip via their stored save
  * HTML; only new (cv2-emitted) instances flow through this renderer.
  *
- * NO-INLINE (per-block no-inline migration contract, 2026-07-09): the
- * rendered subtree carries ZERO inline CSS property declarations. Native WP
- * supports (color / spacing / border / typography) declare
- * `__experimentalSkipSerialization` in block.json so
- * `get_block_wrapper_attributes()` never auto-inlines them; every
- * declaration is emitted instead into the block's own scoped `<style>`.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * BOX-GROUP: padding / margin / border-radius are box objects. Base =
  * WP-native `style.spacing.*` / `style.border.radius` (scoped via

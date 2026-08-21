@@ -16,9 +16,10 @@
  * border) and its content ARRANGEMENT (asideFormat), resolved against the
  * panel's inherited --sgs-mm-* custom properties as safe fallbacks.
  *
- * NO-INLINE (Spec 32): every attribute value is emitted into this instance's
- * own scoped `<style>` tag, keyed to a content-addressed uid selector, never an
- * inline `style="…"` attribute.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * Every attribute value is emitted into this instance's own scoped `<style>`
+ * tag, keyed to a content-addressed uid selector.
  *
  * SECURITY (CF-2, binding): every colour/token attr resolves via
  * `sgs_colour_value()`; every free dimensional attr resolves via the shared

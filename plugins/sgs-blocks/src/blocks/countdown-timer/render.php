@@ -2,14 +2,12 @@
 /**
  * Server-side render for the SGS Countdown Timer block.
  *
- * BLOCK-PRIVATE, NO-INLINE (LOCKED per-block no-inline migration contract
- * §A/§B/§B2, 2026-07-09): the rendered subtree carries ZERO inline CSS
- * property declarations. WP styling supports (color/typography/spacing/
- * __experimentalBorder) all declare `__experimentalSkipSerialization` in
- * block.json so get_block_wrapper_attributes() never auto-inlines them;
- * every declaration is emitted into the block's OWN scoped `.{uid}` <style>
- * tag via the stable core `wp_style_engine_get_styles()` API — exactly how
- * WP core outputs `layout` support (mirrors sgs/quote + sgs/media).
+ * BLOCK-PRIVATE. NO-INLINE: this block emits zero inline style property
+ * declarations. Contract + mechanism: Spec 32. Enforced by
+ * scripts/audit-inline-styling.js --check. Every declaration is emitted into
+ * the block's OWN scoped `.{uid}` <style> tag via the stable core
+ * `wp_style_engine_get_styles()` API — exactly how WP core outputs `layout`
+ * support (mirrors sgs/quote + sgs/media).
  *
  * The `--sgs-countdown-number-colour` / `--sgs-countdown-label-colour` custom-
  * property VALUES are emitted into the same scoped `.{uid}` <style> tag above

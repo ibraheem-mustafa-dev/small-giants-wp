@@ -22,16 +22,16 @@
  * emitted entirely by SGS_Container_Wrapper (mirrors sgs/container); this
  * file does not touch them directly.
  *
- * NO-INLINE (contract §A, 2026-07-09): the rendered subtree (section root,
- * overlay, content column) carries ZERO inline CSS property declarations.
- * color/typography/spacing/shadow/__experimentalBorder all declare
- * __experimentalSkipSerialization in block.json; every value is emitted into
- * CTA-SECTION'S OWN scoped `.{uid}` <style> instead (composite caveat — these
- * do NOT ride through the shared wrapper's `extra_styles`, which would inline
- * them). Section-level WP-native padding/margin remains the wrapper's own
- * scoped mechanism (unchanged). The background-image/size/position trio and
- * the legacy string `shadow` token attr are ALSO moved out of the wrapper's
- * `extra_styles` into this file's own scoped rule.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Composite caveat: color/typography/spacing/shadow/
+ * __experimentalBorder values are emitted into CTA-SECTION'S OWN scoped
+ * `.{uid}` <style> — these do NOT ride through the shared wrapper's
+ * `extra_styles`, which would inline them. Section-level WP-native
+ * padding/margin remains the wrapper's own scoped mechanism (unchanged). The
+ * background-image/size/position trio and the legacy string `shadow` token
+ * attr are ALSO moved out of the wrapper's `extra_styles` into this file's
+ * own scoped rule.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (headline, body, buttons).
@@ -212,14 +212,11 @@ if ( $has_bg_image_class ) {
 	$classes[] = 'sgs-cta-section--has-bg-image';
 }
 
-// ── WP-native color / border / typography / shadow supports — no-inline
-// contract (§A). block.json declares color/typography/spacing/shadow/
-// __experimentalBorder ALL with __experimentalSkipSerialization:true, so
-// get_block_wrapper_attributes() (called inside SGS_Container_Wrapper::render()
-// below) never auto-inlines them. Read the resolved values from
-// $attributes['style'] here and emit them into CTA-SECTION'S OWN scoped
-// <style> (composite caveat, per the migration contract: do NOT pass these as
-// wrapper `extra_styles` — that path inlines). Base spacing (padding/margin)
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+// --check. Composite caveat: values are read from $attributes['style'] and
+// emitted into CTA-SECTION'S OWN scoped <style> — do NOT pass these as
+// wrapper `extra_styles` (that path inlines). Base spacing (padding/margin)
 // is a SEPARATE mechanism the wrapper already handles scoped internally.
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$cta_style_engine_args = array();

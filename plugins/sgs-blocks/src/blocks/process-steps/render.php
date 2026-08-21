@@ -12,20 +12,13 @@
  * already-published posts continue to round-trip via their stored save
  * HTML; only new (cv2-emitted) instances flow through this renderer.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-10):
- * the rendered `<div>` root AND every descendant (each step + its number/
- * icon/title/description) carry ZERO inline CSS property declarations. Every
- * WP styling support this block declares (`spacing` / `color` /
- * `__experimentalBorder` / `typography` / `shadow`) carries
- * `__experimentalSkipSerialization: true` so get_block_wrapper_attributes()
- * never auto-inlines it. Everything is emitted into the block's OWN scoped
- * `.{uid}` <style> tag via `wp_style_engine_get_styles()` (exactly how WP
- * core outputs `layout` support) or hand-built shorthand for the SGS box
- * objects. Hover COLOUR is no longer a custom-property VALUE at all: since
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * Hover COLOUR is no longer a custom-property VALUE at all: since
  * 2026-08-19 it is emitted as a real scoped declaration by the shared
  * `sgs_emit_state_colour_css()`. The remaining custom properties here
  * (transition timing, hover scale/shadow) are still scoped values — a
- * `--var: value` is a value, not a declaration (contract §A).
+ * `--var: value` is a value, not a declaration.
  *
  * BLOCK-PRIVATE, COMPOSITE-KEEPS-WRAPPER (contract §B3): this block never used
  * `SGS_Container_Wrapper` — it hand-rolls its own root `<div>` — and genuinely
@@ -198,11 +191,11 @@ if ( '' !== $transition_duration && null !== $transition_duration ) {
 if ( $transition_easing ) {
 	$wrapper_style_parts[] = '--sgs-transition-easing:' . esc_attr( $transition_easing );
 }
-// NO-INLINE (Spec 32 FR-32-4 as amended 2026-07-18 / D345): $wrapper_style_parts
-// holds custom-property VALUES, and inline `style="--sgs-…"` is FORBIDDEN on the
-// frontend exactly as an inline property declaration is — FR-32-1's done-when is
-// "no `style` attribute at all", explicitly including a custom-property value.
-// They are emitted into the block's scoped rule below instead (see section 4).
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// $wrapper_style_parts holds custom-property VALUES — also forbidden inline
+// (FR-32-4/D345) — emitted into the block's scoped rule below instead (see
+// section 4).
 $wrapper_args  = array(
 	'class' => implode( ' ', $wrapper_classes ),
 );

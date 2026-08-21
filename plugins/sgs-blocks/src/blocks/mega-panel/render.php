@@ -28,10 +28,11 @@
  * here to a section-shaped composite because the shape is bespoke per
  * variant/style, not the container's generic grid.
  *
- * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline `style="…"`
- * property declarations. Every attribute value is emitted into this
- * instance's OWN scoped `<style>` tag, keyed to a content-addressed class
- * selector (never `#uid`, D303), never an inline attribute.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Every attribute value is emitted into this instance's OWN scoped
+ * `<style>` tag, keyed to a content-addressed class selector (never `#uid`,
+ * D303).
  *
  * SECURITY (CF-2, binding): every colour/token attr resolves via
  * `sgs_colour_value()`; every free dimensional attr resolves via the shared

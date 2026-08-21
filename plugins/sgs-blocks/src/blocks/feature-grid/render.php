@@ -175,15 +175,13 @@ if ( $use_auto_flex ) {
 }";
 }
 
-// ── WP-native color / border supports — no-inline contract (§A). ──────────────
-// block.json declares color/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes() (called
-// inside SGS_Container_Wrapper::render() below) never auto-inlines them. Read the
-// resolved values from $attributes['style'] here and emit them into this block's
-// OWN scoped <style>, reusing the same ID hook the grid engine already builds
-// (.$uid.sgs-feature-grid) rather than minting a second uid. Spacing (padding/
-// margin) is a SEPARATE mechanism the shared wrapper already handles scoped
-// internally — not duplicated here.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// this block's OWN scoped <style>, reusing the same ID hook the grid engine
+// already builds (.$uid.sgs-feature-grid) rather than minting a second uid.
+// Spacing (padding/margin) is a SEPARATE mechanism the shared wrapper
+// already handles scoped internally — not duplicated here.
 $root_sel = '.' . $uid . '.sgs-feature-grid';
 // D303: $uid is ALSO a class (the wrapper applies it as an id via extra_attrs) so the
 // class-scoped `.{$uid}.sgs-feature-grid` colour/border rules match this element.

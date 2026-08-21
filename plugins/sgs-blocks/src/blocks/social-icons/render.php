@@ -2,15 +2,11 @@
 /**
  * Server-side render for the SGS Social Icons block.
  *
- * NO-INLINE (per-block no-inline migration contract §A): the rendered subtree
- * carries ZERO inline CSS property declarations. WP `color`/`spacing`/
- * `typography` supports declare `__experimentalSkipSerialization` in
- * block.json so get_block_wrapper_attributes() never auto-inlines them — base
- * padding/margin/text-colour/background-colour/typography are instead emitted
- * scoped via wp_style_engine_get_styles() into the block's own <style> tag,
- * mirroring sgs/heading + sgs/quote. The row `gap`, the per-icon-item colour
- * custom properties, and the per-icon-item size (previously inline
- * `style="width:...;height:..."`) all move into the same scoped stylesheet.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Base padding/margin/text-colour/background-colour/typography are
+ * emitted scoped via wp_style_engine_get_styles() into the block's own
+ * <style> tag, mirroring sgs/heading + sgs/quote.
  *
  * @since 2026-07-10  Closed a residual gap: `typography` support was declared
  * (textAlign) without `__experimentalSkipSerialization`, so any populated

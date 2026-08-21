@@ -122,11 +122,11 @@ if ( '' !== $audio_title ) {
 $schema_json = wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES );
 
 // ---------------------------------------------------------------------------
-// No-inline spacing (contract §A/§B): margin/padding come from WP-native
-// style.spacing (skip-serialised in block.json so get_block_wrapper_attributes()
-// never auto-inlines them) + SGS custom tier object attrs, all emitted into a
-// scoped `.{uid}` <style> tag — never inline. uid is a CLASS (mirrors
-// sgs/label/sgs/heading/sgs/container).
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// margin/padding come from WP-native style.spacing + SGS custom tier object
+// attrs, all emitted into a scoped `.{uid}` <style> tag. uid is a CLASS
+// (mirrors sgs/label/sgs/heading/sgs/container).
 // ---------------------------------------------------------------------------
 
 $uid      = 'sgs-au-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );

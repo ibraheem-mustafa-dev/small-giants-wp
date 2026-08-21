@@ -2,11 +2,8 @@
 /**
  * Server-side render for the SGS Media block.
  *
- * Content media block — image or video. Styling attributes (objectFit,
- * objectPosition, maxWidth, borderRadius, etc.) are applied on the frontend
- * via a scoped `<style>` block — NOTHING is emitted as an inline
- * `style="property:…"` declaration on the media element (no-inline styling
- * contract, Spec 32 / `.claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md`).
+ * Content media block — image or video. Styling attributes (objectFit, objectPosition, maxWidth, borderRadius, etc.) are applied on the frontend via a scoped `<style>` block.
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * mediaType = 'image' (default): image render path with imageUrl / imageId.
  * mediaType = 'video': <video> (internal WP-library or direct MP4) or

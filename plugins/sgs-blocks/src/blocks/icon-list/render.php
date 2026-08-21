@@ -5,16 +5,7 @@
  * Outputs inline SVG icons via sgs_get_lucide_icon(), eliminating brittle
  * CSS content/Unicode rendering that breaks on some platforms.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
- * the rendered `<ul>` root AND every `<li>`/icon-span/text-span descendant
- * carry ZERO inline CSS property declarations. Every declaration is emitted
- * into the block's OWN scoped `.{uid}` <style> tag. The `color`/`typography`/
- * `spacing`/`__experimentalBorder` WP supports declare
- * `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines them. The `--sgs-icon-
- * list-gap` custom property is emitted into the scoped `<style>` rule too —
- * post-D345 contract: even custom-property VALUES never ride the inline
- * style attribute (enforced live by scripts/no-inline/check-no-inline.py).
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * BLOCK-PRIVATE (this is a leaf composite — an arrayContentLift list of
  * icon+text items rendered from a single `items` attribute, not a genuine

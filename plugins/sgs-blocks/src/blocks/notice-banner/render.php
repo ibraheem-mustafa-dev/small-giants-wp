@@ -6,18 +6,12 @@
  * static instances). The icon is the variant's ideal default (Lucide) unless the
  * operator picks an override via the shared IconPicker (any of the four sources).
  *
- * NO-INLINE, NO-WRAPPER (LOCKED per-block no-inline migration contract §A/§B/§B3,
- * 2026-07-10): notice-banner is CONTENT-kind (box + width only) — it never used
- * SGS_Container_Wrapper's grid/section/background/overlay machinery (WS-4:
- * CONTENT kind only ever added maxWidth/contentWidth/padding on top of the
- * block's OWN BEM-driven background/border/icon styling), so per D294 the
- * wrapper is dropped and the block goes fully block-private — the same proven
- * pattern as sgs/quote. The rendered subtree carries ZERO inline CSS property
- * declarations; every declaration (base + tiered padding/margin, WP colour/
- * typography/border supports, iconColour, width) is emitted into the block's
- * OWN scoped `.{uid}` <style> tag. WP styling supports declare
- * `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
- * never auto-inlines them.
+ * NO-WRAPPER (LOCKED per-block no-inline migration contract §A/§B/§B3, 2026-07-10): notice-banner is CONTENT-kind (box + width only) — it never used
+ * SGS_Container_Wrapper's grid/section/background/overlay machinery (WS-4: CONTENT kind only ever added maxWidth/contentWidth/padding on top of the
+ * block's OWN BEM-driven background/border/icon styling), so per D294 the wrapper is dropped and the block goes fully block-private — the same proven
+ * pattern as sgs/quote.
+ *
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * The uid is a CLASS (`sgs-notice-banner-{md5}`), never an `id` — the block
  * declares `anchor: true`, so the id attribute stays free for the anchor (ToC).

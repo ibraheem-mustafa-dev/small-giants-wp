@@ -25,11 +25,9 @@
  * ZERO inline property declarations and no divergence from the wrapper's computed
  * behaviour (the D294 block-private-when-no-grid/section-machinery pattern).
  *
- * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline CSS property
- * declarations. drawerBg + WCAG-computed foreground, drawerAlign, drawerGap,
- * drawerPadding, close-button colour and the skip-serialised __experimentalBorder
- * support are all emitted into this block's OWN scoped `.{uid}` <style> at CLASS
- * specificity (never `#uid`, D303).
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * drawerBg + WCAG-computed foreground, drawerAlign, drawerGap, drawerPadding, close-button colour and the skip-serialised __experimentalBorder
+ * support are all emitted into this block's OWN scoped `.{uid}` <style> at CLASS specificity (never `#uid`, D303).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (menu, logo, CTA).

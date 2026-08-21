@@ -33,9 +33,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 // ---------------------------------------------------------------------------
-// No-inline residual (Spec 32) — same pattern as sgs/container's render.php:
-// block.json skip-serialises color/border, so extract + emit via the core
-// style engine as a scoped rule, and hand the wrapper only a class name.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+// --check. Same pattern as sgs/container's render.php: extract + emit via
+// the core style engine as a scoped rule, and hand the wrapper only a class
+// name.
 // ---------------------------------------------------------------------------
 
 $sgs_ps_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
