@@ -156,6 +156,34 @@ export default function GradientOverlayControl( {
 								<DesignTokenPicker
 									label={ solidLabel }
 									value={ solidColour }
+									// D717 (2026-08-21) — this mount was the ONLY
+									// colour row in the plugin not passing `linked`,
+									// against ~40 that do. Without it the picker
+									// stores whatever CSS colour the swatch happens
+									// to hold, so clicking the client's own brand
+									// swatch froze a raw hex and silently unlinked
+									// the palette token on EVERY pick — not only when
+									// the alpha was lowered, which is how the bug was
+									// originally described. Proven live on the canary
+									// before the fix: picking "Primary" stored
+									// "#e68a95", never the slug.
+									//
+									// Safe for all six attribute pairs this component
+									// writes (whole-block overlay, both shape-divider
+									// colours, hero's media-overlay / media-background
+									// / content-background): every one of their
+									// renderers was traced 2026-08-21 and each
+									// resolves a slug through sgs_colour_value(). A
+									// slug reaching a renderer that does NOT resolve
+									// it paints nothing at all, silently — the D684
+									// defect — so this was checked, not assumed.
+									linked
+									// Alpha OFF (Bean, D717). Transparency now belongs
+									// to backgroundOverlayOpacity, a separate CSS
+									// property that leaves the stored colour intact.
+									// Two transparency mechanisms is what let the
+									// token-corrupting one stay reachable.
+									enableAlpha={ false }
 									onChange={ ( val ) => {
 										setLocalGradientMode( false );
 										setAttributes( {

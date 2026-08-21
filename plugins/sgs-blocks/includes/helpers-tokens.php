@@ -829,6 +829,74 @@ function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string
 }
 
 /**
+ * Resolve an overlay LAYER's complete CSS declaration set — colour/gradient
+ * paint plus its own opacity (D717, 2026-08-21).
+ *
+ * WHY THIS EXISTS, and why it is a layer ABOVE sgs_background_paint_value()
+ * rather than a widening of it: that helper answers one narrow question —
+ * "given a flat colour and a sibling gradient, which background property
+ * wins?" Opacity is not part of that question. It is a second, independent
+ * declaration that only has meaning for an element deliberately layered OVER
+ * something else, and pushing it down into the general paint resolver would
+ * hand an overlay-only concept to every caller painting a plain background
+ * (sgs/card-grid uses it for a card surface, where opacity means nothing).
+ * So this composes that helper for the paint half and owns the layer concept
+ * itself.
+ *
+ * THE DUPLICATION THIS REPLACES: the gradient-beats-colour check was
+ * hand-rolled independently in TWO places — SGS_Container_Wrapper's
+ * `.sgs-container__overlay` branch (which paints the overlay for seven of the
+ * eight blocks mounting `<BackgroundPanel>`) and sgs/hero's own
+ * `.sgs-hero__overlay` (hero passes `no_overlay => true` and paints its own).
+ * Two copies of one concept had already begun to drift. Every future overlay
+ * capability — the hover/tier siblings, blend mode — is now a single edit
+ * here rather than two edits that can disagree.
+ *
+ * SUPERSEDES D581's D5 (2026-08-11), which deleted `backgroundOverlayOpacity`
+ * on the reasoning that the colour picker's own alpha channel should be the
+ * single transparency mechanism. D581 was RIGHT that one mechanism beats two
+ * — do not read this as a reversal of that principle. It was wrong about
+ * WHICH mechanism, because alpha's side effect was not known when the call
+ * was made: `DesignTokenPicker` stores a palette SLUG only on exact string
+ * equality with a palette entry, so altering the alpha breaks the match and
+ * silently stores a raw hex, unlinking the client's brand token. Opacity is a
+ * separate CSS property and leaves the stored colour untouched.
+ *
+ * NO-INLINE CONTRACT (Spec 32): the caller splices this into its own scoped
+ * `.{uid} .sgs-*__overlay` rule. Nothing here rides inline on an element.
+ *
+ * @param string|null    $colour   Flat overlay colour (palette slug or CSS colour).
+ * @param string|null    $gradient Sibling gradient attribute (complete CSS gradient string).
+ * @param int|float|null $opacity  Overlay opacity as a 0-100 PERCENTAGE (the attribute's
+ *                                 stored shape). Null/absent emits no opacity declaration,
+ *                                 so a block that has not adopted the attribute is unchanged.
+ *                                 Clamped to 0-100; 100 emits nothing (it is the CSS default,
+ *                                 and a redundant declaration is noise in every scoped rule).
+ * @return string Declarations joined by `;`, no trailing semicolon (e.g.
+ *                `background-color:var(--wp--preset--color--primary);opacity:0.3`),
+ *                or `''` when there is no paint at all.
+ */
+function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null ): string {
+	$paint = sgs_background_paint_decl( $colour, $gradient );
+
+	if ( '' === $paint ) {
+		return '';
+	}
+
+	$decls = array( $paint );
+
+	if ( null !== $opacity && '' !== $opacity && is_numeric( $opacity ) ) {
+		$pct = max( 0.0, min( 100.0, (float) $opacity ) );
+		if ( 100.0 !== $pct ) {
+			// rtrim keeps `0.3` rather than `0.300000`; a bare `0` stays `0`.
+			$decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.', '' ), '0' ), '.' );
+		}
+	}
+
+	return implode( ';', $decls );
+}
+
+/**
  * Resolve a text-colour attribute (flat colour OR gradient string, D636
  * single-attribute storage) into a bare CSS declaration fragment — no
  * selector, no trailing `;`, matching the shape every block already pushes

@@ -149,6 +149,10 @@
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
+		"backgroundOverlayOpacity": {
+			"type": "number",
+			"default": 30
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""

@@ -84,6 +84,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		bgSvgPosition = 'background',
 		bgSvgAnimation = 'none',
 		bgSvgAnimationSpeed = 'medium',
+		backgroundOverlayOpacity = 30,
 		bgSvgOpacity = 100,
 		bgSvgTextShadow = false,
 		bgSvgMinHeight = '',
@@ -107,18 +108,43 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 			   which the design doc marks SUPERSEDED. Under D2 revised the overlay names are
 			   correct, and renaming would leave TWO controls both labelled "Background
 			   colour" — the real duplicate.
-			   The blend mechanism this text used to describe is step 4 (backgroundOverlayOpacity,
-			   a real 0-100 attribute applied in CSS). Until that ships, this text promises
-			   nothing that does not exist. */ }
+			   Step 4 SHIPPED 2026-08-21 (D717): the blend mechanism is the Overlay
+			   opacity control below, and alpha is now switched off on the colour row
+			   entirely (GradientOverlayControl.js). This text no longer promises
+			   anything that does not exist. */ }
 			<p className="components-base-control__help">
 				{ __(
-					'Sits OVER any image or video behind it — a tint or scrim. For a plain background with no media, use the Background colour setting instead.',
+					'Sits OVER any image or video behind it — a tint or scrim. Use the opacity slider below to let the media show through. For a plain background with no media, use the Background colour setting instead.',
 					'sgs-blocks'
 				) }
 			</p>
 			<GradientOverlayControl
 				attributes={ attributes }
 				setAttributes={ setAttributes }
+			/>
+			{ /* D717 (2026-08-21). REPLACES the colour picker's alpha channel as the
+			   overlay's transparency mechanism — see the help-text comment above for
+			   why alpha was actively harmful. Reaches all eight blocks that mount this
+			   panel (container, cta-section, hero, multi-button, physics-canvas,
+			   site-footer, site-header, trust-bar) with no per-block wiring, and is
+			   painted by the one shared owner, sgs_overlay_decls(). */ }
+			<RangeControl
+				label={ __( 'Overlay opacity', 'sgs-blocks' ) }
+				help={ __(
+					'How solid the overlay is. Lower it to let an image or video behind show through.',
+					'sgs-blocks'
+				) }
+				value={ backgroundOverlayOpacity }
+				onChange={ ( val ) =>
+					setAttributes( {
+						backgroundOverlayOpacity: undefined === val ? 30 : val,
+					} )
+				}
+				min={ 0 }
+				max={ 100 }
+				step={ 1 }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
 			/>
 			<TabPanel
 				tabs={ [

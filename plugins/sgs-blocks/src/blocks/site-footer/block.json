@@ -234,6 +234,10 @@
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
+		"backgroundOverlayOpacity": {
+			"type": "number",
+			"default": 30
+		},
 		"backgroundPosition": {
 			"type": "string",
 			"default": "center center"

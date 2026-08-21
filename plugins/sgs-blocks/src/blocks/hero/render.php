@@ -128,9 +128,12 @@ $bg_image  = $attributes['backgroundImage'] ?? null;
 // full-bleed layer (caught live, 2026-08-11 — same session as the ungate).
 $overlay_colour_raw = $attributes['backgroundOverlayColour'] ?? '';
 $overlay_colour     = '' !== $overlay_colour_raw ? $overlay_colour_raw : 'text';
-// D5 (Background panel redesign, 2026-08-11): `backgroundOverlayOpacity` no
-// longer exists as an attribute — the colour/gradient picker's own alpha is
-// the one dimming mechanism now, matching SGS_Container_Wrapper's overlay.
+// D717 (2026-08-21) — SUPERSEDES D581's D5, which stood here as a
+// "`backgroundOverlayOpacity` no longer exists, alpha is the one dimming
+// mechanism" note. Alpha silently unlinks the client's palette token (see
+// sgs_overlay_decls() in helpers-tokens.php for the full reasoning), so the
+// real 0-100 attribute is back and alpha is off on that colour row.
+$overlay_opacity = $attributes['backgroundOverlayOpacity'] ?? null;
 // Bug fix 2026-08-11: these three were never read here at all, so the
 // GradientOverlayControl UI could write a gradient and it would silently
 // never render — the overlay's own CSS rule (below) only ever emitted a
@@ -1084,10 +1087,14 @@ $overlay_html       = '';
 $has_overlay_colour = $overlay_colour_raw || $overlay_gradient_value;
 if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $has_overlay_colour ) {
 	$overlay_html = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
-	if ( $overlay_gradient_value ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-image:' . $overlay_gradient_value . '}';
-	} else {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-color:' . sgs_colour_value( $overlay_colour ) . '}';
+	// D717: one shared owner for the overlay's declaration set —
+	// SGS_Container_Wrapper paints the same layer for the other seven blocks
+	// through this identical call. hero opts out of the wrapper's own overlay
+	// (`no_overlay => true` below) and paints its own span, which is why the
+	// call is duplicated here and the LOGIC is not.
+	$overlay_decls = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity );
+	if ( '' !== $overlay_decls ) {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{' . $overlay_decls . '}';
 	}
 }
 

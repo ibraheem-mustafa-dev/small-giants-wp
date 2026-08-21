@@ -395,6 +395,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$bg_attachment = 'scroll';
 			}
 			$overlay_colour = $attributes['backgroundOverlayColour'] ?? '';
+			// D717 (2026-08-21): a real 0-100 opacity attribute, replacing the colour
+			// picker's alpha channel as the overlay's transparency mechanism. Null when
+			// a block has not adopted the attribute — the helper then emits no opacity
+			// declaration at all, so nothing changes for that block.
+			$overlay_opacity = $attributes['backgroundOverlayOpacity'] ?? null;
 			// Task 3 (gradient palette-stop rebuild): overlayGradient is now ONE
 			// attribute holding the complete CSS gradient value (any stop count),
 			// validated through sgs_css_gradient_value() at the point of emission
@@ -1420,24 +1425,30 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
 				// — a colour or gradient set with NO media rendered nothing at all,
 				// which is why a flat background colour was only reachable through
-				// WordPress's native Color panel. The colour layer is now the ONE
-				// background-colour concept: with media beneath it, a lowered alpha
-				// lets the image through and it reads as an overlay; with no media it
-				// simply IS the background. Same control, same attribute, one model.
+				// WordPress's native Color panel.
+				//
+				// CORRECTED 2026-08-21 (D717). The rest of this comment used to claim the
+				// overlay "simply IS the background" when no media sits beneath it. That
+				// was true on 2026-08-08 and is NOT true now: `1905257e` gave every one of
+				// the eight blocks mounting <BackgroundPanel> its own separate
+				// `backgroundColour` base layer, declared AND rendered (verified per block
+				// 2026-08-21). This layer is an overlay and only an overlay — which is why
+				// it can carry a 30% default opacity without washing out a solid background.
 				if ( $has_overlay_colour ) {
-					// D5 (Background panel redesign, 2026-08-11): the separate
-					// opacity-percentage control is REMOVED — the colour/gradient
-					// picker's own alpha channel is the one place transparency is
-					// set now. `backgroundOverlayOpacity` no longer exists as an
-					// attribute (see block.json); do not reintroduce it here.
-					if ( $overlay_gradient_value ) {
-						$overlay_decls = 'background-image:' . $overlay_gradient_value;
-					} else {
-						$overlay_decls = sprintf(
-							'background-color:%s',
-							sgs_colour_value( $overlay_colour )
-						);
-					}
+					// D717 (2026-08-21) — SUPERSEDES D581's D5, which stood here as an
+					// explicit "do not reintroduce `backgroundOverlayOpacity`" prohibition.
+					// D5 was right that ONE transparency mechanism beats two; it picked the
+					// wrong one. The colour picker's alpha silently unlinks the client's
+					// brand token — DesignTokenPicker stores a palette slug only on exact
+					// string equality, so altering the alpha stores a raw hex instead — and
+					// that side effect was not known when D5 was made. Alpha is now off on
+					// that row and this is the one mechanism.
+					//
+					// The gradient-beats-colour resolution is no longer hand-rolled here:
+					// sgs_overlay_decls() owns the whole overlay declaration set, and
+					// sgs/hero's own `.sgs-hero__overlay` calls the same helper. Two
+					// drifting copies became one.
+					$overlay_decls = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity );
 					// No-inline contract (Spec 32): the overlay paint is emitted as a
 					// scoped `.{uid} .sgs-container__overlay` rule below — NOT inline on
 					// the span. safecss doesn't touch this raw-echoed span, but an inline
