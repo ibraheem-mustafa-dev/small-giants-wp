@@ -1,5 +1,58 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D727 [ROUTINE] — comments explain FUNCTION, not CHANGE; and the no-inline contract becomes one pointer per block (2026-08-21)
+
+**Bean's call, and it found a bigger shape than the code de-duplication did.** Comments here
+narrated what the code USED TO DO. This project never deprecates, and git + `decisions.md`
+already hold the history, so prior-state narrative in a source file earns nothing and costs
+reading. Bean: *"they explain changes instead of explaining functionality — we're not deprecating
+the files so there's no need to know what it used to be."*
+
+**THE RULE, binding from now on.** Comments describe current behaviour. CUT prior-state narrative
+("previously emitted", "the old approach", "was wrongly X"), session chatter ("corrected
+2026-08-13", "Task 1b", "this session"), autopsies of retired attributes, and restatements of a
+diff git already holds. KEEP current behaviour, the bare D/FR anchor as provenance, WCAG,
+security and performance rationale, rationale justifying a magic number still in the code, and
+**every prohibition**.
+
+**The no-inline contract specifically:** 68 blocks each restated Spec 32's contract in prose —
+~314 lines duplicating a spec that `audit-inline-styling.js --check` already enforces at 0
+violations across 83 blocks. Each generic paragraph is now ONE pointer line naming the spec and
+the gate (`0f105aab`). Block-specific exceptions were kept verbatim; 11 files were left untouched
+because their prose was already specific or already a pointer.
+
+⚠ **NOT scriptable, and haiku is the wrong model.** Measured on a pilot: only 27% of removable
+lines carry a detectable marker (date, D-number, change verb). **The other 73% are continuation
+lines** of a paragraph whose first line had one, so deciding where history ends and behaviour
+resumes is the whole judgement. A marker-tuned regex finds a quarter and cannot tell where to
+stop; a paragraph-tuned one over-cuts into functional text and destroys knowledge silently.
+Tooling is therefore FIND-only: `scripts/extract-comment-narrative.py` locates and ranks
+candidates by narrative DENSITY (not file size) with exact line ranges; a human or model decides.
+
+**⛔ THE REAL FIND — three comments asserted the OPPOSITE of their own code.** `nav-menu`'s
+docblock said submenus and mega panels were unbuilt while the file rendered both, and a second
+comment named `SGS_Container_Wrapper` as rendering its `<nav>` when D539 moved it block-private —
+two comments in ONE file asserting opposite mechanisms. `responsive-logo` claimed an inline
+declaration D345 had moved into scoped CSS. **This codebase's doc debt is confident wrongness,
+not verbosity.** Corrected in `6aa55619` / `0f105aab`.
+⚠ Note HOW the nav-menu one was proven: that file carries a warning recording a previous agent
+concluding "this block emits no `<nav>`" from a grep that could not match, because the tag came
+from another file. Grepping for absence would have repeated the documented mistake. The proof was
+reading the `printf()` at the end of the file.
+
+**Scale + state:** 20 densest files done, ~370 lines removed across 78 files; ~70 files remain as
+an open, unblocked cleanup track (`.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`,
+ready-to-run prompt at `.claude/prompts/2026-08-21-owed-C-comment-narrative-cleanup.md`). NOT parked —
+parking is for BLOCKED or POSTPONED work only.
+
+**Two traps for anyone continuing.** Removing comments can make consecutive assignments contiguous
+and trip a phpcs alignment sniff — the comment was acting as a GROUP SEPARATOR, so fix it by
+reinstating a BLANK LINE, never by realigning and never with `phpcbf` (it aligns the whole file,
+turning a comment-only change into a 68/84-line executable diff). And `check-dead-controls` CHECK
+5 counts raw text occurrences INCLUDING comments, so a comment sweep can shift its findings — it
+must not share a pass with a code change, and any baseline is refreshed ONCE after a whole batch,
+never mid-batch.
+
 ## D726 [ROUTINE] — the side-margin gate asks the wrong question and KEEPS asking it; closed, not fixed (2026-08-21)
 
 `class-sgs-container-wrapper.php` gates core's `.has-global-padding` on `$has_band_props`,

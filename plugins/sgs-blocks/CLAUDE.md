@@ -94,6 +94,61 @@ constant). Only OWN *panel*-count (not row-count, not the EXTENSION split) has b
 match live measurement. Do not quote ANY of its totals — panel-count included, once beyond a single
 verified block — as "what the client sees" without a fresh live check.
 
+### Shared-helper adoption — `scripts/migrate-render-closures.py` (D722)
+
+`includes/helpers-box.php` has carried byte-identical shared forms of three sanitiser closures
+since 2026-07-12 (`cef1fca9`), auto-loaded via `render-helpers.php`, with docblocks saying they
+exist to replace "the local `$sgs_css_length` closures". Only 4 blocks ever adopted them. This
+script finished that migration — **121 closure definitions across 57 files** onto three helpers.
+
+```bash
+python scripts/migrate-render-closures.py --survey        # census
+python scripts/migrate-render-closures.py --fix           # dry run
+python scripts/migrate-render-closures.py --fix --apply   # write
+python scripts/migrate-render-closures.py --check         # gate
+python scripts/migrate-render-closures.py --self-test     # 10 assertions + negative control
+```
+
+⛔ **It is a script and not `sed` for one specific reason:** several files use ALIGNED assignment
+(`$sgs_css_keyword  = static function`, two spaces). A literal-space find/replace silently skips
+them — which is why the closure count read 45 before it read 52. The self-test asserts this case.
+
+⛔ **Carved out deliberately, still open:** `$sgs_corner_shorthand` / `$sgs_radius_shorthand` are
+CORNER-keyed (topLeft/topRight/bottomRight/bottomLeft), structurally a different function from
+`sgs_box_object_shorthand()`'s top/right/bottom/left — there is nothing to call.
+**`before-after/render.php`'s is UNTYPED and is invoked with a raw `null`**, relying on its own
+`is_array()` guard; routing it through a typed-`array` helper would fatal the page. It also does
+NOT migrate to the hardened `sgs_css_length_value()` — four behaviour deltas, and
+`helpers-css-safety.php`'s own header calls that a separate task.
+
+### Comment-narrative detector — `scripts/extract-comment-narrative.py` (D727)
+
+FIND-only. It never edits. Comments must explain what the code DOES, not what it used to do.
+
+```bash
+python scripts/extract-comment-narrative.py --survey --top 20   # rank by narrative DENSITY
+python scripts/extract-comment-narrative.py --extract --only <slug>  # candidates + line ranges
+python scripts/extract-comment-narrative.py --prohibitions      # gate-backed vs UNENFORCED
+python scripts/extract-comment-narrative.py --self-test
+```
+
+⚠ **Deliberately has no `--fix`.** Measured on a pilot: only 27% of removable lines carry a
+detectable marker; **the other 73% are continuation lines** of a paragraph whose first line had
+one. A marker-tuned regex finds a quarter and cannot tell where to stop inside a block; a
+paragraph-tuned one over-cuts into functional text. **This is also why haiku is the wrong model
+for the edit** — a wrong cut deletes knowledge silently and irreversibly.
+
+`--prohibitions` is the more valuable mode: it splits every prohibition into GATE-BACKED (the
+prose names a real executable check — compress it to a pointer, the gate is the defence) and
+UNENFORCED (nothing checks it — keep verbatim, or promote it into a gate). First run: 11
+gate-backed, 37 unenforced. ⛔ A STOP-catalogue reference is PROSE, not a gate — counting it as
+enforcement was a real bug caught by the self-test, and would have hidden the very list the
+script exists to surface.
+
+Open track + ready prompt: `.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`,
+`.claude/prompts/2026-08-21-owed-C-comment-narrative-cleanup.md`. Register:
+`.claude/reports/2026-08-21-unenforced-prohibition-register.md`.
+
 ### Tier-object migration triad — `scripts/migrate-tier-object.py` (Spec 35 / D549 / D554 / D571)
 
 The flat-scalar-trio → tier-object migration (`<prop>` / `<prop>Tablet` / `<prop>Mobile` →

@@ -137,7 +137,13 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   **refuted**, it is call-site glue around an already-shared component, not duplication.
   ⚠ **Counted on CODE lines only, over-limit `render.php` is 26, not 51** — a third of those files
   is documentation. Rank targets by duplication DENSITY, never raw line count.
-  **Live plan:** `~/.claude/plans/go-motion-spec-38-track-synchronous-willow.md` (council-validated).
+  **Where this went (all IN-REPO — the earlier pointer was to a `~/.claude/` path a fresh session
+  on another machine cannot read):** the owed list + the 11-gate-backed-vs-37-UNENFORCED
+  prohibition split is `.claude/reports/2026-08-21-unenforced-prohibition-register.md`; the
+  remaining ~70-file comment sweep is an open unblocked track at
+  `.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`; three ready-to-paste session
+  prompts are in `.claude/prompts/`. Decisions: D722 (closures), D723 (scroll-smoother),
+  D727 (comments explain function, not change).
 
 ### Step 21 — re-run the adversarial council [OPEN — DELIBERATELY LAST]
   **Model:** inline · **Time:** 30 min · **Deps:** every other step above, no exceptions
