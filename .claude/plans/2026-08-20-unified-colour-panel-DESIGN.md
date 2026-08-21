@@ -327,6 +327,49 @@ exercised). It does NOT have `backgroundOverlayColourHover` or `overlayGradientH
 Verified 2026-08-21: **0 of the 10 blocks mounting `BackgroundPanel` declare either overlay
 hover sibling.** Step 6 is therefore NOT started for the overlay layer, not "partial".
 
+### ▶ REFERENCE-BLOCK WORK — started 2026-08-21
+
+**Decision (Bean):** build one block to a perfect colour surface, then propagate — rather
+than the doc's original ordering, which had the reference block as step 9, LAST. The reason
+is a lesson already recorded here: *gates compare a file to a contract, never to its
+sibling*. A finished reference block IS that missing contract; without one, fanning out
+across 10 blocks is 10 chances to diverge with nothing detecting it.
+
+⚠ **The reference block is `sgs/hero`, not `sgs/button` and not `sgs/container`.** Measured
+2026-08-21 — three blocks already carry the complete 8/8 surface (panel + textColour +
+textColourGradient + bg + bgHover + bgGradient + overlay + overlayGradient): `sgs/hero`,
+`sgs/site-footer`, `sgs/trust-bar`. `sgs/button` is a leaf and never exercises
+overlay-over-media, which is exactly where step 4's token-corruption bug lives. Hero is also
+the block QC Gate 2 proved end-to-end, so it has a verified baseline.
+
+**⛔ Sequencing correction:** the reference block cannot be finished before steps 4, 5 and 6,
+because each of those CHANGES the mechanism (a new opacity attribute; the mechanism-C
+adapter; the hover/tier siblings). Build the reference first and you canonise a shape those
+steps then move. So: settle 4/5/6 ON the reference, prove it, then propagate.
+
+**Landed 2026-08-21 — `sgs/container` root text colour (`0f2c167f`).** Not cosmetic: the
+container had NO reachable text-colour control at all. Its wrapper manifest mapped
+`css:color` to `native:color.text` while `supports.color` is FALSE on the block, so the
+binding pointed at a mechanism that does not exist — and
+`check-element-manifest-conformance` was already reporting `text/css:color` and
+`text/css:color-gradient` as GAPs. Now four owned attrs rendered through the same shared
+emitters hero uses, plus a second row in its existing `SgsColourPanel`.
+⚠ Committed but **NOT yet deployed or live-verified** — the deploy aborted on a dirty tree
+(another session mid-work). The visual-diff report says so explicitly rather than implying a
+capture that was not taken.
+
+✅ **Open item "textColour parent/child ruling" is now SETTLED — see D713.** A section-class
+block can parent any non-section block that has no forced parent, so a parent-level
+`textColour` is the root-scoped INHERITABLE cascade default, and the child's control
+overrides it for one instance. Two jobs, two controls, keep both. Applied as the acceptance
+reason to all eight `parent-child-duplicate` textColour entries, replacing the gate's
+generic placeholder. This is what HANDOVER-3 asked for: the pattern ruled ONCE across every
+parent, not per block.
+
+**Still missing on the section-kind roster** (enumerated from `block_composition`, not
+estimated): `sgs/modal` has no `textColour` at all; `sgs/cta-section` and `sgs/site-header`
+have no `textColourGradient`.
+
 ## Build order
 
 Each step is independently shippable and verifiable. Steps 1–2 are already dispatched.

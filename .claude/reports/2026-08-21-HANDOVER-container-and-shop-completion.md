@@ -147,8 +147,12 @@ Good news: the converter has **zero** `.sgs-container__inner` references in its 
    path exists, not that it is mechanism-correct.
 2. Defect-level matching, rule 31 ↔ colour-coverage (`attrName` is the join key, both
    sides discard it).
-3. `textColour` parent/child ruling — still baselined, not ruled. Needs the full parent
-   list enumerated.
+3. ~~`textColour` parent/child ruling~~ — ✅ **SETTLED 2026-08-21, see D713.** A
+   section-class block parents any non-section block without a forced parent, so a
+   parent-level `textColour` is the inheritable cascade default and the child's control
+   overrides one instance — keep both. Applied to all eight baseline entries. Parent list
+   enumerated from `block_composition`: cta-section, hero, modal, site-footer, site-header,
+   trust-bar (+ container, which was ABSENT from the roster — see D713's trap note).
 4. D6 reversal — hero background vs overlay. Not decided.
 5. Rule-31 arithmetic: `+10` claimed, `409 → 420` is `+11`. One finding unaccounted for.
 6. Theme-snapshot slug-valued palette entries (2 in `sites/mamas-munches/`).

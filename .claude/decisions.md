@@ -145,6 +145,41 @@ and two commit messages claim otherwise.
 RULE: "the block does not declare this attribute" does NOT imply "this attribute does
 nothing". Check whether `render.php` reads it anyway.
 
+## D713 [ROUTINE] — A section-class block owns a root text colour; the child's control is not a duplicate of it (2026-08-21)
+
+**2026-08-21. Bean-ruled.** Settles the `textColour` parent/child question that HANDOVER-3
+asked to be ruled "once, across every parent that mounts `sgs/text`, rather than per block".
+
+**The rule.** A section-class block can be the parent of ANY non-section block that has no
+forced parent. You cannot parent `sgs/tab` — tab must nest under `sgs/tabs`, so you get
+`tabs` instead. `sgs/hero` is the same: it accepts anything, even though it ships with a
+default set of children.
+
+**Therefore a parent-level `textColour` is NOT a second control for the same thing.** It is
+the root-scoped INHERITABLE cascade default for whatever the client nests inside; the
+child's own control overrides that default for one instance. Two different jobs, correctly
+two controls. **KEEP BOTH.** This is the HC2 carve-out given a principled boundary instead
+of two examples. The UX objection HANDOVER-3 recorded — that the inspector shows two things
+reading as "text colour" — is real and is answered by LABELLING, not by deleting either.
+
+**Applied.** `duplicate-controls-baseline.json`: the ruling is now the acceptance reason on
+all eight `parent-child-duplicate` + `textColour` entries (`accordion-item`,
+`product-faq-item`, `site-footer-row`, `tab`, `hero`, `cta-section`, `site-footer`, and the
+new `container`), replacing the gate's generic "verify this" placeholder.
+
+**Enumerated, not estimated** — the section-kind roster from `block_composition` is six
+blocks: `cta-section`, `hero`, `modal`, `site-footer`, `site-header`, `trust-bar`. Of those,
+`modal` still lacks `textColour` entirely, and `cta-section` + `site-header` lack
+`textColourGradient`.
+
+⚠ **`sgs/container` was ABSENT from that roster** and is the trap worth remembering: its
+`container_kind` is NULL in the DB and it declared no `supports.sgs.containerKind`, because
+it only resolves to 'section' by render-time FALLBACK in `resolve_kind()`. Any rollout
+scoped by "where container_kind = 'section'" therefore silently excludes the most-used
+section block — a derived field used as a scope predicate, excluding exactly the block with
+the gap. `containerKind: "section"` is now declared (`0f2c167f`); the DB row still needs
+seeding via `/sgs-update`, deferred because a shared-DB reseed is a cross-track action.
+
 ## D708 [ROUTINE] — an extension may own a colour intrinsic to its own effect, never one the colour panel owns (2026-08-21)
 
 **Bean-ruled**, after asking why the hover-effects extension deals with colours and shadows
