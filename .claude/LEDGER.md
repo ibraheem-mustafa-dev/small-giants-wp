@@ -234,19 +234,55 @@ survives), resting colour paints, and a **real pointer hover** repaints
 (hero primary→accent, trust-bar success→cookie-brown). Zero console errors, `isValid:true`.
 Fixture page 2588 — safe to delete.
 
-### 🔵 NEXT SESSION'S FIRST TASK — step 4, APPROVED BY BEAN 2026-08-21
+### ✅ STEP 4 — SHIPPED + LIVE-VERIFIED 2026-08-21 (D717)
 
-**`backgroundOverlayOpacity`.** ⚠ It is a DECISION REVERSAL, not a gap-fill. The bug is real
-and reachable: `DesignTokenPicker.js:139-140` stores a palette SLUG only on exact string
-equality, and `enableAlpha` defaults to `true` (`:468`) — so lowering alpha stores a RAW HEX
-and silently unlinks the client's brand token. ⛔ But `class-sgs-container-wrapper.php` carries
-an explicit in-code prohibition from D581 (2026-08-11): *"`backgroundOverlayOpacity` no longer
-exists as an attribute … do not reintroduce it here."* Scope is NOT the 40 min the plan says:
-8 block.json + the shared wrapper (Rule 7 gate) + removing that prohibition + a new D-number
-superseding D581's D5 + a ruling on whether `enableAlpha` stays true. Full brief in
-`.claude/plans/2026-08-20-unified-colour-panel-DESIGN.md` § "STEP 4 — APPROVED".
-⭐ Frame the supersede as "D581 was right about simplicity, wrong about which mechanism" — the
-alpha side effect was not known when it was made.
+`88d7cf14` `7dff615b` `bcb38d5f` on `origin/main`, deployed `--blocks-only`. Full evidence:
+`reports/visual-diff/d717-overlay-opacity-2026-08-21.md`. Reasoning: D717.
+
+**The brief's framing was incomplete; the larger half came from reading source.** It called the
+token unlink alpha-triggered. `GradientOverlayControl` mounted `DesignTokenPicker` **without
+`linked`** — the only colour row in the plugin missing it, against ~40 that pass it — so it
+stored a raw hex on EVERY pick. **Negative control against pre-fix deployed code:** clicking
+"Primary" stored `#e68a95`. Red, then green on the identical gesture.
+
+- `backgroundOverlayOpacity` (number, **default 30**) on the 8 blocks mounting
+  `<BackgroundPanel>`; ONE `RangeControl` there reaches all 8.
+- `linked` + `enableAlpha={false}` on the shared mount. Bean chose the WIDER scope → all six
+  attribute pairs; all seven renderer paths traced, every one resolves slugs via
+  `sgs_colour_value()` (D684 is what happens when that isn't checked).
+- **New shared owner `sgs_overlay_decls()`** (`helpers-tokens.php`). Bean asked whether the
+  shared helper was being updated; it wasn't, and asking exposed real duplication — the
+  gradient-beats-colour check was hand-rolled in BOTH the wrapper and hero while
+  `sgs_background_paint_value()`, whose docblock claims universality, had one caller. Hover
+  siblings and blend mode are now one edit, not two.
+
+**Live:** container `primary`/45 → `opacity:0.45`; hero `accent`/25 → `opacity:0.25`; both spans
+`style`=`null`. Fixture page 2596 = test rig, safe to delete.
+
+⚠ **Two named visible changes.** hero defaults its overlay to `'text'` once the span exists for
+another reason (was opaque, now 30%); and `patterns/hero-video-background.php` had an OPAQUE
+overlay hiding its video, now a 30% scrim. Blast radius ENUMERATED: 1 pattern + 4 canary test
+pages, **zero client content**.
+
+⛔ **My own corrections, so they aren't re-derived.** (a) I argued 30% would wash out plain
+backgrounds; Bean challenged it and was right — all 8 blocks render their own separate
+`backgroundColour`. My source was a wrapper comment stale since `1905257e`, now **corrected in
+place**. (b) I reported the roster as "2 blocks" — that was 2 PAINT SITES; the control reaches 8.
+(c) The first post-fix click stored `""` and looked like failure; it was a DESELECT (with
+`linked` on the swatch reads as already-selected).
+
+**Planned manifest work proved unnecessary** — verified by RUNNING
+`check-element-manifest-conformance` (passes untouched, style-defect 0/0), not by reading it.
+
+⚠ **Visual-diff gate scoped-skipped** (logged): capture needs the deployed build, deploy refuses
+a dirty tree. The report that followed is an **evidence record, not a gate token** — `source_sha`
+marked `NOT-COMPUTABLE` rather than given a plausible value, so it cannot wave through a future
+commit to these blocks.
+
+⚠ **No multi-rater council ran**, against the project rule and my own plan. The four review
+questions were answered empirically instead (renderer paths traced; helper exercised at 0/100/
+negative/out-of-range/non-numeric through real PHP; authorings enumerated). Flagged, not quietly
+skipped — say if you want it run retrospectively.
 
 ### 🔵 STILL WAITING ON BEAN
 
@@ -307,56 +343,11 @@ greps hitting comments; a specificity computed from a `selectorText` sliced to 7
 
 ## ▶ TIER W (MOTION) TRACK — CLOSED 2026-08-21
 
-**Status: SHIPPED, merged to `main`, deployed, live-verified. Nothing pending.**
-Do not re-open this section to "continue" it — if you are here for motion work, the open
-register is `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`, not this.
+**Nothing pending. Do not re-open this to "continue" it.** Shipped, merged, deployed,
+live-verified: Spec 38's fourth tier (WebGL, D479) now exists, with FR-38-29 surface treatments
+on 15 image-bearing blocks at 5,674 bytes gzip. D714-D716.
 
-**What shipped.** Spec 38's fourth tier (Tier W / WebGL, D479) had **zero code** for
-eighteen days while the spec, `specs/README.md`, the gap register and fourteen memory files
-all described it as part of the system. It now exists, with one effect on its closed list:
-**FR-38-29 surface treatments** — grain / halftone / duotone, GPU shaders applied to the
-image a block already renders, offered on 15 image-bearing blocks.
-
-- Substrate: `src/shared/effects/webgl/` — zero-dependency WebGL2 behind D479's
-  `init / setUniform / destroy` interface. A Gate-A grep enforces that nothing outside that
-  directory imports `renderer.js`, so "swappable in one file" is a CHECKED invariant.
-- Motion: the treatment DEVELOPS IN on scroll (`uResolve` 1 → 0). Client toggle
-  "Reveal on scroll", default ON.
-- Colour: every treatment has a client colour, defaulted to the site palette and stored as
-  palette slugs, so re-theming re-colours every treated image.
-- **5,674 bytes gzip — 4.6% of the named 120KB Tier W allowance.**
-- Canary `/tier-w-surface-canary/` (page 2594); probe
-  `scripts/motion-qa/probe-tier-w-surface.mjs` → **23/23**, 1 honestly SKIPPED.
-- Evidence: `reports/visual-diff/tier-w-surface-2026-08-21.md`.
-
-**Owed, and deliberately not done** (all recorded in Spec 38 §3 FR-38-29, none silently
-dropped):
-- **Naked-`<img>`-root blocks no-op.** `sgs/decorative-image` renders its `<img>` AS the
-  block root; the boot module looks for a nested one. 13 of 15 offered blocks nest theirs.
-  Fixing needs a re-parent or wrapper, and that block's responsive tiers use compound
-  selectors on the `<img>` — a design decision, not a patch.
-- **`sgs/media` is not offered at all** — no fx panel, and `creates_panel=0` correctly will
-  not create one. Escape hatch is `supports.sgs.fx.motionSurface: true` on that block.
-- **`sgs/media` + `sgs/decorative-image` both violate a standing project rule**: they render
-  an `<img>` and neither declares `imageControls`. Pre-existing.
-- **Probe arm 7's GPU-tally assertion is unverifiable on a live page** and reports SKIPPED,
-  never PASS.
-
-**D-entries: LANDED as D714 / D715 / D716.** They were staged in a scratch file during the
-build rather than written straight into `decisions.md`, because that file was carrying 91
-uncommitted lines from the colour-golden track all session and committing it by path would
-have swept their work into this branch. The colour-golden track merged them in on
-2026-08-21; verified present and complete, and the scratch file is deleted.
-
-**FR numbering:** FR-38-29, not 28 — `FR-38-28` is reserved by the Bean-signed but unbuilt
-pointer-reactive-backgrounds design gate (`plans/2026-07-31-step7-cursor-follow-background-design-gate.md`).
-
-### Separately answered this session: does FR-38-12 Flip animate? NO.
-
-Not a bug in `fx-flip.js` — **do not let anyone "fix" it.** The site setting had never been
-switched on, and with it on the effect still cannot animate because WooCommerce performs a
-FULL PAGE NAVIGATION on a filter change (proven: a stamped `window` variable did not survive,
-2 main-frame navigations, products 5 → 3). There is no client-side re-layout for
-`Flip.from()` to animate — D426 recurring at the redirected target. The next question is a
-WooCommerce one. Evidence + three candidate causes:
-`reports/2026-08-21-flip-does-it-animate.md`. Setting restored to its found state.
+Full section — what shipped, the four things deliberately NOT done, and the FR-38-12 Flip
+finding — moved VERBATIM to `memory/session-2026-08-21-tier-w-closed.md` on 2026-08-21 to bring
+this file back under its byte cap. Nothing was edited or dropped. For motion work the open
+register is `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`, not that archive.
