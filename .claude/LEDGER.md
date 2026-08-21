@@ -11,10 +11,24 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 **Invoke `/autopilot` first.**
 
-⚠ **THREE TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
+⚠ **FOUR TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
 The shop-archive / R-3 track owns the sections immediately below. The **colour-golden**
 track owns `## ▶ COLOUR-GOLDEN TRACK`. The **Tier W / motion** track owns
 `## ▶ TIER W (MOTION) TRACK` at the bottom and is CLOSED — nothing is pending there.
+The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
+
+## ▶ CONSOLIDATION TRACK — 2026-08-21, CLOSED except Phase 4
+
+Shipped, deployed, canary-verified (D731/D732/D733): one shared corner-shorthand helper +
+**109 vacuous `function_exists` guards** removed. Standards + rationale are single-sourced —
+do NOT restate them here: **Spec 32 §6.1 (a1)/(a2)** (shared shorthand builders; the sanitiser
+contract) and **Spec 35 Part K** (the gate + two method rules). Enforcement:
+`npm run check:vacuous-guards`, wired into `prebuild`.
+
+**ONLY REMAINING WORK — Phase 4, ~50 min, mechanical, every ambiguity pre-resolved:**
+`.claude/prompts/2026-08-21-owed-A-shared-mechanism-cleanups.md`. It is the programme's ONLY
+behaviour change and **must ship alone**, capturing the canary "before" BEFORE deploying.
+Prompt B is deleted — done.
 
 **If you are the shop-archive track**, read, in this order:
 
@@ -233,44 +247,11 @@ forced the measurement and it changed the finding. My call that a council added 
 deploy refuses a dirty tree. The reports are **evidence records, not gate tokens** —
 `source_sha` is `NOT-COMPUTABLE`, so none can wave through a future commit.
 
-### ✅ D724 — the shared wrapper renders a simple section background as a real `<img>` (2026-08-21)
+### ✅ D724 — shared wrapper renders a simple section background as a real `<img>` (2026-08-21)
 
-`0eb38ecf` + `5cd873af` + `26d0a1b7`, deployed + live-verified. Evidence:
-`reports/visual-diff/d724-img-background-layer-2026-08-21.md`.
-⚠ **`0eb38ecf`'s message cites "(D719)" — WRONG, that number is the other session's. Read it as
-D724.** I inferred the ceiling from my own last entry instead of re-reading it. Not force-pushing
-a shared branch over a citation.
-
-Bean inverted D718's instinct: converge on the BEST implementation, not the incumbent. The
-wrapper painted backgrounds as CSS `background-image` (browser can't find it until the selector
-matches); hero already used a real `<img>` + `fetchpriority`. Hero's approach is now the shared
-one, via the same `sgs_responsive_image()` helper (so `srcset` comes free). Gated to what an
-`<img>` can express — no-repeat + cover/contain + no parallax/fixed + no tier overrides; anything
-else keeps the CSS path. Branches are exact complements.
-
-**An adversarial QC subagent returned NO-GO and was right on all three:**
-1. ⛔ **My error.** I briefed "two" child-positioning reset rules to exclude the new class from.
-   There are **SEVEN**. The four missed win on specificity → background paints ON TOP of content
-   on any section with a shape divider. **A roster assembled by eye instead of enumerated —
-   again.**
-2. The scoped `object-fit` rule was gated on a uid nothing requested → a minimal container's
-   `contain`/`top left` silently reverted to `cover`/centre on the frontend.
-3. Hero's counter and the wrapper's new one each meant "first within MY path" → a page with both
-   marked TWO images `fetchpriority=high`, prioritising neither. One shared
-   `sgs_next_background_image_index()` now.
-
-⛔ **CROSS-SESSION INCIDENT — `origin/main` was briefly FATAL.** The other session's broad
-`git add` swept my uncommitted `hero/render.php` edit into its unrelated commit `87d904a6` and
-pushed it. That carried the CALL to the new counter; the DEFINITION sat uncommitted in my tree —
-so every page rendering a hero with a background image would fatal on an undefined function.
-Repaired in `5cd873af`. **The lesson is sharper than "you might commit their work": it SPLIT ONE
-CHANGE ACROSS TWO COMMITS owned by two sessions, and my own `git diff` showed that file CLEAN —
-which reads as "nothing to do", not "someone took it".**
-
-**Live (page 2596):** hero img `high`/`eager`, container img `auto`/`lazy` — exactly ONE
-high-priority image across two blocks and two code paths; `object-fit:contain` +
-`object-position:0% 0%` survived; tiled container correctly still on `::before` with
-`repeat`; no double-paint; `style` attr `null`.
+**CLOSED — shipped, deployed, live-verified. Nothing pending.** Full section moved VERBATIM to
+`memory/session-2026-08-21-colour-golden-completed.md` on 2026-08-21 to bring this file back under
+its byte cap. Nothing was edited or dropped.
 
 ### 🔵 STILL WAITING ON BEAN
 

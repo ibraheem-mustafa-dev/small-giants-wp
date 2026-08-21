@@ -248,6 +248,59 @@ A merged box family is ONE attribute of `"type": "object"` holding named keys �
 - `<len>` = a CSS length string (`"20px"`, `"1.5rem"`, `"0"`) or an absent/empty key = that side unset (falls to CSS default / inherits). The unit is carried inline in each value, so no separate `{attr}Unit` companion attr is needed.
 - `default`: `{}` (empty object).
 
+### (a1) The SHARED shorthand builders — one per keying, never a per-block closure (added 2026-08-21, D731)
+
+A box object becomes a CSS shorthand string through **one shared helper per keying**, in
+`includes/helpers-box.php`. There is no third option: a `render.php` that hand-rolls its own
+closure is duplication to migrate, not a local choice.
+
+| Keying | Helper | Shorthand order |
+|---|---|---|
+| 4-side (`top/right/bottom/left`) | `sgs_box_object_shorthand( array $box ): ?string` | top right bottom left |
+| **4-corner** (`topLeft/topRight/bottomRight/bottomLeft`) | **`sgs_corner_object_shorthand( $box ): ?string`** | TL TR BR BL |
+
+Both return `null` when every key is empty, so the caller skips the declaration entirely rather
+than emitting a no-op rule. **They are NOT interchangeable** — CSS `border-radius` shorthand order
+is TL TR BR BL, which is a different sequence from the box-model's TRBL, so passing a corner object
+to the 4-side helper silently produces wrong geometry.
+
+⛔ **`sgs_corner_object_shorthand()` takes a MIXED value and guards with `is_array()` internally —
+do not "tidy" it to a typed `array` parameter.** Callers legitimately pass a raw null
+(`$attributes['borderRadiusTablet'] ?? null`). A typed parameter throws `TypeError` and fatals the
+page. **The riskiest existing caller sets the signature, not the tidiest one.**
+
+Enforcement: `scripts/migrate-render-closures.py` owns both families (`--survey` / `--fix` /
+`--check` / `--self-test`). Its `--check` is the gate; its self-test carries a negative control per
+family. It is a script and not `sed` because several files use ALIGNED assignment
+(`$sgs_css_keyword  = static function`), which a literal-space find/replace silently skips.
+
+### (a2) Length sanitisation — the hardened function is the target (2026-08-21)
+
+Two sanitisers exist and they are NOT equivalent:
+
+| | `sgs_css_length_sanitise()` (crude) | `sgs_css_length_value()` (hardened) |
+|---|---|---|
+| `-10px` | `10px` — **sign silently lost** | `-10px` |
+| `calc(100% - 20px)` | `calc10020px` — **corrupted** | preserved |
+| `var:preset\|spacing\|40` | `varpresetspacing40` — **corrupted** | resolved |
+| bare `16` | `16` — invalid CSS, renders nothing | `var(--wp--preset--spacing--16)` |
+
+The crude one is `preg_replace( '/[^A-Za-z0-9.%]/', '', … )` — it strips hyphens, spaces and
+parens unconditionally. `var:preset|spacing|40` is exactly what WP's `BoxControl` emits for a preset
+value, so that corruption is a live path, not a theoretical one.
+
+**`sgs_css_length_value()` is the target for every LENGTH-valued property**, and the precedent
+already ships: `sgs_container_gap_value()` (`helpers-container.php:114`) delegates to it, which is
+why bare-integer `gap` defaults (`"16"`, `"40"` on `sgs/container` and `sgs/gallery`) already
+resolve to preset vars correctly.
+
+⛔ **The hardened function must NEVER be used for a UNITLESS-LEGAL property** — `line-height`,
+`opacity`, `z-index`, `flex-grow/shrink`, `font-weight`, `order`, `aspect-ratio`. It maps a bare
+integer to a **spacing** preset, so `line-height: 2` would become
+`line-height: var(--wp--preset--spacing--2)` — a length token on a unitless property. Enumerated
+2026-08-21: exactly **one** call site is unitless-legal (`testimonial/render.php` `quoteLineHeight`)
+and stays on the crude function; the other 206 are length-valued.
+
 ### (b) Base serialises SCOPED, not dropped and not inline
 **Correct any "drop the support" framing to "keep the support + `__experimentalSkipSerialization` + serialise scoped."** WordPress's `get_block_wrapper_attributes()` auto-inlines any declared `supports.spacing`/`supports.__experimentalBorder` value — that inlining IS the D291 defect class, not the support's existence. The fix: flip serialisation from auto-inline to scoped, per property, via `__experimentalSkipSerialization`, then write the block's resolved `style.spacing.padding` / `style.border.radius` object to its own **CLASS-LEVEL** scoped selector — `.{$uid}.{block-root-class}` (specificity 0,2,0), **NOT** `#{$uid}` (D303, 2026-07-10) — using the stable core API `wp_style_engine_get_styles($style, ['selector' => $scoped_selector])['css']`, **registered into the shared SGS collector (FR-32-11 / §6.2) on the frontend** (echoed inline only in the editor context). This is exactly how WP core outputs `layout` support (a `.wp-container-{id}` rule, not inline) — not a bespoke SGS mechanism. **Class-level, never ID:** WordPress core (6.6 `:root :where()` = 0-1-0), Kadence, Spectra and GenerateBlocks all keep per-instance styling at low/equal specificity and resolve overrides by SOURCE ORDER, never by ID/`!important` escalation. Emitting per-instance styling at `#uid` would make it un-overridable by the equal-specificity `sgsCustomCss` residual (Spec 31 FR-31-5.2) — the render-precedence defect fixed at D303. Every block therefore emits per-instance styling at class-level; any `#uid` emitter is normalised. `skipSerialization` suppresses only WP's *auto-inline output*; it does NOT stop the `style` attribute being populated, so render.php still reads it to emit the scoped rule. Phase-0-proven live: container base spacing now serialises scoped with zero inline declarations on the rendered element.
 

@@ -732,6 +732,27 @@ commit that built them.** Full per-gate rationale: `plugins/sgs-blocks/CLAUDE.md
 | `scripts/check-empty-inspector-containers.js` | **Part F** — an inspector container rendered with NO children is a dead control. An empty `<ToolsPanelItem>` still shows in the "+" menu and in `resetAll`, then displays nothing when opened; an empty `<PanelBody>` opens onto blank space. | The ~50-gate stack had **zero** coverage for this class, and one shipped through it to prove the point. `check-dead-controls.js` checks the INVERSE (an attribute whose control nothing renders) — a container whose children were deleted still has valid wiring, so it reads clean. ⛔ AST walk, never a regex: two regexes answered the same question with **0** and **471**. |
 | `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (`supports.sgs.gridAreas` is RETIRED — any declaration fails the build). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. Rule 2 began as an orphan guard ("must have ≥1 live reader", Part N's N-2) and became a retirement guard when building that reader proved none was ever needed — the converter derives area names from the draft's CSS. No baseline (zero violations existed) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
 
+**Gate enforcing the RENDER-side consolidation standard (added 2026-08-21, D732/D733) — wired into
+`prebuild` plus a `check:vacuous-guards` alias in the same commit that widened it.** This one guards
+Spec 32's contract rather than the inspector surface, but it is listed here because it is the same
+triad mechanism and the same enforcement stack.
+
+| Gate | Enforces | Why it had to exist |
+|---|---|---|
+| `scripts/remove-vacuous-style-engine-guard.py --check` | A `function_exists()` check on a CORE WP function is only meaningful when that function landed AFTER the plugin's declared floor. Below it the false branch is unreachable — dead code wearing the costume of a safety check. | **109 such guards** existed across ~16 core functions against a `Requires at least: 6.7` floor. ⛔ The floor is **PARSED** from the plugin header, never hardcoded: a LOWERED floor makes a family load-bearing again, and a hardcoded constant would both assert a stale claim AND fail the build for reintroducing a *correct* guard. It **fails closed** when the header is unreadable, **exempts polyfill definitions** (`if ( ! function_exists('x') ) { function x(){…} }` is correct code that makes a file runnable outside WP — one such site would have silently broken a 60-assertion CLI self-test), and scans `src/` + `includes/` + **the theme**. |
+
+**Two method rules this gate earned, both generalisable:**
+
+- **Verify a version floor against core LOAD ORDER, not the version number alone.**
+  `wp-settings.php` `require`s style-engine/script-modules/interactivity-api at lines 437/450/453 —
+  before mu-plugins (508) and plugins (582) — and core never wraps those definitions, so no
+  bootstrap window exists. The same check proves the rule DISCRIMINATES rather than being blanket:
+  `pluggable.php` loads at **612, AFTER plugins**, so `wp_get_current_user` guards are REAL, and the
+  `wp_*connector*` family is `@since 7.0`, above the floor. Both are correctly still in the tree.
+- **A count from a convenient subset is not an enumeration.** Two figures were reported wrong the
+  same way — a `src/blocks/*/render.php`-only grep put 74 at "73" and 5-and-5 at "4 and 3". Every
+  miss lived in `includes/`. Run `--check`; never quote a hand-scoped grep.
+
 ## PART L — Per-block inspector definition-of-done (checklist)
 
 > ✅ **VERIFIED PER-ITEM AGAINST CODE, 2026-08-17** — 4 parallel agents + an adversarial refutation
