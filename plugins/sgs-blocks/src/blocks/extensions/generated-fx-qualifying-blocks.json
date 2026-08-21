@@ -4,7 +4,8 @@
 		"draggable",
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/button": [
 		"morph",
@@ -49,24 +50,28 @@
 		"morph",
 		"motion-path",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/decorative-image": [
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/gallery": [
 		"carousel-loop",
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/google-reviews": [
 		"carousel-loop",
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/heading": [
 		"morph",
@@ -82,7 +87,8 @@
 		"morph",
 		"motion-path",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/icon": [
 		"draw",
@@ -94,7 +100,8 @@
 		"image-sequence",
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/info-box": [
 		"cursor-field",
@@ -131,7 +138,8 @@
 		"carousel-loop",
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/pricing-table": [
 		"morph",
@@ -145,7 +153,8 @@
 		"motion-path",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/product-faq": [
 		"cursor-field",
@@ -165,7 +174,8 @@
 	"sgs/responsive-logo": [
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/separator": [
 		"draw",
@@ -178,7 +188,8 @@
 		"motion-path",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/testimonial": [
 		"cursor-field",
@@ -186,7 +197,8 @@
 		"motion-path",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/text": [
 		"morph",
@@ -202,7 +214,8 @@
 		"motion-path",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/trust-bar": [
 		"cursor-field",
@@ -213,13 +226,15 @@
 		"pin-scrub",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"surface-treatment"
 	],
 	"sgs/trustpilot-reviews": [
 		"carousel-loop",
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/whatsapp-cta": [
 		"morph",

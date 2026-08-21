@@ -63,12 +63,45 @@ real check on a first-time bloated module, and (b) the moment --update-baseline 
 (expected as a normal step when landing a new effect), the 20%-drift budget starts
 applying to it from then on. This mirrors the house box-family-guard.py baseline pattern,
 which also treats "no baseline entry yet" as reportable-not-failing.
+
+--PAGE-BUDGET: A DIFFERENT QUESTION FROM EVERYTHING ABOVE (added 2026-08-21, D479/D555)
+----------------------------------------------------------------------------------------
+Everything above answers "did any ONE module regress against its own history". It has no
+concept of a PAGE total, so D479's named 120KB Tier W page allowance was documented
+nowhere and enforced nowhere — a page using surface-treatment could ship any size at all
+and this gate would stay silent, because no single module breached its own 20% band.
+
+`--page-budget <tier>` answers the other question: "how many bytes would a page using
+tier <tier> actually pull, summed, and is that under the named allowance". It:
+  1. Reads `motion-bundle-baseline.json`'s new `page_budgets` object (bytes, gzip) — data,
+     not a number typed into this script.
+  2. Parses `includes/class-sgs-motion-registry.php`'s `MODULES` const (never a
+     hand-copied duplicate of that dependency graph) to find every module ID + its
+     declared `deps`.
+  3. Walks the graph from the tier's entry module(s) — see `_TIER_ENTRY_MODULES` below,
+     the one judgement call this feature makes, documented there — collecting every
+     transitively-required module ID.
+  4. Sums the real gzip bytes of each resolved module's BUILT file under `build/`.
+  5. Exits 1 if the total exceeds the tier's budget.
+
+⚠ BUILD-GZIP BYTES AND WIRE-TRANSFERRED BYTES ARE DIFFERENT INSTRUMENTS. This gate (both
+the per-module baseline above and `--page-budget`) measures `gzip.compress()` on the
+built file's own bytes at COMPRESSLEVEL 9 — the theoretical floor a browser could achieve
+decompressing that exact payload alone. It is NOT what a browser's dev-tools Network panel
+reports for a live page load: real HTTP compression settings, TLS framing, HTTP/2 header
+overhead, and — for `--page-budget` specifically — the fact that several of a page's
+modules may already be resident from an earlier navigation (script-module caching) are
+all invisible to this number. A delta between this gate's figure and a Lighthouse/DevTools
+measurement of the SAME page is not evidence of a regression in either tool; they are
+measuring different things and must never be diffed against each other as if a mismatch
+were a finding.
 """
 from __future__ import annotations
 
 import argparse
 import gzip
 import json
+import re
 import shutil
 import sys
 import tempfile
@@ -80,12 +113,42 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 _PLUGIN_ROOT = _SCRIPT_DIR.parent  # plugins/sgs-blocks
 _BUILD_DIR = _PLUGIN_ROOT / "build"
 _BASELINE_PATH = _SCRIPT_DIR / "motion-bundle-baseline.json"
+_MOTION_REGISTRY_PHP = _PLUGIN_ROOT / "includes" / "class-sgs-motion-registry.php"
 
 # Directories (relative to build/) globbed for Tier G modules. Never a hardcoded file
 # list — new effect modules land without needing this gate edited.
 _WATCHED_SUBDIRS = ("vendor-modules", "shared/effects/gsap", "shared/effects")
 
 _BREACH_THRESHOLD_PCT = 20.0
+
+# ---------------------------------------------------------------------------
+# --page-budget: entry-module selection per tier. See the docstring's
+# "--PAGE-BUDGET" section for what this feature answers.
+#
+# THE ONE JUDGEMENT CALL --page-budget makes: which module ID is "the tier" for
+# graph-walking purposes. Everything downstream of an entry ID (the transitive
+# `deps` set) is DERIVED by parsing `class-sgs-motion-registry.php`'s MODULES
+# const — never hand-copied — but the entry ID itself has to be picked, because
+# the registry has no "this module IS the tier" flag of its own.
+#   'tier_w'  -> '@sgs/fx-surface-treatment'. Unambiguous: it is the ONLY Tier W
+#                module in MODULES (see that module's own comment in the PHP
+#                source — "Surface treatment (Tier W / WebGL)"), and its `deps`
+#                are empty (no GSAP import at all, per that same comment), so
+#                the tier_w page total is exactly this one module's bytes.
+#   'default' -> '@sgs/fx-scrub'. Not spec-cited — a judgement call, flagged as
+#                one rather than presented as derived: `scrub` is the generic,
+#                broadly-offered Tier G effect (fx_effects.requires='none',
+#                seed-motion-fx-registry.py), so it is the most representative
+#                "a page picked ONE ordinary Tier G effect" case. Its resolved
+#                chain (gsap-core + gsap-scrolltrigger + provider + fx-scrub)
+#                is also the heaviest 4-module chain sharing only ScrollTrigger
+#                among the requires='none'/'text' effects, which is why the
+#                'default' budget in motion-bundle-baseline.json was set with
+#                headroom above it rather than below.
+_TIER_ENTRY_MODULES: dict[str, tuple[str, ...]] = {
+    "tier_w": ("@sgs/fx-surface-treatment",),
+    "default": ("@sgs/fx-scrub",),
+}
 
 
 def _iter_modules(build_dir: Path) -> list[Path]:
@@ -118,6 +181,15 @@ def _load_baseline(baseline_path: Path) -> dict:
 
 
 def _save_baseline(baseline_path: Path, modules: dict[str, int], recorded_date: str) -> None:
+    # page_budgets is a SIBLING data object to `modules` (added 2026-08-21) — carried
+    # forward from whatever is already on disk rather than reset here, so an
+    # --update-baseline run (a per-module maintenance action) can never silently drop
+    # the page-total budgets this file also now holds. This function otherwise already
+    # resets `_comment` to a generic line on every run (pre-existing behaviour, not
+    # changed here) — page_budgets deliberately does NOT share that fate, because unlike
+    # the comment prose it is load-bearing data `--page-budget` reads back.
+    existing = _load_baseline(baseline_path)
+    page_budgets = existing.get("page_budgets", {})
     data = {
         "_comment": [
             "Spec 38 (Motion System) FR-38-24 bundle-size budget baseline.",
@@ -127,11 +199,146 @@ def _save_baseline(baseline_path: Path, modules: dict[str, int], recorded_date: 
         ],
         "recorded_date": recorded_date,
         "unit": "gzip-bytes",
+        "page_budgets": page_budgets,
         "modules": dict(sorted(modules.items())),
     }
     with baseline_path.open("w", encoding="utf-8") as fh:
         json.dump(data, fh, indent=2)
         fh.write("\n")
+
+
+class MotionRegistryParseError(Exception):
+    """Raised when `MODULES` cannot be located/parsed in class-sgs-motion-registry.php.
+
+    Same "must not pass vacuously" discipline as check-fx-list-drift.py: a parser that
+    silently matched nothing would make --page-budget compare an empty module set
+    against the budget and read PASS forever, exactly the failure mode this feature
+    exists to close for D479's page allowance.
+    """
+
+
+def _parse_motion_registry_modules(registry_php_path: Path, floor: int = 10) -> dict[str, dict]:
+    """Parse `class-sgs-motion-registry.php`'s `MODULES` const into
+    `{module_id: {'path': str, 'deps': [module_id, ...]}}` — never a hand-copied
+    duplicate of that dependency graph (this file's docstring's --PAGE-BUDGET section).
+
+    `floor` defaults to 10 for the real registry (26 entries as of D555) but is
+    lowered by `--self-test`'s synthetic 2-module fixture, which is deliberately
+    minimal and would otherwise trip the vacuity floor meant for a reshaped REAL file.
+    """
+    if not registry_php_path.exists():
+        raise MotionRegistryParseError(f"{registry_php_path} does not exist.")
+    text = registry_php_path.read_text(encoding="utf-8")
+
+    match = re.search(r"private\s+const\s+MODULES\s*=\s*array\s*\(", text)
+    if match is None:
+        raise MotionRegistryParseError(
+            f"{registry_php_path}: could not locate `private const MODULES = array(`. "
+            "It has been renamed or reshaped — --page-budget would silently walk an "
+            "empty graph."
+        )
+    # Balanced paren scan from the opening '(' the match ends on.
+    start = text.find("(", match.end() - 1)
+    depth = 0
+    end = None
+    for index in range(start, len(text)):
+        if text[index] == "(":
+            depth += 1
+        elif text[index] == ")":
+            depth -= 1
+            if depth == 0:
+                end = index
+                break
+    if end is None:
+        raise MotionRegistryParseError(f"{registry_php_path}: `MODULES` array is never closed.")
+    body = text[start + 1:end]
+
+    modules: dict[str, dict] = {}
+    # Each top-level entry: 'id' => array( 'path' => '...', 'deps' => array( ... ) ),
+    for entry_match in re.finditer(
+        r"'(@sgs/[a-zA-Z0-9_-]+)'\s*=>\s*array\s*\(\s*"
+        r"'path'\s*=>\s*'([^']+)'\s*,\s*"
+        r"'deps'\s*=>\s*array\s*\(([^)]*)\)",
+        body,
+    ):
+        module_id, path, deps_body = entry_match.groups()
+        deps = re.findall(r"'(@sgs/[a-zA-Z0-9_-]+)'", deps_body)
+        modules[module_id] = {"path": path, "deps": deps}
+
+    if len(modules) < floor:
+        raise MotionRegistryParseError(
+            f"{registry_php_path}: parsed only {len(modules)} MODULES entr(y/ies), "
+            f"expected at least {floor}. The construct has almost certainly been "
+            "renamed or reshaped — fix the parser in check-motion-bundle-budget.py, do "
+            "NOT lower this floor to make a thin parse pass."
+        )
+    return modules
+
+
+def _resolve_transitive_modules(modules: dict[str, dict], entry_ids: tuple[str, ...]) -> set[str]:
+    """Every module ID reachable from `entry_ids` by following `deps`, entries included.
+    Cycle-safe (a `seen` set, not recursion) even though the registry's graph is a DAG
+    in practice."""
+    seen: set[str] = set()
+    stack = list(entry_ids)
+    while stack:
+        module_id = stack.pop()
+        if module_id in seen:
+            continue
+        seen.add(module_id)
+        for dep in modules.get(module_id, {}).get("deps", []):
+            if dep not in seen:
+                stack.append(dep)
+    return seen
+
+
+def evaluate_page_budget(
+    build_dir: Path,
+    registry_php_path: Path,
+    tier: str,
+    budgets: dict[str, int],
+    entry_modules: dict[str, tuple[str, ...]] = _TIER_ENTRY_MODULES,
+    registry_floor: int = 10,
+):
+    """Sum the gzip bytes of every module a page using `tier` would pull.
+
+    `build_dir` must be the `build/` directory itself; module paths in the registry
+    (e.g. `build/vendor-modules/gsap-core.js`) are resolved against `build_dir.parent`
+    — the same "plugin root" `build/` normally lives under — so a self-test can point
+    both `registry_php_path` and `build_dir` at an isolated temp tree with no risk of
+    ever touching the real plugin directory.
+
+    Returns (total_bytes, per_module: dict[module_id, bytes], missing_modules: list[str],
+    unknown_tier: bool, budget: int | None).
+    `missing_modules` are resolved module IDs whose built file is absent — a page-budget
+    total is meaningless (and fails closed, see main()) if any required module didn't
+    actually build.
+    """
+    plugin_root = build_dir.parent
+
+    if tier not in entry_modules or tier not in budgets:
+        return 0, {}, [], True, None
+
+    modules = _parse_motion_registry_modules(registry_php_path, floor=registry_floor)
+    resolved = _resolve_transitive_modules(modules, entry_modules[tier])
+
+    per_module: dict[str, int] = {}
+    missing: list[str] = []
+    for module_id in sorted(resolved):
+        entry = modules.get(module_id)
+        if entry is None:
+            # An entry module (or a dep) named in _TIER_ENTRY_MODULES/deps that the
+            # registry itself does not define — a real drift, not a build gap.
+            missing.append(module_id)
+            continue
+        module_path = plugin_root / entry["path"]
+        if not module_path.exists():
+            missing.append(module_id)
+            continue
+        per_module[module_id] = _gzip_size(module_path)
+
+    total = sum(per_module.values())
+    return total, per_module, missing, False, budgets[tier]
 
 
 def evaluate(build_dir: Path, baseline_path: Path):
@@ -229,6 +436,58 @@ def _print_report(rows, missing_build, missing_baselined, build_dir: Path) -> No
             print(f"  MISSING    {key}: has a baseline entry but was not found in the build.")
 
 
+def _run_page_budget(tier: str) -> int:
+    """`--page-budget TIER` against the real tree. See evaluate_page_budget()'s own
+    docstring + this file's --PAGE-BUDGET section for the mechanism."""
+    baseline = _load_baseline(_BASELINE_PATH)
+    budgets: dict[str, int] = baseline.get("page_budgets", {})
+
+    if tier not in _TIER_ENTRY_MODULES or tier not in budgets:
+        known = sorted(set(_TIER_ENTRY_MODULES) & set(budgets))
+        print(
+            f"[motion-bundle-budget --page-budget] GATE FAILED — unknown tier '{tier}'. "
+            f"Known tiers (declared in BOTH _TIER_ENTRY_MODULES here and "
+            f"page_budgets in {_BASELINE_PATH.name}): {', '.join(known) or '(none)'}."
+        )
+        return 1
+
+    try:
+        total, per_module, missing, unknown_tier, budget = evaluate_page_budget(
+            _BUILD_DIR, _MOTION_REGISTRY_PHP, tier, budgets
+        )
+    except MotionRegistryParseError as exc:
+        print(f"\n[motion-bundle-budget --page-budget] GATE FAILED — {exc}")
+        return 1
+
+    print(f"[motion-bundle-budget --page-budget] tier '{tier}' — resolved module graph:")
+    for module_id in sorted(per_module):
+        print(f"    {module_id}: {per_module[module_id]} bytes gzip")
+    if missing:
+        print("[motion-bundle-budget --page-budget] MISSING (resolved but not found in "
+              f"the build output or the registry): {', '.join(sorted(missing))}")
+        print(
+            "\n[motion-bundle-budget --page-budget] GATE FAILED — a resolved module is "
+            "missing; the page total below would be an undercount, so this fails closed "
+            "rather than reporting a false PASS. Run `npm run build` first."
+        )
+        return 1
+
+    verdict = "BREACH" if total > budget else "OK"
+    print(
+        f"[motion-bundle-budget --page-budget] total: {total} bytes gzip / budget: "
+        f"{budget} bytes gzip — {verdict}"
+    )
+    if verdict == "BREACH":
+        print(
+            f"\n[motion-bundle-budget --page-budget] GATE FAILED — tier '{tier}' page "
+            f"total ({total} bytes) exceeds its budget ({budget} bytes) by "
+            f"{total - budget} bytes."
+        )
+        return 1
+    print(f"\n[motion-bundle-budget --page-budget] GATE PASSED — tier '{tier}' within budget.")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
@@ -246,10 +505,19 @@ def main() -> int:
     mode.add_argument("--self-test", action="store_true", default=False,
                        help="Prove the gate can fail: synthesise an oversized module, "
                             "confirm --check catches it, then clean up.")
+    mode.add_argument("--page-budget", metavar="TIER", default=None,
+                       help="Gating mode: sum the gzip bytes of every module a page "
+                            "using TIER would pull (walking class-sgs-motion-registry."
+                            "php's MODULES dependency graph) and exit 1 if the total "
+                            "exceeds motion-bundle-baseline.json's page_budgets[TIER] "
+                            "(D479's named Tier W page allowance).")
     args = parser.parse_args()
 
     if args.self_test:
         return _self_test()
+
+    if args.page_budget:
+        return _run_page_budget(args.page_budget)
 
     if args.update_baseline:
         rows, _breaches, missing_build, _missing_baselined = evaluate(_BUILD_DIR, _BASELINE_PATH)
@@ -369,6 +637,108 @@ def _self_test() -> int:
             ok = False
         else:
             print("[motion-bundle-budget --self-test] vanished-module case: correctly flagged as missing — OK")
+
+        # --- Case 5: --page-budget must catch an over-budget page total.
+        # Synthesises an isolated registry.php + build tree (never the real ones) with a
+        # tiny two-module chain (an entry depending on one other module) and a budget the
+        # combined actual size is made to exceed — proving the gate can fail before
+        # trusting that it enforces D479's real 120KB allowance.
+        page_root = tmp_root / "page-budget"
+        page_includes = page_root / "includes"
+        page_build = page_root / "build" / "vendor-modules"
+        page_includes.mkdir(parents=True)
+        page_build.mkdir(parents=True)
+
+        registry_php = page_includes / "class-sgs-motion-registry.php"
+        registry_php.write_text(
+            "<?php\n"
+            "class SGS_Motion_Registry {\n"
+            "\tprivate const MODULES = array(\n"
+            "\t\t'@sgs/selftest-base' => array(\n"
+            "\t\t\t'path' => 'build/vendor-modules/selftest-base.js',\n"
+            "\t\t\t'deps' => array(),\n"
+            "\t\t),\n"
+            "\t\t'@sgs/selftest-entry' => array(\n"
+            "\t\t\t'path' => 'build/vendor-modules/selftest-entry.js',\n"
+            "\t\t\t'deps' => array( '@sgs/selftest-base' ),\n"
+            "\t\t),\n"
+            "\t);\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        (page_build / "selftest-base.js").write_bytes(b"/* base */" * 20)
+        (page_build / "selftest-entry.js").write_bytes(b"/* entry */" * 20)
+
+        test_entry_modules = {"selftest-tier": ("@sgs/selftest-entry",)}
+        base_actual = _gzip_size(page_build / "selftest-base.js")
+        entry_actual = _gzip_size(page_build / "selftest-entry.js")
+        combined_actual = base_actual + entry_actual
+
+        # 5a — budget comfortably above the combined actual must read OK.
+        generous_budgets = {"selftest-tier": combined_actual + 10_000}
+        total, per_module, missing, unknown_tier, budget = evaluate_page_budget(
+            page_root / "build", registry_php, "selftest-tier", generous_budgets,
+            entry_modules=test_entry_modules, registry_floor=2,
+        )
+        if unknown_tier or missing or total > budget:
+            print(
+                "[motion-bundle-budget --self-test] FAIL — page-budget under-budget "
+                f"case misfired (unknown_tier={unknown_tier}, missing={missing}, "
+                f"total={total}, budget={budget})."
+            )
+            ok = False
+        elif set(per_module) != {"@sgs/selftest-base", "@sgs/selftest-entry"}:
+            print(
+                "[motion-bundle-budget --self-test] FAIL — page-budget resolved the "
+                f"wrong module set: {sorted(per_module)} (expected both selftest "
+                "modules — the dependency walk did not include the transitive dep)."
+            )
+            ok = False
+        else:
+            print(
+                f"[motion-bundle-budget --self-test] page-budget under-budget case: "
+                f"{total} <= {budget} — OK"
+            )
+
+        # 5b — budget BELOW the combined actual must read BREACH. This is the case that
+        # actually proves the gate can fail: D479's allowance is meaningless if this
+        # gate can only ever report PASS.
+        tight_budgets = {"selftest-tier": combined_actual - 1}
+        total, per_module, missing, unknown_tier, budget = evaluate_page_budget(
+            page_root / "build", registry_php, "selftest-tier", tight_budgets,
+            entry_modules=test_entry_modules, registry_floor=2,
+        )
+        if unknown_tier or missing or total <= budget:
+            print(
+                "[motion-bundle-budget --self-test] FAIL — page-budget did NOT catch "
+                f"an over-budget page total (total={total}, budget={budget}). This "
+                "mode would read green forever."
+            )
+            ok = False
+        else:
+            print(
+                f"[motion-bundle-budget --self-test] page-budget over-budget case: "
+                f"caught ({total} > {budget}) — OK"
+            )
+
+        # 5c — a resolved-but-missing module must fail closed, not undercount silently.
+        (page_build / "selftest-base.js").unlink()
+        total, per_module, missing, unknown_tier, budget = evaluate_page_budget(
+            page_root / "build", registry_php, "selftest-tier", generous_budgets,
+            entry_modules=test_entry_modules, registry_floor=2,
+        )
+        if "@sgs/selftest-base" not in missing:
+            print(
+                "[motion-bundle-budget --self-test] FAIL — page-budget did not flag a "
+                "resolved-but-unbuilt module as missing; a silent undercount would "
+                "have reported a false PASS."
+            )
+            ok = False
+        else:
+            print(
+                "[motion-bundle-budget --self-test] page-budget missing-module case: "
+                "correctly flagged as missing — OK"
+            )
 
     finally:
         shutil.rmtree(tmp_root, ignore_errors=True)

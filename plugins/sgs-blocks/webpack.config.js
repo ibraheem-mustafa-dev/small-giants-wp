@@ -217,6 +217,29 @@ if ( moduleConfig ) {
 				'effects',
 				'fx-carousel-loop.js'
 			),
+			/*
+			 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479) — same
+			 * shape as fx-cursor-field/fx-carousel-loop above: this entry
+			 * pulls in the `webgl/` rendering substrate and
+			 * `surface-treatments/` preset modules as plain imports, so they
+			 * bundle straight into this one module rather than needing their
+			 * own entries or externals. No GSAP import anywhere in the
+			 * graph, so a page using this and no Tier G effect still ships
+			 * zero GSAP bytes.
+			 *
+			 * FILENAME is load-bearing exactly as it is for the gsap
+			 * entries: the PHP registry derives its module ID as
+			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `surface-treatment` — so this must stay
+			 * `fx-surface-treatment.js`.
+			 */
+			'shared/effects/fx-surface-treatment': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-surface-treatment.js'
+			),
 			...Object.fromEntries(
 				[
 					'fx-scrub',

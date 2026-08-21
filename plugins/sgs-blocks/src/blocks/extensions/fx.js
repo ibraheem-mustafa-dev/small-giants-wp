@@ -134,6 +134,20 @@ const SHIPPED_EFFECTS = [
 	// on-switch: an effect fully built everywhere else is still dead code until
 	// its name appears in it.
 	'cursor-field',
+	// `surface-treatment` ADDED — Tier W (Spec 38 §1.2b, D479), the one
+	// effect in this array that is not GSAP-driven at all: it paints a
+	// WebGL grain / halftone / duotone finish over the block's own `<img>`
+	// via `src/shared/effects/fx-surface-treatment.js` +
+	// `webgl/index.js`. It still meets this array's single condition —
+	// selecting it yields a real, configurable control that produces a
+	// real result — the runtime module exists, the registry enqueues it on
+	// `data-sgs-fx="surface-treatment"` (a real `fx_effects` DB row, so no
+	// bespoke sniff was needed), `includes/fx-surface-treatment.php` turns
+	// the panel's choices into the `data-sgs-fx-treatment*` attributes +
+	// duotone custom properties the runtime already expects, and the panel
+	// below carries a real preset picker plus duotone colours plus an
+	// intensity fine-tune.
+	'surface-treatment',
 ];
 
 const FX_OPTION_LABELS = {
@@ -146,6 +160,7 @@ const FX_OPTION_LABELS = {
 	'motion-path': __( 'Travel along a route', 'sgs-blocks' ),
 	morph: __( 'Morph between shapes', 'sgs-blocks' ),
 	'cursor-field': __( 'Cursor-follow background', 'sgs-blocks' ),
+	'surface-treatment': __( 'Surface treatment', 'sgs-blocks' ),
 };
 
 /**
@@ -517,6 +532,10 @@ const FX_PARAM_RESET = {
 	fxShape: '',
 	fxShapeAssetFrom: undefined,
 	fxShapeAssetTo: undefined,
+	fxTreatment: '',
+	fxTreatmentShadow: '',
+	fxTreatmentHighlight: '',
+	fxTreatmentIntensity: undefined,
 };
 
 /*
@@ -582,6 +601,124 @@ const FX_SHAPE_OPTIONS = [
 		d: null,
 	},
 ];
+
+/**
+ * The curated surface-treatment presets, as picker options (Spec 38 §1.2b,
+ * D479).
+ *
+ * Deliberately NOT imported from `src/shared/effects/surface-treatments/
+ * presets.js` — that module also exports every preset's GLSL fragment
+ * source as a string, and importing it here would inline three shader
+ * programmes into the EDITOR's webpack bundle for a value this panel only
+ * needs three ids and three labels from. Hand-kept in step with that file
+ * instead, the same "hand-kept mirror, not a shared import" shape this file
+ * already uses for `fx-presets.json` → `FX_ATTR_MAP`'s PHP twin. There is no
+ * `custom` escape hatch here, unlike `FX_PATH_OPTIONS`/`FX_SHAPE_OPTIONS`:
+ * a surface treatment is a shader programme, not an SVG a client could
+ * upload, so the only choices are the three built ones.
+ *
+ * @type {Array<{value: string, label: string}>}
+ */
+const FX_TREATMENT_OPTIONS = [
+	{ value: 'grain', label: __( 'Grain', 'sgs-blocks' ) },
+	{ value: 'halftone', label: __( 'Halftone', 'sgs-blocks' ) },
+	{ value: 'duotone', label: __( 'Duotone', 'sgs-blocks' ) },
+];
+
+/**
+ * A surface-treatment thumbnail — a small glyph suggesting the finish.
+ *
+ * Drawn as a simple pattern rather than the real shader output (unlike
+ * `routeThumbnail`/`shapeThumbnail`, which can draw the exact `d` the
+ * runtime will use): a WebGL grain/halftone/duotone finish has no static
+ * path data to preview from, only a live-rendered pixel field, so the
+ * closest honest preview at 24px is an iconographic stand-in for each
+ * finish rather than a false promise of pixel accuracy.
+ *
+ * @param {string} id Preset id — `grain` | `halftone` | `duotone`.
+ * @return {Object} An SVG element.
+ */
+function treatmentThumbnail( id ) {
+	if ( 'halftone' === id ) {
+		return (
+			<svg
+				viewBox="0 0 100 100"
+				width="24"
+				height="24"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<circle cx="22" cy="22" r="13" fill="currentColor" />
+				<circle cx="58" cy="22" r="9" fill="currentColor" />
+				<circle cx="86" cy="24" r="5" fill="currentColor" />
+				<circle cx="22" cy="58" r="9" fill="currentColor" />
+				<circle cx="58" cy="58" r="6" fill="currentColor" />
+				<circle cx="86" cy="60" r="3" fill="currentColor" />
+				<circle cx="22" cy="86" r="5" fill="currentColor" />
+				<circle cx="58" cy="86" r="3" fill="currentColor" />
+			</svg>
+		);
+	}
+
+	if ( 'duotone' === id ) {
+		return (
+			<svg
+				viewBox="0 0 100 100"
+				width="24"
+				height="24"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<rect x="12" y="12" width="76" height="76" fill="currentColor" />
+				<path
+					d="M 12 12 H 88 V 88 Z"
+					fill="none"
+					stroke="currentColor"
+					strokeOpacity="0.35"
+					strokeWidth="10"
+				/>
+				<rect
+					x="12"
+					y="12"
+					width="38"
+					height="76"
+					fill="currentColor"
+					fillOpacity="0.4"
+				/>
+			</svg>
+		);
+	}
+
+	// `grain` — scattered flecks, the default/fallback glyph.
+	return (
+		<svg
+			viewBox="0 0 100 100"
+			width="24"
+			height="24"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<rect
+				x="10"
+				y="10"
+				width="80"
+				height="80"
+				rx="6"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="6"
+			/>
+			<circle cx="27" cy="30" r="4" fill="currentColor" />
+			<circle cx="52" cy="22" r="3" fill="currentColor" />
+			<circle cx="72" cy="38" r="4.5" fill="currentColor" />
+			<circle cx="34" cy="55" r="3" fill="currentColor" />
+			<circle cx="60" cy="58" r="4" fill="currentColor" />
+			<circle cx="78" cy="70" r="3" fill="currentColor" />
+			<circle cx="24" cy="76" r="4" fill="currentColor" />
+			<circle cx="48" cy="80" r="3" fill="currentColor" />
+		</svg>
+	);
+}
 
 /**
  * A shape-pair thumbnail — the FROM shape, filled small.
@@ -856,6 +993,33 @@ function addFxAttributes( settings, name ) {
 			fxShapeAssetFrom: { type: 'number' },
 			fxShapeAssetTo: { type: 'number' },
 			/*
+			 * Surface treatment (Tier W, Spec 38 §1.2b, D479). `fxTreatment`
+			 * is the curated preset id (`grain`|`halftone`|`duotone`); empty
+			 * means untreated, not "the stylesheet's own default" — unlike
+			 * `fxFieldType` above, there is no meaningful default finish for
+			 * a block nobody asked to be painted over.
+			 *
+			 * `fxTreatmentShadow`/`fxTreatmentHighlight` store palette SLUGS,
+			 * the same `DesignTokenPicker` value shape `fxFieldColour`
+			 * already uses — `includes/fx-surface-treatment.php` resolves
+			 * them via the same `sgs_fx_cursor_field_colour()` helper that
+			 * maps a slug to `var(--wp--preset--color--<slug>)`, so the
+			 * duotone re-colours with the site rather than freezing today's
+			 * palette. Duotone-only; the panel only renders these two when
+			 * `fxTreatment === 'duotone'`.
+			 *
+			 * `fxTreatmentIntensity` is undefined-when-untouched, the same
+			 * "0 is a legitimate value, unset is a different thing" shape
+			 * `fxScrub`/`fxFieldRadius` already use above: the render layer
+			 * clamps an explicit value to 0-1 and drops it back to unset at
+			 * 0, letting the preset's own built-in default stand when the
+			 * client never opens this control.
+			 */
+			fxTreatment: { type: 'string', default: '' },
+			fxTreatmentShadow: { type: 'string', default: '' },
+			fxTreatmentHighlight: { type: 'string', default: '' },
+			fxTreatmentIntensity: { type: 'number' },
+			/*
 			 * Per-breakpoint disable (Spec 38 §7 build task, D446 Task 15) —
 			 * the single most common post-launch agency request, per the
 			 * competitor review this task cited: "turn the animation off on
@@ -931,6 +1095,18 @@ function addFxSaveProps( props, blockType, attributes ) {
 		 */
 		'data-sgs-fx-field': attributes.fxFieldType,
 		'data-sgs-fx-field-colour': attributes.fxFieldColour,
+		/*
+		 * Surface treatment (Tier W, D479). `includes/fx-surface-treatment.php`
+		 * still runs on p11 for THESE (as for every fx attribute) to turn the
+		 * colour slugs into the `--sgs-fx-shadow`/`--sgs-fx-highlight` custom
+		 * properties and clamp intensity — it is not bypassed for static
+		 * blocks, only the base `data-sgs-fx-treatment*` values need to reach
+		 * the markup at all, which is this filter's job for a static block
+		 * exactly as it already is for every other fx param above.
+		 */
+		'data-sgs-fx-treatment': attributes.fxTreatment,
+		'data-sgs-fx-treatment-shadow': attributes.fxTreatmentShadow,
+		'data-sgs-fx-treatment-highlight': attributes.fxTreatmentHighlight,
 	};
 	Object.entries( optional ).forEach( ( [ key, value ] ) => {
 		if ( value ) {
@@ -949,6 +1125,9 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// Cursor-field radius in px. The render layer clamps it to a range that
 		// still renders as a field rather than trusting the stored number.
 		'data-sgs-fx-field-radius': attributes.fxFieldRadius,
+		// Surface-treatment intensity, 0-1. The render layer clamps it and
+		// drops a 0 back to unset — see the attribute declaration above.
+		'data-sgs-fx-treatment-intensity': attributes.fxTreatmentIntensity,
 	};
 	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
 	// discarded a deliberate 0 — see the attribute declarations above.
@@ -2223,6 +2402,215 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											'sgs-blocks'
 										) }
 									/>
+								</ToolsPanelItem>
+							</>
+						) }
+
+						{ /*
+						 * Surface treatment (Tier W, Spec 38 §1.2b, D479).
+						 * Presets-before-parameters: the treatment picker is
+						 * the primary, shown-by-default control (a client
+						 * gets a finished look with zero further clicks),
+						 * duotone's two colours appear only when they mean
+						 * anything, and intensity sits behind the panel's
+						 * "+" because the shipped default already reads
+						 * well — Bean's rule that the client must get a
+						 * good result without ever opening a fine-tune
+						 * control.
+						 */ }
+						{ 'surface-treatment' === fx && (
+							<>
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxTreatment
+									}
+									label={ __( 'Treatment', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxTreatment: '' } )
+									}
+									isShownByDefault
+								>
+									<ToggleGroupControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										isBlock
+										label={ __(
+											'Treatment',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxTreatment }
+										onChange={ ( value ) =>
+											setParam( {
+												fxTreatment: value || '',
+												// Dropping out of duotone
+												// releases both colours —
+												// leaving a slug attached to
+												// a preset with no colour
+												// control showing it would
+												// be stored state the client
+												// cannot see or clear.
+												fxTreatmentShadow:
+													'duotone' === value
+														? attributes.fxTreatmentShadow
+														: '',
+												fxTreatmentHighlight:
+													'duotone' === value
+														? attributes.fxTreatmentHighlight
+														: '',
+											} )
+										}
+										help={ __(
+											'Grain, halftone or duotone, painted over the image on the live site.',
+											'sgs-blocks'
+										) }
+									>
+										{ FX_TREATMENT_OPTIONS.map(
+											( option ) => (
+												<RouteOption
+													key={ option.value }
+													value={ option.value }
+													label={ option.label }
+													icon={ treatmentThumbnail(
+														option.value
+													) }
+												/>
+											)
+										) }
+									</ToggleGroupControl>
+
+									{ ! attributes.fxTreatment && (
+										<Notice
+											status="warning"
+											isDismissible={ false }
+										>
+											{ __(
+												'Pick a treatment above. Until you do, this block will not be treated on the live site.',
+												'sgs-blocks'
+											) }
+										</Notice>
+									) }
+								</ToolsPanelItem>
+
+								{ 'duotone' === attributes.fxTreatment && (
+									<>
+										<ToolsPanelItem
+											hasValue={ () =>
+												!! attributes.fxTreatmentShadow
+											}
+											label={ __(
+												'Shadow colour',
+												'sgs-blocks'
+											) }
+											onDeselect={ () =>
+												setParam( {
+													fxTreatmentShadow: '',
+												} )
+											}
+											isShownByDefault
+										>
+											<DesignTokenPicker
+												label={ __(
+													'Shadow colour',
+													'sgs-blocks'
+												) }
+												value={
+													attributes.fxTreatmentShadow
+												}
+												onChange={ ( value ) =>
+													setParam( {
+														fxTreatmentShadow:
+															value,
+													} )
+												}
+											/>
+										</ToolsPanelItem>
+
+										<ToolsPanelItem
+											hasValue={ () =>
+												!! attributes.fxTreatmentHighlight
+											}
+											label={ __(
+												'Highlight colour',
+												'sgs-blocks'
+											) }
+											onDeselect={ () =>
+												setParam( {
+													fxTreatmentHighlight: '',
+												} )
+											}
+											isShownByDefault
+										>
+											<DesignTokenPicker
+												label={ __(
+													'Highlight colour',
+													'sgs-blocks'
+												) }
+												value={
+													attributes.fxTreatmentHighlight
+												}
+												onChange={ ( value ) =>
+													setParam( {
+														fxTreatmentHighlight:
+															value,
+													} )
+												}
+											/>
+										</ToolsPanelItem>
+									</>
+								) }
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !==
+										attributes.fxTreatmentIntensity
+									}
+									label={ __( 'Intensity', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( {
+											fxTreatmentIntensity: undefined,
+										} )
+									}
+									isShownByDefault={ false }
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __(
+											'Intensity',
+											'sgs-blocks'
+										) }
+										value={
+											attributes.fxTreatmentIntensity
+										}
+										onChange={ ( value ) =>
+											setParam( {
+												fxTreatmentIntensity: value,
+											} )
+										}
+										min={ 0 }
+										max={ 1 }
+										step={ 0.05 }
+										help={ __(
+											'How strong the treatment looks. Leave this alone to use the treatment’s own considered default.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () => false }
+									label={ __( 'Preview', 'sgs-blocks' ) }
+									isShownByDefault
+								>
+									<Notice
+										status="info"
+										isDismissible={ false }
+									>
+										{ __(
+											'Surface treatments preview on the live site. Visitors without WebGL see the original image.',
+											'sgs-blocks'
+										) }
+									</Notice>
 								</ToolsPanelItem>
 							</>
 						) }

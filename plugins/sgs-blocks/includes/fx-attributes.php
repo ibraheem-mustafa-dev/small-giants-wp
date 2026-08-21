@@ -103,6 +103,20 @@ const FX_ATTR_MAP = array(
 	'fxFieldRadius'    => 'data-sgs-fx-field-radius',
 	'fxShapeAssetFrom' => 'data-sgs-fx-shape-asset-from',
 	'fxShapeAssetTo'   => 'data-sgs-fx-shape-asset-to',
+
+	/*
+	 * Surface treatment (Tier W, Spec 38 §1.2b, D479). Same reasoning as the
+	 * cursor-field rows above: most qualifying hosts are DYNAMIC blocks, so
+	 * these MUST be injected here, not just baked in by `fx.js`'s save
+	 * filter for static blocks — without this row a dynamic block's chosen
+	 * treatment/colours never reach the rendered root and
+	 * `includes/fx-surface-treatment.php` (which reads these back off the
+	 * markup at p11) has nothing to act on.
+	 */
+	'fxTreatment'          => 'data-sgs-fx-treatment',
+	'fxTreatmentIntensity' => 'data-sgs-fx-treatment-intensity',
+	'fxTreatmentShadow'    => 'data-sgs-fx-treatment-shadow',
+	'fxTreatmentHighlight' => 'data-sgs-fx-treatment-highlight',
 );
 
 /**
@@ -363,6 +377,30 @@ function sgs_fx_effect_param_scope(): array {
 		 * cross-checked by a gate.
 		 */
 		'cursor-field'     => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius' ),
+
+		/*
+		 * Surface treatment (Tier W, Spec 38 §1.2b, D479). THIS ROW IS
+		 * LOAD-BEARING, NOT BOOKKEEPING — the exact `cursor-field` trap
+		 * documented immediately above, repeated for a different effect:
+		 * `sgs_fx_clear_stale_params()` below does `$allowed = $scope[
+		 * $effect ] ?? array()` and then NULLS every scoped key not in
+		 * `$allowed`. Omitting this row would make `fxTreatment` — a key
+		 * scoped to no effect at all — read as belonging to a DIFFERENT
+		 * effect, so it gets wiped on every single render regardless of
+		 * which effect is selected. The client's chosen treatment would
+		 * silently vanish at render time with no error anywhere: the panel
+		 * would still show it selected in the editor (that side reads the
+		 * stored attribute, not this scope), but the live page would never
+		 * receive `data-sgs-fx-treatment`, `-shadow`, `-highlight` or
+		 * `-intensity` — a feature that looks configured and renders
+		 * nothing.
+		 */
+		'surface-treatment' => array(
+			'fxTreatment',
+			'fxTreatmentIntensity',
+			'fxTreatmentShadow',
+			'fxTreatmentHighlight',
+		),
 	);
 }
 
