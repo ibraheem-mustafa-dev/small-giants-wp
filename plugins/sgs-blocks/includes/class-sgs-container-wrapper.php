@@ -2517,8 +2517,48 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				 * the outer or it would address a node that does not exist.
 				 */
 				$obj_band_props = array();
-				$band_obj_sel   = $uid
-					? ( false !== $opt_wrap_inner ? '.' . $uid . '>.sgs-container__inner' : '.' . $uid )
+
+				/*
+				 * Which element the band CSS targets must follow whether the band
+				 * ELEMENT actually renders — not whether the caller asked for it.
+				 *
+				 * This mirrors $do_wrap (computed far below, ~:2890) exactly, because
+				 * keying on $opt_wrap_inner alone was WRONG in both directions, and a
+				 * post-ship council caught both:
+				 *
+				 *   a) $do_wrap is FORCED true for container-queries-with-grid/flex
+				 *      (~:2895) and for fx='horizontal-panel' (~:2920), and NEITHER
+				 *      force consults $opt_wrap_inner. So `wrap_inner => false` plus
+				 *      either force rendered a band element while band CSS still
+				 *      targeted the outer — the original bug, reintroduced on exactly
+				 *      that combination.
+				 *   b) $has_band_props tests the DESKTOP tier only (~:894), while
+				 *      $obj_band_props is populated from an is_array() check across ALL
+				 *      tiers. A contentWidth with desktop 'full' but a real tablet or
+				 *      mobile value therefore emitted a band rule for an element that
+				 *      never rendered — the cap silently doing nothing. Before this
+				 *      routing change that case landed on the outer: wrong layer, but
+				 *      at least visible. Falling back to the outer when no band renders
+				 *      keeps that behaviour rather than trading a visible bug for an
+				 *      invisible one.
+				 *
+				 * Neither path is reachable by any block shipping today (no block
+				 * combines wrap_inner with containerQueries or fx — grepped), so this
+				 * closes latent landmines, not live regressions. It is cheap to close
+				 * now and expensive to diagnose later, when the composite that trips it
+				 * will look like the thing at fault.
+				 */
+				$band_will_render = ( null !== $opt_wrap_inner )
+					? (bool) $opt_wrap_inner
+					: $has_band_props;
+				if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
+					$band_will_render = true;
+				}
+				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {
+					$band_will_render = true;
+				}
+				$band_obj_sel = $uid
+					? ( $band_will_render ? '.' . $uid . '>.sgs-container__inner' : '.' . $uid )
 					: '';
 				if ( isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) ) {
 					$obj_inner_props[] = array(
