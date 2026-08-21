@@ -18,9 +18,13 @@ SUPERSEDES two claims in the shop track's status (gradients, and the container g
 are marked inline. A count taken while both tracks are running has a timestamp, not a value:
 re-measure before acting on any number here.
 
-**If you are continuing the COLOUR-GOLDEN track**, your single next task is the one open
-defect in that section: move the container's padding default from the OUTER layer to the
-CONTENT-BAND layer. Read `.claude/plans/2026-08-20-unified-colour-panel-DESIGN.md` first.
+**If you are continuing the COLOUR-GOLDEN track**: the container/shop work is DONE and
+QC Gate 2 is CLOSED on all three blocks. Read
+`.claude/reports/2026-08-21-HANDOVER-container-and-shop-completion.md` first — it carries
+two decisions waiting on Bean (the sticky sidebar, and the cap-the-children model) and
+seven still-open colour items. ⛔ The old "move the padding default to the CONTENT-BAND
+layer" instruction is REFUTED: each container has exactly one band, so band-padding stacks
+identically. Do not build it.
 
 **If you are continuing the SHOP-ARCHIVE track**, read, in this order:
 
@@ -71,48 +75,23 @@ Per-step plan status is single-sourced to
   enumerated: 38 renames done, 39 remain** (10 SGS authorings in `theme/` footer patterns, 29
   in `sites/`; the raw string also appears in extraction artefacts which are NOT authorings).
   **P2-1, P2-2, P2-4, P2-5, P2-7, P2-9 NOT STARTED.** QC Gates 3 and 4 not reached.
-- 🔴 **Two container defects handed over, no temp patch applied (Bean's explicit call):**
-  background still capped at content width (P2-1), and `sgs/container` now gives NO horizontal
-  gutter — at 355px product cards and the filter toggle sit flush at `left: 0`, which looks
-  like a regression from this evening's container work.
-  ⛔ **SUPERSEDED 2026-08-21 — both root-caused and fixed by the colour-golden track, and it
-  was NOT that evening's container work.** Neither container commit contained a padding line.
-  Real cause: `163f9fa7` migrated 96 `core/group` instances to `sgs/container`, correctly
-  translating WordPress's `layout:{"type":"constrained"}` (which is what had been supplying
-  the gutter AND the content cap) into `contentWidth:"normal"` — and
-  `class-sgs-container-wrapper.php:431` then discarded the tier object on every render, so
-  `.sgs-container__inner` never rendered. Fixed in `f9f4368b` + `2d291992`; the band now
-  renders (0 → 15 on `/shop/`). ONE residual, described in the colour-golden section below:
-  the gutter default sits on the OUTER layer and compounds per nesting level.
-- ⚠️ **CORRECTION to two commits pushed 2026-08-21 (`29c0fcb1`, and PR #35).** Both claimed
-  American-spelled `backgroundColor` authorings "never painted", citing D338. **D704 corrects
-  D338**: WP drops undeclared attrs from the EDITOR schema, but PHP does NOT drop them before
-  `render.php` runs — and several blocks read `$attributes['backgroundColor']` anyway to
-  re-add `has-*` preset classes. So of 21 authorings renamed: **16 were genuinely dead**
-  (`hero`, `trust-bar` — zero such reads), **5 were already painting**
-  (`site-header-row` ×3 at `render.php:154`, `brand-strip:147`, `testimonial-slider:251`).
-  The renames still stand — they move authorings onto the canonical `sgs_colour_value()`
-  path instead of `has-*` classes that skip-serialisation exists to remove — but they were
-  not all bug fixes. PR #35's description is corrected in place; the commit messages are
-  pushed and cannot be. **Rule: "not declared" does NOT mean "does nothing" — check whether
-  `render.php` reads it anyway.**
+- ✅ **Both container defects handed over are now CLOSED** (background capped at content
+  width = P2-1, and the gutter). Root cause was band CSS painted on the OUTER box — not the
+  padding default, and not that evening's container work. Fixed, deployed and live-verified
+  2026-08-21; see the colour-golden section below and
+  `.claude/reports/2026-08-21-HANDOVER-container-and-shop-completion.md`.
+- ⚠ **Rule carried forward from the shop track:** "not declared" does NOT mean "does
+  nothing" — PHP keeps undeclared attrs, so several blocks still read
+  `$attributes['backgroundColor']` to re-add `has-*` preset classes. Check whether
+  render.php reads an attr before calling it dead. (The HANDOVER-4 file the earlier
+  entry linked was never written — the link was dangling.)
 - **Handover 3** → `.claude/reports/2026-08-20-HANDOVER-3-shop-wave-2-to-colour-golden-track.md`
 
-### ▶ NEXT SESSION — Wave 2, and P1-6 FIRST
+### ✅ Wave 2 + QC GATE 2 — both closed
 
-Wave 2 is four independent steps, no design gate, can start cold. **Do P1-6 first: executed as
-written it would cause damage.**
-
-| Task | Execution | Gate after |
-|---|---|---|
-| **P1-6** colour on 3 blocks (NOT 4) | delegate ×3, sonnet, parallel — one per block, file-disjoint | `/qc-inline` |
-| **P1-5** template validity (7 named WC leaves + stray comments) | delegate, haiku | none |
-| **P1-7** theme CSS (panel visibility, fallbacks, search width) | delegate, sonnet | `/qc-inline` |
-| **P1-8** mobile filter sheet + a11y | delegate, sonnet — ⚠ SEQUENTIAL after P1-7, shares `woocommerce.css` | live check at 390px |
-| **QC GATE 2** | inline — build, deploy, verify at 1440/768/390 | closes Phase 1 |
-
-**Acceptance for P1-6:** the client picks a colour in the editor and the computed style changes on
-the frontend, on each block. Not "attrs declared".
+P1-5/6/7/8 shipped by the shop track; **QC Gate 2 closed 2026-08-21** on all three blocks
+(hero, trust-bar, brand-strip) against Bean's behavioural acceptance test — colour picked in
+the editor, computed style changes on the frontend at rest AND on a real pointer hover.
 
 ### ⛔ THREE PLAN CLAIMS REFUTED — do not work from the old plan text
 
@@ -300,21 +279,43 @@ defects in the first plan draft, including one that would have broken ~280 patte
    footer loses its background silently. The 152 `fontSize` authorings are WP-native
    typography and out of scope entirely.
 
-### 🔴 THE ONE OPEN DEFECT — handed to a fresh session
+### ✅ CONTAINER + SHOP WORK — COMPLETE 2026-08-21
 
-**The default gutter is on the WRONG LAYER.** `padding` defaults to `{left:24px,right:24px}` on
-the OUTER layer, so it COMPOUNDS per nesting level. Measured live at 355px on `/shop/`:
+Full detail: `.claude/reports/2026-08-21-HANDOVER-container-and-shop-completion.md`.
+Commits `0843567d` `669bc1e5` `40411532` `f5e184d5` `38fa1324` `1a127c06`, all deployed
+and live-verified.
 
-- `h1 "Shop"` left `0` → **`48`** (two nested containers x 24px — should be 24)
-- `sgs-container-174e6951`: outer width **92px**, inner content squeezed to **44px** — real
-  unintended narrowing on a small nested container
-- product cards + filter toggle STILL at `left: 0` — they sit OUTSIDE any `sgs-container`,
-  so no container-level fix can reach them (shop template structure)
+Four defects were ONE bug: band CSS (`max-width` + `margin-inline:auto`) painted on the
+container's OUTER box. Fixed by routing band properties to a dedicated band selector.
+- **P2-1 CLOSED** — container background no longer capped (`max-width: 1280px` → `none`).
+- Product cards 165px → **261px**; shop grid restored (was stacked, cards crushed to 73px).
+- Footer column 48px → **400px**; header icon cluster padding 24px → **0**.
+- Filter box now level with the cards (was 24px low).
+- **Results count + sort control BUILT** and behaviourally verified (5 → 3 on filter;
+  prices sort ascending).
 
-**Fix: move the padding default from the OUTER layer to the CONTENT-BAND layer**, where it
-applies once per band instead of stacking. The band now renders (15 on `/shop/`), so it has
-somewhere to go. ⚠ **15 new DOM elements just appeared site-wide and only `/shop/` was
-checked** — pages that already looked correct must be checked for unintended narrowing.
+⛔ The shop-grid break was NOT from this track's work — it came from `2d291992`, which made
+the band render for the first time (0 → 15). Its own note warned only `/shop/` was checked;
+`/shop/` at DESKTOP was the unchecked case.
+
+### ✅ QC GATE 2 — CLOSED on all three blocks (2026-08-21)
+
+`sgs/hero` and `sgs/trust-bar` verified in the EDITOR with a real login, then on the
+frontend: colour panel present, swatch picked, attribute stored as a **slug** (token
+survives), resting colour paints, and a **real pointer hover** repaints
+(hero primary→accent, trust-bar success→cookie-brown). Zero console errors, `isValid:true`.
+Fixture page 2588 — safe to delete.
+
+### 🔵 TWO DECISIONS WAITING ON BEAN
+
+1. **Sticky filter sidebar** — `position:sticky` applies but does nothing (no travel room:
+   panel 1154px is the tallest grid item AND taller than the viewport). ⛔ The obvious
+   `max-height + overflow-y` fix was MEASURED INERT — capped to 852px it still exceeds the
+   829px product column. Three specialists: don't build sticky yet; accordion-collapse the
+   filter groups instead. Sticky earns its place at ~50 products.
+2. **Cap-the-children vs the injected band** — council says adopt-with-changes, scoped
+   narrowly. A blanket swap deletes `@container`, the GSAP fx track, and grid-on-inner.
+   Fix `inspector-scan` rule 23's regex FIRST — it goes silently wrong, not red.
 
 ### Still open on this track (not started)
 
