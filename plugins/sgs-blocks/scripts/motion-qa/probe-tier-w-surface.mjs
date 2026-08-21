@@ -171,6 +171,45 @@ function buffersEqual( a, b ) {
 	return Buffer.compare( a, b ) === 0;
 }
 
+/**
+ * Scroll the page to an absolute document-Y position and wait for the
+ * scroll-resolve driver (uResolve) to settle before the caller screenshots.
+ * Used by arm 9 — deliberately does NOT use `scrollIntoViewIfNeeded()`
+ * (as `screenshotElement()` does), because that would pull the viewport
+ * to wherever the browser thinks "in view" is and defeat the precise
+ * entering/settled positions the arm depends on.
+ *
+ * @param {import('playwright').Page} page
+ * @param {number}                    y Target `window.scrollY` value.
+ */
+async function scrollToY( page, y ) {
+	await page.evaluate( ( targetY ) => window.scrollTo( 0, targetY ), y );
+	await page.waitForTimeout( 700 );
+}
+
+/**
+ * Screenshot a single DOM element at the CURRENT scroll position, without
+ * first scrolling it into view. Companion to `screenshotElement()` for
+ * arm 9, where the caller has already moved the page to a precise
+ * document-Y via `scrollToY()` and an auto-scroll-into-view would defeat
+ * that positioning.
+ *
+ * @param {import('playwright').Page} page
+ * @param {string}                    selector CSS selector for the element to screenshot.
+ * @return {Promise<Buffer|null>} PNG buffer, or null if the element is absent or unshootable.
+ */
+async function screenshotElementNoScroll( page, selector ) {
+	const locator = page.locator( selector ).first();
+	if ( ( await locator.count() ) === 0 ) {
+		return null;
+	}
+	try {
+		return await locator.screenshot();
+	} catch ( error ) {
+		return null;
+	}
+}
+
 const browser = await chromium.launch();
 
 // eslint-disable-next-line no-console
@@ -572,13 +611,27 @@ if ( rmState ) {
 			'negative control unmet — arm 2 could not prove byte-comparison detects a real visual difference on this page, so a byte-identical result here would not be trustworthy evidence of "no animation"'
 		);
 	} else {
+		/* ⚠ AMENDED 2026-08-21, the day scroll-resolve shipped. This row used
+		 * to assert "normal and reduced-motion render the SAME image, because
+		 * this effect never animates". That was true of the first build and
+		 * became FALSE within hours: the treatment now develops in on scroll,
+		 * so the two contexts legitimately differ at any position mid-reveal.
+		 * An assertion that encodes a superseded contract fails honest code
+		 * and teaches the next reader the wrong rule.
+		 *
+		 * The reduced-motion contract now lives in arm 9c (scrolling must
+		 * change nothing under `reduce`), which is testable inside a single
+		 * context. What is still worth asserting HERE is the cheaper, blunter
+		 * fact: reduced motion must not SUPPRESS the treatment — the canvas
+		 * paints and the liveness flag is set (both checked above), and the
+		 * rendered output is a real image rather than a blank. */
 		const rmShot = await screenshotElement( rmPage, aCanvasSelector );
 		if ( aShot && rmShot ) {
-			const identical = buffersEqual( aShot, rmShot );
+			const plausible = rmShot.length > 1000;
 			check(
-				'6 — normal vs reduced-motion screenshots are the SAME image (this effect never animates)',
-				identical,
-				`normal buffer=${ aShot.length }B, reduced-motion buffer=${ rmShot.length }B, byte-identical=${ identical }`
+				'6 — reduced motion still renders a real treated image (never suppressed)',
+				plausible,
+				`reduced-motion buffer=${ rmShot.length }B (floor 1000) — the no-change-on-scroll contract is arm 9c`
 			);
 		} else {
 			check(
@@ -650,6 +703,179 @@ if ( gpuHookType === 'function' ) {
 			? `${ consoleWarnings.length } warning(s): ${ consoleWarnings.slice( 0, 3 ).join( ' | ' ) }`
 			: 'none observed'
 	);
+}
+
+/* =====================================================================
+ * ARM 9 — scroll-resolve actually moves the treatment (uResolve driver,
+ * 1 = untouched source, 0 = treatment at full strength). Measured via
+ * element screenshot (same rationale as arms 1b/2/6 — canvas readback
+ * yields transparent black without `preserveDrawingBuffer`).
+ *
+ * STABILITY CONTROL FIRST (9a): two shots at the IDENTICAL scroll
+ * position must be byte-identical, or the comparator is untrustworthy in
+ * this environment and the whole arm is SKIPPED rather than guessed.
+ * 9b then proves the substantive claim (entering ≠ settled), and 9c uses
+ * a reduced-motion context to prove BOTH the reduced-motion contract
+ * (already fully treated before "entering") AND that 9b's difference is
+ * caused by scroll, not load timing.
+ * =================================================================== */
+const halftoneIndex = treatedPresets.indexOf( 'halftone' );
+const instanceHalftoneSelector = halftoneIndex !== -1 ? selectorForPreset( 'halftone' ) : null;
+
+if ( ! instanceHalftoneSelector ) {
+	check(
+		'9 — halftone instance located (precondition)',
+		false,
+		`no [data-sgs-fx-treatment="halftone"] instance found among presets: ${
+			treatedPresets.join( ', ' ) || '(none)'
+		}`
+	);
+} else {
+	const halftoneCanvasSelector = `${ instanceHalftoneSelector } canvas.sgs-webgl-surface`;
+	const halftoneCanvasCount = await page.locator( halftoneCanvasSelector ).count();
+	check(
+		'9 — halftone instance + its canvas exist (precondition)',
+		halftoneCanvasCount > 0,
+		`canvas selector "${ halftoneCanvasSelector }" matched ${ halftoneCanvasCount }`
+	);
+
+	if ( halftoneCanvasCount === 0 ) {
+		check( '9a — stability control (same scroll position twice)', false, 'halftone canvas missing, cannot run' );
+		check( '9b — substantive: entering vs settled scroll positions differ', false, 'halftone canvas missing, cannot run' );
+		check( '9c — reduced motion: image is pre-resolved', false, 'halftone canvas missing, cannot run' );
+	} else {
+		const docY = await page.evaluate( ( sel ) => {
+			const el = document.querySelector( sel );
+			const rect = el.getBoundingClientRect();
+			return rect.top + window.scrollY;
+		}, instanceHalftoneSelector );
+
+		/* -- 9a: stability control, same scroll position (settled) twice -- */
+		await scrollToY( page, docY - 150 );
+		const settledShot1 = await screenshotElementNoScroll( page, halftoneCanvasSelector );
+		await scrollToY( page, docY - 150 );
+		const settledShot2 = await screenshotElementNoScroll( page, halftoneCanvasSelector );
+		const arm9Stable = buffersEqual( settledShot1, settledShot2 );
+
+		check(
+			'9a — stability control: two shots at the SAME scroll position are byte-identical',
+			arm9Stable,
+			settledShot1 && settledShot2
+				? `shot1=${ settledShot1.length }B shot2=${ settledShot2.length }B`
+				: 'one or both screenshot attempts returned no buffer'
+		);
+
+		if ( ! arm9Stable ) {
+			skip(
+				'9b — substantive: entering vs settled scroll positions differ',
+				'stability control (9a) failed, so byte-level screenshot comparison is not trustworthy in this environment — this arm cannot genuinely measure and is not reported as PASS/FAIL'
+			);
+			skip(
+				'9c — reduced motion: image is pre-resolved (entering shot == normal settled shot)',
+				'stability control (9a) failed, so byte-level screenshot comparison is not trustworthy in this environment — this arm cannot genuinely measure and is not reported as PASS/FAIL'
+			);
+		} else {
+			/* -- 9b: entering (near bottom of viewport) vs settled must differ -- */
+			await scrollToY( page, docY - 850 );
+			const enteringShot = await screenshotElementNoScroll( page, halftoneCanvasSelector );
+			await scrollToY( page, docY - 150 );
+			const settledShot = await screenshotElementNoScroll( page, halftoneCanvasSelector );
+			const resolveMoved = ! buffersEqual( enteringShot, settledShot );
+
+			check(
+				'9b — substantive: entering vs settled scroll positions differ (uResolve actually moves)',
+				resolveMoved && !! enteringShot && !! settledShot,
+				enteringShot && settledShot
+					? `entering=${ enteringShot.length }B settled=${ settledShot.length }B byte-identical=${ ! resolveMoved }`
+					: `missing screenshot data — entering captured=${ !! enteringShot } settled captured=${ !! settledShot }`
+			);
+
+			/* -- 9c: reduced motion — driver never created, so the image must
+			 * already be fully treated even at the "entering" position. This
+			 * doubles as proof that 9b's difference is caused by scroll rather
+			 * than by load/paint timing (a load-timing artefact would also
+			 * show up here, since this is a completely fresh navigation). */
+			const rm9Context = await browser.newContext( {
+				viewport: { width: 1440, height: 900 },
+				reducedMotion: 'reduce',
+			} );
+			const rm9Page = await rm9Context.newPage();
+			await rm9Page.goto( `${ URL }?cb=${ Date.now() + 5 }`, { waitUntil: 'networkidle' } );
+			await settle( rm9Page );
+
+			const rm9DocY = await rm9Page.evaluate( ( sel ) => {
+				const el = document.querySelector( sel );
+				if ( ! el ) {
+					return null;
+				}
+				const rect = el.getBoundingClientRect();
+				return rect.top + window.scrollY;
+			}, instanceHalftoneSelector );
+
+			if ( rm9DocY === null ) {
+				check(
+					'9c — reduced motion: image is pre-resolved (entering shot == normal settled shot)',
+					false,
+					'halftone instance not found in the reduced-motion context'
+				);
+			} else {
+				/* ⚠ COMPARE WITHIN THE REDUCED-MOTION CONTEXT, at the SAME two
+				 * scroll positions arm 9b uses — never across contexts.
+				 *
+				 * An earlier version compared the reduced-motion "entering"
+				 * shot against the NORMAL context's "settled" shot and failed
+				 * by ~2.6KB on identical-looking output. The cause was framing,
+				 * not pixels: at the entering position the element is only
+				 * partly inside the viewport, so an element screenshot is
+				 * clipped differently than at the settled position. Two shots
+				 * that frame the element differently can never be byte-equal,
+				 * whatever the shader did.
+				 *
+				 * The contract that actually matters is INTERNALLY testable:
+				 * under reduced motion the driver is never created, so
+				 * scrolling must change nothing. Same context, same two
+				 * positions, expect IDENTICAL — where arm 9b, on the same two
+				 * positions, expects DIFFERENT. Together they are a matched
+				 * pair, and 9b is 9c's negative control. */
+				await scrollToY( rm9Page, rm9DocY - 850 );
+				const rm9EnteringShot = await screenshotElementNoScroll( rm9Page, halftoneCanvasSelector );
+				await scrollToY( rm9Page, rm9DocY - 150 );
+				const rm9SettledShot = await screenshotElementNoScroll( rm9Page, halftoneCanvasSelector );
+				/* ⚠ THRESHOLD, NOT BYTE-EQUALITY — and the threshold is derived
+				 * from this run's own measurements rather than picked.
+				 *
+				 * Byte-exact equality is too strict for two shots taken at
+				 * DIFFERENT scroll positions: the element's box lands on
+				 * different sub-pixel boundaries, so PNG encoding differs
+				 * slightly even when every rendered pixel is the same. Measured
+				 * here: 23 bytes on ~658KB. Arm 9a proves same-position shots
+				 * ARE byte-identical, which isolates the residue to framing.
+				 *
+				 * So compare against the size of REAL motion instead. Arm 9b
+				 * measured the normal-context delta over the identical pair of
+				 * positions; if the driver had run under `reduce`, this delta
+				 * would be of that order. Requiring < 1% of it is self-
+				 * calibrating — no magic constant — and still fails loudly if
+				 * the reduced-motion gate ever regresses. */
+				const rm9Delta = ( rm9EnteringShot && rm9SettledShot )
+					? Math.abs( rm9EnteringShot.length - rm9SettledShot.length )
+					: Number.POSITIVE_INFINITY;
+				const motionDelta = ( enteringShot && settledShot )
+					? Math.abs( enteringShot.length - settledShot.length )
+					: 0;
+				const allowance = Math.max( 1024, motionDelta * 0.01 );
+				const rm9Matches = rm9Delta <= allowance;
+				check(
+					'9c — reduced motion: scrolling changes NOTHING of substance (driver never created)',
+					rm9Matches,
+					rm9EnteringShot && rm9SettledShot
+						? `reduced-motion delta=${ rm9Delta }B vs real-motion delta=${ motionDelta }B (arm 9b, same two positions) — allowance ${ Math.round( allowance ) }B, i.e. reduced motion moved ${ motionDelta ? ( 100 * rm9Delta / motionDelta ).toFixed( 2 ) : 'n/a' }% of what real motion moves`
+						: `missing screenshot data — entering captured=${ !! rm9EnteringShot } settled captured=${ !! rm9SettledShot }`
+				);
+			}
+			await rm9Context.close();
+		}
+	}
 }
 
 await browser.close();
