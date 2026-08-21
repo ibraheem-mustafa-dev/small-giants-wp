@@ -32,11 +32,10 @@
  * bottom,left}` (base only, matches sgs/quote's pattern), paired with the
  * scalar `borderColour`/`borderStyle` attrs.
  *
- * Per-item icon/text colour (iconColour/textColour) previously wrote an
- * identical `style="color:…"` attribute onto EVERY `<li>`'s icon/text span
- * (not truly per-item — same value repeated across the array). These now
- * emit ONCE into the scoped `<style>` targeting `.{uid} .sgs-icon-list__icon`
- * / `.{uid} .sgs-icon-list__text`, never inline on the repeated elements.
+ * Per-item icon/text colour (iconColour/textColour) emits ONCE into the
+ * scoped `<style>` targeting `.{uid} .sgs-icon-list__icon` /
+ * `.{uid} .sgs-icon-list__text`, never inline on the repeated elements —
+ * the value is shared across the array, not truly per-item.
  *
  * @since 2026-05-?? Initial icon-list render.
  * @since 2026-07-10 No-inline migration (box-object attrs + scoped output).
@@ -71,9 +70,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 // sgs_icon_list_flatten_menu_blocks() lives in includes/helpers-list-markers.php
 // (aggregated by render-helpers.php), NOT here: render.php is re-included once
 // per block instance, so a top-level function declared in it fatals with
-// "Cannot redeclare" the moment a page holds two icon-lists. Caught live
-// 2026-07-23 (a 5-instance test page 500'd); moved to the shared, once-loaded
-// include alongside the marker helpers.
+// "Cannot redeclare" the moment a page holds two icon-lists.
 
 // ---------------------------------------------------------------------------
 // 1. Security sanitisers (contract §D) — a CSS-length sanitiser for box/side

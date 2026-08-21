@@ -110,10 +110,10 @@ $pill_border_radius   = isset( $attributes['pillBorderRadius'] ) ? (string) $att
 $pill_sel_radius_raw  = isset( $attributes['pillSelectedBorderRadius'] ) ? (string) $attributes['pillSelectedBorderRadius'] : '';
 
 // Root wrapper (box+width only, content-kind — matches the mirrored
-// SGS_Container_Wrapper 'content' capability set).
-// RENAMED from `contentWidth` 2026-08-10 (D540): this block renders no inner
-// band — the value becomes a plain `width:` in $root_decls beside `max-width:`.
-// D540 reserves `contentWidth` for a real second layer; a fixed width is `width`.
+// SGS_Container_Wrapper 'content' capability set) (D540). This block renders
+// no inner band — the value becomes a plain `width:` in $root_decls beside
+// `max-width:`. D540 reserves `contentWidth` for a real second layer; a fixed
+// width is `width`.
 $content_width = $attributes['width'] ?? '';
 $max_width     = $attributes['maxWidth'] ?? '';
 
@@ -252,12 +252,11 @@ $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class
 $preset_bg_slug        = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 // Pill custom padding — SGS custom TIER-OF-BOXES object attr
-// {desktop,tablet,mobile} (Spec 35 box-tier migration, 2026-08-11 — the
-// pillPaddingTablet/pillPaddingMobile sibling attrs no longer exist in this
-// block's schema). The pill is a content CHILD, not the block root, so there
-// is no WP-native support to route through. sgs_responsive_normalise_object()
-// is the canonical reader (helpers-responsive.php:273), box=true so an
-// unset/legacy value never mis-resolves as a flat side (D328 defence).
+// {desktop,tablet,mobile} (Spec 35 box-tier migration). The pill is a
+// content CHILD, not the block root, so there is no WP-native support to
+// route through. sgs_responsive_normalise_object() is the canonical reader
+// (helpers-responsive.php:273), box=true so an unset/legacy value never
+// mis-resolves as a flat side (D328 defence).
 $pill_padding_tiers      = sgs_responsive_normalise_object( $attributes['pillPadding'] ?? null, true );
 $pill_padding_obj        = is_array( $pill_padding_tiers['desktop'] ) ? $pill_padding_tiers['desktop'] : array();
 $pill_padding_tablet_obj = is_array( $pill_padding_tiers['tablet'] ) ? $pill_padding_tiers['tablet'] : array();
@@ -718,7 +717,7 @@ $root_attr_args = array(
 // --sgs-op-* custom-property VALUES are emitted into the scoped `{$root_sel}`
 // rule at §7 instead (functional-colour values are normalised to hex by
 // sgs_colour_value() so they survive WordPress's safecss_filter_attr(),
-// which strips rgb()/rgba()/hsl() — the same normalisation now protects the
+// which strips rgb()/rgba()/hsl() — the same normalisation protects the
 // scoped `<style>` channel, which is unfiltered but kept consistent).
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );

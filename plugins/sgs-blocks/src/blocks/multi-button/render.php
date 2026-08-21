@@ -18,13 +18,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 /**
- * `flexDirection`/`flexWrap`/`alignItems`/`justifyContent` are now TIER OBJECTS
- * (Spec 35 pass, {desktop,tablet,mobile}) — the legacy `direction`/`wrap` names
- * from the 2026-08-05 rename, and the flat `…Tablet`/`…Mobile` siblings, are no
- * longer declared by block.json (folded into the object). The former
- * new-name-first/legacy-name-fallback helper is retired: there is now exactly
- * ONE name per property, read via the shared normaliser so an unset attr
- * resolves to `[]` rather than reading a raw array into `esc_attr()`.
+ * `flexDirection`/`flexWrap`/`alignItems`/`justifyContent` are TIER OBJECTS
+ * (Spec 35 pass, {desktop,tablet,mobile}), read via the shared normaliser so
+ * an unset attr resolves to `[]` rather than reading a raw array into
+ * `esc_attr()`.
  */
 $direction_obj    = sgs_responsive_normalise_object( $attributes['flexDirection'] ?? null );
 $direction        = esc_attr( $direction_obj['desktop'] ?? 'row' );
@@ -88,8 +85,7 @@ $justify_content_mobile = esc_attr( $justify_content_obj['mobile'] ?? $justify_c
 // that overrides the draft's faithfully-ABSENT flex-wrap is a cheat to remove). A
 // draft button group with no `flex-wrap` (e.g. `.sgs-hero__ctas`) is `nowrap` — the
 // buttons stay in a ROW (shrinking to fit) until the device-tier `flex-direction`
-// switches to column at 767px. The old `wrap` default made two buttons spill onto a
-// second line at ~800px inside the narrow 2-column hero band (proven live 2026-07-11).
+// switches to column at 767px.
 $wrap_obj    = sgs_responsive_normalise_object( $attributes['flexWrap'] ?? null );
 $wrap        = esc_attr( $wrap_obj['desktop'] ?? 'nowrap' );
 $wrap_tablet = esc_attr( $wrap_obj['tablet'] ?? $wrap );
@@ -118,11 +114,7 @@ $css .= 'align-items:' . $align_items . ';';
 $css .= '}';
 
 // Tablet breakpoint (768px to 1023px — device-tier standard, CLAUDE.md
-// "Responsive breakpoint discipline"). H6 fix (2026-07-05): was
-// 769-1024px, off by one vs the 767/1023 standard, so a draft rule of
-// `@media (min-width:768px)` (row at exactly 768px) fell into the OLD
-// mobile band below instead of this one — the hero CTAs rendered column
-// at 768px when the draft wants row.
+// "Responsive breakpoint discipline").
 $css .= '@media(max-width:1023px) and (min-width:768px){';
 $css .= '.' . $uid . '.sgs-multi-button{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
@@ -171,13 +163,12 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
 		$mb_color_border['border'] = $attributes['style']['border'];
 	}
-	// A1 (D638) — padding joined the same no-inline spacing bucket as margin.
-	// spacing.padding support is now TRUE (still __experimentalSkipSerialization,
-	// like margin above) so WP never auto-inlines it; base padding routes through
-	// the style engine to the SAME scoped selector, tablet/mobile tiers are
-	// handled separately by SGS_Container_Wrapper (paddingTablet/paddingMobile,
-	// universal across all `kind` values — see its "Responsive padding — all
-	// kinds" block).
+	// A1 (D638) — spacing.padding support is TRUE (still
+	// __experimentalSkipSerialization, like margin) so WP never auto-inlines it;
+	// base padding routes through the style engine to the SAME scoped selector,
+	// tablet/mobile tiers are handled separately by SGS_Container_Wrapper
+	// (paddingTablet/paddingMobile, universal across all `kind` values — see
+	// its "Responsive padding — all kinds" block).
 	$mb_spacing = array();
 	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
 		$mb_spacing['margin'] = $attributes['style']['spacing']['margin'];
@@ -225,12 +216,11 @@ if ( '' !== $mb_preset_gradient_slug ) {
 // `--sgs-mb-btn-<prop>-default` custom properties on THIS block's own
 // wrapper element; button/style.css consumes each one as the SECOND
 // fallback tier of its own `--sgs-btn-*` var (colour props) or as the FIRST
-// var() wrapped around what was previously a flat hardcoded value
-// (radius/font-size/font-weight — sgs/button has no per-instance custom
-// property for those, it wins on selector specificity instead, see
-// button/style.css's docblock addition). Custom properties are explicitly
-// allowed inline (Spec 32 no-inline contract only bans REAL property
-// declarations), so these route through SGS_Container_Wrapper's
+// var() wrapped around a value (radius/font-size/font-weight — sgs/button
+// has no per-instance custom property for those, it wins on selector
+// specificity instead, see button/style.css's docblock addition). Custom
+// properties are explicitly allowed inline (Spec 32 no-inline contract only
+// bans REAL property declarations), so these route through SGS_Container_Wrapper's
 // `extra_styles` opt exactly like any other --sgs-* var elsewhere in this
 // codebase.
 //

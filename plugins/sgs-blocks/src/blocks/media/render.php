@@ -70,12 +70,12 @@ $height_unit   = isset( $attributes['heightUnit'] ) ? (string) $attributes['heig
 $height_tablet = (string) ( $height_tiers['tablet'] ?? '' );
 $height_mobile = (string) ( $height_tiers['mobile'] ?? '' );
 
-// Native dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) — replaces the old
-// hand-rolled scalar `aspectRatio` attr. Read from style.dimensions.aspectRatio
-// (block.json declares __experimentalSkipSerialization on supports.dimensions so
-// WP's own wp_render_dimensions_support() emits nothing automatically — see the
-// block.json description comment for why that support can't be left to core: it
-// unconditionally inlines onto the wrapper root tag and ignores `selectors`).
+// Native dimensions.aspectRatio (Spec 35 wave-B, D402). Read from
+// style.dimensions.aspectRatio (block.json declares __experimentalSkipSerialization
+// on supports.dimensions so WP's own wp_render_dimensions_support() emits nothing
+// automatically — see the block.json description comment for why that support
+// can't be left to core: it unconditionally inlines onto the wrapper root tag and
+// ignores `selectors`).
 $native_aspect_ratio = isset( $attributes['style']['dimensions']['aspectRatio'] ) ? (string) $attributes['style']['dimensions']['aspectRatio'] : '';
 
 $allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
@@ -104,8 +104,7 @@ $alignment_raw      = $attributes['alignment'] ?? 'left';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'left';
 
 // `order` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
-// {desktop,tablet,mobile}. `orderMobile`/`orderTablet` no longer exist as
-// sibling attrs; read the object through the shared normaliser so a
+// {desktop,tablet,mobile}. Read the object through the shared normaliser so a
 // legacy/malformed value can't PHP-coerce to the literal string "Array".
 $order_tiers      = sgs_responsive_normalise_object( $attributes['order'] ?? null );
 $css_order        = isset( $order_tiers['desktop'] ) && '' !== $order_tiers['desktop'] && null !== $order_tiers['desktop'] ? intval( $order_tiers['desktop'] ) : null;
@@ -281,7 +280,7 @@ $media_base_decls = array();
 
 // object-fit — only emit when explicitly set to a NON-default value (D7). The
 // default `cover` is provided as an OVERRIDABLE :where() fallback in
-// style.css, so an unset value no longer force-crops and can be overridden.
+// style.css, so an unset value can be overridden rather than forced.
 if ( 'cover' !== $object_fit ) {
 	$media_base_decls[] = 'object-fit:' . esc_attr( $object_fit );
 }
@@ -1294,11 +1293,10 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // `.sgs-foo__image` so per-class CSS rules cascade to the right element.
 // Naked-mode is image-only; video always emits a <figure> wrapper.
 // ---------------------------------------------------------------------------
-// ART-DIRECTION TIERS SUPPRESS NAKED MODE (2026-08-07). Naked mode makes the <img>
-// the block ROOT (Spec 32: no useless wrapper) by REBUILDING $image_html from scratch
-// below — which silently discarded the tier <img>s built in §11 and shipped a single
-// desktop image at every width. Caught on the live canary: 1 <img> in the DOM where 3
-// were expected, and 0 visible.
+// ART-DIRECTION TIERS SUPPRESS NAKED MODE. Naked mode makes the <img> the block ROOT
+// (Spec 32: no useless wrapper) by REBUILDING $image_html from scratch below, which
+// would discard the tier <img>s built in §11 — so naked mode is gated off whenever
+// tier images are present.
 //
 // A block root can only be ONE element, so the tier siblings need a wrapper — and with
 // two or three real images in it that wrapper is STRUCTURAL, not the useless one Spec

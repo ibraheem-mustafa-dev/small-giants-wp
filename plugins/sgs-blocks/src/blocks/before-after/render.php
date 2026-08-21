@@ -95,17 +95,16 @@ $start_position = max( 0, min( 100, $start_position ) );
 $box_shadow        = $attributes['boxShadow'] ?? '';
 $box_shadow_colour = $attributes['boxShadowColour'] ?? '';
 
-// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
-// holding {desktop,tablet,mobile}, read through the shared normaliser.
+// `maxWidth` is a TIER OBJECT (Spec 35) — ONE attr holding
+// {desktop,tablet,mobile}, read through the shared normaliser.
 $max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
 $max_width        = $max_width_tiers['desktop'] ?? '';
 $max_width_tablet = $max_width_tiers['tablet'] ?? '';
 $max_width_mobile = $max_width_tiers['mobile'] ?? '';
 
-// `height` is now also a TIER OBJECT (Spec 35 pass) — `heightTablet`/
-// `heightMobile` are no longer declared by block.json (folded into the
-// object). `heightUnit` stays a separate flat attr (one unit for all tiers,
-// unchanged by this pass).
+// `height` is a TIER OBJECT (Spec 35) — block.json declares no separate
+// heightTablet/heightMobile keys. `heightUnit` stays a separate flat attr
+// (one unit for all tiers).
 $height_tiers  = sgs_responsive_normalise_object( $attributes['height'] ?? null );
 $height        = isset( $height_tiers['desktop'] ) ? (float) $height_tiers['desktop'] : 400;
 $height_unit   = in_array( $attributes['heightUnit'] ?? 'px', array( 'px', 'vh', 'em', 'rem', '%' ), true ) ? $attributes['heightUnit'] : 'px';
@@ -294,13 +293,10 @@ if ( $label_bg_colour ) {
 // --- Image controls (supports.sgs.imageControls + imageControlsExplicit) ---
 // This block is the ONE consumer where style.css genuinely reads
 // `--sgs-object-fit`/`--sgs-object-position` (`.__img` + `.__svg svg`
-// selectors, both with their own CSS fallback). Previously relied on the
-// universal `render_block` guessing filter (image-controls.php) to inject
-// these custom properties onto its guessed root; now emitted explicitly here
+// selectors, both with their own CSS fallback). Emitted explicitly here
 // with the KNOWN root selector, using the same shared maths
 // (`sgs_media_position_focal_to_css()`) and the same object-fit enum
-// whitelist as `sgs_media_position_css()` so a stored value resolves
-// identically to the old injected behaviour. Set as CUSTOM-PROPERTY VALUES
+// whitelist as `sgs_media_position_css()`. Set as CUSTOM-PROPERTY VALUES
 // (not raw `object-fit`/`object-position` declarations) because style.css
 // already reads them via `var(--sgs-object-fit, …)`/`var(--sgs-object-position, …)`
 // with its own fallback per selector — a raw declaration here would compete
@@ -344,13 +340,11 @@ if ( $label_decls ) {
 $label_font_size_unit   = $attributes['labelFontSizeUnit'] ?? 'px';
 $label_line_height_unit = $attributes['labelLineHeightUnit'] ?? '';
 
-// labelFontSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — the old
-// …Tablet/…Mobile sibling attrs are no longer declared by block.json.
-// sgs_responsive_css_rule() reads flat sibling keys, so feed it a synthetic
-// array carrying the normalised tier values under the OLD flat key names —
-// same pattern as button/render.php's $tier_object_synthetic_attrs.
-// labelLineHeight is NOT part of this migration (still genuinely flat, no
-// Tablet/Mobile siblings ever declared) — untouched here.
+// labelFontSize is a TIER OBJECT (Spec 35) — sgs_responsive_css_rule() reads
+// flat sibling keys, so feed it a synthetic array carrying the normalised
+// tier values under the flat key names — same pattern as
+// button/render.php's $tier_object_synthetic_attrs. labelLineHeight stays
+// genuinely flat (no Tablet/Mobile siblings).
 $label_font_size_obj = sgs_responsive_normalise_object( $attributes['labelFontSize'] ?? null );
 $css_label_tiers = sgs_responsive_css_rule(
 	array_merge(

@@ -126,9 +126,9 @@ $text_transform      = isset( $attributes['textTransform'] ) ? $attributes['text
 // is (0,2,0) and beats the theme's own `h1..h6 { color: … }` (0,0,1), so a
 // default here silently disables the client's heading colour on every heading.
 $text_colour = $attributes['textColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient:
-// TWO attributes, gradient wins when set+valid, textColour is untouched.
+// D636 — sibling-attribute shape, mirrors sgs/container's shipped
+// backgroundOverlayColour/overlayGradient: TWO attributes, gradient wins
+// when set+valid, textColour is untouched.
 $text_colour_gradient = $attributes['textColourGradient'] ?? '';
 $font_style           = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
 $text_decoration      = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
@@ -153,7 +153,7 @@ $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, t
 
 $hover_scale               = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
 $hover_colour              = $attributes['textColourHover'] ?? '';
-// D636 Task 1b, sibling-attribute shape — see $text_colour_gradient above.
+// D636 — sibling-attribute shape, see $text_colour_gradient above.
 $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
@@ -260,8 +260,8 @@ $preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_
 // id-scoped text selector, never inline (contract §A).
 $text_decls = array();
 
-// D636 Task 1b — sibling gradient attribute wins when set+valid; the
-// gradient path paints through the glyphs via background-clip:text.
+// D636 — sibling gradient attribute wins when set+valid; the gradient path
+// paints through the glyphs via background-clip:text.
 $text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
 if ( '' !== $text_colour_effective ) {
 	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
@@ -385,7 +385,7 @@ $scoped_css = array();
 
 // --- Hover states ---
 $hover_rules = array();
-// D636 Task 1b — sibling gradient attribute wins when set+valid.
+// D636 — sibling gradient attribute wins when set+valid.
 $hover_colour_effective = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
 if ( '' !== $hover_colour_effective ) {
 	$hover_colour_decl = sgs_text_colour_decl( $hover_colour_effective );
@@ -422,8 +422,8 @@ if ( $hover_rules || $has_scale ) {
 if ( $text_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $text_decls ) . ';}';
 }
-// D636 Task 1b — old-browser fallback for a gradient textColour; a no-op
-// (returns '') when the flat colour (no gradient sibling set) applies.
+// D636 — old-browser fallback for a gradient textColour; a no-op (returns
+// '') when the flat colour (no gradient sibling set) applies.
 $text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 if ( '' !== $text_colour_fallback_rule ) {
 	$scoped_css[] = $text_colour_fallback_rule;
@@ -444,10 +444,9 @@ if ( '' !== $text_colour_fallback_rule ) {
 // already routes every shape correctly — a tier object keeps its tiers, an
 // empty `{}` (an untouched object attr, the COMMON case) returns all-null so
 // nothing is emitted, and a plain preset-slug string becomes the desktop
-// value. The previous ternary sent a STRING down its else branch to all-null,
-// which is why the preset-slug branch below had to re-read the raw attribute —
-// and re-reading it is what emitted `font-size:var(--wp--preset--font-size--array)`
-// once fontSize became an object.
+// value. Normalising unconditionally is what lets the preset-slug branch below
+// read the normalised tier rather than the raw attribute — see its own ⛔ note
+// for why reading raw is a defect.
 $heading_font_size_obj = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
 
 // --- Root font-size — base + tablet + mobile on the SAME selector (Pattern A)

@@ -23,9 +23,7 @@
  * Hover transition/scale/shadow custom properties (--sgs-*) are emitted into
  * the block's OWN scoped `.{uid}` <style> rule, NOT as an inline style
  * attribute on the root (post-D345 contract, class-sgs-container-wrapper.php
- * ~L1081-1082: even VAR-ONLY custom-property values route through the scoped
- * rule now — "VAR-ONLY is allowed inline" was the pre-D345 belief and no
- * longer holds). The static hover rules in style.css read these vars via
+ * ~L1081-1082). The static hover rules in style.css read these vars via
  * var(), unaffected by which channel emits the declaration.
  *
  * Social links are driven by the socialLinks scalar attribute (array of
@@ -37,12 +35,8 @@
  * @var \WP_Block $block      Block instance.
  *
  * @since 2026-05-xx  Initial — sgs/team-member block.
- * @since 2026-06-04  WS-4 composite-mirror: outer wrapper via SGS_Container_Wrapper (kind='content').
- * @since 2026-07-10  100% no-inline + 100% box-group migration: box families →
- *                    objects; dropped SGS_Container_Wrapper (block-private is
- *                    more robust for no-inline, matches sgs/quote); the root
- *                    <div> carries the scoped uid class; nameColour/
- *                    roleColour convert from inline style to scoped rules.
+ * @since 2026-07-10  100% no-inline + 100% box-group migration (block-private,
+ *                    matches sgs/quote).
  *
  * @package SGS\Blocks
  */
@@ -53,9 +47,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
-// 1. Media / photo — single `photo` attr (the former duplicate-attribute
-// collision on this slot was resolved by deleting the old declaration and
-// renaming the newer one to this name) plus responsive tiers photoTablet/
+// 1. Media / photo — single `photo` attr plus responsive tiers photoTablet/
 // photoMobile. PHP renders once for every device, so the tablet/mobile
 // overrides are expressed as <picture><source media> alternates below
 // (step 7) — the exact pattern already proven live on sgs/responsive-logo —
@@ -232,20 +224,18 @@ if ( $hover_scale && in_array( $hover_scale, $allowed_scales, true ) ) {
 
 // sgs_shadow_value_composed() composes the SHAPE-only attr (D621/D622
 // colour-panel split) with the separate colour attr — accepts a preset slug
-// (self-contained) OR a raw ShadowControl shape, not just the fixed
-// subtle/raised/floating/glow allowlist this used to be restricted to.
+// (self-contained) OR a raw ShadowControl shape.
 $safe_hover_shadow = sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
 if ( '' !== $safe_hover_shadow ) {
 	$sgs_wrapper_styles[] = '--sgs-hover-shadow:' . $safe_hover_shadow;
 	$sgs_classes[]        = 'sgs-has-hover';
 }
 
-// FR-35-5 STATE_WITHOUT_BASE fix (Task 4c, 2026-07-21, Bean's Option A) — the
-// card now has a RESTING-state shadow attr alongside the existing hover-only
+// FR-35-5 — the card has a RESTING-state shadow attr alongside the hover-only
 // one, so shadowHover is STATE_OK not STATE_WITHOUT_BASE. An empty control
-// means the card inherits the theme token exactly as before (custom-property
-// FALLBACK at style.css, never a baked default). Var-only inline declaration
-// (same exempt pattern as the hover vars above), mirrors card-grid's
+// means the card inherits the theme token (custom-property FALLBACK at
+// style.css, never a baked default). Var-only inline declaration (same
+// exempt pattern as the hover vars above) mirrors card-grid's
 // --sgs-card-shadow (render.php:209) but scoped to this block's own root
 // rather than a nested repeater item, since team-member's card IS the root.
 if ( '' !== $card_shadow ) {

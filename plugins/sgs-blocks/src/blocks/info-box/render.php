@@ -36,8 +36,8 @@
  *
  * Scalar CONTENT attributes (heading, subtitle, description, icon, mediaType,
  * image, boxMedia, mediaEmoji) are no longer read here. They are retained in
- * block.json as historical schema only (no deprecated.js exists, D271). Rendering from those scalars
- * was removed in the FR-22-6 migration. R-22-14: NO legacy fallback hack.
+ * block.json as historical schema only (no deprecated.js exists, D271).
+ * R-22-14: NO legacy fallback hack.
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
  *   cardStyle, effectHover, iconPosition, backgroundColourHover, textColourHover,
@@ -46,18 +46,7 @@
  *   sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, staggerDelay.
  *
  * @since 2026-05-05  FR-22-6 migration — InnerBlocks content model.
- * @since 2026-06-08  HC2 cleanup — dead per-element responsive data-attrs removed.
- * @since 2026-07-10  100% no-inline + box-group migration (D297 rollout):
- *                    dropped SGS_Container_Wrapper (content-KIND, block-private,
- *                    matches sgs/quote D294); all styling supports skip-serialised;
- *                    padding/margin tiers → object attrs; border/colour/typography/
- *                    shadow → scoped <style> via wp_style_engine_get_styles.
- * @since 2026-07-28  Block-private blockLink/blockLinkTarget attrs removed
- *                    (no edit.js control — unreachable, identical dead pattern
- *                    to sgs/team-member's pre-cleanup blockLink). The universal
- *                    sgsBlockLink extension (includes/hover-effects.php,
- *                    render_block filter) already provides the stretched-link
- *                    overlay capability for this block with zero per-block code.
+ * @since 2026-07-10  100% no-inline + box-group migration (D297).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (all card content).
@@ -98,11 +87,10 @@ $sgs_hover_gray          = isset( $attributes['grayscaleHover'] ) ? (bool) $attr
 
 // Width — SGS custom scalars (kept-scalar single-value families, contract §C).
 // Base only — this block never declared maxWidthTablet/widthTablet.
-// RENAMED from `contentWidth` 2026-08-10 (D540): this block renders NO inner
-// band — it emits a plain `width:` on its own root selector, alongside
-// `max-width:` from maxWidth. D540 reserves `contentWidth` for a block that
-// genuinely wraps its content in a second layer; one that wants a fixed width
-// says `width`. Behaviour is unchanged; only the name now tells the truth.
+// D540: this block renders NO inner band — it emits a plain `width:` on its
+// own root selector, alongside `max-width:` from maxWidth. D540 reserves
+// `contentWidth` for a block that genuinely wraps its content in a second
+// layer; one that wants a fixed width says `width`.
 $sgs_content_width = isset( $attributes['width'] ) ? $attributes['width'] : '';
 $sgs_max_width     = isset( $attributes['maxWidth'] ) ? $attributes['maxWidth'] : '';
 
@@ -445,6 +433,5 @@ $sgs_card_html .= '<div ' . $sgs_wrapper_attrs . '>' . $content . '</div>';
 // Block-link is handled universally by the sgsBlockLink extension
 // (includes/hover-effects.php, render_block filter) — it injects a
 // stretched-link overlay as this root's last child, so no per-block wrap
-// belongs here. This block's own blockLink/blockLinkTarget attrs (which had
-// no edit.js control and were therefore unreachable) were removed.
+// belongs here.
 echo $sgs_card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from pre-sanitised/escaped parts above.

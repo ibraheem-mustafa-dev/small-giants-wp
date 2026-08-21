@@ -20,14 +20,10 @@
  * @since 2026-05-17  Phase 9 — sgs/text block
  * @since 2026-05-17  Peer-parity attrs: background, border, box-shadow, hover,
  *                    customWidth, per-viewport letter-spacing, inheritStyle.
- * @since 2026-06-01  variantStyle removed — migrated to WordPress block styles
- *                    (is-style-quote / is-style-caption / is-style-lead).
- * @since 2026-07-09  Box-object no-inline styling migration (Spec 32 §6.1) —
- *                    borderWidth merged to one object attr; base padding/
- *                    margin/border-radius moved to WP-native style.* +
- *                    scoped Style Engine output; all remaining declarations
- *                    (colour, font, border, box-shadow, width) moved from
- *                    inline to the id-scoped <style> block.
+ * @since 2026-06-01  Variant styling uses WordPress block styles
+ *                    (is-style-quote / is-style-caption / is-style-lead),
+ *                    not a variantStyle attribute.
+ * @since 2026-07-09  Box-object no-inline styling migration (Spec 32 §6.1).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — block is leaf-level).
@@ -45,12 +41,12 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 
 $text = isset( $attributes['text'] ) ? (string) $attributes['text'] : '';
-// User-facing HTML-tag chooser removed (2026-07-05) — the converter never
-// emitted this attr; sgs/text always renders a <p>.
+// sgs/text always renders a <p>; the converter never emits an HTML-tag
+// chooser attr for this block.
 $tag_name    = 'p';
 $text_colour = $attributes['textColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+// D636 — sibling-attribute shape, mirrors sgs/container's shipped
+// backgroundOverlayColour/overlayGradient.
 $text_colour_gradient = $attributes['textColourGradient'] ?? '';
 // fontSize / lineHeight / letterSpacing are OBJECT-typed {desktop,tablet,mobile}
 // attrs (Spec 35 tier-object migration) — normalise via the shared helper rather
@@ -90,7 +86,7 @@ $max_width           = isset( $attributes['maxWidth'] ) ? $attributes['maxWidth'
 $max_width_unit      = $attributes['maxWidthUnit'] ?? 'px';
 $drop_cap            = ! empty( $attributes['dropCap'] );
 $first_letter_colour = $attributes['firstLetterColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape — see $text_colour_gradient above.
+// D636 — sibling-attribute shape, see $text_colour_gradient above.
 $first_letter_colour_gradient = $attributes['firstLetterColourGradient'] ?? '';
 $first_letter_font_size       = isset( $attributes['firstLetterFontSize'] ) ? $attributes['firstLetterFontSize'] : null;
 $first_letter_font_size_unit  = $attributes['firstLetterFontSizeUnit'] ?? 'em';
@@ -156,7 +152,7 @@ $box_shadow_hover = $attributes['boxShadowHover'] ?? '';
 // Hover state.
 $hover_scale               = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : null;
 $hover_colour              = $attributes['textColourHover'] ?? '';
-// D636 Task 1b, sibling-attribute shape — see $text_colour_gradient above.
+// D636 — sibling-attribute shape, see $text_colour_gradient above.
 $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
@@ -225,7 +221,7 @@ if ( $inherit_style ) {
 // handled separately below (they have tablet/mobile tiers — Pattern A).
 $base_decls = array();
 
-// D636 Task 1b — sibling gradient attribute wins when set+valid.
+// D636 — sibling gradient attribute wins when set+valid.
 $text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
 if ( '' !== $text_colour_effective ) {
 	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
@@ -374,7 +370,7 @@ if ( null !== $font_size && '' !== $font_size && ! is_numeric( $font_size ) ) {
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).
 $css_base_decls = $base_decls ? $scope . '{' . implode( ';', $base_decls ) . ';}' : '';
-// D636 Task 1b — old-browser fallback for a gradient textColour; a no-op
+// D636 — old-browser fallback for a gradient textColour; a no-op
 // (returns '') when $text_colour was a flat colour.
 $css_base_decls .= sgs_text_colour_gradient_fallback_rule( $scope, $text_colour_effective );
 
@@ -484,7 +480,7 @@ if ( $drop_cap ) {
 	if ( $first_letter_font_weight ) {
 		$fl_decls[] = 'font-weight:' . esc_attr( $first_letter_font_weight );
 	}
-	// D636 Task 1b — sibling gradient attribute wins when set+valid.
+	// D636 — sibling gradient attribute wins when set+valid.
 	$first_letter_colour_effective = sgs_resolve_text_colour_or_gradient( $first_letter_colour, $first_letter_colour_gradient );
 	if ( '' !== $first_letter_colour_effective ) {
 		$first_letter_colour_decl = sgs_text_colour_decl( $first_letter_colour_effective );
@@ -501,7 +497,7 @@ if ( $drop_cap ) {
 // keyboard-navigation parity (change is not colour-only — scale + shadow
 // provide additional non-colour cue).
 $css_hover = '';
-// D636 Task 1b — sibling gradient attribute wins when set+valid; the OR'd
+// D636 — sibling gradient attribute wins when set+valid; the OR'd
 // gradient siblings here keep $has_hover true when only a gradient is set.
 $hover_colour_effective = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
 $has_hover               = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_hover );

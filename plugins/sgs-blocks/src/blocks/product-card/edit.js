@@ -666,7 +666,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const isBound = sourceMode !== 'typed';
 
 	// Typed mode = the built-in element editor. The block has no InnerBlocks
-	// slot (legacy bridge retired 2026-07-04).
+	// slot.
 	const isBuiltIn = ! isBound;
 
 	// FP-H final unit: SINGLE shared /wc/v3/products/{id} fetch for the
@@ -758,27 +758,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 
 	/*
-	 * Typed-mode CTA preview parity (2026-07-24 fix). The typed preview's CTA
-	 * is hand-authored JSX with no scoped <style> mechanism, so the cta* box
-	 * attrs (padding, border, radius, font, width) never reached it — a
-	 * client changing "CTA padding" in the BoxControl saw the frontend update
-	 * but the editor canvas stay static. Mirrors
-	 * includes/helpers-button-style.php sgs_button_element_style_css() (the
-	 * SAME emitter render.php calls for both typed and bound branches) so the
-	 * two paths stay in lockstep; resolvePcColour mirrors
+	 * Typed-mode CTA preview parity. The typed preview's CTA is hand-authored
+	 * JSX with no scoped <style> mechanism, so the cta* box attrs (padding,
+	 * border, radius, font, width) are applied here to mirror the frontend.
+	 * Mirrors includes/helpers-button-style.php sgs_button_element_style_css()
+	 * (the SAME emitter render.php calls for both typed and bound branches)
+	 * so the two paths stay in lockstep; resolvePcColour mirrors
 	 * includes/helpers-tokens.php sgs_colour_value()'s slug-vs-raw-value
 	 * branch. Hover/focus-visible declarations are NOT mirrored here — this
 	 * is a static (non-interactive) preview element with no :hover state to
 	 * drive, same as every other control in this typed preview.
 	 *
-	 * Extended 2026-07-24 to the text-colour attrs (titleColour/priceColour/
+	 * Also covers the text-colour attrs (titleColour/priceColour/
 	 * descColour/priceNoteColour) — render.php resolves each via the same
 	 * sgs_colour_value() branch and emits it as a scoped CSS custom property
-	 * (--sgs-card-title-colour etc., consumed by style.css); the typed
-	 * preview had inspector controls for these but never applied them, so a
-	 * client changing e.g. "Title colour" saw no change in the editor canvas.
-	 * resolvePcColour is the SAME resolver, renamed generically — the CTA
-	 * usage below is unchanged.
+	 * (--sgs-card-title-colour etc., consumed by style.css). resolvePcColour
+	 * is the SAME resolver, renamed generically — the CTA usage below is
+	 * unchanged.
 	 */
 	const resolvePcColour = ( value ) => {
 		if ( ! value ) {
@@ -794,10 +790,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const ctaPaddingBox = ctaPadding && typeof ctaPadding === 'object' ? ctaPadding : {};
 	const ctaHasPadding =
 		ctaPaddingBox.top || ctaPaddingBox.right || ctaPaddingBox.bottom || ctaPaddingBox.left;
-	// A2 box-object migration (2026-07-26): ctaBorderWidth/ctaBorderRadius are now
-	// {top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight} objects
-	// (mirrors sgs/button). boxShorthand mirrors button/edit.js's canvas-preview
-	// helper (contract §5) so the editor preview matches the frontend
+	// A2 — ctaBorderWidth/ctaBorderRadius are {top,right,bottom,left} /
+	// {topLeft,topRight,bottomLeft,bottomRight} objects (mirrors sgs/button).
+	// boxShorthand mirrors button/edit.js's canvas-preview helper (contract §5)
+	// so the editor preview matches the frontend
 	// (helpers-button-style.php's sgs_box_object_shorthand()).
 	const boxShorthand = ( box, keys ) => {
 		if ( ! box || 'object' !== typeof box ) return undefined;
@@ -829,11 +825,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	};
 
 	/*
-	 * Typed-mode CTA HOVER preview (2026-07-24 residual fix). ctaPreviewStyle
-	 * above covers RESTING state only — an inline style={} object cannot
-	 * express :hover, so a client setting ctaColourBackgroundHover /
-	 * ctaColourTextHover / ctaColourBorderHover never saw it in the editor
-	 * canvas even though render.php emits it via
+	 * Typed-mode CTA HOVER preview. ctaPreviewStyle above covers RESTING
+	 * state only — an inline style={} object cannot express :hover, so this
+	 * block renders the hover rule render.php emits via
 	 * sgs_button_element_style_css()'s hover/focus-visible rule (see
 	 * includes/helpers-button-style.php lines 138-174). Mirrors that rule
 	 * EXACTLY: same 3 properties (background-color/color/border-color), same
@@ -918,9 +912,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// D618/D619 — ONE grouped, SGS-owned colour panel, rendered FIRST (mirrors
 	// button/edit.js + option-picker/edit.js). Rows group by CSS property, not
-	// by attribute name — every state (including the 3 CTA hover states that
-	// previously had NO inspector control at all, only preset-seeding) carries
-	// linked: true. Title/description/price/price-note text colours only apply
+	// by attribute name — every state carries linked: true.
+	// Title/description/price/price-note text colours only apply
 	// in typed built-in mode (bound mode draws these from the live product and
 	// shows a Notice instead — mirrors the isBuiltIn/isBound gating already on
 	// the Card style / Price style panels below). Tag background/text only
@@ -938,8 +931,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// block's pill controls forward 1:1 onto that same block.
 	const colourRows = [];
 	// Card background/text colour — the BLOCK-LEVEL native WP colour controls
-	// (was `supports.color.background`/`text`, now false so WP no longer
-	// renders its own duplicate panel), wired straight to
+	// (`supports.color.background`/`text` is false, so WP does not render
+	// its own duplicate panel), wired straight to
 	// `style.color.background`/`text`. Placed FIRST (whole-card controls,
 	// before the per-element rows below). render.php already reads these
 	// manually and unconditionally — lines ~239-243, wp_style_engine_get_styles(),

@@ -19,10 +19,10 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-products.php';
-// WooCommerce-INDEPENDENT collection engine + shared pagination markup. Folded
-// in from sgs/content-collection on 2026-08-01: Card_Grid_Products above returns
-// an empty array without WooCommerce, so this second engine is what keeps a
-// product collection working on a bare WordPress install.
+// WooCommerce-INDEPENDENT collection engine + shared pagination markup.
+// Card_Grid_Products above returns an empty array without WooCommerce, so
+// this second engine is what keeps a product collection working on a bare
+// WordPress install.
 require_once dirname( __DIR__, 3 ) . '/includes/class-cpt-collection-query.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 
@@ -44,7 +44,7 @@ $allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
 $heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
 	? $attributes['headingLevel']
 	: 'h3';
-// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
+// `columns` is a TIER OBJECT (Spec 35 pass 4) — read each tier via
 // the normaliser, never the raw attribute (absint() on an unresolved array
 // throws "Array to int conversion" and would emit e.g. `columns:0`, exactly
 // the D569/D570 bug class this normaliser exists to prevent).
@@ -52,15 +52,13 @@ $columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? nul
 $columns        = $columns_obj['desktop'] ?? 3;
 $columns_tablet = $columns_obj['tablet'] ?? 2;
 $columns_mobile = $columns_obj['mobile'] ?? 1;
-// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10) - read the desktop tier, never
+// `gap` is a TIER OBJECT (Spec 35 pass 1) - read the desktop tier, never
 // the raw array (a string cast downstream would emit `gap:Array`).
 $gap_obj      = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
 $gap          = ( '' !== (string) ( $gap_obj['desktop'] ?? '' ) ) ? $gap_obj['desktop'] : '30';
 $aspect_ratio = $attributes['aspectRatio'] ?? '16/10';
 $hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
-// overlayStyle removed — no editor control, no consumer anywhere in the
-// repo (D338 full-repo grep, 2026-08-06); abandoned attribute, deleted from
-// block.json too.
+
 $title_colour        = $attributes['titleColour'] ?? '';
 $subtitle_colour     = $attributes['subtitleColour'] ?? '';
 $hover_bg            = $attributes['backgroundColourHover'] ?? '';
@@ -208,16 +206,15 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// ── FR-35-5 STATE_WITHOUT_BASE fix (Task 4, 2026-07-21, Bean's Option A) ────
-// Resting-state fill/border/shadow for the card tile. An empty control means
-// the card inherits the theme token exactly as before — these are custom-
-// property FALLBACKS in style.css (`var(--sgs-card-background,
-// var(--wp--preset--color--surface, #fff))` etc.), never a baked default, so
-// an unmigrated instance renders byte-identical to pre-fix. Scoped to
-// `.sgs-card-grid__item` under this instance's own uid; the wc-product
-// delegation path (below) renders sgs/product-card markup, which has no
-// `.sgs-card-grid__item` element at all, so this rule is a harmless no-op
-// there and never leaks into product-card's own styling.
+// FR-35-5 STATE_WITHOUT_BASE fix — resting-state fill/border/shadow for the
+// card tile. An empty control means the card inherits the theme token
+// exactly as before — these are custom-property FALLBACKS in style.css
+// (`var(--sgs-card-background, var(--wp--preset--color--surface, #fff))`
+// etc.), never a baked default. Scoped to `.sgs-card-grid__item` under this
+// instance's own uid; the wc-product delegation path (below) renders
+// sgs/product-card markup, which has no `.sgs-card-grid__item` element at
+// all, so this rule is a harmless no-op there and never leaks into
+// product-card's own styling.
 $card_state_vars = array();
 if ( '' !== $card_background || '' !== $card_background_gradient ) {
 	$card_bg_paint = sgs_background_paint_value( $card_background, $card_background_gradient );
@@ -251,24 +248,16 @@ if ( ! empty( $card_state_vars ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';
 }
 
-// --- Hover COLOUR, via the one shared helper (2026-08-19). Previously this
-// block wrote `--sgs-hover-bg`/`-bg-image`/`-text`/`-border` custom-property
-// VALUES in BOTH the wc-product and the main branch, which a static
-// `style.css` rule read back through `var()`. That indirection is gone: the
-// helper emits the real declarations on this instance's own scoped selector,
-// matching sgs/info-box, sgs/hero, sgs/process-steps, sgs/cta-section and
-// sgs/post-grid. Emitting here rather than per-branch also collapses the two
-// duplicate emission sites into one — both branches resolve the SAME
-// $hover_* variables further up.
+// --- Hover COLOUR, via the one shared helper. The helper emits the real
+// declarations on this instance's own scoped selector, matching sgs/info-box,
+// sgs/hero, sgs/process-steps, sgs/cta-section and sgs/post-grid. Emitting
+// here rather than per-branch also collapses the two duplicate emission
+// sites into one — both branches resolve the SAME $hover_* variables further
+// up.
 //
 // Colours resolve through sgs_colour_value(), the shared resolver this file
-// already uses for the border-gradient hover paint below. The old inline
-// `var(--wp--preset--color--{sanitize_key})` form could only ever express a
-// preset SLUG — a raw hex was mangled by sanitize_key() into an invalid token
-// that painted nothing. The helper path handles both.
-//
-// The deleted `var()` fallbacks were `transparent`/`none`/`inherit` keywords,
-// so an instance with no hover colour set renders exactly as before.
+// already uses for the border-gradient hover paint below — it handles both a
+// preset slug and a raw hex value.
 $card_grid_hover_decls = array();
 if ( $hover_bg ) {
 	$card_grid_hover_decls[] = 'background-color:' . sgs_colour_value( $hover_bg );
@@ -393,11 +382,11 @@ if ( 'query' === $source ) {
  *                      WC-canonical). Returns nothing without WooCommerce.
  *   'cpt-collection' — query delegated to CPT_Collection_Query. Plain WP_Query
  *                      over a custom post type with the seven meta-driven
- *                      selection rules. NO WooCommerce dependency — this is the
- *                      path folded in from sgs/content-collection (2026-08-01)
- *                      so a non-WooCommerce site can still render a product
- *                      collection. Removing it would delete a working
- *                      capability from every install without WooCommerce.
+ *                      selection rules. NO WooCommerce dependency — this
+ *                      keeps a product collection working on a
+ *                      non-WooCommerce site. Removing it would delete a
+ *                      working capability from every install without
+ *                      WooCommerce.
  *
  * Both share this branch's wrapper classes, CSS vars and empty state, so the
  * two data sources cannot drift apart visually.
@@ -695,7 +684,7 @@ if ( $stagger_delay ) {
 // `:nth-child(N)` scoped rule instead (same mechanism as sgs/social-icons' /
 // sgs/pricing-table's per-item colour), N = this item's 1-based position among
 // ALL rendered card items (every item renders `.sgs-card-grid__item`
-// unconditionally). Was previously an inline `style="--sgs-item-index:N"`.
+// unconditionally).
 $card_grid_stagger_css = '';
 
 // Build the interior HTML (card items).
@@ -718,21 +707,17 @@ foreach ( $items as $index => $item ) :
 	}
 
 	// Unified media slot — sgs_render_media() emits the right tag for either
-	// image or video. The legacy per-item `image` field (never declared in
-	// block.json's items schema) was removed 2026-08-03.
+	// image or video.
 	$item_media = $item['media'] ?? null;
-	// A BARE URL STRING is a first-class accepted shape (2026-07-29). block.json
-	// declares `items[].media` as `{"type":"string"}` while edit.js writes the
-	// object form, and `sgs_render_media()` bails on anything that is not an
-	// array (helpers-media.php:168) — so a string URL rendered NOTHING, silently,
-	// with an empty `.sgs-card-grid__image-wrap` left behind. That is exactly how
-	// both shipped mega starter patterns (sgs/mega-brands-1, sgs/mega-media-cards-1)
-	// lost all 8 of their card images through a green build. Normalising here
-	// fixes every caller at once — patterns, and any converter/clone output that
-	// emits the documented string shape — rather than patching the two patterns
-	// and leaving the trap armed for the next author.
-	// `alt` is deliberately '': these cards carry a visible title, so an alt that
-	// repeated it would double-announce to a screen reader.
+	// A BARE URL STRING is a first-class accepted shape. block.json declares
+	// `items[].media` as `{"type":"string"}` while edit.js writes the object
+	// form, and `sgs_render_media()` bails on anything that is not an array
+	// (helpers-media.php:168) — so a string URL would render NOTHING, silently,
+	// with an empty `.sgs-card-grid__image-wrap` left behind. Normalising here
+	// fixes every caller at once — patterns, and any converter/clone output
+	// that emits the documented string shape.
+	// `alt` is deliberately '': these cards carry a visible title, so an alt
+	// that repeated it would double-announce to a screen reader.
 	if ( is_string( $item_media ) ) {
 		$item_media = '' !== trim( $item_media )
 			? array(

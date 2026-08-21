@@ -2,12 +2,11 @@
 /**
  * Server-side render for the SGS Testimonial block (typed-attr, variant-driven).
  *
- * D8 rebuild (2026-06-11): retired the FR-22-6 InnerBlocks shape. The block is
- * now a TYPED dynamic block — every field is a scalar/object attribute and
- * render.php drives 100% of the output (save.js returns null). The block renders
- * its OWN text elements, so per-element typography controls are legitimate
- * (D192 carve-in). Every field is OPTIONAL and GATED — an empty value emits NO
- * node (no empty boxes, no initials placeholder).
+ * The block is a TYPED dynamic block — every field is a scalar/object attribute
+ * and render.php drives 100% of the output (save.js returns null). The block
+ * renders its OWN text elements, so per-element typography controls are
+ * legitimate (D192 carve-in). Every field is OPTIONAL and GATED — an empty
+ * value emits NO node (no empty boxes, no initials placeholder).
  *
  * 7 variants (supports.sgs.variants): classic-card, pull-quote-editorial,
  * rating-led, avatar-spotlight, corporate-logo, case-study-media, minimal-quote.
@@ -30,38 +29,25 @@
  * `<div>` is built via get_block_wrapper_attributes(); the rendered root
  * carries NO `style="…"` attribute at all. Every declaration (native color/
  * typography/spacing/border/shadow supports, the outer width, every
- * per-element typography override that previously rode an inline `style="…"`
- * attribute on the quote/summary/name/role/org/rating nodes, AND the hover/
- * transition/scale/shadow/stagger custom-property VALUES that previously rode
- * an inline `style="--sgs-x:y"` on the root) is emitted into the block's OWN
- * scoped `.{uid}` <style> tag. Hover COLOUR shifts render as a scoped
+ * per-element typography override, AND the hover/transition/scale/shadow/
+ * stagger custom-property VALUES) is emitted into the block's OWN scoped
+ * `.{uid}` <style> tag. Hover COLOUR shifts render as a scoped
  * `.{uid}.wp-block-sgs-testimonial:hover{…}` rule with real background-color/
  * color/border-color declarations — NOT a `[style*="--sgs-hover-*"]:hover`
- * presence-selector reading an inline var (that pattern is now removed from
- * style.css; matches sgs/info-box, D345 GOTCHA F). WP styling supports all
- * declare `__experimentalSkipSerialization` in block.json so
+ * presence-selector reading an inline var (D345 GOTCHA F; matches
+ * sgs/info-box). WP styling supports all declare
+ * `__experimentalSkipSerialization` in block.json so
  * get_block_wrapper_attributes() never auto-inlines them.
  *
  * BOX-GROUP (contract §B): base padding/margin route to WP-native
  * style.spacing.* (skip-serialised, emitted scoped via the style engine);
- * tiers are the new paddingTablet/paddingMobile/marginTablet/marginMobile
+ * tiers are the paddingTablet/paddingMobile/marginTablet/marginMobile
  * object attrs (scoped @media 1023/767, hand-built shorthand — matches quote).
  *
  * @since 2026-06-11  D8 rebuild — typed dynamic block.
- * @since 2026-07-10  100% no-inline + box-group migration: dropped
- *                    SGS_Container_Wrapper (block-private, quote pattern);
- *                    every per-element inline style="" converted to scoped
- *                    `.{uid} .element{…}` rules; padding/margin tiers → object
- *                    attrs; color/typography/spacing/border/shadow supports →
- *                    __experimentalSkipSerialization + scoped style engine
- *                    output.
- * @since 2026-07-18  D345 zero-inline tightening: the wrapper's remaining
- *                    inline `style="--sgs-x:y"` attribute is gone. Hover
- *                    colours → scoped `:hover{…}` declarations; transition/
- *                    scale/shadow/stagger custom-property VALUES → scoped
- *                    base rule on the same root selector. Matching style.css
- *                    `[style*="--sgs-hover-*"]:hover` presence-selectors
- *                    removed (GOTCHA F, same shape as sgs/info-box).
+ * @since 2026-07-10  100% no-inline + box-group migration (block-private,
+ *                    quote pattern).
+ * @since 2026-07-18  D345 zero-inline tightening (matches sgs/info-box).
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    Unused (typed rebuild — no InnerBlocks).
@@ -124,12 +110,12 @@ $schema_enabled = ! empty( $attributes['schemaEnabled'] );
 // ── Per-element typography (empty → CSS token default via the block's own
 // scoped CSS; NOTHING is emitted inline any more — contract §A). ────────────
 $quote_font_size = sgs_font_size_value( $attributes['quoteFontSize'] ?? '' );
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// kept RAW (not pre-resolved via sgs_colour_value()) because a gradient
-// needs the multi-declaration background-clip:text shape, not a single
-// 'color' => value pair — see the quote rule below, which builds it
-// separately from $sgs_el_rule()'s one-prop-per-key map. quoteColour is
-// UNCHANGED — never a gradient; quoteColourGradient is the sibling.
+// D636 sibling-attribute shape — kept RAW (not pre-resolved via
+// sgs_colour_value()) because a gradient needs the multi-declaration
+// background-clip:text shape, not a single 'color' => value pair — see the
+// quote rule below, which builds it separately from $sgs_el_rule()'s
+// one-prop-per-key map. quoteColour is UNCHANGED — never a gradient;
+// quoteColourGradient is the sibling.
 $quote_colour_raw      = (string) ( $attributes['quoteColour'] ?? '' );
 $quote_colour_gradient = (string) ( $attributes['quoteColourGradient'] ?? '' );
 $quote_style           = in_array( $attributes['quoteFontStyle'] ?? '', array( 'italic', 'normal' ), true ) ? $attributes['quoteFontStyle'] : '';
@@ -174,8 +160,7 @@ $root_sel = '.' . $uid . '.wp-block-sgs-testimonial';
 
 // ---------------------------------------------------------------------------
 // 1. Scoped CSS accumulator + per-element rule builder. Every declaration
-// that used to ride an inline `style="…"` attribute on an element now lands
-// here as `{$root_sel} .element{prop:val;}` (contract §A).
+// lands here as `{$root_sel} .element{prop:val;}` (contract §A).
 // ---------------------------------------------------------------------------
 
 $scoped_css = array();
@@ -232,7 +217,7 @@ $quote_rule = $sgs_el_rule(
 if ( '' !== $quote_rule ) {
 	$scoped_css[] = $quote_rule;
 }
-// D636 Task 1b — sibling gradient attribute wins when set+valid, built
+// D636 — sibling gradient attribute wins when set+valid, built
 // separately from $sgs_el_rule()'s prop=>value map (see $quote_colour_raw).
 $quote_colour_sel       = $root_sel . ' .sgs-testimonial__quote';
 $quote_colour_effective = sgs_resolve_text_colour_or_gradient( $quote_colour_raw, $quote_colour_gradient );
@@ -445,7 +430,7 @@ if ( $hover_scale ) {
 	$wrapper_vars[] = '--sgs-hover-scale:' . esc_attr( (string) $hover_scale );
 }
 if ( $hover_shadow ) {
-	// FR-35-3 ShadowControl swap (2026-07-28) — shadowHover stores either a
+	// FR-35-3 ShadowControl swap — shadowHover stores either a
 	// raw box-shadow SHAPE string (the builder, no colour since D621/D622) or
 	// a bare theme shadow slug (the preset buttons), the same shape as
 	// sgs/team-member's cardShadow. sgs_shadow_value_composed() composes the
@@ -461,9 +446,8 @@ if ( $wrapper_vars ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $wrapper_vars ) . '}';
 }
 if ( $hover_decls ) {
-	// Via the ONE shared hover-colour helper (2026-08-19). Identical output to
-	// the hand-rolled rule this replaces, plus the `:focus-visible` twin a
-	// keyboard user needs — this block had `:hover` alone.
+	// Via the ONE shared hover-colour helper, which also emits the
+	// `:focus-visible` twin a keyboard user needs.
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 
@@ -770,7 +754,7 @@ if ( '' === trim( $inner_html ) ) {
 // ---------------------------------------------------------------------------
 // 3. Build the root element's attributes. D345: the rendered root carries NO
 // 'style' key at all — hover colours + transition/scale/shadow/stagger vars
-// all moved into the scoped <style> block above (§1/§2).
+// are emitted into the scoped <style> block above (§1/§2).
 // ---------------------------------------------------------------------------
 
 $root_attr_args = array(

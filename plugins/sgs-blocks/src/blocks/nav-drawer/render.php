@@ -80,9 +80,7 @@ $root_sel  = '.' . $uid . '.wp-block-sgs-nav-drawer';
 $body_sel  = $root_sel . ' .sgs-nav-drawer__body';
 $close_sel = $root_sel . ' .sgs-nav-drawer__close';
 
-// ── Geometry — desktop-variant anchors (design gate 2026-07-28, supersedes the
-// retired `edge`/`width` scalars; zero stored instances carried either, so this
-// is a clean cut, not a migration). `anchor` is a per-device object
+// ── Geometry — desktop-variant anchors. `anchor` is a per-device object
 // { desktop, tablet, mobile } of full-screen|header|trigger|centred, resolved
 // via the shared sgs_resolve_tier() cascade (identical semantics to every
 // other §S9 responsive-object attribute — 'inherit'/null/absent = inherit
@@ -98,10 +96,9 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' )
  * width beneath it; `trigger` anchors BELOW the actual burger, reading the
  * `--sgs-drawer-trigger-top` / `--sgs-drawer-trigger-right` values store.js
  * measures from the live trigger rect at open time (same measure-and-write
- * pattern as the header offset) and falling back to the old 16px/16px corner
- * only when JS has not run — the previous CSS-only literal could not track an
- * arbitrary trigger location at all; `centred` is the modal-card geometry `sgs/modal`
- * already uses (margin:auto within a fixed inset).
+ * pattern as the header offset), falling back to 16px/16px only when JS has
+ * not run; `centred` is the modal-card geometry `sgs/modal` already uses
+ * (margin:auto within a fixed inset).
  *
  * @param string $anchor_value Resolved anchor keyword for this tier.
  * @param string $panel_size   Resolved, pre-sanitised panelSize length for this tier (may be '').
@@ -397,10 +394,7 @@ if ( '' !== $custom_css ) {
  * fade-drop (no class, so an untouched drawer is unaffected), header expands
  * down, trigger scales/fades from its corner, centred scales up like a
  * modal. `fade` is an explicit opacity-only override available at every
- * anchor. `top`/`right`/`bottom`/`left` directional slides were RETIRED
- * (design gate 2026-07-28) — zero stored instances carried anything but
- * `auto`, verified via grep across theme/sgs-theme/patterns/, so this is a
- * clean cut. All rules live inside the CSS's `prefers-reduced-motion:
+ * anchor. All rules live inside the CSS's `prefers-reduced-motion:
  * no-preference` block, so a reduced-motion user is unaffected regardless.
  */
 $sgs_nd_allowed_anims = array( 'auto', 'fade' );
@@ -453,12 +447,11 @@ if ( '' !== $sgs_nd_anim_class ) {
 	$classes[] = $sgs_nd_anim_class;
 }
 
-// ── variantPreset (Task-3 discriminator, design gate 2026-07-28) — the
-// variation slug this instance was inserted from. No CSS behaviour depends on
-// it (each variation's LOOK comes entirely from the attrs it sets, per the
-// binding variant principle), but rendering it as a class makes the attribute
-// non-dead (check-dead-controls.js) and gives per-preset CSS a hook should a
-// future need arise.
+// ── variantPreset — the variation slug this instance was inserted from. No
+// CSS behaviour depends on it (each variation's LOOK comes entirely from the
+// attrs it sets, per the binding variant principle), but rendering it as a
+// class makes the attribute non-dead (check-dead-controls.js) and gives
+// per-preset CSS a hook should a future need arise.
 $variant_preset_slug = isset( $attributes['variantPreset'] ) ? sanitize_html_class( (string) $attributes['variantPreset'] ) : '';
 if ( '' !== $variant_preset_slug ) {
 	$classes[] = 'sgs-nav-drawer--preset-' . $variant_preset_slug;
