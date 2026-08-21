@@ -170,8 +170,10 @@ attribute WP discards. Their warning is met, not violated.
 
 ### Shipped earlier on this track
 
-`70c88348` ShadowControl crash (5 mounts) · `e81ea92a` D338 corrected framework-wide (PHP keeps / JS drops) · `20332725` rule 31 sees shared files (409→418) · `1905257e` container background editable + 38 authorings migrated · `2d291992` contentWidth regression · `6bbd0c7c` `ebad91df` `0c44b0c6` resting border gradients + dead colour cleanup. Full detail in the commits and in the colour-golden scan-set report.
-
+`70c88348` ShadowControl crash · `e81ea92a` D338 corrected framework-wide · `20332725` rule 31
+sees shared files · `1905257e` container background editable + 38 authorings · `2d291992`
+contentWidth regression · `6bbd0c7c` `ebad91df` `0c44b0c6` resting border gradients + dead
+colour cleanup. Detail: the commits + `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
 
 ### ⛔ CORRECTIONS TO STALE CLAIMS ABOVE — the shop track's section is out of date on these
 
@@ -190,116 +192,85 @@ attribute WP discards. Their warning is met, not violated.
    footer loses its background silently. The 152 `fontSize` authorings are WP-native
    typography and out of scope entirely.
 
-### ✅ CONTAINER + SHOP WORK — COMPLETE 2026-08-21
+### ✅ Completed earlier on this track, 2026-08-21 (archived)
 
-Full detail: `.claude/reports/2026-08-21-HANDOVER-container-and-shop-completion.md`.
-Commits `0843567d` `669bc1e5` `40411532` `f5e184d5` `38fa1324` `1a127c06`, all deployed
-and live-verified.
+Container + shop work, the colour-surface text-colour landings (`sgs/container` `0f2c167f`,
+`sgs/cta-section` `7b9357cc`), and QC Gate 2 closing on hero + trust-bar are all COMPLETE.
+Sections moved VERBATIM to `memory/session-2026-08-21-colour-golden-completed.md` to keep this
+file under its byte cap — nothing edited or dropped. Detail also in `decisions.md`, the commits,
+and `.claude/reports/2026-08-21-HANDOVER-container-and-shop-completion.md`.
 
-Four defects were ONE bug: band CSS (`max-width` + `margin-inline:auto`) painted on the
-container's OUTER box. Fixed by routing band properties to a dedicated band selector.
-- **P2-1 CLOSED** — container background no longer capped (`max-width: 1280px` → `none`).
-- Product cards 165px → **261px**; shop grid restored (was stacked, cards crushed to 73px).
-- Footer column 48px → **400px**; header icon cluster padding 24px → **0**.
-- Filter box now level with the cards (was 24px low).
-- **Results count + sort control BUILT** and behaviourally verified (5 → 3 on filter;
-  prices sort ascending).
+### ✅ STEP 4 + hero convergence — SHIPPED, DEPLOYED, LIVE-VERIFIED 2026-08-21 (D717, D718)
 
-⛔ The shop-grid break was NOT from this track's work — it came from `2d291992`, which made
-the band render for the first time (0 → 15). Its own note warned only `/shop/` was checked;
-`/shop/` at DESKTOP was the unchecked case.
+`88d7cf14` `7dff615b` `bcb38d5f` `135b3284` `b64d40b0`. Evidence:
+`reports/visual-diff/d717-overlay-opacity-2026-08-21.md`. Full reasoning: D717 + D718.
 
-### ✅ COLOUR SURFACE — text colour landed on the two blocks that needed it (2026-08-21)
+**D717 — `backgroundOverlayOpacity` (default 30) on the 8 blocks mounting `<BackgroundPanel>`,
+one `RangeControl` reaching all 8; `linked` + `enableAlpha={false}` on the shared picker.**
+Supersedes D581's D5: one transparency mechanism was right, alpha was the wrong one — it
+silently unlinks the palette token. ⛔ **The brief blamed alpha; the larger half came from
+reading source** — that mount was the ONLY colour row missing `linked` (against ~40), so it
+stored a raw hex on EVERY pick. Negative control on pre-fix deployed code: "Primary" stored
+`#e68a95`; same gesture post-fix stored `primary`. New shared owner `sgs_overlay_decls()`.
 
-- **`sgs/container`** (`0f2c167f`) — had NO reachable text control at all: its manifest mapped
-  `css:color` to `native:color.text` while `supports.color` is FALSE, a binding pointing at a
-  mechanism that cannot exist. Four owned attrs via the shared emitters + a panel row.
-  **DEPLOYED + VERIFIED**: resting and hover both paint as TOKENS, child `sgs/text` inherits.
-- **`sgs/cta-section`** (`7b9357cc`) — `textColour`/`textColourHover` were rendered but
-  EDITOR-UNREACHABLE (zero refs in edit.js). Now exposed + gradients; `supports.color.text`
-  off (0 authorings affected) so native UI doesn't compete (rule 31). **DEPLOYED + VERIFIED.**
-- **`sgs/site-header`** — correctly NOT changed. Its `colourExemptions.text` gradient exemption
-  is gate-enforced and names the real reason: `background-clip:text` would hijack the wrapper's
-  background box and destroy the header background this same block paints.
-- **Help text fix** — the shipped wording told clients to LOWER THE ALPHA, which is the exact
-  token-corrupting step 4 exists to fix. Rewritten. ⛔ The RENAME half of step 3 was CANCELLED:
-  it came from D2b, which the design doc marks superseded.
-- **D714–D716 pasted** for the Tier-W session, renumbered against the ceiling at paste time.
+**D718 — hero's overlay converged with the wrapper.** Bean: *"why is the hero different anyway?"*
+Removed the legacy `: 'text'` fallback (git shows it PREDATES the 2026-08-11 redesign — never a
+decision) and the background-image-alone trigger. **All 8 blocks: no colour set = no overlay.**
+⛔ **Why D717 didn't already fix it:** it unified the PAINT but left the POLICY hand-written at
+both call sites. **A helper owning the value but not the CONDITION makes two implementations
+LOOK converged without converging them.** Both now derive existence from the helper's return.
 
-### ✅ QC GATE 2 — CLOSED on all three blocks (2026-08-21)
+**Not chosen:** `accent`@30 as hero's default — light hero text over a mid photo: `text` 5.37:1,
+`accent` **2.78:1**; more accent opacity is WORSE (1.72 at 80%). Convergence dissolved it.
 
-`sgs/hero` and `sgs/trust-bar` verified in the EDITOR with a real login, then on the
-frontend: colour panel present, swatch picked, attribute stored as a **slug** (token
-survives), resting colour paints, and a **real pointer hover** repaints
-(hero primary→accent, trust-bar success→cookie-brown). Zero console errors, `isValid:true`.
-Fixture page 2588 — safe to delete.
+⛔ **My corrections:** (a) I argued 30% would wash out plain backgrounds — Bean was right, all 8
+render their own `backgroundColour`; my source was a wrapper comment stale since `1905257e`,
+**corrected in place**. (b) "2 blocks" was 2 PAINT SITES; the control reaches 8. (c) I reported
+D717's four review questions "answered empirically" when Q4 was only NAMED — Bean's questions
+forced the measurement and it changed the finding. My call that a council added nothing was wrong.
 
-### ✅ STEP 4 — SHIPPED + LIVE-VERIFIED 2026-08-21 (D717)
+⚠ **Visual-diff gate scoped-skipped** (logged) each time: capture needs the deployed build,
+deploy refuses a dirty tree. The reports are **evidence records, not gate tokens** —
+`source_sha` is `NOT-COMPUTABLE`, so none can wave through a future commit.
 
-`88d7cf14` `7dff615b` `bcb38d5f` on `origin/main`, deployed. Evidence:
-`reports/visual-diff/d717-overlay-opacity-2026-08-21.md`. Full reasoning: D717.
+### ✅ D724 — the shared wrapper renders a simple section background as a real `<img>` (2026-08-21)
 
-**The brief blamed alpha; the larger half came from reading source.** `GradientOverlayControl`
-mounted `DesignTokenPicker` **without `linked`** — the only colour row in the plugin missing it,
-against ~40 that pass it — so it stored a raw hex on EVERY pick. **Negative control on pre-fix
-deployed code:** clicking "Primary" stored `#e68a95`; same gesture post-fix stored `primary`.
+`0eb38ecf` + `5cd873af` + `26d0a1b7`, deployed + live-verified. Evidence:
+`reports/visual-diff/d724-img-background-layer-2026-08-21.md`.
+⚠ **`0eb38ecf`'s message cites "(D719)" — WRONG, that number is the other session's. Read it as
+D724.** I inferred the ceiling from my own last entry instead of re-reading it. Not force-pushing
+a shared branch over a citation.
 
-- `backgroundOverlayOpacity` (number, **default 30**) on the 8 blocks mounting
-  `<BackgroundPanel>`; ONE `RangeControl` there reaches all 8.
-- `linked` + `enableAlpha={false}` on the shared mount → all six attribute pairs; all seven
-  renderer paths traced, every one resolves slugs via `sgs_colour_value()` (D684 is what
-  happens when that isn't checked).
-- **`sgs_overlay_decls()`** (`helpers-tokens.php`) — Bean asked whether the shared helper was
-  being updated; it wasn't, and asking exposed the gradient-beats-colour check hand-rolled in
-  BOTH the wrapper and hero while `sgs_background_paint_value()`, whose docblock claims
-  universality, had one caller. ⚠ **It unified the paint but NOT the policy — see D718.**
+Bean inverted D718's instinct: converge on the BEST implementation, not the incumbent. The
+wrapper painted backgrounds as CSS `background-image` (browser can't find it until the selector
+matches); hero already used a real `<img>` + `fetchpriority`. Hero's approach is now the shared
+one, via the same `sgs_responsive_image()` helper (so `srcset` comes free). Gated to what an
+`<img>` can express — no-repeat + cover/contain + no parallax/fixed + no tier overrides; anything
+else keeps the CSS path. Branches are exact complements.
 
-**Live:** container `primary`/45 → `0.45`, both spans `style`=`null`. Default-30 blast radius
-ENUMERATED: 1 theme pattern + 4 canary test pages, **zero client content**. Page 2596 = test rig.
+**An adversarial QC subagent returned NO-GO and was right on all three:**
+1. ⛔ **My error.** I briefed "two" child-positioning reset rules to exclude the new class from.
+   There are **SEVEN**. The four missed win on specificity → background paints ON TOP of content
+   on any section with a shape divider. **A roster assembled by eye instead of enumerated —
+   again.**
+2. The scoped `object-fit` rule was gated on a uid nothing requested → a minimal container's
+   `contain`/`top left` silently reverted to `cover`/centre on the frontend.
+3. Hero's counter and the wrapper's new one each meant "first within MY path" → a page with both
+   marked TWO images `fetchpriority=high`, prioritising neither. One shared
+   `sgs_next_background_image_index()` now.
 
-⛔ **My own corrections:** (a) I argued 30% would wash out plain backgrounds; Bean was right —
-all 8 render their own `backgroundColour`; my source was a wrapper comment stale since
-`1905257e`, **corrected in place**. (b) "2 blocks" was 2 PAINT SITES; the control reaches 8.
-(c) A post-fix click storing `""` looked like failure; it was a DESELECT. Planned manifest work
-proved unnecessary — verified by RUNNING the gate, not reading it.
+⛔ **CROSS-SESSION INCIDENT — `origin/main` was briefly FATAL.** The other session's broad
+`git add` swept my uncommitted `hero/render.php` edit into its unrelated commit `87d904a6` and
+pushed it. That carried the CALL to the new counter; the DEFINITION sat uncommitted in my tree —
+so every page rendering a hero with a background image would fatal on an undefined function.
+Repaired in `5cd873af`. **The lesson is sharper than "you might commit their work": it SPLIT ONE
+CHANGE ACROSS TWO COMMITS owned by two sessions, and my own `git diff` showed that file CLEAN —
+which reads as "nothing to do", not "someone took it".**
 
-⚠ **Visual-diff gate scoped-skipped both times** (logged): capture needs the deployed build,
-deploy refuses a dirty tree. The report is an **evidence record, not a gate token** —
-`source_sha` is `NOT-COMPUTABLE`, so it cannot wave through a future commit here.
-
-### ✅ D718 — hero's overlay converged with the wrapper (2026-08-21, `135b3284`)
-
-Bean: *"why is the hero different anyway? They all be via the background panel."* It was, in two
-ways, and R-31-9/D152 already called that a bug. **Removed:** the legacy `: 'text'` paint
-fallback (git shows it PREDATES the 2026-08-11 redesign — that session only guarded it, nobody
-re-reasoned the colour) and the background-image-alone trigger. **Net: on all eight blocks, no
-colour set = no overlay.**
-
-**Kept, because it is justified and measured:** hero renders its own media layers and its bg
-image is a real `<img>` with `fetchpriority="high"`; the wrapper emits a CSS `background-image`
-the browser only finds after the selector matches. Real CWV win on an LCP element. **If
-anything the other section blocks should adopt hero's approach — parked, not done.**
-
-⛔ **Why D717 didn't already fix this — the generalisable lesson.** D717 extracted
-`sgs_overlay_decls()` for the PAINT but left the POLICY (does a layer exist / what colour when
-unset) hand-written at BOTH call sites, which is exactly how hero's divergence survived it
-untouched. Bean named it: *"I thought this was not going to be an issue since we agreed on
-making a new shared helper."* **A helper that owns the value but not the CONDITION makes two
-implementations look converged without converging them — the divergence lives in the branch,
-not the expression.** Both sites now derive existence from the helper's return.
-
-**Live (page 2596):** hero+image, overlay unset → span ABSENT (was `rgb(58,46,38)`@0.3);
-hero with `accent`/25 → still paints (the control proving the fallback went, not the feature);
-container `primary`/45 → unchanged.
-
-**Not chosen:** `accent`@30 as hero's default. Light hero text over a mid photo — `text` 5.37:1,
-`accent` **2.78:1**, `accent-dark` 4.29:1 — and MORE accent opacity is worse (1.72 at 80%): a
-light scrim moves the photo toward light text. Convergence dissolved the question.
-
-⚠ **Correction to my own D717 write-up:** I reported the four council questions as "answered
-empirically". Question 4 (hero's `'text'` default) was only NAMED, not resolved — Bean's two
-questions are what forced the measurement, and it changed the finding from "a default got
-dimmer" to "a default that was broken". My call that the council added nothing was wrong.
+**Live (page 2596):** hero img `high`/`eager`, container img `auto`/`lazy` — exactly ONE
+high-priority image across two blocks and two code paths; `object-fit:contain` +
+`object-position:0% 0%` survived; tiled container correctly still on `::before` with
+`repeat`; no double-paint; `style` attr `null`.
 
 ### 🔵 STILL WAITING ON BEAN
 
