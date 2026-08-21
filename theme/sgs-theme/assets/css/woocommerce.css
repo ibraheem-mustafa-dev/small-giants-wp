@@ -691,6 +691,13 @@ dialog.sgs-shop-filters {
 	max-height: none;
 	color: inherit;
 
+	/* The UA stylesheet also gives <dialog> `width: fit-content`, so on desktop
+	   the sidebar shrank to whatever its widest visible row happened to be —
+	   measured 248px inside its own 260px grid track, and it narrowed further
+	   as accordion groups closed, because closed groups expose only their short
+	   labels. The track already defines the width; the panel must simply fill it. */
+	width: 100%;
+
 	/* The UA stylesheet gives <dialog> `margin: auto`. As a GRID ITEM that
 	   resolves to auto margins on both axes, which centres the sidebar in its
 	   track and silently overrides the parent's `align-items: start` - measured
@@ -1933,4 +1940,194 @@ body.woocommerce-cart .with-empty-cart-icon,
  * missed, and stayed invisible as a fault until its own contents went away. */
 .sgs-shop-filters .wc-block-product-filters__overlay-footer {
 	display: none;
+}
+
+/* ── 8i. Making WooCommerce's own controls look like they belong here ──
+ *
+ * Everything below styles markup WooCommerce renders and we do not control.
+ * Form controls are the recurring theme: a <select>, an <input type=range> and a
+ * chip <li> do NOT inherit font from their ancestors, so each one arrives in the
+ * browser's default face at the browser's default size unless told otherwise.
+ * That is why the panel read as "unstyled" even though its own headings and
+ * chips were already themed. */
+
+/* (5) Font inheritance for every control WooCommerce renders inside the panel.
+ * One rule rather than per-control repetition — form elements are the only
+ * things in the subtree that need telling. */
+.sgs-shop-filters select,
+.sgs-shop-filters input,
+.sgs-shop-filters button,
+.sgs-shop-filters textarea {
+	font-family: inherit;
+	color: inherit;
+}
+
+/* (1) The sort dropdown. Measured before: Arial 14px with a grey browser border
+ * and square corners, sitting next to fully-themed SGS controls. It lives in the
+ * toolbar rather than the filter panel, hence the separate scope. */
+.sgs-shop-toolbar select,
+select.orderby,
+.wc-block-product-sort-select select,
+.wp-block-woocommerce-product-sort-select select {
+	font-family: inherit;
+	font-size: 0.9375rem;
+	line-height: 1.2;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	padding: 0.5em 2em 0.5em 0.75em;
+	min-height: 44px;
+	cursor: pointer;
+	/* Chevron drawn as a background image so the control keeps a consistent
+	   arrow across platforms once `appearance` is removed. currentColor is not
+	   available inside a data URI, so this tracks the text token instead. */
+	appearance: none;
+	background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+	background-position: calc(100% - 1.1em) 55%, calc(100% - 0.75em) 55%;
+	background-size: 0.35em 0.35em, 0.35em 0.35em;
+	background-repeat: no-repeat;
+}
+
+.sgs-shop-toolbar select:focus-visible,
+select.orderby:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
+/* (2) The Filter toggle. It was rgb(0,0,0) on rgb(240,240,240) — the browser's
+ * default button, not a brand control. Takes the same `primary` preset token set
+ * as sgs/button, so it matches the search and call buttons rather than
+ * approximating them. */
+.sgs-shop-filters__toggle {
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	border: 1px solid var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	font-family: inherit;
+	font-size: 0.9375rem;
+	font-weight: 600;
+}
+
+.sgs-shop-filters__toggle:hover,
+.sgs-shop-filters__toggle:focus-visible {
+	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--preset--color--text-inverse));
+}
+
+/* (3) The slider's handles escaped the panel. The track spans the full content
+ * width, and each handle is a 20px circle CENTRED on the track's end — so half a
+ * handle sat outside the box at each end. Insetting the slider by the handle's
+ * radius puts both circles fully inside without shortening the usable range. */
+.sgs-shop-filters .wc-block-product-filter-price-slider {
+	padding-inline: 10px;
+}
+
+/* (4) The handles themselves.
+ * ⚠ An earlier pass styled `__range-input::-webkit-slider-thumb`. The inputs are
+ * actually `class="min"` and `class="max"` — that selector matched NOTHING, which
+ * is why the handles kept the browser's default black-bordered circle while the
+ * bar beside them was brand pink. Targeted by element+type instead, so a future
+ * WooCommerce class rename cannot silently un-style them again. */
+.sgs-shop-filters input[type="range"]::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--primary);
+	border: 2px solid var(--wp--preset--color--surface, #fff);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.sgs-shop-filters input[type="range"]::-moz-range-thumb {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--primary);
+	border: 2px solid var(--wp--preset--color--surface, #fff);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.sgs-shop-filters input[type="range"]:focus-visible::-webkit-slider-thumb {
+	outline: 3px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 3px;
+}
+
+/* (6) "Filters" is the panel's title and the group labels sit beneath it, but
+ * both measured 16px, so the hierarchy read flat. */
+.sgs-shop-filters .sgs-shop-filters__heading {
+	font-size: 1.25rem;
+	line-height: 1.2;
+}
+
+/* (8) The clear-all button measured 198x61 at 18px with 16px/36px padding —
+ * a page-level call to action inside a sidebar. It is a secondary, low-frequency
+ * control and should read as one. */
+.sgs-shop-filters .wp-block-woocommerce-product-filter-clear-button .sgs-button,
+.sgs-shop-filters__sheet-footer .sgs-shop-filters__clear-all {
+	font-size: 0.875rem;
+	padding: 0.5em 1.25em;
+	min-height: 44px;
+}
+
+/* (9) The active-filter chips — the ones carrying an x to remove a filter.
+ * ⚠ These are `wc-block-product-filter-REMOVABLE-chips__item`, a DIFFERENT class
+ * from the selectable `wc-block-product-filter-chips__item` styled earlier, so
+ * they were never covered and kept the browser's 2px-radius default. They also
+ * sat flush against the clear-all button — measured gap: 0. */
+.sgs-shop-filters .wc-block-product-filter-removable-chips__items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sgs-shop-filters .wc-block-product-filter-removable-chips__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	min-height: 32px;
+	padding: 0.25em 0.75em;
+	background: var(--wp--custom--button-presets--outline--background, transparent);
+	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	font-size: 0.8125rem;
+	line-height: 1.2;
+	color: inherit;
+	list-style: none;
+}
+
+.sgs-shop-filters .wc-block-product-filter-removable-chips__item:hover {
+	border-color: var(--wp--preset--color--primary);
+	background: color-mix(in oklab, var(--wp--preset--color--primary) 12%, transparent);
+}
+
+/* The remove control inside each chip — a 24px hit area rather than a bare
+ * glyph, which is the smallest that stays comfortably tappable inside a 32px
+ * chip without forcing the chip taller. */
+.sgs-shop-filters .wc-block-product-filter-removable-chips__item button,
+.sgs-shop-filters .wc-block-product-filter-removable-chips__remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 24px;
+	min-height: 24px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+}
+
+/* The gap the chips row never had beneath it. */
+.sgs-shop-filters .wp-block-woocommerce-product-filter-removable-chips {
+	margin-bottom: var(--wp--preset--spacing--20, 0.75rem);
 }
