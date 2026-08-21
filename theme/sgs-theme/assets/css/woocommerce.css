@@ -1920,3 +1920,17 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wc-block-product-filters__apply {
 	display: none;
 }
+
+/* 3. AND THE FOOTER THAT HELD IT.
+ *
+ * Hiding the Apply button left WooCommerce's `__overlay-footer` as an EMPTY
+ * strip still carrying `box-shadow: 0 -4px 8px rgba(0,0,0,.1)` — which painted a
+ * grey band across the sheet just above our own footer. Found by hit-testing the
+ * pixels rather than reading the stylesheet: nothing opaque sat there, and the
+ * only thing at those coordinates was a shadow with no visible owner.
+ *
+ * Their header was already hidden for the same reason; the footer simply got
+ * missed, and stayed invisible as a fault until its own contents went away. */
+.sgs-shop-filters .wc-block-product-filters__overlay-footer {
+	display: none;
+}
