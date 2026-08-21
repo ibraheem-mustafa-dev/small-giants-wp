@@ -20,47 +20,39 @@ track owns `## ▶ COLOUR-GOLDEN TRACK`. The **Tier W / motion** track owns
 
 1. `.claude/plans/phase-shop-container-remediation.md` — Phase 1 is COMPLETE. The live front
    is the container capability gap below.
-2. `~/.claude/memory/research/2026-08-21-wp-block-theme-main-width-and-full-bleed-bands.md`
-   — the research that reframes Phase 2. Read this BEFORE touching the container.
+2. `.claude/decisions.md` D725 + D726 — the width model, SETTLED. Read before any
+   container work; they close what the research below merely optioned.
 3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — IN FULL if touching converter/walker.
 
-## Task 1 — Rule on the container's width model (Bean, then build)
+## Task 1 — container width model: ✅ CLOSED 2026-08-21 (D725 / D726)
 
-**What:** `sgs/container` caps content by INJECTING `.sgs-container__inner` with a `max-width`
-on it. WordPress core instead caps a container's CHILDREN with a selector that excludes
-`.alignfull`, so a child can opt out. Ours has no opt-out: a full-bleed child of a constrained
-parent is INEXPRESSIBLE, which is why `<main>` had to be unconstrained on the shop template.
-**Why:** every full-bleed band on every client build hits this. It is the same work the
-colour-golden track scoped as their §4b.
-**Orchestration:** inline (Opus) for the ruling — it is a Rule 7 shared-mechanism change and
-needs Bean's sign-off. Build afterwards: sonnet, scoped to `container_kind='content'` only.
-**Guardrail:** three capabilities structurally need the real node and must keep it —
-`@container` queries, `data-sgs-fx-track` (GSAP), grid-on-inner. Not a blanket swap.
-**Prerequisite, non-negotiable:** widen
-`scripts/inspector-scan/rules/23-content-width-needs-inner-band.js` FIRST — its regex expects a
-dot-class after `>`, so core's `:where(...)` shape makes it report "no band" for every correctly
-migrated block. It goes silently wrong, not red.
-**Acceptance:** a container with `contentWidth:normal` has a child with `align:full` spanning
-edge-to-edge, measured live. Not "the CSS looks right".
+**Settled the OPPOSITE way to how this task was written, so read D725 before acting on any
+older note about it.** The task assumed we would adopt core's cap-the-children model. Bean
+ruled the other way: our `contentWidth` already caps content in the right place, so core's
+duplicate `layout:{"type":"constrained"}` was DELETED from the last three templates
+(`c984a676`). One cap per page, and it is ours.
 
-**THE SHOP PAGE IS THE SECOND HALF OF THIS TASK.** Two things there exist ONLY as workarounds
-for the gap and should be reverted once it closes, in `templates/archive-product.html`:
-1. `<main>` is `contentWidth:"full"`. Canonical is a CONSTRAINED `<main>` whose constraint caps
-   children — restore that once a child can opt out with `align:full`.
-2. The wrapper around `sgs/collapsible-text` exists only because an unconstrained `<main>` would
-   let that operator copy span the viewport. In core's model it is unnecessary — TT5 puts
-   `query-title`/`term-description` straight into `<main>` with no wrapper. Delete it then.
-Bean ruled on keeping both for now; they are deliberate debt with a named trigger, not drift.
+⛔ **Three instructions that used to live here are now WRONG — do not act on them if you meet
+them in an older doc, a branch or a stale summary:**
+1. ~~"Prerequisite, non-negotiable: widen inspector-scan rule 23"~~ — that was only needed for
+   the migration we did not do. The regex is correct for the model we kept.
+2. ~~"Acceptance: a container with `contentWidth:normal` has a child with `align:full` spanning
+   edge-to-edge"~~ — wrong test. A full-bleed section is a SIBLING, not a child; nothing needs
+   to break out. `alignfull` is unnecessary here rather than broken.
+3. ~~"`<main>` is `contentWidth:full` — a workaround; restore a constrained `<main>`"~~ — that
+   is now CANONICAL. `<main>` is structure and passes width through. The
+   `sgs/collapsible-text` wrapper is likewise a legitimate opt-IN to a band, not debt.
+
+**Measured live 1440/768/390:** stacked caps 3 → 0; `<main>` 1425px unbanded; 26 sections
+full-bleed outer + 1280px inner; `single.html` 0 uncapped. **Accepted consequence (D725):** a
+block placed straight into a page is intentionally full-width — it keeps its own
+padding/margin/alignment. Do not "fix" it.
 
 ## Task 2 — Two decisions the colour-golden track is waiting on
 
 Sticky sidebar (their evidence says the accordion already solved it — RE-MEASURE before
 building anything) and the band-replacement model, which is Task 1 by another name. See their
 section below.
-
-## Task 3 — PR #35 (Indus Foods colour renames) needs review or merge
-
-Two commits, static-verified only; Indus is not deployed anywhere to look at.
 
 ## ▶ LIVE STATUS — 2026-08-21 (shop-archive track)
 
@@ -72,6 +64,14 @@ style confirmed on the frontend at rest AND under a real pointer hover, with a n
 control). Per-step detail is single-sourced to the plan doc, not duplicated here.
 
 ### Shipped this session (2026-08-21)
+
+- **Container/width session (same day).** One cap per page (`c984a676`); the EDITOR now renders
+  the `.sgs-container__inner` band it had styled but never created, so band controls finally
+  move the canvas (`921954fc`; 7 banded / 4 unbanded, exactly tracking `contentWidth`);
+  archive-product's WC blocks made valid (`a47e76f2`, `426d3d42`); `build-deploy.py` purges BOTH
+  cache layers — the OPcache reset both CLAUDE.md files claimed existed did not (`32315c37`);
+  4 dead template-part slots deleted (`0413f76e`); P2-6 residual closed (`7636397d`).
+  D719-D721, D725, D726.
 
 - **Shop filter UI rebuilt.** Accordion (`<details>`/`<summary>`) collapses the filter groups:
   panel 1154px → 505px, which is what finally made `position:sticky` work — held at its 24px

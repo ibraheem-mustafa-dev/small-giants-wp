@@ -27,10 +27,9 @@ as every commit**.
 
 ## ▶ EXECUTION PROGRESS (updated 2026-08-21, end of FOURTH execution session)
 
-**Phase 1 Wave 1 SHIPPED + DEPLOYED + LIVE-VERIFIED. Wave 2 CODE-COMPLETE + COMMITTED, NOT
-DEPLOYED, NOT LIVE-VERIFIED (QC GATE 2 OPEN). Phase 2 NOT STARTED BY THIS TRACK — but see the
-cross-track note below: the parallel colour-golden session shipped P2-3-adjacent and
-P2-6 work independently while Wave 2 was running.**
+**PHASE 1 COMPLETE (both gates closed, live-verified). PHASE 2 IS MOSTLY DONE — five of the
+nine steps shipped, several by parallel tracks. Status below was RE-VERIFIED against the code on
+2026-08-21 rather than carried forward; it had read "NOT STARTED" for four sessions.**
 **The R-3 workstream is COMPLETE (all 7 items).** Commits: `3224db10`, `03fd4247`, `b562c6d2`, `631e97a3`,
 `21131a98`, `25cc0188` (all on `main`, pushed).
 
@@ -46,7 +45,7 @@ P2-6 work independently while Wave 2 was running.**
 | **P1-7** theme CSS (panel visibility, fallbacks, search width) | ✅ **DONE** (`fe078c2f`) | Dead teal fallbacks **enumerated at 47** (45× `#0f7e80`, 2× `#0b6668`), now 0. 15 of them sat on focus outlines and took `currentColor` rather than deletion — not in the brief, and correct. |
 | **P1-8** mobile filter sheet + a11y | ✅ **DONE + LIVE-VERIFIED** (`fe078c2f` + 6 follow-ups) | Native `<dialog>` bottom sheet. ⚠ Deviation flagged by the agent and accepted: sticky trigger built as `position:fixed` + scroll listener, not `position:sticky` — sticky would pin to its own containing block and sit near the page bottom, not follow the grid. |
 | **QC GATE 2** | ✅ **CLOSED 2026-08-21 — PHASE 1 COMPLETE** | Closed by the colour-golden track BEHAVIOURALLY, which is the bar Bean set: a swatch picked in the editor, then the computed style confirmed changed on the frontend at rest AND under a real pointer hover, with a negative control (hero returned to its resting colour when unhovered). Frontend separately verified live at 1440/768/390. The four visual-gate skips in `reports/visual-diff/manual-skips.log` remain an honest record — no PASS was ever fabricated. |
-| **Phase 2** (P2-1…P2-9) | ⬜ **NOT STARTED** | Both design gates (G1/G2) remain closed and ready. |
+| **Phase 2** (P2-1…P2-9) | 🟡 **MOSTLY DONE — status VERIFIED against the code 2026-08-21, not carried forward** | This row read NOT STARTED for four sessions while five steps had shipped, several by other tracks. A plan claiming LESS progress than reality still costs a session: it sends the next reader to re-do P2-1 and P2-3. See the Phase 2 table below. |
 
 ### ✅ CLEAR-FILTERS BUTTON — closed (`7e2d6eba`), the last P1-5 residual
 
@@ -604,6 +603,26 @@ run **strictly sequentially**.
 | **P2-7** | inline | `/sgs-update` reseed. ⚠ Cross-track — breaks other worktrees' DB gate until their classifier lands. Announce first | P2-6 |
 | ~~P2-8~~ | — | **MOVED TO PHASE 1 as P1-1b** per D542 ("if an item touches more than ~3 blocks, the first deliverable is the detector, not the edit" — this touches 71). Building it first means it FLAGS the container, then P2-4 fixes it, then the count drops by one — a real before/after instead of an eyeball. | — |
 | **P2-9** | haiku | `<main>` landmark — re-admit `main` to the tagName enum or wrap the template, whichever P2-1's outcome makes cleaner. **Orchestrator decides which; do not hand this choice to the agent** | P2-1 |
+
+### ▶ VERIFIED STATUS — read from the code 2026-08-21, not from this plan's own history
+
+| Step | Verified status | Evidence |
+|---|---|---|
+| **P2-1** band off the outer + own band selector + `narrow` token | ✅ **DONE** | D706 `2d291992` + `669bc1e5`; `narrow` handled in the resolver |
+| **P2-2** `layout` default per G1 | ❌ **OPEN** | `block.json` default `""` vs `LayoutPanel.js:50` `'stack'` — the panel shows a state the block does not have, and `""` deliberately falls through to CSS-initial `stretch` (D306) |
+| **P2-3** container root colour + dead `textColor`/`backgroundColor` reads + `attrMap` off `native:*` | ✅ **DONE** | D713; the only remaining grep hit in `render.php` is a COMMENT explaining the removal |
+| **P2-4** editor preview parity | 🟡 **PARTIAL** | The content band now renders in the editor (`921954fc`, 7 banded / 4 unbanded tracking `contentWidth`). The wider "mirror render.php's scoped-CSS emission" is untouched |
+| **P2-5** responsive grid + `minColumnWidth` | ❌ **OPEN** | `minColumnWidth` appears in NEITHER `block.json` nor the wrapper — 0 hits |
+| **P2-6** ~280 American→British authorings | ✅ **DONE** | Last renameable one closed `7636397d`. ⚠ 12 American spellings REMAIN and are CORRECT — they sit on CORE blocks. Only `wp:sgs/*` authorings are renameable; counted by parsing each block comment and keying on its block name, never by grepping the word |
+| **P2-7** `/sgs-update` reseed | ❌ **OPEN** | Cross-track — breaks other worktrees' DB gate until their classifier lands. Announce first |
+| **P2-9** `<main>` landmark | ✅ **DONE** | D710, singleton guard |
+
+**Also closed outside this table:** the container width model (D725/D726 — core's duplicate
+constrained layout deleted, one cap per page) and the editor content band. **Found, not fixed:**
+`check-dead-pattern-attrs` flags `style.spacing` on `single.html:7/11/27` — `sgs/container`
+dropped `supports.spacing` at D707 when padding/margin became block-owned, so those authorings
+use an undeclared native family. Advisory (exit 0), still working via the wrapper's legacy
+fallback, but it is a D707 residual across the theme.
 
 **QC GATE 3** (after P2-4): container behaviour — background paints edge-to-edge with NO
 `align:"full"`; inspector controls move the canvas; every wrapper-mirroring composite (hero,
