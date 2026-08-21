@@ -643,12 +643,19 @@ h2.wc-block-mini-cart__title {
 		   uses (scope bridge — see block comment above) ── */
 		min-height: 44px;
 		padding: 0.5em 1.25em;
-		border-radius: var(--wp--custom--border-radius--medium, 8px);
+		border-radius: var(--wp--custom--border-radius--pill, 9999px);
 		font-weight: 600;
 		font-size: 0.9375rem;
 		cursor: pointer;
 		background: var(--wp--preset--color--primary, #E68A95);
-		color: var(--sgs-product-card-btn-text, #3A2E26);
+		/* ⚠ WAS `--sgs-product-card-btn-text` (#3A2E26, brown). On the pink
+		   primary that matched no other primary control on the site — the search
+		   submit and call buttons both use the near-white inverse. Measured 5.28:1
+		   against the pink either way, so this is a consistency fix, not a
+		   contrast one. The client's own button-presets--primary--text token
+		   carries the same brown; that wider inconsistency is flagged, not
+		   patched here. */
+		color: var(--wp--preset--color--text-inverse, #fffaf5);
 		border: 2px solid var(--wp--preset--color--primary, #E68A95);
 		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 	}
@@ -1995,34 +2002,11 @@ select.orderby:focus-visible {
 	outline-offset: 2px;
 }
 
-/* (2) The Filter toggle. It was rgb(0,0,0) on rgb(240,240,240) — the browser's
- * default button, not a brand control. Takes the same `primary` preset token set
- * as sgs/button, so it matches the search and call buttons rather than
- * approximating them. */
-.sgs-shop-filters__toggle {
-	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
-	border: 1px solid var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
-	/* ⚠ NOT `--wp--custom--button-presets--primary--text`. That token resolves to
-	   #3a2e26 on this client — brown text on the pink primary — while every other
-	   primary-looking control on the site (search submit, call button) uses the
-	   near-white inverse. Following the token faithfully produced a button that
-	   matched no other button, so the inverse token is used directly here.
-	   ⚠ The underlying inconsistency is in the client's own preset and is NOT
-	   fixed here: any filled sgs/button--primary inherits the same brown. Raised
-	   separately rather than patched per control. */
-	color: var(--wp--preset--color--text-inverse, #fff);
-	border-radius: var(--wp--custom--border-radius--pill, 9999px);
-	font-family: inherit;
-	font-size: 0.9375rem;
-	font-weight: 600;
-}
-
-.sgs-shop-filters__toggle:hover,
-.sgs-shop-filters__toggle:focus-visible {
-	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
-	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
+/* (2) The Filter toggle is styled by `body.is-enhanced .sgs-shop-filters__toggle`
+ * above, NOT here. A rule was briefly added at this point and lost silently: that
+ * one is (0,2,0) and this scope is (0,1,0). Two owners for one button is the
+ * problem, not the specificity — so the original was corrected in place and this
+ * one deleted rather than out-specified. */
 
 /* (3) The slider's handles escaped the panel. The track spans the full content
  * width, and each handle is a 20px circle CENTRED on the track's end — so half a
