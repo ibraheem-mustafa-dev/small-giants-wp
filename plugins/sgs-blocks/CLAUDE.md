@@ -180,13 +180,21 @@ long quoted here — the missed one is the worst, because `var:preset|spacing|40
 own header calls that a separate task and it must ship alone: it is a real behaviour change, and
 stacking it on a refactor makes both unfalsifiable.
 
-### Vacuous style-engine guard — `scripts/remove-vacuous-style-engine-guard.py` (2026-08-21)
+### Vacuous core-function guards — `scripts/remove-vacuous-style-engine-guard.py` (D732/D733)
 
-`wp_style_engine_get_styles()` shipped in **WP 6.1**. This plugin (`sgs-blocks.php`) and the theme
-(`style.css`) both declare **"Requires at least: 6.7"**. So all 73 occurrences of
-`function_exists( 'wp_style_engine_get_styles' )` across 63 render.php files were testing for a
-function their own declared floor guarantees — a false branch that was never reachable on any
-supported install. Removal is behaviour-neutral BY CONSTRUCTION, not by measurement.
+A `function_exists()` check on a CORE function is only meaningful when that function landed AFTER
+the plugin's declared minimum. `sgs-blocks.php` and the theme's `style.css` both declare
+**"Requires at least: 6.7"**, so **109 guards** (73 at D732 + 36 at D733) were testing for functions
+their own floor guarantees — a false branch never reachable on any supported install. Removal is
+behaviour-neutral BY CONSTRUCTION, not by measurement.
+
+⛔ **Verify the floor against core LOAD ORDER, not just the version number.** `style-engine.php`,
+`script-modules.php` and `interactivity-api.php` are `require`d at `wp-settings.php` lines
+437/450/453 — before mu-plugins (508) and plugins (582) — and core never wraps those definitions in
+`function_exists`, so no bootstrap window exists in which SGS code runs and the function is absent.
+The same check proves the rule DISCRIMINATES rather than being blanket: `pluggable.php` loads at
+line **612, AFTER plugins**, so `wp_get_current_user` guards are REAL. Likewise the `wp_*connector*`
+family is `@since 7.0` — ABOVE the floor. Both are correctly still in the tree.
 
 ```bash
 python scripts/remove-vacuous-style-engine-guard.py --survey      # census
@@ -214,9 +222,20 @@ separator; without it the statement above becomes adjacent to the de-indented fi
 `accordion`). The script leaves a BLANK LINE in its place. **The fix for a merged group is a blank
 line, NEVER `phpcbf`** — that realigns whole files and turns a scoped change into an unreviewable diff.
 
-⛔ Two sibling families are ALSO vacuous against the 6.7 floor and deliberately NOT touched here —
-`wp_interactivity_data_wp_context` (4) and `wp_enqueue_script_module` (3), both WP 6.5. Separate
-family, separate commit; two overlapping changes in one commit are unfalsifiable.
+⛔ **NEVER remove a POLYFILL DEFINITION.** `if ( ! function_exists( 'x' ) ) { function x() {…} }`
+is correct code that makes a file runnable outside WordPress. `helpers-css-safety.php`'s `esc_attr`
+guard is exactly this — inside a CLI `--self-test` block, with `scripts/diff-gap-sanitiser.php`
+requiring the file standalone. It is KEPT, and the gate exempts that shape. Before deleting any
+guard, grep `scripts/` and `tests/` for the filename: several `includes/` files ARE loaded by
+standalone harnesses.
+
+⚠ **Counts here were wrong TWICE, the same way: a `src/blocks/*/render.php`-only grep.** "73" was
+really 74 and "4 and 3" were really 5 and 5 — every missed site lived in `includes/`. Do not trust a
+figure from a convenient subset; run `--check`, which scans `src/` + `includes/` + the theme.
+
+⚠ **The floor is PARSED from the plugin header, never hardcoded.** A lowered floor makes the
+affected family load-bearing again, and the gate drops it rather than asserting a stale claim; it
+fails closed if the header cannot be read. Wired into `prebuild` + `npm run check:vacuous-guards`.
 
 ### Comment-narrative detector — `scripts/extract-comment-narrative.py` (D727)
 

@@ -1,5 +1,21 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D733 — the vacuous-guard sweep finishes at 109, and the detector is what found the misses [ROUTINE]
+
+**The rule, stated once:** a `function_exists()` check on a CORE function is only meaningful when that function landed AFTER the plugin's declared minimum. Below the floor it is a false branch that has never been reachable. `sgs-blocks.php` and the theme both declare **"Requires at least: 6.7"**. 109 guards across two commits tested for functions their own floor guarantees.
+
+**Every `@since` was read from WordPress core and traced to its OWN docblock**, never a nearby one — `script-modules.php` alone carries six `@since 6.5.0` blocks for six different functions, so reading the closest is a coin flip. The 6.7 floor was then checked against core LOAD ORDER rather than assumed: `style-engine.php`, `script-modules.php` and `interactivity-api.php` are `require`d at `wp-settings.php` lines 437/450/453, before mu-plugins (508) and plugins (582), and core never wraps those definitions in `function_exists` — so no bootstrap window exists in which SGS code runs and the function is absent. The same check proved the rule DISCRIMINATES: `pluggable.php` loads at line 612, AFTER plugins, so `wp_get_current_user` guards are genuinely load-bearing and were left alone.
+
+**My counts were wrong twice, the same way both times.** "73" and "4 and 3" were all render.php-only greps; the real figures were 74 and 5 and 5. Widening the detector to `includes/` found a style-engine guard in `class-sgs-container-wrapper.php` I had missed entirely. A convenient subset is not an enumeration.
+
+**Five distinct shapes, so no single codemod.** Ternary-with-fallback, leading/middle/trailing conjunct, standalone `if`, and a negated early-return using a namespaced `unction_exists`. Two bugs the self-test caught before rollout: `} else {` is brace-NEUTRAL so depth-counting sails past it to the final `}` (an `else` guard is now REFUSED, detected structurally), and deleting an `if` line merges phpcs alignment groups (a blank line is left in its place, never `phpcbf`).
+
+**One site deliberately KEPT.** `helpers-css-safety.php`'s `esc_attr` guard is a POLYFILL DEFINITION inside a CLI `--self-test` block, and `scripts/diff-gap-sanitiser.php` requires that file standalone. Removing it breaks the self-test — verified 60/60 passing with it in place. That single case is why every dispatched brief carried an explicit never-remove-a-polyfill rule.
+
+**The gate is the durable half.** `--check` now PARSES the floor from the plugin header instead of hardcoding it, so a LOWERED floor drops the affected family out of the gate rather than the gate asserting a stale claim; it fails closed when the header is unreadable, exempts polyfill definitions, scans the theme too, and is WIRED into `prebuild` — it was unwired, this repo's documented D338/D493 failure. 23 self-test assertions, each with a negative control.
+
+**Regression evidence, not assertion:** PHPUnit is byte-identical against a stashed HEAD baseline — 1509 tests / 3829 assertions / 2 errors / 24 failures both before and after, so all 26 failures pre-date the work.
+
 ## D731 — the corner-keyed shorthand gets the sibling helper it always needed [ROUTINE]
 
 **The carve-out was correct, and it stayed correct until somebody built the missing function.** Eight render.php files each carried a byte-identical closure turning a corner-keyed box object into a CSS `border-radius` shorthand. D722's migration deliberately skipped them: `sgs_box_object_shorthand()` is keyed top/right/bottom/left, a corner object is topLeft/topRight/bottomRight/bottomLeft, so there was genuinely nothing to call. Added `sgs_corner_object_shorthand()` and migrated all 17 call sites.
