@@ -474,6 +474,26 @@ h2.wc-block-mini-cart__title {
 
 /* ── 8b. Filter sidebar / drawer ── */
 
+/* Specificity note (2026-08-21): the `.sgs-container.sgs-shop-filters` compound
+ * is REQUIRED, not decorative. This element is an sgs/container, and the block's
+ * own scoped CSS sets `.sgs-container { position: relative }` (it needs a
+ * positioned ancestor for the background/overlay layer). That rule is a single
+ * class, exactly like `.sgs-shop-filters`, and it is emitted into an inline
+ * <style> in the body — i.e. LATER in source order than this linked stylesheet —
+ * so at equal specificity it won.
+ *
+ * The consequence was two defects for the price of one, both measured live on
+ * the canary at 1309px:
+ *   1. The sticky sidebar was never sticky. `position` computed to `relative`,
+ *      so the filter panel did not follow the page on scroll at all — a feature
+ *      that looked present in the source and did nothing.
+ *   2. `top: 24px` survived, and on a `relative` element `top` is a plain
+ *      offset rather than a sticky threshold. The panel sat 24px BELOW the first
+ *      product card (filters 422 vs cards 398) instead of level with it.
+ * Forcing `position: sticky` live closed the gap to exactly 0 and restored the
+ * scroll behaviour, which is what proved the cause rather than merely fitting it.
+ */
+.sgs-container.sgs-shop-filters,
 .sgs-shop-filters {
 	position: sticky;
 	top: var(--wp--preset--spacing--40, 1.5rem);
