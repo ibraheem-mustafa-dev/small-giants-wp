@@ -2,14 +2,14 @@
 verdict: PASS
 intent_capture_passed: true
 date: 2026-08-21
-scope: 49 blocks — inline sanitiser closures replaced with the shared helpers
+scope: 57 blocks — inline sanitiser closures replaced with the shared helpers
 ---
 
 # Shared-sanitiser adoption — equivalence proof in place of per-block captures
 
 ## What changed
 
-`$sgs_css_length` / `$sgs_css_keyword` / `$sgs_box_shorthand` closures deleted from 49
+`$sgs_css_length` / `$sgs_css_keyword` / `$sgs_box_shorthand` closures deleted from 57
 `render.php` files; every call site rewritten to `sgs_css_length_sanitise()` /
 `sgs_css_keyword_sanitise()` / `sgs_box_object_shorthand()` in `includes/helpers-box.php`.
 
@@ -39,6 +39,20 @@ Both implementations were run side by side over a corpus and compared byte-for-b
 
 Source bodies were additionally verified byte-identical before the change: all 52 `css_length`
 bodies are one string, all 38 `css_keyword` bodies are one string.
+
+## Batch 2 — the 8 entangled files
+
+Eight files carried a CARVED-OUT `$sgs_corner_shorthand` / `$sgs_radius_shorthand` that closed
+over the length closure being deleted. Those corner closures are **kept** (no shared helper
+exists for the corner-keyed shape); only their dependency was rewritten, and the now-dead
+`use ( $sgs_css_length )` clause removed.
+
+⛔ **`before-after`'s radius closure was the specific hazard** — it is UNTYPED and is called as
+`$sgs_radius_shorthand( $attributes['borderRadiusTablet'] ?? null )`, i.e. with a raw `null`,
+relying on its own internal `is_array()` guard. It was deliberately NOT routed through a
+typed-`array` helper, which would have fatalled the page. Verified after the change: the
+closure is still `static function ( $box )` (untyped), its `is_array()` guard is intact, and
+only the inner calls changed to `sgs_css_length_sanitise()`.
 
 ## What this does NOT cover
 

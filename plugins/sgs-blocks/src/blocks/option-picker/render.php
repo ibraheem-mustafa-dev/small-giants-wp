@@ -76,16 +76,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration. Mirrors sgs/button + sgs/quote + sgs/container.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — free-text attrs concatenated into raw CSS
 // declarations (border-style). Strips everything except letters + hyphen.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Attribute extraction.
 // ---------------------------------------------------------------------------
@@ -128,10 +120,10 @@ $max_width     = $attributes['maxWidth'] ?? '';
 // Root border — custom attrs (mirrors sgs/quote: radius stays WP-native,
 // width/style/colour are SGS custom so width can be a 4-side object).
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
 $has_border_width     = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
@@ -240,7 +232,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -305,13 +297,13 @@ if ( $pill_sel_border_col ) {
 if ( '' !== $pill_border_radius ) {
 	// CSS-length string — emit the value directly (sanitised), preserving an
 	// explicit "0"/"0px". '' = unset → the CSS default var governs.
-	$pbr_safe = $sgs_css_length( $pill_border_radius );
+	$pbr_safe = sgs_css_length_sanitise( $pill_border_radius );
 	if ( '' !== $pbr_safe ) {
 		$var_decls[] = '--sgs-op-pill-radius:' . $pbr_safe;
 	}
 }
 if ( '' !== $pill_sel_radius_raw ) {
-	$psr_safe = $sgs_css_length( $pill_sel_radius_raw );
+	$psr_safe = sgs_css_length_sanitise( $pill_sel_radius_raw );
 	if ( '' !== $psr_safe ) {
 		$var_decls[] = '--sgs-op-sel-pill-radius:' . $psr_safe;
 	}
@@ -350,14 +342,14 @@ if ( 'none' !== $border_style ) {
 	}
 }
 if ( $max_width ) {
-	$mw_safe = $sgs_css_length( $max_width );
+	$mw_safe = sgs_css_length_sanitise( $max_width );
 	if ( '' !== $mw_safe ) {
 		$root_decls[] = 'max-width:' . $mw_safe;
 		$root_decls[] = 'margin-inline:auto';
 	}
 }
 if ( $content_width ) {
-	$cw_safe = $sgs_css_length( $content_width );
+	$cw_safe = sgs_css_length_sanitise( $content_width );
 	if ( '' !== $cw_safe ) {
 		$root_decls[] = 'width:' . $cw_safe;
 	}
@@ -437,32 +429,21 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 
 // --- Responsive padding/margin/border-radius tiers — box objects, hand-built
 // shorthand (contract §B/§B2: tablet max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+$sgs_corner_shorthand = static function ( array $box ) {
+	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
 	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
 		return null;
 	}
 	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
 };
 
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 $radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
 
@@ -498,9 +479,9 @@ if ( $mobile_root_decls ) {
 // (SGS custom family; falls back to the per-size default in style.css when
 // unset — byte-identical default behaviour). ---
 $sel_pill        = "{$root_sel} .sgs-option-picker__pill";
-$pill_padding_val      = $sgs_box_shorthand( $pill_padding_obj );
-$pill_padding_tab_val  = $sgs_box_shorthand( $pill_padding_tablet_obj );
-$pill_padding_mob_val  = $sgs_box_shorthand( $pill_padding_mobile_obj );
+$pill_padding_val      = sgs_box_object_shorthand( $pill_padding_obj );
+$pill_padding_tab_val  = sgs_box_object_shorthand( $pill_padding_tablet_obj );
+$pill_padding_mob_val  = sgs_box_object_shorthand( $pill_padding_mobile_obj );
 
 if ( null !== $pill_padding_val ) {
 	$scoped_css[] = "{$sel_pill}{padding:{$pill_padding_val};}";
@@ -527,7 +508,7 @@ if ( '' !== $label_colour ) {
 	$legend_decls[] = 'color:' . sgs_colour_value( $label_colour );
 }
 if ( '' !== $label_margin_bottom ) {
-	$mb_safe = $sgs_css_length( $label_margin_bottom );
+	$mb_safe = sgs_css_length_sanitise( $label_margin_bottom );
 	if ( '' !== $mb_safe ) {
 		$legend_decls[] = 'margin-bottom:' . $mb_safe;
 	}
@@ -755,8 +736,8 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (matches SGS_Container_Wrapper + sgs/quote).
-	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length /
-	// $sgs_css_keyword / sgs_colour_value / wp_style_engine_get_styles /
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() /
+	// sgs_css_keyword_sanitise() / sgs_colour_value / wp_style_engine_get_styles /
 	// sgs_typography_css_rule), so no un-sanitised value survives to here.
 	echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>

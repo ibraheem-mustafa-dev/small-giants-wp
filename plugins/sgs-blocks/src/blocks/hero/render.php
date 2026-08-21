@@ -61,16 +61,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // digits, dot, and % so a Contributor-authored malicious value (e.g.
 // "600px;}body{display:none}.x{min-height:0") can never break out of the
 // declaration into a new CSS rule. Mirrors sgs/button's proven sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / object-fit) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // object-position sanitiser — allows the keyword/percentage/length grammar of
 // CSS object-position ("center 20%", "top left", "10px 50%") while stripping
 // anything that could break out of the declaration.
@@ -81,25 +73,14 @@ $sgs_css_object_position = static function ( $value ) {
 // Box-object shorthand builder — { top, right, bottom, left } → a CSS
 // `padding`/`border-width`-style 4-value shorthand string, each side
 // sanitised. Returns null when every side is empty (nothing to emit).
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // Border-radius object shorthand builder — { topLeft, topRight, bottomLeft,
 // bottomRight } → CSS `border-radius` 4-value shorthand (TL TR BR BL order).
 // Returns null when every corner is empty.
-$sgs_radius_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+$sgs_radius_shorthand = static function ( array $box ) {
+	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
 	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
 		return null;
 	}
@@ -207,9 +188,9 @@ $image_object_position_tablet = $attributes['imageObjectPositionTablet'] ?? '';
 // in block.json (WP silently discards any attr the block.json doesn't
 // declare, D338). sgs_responsive_normalise_object() is the canonical reader.
 $min_height_obj    = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
-$min_height        = $sgs_css_length( $min_height_obj['desktop'] ?? '' );
-$min_height_tablet = $sgs_css_length( $min_height_obj['tablet'] ?? '' );
-$min_height_mobile = $sgs_css_length( $min_height_obj['mobile'] ?? '360px' );
+$min_height        = sgs_css_length_sanitise( $min_height_obj['desktop'] ?? '' );
+$min_height_tablet = sgs_css_length_sanitise( $min_height_obj['tablet'] ?? '' );
+$min_height_mobile = sgs_css_length_sanitise( $min_height_obj['mobile'] ?? '360px' );
 
 // Sub-headline / headline / label font-size are owned by the child
 // sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
@@ -266,7 +247,7 @@ $image_object_position = $attributes['imageObjectPosition'] ?? 'center center';
 $image_width        = $attributes['imageWidth'] ?? null;
 $image_width_tablet = $attributes['imageWidthTablet'] ?? null;
 $image_width_mobile = $attributes['imageWidthMobile'] ?? null;
-$image_width_unit   = $sgs_css_length( $attributes['imageWidthUnit'] ?? '%' );
+$image_width_unit   = sgs_css_length_sanitise( $attributes['imageWidthUnit'] ?? '%' );
 
 // imageHeight is a TIER OBJECT (Spec 35): one attr carrying all three tiers,
 // replacing the imageHeight/imageHeightTablet/imageHeightMobile trio 2026-08-10.
@@ -277,7 +258,7 @@ $image_height_obj    = sgs_responsive_normalise_object( $attributes['imageHeight
 $image_height        = $image_height_obj['desktop'] ?? null;
 $image_height_tablet = $image_height_obj['tablet'] ?? null;
 $image_height_mobile = $image_height_obj['mobile'] ?? null;
-$image_height_unit   = $sgs_css_length( $attributes['imageHeightUnit'] ?? 'px' );
+$image_height_unit   = sgs_css_length_sanitise( $attributes['imageHeightUnit'] ?? 'px' );
 
 // Image border radius — box-object family (contract §B): base + tablet +
 // mobile, each { topLeft, topRight, bottomLeft, bottomRight }, string values
@@ -288,7 +269,7 @@ $image_border_radius_mobile_obj = is_array( $attributes['imageBorderRadiusMobile
 
 // Image border — width is a box-object family (base only, no tiers, matches
 // the pre-existing base-only contract). Style/colour stay scalar attrs.
-$image_border_style     = $sgs_css_keyword( $attributes['imageBorderStyle'] ?? 'none' );
+$image_border_style     = sgs_css_keyword_sanitise( $attributes['imageBorderStyle'] ?? 'none' );
 $image_border_width_obj = is_array( $attributes['imageBorderWidth'] ?? null ) ? $attributes['imageBorderWidth'] : array();
 $image_border_colour    = $attributes['imageBorderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $image_border_colour when set.
@@ -489,7 +470,7 @@ if ( $is_split ) {
 	} elseif ( 'wide' === $cw_raw ) {
 		$band = 'var(--wp--style--global--wide-size)';
 	} elseif ( '' !== $cw_raw && 'full' !== $cw_raw ) {
-		$band = $sgs_css_length( $cw_raw );
+		$band = sgs_css_length_sanitise( $cw_raw );
 	}
 	if ( '' !== $band ) {
 		$responsive_css .= '.' . $uid . '{padding-inline:max(var(--wp--style--root--padding-right,24px),calc((100% - ' . $band . ') / 2))}';
@@ -618,15 +599,15 @@ if ( $is_split ) {
 // ── imagePadding: box-object family — base + tablet + mobile (on the <img>
 // element). Gated on $is_split, matching the old emission's scope.
 if ( $is_split ) {
-	$img_pad_base = $sgs_box_shorthand( $image_padding_obj );
+	$img_pad_base = sgs_box_object_shorthand( $image_padding_obj );
 	if ( null !== $img_pad_base ) {
 		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{padding:' . $img_pad_base . '}';
 	}
-	$img_pad_tab = $sgs_box_shorthand( $image_padding_tablet_obj );
+	$img_pad_tab = sgs_box_object_shorthand( $image_padding_tablet_obj );
 	if ( null !== $img_pad_tab ) {
 		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{padding:' . $img_pad_tab . '}}';
 	}
-	$img_pad_mob = $sgs_box_shorthand( $image_padding_mobile_obj );
+	$img_pad_mob = sgs_box_object_shorthand( $image_padding_mobile_obj );
 	if ( null !== $img_pad_mob ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{padding:' . $img_pad_mob . '}}';
 	}
@@ -653,7 +634,7 @@ if ( $is_split ) {
 	// tiers). Moved here from the inline style="" on the <img> element
 	// (contract §A) — was previously the only remaining inline decl on the
 	// split image alongside object-fit/object-position (below).
-	$img_border_width_val = $sgs_box_shorthand( $image_border_width_obj );
+	$img_border_width_val = sgs_box_object_shorthand( $image_border_width_obj );
 	$img_border_has_width = null !== $img_border_width_val;
 	if ( 'none' !== $image_border_style || $img_border_has_width ) {
 		$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
@@ -732,15 +713,15 @@ if ( null !== $image_height_mobile ) {
 }
 
 // ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).
-$media_pad_base = $sgs_box_shorthand( $media_padding_obj );
+$media_pad_base = sgs_box_object_shorthand( $media_padding_obj );
 if ( null !== $media_pad_base ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__media{padding:' . $media_pad_base . '}';
 }
-$media_pad_tab = $sgs_box_shorthand( $media_padding_tablet_obj );
+$media_pad_tab = sgs_box_object_shorthand( $media_padding_tablet_obj );
 if ( null !== $media_pad_tab ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__media{padding:' . $media_pad_tab . '}}';
 }
-$media_pad_mob = $sgs_box_shorthand( $media_padding_mobile_obj );
+$media_pad_mob = sgs_box_object_shorthand( $media_padding_mobile_obj );
 if ( null !== $media_pad_mob ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{padding:' . $media_pad_mob . '}}';
 }
@@ -784,15 +765,15 @@ $media_ken_burns          = ! empty( $attributes['mediaKenBurns'] ) && ! $media_
 $media_animation_duration = isset( $attributes['mediaAnimationDuration'] ) ? absint( $attributes['mediaAnimationDuration'] ) : 20;
 
 // ── contentPadding: box-object family — base + tablet + mobile (on .sgs-hero__content).
-$content_pad_base = $sgs_box_shorthand( $content_padding_obj );
+$content_pad_base = sgs_box_object_shorthand( $content_padding_obj );
 if ( null !== $content_pad_base ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__content{padding:' . $content_pad_base . '}';
 }
-$content_pad_tab = $sgs_box_shorthand( $content_padding_tablet_obj );
+$content_pad_tab = sgs_box_object_shorthand( $content_padding_tablet_obj );
 if ( null !== $content_pad_tab ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{padding:' . $content_pad_tab . '}}';
 }
-$content_pad_mob = $sgs_box_shorthand( $content_padding_mobile_obj );
+$content_pad_mob = sgs_box_object_shorthand( $content_padding_mobile_obj );
 if ( null !== $content_pad_mob ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{padding:' . $content_pad_mob . '}}';
 }
@@ -882,20 +863,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = $sgs_css_length( $radius_raw );
+			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
 		} elseif ( is_array( $radius_raw ) ) {
 			$radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = $sgs_css_length( $radius_raw[ $corner ] );
+					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 				}
 			}
 			if ( ! empty( $radius_clean ) ) {
@@ -927,16 +908,16 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
 	}
 	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$typography_args['letterSpacing'] = $sgs_css_length( $attributes['style']['typography']['letterSpacing'] );
+		$typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
 	}
 	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$typography_args['textTransform'] = $sgs_css_keyword( $attributes['style']['typography']['textTransform'] );
+		$typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
 	}
 	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$typography_args['fontWeight'] = $sgs_css_keyword( (string) $attributes['style']['typography']['fontWeight'] );
+		$typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
 	}
 	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$typography_args['fontStyle'] = $sgs_css_keyword( $attributes['style']['typography']['fontStyle'] );
+		$typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
 	}
 	if ( ! empty( $typography_args ) ) {
 		$typography_scoped = wp_style_engine_get_styles(
@@ -962,7 +943,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // mask ring paints its own ring using $width below, independent of them. ---
 if ( '' !== $border_colour_gradient ) {
 	$native_border_width_val = isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width']
-		? $sgs_css_length( $attributes['style']['border']['width'] )
+		? sgs_css_length_sanitise( $attributes['style']['border']['width'] )
 		: '';
 	$responsive_css         .= sgs_border_gradient_css(
 		$root_sel,
@@ -1050,23 +1031,33 @@ if ( $has_attr_video ) {
 
 // Build standard background image element.
 // Using an <img> instead of CSS background-image lets the browser discover the LCP
-// resource early and apply fetchpriority="high". A static per-request counter ensures
-// only the first hero on a page gets the high-priority hint.
+// resource early and apply fetchpriority="high".
+//
+// PAGE-SCOPED counter (Fix 3, adversarial-review corrected 2026-08-21): LCP
+// priority is a property of the PAGE's render order, not of this block's own
+// code path — a private `static $sgs_hero_count` here only knew "am I first
+// within HERO's own render calls", so a hero background image followed by a
+// sgs/container background image would previously mark BOTH
+// `fetchpriority=high`, prioritising neither. sgs_next_background_image_index()
+// (helpers-media.php) is now the ONE counter shared with
+// SGS_Container_Wrapper's own background-image fast path, so only the image
+// that renders first ON THE PAGE — whichever block it belongs to — gets the
+// high-priority hint; every later instance stays lazy.
 $bg_img_html = '';
 if ( $has_standard_bg_image ) {
-	static $sgs_hero_count = 0;
-	++$sgs_hero_count;
+	require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 	$img_id         = ! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0;
-	$fetch_priority = 1 === $sgs_hero_count ? 'high' : 'auto';
-	$loading        = 1 === $sgs_hero_count ? 'eager' : 'lazy';
+	$sgs_is_first   = 1 === sgs_next_background_image_index();
+	$fetch_priority = $sgs_is_first ? 'high' : 'auto';
+	$loading        = $sgs_is_first ? 'eager' : 'lazy';
 
 	$img_attrs = array(
 		'class'         => 'sgs-hero__bg-img',
 		'aria-hidden'   => 'true',
 		'fetchpriority' => $fetch_priority,
 		'loading'       => $loading,
-		'decoding'      => 1 === $sgs_hero_count ? 'sync' : 'async',
+		'decoding'      => $sgs_is_first ? 'sync' : 'async',
 		'alt'           => '',
 	);
 
@@ -1074,7 +1065,6 @@ if ( $has_standard_bg_image ) {
 		$img_attrs['class'] .= ' sgs-hero__bg-img--parallax';
 	}
 
-	require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 	$bg_img_html = sgs_responsive_image(
 		$img_id,
 		$bg_image['url'],
@@ -1304,8 +1294,8 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
 // §D — matches SGS_Container_Wrapper + sgs/quote + sgs/button). Every value
-// reaching $responsive_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword
-// / $sgs_css_object_position / $sgs_box_shorthand / $sgs_radius_shorthand /
+// reaching $responsive_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise()
+// / $sgs_css_object_position / sgs_box_object_shorthand() / $sgs_radius_shorthand /
 // absint / sgs_colour_value / wp_style_engine_get_styles), so no un-sanitised
 // value survives to here.
 if ( $responsive_css ) {

@@ -88,14 +88,6 @@ $start_position = max( 0, min( 100, $start_position ) );
 // 2. Sanitisers (mirrors sgs/quote — box-object interface contract §D).
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 3. Frame (root) attributes.
 // ---------------------------------------------------------------------------
@@ -138,7 +130,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -181,7 +173,7 @@ if ( $style_color_bg ) {
 }
 if ( 'none' !== $border_style ) {
 	if ( $border_width_raw ) {
-		$wrapper_decls[] = 'border-width:' . $sgs_css_length( $border_width_raw );
+		$wrapper_decls[] = 'border-width:' . sgs_css_length_sanitise( $border_width_raw );
 	}
 	$wrapper_decls[] = 'border-style:' . $border_style;
 	if ( $border_colour ) {
@@ -192,7 +184,7 @@ if ( $box_shadow ) {
 	$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 }
 if ( $max_width ) {
-	$mw_safe = $sgs_css_length( $max_width );
+	$mw_safe = sgs_css_length_sanitise( $max_width );
 	if ( '' !== $mw_safe ) {
 		$wrapper_decls[] = 'max-width:' . $mw_safe;
 		$wrapper_decls[] = 'margin-inline:auto';
@@ -218,24 +210,24 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 }
 
 // Max-width tiers.
-$mwt_safe = $max_width_tablet ? $sgs_css_length( $max_width_tablet ) : '';
+$mwt_safe = $max_width_tablet ? sgs_css_length_sanitise( $max_width_tablet ) : '';
 if ( '' !== $mwt_safe ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{max-width:{$mwt_safe};}}";
 }
-$mwm_safe = $max_width_mobile ? $sgs_css_length( $max_width_mobile ) : '';
+$mwm_safe = $max_width_mobile ? sgs_css_length_sanitise( $max_width_mobile ) : '';
 if ( '' !== $mwm_safe ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{max-width:{$mwm_safe};}}";
 }
 
 // Border-radius tiers (box family).
-$sgs_radius_shorthand = static function ( $box ) use ( $sgs_css_length ) {
+$sgs_radius_shorthand = static function ( $box ) {
 	if ( ! is_array( $box ) ) {
 		return null;
 	}
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
 	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
 		return null;
 	}
@@ -334,13 +326,13 @@ $label_sel = $root_sel . ' .wp-block-sgs-before-after__label';
 
 $label_decls = array();
 if ( $attributes['labelFontWeight'] ?? '' ) {
-	$fw_safe = $sgs_css_keyword( $attributes['labelFontWeight'] );
+	$fw_safe = sgs_css_keyword_sanitise( $attributes['labelFontWeight'] );
 	if ( '' !== $fw_safe ) {
 		$label_decls[] = 'font-weight:' . $fw_safe;
 	}
 }
 if ( $attributes['labelFontStyle'] ?? '' ) {
-	$fs_safe = $sgs_css_keyword( $attributes['labelFontStyle'] );
+	$fs_safe = sgs_css_keyword_sanitise( $attributes['labelFontStyle'] );
 	if ( '' !== $fs_safe ) {
 		$label_decls[] = 'font-style:' . $fs_safe;
 	}

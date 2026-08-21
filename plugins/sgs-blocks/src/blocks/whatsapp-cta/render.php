@@ -66,28 +66,13 @@ if ( $encoded_message ) {
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // Box-model shorthand: top right bottom left.
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // CSS border-radius shorthand order is top-left top-right bottom-right bottom-left.
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+$sgs_corner_shorthand = static function ( array $box ) {
+	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
 	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
 		return null;
 	}
@@ -124,7 +109,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -208,10 +193,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 
 // --- Responsive padding/margin/border-radius tiers — hand-built shorthand,
 // scoped @media on the SAME root selector (tablet ≤1023px, mobile ≤767px). ---
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 $radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
 
@@ -320,7 +305,7 @@ $whatsapp_svg .= '</svg>';
 if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (matches sgs/heading + SGS_Container_Wrapper).
-	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length,
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise(),
 	// allowlists/enums, sgs_colour_value(), wp_style_engine_get_styles(),
 	// sgs_typography_css_rule()), so no un-sanitised value survives here.
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>

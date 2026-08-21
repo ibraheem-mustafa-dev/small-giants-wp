@@ -52,13 +52,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // object-attr side/corner value or free-text keyword can never break out of
 // its declaration.
 // ---------------------------------------------------------------------------
-$sgs_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $number        = isset( $attributes['number'] ) ? absint( $attributes['number'] ) : 0;
 $prefix        = isset( $attributes['prefix'] ) ? (string) $attributes['prefix'] : '';
 $suffix        = isset( $attributes['suffix'] ) ? (string) $attributes['suffix'] : '';
@@ -191,7 +184,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -204,8 +197,8 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 
 // Border width/style/colour — WP-native scalar (base only, no tiers; no
 // custom SGS border attrs exist on this block).
-$border_width_val = isset( $attributes['style']['border']['width'] ) ? $sgs_css_length( $attributes['style']['border']['width'] ) : '';
-$border_style_val = isset( $attributes['style']['border']['style'] ) ? $sgs_css_keyword( $attributes['style']['border']['style'] ) : '';
+$border_width_val = isset( $attributes['style']['border']['width'] ) ? sgs_css_length_sanitise( $attributes['style']['border']['width'] ) : '';
+$border_style_val = isset( $attributes['style']['border']['style'] ) ? sgs_css_keyword_sanitise( $attributes['style']['border']['style'] ) : '';
 $border_color_val = isset( $attributes['style']['border']['color'] ) ? (string) $attributes['style']['border']['color'] : '';
 
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
@@ -276,34 +269,23 @@ $margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $a
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // CSS border-radius shorthand order is top-left top-right bottom-right
 // bottom-left (NOT the box-model top/right/bottom/left order).
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+$sgs_corner_shorthand = static function ( array $box ) {
+	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
 	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
 		return null;
 	}
 	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
 };
 
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 $radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
 
@@ -374,7 +356,7 @@ $full_text = $prefix . $formatted_number . $suffix . ' ' . $label;
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/heading). Every value reaching $scoped_css is pre-sanitised
-	// ($sgs_css_length / $sgs_css_keyword / wp_style_engine_get_styles /
+	// (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles /
 	// sgs_colour_value / sgs_typography_css_rule), so no un-sanitised value
 	// survives here.
 	?>

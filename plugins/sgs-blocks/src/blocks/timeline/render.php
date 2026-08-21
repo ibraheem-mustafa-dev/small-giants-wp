@@ -53,10 +53,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // needed.)
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
@@ -146,7 +142,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -162,10 +158,10 @@ $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null 
 // Border width/colour/style — SGS custom attrs (no WP-native per-side width
 // support; matches sgs/quote + sgs/button). Base only, no tiers.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_colour = $attributes['borderColour'] ?? '';
@@ -188,23 +184,12 @@ $title_sel = $root_sel . ' .sgs-timeline__title';
 $scoped_css = array();
 
 // --- Box shorthand helpers (contract §B) ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // CSS border-radius shorthand order is top-left top-right bottom-right bottom-left.
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+$sgs_corner_shorthand = static function ( array $box ) {
+	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
 	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
 		return null;
 	}
@@ -308,10 +293,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive padding/margin/border-radius tiers — box objects, hand-built
 // shorthand, scoped @media on the root selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 $radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
 

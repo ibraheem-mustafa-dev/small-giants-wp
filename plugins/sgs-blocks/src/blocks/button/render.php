@@ -125,19 +125,11 @@ $min_height_mob = null !== $min_height_obj['mobile'] ? absint( $min_height_obj['
 // §1): a CSS-length sanitiser for object-attr side/corner values — strips
 // everything except digits, dot, %, and unit letters so a value can never
 // break out of its declaration. Mirrors sgs/container's wrapper sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / font-style / text-transform / text-decoration).
 // Strips everything except letters + hyphen, so ;{}():digits can never break out
 // of the declaration into a new CSS rule. A Contributor-authored malicious value
 // (e.g. "solid;}body{display:none") is reduced to safe keyword chars.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $allowed_units = array( 'px', 'em', 'rem', '%' );
 
 // Min-height units — validated after $allowed_units is declared.
@@ -187,7 +179,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -202,9 +194,9 @@ $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null 
 
 // Typography (custom mode only).
 $font_weight     = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
-$font_style_attr = isset( $attributes['fontStyle'] ) ? $sgs_css_keyword( $attributes['fontStyle'] ) : 'normal';
-$text_transform  = isset( $attributes['textTransform'] ) ? $sgs_css_keyword( $attributes['textTransform'] ) : '';
-$text_decoration = isset( $attributes['textDecoration'] ) ? $sgs_css_keyword( $attributes['textDecoration'] ) : '';
+$font_style_attr = isset( $attributes['fontStyle'] ) ? sgs_css_keyword_sanitise( $attributes['fontStyle'] ) : 'normal';
+$text_transform  = isset( $attributes['textTransform'] ) ? sgs_css_keyword_sanitise( $attributes['textTransform'] ) : '';
+$text_decoration = isset( $attributes['textDecoration'] ) ? sgs_css_keyword_sanitise( $attributes['textDecoration'] ) : '';
 // fontSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — same shape as
 // lineHeight/letterSpacing below; the old …Tablet/…Mobile sibling attrs are
 // no longer declared by block.json.
@@ -293,12 +285,12 @@ $text_decoration_hover = isset( $attributes['textDecorationHover'] ) ? sanitize_
 // Border (custom mode only). Box-object interface contract §1/§2: borderWidth
 // is an SGS custom OBJECT attr { top, right, bottom, left } — no WP-native
 // border-width support, no tiers (matches the pre-existing base-only contract).
-$border_style     = isset( $attributes['borderStyle'] ) ? $sgs_css_keyword( $attributes['borderStyle'] ) : 'solid';
+$border_style     = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
 $border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_rgt = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bot = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_lft = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Box shadow — SHAPE-only string attrs (D621/D622 colour-architecture
@@ -533,34 +525,23 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // shorthand (contract §2/§4). Tablet (≤1023px) then mobile (≤767px) on the
 // SAME id-scoped selector as the base rule above, so plain source-order
 // cascade (no !important needed) lets the narrower tier win.
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // CSS border-radius shorthand order is top-left top-right bottom-right
 // bottom-left (NOT the box-model top/right/bottom/left order).
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+$sgs_corner_shorthand = static function ( array $box ) {
+	$tl = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
+	$tr = sgs_css_length_sanitise( $box['topRight'] ?? '' );
+	$br = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+	$bl = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
 	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
 		return null;
 	}
 	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
 };
 
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 $radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
 
@@ -964,7 +945,7 @@ if ( $scoped_css_parts ) {
 	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper
 	// pattern: it blocks a </style> breakout while leaving CSS combinators like
 	// `>` intact (esc_html would turn `>` into &gt; and break any descendant rule).
-	// Every value reaching $raw_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword
+	// Every value reaching $raw_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise()
 	// / wp_style_engine_get_styles), so no un-sanitised value survives to here.
 	echo '<style>' . wp_strip_all_tags( $raw_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>
 }
