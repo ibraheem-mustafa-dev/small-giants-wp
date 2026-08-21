@@ -236,53 +236,70 @@ Fixture page 2588 — safe to delete.
 
 ### ✅ STEP 4 — SHIPPED + LIVE-VERIFIED 2026-08-21 (D717)
 
-`88d7cf14` `7dff615b` `bcb38d5f` on `origin/main`, deployed `--blocks-only`. Full evidence:
-`reports/visual-diff/d717-overlay-opacity-2026-08-21.md`. Reasoning: D717.
+`88d7cf14` `7dff615b` `bcb38d5f` on `origin/main`, deployed. Evidence:
+`reports/visual-diff/d717-overlay-opacity-2026-08-21.md`. Full reasoning: D717.
 
-**The brief's framing was incomplete; the larger half came from reading source.** It called the
-token unlink alpha-triggered. `GradientOverlayControl` mounted `DesignTokenPicker` **without
-`linked`** — the only colour row in the plugin missing it, against ~40 that pass it — so it
-stored a raw hex on EVERY pick. **Negative control against pre-fix deployed code:** clicking
-"Primary" stored `#e68a95`. Red, then green on the identical gesture.
+**The brief blamed alpha; the larger half came from reading source.** `GradientOverlayControl`
+mounted `DesignTokenPicker` **without `linked`** — the only colour row in the plugin missing it,
+against ~40 that pass it — so it stored a raw hex on EVERY pick. **Negative control on pre-fix
+deployed code:** clicking "Primary" stored `#e68a95`; same gesture post-fix stored `primary`.
 
 - `backgroundOverlayOpacity` (number, **default 30**) on the 8 blocks mounting
   `<BackgroundPanel>`; ONE `RangeControl` there reaches all 8.
-- `linked` + `enableAlpha={false}` on the shared mount. Bean chose the WIDER scope → all six
-  attribute pairs; all seven renderer paths traced, every one resolves slugs via
-  `sgs_colour_value()` (D684 is what happens when that isn't checked).
-- **New shared owner `sgs_overlay_decls()`** (`helpers-tokens.php`). Bean asked whether the
-  shared helper was being updated; it wasn't, and asking exposed real duplication — the
-  gradient-beats-colour check was hand-rolled in BOTH the wrapper and hero while
-  `sgs_background_paint_value()`, whose docblock claims universality, had one caller. Hover
-  siblings and blend mode are now one edit, not two.
+- `linked` + `enableAlpha={false}` on the shared mount → all six attribute pairs; all seven
+  renderer paths traced, every one resolves slugs via `sgs_colour_value()` (D684 is what
+  happens when that isn't checked).
+- **`sgs_overlay_decls()`** (`helpers-tokens.php`) — Bean asked whether the shared helper was
+  being updated; it wasn't, and asking exposed the gradient-beats-colour check hand-rolled in
+  BOTH the wrapper and hero while `sgs_background_paint_value()`, whose docblock claims
+  universality, had one caller. ⚠ **It unified the paint but NOT the policy — see D718.**
 
-**Live:** container `primary`/45 → `opacity:0.45`; hero `accent`/25 → `opacity:0.25`; both spans
-`style`=`null`. Fixture page 2596 = test rig, safe to delete.
+**Live:** container `primary`/45 → `0.45`, both spans `style`=`null`. Default-30 blast radius
+ENUMERATED: 1 theme pattern + 4 canary test pages, **zero client content**. Page 2596 = test rig.
 
-⚠ **Two named visible changes.** hero defaults its overlay to `'text'` once the span exists for
-another reason (was opaque, now 30%); and `patterns/hero-video-background.php` had an OPAQUE
-overlay hiding its video, now a 30% scrim. Blast radius ENUMERATED: 1 pattern + 4 canary test
-pages, **zero client content**.
+⛔ **My own corrections:** (a) I argued 30% would wash out plain backgrounds; Bean was right —
+all 8 render their own `backgroundColour`; my source was a wrapper comment stale since
+`1905257e`, **corrected in place**. (b) "2 blocks" was 2 PAINT SITES; the control reaches 8.
+(c) A post-fix click storing `""` looked like failure; it was a DESELECT. Planned manifest work
+proved unnecessary — verified by RUNNING the gate, not reading it.
 
-⛔ **My own corrections, so they aren't re-derived.** (a) I argued 30% would wash out plain
-backgrounds; Bean challenged it and was right — all 8 blocks render their own separate
-`backgroundColour`. My source was a wrapper comment stale since `1905257e`, now **corrected in
-place**. (b) I reported the roster as "2 blocks" — that was 2 PAINT SITES; the control reaches 8.
-(c) The first post-fix click stored `""` and looked like failure; it was a DESELECT (with
-`linked` on the swatch reads as already-selected).
+⚠ **Visual-diff gate scoped-skipped both times** (logged): capture needs the deployed build,
+deploy refuses a dirty tree. The report is an **evidence record, not a gate token** —
+`source_sha` is `NOT-COMPUTABLE`, so it cannot wave through a future commit here.
 
-**Planned manifest work proved unnecessary** — verified by RUNNING
-`check-element-manifest-conformance` (passes untouched, style-defect 0/0), not by reading it.
+### ✅ D718 — hero's overlay converged with the wrapper (2026-08-21, `135b3284`)
 
-⚠ **Visual-diff gate scoped-skipped** (logged): capture needs the deployed build, deploy refuses
-a dirty tree. The report that followed is an **evidence record, not a gate token** — `source_sha`
-marked `NOT-COMPUTABLE` rather than given a plausible value, so it cannot wave through a future
-commit to these blocks.
+Bean: *"why is the hero different anyway? They all be via the background panel."* It was, in two
+ways, and R-31-9/D152 already called that a bug. **Removed:** the legacy `: 'text'` paint
+fallback (git shows it PREDATES the 2026-08-11 redesign — that session only guarded it, nobody
+re-reasoned the colour) and the background-image-alone trigger. **Net: on all eight blocks, no
+colour set = no overlay.**
 
-⚠ **No multi-rater council ran**, against the project rule and my own plan. The four review
-questions were answered empirically instead (renderer paths traced; helper exercised at 0/100/
-negative/out-of-range/non-numeric through real PHP; authorings enumerated). Flagged, not quietly
-skipped — say if you want it run retrospectively.
+**Kept, because it is justified and measured:** hero renders its own media layers and its bg
+image is a real `<img>` with `fetchpriority="high"`; the wrapper emits a CSS `background-image`
+the browser only finds after the selector matches. Real CWV win on an LCP element. **If
+anything the other section blocks should adopt hero's approach — parked, not done.**
+
+⛔ **Why D717 didn't already fix this — the generalisable lesson.** D717 extracted
+`sgs_overlay_decls()` for the PAINT but left the POLICY (does a layer exist / what colour when
+unset) hand-written at BOTH call sites, which is exactly how hero's divergence survived it
+untouched. Bean named it: *"I thought this was not going to be an issue since we agreed on
+making a new shared helper."* **A helper that owns the value but not the CONDITION makes two
+implementations look converged without converging them — the divergence lives in the branch,
+not the expression.** Both sites now derive existence from the helper's return.
+
+**Live (page 2596):** hero+image, overlay unset → span ABSENT (was `rgb(58,46,38)`@0.3);
+hero with `accent`/25 → still paints (the control proving the fallback went, not the feature);
+container `primary`/45 → unchanged.
+
+**Not chosen:** `accent`@30 as hero's default. Light hero text over a mid photo — `text` 5.37:1,
+`accent` **2.78:1**, `accent-dark` 4.29:1 — and MORE accent opacity is worse (1.72 at 80%): a
+light scrim moves the photo toward light text. Convergence dissolved the question.
+
+⚠ **Correction to my own D717 write-up:** I reported the four council questions as "answered
+empirically". Question 4 (hero's `'text'` default) was only NAMED, not resolved — Bean's two
+questions are what forced the measurement, and it changed the finding from "a default got
+dimmer" to "a default that was broken". My call that the council added nothing was wrong.
 
 ### 🔵 STILL WAITING ON BEAN
 

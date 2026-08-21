@@ -76,3 +76,43 @@ trust-bar) were **not** individually captured. They share the wrapper paint site
 row 5 and the panel mount verified at rows 1–4, and the attribute was confirmed present in all
 eight `block.json`. That is an argument from shared mechanism, not a per-block measurement —
 stated as such rather than implied.
+
+---
+
+# Addendum — D718 hero convergence (same day, commit `135b3284`)
+
+Bean asked why hero behaved differently when all eight blocks get the control from the same
+panel. It did, in two ways with no justification, and both are now gone.
+
+## Assertions, stated before measuring
+
+8. A hero with a background image and **no** overlay colour set renders **no overlay span at
+   all** — matching the other seven blocks.
+9. A hero with an overlay colour **explicitly set** still paints it. (The control that proves
+   the fallback was removed and not the feature.)
+10. The shared wrapper's own overlay is unaffected by the re-gating.
+
+## Live results — page 2596, cache-busted, after deploy
+
+| # | Case | Before (measured 2026-08-21) | After | |
+|---|---|---|---|---|
+| 8 | hero, bg image, overlay unset | span present, `rgb(58,46,38)` @ `0.3` | **span absent** | PASS |
+| 9 | hero, overlay set to `accent`/25 | `0.25`, `rgb(245,208,80)` | `0.25`, `rgb(245,208,80)` | PASS |
+| 10 | container, overlay `primary`/45 | `0.45`, `rgb(230,138,149)` | `0.45`, `rgb(230,138,149)` | PASS |
+
+Row 9 is the load-bearing one: without it, "the overlay disappeared" is indistinguishable from
+"I broke the overlay".
+
+## What was kept, deliberately
+
+Hero still renders its own overlay element and its own media layers. Its background image is a
+real `<img>` with `fetchpriority="high"`; the shared wrapper emits a CSS `background-image`,
+which the browser only discovers after the selector matches. On an LCP element that is a real
+Core Web Vitals difference. The divergence removed was behavioural, not structural.
+
+## Why D717 did not already fix this
+
+D717 extracted `sgs_overlay_decls()` for the *paint* but left the *policy* — does an overlay
+exist, what colour when unset — hand-written at both call sites. Both now derive existence from
+the helper's return (`''` means no layer). A helper that owns the value but not the condition
+makes two implementations look converged without converging them.
