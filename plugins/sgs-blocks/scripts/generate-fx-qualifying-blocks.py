@@ -448,6 +448,57 @@ def _richtext_blocks() -> set[str]:
     return found
 
 
+def _raster_image_blocks() -> set[str]:
+    """Blocks that actually RENDER a raster `<img>` — the structural half of
+    the 'image' provision test.
+
+    Mirrors `_richtext_blocks()`: a structural fact read straight out of the
+    block's own source rather than inferred from a declared capability.
+
+    WHY THIS EXISTS AT ALL, rather than trusting `supports.sgs.imageControls`.
+    Project CLAUDE.md mandates that flag on every block rendering an `<img>`,
+    so the declaration OUGHT to be sufficient. Measured 2026-08-21, it is not:
+    `sgs/media` and `sgs/decorative-image` both render an `<img>` in their
+    render.php and edit.js, and NEITHER declares `imageControls`. Deriving
+    eligibility from the declaration alone therefore excluded the framework's
+    two most obvious image blocks — a scope predicate computed from a field
+    that is itself inconsistently applied is self-fulfilling, and it excludes
+    exactly the blocks the capability is missing from.
+
+    This is the same correction the 'svg' -> 'svg-subtree' split made (see the
+    module docstring): the token widens to the STRUCTURAL fact, and the
+    declared flag stays in the union so a block that declares the capability
+    without a literal `<img>` (an attachment helper, a background layer) is
+    not dropped either.
+    """
+    found: set[str] = set()
+    for block_json_path in sorted(BLOCKS_DIR.glob("*/block.json")):
+        block_dir = block_json_path.parent
+        renders_image = False
+        for source_name in ("render.php", "edit.js"):
+            source = block_dir / source_name
+            if not source.exists():
+                continue
+            try:
+                content = source.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            # `<img` covers hand-written markup; `wp_get_attachment_image`
+            # covers the WordPress helper that emits one on the block's behalf.
+            if re.search(r"<img\b", content) or "wp_get_attachment_image" in content:
+                renders_image = True
+                break
+        if not renders_image:
+            continue
+        try:
+            name = json.loads(block_json_path.read_text(encoding="utf-8")).get("name")
+        except (OSError, json.JSONDecodeError):
+            continue
+        if name:
+            found.add(name)
+    return found
+
+
 def _is_narrow_viewport_only(condition: str) -> bool:
     """Can this `@media` condition ONLY match a viewport narrower than desktop?
 
@@ -588,6 +639,7 @@ def _block_provisions(
     block_json: dict,
     richtext_blocks: set[str],
     x_scroll_blocks: set[str],
+    raster_image_blocks: set[str],
 ) -> set[str]:
     """The set of requirement tokens this block satisfies."""
     provisions: set[str] = set()
@@ -674,6 +726,21 @@ def _block_provisions(
     ):
         provisions.add("surface")
 
+    # 'image' — the surface-treatment effect's target (Tier W, D479/D555 build).
+    # This project MANDATES `supports.sgs.imageControls: true` on every block
+    # that renders an `<img>` (project CLAUDE.md "Image controls discipline"),
+    # so that flag is the ground-truth signal for "this block has a real image
+    # to shade" — the SAME idiom as 'section' above (read a supports.sgs.*
+    # flag the block already carries), never a hardcoded block-name roster
+    # (R-31-1). Verified live before writing this: 15 of 83 blocks declare
+    # `imageControls`, 7 with it set `true` (consistency/golden-controls.json
+    # note above) — before-after, card-grid, and others.
+    # UNION, not the declaration alone — see `_raster_image_blocks()` for why
+    # the declared flag is necessary but NOT sufficient here (sgs/media and
+    # sgs/decorative-image render an `<img>` and declare nothing).
+    if sgs_supports.get("imageControls") is True or block_slug in raster_image_blocks:
+        provisions.add("image")
+
     return provisions
 
 
@@ -723,6 +790,7 @@ def compute_map() -> dict[str, list[str]]:
     block_jsons = _load_block_jsons()
     richtext_blocks = _richtext_blocks()
     x_scroll_blocks = _x_scroll_track_blocks()
+    raster_image_blocks = _raster_image_blocks()
     qualifying_effects = _load_qualifying_effects()
 
     result: dict[str, list[str]] = {}
@@ -750,7 +818,7 @@ def compute_map() -> dict[str, list[str]]:
             continue
 
         provisions = _block_provisions(
-            block_slug, block_json, richtext_blocks, x_scroll_blocks
+            block_slug, block_json, richtext_blocks, x_scroll_blocks, raster_image_blocks
         )
 
         # PASS 1 — effects with a SPECIFIC target requirement. These are what

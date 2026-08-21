@@ -42,13 +42,13 @@ specific trap this project has hit before: if a file's shape changes and a parse
 nothing, every set comparison becomes empty-vs-empty and the gate reads green forever.
 So EVERY parse asserts a non-empty result AND a floor count, and hard-fails naming the
 file and the construct when the parse comes back thin. A gate that cannot fail is worse
-than no gate. `--self-test` case 7 proves this arm fires.
+than no gate. `--self-test`'s vacuity case proves this arm fires.
 
 GATE SHAPE (matches check-motion-bundle-budget.py / audit-feature-parity.py)
 ----------------------------------------------------------------------------------------
 - Default (no flag): observational report, exit 0 regardless of findings.
 - --check:     gating mode. Exit 1 on any invariant breach or any vacuous parse.
-- --self-test: proves the gate can fail — seven cases against a temp copy of the sources.
+- --self-test: proves the gate can fail — ten cases against a temp copy of the sources.
 
 Run: python plugins/sgs-blocks/scripts/check-fx-list-drift.py --check
 """
@@ -94,7 +94,7 @@ _I4_UNIVERSAL_ATTRS = frozenset(
 
 @dataclass(frozen=True)
 class Sources:
-    """The six committed files this gate reads.
+    """The nine committed files/directories this gate reads.
 
     Parameterised (rather than module constants) purely so `--self-test` can point the
     whole gate at a temp copy and perturb it without ever touching the real tree.
@@ -106,6 +106,14 @@ class Sources:
     effect_meta_json: Path
     cursor_field_php: Path
     cursor_field_css: Path
+    # I7 — the Tier W shader-treatment triad (D479/D555 surface-treatment build).
+    # Same "three lists, one truth" defect class as the header docstring names, one
+    # level down: an id can be allowlisted server-side, listed as a client-facing
+    # preset, and yet have no shader to run — or the reverse, a shader module that
+    # nothing on the allowlist or the picker will ever select.
+    surface_treatment_php: Path
+    surface_treatment_presets_js: Path
+    surface_treatment_frag_dir: Path
 
     @staticmethod
     def default(root: Path = _PLUGIN_ROOT) -> "Sources":
@@ -116,6 +124,9 @@ class Sources:
             effect_meta_json=root / "src" / "blocks" / "extensions" / "generated-fx-effect-meta.json",
             cursor_field_php=root / "includes" / "fx-cursor-field.php",
             cursor_field_css=root / "assets" / "css" / "fx-cursor-field.css",
+            surface_treatment_php=root / "includes" / "fx-surface-treatment.php",
+            surface_treatment_presets_js=root / "src" / "shared" / "effects" / "surface-treatments" / "presets.js",
+            surface_treatment_frag_dir=root / "src" / "shared" / "effects" / "surface-treatments",
         )
 
     def all_paths(self) -> list[Path]:
@@ -126,6 +137,9 @@ class Sources:
             self.effect_meta_json,
             self.cursor_field_php,
             self.cursor_field_css,
+            self.surface_treatment_php,
+            self.surface_treatment_presets_js,
+            self.surface_treatment_frag_dir,
         ]
 
 
@@ -363,8 +377,66 @@ def parse_css_field_types(src: Sources) -> list[str]:
     return types
 
 
+def parse_treatment_allowlist(src: Sources) -> list[str]:
+    """fx-surface-treatment.php `SGS_FX_TREATMENTS` — the server-side allowlist a
+    `fxTreatment` value must appear in before the render layer will emit it."""
+    path = src.surface_treatment_php
+    match = re.search(
+        r"const\s+SGS_FX_TREATMENTS\s*=\s*array\s*\(([^)]*)\)", _read(path)
+    )
+    if match is None:
+        raise VacuousParse(
+            f"{path}: could not locate `SGS_FX_TREATMENTS`. It has been renamed, moved "
+            "or reshaped — I7 would silently compare against an empty set."
+        )
+    ids = re.findall(r"'([a-z0-9-]+)'", match.group(1))
+    _floor(ids, 1, path, "SGS_FX_TREATMENTS")
+    return ids
+
+
+def parse_treatment_presets(src: Sources) -> list[str]:
+    """surface-treatments/presets.js `TREATMENT_PRESETS` — the client-facing preset
+    map the picker + WebGL bootstrap both key off (`resolvePreset()`)."""
+    path = src.surface_treatment_presets_js
+    body = _block_after(
+        _read(path), r"export\s+const\s+TREATMENT_PRESETS\s*=\s*\{", "{", "}", path,
+        "TREATMENT_PRESETS",
+    )
+    body = _strip_js_comments(body)
+    # Top-level keys only — `grain: {`, `halftone: {`, etc. A bare-identifier key
+    # (valid here: every shipped id is a plain lowercase word) followed by `{` at the
+    # object's own top level. Nested `uniforms: { ... }` bodies also match a bare
+    # `key: {` shape, so this would over-collect if it recursed — it does not, because
+    # `_block_after` already isolated ONLY the TREATMENT_PRESETS body and each preset's
+    # own nested braces are skipped over by scanning for `{` immediately following an
+    # identifier at start-of-line/after-comma, which nested uniform entries also satisfy
+    # (`uIntensity: { type: 'float', ... }`) — so this parser deliberately reads the
+    # `id:` field INSIDE each preset object instead of the outer key, which is immune to
+    # nesting depth and matches the field every preset object declares for exactly this
+    # kind of cross-check (`id: 'grain'`, verified against the live file before writing
+    # this).
+    ids = re.findall(r"\bid\s*:\s*'([a-z0-9-]+)'", body)
+    _floor(ids, 1, path, "TREATMENT_PRESETS[*].id")
+    return ids
+
+
+def parse_treatment_frag_files(src: Sources) -> list[str]:
+    """The `*.frag.js` modules actually present in the surface-treatments directory —
+    the ground-truth "does a shader exist for this id" fact neither list above can
+    lie about on its own."""
+    directory = src.surface_treatment_frag_dir
+    if not directory.exists() or not directory.is_dir():
+        raise VacuousParse(
+            f"{directory} does not exist as a directory — this gate reads it as an "
+            "input and cannot verify anything without it."
+        )
+    ids = sorted(p.name[: -len(".frag.js")] for p in directory.glob("*.frag.js"))
+    _floor(ids, 1, directory, "*.frag.js shader modules")
+    return ids
+
+
 # ---------------------------------------------------------------------------
-# The six invariants.
+# The seven invariants.
 # ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
@@ -385,7 +457,7 @@ def _dupes(items: list[str]) -> list[str]:
 
 
 def evaluate(src: Sources) -> list[Violation]:
-    """Run all six invariants. Raises VacuousParse if any input cannot be read."""
+    """Run all seven invariants. Raises VacuousParse if any input cannot be read."""
     shipped = parse_shipped_effects(src)
     labels = parse_option_labels(src)
     picker = parse_picker_effects(src)
@@ -395,6 +467,9 @@ def evaluate(src: Sources) -> list[Violation]:
     php_field_types = parse_cursor_field_types(src)
     css_field_types = parse_css_field_types(src)
     js_field_types = parse_field_type_options(src)
+    treatment_allowlist = parse_treatment_allowlist(src)
+    treatment_presets = parse_treatment_presets(src)
+    treatment_frag_files = parse_treatment_frag_files(src)
 
     violations: list[Violation] = []
 
@@ -519,6 +594,34 @@ def evaluate(src: Sources) -> list[Violation]:
                 "three. All three must agree.",
             ))
 
+    # ---- I7: the shader-treatment triad agrees -------------------------------
+    # The surface-treatment analogue of I6: a treatment id can be allowlisted
+    # server-side (SGS_FX_TREATMENTS), offered client-side (TREATMENT_PRESETS), and
+    # actually shader-backed on disk (*.frag.js) — three independent facts, and any
+    # one missing means a broken or invisible treatment that still looks configured.
+    treatment_triad = (
+        (f"SGS_FX_TREATMENTS ({src.surface_treatment_php.name})", set(treatment_allowlist)),
+        (f"TREATMENT_PRESETS ({src.surface_treatment_presets_js.name})", set(treatment_presets)),
+        (f"*.frag.js modules ({src.surface_treatment_frag_dir.name}/)", set(treatment_frag_files)),
+    )
+    every_treatment = set().union(*(members for _label, members in treatment_triad))
+    for treatment_id in sorted(every_treatment):
+        absent = [label for label, members in treatment_triad if treatment_id not in members]
+        if absent:
+            violations.append(Violation(
+                "I7",
+                f"shader treatment `{treatment_id}` is missing from: {'; '.join(absent)}. "
+                "Allowlisted with no preset, the render layer accepts a value the client "
+                "can never choose; presented with no allowlist entry, the render layer "
+                "silently falls back to the default treatment; either with no `.frag.js` "
+                "file, the WebGL bootstrap has nothing to compile and paints nothing.",
+                f"Add `{treatment_id}` to each of the three (SGS_FX_TREATMENTS in "
+                "includes/fx-surface-treatment.php, TREATMENT_PRESETS in "
+                "src/shared/effects/surface-treatments/presets.js, and a matching "
+                f"{treatment_id}.frag.js in the same directory), or remove it from all "
+                "three consistently.",
+            ))
+
     return violations
 
 
@@ -534,6 +637,7 @@ _INVARIANTS = {
     "I4": "every non-universal FX_ATTR_MAP key is claimed by >=1 effect's param scope",
     "I5": "param-scope rows name only real FX_ATTR_MAP keys and shipped effects",
     "I6": "the cursor-field type triad (picker / PHP allowlist / CSS paint rules) agrees",
+    "I7": "the shader-treatment triad (PHP allowlist / JS presets / *.frag.js files) agrees",
 }
 
 
@@ -562,9 +666,10 @@ def _print_report(src: Sources, violations: list[Violation]) -> None:
 # proven for the fields its self-test actually perturbs, and 'I added the comparison' is
 # not evidence the comparison runs."
 #
-# So: assert clean, then break EACH of the six invariants in turn against a temp copy,
-# assert each is caught by its OWN invariant id, restore, re-assert clean. Then a seventh
-# case — blank a source file — proving the vacuity guard fires rather than reading green.
+# So: assert clean, then break EACH of the seven invariants in turn against a temp copy
+# (I7's three independent legs each get their own break), assert each is caught by its
+# OWN invariant id, restore, re-assert clean. Then a final case — blank a source file —
+# proving the vacuity guard fires rather than reading green.
 #
 # Every break VERIFIES THE TEXT ACTUALLY CHANGED before trusting the result. A string
 # replacement that matched nothing is silent, and would otherwise produce a false
@@ -618,6 +723,26 @@ _CASES = (
         "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask' );",
         "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'selftest-ghost' );",
     ),
+    _Case(
+        # I7 leg 1: delete 'halftone' from the PHP allowlist. TREATMENT_PRESETS and the
+        # halftone.frag.js file both still name it — an id the picker still offers and a
+        # shader still exists for, but the render layer will now reject.
+        "I7", "delete 'halftone' from SGS_FX_TREATMENTS (PHP allowlist)",
+        "surface_treatment_php",
+        "array( 'grain', 'halftone', 'duotone' )",
+        "array( 'grain', 'duotone' )",
+    ),
+    _Case(
+        # I7 leg 2: delete the `id: 'duotone'` field from its TREATMENT_PRESETS entry.
+        # The object itself stays syntactically valid (still allowlisted, still has a
+        # frag file) — only the client-facing preset roster loses track of it, which is
+        # exactly the "configured, enqueued and invisible" shape I6 already proves for
+        # cursor-field types, one level down.
+        "I7", "delete the id field from TREATMENT_PRESETS.duotone",
+        "surface_treatment_presets_js",
+        "\t\tid: 'duotone',\n",
+        "",
+    ),
 )
 
 
@@ -634,6 +759,12 @@ def _self_test() -> int:
             effect_meta_json=root / "generated-fx-effect-meta.json",
             cursor_field_php=root / "fx-cursor-field.php",
             cursor_field_css=root / "fx-cursor-field.css",
+            surface_treatment_php=root / "fx-surface-treatment.php",
+            surface_treatment_presets_js=root / "presets.js",
+            # A directory, not a file — copied whole below via copytree, never
+            # copyfile. Its own subdir name so copytree doesn't collide with the
+            # other flat-copied files sharing `root`.
+            surface_treatment_frag_dir=root / "surface-treatments",
         )
         pristine: dict[str, str] = {}
         for field in temp.__dataclass_fields__:
@@ -641,8 +772,12 @@ def _self_test() -> int:
             if not source_path.exists():
                 print(f"[fx-list-drift --self-test] FAIL — missing source: {source_path}")
                 return 1
-            shutil.copyfile(source_path, getattr(temp, field))
-            pristine[field] = getattr(temp, field).read_text(encoding="utf-8")
+            dest_path: Path = getattr(temp, field)
+            if source_path.is_dir():
+                shutil.copytree(source_path, dest_path)
+                continue
+            shutil.copyfile(source_path, dest_path)
+            pristine[field] = dest_path.read_text(encoding="utf-8")
 
         # Case 0 — baseline.
         try:
@@ -692,6 +827,30 @@ def _self_test() -> int:
                 print(f"[fx-list-drift --self-test] {case.invariant}: {case.label} — NOT "
                       f"CAUGHT by {case.invariant} (fired: {other}); restored")
 
+        # I7 leg 3 — delete a *.frag.js file from disk. A text-replace _Case can't
+        # express this (there is no anchor string inside the deleted file itself once
+        # it's gone), so it's handled directly rather than through _CASES: the id stays
+        # allowlisted AND stays a picker preset, but the shader that would actually run
+        # it is missing — the third and final way the triad can drift.
+        grain_frag = temp.surface_treatment_frag_dir / "grain.frag.js"
+        grain_frag_bytes = grain_frag.read_bytes()
+        grain_frag.unlink()
+        try:
+            found = evaluate(temp)
+            caught = [v for v in found if v.invariant == "I7"]
+        except VacuousParse as exc:
+            found, caught = [], []
+            print(f"[fx-list-drift --self-test] I7: parse went vacuous: {exc}")
+        grain_frag.write_bytes(grain_frag_bytes)  # restore BEFORE asserting
+        if caught:
+            print(f"[fx-list-drift --self-test] I7: delete grain.frag.js from disk — "
+                  f"caught ({len(caught)} msg): {caught[0].detail[:96]}…; restored")
+        else:
+            failures.append("I7")
+            other = ", ".join(sorted({v.invariant for v in found})) or "none"
+            print(f"[fx-list-drift --self-test] I7: delete grain.frag.js from disk — NOT "
+                  f"CAUGHT by I7 (fired: {other}); restored")
+
         # Case 7 — vacuity guard.
         temp.fx_js.write_text("// deliberately blanked by --self-test\n", encoding="utf-8")
         try:
@@ -721,9 +880,9 @@ def _self_test() -> int:
         print(f"[fx-list-drift --self-test] FAIL — unproven: {', '.join(failures)}. Those "
               "invariants read green forever. Fix the check.")
         return 1
-    print("[fx-list-drift --self-test] PASS — all 7 cases: baseline clean, each of the six "
-          "invariants provably fails on its own break, the vacuity guard fires, and the "
-          "restore returns to clean.")
+    print("[fx-list-drift --self-test] PASS — all 10 cases: baseline clean, each of the seven "
+          "invariants provably fails on its own break (I7 across all three of its legs), "
+          "the vacuity guard fires, and the restore returns to clean.")
     return 0
 
 
@@ -739,7 +898,7 @@ def main() -> int:
     mode.add_argument("--check", action="store_true", default=False,
                       help="Gating mode: exit 1 on any invariant breach or vacuous parse.")
     mode.add_argument("--self-test", action="store_true", default=False,
-                      help="Prove the gate can fail: seven cases against a temp copy.")
+                      help="Prove the gate can fail: ten cases against a temp copy.")
     args = parser.parse_args()
 
     if args.self_test:
@@ -761,7 +920,7 @@ def main() -> int:
             print(f"\n[fx-list-drift] {len(violations)} finding(s) — report mode, exit 0. "
                   "Run with --check to gate.")
         else:
-            print("\n[fx-list-drift] All six invariants hold.")
+            print("\n[fx-list-drift] All seven invariants hold.")
         return 0
 
     if violations:
@@ -769,7 +928,7 @@ def main() -> int:
               "violation(s) above. Each one is an effect or attribute that would ship "
               "looking healthy while doing nothing.")
         return 1
-    print("\n[fx-list-drift] GATE PASSED — all six invariants hold.")
+    print("\n[fx-list-drift] GATE PASSED — all seven invariants hold.")
     return 0
 
 

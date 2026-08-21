@@ -1,0 +1,54 @@
+/**
+ * SGS motion — surface treatment (Spec 38 Tier W, D479).
+ *
+ * The POSITIONING half of the effect. `src/shared/effects/webgl/renderer.js`
+ * appends a `<canvas class="sgs-webgl-surface">` as a sibling of the treated
+ * `<img>`, directly inside the element carrying `data-sgs-fx="surface-
+ * treatment"` (Spec 32: that module writes zero CSS property declarations —
+ * `canvas.style.*` never appears there, only this stylesheet positions it).
+ *
+ * The canvas must sit exactly over its sibling `<img>`, so the host element
+ * becomes the positioning context and the canvas fills it edge to edge.
+ */
+
+[data-sgs-fx="surface-treatment"] {
+	position: relative;
+}
+
+/*
+ * SPECIFICITY WARNING — do not simplify this selector to a bare class rule.
+ *
+ * Elsewhere in this codebase, `[data-sgs-cursor-field] > *` (fx-cursor-
+ * field.css) forces every direct child to `z-index: 1`. If a surface-
+ * treatment host is ALSO a cursor-field emitter (both are extension
+ * attributes on the same root — nothing stops a block carrying both), an
+ * unqualified `.sgs-webgl-surface { z-index: … }` rule could lose that
+ * cascade fight depending on source order, since both rules share the same
+ * specificity otherwise. Scoping to the parent attribute selector keeps this
+ * rule's specificity explicit and predictable rather than relying on
+ * declaration order between two unrelated stylesheets.
+ */
+[data-sgs-fx="surface-treatment"] > .sgs-webgl-surface {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	pointer-events: none;
+}
+
+/*
+ * No `@media (prefers-reduced-motion: reduce)` rule here, deliberately.
+ *
+ * Every other Tier V/G effect stylesheet in this directory gates something
+ * under reduced motion because those effects ANIMATE. This one draws exactly
+ * once (see `fx-surface-treatment.js`'s own docblock: `initSurface()` paints
+ * a single frame; the canvas only ever redraws on a debounced resize, never
+ * on a timer or scroll) and then sits as static as the plain `<img>` it
+ * covers. There is no motion for reduced-motion to suppress, and adding a
+ * gate that hid the canvas would silently give reduced-motion visitors a
+ * plain photo where every other visitor sees the designed grain/halftone/
+ * duotone finish — the "degrade to less content" failure this framework's
+ * design rules forbid. Do not add the gate back without re-litigating this
+ * comment and the matching one in the JS module.
+ */

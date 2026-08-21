@@ -282,6 +282,20 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/fx-carousel-loop.js',
 			'deps' => array(),
 		),
+
+		/*
+		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). NO deps —
+		 * Tier W is a rendering substrate, not a GSAP plugin, and carries no
+		 * GSAP import at all: a page using this and no Tier G effect ships
+		 * zero GSAP bytes, the same guarantee `@sgs/fx-cursor-field` and
+		 * `@sgs/fx-carousel-loop` keep above. The module ID still follows
+		 * '@sgs/fx-' . <fx_effects.effect> so the generic enqueue_effect()
+		 * lookup finds it with no special case.
+		 */
+		'@sgs/fx-surface-treatment' => array(
+			'path' => 'build/shared/effects/fx-surface-treatment.js',
+			'deps' => array(),
+		),
 	);
 
 	/**
@@ -336,6 +350,16 @@ class SGS_Motion_Registry {
 		 * months (D452).
 		 */
 		'cursor-field'     => 'assets/css/fx-cursor-field.css',
+
+		/*
+		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). The
+		 * stylesheet positions the `<canvas class="sgs-webgl-surface">` the
+		 * boot module appends over its sibling `<img>` — the render/JS
+		 * layers write zero CSS property declarations of their own
+		 * (Spec 32), so without this enqueue the canvas would paint at its
+		 * intrinsic size instead of covering the image it treats.
+		 */
+		'surface-treatment' => 'assets/css/fx-surface-treatment.css',
 	);
 
 	/**

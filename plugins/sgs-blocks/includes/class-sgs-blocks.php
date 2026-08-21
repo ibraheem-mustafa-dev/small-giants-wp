@@ -101,6 +101,15 @@ final class SGS_Blocks {
 		// (Spec 32 forbids the inline declarations those would otherwise be).
 		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
 
+		// Surface treatment (Tier W / WebGL, Spec 38 s1.2b, D479). Same p11
+		// slot as the three siblings above: marks the emitter with its
+		// treatment id and, for duotone, a uid-scoped <style> setting
+		// --sgs-fx-shadow/--sgs-fx-highlight (Spec 32 forbids the inline
+		// declarations those would otherwise be). Rides the standard
+		// SGS_Motion_Registry enqueue path via the shared data-sgs-fx
+		// attribute — no bespoke sniff needed.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-surface-treatment.php';
+
 		// Flip on WooCommerce Product Collection re-filtering (Spec 38
 		// FR-38-12, redirected 2026-08-20 — see the design gate this file's
 		// docblock points to). A `render_block_woocommerce/product-collection`

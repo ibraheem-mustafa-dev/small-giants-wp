@@ -72,6 +72,15 @@ WHAT THIS SEEDS (§6 numbered list — each item below maps 1:1)
    EXPLICITLY deferred (§6 item 6: "Wave A ships without it — theme.json
    `--wp--custom--duration/easing--*` already serve"). Not touched here, by design.
 
+CHANGELOG (post-Wave-A additions, newest first)
+---------------------------------------------------------------------------------------
+- 2026-08-21 (Tier W / D479 / D555): seeded `fx_effects.surface-treatment` (tier='W',
+  the FIRST Tier W row in this table) + its four `fx:*` attr rows (fxTreatment,
+  fxTreatmentIntensity, fxTreatmentShadow, fxTreatmentHighlight). Also corrected the
+  `requires` closed-vocabulary comment above, which had drifted behind the earlier
+  'surface' (cursor-field) addition — see that comment for detail. Per-row citation
+  lives on the `surface-treatment` row itself in FX_EFFECTS below.
+
 Run after any DB rebuild. Safe to re-run — a clean run reports zero changes both times
 (see the two-consecutive-run proof in the A6 session report).
 """
@@ -150,10 +159,15 @@ DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.
 #                                         row at all -- flagged, not silently
 #                                         dropped: there is nothing to seed here.
 #   requires                'text'|'svg'|'svg-subtree'|'section'|'item-set'|
-#                          'track'|'none' — what the effect needs OF ITS
-#                          TARGET, derived from each §2 row's own qualifiers
-#                          (Conditions/Exposure-surface text). Closed
-#                          vocabulary; per-row citation below.
+#                          'track'|'surface'|'image'|'none' — what the effect
+#                          needs OF ITS TARGET, derived from each §2 row's
+#                          own qualifiers (Conditions/Exposure-surface text).
+#                          Closed vocabulary; per-row citation below.
+#                          ('surface' added FR-38-25/D444 for cursor-field —
+#                          this list line itself drifted behind that add and
+#                          is corrected here, not just for the new row.
+#                          'image' added for surface-treatment, Tier W,
+#                          D479/D555 — see that row's own comment below.)
 #
 #                          'svg' vs 'svg-subtree' split 2026-07-31 (Motion
 #                          Wave D register Step 4). Before this split both
@@ -713,6 +727,73 @@ FX_EFFECTS: list[dict] = [
         # key and is also never offered from the generic panel.
         "creates_panel": 0,
     },
+    {
+        # Tier W (D479, "rendering substrate" tier — WebGL) / D555. A shader
+        # pass (grain, halftone, duotone — TREATMENT_PRESETS in
+        # src/shared/effects/surface-treatments/presets.js) drawn ONCE over a
+        # block's own image, via the four fxTreatment* attrs named in the
+        # build brief. This is the first fx_effects row of tier 'W' — every
+        # prior row is 'V' or 'G'; D479's own five-part test is what admits a
+        # rendering substrate as a tier at all, not re-litigated here.
+        "effect": "surface-treatment",
+        "in_picker": 1,
+        # pins/triggers. VERIFIED against the built runtime shape (a WebGL
+        # canvas painted once over the target <img>, no scroll/hover
+        # listener, no re-render loop): there is nothing to pin (it never
+        # spans a scroll range) and nothing for a trigger enum to arm —
+        # 'load' is the only coherent reading, matching every other
+        # draw-once-on-mount effect in this table (e.g. `draggable`).
+        "pins": 0,
+        "triggers": "load",
+        "tier": "W",
+        # No GSAP plugin — this is the WebGL rendering substrate itself, not
+        # a GSAP-driven tween. plugin_set stays the GSAP-plugin-name channel
+        # every other row uses it for; a Tier W effect has nothing to put
+        # there, same shape as the Tier V rows above (cursor-field,
+        # carousel-loop, page-transitions) which are also `[]`.
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # 'simplify', NOT 'unimplemented': this effect draws its shader pass
+        # once on load and NEVER animates again — there is no ongoing motion
+        # for `prefers-reduced-motion` to gate off. Output is byte-identical
+        # whether reduced-motion is set or not, because there was only ever
+        # one frame to draw. This is the SAME "nothing to gate" shape
+        # `cursor-field` documents on its own row above (a resting/static
+        # state IS the finished state); `simplify` is the established value
+        # for exactly this case, not a placeholder for a degradation that
+        # was never built.
+        "reduced_motion": "simplify",
+        # 'no-preview': WebGL requires a real GPU-backed <canvas> context: the
+        # block editor's iframe can construct one, but doing so for every
+        # image on every block in the canvas is exactly the cost D479's own
+        # budget doctrine gates against (a NAMED 120KB allowance is for
+        # PAGES that opt in, not for the editor always paying it). The
+        # editor therefore shows the plain untreated image — a real, honest
+        # state (not a broken preview) — and the treatment only ever paints
+        # on the published frontend. Matches `scroll-smoother`/
+        # `page-transitions`'s own 'no-preview' rows for the same "cannot
+        # honestly preview this surface in wp-admin" reason.
+        "editor_story": "no-preview",
+        "scope": "block",
+        # 'image' — this effect's target is the block's own rendered <img>,
+        # not a section/text/svg surface. See generate-fx-qualifying-blocks.py
+        # `_block_provisions()` for how a block DECLARES this requirement
+        # (supports.sgs.imageControls === true, the project-mandated flag on
+        # every image-rendering block — never a hardcoded block-name list).
+        "requires": "image",
+        # creates_panel=0, DELIBERATE. Same containment reasoning as
+        # `cursor-field`'s own row (D459/FR-38-25's "13 panels where none
+        # makes sense" containment failure): `imageControls` is declared on
+        # 15 of 83 blocks (7 with it `true` — see generate-fx-qualifying-
+        # blocks.py's own comment for the measured count), and several of
+        # those are decorative/logo-shaped blocks where a shader-treatment
+        # panel is not a sensible default surface. Offering the effect
+        # (in_picker=1) wherever a qualifying block ALREADY has a fx panel
+        # for another reason, without unconditionally creating a NEW panel
+        # on every imageControls block, is the same measured containment
+        # choice cursor-field made — not re-derived from scratch here.
+        "creates_panel": 0,
+    },
 ]
 
 # ---------------------------------------------------------------------------
@@ -832,6 +913,21 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     # an empty-but-present attribute rather than omitting it).
     "fxDisableTablet": "fx:disable-tablet",
     "fxDisableMobile": "fx:disable-mobile",
+    #
+    # `fxTreatment` / `fxTreatmentIntensity` / `fxTreatmentShadow` /
+    # `fxTreatmentHighlight` -> fx:treatment / fx:treatment-intensity /
+    # fx:treatment-shadow / fx:treatment-highlight (Tier W surface-treatment,
+    # D479/D555). Same shape as the fxPath*/fxShape* rows above: the AUTHORING
+    # attrs a block declares in its own block.json, each mapped 1:1 to its
+    # `fx:*` pseudo-namespace name rather than invented from scratch. Four
+    # separate rows, not one, because the shader pass has four independently
+    # settable parameters (preset id, an intensity float, and two colour
+    # overrides) — collapsing them would lose which one a cloned draft's
+    # value belongs to.
+    "fxTreatment": "fx:treatment",
+    "fxTreatmentIntensity": "fx:treatment-intensity",
+    "fxTreatmentShadow": "fx:treatment-shadow",
+    "fxTreatmentHighlight": "fx:treatment-highlight",
 }
 
 FX_EFFECTS_COLUMNS = (
