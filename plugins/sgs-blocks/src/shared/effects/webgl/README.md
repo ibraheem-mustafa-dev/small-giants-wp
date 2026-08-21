@@ -15,6 +15,10 @@ initSurface( el, {
   image,      // HTMLImageElement — MUST already be decoded by the caller
   fragment,   // GLSL ES 3.00 fragment shader source (string)
   uniforms,   // { name: value } initial uniform values
+  onLost,     // optional () => void — see contract 2. Fired when the GPU
+              // context is lost and NOT restored within the grace window,
+              // after this module has removed its own canvas. The caller
+              // MUST use it to restore whatever it hid.
 } ) -> { setUniform( name, value ), redraw(), destroy() } | null
 ```
 
@@ -62,10 +66,25 @@ because a single-pass shader genuinely does not need 34KB of scene graph.
 
 **1. Context-loss recovery.**
 `webglcontextlost` → `preventDefault()` and stop. `webglcontextrestored` → rebuild the
-program, texture and buffers, then redraw. On unrecoverable loss, **remove the canvas** so
-the original `<img>` becomes visible again. Never leave a dead black rectangle. iOS Safari
-discards the GPU context under memory pressure; this is the single most-reported WebGL
-complaint on every major library's issue tracker.
+program, texture and buffers, then redraw. iOS Safari discards the GPU context under memory
+pressure; this is the single most-reported WebGL complaint on every major library's issue
+tracker.
+
+⚠ **A RESTORE MAY NEVER BE OFFERED, AND THAT IS THE COMMON CASE.** Corrected 2026-08-21
+after a pre-merge QC council traced the gap: recovery must NOT depend on
+`webglcontextrestored` firing at all, because on the very engine named above it frequently
+never does. `onContextLost()` therefore starts a bounded grace timer
+(`CONTEXT_RESTORE_GRACE_MS`, 3s); if no restore arrives, it removes the canvas **and calls
+`onLost`**.
+
+**Both halves are required.** This module can remove its own canvas, but only the CALLER
+knows what it hid — the boot module sets `visibility: hidden` on the `<img>` once the first
+draw succeeds. Canvas removal alone would therefore leave a blank slot rather than the
+photograph. Never leave a dead rectangle, and never leave a hidden `<img>` under one.
+
+⚠ An earlier draft of this file claimed the `<img>` was *"never hidden, only covered"*,
+which would have made recovery free. That was false, and it is exactly the kind of
+overstated safety claim that stops the next reader looking.
 
 **2. Explicit GPU disposal.**
 Textures, buffers, programs and shaders are **not** garbage-collected like DOM nodes; leaks

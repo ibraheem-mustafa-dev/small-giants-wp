@@ -22,9 +22,17 @@
  *    every major WebGL library's issue tracker — this directory's README
  *    calls it out explicitly). An effect with no loss-recovery path degrades
  *    to a dead black rectangle sitting over the source image forever. This
- *    module instead removes its own canvas on unrecoverable loss, so the
- *    `<img>` the canvas was drawn over — never hidden, only covered — becomes
- *    visible again with zero extra code.
+ *    module removes its own canvas on unrecoverable loss and calls the
+ *    caller's `onLost` so the caller can restore whatever it hid.
+ *
+ *    ⚠ CORRECTED 2026-08-21 (pre-merge QC council). This paragraph used to
+ *    claim the source `<img>` was "never hidden, only covered", which would
+ *    have made recovery free. It is NOT true: the boot module sets
+ *    `visibility: hidden` on the `<img>` once the first draw succeeds, so
+ *    removing the canvas alone leaves a blank slot. Recovery therefore needs
+ *    BOTH halves — canvas removal here, and the `onLost` callback for the
+ *    caller's own un-hide. A docblock that overstates a safety property is
+ *    worse than none, because it stops the next reader looking.
  *
  * 2. DISPOSAL ORDERING. `destroy()` must set the `destroyed` flag and detach
  *    both context-event listeners BEFORE calling `loseContext()`, because
@@ -63,6 +71,18 @@ export function __gpuObjectCount() {
 }
 
 const CANVAS_CLASS = 'sgs-webgl-surface';
+
+/**
+ * How long to wait for `webglcontextrestored` after a loss before giving up,
+ * removing the canvas and telling the caller to restore its own fallback.
+ *
+ * A restore is entirely at the browser's discretion and on iOS Safari it
+ * frequently never arrives at all, so "wait for the restore" cannot be the
+ * only recovery path — see `onContextLost()`. Three seconds is long enough
+ * that a browser genuinely intending to restore has done so, and short
+ * enough that a visitor is not left looking at a blank slot.
+ */
+const CONTEXT_RESTORE_GRACE_MS = 3000;
 
 /** Cap device-pixel-ratio scaling — beyond 2x the extra fill rate buys
  * nothing visible and costs real frame time on the redraw path. */
@@ -214,7 +234,10 @@ export function createRenderer( el, opts ) {
 		return null;
 	}
 
-	const { image, fragment, uniforms = {} } = opts;
+	const { image, fragment, uniforms = {}, onLost = null } = opts;
+
+	/** Pending give-up timer from a context loss, or null. */
+	let giveUpTimer = null;
 
 	const rect = el.getBoundingClientRect();
 	if ( rect.width <= 0 || rect.height <= 0 ) {
@@ -476,6 +499,35 @@ export function createRenderer( el, opts ) {
 		vertexBuffer = null;
 		vao = null;
 		texture = null;
+
+		// ⛔ THE RESTORE MAY NEVER COME, AND THAT IS THE COMMON CASE.
+		//
+		// `webglcontextrestored` firing at all is entirely at the browser's
+		// discretion. iOS Safari — the engine this contract singles out as the
+		// most aggressive context-discarder — frequently discards under memory
+		// pressure and never offers a restore. Until this guard existed, that
+		// path left the canvas mounted over an <img> the caller had already
+		// hidden, painting nothing: a permanent blank slot where the client's
+		// photograph used to be, which is precisely the outcome this whole
+		// substrate is designed to make impossible.
+		//
+		// Recovery was previously reachable ONLY from `onContextRestored`'s
+		// failure branch — i.e. only when a restore WAS offered and then
+		// failed. Give up on a deadline instead, and tell the caller so it can
+		// put its own fallback back.
+		if ( giveUpTimer ) {
+			clearTimeout( giveUpTimer );
+		}
+		giveUpTimer = setTimeout( () => {
+			giveUpTimer = null;
+			if ( destroyed || program ) {
+				return;
+			}
+			removeCanvas();
+			if ( 'function' === typeof onLost ) {
+				onLost();
+			}
+		}, CONTEXT_RESTORE_GRACE_MS );
 	}
 
 	/**
@@ -486,6 +538,11 @@ export function createRenderer( el, opts ) {
 	function onContextRestored() {
 		if ( destroyed ) {
 			return;
+		}
+		// A restore arrived inside the grace window — stand the give-up down.
+		if ( giveUpTimer ) {
+			clearTimeout( giveUpTimer );
+			giveUpTimer = null;
 		}
 		if ( ! buildProgram() ) {
 			removeCanvas();

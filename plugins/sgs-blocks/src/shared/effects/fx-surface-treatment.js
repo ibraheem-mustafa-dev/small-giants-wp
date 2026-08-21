@@ -215,6 +215,19 @@ function initTreatment( el ) {
 			image: img,
 			fragment: preset.fragment,
 			uniforms,
+			// THE OTHER HALF OF CONTEXT-LOSS RECOVERY. The substrate removes
+			// its own dead canvas, but only THIS module knows the <img> was
+			// hidden, so only this module can put it back. Without this
+			// callback an unrecoverable GPU context loss — routine on iOS
+			// Safari under memory pressure — left a hidden <img> under a
+			// canvas painting nothing: a permanent blank slot where the
+			// client's photograph was. Found by a pre-merge QC council
+			// tracing the path, not by any automated gate.
+			onLost: () => {
+				img.style.visibility = '';
+				delete el.dataset.sgsWebglActive;
+				state.handle = null;
+			},
 		} );
 
 		if ( state.cancelled ) {
