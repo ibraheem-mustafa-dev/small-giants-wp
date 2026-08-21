@@ -1,5 +1,94 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D721 [ROUTINE] — the deploy purges BOTH cache layers, and the OPcache reset the docs promised never existed (2026-08-21)
+
+**Bean asked for the LiteSpeed purge to be wired into `build-deploy.py` so it could not be
+forgotten. Reading the script to place it turned up the bigger half: it did not reset OPcache
+either, and BOTH CLAUDE.md files said it did** (`CLAUDE.md:176` "resets OPcache via HTTP";
+`plugins/sgs-blocks/CLAUDE.md` "…`.bak` rollback rotation, OPcache reset"). The only two
+`opcache` mentions in the script were inside `ROLLBACK_HINT` — a string of MANUAL instructions
+printed on failure, never executed. A defence asserted in docs and enforced nowhere is this
+repo's recorded failure mode, and D709 (theme assets served STALE to every warm cache) landed
+the day before.
+
+**TWO CACHES, NOT ONE.** `OPcache` holds COMPILED PHP — stale means the server runs yesterday's
+`render.php`. `LiteSpeed` holds RENDERED HTML — stale means the server never runs today's PHP at
+all. Clearing one does nothing for the other.
+
+**OPcache MUST be reset over HTTP.** Each PHP SAPI keeps its own OPcache, so `wp eval` resets the
+CLI pool's copy and leaves the WEB pool — the one serving visitors — untouched, while reporting
+success. `step_purge_caches()` writes a randomly-named probe into the webroot, fetches it over
+HTTPS so the web pool compiles it, removes it, and CONFIRMS the removal rather than assuming the
+`rm` landed. Random name because it is world-reachable for ~1s and a guessable `opcache_reset()`
+endpoint is a free cache-stampede lever. Placed BEFORE `step_verify()`, which probes with a
+cache-busting query string and would otherwise return green off a stale cache.
+
+**Fails soft, loudly** — the files are live by then, so aborting would read as "nothing shipped";
+but no leg that did not run is reported as OK. Opt out via `--skip-purge`. Verified with two
+NEGATIVE controls (unreachable host, bad webroot — both fail loudly) and a positive control on
+the real target, plus a check that no probe file was left behind. Both CLAUDE.md claims corrected
+in the same commit, each carrying the note that it was false until today.
+
+## D720 [ROUTINE] — four dead template-part slots deleted; a registered part with no consumer is a client-facing trap (2026-08-21)
+
+**Bean spotted the premise:** `header-minimal` has no file because the header/footer system moved
+to the `sgs_header`/`sgs_footer` CPT model (Spec 37 §74). So it was never a missing file to
+recreate — it was a stale registration to remove. He then asked the same of `footer-minimal`,
+which turned a one-line fix into a sweep.
+
+**Nine template-part slots existed; only FIVE were live** (file + registered + actually called).
+The four dead ones were dead in three different ways: `header-minimal` (registered, file already
+gone), `footer-minimal` and `sgs-pdp-gallery` (file + registered, never called), `sidebar` (file
+only, unregistered, never called).
+
+**Why this is not tidying.** A registered part WITH a file appears in the Site Editor as a real,
+editable template part. A client could open "Footer (Minimal)" or "PDP: Product Gallery", edit it,
+save, and change nothing anywhere, with no warning — against this project's standard that clients
+are tech-illiterate and use the block editor exclusively. **Deleting a part's FILE while leaving
+its registration is what creates the trap**; `0a6a0fbc` deleted four header parts and removed
+three of four registrations, and `header-minimal` was the one missed.
+
+`sidebar` was a different disposition — a COMPLETE blog sidebar nobody ever wired in, i.e.
+unfinished rather than superseded — so it was raised separately rather than swept in; Bean's call.
+The `sgs/framework-header-minimal` / `sgs/footer-minimal` PATTERNS are the live mechanism and are
+untouched. **A theory disproved before shipping:** that `sidebar.html` was non-conformant for
+using `core/archives`/`core/categories`. Neither is banned — no SGS equivalent exists and
+`check-no-core-blocks.py` passes clean. The deletion stands on "no consumer", not a rule it never
+broke. Result: 5 parts, 0 orphans.
+
+## D719 [INCIDENT] — a raw HTML comment is block CONTENT, and moving it to the parent makes it worse (2026-08-21)
+
+**Three errors on `archive-product` in the Site Editor. Two were real, and every server-side check
+came back clean — which is the tell: block validation runs in JAVASCRIPT, so PHP cannot see it.**
+Read the verdict with `wp.blocks.validateBlock()` against the live editor store. Seven blocks
+invalid, two causes:
+
+1. **Six WooCommerce filter blocks were missing the wrapper `<div>` their own `save()` emits.**
+   Read the exact expected string from `wp.blocks.getSaveContent(getBlockType(name), attrs, [])`
+   — never transcribe it from a truncated console log.
+2. **Raw HTML comments inside a block's own saved content.** WP splits saved content into
+   `innerContent` chunks with `null` placeholders for inner BLOCKS, then compares the non-null
+   chunks against `save()`. A comment is not a placeholder, so it lands in those chunks where
+   `save()` has nothing. `product-collection` was invalid for this reason ALONE.
+
+⛔ **THE CORRECTION, and the reusable rule.** The first fix lifted the comments out of the WC
+blocks into their `sgs/container` parents — and broke two blocks that had been VALID.
+`sgs/container` renders `save: () => <InnerBlocks.Content />`, so `getSaveContent()` returns the
+**EMPTY STRING**: it accounts for no markup of its own at all. The parent was a *worse* host than
+the block the comment came out of. **Relocation is not a fix; only getting outside every block
+delimiter is.** Structural notes belong at the top of the template file — where this template
+already kept seventeen of them.
+
+Caught only by re-running the validator AFTER deploying, with a negative control (deliberately
+wrong content still returns `false`, so a clean pass is a real pass). That re-check also unmasked
+render crashes on three filter blocks which had never rendered before — an invalid block shows the
+warning UI, so its Edit component never runs and cannot crash. Those crashes are a shared-hosting
+MySQL connection ceiling, not a defect: the same REST endpoints return 200 in ~150ms replayed
+serially, and 500 "Error establishing a database connection" only under the editor's concurrent
+burst. **The third reported error (`sgs-archive-toolbar` "deleted or unavailable") is NOT
+reproducible** — the block is `isValid:true`, REST returns it published — and is deliberately not
+claimed as fixed.
+
 ## D718 [ROUTINE] — sgs/hero's overlay converges with the shared wrapper; the shared helper now owns the POLICY, not just the paint (2026-08-21)
 
 **Colour-golden track. Bean-ruled, and he found it by asking the right question:** *"Why is the
@@ -173,10 +262,15 @@ to the viewport edge at 355px. Migrated to block-owned object attrs following th
 `sgs/gallery` precedent. 38 blocks still use the split model; container is the proof-of-shape
 for a later scripted migration.
 
-⚠ **RESIDUAL, OPEN:** the default landed on the OUTER layer and therefore COMPOUNDS per nesting
-level — measured 48px instead of 24px on a two-deep container, and a 92px nested container
-squeezed to 44px of content. **It belongs on the CONTENT-BAND layer**, which now exists thanks
-to D706. Handed to a fresh session.
+⚠ ~~**RESIDUAL, OPEN:** the default landed on the OUTER layer and therefore COMPOUNDS per
+nesting level — measured 48px instead of 24px on a two-deep container. **It belongs on the
+CONTENT-BAND layer.** Handed to a fresh session.~~
+✅ **CLOSED 90 MINUTES LATER, BY A DIFFERENT MECHANISM — see `865e6d8e` (D721 below).** The fix
+was NOT to move the default to the content band. The per-instance default was DELETED and the
+gutter delegated to WordPress core's own `.has-global-padding`, which carries core's nesting
+reset, so it cannot compound at any depth. Corrected 2026-08-21: this entry sat here for a day
+telling the next reader to do, on the wrong layer, work that was already done — the exact
+failure mode a living decision log exists to prevent.
 
 ## D709 [INCIDENT] — theme assets were served STALE to every warm browser cache (2026-08-21)
 
