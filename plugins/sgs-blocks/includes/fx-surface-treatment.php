@@ -5,18 +5,28 @@
  * WHAT THIS CLOSES
  * The Tier W boot module (`src/shared/effects/fx-surface-treatment.js`) reads
  * `el.dataset.sgsFxTreatment` to choose which WebGL preset to draw over a
- * `<img>`, and reads `--sgs-fx-shadow` / `--sgs-fx-highlight` (for the
- * duotone preset) plus `data-sgs-fx-treatment-*` scalar overrides for the
- * float uniforms. None of that can come from the editor's stored attributes
- * without a render layer:
+ * `<img>`, and reads `--sgs-fx-tint` (grain), `--sgs-fx-ink` (halftone), or
+ * `--sgs-fx-shadow` / `--sgs-fx-highlight` (duotone) plus
+ * `data-sgs-fx-treatment-*` scalar overrides for the float uniforms. None of
+ * that can come from the editor's stored attributes without a render layer:
  *
- *   client picks a treatment + palette colours  ->  fxTreatment="duotone" etc.
- *   THIS FILE turns that into                   ->  data-sgs-fx="surface-treatment"
- *                                                    + data-sgs-fx-treatment="duotone"
- *                                                    + a uid-scoped <style> setting
- *                                                      --sgs-fx-shadow / --sgs-fx-highlight
- *                                                    + data-sgs-fx-treatment-intensity
- *   the JS boot module then reads                ->  exactly what it already expects
+ *   client picks a treatment + palette colour(s) ->  fxTreatment="duotone" etc.
+ *   THIS FILE turns that into                    ->  data-sgs-fx="surface-treatment"
+ *                                                     + data-sgs-fx-treatment="duotone"
+ *                                                     + a uid-scoped <style> setting
+ *                                                       --sgs-fx-tint / --sgs-fx-ink /
+ *                                                       --sgs-fx-shadow / --sgs-fx-highlight
+ *                                                     + data-sgs-fx-treatment-intensity
+ *   the JS boot module then reads                 ->  exactly what it already expects
+ *
+ * Every treatment carries colour control (owner request: halftone's black
+ * diagonal pattern needed one too, and every finish should default to the
+ * site palette while staying changeable through the framework's own colour
+ * controls). All four colours are OPTIONAL: when the client leaves one
+ * unset, the corresponding custom property is never emitted, and the boot
+ * module's own `paletteFallback`/`paletteTransform` resolution
+ * (`src/shared/effects/surface-treatments/presets.js`) supplies the default
+ * straight from the site palette.
  *
  * TWO REASONS IT IS A RENDER LAYER RATHER THAN INLINE STYLE.
  *
@@ -150,11 +160,37 @@ function sgs_apply_fx_surface_treatment( string $block_content ): string {
 
 	$declarations = array();
 
-	// Duotone-only palette overrides. Resolved via `sgs_fx_cursor_field_colour()`
+	// Per-treatment palette overrides. Resolved via `sgs_fx_cursor_field_colour()`
 	// (`includes/fx-cursor-field.php`) rather than a new resolver — it already
 	// accepts a theme palette SLUG (mapped to `var(--wp--preset--color--<slug>)`
 	// so re-theming follows with no re-render) or a hex literal, and rejects
 	// anything else. Reused as-is; not duplicated.
+	//
+	// A colour is published ONLY when the client actually set one — an unset
+	// value is deliberately left unpublished so the runtime's own
+	// palette-derived default (`paletteFallback`/`paletteTransform` in
+	// `presets.js`) resolves it instead. Emitting a default here would freeze
+	// the finish against future re-theming, which is exactly what the
+	// resolution-order contract this file's own docblock names is built to
+	// avoid.
+	if ( 'grain' === $treatment ) {
+		$tint = sgs_fx_cursor_field_colour(
+			(string) $processor->get_attribute( 'data-sgs-fx-treatment-tint' )
+		);
+		if ( '' !== $tint ) {
+			$declarations[] = \sprintf( '--sgs-fx-tint:%s', $tint );
+		}
+	}
+
+	if ( 'halftone' === $treatment ) {
+		$ink = sgs_fx_cursor_field_colour(
+			(string) $processor->get_attribute( 'data-sgs-fx-treatment-ink' )
+		);
+		if ( '' !== $ink ) {
+			$declarations[] = \sprintf( '--sgs-fx-ink:%s', $ink );
+		}
+	}
+
 	if ( 'duotone' === $treatment ) {
 		$shadow = sgs_fx_cursor_field_colour(
 			(string) $processor->get_attribute( 'data-sgs-fx-treatment-shadow' )

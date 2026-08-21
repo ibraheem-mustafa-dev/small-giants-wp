@@ -151,6 +151,12 @@ function transformBrandColour( rgb, transform ) {
 		// muddy-brown, the failure the first duotone build actually exhibited.
 		return [ rgb[ 0 ] * 0.26, rgb[ 1 ] * 0.24, rgb[ 2 ] * 0.34 ];
 	}
+	if ( 'ink' === transform ) {
+		// Printer's ink: dark enough to read as ink, saturated enough to read
+		// as a COLOUR. A full 'deepen' lands near-black and defeats the point
+		// of offering an ink colour at all.
+		return [ rgb[ 0 ] * 0.55, rgb[ 1 ] * 0.42, rgb[ 2 ] * 0.50 ];
+	}
 	if ( 'lighten' === transform ) {
 		// Toward white, retaining a clear tint so highlights still read as
 		// branded rather than as plain paper.

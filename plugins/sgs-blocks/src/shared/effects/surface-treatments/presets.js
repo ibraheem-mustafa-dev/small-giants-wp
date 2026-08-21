@@ -71,6 +71,16 @@ export const TREATMENT_PRESETS = {
 			// preset-agnostic: 0 = treatment at full chosen strength
 			// (the resting state), 1 = untouched source.
 			uResolve: { type: 'float', default: 0, min: 0, max: 1 },
+			uTint: {
+				type: 'vec3',
+				// Warm brand tone riding the grain. Deepened so it reads as
+				// film stock rather than a colour wash.
+				paletteFallback: 'primary',
+				paletteTransform: 'deepen',
+				default: [ 0.28, 0.18, 0.12 ],
+				min: [ 0, 0, 0 ],
+				max: [ 1, 1, 1 ],
+			},
 			uIntensity: { type: 'float', default: 0.08, min: 0, max: 0.4 },
 			uContrast: { type: 'float', default: 1.06, min: 1, max: 1.4 },
 			uSeed: { type: 'float', default: 0, min: 0, max: 1000 },
@@ -85,6 +95,24 @@ export const TREATMENT_PRESETS = {
 			// preset-agnostic: 0 = treatment at full chosen strength
 			// (the resting state), 1 = untouched source.
 			uResolve: { type: 'float', default: 0, min: 0, max: 1 },
+			uInk: {
+				type: 'vec3',
+				// THE dot colour. Deepened from the brand hue so an untouched
+				// halftone prints in the client's ink rather than generic
+				// black — the owner's question that prompted this uniform.
+				paletteFallback: 'primary',
+				// 'ink', NOT 'deepen'. Measured on the canary: a fully
+				// deepened brand pink resolves to roughly rgb(60,33,51),
+				// which at dot size still reads as BLACK — the owner would
+				// have seen the same "black diagonal line pattern" he asked
+				// about, from a control that claims to be coloured. Ink keeps
+				// enough chroma to be recognisably the brand while staying
+				// dark enough to print as ink rather than a wash.
+				paletteTransform: 'ink',
+				default: [ 0.08, 0.07, 0.09 ],
+				min: [ 0, 0, 0 ],
+				max: [ 1, 1, 1 ],
+			},
 			uScale: { type: 'float', default: 90, min: 20, max: 260 },
 			uAngle: { type: 'float', default: 0.4, min: 0, max: 1.57 },
 			uSoftness: { type: 'float', default: 0.35, min: 0.05, max: 1 },

@@ -32,17 +32,17 @@ defined( 'ABSPATH' ) || exit;
  * Block attribute name => rendered data-attribute suffix (Spec 38 §11.2).
  */
 const FX_ATTR_MAP = array(
-	'fx'           => 'data-sgs-fx',
-	'fxTrigger'    => 'data-sgs-fx-trigger',
-	'fxStart'      => 'data-sgs-fx-start',
-	'fxEnd'        => 'data-sgs-fx-end',
-	'fxHold'       => 'data-sgs-fx-hold',
-	'fxScrub'      => 'data-sgs-fx-scrub',
-	'fxStagger'    => 'data-sgs-fx-stagger',
-	'fxDuration'   => 'data-sgs-fx-duration',
-	'fxEase'       => 'data-sgs-fx-ease',
-	'fxSplit'      => 'data-sgs-fx-split',
-	'fxMask'       => 'data-sgs-fx-mask',
+	'fx'                   => 'data-sgs-fx',
+	'fxTrigger'            => 'data-sgs-fx-trigger',
+	'fxStart'              => 'data-sgs-fx-start',
+	'fxEnd'                => 'data-sgs-fx-end',
+	'fxHold'               => 'data-sgs-fx-hold',
+	'fxScrub'              => 'data-sgs-fx-scrub',
+	'fxStagger'            => 'data-sgs-fx-stagger',
+	'fxDuration'           => 'data-sgs-fx-duration',
+	'fxEase'               => 'data-sgs-fx-ease',
+	'fxSplit'              => 'data-sgs-fx-split',
+	'fxMask'               => 'data-sgs-fx-mask',
 
 	/*
 	 * Motion-path route (Spec 38 §11.2, D427). These two are the AUTHORING
@@ -60,9 +60,9 @@ const FX_ATTR_MAP = array(
 	 * params above, so emitting the label too would ship a data attribute no
 	 * runtime reads.
 	 */
-	'fxPath'       => 'data-sgs-fx-path',
-	'fxPathAsset'  => 'data-sgs-fx-path-asset',
-	'fxPathRotate' => 'data-sgs-fx-motion-path-rotate',
+	'fxPath'               => 'data-sgs-fx-path',
+	'fxPathAsset'          => 'data-sgs-fx-path-asset',
+	'fxPathRotate'         => 'data-sgs-fx-motion-path-rotate',
 
 	/*
 	 * Resting position (Spec 38 §11.2, D441, 2026-08-01). Where the traveller
@@ -74,8 +74,8 @@ const FX_ATTR_MAP = array(
 	 * file's docblock for the full mechanism and why a runtime clamp was
 	 * rejected in favour of it.
 	 */
-	'fxPathRest'   => 'data-sgs-fx-motion-path-rest',
-	'fxPathRestVh' => 'data-sgs-fx-motion-path-rest-vh',
+	'fxPathRest'           => 'data-sgs-fx-motion-path-rest',
+	'fxPathRestVh'         => 'data-sgs-fx-motion-path-rest-vh',
 
 	/*
 	 * MorphSVG shape pair (Spec 38 §11.2, D427). These are the AUTHORING
@@ -86,7 +86,7 @@ const FX_ATTR_MAP = array(
 	 * deliberately has no row here, same as the motion-path target above —
 	 * nothing authors it.
 	 */
-	'fxShape'          => 'data-sgs-fx-shape',
+	'fxShape'              => 'data-sgs-fx-shape',
 
 	/*
 	 * Cursor field (FR-38-25). These three MUST be here, not just in `fx.js`'s
@@ -98,11 +98,11 @@ const FX_ATTR_MAP = array(
 	 * colour override — an effect that looks configured and renders something
 	 * else. Caught by a qc-council code-path trace before deploy.
 	 */
-	'fxFieldType'      => 'data-sgs-fx-field',
-	'fxFieldColour'    => 'data-sgs-fx-field-colour',
-	'fxFieldRadius'    => 'data-sgs-fx-field-radius',
-	'fxShapeAssetFrom' => 'data-sgs-fx-shape-asset-from',
-	'fxShapeAssetTo'   => 'data-sgs-fx-shape-asset-to',
+	'fxFieldType'          => 'data-sgs-fx-field',
+	'fxFieldColour'        => 'data-sgs-fx-field-colour',
+	'fxFieldRadius'        => 'data-sgs-fx-field-radius',
+	'fxShapeAssetFrom'     => 'data-sgs-fx-shape-asset-from',
+	'fxShapeAssetTo'       => 'data-sgs-fx-shape-asset-to',
 
 	/*
 	 * Surface treatment (Tier W, Spec 38 §1.2b, D479). Same reasoning as the
@@ -117,6 +117,16 @@ const FX_ATTR_MAP = array(
 	'fxTreatmentIntensity' => 'data-sgs-fx-treatment-intensity',
 	'fxTreatmentShadow'    => 'data-sgs-fx-treatment-shadow',
 	'fxTreatmentHighlight' => 'data-sgs-fx-treatment-highlight',
+
+	/*
+	 * Per-treatment single colour (owner request: every treatment gets
+	 * colour control, not only duotone). Same reasoning as the shadow/
+	 * highlight rows immediately above — most qualifying hosts are DYNAMIC
+	 * blocks, so these MUST be injected here too, not just baked in by
+	 * `fx.js`'s save filter for static blocks.
+	 */
+	'fxTreatmentTint'      => 'data-sgs-fx-treatment-tint',
+	'fxTreatmentInk'       => 'data-sgs-fx-treatment-ink',
 	'fxTreatmentReveal'    => 'data-sgs-fx-treatment-reveal',
 );
 
@@ -356,12 +366,12 @@ function sgs_fx_apply_preset( array $attrs, string $effect ): array {
  */
 function sgs_fx_effect_param_scope(): array {
 	return array(
-		'scrub'            => array( 'fxScrub', 'fxEase' ),
-		'pin-scrub'        => array( 'fxHold', 'fxScrub' ),
-		'horizontal-panel' => array( 'fxHold', 'fxScrub' ),
-		'split-reveal'     => array( 'fxDuration', 'fxStagger', 'fxEase', 'fxSplit', 'fxMask' ),
-		'motion-path'      => array( 'fxPath', 'fxPathAsset', 'fxPathRotate', 'fxPathRest', 'fxPathRestVh', 'fxScrub' ),
-		'morph'            => array( 'fxShape', 'fxShapeAssetFrom', 'fxShapeAssetTo' ),
+		'scrub'             => array( 'fxScrub', 'fxEase' ),
+		'pin-scrub'         => array( 'fxHold', 'fxScrub' ),
+		'horizontal-panel'  => array( 'fxHold', 'fxScrub' ),
+		'split-reveal'      => array( 'fxDuration', 'fxStagger', 'fxEase', 'fxSplit', 'fxMask' ),
+		'motion-path'       => array( 'fxPath', 'fxPathAsset', 'fxPathRotate', 'fxPathRest', 'fxPathRestVh', 'fxScrub' ),
+		'morph'             => array( 'fxShape', 'fxShapeAssetFrom', 'fxShapeAssetTo' ),
 
 		/*
 		 * FR-38-25. Found by LIVE verification, not by review: with the row
@@ -377,7 +387,7 @@ function sgs_fx_effect_param_scope(): array {
 		 * the second of the three to have been missed on this effect. None is
 		 * cross-checked by a gate.
 		 */
-		'cursor-field'     => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius' ),
+		'cursor-field'      => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius' ),
 
 		/*
 		 * Surface treatment (Tier W, Spec 38 §1.2b, D479). THIS ROW IS
@@ -401,6 +411,8 @@ function sgs_fx_effect_param_scope(): array {
 			'fxTreatmentIntensity',
 			'fxTreatmentShadow',
 			'fxTreatmentHighlight',
+			'fxTreatmentTint',
+			'fxTreatmentInk',
 			'fxTreatmentReveal',
 		),
 	);

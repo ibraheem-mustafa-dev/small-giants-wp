@@ -42,6 +42,13 @@ uniform float uSoftness;
 // Preset-agnostic on purpose: one knob, three shaders, one driver.
 uniform float uResolve;
 
+// The DOT COLOUR. Was hard-coded to a near-black scaling of the source,
+// which is why the owner saw 'just a black diagonal line pattern' and asked
+// where the colour options were - a fair question, since a halftone's ink is
+// the single most brand-expressive thing about it. Defaults to a deepened
+// palette colour so an untouched halftone is already on-brand.
+uniform vec3 uInk;
+
 const vec3 LUMA = vec3( 0.2126, 0.7152, 0.0722 );
 
 /** Standard 2D rotation matrix application, inlined (no mat2 uniform — this
@@ -71,10 +78,13 @@ void main() {
 		dist
 	);
 
-	// Hue-preserving darken toward near-black ink (see module docblock) —
-	// scaling the source RGB keeps its ratio, so colour survives.
-	vec3 inkTint = srcColour.rgb * 0.08;
-	vec3 result = mix( srcColour.rgb, inkTint, dotMask );
+	// The ink is the client's colour, modulated by the source luminance so
+	// the print still reads as tonal rather than as a flat stencil: a dot
+	// over a dark region prints denser than one over a light region.
+	// Retaining a little of the source keeps the image legible under the
+	// screen rather than obliterated by it.
+	vec3 ink = uInk * ( 0.55 + 0.45 * lum );
+	vec3 result = mix( srcColour.rgb, ink, dotMask );
 
 	// Blend back toward the untouched source by uResolve (see its
 	// declaration above). At uResolve = 0 this is a no-op.

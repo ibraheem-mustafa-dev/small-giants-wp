@@ -39,6 +39,12 @@ uniform float uContrast;
 // Preset-agnostic on purpose: one knob, three shaders, one driver.
 uniform float uResolve;
 
+// A TINT pushed through the grain, so the treatment can carry brand warmth
+// rather than reading as neutral noise. Applied proportionally to the grain
+// itself, never as a flat wash over the photograph - a colour cast over the
+// whole image would be a filter, not a film stock.
+uniform vec3 uTint;
+
 /**
  * Cheap 2D value hash — no texture lookup, no trig, deterministic per
  * pixel + uSeed so the same seed always paints the same grain (useful for
@@ -63,9 +69,14 @@ void main() {
 	// as "hazy" rather than "filmic" without a small contrast push.
 	vec3 contrasted = ( grained - 0.5 ) * uContrast + 0.5;
 
+	// Tint only where the grain actually lands. n is signed noise centred
+	// on zero, so abs(n) is grain PRESENCE — the tint therefore rides the
+	// texture and leaves clean areas of the photograph alone.
+	vec3 tinted = mix( contrasted, uTint, abs( n ) * uIntensity * 2.0 );
+
 	// Blend back toward the untouched source by uResolve (see its
 	// declaration above). At uResolve = 0 this is a no-op.
-	vec3 resolved = mix( contrasted, srcColour.rgb, uResolve );
+	vec3 resolved = mix( tinted, srcColour.rgb, uResolve );
 
 	fragColour = vec4( clamp( resolved, 0.0, 1.0 ), srcColour.a );
 }

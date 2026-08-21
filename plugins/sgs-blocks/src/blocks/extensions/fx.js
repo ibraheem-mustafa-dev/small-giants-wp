@@ -535,6 +535,8 @@ const FX_PARAM_RESET = {
 	fxTreatment: '',
 	fxTreatmentShadow: '',
 	fxTreatmentHighlight: '',
+	fxTreatmentTint: '',
+	fxTreatmentInk: '',
 	fxTreatmentIntensity: undefined,
 	fxTreatmentReveal: '',
 };
@@ -1009,6 +1011,16 @@ function addFxAttributes( settings, name ) {
 			 * palette. Duotone-only; the panel only renders these two when
 			 * `fxTreatment === 'duotone'`.
 			 *
+			 * `fxTreatmentTint` (grain) / `fxTreatmentInk` (halftone) are the
+			 * same palette-SLUG shape, one colour each, for the two
+			 * single-colour treatments — every treatment now carries colour
+			 * control, not only duotone. Left empty, the runtime derives its
+			 * own default straight from the site palette (`paletteFallback`/
+			 * `paletteTransform` in `presets.js`), so an unset value is
+			 * "follow the theme", never a frozen literal — the same
+			 * empty-means-untreated-default shape the rest of this block
+			 * documents, applied per treatment rather than per finish.
+			 *
 			 * `fxTreatmentIntensity` is undefined-when-untouched, the same
 			 * "0 is a legitimate value, unset is a different thing" shape
 			 * `fxScrub`/`fxFieldRadius` already use above: the render layer
@@ -1019,6 +1031,8 @@ function addFxAttributes( settings, name ) {
 			fxTreatment: { type: 'string', default: '' },
 			fxTreatmentShadow: { type: 'string', default: '' },
 			fxTreatmentHighlight: { type: 'string', default: '' },
+			fxTreatmentTint: { type: 'string', default: '' },
+			fxTreatmentInk: { type: 'string', default: '' },
 			fxTreatmentIntensity: { type: 'number' },
 			/*
 			 * Reveal-on-scroll toggle for the treatment above. Empty string
@@ -1120,6 +1134,8 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-treatment': attributes.fxTreatment,
 		'data-sgs-fx-treatment-shadow': attributes.fxTreatmentShadow,
 		'data-sgs-fx-treatment-highlight': attributes.fxTreatmentHighlight,
+		'data-sgs-fx-treatment-tint': attributes.fxTreatmentTint,
+		'data-sgs-fx-treatment-ink': attributes.fxTreatmentInk,
 		// Only 'off' is ever meaningful to emit — '' (reveal on, the default)
 		// is falsy here and correctly skipped by the `if ( value )` guard
 		// below, matching the render layer's "presence means off" contract.
@@ -2459,12 +2475,13 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										onChange={ ( value ) =>
 											setParam( {
 												fxTreatment: value || '',
-												// Dropping out of duotone
-												// releases both colours —
-												// leaving a slug attached to
-												// a preset with no colour
-												// control showing it would
-												// be stored state the client
+												// Only the colour(s) that
+												// belong to the CHOSEN
+												// treatment survive a switch
+												// — leaving a slug attached
+												// to a preset with no colour
+												// control showing it would be
+												// stored state the client
 												// cannot see or clear.
 												fxTreatmentShadow:
 													'duotone' === value
@@ -2473,6 +2490,14 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 												fxTreatmentHighlight:
 													'duotone' === value
 														? attributes.fxTreatmentHighlight
+														: '',
+												fxTreatmentTint:
+													'grain' === value
+														? attributes.fxTreatmentTint
+														: '',
+												fxTreatmentInk:
+													'halftone' === value
+														? attributes.fxTreatmentInk
 														: '',
 											} )
 										}
@@ -2545,6 +2570,103 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									/>
 								</ToolsPanelItem>
 
+								{ /*
+								 * Per-treatment colour (the owner's request:
+								 * "shouldn't [halftone] have colour options?"
+								 * / "they should all be defaulted to palette
+								 * slugs but be able to be changed with our
+								 * universalised colour controls"). One row
+								 * for grain, one for halftone, two for
+								 * duotone — all four store a palette SLUG via
+								 * `DesignTokenPicker`, the same shape
+								 * `fxFieldColour` already uses above, and all
+								 * four leave their default UNTOUCHED here:
+								 * the runtime already resolves an unset
+								 * colour from the site palette
+								 * (`paletteFallback`/`paletteTransform` in
+								 * `presets.js`), so emitting one from this
+								 * panel would freeze the finish against
+								 * future re-theming instead of letting it
+								 * follow the brand.
+								 */ }
+								{ 'grain' === attributes.fxTreatment && (
+									<ToolsPanelItem
+										hasValue={ () =>
+											!! attributes.fxTreatmentTint
+										}
+										label={ __(
+											'Grain tint',
+											'sgs-blocks'
+										) }
+										onDeselect={ () =>
+											setParam( {
+												fxTreatmentTint: '',
+											} )
+										}
+										isShownByDefault
+									>
+										<DesignTokenPicker
+											label={ __(
+												'Grain tint',
+												'sgs-blocks'
+											) }
+											value={
+												attributes.fxTreatmentTint
+											}
+											onChange={ ( value ) =>
+												setParam( {
+													fxTreatmentTint: value,
+												} )
+											}
+										/>
+										<p className="components-base-control__help">
+											{ __(
+												'Defaults to your brand colour. Change it to anything in your palette.',
+												'sgs-blocks'
+											) }
+										</p>
+									</ToolsPanelItem>
+								) }
+
+								{ 'halftone' === attributes.fxTreatment && (
+									<ToolsPanelItem
+										hasValue={ () =>
+											!! attributes.fxTreatmentInk
+										}
+										label={ __(
+											'Ink colour',
+											'sgs-blocks'
+										) }
+										onDeselect={ () =>
+											setParam( {
+												fxTreatmentInk: '',
+											} )
+										}
+										isShownByDefault
+									>
+										<DesignTokenPicker
+											label={ __(
+												'Ink colour',
+												'sgs-blocks'
+											) }
+											value={
+												attributes.fxTreatmentInk
+											}
+											onChange={ ( value ) =>
+												setParam( {
+													fxTreatmentInk: value,
+												} )
+											}
+										/>
+										<p className="components-base-control__help">
+											{ __(
+												'Defaults to your brand colour. Change it to anything in your palette.',
+												'sgs-blocks'
+											) }
+										</p>
+									</ToolsPanelItem>
+								) }
+
 								{ 'duotone' === attributes.fxTreatment && (
 									<>
 										<ToolsPanelItem
@@ -2577,6 +2699,12 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 													} )
 												}
 											/>
+											<p className="components-base-control__help">
+												{ __(
+													'Defaults to your brand colour. Change it to anything in your palette.',
+													'sgs-blocks'
+												) }
+											</p>
 										</ToolsPanelItem>
 
 										<ToolsPanelItem
@@ -2609,6 +2737,12 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 													} )
 												}
 											/>
+											<p className="components-base-control__help">
+												{ __(
+													'Defaults to your brand colour. Change it to anything in your palette.',
+													'sgs-blocks'
+												) }
+											</p>
 										</ToolsPanelItem>
 									</>
 								) }
