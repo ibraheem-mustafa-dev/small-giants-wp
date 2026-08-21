@@ -372,8 +372,6 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      start index=0 → back to 0 after 3 presses".
      ⚠ This block passed the looping rollout's own "dots == real cards" check (3 == 3) while its
      keyboard path was already broken. A dot that moves is not a dot that WORKS.
-     NOT fixed this session — a behavioural change to that block's navigation, not a measurement
-     task, and outside this session's "measure, don't ship" scope.
 
 - **FR-38-14 Physics easings as flavours.** Physics2D / PhysicsProps / CustomBounce /
   CustomWiggle appear ONLY as easing/motion-flavour options inside other G effects' controls
@@ -435,8 +433,6 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   an emitter as a decorative child (icon, decorative-image), gated the same way `imageControls`
   is — declared in `block.json` `supports.sgs`, never hand-listed. Do not default it on for any
   existing block.
-
- **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1\R-31-9). Two roles:
 
  **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1/R-31-9). Two roles:
   - **EMITTER** — publishes the pointer coordinates and paints the base field. Eligible: any
@@ -695,8 +691,12 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   four rows reuse the `DesignTokenPicker` + `ToolsPanelItem` shape this same file already
   uses for `fxFieldColour`.
 
- **Measured, not reasoned:** 5,674 bytes gzip — **4.6% of D479's 120KB Tier W page
-  allowance** (4,325 for the treatments, +1,349 for the scroll reveal). Panel roster **32 blocks before, 32 after**; offered on 15 image-bearing
+ **Measured, not reasoned:** 5,674 bytes gzip at build time — **4.6% of D479's 120KB Tier W page
+  allowance** (4,325 for the treatments, +1,349 for the scroll reveal).
+  ⚠ **That 5,674 is the recorded BASELINE, not the current size.** Re-measured 2026-08-21,
+  `check-motion-bundle-budget.py` reads `fx-surface-treatment.js` at **6,414 bytes (+13.0%)** —
+  still passing, still far inside the allowance, but anyone quoting 5,674 as today's figure is
+  quoting a copy that has already drifted. Run the gate; do not cite this line. Panel roster **32 blocks before, 32 after**; offered on 15 image-bearing
   blocks. `creates_panel=1` was measured and REJECTED: it grew the roster to 39, and five of
   the seven new panel hosts were `form-field-tiles` / `option-picker` / `social-icons` /
   `star-rating` / `card-grid` — a form field acquiring a scroll-scrub panel is exactly the
@@ -1445,8 +1445,13 @@ cheap prefix scan; pattern authors can hand-write it.
 ### 11.3 Converter mapping (defined now, lifted later)
 
 Each `data-sgs-fx*` attr maps 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStart`, `fxEnd`,
-`fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin` — seeded in `block_attributes`
-under `fx:*`, §6.2). `fxPin` is IMAGE-SEQUENCE-only (D435, 2026-08-01).
+`fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin`, `fxShape`, `fxPath` — seeded in
+`block_attributes` under `fx:*`, §6.2). `fxPin` is IMAGE-SEQUENCE-only (D435, 2026-08-01).
+
+> **`fxShape` / `fxPath` added to this list 2026-08-21** (wave-D register Step 20 item b). Their
+> honest seed status was already written up at §11.2's D427 amendment but had never been
+> reflected HERE, so §11.3's mapping list read as though neither attr existed. The status text
+> is not duplicated — read it at the D427 amendment; this is the pointer.
 
 > **AMENDMENT 2026-07-30 (D417) — `data-sgs-fx-hold` / `fxHold` added to §11.2 and to the list
 > above.** Owner-reported against FR-38-6: a pinned section released the instant its last child

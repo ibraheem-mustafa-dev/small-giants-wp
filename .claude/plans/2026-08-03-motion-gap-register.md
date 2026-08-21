@@ -1,5 +1,12 @@
 # Motion + FX — the MASTER GAP REGISTER
 
+> ⚠ **SWEPT 2026-08-21 — this register had NEVER been swept since it was written on 2026-08-03,
+> and had gone stale on seven items, including its own ⭐ "most undervalued item" (surface
+> treatments), which shipped 2026-08-21.** Its closing CAUTION warned about exactly this and then
+> fired on the register itself. Items corrected below carry a ✅/◐ marker and a date. Items I did
+> NOT verify are marked **UNVERIFIED** rather than left to read as live — an unmarked claim here
+> is not evidence.
+
 > **What this is.** Every gap, weakness, missing category and client-usability shortfall found on
 > 2026-08-02/03, in one place, ranked. Consolidates nine reports so the findings are not spread
 > across files nobody re-reads.
@@ -64,13 +71,13 @@ Ranked by client impact.
 
 | # | Gap | Category | Effort |
 |---|---|---|---|
-| 1 | **Hover suite covers only 4 blocks** (Info Box, Card Grid, CTA Section, Hero). Project's own docs list the rest as "Phase 2 — Not Started". Scale/shadow/zoom/duration/easing missing everywhere else. | Rollout | Medium |
-| 2 | **Audio-reactive has no sensitivity/gain control** — `fftSize`/`smoothingTimeConstant` hardcoded (`audio/view.js:75-76`). A client cannot tune a visualiser that reacts too much or too little. | Control | ~15 min |
+| 1 | **UNVERIFIED 2026-08-21** — an attribute scan found no block declaring `hoverScale`/`hoverLift`/`hoverShadow`/`hoverZoom` under those names, so the suite is named something else; the claim was neither confirmed nor refuted. **Hover suite covers only 4 blocks** (Info Box, Card Grid, CTA Section, Hero). Project's own docs list the rest as "Phase 2 — Not Started". Scale/shadow/zoom/duration/easing missing everywhere else. | Rollout | Medium |
+| 2 | ✅ **CLOSED (verified 2026-08-21).** `reactiveSensitivity` ships as a declared attr; `audio/view.js:37-46` derives `fftSize` (stepped in thirds for the power-of-2 constraint) and `smoothingTimeConstant` (linear) from it, defaulting to the pre-control 512/0.8 so published instances render byte-identically. | Control | done |
 | 3 | **Audio-reactive is undiscoverable** — 4 genuinely good analyser-driven visualisers buried in the Audio block's *style* dropdown. Nobody browsing for "effects" finds them. | Discoverability | Small |
-| 4 | **`fx-morph` fix unverified live** (D452 moved attrs from `<svg>` to `<path>`; source confirms the fix, no QA note since). | Verification | ~10 min |
-| 5 | **D451 motion-path repeat-trigger defect — current status unknown.** | Verification | ~10 min |
+| 4 | **UNVERIFIED 2026-08-21 (not re-checked this session).** **`fx-morph` fix unverified live** (D452 moved attrs from `<svg>` to `<path>`; source confirms the fix, no QA note since). | Verification | ~10 min |
+| 5 | **UNVERIFIED 2026-08-21 (not re-checked this session).** **D451 motion-path repeat-trigger defect — status still unknown.** | Verification | ~10 min |
 | 6 | **No in-editor preview for Lenis smooth scroll** — client must publish and scroll the live site to judge feel. Architectural. | UX | Medium |
-| 7 | **"Good by default" never proven** for pin/scrub/scramble/split-reveal — no drop-on-page screenshot test exists. This is the single biggest differentiator vs Kadence/Spectra and it is unmeasured. | Verification | Medium |
+| 7 | **UNVERIFIED 2026-08-21 (not re-checked this session).** **"Good by default" never proven** for pin/scrub/scramble/split-reveal — no drop-on-page screenshot test exists. This is the single biggest differentiator vs Kadence/Spectra and it is unmeasured. | Verification | Medium |
 | 8 | **Cursor field has no contrast warning** — a client can pick a field colour that clashes or vanishes. | Control | Small |
 
 ### Structurally agency-only — should be LABELLED, not "fixed"
@@ -107,12 +114,12 @@ needs its §10 reduced-motion row AND a 2.2.2 answer where it moves autonomously
 
 | # | Category | Why it matters | Tier |
 |---|---|---|---|
-| 1 | **Page transitions / View Transitions API** | Cross-browser at ~88%, same-document; **degrades perfectly with JS off** — matches Bean's constraints better than almost anything else on this list. Spec'd in §3.5, nothing built. | **V** |
-| 2 | **Native CSS scroll-driven animations** (`animation-timeline`) | Supported in all three engines as of 2026. Absent from a survey whose own §1 is scroll-driven. Candidate to DEMOTE existing Tier G work to Tier V. | **V** |
-| 3 | **Modern CSS entry/exit** — `@starting-style`, `allow-discrete`, Popover, Anchor positioning | Accordions, modals, drawers, tooltips. Cheap, native, huge polish return. | **V** |
+| 1 | ✅ **BUILT 2026-07-30 (FR-38-19, D424) — verified 2026-08-21.** `assets/css/view-transitions.css` + `class-sgs-motion-registry.php:702-729`; CSS-first, zero frontend JS, per-template. This register was written 2026-08-03, three days AFTER it shipped. ~~**Page transitions / View Transitions API**~~ | Cross-browser at ~88%, same-document; **degrades perfectly with JS off** — matches Bean's constraints better than almost anything else on this list. Spec'd in §3.5, nothing built. | **V** |
+| 2 | ◐ **PARTIAL — in use already (verified 2026-08-21):** `card-grid/style.css:306-322` and `counter/style.css:15-18` both ship `@supports (animation-timeline: view())`. Absent as a *system*, not absent from the codebase. **Native CSS scroll-driven animations** (`animation-timeline`) | Supported in all three engines as of 2026. Absent from a survey whose own §1 is scroll-driven. Candidate to DEMOTE existing Tier G work to Tier V. | **V** |
+| 3 | ◐ **PARTIAL — in use already (verified 2026-08-21):** `accordion/style.css:276-296` uses `@starting-style`; `modal/style.css:88-99` uses `allow-discrete` + `@starting-style`. Popover/Anchor remain unused. **Modern CSS entry/exit** | Accordions, modals, drawers, tooltips. Cheap, native, huge polish return. | **V** |
 | 4 | **Image transitions** — displacement melts, curtain wipes | Core award-tier vocabulary. | **W** |
 | 5 | **Generative backgrounds** — noise fields, gradient meshes, flow fields | Applies to every client site, not one hero. | **W** |
-| 6 | **Surface treatments** — grain, dither, halftone, ASCII, chromatic aberration | ⭐ **Most undervalued item in this register.** Cheap shaders, very fashionable, makes stock photography look art-directed. High return per byte, applies everywhere. | **W** |
+| 6 | ✅ **BUILT + LIVE-VERIFIED 2026-08-21 (FR-38-29, the first Tier W effect).** Grain / halftone / duotone on 15 image-bearing blocks; 6,414 bytes gzip (the 5,674 figure quoted elsewhere is the stale baseline). Probe 23/23. ~~Surface treatments~~ — was ⭐ **the most undervalued item in this register**, and it shipped. Cheap shaders, very fashionable, makes stock photography look art-directed. High return per byte, applies everywhere. | **W** |
 | 7 | **Lottie** | Absent entirely. Designer-authored vector motion, huge ecosystem. | H? |
 | 8 | **Scrollytelling** frameworks | Editorial/charity storytelling — a real SME/charity use case. | V/G |
 | 9 | **Counters / data-viz motion** | Charities and B2B: animated stats, progress, charts. | V |
@@ -147,7 +154,12 @@ The recurring theme across every audit. These are the patterns, not one-off fixe
 
 ---
 
-## SECTION 4 — Tier W (WebGL) — decisions pending Bean
+## SECTION 4 — Tier W (WebGL) — ✅ ALL FOUR DECISIONS LANDED (D479 + the 2026-08-21 Tier W build)
+
+> Swept 2026-08-21: D1 (120KB Tier-W-only allowance), D2 (OGL-shaped substrate behind our own
+> `init/setUniform/destroy`), D3 (Tier V fallback) and D4 (closed list) are all **taken and built** —
+> `src/shared/effects/webgl/`, with a Gate-A grep enforcing that nothing outside that directory
+> imports `renderer.js`. Nothing below is pending. Kept for the admission test + house contracts.
 
 | # | Decision | Recommendation |
 |---|---|---|

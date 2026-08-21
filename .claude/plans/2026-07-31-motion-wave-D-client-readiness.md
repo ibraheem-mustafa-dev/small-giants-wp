@@ -8,13 +8,20 @@ Invoke /autopilot before doing anything else.
 
 > **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
 > `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
-> it is OPEN. There are no closed steps in this file.** 7 remain (verify, don't trust this number:
+> it is OPEN. There are no closed steps in this file.** 6 remain (verify, don't trust this number:
 `grep -c '^### Step' <this file>`).
 
 > **Closed since the prune:** Step 8 (FR-38-27, 2026-08-02) · Step Y (both loop arms measured, `216508ce`) · Step W/X/Z earlier · and
 > M3 (indus-foods snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
 
 ## Where this stands
+
+> ⚠ **SWEPT 2026-08-21 against the code.** This register had gone stale on 3 of 5 verified items —
+> Step Z-residual was fully closed, Step 20 was 3-of-5 closed, and every Step U figure was wrong
+> (understated; the files had grown). The gap register's own CAUTION is the reason this matters:
+> an agent once called a fix "the single highest-value item in this whole audit" when it had been
+> fixed hours earlier, **because it cited a doc and the doc was stale**. Re-verify before acting.
+
 
 Waves A–E are closed. This session closed **Step X** (the three-list drift gate, D465), **Step W**
 (the looping rollout, D466) and **Step Z** (the focus cascade, D467). What is left is below, ranked.
@@ -56,29 +63,13 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
 
 ## The open steps, in run order
 
-### Step Z-residual — focus sweep: 9 of 12 blocks DONE (`7ac165f7`); 3 named blocks remain [OPEN]
-  **Model:** sonnet · **Time:** 30 min for what is left
-  ✅ **Done 2026-08-02:** 10 rules across 9 blocks repointed onto `var(--sgs-focus-color, <original>)`
-  — audio · brand-strip · buybox · card-grid · cta-section · info-box · notice-banner ·
-  responsive-logo (`.scss`, not lifted CSS as this register claimed) · trust-bar · whatsapp-cta.
-  Verified on the live canary: deployed `style-index.css` carries the token, and a Playwright
-  `getComputedStyle` on `responsive-logo` resolved it to the client's real accent `#f5d050`.
-  ⛔ **`card-grid:402` was a FALSE target in this register.** `.sgs-card-grid__page-btn` is a hover
-  FILL already keyed to `var(--wp--preset--color--primary)` — on-palette, different mechanism, never
-  part of the defect. Left unchanged deliberately; do not "fix" it.
-  **THE RESIDUAL — three blocks, each blocked on its own question, none on effort:**
-  1. ⛔ **`sgs/button` — writer UNPROVEN.** 7 elements compute `#3a2e26` while both matching rules
-     resolve to accent. Something the rule-scan missed is winning. **Prove the cause first.**
-  2. ⛔ **`sgs/nav-menu`** — needs the first-paint probe fixed for multi-instance blocks, or a genuine
-     capture. It renders a hidden second copy in the drawer, so the capture reads `2/4 visible`.
-     ⚠ **The gate reason is now GONE** (`08c8dfef` exempts interaction-only CSS), so if the change is
-     a pure `:focus-visible` value swap this is unblocked — re-check before assuming it still applies.
-  3. **`sgs/nav-drawer`** — same `currentColor` close-button pattern; its `block.json` documents the
-     outline as deliberately uncontrolled. Skipped as too close to the nav-menu trap. Needs a ruling,
-     not a fix.
-  **Done when:** those three are resolved or explicitly ruled out, with the cause proven for `button`.
-
-
+> **Step Z-residual — CLOSED 2026-08-21** (`9c4fd59d` + `b4a15b15`). All three remaining blocks
+> (`sgs/button`, `sgs/nav-menu`, `sgs/nav-drawer`) now resolve their focus ring through
+> `var(--sgs-focus-color, …)`. `sgs/button`'s "writer UNPROVEN" was answered: the cause was an
+> **ABSENCE**, not a losing rule — it had no outline declaration at all, and the WP rule that
+> would supply one cannot match because the block never carries `.wp-element-button`.
+> ⚠ One residual, not worth its own step: `nav-drawer/block.json:68`'s `_note` still documents
+> that close button's outline as "uncontrollable styling", which is no longer accurate.
 
 ### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN]
   **Model:** inline · **Time:** 3 h
@@ -86,21 +77,30 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   `convert_section()` with authored drafts (`reports/2026-08-01-motion-clone-probe.md`): **every fx
   attribute vanished — and not even into the skip-with-reason channel Rule 4 requires.** D436 seeded
   the runtime PLAYBACK registry, a different layer entirely. **So this stays a full build.**
-  **Start here:** `lift_behavioural_attrs` (`db/db_lookup.py:4454`) is purpose-shaped for exactly
+  **Start here:** `lift_behavioural_attrs` (`db/db_lookup.py:5051`) is purpose-shaped for exactly
   this, has ZERO callers, and carries a latent bug — it strips `data-sgs-` and keeps the hyphenated
   remainder, so `data-sgs-fx-trigger` could never match `fxTrigger` even if wired.
   ⚠ Collides with Track 1's live converter work — check `LEDGER.md` before dispatching.
   **On-fail:** if it cannot land, AMEND Spec 38's success definition to say motion is applied by hand
   after a clone. Do not leave the claim standing unbuilt.
 
-### Step 20 — spec ↔ code reconciliation [OPEN]
-  **Model:** sonnet · **Time:** 1 h
-  **Action:** add `data-sgs-fx-momentum` to §11.2's grammar; mark `fxShape`/`fxPath` seed status
-  honestly in §11.3; retire the dead `scroll-smoother` `fx_effects` row (D422 moved smoothing to
-  Lenis/Tier H); correct `generate-fx-qualifying-blocks.py`'s stale comment claiming
-  `sgs/image-sequence` does not exist; wire or delete `sgs_get_fx_qualifying_blocks()` (zero callers
-  while its docstring claims the render layer uses it).
-  **Done when:** every grammar attr has a control, a DB row and a consumer — in both directions.
+### Step 20 — spec ↔ code reconciliation [OPEN — 2 of 5 remain]
+  **Model:** sonnet · **Time:** 30 min
+  ✅ **(a) CLOSED** — `data-sgs-fx-momentum` IS in §11.2's grammar (`38-SGS-MOTION-SYSTEM.md:1310`).
+  ✅ **(d) CLOSED** — `generate-fx-qualifying-blocks.py:390-394` now states `sgs/image-sequence`
+  EXISTS as an agency-only block; the stale comment was corrected 2026-08-02 and says so.
+  ◐ **(b) MISPLACED, not missing** — the honest `fxShape`/`fxPath` seed-status text exists
+  (`:1414-1428`, the D427 amendment) but sits in **§11.2**. §11.3's mapping list (`:1446-1448`)
+  still omits both. Move or duplicate it there.
+  ⛔ **(c) IS A RULING, NOT A DELETE — this register was wrong to call the row "dead".**
+  `seed-motion-fx-registry.py:575-604` documents the `scroll-smoother` `fx_effects` row as
+  DELIBERATE: its `scope='site'` proves BY CONSTRUCTION that ScrollSmoother is structurally
+  excluded from every block panel — that is the row's own acceptance test. Deleting it removes a
+  load-bearing negative proof. Recommend KEEP + annotate. Needs a D-number either way.
+  ○ **(e) OPEN** — `sgs_get_fx_qualifying_blocks()` still has zero callers, and
+  `generated-fx-qualifying-blocks.php` is never `require`d by any PHP, so the function does not
+  exist at runtime at all. Spec 38 (`:1120-1130`) already records this and recommends DELETE.
+  **Done when:** (b) and (e) are resolved and (c) has a D-numbered ruling.
 
 ### Step R-residual — the cursor field's stated limits [OPEN, low priority]
   **Model:** sonnet · **Time:** 1 h
@@ -126,12 +126,18 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   reproduce the symptom, and per measurement-vs-eye **Bean's report STANDS over the null
   measurement**. An agent would re-run scripted drags and produce a fourth false pass.
 
-### Step U — file-length debt on the grid blocks [OPEN]
-  **Model:** haiku · **Time:** 2 h
-  Against the project's own limits (PHP 300, JS 250): `card-grid/render.php` 617,
-  `card-grid/edit.js` 671, `post-grid/render.php` 523, `post-grid/edit.js` **1,045**.
-  Bean ruled 2026-08-01: log it, tackle separately — splitting large files while agents are mid-edit
-  in a shared worktree invites clobbering. **Do this in a clean session.**
+### Step U — file-length debt — SUPERSEDED 2026-08-21, see the plan [OPEN, reframed]
+  **The register's four filenames and all four numbers were wrong** (they had grown: 815/947/619/
+  1181, not 617/671/523/1045) — and, more importantly, four files was never the scope. **Measured:
+  110 files breach the limits** (51 `render.php` > 300, 59 `edit.js` > 250; 42,207 excess lines).
+  ⛔ **Bean REJECTED a file-length gate** (2026-08-21) — dev friction, and it punishes legitimate
+  size. Do not re-propose one. He reframed the task: find the common bloat SHAPES and fix those.
+  **Measured shapes:** change-narrative documentation **5,739 lines** (the biggest); inline
+  sanitiser closures **663** across 129 definitions; JS `ResponsiveBoxControl` glue 1,377 —
+  **refuted**, it is call-site glue around an already-shared component, not duplication.
+  ⚠ **Counted on CODE lines only, over-limit `render.php` is 26, not 51** — a third of those files
+  is documentation. Rank targets by duplication DENSITY, never raw line count.
+  **Live plan:** `~/.claude/plans/go-motion-spec-38-track-synchronous-willow.md` (council-validated).
 
 ### Step 21 — re-run the adversarial council [OPEN — DELIBERATELY LAST]
   **Model:** inline · **Time:** 30 min · **Deps:** every other step above, no exceptions
