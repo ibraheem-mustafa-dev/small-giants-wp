@@ -634,6 +634,73 @@ gates; **Bean's eye (R-31-13)**. **📝 DOCS + `/handoff`.**
 
 ---
 
+# PHASE 3 — every theme template, one at a time
+
+**Bean, 2026-08-21:** *"lets add a P3 to this track's plan for the individual theme template
+pages having a point each for working on them 1 by 1 ... considering this whole plan is based on
+the product archive template it is consistent with our work."* Correct on both counts, and it was
+never recorded — this plan and the LEDGER had zero mention of a per-template pass.
+
+**Why a phase and not a chore.** Everything Phases 1-2 fixed was found THROUGH one template.
+Three stacked width caps, seven invalid WooCommerce blocks, four dead template-part slots, a
+colour attribute WordPress was discarding, hero's base padding vanishing on save — none of that
+came from auditing blocks in the abstract. It came from opening `archive-product` and measuring
+it. The other eight templates have not had that treatment.
+
+## The per-template checklist — the same seven things, every time
+
+Derived from what actually found defects on `archive-product`, `front-page`, `page` and `single`.
+Not invented: each line is a check that caught something real on 2026-08-21.
+
+1. **Editor validity.** Open the template in the Site Editor and run
+   `wp.blocks.validateBlock()` over the tree. Target 0 invalid. ⚠ Server-side checks CANNOT see
+   this — validation runs in JavaScript, which is why every PHP/WP-CLI probe came back clean while
+   the editor showed three errors (D719).
+2. **Width model.** One cap per page. `<main>` and other STRUCTURE say `contentWidth:"full"` and
+   pass width through; sections cap their own content. No `layout:{"type":"constrained"}`
+   anywhere (D725).
+3. **Spacing declarations.** `migrate-theme-native-spacing.py --check` clean — no authoring on a
+   native family its block no longer declares.
+4. **Core blocks.** `check-no-core-blocks.py` clean. Then list the core blocks with NO SGS
+   equivalent as gap candidates — they are NOT violations. ⚠ Do not confuse the two: `sgs/sidebar`
+   was nearly deleted on a false "uses banned blocks" claim; `core/archives` and `core/categories`
+   are not on the replacement map at all.
+5. **Live measurement at 375 / 768 / 1440.** Background paints edge-to-edge, content caps, no
+   text flush at the edge that should not be, no double indent. Computed styles, not screenshots.
+6. **Landmarks + a11y.** Exactly one `<main>`; `nav`/`aside` labelled; heading order sane.
+7. **Client-editability.** Every visible setting reachable in the editor, and the canvas actually
+   moves when it changes. This is the one that keeps failing quietly — the content band was
+   styled in `editor.css` but never rendered by `edit.js` for months.
+
+**Done-when, per template:** all seven pass, measured live, with the evidence in the commit
+message. Not "the markup looks right".
+
+## The templates, ordered
+
+| # | Template | Size | Containers | Known state |
+|---|---|---|---|---|
+| **P3-1** | `archive-product.html` | 10.0 KB | 7 (+17 WC blocks) | ⭐ **THE REFERENCE.** Phases 1-2 lived here. Editor-valid, width model correct, spacing migrated. Re-run the checklist to CONFIRM it as the standard the rest are measured against |
+| **P3-2** | `single.html` | 3.1 KB | 7 | Biggest core-block cluster (14 comment blocks + `spacer`), none with an SGS equivalent. `<main>` is a deliberate 800px prose band |
+| **P3-3** | `single-product.html` | 3.8 KB | 6 (+5 WC) | PDP. Untouched by this plan; buybox owns its own gallery column |
+| **P3-4** | `archive.html` | 2.5 KB | 5 | `post-excerpt` / `query-no-results` / `term-description`, no SGS equivalents |
+| **P3-5** | `search.html` | 2.7 KB | 5 | Same three, plus `core/search` |
+| **P3-6** | `page.html` | 1.9 KB | 2 | Width model done 2026-08-21; `post-title` wrapped. Needs checks 1, 5, 6, 7 |
+| **P3-7** | `front-page.html` | 1.6 KB | 1 | Width model done. ⚠ Renders ~104 chars — an EMPTY page cannot demonstrate correct capping, so measure it against real content or say so |
+| **P3-8** | `index.html` | 1.1 KB | 1 | Blog index |
+| **P3-9** | `404.html` | 1.3 KB | 1 | Smallest; `core/search` |
+| **P3-10** | Parts: `sgs-pdp-content`, `sgs-pdp-buybox`, `sgs-archive-toolbar` | — | 3 / 0 / 0 | `header`/`footer` are one-line pattern shims and need nothing |
+
+Ordered by how much is already known, not by size — `archive-product` first because confirming
+the reference makes every later comparison cheap.
+
+## Standing constraints
+
+- **One template per commit**, with its measurements in the message. They are independent, so a
+  regression is attributable.
+- **Deploy is theme-only** — no block rebuild, so these never collide with a parallel block track.
+- **Do NOT batch the checklist across templates.** Every defect this plan found was specific to
+  the page it was on; a sweep would have found none of them.
+
 ## Key Judgement Calls
 
 - **G1 — `flexDirection` default.** Options: `flex`+`column` / `flex`+row / keep `stack`.
