@@ -173,7 +173,13 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 # sandybrown is the ONLY target (palestine-lives.org is gone — removed from TARGETS 2026-08-10).
 # Scope: --blocks-only | --theme-only. It runs the build itself unless --skip-build.
 # It carries the dirty-tree gate + default-ON fail-closed verify + .bak rollback rotation, and
-# resets OPcache via HTTP (the CLI pool is separate). Full sequence in dev-setup.md.
+# purges BOTH cache layers post-deploy — OPcache (compiled PHP) via an HTTPS probe, because the
+# CLI pool has its OWN OPcache and `wp eval` would reset the wrong one; and the LiteSpeed page
+# cache (rendered HTML) via wp-cli. Clearing one does nothing for the other. Opt out only with
+# --skip-purge, and know that doing so IS D709. Full sequence in dev-setup.md.
+# ⚠ This line CLAIMED the OPcache reset from D336 until 2026-08-21, when the claim was checked
+#   and found false — the only `opcache` mentions in the script were inside its rollback HINT
+#   string. It is true now because step_purge_caches() was built, not because it was asserted.
 #
 # ⛔ NEVER hand-roll tar / scp -r / ssh 'rm -rf … && mv …'. The old recipe deleted the LIVE
 #    directory before extracting: on 2026-07-14 (D336) it took two client sites down for ~2.5h.

@@ -41,6 +41,7 @@ client by adding a single dict entry; no code changes needed elsewhere.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import shlex
@@ -501,6 +502,126 @@ def step_local_cleanup(dry_run: bool) -> int:
         err(f"tarball still present after cleanup: {tarball}")
         return 1
     log("[5/5] Local cleanup: OK")
+    return 0
+
+
+def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
+                      host: str) -> int:
+    """Post-deploy cache purge - TWO DIFFERENT CACHES, deliberately both.
+
+    WHY THIS EXISTS (2026-08-21). Both CLAUDE.md files stated that this script
+    "resets OPcache", and it did not: the only two `opcache` mentions in this file
+    were inside ROLLBACK_HINT, a string of MANUAL instructions printed on failure.
+    A defence asserted in docs and enforced nowhere is this repo's recorded failure
+    mode, and D709 (theme assets served STALE to every warm browser cache, the day
+    before this was written) is what it costs.
+
+    The two layers are not interchangeable:
+
+      OPcache   holds COMPILED PHP.   Stale => the server runs yesterday's render.php.
+      LiteSpeed holds RENDERED HTML.  Stale => the server never runs today's PHP at all.
+
+    Clearing one does nothing for the other.
+
+    OPCACHE MUST BE RESET OVER HTTP, NOT OVER SSH. Each PHP SAPI keeps its OWN
+    OPcache: `wp eval` runs in the CLI pool and resets the CLI's cache, leaving the
+    web pool - the one that actually serves visitors - untouched, while reporting
+    success. So a temporary file is written into the webroot, fetched over HTTPS so
+    the WEB pool executes it, then removed. The filename carries a random token: it
+    is world-reachable for the ~1s it exists, and a guessable opcache_reset()
+    endpoint is a free cache-stampede lever. The payload ships base64-encoded so no
+    PHP quoting can be mangled by the shell on the way.
+
+    FAILS SOFT, LOUDLY. By this point the files are already live, so a failed purge
+    is not grounds to abort - that would read as "nothing shipped" and invite a
+    retry loop. But a leg that did not run is NEVER reported as OK: the whole point
+    of this step is that silence is what made D709 invisible.
+    """
+    log("[purge] clearing both cache layers (OPcache + page cache)")
+    if dry_run:
+        log("[purge] SKIPPED (--dry-run); would reset OPcache over HTTPS "
+            "and run `wp litespeed-purge all`")
+        return 0
+
+    webroot = (wp_content[: -len("/wp-content")]
+               if wp_content.endswith("/wp-content") else wp_content)
+    ok_opcache = False
+    ok_page = False
+
+    # ---- leg 1: OPcache, via the WEB pool ---------------------------------
+    probe = "sgs-opcache-" + os.urandom(8).hex() + ".php"
+    remote_probe = webroot + "/" + probe
+    php = ("<?php if (function_exists('opcache_reset')) { echo opcache_reset() "
+           "? 'SGS-OPCACHE-RESET-OK' : 'SGS-OPCACHE-RESET-FAILED'; } "
+           "else { echo 'SGS-OPCACHE-ABSENT'; }")
+    b64 = base64.b64encode(php.encode("utf-8")).decode("ascii")
+    write_cmd = ssh_base_cmd(use_alias) + [
+        "echo " + shlex.quote(b64) + " | base64 -d > " + shlex.quote(remote_probe)]
+    rm_cmd = ssh_base_cmd(use_alias) + ["rm -f " + shlex.quote(remote_probe)]
+    try:
+        w = subprocess.run(write_cmd, check=False, capture_output=True, text=True)
+        if w.returncode != 0:
+            err("[purge] could not write the OPcache probe (exit %d): %s"
+                % (w.returncode, (w.stderr or "").strip()[:200]))
+        else:
+            import urllib.error
+            import urllib.request
+            url = "https://" + host + "/" + probe
+            try:
+                req = urllib.request.Request(
+                    url, headers={"User-Agent": "sgs-deploy/opcache"})
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    body = resp.read(200).decode("utf-8", "replace")
+                if "SGS-OPCACHE-RESET-OK" in body:
+                    log("[purge] OPcache: RESET (web pool)")
+                    ok_opcache = True
+                elif "SGS-OPCACHE-ABSENT" in body:
+                    log("[purge] OPcache: not enabled on this host - nothing to reset")
+                    ok_opcache = True
+                else:
+                    err("[purge] OPcache reset did not confirm; probe said: %r"
+                        % body.strip()[:120])
+            except (urllib.error.URLError, OSError) as e:
+                err("[purge] OPcache probe request failed: %s" % e)
+    finally:
+        subprocess.run(rm_cmd, check=False, capture_output=True, text=True)
+        # Prove the probe is gone rather than assuming the rm landed - it is a
+        # publicly reachable file that resets a shared cache.
+        chk = subprocess.run(
+            ssh_base_cmd(use_alias)
+            + ["test -e " + shlex.quote(remote_probe)
+               + " && echo PRESENT || echo GONE"],
+            check=False, capture_output=True, text=True)
+        if "PRESENT" in (chk.stdout or ""):
+            err("[purge] the OPcache probe is STILL on the server: %s "
+                "- remove it by hand" % remote_probe)
+
+    # ---- leg 2: page cache (LiteSpeed) ------------------------------------
+    # Gated on the plugin actually being active so a target without LiteSpeed
+    # reports "not installed" rather than a red error on every deploy.
+    page_cmd = ssh_base_cmd(use_alias) + [
+        "cd " + shlex.quote(webroot) + " && "
+        "if wp plugin is-active litespeed-cache 2>/dev/null; then "
+        "wp litespeed-purge all 2>&1; else echo SGS-NO-LITESPEED; fi"]
+    pc = subprocess.run(page_cmd, check=False, capture_output=True, text=True)
+    out = ((pc.stdout or "") + (pc.stderr or "")).strip()
+    if "SGS-NO-LITESPEED" in out:
+        log("[purge] page cache: LiteSpeed not active on this target - skipped")
+        ok_page = True
+    elif pc.returncode == 0 and "Purged" in out:
+        log("[purge] page cache: PURGED (LiteSpeed)")
+        ok_page = True
+    else:
+        err("[purge] page-cache purge did not confirm (exit %d): %s"
+            % (pc.returncode, out[:200]))
+
+    if ok_opcache and ok_page:
+        log("[purge] OK - both layers clear")
+        return 0
+    # Non-fatal by design (see the docstring), but never silent.
+    err("[purge] NOT FULLY PURGED - the deploy IS live, but visitors with a warm "
+        "cache may still be served the previous version. Re-run the failing leg "
+        "by hand before trusting a visual check.")
     return 0
 
 
@@ -974,6 +1095,10 @@ def parse_args() -> argparse.Namespace:
                    help="Skip the pre-deploy stored-content compatibility gate "
                         "(NOT recommended — it is the only check that catches a "
                         "deploy whose schemas strand or delete stored content).")
+    p.add_argument("--skip-purge", action="store_true",
+                   help="Skip the post-deploy cache purge (OPcache + LiteSpeed). "
+                        "NOT recommended: the deploy still lands, but warm caches "
+                        "keep serving the previous version — that is D709.")
     p.add_argument("--takeover", action="store_true",
                    help="Deploy even when the live target carries a commit that is NOT "
                         "an ancestor of HEAD (i.e. deliberately overwrite another "
@@ -1110,6 +1235,15 @@ def main() -> int:
     if rc != 0:
         print(f"[ABORTED] reason: local-cleanup-failed (exit {rc})", flush=True)
         return 1
+
+    # Cache purge — BEFORE verify, so the smoke test measures what a visitor gets
+    # rather than what a cache-busting query string gets. Never aborts: see the
+    # step's docstring.
+    if args.skip_purge:
+        log("[purge] SKIPPED (--skip-purge) — a warm cache may serve the OLD version")
+    else:
+        step_purge_caches(args.dry_run, use_alias, target["wp_content"],
+                          target["host"])
 
     # Post-deploy smoke test — ON by default, aborts on a broken site.
     verify_url = args.verify_url or f"https://{target['host']}/"

@@ -238,7 +238,11 @@ first, and on 2026-07-14 (D336) that took two client sites down for ~2.5h. It al
 2026-08-10 so nobody copies it back.
 
 `build-deploy.py` is the ONE path: dirty-tree gate, `--payload` deadlock-breaker, pre-deploy
-stored-content audit, default-ON fail-closed smoke test, `.bak` rollback rotation, OPcache reset.
+stored-content audit, default-ON fail-closed smoke test, `.bak` rollback rotation, and a
+post-deploy purge of BOTH cache layers — OPcache (compiled PHP, reset over HTTPS because the CLI
+pool keeps a separate one) and the LiteSpeed page cache (rendered HTML). ⚠ This sentence listed
+"OPcache reset" as a shipped feature until 2026-08-21, when it was checked and found false; it
+is true now because `step_purge_caches()` exists, not because the doc said so.
 Scope with `--blocks-only` / `--theme-only`; `--skip-build` reuses `build/`. Do not reach for
 `--allow-dirty` (an uncommitted edit was D336's trigger) or `--skip-verify` (it removes the check
 that catches a broken deploy).
