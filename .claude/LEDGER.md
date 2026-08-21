@@ -336,25 +336,29 @@ greps hitting comments; a specificity computed from a `selectorText` sliced to 7
 **⛔ Two live defects — read first:**
 1. **`sgs/hero`'s overlay gradient was silently replaced by the flat colour** (`fc261fd3`).
    `$overlay_gradient` never existed — one reference, zero assignments, ever — so the null fell
-   through to `background-color` and the overlay still painted, which is why it survived. Fixed
-   + live-proven with a negative control:
-   `reports/visual-diff/hero-overlay-gradient-2026-08-21.md`. ⚠ Cause: the pair is asymmetric —
+   through to `background-color` and the overlay still painted, which is why it survived.
+   Live-proven fixed with a negative control:
+   `reports/visual-diff/hero-overlay-gradient-2026-08-21.md`. ⚠ Cause: an asymmetric pair,
    `backgroundOverlayColour` vs `overlayGradient`.
 2. **I broke `main` for ~5 min** (`87d904a6`): a `'src/blocks/*/render.php'` GLOB satisfied the
    path-scoped-commit hook and swept the co-active track's half-done edit. **A glob over a
    shared directory is `git add -A` wearing a pathspec.** Enumerate exact filenames.
 
 **⛔ THREE comments asserted the OPPOSITE of their own code** (nav-menu ×2, responsive-logo) —
-this codebase's real doc debt is confident wrongness, not verbosity.
+this codebase's doc debt is confident wrongness, not verbosity.
 
-**Shipped:** both motion registers + Spec 38 swept against the code · 121 sanitiser closures
-across 57 files onto 3 shared helpers already existing at 3% adoption · ~370 lines of
-change-narrative cut from 78 files · no-inline prose → one pointer per block · `R-22-14` →
-`R-31-14` ×14 · scroll-smoother row → `tier='H'` (D723's owed action).
+**Shipped:** motion registers + Spec 38 swept · 121 sanitiser closures across 57 files onto 3
+shared helpers already existing at 3% adoption · ~370 lines of narrative cut from 78 files ·
+no-inline prose → one pointer per block · `R-22-14`→`R-31-14` ×14 · scroll-smoother → `tier='H'`.
 
-**⛔ Shipped detail, every owed follow-up, and the 11-gate-backed-vs-37-UNENFORCED prohibition
-split live in `.claude/reports/2026-08-21-unenforced-prohibition-register.md`. Read it before
-continuing this track.** Biggest item there: `wp_style_engine_get_styles`, 63 files, no absorber.
+**⛔ Detail, owed follow-ups, and the 11-gate-backed-vs-37-UNENFORCED split:
+`.claude/reports/2026-08-21-unenforced-prohibition-register.md`. Read before continuing.**
+
+## ▶ CLEANUP TRACK — comment-narrative trim, ~70 files (OPEN, unblocked)
+
+Not parked; pick up any time. 20 densest files done (~370 lines), ~70 remain at ~9 each.
+**Rules, tooling, owed items + a ready session prompt:
+`.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`.**
 
 ## ▶ TIER W (MOTION) TRACK — CLOSED 2026-08-21
 
