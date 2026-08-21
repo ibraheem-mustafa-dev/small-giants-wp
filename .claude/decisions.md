@@ -1,5 +1,87 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D724 [INCIDENT] — the shared wrapper renders a simple section background as a real `<img>`; and a cross-session commit split one change in two and left `main` fatal (2026-08-21)
+
+**Colour-golden track. Bean's direction, and it inverted the previous day's instinct.** D718 had
+just converged `sgs/hero` DOWN to the shared wrapper's overlay policy. Bean asked the better
+question: *"why don't we give the hero the other block's shared overlay helper and then use the
+hero's background setup to rewrite the shared background file?"* — i.e. converge on the BEST
+implementation, not the incumbent one. That is what R-31-9/D152 actually asks for: a missing
+capability belongs in the shared layer, rather than the stronger block being dragged down.
+
+**The gap, measured not asserted.** The wrapper painted a background image as CSS
+`background-image` on a scoped `::before`. The browser cannot discover that image until the
+stylesheet parses and the selector matches. `sgs/hero` already rendered a real `<img>` with
+`fetchpriority="high"`, which the preload scanner finds while still reading the HTML — a real
+LCP difference on the element most likely to BE the LCP. Every other section block was on the
+slow path. The wrapper now renders the `<img>` through the same `sgs_responsive_image()` helper
+hero uses, so it also gains real `srcset` from `wp_get_attachment_image()`.
+
+**The gate is mechanism-driven and universal, NOT a per-block carve-out.** `no-repeat` (an
+`<img>` cannot tile) + `cover|contain` (`object-fit` maps to those two only) + no parallax + no
+`fixed` attachment (both paint through a different mechanism) + no tablet/mobile tier overrides
+(those swap `::before`'s image inside `@media` rules an `<img>` does not participate in;
+migrating only the desktop tier would silently drop a client's mobile background). Everything
+else keeps the CSS path. The two branches are exact complements — verified by enumerating every
+combination, so nothing double-paints and nothing stops painting.
+
+**Pre-design risk check, done before writing any code:** zero rules plugin-wide select a direct
+universal child (`> *:first-child`), so an injected `<img>` cannot shift anyone's `:first-child`;
+and `position:absolute` keeps it out of flow so it never becomes a grid or flex item. The wrapper
+ALREADY injects an absolutely-positioned media child for background video — this mirrors that
+proven shape rather than inventing one.
+
+### Three defects an adversarial review caught before commit — it returned NO-GO
+
+1. **BLOCKER, and my error.** I briefed the builder that there were TWO child-positioning reset
+   rules to exclude the new class from. There are **SEVEN**. The four missed (shape-divider plus
+   three SVG variants) win on specificity and would have forced the `<img>` to
+   `position:relative; z-index:1` — a background painting ON TOP of the content, on any container
+   with a shape divider AND a background image. Same failure this file's own comments record
+   happening before to hero's overlay and the FX decorations. **A roster I assembled by eye
+   instead of enumerating — the exact habit this project keeps punishing.**
+2. **BLOCKER.** The scoped `object-fit`/`object-position` rule was gated on a `uid` that nothing
+   in `$needs_uid` requested for this path. A minimal container with `backgroundSize:contain` and
+   a custom position minted no uid, so the rule never emitted and the image silently reverted to
+   `cover`/centre on the frontend while the editor still showed the client's choice.
+3. **MAJOR.** Two independent "first image" counters — hero's pre-existing one and the wrapper's
+   new one — each meant "first within MY code path". A page with a hero image followed by a
+   container image marked BOTH `fetchpriority="high"`. Prioritising two images prioritises
+   neither, defeating the entire purpose. Replaced by one page-scoped
+   `sgs_next_background_image_index()` shared by both.
+
+### ⛔ The cross-session incident — a broad `git add` split ONE change across TWO commits
+
+While the fixes were in the working tree, the OTHER active session on this shared worktree
+committed **my uncommitted edit to `hero/render.php`** inside its own unrelated commit
+`87d904a6` ("refactor(render): the last 21 closures") and pushed it. That commit carried the
+CALL SITE `sgs_next_background_image_index()`; the function DEFINITION was in
+`helpers-media.php`, still uncommitted in my tree.
+
+**So `origin/main` briefly held a call to an undefined function: every page rendering an
+`sgs/hero` with a background image would fatal.** Verified by `git grep` against HEAD — call
+committed, definition not. Repaired in `5cd873af` (definition only, strictly additive).
+
+**The lesson is sharper than the usual one.** The known risk of a broad `git add` on a shared
+worktree is *committing someone else's work*. This is worse and less obvious: it **split one
+atomic change across two commits owned by two sessions**, leaving the branch in a state neither
+session intended or could see from its own diff. My own `git diff` showed `hero/render.php`
+clean, which reads as "nothing to do" rather than "someone took it".
+
+⚠ **The commit `0eb38ecf` cites "(D719)" and that number is WRONG.** I allocated it by assuming
+D718 (mine) was the ceiling. It was not — the other session had reached D723 while I worked, and
+D719 is theirs ("a raw HTML comment is block CONTENT"). Caught by an assertion, not by luck; this
+entry is D724. The commit message is not being rewritten: the branch is shared and pushed, and
+force-pushing to fix a citation would be far more dangerous than the wrong citation. **Read
+`0eb38ecf`'s "(D719)" as "(D724)".** The general rule this reinforces: on a shared worktree the
+D-ceiling must be re-read immediately before allocating, never inferred from your own last entry.
+
+**Status: committed + pushed, NOT deployed, NOT live-verified.** `build-deploy.py` correctly
+ABORTED — the other session has 183 lines of in-flight edits to `cta-section/render.php` and
+`site-header/render.php`, which this deploy would have pushed live. `--payload` does not help
+(it explicitly still blocks another track's dirty files) and `--allow-dirty` is banned (D336).
+Live verification is genuinely pending that session committing. **Not claimed as done.**
+
 ## D723 [ROUTINE] — the `scroll-smoother` fx_effects row STAYS (it is a negative proof), but its tier and plugin_set are stale against D422 (2026-08-21)
 
 **The wave-D register said "retire the dead `scroll-smoother` `fx_effects` row". That instruction was
