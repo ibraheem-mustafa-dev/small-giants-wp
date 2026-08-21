@@ -658,8 +658,45 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   photograph visible. There is no second code path to keep in sync, and a silently-dead
   shader is DETECTABLE (the flag is absent) rather than indistinguishable from success.
 
- **Measured, not reasoned:** 4,325 bytes gzip — **3.5% of D479's 120KB Tier W page
-  allowance**. Panel roster **32 blocks before, 32 after**; offered on 15 image-bearing
+ **EVERY TREATMENT CARRIES A CLIENT COLOUR, DEFAULTED TO THE SITE PALETTE.** Added
+  2026-08-21 on the owner's instruction — *"What about halftone, it's just got a black
+  diagonal line pattern covering the photo, shouldn't that have colour options?"* and
+  *"they should all be defaulted to palette slugs but be able to be changed with our
+  universalised colour controls."* Both were right: halftone's ink was hard-coded, and only
+  duotone had any colour control.
+
+  | Treatment | Uniform | Control | Custom property |
+  |---|---|---|---|
+  | grain | `uTint` | "Grain tint" | `--sgs-fx-tint` |
+  | halftone | `uInk` | "Ink colour" | `--sgs-fx-ink` |
+  | duotone | `uShadow` / `uHighlight` | "Shadow colour" / "Highlight colour" | `--sgs-fx-shadow` / `--sgs-fx-highlight` |
+
+  All four store palette SLUGS, so re-theming re-colours every treated image. Resolution
+  order at runtime: the client's explicit pick → the site palette (via each uniform's
+  declared `paletteFallback` slug, transformed by `paletteTransform`) → the literal preset
+  default, which now only applies to a site defining no palette at all. **The render layer
+  publishes a colour ONLY when the client set one** — emitting a default there would freeze
+  it against future re-theming.
+
+ **The palette value is DERIVED, never used raw, and that was measured twice.** A brand
+  palette supplies one MID-tone hue; a duotone needs tonal distance between its ends and a
+  halftone needs an ink dark enough to print. Using the primary raw made the duotone look
+  untouched (trading *"looks black and white"* for *"looks like nothing"*), and a fully
+  deepened primary made the halftone ink resolve to ~`rgb(60,33,51)` — still reading as
+  BLACK at dot size, i.e. a colour control that visibly changed nothing. Hence three
+  transforms: `deepen` (duotone shadow, grain tint), `ink` (halftone, chroma-retaining), and
+  `lighten` (duotone highlight).
+
+ ⚠ **Deliberately NOT `SgsColourPanel`**, despite it being the canonical colour control on
+  75 blocks. Its own docblock records that every call site mounts it exactly once per block;
+  `fx.js` is a `registerBlockType` EXTENSION spanning many block types that already mount
+  their own, so a second would stack a second panel titled "Colour" in the Styles tab — the
+  scattered/duplicated-colour confusion D609 and D622 exist to remove, merely relocated. The
+  four rows reuse the `DesignTokenPicker` + `ToolsPanelItem` shape this same file already
+  uses for `fxFieldColour`.
+
+ **Measured, not reasoned:** 5,674 bytes gzip — **4.6% of D479's 120KB Tier W page
+  allowance** (4,325 for the treatments, +1,349 for the scroll reveal). Panel roster **32 blocks before, 32 after**; offered on 15 image-bearing
   blocks. `creates_panel=1` was measured and REJECTED: it grew the roster to 39, and five of
   the seven new panel hosts were `form-field-tiles` / `option-picker` / `social-icons` /
   `star-rating` / `card-grid` — a form field acquiring a scroll-scrub panel is exactly the
