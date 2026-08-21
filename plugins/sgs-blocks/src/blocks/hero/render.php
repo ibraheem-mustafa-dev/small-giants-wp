@@ -31,14 +31,11 @@
  * SGS_Container_Wrapper (mirrors sgs/container); the other 5 families are
  * read + emitted here, block-private.
  *
- * NO-INLINE (contract §A, 2026-07-09): the rendered subtree (section root,
- * overlay, content column, media wrapper, split image) carries ZERO inline
- * CSS property declarations. color/typography/spacing/__experimentalBorder
- * all declare __experimentalSkipSerialization in block.json; every value is
- * emitted into HERO'S OWN scoped `.{uid}` <style> instead (composite caveat —
- * these do NOT ride through the shared wrapper's `extra_styles`, which would
- * inline them). Section-level WP-native padding/margin remains the wrapper's
- * own scoped mechanism (unchanged).
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * (composite caveat — these do NOT ride through the shared wrapper's
+ * `extra_styles`, which would inline them). Section-level WP-native
+ * padding/margin remains the wrapper's own scoped mechanism (unchanged).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (label, headline, sub-headline, CTAs).
@@ -404,9 +401,10 @@ if ( '' !== $hover_border_colour_gradient ) {
 	$responsive_css .= sgs_border_gradient_css( "{$root_sel}:hover", $hover_border_colour_gradient, null, '1px' );
 }
 
-// Split variant: replace the default flex layout with CSS Grid. No-inline
-// contract (§A): display:grid is a real property declaration, so it is
-// deferred to the scoped .uid rule (was previously pushed inline via $styles).
+// Split variant: replace the default flex layout with CSS Grid.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// display:grid is deferred to the scoped .uid rule (was previously pushed inline via $styles).
 if ( $is_split ) {
 	$responsive_css .= '.' . $uid . '{display:grid}';
 
@@ -800,15 +798,12 @@ if ( $split_image_bleed ) {
 	$classes[] = 'sgs-hero--split-bleed';
 }
 
-// ── WP-native color / border / typography supports — no-inline contract (§A). ──
-// block.json declares color/typography/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes() (called
-// inside SGS_Container_Wrapper::render() below) never auto-inlines them. Read
-// the resolved values from $attributes['style'] here and emit them into HERO'S
-// OWN scoped <style> (composite caveat, per the migration contract: do NOT pass
-// these as wrapper `extra_styles` — that path inlines). Base spacing (padding/
-// margin) is a SEPARATE mechanism the wrapper already handles scoped internally
-// (reads $attributes['style']['spacing'] directly) — not duplicated here.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// (composite caveat, per the migration contract: do NOT pass these as wrapper
+// `extra_styles` — that path inlines). Base spacing (padding/margin) is a
+// SEPARATE mechanism the wrapper already handles scoped internally (reads
+// $attributes['style']['spacing'] directly) — not duplicated here.
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$hero_style_engine_args = array();
 
@@ -1025,17 +1020,19 @@ if ( $has_standard_bg_image ) {
 	);
 }
 
-// Build overlay. No-inline contract (§A): background-color/opacity move to the
-// scoped <style> ($responsive_css, appended below) — the element carries only
-// its class, no style="" attribute. Hero renders its own overlay instead of the
-// shared wrapper's (per the C3 double-emit guard above).
+// Build overlay. NO-INLINE: this block emits zero inline style property
+// declarations. Contract + mechanism: Spec 32. Enforced by
+// scripts/audit-inline-styling.js --check. background-color/opacity move to
+// the scoped <style> ($responsive_css, appended below) — the element carries
+// only its class. Hero renders its own overlay instead of the shared
+// wrapper's (per the C3 double-emit guard above).
 $overlay_html = '';
 // D718: the EXISTENCE test is the shared helper's own return value, not a
 // separate hand-written condition. sgs_overlay_decls() returns '' when there is
 // nothing to paint, so "is there an overlay?" and "what does it paint?" are one
 // decision in one place. SGS_Container_Wrapper gates the identical way, so the
 // two sites cannot drift apart on policy.
-$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, $overlay_gradient, $overlay_opacity );
+$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, $overlay_gradient_value, $overlay_opacity );
 if ( '' !== $overlay_decls ) {
 	$overlay_html    = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
 	$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{' . $overlay_decls . '}';
@@ -1045,10 +1042,11 @@ if ( '' !== $overlay_decls ) {
 // InnerBlocks. $content is the full serialised child-block output.
 
 // ── Build content column wrapper ───────────────────────────────────────────
-// FR-22-6: content column wraps InnerBlocks ($content) directly. No-inline
-// contract (§A): display/flex-direction/justify-content/background-color are
-// ALL emitted scoped (.uid .sgs-hero__content{...}) above — this element
-// carries NO style="" attribute any more.
+// FR-22-6: content column wraps InnerBlocks ($content) directly.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// display/flex-direction/justify-content/background-color are ALL emitted
+// scoped (.uid .sgs-hero__content{...}) above.
 // R-31-14: no scalar content rendering. $content = full InnerBlocks output
 // (sgs/label + sgs/heading + sgs/text + sgs/button(s) supplied by converter).
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
