@@ -16,6 +16,24 @@
      the collection's first <div>; without it, filters update the URL/chips
      but the grid never re-queries client-side (only on a full page reload). -->
 <!-- Bottom collapsible text (collapsible, operator fills copy) -->
+<!-- ⛔ BLOCK-VALIDATION RULE, learned the hard way 2026-08-21. Every structural note in
+     this template lives HERE, outside all block delimiters, and must stay here.
+     WordPress splits a block's saved content into innerContent chunks with null
+     placeholders for inner BLOCKS, then compares the non-null chunks against save().
+     A raw HTML comment is not a placeholder, so it lands in those chunks. Put one
+     inside a WooCommerce filter block and save() has nothing to match it; put it inside
+     an sgs/container and it is worse, because that block's save() emits the EMPTY
+     string. Both report "unexpected or invalid content". Relocating a comment from a
+     WC block into its sgs/container parent does NOT fix it — it moves the failure.
+     Filter groups render in order: active chips / price / flavour / size / rating.
+     Each WC filter block also carries the wrapper <div> its own save() emits; omitting
+     that is the second half of the same validation failure.
+     Results count + sort sit INSIDE product-collection deliberately:
+     woocommerce/product-results-count declares usesContext ["queryId"], so it only
+     knows WHICH query to count as a descendant of the collection. catalog-sorting
+     needs no context but is kept alongside so the two read as one toolbar. That
+     toolbar container is contentWidth "full" because it is a toolbar row, not a page
+     content band — the default "normal" would inject a band element for no reason. -->
 
 <!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"full"}} -->
 
@@ -54,13 +72,6 @@
 				</div>
 				<!-- /wp:html -->
 
-				<!-- Filter groups in order: active chips / price / flavour / size / rating.
-				     NOTE: explanatory comments live OUT here, ABOVE the block. A raw HTML comment
-				     placed INSIDE a WooCommerce filter block lands in that block's own saved
-				     content, where its save() has nothing, and the editor reports "unexpected or
-				     invalid content". Each block below also carries the wrapper <div> its save()
-				     emits — omitting it is the same validation failure. Both proven 2026-08-21 via
-				     wp.blocks.validateBlock() in the live Site Editor. -->
 				<!-- wp:woocommerce/product-filters {"style":{"spacing":{"padding":{"top":"0","bottom":"0"}}}} -->
 				<div class="wp-block-woocommerce-product-filters wc-block-product-filters" style="padding-top:0;padding-bottom:0">
 
@@ -112,15 +123,6 @@
 
 			<!-- /wp:sgs/container -->
 
-			<!-- Results count + sort. INSIDE product-collection deliberately:
-			     woocommerce/product-results-count declares usesContext ["queryId"]
-			     (verified on the canary via WP_Block_Type_Registry), so it only knows
-			     WHICH query to count when it is a descendant of the collection.
-			     catalog-sorting declares no context and would work anywhere, but is
-			     kept alongside so the two read as one toolbar.
-			     contentWidth "full" because this is a toolbar row, not a page content
-			     band — the default "normal" would render a band element inside the
-			     collection for no reason. -->
 			<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"inherit":true,"perPage":12,"isProductCollectionBlock":true},"tagName":"div","displayLayout":{"type":"flex","columns":3},"queryContextIncludes":["collection"],"align":"wide"} -->
 			<div class="wp-block-woocommerce-product-collection alignwide">
 
