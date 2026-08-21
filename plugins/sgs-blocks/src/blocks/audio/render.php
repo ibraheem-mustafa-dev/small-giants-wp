@@ -232,7 +232,7 @@ $wrapper_attrs   = get_block_wrapper_attributes(
 );
 ?>
 <?php if ( $scoped_css ) : ?>
-<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_sanitise() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally. ?>>
 	<?php if ( $schema_json ) : ?>

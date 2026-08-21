@@ -19,6 +19,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// This file's helpers delegate to sgs_css_length_value() (Spec 32 §6.1 (a2)).
+// Require it HERE, not just via render-helpers.php, because a render.php may
+// require_once this file directly without ever loading render-helpers.php —
+// without this line those pages would fatal on "Call to undefined function
+// sgs_css_length_value()". Both files guard with function_exists(), so load
+// order does not matter — only that both load before either is CALLED.
+require_once __DIR__ . '/helpers-css-safety.php';
+
 if ( ! function_exists( 'sgs_css_length_sanitise' ) ) {
 	/**
 	 * Strip a CSS length value down to the safe grammar (digits, letters for the
@@ -57,10 +65,10 @@ if ( ! function_exists( 'sgs_box_object_shorthand' ) ) {
 	 * @return string|null Shorthand, or null when the box is empty.
 	 */
 	function sgs_box_object_shorthand( array $box ): ?string {
-		$top    = sgs_css_length_sanitise( $box['top'] ?? '' );
-		$right  = sgs_css_length_sanitise( $box['right'] ?? '' );
-		$bottom = sgs_css_length_sanitise( $box['bottom'] ?? '' );
-		$left   = sgs_css_length_sanitise( $box['left'] ?? '' );
+		$top    = sgs_css_length_value( $box['top'] ?? '' );
+		$right  = sgs_css_length_value( $box['right'] ?? '' );
+		$bottom = sgs_css_length_value( $box['bottom'] ?? '' );
+		$left   = sgs_css_length_value( $box['left'] ?? '' );
 		if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
 			return null;
 		}
@@ -93,10 +101,10 @@ if ( ! function_exists( 'sgs_corner_object_shorthand' ) ) {
 		if ( ! is_array( $box ) ) {
 			return null;
 		}
-		$top_left     = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
-		$top_right    = sgs_css_length_sanitise( $box['topRight'] ?? '' );
-		$bottom_right = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
-		$bottom_left  = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
+		$top_left     = sgs_css_length_value( $box['topLeft'] ?? '' );
+		$top_right    = sgs_css_length_value( $box['topRight'] ?? '' );
+		$bottom_right = sgs_css_length_value( $box['bottomRight'] ?? '' );
+		$bottom_left  = sgs_css_length_value( $box['bottomLeft'] ?? '' );
 		if ( '' === $top_left && '' === $top_right && '' === $bottom_right && '' === $bottom_left ) {
 			return null;
 		}
@@ -152,7 +160,7 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 		// keeps every existing instance rendering unchanged. Same rule as
 		// SpacingControl.js's normaliseFreeInput(), deliberately.
 		if ( isset( $box['radius'] ) && '' !== $box['radius'] && null !== $box['radius'] ) {
-			$radius = sgs_css_length_sanitise( $box['radius'] );
+			$radius = sgs_css_length_value( $box['radius'] );
 			if ( '' !== $radius ) {
 				if ( preg_match( '/^\d+(\.\d+)?$/', $radius ) ) {
 					$radius .= 'px';

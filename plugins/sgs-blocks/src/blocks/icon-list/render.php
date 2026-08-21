@@ -256,7 +256,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -271,10 +271,10 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 // only (no tiers — matches the pre-existing base-only contract, sgs/quote
 // pattern). Paired with scalar borderColour/borderStyle attrs.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
@@ -639,7 +639,7 @@ foreach ( $resolved_items as $item ) {
 $needs_wrapper = ( '' !== $heading_text ) || $render_landmark;
 $wrapper_tag   = $render_landmark ? 'nav' : 'div';
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $items_html/$heading_html built with esc_url/wp_kses_post/esc_attr above; $scoped_css pre-sanitised (sgs_css_length_sanitise()/sgs_css_keyword_sanitise()/allowlists/wp_style_engine_get_styles/sgs_colour_value/sgs_typography_css_rule) + wrapped in wp_strip_all_tags.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $items_html/$heading_html built with esc_url/wp_kses_post/esc_attr above; $scoped_css pre-sanitised (sgs_css_length_value()/sgs_css_keyword_sanitise()/allowlists/wp_style_engine_get_styles/sgs_colour_value/sgs_typography_css_rule) + wrapped in wp_strip_all_tags.
 if ( $scoped_css ) {
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 }

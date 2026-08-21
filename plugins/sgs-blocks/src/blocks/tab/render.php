@@ -117,17 +117,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$tab_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$tab_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$tab_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$tab_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $tab_radius_raw ) && '' !== $tab_radius_raw ) {
-		$tab_border_args['radius'] = sgs_css_length_sanitise( $tab_radius_raw );
+		$tab_border_args['radius'] = sgs_css_length_value( $tab_radius_raw );
 	} elseif ( is_array( $tab_radius_raw ) ) {
 		$tab_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 			if ( ! empty( $tab_radius_raw[ $corner ] ) ) {
-				$tab_radius_clean[ $corner ] = sgs_css_length_sanitise( $tab_radius_raw[ $corner ] );
+				$tab_radius_clean[ $corner ] = sgs_css_length_value( $tab_radius_raw[ $corner ] );
 			}
 		}
 		if ( ! empty( $tab_radius_clean ) ) {
@@ -152,7 +152,7 @@ if ( ! empty( $tab_style_engine_args ) ) {
 // Output the block's own scoped color/border CSS (if any). wp_strip_all_tags
 // (NOT esc_html) blocks a </style> breakout while leaving CSS combinators
 // like `>` intact (contract §D — matches SGS_Container_Wrapper + sgs/hero).
-// Every value reaching $tab_responsive_css is pre-sanitised (sgs_css_length_sanitise() /
+// Every value reaching $tab_responsive_css is pre-sanitised (sgs_css_length_value() /
 // sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so nothing un-sanitised
 // survives to here.
 if ( $tab_responsive_css ) {

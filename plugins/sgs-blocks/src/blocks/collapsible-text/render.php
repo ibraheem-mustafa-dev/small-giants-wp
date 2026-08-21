@@ -248,7 +248,7 @@ $output = '';
 if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
 	// leaving CSS combinators like `>` intact (contract §D). Every value
-	// reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() /
+	// reaching $scoped_css is pre-sanitised (sgs_css_length_value() /
 	// wp_style_engine_get_styles / sgs_typography_css_rule's own
 	// sanitisers), so no un-sanitised value survives here.
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>.

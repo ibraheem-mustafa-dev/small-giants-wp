@@ -324,7 +324,7 @@ if ( '' !== $style_link_colour ) {
 // operator set in the native Border panel; '1px' is the fallback for "no
 // width set" (matches the hover emission's own fallback below). ---
 $sgs_border_width_native = isset( $style_border_args['width'] ) && is_string( $style_border_args['width'] )
-	? sgs_css_length_sanitise( $style_border_args['width'] )
+	? sgs_css_length_value( $style_border_args['width'] )
 	: '';
 if ( '' !== $sgs_border_gradient ) {
 	$sgs_border_gradient_width = '' !== $sgs_border_width_native ? $sgs_border_width_native : '1px';
@@ -333,13 +333,13 @@ if ( '' !== $sgs_border_gradient ) {
 
 // --- Width (kept-scalar, base only) ---
 if ( $sgs_content_width ) {
-	$cw_safe = sgs_css_length_sanitise( $sgs_content_width );
+	$cw_safe = sgs_css_length_value( $sgs_content_width );
 	if ( '' !== $cw_safe ) {
 		$scoped_css[] = "{$root_sel}{width:{$cw_safe};}";
 	}
 }
 if ( $sgs_max_width ) {
-	$mw_safe = sgs_css_length_sanitise( $sgs_max_width );
+	$mw_safe = sgs_css_length_value( $sgs_max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-inline:auto;}";
 	}
@@ -415,7 +415,7 @@ if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/quote + sgs/process-steps). Every value reaching $scoped_css is
-	// pre-sanitised (sgs_css_length_sanitise() / allowlists / wp_style_engine_get_styles /
+	// pre-sanitised (sgs_css_length_value() / allowlists / wp_style_engine_get_styles /
 	// sgs_colour_value), so no un-sanitised value survives to here.
 	$sgs_card_html .= '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 }

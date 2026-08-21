@@ -73,10 +73,10 @@ if ( ! function_exists( 'sgs_serialise_box_corners' ) ) {
 			// Defensive: a legacy string value read from an old post still renders as-is.
 			return (string) $box;
 		}
-		$top_left     = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
-		$top_right    = sgs_css_length_sanitise( $box['topRight'] ?? '' );
-		$bottom_left  = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
-		$bottom_right = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+		$top_left     = sgs_css_length_value( $box['topLeft'] ?? '' );
+		$top_right    = sgs_css_length_value( $box['topRight'] ?? '' );
+		$bottom_left  = sgs_css_length_value( $box['bottomLeft'] ?? '' );
+		$bottom_right = sgs_css_length_value( $box['bottomRight'] ?? '' );
 		if ( '' === $top_left && '' === $top_right && '' === $bottom_left && '' === $bottom_right ) {
 			return '';
 		}

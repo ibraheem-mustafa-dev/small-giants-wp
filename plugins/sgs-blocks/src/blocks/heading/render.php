@@ -182,10 +182,10 @@ $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ?
 // Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base only
 // (no tiers). No WP-native border-width support; colour/style stay scalar attrs.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 // Border-radius — WP-native style.border.radius (string = uniform, or an object
@@ -200,7 +200,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -626,7 +626,7 @@ $rendered_tag_escaped = tag_escape( $rendered_tag );
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper).
-	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() /
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_value() /
 	// sgs_css_keyword_sanitise() / allowlists / floatval / wp_style_engine_get_styles /
 	// sgs_colour_value / sgs_shadow_value), so no un-sanitised value survives here.
 	?>

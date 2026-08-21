@@ -146,17 +146,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$slider_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$slider_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$slider_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$slider_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $slider_radius_raw ) && '' !== $slider_radius_raw ) {
-		$slider_border_args['radius'] = sgs_css_length_sanitise( $slider_radius_raw );
+		$slider_border_args['radius'] = sgs_css_length_value( $slider_radius_raw );
 	} elseif ( is_array( $slider_radius_raw ) ) {
 		$slider_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 			if ( ! empty( $slider_radius_raw[ $corner ] ) ) {
-				$slider_radius_clean[ $corner ] = sgs_css_length_sanitise( $slider_radius_raw[ $corner ] );
+				$slider_radius_clean[ $corner ] = sgs_css_length_value( $slider_radius_raw[ $corner ] );
 			}
 		}
 		if ( ! empty( $slider_radius_clean ) ) {
@@ -191,7 +191,7 @@ if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attrib
 	$slider_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
 }
 if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-	$slider_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
+	$slider_typography_args['letterSpacing'] = sgs_css_length_value( $attributes['style']['typography']['letterSpacing'] );
 }
 if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
 	$slider_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );

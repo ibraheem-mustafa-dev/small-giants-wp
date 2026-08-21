@@ -36,7 +36,7 @@
  *
  * SECURITY (CF-2, binding): every colour/token attr resolves via
  * `sgs_colour_value()`; every free dimensional attr resolves via the shared
- * `sgs_css_length_sanitise()` / `sgs_css_keyword_sanitise()` regex
+ * `sgs_css_length_value()` / `sgs_css_keyword_sanitise()` regex
  * sanitisers (helpers-box.php); nothing raw is ever concatenated into the
  * scoped `<style>`. `wp_strip_all_tags()` guards the one remaining
  * `</style>`-breakout vector as a defence-in-depth backstop.
@@ -89,8 +89,8 @@ $accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_h
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-$border_radius     = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['borderRadius'] ?? '20px' ) : '20px';
-$aside_width       = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideWidth'] ?? '340px' ) : '340px';
+$border_radius     = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['borderRadius'] ?? '20px' ) : '20px';
+$aside_width       = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideWidth'] ?? '340px' ) : '340px';
 $aside_separator   = is_array( $attributes['asideSeparator'] ?? null ) ? $attributes['asideSeparator'] : array( 'style' => 'line' );
 
 $max_width_obj     = is_array( $attributes['maxWidth'] ?? null ) ? $attributes['maxWidth'] : array( 'desktop' => '1120px' );
@@ -439,7 +439,7 @@ $sep_style_val = isset( $aside_separator['style'] ) && in_array( $aside_separato
 	? (string) $aside_separator['style']
 	: 'line';
 if ( 'line' === $sep_style_val ) {
-	$sep_width_val  = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $aside_separator['width'] ?? '1px' ) : '1px';
+	$sep_width_val  = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $aside_separator['width'] ?? '1px' ) : '1px';
 	$sep_width_val  = '' !== $sep_width_val ? $sep_width_val : '1px';
 	$sep_colour_raw = isset( $aside_separator['colour'] ) ? (string) $aside_separator['colour'] : '';
 	// A 1px separator at the panel-border alpha measured invisible next to an

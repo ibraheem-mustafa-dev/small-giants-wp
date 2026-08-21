@@ -477,7 +477,7 @@ if ( $sgs_ps_is_dialog_mode ) {
 // -------------------------------------------------------------------------
 ?>
 <?php if ( $sgs_scoped_css ) : ?>
-<style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_sanitise() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
+<style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from get_block_wrapper_attributes() and esc_* functions. ?>>
 <?php if ( 'icon-expand' === $display ) : ?>

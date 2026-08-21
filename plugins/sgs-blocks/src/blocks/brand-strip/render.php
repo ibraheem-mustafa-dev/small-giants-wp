@@ -577,7 +577,7 @@ if ( ! empty( $logos ) ) {
 // ---------------------------------------------------------------------------
 // 8. Output. wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
 // leaving CSS combinators like `>` intact (contract §D). Every value reaching
-// $scoped_css is pre-sanitised (sgs_css_length_sanitise() / wp_style_engine_get_styles),
+// $scoped_css is pre-sanitised (sgs_css_length_value() / wp_style_engine_get_styles),
 // so no un-sanitised value survives here. Single set inside track — view.js
 // clones as needed for infinite scroll.
 // ---------------------------------------------------------------------------

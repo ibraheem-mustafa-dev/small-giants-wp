@@ -180,7 +180,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -193,7 +193,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 
 // Border width/style/colour — WP-native scalar (base only, no tiers; no
 // custom SGS border attrs exist on this block).
-$border_width_val = isset( $attributes['style']['border']['width'] ) ? sgs_css_length_sanitise( $attributes['style']['border']['width'] ) : '';
+$border_width_val = isset( $attributes['style']['border']['width'] ) ? sgs_css_length_value( $attributes['style']['border']['width'] ) : '';
 $border_style_val = isset( $attributes['style']['border']['style'] ) ? sgs_css_keyword_sanitise( $attributes['style']['border']['style'] ) : '';
 $border_color_val = isset( $attributes['style']['border']['color'] ) ? (string) $attributes['style']['border']['color'] : '';
 
@@ -339,7 +339,7 @@ $full_text = $prefix . $formatted_number . $suffix . ' ' . $label;
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/heading). Every value reaching $scoped_css is pre-sanitised
-	// (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles /
+	// (sgs_css_length_value() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles /
 	// sgs_colour_value / sgs_typography_css_rule), so no un-sanitised value
 	// survives here.
 	?>

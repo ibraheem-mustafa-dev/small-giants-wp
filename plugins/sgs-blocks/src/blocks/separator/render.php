@@ -58,7 +58,7 @@ $line_style          = in_array( $line_style_raw, $allowed_line_styles, true ) ?
 $width_unit_raw = $attributes['widthUnit'] ?? '%';
 $width_unit     = in_array( $width_unit_raw, array( 'px', '%' ), true ) ? $width_unit_raw : '%';
 
-$thickness_unit = sgs_css_length_sanitise( $attributes['thicknessUnit'] ?? 'px' );
+$thickness_unit = sgs_css_length_value( $attributes['thicknessUnit'] ?? 'px' );
 $thickness_unit = '' !== $thickness_unit ? $thickness_unit : 'px';
 
 $colour = $attributes['colour'] ?? '';

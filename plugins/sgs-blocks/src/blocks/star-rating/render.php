@@ -290,7 +290,7 @@ if ( $schema_enabled && $schema_item_name ) {
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches sgs/heading). Every
-	// value reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() / allowlists /
+	// value reaching $scoped_css is pre-sanitised (sgs_css_length_value() / allowlists /
 	// wp_style_engine_get_styles / sanitize_html_class), so no un-sanitised
 	// value survives here.
 	?>

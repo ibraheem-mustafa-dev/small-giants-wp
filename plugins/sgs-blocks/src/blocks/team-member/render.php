@@ -135,7 +135,7 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 // only), team-member declares FULL native __experimentalBorder support, so
 // everything lives under $attributes['style']['border'].
 $style_border       = isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ? $attributes['style']['border'] : array();
-$border_width_raw   = isset( $style_border['width'] ) ? sgs_css_length_sanitise( $style_border['width'] ) : '';
+$border_width_raw   = isset( $style_border['width'] ) ? sgs_css_length_value( $style_border['width'] ) : '';
 $border_style_raw   = isset( $style_border['style'] ) ? sgs_css_keyword_sanitise( $style_border['style'] ) : '';
 $border_color_raw   = isset( $style_border['color'] ) && is_string( $style_border['color'] ) ? $style_border['color'] : '';
 $preset_border_slug = isset( $attributes['borderColor'] ) ? sanitize_html_class( $attributes['borderColor'] ) : '';
@@ -149,7 +149,7 @@ if ( isset( $style_border['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -503,7 +503,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 
 // --- maxWidth (kept-scalar family, contract §C). ---
 if ( $max_width ) {
-	$mw_safe = sgs_css_length_sanitise( $max_width );
+	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-inline:auto;}";
 	}

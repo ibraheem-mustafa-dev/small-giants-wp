@@ -136,7 +136,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -152,10 +152,10 @@ $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null 
 // Border width/colour/style — SGS custom attrs (no WP-native per-side width
 // support; matches sgs/quote + sgs/button). Base only, no tiers.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_colour = $attributes['borderColour'] ?? '';

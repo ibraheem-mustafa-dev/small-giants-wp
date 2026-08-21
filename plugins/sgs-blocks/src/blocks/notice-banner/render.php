@@ -216,7 +216,7 @@ if ( '' !== $sgs_notice_banner_stroke_grad['defs'] ) {
 
 // --- Width (base only, kept-scalar). ---
 if ( $max_width ) {
-	$mw_safe = sgs_css_length_sanitise( $max_width );
+	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};}";
 	}
@@ -443,7 +443,7 @@ $output        = '<div ' . $wrapper_attrs . '>' . $sgs_inner_html . '</div>'; //
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/quote + sgs/heading). Every value reaching $scoped_css is
-	// pre-sanitised (sgs_css_length_sanitise() / sgs_colour_value / wp_style_engine_get_styles /
+	// pre-sanitised (sgs_css_length_value() / sgs_colour_value / wp_style_engine_get_styles /
 	// allowlisted attribute enums), so no un-sanitised value survives to here.
 	echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>

@@ -116,7 +116,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -131,10 +131,10 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 // custom OBJECT attr { top, right, bottom, left } — no WP-native border-width
 // support, no tiers (mirrors sgs/button's base-only contract).
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style  = $attributes['borderStyle'] ?? 'none';

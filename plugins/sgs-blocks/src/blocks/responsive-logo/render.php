@@ -478,7 +478,7 @@ $inner_html = ob_get_clean();
 // ── Scoped CSS output (no-inline contract §A) ────────────────────────────────
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators intact. Every value reaching $scoped_css is pre-sanitised
-// (sgs_css_length_sanitise() / wp_style_engine_get_styles), so no un-sanitised value
+// (sgs_css_length_value() / wp_style_engine_get_styles), so no un-sanitised value
 // survives here.
 
 if ( $scoped_css ) :

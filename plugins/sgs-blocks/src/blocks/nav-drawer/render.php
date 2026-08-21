@@ -307,7 +307,7 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 // existing default) emits nothing extra so an untouched drawer is unaffected.
 $sgs_nd_surface_opacity = isset( $attributes['surfaceOpacity'] ) ? (float) $attributes['surfaceOpacity'] : 1.0;
 $sgs_nd_surface_opacity = max( 0.0, min( 1.0, $sgs_nd_surface_opacity ) );
-$sgs_nd_surface_blur    = sgs_css_length_sanitise( $attributes['surfaceBlur'] ?? '' );
+$sgs_nd_surface_blur    = sgs_css_length_value( $attributes['surfaceBlur'] ?? '' );
 
 if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 	$sgs_nd_surface_decls = '';
@@ -344,17 +344,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
+		$border_args['radius'] = sgs_css_length_value( $radius_raw );
 	} elseif ( is_array( $radius_raw ) ) {
 		$radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 			if ( ! empty( $radius_raw[ $corner ] ) ) {
-				$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
+				$radius_clean[ $corner ] = sgs_css_length_value( $radius_raw[ $corner ] );
 			}
 		}
 		if ( ! empty( $radius_clean ) ) {

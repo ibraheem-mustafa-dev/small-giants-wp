@@ -263,17 +263,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$gr_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$gr_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$gr_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$gr_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $gr_radius_raw ) && '' !== $gr_radius_raw ) {
-		$gr_border_args['radius'] = sgs_css_length_sanitise( $gr_radius_raw );
+		$gr_border_args['radius'] = sgs_css_length_value( $gr_radius_raw );
 	} elseif ( is_array( $gr_radius_raw ) ) {
 		$gr_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gr_corner ) {
 			if ( ! empty( $gr_radius_raw[ $gr_corner ] ) ) {
-				$gr_radius_clean[ $gr_corner ] = sgs_css_length_sanitise( $gr_radius_raw[ $gr_corner ] );
+				$gr_radius_clean[ $gr_corner ] = sgs_css_length_value( $gr_radius_raw[ $gr_corner ] );
 			}
 		}
 		if ( ! empty( $gr_radius_clean ) ) {
@@ -650,7 +650,7 @@ $inner_html = ob_get_clean();
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
 // §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote). Every value
-// reaching $gr_responsive_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise()
+// reaching $gr_responsive_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise()
 // / wp_style_engine_get_styles), so no un-sanitised value survives to here.
 if ( $gr_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gr_responsive_css built from pre-sanitised values only.

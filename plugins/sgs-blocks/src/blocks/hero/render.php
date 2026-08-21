@@ -135,9 +135,9 @@ $image_object_position_tablet = $attributes['imageObjectPositionTablet'] ?? '';
 // in block.json (WP silently discards any attr the block.json doesn't
 // declare, D338). sgs_responsive_normalise_object() is the canonical reader.
 $min_height_obj    = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
-$min_height        = sgs_css_length_sanitise( $min_height_obj['desktop'] ?? '' );
-$min_height_tablet = sgs_css_length_sanitise( $min_height_obj['tablet'] ?? '' );
-$min_height_mobile = sgs_css_length_sanitise( $min_height_obj['mobile'] ?? '360px' );
+$min_height        = sgs_css_length_value( $min_height_obj['desktop'] ?? '' );
+$min_height_tablet = sgs_css_length_value( $min_height_obj['tablet'] ?? '' );
+$min_height_mobile = sgs_css_length_value( $min_height_obj['mobile'] ?? '360px' );
 
 // Sub-headline / headline / label font-size are owned by the child
 // sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
@@ -192,7 +192,7 @@ $image_object_position = $attributes['imageObjectPosition'] ?? 'center center';
 $image_width        = $attributes['imageWidth'] ?? null;
 $image_width_tablet = $attributes['imageWidthTablet'] ?? null;
 $image_width_mobile = $attributes['imageWidthMobile'] ?? null;
-$image_width_unit   = sgs_css_length_sanitise( $attributes['imageWidthUnit'] ?? '%' );
+$image_width_unit   = sgs_css_length_value( $attributes['imageWidthUnit'] ?? '%' );
 
 // imageHeight is a TIER OBJECT (Spec 35): one attr carrying all three tiers,
 // replacing the imageHeight/imageHeightTablet/imageHeightMobile trio 2026-08-10.
@@ -203,7 +203,7 @@ $image_height_obj    = sgs_responsive_normalise_object( $attributes['imageHeight
 $image_height        = $image_height_obj['desktop'] ?? null;
 $image_height_tablet = $image_height_obj['tablet'] ?? null;
 $image_height_mobile = $image_height_obj['mobile'] ?? null;
-$image_height_unit   = sgs_css_length_sanitise( $attributes['imageHeightUnit'] ?? 'px' );
+$image_height_unit   = sgs_css_length_value( $attributes['imageHeightUnit'] ?? 'px' );
 
 // Image border radius — box-object family (contract §B): base + tablet +
 // mobile, each { topLeft, topRight, bottomLeft, bottomRight }, string values
@@ -416,7 +416,7 @@ if ( $is_split ) {
 	} elseif ( 'wide' === $cw_raw ) {
 		$band = 'var(--wp--style--global--wide-size)';
 	} elseif ( '' !== $cw_raw && 'full' !== $cw_raw ) {
-		$band = sgs_css_length_sanitise( $cw_raw );
+		$band = sgs_css_length_value( $cw_raw );
 	}
 	if ( '' !== $band ) {
 		$responsive_css .= '.' . $uid . '{padding-inline:max(var(--wp--style--root--padding-right,24px),calc((100% - ' . $band . ') / 2))}';
@@ -798,17 +798,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
+		$border_args['radius'] = sgs_css_length_value( $radius_raw );
 	} elseif ( is_array( $radius_raw ) ) {
 		$radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 			if ( ! empty( $radius_raw[ $corner ] ) ) {
-				$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
+				$radius_clean[ $corner ] = sgs_css_length_value( $radius_raw[ $corner ] );
 			}
 		}
 		if ( ! empty( $radius_clean ) ) {
@@ -840,7 +840,7 @@ if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attrib
 	$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
 }
 if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-	$typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
+	$typography_args['letterSpacing'] = sgs_css_length_value( $attributes['style']['typography']['letterSpacing'] );
 }
 if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
 	$typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
@@ -874,7 +874,7 @@ if ( isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], ar
 // mask ring paints its own ring using $width below, independent of them. ---
 if ( '' !== $border_colour_gradient ) {
 	$native_border_width_val = isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width']
-		? sgs_css_length_sanitise( $attributes['style']['border']['width'] )
+		? sgs_css_length_value( $attributes['style']['border']['width'] )
 		: '';
 	$responsive_css         .= sgs_border_gradient_css(
 		$root_sel,
@@ -1214,7 +1214,7 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
 // §D — matches SGS_Container_Wrapper + sgs/quote + sgs/button). Every value
-// reaching $responsive_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise()
+// reaching $responsive_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise()
 // / $sgs_css_object_position / sgs_box_object_shorthand() / $sgs_radius_shorthand /
 // absint / sgs_colour_value / wp_style_engine_get_styles), so no un-sanitised
 // value survives to here.

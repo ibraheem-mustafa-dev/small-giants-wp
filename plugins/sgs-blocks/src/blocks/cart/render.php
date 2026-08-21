@@ -51,7 +51,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // as CLOSURES on local variables (never `function foo(){}` at file scope:
 // WP `require`s this file fresh per render, and a top-level function would
 // fatal with "Cannot redeclare" the moment two sgs/cart instances render on
-// one page) — matches the sgs_css_length_sanitise() pattern established below.
+// one page) — matches the sgs_css_length_value() pattern established below.
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32 FR-32-4, D345): margin is a WP-native

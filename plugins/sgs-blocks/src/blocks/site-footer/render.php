@@ -73,17 +73,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$sf_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$sf_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$sf_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$sf_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $sf_radius_raw ) && '' !== $sf_radius_raw ) {
-		$sf_border_args['radius'] = sgs_css_length_sanitise( $sf_radius_raw );
+		$sf_border_args['radius'] = sgs_css_length_value( $sf_radius_raw );
 	} elseif ( is_array( $sf_radius_raw ) ) {
 		$sf_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sf_corner ) {
 			if ( ! empty( $sf_radius_raw[ $sf_corner ] ) ) {
-				$sf_radius_clean[ $sf_corner ] = sgs_css_length_sanitise( $sf_radius_raw[ $sf_corner ] );
+				$sf_radius_clean[ $sf_corner ] = sgs_css_length_value( $sf_radius_raw[ $sf_corner ] );
 			}
 		}
 		if ( ! empty( $sf_radius_clean ) ) {

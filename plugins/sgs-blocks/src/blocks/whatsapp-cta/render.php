@@ -93,7 +93,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -288,7 +288,7 @@ $whatsapp_svg .= '</svg>';
 if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (matches sgs/heading + SGS_Container_Wrapper).
-	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise(),
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_value(),
 	// allowlists/enums, sgs_colour_value(), wp_style_engine_get_styles(),
 	// sgs_typography_css_rule()), so no un-sanitised value survives here.
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>

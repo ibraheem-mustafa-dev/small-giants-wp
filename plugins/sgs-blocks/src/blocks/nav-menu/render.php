@@ -1123,7 +1123,7 @@ $burger_hover_slug = isset( $attributes['burgerHoverColour'] ) ? (string) $attri
 if ( '' !== $burger_hover_slug ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__burger:hover,' . $uid_sel . ' .sgs-nav-menu__burger:focus-visible{background-color:' . sgs_colour_value( $burger_hover_slug ) . ';}';
 }
-$burger_size = sgs_css_length_sanitise( $attributes['burgerSize'] ?? '44px' );
+$burger_size = sgs_css_length_value( $attributes['burgerSize'] ?? '44px' );
 if ( '' !== $burger_size ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__burger{width:' . $burger_size . ';height:' . $burger_size . ';min-width:' . $burger_size . ';min-height:' . $burger_size . ';}';
 }
@@ -1219,8 +1219,8 @@ foreach (
 		'--sgs-nm-submenu-colour'    => '' !== (string) ( $attributes['submenuColour'] ?? '' )
 			? sgs_colour_value( (string) $attributes['submenuColour'] )
 			: '',
-		'--sgs-nm-submenu-min-width' => sgs_css_length_sanitise( $attributes['submenuMinWidth'] ?? '' ),
-		'--sgs-nm-submenu-radius'    => sgs_css_length_sanitise( $attributes['submenuRadius'] ?? '' ),
+		'--sgs-nm-submenu-min-width' => sgs_css_length_value( $attributes['submenuMinWidth'] ?? '' ),
+		'--sgs-nm-submenu-radius'    => sgs_css_length_value( $attributes['submenuRadius'] ?? '' ),
 	) as $sgs_nm_var => $sgs_nm_val
 ) {
 	if ( '' !== $sgs_nm_val ) {
@@ -1626,7 +1626,7 @@ foreach ( array(
 // exists at any width — and a flex gap between one item paints nothing. The
 // control has therefore been inert for its whole life while looking wired: it
 // had a label, a value and a reset, and changed the page not at all.
-$nav_gap = isset( $attributes['gap'] ) ? sgs_css_length_sanitise( (string) $attributes['gap'] ) : '';
+$nav_gap = isset( $attributes['gap'] ) ? sgs_css_length_value( (string) $attributes['gap'] ) : '';
 if ( '' !== $nav_gap ) {
 	$root_box_css .= $uid_sel . ' .sgs-nav-menu__bar{gap:' . $nav_gap . ';}';
 }

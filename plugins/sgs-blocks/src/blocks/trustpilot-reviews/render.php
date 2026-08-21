@@ -259,17 +259,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$tp_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$tp_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$tp_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$tp_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $tp_radius_raw ) && '' !== $tp_radius_raw ) {
-		$tp_border_args['radius'] = sgs_css_length_sanitise( $tp_radius_raw );
+		$tp_border_args['radius'] = sgs_css_length_value( $tp_radius_raw );
 	} elseif ( is_array( $tp_radius_raw ) ) {
 		$tp_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $tp_corner ) {
 			if ( ! empty( $tp_radius_raw[ $tp_corner ] ) ) {
-				$tp_radius_clean[ $tp_corner ] = sgs_css_length_sanitise( $tp_radius_raw[ $tp_corner ] );
+				$tp_radius_clean[ $tp_corner ] = sgs_css_length_value( $tp_radius_raw[ $tp_corner ] );
 			}
 		}
 		if ( ! empty( $tp_radius_clean ) ) {
@@ -607,7 +607,7 @@ if ( $show_schema && ! empty( $reviews ) ) {
 // Output: schema JSON-LD, then this block's own scoped <style> (no-inline
 // contract §A/§D — wp_strip_all_tags, NOT esc_html, blocks a </style>
 // breakout while leaving CSS combinators intact; every value reaching
-// $tp_responsive_css is pre-sanitised via sgs_css_length_sanitise() / sgs_css_keyword_sanitise()
+// $tp_responsive_css is pre-sanitised via sgs_css_length_value() / sgs_css_keyword_sanitise()
 // / wp_style_engine_get_styles), then the outer wrapper via the shared helper.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 // ───────────────────────────────────────────────────────────────────────────

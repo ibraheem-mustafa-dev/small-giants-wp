@@ -119,10 +119,10 @@ $max_width     = $attributes['maxWidth'] ?? '';
 // Root border — custom attrs (mirrors sgs/quote: radius stays WP-native,
 // width/style/colour are SGS custom so width can be a 4-side object).
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width     = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
@@ -231,7 +231,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -295,13 +295,13 @@ if ( $pill_sel_border_col ) {
 if ( '' !== $pill_border_radius ) {
 	// CSS-length string — emit the value directly (sanitised), preserving an
 	// explicit "0"/"0px". '' = unset → the CSS default var governs.
-	$pbr_safe = sgs_css_length_sanitise( $pill_border_radius );
+	$pbr_safe = sgs_css_length_value( $pill_border_radius );
 	if ( '' !== $pbr_safe ) {
 		$var_decls[] = '--sgs-op-pill-radius:' . $pbr_safe;
 	}
 }
 if ( '' !== $pill_sel_radius_raw ) {
-	$psr_safe = sgs_css_length_sanitise( $pill_sel_radius_raw );
+	$psr_safe = sgs_css_length_value( $pill_sel_radius_raw );
 	if ( '' !== $psr_safe ) {
 		$var_decls[] = '--sgs-op-sel-pill-radius:' . $psr_safe;
 	}
@@ -340,14 +340,14 @@ if ( 'none' !== $border_style ) {
 	}
 }
 if ( $max_width ) {
-	$mw_safe = sgs_css_length_sanitise( $max_width );
+	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$root_decls[] = 'max-width:' . $mw_safe;
 		$root_decls[] = 'margin-inline:auto';
 	}
 }
 if ( $content_width ) {
-	$cw_safe = sgs_css_length_sanitise( $content_width );
+	$cw_safe = sgs_css_length_value( $content_width );
 	if ( '' !== $cw_safe ) {
 		$root_decls[] = 'width:' . $cw_safe;
 	}
@@ -494,7 +494,7 @@ if ( '' !== $label_colour ) {
 	$legend_decls[] = 'color:' . sgs_colour_value( $label_colour );
 }
 if ( '' !== $label_margin_bottom ) {
-	$mb_safe = sgs_css_length_sanitise( $label_margin_bottom );
+	$mb_safe = sgs_css_length_value( $label_margin_bottom );
 	if ( '' !== $mb_safe ) {
 		$legend_decls[] = 'margin-bottom:' . $mb_safe;
 	}
@@ -722,7 +722,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (matches SGS_Container_Wrapper + sgs/quote).
-	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() /
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_value() /
 	// sgs_css_keyword_sanitise() / sgs_colour_value / wp_style_engine_get_styles /
 	// sgs_typography_css_rule), so no un-sanitised value survives to here.
 	echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

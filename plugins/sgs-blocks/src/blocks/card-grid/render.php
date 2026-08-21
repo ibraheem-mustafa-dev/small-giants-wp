@@ -132,17 +132,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$cg_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$cg_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$cg_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$cg_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $cg_radius_raw ) && '' !== $cg_radius_raw ) {
-		$cg_border_args['radius'] = sgs_css_length_sanitise( $cg_radius_raw );
+		$cg_border_args['radius'] = sgs_css_length_value( $cg_radius_raw );
 	} elseif ( is_array( $cg_radius_raw ) ) {
 		$cg_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $cg_corner ) {
 			if ( ! empty( $cg_radius_raw[ $cg_corner ] ) ) {
-				$cg_radius_clean[ $cg_corner ] = sgs_css_length_sanitise( $cg_radius_raw[ $cg_corner ] );
+				$cg_radius_clean[ $cg_corner ] = sgs_css_length_value( $cg_radius_raw[ $cg_corner ] );
 			}
 		}
 		if ( ! empty( $cg_radius_clean ) ) {
@@ -179,7 +179,7 @@ if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attrib
 	$cg_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
 }
 if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-	$cg_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
+	$cg_typography_args['letterSpacing'] = sgs_css_length_value( $attributes['style']['typography']['letterSpacing'] );
 }
 if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
 	$cg_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
@@ -231,12 +231,12 @@ if ( is_array( $card_border_width ) && array_filter( $card_border_width, static 
 	$card_border_width_sides = array();
 	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 		$side_value                = $card_border_width[ $side ] ?? '';
-		$card_border_width_sides[] = '' !== $side_value ? sgs_css_length_sanitise( $side_value ) : '0';
+		$card_border_width_sides[] = '' !== $side_value ? sgs_css_length_value( $side_value ) : '0';
 	}
 	$card_state_vars[] = '--sgs-card-border-width:' . implode( ' ', $card_border_width_sides ) . ';';
 }
 if ( '' !== $card_radius ) {
-	$card_state_vars[] = '--sgs-card-radius:' . sgs_css_length_sanitise( $card_radius ) . ';';
+	$card_state_vars[] = '--sgs-card-radius:' . sgs_css_length_value( $card_radius ) . ';';
 }
 if ( '' !== $card_shadow ) {
 	$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour ) . ';';
@@ -330,7 +330,7 @@ if ( '' !== $cg_preset_bg_slug ) {
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators like `>` intact (contract §D — matches SGS_Container_Wrapper +
 // sgs/hero). Every value reaching $card_grid_native_css is pre-sanitised
-// (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so no
+// (sgs_css_length_value() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so no
 // un-sanitised value survives to here.
 $card_grid_native_style_tag = $card_grid_native_css ? '<style id="' . esc_attr( $uid ) . '-native">' . wp_strip_all_tags( $card_grid_native_css ) . '</style>' : '';
 

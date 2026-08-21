@@ -129,7 +129,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -172,7 +172,7 @@ if ( $style_color_bg ) {
 }
 if ( 'none' !== $border_style ) {
 	if ( $border_width_raw ) {
-		$wrapper_decls[] = 'border-width:' . sgs_css_length_sanitise( $border_width_raw );
+		$wrapper_decls[] = 'border-width:' . sgs_css_length_value( $border_width_raw );
 	}
 	$wrapper_decls[] = 'border-style:' . $border_style;
 	if ( $border_colour ) {
@@ -183,7 +183,7 @@ if ( $box_shadow ) {
 	$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 }
 if ( $max_width ) {
-	$mw_safe = sgs_css_length_sanitise( $max_width );
+	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$wrapper_decls[] = 'max-width:' . $mw_safe;
 		$wrapper_decls[] = 'margin-inline:auto';
@@ -208,11 +208,11 @@ if ( ! empty( $base_style_engine_args ) ) {
 }
 
 // Max-width tiers.
-$mwt_safe = $max_width_tablet ? sgs_css_length_sanitise( $max_width_tablet ) : '';
+$mwt_safe = $max_width_tablet ? sgs_css_length_value( $max_width_tablet ) : '';
 if ( '' !== $mwt_safe ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{max-width:{$mwt_safe};}}";
 }
-$mwm_safe = $max_width_mobile ? sgs_css_length_sanitise( $max_width_mobile ) : '';
+$mwm_safe = $max_width_mobile ? sgs_css_length_value( $max_width_mobile ) : '';
 if ( '' !== $mwm_safe ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{max-width:{$mwm_safe};}}";
 }

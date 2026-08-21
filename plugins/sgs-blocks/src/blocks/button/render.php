@@ -176,7 +176,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -284,10 +284,10 @@ $text_decoration_hover = isset( $attributes['textDecorationHover'] ) ? sanitize_
 // border-width support, no tiers (matches the pre-existing base-only contract).
 $border_style     = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
 $border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
-$border_width_rgt = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
-$border_width_bot = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
-$border_width_lft = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Box shadow — SHAPE-only string attrs (D621/D622 colour-architecture
@@ -929,7 +929,7 @@ if ( $scoped_css_parts ) {
 	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper
 	// pattern: it blocks a </style> breakout while leaving CSS combinators like
 	// `>` intact (esc_html would turn `>` into &gt; and break any descendant rule).
-	// Every value reaching $raw_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise()
+	// Every value reaching $raw_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise()
 	// / wp_style_engine_get_styles), so no un-sanitised value survives to here.
 	echo '<style>' . wp_strip_all_tags( $raw_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>
 }

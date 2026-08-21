@@ -509,7 +509,7 @@ $scoped_css[] = "{$root_sel} .sgs-social-icons__item img{width:{$icon_size}px;he
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D). Every value reaching
-	// $scoped_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() /
+	// $scoped_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise() /
 	// allowlists / wp_style_engine_get_styles / sgs_colour_value), so no
 	// un-sanitised value survives here.
 	?>

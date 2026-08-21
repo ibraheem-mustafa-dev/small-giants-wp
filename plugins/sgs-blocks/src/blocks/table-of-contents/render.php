@@ -354,7 +354,7 @@ $open_attr = $default_collapsed ? '' : ' open';
 if ( $scoped_css ) :
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
 	// leaving CSS combinators like `>` intact (contract §D). Every value
-	// reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() / esc_attr /
+	// reaching $scoped_css is pre-sanitised (sgs_css_length_value() / esc_attr /
 	// sgs_colour_value / wp_style_engine_get_styles), so no un-sanitised
 	// value survives here.
 	?>

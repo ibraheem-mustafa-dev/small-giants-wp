@@ -290,17 +290,17 @@ if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['sty
 	$gallery_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 }
 if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$gallery_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+	$gallery_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$gallery_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $gallery_radius_raw ) && '' !== $gallery_radius_raw ) {
-		$gallery_border_args['radius'] = sgs_css_length_sanitise( $gallery_radius_raw );
+		$gallery_border_args['radius'] = sgs_css_length_value( $gallery_radius_raw );
 	} elseif ( is_array( $gallery_radius_raw ) ) {
 		$gallery_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gallery_corner ) {
 			if ( ! empty( $gallery_radius_raw[ $gallery_corner ] ) ) {
-				$gallery_radius_clean[ $gallery_corner ] = sgs_css_length_sanitise( $gallery_radius_raw[ $gallery_corner ] );
+				$gallery_radius_clean[ $gallery_corner ] = sgs_css_length_value( $gallery_radius_raw[ $gallery_corner ] );
 			}
 		}
 		if ( ! empty( $gallery_radius_clean ) ) {
@@ -643,7 +643,7 @@ $inner_html = ob_get_clean();
 // Output the gallery's own scoped <style> (color/border no-inline re-emit).
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 // CSS combinators like `>` intact. Every value reaching $gallery_responsive_css
-// is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles),
+// is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles),
 // so no un-sanitised value survives to here.
 if ( $gallery_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gallery_responsive_css built from pre-sanitised values only.

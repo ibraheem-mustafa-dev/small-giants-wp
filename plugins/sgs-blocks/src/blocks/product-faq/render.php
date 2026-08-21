@@ -264,7 +264,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 
 // --- Width (base only — outer maxWidth). ---
 if ( $max_width ) {
-	$mw_safe = sgs_css_length_sanitise( $max_width );
+	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-inline:auto;}";
 	}
@@ -346,7 +346,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 // 8. Render. wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
 // leaving CSS combinators like `>` intact (contract §D — matches
 // SGS_Container_Wrapper + sgs/quote + sgs/brand-strip). Every value reaching
-// $scoped_css is pre-sanitised (sgs_css_length_sanitise() / wp_style_engine_get_styles),
+// $scoped_css is pre-sanitised (sgs_css_length_value() / wp_style_engine_get_styles),
 // so no un-sanitised value survives to here.
 // ---------------------------------------------------------------------------
 

@@ -10,6 +10,14 @@
  * @package SGS\Blocks
  */
 
+// This file's helpers delegate to sgs_css_length_value() (Spec 32 §6.1 (a2)).
+// Require it HERE, not just via render-helpers.php, because a render.php may
+// require_once this file directly without ever loading render-helpers.php —
+// without this line those pages would fatal on "Call to undefined function
+// sgs_css_length_value()". Both files guard with function_exists(), so load
+// order does not matter — only that both load before either is CALLED.
+require_once __DIR__ . '/helpers-css-safety.php';
+
 /**
  * Determine whether an attribute value is meaningfully set.
  *
@@ -1076,7 +1084,7 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
 		return '';
 	}
 
-	$width = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $width ) : $width;
+	$width = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $width ) : $width;
 	if ( '' === $width ) {
 		$width = '2px';
 	}
