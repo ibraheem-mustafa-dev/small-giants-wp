@@ -172,7 +172,7 @@
 		},
 		"tagName": {
 			"type": "string",
-			"enum": [ "div", "section", "article", "aside", "nav", "header", "footer", "figure" ],
+			"enum": [ "div", "section", "article", "aside", "nav", "header", "footer", "figure", "main" ],
 			"default": "section"
 		},
 		"ariaLabel": {

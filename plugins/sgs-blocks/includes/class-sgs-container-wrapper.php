@@ -669,12 +669,29 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// carry a semantic tag in every page context (WCAG 2.2 landmark navigation
 			// + SEO).
 			//
-			// 'main' is deliberately NOT in this list. A page has exactly one <main>
-			// landmark (no nesting exception exists for it, unlike header/footer/aside
-			// — confirmed against HTML-AAM); offering it on a repeatable layout block
-			// let a client produce 2-3 <main> landmarks on one page. Any stored
-			// tagName:'main' from before this change falls through to the 'section'
-			// default below, same as any other invalid value.
+			// 'main' IS allowed, but only ONCE per request — see the guard below.
+			//
+			// HISTORY, because this reverses an earlier decision rather than ignoring
+			// it: 'main' was previously removed from this list outright. The reasoning
+			// was sound as far as it went — a page has exactly one <main> landmark (no
+			// nesting exception exists for it, unlike header/footer/aside, confirmed
+			// against HTML-AAM), and offering it on a repeatable layout block let a
+			// client produce 2-3 <main> landmarks on one page.
+			//
+			// But removing it traded one defect for a worse one. Every one of the
+			// theme's 9 templates authors tagName:'main' on its outermost content
+			// container, and every one silently fell through to 'section' — measured
+			// live 2026-08-21: ZERO <main> and ZERO role="main" on the home, shop and
+			// about pages. So the site shipped no main landmark at all, on any page,
+			// for any client. That breaks the target of every "skip to content" link
+			// and removes the landmark screen readers jump to by shortcut key (WCAG
+			// 2.4.1 Bypass Blocks).
+			//
+			// The fix keeps BOTH properties: the first container claiming 'main' in a
+			// request renders <main>; any later one falls back to 'section'. A client
+			// duplicating a container therefore cannot produce a second <main> — the
+			// original footgun stays closed — while the template's single intentional
+			// one now works.
 			$allowed_tags = array(
 				'section',
 				'div',
@@ -686,9 +703,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'figure',
 				'details',
 				'fieldset',
+				'main',
 			);
 			if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 				$html_tag = 'section';
+			}
+
+			// Singleton guard for the document's one <main>. Static, so it resets
+			// naturally per request. Deliberately NOT a "did the template ask first"
+			// check: whichever container renders first wins, which for a block theme
+			// is the outermost one the template authored.
+			if ( 'main' === $html_tag ) {
+				static $sgs_main_landmark_claimed = false;
+
+				if ( $sgs_main_landmark_claimed ) {
+					$html_tag = 'section';
+				} else {
+					$sgs_main_landmark_claimed = true;
+				}
 			}
 
 			// WP-native align — breakout control (v0.4: widthMode retired; align replaces

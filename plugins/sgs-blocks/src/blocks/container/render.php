@@ -195,8 +195,10 @@ if ( ! empty( $sgs_container_supports_classes ) ) {
 	$sgs_container_wrapper_opts['extra_classes'] = $sgs_container_supports_classes;
 }
 
-// Landmark label (nav/aside only — main was removed from the tagName allowlist
-// entirely; header/footer lose their landmark role once nested so need no label).
+// Landmark label (nav/aside only). `main` is allowed again as of 2026-08-21 but
+// deliberately takes NO label: a document has exactly one <main>, so there is
+// nothing for a label to disambiguate it from — unlike nav/aside, which repeat.
+// header/footer lose their landmark role once nested, so they need none either.
 if ( in_array( $html_tag, array( 'nav', 'aside' ), true ) && ! empty( $attributes['ariaLabel'] ) ) {
 	$sgs_container_wrapper_opts['extra_attrs'] = array(
 		'aria-label' => sanitize_text_field( $attributes['ariaLabel'] ),
