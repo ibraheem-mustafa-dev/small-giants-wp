@@ -143,8 +143,19 @@ $hover_decls = array();
 if ( $hover_background_colour ) {
 	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
 }
-if ( $hover_text_colour ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
+// Hover text routed through the SHARED resolver so a gradient sibling WINS over the flat
+// value, and the background-clip:text form comes from the same emitter sgs/hero and
+// sgs/container use. Was a flat-only sgs_colour_value() call, so a hover text gradient
+// could never have painted.
+$cta_hover_text_effective = sgs_resolve_text_colour_or_gradient(
+	(string) $hover_text_colour,
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+if ( '' !== $cta_hover_text_effective ) {
+	$cta_hover_text_decl = sgs_text_colour_decl( $cta_hover_text_effective );
+	if ( '' !== $cta_hover_text_decl ) {
+		$hover_decls[] = $cta_hover_text_decl;
+	}
 }
 if ( $hover_border_colour ) {
 	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
@@ -179,8 +190,23 @@ if ( '' !== $hover_border_gradient ) {
 // Hover colour shifts (background/text/border) — per-instance scoped rule,
 // no resting-state declarations (empty array — the base colours are handled
 // elsewhere), :hover/:focus-visible only. No-op when no hover colour is set.
-if ( $hover_decls ) {
-	$responsive_css .= sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
+// Resting text GRADIENT only. The flat resting colour keeps its existing preset-class
+// path (has-text-color + has-{slug}-color, further down); emitting the flat case here
+// as well would duplicate the declaration. Same split sgs/container uses.
+$cta_resting_decls         = array();
+$cta_resting_text_gradient = (string) ( $attributes['textColourGradient'] ?? '' );
+if ( '' !== $cta_resting_text_gradient ) {
+	$cta_resting_text_effective = sgs_resolve_text_colour_or_gradient( '', $cta_resting_text_gradient );
+	if ( '' !== $cta_resting_text_effective ) {
+		$cta_resting_text_decl = sgs_text_colour_decl( $cta_resting_text_effective );
+		if ( '' !== $cta_resting_text_decl ) {
+			$cta_resting_decls[] = $cta_resting_text_decl;
+		}
+	}
+}
+
+if ( $hover_decls || $cta_resting_decls ) {
+	$responsive_css .= sgs_emit_state_colour_css( $root_sel, $cta_resting_decls, $hover_decls );
 }
 
 // Class marker replaces the old [style*="background"] attribute sniff

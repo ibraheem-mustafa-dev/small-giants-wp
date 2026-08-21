@@ -240,6 +240,38 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				group="styles" block below so it renders first in the Styles tab. */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						/* Root TEXT colour. `textColour` and `textColourHover` already EXISTED and were
+						   already rendered, but had NO editor control anywhere on this block — a client
+						   could never reach either. This row exposes them and adds the gradient siblings.
+						   Per D713 a section-class block's root text colour is the INHERITABLE cascade
+						   default for whatever the client nests inside; a child's own control overrides
+						   it for one instance. `supports.color.text` was switched OFF in the same change
+						   so WordPress's native colour UI does not compete with this row (rule 31). */
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: attributes.textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								gradientValue: attributes.textColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
 					attributes.shadow && {
 						key: 'shadow',
 						label: __( 'Shadow colour', 'sgs-blocks' ),

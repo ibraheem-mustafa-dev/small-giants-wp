@@ -93,9 +93,26 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 
 	return (
 		<PanelBody title={ __( 'Background', 'sgs-blocks' ) } initialOpen={ false }>
+			{ /* Help text rewritten 2026-08-21. The previous wording made three claims that
+			   are all false under the two-layer model (D2 revised): it called this colour
+			   "the background" (it is the OVERLAY), said "there is no separate overlay to
+			   set up" (there is — sgs/container gained a real backgroundColour base layer in
+			   1905257e), and told clients to LOWER ITS ALPHA to blend over media.
+			   That last one was the harmful one: DesignTokenPicker stores a palette SLUG only
+			   when the picked colour is string-equal to a palette entry, so changing the alpha
+			   breaks the match and stores a RAW HEX instead — silently unlinking the client's
+			   brand token, so a later rebrand leaves that colour behind. The shipped help text
+			   was instructing people to do it.
+			   ⛔ Deliberately NOT renamed to "Background colour": that rename came from D2b,
+			   which the design doc marks SUPERSEDED. Under D2 revised the overlay names are
+			   correct, and renaming would leave TWO controls both labelled "Background
+			   colour" — the real duplicate.
+			   The blend mechanism this text used to describe is step 4 (backgroundOverlayOpacity,
+			   a real 0-100 attribute applied in CSS). Until that ships, this text promises
+			   nothing that does not exist. */ }
 			<p className="components-base-control__help">
 				{ __(
-					'This colour is the background. With an image or video behind it, lower its alpha to let the media show through — there is no separate overlay to set up.',
+					'Sits OVER any image or video behind it — a tint or scrim. For a plain background with no media, use the Background colour setting instead.',
 					'sgs-blocks'
 				) }
 			</p>
