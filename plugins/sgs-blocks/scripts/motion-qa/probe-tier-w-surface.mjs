@@ -118,121 +118,57 @@ async function settle( page ) {
 }
 
 /**
- * Read a downsampled grid of pixels from a WebGL canvas. The context has no
- * `preserveDrawingBuffer`, so pixels are copied out via `drawImage` into a
- * throwaway 2D canvas rather than read directly off the WebGL surface.
+ * Screenshot a single DOM element as a PNG buffer, for byte-level visual
+ * comparison. This replaces WebGL canvas-readback (`drawImage` off the
+ * canvas into a 2D scratch canvas + `getImageData`) for arms 1b/2/6: the
+ * production renderer creates its WebGL2 context WITHOUT
+ * `preserveDrawingBuffer` (correct for production — it saves memory and
+ * bandwidth on every client page), so after the browser composites the
+ * frame the drawing buffer is cleared and any readback yields transparent
+ * black even though the canvas was genuinely painted. An element screenshot
+ * is captured by the BROWSER'S COMPOSITOR — the same pixels a visitor sees —
+ * so it has no such blind spot.
+ *
+ * PNG encoding is deterministic for identical pixels within one browser
+ * build, which is what the same-element-twice stability controls below
+ * rely on. It is NOT guaranteed stable across animation, lazy-loading or
+ * layout shift, so callers settle + scroll into view first.
  *
  * @param {import('playwright').Page} page
- * @param {string}                    selector CSS selector for the canvas.
- * @param {number}                    grid     Points per axis (grid×grid samples).
- * @return {Promise<number[][]|null>} `[r,g,b,a]` tuples, or null if absent/empty.
+ * @param {string}                    selector CSS selector for the element to screenshot.
+ * @return {Promise<Buffer|null>} PNG buffer, or null if the element is absent or unshootable.
  */
-async function sampleCanvasPixels( page, selector, grid = 6 ) {
-	return page.evaluate(
-		( { selector: sel, grid: g } ) => {
-			const canvas = document.querySelector( sel );
-			if ( ! canvas || ! canvas.width || ! canvas.height ) {
-				return null;
-			}
-			const scratch = document.createElement( 'canvas' );
-			scratch.width = canvas.width;
-			scratch.height = canvas.height;
-			const ctx = scratch.getContext( '2d' );
-			ctx.drawImage( canvas, 0, 0 );
-			const { data } = ctx.getImageData( 0, 0, canvas.width, canvas.height );
-			const points = [];
-			for ( let gy = 0; gy < g; gy++ ) {
-				for ( let gx = 0; gx < g; gx++ ) {
-					const x = Math.floor( ( ( gx + 0.5 ) * canvas.width ) / g );
-					const y = Math.floor( ( ( gy + 0.5 ) * canvas.height ) / g );
-					const idx = ( y * canvas.width + x ) * 4;
-					points.push( [ data[ idx ], data[ idx + 1 ], data[ idx + 2 ], data[ idx + 3 ] ] );
-				}
-			}
-			return points;
-		},
-		{ selector, grid }
-	);
+async function screenshotElement( page, selector ) {
+	const locator = page.locator( selector ).first();
+	if ( ( await locator.count() ) === 0 ) {
+		return null;
+	}
+	try {
+		await locator.scrollIntoViewIfNeeded();
+	} catch ( error ) {
+		// Non-fatal — element may already be in view or unscrollable; the
+		// screenshot attempt below is the real test of shootability.
+	}
+	await page.waitForTimeout( 600 );
+	try {
+		return await locator.screenshot();
+	} catch ( error ) {
+		return null;
+	}
 }
 
 /**
- * Same grid-sampling but off a rendered `<img>` (the untreated control).
+ * Byte-level equality check for two PNG buffers.
  *
- * @param {import('playwright').Page} page
- * @param {string}                    selector CSS selector for the image.
- * @param {number}                    grid     Points per axis.
- * @return {Promise<number[][]|null>}
- */
-async function sampleImagePixels( page, selector, grid = 6 ) {
-	return page.evaluate(
-		( { selector: sel, grid: g } ) => {
-			const img = document.querySelector( sel );
-			if ( ! img || ! img.naturalWidth || ! img.naturalHeight ) {
-				return null;
-			}
-			const scratch = document.createElement( 'canvas' );
-			scratch.width = img.naturalWidth;
-			scratch.height = img.naturalHeight;
-			const ctx = scratch.getContext( '2d' );
-			ctx.drawImage( img, 0, 0 );
-			const { data } = ctx.getImageData( 0, 0, scratch.width, scratch.height );
-			const points = [];
-			for ( let gy = 0; gy < g; gy++ ) {
-				for ( let gx = 0; gx < g; gx++ ) {
-					const x = Math.floor( ( ( gx + 0.5 ) * scratch.width ) / g );
-					const y = Math.floor( ( ( gy + 0.5 ) * scratch.height ) / g );
-					const idx = ( y * scratch.width + x ) * 4;
-					points.push( [ data[ idx ], data[ idx + 1 ], data[ idx + 2 ], data[ idx + 3 ] ] );
-				}
-			}
-			return points;
-		},
-		{ selector, grid }
-	);
-}
-
-/**
- * Is this grid of points NON-uniform (more than one distinct pixel value)?
- * A canvas/image that drew nothing collapses to a single repeated value.
- *
- * @param {number[][]} points
+ * @param {Buffer|null} a
+ * @param {Buffer|null} b
  * @return {boolean}
  */
-function isNonUniform( points ) {
-	if ( ! points || points.length < 2 ) {
+function buffersEqual( a, b ) {
+	if ( ! a || ! b ) {
 		return false;
 	}
-	const [ r0, g0, b0, a0 ] = points[ 0 ];
-	return points.some(
-		( [ r, g, b, a ] ) => r !== r0 || g !== g0 || b !== b0 || a !== a0
-	);
-}
-
-/**
- * Fraction of corresponding grid points that differ beyond a small
- * per-channel tolerance (guards against 1-bit rounding noise from the
- * software rasteriser counting as a "difference").
- *
- * @param {number[][]} a
- * @param {number[][]} b
- * @param {number}     tolerance Per-channel delta below which two points count as "same".
- * @return {number} 0..1
- */
-function diffFraction( a, b, tolerance = 6 ) {
-	const n = Math.min( a.length, b.length );
-	let differing = 0;
-	for ( let i = 0; i < n; i++ ) {
-		const [ ar, ag, ab ] = a[ i ];
-		const [ br, bg, bb ] = b[ i ];
-		if (
-			Math.abs( ar - br ) > tolerance ||
-			Math.abs( ag - bg ) > tolerance ||
-			Math.abs( ab - bb ) > tolerance
-		) {
-			differing++;
-		}
-	}
-	return n === 0 ? 0 : differing / n;
+	return Buffer.compare( a, b ) === 0;
 }
 
 const browser = await chromium.launch();
@@ -371,62 +307,81 @@ if ( instanceDSelector ) {
 }
 
 /* =====================================================================
- * ARM 1b — the canvas actually painted (non-uniform pixels), paired
- * with a synthetic negative control proving the non-uniformity test
- * itself can fail.
+ * ARM 1b — the canvas actually painted, measured via an ELEMENT
+ * SCREENSHOT (browser-composited pixels — what a visitor actually sees)
+ * rather than canvas readback, which reads back transparent black
+ * because the renderer has no `preserveDrawingBuffer` (see
+ * `screenshotElement()` docstring). Paired with a same-element-twice
+ * stability control: if two shots of the SAME element are not
+ * byte-identical, the screenshot discriminator is unreliable in this
+ * environment and the arm reports SKIPPED, never a guessed PASS.
  * =================================================================== */
-let aPixels = null;
+const aCanvasSelector = `${ instanceASelector } canvas.sgs-webgl-surface`;
+let aShot = null;
+let dShot = null;
+let shotDiscriminatorStable = false;
+
 if ( aCount > 0 ) {
-	aPixels = await sampleCanvasPixels( page, `${ instanceASelector } canvas.sgs-webgl-surface` );
+	aShot = await screenshotElement( page, aCanvasSelector );
+	const aShotAgain = await screenshotElement( page, aCanvasSelector );
+	shotDiscriminatorStable = buffersEqual( aShot, aShotAgain );
+
 	check(
-		'1b — A canvas pixels are non-uniform (actually drew something)',
-		isNonUniform( aPixels ),
-		aPixels
-			? `${ aPixels.length } samples, first=${ JSON.stringify( aPixels[ 0 ] ) } last=${ JSON.stringify( aPixels[ aPixels.length - 1 ] ) }`
-			: 'no pixel data read (canvas missing or zero-size)'
+		'1b negative control — two screenshots of the same canvas element are byte-identical (discriminator is stable)',
+		shotDiscriminatorStable,
+		aShot && aShotAgain
+			? `shot1=${ aShot.length }B shot2=${ aShotAgain.length }B`
+			: 'one or both screenshot attempts returned no buffer'
 	);
+
+	if ( ! shotDiscriminatorStable ) {
+		skip(
+			'1b — A canvas screenshot is a plausible non-trivial image',
+			'same-element-twice stability control failed (two shots of the identical element differed) — the screenshot discriminator cannot be trusted here, so this arm cannot genuinely measure and is not reported as PASS/FAIL'
+		);
+	} else {
+		check(
+			'1b — A canvas screenshot is a plausible non-trivial image',
+			!! aShot && aShot.length > 1000,
+			aShot ? `buffer length=${ aShot.length } bytes (floor 1000)` : 'no buffer captured'
+		);
+	}
 } else {
-	check( '1b — A canvas pixels non-uniform', false, 'instance A not found' );
+	check( '1b negative control — same-element-twice stability', false, 'instance A not found' );
+	skip( '1b — A canvas screenshot is a plausible non-trivial image', 'instance A not found, cannot screenshot' );
 }
 
-const syntheticUniform = await page.evaluate( () => {
-	const c = document.createElement( 'canvas' );
-	c.width = 32;
-	c.height = 32;
-	// Deliberately left untouched — a fully transparent, uniformly-blank
-	// buffer, the same shape a "drew nothing" canvas would produce.
-	const ctx = c.getContext( '2d' );
-	const { data } = ctx.getImageData( 0, 0, c.width, c.height );
-	const points = [];
-	for ( let i = 0; i < data.length; i += 4 ) {
-		points.push( [ data[ i ], data[ i + 1 ], data[ i + 2 ], data[ i + 3 ] ] );
-	}
-	return points;
-} );
-check(
-	'1b negative control — a blank synthetic canvas FAILS the same non-uniformity test',
-	! isNonUniform( syntheticUniform ),
-	`${ syntheticUniform.length } samples, all equal to ${ JSON.stringify( syntheticUniform[ 0 ] ) } — proves the detector discriminates`
-);
+if ( instanceDSelector ) {
+	dShot = await screenshotElement( page, instanceDSelector );
+}
 
 /* =====================================================================
  * ARM 2 — treated ≠ untreated: proves a TREATMENT happened, not a
- * passthrough blit of the same image.
+ * passthrough blit of the same image. Screenshot instance A's canvas
+ * and instance D's untreated `<img>` and assert the PNG buffers differ.
+ * Gated on the same-element-twice stability control from arm 1b — if
+ * that control failed, byte comparison is not trustworthy here and this
+ * arm reports SKIPPED rather than a guessed result.
  * =================================================================== */
-if ( aPixels && instanceDSelector ) {
-	const dPixels = await sampleImagePixels( page, instanceDSelector );
-	if ( dPixels ) {
-		const frac = diffFraction( aPixels, dPixels );
-		check(
-			'2 — A canvas differs from D untreated image at a meaningful fraction of sample points',
-			frac >= 0.5,
-			`${ Math.round( frac * 100 ) }% of ${ Math.min( aPixels.length, dPixels.length ) } grid points differ (threshold 50%)`
-		);
-	} else {
-		check( '2 — A vs D pixel diff', false, 'could not read D pixel data' );
-	}
+let arm2ProvedRealDifference = false;
+if ( ! shotDiscriminatorStable ) {
+	skip(
+		'2 — A canvas screenshot differs from D untreated image screenshot',
+		'the same-element-twice stability control (arm 1b) failed, so byte-level screenshot comparison is not trustworthy in this environment'
+	);
+} else if ( aShot && dShot ) {
+	arm2ProvedRealDifference = ! buffersEqual( aShot, dShot );
+	check(
+		'2 — A canvas screenshot differs from D untreated image screenshot',
+		arm2ProvedRealDifference,
+		`A buffer=${ aShot.length }B, D buffer=${ dShot.length }B, byte-identical=${ ! arm2ProvedRealDifference }`
+	);
 } else {
-	check( '2 — A vs D pixel diff', false, 'missing A pixels or D selector, cannot compare' );
+	check(
+		'2 — A canvas screenshot differs from D untreated image screenshot',
+		false,
+		`missing screenshot data — A captured=${ !! aShot } D captured=${ !! dShot } (D selector: ${ instanceDSelector || 'not found' })`
+	);
 }
 
 /* =====================================================================
@@ -572,9 +527,13 @@ await mobileContext.close();
 
 /* =====================================================================
  * ARM 6 — reduced motion is a no-op (draws once, never suppressed).
- * Negative control: prove the comparison mechanism is LIVE by first
- * confirming both samples are themselves non-uniform (not two blank
- * reads trivially matching each other).
+ * Measured via element screenshot (same rationale as arms 1b/2 — canvas
+ * readback returns transparent black because the renderer has no
+ * `preserveDrawingBuffer`). Negative control: reuse arm 2's proof that
+ * byte-comparison CAN detect a real difference (treated vs untreated
+ * differed) — if arm 2 could not prove that, byte comparison cannot be
+ * trusted to prove "no difference" here either, so this arm is SKIPPED
+ * rather than reporting a false PASS on an untrustworthy comparison.
  * =================================================================== */
 const rmContext = await browser.newContext( {
 	viewport: { width: 1440, height: 900 },
@@ -607,22 +566,27 @@ if ( rmState ) {
 		`data-sgs-webgl-active=${ rmState.active }`
 	);
 
-	const rmPixels = await sampleCanvasPixels( rmPage, `${ instanceASelector } canvas.sgs-webgl-surface` );
-	const bothNonUniform = isNonUniform( aPixels ) && isNonUniform( rmPixels );
-	check(
-		'6 negative control — the comparison is LIVE (both samples are themselves non-uniform, not two blank reads)',
-		bothNonUniform,
-		`normal non-uniform=${ isNonUniform( aPixels ) } reduced-motion non-uniform=${ isNonUniform( rmPixels ) }`
-	);
-	if ( bothNonUniform ) {
-		const frac = diffFraction( aPixels, rmPixels );
-		check(
-			'6 — normal vs reduced-motion renders are the SAME image (this effect never animates)',
-			frac < 0.05,
-			`${ Math.round( frac * 100 ) }% of grid points differ between normal and reduced-motion (threshold <5%)`
+	if ( ! arm2ProvedRealDifference ) {
+		skip(
+			'6 — normal vs reduced-motion screenshots are the SAME image (this effect never animates)',
+			'negative control unmet — arm 2 could not prove byte-comparison detects a real visual difference on this page, so a byte-identical result here would not be trustworthy evidence of "no animation"'
 		);
 	} else {
-		check( '6 — normal vs reduced-motion pixel match', false, 'cannot compare, one or both samples were blank' );
+		const rmShot = await screenshotElement( rmPage, aCanvasSelector );
+		if ( aShot && rmShot ) {
+			const identical = buffersEqual( aShot, rmShot );
+			check(
+				'6 — normal vs reduced-motion screenshots are the SAME image (this effect never animates)',
+				identical,
+				`normal buffer=${ aShot.length }B, reduced-motion buffer=${ rmShot.length }B, byte-identical=${ identical }`
+			);
+		} else {
+			check(
+				'6 — normal vs reduced-motion screenshots are the SAME image',
+				false,
+				`missing screenshot data — normal captured=${ !! aShot } reduced-motion captured=${ !! rmShot }`
+			);
+		}
 	}
 } else {
 	check( '6 — reduced motion no-op', false, 'instance A not found under reduced motion' );

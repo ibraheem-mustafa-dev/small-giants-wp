@@ -31,6 +31,20 @@ void main() {
 	vec4 srcColour = texture( u_image, v_uv );
 	float lum = dot( srcColour.rgb, LUMA );
 
+	// STRETCH THE LUMINANCE BEFORE MAPPING IT. Measured on the canary
+	// 2026-08-21: feeding raw sRGB luminance straight into the ramp produced
+	// a muddy, over-dark result on real client photography, because a
+	// mid-key photograph's luminance clusters well below 0.5 — so
+	// mix( shadow, highlight, lum ) only ever reached the bottom third of
+	// the ramp and the highlight colour was never approached. That reads as
+	// "the image got darker", not "the image got art-directed", which fails
+	// this phase's own good-by-default bar.
+	//
+	// smoothstep re-maps the band real photographs actually occupy across
+	// the FULL shadow -> highlight range, with an eased roll-off at both
+	// ends so clipped blacks and blown highlights do not posterise.
+	lum = smoothstep( 0.06, 0.78, lum );
+
 	vec3 duo = mix( uShadow, uHighlight, lum );
 
 	// uMix = 1.0 → full duotone; uMix = 0.0 → untouched source. Blending
