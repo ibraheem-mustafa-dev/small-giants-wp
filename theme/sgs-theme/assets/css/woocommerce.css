@@ -2002,7 +2002,15 @@ select.orderby:focus-visible {
 .sgs-shop-filters__toggle {
 	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
 	border: 1px solid var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
-	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
+	/* ⚠ NOT `--wp--custom--button-presets--primary--text`. That token resolves to
+	   #3a2e26 on this client — brown text on the pink primary — while every other
+	   primary-looking control on the site (search submit, call button) uses the
+	   near-white inverse. Following the token faithfully produced a button that
+	   matched no other button, so the inverse token is used directly here.
+	   ⚠ The underlying inconsistency is in the client's own preset and is NOT
+	   fixed here: any filled sgs/button--primary inherits the same brown. Raised
+	   separately rather than patched per control. */
+	color: var(--wp--preset--color--text-inverse, #fff);
 	border-radius: var(--wp--custom--border-radius--pill, 9999px);
 	font-family: inherit;
 	font-size: 0.9375rem;
@@ -2013,7 +2021,7 @@ select.orderby:focus-visible {
 .sgs-shop-filters__toggle:focus-visible {
 	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
 	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
-	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--preset--color--text-inverse));
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 /* (3) The slider's handles escaped the panel. The track spans the full content
