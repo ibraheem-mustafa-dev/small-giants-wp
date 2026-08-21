@@ -127,68 +127,66 @@ $sgs_form_style_group      = is_array( $attributes['style'] ?? null ) ? $attribu
 $sgs_form_supports_css     = '';
 $sgs_form_supports_classes = array( 'sgs-form' );
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_form_style_engine_input = array();
+$sgs_form_style_engine_input = array();
 
-	if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_group['color'] ) ) {
-		$sgs_form_style_engine_input['color'] = $sgs_form_style_group['color'];
-	}
+if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_group['color'] ) ) {
+	$sgs_form_style_engine_input['color'] = $sgs_form_style_group['color'];
+}
 
-	if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_group['border'] ) ) {
-		$sgs_form_border_raw = $sgs_form_style_group['border'];
-		$sgs_form_border     = array();
-		if ( isset( $sgs_form_border_raw['color'] ) && '' !== $sgs_form_border_raw['color'] ) {
-			$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
-		}
-		if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] ) {
-			$sgs_form_border['style'] = sgs_css_keyword_sanitise( $sgs_form_border_raw['style'] );
-		}
-		if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
-			$sgs_form_border['width'] = $sgs_form_border_raw['width'];
-		}
-		if ( isset( $sgs_form_border_raw['radius'] ) && '' !== $sgs_form_border_raw['radius'] ) {
-			$sgs_form_border['radius'] = $sgs_form_border_raw['radius'];
-		}
-		if ( ! empty( $sgs_form_border ) ) {
-			$sgs_form_style_engine_input['border'] = $sgs_form_border;
-		}
+if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_group['border'] ) ) {
+	$sgs_form_border_raw = $sgs_form_style_group['border'];
+	$sgs_form_border     = array();
+	if ( isset( $sgs_form_border_raw['color'] ) && '' !== $sgs_form_border_raw['color'] ) {
+		$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
 	}
+	if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] ) {
+		$sgs_form_border['style'] = sgs_css_keyword_sanitise( $sgs_form_border_raw['style'] );
+	}
+	if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
+		$sgs_form_border['width'] = $sgs_form_border_raw['width'];
+	}
+	if ( isset( $sgs_form_border_raw['radius'] ) && '' !== $sgs_form_border_raw['radius'] ) {
+		$sgs_form_border['radius'] = $sgs_form_border_raw['radius'];
+	}
+	if ( ! empty( $sgs_form_border ) ) {
+		$sgs_form_style_engine_input['border'] = $sgs_form_border;
+	}
+}
 
-	if ( ! empty( $sgs_form_style_engine_input ) ) {
-		$sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
+if ( ! empty( $sgs_form_style_engine_input ) ) {
+	$sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
 
-		$sgs_form_engine_styles = wp_style_engine_get_styles(
-			$sgs_form_style_engine_input,
-			array( 'selector' => $sgs_form_sel )
-		);
-		if ( ! empty( $sgs_form_engine_styles['css'] ) ) {
-			$sgs_form_supports_css      .= $sgs_form_engine_styles['css'];
-			$sgs_form_supports_classes[] = $sgs_form_uid;
-		}
+	$sgs_form_engine_styles = wp_style_engine_get_styles(
+		$sgs_form_style_engine_input,
+		array( 'selector' => $sgs_form_sel )
+	);
+	if ( ! empty( $sgs_form_engine_styles['css'] ) ) {
+		$sgs_form_supports_css      .= $sgs_form_engine_styles['css'];
+		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
+}
 
-	// Typography — declared selector (block.json selectors.typography.root,
-	// none declared for sgs/form, so scope to the block root itself).
-	$sgs_form_typography_args = array();
-	if ( isset( $sgs_form_style_group['typography']['fontSize'] ) && '' !== $sgs_form_style_group['typography']['fontSize'] ) {
-		$sgs_form_typography_args['fontSize'] = (string) $sgs_form_style_group['typography']['fontSize'];
+// Typography — declared selector (block.json selectors.typography.root,
+// none declared for sgs/form, so scope to the block root itself).
+$sgs_form_typography_args = array();
+if ( isset( $sgs_form_style_group['typography']['fontSize'] ) && '' !== $sgs_form_style_group['typography']['fontSize'] ) {
+	$sgs_form_typography_args['fontSize'] = (string) $sgs_form_style_group['typography']['fontSize'];
+}
+if ( isset( $sgs_form_style_group['typography']['lineHeight'] ) && '' !== $sgs_form_style_group['typography']['lineHeight'] ) {
+	$sgs_form_typography_args['lineHeight'] = (string) $sgs_form_style_group['typography']['lineHeight'];
+}
+if ( ! empty( $sgs_form_typography_args ) ) {
+	if ( empty( $sgs_form_uid ) ) {
+		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
-	if ( isset( $sgs_form_style_group['typography']['lineHeight'] ) && '' !== $sgs_form_style_group['typography']['lineHeight'] ) {
-		$sgs_form_typography_args['lineHeight'] = (string) $sgs_form_style_group['typography']['lineHeight'];
-	}
-	if ( ! empty( $sgs_form_typography_args ) ) {
-		if ( empty( $sgs_form_uid ) ) {
-			$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-			$sgs_form_supports_classes[] = $sgs_form_uid;
-		}
-		$sgs_form_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $sgs_form_typography_args ),
-			array( 'selector' => '.' . $sgs_form_uid . '.sgs-form' )
-		);
-		if ( ! empty( $sgs_form_typography_scoped['css'] ) ) {
-			$sgs_form_supports_css .= $sgs_form_typography_scoped['css'];
-		}
+	$sgs_form_typography_scoped = wp_style_engine_get_styles(
+		array( 'typography' => $sgs_form_typography_args ),
+		array( 'selector' => '.' . $sgs_form_uid . '.sgs-form' )
+	);
+	if ( ! empty( $sgs_form_typography_scoped['css'] ) ) {
+		$sgs_form_supports_css .= $sgs_form_typography_scoped['css'];
 	}
 }
 

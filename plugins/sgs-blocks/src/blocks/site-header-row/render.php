@@ -63,76 +63,75 @@ if ( '' !== $slot_class ) {
 $css = '';
 
 // NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$shr_style_engine_args = array();
 
-	$shr_color_args = array();
-	// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
-	// DesignTokenPicker stores a token SLUG ('primary') when a palette swatch is
-	// picked with linked:true. The style engine does NOT resolve a bare slug and
-	// does NOT reject it either — PROVEN on the canary 2026-08-19 via
-	// wp_style_engine_get_styles(['color'=>['background'=>'primary']]), which
-	// returns the literal `background-color:primary;`. That is invalid CSS, so the
-	// browser drops the declaration and the client's chosen colour SILENTLY does
-	// nothing. sgs_colour_value() turns a slug into var(--wp--preset--color--…),
-	// passes a raw hex through untouched, and rejects a declaration breakout.
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$shr_text_value = sgs_colour_value( (string) $attributes['textColour'] );
-		if ( '' !== $shr_text_value ) {
-			$shr_color_args['text'] = $shr_text_value;
-		}
-	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$shr_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
-		if ( '' !== $shr_bg_value ) {
-			$shr_color_args['background'] = $shr_bg_value;
-		}
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$shr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $shr_color_args ) ) {
-		$shr_style_engine_args['color'] = $shr_color_args;
-	}
+$shr_style_engine_args = array();
 
-	$shr_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$shr_border_args['color'] = (string) $attributes['style']['border']['color'];
+$shr_color_args = array();
+// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
+// DesignTokenPicker stores a token SLUG ('primary') when a palette swatch is
+// picked with linked:true. The style engine does NOT resolve a bare slug and
+// does NOT reject it either — PROVEN on the canary 2026-08-19 via
+// wp_style_engine_get_styles(['color'=>['background'=>'primary']]), which
+// returns the literal `background-color:primary;`. That is invalid CSS, so the
+// browser drops the declaration and the client's chosen colour SILENTLY does
+// nothing. sgs_colour_value() turns a slug into var(--wp--preset--color--…),
+// passes a raw hex through untouched, and rejects a declaration breakout.
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$shr_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+	if ( '' !== $shr_text_value ) {
+		$shr_color_args['text'] = $shr_text_value;
 	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$shr_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$shr_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+	if ( '' !== $shr_bg_value ) {
+		$shr_color_args['background'] = $shr_bg_value;
 	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$shr_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$shr_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $shr_radius_raw ) && '' !== $shr_radius_raw ) {
-			$shr_border_args['radius'] = sgs_css_length_sanitise( $shr_radius_raw );
-		} elseif ( is_array( $shr_radius_raw ) ) {
-			$shr_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $shr_corner ) {
-				if ( ! empty( $shr_radius_raw[ $shr_corner ] ) ) {
-					$shr_radius_clean[ $shr_corner ] = sgs_css_length_sanitise( $shr_radius_raw[ $shr_corner ] );
-				}
-			}
-			if ( ! empty( $shr_radius_clean ) ) {
-				$shr_border_args['radius'] = $shr_radius_clean;
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$shr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $shr_color_args ) ) {
+	$shr_style_engine_args['color'] = $shr_color_args;
+}
+
+$shr_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$shr_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$shr_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$shr_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$shr_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $shr_radius_raw ) && '' !== $shr_radius_raw ) {
+		$shr_border_args['radius'] = sgs_css_length_sanitise( $shr_radius_raw );
+	} elseif ( is_array( $shr_radius_raw ) ) {
+		$shr_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $shr_corner ) {
+			if ( ! empty( $shr_radius_raw[ $shr_corner ] ) ) {
+				$shr_radius_clean[ $shr_corner ] = sgs_css_length_sanitise( $shr_radius_raw[ $shr_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $shr_border_args ) ) {
-		$shr_style_engine_args['border'] = $shr_border_args;
-	}
-
-	if ( ! empty( $shr_style_engine_args ) ) {
-		$shr_scoped_styles = wp_style_engine_get_styles(
-			$shr_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $shr_scoped_styles['css'] ) ) {
-			$css .= $shr_scoped_styles['css'];
+		if ( ! empty( $shr_radius_clean ) ) {
+			$shr_border_args['radius'] = $shr_radius_clean;
 		}
+	}
+}
+if ( ! empty( $shr_border_args ) ) {
+	$shr_style_engine_args['border'] = $shr_border_args;
+}
+
+if ( ! empty( $shr_style_engine_args ) ) {
+	$shr_scoped_styles = wp_style_engine_get_styles(
+		$shr_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $shr_scoped_styles['css'] ) ) {
+		$css .= $shr_scoped_styles['css'];
 	}
 }
 

@@ -353,22 +353,21 @@ if ( $text_colour ) {
 
 // --- WP typography support (fontSize/lineHeight) — scoped onto the text
 // selector (matches the block's declared `selectors.typography`). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$typography_args = array();
-	if ( '' !== $style_font_size ) {
-		$typography_args['fontSize'] = $style_font_size;
-	}
-	if ( '' !== $style_line_height ) {
-		$typography_args['lineHeight'] = $style_line_height;
-	}
-	if ( ! empty( $typography_args ) ) {
-		$typography_scoped_styles = wp_style_engine_get_styles(
-			array( 'typography' => $typography_args ),
-			array( 'selector' => $text_sel )
-		);
-		if ( ! empty( $typography_scoped_styles['css'] ) ) {
-			$scoped_css[] = $typography_scoped_styles['css'];
-		}
+
+$typography_args = array();
+if ( '' !== $style_font_size ) {
+	$typography_args['fontSize'] = $style_font_size;
+}
+if ( '' !== $style_line_height ) {
+	$typography_args['lineHeight'] = $style_line_height;
+}
+if ( ! empty( $typography_args ) ) {
+	$typography_scoped_styles = wp_style_engine_get_styles(
+		array( 'typography' => $typography_args ),
+		array( 'selector' => $text_sel )
+	);
+	if ( ! empty( $typography_scoped_styles['css'] ) ) {
+		$scoped_css[] = $typography_scoped_styles['css'];
 	}
 }
 
@@ -382,54 +381,52 @@ if ( '' !== $text_align ) {
 // --- WP colour support (text/background, skip-serialised) — scoped onto the
 // root. Preset SLUGS get the standard has-* classes re-added manually below;
 // custom hex/rgb values are emitted here via the style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$color_scoped_styles = wp_style_engine_get_styles(
-			array( 'color' => $color_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $color_scoped_styles['css'] ) ) {
-			$scoped_css[] = $color_scoped_styles['css'];
-		}
+
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$color_scoped_styles = wp_style_engine_get_styles(
+		array( 'color' => $color_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $color_scoped_styles['css'] ) ) {
+		$scoped_css[] = $color_scoped_styles['css'];
 	}
 }
 
 // --- Base spacing (padding/margin) + border-radius — WP-native style.*
 // objects, skip-serialised, emitted scoped via the stable core style engine
 // (exactly how WP core outputs `layout` support). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
+
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

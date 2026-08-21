@@ -332,44 +332,43 @@ if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 // __experimentalSkipSerialization:true, so get_block_wrapper_attributes() never
 // auto-inlines it; read the resolved values from $attributes['style']['border']
 // and emit them into this block's own scoped <style>.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		// Sanitised via sgs_colour_value() (route-by-role, D301/D302): resolves a
-		// preset slug to var(), passes a hex/rgba through. Defence-in-depth: strip
-		// any structural CSS chars so no declaration/selector injection can ride in.
-		$border_args['color'] = preg_replace( '/[;{}<>]/', '', sgs_colour_value( (string) $attributes['style']['border']['color'] ) );
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
-		} elseif ( is_array( $radius_raw ) ) {
-			$radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $radius_clean ) ) {
-				$border_args['radius'] = $radius_clean;
+
+$border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	// Sanitised via sgs_colour_value() (route-by-role, D301/D302): resolves a
+	// preset slug to var(), passes a hex/rgba through. Defence-in-depth: strip
+	// any structural CSS chars so no declaration/selector injection can ride in.
+	$border_args['color'] = preg_replace( '/[;{}<>]/', '', sgs_colour_value( (string) $attributes['style']['border']['color'] ) );
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+		$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
+	} elseif ( is_array( $radius_raw ) ) {
+		$radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			if ( ! empty( $radius_raw[ $corner ] ) ) {
+				$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 			}
 		}
-	}
-	if ( ! empty( $border_args ) ) {
-		$border_scoped = wp_style_engine_get_styles(
-			array( 'border' => $border_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $border_scoped['css'] ) ) {
-			$css .= $border_scoped['css'];
+		if ( ! empty( $radius_clean ) ) {
+			$border_args['radius'] = $radius_clean;
 		}
+	}
+}
+if ( ! empty( $border_args ) ) {
+	$border_scoped = wp_style_engine_get_styles(
+		array( 'border' => $border_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_scoped['css'] ) ) {
+		$css .= $border_scoped['css'];
 	}
 }
 

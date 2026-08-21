@@ -1624,7 +1624,7 @@ foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {
 		$nav_base_spacing[ $spacing_prop ] = $sides;
 	}
 }
-if ( $nav_base_spacing && function_exists( 'wp_style_engine_get_styles' ) ) {
+if ( $nav_base_spacing ) {
 	// The style engine resolves preset tokens (var:preset|spacing|40) that a raw
 	// string concat would emit verbatim and the browser would drop.
 	$nav_spacing_styles = wp_style_engine_get_styles( array( 'spacing' => $nav_base_spacing ) );

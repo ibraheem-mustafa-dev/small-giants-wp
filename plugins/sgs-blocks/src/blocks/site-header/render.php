@@ -53,84 +53,83 @@ $css = '';
 // ── WP-native colour / border supports — no-inline contract (Spec 32). ──────────
 // Mirrors sgs/site-header-row + sgs/feature-grid: skip-serialised supports are
 // read from $attributes['style'] and emitted into this block's scoped <style>.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sh_style_engine_args = array();
 
-	// Colour comes from SGS-OWNED attributes, not the native supports (FR-37-44).
-	// block.json still DECLARES supports.color — the audit-block-uniformity gate
-	// requires the key to be present as a pipeline/DB contract signal — but every
-	// sub-flag is false, so WordPress renders no colour panel of its own and never
-	// writes $attributes['style']['color'] at all. Reading it here would be dead code.
-	// The header mirrors sgs/site-header-row exactly — same attribute names, same
-	// style engine, same scoped emission — so the two read as one system.
-	// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
-	// DesignTokenPicker stores a token SLUG ('surface') when a palette swatch is
-	// picked with linked:true — see its own docblock — and the style engine does
-	// NOT resolve a bare slug: it would emit the invalid `background-color:surface`.
-	// sgs_colour_value() turns a slug into var(--wp--preset--color--surface),
-	// passes a raw hex through untouched, and rejects a declaration breakout
-	// riding a var() passthrough.
-	$sh_color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$sh_text_value = sgs_colour_value( (string) $attributes['textColour'] );
-		if ( '' !== $sh_text_value ) {
-			$sh_color_args['text'] = $sh_text_value;
-		}
-	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
-		if ( '' !== $sh_bg_value ) {
-			$sh_color_args['background'] = $sh_bg_value;
-		}
-	}
-	if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
-		$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );
-		if ( '' !== $sh_gradient_value ) {
-			$sh_color_args['gradient'] = $sh_gradient_value;
-		}
-	}
-	if ( ! empty( $sh_color_args ) ) {
-		$sh_style_engine_args['color'] = $sh_color_args;
-	}
+$sh_style_engine_args = array();
 
-	$sh_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$sh_border_args['color'] = (string) $attributes['style']['border']['color'];
+// Colour comes from SGS-OWNED attributes, not the native supports (FR-37-44).
+// block.json still DECLARES supports.color — the audit-block-uniformity gate
+// requires the key to be present as a pipeline/DB contract signal — but every
+// sub-flag is false, so WordPress renders no colour panel of its own and never
+// writes $attributes['style']['color'] at all. Reading it here would be dead code.
+// The header mirrors sgs/site-header-row exactly — same attribute names, same
+// style engine, same scoped emission — so the two read as one system.
+// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
+// DesignTokenPicker stores a token SLUG ('surface') when a palette swatch is
+// picked with linked:true — see its own docblock — and the style engine does
+// NOT resolve a bare slug: it would emit the invalid `background-color:surface`.
+// sgs_colour_value() turns a slug into var(--wp--preset--color--surface),
+// passes a raw hex through untouched, and rejects a declaration breakout
+// riding a var() passthrough.
+$sh_color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$sh_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+	if ( '' !== $sh_text_value ) {
+		$sh_color_args['text'] = $sh_text_value;
 	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$sh_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$sh_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+	if ( '' !== $sh_bg_value ) {
+		$sh_color_args['background'] = $sh_bg_value;
 	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$sh_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['backgroundColourGradient'] ) && '' !== $attributes['backgroundColourGradient'] ) {
+	$sh_gradient_value = sgs_colour_value( (string) $attributes['backgroundColourGradient'] );
+	if ( '' !== $sh_gradient_value ) {
+		$sh_color_args['gradient'] = $sh_gradient_value;
 	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$sh_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $sh_radius_raw ) && '' !== $sh_radius_raw ) {
-			$sh_border_args['radius'] = sgs_css_length_sanitise( $sh_radius_raw );
-		} elseif ( is_array( $sh_radius_raw ) ) {
-			$sh_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sh_corner ) {
-				if ( ! empty( $sh_radius_raw[ $sh_corner ] ) ) {
-					$sh_radius_clean[ $sh_corner ] = sgs_css_length_sanitise( $sh_radius_raw[ $sh_corner ] );
-				}
-			}
-			if ( ! empty( $sh_radius_clean ) ) {
-				$sh_border_args['radius'] = $sh_radius_clean;
+}
+if ( ! empty( $sh_color_args ) ) {
+	$sh_style_engine_args['color'] = $sh_color_args;
+}
+
+$sh_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$sh_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$sh_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$sh_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$sh_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $sh_radius_raw ) && '' !== $sh_radius_raw ) {
+		$sh_border_args['radius'] = sgs_css_length_sanitise( $sh_radius_raw );
+	} elseif ( is_array( $sh_radius_raw ) ) {
+		$sh_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sh_corner ) {
+			if ( ! empty( $sh_radius_raw[ $sh_corner ] ) ) {
+				$sh_radius_clean[ $sh_corner ] = sgs_css_length_sanitise( $sh_radius_raw[ $sh_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $sh_border_args ) ) {
-		$sh_style_engine_args['border'] = $sh_border_args;
-	}
-
-	if ( ! empty( $sh_style_engine_args ) ) {
-		$sh_scoped_styles = wp_style_engine_get_styles(
-			$sh_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $sh_scoped_styles['css'] ) ) {
-			$css .= $sh_scoped_styles['css'];
+		if ( ! empty( $sh_radius_clean ) ) {
+			$sh_border_args['radius'] = $sh_radius_clean;
 		}
+	}
+}
+if ( ! empty( $sh_border_args ) ) {
+	$sh_style_engine_args['border'] = $sh_border_args;
+}
+
+if ( ! empty( $sh_style_engine_args ) ) {
+	$sh_scoped_styles = wp_style_engine_get_styles(
+		$sh_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $sh_scoped_styles['css'] ) ) {
+		$css .= $sh_scoped_styles['css'];
 	}
 }
 

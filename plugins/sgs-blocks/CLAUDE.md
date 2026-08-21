@@ -161,13 +161,62 @@ python scripts/migrate-render-closures.py --self-test     # 10 assertions + nega
 (`$sgs_css_keyword  = static function`, two spaces). A literal-space find/replace silently skips
 them — which is why the closure count read 45 before it read 52. The self-test asserts this case.
 
-⛔ **Carved out deliberately, still open:** `$sgs_corner_shorthand` / `$sgs_radius_shorthand` are
-CORNER-keyed (topLeft/topRight/bottomRight/bottomLeft), structurally a different function from
-`sgs_box_object_shorthand()`'s top/right/bottom/left — there is nothing to call.
-**`before-after/render.php`'s is UNTYPED and is invoked with a raw `null`**, relying on its own
-`is_array()` guard; routing it through a typed-`array` helper would fatal the page. It also does
-NOT migrate to the hardened `sgs_css_length_value()` — four behaviour deltas, and
-`helpers-css-safety.php`'s own header calls that a separate task.
+**The corner family is now CLOSED (2026-08-21).** `$sgs_corner_shorthand` / `$sgs_radius_shorthand`
+are CORNER-keyed (topLeft/topRight/bottomRight/bottomLeft), structurally a different function from
+`sgs_box_object_shorthand()`'s top/right/bottom/left — which is why there was nothing to call and
+the family was carved out. `includes/helpers-box.php` now provides the missing sibling
+**`sgs_corner_object_shorthand()`**, and all 8 definitions + 17 call sites are migrated; the script
+owns the family rather than skipping it.
+
+⛔ **The shared helper is UNTYPED on purpose — do not "tidy" it to `array`.**
+`before-after/render.php` invokes it with a raw `null` (`$attributes['borderRadiusTablet'] ?? null`)
+and relied on its own `is_array()` guard, which the helper now owns internally. A typed-`array`
+parameter would throw TypeError and fatal the page. The riskiest existing caller sets the signature.
+
+⛔ **Still open, deliberately:** it does NOT migrate to the hardened `sgs_css_length_value()`.
+Enumerated 2026-08-21: **247 call sites across 58 files**, with FIVE behaviour deltas, not the four
+long quoted here — the missed one is the worst, because `var:preset|spacing|40` (exactly what WP's
+`BoxControl` emits for a preset) is corrupted to `varpresetspacing40`. `helpers-css-safety.php`'s
+own header calls that a separate task and it must ship alone: it is a real behaviour change, and
+stacking it on a refactor makes both unfalsifiable.
+
+### Vacuous style-engine guard — `scripts/remove-vacuous-style-engine-guard.py` (2026-08-21)
+
+`wp_style_engine_get_styles()` shipped in **WP 6.1**. This plugin (`sgs-blocks.php`) and the theme
+(`style.css`) both declare **"Requires at least: 6.7"**. So all 73 occurrences of
+`function_exists( 'wp_style_engine_get_styles' )` across 63 render.php files were testing for a
+function their own declared floor guarantees — a false branch that was never reachable on any
+supported install. Removal is behaviour-neutral BY CONSTRUCTION, not by measurement.
+
+```bash
+python scripts/remove-vacuous-style-engine-guard.py --survey      # census
+python scripts/remove-vacuous-style-engine-guard.py --fix          # dry run
+python scripts/remove-vacuous-style-engine-guard.py --fix --apply  # write
+python scripts/remove-vacuous-style-engine-guard.py --check        # gate
+python scripts/remove-vacuous-style-engine-guard.py --self-test    # 14 assertions + negative control
+```
+
+⛔ **There were TWO shapes and they are NOT interchangeable.** 64 were STANDALONE (the whole `if`
+goes, body de-indents one tab). **9 were COMPOUND** — the dead call ANDed with a REAL condition
+(`&& ! empty( $base_margin_obj )`, `! $inherit_style && …`, and one spanning multiple lines).
+Deleting the wrapper on those would have silently dropped a live condition. Only the dead conjunct
+is removed there. Enumerate before assuming a guard is standalone.
+
+⛔ **`} else {` is brace-NEUTRAL, so naive depth-counting sails straight past it** to the final `}`
+and lifts a body that isn't the whole story. Checking the closing line for the word "else" does NOT
+work — the real close is detected structurally (a body line at the guard's own indent starting with
+`}`). A guard with an `else` is REFUSED, never guessed at. The self-test asserts this, and it caught
+the bug for real during the build.
+
+⛔ **Deleting the `if` line outright merges phpcs alignment groups.** The guard line was a visual
+separator; without it the statement above becomes adjacent to the de-indented first body line and
+`Generic.Formatting.MultipleStatementAlignment` reports a warning HEAD did not have (caught on
+`accordion`). The script leaves a BLANK LINE in its place. **The fix for a merged group is a blank
+line, NEVER `phpcbf`** — that realigns whole files and turns a scoped change into an unreviewable diff.
+
+⛔ Two sibling families are ALSO vacuous against the 6.7 floor and deliberately NOT touched here —
+`wp_interactivity_data_wp_context` (4) and `wp_enqueue_script_module` (3), both WP 6.5. Separate
+family, separate commit; two overlapping changes in one commit are unfalsifiable.
 
 ### Comment-narrative detector — `scripts/extract-comment-narrative.py` (D727)
 

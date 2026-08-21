@@ -211,61 +211,60 @@ $sgs_card_typo_css .= sgs_media_position_css(
 // internally (it reads $attributes['style']['spacing'] directly) — NOT
 // duplicated here, or it would double-emit. Preset (palette-slug) colours are
 // class-based, re-added below.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_pc_style_engine_args = array();
 
-	$sgs_pc_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$sgs_pc_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$sgs_pc_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$sgs_pc_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $sgs_pc_color_args ) ) {
-		$sgs_pc_style_engine_args['color'] = $sgs_pc_color_args;
-	}
+$sgs_pc_style_engine_args = array();
 
-	$sgs_pc_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$sgs_pc_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$sgs_pc_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$sgs_pc_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
-			$sgs_pc_border_args['radius'] = sgs_css_length_sanitise( $sgs_pc_radius_raw );
-		} elseif ( is_array( $sgs_pc_radius_raw ) ) {
-			$sgs_pc_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
-				if ( ! empty( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) ) {
-					$sgs_pc_radius_clean[ $sgs_pc_corner ] = sgs_css_length_sanitise( $sgs_pc_radius_raw[ $sgs_pc_corner ] );
-				}
-			}
-			if ( ! empty( $sgs_pc_radius_clean ) ) {
-				$sgs_pc_border_args['radius'] = $sgs_pc_radius_clean;
+$sgs_pc_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$sgs_pc_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$sgs_pc_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$sgs_pc_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $sgs_pc_color_args ) ) {
+	$sgs_pc_style_engine_args['color'] = $sgs_pc_color_args;
+}
+
+$sgs_pc_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$sgs_pc_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$sgs_pc_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$sgs_pc_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
+		$sgs_pc_border_args['radius'] = sgs_css_length_sanitise( $sgs_pc_radius_raw );
+	} elseif ( is_array( $sgs_pc_radius_raw ) ) {
+		$sgs_pc_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
+			if ( ! empty( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) ) {
+				$sgs_pc_radius_clean[ $sgs_pc_corner ] = sgs_css_length_sanitise( $sgs_pc_radius_raw[ $sgs_pc_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $sgs_pc_border_args ) ) {
-		$sgs_pc_style_engine_args['border'] = $sgs_pc_border_args;
-	}
-
-	if ( ! empty( $sgs_pc_style_engine_args ) ) {
-		$sgs_pc_scoped = wp_style_engine_get_styles(
-			$sgs_pc_style_engine_args,
-			array( 'selector' => '.' . $sgs_card_uid . '.wp-block-sgs-product-card' )
-		);
-		if ( ! empty( $sgs_pc_scoped['css'] ) ) {
-			$sgs_card_typo_css .= $sgs_pc_scoped['css'];
+		if ( ! empty( $sgs_pc_radius_clean ) ) {
+			$sgs_pc_border_args['radius'] = $sgs_pc_radius_clean;
 		}
+	}
+}
+if ( ! empty( $sgs_pc_border_args ) ) {
+	$sgs_pc_style_engine_args['border'] = $sgs_pc_border_args;
+}
+
+if ( ! empty( $sgs_pc_style_engine_args ) ) {
+	$sgs_pc_scoped = wp_style_engine_get_styles(
+		$sgs_pc_style_engine_args,
+		array( 'selector' => '.' . $sgs_card_uid . '.wp-block-sgs-product-card' )
+	);
+	if ( ! empty( $sgs_pc_scoped['css'] ) ) {
+		$sgs_card_typo_css .= $sgs_pc_scoped['css'];
 	}
 }
 

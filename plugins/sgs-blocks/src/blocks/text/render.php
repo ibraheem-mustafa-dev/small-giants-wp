@@ -388,45 +388,44 @@ if ( '' !== $border_colour_gradient ) {
 // stable core API WP core itself uses for `layout` support) — mirrors
 // sgs/button's/sgs/container's wrapper pattern exactly.
 $css_base_spacing_radius = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_spacing_padding = array();
-	if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-		foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
-			if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-				$base_spacing_padding[ $spacing_side ] = $spacing_value;
-			}
-		}
-	}
-	$base_spacing_margin = array();
-	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-		foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
-			if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-				$base_spacing_margin[ $spacing_side ] = $spacing_value;
-			}
-		}
-	}
 
-	$base_style_engine_args = array();
-	if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
-		$base_style_engine_args['spacing'] = array();
-		if ( ! empty( $base_spacing_padding ) ) {
-			$base_style_engine_args['spacing']['padding'] = $base_spacing_padding;
-		}
-		if ( ! empty( $base_spacing_margin ) ) {
-			$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
+$base_spacing_padding = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_spacing_padding[ $spacing_side ] = $spacing_value;
 		}
 	}
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $scope )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$css_base_spacing_radius = $base_scoped_styles['css'];
+}
+$base_spacing_margin = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_spacing_margin[ $spacing_side ] = $spacing_value;
 		}
+	}
+}
+
+$base_style_engine_args = array();
+if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
+	$base_style_engine_args['spacing'] = array();
+	if ( ! empty( $base_spacing_padding ) ) {
+		$base_style_engine_args['spacing']['padding'] = $base_spacing_padding;
+	}
+	if ( ! empty( $base_spacing_margin ) ) {
+		$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
+	}
+}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $scope )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$css_base_spacing_radius = $base_scoped_styles['css'];
 	}
 }
 

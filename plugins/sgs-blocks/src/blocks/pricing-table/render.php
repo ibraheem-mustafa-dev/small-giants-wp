@@ -389,82 +389,81 @@ foreach ( $plans as $plan_index => $plan ) {
 // pass these as wrapper `extra_styles` — that path inlines). Base spacing
 // (padding/margin) is a SEPARATE mechanism the wrapper already handles
 // scoped internally — not duplicated here.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$pt_style_engine_args = array();
 
-	$pt_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$pt_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$pt_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$pt_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $pt_color_args ) ) {
-		$pt_style_engine_args['color'] = $pt_color_args;
-	}
+$pt_style_engine_args = array();
 
-	$pt_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$pt_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$pt_border_args['style'] = preg_replace( '/[^a-zA-Z-]/', '', (string) $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$pt_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$pt_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $pt_radius_raw ) && '' !== $pt_radius_raw ) {
-			$pt_border_args['radius'] = sgs_css_length_sanitise( $pt_radius_raw );
-		} elseif ( is_array( $pt_radius_raw ) ) {
-			$pt_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $pt_corner ) {
-				if ( ! empty( $pt_radius_raw[ $pt_corner ] ) ) {
-					$pt_radius_clean[ $pt_corner ] = sgs_css_length_sanitise( $pt_radius_raw[ $pt_corner ] );
-				}
-			}
-			if ( ! empty( $pt_radius_clean ) ) {
-				$pt_border_args['radius'] = $pt_radius_clean;
+$pt_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$pt_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$pt_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$pt_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $pt_color_args ) ) {
+	$pt_style_engine_args['color'] = $pt_color_args;
+}
+
+$pt_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$pt_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$pt_border_args['style'] = preg_replace( '/[^a-zA-Z-]/', '', (string) $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$pt_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$pt_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $pt_radius_raw ) && '' !== $pt_radius_raw ) {
+		$pt_border_args['radius'] = sgs_css_length_sanitise( $pt_radius_raw );
+	} elseif ( is_array( $pt_radius_raw ) ) {
+		$pt_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $pt_corner ) {
+			if ( ! empty( $pt_radius_raw[ $pt_corner ] ) ) {
+				$pt_radius_clean[ $pt_corner ] = sgs_css_length_sanitise( $pt_radius_raw[ $pt_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $pt_border_args ) ) {
-		$pt_style_engine_args['border'] = $pt_border_args;
-	}
-
-	if ( ! empty( $pt_style_engine_args ) ) {
-		$pt_scoped_styles = wp_style_engine_get_styles(
-			$pt_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $pt_scoped_styles['css'] ) ) {
-			$responsive_css .= $pt_scoped_styles['css'];
+		if ( ! empty( $pt_radius_clean ) ) {
+			$pt_border_args['radius'] = $pt_radius_clean;
 		}
 	}
+}
+if ( ! empty( $pt_border_args ) ) {
+	$pt_style_engine_args['border'] = $pt_border_args;
+}
 
-	// Typography — declared selector (block.json selectors.typography) is
-	// ".sgs-pricing-table__title"; the rendered element uses the canonical
-	// __name class (style.css keeps __title as a back-compat alias), so both
-	// are targeted here to match that existing dual-selector convention.
-	$pt_typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$pt_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+if ( ! empty( $pt_style_engine_args ) ) {
+	$pt_scoped_styles = wp_style_engine_get_styles(
+		$pt_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $pt_scoped_styles['css'] ) ) {
+		$responsive_css .= $pt_scoped_styles['css'];
 	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$pt_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-	}
-	if ( ! empty( $pt_typography_args ) ) {
-		$pt_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $pt_typography_args ),
-			array( 'selector' => $root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title' )
-		);
-		if ( ! empty( $pt_typography_scoped['css'] ) ) {
-			$responsive_css .= $pt_typography_scoped['css'];
-		}
+}
+
+// Typography — declared selector (block.json selectors.typography) is
+// ".sgs-pricing-table__title"; the rendered element uses the canonical
+// __name class (style.css keeps __title as a back-compat alias), so both
+// are targeted here to match that existing dual-selector convention.
+$pt_typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$pt_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$pt_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+if ( ! empty( $pt_typography_args ) ) {
+	$pt_typography_scoped = wp_style_engine_get_styles(
+		array( 'typography' => $pt_typography_args ),
+		array( 'selector' => $root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title' )
+	);
+	if ( ! empty( $pt_typography_scoped['css'] ) ) {
+		$responsive_css .= $pt_typography_scoped['css'];
 	}
 }
 

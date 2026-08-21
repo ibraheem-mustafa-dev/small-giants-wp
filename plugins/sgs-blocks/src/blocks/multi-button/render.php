@@ -139,52 +139,51 @@ $css .= '}}';
 // Emit them scoped to the SAME `#{uid}.sgs-multi-button` selector the flex
 // CSS already targets, via the stable core style engine (mirrors sgs/label's
 // pattern).
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$mb_color_border = array();
-	// D635-pattern migration: background/text now read from the flat
-	// backgroundColour/textColour attrs (SgsColourPanel), not native
-	// style.color.background/.text (supports.color.background/.text are now
-	// false). Gradient stays native (supports.color.gradients unchanged).
-	$mb_color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$mb_color_args['text'] = (string) $attributes['textColour'];
-	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$mb_color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$mb_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $mb_color_args ) ) {
-		$mb_color_border['color'] = $mb_color_args;
-	}
-	if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
-		$mb_color_border['border'] = $attributes['style']['border'];
-	}
-	// A1 (D638) — spacing.padding support is TRUE (still
-	// __experimentalSkipSerialization, like margin) so WP never auto-inlines it;
-	// base padding routes through the style engine to the SAME scoped selector,
-	// tablet/mobile tiers are handled separately by SGS_Container_Wrapper
-	// (paddingTablet/paddingMobile, universal across all `kind` values — see
-	// its "Responsive padding — all kinds" block).
-	$mb_spacing = array();
-	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-		$mb_spacing['margin'] = $attributes['style']['spacing']['margin'];
-	}
-	if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-		$mb_spacing['padding'] = $attributes['style']['spacing']['padding'];
-	}
-	if ( ! empty( $mb_spacing ) ) {
-		$mb_color_border['spacing'] = $mb_spacing;
-	}
-	if ( ! empty( $mb_color_border ) ) {
-		$mb_style_engine_css = wp_style_engine_get_styles(
-			$mb_color_border,
-			array( 'selector' => '.' . $uid . '.sgs-multi-button' )
-		);
-		if ( ! empty( $mb_style_engine_css['css'] ) ) {
-			$css .= $mb_style_engine_css['css'];
-		}
+
+$mb_color_border = array();
+// D635-pattern migration: background/text now read from the flat
+// backgroundColour/textColour attrs (SgsColourPanel), not native
+// style.color.background/.text (supports.color.background/.text are now
+// false). Gradient stays native (supports.color.gradients unchanged).
+$mb_color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$mb_color_args['text'] = (string) $attributes['textColour'];
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$mb_color_args['background'] = (string) $attributes['backgroundColour'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$mb_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $mb_color_args ) ) {
+	$mb_color_border['color'] = $mb_color_args;
+}
+if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
+	$mb_color_border['border'] = $attributes['style']['border'];
+}
+// A1 (D638) — spacing.padding support is TRUE (still
+// __experimentalSkipSerialization, like margin) so WP never auto-inlines it;
+// base padding routes through the style engine to the SAME scoped selector,
+// tablet/mobile tiers are handled separately by SGS_Container_Wrapper
+// (paddingTablet/paddingMobile, universal across all `kind` values — see
+// its "Responsive padding — all kinds" block).
+$mb_spacing = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	$mb_spacing['margin'] = $attributes['style']['spacing']['margin'];
+}
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	$mb_spacing['padding'] = $attributes['style']['spacing']['padding'];
+}
+if ( ! empty( $mb_spacing ) ) {
+	$mb_color_border['spacing'] = $mb_spacing;
+}
+if ( ! empty( $mb_color_border ) ) {
+	$mb_style_engine_css = wp_style_engine_get_styles(
+		$mb_color_border,
+		array( 'selector' => '.' . $uid . '.sgs-multi-button' )
+	);
+	if ( ! empty( $mb_style_engine_css['css'] ) ) {
+		$css .= $mb_style_engine_css['css'];
 	}
 }
 

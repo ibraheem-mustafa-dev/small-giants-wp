@@ -252,42 +252,41 @@ if ( $root_decls ) {
 // --- WP colour/spacing supports + border-radius (skip-serialised in
 // block.json), emitted scoped via the stable core style engine (matches
 // sgs/heading / sgs/button / SGS_Container_Wrapper). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( '' !== $style_color_gradient ) {
-		$color_args['gradient'] = $style_color_gradient;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( '' !== $style_color_gradient ) {
+	$color_args['gradient'] = $style_color_gradient;
+}
+if ( ! empty( $color_args ) ) {
+	$base_style_engine_args['color'] = $color_args;
+}
+
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

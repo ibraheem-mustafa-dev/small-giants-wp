@@ -244,22 +244,21 @@ if ( 100.0 !== $opacity ) {
 
 // --- Base spacing (padding/margin) — skip-serialised WP support, emitted
 // scoped via the stable core style engine (matches sgs/quote / sgs/heading). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			array( 'spacing' => $base_spacing ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		array( 'spacing' => $base_spacing ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

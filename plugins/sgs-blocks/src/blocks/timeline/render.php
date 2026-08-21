@@ -209,66 +209,65 @@ if ( 'none' !== $border_style && '' !== $border_colour_gradient ) {
 // --- Base spacing (padding/margin), border-radius, WP colour + shadow
 // supports — skip-serialised, emitted scoped via the stable core style
 // engine (exactly how WP core outputs `layout` support). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
 
-	if ( '' !== $style_shadow ) {
-		$base_style_engine_args['shadow'] = $style_shadow;
-	}
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$base_style_engine_args['color'] = $color_args;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
-	}
+if ( '' !== $style_shadow ) {
+	$base_style_engine_args['shadow'] = $style_shadow;
+}
 
-	// --- Typography — routed to `.sgs-timeline__title` (matches the declared
-	// selectors.typography in block.json), not the root. ---
-	if ( ! empty( $style_typography ) ) {
-		$typography_scoped_styles = wp_style_engine_get_styles(
-			array( 'typography' => $style_typography ),
-			array( 'selector' => $title_sel )
-		);
-		if ( ! empty( $typography_scoped_styles['css'] ) ) {
-			$scoped_css[] = $typography_scoped_styles['css'];
-		}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
 
-	// --- text-align — not a style-engine `typography` key (hand-built, mirrors
-	// sgs/countdown-timer + sgs/icon-list), scoped to the title selector. ---
-	if ( '' !== $text_align ) {
-		$scoped_css[] = "{$title_sel}{text-align:{$text_align};}";
+// --- Typography — routed to `.sgs-timeline__title` (matches the declared
+// selectors.typography in block.json), not the root. ---
+if ( ! empty( $style_typography ) ) {
+	$typography_scoped_styles = wp_style_engine_get_styles(
+		array( 'typography' => $style_typography ),
+		array( 'selector' => $title_sel )
+	);
+	if ( ! empty( $typography_scoped_styles['css'] ) ) {
+		$scoped_css[] = $typography_scoped_styles['css'];
 	}
+}
+
+// --- text-align — not a style-engine `typography` key (hand-built, mirrors
+// sgs/countdown-timer + sgs/icon-list), scoped to the title selector. ---
+if ( '' !== $text_align ) {
+	$scoped_css[] = "{$title_sel}{text-align:{$text_align};}";
 }
 
 // --- Responsive padding/margin/border-radius tiers — box objects, hand-built

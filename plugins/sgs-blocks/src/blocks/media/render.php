@@ -315,7 +315,7 @@ if ( $media_base_decls ) {
 // media element (img/video) — mirrors this block's pre-existing behaviour of
 // painting border/radius on the media element itself, not the figure.
 $border_base_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $native_border ) ) {
+if ( ! empty( $native_border ) ) {
 	$border_base_out = wp_style_engine_get_styles(
 		array( 'border' => $native_border ),
 		array( 'selector' => $id_sel )
@@ -336,7 +336,6 @@ if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $native_border 
 $aspect_ratio_css = '';
 if ( '' !== $native_aspect_ratio
 	&& preg_match( '/^[\d\s\/]+$/', $native_aspect_ratio )
-	&& function_exists( 'wp_style_engine_get_styles' )
 ) {
 	$aspect_ratio_out = wp_style_engine_get_styles(
 		array( 'dimensions' => array( 'aspectRatio' => $native_aspect_ratio ) ),
@@ -495,24 +494,23 @@ if ( $mobile_rules ) {
 // Border-radius tiers — SGS custom tier OBJECT attrs (borderRadiusTablet /
 // borderRadiusMobile), routed through the same stable core style-engine API
 // as the base rule above (box-object interface contract §B).
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	if ( ! empty( $border_radius_tablet_obj ) ) {
-		$radius_tab_out = wp_style_engine_get_styles(
-			array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-			array( 'selector' => $id_sel )
-		);
-		if ( ! empty( $radius_tab_out['css'] ) ) {
-			$responsive_css .= '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
-		}
+
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $id_sel )
+	);
+	if ( ! empty( $radius_tab_out['css'] ) ) {
+		$responsive_css .= '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
 	}
-	if ( ! empty( $border_radius_mobile_obj ) ) {
-		$radius_mob_out = wp_style_engine_get_styles(
-			array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-			array( 'selector' => $id_sel )
-		);
-		if ( ! empty( $radius_mob_out['css'] ) ) {
-			$responsive_css .= '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
-		}
+}
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $id_sel )
+	);
+	if ( ! empty( $radius_mob_out['css'] ) ) {
+		$responsive_css .= '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
 	}
 }
 

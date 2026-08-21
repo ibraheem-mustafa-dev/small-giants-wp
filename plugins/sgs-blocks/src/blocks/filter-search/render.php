@@ -150,7 +150,7 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 		}
 	}
 }
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+if ( ! empty( $base_margin_obj ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
 		array( 'selector' => $root_sel )

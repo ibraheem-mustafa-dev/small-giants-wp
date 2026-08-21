@@ -55,61 +55,59 @@ $sgs_container_style_group = is_array( $attributes['style'] ?? null ) ? $attribu
 $sgs_container_supports_css     = '';
 $sgs_container_supports_classes = array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_container_style_engine_input = array();
+$sgs_container_style_engine_input = array();
 
-	if ( ! empty( $sgs_container_style_group['color'] ) && is_array( $sgs_container_style_group['color'] ) ) {
-		$sgs_container_style_engine_input['color'] = $sgs_container_style_group['color'];
+if ( ! empty( $sgs_container_style_group['color'] ) && is_array( $sgs_container_style_group['color'] ) ) {
+	$sgs_container_style_engine_input['color'] = $sgs_container_style_group['color'];
+}
+
+// SGS-OWNED base background colour (D294 pattern, mirrors sgs/site-header /
+// sgs/site-header-row) — the OUTER-most paint layer, BELOW the media ::before
+// (z-index:-1), the overlay span (z-index:0, backgroundOverlayColour/
+// overlayGradient — a DIFFERENT, deliberately untouched attribute) and content
+// (z-index:1). See class-sgs-container-wrapper.php's z-index doc (~L948-950).
+// ⚠ EVERY value goes through sgs_colour_value() before the style engine:
+// DesignTokenPicker stores a token SLUG ('surface') when linked:true, and the
+// style engine does not resolve a bare slug — it would emit the invalid
+// `background-color:surface` (proven live defect, D684, site-header-row).
+// RESTING flat colour goes through the style engine as before. The GRADIENT
+// sibling and the HOVER state cannot: the style engine has no state axis and
+// would emit a gradient as a flat colour. Both are emitted below as a scoped
+// `.uid{…}` / `.uid:hover,.uid:focus-visible{…}` pair via the shared
+// sgs_emit_state_colour_css(), exactly as sgs/hero does (render.php:386-419).
+//
+// ⛔ WHY THE PAIR EXISTS AT ALL (2026-08-20): this row shipped earlier the same
+// day with ONE state and NO gradient, and rule 31 correctly flagged it twice —
+// a non-conformant colour row added while enforcing the colour standard. It is
+// completed here rather than exempted. A row with a resting colour but no hover
+// is not a smaller feature, it is an asymmetric one: the same STATE_WITHOUT_BASE
+// shape in reverse.
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour']
+	&& empty( $attributes['backgroundColourGradient'] ) ) {
+	$sgs_container_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
+	if ( '' !== $sgs_container_bg_value ) {
+		$sgs_container_style_engine_input['color']['background'] = $sgs_container_bg_value;
 	}
+}
 
-	// SGS-OWNED base background colour (D294 pattern, mirrors sgs/site-header /
-	// sgs/site-header-row) — the OUTER-most paint layer, BELOW the media ::before
-	// (z-index:-1), the overlay span (z-index:0, backgroundOverlayColour/
-	// overlayGradient — a DIFFERENT, deliberately untouched attribute) and content
-	// (z-index:1). See class-sgs-container-wrapper.php's z-index doc (~L948-950).
-	// ⚠ EVERY value goes through sgs_colour_value() before the style engine:
-	// DesignTokenPicker stores a token SLUG ('surface') when linked:true, and the
-	// style engine does not resolve a bare slug — it would emit the invalid
-	// `background-color:surface` (proven live defect, D684, site-header-row).
-	// RESTING flat colour goes through the style engine as before. The GRADIENT
-	// sibling and the HOVER state cannot: the style engine has no state axis and
-	// would emit a gradient as a flat colour. Both are emitted below as a scoped
-	// `.uid{…}` / `.uid:hover,.uid:focus-visible{…}` pair via the shared
-	// sgs_emit_state_colour_css(), exactly as sgs/hero does (render.php:386-419).
-	//
-	// ⛔ WHY THE PAIR EXISTS AT ALL (2026-08-20): this row shipped earlier the same
-	// day with ONE state and NO gradient, and rule 31 correctly flagged it twice —
-	// a non-conformant colour row added while enforcing the colour standard. It is
-	// completed here rather than exempted. A row with a resting colour but no hover
-	// is not a smaller feature, it is an asymmetric one: the same STATE_WITHOUT_BASE
-	// shape in reverse.
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour']
-		&& empty( $attributes['backgroundColourGradient'] ) ) {
-		$sgs_container_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
-		if ( '' !== $sgs_container_bg_value ) {
-			$sgs_container_style_engine_input['color']['background'] = $sgs_container_bg_value;
-		}
-	}
+if ( ! empty( $sgs_container_style_group['border'] ) && is_array( $sgs_container_style_group['border'] ) ) {
+	$sgs_container_style_engine_input['border'] = $sgs_container_style_group['border'];
+}
+if ( ! empty( $sgs_container_style_group['typography'] ) && is_array( $sgs_container_style_group['typography'] ) ) {
+	$sgs_container_style_engine_input['typography'] = $sgs_container_style_group['typography'];
+}
 
-	if ( ! empty( $sgs_container_style_group['border'] ) && is_array( $sgs_container_style_group['border'] ) ) {
-		$sgs_container_style_engine_input['border'] = $sgs_container_style_group['border'];
-	}
-	if ( ! empty( $sgs_container_style_group['typography'] ) && is_array( $sgs_container_style_group['typography'] ) ) {
-		$sgs_container_style_engine_input['typography'] = $sgs_container_style_group['typography'];
-	}
+if ( ! empty( $sgs_container_style_engine_input ) ) {
+	$sgs_container_supports_uid = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_container_supports_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
 
-	if ( ! empty( $sgs_container_style_engine_input ) ) {
-		$sgs_container_supports_uid = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_container_supports_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
-
-		$sgs_container_engine_styles = wp_style_engine_get_styles(
-			$sgs_container_style_engine_input,
-			array( 'selector' => $sgs_container_supports_sel )
-		);
-		if ( ! empty( $sgs_container_engine_styles['css'] ) ) {
-			$sgs_container_supports_css       = $sgs_container_engine_styles['css'];
-			$sgs_container_supports_classes[] = $sgs_container_supports_uid;
-		}
+	$sgs_container_engine_styles = wp_style_engine_get_styles(
+		$sgs_container_style_engine_input,
+		array( 'selector' => $sgs_container_supports_sel )
+	);
+	if ( ! empty( $sgs_container_engine_styles['css'] ) ) {
+		$sgs_container_supports_css       = $sgs_container_engine_styles['css'];
+		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
 	}
 }
 

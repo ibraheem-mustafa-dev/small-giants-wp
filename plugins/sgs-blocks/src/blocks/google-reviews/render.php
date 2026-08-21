@@ -238,61 +238,60 @@ $gr_extra_styles = array(
 // this block's OWN scoped <style> (do NOT pass via wrapper extra_styles —
 // that inlines).
 $gr_responsive_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$gr_style_engine_args = array();
 
-	$gr_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$gr_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$gr_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$gr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $gr_color_args ) ) {
-		$gr_style_engine_args['color'] = $gr_color_args;
-	}
+$gr_style_engine_args = array();
 
-	$gr_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$gr_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$gr_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$gr_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$gr_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $gr_radius_raw ) && '' !== $gr_radius_raw ) {
-			$gr_border_args['radius'] = sgs_css_length_sanitise( $gr_radius_raw );
-		} elseif ( is_array( $gr_radius_raw ) ) {
-			$gr_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gr_corner ) {
-				if ( ! empty( $gr_radius_raw[ $gr_corner ] ) ) {
-					$gr_radius_clean[ $gr_corner ] = sgs_css_length_sanitise( $gr_radius_raw[ $gr_corner ] );
-				}
-			}
-			if ( ! empty( $gr_radius_clean ) ) {
-				$gr_border_args['radius'] = $gr_radius_clean;
+$gr_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$gr_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$gr_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$gr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $gr_color_args ) ) {
+	$gr_style_engine_args['color'] = $gr_color_args;
+}
+
+$gr_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$gr_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$gr_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$gr_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$gr_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $gr_radius_raw ) && '' !== $gr_radius_raw ) {
+		$gr_border_args['radius'] = sgs_css_length_sanitise( $gr_radius_raw );
+	} elseif ( is_array( $gr_radius_raw ) ) {
+		$gr_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gr_corner ) {
+			if ( ! empty( $gr_radius_raw[ $gr_corner ] ) ) {
+				$gr_radius_clean[ $gr_corner ] = sgs_css_length_sanitise( $gr_radius_raw[ $gr_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $gr_border_args ) ) {
-		$gr_style_engine_args['border'] = $gr_border_args;
-	}
-
-	if ( ! empty( $gr_style_engine_args ) ) {
-		$gr_scoped_styles = wp_style_engine_get_styles(
-			$gr_style_engine_args,
-			array( 'selector' => $gr_root_sel )
-		);
-		if ( ! empty( $gr_scoped_styles['css'] ) ) {
-			$gr_responsive_css .= $gr_scoped_styles['css'];
+		if ( ! empty( $gr_radius_clean ) ) {
+			$gr_border_args['radius'] = $gr_radius_clean;
 		}
+	}
+}
+if ( ! empty( $gr_border_args ) ) {
+	$gr_style_engine_args['border'] = $gr_border_args;
+}
+
+if ( ! empty( $gr_style_engine_args ) ) {
+	$gr_scoped_styles = wp_style_engine_get_styles(
+		$gr_style_engine_args,
+		array( 'selector' => $gr_root_sel )
+	);
+	if ( ! empty( $gr_scoped_styles['css'] ) ) {
+		$gr_responsive_css .= $gr_scoped_styles['css'];
 	}
 }
 

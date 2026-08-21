@@ -107,101 +107,100 @@ $root_sel = '.' . $uid . '.wp-block-sgs-card-grid';
 // is a separate mechanism the wrapper already handles scoped internally —
 // not duplicated here.
 $card_grid_native_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$cg_style_engine_args = array();
 
-	$cg_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$cg_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$cg_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$cg_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $cg_color_args ) ) {
-		$cg_style_engine_args['color'] = $cg_color_args;
-	}
+$cg_style_engine_args = array();
 
-	$cg_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$cg_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$cg_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$cg_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$cg_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $cg_radius_raw ) && '' !== $cg_radius_raw ) {
-			$cg_border_args['radius'] = sgs_css_length_sanitise( $cg_radius_raw );
-		} elseif ( is_array( $cg_radius_raw ) ) {
-			$cg_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $cg_corner ) {
-				if ( ! empty( $cg_radius_raw[ $cg_corner ] ) ) {
-					$cg_radius_clean[ $cg_corner ] = sgs_css_length_sanitise( $cg_radius_raw[ $cg_corner ] );
-				}
-			}
-			if ( ! empty( $cg_radius_clean ) ) {
-				$cg_border_args['radius'] = $cg_radius_clean;
+$cg_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$cg_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$cg_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$cg_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $cg_color_args ) ) {
+	$cg_style_engine_args['color'] = $cg_color_args;
+}
+
+$cg_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$cg_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$cg_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$cg_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$cg_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $cg_radius_raw ) && '' !== $cg_radius_raw ) {
+		$cg_border_args['radius'] = sgs_css_length_sanitise( $cg_radius_raw );
+	} elseif ( is_array( $cg_radius_raw ) ) {
+		$cg_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $cg_corner ) {
+			if ( ! empty( $cg_radius_raw[ $cg_corner ] ) ) {
+				$cg_radius_clean[ $cg_corner ] = sgs_css_length_sanitise( $cg_radius_raw[ $cg_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $cg_border_args ) ) {
-		$cg_style_engine_args['border'] = $cg_border_args;
-	}
-
-	if ( isset( $attributes['style']['shadow'] ) && '' !== $attributes['style']['shadow'] ) {
-		$cg_style_engine_args['shadow'] = (string) $attributes['style']['shadow'];
-	}
-
-	if ( ! empty( $cg_style_engine_args ) ) {
-		$cg_scoped_styles = wp_style_engine_get_styles(
-			$cg_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $cg_scoped_styles['css'] ) ) {
-			$card_grid_native_css .= $cg_scoped_styles['css'];
+		if ( ! empty( $cg_radius_clean ) ) {
+			$cg_border_args['radius'] = $cg_radius_clean;
 		}
 	}
+}
+if ( ! empty( $cg_border_args ) ) {
+	$cg_style_engine_args['border'] = $cg_border_args;
+}
 
-	// Typography — block.json selectors.typography targets .sgs-card-grid__title,
-	// so scope the native typography rule there (distinct from the per-instance
-	// titleFontSize/subtitleFontSize custom-attr mechanism further below).
-	$cg_typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$cg_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+if ( isset( $attributes['style']['shadow'] ) && '' !== $attributes['style']['shadow'] ) {
+	$cg_style_engine_args['shadow'] = (string) $attributes['style']['shadow'];
+}
+
+if ( ! empty( $cg_style_engine_args ) ) {
+	$cg_scoped_styles = wp_style_engine_get_styles(
+		$cg_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $cg_scoped_styles['css'] ) ) {
+		$card_grid_native_css .= $cg_scoped_styles['css'];
 	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$cg_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+
+// Typography — block.json selectors.typography targets .sgs-card-grid__title,
+// so scope the native typography rule there (distinct from the per-instance
+// titleFontSize/subtitleFontSize custom-attr mechanism further below).
+$cg_typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$cg_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$cg_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
+	$cg_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
+}
+if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
+	$cg_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
+}
+if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
+	$cg_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
+}
+if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
+	$cg_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
+}
+if ( ! empty( $cg_typography_args ) ) {
+	$cg_typography_scoped = wp_style_engine_get_styles(
+		array( 'typography' => $cg_typography_args ),
+		array( 'selector' => $root_sel . ' .sgs-card-grid__title' )
+	);
+	if ( ! empty( $cg_typography_scoped['css'] ) ) {
+		$card_grid_native_css .= $cg_typography_scoped['css'];
 	}
-	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$cg_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
-	}
-	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$cg_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$cg_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$cg_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
-	}
-	if ( ! empty( $cg_typography_args ) ) {
-		$cg_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $cg_typography_args ),
-			array( 'selector' => $root_sel . ' .sgs-card-grid__title' )
-		);
-		if ( ! empty( $cg_typography_scoped['css'] ) ) {
-			$card_grid_native_css .= $cg_typography_scoped['css'];
-		}
-	}
-	if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
-		$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
-	}
+}
+if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
+	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
 }
 
 // FR-35-5 STATE_WITHOUT_BASE fix — resting-state fill/border/shadow for the

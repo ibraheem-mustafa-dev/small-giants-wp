@@ -273,44 +273,43 @@ if ( $hover_decls ) {
 // --- Base spacing (padding/margin), border-radius, WP colour + typography +
 // shadow supports — skip-serialised, emitted scoped via the stable core style
 // engine (exactly how WP core outputs `layout` support). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	if ( ! empty( $style_color_args ) ) {
-		$base_style_engine_args['color'] = $style_color_args;
-	}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
 
-	if ( ! empty( $style_typography_args ) ) {
-		$base_style_engine_args['typography'] = $style_typography_args;
-	}
+if ( ! empty( $style_color_args ) ) {
+	$base_style_engine_args['color'] = $style_color_args;
+}
 
-	if ( '' !== $style_shadow ) {
-		$base_style_engine_args['shadow'] = $style_shadow;
-	}
+if ( ! empty( $style_typography_args ) ) {
+	$base_style_engine_args['typography'] = $style_typography_args;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( '' !== $style_shadow ) {
+	$base_style_engine_args['shadow'] = $style_shadow;
+}
+
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

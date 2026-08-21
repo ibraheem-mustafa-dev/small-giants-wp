@@ -234,7 +234,7 @@ if ( $typography_args ) {
 	$root_style_args['typography'] = $typography_args;
 }
 
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $root_style_args ) ) {
+if ( ! empty( $root_style_args ) ) {
 	$root_out = wp_style_engine_get_styles(
 		$root_style_args,
 		array( 'selector' => $root_sel )
@@ -285,24 +285,22 @@ if ( $mobile_decls ) {
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	if ( ! empty( $border_radius_tablet_obj ) ) {
-		$radius_tab_out = wp_style_engine_get_styles(
-			array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $radius_tab_out['css'] ) ) {
-			$scoped_css[] = '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
-		}
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $radius_tab_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
 	}
-	if ( ! empty( $border_radius_mobile_obj ) ) {
-		$radius_mob_out = wp_style_engine_get_styles(
-			array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $radius_mob_out['css'] ) ) {
-			$scoped_css[] = '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
-		}
+}
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $radius_mob_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
 	}
 }
 

@@ -407,7 +407,7 @@ if ( ! $inherit_style && 'none' !== $border_style && '' !== $border_colour_gradi
 // --- Base spacing (padding/margin), border-radius, WP colour + typography
 // supports — skip-serialised, emitted scoped via the stable core style engine
 // (exactly how WP core outputs `layout` support). ---
-if ( ! $inherit_style && function_exists( 'wp_style_engine_get_styles' ) ) {
+if ( ! $inherit_style ) {
 	$base_style_engine_args = array();
 
 	$base_spacing = array();

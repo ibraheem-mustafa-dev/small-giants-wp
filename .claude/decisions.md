@@ -1,5 +1,29 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D731 — the corner-keyed shorthand gets the sibling helper it always needed [ROUTINE]
+
+**The carve-out was correct, and it stayed correct until somebody built the missing function.** Eight render.php files each carried a byte-identical closure turning a corner-keyed box object into a CSS `border-radius` shorthand. D722's migration deliberately skipped them: `sgs_box_object_shorthand()` is keyed top/right/bottom/left, a corner object is topLeft/topRight/bottomRight/bottomLeft, so there was genuinely nothing to call. Added `sgs_corner_object_shorthand()` and migrated all 17 call sites.
+
+**The signature is the whole decision.** The helper takes a MIXED value and guards with `is_array()` internally rather than typing the parameter `array`. `before-after/render.php` calls it with a raw `null` and relied on its own guard; a typed helper would throw TypeError and fatal the page. The riskiest existing caller sets the signature, not the tidiest one.
+
+**Proven, not asserted.** Differential-tested the HEAD closures (both variants) against the helper over 14,690 cases — the full 4-corner cross product of 11 representative values including preset tokens, negatives, `calc()` and junk, plus missing-key boxes and non-array inputs — 0 mismatches, with a negative control proving the harness detects a wrong implementation. phpcs identical to HEAD on all 8 files.
+
+**Two things the enumeration corrected in the brief.** The site count was 17, not the 21 carried in the plan. And `before-after` gained a phpcs alignment warning because the deleted closure's name was longer than the call it left behind — fixed by hand to one space, never `phpcbf`.
+
+## D732 — 73 `function_exists` guards were testing for a function the plugin's own floor guarantees [ROUTINE]
+
+**A guard is only meaningful when the function landed AFTER your declared minimum.** `wp_style_engine_get_styles()` shipped in WP 6.1. `sgs-blocks.php` and the theme's `style.css` both declare "Requires at least: 6.7". All 73 occurrences across 63 render.php files had a false branch that was unreachable on any supported install. Removal is behaviour-neutral BY CONSTRUCTION — there is no input on which the deleted branch could have run — not by measurement.
+
+**This replaced the plan's Phase 3, which asked for a shared helper.** The premise did not survive the code: only the single guard LINE repeats. Inside it, the args assembly diverges — 39 files share the `border` shape, 22 `spacing`, 10 `typography`, 9 `color`, and the line after the guard has ~37 distinct shapes. A helper owning only the guard saves one vacuous line and adds indirection; a helper owning assembly cannot exist.
+
+**There were two shapes, and conflating them would have dropped live conditions.** 64 standalone (whole `if` goes, body de-indents) and 9 COMPOUND, where the dead call is ANDed with a real condition. Deleting the wrapper on those nine would have silently removed a working guard.
+
+**Two bugs the self-test caught before they shipped.** `} else {` is brace-neutral, so depth-counting sails past it to the final `}` and would have lifted a body that wasn't the whole story — checking the closing line for "else" does not work, so the early close is detected structurally and an `else` guard is REFUSED. And deleting the `if` line outright merges phpcs alignment groups (caught on `accordion`), so a blank line is left in its place.
+
+**Verified across all 63:** 0 lint failures, 0 CRLF conversions, 0 phpcs deltas against HEAD.
+
+**Left open deliberately:** `wp_interactivity_data_wp_context` (4) and `wp_enqueue_script_module` (3) are also below the 6.7 floor and also vacuous — separate family, separate commit.
+
 ## D730 — pin-scrub fixture built and claim 7 closed; and a whole probe directory was unreachable [INCIDENT]
 
 **The wiring half is the more important half, and Bean caught it.** `scripts/motion-qa/` held **13 probes with ZERO references anywhere in `package.json`** — no gate, no alias, no pipeline. Each was written for one investigation and then became undiscoverable by convention. That is this repo's documented failure mode at directory scale (D338/D493: a gate unwired for three weeks while docs claimed it ran). The three probes added at D729 would have joined them.

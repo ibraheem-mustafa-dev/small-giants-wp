@@ -158,22 +158,21 @@ if ( $sgs_ps_colour_decls ) {
 // --- Base padding/margin — WP-native style.spacing objects (skip-serialised
 // in block.json → not auto-inlined by get_block_wrapper_attributes()).
 // Emitted scoped via the stable core style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_spacing_args = array();
-	if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-		$sgs_spacing_args['padding'] = $attributes['style']['spacing']['padding'];
-	}
-	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-		$sgs_spacing_args['margin'] = $attributes['style']['spacing']['margin'];
-	}
-	if ( ! empty( $sgs_spacing_args ) ) {
-		$sgs_base_scoped = wp_style_engine_get_styles(
-			array( 'spacing' => $sgs_spacing_args ),
-			array( 'selector' => $sgs_style_sel )
-		);
-		if ( ! empty( $sgs_base_scoped['css'] ) ) {
-			$sgs_scoped_css[] = $sgs_base_scoped['css'];
-		}
+
+$sgs_spacing_args = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	$sgs_spacing_args['padding'] = $attributes['style']['spacing']['padding'];
+}
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	$sgs_spacing_args['margin'] = $attributes['style']['spacing']['margin'];
+}
+if ( ! empty( $sgs_spacing_args ) ) {
+	$sgs_base_scoped = wp_style_engine_get_styles(
+		array( 'spacing' => $sgs_spacing_args ),
+		array( 'selector' => $sgs_style_sel )
+	);
+	if ( ! empty( $sgs_base_scoped['css'] ) ) {
+		$sgs_scoped_css[] = $sgs_base_scoped['css'];
 	}
 }
 

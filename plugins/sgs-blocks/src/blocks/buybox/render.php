@@ -419,29 +419,27 @@ $style_group       = is_array( $attributes['style'] ?? null ) ? $attributes['sty
 $style_color_args  = ! empty( $style_group['color'] ) && is_array( $style_group['color'] ) ? $style_group['color'] : array();
 $style_border_args = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
+$base_style_engine_args = array();
 
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_style_engine_args['spacing'] = array( 'margin' => $base_margin_obj );
-	}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_style_engine_args['spacing'] = array( 'margin' => $base_margin_obj );
+}
 
-	if ( ! empty( $style_color_args ) ) {
-		$base_style_engine_args['color'] = $style_color_args;
-	}
+if ( ! empty( $style_color_args ) ) {
+	$base_style_engine_args['color'] = $style_color_args;
+}
 
-	if ( ! empty( $style_border_args ) ) {
-		$base_style_engine_args['border'] = $style_border_args;
-	}
+if ( ! empty( $style_border_args ) ) {
+	$base_style_engine_args['border'] = $style_border_args;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

@@ -236,82 +236,81 @@ $scoped_css = array();
 // --- Base spacing (padding/margin), colour, border (incl. radius/width/
 // style), typography, shadow — skip-serialised, emitted scoped via the
 // stable core style engine (exactly how WP core outputs these supports). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	if ( ! empty( $style_color_args ) ) {
-		$base_style_engine_args['color'] = $style_color_args;
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	if ( ! empty( $style_border_args ) ) {
-		$base_style_engine_args['border'] = $style_border_args;
-	}
+if ( ! empty( $style_color_args ) ) {
+	$base_style_engine_args['color'] = $style_color_args;
+}
 
-	if ( ! empty( $style_typography_args ) ) {
-		$base_style_engine_args['typography'] = $style_typography_args;
-	}
+if ( ! empty( $style_border_args ) ) {
+	$base_style_engine_args['border'] = $style_border_args;
+}
 
-	if ( '' !== $style_shadow ) {
-		$base_style_engine_args['shadow'] = $style_shadow;
-	}
+if ( ! empty( $style_typography_args ) ) {
+	$base_style_engine_args['typography'] = $style_typography_args;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
-	}
+if ( '' !== $style_shadow ) {
+	$base_style_engine_args['shadow'] = $style_shadow;
+}
 
-	/*
-	 * text-align is the ONE declared typography support the wholesale passthrough
-	 * above cannot carry: it is not a style-engine key, so
-	 * wp_style_engine_get_styles() silently ignores it (same reason
-	 * sgs/notice-banner and sgs/cta-section each emit it by hand). Every other
-	 * declared support — fontSize / lineHeight / letterSpacing / textTransform /
-	 * fontWeight / fontStyle — already reaches $root_sel through
-	 * $style_typography_args, so this is the only gap.
-	 *
-	 * Emitted to the block ROOT, not a child element: this block renders its
-	 * heading and description as InnerBlocks children (HC2 migration, see
-	 * style.css:99), so plain CSS inheritance carries the value down. A
-	 * DECLARATION beats an INHERITED value regardless of specificity, so an
-	 * unset child inherits this and any child setting its own alignment wins.
-	 *
-	 * Reads the native key first — WP's "Align text" control writes
-	 * style.typography.textAlign — with the top-level attribute as the fallback
-	 * the cloning converter writes.
-	 */
-	$info_box_text_align = $attributes['style']['typography']['textAlign']
-		?? ( $attributes['textAlign'] ?? '' );
-	if ( in_array( $info_box_text_align, array( 'left', 'center', 'right' ), true ) ) {
-		$scoped_css[] = $root_sel . '{text-align:' . esc_attr( $info_box_text_align ) . '}';
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
 
-	// Link colour (Elements API) — scoped to descendant links, reuses the
-	// engine's own 'color' compiler (resolves preset var refs identically).
-	if ( '' !== $style_link_colour ) {
-		$link_sel    = $root_sel . ' a:where(:not(.wp-element-button))';
-		$link_styles = wp_style_engine_get_styles(
-			array( 'color' => array( 'text' => $style_link_colour ) ),
-			array( 'selector' => $link_sel )
-		);
-		if ( ! empty( $link_styles['css'] ) ) {
-			$scoped_css[] = $link_styles['css'];
-		}
+/*
+ * text-align is the ONE declared typography support the wholesale passthrough
+ * above cannot carry: it is not a style-engine key, so
+ * wp_style_engine_get_styles() silently ignores it (same reason
+ * sgs/notice-banner and sgs/cta-section each emit it by hand). Every other
+ * declared support — fontSize / lineHeight / letterSpacing / textTransform /
+ * fontWeight / fontStyle — already reaches $root_sel through
+ * $style_typography_args, so this is the only gap.
+ *
+ * Emitted to the block ROOT, not a child element: this block renders its
+ * heading and description as InnerBlocks children (HC2 migration, see
+ * style.css:99), so plain CSS inheritance carries the value down. A
+ * DECLARATION beats an INHERITED value regardless of specificity, so an
+ * unset child inherits this and any child setting its own alignment wins.
+ *
+ * Reads the native key first — WP's "Align text" control writes
+ * style.typography.textAlign — with the top-level attribute as the fallback
+ * the cloning converter writes.
+ */
+$info_box_text_align = $attributes['style']['typography']['textAlign']
+	?? ( $attributes['textAlign'] ?? '' );
+if ( in_array( $info_box_text_align, array( 'left', 'center', 'right' ), true ) ) {
+	$scoped_css[] = $root_sel . '{text-align:' . esc_attr( $info_box_text_align ) . '}';
+}
+
+// Link colour (Elements API) — scoped to descendant links, reuses the
+// engine's own 'color' compiler (resolves preset var refs identically).
+if ( '' !== $style_link_colour ) {
+	$link_sel    = $root_sel . ' a:where(:not(.wp-element-button))';
+	$link_styles = wp_style_engine_get_styles(
+		array( 'color' => array( 'text' => $style_link_colour ) ),
+		array( 'selector' => $link_sel )
+	);
+	if ( ! empty( $link_styles['css'] ) ) {
+		$scoped_css[] = $link_styles['css'];
 	}
 }
 

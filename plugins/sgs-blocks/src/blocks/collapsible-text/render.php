@@ -121,22 +121,21 @@ $scoped_css = array();
 
 // --- Base padding/margin (WP-native style.spacing.*), emitted scoped via the
 // stable core style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$spacing_args = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$spacing_args['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$spacing_args['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $spacing_args ) ) {
-		$spacing_scoped_styles = wp_style_engine_get_styles(
-			array( 'spacing' => $spacing_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $spacing_scoped_styles['css'] ) ) {
-			$scoped_css[] = $spacing_scoped_styles['css'];
-		}
+
+$spacing_args = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$spacing_args['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$spacing_args['margin'] = $base_margin_obj;
+}
+if ( ! empty( $spacing_args ) ) {
+	$spacing_scoped_styles = wp_style_engine_get_styles(
+		array( 'spacing' => $spacing_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $spacing_scoped_styles['css'] ) ) {
+		$scoped_css[] = $spacing_scoped_styles['css'];
 	}
 }
 
@@ -173,22 +172,21 @@ if ( $mobile_decls ) {
 // --- WP colour support (skip-serialised) — custom hex/rgb emitted scoped via
 // the style engine; preset SLUGS get the standard has-* classes re-added
 // manually below. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$color_scoped_styles = wp_style_engine_get_styles(
-			array( 'color' => $color_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $color_scoped_styles['css'] ) ) {
-			$scoped_css[] = $color_scoped_styles['css'];
-		}
+
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$color_scoped_styles = wp_style_engine_get_styles(
+		array( 'color' => $color_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $color_scoped_styles['css'] ) ) {
+		$scoped_css[] = $color_scoped_styles['css'];
 	}
 }
 

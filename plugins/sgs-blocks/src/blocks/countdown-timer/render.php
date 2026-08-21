@@ -174,44 +174,43 @@ $root_sel = '.' . $uid . '.wp-block-sgs-countdown-timer';
 $scoped_css = array();
 
 // --- Base spacing/border/colour/typography — one style-engine call, scoped. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_args['spacing'] = $base_spacing;
-	}
+$base_args = array();
 
-	if ( ! empty( $native_border ) ) {
-		$base_args['border'] = $native_border;
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_args['spacing'] = $base_spacing;
+}
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_args['color'] = $color_args;
-	}
+if ( ! empty( $native_border ) ) {
+	$base_args['border'] = $native_border;
+}
 
-	if ( '' !== $style_font_size ) {
-		$base_args['typography'] = array( 'fontSize' => $style_font_size );
-	}
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$base_args['color'] = $color_args;
+}
 
-	if ( ! empty( $base_args ) ) {
-		$base_out = wp_style_engine_get_styles( $base_args, array( 'selector' => $root_sel ) );
-		if ( ! empty( $base_out['css'] ) ) {
-			$scoped_css[] = $base_out['css'];
-		}
+if ( '' !== $style_font_size ) {
+	$base_args['typography'] = array( 'fontSize' => $style_font_size );
+}
+
+if ( ! empty( $base_args ) ) {
+	$base_out = wp_style_engine_get_styles( $base_args, array( 'selector' => $root_sel ) );
+	if ( ! empty( $base_out['css'] ) ) {
+		$scoped_css[] = $base_out['css'];
 	}
 }
 
@@ -249,47 +248,46 @@ if ( '' !== $number_colour_gradient_valid ) {
 // --- Responsive tiers — padding/margin/border-radius, each routed through the
 // same style-engine call, wrapped in the block's own scoped @media (contract
 // §B2: tablet max-width:1023px, mobile max-width:767px). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$tablet_args = array();
-	if ( ! empty( $padding_tablet_obj ) || ! empty( $margin_tablet_obj ) ) {
-		$tablet_spacing = array();
-		if ( ! empty( $padding_tablet_obj ) ) {
-			$tablet_spacing['padding'] = $padding_tablet_obj;
-		}
-		if ( ! empty( $margin_tablet_obj ) ) {
-			$tablet_spacing['margin'] = $margin_tablet_obj;
-		}
-		$tablet_args['spacing'] = $tablet_spacing;
-	}
-	if ( ! empty( $border_radius_tablet_obj ) ) {
-		$tablet_args['border'] = array( 'radius' => $border_radius_tablet_obj );
-	}
-	if ( ! empty( $tablet_args ) ) {
-		$tablet_out = wp_style_engine_get_styles( $tablet_args, array( 'selector' => $root_sel ) );
-		if ( ! empty( $tablet_out['css'] ) ) {
-			$scoped_css[] = '@media(max-width:1023px){' . $tablet_out['css'] . '}';
-		}
-	}
 
-	$mobile_args = array();
-	if ( ! empty( $padding_mobile_obj ) || ! empty( $margin_mobile_obj ) ) {
-		$mobile_spacing = array();
-		if ( ! empty( $padding_mobile_obj ) ) {
-			$mobile_spacing['padding'] = $padding_mobile_obj;
-		}
-		if ( ! empty( $margin_mobile_obj ) ) {
-			$mobile_spacing['margin'] = $margin_mobile_obj;
-		}
-		$mobile_args['spacing'] = $mobile_spacing;
+$tablet_args = array();
+if ( ! empty( $padding_tablet_obj ) || ! empty( $margin_tablet_obj ) ) {
+	$tablet_spacing = array();
+	if ( ! empty( $padding_tablet_obj ) ) {
+		$tablet_spacing['padding'] = $padding_tablet_obj;
 	}
-	if ( ! empty( $border_radius_mobile_obj ) ) {
-		$mobile_args['border'] = array( 'radius' => $border_radius_mobile_obj );
+	if ( ! empty( $margin_tablet_obj ) ) {
+		$tablet_spacing['margin'] = $margin_tablet_obj;
 	}
-	if ( ! empty( $mobile_args ) ) {
-		$mobile_out = wp_style_engine_get_styles( $mobile_args, array( 'selector' => $root_sel ) );
-		if ( ! empty( $mobile_out['css'] ) ) {
-			$scoped_css[] = '@media(max-width:767px){' . $mobile_out['css'] . '}';
-		}
+	$tablet_args['spacing'] = $tablet_spacing;
+}
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$tablet_args['border'] = array( 'radius' => $border_radius_tablet_obj );
+}
+if ( ! empty( $tablet_args ) ) {
+	$tablet_out = wp_style_engine_get_styles( $tablet_args, array( 'selector' => $root_sel ) );
+	if ( ! empty( $tablet_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $tablet_out['css'] . '}';
+	}
+}
+
+$mobile_args = array();
+if ( ! empty( $padding_mobile_obj ) || ! empty( $margin_mobile_obj ) ) {
+	$mobile_spacing = array();
+	if ( ! empty( $padding_mobile_obj ) ) {
+		$mobile_spacing['padding'] = $padding_mobile_obj;
+	}
+	if ( ! empty( $margin_mobile_obj ) ) {
+		$mobile_spacing['margin'] = $margin_mobile_obj;
+	}
+	$mobile_args['spacing'] = $mobile_spacing;
+}
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$mobile_args['border'] = array( 'radius' => $border_radius_mobile_obj );
+}
+if ( ! empty( $mobile_args ) ) {
+	$mobile_out = wp_style_engine_get_styles( $mobile_args, array( 'selector' => $root_sel ) );
+	if ( ! empty( $mobile_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $mobile_out['css'] . '}';
 	}
 }
 

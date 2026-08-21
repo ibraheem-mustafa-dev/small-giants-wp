@@ -45,40 +45,38 @@ $sgs_ps_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['st
 $sgs_ps_supports_css     = '';
 $sgs_ps_supports_classes = array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_ps_engine_input = array();
+$sgs_ps_engine_input = array();
 
-	// D635-pattern migration: background now reads from the flat backgroundColour
-	// attr (SgsColourPanel), not native style.color.background (supports.color.
-	// background is now false). Text was turned off with no replacement attr
-	// (block.json's element note: decorative-only children never inherit `color`
-	// visibly). Gradient stays native (supports.color.gradients unchanged).
-	$sgs_ps_color_args = array();
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$sgs_ps_color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( ! empty( $sgs_ps_style_group['color']['gradient'] ) ) {
-		$sgs_ps_color_args['gradient'] = (string) $sgs_ps_style_group['color']['gradient'];
-	}
-	if ( ! empty( $sgs_ps_color_args ) ) {
-		$sgs_ps_engine_input['color'] = $sgs_ps_color_args;
-	}
-	if ( ! empty( $sgs_ps_style_group['border'] ) && is_array( $sgs_ps_style_group['border'] ) ) {
-		$sgs_ps_engine_input['border'] = $sgs_ps_style_group['border'];
-	}
+// D635-pattern migration: background now reads from the flat backgroundColour
+// attr (SgsColourPanel), not native style.color.background (supports.color.
+// background is now false). Text was turned off with no replacement attr
+// (block.json's element note: decorative-only children never inherit `color`
+// visibly). Gradient stays native (supports.color.gradients unchanged).
+$sgs_ps_color_args = array();
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$sgs_ps_color_args['background'] = (string) $attributes['backgroundColour'];
+}
+if ( ! empty( $sgs_ps_style_group['color']['gradient'] ) ) {
+	$sgs_ps_color_args['gradient'] = (string) $sgs_ps_style_group['color']['gradient'];
+}
+if ( ! empty( $sgs_ps_color_args ) ) {
+	$sgs_ps_engine_input['color'] = $sgs_ps_color_args;
+}
+if ( ! empty( $sgs_ps_style_group['border'] ) && is_array( $sgs_ps_style_group['border'] ) ) {
+	$sgs_ps_engine_input['border'] = $sgs_ps_style_group['border'];
+}
 
-	if ( ! empty( $sgs_ps_engine_input ) ) {
-		$sgs_ps_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_ps_sel = '.' . $sgs_ps_uid . '.wp-block-sgs-physics-canvas';
+if ( ! empty( $sgs_ps_engine_input ) ) {
+	$sgs_ps_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_ps_sel = '.' . $sgs_ps_uid . '.wp-block-sgs-physics-canvas';
 
-		$sgs_ps_engine_styles = wp_style_engine_get_styles(
-			$sgs_ps_engine_input,
-			array( 'selector' => $sgs_ps_sel )
-		);
-		if ( ! empty( $sgs_ps_engine_styles['css'] ) ) {
-			$sgs_ps_supports_css       = $sgs_ps_engine_styles['css'];
-			$sgs_ps_supports_classes[] = $sgs_ps_uid;
-		}
+	$sgs_ps_engine_styles = wp_style_engine_get_styles(
+		$sgs_ps_engine_input,
+		array( 'selector' => $sgs_ps_sel )
+	);
+	if ( ! empty( $sgs_ps_engine_styles['css'] ) ) {
+		$sgs_ps_supports_css       = $sgs_ps_engine_styles['css'];
+		$sgs_ps_supports_classes[] = $sgs_ps_uid;
 	}
 }
 

@@ -152,7 +152,7 @@ $drawer_id = $uid . '-drawer';
 
 $scoped_css = array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+if ( ! empty( $base_margin_obj ) ) {
 	$base_margin_styles = wp_style_engine_get_styles(
 		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
 		array( 'selector' => $sel )

@@ -92,61 +92,60 @@ if ( '' !== $sgs_ai_stroke_grad['css'] ) {
 
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$style_engine_args = array();
 
-	$color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$color_args['text'] = (string) $attributes['textColour'];
-	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $color_args ) ) {
-		$style_engine_args['color'] = $color_args;
-	}
+$style_engine_args = array();
 
-	$border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
-		} elseif ( is_array( $radius_raw ) ) {
-			$radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $radius_clean ) ) {
-				$border_args['radius'] = $radius_clean;
+$color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$color_args['text'] = (string) $attributes['textColour'];
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$color_args['background'] = (string) $attributes['backgroundColour'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $color_args ) ) {
+	$style_engine_args['color'] = $color_args;
+}
+
+$border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+		$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
+	} elseif ( is_array( $radius_raw ) ) {
+		$radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			if ( ! empty( $radius_raw[ $corner ] ) ) {
+				$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 			}
 		}
-	}
-	if ( ! empty( $border_args ) ) {
-		$style_engine_args['border'] = $border_args;
-	}
-
-	if ( ! empty( $style_engine_args ) ) {
-		$scoped_styles = wp_style_engine_get_styles(
-			$style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $scoped_styles['css'] ) ) {
-			$responsive_css .= $scoped_styles['css'];
+		if ( ! empty( $radius_clean ) ) {
+			$border_args['radius'] = $radius_clean;
 		}
+	}
+}
+if ( ! empty( $border_args ) ) {
+	$style_engine_args['border'] = $border_args;
+}
+
+if ( ! empty( $style_engine_args ) ) {
+	$scoped_styles = wp_style_engine_get_styles(
+		$style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $scoped_styles['css'] ) ) {
+		$responsive_css .= $scoped_styles['css'];
 	}
 }
 

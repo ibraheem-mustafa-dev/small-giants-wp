@@ -218,157 +218,156 @@ if ( $has_bg_image_class ) {
 // emitted into CTA-SECTION'S OWN scoped <style> — do NOT pass these as
 // wrapper `extra_styles` (that path inlines). Base spacing (padding/margin)
 // is a SEPARATE mechanism the wrapper already handles scoped internally.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$cta_style_engine_args = array();
 
-	$color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $color_args ) ) {
-		$cta_style_engine_args['color'] = $color_args;
-	}
+$cta_style_engine_args = array();
 
-	$border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
-		} elseif ( is_array( $radius_raw ) ) {
-			$radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $radius_clean ) ) {
-				$border_args['radius'] = $radius_clean;
+$color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $color_args ) ) {
+	$cta_style_engine_args['color'] = $color_args;
+}
+
+$border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+		$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
+	} elseif ( is_array( $radius_raw ) ) {
+		$radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			if ( ! empty( $radius_raw[ $corner ] ) ) {
+				$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 			}
 		}
-	}
-	if ( ! empty( $border_args ) ) {
-		$cta_style_engine_args['border'] = $border_args;
-	}
-
-	if ( ! empty( $cta_style_engine_args ) ) {
-		$cta_scoped_styles = wp_style_engine_get_styles(
-			$cta_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $cta_scoped_styles['css'] ) ) {
-			$responsive_css .= $cta_scoped_styles['css'];
+		if ( ! empty( $radius_clean ) ) {
+			$border_args['radius'] = $radius_clean;
 		}
 	}
+}
+if ( ! empty( $border_args ) ) {
+	$cta_style_engine_args['border'] = $border_args;
+}
 
-	// Typography — declared selector (block.json selectors.typography.root)
-	// targets .sgs-cta-section__headline.
-	$typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+if ( ! empty( $cta_style_engine_args ) ) {
+	$cta_scoped_styles = wp_style_engine_get_styles(
+		$cta_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $cta_scoped_styles['css'] ) ) {
+		$responsive_css .= $cta_scoped_styles['css'];
 	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-	}
-	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
-	}
-	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
-	}
+}
 
-	/*
-	 * Native typography emits to the block ROOT (`$root_sel`), not a child
-	 * selector — the headline lives in an InnerBlocks `sgs/heading` child
-	 * (live DOM: `.sgs-cta-section__content > h2.wp-block-sgs-heading`).
-	 *
-	 * Emitting to the block ROOT instead is what core does — core/group,
-	 * core/cover and core/columns all declare typography supports with NO
-	 * selector pointing at a child, and rely on plain CSS inheritance to reach
-	 * their InnerBlocks children.
-	 *
-	 * This also gives the exact semantic Bean specified: a DECLARATION always
-	 * beats an INHERITED value regardless of specificity, so an unset child
-	 * inherits this container default, while any child that sets its own
-	 * typography wins automatically. Container overrides the default, never the
-	 * child's own choice — the "LAYERED DEFAULT + OVERRIDE" the verification bar
-	 * calls legitimate, as opposed to a TRUE DUPLICATE.
-	 *
-	 * ⚠ MEASURED LIMIT — font-size does NOT reach a heading child, and cannot.
-	 * Verified live on the canary 2026-08-15: with the container at 44px, an
-	 * unset `sgs/heading` child still computed 33.09px, not the container's
-	 * 38.76px. The block is innocent — `sgs/heading` declares `fontSize
-	 * default={}` and emits no base font-size (D338). The winner is
-	 * theme.json's `styles.elements.h2.typography.fontSize`, which is a
-	 * DECLARATION on the h2 element, and a declaration always beats an
-	 * inherited value.
-	 *
-	 * So inheritance carries only the properties theme.json does NOT declare on
-	 * the element — text-align among them. For font-size on a heading child the
-	 * container would need a descendant-scoped rule or a CSS custom property
-	 * the child consumes, which is exactly what the Mama's Munches draft does
-	 * (`.sgs-featured-product .sgs-section-heading__intro{font-size:16px}`).
-	 * Not built here: no defect currently demands it, and adding it would put
-	 * the container back to out-declaring its children.
-	 */
-	if ( ! empty( $typography_args ) ) {
-		$typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $typography_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $typography_scoped['css'] ) ) {
-			$responsive_css .= $typography_scoped['css'];
-		}
-	}
+// Typography — declared selector (block.json selectors.typography.root)
+// targets .sgs-cta-section__headline.
+$typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
+	$typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
+}
+if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
+	$typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
+}
+if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
+	$typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
+}
+if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
+	$typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
+}
 
-	/*
-	 * Text alignment reaches this block by TWO routes.
-	 *
-	 * 1. NATIVE CONTROL — block.json declares `supports.typography.textAlign`,
-	 *    so WordPress renders the "Align text" toolbar button. Verified live on
-	 *    the canary: clicking it writes `style.typography.textAlign`. Because the
-	 *    same supports block sets `__experimentalSkipSerialization`, WP does NOT
-	 *    emit the CSS itself — this file has to.
-	 *
-	 * 2. CLONING CONVERTER — the DB carries a real routing row for this block
-	 *    (`block_attributes`: textAlign → css_property `text-align`, css_element
-	 *    `headline`), so the converter writes the TOP-LEVEL `textAlign` attribute
-	 *    on cloned content. That read is therefore load-bearing and must stay:
-	 *    swapping the key over to the native one — the obvious "match the
-	 *    sibling" fix — would silently break every cloned CTA.
-	 *
-	 * The client's own editor action wins over a cloned default, so the native
-	 * key is checked first and the converter key is the fallback.
-	 */
-	$cta_text_align = '';
-	if ( isset( $attributes['style']['typography']['textAlign'] ) ) {
-		$cta_text_align = $attributes['style']['typography']['textAlign'];
-	} elseif ( isset( $attributes['textAlign'] ) ) {
-		$cta_text_align = $attributes['textAlign'];
+/*
+ * Native typography emits to the block ROOT (`$root_sel`), not a child
+ * selector — the headline lives in an InnerBlocks `sgs/heading` child
+ * (live DOM: `.sgs-cta-section__content > h2.wp-block-sgs-heading`).
+ *
+ * Emitting to the block ROOT instead is what core does — core/group,
+ * core/cover and core/columns all declare typography supports with NO
+ * selector pointing at a child, and rely on plain CSS inheritance to reach
+ * their InnerBlocks children.
+ *
+ * This also gives the exact semantic Bean specified: a DECLARATION always
+ * beats an INHERITED value regardless of specificity, so an unset child
+ * inherits this container default, while any child that sets its own
+ * typography wins automatically. Container overrides the default, never the
+ * child's own choice — the "LAYERED DEFAULT + OVERRIDE" the verification bar
+ * calls legitimate, as opposed to a TRUE DUPLICATE.
+ *
+ * ⚠ MEASURED LIMIT — font-size does NOT reach a heading child, and cannot.
+ * Verified live on the canary 2026-08-15: with the container at 44px, an
+ * unset `sgs/heading` child still computed 33.09px, not the container's
+ * 38.76px. The block is innocent — `sgs/heading` declares `fontSize
+ * default={}` and emits no base font-size (D338). The winner is
+ * theme.json's `styles.elements.h2.typography.fontSize`, which is a
+ * DECLARATION on the h2 element, and a declaration always beats an
+ * inherited value.
+ *
+ * So inheritance carries only the properties theme.json does NOT declare on
+ * the element — text-align among them. For font-size on a heading child the
+ * container would need a descendant-scoped rule or a CSS custom property
+ * the child consumes, which is exactly what the Mama's Munches draft does
+ * (`.sgs-featured-product .sgs-section-heading__intro{font-size:16px}`).
+ * Not built here: no defect currently demands it, and adding it would put
+ * the container back to out-declaring its children.
+ */
+if ( ! empty( $typography_args ) ) {
+	$typography_scoped = wp_style_engine_get_styles(
+		array( 'typography' => $typography_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $typography_scoped['css'] ) ) {
+		$responsive_css .= $typography_scoped['css'];
 	}
-	if ( in_array( $cta_text_align, array( 'left', 'center', 'right' ), true ) ) {
-		$responsive_css .= $root_sel . '{text-align:' . esc_attr( $cta_text_align ) . '}';
-	}
+}
+
+/*
+ * Text alignment reaches this block by TWO routes.
+ *
+ * 1. NATIVE CONTROL — block.json declares `supports.typography.textAlign`,
+ *    so WordPress renders the "Align text" toolbar button. Verified live on
+ *    the canary: clicking it writes `style.typography.textAlign`. Because the
+ *    same supports block sets `__experimentalSkipSerialization`, WP does NOT
+ *    emit the CSS itself — this file has to.
+ *
+ * 2. CLONING CONVERTER — the DB carries a real routing row for this block
+ *    (`block_attributes`: textAlign → css_property `text-align`, css_element
+ *    `headline`), so the converter writes the TOP-LEVEL `textAlign` attribute
+ *    on cloned content. That read is therefore load-bearing and must stay:
+ *    swapping the key over to the native one — the obvious "match the
+ *    sibling" fix — would silently break every cloned CTA.
+ *
+ * The client's own editor action wins over a cloned default, so the native
+ * key is checked first and the converter key is the fallback.
+ */
+$cta_text_align = '';
+if ( isset( $attributes['style']['typography']['textAlign'] ) ) {
+	$cta_text_align = $attributes['style']['typography']['textAlign'];
+} elseif ( isset( $attributes['textAlign'] ) ) {
+	$cta_text_align = $attributes['textAlign'];
+}
+if ( in_array( $cta_text_align, array( 'left', 'center', 'right' ), true ) ) {
+	$responsive_css .= $root_sel . '{text-align:' . esc_attr( $cta_text_align ) . '}';
 }
 
 // Skip-serialised `color` support also stops WP auto-adding the standard

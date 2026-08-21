@@ -92,61 +92,60 @@ if ( '' !== $tab_preset_bg_slug ) {
 // Read the resolved values from $attributes['style'] and emit into THIS
 // TAB'S OWN scoped <style> via the stable core API. Mirrors sgs/hero + sgs/tabs.
 $tab_responsive_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$tab_style_engine_args = array();
 
-	$tab_color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$tab_color_args['text'] = (string) $attributes['textColour'];
-	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$tab_color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$tab_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $tab_color_args ) ) {
-		$tab_style_engine_args['color'] = $tab_color_args;
-	}
+$tab_style_engine_args = array();
 
-	$tab_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$tab_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$tab_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$tab_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$tab_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $tab_radius_raw ) && '' !== $tab_radius_raw ) {
-			$tab_border_args['radius'] = sgs_css_length_sanitise( $tab_radius_raw );
-		} elseif ( is_array( $tab_radius_raw ) ) {
-			$tab_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $tab_radius_raw[ $corner ] ) ) {
-					$tab_radius_clean[ $corner ] = sgs_css_length_sanitise( $tab_radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $tab_radius_clean ) ) {
-				$tab_border_args['radius'] = $tab_radius_clean;
+$tab_color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$tab_color_args['text'] = (string) $attributes['textColour'];
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$tab_color_args['background'] = (string) $attributes['backgroundColour'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$tab_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $tab_color_args ) ) {
+	$tab_style_engine_args['color'] = $tab_color_args;
+}
+
+$tab_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$tab_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$tab_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$tab_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$tab_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $tab_radius_raw ) && '' !== $tab_radius_raw ) {
+		$tab_border_args['radius'] = sgs_css_length_sanitise( $tab_radius_raw );
+	} elseif ( is_array( $tab_radius_raw ) ) {
+		$tab_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			if ( ! empty( $tab_radius_raw[ $corner ] ) ) {
+				$tab_radius_clean[ $corner ] = sgs_css_length_sanitise( $tab_radius_raw[ $corner ] );
 			}
 		}
-	}
-	if ( ! empty( $tab_border_args ) ) {
-		$tab_style_engine_args['border'] = $tab_border_args;
-	}
-
-	if ( ! empty( $tab_style_engine_args ) ) {
-		$tab_scoped_styles = wp_style_engine_get_styles(
-			$tab_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $tab_scoped_styles['css'] ) ) {
-			$tab_responsive_css .= $tab_scoped_styles['css'];
+		if ( ! empty( $tab_radius_clean ) ) {
+			$tab_border_args['radius'] = $tab_radius_clean;
 		}
+	}
+}
+if ( ! empty( $tab_border_args ) ) {
+	$tab_style_engine_args['border'] = $tab_border_args;
+}
+
+if ( ! empty( $tab_style_engine_args ) ) {
+	$tab_scoped_styles = wp_style_engine_get_styles(
+		$tab_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $tab_scoped_styles['css'] ) ) {
+		$tab_responsive_css .= $tab_scoped_styles['css'];
 	}
 }
 

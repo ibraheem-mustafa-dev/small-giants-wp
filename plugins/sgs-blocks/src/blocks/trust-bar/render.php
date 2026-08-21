@@ -155,47 +155,46 @@ $root_sel  = $uid_scope . '.wp-block-sgs-trust-bar';
 // internally (reads $attributes['style']['spacing'] directly) — not duplicated
 // here.
 $tb_extra_scoped_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$tb_style_engine_args = array();
 
-	$tb_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$tb_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$tb_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$tb_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$tb_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $tb_radius_raw ) && '' !== $tb_radius_raw ) {
-			$tb_border_args['radius'] = sgs_css_length_sanitise( $tb_radius_raw );
-		} elseif ( is_array( $tb_radius_raw ) ) {
-			$tb_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $tb_corner ) {
-				if ( ! empty( $tb_radius_raw[ $tb_corner ] ) ) {
-					$tb_radius_clean[ $tb_corner ] = sgs_css_length_sanitise( $tb_radius_raw[ $tb_corner ] );
-				}
-			}
-			if ( ! empty( $tb_radius_clean ) ) {
-				$tb_border_args['radius'] = $tb_radius_clean;
+$tb_style_engine_args = array();
+
+$tb_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$tb_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$tb_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$tb_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$tb_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $tb_radius_raw ) && '' !== $tb_radius_raw ) {
+		$tb_border_args['radius'] = sgs_css_length_sanitise( $tb_radius_raw );
+	} elseif ( is_array( $tb_radius_raw ) ) {
+		$tb_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $tb_corner ) {
+			if ( ! empty( $tb_radius_raw[ $tb_corner ] ) ) {
+				$tb_radius_clean[ $tb_corner ] = sgs_css_length_sanitise( $tb_radius_raw[ $tb_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $tb_border_args ) ) {
-		$tb_style_engine_args['border'] = $tb_border_args;
-	}
-
-	if ( ! empty( $tb_style_engine_args ) ) {
-		$tb_scoped_styles = wp_style_engine_get_styles(
-			$tb_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $tb_scoped_styles['css'] ) ) {
-			$tb_extra_scoped_css .= $tb_scoped_styles['css'];
+		if ( ! empty( $tb_radius_clean ) ) {
+			$tb_border_args['radius'] = $tb_radius_clean;
 		}
+	}
+}
+if ( ! empty( $tb_border_args ) ) {
+	$tb_style_engine_args['border'] = $tb_border_args;
+}
+
+if ( ! empty( $tb_style_engine_args ) ) {
+	$tb_scoped_styles = wp_style_engine_get_styles(
+		$tb_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $tb_scoped_styles['css'] ) ) {
+		$tb_extra_scoped_css .= $tb_scoped_styles['css'];
 	}
 }
 

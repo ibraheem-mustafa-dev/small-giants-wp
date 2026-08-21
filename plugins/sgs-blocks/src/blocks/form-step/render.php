@@ -47,57 +47,55 @@ $sgs_fs_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['st
 $sgs_fs_supports_css     = '';
 $sgs_fs_supports_classes = array( 'sgs-form-step' );
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_fs_style_engine_input = array();
+$sgs_fs_style_engine_input = array();
 
-	// SGS flat colour attrs (D635 pattern — native color.text/color.background
-	// supports are off; the SgsColourPanel writes here instead). Gradient stays
-	// on the WP-native style.color.gradient path (gradients support unchanged).
-	$sgs_fs_color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$sgs_fs_color_args['text'] = (string) $attributes['textColour'];
+// SGS flat colour attrs (D635 pattern — native color.text/color.background
+// supports are off; the SgsColourPanel writes here instead). Gradient stays
+// on the WP-native style.color.gradient path (gradients support unchanged).
+$sgs_fs_color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$sgs_fs_color_args['text'] = (string) $attributes['textColour'];
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$sgs_fs_color_args['background'] = (string) $attributes['backgroundColour'];
+}
+if ( isset( $sgs_fs_style_group['color']['gradient'] ) && '' !== $sgs_fs_style_group['color']['gradient'] ) {
+	$sgs_fs_color_args['gradient'] = (string) $sgs_fs_style_group['color']['gradient'];
+}
+if ( ! empty( $sgs_fs_color_args ) ) {
+	$sgs_fs_style_engine_input['color'] = $sgs_fs_color_args;
+}
+if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['border'] ) ) {
+	$sgs_fs_border_raw = $sgs_fs_style_group['border'];
+	$sgs_fs_border     = array();
+	if ( isset( $sgs_fs_border_raw['color'] ) && '' !== $sgs_fs_border_raw['color'] ) {
+		$sgs_fs_border['color'] = (string) $sgs_fs_border_raw['color'];
 	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$sgs_fs_color_args['background'] = (string) $attributes['backgroundColour'];
+	if ( isset( $sgs_fs_border_raw['style'] ) && '' !== $sgs_fs_border_raw['style'] ) {
+		$sgs_fs_border['style'] = sgs_css_keyword_sanitise( $sgs_fs_border_raw['style'] );
 	}
-	if ( isset( $sgs_fs_style_group['color']['gradient'] ) && '' !== $sgs_fs_style_group['color']['gradient'] ) {
-		$sgs_fs_color_args['gradient'] = (string) $sgs_fs_style_group['color']['gradient'];
+	if ( isset( $sgs_fs_border_raw['width'] ) && '' !== $sgs_fs_border_raw['width'] ) {
+		$sgs_fs_border['width'] = $sgs_fs_border_raw['width'];
 	}
-	if ( ! empty( $sgs_fs_color_args ) ) {
-		$sgs_fs_style_engine_input['color'] = $sgs_fs_color_args;
+	if ( isset( $sgs_fs_border_raw['radius'] ) && '' !== $sgs_fs_border_raw['radius'] ) {
+		$sgs_fs_border['radius'] = $sgs_fs_border_raw['radius'];
 	}
-	if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['border'] ) ) {
-		$sgs_fs_border_raw = $sgs_fs_style_group['border'];
-		$sgs_fs_border     = array();
-		if ( isset( $sgs_fs_border_raw['color'] ) && '' !== $sgs_fs_border_raw['color'] ) {
-			$sgs_fs_border['color'] = (string) $sgs_fs_border_raw['color'];
-		}
-		if ( isset( $sgs_fs_border_raw['style'] ) && '' !== $sgs_fs_border_raw['style'] ) {
-			$sgs_fs_border['style'] = sgs_css_keyword_sanitise( $sgs_fs_border_raw['style'] );
-		}
-		if ( isset( $sgs_fs_border_raw['width'] ) && '' !== $sgs_fs_border_raw['width'] ) {
-			$sgs_fs_border['width'] = $sgs_fs_border_raw['width'];
-		}
-		if ( isset( $sgs_fs_border_raw['radius'] ) && '' !== $sgs_fs_border_raw['radius'] ) {
-			$sgs_fs_border['radius'] = $sgs_fs_border_raw['radius'];
-		}
-		if ( ! empty( $sgs_fs_border ) ) {
-			$sgs_fs_style_engine_input['border'] = $sgs_fs_border;
-		}
+	if ( ! empty( $sgs_fs_border ) ) {
+		$sgs_fs_style_engine_input['border'] = $sgs_fs_border;
 	}
+}
 
-	if ( ! empty( $sgs_fs_style_engine_input ) ) {
-		$sgs_fs_uid = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_fs_sel = '.' . $sgs_fs_uid . '.sgs-form-step';
+if ( ! empty( $sgs_fs_style_engine_input ) ) {
+	$sgs_fs_uid = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_fs_sel = '.' . $sgs_fs_uid . '.sgs-form-step';
 
-		$sgs_fs_engine_styles = wp_style_engine_get_styles(
-			$sgs_fs_style_engine_input,
-			array( 'selector' => $sgs_fs_sel )
-		);
-		if ( ! empty( $sgs_fs_engine_styles['css'] ) ) {
-			$sgs_fs_supports_css       = $sgs_fs_engine_styles['css'];
-			$sgs_fs_supports_classes[] = $sgs_fs_uid;
-		}
+	$sgs_fs_engine_styles = wp_style_engine_get_styles(
+		$sgs_fs_style_engine_input,
+		array( 'selector' => $sgs_fs_sel )
+	);
+	if ( ! empty( $sgs_fs_engine_styles['css'] ) ) {
+		$sgs_fs_supports_css       = $sgs_fs_engine_styles['css'];
+		$sgs_fs_supports_classes[] = $sgs_fs_uid;
 	}
 }
 

@@ -216,7 +216,7 @@ if ( '' !== $font_size_css ) {
 
 // --- Base margin (WP-native style.spacing.margin, skip-serialised) emitted
 // scoped via the stable core style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+if ( ! empty( $base_margin_obj ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
 		array( 'selector' => $root_sel )
@@ -300,22 +300,21 @@ if ( null !== $margin_mob_val ) {
 // --- WP colour support (skip-serialised) — custom hex/rgb emitted scoped via
 // the style engine; preset SLUGS get the standard has-* classes re-added
 // manually in step 5. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$color_scoped_styles = wp_style_engine_get_styles(
-			array( 'color' => $color_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $color_scoped_styles['css'] ) ) {
-			$scoped_css[] = $color_scoped_styles['css'];
-		}
+
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$color_scoped_styles = wp_style_engine_get_styles(
+		array( 'color' => $color_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $color_scoped_styles['css'] ) ) {
+		$scoped_css[] = $color_scoped_styles['css'];
 	}
 }
 

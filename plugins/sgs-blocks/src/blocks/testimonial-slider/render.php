@@ -121,99 +121,98 @@ $classes[] = $uid;
 // max-width is a SEPARATE mechanism the wrapper already handles scoped
 // internally — not duplicated here.
 $slider_scoped_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$slider_style_engine_args = array();
 
-	$slider_color_args = array();
-	if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-		$slider_color_args['text'] = (string) $attributes['textColour'];
-	}
-	if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-		$slider_color_args['background'] = (string) $attributes['backgroundColour'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$slider_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $slider_color_args ) ) {
-		$slider_style_engine_args['color'] = $slider_color_args;
-	}
+$slider_style_engine_args = array();
 
-	$slider_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$slider_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$slider_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$slider_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$slider_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $slider_radius_raw ) && '' !== $slider_radius_raw ) {
-			$slider_border_args['radius'] = sgs_css_length_sanitise( $slider_radius_raw );
-		} elseif ( is_array( $slider_radius_raw ) ) {
-			$slider_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $slider_radius_raw[ $corner ] ) ) {
-					$slider_radius_clean[ $corner ] = sgs_css_length_sanitise( $slider_radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $slider_radius_clean ) ) {
-				$slider_border_args['radius'] = $slider_radius_clean;
+$slider_color_args = array();
+if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
+	$slider_color_args['text'] = (string) $attributes['textColour'];
+}
+if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
+	$slider_color_args['background'] = (string) $attributes['backgroundColour'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$slider_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $slider_color_args ) ) {
+	$slider_style_engine_args['color'] = $slider_color_args;
+}
+
+$slider_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$slider_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$slider_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$slider_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$slider_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $slider_radius_raw ) && '' !== $slider_radius_raw ) {
+		$slider_border_args['radius'] = sgs_css_length_sanitise( $slider_radius_raw );
+	} elseif ( is_array( $slider_radius_raw ) ) {
+		$slider_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			if ( ! empty( $slider_radius_raw[ $corner ] ) ) {
+				$slider_radius_clean[ $corner ] = sgs_css_length_sanitise( $slider_radius_raw[ $corner ] );
 			}
 		}
-	}
-	if ( ! empty( $slider_border_args ) ) {
-		$slider_style_engine_args['border'] = $slider_border_args;
-	}
-
-	if ( ! empty( $slider_style_engine_args ) ) {
-		$slider_scoped_styles = wp_style_engine_get_styles(
-			$slider_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $slider_scoped_styles['css'] ) ) {
-			$slider_scoped_css .= $slider_scoped_styles['css'];
+		if ( ! empty( $slider_radius_clean ) ) {
+			$slider_border_args['radius'] = $slider_radius_clean;
 		}
 	}
+}
+if ( ! empty( $slider_border_args ) ) {
+	$slider_style_engine_args['border'] = $slider_border_args;
+}
 
-	// Typography — the block itself renders no direct text node (the quote
-	// text belongs to the child sgs/testimonial InnerBlocks), so this scopes
-	// to the root element, not the stale/unused block.json `selectors.typography`
-	// (.sgs-testimonial-slider__quote — no element in this block's own markup
-	// ever carried that class).
-	$slider_typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$slider_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+if ( ! empty( $slider_style_engine_args ) ) {
+	$slider_scoped_styles = wp_style_engine_get_styles(
+		$slider_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $slider_scoped_styles['css'] ) ) {
+		$slider_scoped_css .= $slider_scoped_styles['css'];
 	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$slider_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+
+// Typography — the block itself renders no direct text node (the quote
+// text belongs to the child sgs/testimonial InnerBlocks), so this scopes
+// to the root element, not the stale/unused block.json `selectors.typography`
+// (.sgs-testimonial-slider__quote — no element in this block's own markup
+// ever carried that class).
+$slider_typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$slider_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$slider_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
+	$slider_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
+}
+if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
+	$slider_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
+}
+if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
+	$slider_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
+}
+if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
+	$slider_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
+}
+if ( ! empty( $slider_typography_args ) ) {
+	$slider_typography_scoped = wp_style_engine_get_styles(
+		array( 'typography' => $slider_typography_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $slider_typography_scoped['css'] ) ) {
+		$slider_scoped_css .= $slider_typography_scoped['css'];
 	}
-	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$slider_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
-	}
-	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$slider_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$slider_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$slider_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
-	}
-	if ( ! empty( $slider_typography_args ) ) {
-		$slider_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $slider_typography_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $slider_typography_scoped['css'] ) ) {
-			$slider_scoped_css .= $slider_typography_scoped['css'];
-		}
-	}
-	if ( isset( $attributes['style']['typography']['textAlign'] ) && '' !== $attributes['style']['typography']['textAlign'] ) {
-		$slider_scoped_css .= $root_sel . '{text-align:' . sgs_css_keyword_sanitise( $attributes['style']['typography']['textAlign'] ) . '}';
-	}
+}
+if ( isset( $attributes['style']['typography']['textAlign'] ) && '' !== $attributes['style']['typography']['textAlign'] ) {
+	$slider_scoped_css .= $root_sel . '{text-align:' . sgs_css_keyword_sanitise( $attributes['style']['typography']['textAlign'] ) . '}';
 }
 
 // Skip-serialised `color` support also stops WP auto-adding the standard

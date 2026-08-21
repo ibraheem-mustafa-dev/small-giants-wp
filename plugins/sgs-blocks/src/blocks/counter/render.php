@@ -122,22 +122,21 @@ if ( $label_colour ) {
 // the wrapper. `textAlign` is class-based (`has-text-align-*`, applied by WP
 // core automatically) — no scoped rule needed for it.
 // ---------------------------------------------------------------------------
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$typography_args['fontSize'] = $attributes['style']['typography']['fontSize'];
-	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$typography_args['lineHeight'] = $attributes['style']['typography']['lineHeight'];
-	}
-	if ( ! empty( $typography_args ) ) {
-		$native_typo_styles = wp_style_engine_get_styles(
-			array( 'typography' => $typography_args ),
-			array( 'selector' => $number_sel )
-		);
-		if ( ! empty( $native_typo_styles['css'] ) ) {
-			$scoped_css[] = $native_typo_styles['css'];
-		}
+
+$typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$typography_args['fontSize'] = $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$typography_args['lineHeight'] = $attributes['style']['typography']['lineHeight'];
+}
+if ( ! empty( $typography_args ) ) {
+	$native_typo_styles = wp_style_engine_get_styles(
+		array( 'typography' => $typography_args ),
+		array( 'selector' => $number_sel )
+	);
+	if ( ! empty( $native_typo_styles['css'] ) ) {
+		$scoped_css[] = $native_typo_styles['css'];
 	}
 }
 
@@ -198,59 +197,57 @@ $border_width_val = isset( $attributes['style']['border']['width'] ) ? sgs_css_l
 $border_style_val = isset( $attributes['style']['border']['style'] ) ? sgs_css_keyword_sanitise( $attributes['style']['border']['style'] ) : '';
 $border_color_val = isset( $attributes['style']['border']['color'] ) ? (string) $attributes['style']['border']['color'] : '';
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
+$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	$border_args = array();
-	if ( null !== $base_border_radius ) {
-		$border_args['radius'] = $base_border_radius;
-	}
-	if ( '' !== $border_width_val ) {
-		$border_args['width'] = $border_width_val;
-	}
-	if ( '' !== $border_style_val ) {
-		$border_args['style'] = $border_style_val;
-	}
-	if ( '' !== $border_color_val ) {
-		$border_args['color'] = $border_color_val;
-	}
-	if ( ! empty( $border_args ) ) {
-		$base_style_engine_args['border'] = $border_args;
-	}
+$border_args = array();
+if ( null !== $base_border_radius ) {
+	$border_args['radius'] = $base_border_radius;
+}
+if ( '' !== $border_width_val ) {
+	$border_args['width'] = $border_width_val;
+}
+if ( '' !== $border_style_val ) {
+	$border_args['style'] = $border_style_val;
+}
+if ( '' !== $border_color_val ) {
+	$border_args['color'] = $border_color_val;
+}
+if ( ! empty( $border_args ) ) {
+	$base_style_engine_args['border'] = $border_args;
+}
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( '' !== $style_color_gradient ) {
-		$color_args['gradient'] = $style_color_gradient;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( '' !== $style_color_gradient ) {
+	$color_args['gradient'] = $style_color_gradient;
+}
+if ( ! empty( $color_args ) ) {
+	$base_style_engine_args['color'] = $color_args;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

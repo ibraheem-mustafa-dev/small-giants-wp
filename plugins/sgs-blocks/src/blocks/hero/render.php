@@ -787,82 +787,81 @@ if ( $split_image_bleed ) {
 // `extra_styles` — that path inlines). Base spacing (padding/margin) is a
 // SEPARATE mechanism the wrapper already handles scoped internally (reads
 // $attributes['style']['spacing'] directly) — not duplicated here.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$hero_style_engine_args = array();
 
-	$border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
-		} elseif ( is_array( $radius_raw ) ) {
-			$radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $radius_clean ) ) {
-				$border_args['radius'] = $radius_clean;
+$hero_style_engine_args = array();
+
+$border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+		$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
+	} elseif ( is_array( $radius_raw ) ) {
+		$radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			if ( ! empty( $radius_raw[ $corner ] ) ) {
+				$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 			}
 		}
-	}
-	if ( ! empty( $border_args ) ) {
-		$hero_style_engine_args['border'] = $border_args;
-	}
-
-	if ( ! empty( $hero_style_engine_args ) ) {
-		$hero_scoped_styles = wp_style_engine_get_styles(
-			$hero_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $hero_scoped_styles['css'] ) ) {
-			$responsive_css .= $hero_scoped_styles['css'];
+		if ( ! empty( $radius_clean ) ) {
+			$border_args['radius'] = $radius_clean;
 		}
 	}
+}
+if ( ! empty( $border_args ) ) {
+	$hero_style_engine_args['border'] = $border_args;
+}
 
-	// Typography — declared selector (block.json selectors.typography.root)
-	// targets .sgs-hero__headline, so scope the rule there rather than root_sel.
-	$typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+if ( ! empty( $hero_style_engine_args ) ) {
+	$hero_scoped_styles = wp_style_engine_get_styles(
+		$hero_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $hero_scoped_styles['css'] ) ) {
+		$responsive_css .= $hero_scoped_styles['css'];
 	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+
+// Typography — declared selector (block.json selectors.typography.root)
+// targets .sgs-hero__headline, so scope the rule there rather than root_sel.
+$typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
+	$typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
+}
+if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
+	$typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
+}
+if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
+	$typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
+}
+if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
+	$typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
+}
+if ( ! empty( $typography_args ) ) {
+	$typography_scoped = wp_style_engine_get_styles(
+		array( 'typography' => $typography_args ),
+		array( 'selector' => $root_sel . ' .sgs-hero__headline' )
+	);
+	if ( ! empty( $typography_scoped['css'] ) ) {
+		$responsive_css .= $typography_scoped['css'];
 	}
-	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
-	}
-	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
-	}
-	if ( ! empty( $typography_args ) ) {
-		$typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $typography_args ),
-			array( 'selector' => $root_sel . ' .sgs-hero__headline' )
-		);
-		if ( ! empty( $typography_scoped['css'] ) ) {
-			$responsive_css .= $typography_scoped['css'];
-		}
-	}
-	if ( isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
-		$responsive_css .= $root_sel . ' .sgs-hero__headline{text-align:' . $attributes['textAlign'] . '}';
-	}
+}
+if ( isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
+	$responsive_css .= $root_sel . ' .sgs-hero__headline{text-align:' . $attributes['textAlign'] . '}';
 }
 
 // --- Resting border gradient (D701) — masked ::before ring, mirrors the

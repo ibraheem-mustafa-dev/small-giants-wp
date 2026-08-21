@@ -472,49 +472,48 @@ $scoped_css_parts[] = sgs_responsive_css_rule(
 // populated, so emit as ONE scoped #uid rule via wp_style_engine_get_styles()
 // (the stable core API WP core itself uses for `layout` support) instead of
 // inline — mirrors sgs/container's wrapper pattern exactly.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
-	if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
-		$base_style_engine_args['spacing'] = array();
-		if ( ! empty( $base_spacing_padding ) ) {
-			$base_style_engine_args['spacing']['padding'] = $base_spacing_padding;
-		}
-		if ( ! empty( $base_spacing_margin ) ) {
-			$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
-		}
-	}
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => ".{$uid}.sgs-button" )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css_parts[] = $base_scoped_styles['css'];
-		}
-	}
 
-	// WP-native `color` support (skip-serialised) — a custom hex/rgb value set
-	// via the Styles panel is emitted scoped instead of auto-inlined. Preset
-	// slug values (textColor/backgroundColor) never reach $attributes['style'];
-	// those get the has-* classes in step 5 instead.
-	if ( '' !== $style_colour_text || '' !== $style_colour_bg ) {
-		$colour_style_engine_args = array( 'color' => array() );
-		if ( '' !== $style_colour_text ) {
-			$colour_style_engine_args['color']['text'] = $style_colour_text;
-		}
-		if ( '' !== $style_colour_bg ) {
-			$colour_style_engine_args['color']['background'] = $style_colour_bg;
-		}
-		$colour_scoped_styles = wp_style_engine_get_styles(
-			$colour_style_engine_args,
-			array( 'selector' => ".{$uid}.sgs-button" )
-		);
-		if ( ! empty( $colour_scoped_styles['css'] ) ) {
-			$scoped_css_parts[] = $colour_scoped_styles['css'];
-		}
+$base_style_engine_args = array();
+if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
+	$base_style_engine_args['spacing'] = array();
+	if ( ! empty( $base_spacing_padding ) ) {
+		$base_style_engine_args['spacing']['padding'] = $base_spacing_padding;
+	}
+	if ( ! empty( $base_spacing_margin ) ) {
+		$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
+	}
+}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => ".{$uid}.sgs-button" )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css_parts[] = $base_scoped_styles['css'];
+	}
+}
+
+// WP-native `color` support (skip-serialised) — a custom hex/rgb value set
+// via the Styles panel is emitted scoped instead of auto-inlined. Preset
+// slug values (textColor/backgroundColor) never reach $attributes['style'];
+// those get the has-* classes in step 5 instead.
+if ( '' !== $style_colour_text || '' !== $style_colour_bg ) {
+	$colour_style_engine_args = array( 'color' => array() );
+	if ( '' !== $style_colour_text ) {
+		$colour_style_engine_args['color']['text'] = $style_colour_text;
+	}
+	if ( '' !== $style_colour_bg ) {
+		$colour_style_engine_args['color']['background'] = $style_colour_bg;
+	}
+	$colour_scoped_styles = wp_style_engine_get_styles(
+		$colour_style_engine_args,
+		array( 'selector' => ".{$uid}.sgs-button" )
+	);
+	if ( ! empty( $colour_scoped_styles['css'] ) ) {
+		$scoped_css_parts[] = $colour_scoped_styles['css'];
 	}
 }
 

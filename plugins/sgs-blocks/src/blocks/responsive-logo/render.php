@@ -260,29 +260,28 @@ $scoped_css[] = sgs_responsive_css_rule(
 
 // --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
 // scoped via the stable core style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
-		? $attributes['style']['spacing']['padding']
-		: array();
-	$base_margin_obj  = ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) )
-		? $attributes['style']['spacing']['margin']
-		: array();
 
-	if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
-		$spacing_args = array();
-		if ( ! empty( $base_padding_obj ) ) {
-			$spacing_args['padding'] = $base_padding_obj;
-		}
-		if ( ! empty( $base_margin_obj ) ) {
-			$spacing_args['margin'] = $base_margin_obj;
-		}
-		$base_scoped_styles = wp_style_engine_get_styles(
-			array( 'spacing' => $spacing_args ),
-			array( 'selector' => $sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+$base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
+	? $attributes['style']['spacing']['padding']
+	: array();
+$base_margin_obj  = ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) )
+	? $attributes['style']['spacing']['margin']
+	: array();
+
+if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
+	$spacing_args = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$spacing_args['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$spacing_args['margin'] = $base_margin_obj;
+	}
+	$base_scoped_styles = wp_style_engine_get_styles(
+		array( 'spacing' => $spacing_args ),
+		array( 'selector' => $sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

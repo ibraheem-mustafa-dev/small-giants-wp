@@ -62,47 +62,46 @@ $css = '';
 // Colour is NO LONGER native (D-pending, this migration) — see the SGS-OWNED
 // backgroundColour/textColour block below, which replaces the native
 // style.color.* read that used to sit here.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sf_style_engine_args = array();
 
-	$sf_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$sf_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$sf_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$sf_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$sf_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $sf_radius_raw ) && '' !== $sf_radius_raw ) {
-			$sf_border_args['radius'] = sgs_css_length_sanitise( $sf_radius_raw );
-		} elseif ( is_array( $sf_radius_raw ) ) {
-			$sf_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sf_corner ) {
-				if ( ! empty( $sf_radius_raw[ $sf_corner ] ) ) {
-					$sf_radius_clean[ $sf_corner ] = sgs_css_length_sanitise( $sf_radius_raw[ $sf_corner ] );
-				}
-			}
-			if ( ! empty( $sf_radius_clean ) ) {
-				$sf_border_args['radius'] = $sf_radius_clean;
+$sf_style_engine_args = array();
+
+$sf_border_args = array();
+if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+	$sf_border_args['color'] = (string) $attributes['style']['border']['color'];
+}
+if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+	$sf_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+}
+if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+	$sf_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
+}
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$sf_radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $sf_radius_raw ) && '' !== $sf_radius_raw ) {
+		$sf_border_args['radius'] = sgs_css_length_sanitise( $sf_radius_raw );
+	} elseif ( is_array( $sf_radius_raw ) ) {
+		$sf_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sf_corner ) {
+			if ( ! empty( $sf_radius_raw[ $sf_corner ] ) ) {
+				$sf_radius_clean[ $sf_corner ] = sgs_css_length_sanitise( $sf_radius_raw[ $sf_corner ] );
 			}
 		}
-	}
-	if ( ! empty( $sf_border_args ) ) {
-		$sf_style_engine_args['border'] = $sf_border_args;
-	}
-
-	if ( ! empty( $sf_style_engine_args ) ) {
-		$sf_scoped_styles = wp_style_engine_get_styles(
-			$sf_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $sf_scoped_styles['css'] ) ) {
-			$css .= $sf_scoped_styles['css'];
+		if ( ! empty( $sf_radius_clean ) ) {
+			$sf_border_args['radius'] = $sf_radius_clean;
 		}
+	}
+}
+if ( ! empty( $sf_border_args ) ) {
+	$sf_style_engine_args['border'] = $sf_border_args;
+}
+
+if ( ! empty( $sf_style_engine_args ) ) {
+	$sf_scoped_styles = wp_style_engine_get_styles(
+		$sf_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $sf_scoped_styles['css'] ) ) {
+		$css .= $sf_scoped_styles['css'];
 	}
 }
 
