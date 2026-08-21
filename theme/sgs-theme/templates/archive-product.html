@@ -99,6 +99,20 @@
 			<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"inherit":true,"perPage":12,"isProductCollectionBlock":true},"tagName":"div","displayLayout":{"type":"flex","columns":3},"queryContextIncludes":["collection"],"align":"wide"} -->
 			<div class="wp-block-woocommerce-product-collection alignwide">
 
+				<!-- Results count + sort. INSIDE product-collection deliberately:
+				     woocommerce/product-results-count declares usesContext ["queryId"]
+				     (verified on the canary via WP_Block_Type_Registry), so it only knows
+				     WHICH query to count when it is a descendant of the collection.
+				     catalog-sorting declares no context and would work anywhere, but is
+				     kept alongside so the two read as one toolbar.
+				     contentWidth "full" because this is a toolbar row, not a page content
+				     band — the default "normal" would render a band element inside the
+				     collection for no reason. -->
+				<!-- wp:sgs/container {"tagName":"div","className":"sgs-shop-toolbar","layout":"flex","justifyContent":"space-between","alignItems":"center","flexWrap":"wrap","contentWidth":{"desktop":"full"}} -->
+					<!-- wp:woocommerce/product-results-count /-->
+					<!-- wp:woocommerce/catalog-sorting /-->
+				<!-- /wp:sgs/container -->
+
 				<!-- wp:woocommerce/product-template -->
 					<!-- wp:sgs/product-card {"sourceMode":"wc-product","showPickers":false,"ctaBehaviour":"learn-more","showLadder":false} /-->
 				<!-- /wp:woocommerce/product-template -->
