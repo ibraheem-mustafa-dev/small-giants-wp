@@ -55,7 +55,7 @@
 					"clusters": [ "fill", "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "backgroundColor",
+						"css:background-color": "backgroundColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "native:__experimentalBorder.width",
@@ -247,11 +247,11 @@
 			"type": "string",
 			"default": ""
 		},
-		"backgroundColor": {
+		"backgroundColour": {
 			"type": "string",
 			"default": "accent"
 		},
-		"textColor": {
+		"textColour": {
 			"type": "string",
 			"default": "text"
 		},

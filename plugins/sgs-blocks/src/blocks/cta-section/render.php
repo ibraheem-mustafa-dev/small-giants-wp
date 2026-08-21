@@ -383,8 +383,8 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
 // manually (mirrors sgs/hero / sgs/quote) so preset palette colours still
 // resolve visually.
-$cta_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$cta_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+$cta_preset_text_slug = isset( $attributes['textColour'] ) ? sanitize_html_class( $attributes['textColour'] ) : '';
+$cta_preset_bg_slug   = isset( $attributes['backgroundColour'] ) ? sanitize_html_class( $attributes['backgroundColour'] ) : '';
 if ( '' !== $cta_preset_text_slug ) {
 	$classes[] = 'has-text-color';
 	$classes[] = 'has-' . $cta_preset_text_slug . '-color';
