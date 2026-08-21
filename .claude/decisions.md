@@ -1,5 +1,93 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D723 [ROUTINE] — the `scroll-smoother` fx_effects row STAYS (it is a negative proof), but its tier and plugin_set are stale against D422 (2026-08-21)
+
+**The wave-D register said "retire the dead `scroll-smoother` `fx_effects` row". That instruction was
+wrong, and deleting the row would have removed a load-bearing negative proof.**
+`seed-motion-fx-registry.py:575-604` documents the row's purpose plainly: it exists so the `scope`
+column can **prove by construction** that a SITE-scoped effect is structurally excluded from every
+block panel — that is the row's own acceptance test ("ScrollSmoother must never reach a block
+inspector"). A row whose job is to be excluded looks exactly like a dead row to anything that only
+counts consumers.
+
+**RULING: keep the row.** Register corrected from "delete" to "rule on it" in `a294db3d`.
+
+**But the register was half-right, and the real staleness is elsewhere — found while checking it.**
+D422 (2026-07-30) superseded GSAP ScrollSmoother with **Lenis** and admitted **Tier H**. The live DB
+row still reads:
+
+    effect=scroll-smoother  scope=site  tier=G  plugin_set=["ScrollSmoother"]
+
+`tier` should be H and `plugin_set` names a GSAP plugin that D422 retired. **This is latent, not
+live** — `scope='site'` means the effect never reaches a block panel, so nothing activates it — but
+`class-sgs-motion-registry.php:426` shows `plugin_set` IS the vocabulary the registry uses to decide
+GSAP module loading, so a stale entry there is a trap waiting for whoever next touches that path.
+The same values are baked into the generated artefact `includes/generated-fx-effects.php:111-115`.
+
+**Deliberately NOT fixed in this session, and why.** Correcting it means editing the seeder AND
+re-seeding the DB plus regenerating the PHP artefact. Editing the seeder alone desyncs it from the
+DB and would trip the schema-drift / seed-capture gates. **Re-seeding a shared DB while a co-active
+track is committing is a recorded way to break BOTH tracks' builds** (`/sgs-update` has done exactly
+that before). Two tracks were committing to `main` throughout this session.
+
+**Action owed, for a session with a quiet tree:** set `tier` to `H`, replace the `ScrollSmoother`
+`plugin_set` entry with the Lenis/Tier-H reality (or empty it, since Tier H is not GSAP-plugin
+shaped at all), re-seed, regenerate `generated-fx-effects.php`, and re-run the prebuild chain.
+Mapped to a named follow-up rather than dropped — STOP-29.
+
+## D722 [ROUTINE] — file-length gate REJECTED; the debt is measured by SHAPE, and the shared-sanitiser migration is finished (2026-08-21)
+
+**Bean ruled against a file-length gate** — dev friction, and it punishes legitimate size. Do not
+re-propose one. He reframed the task: find the common bloat SHAPES and fix those.
+
+**Measured (re-run, never cite these from memory):** 110 files breach the project's own limits
+(51 `render.php` > 300, 59 `edit.js` > 250), **42,207 excess lines** — not the 4 files / 3,562
+lines the wave-D register claimed, and every one of its four numbers was understated because the
+files had grown. Three shapes: change-narrative documentation **5,694 lines** (the largest, and
+Bean's find, not mine); inline sanitiser closures **663**; JS `ResponsiveBoxControl` glue 1,377 —
+**refuted**, it is call-site glue around an already-shared component, not duplication.
+
+⚠ **Counted on CODE lines only, over-limit `render.php` is 26, not 51** — a third of those files is
+documentation. **Rank targets by duplication DENSITY, never raw line count**: `nav-menu/render.php`
+is 1,758 lines but 48% comments and gains nothing from closure extraction.
+
+**Shipped: 121 closure definitions across 57 files collapsed onto three shared helpers**
+(`2568190f` + `87d904a6`). `helpers-box.php` had carried byte-identical shared forms since
+2026-07-12 (`cef1fca9`), auto-loaded, with docblocks saying they existed to replace exactly these
+closures — only 4 blocks had ever adopted them. **A stalled migration, not a design problem.**
+`STOP-NO-TOP-LEVEL-FUNCTION-IN-PER-RENDER-PHP` actively prescribes the move; a council found no
+prior revert and no prohibition.
+
+**Honest limit, recorded so nobody oversells it later:** this took over-limit `render.php` from
+51 to **50**. One file. It is a correctness and single-source-of-truth win, not a size win.
+
+**Three things worth carrying forward:**
+1. **Equivalence was PROVEN BY EXECUTION, not asserted** — both implementations run over 34 inputs
+   (bare numbers, negatives, `calc()`, multi-value, injection, `null`/`false`/int) + 7 box shapes,
+   byte-identical on every one, with a negative control proving the harness could fail. The
+   visual-diff gate correctly refused to auto-skip a non-comment deletion; a screenshot pair would
+   have been WEAKER evidence, showing one state rather than agreement across the input domain.
+2. **NOT migrated to the hardened `sgs_css_length_value()`.** Four real behaviour deltas (bare `10`
+   becomes a spacing-preset var; `-10px` currently loses its sign; `calc()` currently corrupts;
+   `16px 12px` currently loses its space). `helpers-css-safety.php`'s own header already calls that
+   a separate task. Stacking it would have made both changes unfalsifiable.
+3. **Carved out: 21 corner-keyed closures in 8 files.** `$sgs_corner_shorthand` /
+   `$sgs_radius_shorthand` key on topLeft/topRight/bottomRight/bottomLeft — structurally a
+   different function from the box helper's top/right/bottom/left, with nothing to call.
+   ⛔ `before-after`'s is UNTYPED and is invoked with a raw `null`, relying on its own `is_array()`
+   guard; routing it through a typed-`array` helper would fatal the page. It was left untyped
+   deliberately — do not "tidy" it.
+
+**Tooling:** `scripts/migrate-render-closures.py` ships the full survey/fix/check/self-test triad
+(project rule: anything touching >3 blocks gets the detector, not the edit). It is a script and not
+`sed` because several files use ALIGNED assignment (`$sgs_css_keyword  = static function`) that a
+literal-space find/replace silently skips — which is why the closure count read 45 before it read 52.
+
+**Also swept:** both motion registers and Spec 38 against the code (`a294db3d`). Stale on 7 items
+including the gap register's own starred "most undervalued item", which had shipped. Spec 38 carried
+a "NOT fixed this session" sentence directly under a "FIXED + PROVEN LIVE 17/17" claim for the same
+defect.
+
 ## D721 [ROUTINE] — the deploy purges BOTH cache layers, and the OPcache reset the docs promised never existed (2026-08-21)
 
 **Bean asked for the LiteSpeed purge to be wired into `build-deploy.py` so it could not be
