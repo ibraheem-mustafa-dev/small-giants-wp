@@ -13,12 +13,8 @@
  *   transitionDuration, transitionEasing,
  *   textAlign (native typography support — targets the headline child).
  *
- * Spec 35 Task 5 (2026-07-19): removed 12 genuinely-dead attrs (headlineColour,
- * bodyColour, buttonColour, buttonBackground, buttonStyle, buttonSize,
- * buttonBorderColour, buttonBorderWidth, buttonBorderRadius, textAlignMobile,
- * textAlignTablet, textAlignDesktop) — zero repo-wide references outside their
- * own block.json declaration; button styling lives on the child multi-button
- * block, and textAlign is handled by the single native `textAlign` support.
+ * Button styling lives on the child multi-button block; textAlign is handled
+ * by the single native `textAlign` support (Spec 35 Task 5).
  *
  * BOX-GROUP (contract §B, 2026-07-09): paddingTablet/paddingMobile,
  * marginTablet/marginMobile, contentBandPadding/Tablet/Mobile are box OBJECTS
@@ -35,8 +31,7 @@
  * them). Section-level WP-native padding/margin remains the wrapper's own
  * scoped mechanism (unchanged). The background-image/size/position trio and
  * the legacy string `shadow` token attr are ALSO moved out of the wrapper's
- * `extra_styles` into this file's own scoped rule (they used to inline via
- * extra_styles before this migration).
+ * `extra_styles` into this file's own scoped rule.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (headline, body, buttons).
@@ -58,11 +53,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // FR-22-6: scalar content attrs (headline, body) are intentionally NOT read here.
 // They are retained in block.json as historical schema only (no deprecated.js, D271). R-22-14.
 $ribbon = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
-// WS-4: `layout` renamed to `contentLayout` (the container owns `layout` = grid/flex).
-// No legacy fallback (R-31-14). The old `$attributes['layout']` branch was removed as
-// unreachable: `contentLayout` declares default 'centred' in block.json, so WP always
-// populates it and the `??` never reached the legacy read. Un-migrated posts already
-// rendered 'centred'; removing the branch changes no output.
+// `contentLayout` (the container owns `layout` = grid/flex). No legacy fallback (R-31-14) —
+// `contentLayout` declares default 'centred' in block.json, so WP always populates it.
 $content_layout           = $attributes['contentLayout'] ?? 'centred';
 $background_image         = $attributes['backgroundImage'] ?? null;
 $background_media         = $attributes['backgroundMedia'] ?? null;
@@ -108,9 +100,7 @@ $gradient_preset          = in_array( $attributes['gradientPreset'] ?? '', $allo
 // raw box-shadow SHAPE string (x/y/blur/spread, no colour) built by the
 // shared ShadowControl (Spec 35 T2.2); colour is a SEPARATE sibling attr
 // (`shadowColour`, D621/D622 colour-panel split) composed back in by
-// sgs_shadow_value_composed(). The dead native `shadow` support duplicate
-// was removed outright (it competed with this attr for the same selector —
-// see git history). No-inline contract (§A): route the resolved box-shadow
+// sgs_shadow_value_composed(). No-inline contract (§A): route the resolved box-shadow
 // into cta-section's OWN scoped <style> instead of the wrapper's
 // extra_styles. $cta_helper_attrs nulls `shadow` below (C3 double-emit
 // guard) so the wrapper never re-emits it.
@@ -137,8 +127,7 @@ if ( $hover_background_colour ) {
 }
 // Hover text routed through the SHARED resolver so a gradient sibling WINS over the flat
 // value, and the background-clip:text form comes from the same emitter sgs/hero and
-// sgs/container use. Was a flat-only sgs_colour_value() call, so a hover text gradient
-// could never have painted.
+// sgs/container use.
 $cta_hover_text_effective = sgs_resolve_text_colour_or_gradient(
 	(string) $hover_text_colour,
 	(string) ( $attributes['textColourHoverGradient'] ?? '' )
@@ -155,8 +144,7 @@ if ( $hover_border_colour ) {
 
 // ── Responsive CSS builder ──────────────────────────────────────────────────
 // No-inline contract (§A): background-image/size/position (a real property
-// declaration trio) is deferred to the scoped .uid rule below — was
-// previously pushed inline via $wrapper_styles → wrapper extra_styles.
+// declaration trio) is deferred to the scoped .uid rule below.
 $responsive_css = '';
 
 if ( $has_image_bg ) {
@@ -201,9 +189,8 @@ if ( $hover_decls || $cta_resting_decls ) {
 	$responsive_css .= sgs_emit_state_colour_css( $root_sel, $cta_resting_decls, $hover_decls );
 }
 
-// Class marker replaces the old [style*="background"] attribute sniff
-// (style.css's `.sgs-cta-section:not(.sgs-cta-section--has-bg-image)` fallback)
-// now that background-image no longer rides on the inline style attribute.
+// Class marker used instead of a `[style*="background"]` attribute sniff,
+// since background-image does not ride on the inline style attribute.
 $has_bg_image_class = $has_image_bg;
 
 if ( $shadow_value ) {
@@ -314,13 +301,9 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 
 	/*
-	 * ⛔ SELECTOR CORRECTED 2026-08-15. This emitted to
-	 * `$root_sel . ' .sgs-cta-section__headline'` — a class NOTHING renders. The
-	 * FR-22-6 migration moved the headline into an InnerBlocks `sgs/heading`
-	 * child (live DOM: `.sgs-cta-section__content > h2.wp-block-sgs-heading`)
-	 * and the selector was never updated, so ALL EIGHT native typography
-	 * controls on this block were silent no-ops: a client set one, it saved,
-	 * nothing moved.
+	 * Native typography emits to the block ROOT (`$root_sel`), not a child
+	 * selector — the headline lives in an InnerBlocks `sgs/heading` child
+	 * (live DOM: `.sgs-cta-section__content > h2.wp-block-sgs-heading`).
 	 *
 	 * Emitting to the block ROOT instead is what core does — core/group,
 	 * core/cover and core/columns all declare typography supports with NO
@@ -362,19 +345,13 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 
 	/*
-	 * Text alignment reaches this block by TWO routes, and until 2026-08-15 only
-	 * one of them painted.
+	 * Text alignment reaches this block by TWO routes.
 	 *
 	 * 1. NATIVE CONTROL — block.json declares `supports.typography.textAlign`,
 	 *    so WordPress renders the "Align text" toolbar button. Verified live on
 	 *    the canary: clicking it writes `style.typography.textAlign`. Because the
 	 *    same supports block sets `__experimentalSkipSerialization`, WP does NOT
-	 *    emit the CSS itself — this file has to. The scoped typography emitter
-	 *    above enumerates fontSize/lineHeight/letterSpacing/textTransform/
-	 *    fontWeight/fontStyle and never included textAlign, so a client could
-	 *    align the headline, watch it save, and see nothing move. Silent no-op.
-	 *    `sgs/card-grid` (render.php:196) and `sgs/testimonial-slider` already
-	 *    read this key correctly.
+	 *    emit the CSS itself — this file has to.
 	 *
 	 * 2. CLONING CONVERTER — the DB carries a real routing row for this block
 	 *    (`block_attributes`: textAlign → css_property `text-align`, css_element
@@ -416,11 +393,10 @@ if ( '' !== $cta_preset_bg_slug ) {
 // SGS_Container_Wrapper::render() at the foot of this file). cta-section's own
 // classes + CSS vars + bespoke cover-image background ride through via opts.
 //
-// D643/D-open(9) FIX (2026-08-17): `no_overlay` was previously passed here,
-// which suppresses the WRAPPER's `.sgs-container__overlay` span entirely —
-// the only place `backgroundOverlayColour`/`overlayGradient` are read and
-// painted. `<BackgroundPanel>` in edit.js exposes both controls, they save
-// correctly, but painted nothing (recorded as decisions.md D-open item 9).
+// D643: `no_overlay` is NOT passed to the wrapper here — that flag would suppress
+// the WRAPPER's `.sgs-container__overlay` span, the only place
+// `backgroundOverlayColour`/`overlayGradient` (exposed via `<BackgroundPanel>` in
+// edit.js) are read and painted.
 // This is NOT the same overlay as cta-section's own `.sgs-cta-section__overlay`
 // span below, which only darkens a background IMAGE/VIDEO via
 // `--sgs-cta-overlay-opacity` (a single fixed `primary-dark` tint tied to
@@ -458,10 +434,7 @@ if ( $has_video_bg ) {
 
 // No-inline contract (FR-32-1 / FR-32-4 as amended 2026-07-18, D345): `opacity`
 // is a real CSS property, so it is not set via inline style="opacity:…" — AND
-// the custom-property VALUE may not ride inline either. The superseded comment
-// that used to sit here vouched for `style="--sgs-cta-overlay-opacity:…"` under
-// the PRE-D345 reading ("custom-prop values are not property declarations"),
-// which is exactly why this site survived the 2026-07-30 audit's first pass.
+// the custom-property VALUE may not ride inline either.
 //
 // The overlay is a SINGLETON per block instance (one <span>, one value), so it
 // takes the plain root-scoped shape — not the `:nth-child(N)` per-item shape.
@@ -527,10 +500,10 @@ if ( $responsive_css ) {
 // must not re-emit it via extra_styles (which would inline it). The full container attr
 // surface is still mirrored for editor controls.
 //
-// `no_overlay` is deliberately NOT passed (fixed 2026-08-17, decisions.md D-open item
-// 9) — that flag suppresses the wrapper's `backgroundOverlayColour`/`overlayGradient`
-// emission, a distinct feature from cta-section's own image-darkening overlay above.
-// See the comment above the WS-4 note for the full rationale.
+// `no_overlay` is deliberately NOT passed (D643) — that flag suppresses the wrapper's
+// `backgroundOverlayColour`/`overlayGradient` emission, a distinct feature from
+// cta-section's own image-darkening overlay above. See the comment above the WS-4
+// note for the full rationale.
 $cta_helper_attrs                    = $attributes;
 $cta_helper_attrs['backgroundImage'] = null;
 $cta_helper_attrs['shadow']          = null;

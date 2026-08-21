@@ -77,12 +77,9 @@ $colour_scheme   = isset( $attributes['colourScheme'] ) && in_array( $attributes
 $headings_on = ! isset( $attributes['headings'] ) || (bool) $attributes['headings'];
 $bg_blur     = ! empty( $attributes['bgBlur'] );
 
-// Split from the old single `accent` attribute (D643, Bean-ruled): one colour
-// attribute cannot secretly paint 4 unrelated CSS properties (background-colour,
-// border-colour, text-colour, background-image) — each needs its own control
-// before the universal gradient rollout can land. Each new attribute keeps the
-// SAME default ("accent") the retired attribute had, so existing rendering is
-// unchanged unless an operator now picks a different colour per role.
+// (D643, Bean-ruled): one colour attribute cannot secretly paint 4 unrelated
+// CSS properties (background-colour, border-colour, text-colour, background-
+// image) — each has its own control, each defaulting to "accent".
 $accent_bg_slug     = isset( $attributes['accentBackground'] ) ? sanitize_html_class( (string) $attributes['accentBackground'] ) : 'accent';
 $accent_border_slug = isset( $attributes['accentBorderColour'] ) ? sanitize_html_class( (string) $attributes['accentBorderColour'] ) : 'accent';
 $accent_border_gradient = sgs_css_gradient_value( $attributes['accentBorderColourGradient'] ?? '' );
@@ -399,8 +396,7 @@ if ( ! $show_headings ) {
 // ---------------------------------------------------------------------------
 
 // The aside-present `display:flex` on the content row is INVARIANT shape and
-// lives in style.css (`.sgs-mega-panel__content:has(.sgs-mega-aside)`); the old
-// rule here was self-nested (`:has()` argument carried $root_sel) and inert.
+// lives in style.css (`.sgs-mega-panel__content:has(.sgs-mega-aside)`).
 // Only the per-INSTANCE aside WIDTH is emitted here (targets the aside directly
 // on the frontend, where it is the content row's direct child).
 $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';width:' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';}';
@@ -411,13 +407,6 @@ $css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;o
 /*
  * Group-heading EYEBROW (BUILD-SPEC §3 columns: "group heading shown
  * (eyebrow, mono 11px .14em uppercase muted, margin-bottom 16px)").
- *
- * This was specified but NEVER BUILT — the only rule that ever targeted
- * $heading_sel was the headings-OFF visually-hidden case, so a group heading
- * rendered with the theme's plain <h> styling (measured live: 36px, weight
- * 700, Fraunces serif, brand pink — Bean's eye 2026-07-28: "the 2 headings in
- * the drafts were closer to label blocks ... it looks like you've set their
- * appearance to match general h2 tags").
  *
  * Draft values, both files, identical: `font-family:'Geist Mono',monospace;
  * font-size:11px; letter-spacing:.14em; text-transform:uppercase;
@@ -475,13 +464,11 @@ if ( 'line' === $sep_style_val ) {
  * DEFAULT only: sgs/mega-aside's own `asideBg` is block-private and renders
  * at higher specificity, so an operator-set background still wins.
  *
- * 2026-08-06: the `:not([style*="background"])` guard this rule carried was
- * STRANDED. Under Spec 32 no block emits an inline `style` property
- * declaration, so the guard always matched and the default was unconditional
- * — it could not detect an operator background, and it out-ranked the
- * operator's own scoped rule. Replaced by :where(), which drops the selector
- * to specificity (0,0,0) so ANY operator rule wins. That is what "DEFAULT
- * only" was always trying to express.
+ * Uses `:where()`, which drops the selector to specificity (0,0,0), so ANY
+ * operator rule wins — this is what "DEFAULT only" means: under Spec 32 no
+ * block emits an inline `style` property declaration, so a
+ * `:not([style*="background"])` guard would always match and become an
+ * unconditional override, unable to detect an operator background.
  */
 $css .= ':where(' . $aside_sel . '){background-color:var(--sgs-mm-card);border-radius:12px;}';
 
@@ -558,14 +545,11 @@ if ( '' !== $css ) {
 }
 
 /*
- * Panel-footer slot (2026-07-28, Bean ruling). `sgs/nav-menu` needs the mega
+ * Panel-footer slot (Bean ruling, 2026-07-28). `sgs/nav-menu` needs the mega
  * item's own destination link ("View all X") to live INSIDE the panel — see
- * CF-15 — and its previous position as a SIBLING of this block rendered it
- * outside the panel's border, where it read as a stray line and was overlapped
- * by the trigger's hover underline. A filter is used rather than string
- * surgery on this block's output so the insertion point is explicit and
- * cannot drift. Consumers must pass ALREADY-ESCAPED markup (nav-menu builds
- * it with esc_url/esc_html).
+ * CF-15. A filter is used rather than string surgery on this block's output
+ * so the insertion point is explicit and cannot drift. Consumers must pass
+ * ALREADY-ESCAPED markup (nav-menu builds it with esc_url/esc_html).
  *
  * @param string $footer_html Escaped markup appended inside the panel, after the content row.
  * @param int    $panel_id    This panel post's ID.

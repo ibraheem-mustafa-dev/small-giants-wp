@@ -8,15 +8,12 @@
  * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9 / D294) —
  * no divergent per-block styling path.
  *
- * Rendered with tag <header> (FR-37-13 fix B, D375): this block IS the site
- * banner landmark. The SGS header engine (Sgs_Header_Rules::filter_template_part)
- * short-circuits core/template-part on every request via the priority-9999
- * default rule, so core never emits its own <header class="wp-block-template-part">
- * wrapper — leaving the page with zero <header> landmarks and the scroll-behaviour
- * JS/CSS (header-behaviours) targeting an element that never rendered (all four
- * behaviours silently dead, live-proven 2026-07-23). Emitting <header> here revives
- * sticky/transparent/shrink/hide-on-scroll AND adds the missing banner landmark.
- * 'header' is in SGS_Container_Wrapper's tag allowlist. The behaviours key on the
+ * Rendered with tag <header> (D375): this block IS the site banner landmark.
+ * The SGS header engine (Sgs_Header_Rules::filter_template_part) short-circuits
+ * core/template-part on every request via the priority-9999 default rule, so
+ * core never emits its own <header class="wp-block-template-part"> wrapper.
+ * Emitting <header> here provides sticky/transparent/shrink/hide-on-scroll AND
+ * the banner landmark. 'header' is in SGS_Container_Wrapper's tag allowlist. The behaviours key on the
  * block-guaranteed '.sgs-site-header' class. No nested landmark in the current
  * template roster: rows render as <div> (site-header-row) and the engine's
  * short-circuit means core's <header class="wp-block-template-part"> wrapper is not
@@ -59,18 +56,13 @@ $css = '';
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$sh_style_engine_args = array();
 
-	// Colour comes from SGS-OWNED attributes, not the native supports (2026-08-19,
-	// FR-37-44 follow-on). block.json still DECLARES supports.color — the
-	// audit-block-uniformity gate requires the key to be present as a
-	// pipeline/DB contract signal — but every sub-flag is now false, so
-	// WordPress renders no colour panel of its own and never writes
-	// $attributes['style']['color'] at all. Reading it here would be dead code.
-	//
-	// Why the migration: the header was one of only three blocks with core's
-	// colour UI and no SGS panel, while sgs/site-header-row carried the SAME two
-	// colours as SGS attributes. One concept, two mechanisms, two levels. The
-	// header now mirrors the row exactly — same attribute names, same style
-	// engine, same scoped emission — so the two read as one system.
+	// Colour comes from SGS-OWNED attributes, not the native supports (FR-37-44).
+	// block.json still DECLARES supports.color — the audit-block-uniformity gate
+	// requires the key to be present as a pipeline/DB contract signal — but every
+	// sub-flag is false, so WordPress renders no colour panel of its own and never
+	// writes $attributes['style']['color'] at all. Reading it here would be dead code.
+	// The header mirrors sgs/site-header-row exactly — same attribute names, same
+	// style engine, same scoped emission — so the two read as one system.
 	// ⚠ EVERY value goes through sgs_colour_value() before the style engine.
 	// DesignTokenPicker stores a token SLUG ('surface') when a palette swatch is
 	// picked with linked:true — see its own docblock — and the style engine does
@@ -142,11 +134,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// The has-*-color / has-*-background-color preset classes were removed with the
-// native colour UI (2026-08-19). WordPress injects the `textColor` /
-// `backgroundColor` slug attributes ONLY while supports.color's sub-flags are
-// true; with them false those attributes are never written, so the classes could
-// only ever have been emitted from stale stored content.
+// WordPress injects the `textColor` / `backgroundColor` slug attributes ONLY
+// while supports.color's sub-flags are true; with them false those attributes
+// are never written, so the has-*-color classes could only ever come from
+// stale stored content.
 
 // ── Header-level tri-state behaviours (FR-37-14, Spec 35 T1.4) ──────────────
 // The body-class mechanism (Sgs_Header_Behaviours::add_body_classes) is
@@ -191,10 +182,9 @@ $sh_contrast    = isset( $attributes['contrastSafe'] ) ? $attributes['contrastSa
 // merge below stays the single writer of `background`/`position` as designed.
 // Every tier is resolved concrete, which the emitters handle identically (the
 // differs-from-the-tier-above minimisation still collapses equal tiers).
-// DIRECTION (2026-08-19). Transparent has always had TWO states — see-through
-// at rest, solid once scrolled — but the pair was hardcoded in that order and a
-// client could not invert it. `headerTransparentDirection` chooses which state
-// is which. It adds NO new CSS mechanism: it swaps which of the two existing
+// DIRECTION. Transparent has TWO states — see-through at rest, solid once
+// scrolled. `headerTransparentDirection` chooses which state is which. It
+// adds NO new CSS mechanism: it swaps which of the two existing
 // rules (the resting one, or the `.is-header-scrolled` one) carries the
 // transparency.
 $sh_direction   = isset( $attributes['headerTransparentDirection'] )
@@ -212,17 +202,13 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sh_tier ) {
 }
 
 // Sticky + Transparent both write to the SAME base selector's `position` /
-// `top` / `z-index` — QC (2026-07-28) proved that emitting each behaviour's
-// CSS independently (each with its own unconditional `!important` off-decl)
-// let a later-emitted OFF behaviour's cancel-declaration clobber an earlier
-// ON behaviour's declaration via plain CSS source order, at every viewport.
-// Fixed via sgs_merge_tri_state_declarations(): resolves both per tier FIRST
-// and emits ONE set of declarations per tier, single writer per property —
-// an off/never-configured behaviour now contributes nothing at all (no more
-// cancel-decl to clobber anyone), and if both are ever genuinely ON for the
-// same tier, Sticky (listed first) wins position/top/z-index while
-// Transparent still contributes its own non-colliding `background`/`left`/
-// `right` (documented precedence, not an accident of source order).
+// `top` / `z-index`. sgs_merge_tri_state_declarations() resolves both per
+// tier FIRST and emits ONE set of declarations per tier, single writer per
+// property — an off/never-configured behaviour contributes nothing at all,
+// and if both are ever genuinely ON for the same tier, Sticky (listed first)
+// wins position/top/z-index while Transparent still contributes its own
+// non-colliding `background`/`left`/`right` (documented precedence, not an
+// accident of source order).
 $css .= sgs_merge_tri_state_declarations(
 	$root_sel,
 	array(
@@ -273,20 +259,12 @@ $css .= sgs_merge_tri_state_declarations(
 // one regardless of selector specificity or source order, so the extra
 // `.is-header-scrolled` class here never mattered; the missing `!important`
 // did. Token-based (theme surface preset), never hardcoded.
-// SCROLLED STATE — the other half of the transparent pair, now client-reachable.
+// SCROLLED STATE — the other half of the transparent pair, client-reachable via
+// backgroundColourScrolled / backgroundColourScrolledGradient / textColourScrolled,
+// falling back to the same surface token when unset.
 //
-// Before 2026-08-19 this rule hardcoded the theme surface token, so the client
-// could see the flip happen but never choose the colour it flipped TO. It now
-// reads backgroundColourScrolled / backgroundColourScrolledGradient /
-// textColourScrolled, falling back to the same surface token when unset, so an
-// existing header looks identical until someone actually picks a colour.
-//
-// MUST CARRY `!important`, and this is the root cause of
-// P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING, so do not quietly drop it:
-// sgs_merge_tri_state_declarations() emits every RESTING declaration with
-// `!important`, and an `!important` declaration beats a non-`!important` one
-// regardless of selector specificity or source order. The extra
-// `.is-header-scrolled` class never mattered; the missing `!important` did.
+// MUST CARRY `!important` — do not drop it (see the root-cause note above:
+// P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING).
 //
 // Built by hand rather than through wp_style_engine_get_styles() for exactly
 // that reason — the style engine has no way to emit `!important`.
@@ -406,12 +384,10 @@ if ( $sh_hide_any_tier ) {
 	);
 }
 
-// Contrast safety over hero — PER TIER (2026-08-19). Reshaped from a flat enum
-// driving a <body> class to a per-device object emitted as per-instance scoped
-// CSS, matching the four behaviours above. A body class is site-wide and simply
-// cannot express "scrim on desktop, none on phone", which is the common case
-// for a header transparent over a desktop hero only. The rules below are the
-// ones retired from assets/css/header-behaviours.css, now uid-scoped.
+// Contrast safety over hero — PER TIER, emitted as per-instance scoped CSS,
+// matching the four behaviours above. A body class is site-wide and cannot
+// express "scrim on desktop, none on phone", which is the common case for a
+// header transparent over a desktop hero only.
 //
 // Uses sgs_emit_tier_rules_map(), NOT sgs_emit_tier_rules(): this is a
 // four-value enum, and the binary helper tests `'on' === $state`, so 'scrim',
@@ -480,8 +456,7 @@ $css .= '@media (prefers-reduced-motion: reduce) {' . $root_sel . '{transition:n
 // Data attrs consumed by view.js: (a) whether ANY tier requests sticky, so the
 // "sticky silently broken by an ancestor" warning only fires when relevant;
 // (b) whether ANY tier requests a scroll-driven behaviour, so the scroll
-// listener is skipped entirely on headers with none active (matches the prior
-// getActiveBehaviours() perf gate, now resolved per-block instead of per-body).
+// listener is skipped entirely on headers with none active.
 $sh_extra_attrs         = array( 'id' => $uid );
 $sh_sticky_any_tier     = ! empty( sgs_resolve_on_tiers( $sh_sticky, 'on', 'off' ) );
 $sh_scroll_behaviour_on = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on', 'off' ) )
@@ -506,12 +481,9 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
-		// ALWAYS <header>. The `tagName` attribute (header|div) was deleted
-		// 2026-08-19: no control ever mounted it, so no client could reach it,
-		// and a site header is a page-unique landmark — offering a plain <div>
-		// only lets someone break the page's accessibility landmark structure
-		// from a dropdown. This was already the effective value, since the
-		// attribute's own default was 'header'.
+		// ALWAYS <header> — a site header is a page-unique landmark; offering a
+		// plain <div> tag choice would let someone break the page's accessibility
+		// landmark structure from a dropdown.
 		'tag'           => 'header',
 		'extra_classes' => $classes,
 		'extra_attrs'   => $sh_extra_attrs,
