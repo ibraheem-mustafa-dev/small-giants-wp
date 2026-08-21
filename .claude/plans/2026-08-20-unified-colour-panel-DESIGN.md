@@ -273,6 +273,60 @@ Element-colours region, correctly wired, once. Do not mount it.
 
 ---
 
+## ▶ BUILD PROGRESS — updated 2026-08-21
+
+| # | Step | Status |
+|---|---|---|
+| 1 | Shadow-colour crash | ✅ `70c88348` — 5 mounts wired + wrapper consumption (or it was 4 dead controls) |
+| 2 | Correct the false gate diagnostic | ✅ `e81ea92a` — D704, PHP keeps / JS drops |
+| 3 | Rename + help text ("Overlay colour" → "Background colour") | ❌ **not done** |
+| 4 | `backgroundOverlayOpacity` attr + slider | ❌ **not done** — still the highest-severity open item, see D3 |
+| 5 | Mechanism-C adapter + prop-name unification | ❌ not done |
+| 6 | Hover + tier siblings | ❌ **not started for the OVERLAY layer** — verified 2026-08-21: 0 of 10 `BackgroundPanel` blocks declare `backgroundOverlayColourHover`/`overlayGradientHover`. `52b96e68` added the BASE layer's `backgroundColourHover` to the container, which is a different attribute |
+| 7 | Merge the panels + type selector; delete `WrapperColourPanel.js` | ❌ not done — re-verified 2026-08-21 that `WrapperColourPanel.js` still has ZERO JSX mounts (the only hit is a comment at `BackgroundPanel.js:499` saying so), so deleting it remains safe |
+| 8 | Blend mode | ❌ not done |
+| 9 | `sgs/button` as reference block | ❌ not done |
+
+**Landed outside this doc's build order** (the session went where the live defects were):
+container background made editable + 38 theme authorings migrated (`1905257e`, D704 mechanism);
+`contentWidth` regression root-caused and fixed (`2d291992`, **D706**); padding/margin migrated
+to block-owned box objects (`f9f4368b`, **D707**); dead hover-extension colours deleted
+(`ebad91df`, **D708**); rule 31 widened (`20332725`, **D705**); resting border gradients ×2
+(`6bbd0c7c`).
+
+⭐ **D2's two-layer model is now VINDICATED and partly built.** Bean ruled background colour and
+overlay should be separate settings — matching Kadence/Elementor. `backgroundOverlayColour` is
+therefore CORRECTLY named as the overlay, and `sgs/container` gained a real `backgroundColour`
+base layer beneath the media. **Live-verified**: paints through the `sgs-cst-` uid, zero ghost
+classes.
+
+✅ **THE "ONE OPEN DEFECT" IS CLOSED — and the fix named here was REFUTED before building.**
+This block previously said D707's gutter default should move from the OUTER layer to the
+CONTENT-BAND layer. That was disproved: each container renders exactly ONE band, so
+band-padding stacks identically — three nested containers would still give 72px. It would
+also have forced an extra `<div>` into every container site-wide.
+
+The real cause was found by git archaeology + live DOM: `163f9fa7` migrated 96 `core/group`
+blocks to `sgs/container`, carrying the max-width CAP across but not WordPress's gutter, and
+`f9f4368b` then re-created that gutter by hand as a per-instance default — which has no
+nesting reset, so it compounded. Fixed by re-adopting core's own `.has-global-padding`
+(`865e6d8e`), which ships the nesting reset. A second, deeper bug was then found and fixed:
+band CSS was being painted on the container's OUTER box (`669bc1e5`), which is what capped
+backgrounds (**P2-1, now closed**), collapsed a grid item to 48px, and split the shop grid.
+Full record: `.claude/reports/2026-08-21-HANDOVER-container-and-shop-completion.md`.
+
+✅ **GATE 2 IS 3-of-3, CLOSED 2026-08-21.** `sgs/hero` and `sgs/trust-bar` verified with a
+real editor login: colour panel present, swatch picked, value stored as a SLUG (token
+survives), resting colour paints, and a REAL POINTER HOVER repaints — hero primary→accent,
+trust-bar success→cookie-brown. Zero console errors, `isValid: true`, hover rules correctly
+paired `:hover, :focus-visible`. `sgs/brand-strip` passed earlier.
+
+⚠ **Step 6 needs restating — the two layers were being conflated.** `sgs/container` has
+`backgroundColour` + `backgroundColourHover` (the BASE layer, which is what Gate 2
+exercised). It does NOT have `backgroundOverlayColourHover` or `overlayGradientHover`.
+Verified 2026-08-21: **0 of the 10 blocks mounting `BackgroundPanel` declare either overlay
+hover sibling.** Step 6 is therefore NOT started for the overlay layer, not "partial".
+
 ## Build order
 
 Each step is independently shippable and verifiable. Steps 1–2 are already dispatched.
