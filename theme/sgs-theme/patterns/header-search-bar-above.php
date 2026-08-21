@@ -25,7 +25,7 @@
 
 <!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
 
-<!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap"} -->
+<!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap","contentWidth":{"desktop":"full"}} -->
 <!-- wp:sgs/cart /-->
 <!-- /wp:sgs/container -->
 <!-- /wp:sgs/site-header-row -->
