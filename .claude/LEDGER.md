@@ -17,18 +17,30 @@ track owns `## ▶ COLOUR-GOLDEN TRACK`. The **Tier W / motion** track owns
 `## ▶ TIER W (MOTION) TRACK` at the bottom and is CLOSED — nothing is pending there.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 
-## ▶ CONSOLIDATION TRACK — 2026-08-21, CLOSED except Phase 4
+## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
-Shipped, deployed, canary-verified (D731/D732/D733): one shared corner-shorthand helper +
-**109 vacuous `function_exists` guards** removed. Standards + rationale are single-sourced —
-do NOT restate them here: **Spec 32 §6.1 (a1)/(a2)** (shared shorthand builders; the sanitiser
+Shipped, deployed, canary-verified (D731/D732/D733/Phase 4): one shared corner-shorthand
+helper + **109 vacuous `function_exists` guards** removed + **204 length call sites** migrated
+from the crude to the hardened sanitiser. Standards + rationale are single-sourced — do not
+restate them here: **Spec 32 §6.1 (a1)/(a2)** (shared shorthand builders; the sanitiser
 contract) and **Spec 35 Part K** (the gate + two method rules). Enforcement:
 `npm run check:vacuous-guards`, wired into `prebuild`.
 
-**ONLY REMAINING WORK — Phase 4, ~50 min, mechanical, every ambiguity pre-resolved:**
-`.claude/prompts/2026-08-21-owed-A-shared-mechanism-cleanups.md`. It is the programme's ONLY
-behaviour change and **must ship alone**, capturing the canary "before" BEFORE deploying.
-Prompt B is deleted — done.
+**Phase 4 (the programme's only behaviour change) shipped 2026-08-22, commits `a2f6d5df` +
+`bbf13cc2`.** `sgs_css_length_sanitise()` → `sgs_css_length_value()` across 56 files (204 call
+sites), via new codemod `scripts/migrate-length-sanitiser.py` (survey/fix/check/self-test,
+mutation-tested negative control). Two sites deliberately excluded (named in the script):
+testimonial `quoteLineHeight` (unitless-legal) and google-reviews `gr_pct` (bare number +
+caller-appended `%`). 5 stranded `function_exists('sgs_css_length_sanitise')` guards
+retargeted to the new function name. Live-proven on a dedicated probe page
+(`gate-length-sanitiser-probe`, since deleted): before-deploy CSS showed
+`border-top-left-radius:calc20px1vw` (corrupted); after-deploy showed
+`border-top-left-radius:calc(20px + 1vw)` (correct). Zero PHP fatals, zero new debug.log
+entries, payload-verify + motion-QA both green on deploy. Visual-diff gate scoped-bypassed for
+44 markup-touching-but-behaviour-identical blocks (logged, `bbf13cc2`) — real risk was
+edge-case-only (negative/calc/multi-value/bare-integer inputs absent from live content), the
+one edge case that IS live (`gr_pct`) was excluded from the migration, not shipped untested.
+Prompt B is deleted — done. Nothing remains on this track.
 
 **If you are the shop-archive track**, read, in this order:
 
