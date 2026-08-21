@@ -40,6 +40,36 @@ my commit. My decision entries are waiting for you in
 `.claude/scratch/2026-08-21-tier-w-decisions-PENDING.md` — paste them in when you're
 ready. **`LEDGER.md` untouched too**, as you asked.
 
+# The Flip question you asked — answered
+
+You said you thought the Flip effect hadn't worked. **You were right, and I found out why.
+It is not a bug in the code we wrote.**
+
+Two things, in order:
+
+1. **The setting had never been switched on.** Flip only activates when a site setting says
+   so, and that setting was empty. Nothing was loading. That alone explains what you saw.
+
+2. **With it switched on, it still can't animate — because WooCommerce reloads the whole
+   page when you change a filter.** I proved this by leaving a marker in the page's memory
+   and checking whether it survived a filter click. It didn't; the page navigated. Filtering
+   works (5 products became 3), but by loading a new page rather than rearranging the
+   existing one. Flip's entire job is to animate cards moving to new positions *on the same
+   page*. If the page reloads, there is nothing to animate.
+
+Everything on our side is correct and verified: the setting, the attribute, the module
+loading, the element it watches, the way it finds product cards. The missing piece is
+WooCommerce's, and it's the same thing that killed the previous version of this feature
+(D426) showing up again at the new target.
+
+**Do not let anyone "fix" `fx-flip.js`** — it isn't the broken part. The next question is a
+WooCommerce one: why does that shop page fall back to a full reload when it declares all the
+markers for client-side updating? Full detail, evidence and the three candidate causes:
+`reports/2026-08-21-flip-does-it-animate.md`.
+
+I put the setting back to off, since leaving it on would download code on every shop page
+for an effect that provably does nothing there.
+
 # The one decision I need from you
 
 **Does the duotone look right to you?**
