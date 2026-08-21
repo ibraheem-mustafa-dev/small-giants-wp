@@ -35,6 +35,7 @@ return array(
 	'fxTreatment' => array( 'type' => 'string' ),
 	'fxTreatmentHighlight' => array( 'type' => 'string' ),
 	'fxTreatmentIntensity' => array( 'type' => 'number' ),
+	'fxTreatmentReveal' => array( 'type' => 'string' ),
 	'fxTreatmentShadow' => array( 'type' => 'string' ),
 	'fxTrigger' => array( 'type' => 'string' ),
 	'sgsAnimation' => array( 'type' => 'string' ),
