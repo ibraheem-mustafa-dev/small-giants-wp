@@ -174,7 +174,9 @@ and relied on its own `is_array()` guard, which the helper now owns internally. 
 parameter would throw TypeError and fatal the page. The riskiest existing caller sets the signature.
 
 ⛔ **Still open, deliberately:** it does NOT migrate to the hardened `sgs_css_length_value()`.
-Enumerated 2026-08-21: **247 call sites across 58 files**, with FIVE behaviour deltas, not the four
+Enumerated 2026-08-21: **207 call sites across 56 files** (an earlier line here said "247 across 58"
+— that counted the definition and the `function_exists` guards as call sites; corrected the same day
+by classifying each match rather than counting raw hits). FIVE behaviour deltas, not the four
 long quoted here — the missed one is the worst, because `var:preset|spacing|40` (exactly what WP's
 `BoxControl` emits for a preset) is corrupted to `varpresetspacing40`. `helpers-css-safety.php`'s
 own header calls that a separate task and it must ship alone: it is a real behaviour change, and

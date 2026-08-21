@@ -7,7 +7,10 @@ Paste this whole file into a fresh session.
 Invoke `/autopilot` before doing anything else.
 
 **Plan label:** `[PLAN: sonnet]` — every phase is mechanical. Nothing here needs Opus.
-**Time:** ~50 min end to end, most of it waiting on two builds.
+**Time:** ~65 min end to end — ~50 for the migration and its live proof, ~15 for docs + enforcement.
+**Done-when:** the code is deployed and live-verified **AND** all four docs describe the shipped
+state **AND** the enforcement decision is made and acted on. Code-only is NOT done — four live docs
+currently say this migration has not happened.
 **USP:** this is the LAST behaviour change owed from the 2026-08-21 consolidation, and the only one
 in the whole programme that alters rendered output. Done, `-10px` stops silently losing its sign
 and `calc()` stops being corrupted — on 206 call sites at once.
@@ -151,6 +154,57 @@ and could then only verify the after-state. Do not repeat that.
 
 **Fail:** a value that got WORSE, or a page that now renders nothing where it previously rendered
 something. Roll back with the `.bak` the deploy script leaves on the server.
+
+---
+
+## PHASE 5 — docs + enforcement — `[HANDOFF]`
+
+**Model:** inline · **Time:** 15 min · **Deps:** Phase 4 verified live
+**Do NOT skip this because the code works.** Four live docs currently describe this migration as
+NOT DONE. Leaving them is how the next session re-investigates a solved problem — the exact cost
+this programme kept paying.
+
+**1. `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` §6.1 (a2)** — the contract you
+implemented. Flip it from "is the target" to DONE, and state the outcome: how many sites moved, the
+carve-out that remains, and the date. Keep the delta table — it is the *why*, and it stays true.
+
+**2. `plugins/sgs-blocks/CLAUDE.md`**, the shared-helper section (search `sgs_css_length_value`).
+It currently reads **"Still open, deliberately"** with the site count and the five deltas. That
+sentence becomes false the moment you land Phase 3. Replace it with the shipped state + the
+surviving carve-out. ⚠ The count in that file was already wrong once ("247 across 58" when the real
+figure was 207 across 56, because it counted definitions and guards as call sites) — quote your
+`--survey` output, not a remembered number.
+
+**3. `.claude/decisions.md`** — one new D-entry at the top (verify the ceiling with
+`grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` — **anchor on
+the heading**; an unanchored grep once returned a hex colour as a D-number). Record: the ruling, the
+counts, the ONE carve-out and why, the precondition that would have fatalled pages, and the live
+before/after evidence. Tag `[ROUTINE]`.
+
+**4. `.claude/LEDGER.md`** — the consolidation track says "CLOSED except Phase 4". Close it.
+⚠ **It runs near its 24,576-byte cap** — shrink that block to a pointer rather than expanding it,
+and run `python .claude/hooks/handoff-preflight.py --check` before committing. A `decisions-size`
+FAIL is expected and **must be left alone** — it self-heals via the `decisions-sweep-auto.py` Stop
+hook (verified 2026-08-21; `.claude/CLAUDE.md` says explicitly not to spend session time on it).
+
+**5. ENFORCEMENT — decide, then act.** After this migration `sgs_css_length_sanitise()` has ONE
+legitimate caller. Nothing currently stops a future block adding a 208th. Pick one and say which:
+
+- **(a) Recommended — gate it.** Extend the existing detector triad with a `--check` that fails on
+  any NEW `sgs_css_length_sanitise(` call outside the named exclusion list, and wire it into
+  `prebuild` **in the same commit that builds it**. This repo's documented failure mode (D338/D493)
+  is a gate built and left unwired for weeks while docs claimed it ran. Grep `package.json` to prove
+  it is reachable; a gate nothing calls is not enforcement.
+- **(b) Retire the function** — fold the one unitless caller onto a purpose-named helper
+  (`sgs_css_unitless_sanitise()`), then delete the crude one outright so the wrong choice becomes
+  impossible rather than merely discouraged. Cleaner end-state, slightly more work.
+- **(c) Do nothing** — only defensible if you can say why a 208th caller would be harmless.
+
+**Test — Happy:** every one of the four docs describes the SHIPPED state; the gate (if built) fails
+on a planted violation and passes once removed.
+**Fail:** any doc still saying "still open" / "not done" / carrying a superseded count.
+**Integration:** `python .claude/hooks/handoff-preflight.py --check` — 9 of 10 PASS, with
+`decisions-size` the only expected failure.
 
 ## Key Judgement Calls — already made, do not re-litigate
 
