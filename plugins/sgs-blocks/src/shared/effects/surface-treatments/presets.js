@@ -101,12 +101,35 @@ export const TREATMENT_PRESETS = {
 			uResolve: { type: 'float', default: 0, min: 0, max: 1 },
 			uShadow: {
 				type: 'vec3',
+				// Prefer the CLIENT'S OWN brand colour over this hard-coded
+				// navy. A duotone exists to make an image look on-brand; a
+				// duotone in colours that are not the client's just looks
+				// like a filter. Measured 2026-08-21 on the Mama's Munches
+				// canary: with the navy/cream defaults the owner read the
+				// result as "just the black and white one" — correct, because
+				// navy -> cream across a warm-brown photograph lands almost
+				// neutral. The site's palette (pink #e68a95) was sitting
+				// unused the whole time.
+				paletteFallback: 'primary',
+				// DERIVE a deep end from the brand hue rather than using it
+				// raw. Measured on the Mama's canary: the palette primary
+				// (#e68a95) is a MID-tone, so using it raw as the shadow gave
+				// a ramp with no depth and the treated photo looked barely
+				// touched — trading "looks black and white" for "looks like
+				// nothing". A duotone needs a dark end and a light end; both
+				// are derived from the same hue so the result stays on-brand.
+				paletteTransform: 'deepen',
 				default: [ 0.05, 0.08, 0.2 ],
 				min: [ 0, 0, 0 ],
 				max: [ 1, 1, 1 ],
 			},
 			uHighlight: {
 				type: 'vec3',
+				// `base` is this framework's conventional light ground. If a
+				// site does not define it the warm cream below still reads
+				// correctly against almost any brand colour.
+				paletteFallback: 'primary',
+				paletteTransform: 'lighten',
 				default: [ 0.98, 0.93, 0.8 ],
 				min: [ 0, 0, 0 ],
 				max: [ 1, 1, 1 ],

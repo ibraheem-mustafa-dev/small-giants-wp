@@ -128,6 +128,43 @@ function resolveColourVec3( root, name, fallback ) {
 }
 
 /**
+ * Derive a duotone END from a brand colour.
+ *
+ * A duotone maps luminance across TWO colours, and it only reads as a duotone
+ * when those two have real tonal distance. A brand palette rarely supplies
+ * that: it supplies one mid-tone hue. Using that hue raw at both ends produces
+ * a flat ramp and an image that looks untouched — measured on the Mama's
+ * Munches canary, whose primary (#e68a95) is a mid pink.
+ *
+ * So take the hue and derive a deep end and a pale end from it. The result has
+ * the contrast a duotone needs AND stays unmistakably the client's colour,
+ * which is the entire reason to use a duotone rather than greyscale.
+ *
+ * @param {number[]} rgb       `[r, g, b]` 0-1, the brand colour.
+ * @param {string}   transform `'deepen'` | `'lighten'` | undefined (identity).
+ * @return {number[]} The derived `[r, g, b]`.
+ */
+function transformBrandColour( rgb, transform ) {
+	if ( 'deepen' === transform ) {
+		// Toward black, keeping the hue. Not pure multiplication on every
+		// channel equally — a touch of extra blue keeps deep tones from going
+		// muddy-brown, the failure the first duotone build actually exhibited.
+		return [ rgb[ 0 ] * 0.26, rgb[ 1 ] * 0.24, rgb[ 2 ] * 0.34 ];
+	}
+	if ( 'lighten' === transform ) {
+		// Toward white, retaining a clear tint so highlights still read as
+		// branded rather than as plain paper.
+		const m = 0.84;
+		return [
+			rgb[ 0 ] + ( 1 - rgb[ 0 ] ) * m,
+			rgb[ 1 ] + ( 1 - rgb[ 1 ] ) * m,
+			rgb[ 2 ] + ( 1 - rgb[ 2 ] ) * m,
+		];
+	}
+	return rgb;
+}
+
+/**
  * Build the `{ name: value }` uniform map for one element: preset defaults,
  * overridden by `data-sgs-fx-treatment-*` for scalar (`float`) uniforms and
  * by CSS custom properties for `vec3` colour uniforms (the render layer
@@ -148,10 +185,32 @@ function resolveUniforms( el, preset ) {
 			// the uniform's own suffix (uShadow -> --sgs-fx-shadow), not
 			// from data-* overrides — the render layer is the publisher.
 			const suffix = name.charAt( 1 ).toLowerCase() + name.slice( 2 );
+
+			// Resolution order, cheapest-correct first:
+			//   1. what the client explicitly picked (the render layer
+			//      publishes it as --sgs-fx-<suffix>)
+			//   2. the site's own palette, via this uniform's declared
+			//      `paletteFallback` slug — so an untouched duotone is
+			//      ON-BRAND rather than wearing whatever colours this file
+			//      happened to hard-code
+			//   3. the preset's literal default, which now only ever applies
+			//      to a site that does not define that palette slug at all
+			let fallback = spec.default;
+			if ( spec.paletteFallback ) {
+				const brand = resolveColourVec3(
+					el,
+					'--wp--preset--color--' + spec.paletteFallback,
+					null
+				);
+				if ( brand ) {
+					fallback = transformBrandColour( brand, spec.paletteTransform );
+				}
+			}
+
 			uniforms[ name ] = resolveColourVec3(
 				el,
 				'--sgs-fx-' + suffix,
-				spec.default
+				fallback
 			);
 			return;
 		}
