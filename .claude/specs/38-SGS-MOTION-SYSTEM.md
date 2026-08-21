@@ -625,11 +625,31 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   tests (i) and (ii) therefore hold. It is bounded to one surface (iii), degrades to the
   untouched image (iv), and is admitted by D479 plus the 2026-08-21 design gate (v).
 
- **STATIC — this is the load-bearing property, not an implementation detail.** It draws
-  ONCE and never animates: no rAF loop, no per-frame GPU cost, no SC 2.2.2 exposure, and
-  nothing for `prefers-reduced-motion` to gate (§10). It also carries no pointer gate, so
-  unlike FR-38-25's cursor field it renders on phones — which is where most SME and charity
-  traffic is.
+ **SCROLL-RESOLVE — the treatment DEVELOPS IN as the element enters the viewport.**
+  Added 2026-08-21, hours after the first build, on the owner's instruction: *"I can see grain
+  and halftone being statically visible… there's no scroll motion effect applied."* A fair
+  objection — a static image filter in a spec whose entire subject is motion contributes no
+  motion. A shared `uResolve` uniform (1 = untouched source, 0 = treatment at full chosen
+  strength) is driven 1 → 0 by scroll progress. Client control: **"Reveal on scroll"**,
+  default ON, storing `fxTreatmentReveal='off'` to disable.
+
+ **Direction matters and was chosen deliberately.** The intuitive reading — the photograph
+  resolving OUT of a treated state into a clean one — was rejected: it makes the RESTING
+  appearance of every treated image the untreated photograph, so the treatment is visible only
+  mid-scroll and vanishes once the visitor stops. Running it the other way leaves the settled
+  appearance byte-identical to the pre-driver build, so the motion is strictly additive and
+  cannot regress a look already signed off.
+
+ **SC 2.2.2 is still not engaged, and that is the point of using scroll as the driver.**
+  2.2.2 governs motion that STARTS AUTOMATICALLY and runs beyond five seconds. This advances
+  only as the visitor scrolls and stops the instant they do — user-driven, exactly like the
+  shipped Tier V parallax. So the accessibility position that made this the right first Tier W
+  effect survives the addition of motion. Cost is bounded three ways: an `IntersectionObserver`
+  (an off-screen image runs nothing), an rAF-coalesced scroll handler (one redraw per frame at
+  most), and a settled-state short-circuit (a fully-developed element stops redrawing).
+
+ **No pointer gate**, so unlike FR-38-25's cursor field it renders on phones — which is where
+  most SME and charity traffic is.
 
  **FAIL-OPEN BY CONSTRUCTION, NOT BY A FALLBACK BRANCH.** SSR renders the ordinary `<img>`.
   JS hides it **only after a successful first draw**, setting `data-sgs-webgl-active="1"` at
@@ -1220,7 +1240,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Page transitions | **Suppress:** instant navigation |
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
 | Cursor-reactive field — `floating-objects` type (FR-38-25, once built) | **Simplify to a fixed resting transform, never suppress the object.** Differs from the `glow`/`spotlight-mask` SIMPLIFY case above: those rest as a static PAINT (a legitimate finished state); an autonomously-moving OBJECT has no equivalent "just stop tracking" answer, because the object is content an operator placed deliberately (`degrade-to-more-content-never-less`). Under `prefers-reduced-motion: reduce` the object renders at its AUTHORED static position (`transform: none`), identical to the fail-open no-JS state — the reduced-motion state and the no-JS state are the SAME state, needing no separate code path. |
-| Surface treatment (FR-38-29, Tier W) | **NOTHING TO GATE — and that is a measured result, not an omission.** The effect draws ONCE and never animates, so there is no motion for `prefers-reduced-motion` to suppress. Output is **byte-identical** under `reduce` and under `no-preference` — verified live 2026-08-21 by comparing composited element screenshots (both 659,504 bytes, byte-identical), with the treated-vs-untreated comparison as the negative control proving the comparator can detect a real difference. ⛔ **Do NOT add a reduced-motion suppression here.** Hiding a static image treatment would remove content a client deliberately applied — the `degrade-to-more-content-never-less` failure — and there is deliberately no `@media (prefers-reduced-motion: reduce)` rule in `fx-surface-treatment.css` for the same reason. |
+| Surface treatment (FR-38-29, Tier W) | **SIMPLIFY — settle immediately at the treated state, never suppress the treatment.** Under `reduce` the scroll-resolve driver is not created at all (no `IntersectionObserver`, no scroll listener, no per-frame work): `uResolve` is set to 0 once and the image renders at the treatment's full chosen strength. ⛔ **Note the direction — the reduced-motion state is the TREATED image, not the plain photograph.** Falling back to the untreated photo would strip content the client deliberately configured (`degrade-to-more-content-never-less`); the thing being removed under `reduce` is the *developing*, not the *treatment*. There is deliberately no `@media (prefers-reduced-motion: reduce)` rule in `fx-surface-treatment.css` — the gate is in JS, where the driver lives. ⚠ **AMENDED 2026-08-21, same day as the FR.** This row first read "NOTHING TO GATE — the effect draws once and never animates", which was true of the first build and became FALSE within hours when scroll-resolve was added on the owner's instruction. Recorded rather than quietly overwritten: a §10 row is a contract, and one that silently stops matching its effect is the drift this table exists to prevent. |
 | Carousel loop (FR-38-26) | **Suppress-equivalent (measured 2026-08-02):** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. Confirmed identical under reduce on 4 of 5 rollout blocks. Two blocks' own arrow-click code hardcoded `'smooth'` regardless of the preference — a defect in those blocks, not the loop module — fixed same day (`5c45f879`, `ba28ab92`); the one remaining hardcoded case (google-reviews autoplay) is correctly gated by an early return. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)

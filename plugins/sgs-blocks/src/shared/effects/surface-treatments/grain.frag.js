@@ -30,6 +30,15 @@ uniform float uIntensity;
 uniform float uSeed;
 uniform float uContrast;
 
+// SCROLL-RESOLVE (2026-08-21). 0 = the treatment at full chosen strength (the
+// resting state); 1 = the untouched source image. The boot module drives this
+// from 1 -> 0 as the element scrolls into view, so the treatment DEVELOPS in
+// rather than the photograph resolving away — the settled appearance is
+// therefore unchanged from before this uniform existed, which is why adding it
+// could not regress a look the owner had already approved.
+// Preset-agnostic on purpose: one knob, three shaders, one driver.
+uniform float uResolve;
+
 /**
  * Cheap 2D value hash — no texture lookup, no trig, deterministic per
  * pixel + uSeed so the same seed always paints the same grain (useful for
@@ -54,6 +63,10 @@ void main() {
 	// as "hazy" rather than "filmic" without a small contrast push.
 	vec3 contrasted = ( grained - 0.5 ) * uContrast + 0.5;
 
-	fragColour = vec4( clamp( contrasted, 0.0, 1.0 ), srcColour.a );
+	// Blend back toward the untouched source by uResolve (see its
+	// declaration above). At uResolve = 0 this is a no-op.
+	vec3 resolved = mix( contrasted, srcColour.rgb, uResolve );
+
+	fragColour = vec4( clamp( resolved, 0.0, 1.0 ), srcColour.a );
 }
 `;

@@ -117,6 +117,7 @@ const FX_ATTR_MAP = array(
 	'fxTreatmentIntensity' => 'data-sgs-fx-treatment-intensity',
 	'fxTreatmentShadow'    => 'data-sgs-fx-treatment-shadow',
 	'fxTreatmentHighlight' => 'data-sgs-fx-treatment-highlight',
+	'fxTreatmentReveal'    => 'data-sgs-fx-treatment-reveal',
 );
 
 /**
@@ -400,6 +401,7 @@ function sgs_fx_effect_param_scope(): array {
 			'fxTreatmentIntensity',
 			'fxTreatmentShadow',
 			'fxTreatmentHighlight',
+			'fxTreatmentReveal',
 		),
 	);
 }

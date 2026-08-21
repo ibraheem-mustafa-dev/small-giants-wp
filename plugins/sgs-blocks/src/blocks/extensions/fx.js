@@ -536,6 +536,7 @@ const FX_PARAM_RESET = {
 	fxTreatmentShadow: '',
 	fxTreatmentHighlight: '',
 	fxTreatmentIntensity: undefined,
+	fxTreatmentReveal: '',
 };
 
 /*
@@ -1020,6 +1021,18 @@ function addFxAttributes( settings, name ) {
 			fxTreatmentHighlight: { type: 'string', default: '' },
 			fxTreatmentIntensity: { type: 'number' },
 			/*
+			 * Reveal-on-scroll toggle for the treatment above. Empty string
+			 * means ON (the default): the treatment develops in as the
+			 * element scrolls into view, driven by the boot module's
+			 * `uResolve` uniform. `'off'` is the only other legal value —
+			 * the boot module's own gate is `'off' !== dataset.sgsFxTreatmentReveal`,
+			 * so ANY value other than the exact string `'off'` reads as on.
+			 * Kept a plain string, not a boolean, to match the render
+			 * layer's closed-set skip-with-reason pattern the rest of this
+			 * effect's params use (`fxTreatment` above).
+			 */
+			fxTreatmentReveal: { type: 'string', default: '' },
+			/*
 			 * Per-breakpoint disable (Spec 38 §7 build task, D446 Task 15) —
 			 * the single most common post-launch agency request, per the
 			 * competitor review this task cited: "turn the animation off on
@@ -1107,6 +1120,10 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-treatment': attributes.fxTreatment,
 		'data-sgs-fx-treatment-shadow': attributes.fxTreatmentShadow,
 		'data-sgs-fx-treatment-highlight': attributes.fxTreatmentHighlight,
+		// Only 'off' is ever meaningful to emit — '' (reveal on, the default)
+		// is falsy here and correctly skipped by the `if ( value )` guard
+		// below, matching the render layer's "presence means off" contract.
+		'data-sgs-fx-treatment-reveal': attributes.fxTreatmentReveal,
 	};
 	Object.entries( optional ).forEach( ( [ key, value ] ) => {
 		if ( value ) {
@@ -2489,6 +2506,43 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											) }
 										</Notice>
 									) }
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										'off' === attributes.fxTreatmentReveal
+									}
+									label={ __(
+										'Reveal on scroll',
+										'sgs-blocks'
+									) }
+									onDeselect={ () =>
+										setParam( { fxTreatmentReveal: '' } )
+									}
+									isShownByDefault
+								>
+									<ToggleControl
+										__nextHasNoMarginBottom
+										label={ __(
+											'Reveal on scroll',
+											'sgs-blocks'
+										) }
+										checked={
+											'off' !==
+											attributes.fxTreatmentReveal
+										}
+										onChange={ ( checked ) =>
+											setParam( {
+												fxTreatmentReveal: checked
+													? ''
+													: 'off',
+											} )
+										}
+										help={ __(
+											'The treatment fades in as the image scrolls into view. Turn off to apply it immediately.',
+											'sgs-blocks'
+										) }
+									/>
 								</ToolsPanelItem>
 
 								{ 'duotone' === attributes.fxTreatment && (

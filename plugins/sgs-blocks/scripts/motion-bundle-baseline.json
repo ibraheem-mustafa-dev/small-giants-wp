@@ -13,7 +13,7 @@
   "modules": {
     "shared/effects/fx-carousel-loop.js": 1012,
     "shared/effects/fx-cursor-field.js": 1331,
-    "shared/effects/fx-surface-treatment.js": 4325,
+    "shared/effects/fx-surface-treatment.js": 5674,
     "shared/effects/gsap/fx-draggable.js": 1017,
     "shared/effects/gsap/fx-draw.js": 673,
     "shared/effects/gsap/fx-flip.js": 789,

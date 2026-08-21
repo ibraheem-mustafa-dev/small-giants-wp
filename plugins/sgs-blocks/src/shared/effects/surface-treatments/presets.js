@@ -67,6 +67,10 @@ export const TREATMENT_PRESETS = {
 		label: 'Grain',
 		fragment: GRAIN_FRAGMENT,
 		uniforms: {
+			// Shared across every preset so the scroll driver is
+			// preset-agnostic: 0 = treatment at full chosen strength
+			// (the resting state), 1 = untouched source.
+			uResolve: { type: 'float', default: 0, min: 0, max: 1 },
 			uIntensity: { type: 'float', default: 0.08, min: 0, max: 0.4 },
 			uContrast: { type: 'float', default: 1.06, min: 1, max: 1.4 },
 			uSeed: { type: 'float', default: 0, min: 0, max: 1000 },
@@ -77,6 +81,10 @@ export const TREATMENT_PRESETS = {
 		label: 'Halftone',
 		fragment: HALFTONE_FRAGMENT,
 		uniforms: {
+			// Shared across every preset so the scroll driver is
+			// preset-agnostic: 0 = treatment at full chosen strength
+			// (the resting state), 1 = untouched source.
+			uResolve: { type: 'float', default: 0, min: 0, max: 1 },
 			uScale: { type: 'float', default: 90, min: 20, max: 260 },
 			uAngle: { type: 'float', default: 0.4, min: 0, max: 1.57 },
 			uSoftness: { type: 'float', default: 0.35, min: 0.05, max: 1 },
@@ -87,6 +95,10 @@ export const TREATMENT_PRESETS = {
 		label: 'Duotone',
 		fragment: DUOTONE_FRAGMENT,
 		uniforms: {
+			// Shared across every preset so the scroll driver is
+			// preset-agnostic: 0 = treatment at full chosen strength
+			// (the resting state), 1 = untouched source.
+			uResolve: { type: 'float', default: 0, min: 0, max: 1 },
 			uShadow: {
 				type: 'vec3',
 				default: [ 0.05, 0.08, 0.2 ],

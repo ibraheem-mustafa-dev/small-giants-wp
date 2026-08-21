@@ -33,6 +33,15 @@ uniform float uScale;
 uniform float uAngle;
 uniform float uSoftness;
 
+// SCROLL-RESOLVE (2026-08-21). 0 = the treatment at full chosen strength (the
+// resting state); 1 = the untouched source image. The boot module drives this
+// from 1 -> 0 as the element scrolls into view, so the treatment DEVELOPS in
+// rather than the photograph resolving away — the settled appearance is
+// therefore unchanged from before this uniform existed, which is why adding it
+// could not regress a look the owner had already approved.
+// Preset-agnostic on purpose: one knob, three shaders, one driver.
+uniform float uResolve;
+
 const vec3 LUMA = vec3( 0.2126, 0.7152, 0.0722 );
 
 /** Standard 2D rotation matrix application, inlined (no mat2 uniform — this
@@ -67,6 +76,10 @@ void main() {
 	vec3 inkTint = srcColour.rgb * 0.08;
 	vec3 result = mix( srcColour.rgb, inkTint, dotMask );
 
-	fragColour = vec4( clamp( result, 0.0, 1.0 ), srcColour.a );
+	// Blend back toward the untouched source by uResolve (see its
+	// declaration above). At uResolve = 0 this is a no-op.
+	vec3 resolved = mix( result, srcColour.rgb, uResolve );
+
+	fragColour = vec4( clamp( resolved, 0.0, 1.0 ), srcColour.a );
 }
 `;

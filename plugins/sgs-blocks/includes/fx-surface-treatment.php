@@ -188,6 +188,31 @@ function sgs_apply_fx_surface_treatment( string $block_content ): string {
 		}
 	}
 
+	// Reveal-on-scroll (D-reveal, FR-38-29 extension). Closed set — same
+	// skip-with-reason discipline as `$treatment` above, not a coercion.
+	// The default ('' — attribute simply absent, since `fx-attributes.php`
+	// never injects an empty value) means reveal-ON: the treatment develops
+	// in as the element scrolls into view. 'off' is the only other legal
+	// value, and it IS stamped, because its ABSENCE is exactly what the boot
+	// module (`src/shared/effects/fx-surface-treatment.js`) reads as "on" —
+	// see this file's class doc. An unrecognised value is dropped rather than
+	// passed through, so a typo never silently disables the reveal.
+	$reveal = (string) $processor->get_attribute( 'data-sgs-fx-treatment-reveal' );
+	if ( 'off' === $reveal ) {
+		$processor->set_attribute( 'data-sgs-fx-treatment-reveal', 'off' );
+	} else {
+		if ( '' !== $reveal && \defined( 'WP_DEBUG' ) && \WP_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			\error_log(
+				\sprintf(
+					'SGS motion: skipped surface treatment reveal value "%s" — not a known value.',
+					$reveal
+				)
+			);
+		}
+		$processor->remove_attribute( 'data-sgs-fx-treatment-reveal' );
+	}
+
 	// `$head` is re-prepended on EVERY return path that rebuilds the markup —
 	// the processor only ever saw `$rest`, so returning its output alone
 	// would silently drop the block's own leading <style> and with it every

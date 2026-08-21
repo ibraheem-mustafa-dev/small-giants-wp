@@ -41,6 +41,7 @@
 
 import { initSurface } from './webgl';
 import { resolvePreset } from './surface-treatments/presets';
+import { prefersReducedMotion, rafThrottle } from './motion-utils';
 
 /** Elements the render layer marked as surface-treatment hosts. */
 const SELECTOR = '[data-sgs-fx="surface-treatment"]';
@@ -164,6 +165,99 @@ function resolveUniforms( el, preset ) {
 }
 
 /**
+ * Drive `uResolve` from 1 (untouched source) down to 0 (the treatment at its
+ * chosen strength) as `el` scrolls into view, so the treatment DEVELOPS in.
+ *
+ * ── WHY THIS DIRECTION, AND NOT THE OBVIOUS ONE ───────────────────────────
+ *
+ * The intuitive reading of "resolve" is the photograph resolving OUT of a
+ * treated state into a clean one. That was rejected deliberately: it makes
+ * the settled appearance of every treated image the UNTREATED photograph, so
+ * the treatment is only ever visible mid-scroll and vanishes once the visitor
+ * stops. Running it the other way leaves the resting appearance byte-identical
+ * to what it was before this driver existed — the motion is strictly additive
+ * and cannot regress a look already signed off.
+ *
+ * ── WHY SCROLL-DRIVEN MOTION IS NOT AN SC 2.2.2 PROBLEM ───────────────────
+ *
+ * WCAG 2.2.2 (Pause, Stop, Hide) governs motion that STARTS AUTOMATICALLY and
+ * runs for more than five seconds. This runs only while the visitor scrolls,
+ * advances only as far as they scroll, and stops the instant they do — it is
+ * user-driven, like a parallax, not autoplaying. That is the same reasoning
+ * the shipped Tier V parallax rests on, and it is why this could be added
+ * without acquiring the pause-control obligation that disqualified the fluid
+ * cursor field (Spec 38 §1.2b).
+ *
+ * Cost is bounded three ways: an `IntersectionObserver` means an off-screen
+ * image runs nothing at all; the scroll handler is rAF-coalesced so a burst of
+ * scroll events costs one redraw per frame at most; and progress is clamped so
+ * a fully-entered element stops redrawing entirely.
+ *
+ * @param {HTMLElement} el     The treatment host.
+ * @param {{setUniform: Function, redraw: Function}} handle The render handle.
+ * @return {Function} Teardown for this driver.
+ */
+function driveScrollResolve( el, handle ) {
+	// Reduced motion: no listener, no observer, no per-frame work — just the
+	// finished state. Note this lands on TREATED, not untreated: the settled
+	// look is the content the client configured, and dropping to a plain photo
+	// would be the degrade-to-LESS-content failure (see this module's header).
+	if ( prefersReducedMotion() ) {
+		handle.setUniform( 'uResolve', 0 );
+		handle.redraw();
+		return () => {};
+	}
+
+	let visible = false;
+	let settled = false;
+
+	const update = () => {
+		if ( ! visible ) {
+			return;
+		}
+		const rect = el.getBoundingClientRect();
+		const vh = window.innerHeight || document.documentElement.clientHeight;
+		// 0 while the element's top edge is still at the bottom of the
+		// viewport; 1 once its top has travelled 65% of the way up. The
+		// treatment is therefore fully developed well before the element
+		// centres, rather than still resolving as it leaves.
+		const travelled = ( vh - rect.top ) / ( vh * 0.65 );
+		const progress = Math.min( 1, Math.max( 0, travelled ) );
+		const resolve = 1 - progress;
+
+		if ( settled && resolve === 0 ) {
+			return; // fully developed and staying that way — stop redrawing.
+		}
+		settled = resolve === 0;
+
+		handle.setUniform( 'uResolve', resolve );
+		handle.redraw();
+	};
+
+	const onScroll = rafThrottle( update );
+
+	const io = new IntersectionObserver( ( entries ) => {
+		entries.forEach( ( entry ) => {
+			visible = entry.isIntersecting;
+			if ( visible ) {
+				update();
+			}
+		} );
+	} );
+	io.observe( el );
+
+	window.addEventListener( 'scroll', onScroll, { passive: true } );
+	window.addEventListener( 'resize', onScroll, { passive: true } );
+	update();
+
+	return () => {
+		io.disconnect();
+		window.removeEventListener( 'scroll', onScroll );
+		window.removeEventListener( 'resize', onScroll );
+	};
+}
+
+/**
  * Initialise one element: locate its image, wait for it to decode, resolve
  * its preset + uniforms, and attempt a Tier W surface.
  *
@@ -182,7 +276,7 @@ function resolveUniforms( el, preset ) {
  *                     including before this async init has resolved.
  */
 function initTreatment( el ) {
-	const state = { cancelled: false, handle: null };
+	const state = { cancelled: false, handle: null, stopDriver: null };
 
 	const img = el.querySelector( 'img' );
 	if ( ! img ) {
@@ -227,6 +321,12 @@ function initTreatment( el ) {
 				img.style.visibility = '';
 				delete el.dataset.sgsWebglActive;
 				state.handle = null;
+				// Stop the scroll driver too — it would otherwise keep
+				// pushing uniforms at a destroyed surface every frame.
+				if ( state.stopDriver ) {
+					state.stopDriver();
+					state.stopDriver = null;
+				}
 			},
 		} );
 
@@ -257,10 +357,21 @@ function initTreatment( el ) {
 		// canvas that replaced it.
 		img.style.visibility = 'hidden';
 		el.dataset.sgsWebglActive = '1';
+
+		// Scroll-resolve, unless the client turned it off. Started only here,
+		// after a confirmed first paint — a driver attached to a surface that
+		// never drew would push uniforms at nothing.
+		if ( 'off' !== el.dataset.sgsFxTreatmentReveal ) {
+			state.stopDriver = driveScrollResolve( el, handle );
+		}
 	} )();
 
 	return () => {
 		state.cancelled = true;
+		if ( state.stopDriver ) {
+			state.stopDriver();
+			state.stopDriver = null;
+		}
 		if ( state.handle ) {
 			state.handle.destroy();
 			state.handle = null;
