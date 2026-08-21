@@ -2,12 +2,9 @@
 /**
  * Server-side render for the SGS Hero block.
  *
- * FR-22-6 migration: the content column (label, headline, sub-headline, CTAs)
- * is now rendered via InnerBlocks ($content). CTAs are child sgs/multi-button >
- * sgs/button blocks — the scalar ctaPrimary/ctaSecondary content/style/hover
- * attrs and ctaGap attrs were REMOVED entirely (no deprecated.js pre-production,
- * D270/D293): they drove no rendering output (their target selectors
- * .sgs-hero__cta-primary/--accent/--primary and .sgs-hero__ctas never render).
+ * FR-22-6: the content column (label, headline, sub-headline, CTAs) is
+ * rendered via InnerBlocks ($content). CTAs are child sgs/multi-button >
+ * sgs/button blocks (D270/D293).
  * R-22-14: NO legacy scalar fallback.
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
@@ -93,50 +90,29 @@ $sgs_radius_shorthand = static function ( array $box ) {
 $variant   = $attributes['variant'] ?? 'standard';
 $alignment = $attributes['alignment'] ?? 'left';
 $bg_image  = $attributes['backgroundImage'] ?? null;
-// WS-4: `overlayColour`/`overlayOpacity` were renamed to `backgroundOverlayColour`/
-// `backgroundOverlayOpacity` (the shared container owns those names). The legacy
-// `overlayColour` attribute has since been deleted outright (D270 — pre-production
-// framework, no migration path needed); only the canonical name is read. These
-// dynamic blocks save <InnerBlocks.Content/>, so no save-markup deprecation is needed.
+// `overlayColour`/`overlayOpacity` were renamed to `backgroundOverlayColour`/
+// `backgroundOverlayOpacity` (the shared container owns those names); only the
+// canonical name is read (D270). These dynamic blocks save <InnerBlocks.Content/>,
+// so no save-markup deprecation is needed.
 // Raw here; sanitised via sgs_colour_value() at the scoped-CSS concat site (matches the
 // sibling colour pattern — media/content/image-border — so the sanitiser is locally
 // obvious at every concatenation point and never double-applied to a resolved var()).
 // Raw (undefaulted) value — used to decide WHETHER an overlay colour was
-// explicitly set (the ungate condition below). 'text' is a real PAINT
-// default applied only once the span is already going to exist for some
-// other reason (media present); it must never itself trigger the span, or
-// every hero with no media and no configured overlay would render an opaque
-// full-bleed layer (caught live, 2026-08-11 — same session as the ungate).
+// explicitly set (the ungate condition below).
 $overlay_colour_raw = $attributes['backgroundOverlayColour'] ?? '';
-// D718 (2026-08-21): the legacy `: 'text'` paint fallback is DELETED and hero now
-// gates its overlay exactly like SGS_Container_Wrapper does — no colour set, no
-// overlay. Bean: "why is the hero different anyway? They all be via the background
-// panel." He was right, and R-31-9/D152 already says so: one shared control that
-// behaves two ways is the divergence that rule calls a bug to remove.
-//
-// What was different, and why only part of it was justified: hero renders ALL its
-// own media layers so it controls their stacking, and its background image is a
-// REAL <img> with fetchpriority="high" (the preload scanner finds it; the wrapper's
-// CSS background-image is only discovered after the selector matches) — that is a
-// genuine LCP win and it stays. The two BEHAVIOURAL differences had no such
-// justification: painting `text` when the client chose nothing, and creating the
-// layer from a background image alone. git shows the `text` fallback PREDATES the
-// 2026-08-11 background-panel redesign — that session only added a guard stopping
-// it from triggering the span; nobody ever re-reasoned the colour itself.
-// D717 (2026-08-21) — SUPERSEDES D581's D5, which stood here as a
-// "`backgroundOverlayOpacity` no longer exists, alpha is the one dimming
-// mechanism" note. Alpha silently unlinks the client's palette token (see
-// sgs_overlay_decls() in helpers-tokens.php for the full reasoning), so the
-// real 0-100 attribute is back and alpha is off on that colour row.
+// D718: hero gates its overlay exactly like SGS_Container_Wrapper does — no
+// colour set, no overlay (R-31-9/D152: one shared control must not behave two
+// ways). Hero still renders ALL its own media layers (so it controls their
+// stacking), and its background image is a REAL <img> with fetchpriority="high"
+// (the preload scanner finds it; the wrapper's CSS background-image is only
+// discovered after the selector matches) — that is a genuine LCP win and it stays.
+// D717: `backgroundOverlayOpacity` is the real 0-100 dimming attribute (see
+// sgs_overlay_decls() in helpers-tokens.php) — alpha is off on that colour row.
 $overlay_opacity = $attributes['backgroundOverlayOpacity'] ?? null;
-// Bug fix 2026-08-11: these three were never read here at all, so the
-// GradientOverlayControl UI could write a gradient and it would silently
-// never render — the overlay's own CSS rule (below) only ever emitted a
-// flat background-color. Same read pattern SGS_Container_Wrapper uses.
-// Task 3 (gradient palette-stop rebuild): overlayGradient is now ONE
-// attribute holding the complete CSS gradient value, validated through
-// sgs_css_gradient_value() at the point of emission below — replaces the
-// old 4-attr bool/angle/from/to shape.
+// Read here (same pattern SGS_Container_Wrapper uses) so the overlay's own CSS
+// rule below can paint it. overlayGradient is ONE attribute holding the complete
+// CSS gradient value, validated through sgs_css_gradient_value() at the point of
+// emission below.
 $overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient'] ?? '' );
 // The split column's sources are TYPED, one family per media kind:
 // splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a
@@ -148,16 +124,7 @@ $overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient']
 // pre-production, so there is nothing to migrate). They also contradicted this
 // file's own R-22-14 contract at the top — "NO legacy scalar fallback" — and
 // R-31-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
-// Verified before deletion, not assumed: across ALL post statuses on the canary
-// the only rows carrying splitMedia/splitImage were one leftover DRAFT from the
-// reverted D594 session and this session's own probe page, plus their revisions
-// — zero real content.
-$split_image = $attributes['splitImage'] ?? null;
-// splitImageTablet was DECLARED in block.json (b717717d) but read by nothing —
-// no render, no editor control — so the attribute existed and did nothing. The
-// dead-control gate did not catch it (it treats a responsive-family member as
-// consumed when the BASE is consumed, which is exactly wrong here: rendering the
-// base says nothing about whether the tablet tier renders). Wired 2026-08-07.
+$split_image        = $attributes['splitImage'] ?? null;
 $split_image_tablet = $attributes['splitImageTablet'] ?? null;
 $split_image_mobile = $attributes['splitImageMobile'] ?? null;
 // Per-tier media TYPE (2026-08-13). The split media column may be an image on one
@@ -195,14 +162,12 @@ $min_height_mobile = sgs_css_length_sanitise( $min_height_obj['mobile'] ?? '360p
 // Sub-headline / headline / label font-size are owned by the child
 // sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
 // scoped font-size <style> is emitted here. headline/subHeadline margin-bottom
-// and subHeadlineMaxWidth controls were RETIRED 2026-08-12 (Spec 35 Phase 2.3):
-// the content itself moved to child InnerBlocks at FR-22-6 and these leftover
-// parent-side spacing overrides never carried meaningful client intent (their
-// live values were scratch-page defaults, not deliberate settings — Bean).
-// splitImageHeight / splitImageHeightTablet / splitImageMobileHeight were REMOVED
-// 2026-08-10 — they duplicated `imageHeight` on the same property AND the same
-// element (`.sgs-hero__split-image`). See the consolidation note at the emission
-// site. Height for the split image now comes solely from the `imageHeight` object.
+// and subHeadlineMaxWidth controls were retired (Spec 35 Phase 2.3) once the
+// content moved to child InnerBlocks at FR-22-6.
+// splitImageHeight / splitImageHeightTablet / splitImageMobileHeight were removed
+// — they duplicated `imageHeight` on the same property AND the same element
+// (`.sgs-hero__split-image`). See the consolidation note at the emission site.
+// Height for the split image now comes solely from the `imageHeight` object.
 
 // D702 — root background/text colour, resting + hover, each with a sibling
 // `{attr}Gradient` (D636 storage shape: two attributes, gradient wins when
@@ -551,20 +516,12 @@ if ( $is_split ) {
 	if ( '' !== $hero_gap_mobile ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
 	}
-	// Split-image height is NOT emitted here. The `splitImageHeight` family was
-	// REMOVED 2026-08-10: it wrote `height` to `.sgs-hero__split-image` — the exact
-	// same property on the exact same element as the `imageHeight` family below, so
-	// the two genuinely contended for one routing slot. The DB gate caught it
-	// (`amb:sgs/hero:height:wrapper_css:split-image`) once the css-property
-	// classifier was actually run for the first time; before that the collision was
-	// invisible. At equal specificity the later rule wins, and `imageHeight` emits
-	// later — so `imageHeight` was ALREADY the effective winner whenever both were
-	// set. Consolidating onto it therefore changes no rendered output.
-	// `imageHeight` was kept as the survivor because it carries a configurable unit
-	// (`imageHeightUnit`) rather than hardcoding px, forces no `object-fit`, and was
-	// the only one of the two named consistently across all three tiers
-	// (`splitImageMobileHeight` put the tier token in the middle, which is also why
-	// the classifier could not tier it). See the imageHeight block below.
+	// Split-image height is NOT emitted here. The `splitImageHeight` family wrote
+	// `height` to `.sgs-hero__split-image` — the exact same property on the exact
+	// same element as `imageHeight` below, so the two contended for one routing
+	// slot. `imageHeight` is the survivor: it carries a configurable unit
+	// (`imageHeightUnit`) rather than hardcoding px, forces no `object-fit`, and is
+	// named consistently across all three tiers. See the imageHeight block below.
 
 	// Desktop/base column order. Blank ('') = natural DOM order (content is
 	// first in markup, so it lands in the first/left grid track). 'media-first'
@@ -730,12 +687,11 @@ if ( null !== $media_pad_mob ) {
 // (contract §A). The shared per-area schema attr; the legacy mediaBackgroundColour
 // attr was removed 2026-07-23 (it duplicated this on css:background-color / element
 // media and collided in the routing DB — mediaBackground is the sole canonical source).
-// Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
-// overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
-// (includes/class-sgs-container-wrapper.php ~1159-1176).
+// Gradient support (D561) mirrors the whole-block overlay's
+// linear-gradient(%ddeg,%s,%s) shape 1:1 (includes/class-sgs-container-wrapper.php ~1159-1176).
 $media_bg_resolved = $attributes['mediaBackground'] ?? '';
-// Task 3: mediaBackgroundGradient is now ONE attribute holding the complete
-// CSS gradient value, validated through sgs_css_gradient_value().
+// mediaBackgroundGradient is ONE attribute holding the complete CSS gradient
+// value, validated through sgs_css_gradient_value().
 $media_bg_gradient_value = sgs_css_gradient_value( $attributes['mediaBackgroundGradient'] ?? '' );
 if ( $media_bg_gradient_value ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-image:' . $media_bg_gradient_value . '}';
@@ -750,8 +706,8 @@ if ( $media_bg_gradient_value ) {
 // (~line 969 below) 1:1, scoped to `.sgs-hero__media-overlay` instead of
 // `.sgs-hero__overlay`.
 $media_overlay_colour_raw = $attributes['mediaOverlayColour'] ?? '';
-// Task 3: mediaOverlayGradient is now ONE attribute holding the complete CSS
-// gradient value, validated through sgs_css_gradient_value().
+// mediaOverlayGradient is ONE attribute holding the complete CSS gradient
+// value, validated through sgs_css_gradient_value().
 $media_overlay_gradient_value = sgs_css_gradient_value( $attributes['mediaOverlayGradient'] ?? '' );
 $media_overlay_has_colour     = '' !== $media_overlay_colour_raw || $media_overlay_gradient_value;
 
@@ -783,11 +739,10 @@ if ( null !== $content_pad_mob ) {
 // structural declarations (previously duplicated in style.css AND inline);
 // justify-content is driven by verticalAlignment (top/center/bottom).
 $content_background = isset( $attributes['contentBackground'] ) ? (string) $attributes['contentBackground'] : '';
-// Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
-// overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
-// (includes/class-sgs-container-wrapper.php ~1159-1176).
-// Task 3: contentBackgroundGradient is now ONE attribute holding the
-// complete CSS gradient value, validated through sgs_css_gradient_value().
+// Gradient support (D561) mirrors the whole-block overlay's
+// linear-gradient(%ddeg,%s,%s) shape 1:1 (includes/class-sgs-container-wrapper.php ~1159-1176).
+// contentBackgroundGradient is ONE attribute holding the complete CSS gradient
+// value, validated through sgs_css_gradient_value().
 $content_bg_gradient_value = sgs_css_gradient_value( $attributes['contentBackgroundGradient'] ?? '' );
 $v_align_map               = array(
 	'top'    => 'flex-start',
@@ -830,8 +785,7 @@ $classes = array(
 	// { margin:auto !important }` matches the hero (its selector EXCLUDES
 	// .alignfull) and beats our non-important negative-margin full-bleed —
 	// producing the asymmetric outer margin regression. Adding alignfull
-	// removes the hero from that selector's match set. (Restored from prior
-	// session; PROVE live before commit.)
+	// removes the hero from that selector's match set.
 	'alignfull',
 	$uid,
 );
@@ -961,18 +915,15 @@ if ( '' !== $hero_preset_text_slug ) {
 	$classes[] = 'has-text-color';
 	$classes[] = 'has-' . $hero_preset_text_slug . '-color';
 }
-// D6 (capability-routing doctrine, 2026-08-11): native `supports.color`
-// background/gradients REMOVED — it competed with this block's own overlay
+// D6: native `supports.color` background/gradients are REMOVED — the overlay
 // mechanism (GradientOverlayControl / overlayGradient / backgroundOverlayColour)
-// and, being wired up first, silently won, making the working overlay control
-// look broken. The overlay is now the ONLY background-colour concept.
+// is the ONLY background-colour concept on this block.
 //
 // `has-background` still needs setting here (not just left to the overlay's
 // own render) so the style.css default-gradient suppression
 // (`.sgs-hero:not(.has-background)`, style.css line ~50) fires — without it
 // the framework's default primary-dark→primary gradient shows through a
-// translucent overlay colour. measurement-vs-eye recurrence (2026-05-05 hero
-// -gradient incident); Bean-reported 2026-07-10.
+// translucent overlay colour.
 if ( ( '' !== $overlay_colour_raw || $overlay_gradient_value ) && ! in_array( 'has-background', $classes, true ) ) {
 	$classes[] = 'has-background';
 }
@@ -1076,25 +1027,14 @@ if ( $has_standard_bg_image ) {
 
 // Build overlay. No-inline contract (§A): background-color/opacity move to the
 // scoped <style> ($responsive_css, appended below) — the element carries only
-// its class, no style="" attribute.
-//
-// Bug fix 2026-08-11: mirrors SGS_Container_Wrapper's own overlay fix
-// (`class-sgs-container-wrapper.php`, "UNGATED 2026-08-08" comment) which
-// this private copy never received. Two bugs, same root cause (hero renders
-// its own overlay instead of the shared wrapper's, per the C3 double-emit
-// guard above — so a fix to the shared version never reaches here):
-// (a) a colour/gradient with no background image rendered NOTHING at all
-// (the old gate required an image/video/SVG background to exist first);
-// (b) `overlayGradient`/`overlayGradientFrom/To/Angle` were never read into
-// this file at all, so the CSS rule could only ever emit a flat colour.
+// its class, no style="" attribute. Hero renders its own overlay instead of the
+// shared wrapper's (per the C3 double-emit guard above).
 $overlay_html = '';
-// D718: the EXISTENCE test is now the shared helper's own return value, not a
+// D718: the EXISTENCE test is the shared helper's own return value, not a
 // separate hand-written condition. sgs_overlay_decls() returns '' when there is
 // nothing to paint, so "is there an overlay?" and "what does it paint?" are one
-// decision in one place. D717 unified the declaration building but left this
-// gating duplicated at both call sites — which is precisely how hero kept its
-// divergent behaviour through that change. SGS_Container_Wrapper gates the
-// identical way; the two sites can no longer drift apart on policy.
+// decision in one place. SGS_Container_Wrapper gates the identical way, so the
+// two sites cannot drift apart on policy.
 $overlay_decls = sgs_overlay_decls( $overlay_colour_raw, $overlay_gradient, $overlay_opacity );
 if ( '' !== $overlay_decls ) {
 	$overlay_html    = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';

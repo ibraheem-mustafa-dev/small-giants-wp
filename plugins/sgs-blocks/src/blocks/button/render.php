@@ -59,9 +59,8 @@ $url           = $has_url ? esc_url( $effective_url ) : '#';
 $link_target   = isset( $attributes['linkTarget'] ) ? esc_attr( $attributes['linkTarget'] ) : '_self';
 $rel           = isset( $attributes['rel'] ) ? esc_attr( $attributes['rel'] ) : '';
 $download      = ! empty( $attributes['download'] );
-// User-facing HTML-element chooser removed (2026-07-05) — the converter never
-// emitted this attr. The tag is auto-derived: a non-empty URL renders <a>,
-// otherwise <button>, preserving link-vs-button semantics without a setting.
+// The tag is auto-derived: a non-empty URL renders <a>, otherwise <button>,
+// preserving link-vs-button semantics without a setting.
 $tag_name   = $has_url ? 'a' : 'button';
 $is_submit  = ! empty( $attributes['isSubmit'] );
 $aria_label = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
@@ -599,9 +598,9 @@ if ( $icon ) {
 // tier has its OWN unit attribute (minHeightUnit / minHeightTabletUnit /
 // minHeightMobileUnit) — the general helper assumes one shared unit per
 // property family, so min-height is built by hand here rather than forced
-// through it. Because the base value now lives in this same-selector <style>
-// rule (not inline on the element), the tier overrides no longer need
-// !important to win (the "F4 pattern" !important workaround is retired).
+// through it. Because the base value lives in this same-selector <style>
+// rule (not inline on the element), the tier overrides do not need
+// !important to win.
 $min_height_decls = array();
 if ( $min_height ) {
 	$min_height_decls[] = ".{$uid}.sgs-button{min-height:{$min_height}{$min_height_unit};}";
@@ -882,8 +881,7 @@ $safe_inherit_style = in_array( $inherit_style, $allowed_presets, true ) ? $inhe
 // button's own identity class + inline styles merge into the block-wrapper attrs
 // so the element is the DIRECT flex child of sgs/multi-button. This lets a column
 // flex `align-items:stretch` stretch the button itself (full-width mobile stack)
-// instead of a dead wrapper div. Full-width is now the `sgs-button--full` modifier
-// (was `sgs-button-wrapper--full`).
+// instead of a dead wrapper div. Full-width is the `sgs-button--full` modifier.
 $full_modifier = ( 'full' === $width_type ) ? ' sgs-button--full' : '';
 $merged_class  = trim( $btn_class_str . $full_modifier );
 // $merged_style carries ONLY custom-property VALUES ($inline_styles from step
@@ -934,12 +932,11 @@ $allowed_css_tags = array(
 	'style' => array(),
 );
 if ( $scoped_css_parts ) {
-	// Class-level compound selector, matching the seven other scoped rules in this file.
-	// It was previously `#{$uid} .sgs-button` — ID-scoped AND a DESCENDANT combinator, while
-	// the uid and the class sit on the SAME element, so it matched zero elements and
-	// prefers-reduced-motion was silently ignored (measured live on the canary 2026-08-17:
-	// `#id .sgs-button` = 0 matches, `#id.sgs-button` = 1). ID scoping also breaks Spec 32
-	// §6.1(b)/D303, which requires class level so the client's sgsCustomCss residual can win.
+	// Class-level compound selector (`.{$uid}.sgs-button`), matching the seven other
+	// scoped rules in this file. The uid and the class sit on the SAME element, so an
+	// ID selector (`#{$uid} .sgs-button`) would be a descendant combinator and match
+	// zero elements. Class level is also required by Spec 32 §6.1(b)/D303, so the
+	// client's sgsCustomCss residual can win.
 	$raw_css = implode( '', $scoped_css_parts )
 		. "@media(prefers-reduced-motion:reduce){.{$uid}.sgs-button{transition:none !important;transform:none !important;}}";
 	// wp_strip_all_tags (not esc_html) matches the proven SGS_Container_Wrapper

@@ -2,13 +2,11 @@
 /**
  * Server-side render for the SGS Testimonial Slider block.
  *
- * FR-22-6 InnerBlocks migration (2026-05-30):
- * Slides are now sgs/testimonial InnerBlocks, not a scalar `testimonials`
- * array attribute. The render iterates $block->inner_blocks, renders each
- * child via $inner_block->render(), and wraps it in the existing
- * .sgs-testimonial-slider__slide container so view.js (which queries
- * '.sgs-testimonial-slider__slide') and style.css continue to work
- * unchanged — zero edits needed to view.js or CSS.
+ * Slides are sgs/testimonial InnerBlocks (FR-22-6). The render iterates
+ * $block->inner_blocks, renders each child via $inner_block->render(), and
+ * wraps it in the existing .sgs-testimonial-slider__slide container so
+ * view.js (which queries '.sgs-testimonial-slider__slide') and style.css
+ * work unchanged.
  *
  * Dots and arrows are derived from count( $block->inner_blocks ) so the
  * navigation count is always in sync with the actual number of testimonials.
@@ -67,33 +65,19 @@ $hover_border_colour = $attributes['borderColourHover'] ?? '';
 $hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
-// below — no local variable needed here (dead-assignment cleanup).
-// nameFontSize had no editor control and no consumer anywhere in the repo
-// (D338 full-repo grep, 2026-08-06) — removed as an abandoned attribute,
-// see block.json for the matching removal.
+// below — no local variable needed here.
 
 /*
  * Drag momentum — BLOCK-PRIVATE, deliberately NOT the shared Tier G roster.
+ * This carousel is `overflow: hidden` with a transform-based clone-loop
+ * driven by `--sgs-slider-offset`, so it is never a genuine native
+ * `overflow-x: auto|scroll` element — the shared runtime's
+ * `isNativeHorizontalScroller()` check cannot attach to it.
  *
- * This block used to declare `supports.sgs.fx.draggable` and emit
- * `data-sgs-fx="draggable"` here. That was inert and expensive, and both
- * halves were removed 2026-07-31:
- *
- *   · INERT — the shared runtime (shared/effects/gsap/fx-draggable.js) only
- *     ever attaches to a genuine native `overflow-x: auto|scroll` element.
- *     This carousel is `overflow: hidden` with a transform-based clone-loop
- *     driven by `--sgs-slider-offset`, so `isNativeHorizontalScroller()`
- *     returned false and `initDraggable()` returned `undefined`, every time.
- *     Confirmed independently by the site owner: the effect did nothing here.
- *   · EXPENSIVE — `SGS_Motion_Registry` sniffs the rendered markup for
- *     `data-sgs-fx` and enqueues that effect's whole plugin set. Emitting the
- *     marker therefore shipped GSAP core + InertiaPlugin + the effect module
- *     (~35KB gzip) to run a function that returned `undefined`.
- *
- * What remains is this block's OWN, working mechanism: the pointer-drag in
- * view.js plus its private InertiaPlugin momentum layer, which imports the
- * plugin dynamically and only for an instance that opted in — so a page with
- * the toggle off still fetches zero bytes of GSAP. The marker below is
+ * The working mechanism is this block's OWN: the pointer-drag in view.js
+ * plus its private InertiaPlugin momentum layer, which imports the plugin
+ * dynamically and only for an instance that opted in — so a page with the
+ * toggle off still fetches zero bytes of GSAP. The marker below is
  * block-private grammar (`data-sgs-slider-momentum`), read only by this
  * block's view.js, and is invisible to the shared registry's `data-sgs-fx`
  * sniff by construction.
@@ -198,10 +182,9 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 
 	// Typography — the block itself renders no direct text node (the quote
 	// text belongs to the child sgs/testimonial InnerBlocks), so this scopes
-	// to the same root element WP was previously auto-inlining onto (parity
-	// with pre-migration behaviour), not the stale/unused block.json
-	// `selectors.typography` (.sgs-testimonial-slider__quote — no element in
-	// this block's own markup ever carried that class).
+	// to the root element, not the stale/unused block.json `selectors.typography`
+	// (.sgs-testimonial-slider__quote — no element in this block's own markup
+	// ever carried that class).
 	$slider_typography_args = array();
 	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
 		$slider_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
@@ -274,9 +257,8 @@ if ( $hover_border_colour ) {
 	$slider_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
 if ( $slider_hover_decls ) {
-	// Via the ONE shared hover-colour helper (2026-08-19). Identical output to
-	// the hand-rolled rule this replaces, plus the `:focus-visible` twin a
-	// keyboard user needs — this block had `:hover` alone.
+	// Via the ONE shared hover-colour helper — also emits the `:focus-visible`
+	// twin a keyboard user needs.
 	$slider_scoped_css .= sgs_emit_state_colour_css( $root_sel, array(), $slider_hover_decls );
 }
 
@@ -296,8 +278,8 @@ if ( '' !== $hover_border_gradient ) {
 // view.js queries .sgs-testimonial-slider[data-autoplay] / [data-speed] /
 // [data-slides] on the OUTER wrapper. These must ride through extra_attrs so
 // they are present on the element that get_block_wrapper_attributes() emits.
-// The role/aria-roledescription/aria-label that were previously on the <div>
-// in the printf() calls are also moved here so the wrapper helper owns the tag.
+// role/aria-roledescription/aria-label ride the same array so the wrapper
+// helper owns the tag.
 $slider_extra_attrs = array(
 	'data-autoplay'        => $autoplay ? 'true' : 'false',
 	'data-speed'           => (string) absint( $autoplay_speed ),
@@ -374,9 +356,9 @@ foreach ( $inner_blocks as $inner_block ) {
 	++$slide_index;
 }
 
-// ── Arrows — always rendered when showArrows is enabled, regardless of count.
-// Bug-fix (2026-06-03): removed "total > slidesVisible" gate — nav must always
-// show and rotate even when total === slidesVisible (e.g. 4 cards, 3 visible).
+// ── Arrows — always rendered when showArrows is enabled, regardless of count
+// (nav must show and rotate even when total === slidesVisible, e.g. 4 cards,
+// 3 visible).
 $arrow_prev_html = '';
 $arrow_next_html = '';
 if ( $show_arrows && $total_testimonials > 0 ) {
@@ -394,7 +376,6 @@ if ( $show_arrows && $total_testimonials > 0 ) {
 }
 
 // ── Dots — always rendered when showDots is enabled, regardless of count.
-// Bug-fix (2026-06-03): removed "total > slidesVisible" gate — same reason.
 $dots_html = '';
 if ( $show_dots && $total_testimonials > 0 ) {
 	$dots_html = '<div class="sgs-testimonial-slider__dots" role="group" aria-label="' . esc_attr__( 'Testimonial navigation', 'sgs-blocks' ) . '">';
@@ -416,9 +397,8 @@ if ( $show_dots && $total_testimonials > 0 ) {
 }
 
 // ── Controls bar (dots + pause button slot) — always rendered when there are
-// slides, so view.js can always inject the pause button into __controls.
-// Bug-fix (2026-06-03): was conditional on $dots_html — pause btn fell outside
-// __controls when dots were hidden. Now rendered whenever there are slides.
+// slides, so view.js can always inject the pause button into __controls, even
+// when dots are hidden.
 $controls_html = '';
 if ( $total_testimonials > 0 ) {
 	$controls_html = '<div class="sgs-testimonial-slider__controls">' . $dots_html . '</div>';

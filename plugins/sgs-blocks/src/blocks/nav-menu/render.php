@@ -1,19 +1,17 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName -- dynamic block render template; helper class below is rendered inline, its namespace lives in the block slug.
 /**
- * SGS Nav Menu (sgs/nav-menu) — server-side render.
+ * SGS Nav Menu (sgs/nav-menu) — server-side render. (D270)
  *
- * REBUILD (Spec 36 Phase 1 Wave 2, Step 6 — D270 same-slug rebuild, no
- * deprecation). This is the site's VISIBLE menu: a FLAT horizontal bar of
- * real <a href> links on desktop; below `collapsePoint` it becomes a burger
- * that opens `sgs/nav-drawer` through the shared `store('sgs/nav')`
- * Interactivity store (src/shared/nav-interactivity/store.js). No
- * submenus/dropdowns/mega this phase — a submenu/mega-menu item collapses to
- * its OWN single top-level link.
+ * This is the site's VISIBLE menu: a FLAT horizontal bar of real <a href>
+ * links on desktop; below `collapsePoint` it becomes a burger that opens
+ * `sgs/nav-drawer` through the shared `store('sgs/nav')` Interactivity store
+ * (src/shared/nav-interactivity/store.js). Submenus (one level deep,
+ * MAX_SUBMENU_DEPTH = 1) and mega panels ARE rendered — dropdown roots,
+ * sub-toggles and `sgs_mega_render_panel_content()` panels, all driven by the
+ * shared `sgs/mega` interactivity store.
  *
  * Menu source: the shared SGS_Nav_Menu_Source resolver (one-source rule,
- * Spec 36 FR-36-1) — the SAME resolver the drawer content uses. (sgs/adaptive-nav,
- * the block this comment used to name as the other consumer, was retired/deleted
- * at FR-37-21/D362, 2026-07-22 — this block is its replacement.)
+ * Spec 36 FR-36-1) — the SAME resolver the drawer content uses.
  *
  * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline CSS property
  * declarations. Colour / hover / typography / featured styling are emitted
@@ -774,20 +772,25 @@ $toggle_html = sprintf(
 );
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
-// The landmark ITSELF is the wrapper element: SGS_Container_Wrapper is called
-// below with `'tag' => 'nav'`, so this block's root IS a <nav>. It always has
-// been. This label rides onto it via `extra_attrs` — see the wrapper call.
+// The landmark ITSELF is this block's root: the final `printf()` at the end of
+// this file emits `<nav %s>` directly via get_block_wrapper_attributes(), so the
+// root IS a <nav>. This label rides onto it through $nav_root_attrs.
+// ⚠ Corrected 2026-08-21: this previously said SGS_Container_Wrapper renders the
+// tag. That stopped being true at D539, when the block moved to a block-private
+// root (see the require note at the top — the wrapper file is deliberately NOT
+// required). The warning below still stands; only the mechanism named changed.
 //
 // ⚠ HISTORY, so this is not "fixed" a third time. On 2026-07-23 a change added
 // a SECOND, inner <nav class="sgs-nav-menu__nav"> here and moved the label onto
 // it, on the stated grounds that the block "emitted NO <nav> element at all" and
 // that the wrapper was "a roleless <div>". Both premises were false. They came
 // from `grep -c "<nav" nav-menu/render.php`, which returns 0 because the <nav>
-// is emitted by class-sgs-container-wrapper.php — a different file the grep
-// never read (STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING). Live on the
+// was at that time emitted by class-sgs-container-wrapper.php — a different file
+// the grep never read (STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING). Live on the
 // canary that change produced <nav> nested inside <nav> around the SAME links,
 // with the OUTER one unnamed, and axe still reported `landmark-unique`. Reverted
-// 2026-07-23. Before changing the landmark structure again, read the wrapper.
+// 2026-07-23. Before changing the landmark structure again, read the printf()
+// at the end of this file — that is what emits the landmark now.
 //
 // The label falls back through: operator `navLabel` → the resolved MENU'S OWN
 // NAME → 'Primary'. Preferring the menu name means two nav instances bound to
@@ -866,10 +869,7 @@ $link_sel = $uid_sel . ' .sgs-nav-menu__link';
 $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
 /*
- * 4a-ii. Nav CONTAINER appearance (2026-07-28 — Bean-directed; the block had
- * NO fill controls at all, only per-item ones, so a bar could never sit on
- * its own surface. Audit: `supports` declared spacing only, and the element
- * manifest's `wrapper` mapped padding/margin/max-width and nothing else).
+ * 4a-ii. Nav CONTAINER appearance.
  *
  * Every value is emitted ONLY when the operator has set it, so an untouched
  * nav is byte-identical to before. `$uid_sel` targets the <nav> root itself
@@ -986,11 +986,10 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 	 * UNDERLINE — a real ::after bar, and the fallback for every other case so
 	 * there is never zero visible feedback (WCAG 1.4.1 / 2.4.7).
 	 *
-	 * NOT `text-decoration:underline`, which was the pre-2026-07-20 fallback:
-	 * that hugs the baseline, breaks around descenders, spans only the glyphs
-	 * (so every item's line is a different length), and cannot animate. A
-	 * positioned bar spans the link box consistently and grows in from the
-	 * left. Bean reported it as "quite an ugly look"; the mechanism confirmed it.
+	 * NOT `text-decoration:underline`: that hugs the baseline, breaks around
+	 * descenders, spans only the glyphs (so every item's line is a different
+	 * length), and cannot animate. A positioned bar spans the link box
+	 * consistently and grows in from the left.
 	 */
 	$u_thickness = isset( $attributes['underlineThickness'] ) ? (float) $attributes['underlineThickness'] : 2;
 	$u_offset    = isset( $attributes['underlineOffset'] ) ? (float) $attributes['underlineOffset'] : 6;
@@ -1101,11 +1100,9 @@ $css .= $uid_sel . '{' . $sgs_nm_featured_vars . '}';
 /*
  * 4d-ii. Featured HOVER state. The featured item is the one nav item an
  * operator most wants to stand out (it is usually the "Order now" / "Book"
- * call to action), and before 2026-07-20 it had no hover state at all — it
- * inherited the generic item hover, which fought its own pill. It now carries
- * its own Normal|Hover pair for both text and background, resolved by the same
- * contrast helper as the resting state so the operator's colour wins whenever
- * it is readable.
+ * call to action). It carries its own Normal|Hover pair for both text and
+ * background, resolved by the same contrast helper as the resting state so
+ * the operator's colour wins whenever it is readable.
  */
 $featured_hover_sel    = implode(
 	',',
@@ -1198,15 +1195,13 @@ $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-
 $css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu__caret{transition:none;}}';
 
 /*
- * Panel anchoring (fixed 2026-07-28, Bean design-gated — Gate-3 finding).
- * The wrap previously anchored to `.sgs-nav-menu__mega` (the <li>-level
- * hover bridge, position:relative), so the panel shrink-to-fit against the
- * MENU ITEM's width and rendered as a ~100px vertical sliver on the live
- * page. The draft designs (sites/Mega-menu design + Indus Foods Mega Menu
- * Design, both at "position:absolute;top:100%;left:0;right:0" on the header
- * container with an 1120px-capped centred panel) anchor a wide centred band
- * instead. Our sanctioned anchor is the BAR (`.sgs-nav-menu__bar` is already
- * position:relative in style.css for the indicator pill), so the wrap now
+ * Panel anchoring (Bean design-gated — Gate-3 finding). The wrap anchors to
+ * the BAR (`.sgs-nav-menu__bar` is already position:relative in style.css
+ * for the indicator pill), not to the <li>-level hover bridge, so the panel
+ * can exceed a single menu item's width. The draft designs (sites/Mega-menu
+ * design + Indus Foods Mega Menu Design, both at
+ * "position:absolute;top:100%;left:0;right:0" on the header container with
+ * an 1120px-capped centred panel) anchor a wide centred band, so the wrap
  * centres on the bar and may exceed the bar's width up to the draft's
  * 1120px cap with the draft's 28px side gutters. MEGA-ONLY by construction:
  * plain (non-mega) dropdowns, when built, must anchor left-aligned under
@@ -1446,8 +1441,7 @@ $css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid cu
  */
 
 /*
- * IN-DRAWER SUBMENU — real nested accordion/drill-down markup (rebuilt again,
- * this session, for the "wired but inert" submenuModel fix).
+ * IN-DRAWER SUBMENU — real nested accordion/drill-down markup.
  *
  * `.sgs-nav-menu__submenu-root` / `-wrap` no longer render inside a drawer at
  * all — `render_items_drawer()` above emits `.sgs-nav-menu__accordion(-row)`
@@ -1496,23 +1490,17 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link[aria-current="page
  * panel — so `.sgs-nav-menu__mega-panel-wrap` never appears inside a drawer's
  * OWN nav-menu instance and needs no in-drawer override here. (FR-36-5's
  * "the same panel renders inside the drawer" mega-in-drawer capability
- * remains a declared future item, not built by this session.)
+ * remains a declared future item, not yet built.)
  */
 
 /*
- * In-drawer width discipline (Bean, 2026-07-28): a vertical drawer menu must
- * FILL the space available, never shrink-wrap to its longest label. Measured
- * before this rule: the whole vertical list hugged to ~95px (the drawer body
- * is align-items:flex-start, and the nav root + bar + items all sized to
- * content), so the in-drawer mega panel inherited a 95px column and its text
- * CLIPPED. The full width exists to stop child content — mega panels above
- * all — being cut off, and to give items proper touch-target size. That is
- * the whole of its rationale.
+ * In-drawer width discipline: a vertical drawer menu must FILL the space
+ * available, never shrink-wrap to its longest label. The full width exists
+ * to stop child content — mega panels above all — being cut off, and to
+ * give items proper touch-target size. That is the whole of its rationale.
  *
- * It says NOTHING about where the LABEL should sit (corrected 2026-08-07: an
- * earlier version of this comment claimed left was a decided "natural reading
- * edge" — it was not; nothing had been decided). Where labels sit depends on
- * the drawer's design and how much of the screen it covers, so it is the
+ * It says NOTHING about where the LABEL should sit. Where labels sit depends
+ * on the drawer's design and how much of the screen it covers, so it is the
  * OPERATOR's pick, made once on the drawer (nav-drawer's "Content alignment"
  * control) and inherited here. Because the box stays full-width by design,
  * align-items can move nothing — only text-align moves the label, which is

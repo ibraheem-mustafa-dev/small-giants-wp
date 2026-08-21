@@ -6,8 +6,7 @@
  * `empty( $content )`):
  *
  *  - 'typed' (default): renders the card's built-in elements directly from
- *    block attributes (sgs_product_card_builtin_render). No InnerBlocks —
- *    the FP-H transition bridge retired 2026-07-04.
+ *    block attributes (sgs_product_card_builtin_render). No InnerBlocks slot.
  *
  *  - 'wc-product' / 'sgs-cpt' (Live product data): resolves a real product
  *    (WooCommerce or sgs_product CPT), seeds the Interactivity API state from
@@ -21,12 +20,10 @@
  * wrapper capabilities (align, maxWidth, etc.). The block is
  * a CONTENT-KIND composite — only width layers are emitted (no bg/grid/shapes).
  *
- * `contentWidth` was DELETED 2026-08-10 (D540). It was declared and exposed to
- * the client, but $base_opts below passes `wrap_inner => false` on EVERY branch,
- * so `.sgs-container__inner` never renders and the wrapper wrote the band CSS to
- * a selector that does not exist. The control changed nothing. D540 reserves the
- * name for a block that genuinely renders an inner band; this one cannot.
- * Render-neutral at deletion: 0 theme patterns/parts and 0 canary posts set it.
+ * `contentWidth` is deliberately absent (D540) — $base_opts below passes
+ * `wrap_inner => false` on EVERY branch, so `.sgs-container__inner` never
+ * renders and a width control targeting it would do nothing. D540 reserves
+ * the name for a block that genuinely renders an inner band; this one cannot.
  *
  * Shell classes:
  *  - standard: .product-card
@@ -135,16 +132,6 @@ if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width )
 if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
 	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
 }
-// NOTE (2026-07-30): the retired `innerPadding` emit block lived here. The
-// scalar `innerPadding` attr was migrated to the `cardPadding` box-object on
-// 2026-07-24 (FR-31-22) — see the cardPadding rendering further down — but the
-// old emit was left behind reading a `$inner_padding` variable whose assignment
-// had been deleted with the attribute. It was a READ WITH NO WRITER: harmless
-// in output (sgs_container_gap_value(null) casts to '' and returns '', so the
-// `if` never fired and no var was ever emitted) but it raised a PHP 8
-// "Undefined variable $inner_padding" warning on EVERY product-card render.
-// Deleted, not repaired — cardPadding is the live mechanism.
-
 // CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
 // into the scoped <style> below (border width/radius = length; border style =
 // keyword). Strip everything outside the safe grammar so a Contributor-authored
@@ -183,9 +170,8 @@ $classes[] = $sgs_card_uid;
 $sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
-// 'pill' typography now targets the REAL option-picker pill (both typed + bound
-// pack pickers render sgs/option-picker) — the legacy .sgs-product-card__pill /
-// .pill markup was removed 2026-07-10, so this control styles the live pills.
+// 'pill' typography targets the option-picker pill (both typed + bound pack
+// pickers render sgs/option-picker).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
@@ -283,9 +269,8 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// Card ROOT padding (FR-31-22 box-object migration, 2026-07-24) — REPLACES the
-// retired single-value innerPadding custom-property mechanism. cardPadding is
-// a {top,right,bottom,left} box-object attr (mirrors ctaPadding/tagPadding),
+// Card ROOT padding (FR-31-22). cardPadding is a {top,right,bottom,left}
+// box-object attr (mirrors ctaPadding/tagPadding),
 // shorthanded via the shared sgs_box_object_shorthand() helper (helpers-box.php,
 // auto-loaded via render-helpers.php) into ONE scoped <style> rule — never an
 // inline `style="padding:…"` declaration (Spec 32). Targets BOTH the bound-mode
@@ -294,7 +279,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // render branch. An entirely-empty/un-set cardPadding ({}) → sgs_box_object_
 // shorthand() returns null → NO rule is emitted at all, so style.css's own
 // :where(.product-card) .product-card-body/.sgs-product-card__body{padding:20px}
-// default renders — byte-identical to the pre-migration innerPadding default.
+// default renders.
 $sgs_card_padding_obj      = is_array( $attributes['cardPadding'] ?? null ) ? $attributes['cardPadding'] : array();
 $sgs_card_padding_shorthand = sgs_box_object_shorthand( $sgs_card_padding_obj );
 if ( null !== $sgs_card_padding_shorthand ) {
@@ -386,9 +371,7 @@ if ( 'typed' === $source_mode ) {
 
 	$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
-	// Built-in element render — the ONLY typed path. The FP-H InnerBlocks
-	// transition bridge retired 2026-07-04 (legacy clones are re-cloned with
-	// native typed attrs; the block has no InnerBlocks slot).
+	// Built-in element render — the ONLY typed path (no InnerBlocks slot).
 	// Prepend the scoped typography + CTA <style>. Pass the uid so the trial tag
 	// carries it (the box rule above scopes to it).
 	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes, $sgs_card_uid );
@@ -1013,11 +996,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php endif; ?>
 				<?php
 				// FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper.
-				// D649: the title carries `sgs-product-card__title` so styling keys on IDENTITY, not
-				// tag name. Bound markup previously emitted a bare tag, which forced style.css to
-				// enumerate `> h2, > h4` — a rule that had to be extended every time a new tag became
-				// selectable, and silently left the newest one (`p`) unstyled. Keying on the class
-				// makes that class of bug impossible and unifies bound with typed mode.
+				// D649: the title carries `sgs-product-card__title` so styling keys on IDENTITY,
+				// not tag name.
 				?>
 				<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
 					<?php if ( '' !== $card_permalink ) : ?>
@@ -1248,9 +1228,8 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					 * v1 ruling: 'add-to-basket'/'buy-now' are PRIMARY-only behaviours — a
 					 * second add form would double the Interactivity context wiring (one
 					 * canonical cart form per card), so the secondary is ALWAYS a plain
-					 * learn-more anchor (the cta2Behaviour attr was removed as a dead
-					 * control 2026-06-10). Nothing secondary is seeded into context
-					 * (the JS never needs it — the secondary is always a plain anchor).
+					 * learn-more anchor. Nothing secondary is seeded into context (the JS
+					 * never needs it — the secondary is always a plain anchor).
 					 * URL fallback: empty cta2Url → the bound product's permalink.
 					 */
 					$sgs_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
@@ -1589,9 +1568,8 @@ ob_start();
 		 * v1 ruling: 'add-to-basket'/'buy-now' are PRIMARY-only behaviours — a
 		 * second add form would double the Interactivity context wiring (one
 		 * canonical cart form per card), so the secondary is ALWAYS a plain
-		 * learn-more anchor (the cta2Behaviour attr was removed as a dead
-		 * control 2026-06-10). Nothing secondary is seeded into context
-		 * (the JS never needs it — the secondary is always a plain anchor).
+		 * learn-more anchor. Nothing secondary is seeded into context (the JS
+		 * never needs it — the secondary is always a plain anchor).
 		 * URL fallback: empty cta2Url → the bound product's permalink.
 		 */
 		$sgs_nv_cta2_text = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
