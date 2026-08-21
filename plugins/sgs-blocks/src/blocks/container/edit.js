@@ -109,6 +109,10 @@ export default function Edit({ attributes, setAttributes, name }) {
     backgroundColourGradient,
     backgroundColourHover,
     backgroundColourHoverGradient,
+    textColour,
+    textColourGradient,
+    textColourHover,
+    textColourHoverGradient,
   } = attributes;
 
   // Active device tier for the preview, read from the SAME source the inspector's
@@ -273,6 +277,38 @@ export default function Edit({ attributes, setAttributes, name }) {
                   gradientValue: backgroundColourHoverGradient,
                   onGradientChange: ( val ) =>
                     setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+                },
+              ],
+            },
+            {
+              /* Root TEXT colour. A section-KIND block can parent any non-section
+                 block without a forced parent, so this is the INHERITABLE cascade
+                 default for whatever the client nests inside — NOT a duplicate of a
+                 child's own text control (Bean's ruling, 2026-08-21). It replaces a
+                 DEAD binding: the wrapper manifest mapped css:color to
+                 `native:color.text` while supports.color is false on this block, so
+                 there was no reachable text control at all. */
+              key: 'text',
+              label: __( 'Text colour', 'sgs-blocks' ),
+              states: [
+                {
+                  key: 'normal',
+                  label: __( 'Normal', 'sgs-blocks' ),
+                  value: textColour,
+                  onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+                  linked: true,
+                  gradientValue: textColourGradient,
+                  onGradientChange: ( val ) =>
+                    setAttributes( { textColourGradient: val ?? '' } ),
+                },
+                {
+                  key: 'hover',
+                  label: __( 'Hover', 'sgs-blocks' ),
+                  value: textColourHover,
+                  onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+                  gradientValue: textColourHoverGradient,
+                  onGradientChange: ( val ) =>
+                    setAttributes( { textColourHoverGradient: val ?? '' } ),
                 },
               ],
             },

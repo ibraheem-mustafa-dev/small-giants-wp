@@ -73,10 +73,15 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout", "animation" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
+						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:font-weight": "native:typography.fontWeight",
@@ -95,15 +100,26 @@
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
 						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration"
+						"anim:duration": "bgAnimationDuration",
+						"css:color-gradient": "textColourGradient"
 					},
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes."
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -122,7 +138,10 @@
 					"label": "Content band",
 					"layer": "CONTENT",
 					"order": 3,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:width": "contentWidth"
@@ -132,7 +151,11 @@
 					"label": "Grid item",
 					"layer": "GRID_AREA",
 					"order": 4,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "gridItem",
 					"attrMap": {
 						"css:background-color": "gridItemBackground",
@@ -159,7 +182,8 @@
 					"clusters": [],
 					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*), parallax/Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none."
 				}
-			}
+			},
+			"containerKind": "section"
 		}
 	},
 	"selectors": {
@@ -172,7 +196,17 @@
 		},
 		"tagName": {
 			"type": "string",
-			"enum": [ "div", "section", "article", "aside", "nav", "header", "footer", "figure", "main" ],
+			"enum": [
+				"div",
+				"section",
+				"article",
+				"aside",
+				"nav",
+				"header",
+				"footer",
+				"figure",
+				"main"
+			],
 			"default": "section"
 		},
 		"ariaLabel": {
@@ -181,7 +215,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gridTemplateColumns": {
 			"type": "object",
@@ -291,7 +329,10 @@
 		},
 		"shapeDividerTopScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerTopFlip": {
 			"type": "boolean",
@@ -315,7 +356,10 @@
 		},
 		"shapeDividerBottomScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerBottomFlip": {
 			"type": "boolean",
@@ -370,7 +414,9 @@
 		},
 		"gridItemPadding": {
 			"type": "object",
-			"default": {"desktop": {}}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"gridItemBackground": {
 			"type": "string",
@@ -482,7 +528,9 @@
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "normal"}
+			"default": {
+				"desktop": "normal"
+			}
 		},
 		"padding": {
 			"type": "object",
@@ -511,7 +559,9 @@
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"backgroundColour": {
 			"type": "string",
@@ -528,6 +578,26 @@
 		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting root text colour, bound to the wrapper element's css:color. A section-KIND block can parent arbitrary content, so this is a root-scoped INHERITABLE cascade default for whatever the client nests inside — not a duplicate of a child's own control (HC2 carve-out, Bean-ruled 2026-08-21)."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColour at render time, mirroring sgs/hero."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover/focus root text colour. Sibling of textColour; declared so the state is reachable (a state without a base is an asymmetric control surface)."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient for the hover root text colour. Non-empty wins over textColourHover."
 		}
 	},
 	"providesContext": {

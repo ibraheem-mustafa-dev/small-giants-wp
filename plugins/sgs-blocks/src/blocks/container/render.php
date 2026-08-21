@@ -143,6 +143,45 @@ if ( '' !== $sgs_container_hover_bg ) {
 	$sgs_container_hover_decls[] = $sgs_container_hover_bg;
 }
 
+// Root TEXT colour (D702 shape, same emitter as sgs/hero render.php:390-412 —
+// sgs_resolve_text_colour_or_gradient() picks the gradient over the flat value,
+// sgs_text_colour_decl() turns it into the right declaration, including the
+// background-clip:text form a gradient needs). One emitter, not a second
+// mechanism.
+//
+// WHY A SECTION-KIND BLOCK OWNS A ROOT TEXT COLOUR (Bean-ruled 2026-08-21): a
+// section-class block can be the parent of ANY non-section block that has no
+// forced parent, so this is the INHERITABLE cascade default for whatever the
+// client nests inside — not a duplicate of a child's own text control. The child
+// overrides one instance; this sets the default for all of them.
+//
+// It REPLACES a dead binding: the wrapper manifest mapped css:color to
+// `native:color.text` while `supports.color` is FALSE on this block, so that
+// mapping pointed at a mechanism that does not exist and the container had no
+// text-colour control at all. check-element-manifest-conformance already
+// reported both text/css:color and text/css:color-gradient as GAPs here.
+$sgs_container_resting_text = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+if ( '' !== $sgs_container_resting_text ) {
+	$sgs_container_resting_text_decl = sgs_text_colour_decl( $sgs_container_resting_text );
+	if ( '' !== $sgs_container_resting_text_decl ) {
+		$sgs_container_resting_decls[] = $sgs_container_resting_text_decl;
+	}
+}
+
+$sgs_container_hover_text = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+if ( '' !== $sgs_container_hover_text ) {
+	$sgs_container_hover_text_decl = sgs_text_colour_decl( $sgs_container_hover_text );
+	if ( '' !== $sgs_container_hover_text_decl ) {
+		$sgs_container_hover_decls[] = $sgs_container_hover_text_decl;
+	}
+}
+
 if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
 	// The uid is normally minted by the style-engine branch above, but that
 	// branch does not run when the ONLY colour set is a gradient or a hover —

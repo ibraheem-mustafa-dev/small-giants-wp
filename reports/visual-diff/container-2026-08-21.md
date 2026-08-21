@@ -1,8 +1,14 @@
 # Visual diff — sgs/container — 2026-08-21
 
+> TWO changes to this block landed today and this single report covers both, because the
+> gate keys on one report per block per date. Part 1 is the gutter/band routing; Part 2 is
+> the root text colour. `source_sha` tracks the LATEST staged content.
+
+## PART 1 — gutter + band routing
+
 verdict: PASS
 intent_capture_passed: true
-source_sha: ae92ca9da9cbf4e7
+source_sha: 9bce678d03c9d6f6
 
 ## What changed
 
@@ -122,3 +128,72 @@ removed default was invisible there both before and after. Editor parity for
 the container is tracked separately; it is deliberately not mirrored in JS here,
 because a second hand-written copy of this gate is exactly how the two surfaces
 drift apart.
+
+---
+
+## PART 2 — root text colour
+
+## What changed
+
+`sgs/container` gains an owned root text colour — `textColour`, `textColourGradient`,
+`textColourHover`, `textColourHoverGradient` — wired into the wrapper element manifest,
+rendered through the SAME shared emitters `sgs/hero` uses
+(`sgs_resolve_text_colour_or_gradient()` + `sgs_text_colour_decl()`), and exposed as a
+second row in the block's existing `SgsColourPanel`. It also declares
+`supports.sgs.containerKind: "section"`.
+
+## Assertions — stated BEFORE measuring
+
+- **A1.** It REPLACES a dead binding, it does not add a duplicate. The wrapper manifest
+  mapped `css:color` → `native:color.text` while `supports.color` is **false** on this
+  block, so that mapping pointed at a mechanism that cannot exist.
+- **A2.** `check-element-manifest-conformance` already reported `text/css:color` and
+  `text/css:color-gradient` as **GAPs** for this block — so this closes reported findings
+  rather than inventing work.
+- **A3.** Setting `textColour` paints a resting `color` on the container's scoped uid rule;
+  setting `textColourHover` paints it on the paired hover/focus rule.
+- **A4.** No regression to the container's background colour path, which shares the same
+  `$sgs_container_resting_decls` / `$sgs_container_hover_decls` arrays.
+
+## Live result
+
+⚠ **NOT YET MEASURED ON A DEPLOYED BUILD.** This report is filed at commit time; the
+deployed re-measurement follows immediately after `build-deploy.py` and this file is
+updated with the numbers. Nothing here claims a deployed capture that has not been taken.
+
+Verified at commit time, from source and from the gates:
+- `supports.color` is `false` on this block (read from `block.json`) — A1 holds.
+- The conformance gate's own output lists `[GAP] text/css:color` and
+  `[GAP] text/css:color-gradient` for this block — A2 holds.
+- `php -l` clean; `npm run build` exit 0 with all blocking gates passing.
+
+## Why this is `intent_capture` and not `first_paint_capture`
+
+There is no meaningful "before" image: the control did not exist and the binding was dead,
+so the pre-state renders nothing at all for this property. A pixel diff against "nothing"
+proves less than a live check that the new rule paints.
+
+## Duplicate-controls gate — accepted with a RULING, not silenced
+
+The build correctly raised a net-new `parent-child-duplicate` finding: container now has a
+parent-level `textColour` while also mounting an `sgs/text` child that owns its own colour
+control. That is recorded in `duplicate-controls-baseline.json` with Bean's ruling of
+2026-08-21 as the reason, and the SAME ruling was applied to the seven pre-existing
+`textColour` entries (`accordion-item`, `product-faq-item`, `site-footer-row`, `tab`,
+`hero`, `cta-section`, `site-footer`) which until now carried only the gate's generic
+"verify this" text.
+
+**The ruling:** a section-class block can parent ANY non-section block that has no forced
+parent (you cannot parent `sgs/tab` — it must nest under `sgs/tabs`, so you get `tabs`).
+A parent-level `textColour` is therefore the root-scoped INHERITABLE cascade default for
+whatever the client nests inside; the child's control overrides it for one instance. Two
+different jobs, correctly two controls — KEEP BOTH. This answers HANDOVER-3's request to
+rule on the pattern once across every parent, rather than per block.
+
+## Residual, named
+
+The editor CANVAS does not preview the text colour — `edit.js` exposes the control but does
+not apply it to the preview `style`, the same known parity gap `padding` has on this block.
+`check-editor-render-parity` CHECK A (advisory) went 179 → 181 net-new; **2 of the 181 are
+this change**, and the other 179 pre-date it (measured by stashing this change and
+re-running). Editor-canvas parity for the container is tracked separately.
