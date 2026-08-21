@@ -588,8 +588,18 @@ FX_EFFECTS: list[dict] = [
         # pins/triggers (D416). UNSHIPPED - placeholder. scope=site, so it never reaches a block panel at all.
         "pins": 0,
         "triggers": "scroll",
-        "tier": "G",
-        "plugin_set": ["ScrollSmoother"],
+        # tier='H', plugin_set=[] since D422 (2026-07-30): site-level smoothing
+        # moved from GSAP ScrollSmoother to Lenis, and Lenis was admitted as
+        # Tier H (helper/utility) rather than Tier G. This row carried tier='G'
+        # and plugin_set=['ScrollSmoother'] until 2026-08-21 — naming a GSAP
+        # plugin that decision retired. It was never load-bearing (scope='site'
+        # means nothing activates it, and 'ScrollSmoother' is not a key in
+        # SGS_Motion_Registry::PLUGIN_MODULES, so it enqueued nothing either
+        # way) but a stale mechanism name is a trap for whoever reads it next.
+        # plugin_set is EMPTY because Tier H is not GSAP-plugin shaped at all —
+        # the same shape three other rows already use.
+        "tier": "H",
+        "plugin_set": [],
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "no-preview",

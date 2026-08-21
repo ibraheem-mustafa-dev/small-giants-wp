@@ -65,7 +65,7 @@
 					"order": 3,
 					"clusters": [ "text" ],
 					"prefix": "toggleClose",
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColour resolves css:color via the default {prefix}{suffix} convention (toggleClose + Colour). The button's :hover opacity fade (style.css:90-92, opacity:0.75) and its :focus-visible outline (style.css:94-97) have NO attribute behind them — an uncontrollable-styling finding, not a manifest gap (no state is declared for this element for that reason)."
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColour resolves css:color via the default {prefix}{suffix} convention (toggleClose + Colour). The button's :hover opacity fade and its :focus-visible outline have NO per-block attribute behind them — an uncontrollable-styling finding, not a manifest gap (no state is declared for this element for that reason). The outline is NOT hardcoded, though: since D467 it resolves var(--sgs-focus-color, currentColor), so it follows the site-wide focus token. Line numbers deliberately omitted — the earlier ones had drifted."
 				}
 			}
 		},

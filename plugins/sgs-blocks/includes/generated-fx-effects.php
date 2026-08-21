@@ -109,7 +109,7 @@ function sgs_get_motion_fx_effects() {
 				'triggers'              => array( 'scroll', 'load', 'hover' ),
 			),
 			'scroll-smoother' => array(
-				'plugin_set'            => array( 'ScrollSmoother' ),
+				'plugin_set'            => array(),
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'scroll' ),
