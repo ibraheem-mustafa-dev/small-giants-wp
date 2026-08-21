@@ -86,6 +86,26 @@ const TEMPLATE_MODE_OPTIONS = [
   { label: __("Card grid", "sgs-blocks"), value: "card-grid" },
 ];
 
+/**
+ * Editor mirror of `$sgs_resolve_content_width` in class-sgs-container-wrapper.php.
+ *
+ * Kept token-for-token in step with the PHP: `normal`/`wide` map to the SAME global
+ * custom properties the frontend uses, so the canvas band and the rendered band resolve
+ * to one number rather than two that merely look alike. `full` and `''` both resolve to
+ * NOTHING — they are identical on the frontend (:508-524) and must stay identical here,
+ * because "no cap" is what makes `$has_band_props` false and suppresses the band entirely.
+ *
+ * @param {string} value Raw contentWidth tier value.
+ * @return {string} A CSS length, or '' for no cap.
+ */
+function resolveContentWidthPreview( value ) {
+	const v = String( value ?? '' );
+	if ( v === 'normal' ) return 'var(--wp--style--global--content-size,1200px)';
+	if ( v === 'wide' ) return 'var(--wp--style--global--wide-size,1400px)';
+	if ( v === 'full' || v === '' ) return '';
+	return v;
+}
+
 export default function Edit({ attributes, setAttributes, name }) {
   const {
     layout,
@@ -194,6 +214,49 @@ export default function Edit({ attributes, setAttributes, name }) {
     style.maxWidth = previewMaxWidth;
   }
 
+  // ── CONTENT BAND (L2) — the editor rendered ONE layer until 2026-08-21 ─────
+  // `edit.js` never emitted `.sgs-container__inner`, while `editor.css:13` styled it:
+  // a rule waiting for an element that was never created. So "Content band width" and
+  // "Band padding" wrote to something the canvas did not contain — the client changed
+  // a setting, nothing moved, and the only way to see the result was to publish.
+  //
+  // The gate MUST match the wrapper's `$has_band_props` (~:894): a resolved contentWidth
+  // OR any band-padding side. Not "is contentWidth set" — `full` resolves to '' and must
+  // NOT produce a band, or the canvas would grow a layer the frontend does not have.
+  const bandMaxWidth = resolveContentWidthPreview(
+    resolveResponsiveTier( attributes.contentWidth, previewTier )?.value
+  );
+  const bandPadTier = resolveResponsiveTier( attributes.contentBandPadding, previewTier )?.value;
+  const bandPad = bandPadTier && typeof bandPadTier === "object" ? bandPadTier : {};
+  const hasBandPadding = [ "top", "right", "bottom", "left" ].some( ( side ) => !! bandPad[ side ] );
+  const hasBandProps = bandMaxWidth !== "" || hasBandPadding;
+
+  const bandStyle = {};
+  if ( bandMaxWidth ) {
+    bandStyle.maxWidth = bandMaxWidth;
+    bandStyle.marginInline = "auto";
+  }
+  if ( bandPad.top ) bandStyle.paddingTop = bandPad.top;
+  if ( bandPad.right ) bandStyle.paddingRight = bandPad.right;
+  if ( bandPad.bottom ) bandStyle.paddingBottom = bandPad.bottom;
+  if ( bandPad.left ) bandStyle.paddingLeft = bandPad.left;
+
+  // GRID-ON-INNER. The frontend moves the grid ONTO the band whenever a band exists
+  // (`$grid_on_inner`, ~:902) — which is why commit a28a1121 had to delete the
+  // `.sgs-cols-*` classes: they addressed the wrapper after the grid had moved. The
+  // canvas has to make the same move, or a grid container previews its columns on the
+  // full-bleed outer while rendering them on the capped band.
+  const gridOnInner = ( layout === "grid" || layout === "flex" ) && hasBandProps;
+  if ( gridOnInner ) {
+    for ( const key of [ "display", "gridTemplateColumns", "gap", "alignItems",
+                         "justifyItems", "alignContent", "flexWrap" ] ) {
+      if ( style[ key ] !== undefined ) {
+        bandStyle[ key ] = style[ key ];
+        delete style[ key ];
+      }
+    }
+  }
+
   const className = [
     "sgs-container",
     `sgs-container--${layout}`,
@@ -230,10 +293,16 @@ export default function Edit({ attributes, setAttributes, name }) {
     .join( " " );
 
   const blockProps = useBlockProps({ className: editorClassName, style });
-  const innerBlocksProps = useInnerBlocksProps(blockProps, {
-    orientation: layout === "stack" ? "vertical" : undefined,
-    allowedBlocks,
-  });
+  // The children belong to the BAND when one renders, and to the root when one does not.
+  // useInnerBlocksProps is called exactly once either way — branching the ARGUMENT, never
+  // the hook, so this cannot trip the rules of hooks.
+  const innerBlocksProps = useInnerBlocksProps(
+    hasBandProps ? { className: "sgs-container__inner", style: bandStyle } : blockProps,
+    {
+      orientation: layout === "stack" ? "vertical" : undefined,
+      allowedBlocks,
+    }
+  );
 
   return (
     <>
@@ -506,7 +575,13 @@ export default function Edit({ attributes, setAttributes, name }) {
 
       </InspectorControls>
 
-      <div { ...innerBlocksProps } />
+      { hasBandProps ? (
+        <div { ...blockProps }>
+          <div { ...innerBlocksProps } />
+        </div>
+      ) : (
+        <div { ...innerBlocksProps } />
+      ) }
     </>
   );
 }
