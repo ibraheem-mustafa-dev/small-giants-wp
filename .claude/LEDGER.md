@@ -54,14 +54,18 @@ Per-step plan status is single-sourced to
   sheet animates in and out, opens with 0px page jump, scrolls internally, Escape closes,
   focus returns, and the closed drawer exposes 0 focusable controls (was 26 — a real WCAG
   fix).
-- **QC GATE 2: PARTIAL.** Frontend PASSES. The EDITOR half is outstanding and is handed to
-  the colour-golden track: pick a colour on `sgs/hero` / `sgs/trust-bar` / `sgs/brand-strip`
-  and confirm the computed style changes at rest AND on hover. Gradients have never been
-  observed working on these blocks — a dead gradient toggle is a finding, not a pass.
-  ⛔ **SUPERSEDED 2026-08-21 by the colour-golden track: gradients DO work.** Gate 2 was run
-  behaviourally on `sgs/brand-strip` — colour set in the editor, frontend paints the resting
-  colour, the hover state and a `linear-gradient`, on a paired `:hover, :focus-within` rule.
-  `sgs/hero` and `sgs/trust-bar` remain untested. See the colour-golden section below.
+- ✅ **QC GATE 2: CLOSED — PHASE 1 IS COMPLETE.** Closed by the colour-golden track on
+  2026-08-21 against Bean's behavioural test, not "attrs declared": in the editor they picked
+  a swatch on each block and confirmed the computed style changed on the frontend at rest AND
+  under a REAL pointer hover. `sgs/hero` primary → accent-dark (`rgb(245,208,80)` on hover),
+  `sgs/trust-bar` success → cookie-brown (`rgb(139,111,78)`), `sgs/brand-strip` verified
+  earlier. The round-trip stored a token SLUG not a hex, so the token survives. Hero returned
+  to its resting colour when unhovered — a negative control. Fixture page 2588 is deletable.
+- ✅ **P2-1 CLOSED, and it was one bug not four.** The content band's `max-width` +
+  `margin-inline:auto` were painting on the container's OUTER box. That single fault produced
+  the capped background, a 340px grid track collapsing to 48px, a stranded centring margin,
+  and gutters compounding to 72px over three nesting levels — which is why they looked
+  unrelated. Shop archive repaired with it (products 260px → 940px at desktop).
 - ⛔ **Framework-wide defect found and fixed (`d3e98700`): theme assets were served STALE to
   any warm browser cache.** Every theme CSS/JS URL carried the theme version, which is never
   bumped, so an asset deployed between releases kept an identical URL. Same URL returned

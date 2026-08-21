@@ -26,18 +26,6 @@
 		},
 		{
 			"check": "parent-child-duplicate",
-			"block": "sgs/cta-section",
-			"attr": "textColor",
-			"severity": "scoped",
-			"keeper": "child sgs/text's own typography/colour controls",
-			"sources": [
-				"sgs/cta-section edit.js: parent-level control for \"textColor\"",
-				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
-			],
-			"reason": "\"textColor\" (role \"text\") is a parent-level styling attr on sgs/cta-section, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?"
-		},
-		{
-			"check": "parent-child-duplicate",
 			"block": "sgs/hero",
 			"attr": "imageBorderColour",
 			"severity": "scoped",
