@@ -474,26 +474,50 @@ h2.wc-block-mini-cart__title {
 
 /* ── 8b. Filter sidebar / drawer ── */
 
-/* Specificity note (2026-08-21): the `.sgs-container.sgs-shop-filters` compound
- * is REQUIRED, not decorative. This element is an sgs/container, and the block's
- * own scoped CSS sets `.sgs-container { position: relative }` (it needs a
- * positioned ancestor for the background/overlay layer). That rule is a single
- * class, exactly like `.sgs-shop-filters`, and it is emitted into an inline
- * <style> in the body — i.e. LATER in source order than this linked stylesheet —
- * so at equal specificity it won.
+/* Specificity note (2026-08-21) — the ID selector is REQUIRED, not decorative.
+ * Deleting it in a tidy-up silently kills the sticky sidebar again, with no error.
  *
- * The consequence was two defects for the price of one, both measured live on
- * the canary at 1309px:
- *   1. The sticky sidebar was never sticky. `position` computed to `relative`,
- *      so the filter panel did not follow the page on scroll at all — a feature
- *      that looked present in the source and did nothing.
- *   2. `top: 24px` survived, and on a `relative` element `top` is a plain
- *      offset rather than a sticky threshold. The panel sat 24px BELOW the first
- *      product card (filters 422 vs cards 398) instead of level with it.
- * Forcing `position: sticky` live closed the gap to exactly 0 and restored the
- * scroll behaviour, which is what proved the cause rather than merely fitting it.
+ * WHAT WINS, AND WHY. This element is an sgs/container, so it is matched by the
+ * container block's own overlay-stacking guard in
+ * plugins/sgs-blocks/src/blocks/container/style.css:63 —
+ *   .sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay)
+ *                     :not(.sgs-cta-section__overlay):not(.sgs-fx-path-route)
+ *                     :not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target)
+ *   { position: relative; z-index: 1 }
+ * `:not()` contributes no specificity ITSELF but counts its ARGUMENT at full
+ * weight, so those six chained class arguments plus the leading class make that
+ * selector (0,7,0). It is one of SEVEN sibling guards in that file carrying 4-7
+ * :not() clauses each. A class-based rule here — even the `.sgs-container
+ * .sgs-shop-filters` compound this file carried until today, at (0,2,0) — loses
+ * to it outright, on specificity, regardless of source order.
+ *
+ * CONSEQUENCE WHEN IT LOSES: `position` computes to `relative`, so the sticky
+ * sidebar is not sticky at all — measured live at 1440px, the panel scrolled from
+ * top 421.9px to -178.1px on a 600px scroll, i.e. straight off with the page. The
+ * surviving `top: 24px` then acts as a plain offset on a relative element, sitting
+ * the panel 24px BELOW the first product card instead of level with it.
+ *
+ * An ID is (1,0,0) and beats (0,7,0) on the class column alone. The template
+ * already sets "anchor":"sgs-shop-filters" (archive-product.html:44) and that
+ * anchor is verified to render as a real id on this element, so the hook costs
+ * nothing new. !important was rejected: it wins the same fight while hiding which
+ * rule it is fighting.
+ *
+ * ⚠ CORRECTION TO THIS FILE'S OWN EARLIER NOTE. The version committed hours
+ * earlier blamed a tie between `.sgs-container` and `.sgs-shop-filters`, both
+ * (0,1,0), broken by source order, and "fixed" it with a (0,2,0) compound. That
+ * diagnosis was WRONG — read off a selector string truncated to 70 characters,
+ * which hid four of the six :not() clauses and understated the real specificity.
+ * The compound shipped and changed nothing. Rule 63 was always the winner.
+ *
+ * ⚠ NOT the cause, audited live and ruled out: no ancestor of this element up to
+ * <html> has overflow other than visible, any transform, any filter, any contain,
+ * or a fixed height — so the sticky containing-block chain is sound. And
+ * `align-self: start` is NOT needed: line 455 already sets align-items:start on
+ * the grid container, so every item shrink-wraps. The filters column matches the
+ * grid height because it is the TALLEST item, not because it stretches.
  */
-.sgs-container.sgs-shop-filters,
+#sgs-shop-filters,
 .sgs-shop-filters {
 	position: sticky;
 	top: var(--wp--preset--spacing--40, 1.5rem);
@@ -682,7 +706,7 @@ dialog.sgs-shop-filters {
 }
 
 @media ( max-width: 781px ) {
-	dialog.sgs-shop-filters:modal {
+	dialog#sgs-shop-filters:modal {
 		/* Bottom sheet: full width, ~85vh, anchored to the viewport bottom. */
 		position: fixed;
 		inset: auto 0 0 0;
