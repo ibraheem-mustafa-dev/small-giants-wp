@@ -1,5 +1,64 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D717 [INCIDENT] — `backgroundOverlayOpacity` restored, alpha retired: D581's D5 was right about simplicity, wrong about which mechanism (2026-08-21)
+
+**Colour-golden track. This SUPERSEDES D581's D5 (2026-08-11), which stood as an explicit
+in-code prohibition in two files.** D5 removed the overlay's opacity-percentage control on the
+reasoning that the colour picker's own alpha channel should be the single place transparency is
+set. **Read this as a correction of the MECHANISM, not a rejection of the principle** — one
+transparency control genuinely does beat two, and that half of D5 stands. It picked the wrong
+one, because alpha's side effect was not known when the call was made.
+
+**The defect, proven live before the fix, not inferred.** `DesignTokenPicker` stores a palette
+SLUG only on exact string equality with a palette entry (`DesignTokenPicker.js:139-140`), so
+altering a colour's alpha breaks the match and stores a raw hex — silently unlinking the
+client's brand token, so a later rebrand leaves that colour behind.
+
+**But the brief's framing was incomplete, and the larger half was found by reading source.**
+The overlay row was the ONLY colour row in the plugin not passing `linked`, against ~40 that do
+(`GradientOverlayControl.js:156`). Without it the picker stores a raw CSS value on EVERY pick,
+alpha untouched. **Negative control run on the canary against pre-fix deployed code: inserting
+an `sgs/container`, opening Background → overlay, and clicking the client's own "Primary"
+swatch stored `#e68a95`, never the slug.** The unlink was unconditional, not alpha-triggered.
+
+**Shipped.** A real `backgroundOverlayOpacity` (number, default 30) on the 8 blocks that mount
+`<BackgroundPanel>`; a `RangeControl` in that one shared panel, so all 8 are reached with no
+per-block wiring; `linked` + `enableAlpha={false}` on the shared picker mount.
+
+**Scope of the `linked` fix — Bean chose the wider option, and it was verified, not assumed.**
+It lands in the shared component, so it reaches all six attribute pairs that component writes
+(whole-block overlay, both shape-divider colours, hero's media-overlay / media-background /
+content-background). Each of their renderers was traced and every one resolves a slug through
+`sgs_colour_value()`. This mattered: a slug reaching a renderer that does NOT resolve it paints
+nothing at all, silently — the D684 defect.
+
+**New shared owner: `sgs_overlay_decls()` (`helpers-tokens.php`).** Bean asked whether the
+shared helper was being updated; it was not, and the answer exposed real duplication. The
+gradient-beats-colour resolution had been hand-rolled INDEPENDENTLY in the wrapper's
+`.sgs-container__overlay` branch and in `sgs/hero`'s own `.sgs-hero__overlay` (hero passes
+`no_overlay => true`), while `sgs_background_paint_value()` — whose own docblock calls itself
+universal — had exactly ONE caller plugin-wide. Both sites now call the new helper and their
+copies are deleted. It composes the existing paint helper rather than widening it: opacity is
+not part of "which background property wins", and pushing it down would hand an overlay-only
+concept to `sgs/card-grid`, which uses that helper for a plain card surface.
+
+**A stale comment corrected in the same change, because it caused a wrong call this session.**
+`class-sgs-container-wrapper.php` claimed the overlay "simply IS the background" when no media
+sits beneath it. True when written (2026-08-08); false since `1905257e`. I argued from it that
+a 30% default would wash out solid backgrounds; Bean challenged it; enumeration settled it —
+all 8 blocks declare AND render their own separate `backgroundColour`. The layer is an overlay
+and only an overlay, so 30% is safe. **The comment is corrected in place so the next reader is
+not misled by it too.**
+
+**Named consequence, not a surprise.** `sgs/hero` defaults `$overlay_colour` to `'text'` once
+its span exists for any other reason. That previously painted opaque and now lightens to 30%.
+Visible change, judged an improvement, flagged for Bean's eye rather than left to surface later.
+
+**Planned work that turned out unnecessary, verified by RUNNING the gate not reading it:** the
+plan reserved element-manifest `css:opacity` entries for 8 blocks on the assumption
+`check-element-manifest-conformance` would fail the build. It passes untouched (style-defect
+0/0). No manifest edit was made.
+
 ## D704 [INCIDENT] — WordPress does NOT discard undeclared attributes before render.php; D338 was half true (2026-08-21)
 
 **Colour-golden track.** This repo has operated on D338: *"WordPress silently discards any
