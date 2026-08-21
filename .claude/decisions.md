@@ -1,5 +1,61 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D725 [ROUTINE] — one cap per page: core's constrained layout is deleted, and a bare block is intentionally unbanded (2026-08-21)
+
+**Bean-ruled, and his framing was the one that resolved it:** our `contentWidth` already does
+this job and does it in the RIGHT PLACE — it wraps the CONTENT inside the container rather than
+shrinking the container itself. Core's `layout:{"type":"constrained"}` added a second identical
+cap and nothing else.
+
+`front-page.html` and `page.html` each had an `sgs/container` `<main>` capping at 1200, core's
+constrained post-content capping at 1200 inside it, and every section inside capping at 1200
+again — **three stacked caps doing one job.** That, not `maxWidth` vs `contentWidth`, was the
+real "outer/content width overlap"; those two attributes are cleanly separated by design and
+correct in code.
+
+**THE MODEL (now written into the templates themselves):** OUTER (`maxWidth`, default `{}` = no
+cap) paints full-bleed; INNER (`contentWidth`, default `"normal"`) holds the content. That
+PAIRING is the model. **No default was changed** — `contentWidth:"full"` would make the band
+identical to the outer and therefore pointless, which is why D706 set `normal` and why an earlier
+proposal here to "revert to full" was wrong and dropped. `<main>` is STRUCTURE, not content, so
+it says `full` and passes width through; each section paints edge-to-edge and caps its own words.
+`single.html` keeps its deliberate 800px prose band.
+
+**MEASURED LIVE at 1440/768/390 after deploy**, not asserted: stacked 1200px caps **3 -> 0**;
+post-content now `is-layout-flow`; `<main>` 1425px with no band; **26 sections each outer-1425
+full-bleed + inner-1280 capped**; page title 705px at left 24 (it needed its own wrapper — loose
+content would otherwise span the viewport); 24px gutter present at every width; `single.html`
+0 uncapped blocks. Note the live band computes to **1280px, not theme.json's 1200** — the Site
+Editor's saved global styles override theme.json.
+
+⭐ **THE CONSEQUENCE, RULED AS INTENDED (Bean):** a block placed straight into a page rather than
+inside a container is now **full-width and unbanded** — measured, 2 bare paragraphs flush at
+left:0. Core used to catch those. **Bean's ruling: not using a container IS the choice, and the
+block still has padding, margin and alignment of its own.** Verified before accepting:
+`sgs/text`, `sgs/heading`, `sgs/quote` and `sgs/button` all declare `spacing.padding` +
+`spacing.margin` plus responsive tier attrs, and `sgs/heading` declares `align`. **Sole gap:
+`sgs/media` declares no spacing supports at all**, so a bare image has no padding control —
+full-width is usually wanted there anyway, but it is the one block where the fallback is absent.
+
+⛔ **Do NOT "fix" the flush bare blocks** by re-adding a cap on post-content's children. That is
+core's cap-the-children model returning through the back door, and it is the thing this decision
+deleted. Three rejected alternatives, for the record: a low-specificity theme rule capping bare
+children (rejected — reintroduces the duplicate mechanism); an authoring rule that all content
+must live in containers (rejected — a client typing a paragraph should not silently misbehave);
+reverting `page.html`'s `<main>` to `normal` (rejected — sections lose the ability to bleed,
+which is the capability this change bought).
+
+**A claim I made and disproved:** that removing core's cap risked text going flush to the
+viewport edge site-wide. Measured instead — 50 text elements correctly indented, 5 flush, all
+five being the a11y skip-link, header logo and test content, none caused by `contentWidth`.
+Stripping `has-global-padding` in the DOM showed 3 of 7 containers keep their padding regardless.
+It was a migration detail inflated into a blocker.
+
+**Still open, untouched:** `class-sgs-container-wrapper.php:1297` gates the side margin on
+`$has_band_props` — one `if` asking "does this cap its content width?" and using the answer to
+decide "should this have a side margin?". Two unrelated questions, one answer. Needs the shared
+wrapper, which another track is editing.
+
 ## D724 [INCIDENT] — the shared wrapper renders a simple section background as a real `<img>`; and a cross-session commit split one change in two and left `main` fatal (2026-08-21)
 
 **Colour-golden track. Bean's direction, and it inverted the previous day's instinct.** D718 had
