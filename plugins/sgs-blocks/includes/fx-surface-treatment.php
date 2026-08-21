@@ -158,6 +158,37 @@ function sgs_apply_fx_surface_treatment( string $block_content ): string {
 
 	$processor->set_attribute( 'data-sgs-fx-treatment', $treatment );
 
+	// Site-wide colour source (D-treatment-palette-base). Read directly off
+	// the raw option rather than through `SGS_Motion_Registry::settings()` —
+	// that method's return array is a fixed whitelist of keys and does not
+	// carry this one (out of scope for this change; see
+	// `class-sgs-motion-settings.php`). Re-validated here with the same
+	// `[a-z0-9-]+` slug rule `Sgs_Motion_Settings::sanitise()` applies at
+	// save time, so a hand-edited option can never reach a CSS custom-
+	// property name unchecked.
+	//
+	// The JS boot module already defaults every uniform to the `primary`
+	// palette slug when no override reaches it (`paletteFallback` in
+	// `src/shared/effects/surface-treatments/presets.js`), so stamping
+	// `primary` here would be a no-op attribute on every treated block in the
+	// DOM. Only a genuinely non-default source is worth publishing — same
+	// "don't emit a default" discipline this file already applies to
+	// `--sgs-fx-tint`/`--sgs-fx-ink`/`--sgs-fx-shadow`/`--sgs-fx-highlight`
+	// above.
+	// ONE read path. This deliberately goes through the registry rather than
+	// reading the raw option: `SGS_Motion_Registry::settings()` returns a
+	// hard-coded whitelist and applies the same slug validation, so reading
+	// around it would leave two places that decide what this setting means —
+	// exactly the divergence that produces a setting which saves fine and then
+	// silently does nothing. (The first implementation of this feature DID
+	// bypass the registry, because the key was missing from that whitelist;
+	// the key was added there instead.)
+	$treatment_palette_base = SGS_Motion_Registry::settings()['treatment_palette_base'] ?? 'primary';
+
+	if ( 'primary' !== $treatment_palette_base ) {
+		$processor->set_attribute( 'data-sgs-fx-treatment-palette', $treatment_palette_base );
+	}
+
 	$declarations = array();
 
 	// Per-treatment palette overrides. Resolved via `sgs_fx_cursor_field_colour()`

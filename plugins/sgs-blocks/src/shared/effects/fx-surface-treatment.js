@@ -203,9 +203,16 @@ function resolveUniforms( el, preset ) {
 			//      to a site that does not define that palette slug at all
 			let fallback = spec.default;
 			if ( spec.paletteFallback ) {
+				// A SITE-WIDE override of which palette slug the treatments
+				// derive from, published by the render layer from the SGS ->
+				// Motion setting. Absent means `primary`, the preset's own
+				// declared slug — the render layer deliberately does not stamp
+				// the default, so an unset site keeps a clean DOM.
+				const siteSlug = el.dataset.sgsFxTreatmentPalette;
+				const slug = siteSlug || spec.paletteFallback;
 				const brand = resolveColourVec3(
 					el,
-					'--wp--preset--color--' + spec.paletteFallback,
+					'--wp--preset--color--' + slug,
 					null
 				);
 				if ( brand ) {

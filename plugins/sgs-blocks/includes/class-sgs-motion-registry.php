@@ -527,7 +527,30 @@ class SGS_Motion_Registry {
 			$style = 'fade';
 		}
 
+		/*
+		 * FR-38-29 — which palette slug the surface treatments derive every
+		 * colour from. It reaches a CSS custom-property NAME
+		 * (`--wp--preset--color--<slug>`), so an unrecognised value is
+		 * REPLACED here as well as at save time, same reasoning as the
+		 * transition style above. A slug is `[a-z0-9-]+` and nothing else.
+		 *
+		 * ⚠ This key MUST stay in the array below. `settings()` returns a
+		 * hard-coded whitelist rather than passing `$raw` through, so a key
+		 * absent from it reads as its default FOREVER, with no error — a
+		 * setting that saves correctly and then does nothing. Caught during
+		 * the 2026-08-21 build, when the first implementation had to bypass
+		 * this method entirely to work.
+		 */
+		$palette_base = isset( $raw['treatment_palette_base'] )
+			? (string) $raw['treatment_palette_base']
+			: 'primary';
+
+		if ( ! \preg_match( '/^[a-z0-9-]+$/', $palette_base ) ) {
+			$palette_base = 'primary';
+		}
+
 		return array(
+			'treatment_palette_base'    => $palette_base,
 			'smooth_scroll'             => ! empty( $raw['smooth_scroll'] ),
 			'smooth_scroll_strength'    => $strength,
 			'smooth_touch'              => ! empty( $raw['smooth_touch'] ),
