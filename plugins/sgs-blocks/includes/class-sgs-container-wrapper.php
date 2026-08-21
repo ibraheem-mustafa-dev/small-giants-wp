@@ -972,6 +972,89 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 			}
 
+			// Background image — real <img> fast path (Phase 2 LCP, mirrors
+			// sgs/hero's own `bg_img_html` in render.php).
+			//
+			// Why: a CSS background-image only becomes discoverable to the browser's
+			// PRELOAD SCANNER once it has downloaded and matched the render-blocking
+			// stylesheet that declares it — the scanner cannot see inside a <style>
+			// tag while still parsing the HTML. A real <img fetchpriority="high"> is
+			// visible to the scanner immediately, while it is still reading markup,
+			// which lets the browser start the request for the section's LCP image
+			// far earlier and shortens the page's largest paint.
+			//
+			// $sgs_bg_img_is_simple gates the <img> path to cases it can express
+			// FAITHFULLY. Every clause below names a real capability gap between
+			// <img> and CSS background-* — this is a mechanism boundary applied
+			// identically to every block that reaches this shared wrapper, not a
+			// per-block carve-out.
+			$sgs_bg_img_is_simple = ( 'no-repeat' === $bg_repeat )
+				// An <img> is a single raster paint — it has no equivalent to
+				// background-repeat's tiling, so a tiled background must stay CSS.
+				&& in_array( $bg_size, array( 'cover', 'contain' ), true )
+				// object-fit only maps to cover/contain. background-size also
+				// accepts arbitrary lengths/percentages/'auto', none of which
+				// object-fit can express, so anything other than cover/contain
+				// must stay CSS.
+				&& ! $bg_parallax
+				// Parallax works by pinning the CSS background box with
+				// `position:fixed` relative to the viewport (see
+				// `.sgs-container--parallax` in style.css) — an <img> painting the
+				// section's own box cannot reproduce that independent scroll.
+				&& 'fixed' !== $bg_attachment
+				// background-attachment:fixed has no <img> equivalent, for the
+				// same structural reason as parallax above.
+				&& empty( $bg_image_tablet['url'] )
+				&& empty( $bg_image_mobile['url'] );
+				// The tablet/mobile tier overrides (below, ~L2079-2083) swap the
+				// image on the SAME ::before layer inside @media rules — an <img>
+				// element sitting outside that layer does not participate. Migrating
+				// only the desktop tier while leaving tiers on ::before would
+				// silently drop a client's tablet/mobile background the moment they
+				// set one, so whenever ANY tier override exists the WHOLE image
+				// stays on the existing CSS path until the tiers are migrated too.
+
+			$bg_img_html = '';
+			if ( $has_bg_image && ! $has_bg_video && $sgs_bg_img_is_simple ) { // D6: universal, was section-only.
+				// PAGE-SCOPED counter (Fix 3, adversarial-review corrected): LCP
+				// priority is a property of the PAGE's render order, not of this
+				// block's own code path — a private static here would only know
+				// "am I first within THIS wrapper", so a hero background image
+				// followed by a container background image would mark BOTH
+				// `fetchpriority=high`, prioritising neither. sgs_hero/render.php
+				// calls the SAME shared counter (helpers-media.php) so only the
+				// image that renders first ON THE PAGE — whichever block it
+				// belongs to — gets the high-priority hint; every later instance
+				// is presumed below-the-fold and stays lazy.
+				$sgs_bg_img_is_first = 1 === sgs_next_background_image_index();
+
+				$bg_img_html = sgs_responsive_image(
+					! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0,
+					$bg_image['url'],
+					'',
+					'full',
+					array(
+						'class'         => 'sgs-container__image-bg',
+						'aria-hidden'   => 'true',
+						'fetchpriority' => $sgs_bg_img_is_first ? 'high' : 'auto',
+						'loading'       => $sgs_bg_img_is_first ? 'eager' : 'lazy',
+						'decoding'      => $sgs_bg_img_is_first ? 'sync' : 'async',
+					)
+				);
+			}
+
+			// object-fit/object-position for the <img> path above — built here
+			// (where $bg_size/$bg_position are in scope) but EMITTED with the
+			// other scoped rules further down, same reason as $sgs_media_layer_decls
+			// below: $uid/$responsive_css don't exist yet at this point. No-inline
+			// contract (Spec 32): these values route to the scoped <style>, never
+			// onto the <img> tag itself.
+			$sgs_bg_img_style_decls = array();
+			if ( '' !== $bg_img_html ) {
+				$sgs_bg_img_style_decls[] = 'object-fit:' . esc_attr( $bg_size );
+				$sgs_bg_img_style_decls[] = 'object-position:' . esc_attr( $bg_position );
+			}
+
 			// Background image — section kind only, painted on the .$uid::before
 			// MEDIA LAYER rather than on .$uid itself (Phase 1, 2026-08-08).
 			//
@@ -990,8 +1073,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// $responsive_css do not exist yet at this point, and $responsive_css
 			// is initialised to '' below, which would silently discard anything
 			// appended here.
+			//
+			// Gated on `! $sgs_bg_img_is_simple` (added Phase 2): when the <img>
+			// fast path above already painted the image, this block must NOT also
+			// push background-image onto ::before — that would double-paint the
+			// same image on two separate layers for no benefit.
 			$sgs_media_layer_decls = array();
-			if ( $has_bg_image && ! $has_bg_video ) { // D6: universal, was section-only.
+			if ( $has_bg_image && ! $has_bg_video && ! $sgs_bg_img_is_simple ) { // D6: universal, was section-only.
 				// The layer's own box properties are emitted HERE rather than as a
 				// blanket `.sgs-container::before` rule in style.css, so the
 				// pseudo-element only becomes a box on containers that actually have
@@ -1729,6 +1817,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// divider's height/colour (FR-32-1 — those were inline PROPERTY
 				// declarations, the more serious breach).
 				|| $has_bg_svg
+				// Phase 2 <img> LCP fast path: object-fit/object-position for the
+				// real <img> can ONLY ever be a scoped `.$uid > .sgs-container__image-bg`
+				// rule (Spec 32 no-inline contract forbids putting them on the tag).
+				// Without this clause a MINIMAL container — background image only,
+				// nothing else that would otherwise mint a uid — renders the <img>
+				// but never gets a uid, so the rule that sets its object-fit/
+				// object-position never emits and the browser silently falls back
+				// to this stylesheet's `object-fit:cover` / default centred position,
+				// discarding whatever the client actually configured.
+				|| ! empty( $sgs_bg_img_style_decls )
 				|| ! empty( $shape_divider_decls )
 				// D345 Facet B: any remaining custom-property VALUES ($styles — the
 				// composite's extra_styles + ken-burns/svg/grid-item vars) also need a
@@ -1843,6 +1941,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// @media tier overrides below so a narrower viewport still wins.
 			if ( $sgs_media_layer_decls && $uid ) {
 				$responsive_css .= '.' . $uid . '::before{' . implode( ';', $sgs_media_layer_decls ) . '}';
+			}
+
+			// <img> fast-path object-fit/object-position scoped rule (Phase 2 LCP,
+			// built further up alongside $sgs_bg_img_is_simple) — the real <img>
+			// sits directly inside .{uid} (see the final-assembly sprintf below),
+			// so this targets it as a direct child, matching the ::before media
+			// layer's box exactly (same object-fit/object-position semantics as
+			// that layer's background-size/background-position).
+			if ( $sgs_bg_img_style_decls && $uid ) {
+				$responsive_css .= '.' . $uid . ' > .sgs-container__image-bg{' . implode( ';', $sgs_bg_img_style_decls ) . '}';
 			}
 
 			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay
@@ -3019,16 +3127,25 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// ----------------------------------------------------------------
-			// Final assembly — order mirrors container/render.php printf exactly:
-			// shape_top / video / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom
+			// Final assembly — order:
+			// shape_top / bg_img / video / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom
+			//
+			// $bg_img_html sits IMMEDIATELY BEFORE $video_html (Phase 2 LCP fast
+			// path, above) so today's z-order is preserved: a background video was
+			// already painting above a background image via the ::before layer's
+			// z-index, and the two are mutually exclusive per-block anyway
+			// ($has_bg_image && ! $has_bg_video gates the <img> path), so placing
+			// the image ahead of the video slot keeps that ordering intact for the
+			// (currently impossible) case either changes.
 			// ----------------------------------------------------------------
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr().
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped).
 			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
 			$element    = sprintf(
-				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s</%1$s>',
+				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s</%1$s>',
 				$html_tag,
 				$open_attrs,
 				$shape_top_html,
+				$bg_img_html,
 				$video_html,
 				$overlay_html,
 				$svg_bg_html,

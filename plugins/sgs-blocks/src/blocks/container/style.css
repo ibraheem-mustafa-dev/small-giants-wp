@@ -59,8 +59,12 @@
    `position:relative` too — breaking both the legacy inset-based sizing and
    the CSS-anchor-positioned sizing that replaced it, since anchor()/
    anchor-size() require `position:absolute`/`fixed` to resolve at all.
-   Excluded here on the same terms as the two overlay classes above. */
-.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+   Excluded here on the same terms as the two overlay classes above.
+   `.sgs-container__image-bg` (Phase 2, the <img> LCP fast path) is excluded for
+   the identical reason: this rule's `position:relative` would out-rank the
+   image's own `position:absolute` (see the rule below), lifting it above the
+   overlay and content instead of sitting behind them. */
+.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg) {
 	position: relative;
 	z-index: 1;
 }
@@ -125,7 +129,7 @@
 /* Ensure content stays above shape dividers. FX decorations excluded — see
    the D442-follow-up note above the identical exclusion on the base
    .sgs-container rule; same collision, same fix. */
-.sgs-container--has-shape-divider > *:not(.sgs-shape-divider):not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+.sgs-container--has-shape-divider > *:not(.sgs-shape-divider):not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg) {
 	position: relative;
 	z-index: 1;
 }
@@ -140,15 +144,33 @@
 
 /* All child content sits above bg layers. FX decorations excluded — see the
    D442-follow-up note above the identical exclusion on the base
-   .sgs-container rule; same collision, same fix. */
-.sgs-container--has-bg-image > *:not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target),
-.sgs-container--has-bg-video > *:not(.sgs-container__video-bg):not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+   .sgs-container rule; same collision, same fix. `.sgs-container__image-bg`
+   (Phase 2 <img> LCP fast path) is excluded here too — the class this rule
+   selector is keyed on is `--has-bg-image`, which the wrapper adds whenever
+   $has_bg_image is true regardless of whether the ::before-CSS path or the
+   <img> path rendered it, so the <img> can reach this container. */
+.sgs-container--has-bg-image > *:not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg),
+.sgs-container--has-bg-video > *:not(.sgs-container__video-bg):not(.sgs-container__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg) {
 	position: relative;
 	z-index: 1;
 }
 
 /* Background video */
 .sgs-container__video-bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	pointer-events: none;
+}
+
+/* Background image — real <img> LCP fast path (Phase 2). Mirrors
+   .sgs-container__video-bg above; object-fit/object-position are overridden
+   per-instance by the scoped <style> the wrapper emits (class-sgs-container-
+   wrapper.php), matching the ::before layer's background-size/-position. */
+.sgs-container__image-bg {
 	position: absolute;
 	inset: 0;
 	z-index: 0;
@@ -235,19 +257,19 @@
 /* Ensure content sits above background SVG layer. FX decorations excluded —
    see the D442-follow-up note above the identical exclusion on the base
    .sgs-container rule; same collision, same fix. */
-.sgs-container--has-bg-svg > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+.sgs-container--has-bg-svg > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg) {
 	position: relative;
 	z-index: 1;
 }
 
 /* Foreground SVG: content sits below */
-.sgs-container--svg-foreground > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target) {
+.sgs-container--svg-foreground > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg) {
 	position: relative;
 	z-index: 0;
 }
 
 /* Optional text shadow for readability over busy SVG layers */
-.sgs-container--svg-text-shadow > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider) {
+.sgs-container--svg-text-shadow > *:not(.sgs-container__svg-bg):not(.sgs-container__overlay):not(.sgs-container__video-bg):not(.sgs-shape-divider):not(.sgs-container__image-bg) {
 	text-shadow: 0 1px 4px rgba( 0, 0, 0, 0.35 );
 }
 
