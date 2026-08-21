@@ -75,6 +75,32 @@ which is why humans/models classified rather than the script. Re-run rather than
 - `icon-list` — no top-level function in `render.php`: fatals with "Cannot redeclare" on the second block instance. (Live incident: a 5-instance page 500'd while a single instance rendered fine.)
 - `hero` — R-22-14/R-31-14: no legacy scalar fallback; `'image'` tier type is STRICT; the tier-media CSS caller contract must append before printing.
 
+## Gates BUILT from this register (2026-08-21, D728)
+
+Two entries retired by writing the check rather than keeping the prose.
+
+**Undefined variables in `render.php` — the entry that said `no static gate in this repo can see this`.**
+Now `python scripts/check-render-undefined-vars.py --check`, wired into `prebuild`. PHPStan **level 1**
+over `src/blocks` — ⚠ **not level 0**, which was the assumption going in and is wrong: level 0 across
+all 83 blocks emits 1,294 errors and zero variable errors. `phpstan-render.neon` +
+`phpstan-render-baseline.neon` (18 triaged entries, triage in the baseline's own header). `--self-test`
+reintroduces the real hero defect at its real call site and asserts the gate reports it.
+
+**`check-fx-list-drift.py` I4/I5 — the gate that admitted two of its seven invariants were vacuous.**
+Root cause was whitespace, not logic: the self-test's exact-string anchors went stale when
+`includes/fx-attributes.php` had its `=>` columns re-padded, so nothing got broken and "no violation"
+proved nothing. Anchors are now regex, whitespace-tolerant, and rejected unless exactly one
+substitution lands. `--self-test` reports zero unproven invariants.
+
+⚠ **Both were observed failing before being trusted, in both directions** — the real defect caught,
+AND a deliberately-corrupted anchor producing a red gate rather than a silent pass. The first attempt
+at the second control **did not land** (the corruption assertion failed and the run passed anyway),
+which is this register's own thesis biting mid-session. A negative control needs its own landing proof.
+
+**Still open from the tables above:** every other row. `STOP-NO-KSORT`, the tier-object cast,
+`mega-panel`'s transition allowlist, the `site-header` `!important` pin, `product-card`'s badge
+directives, and `testimonial-slider`'s uid/anchor collision all remain prose enforced by hope.
+
 ## Owed follow-ups, recorded not dropped (STOP-29)
 
 1. **`R-22-14` is a stale spec anchor** in `testimonial/render.php` and `option-picker/render.php`. Spec 22 was merged into Spec 31; the live rule is **R-31-14**. The rule holds — only the number is wrong. A rename is its own change.

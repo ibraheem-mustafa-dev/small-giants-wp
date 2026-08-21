@@ -677,11 +677,39 @@ def _print_report(src: Sources, violations: list[Violation]) -> None:
 
 @dataclass(frozen=True)
 class _Case:
+    """A single self-test break.
+
+    Two anchoring modes, chosen per case:
+      - LITERAL (`old`/`new` set, `pattern` left None) — an exact string search-and-
+        replace. Simple, but brittle against whitespace/column-alignment drift in the
+        source file (`=>` padding, PHP array alignment) — a re-alignment can silently
+        stop the anchor matching, which is exactly what happened to the I4/I5 cases
+        below before this dataclass grew a second mode.
+      - REGEX (`pattern`/`replacement` set, `old`/`new` left "") — whitespace either
+        side of `=>`/`,` is matched with `\\s*` instead of pinned to today's exact
+        column count, so a future re-alignment of the source file cannot silently
+        re-vacuum the case the way it did here. `replacement` is a `re.sub` template
+        (may use `\\g<0>` etc.); the substitution is applied with `count=1` and the
+        case is REJECTED (treated the same as a literal anchor miss) unless exactly
+        one substitution lands — a pattern that matches zero OR more than once is
+        exactly as untrustworthy as a stale literal anchor.
+    """
+
     invariant: str
     label: str
     attr: str          # Sources field to perturb
-    old: str
-    new: str
+    old: str = ""
+    new: str = ""
+    pattern: str | None = None
+    replacement: str | None = None
+
+    def apply(self, before: str) -> str | None:
+        """Return the perturbed text, or None if the anchor did not land."""
+        if self.pattern is not None:
+            after, count = re.subn(self.pattern, self.replacement or "", before, count=1)
+            return after if count == 1 else None
+        after = before.replace(self.old, self.new, 1)
+        return after if after != before else None
 
 
 _CASES = (
@@ -700,16 +728,23 @@ _CASES = (
         "\t'fxEase' => array( 'type' => 'string' ),\n\t'fxSelfTestOrphan' => array( 'type' => 'string' ),",
     ),
     _Case(
+        # REGEX-anchored (not literal): FX_ATTR_MAP's `=>` column alignment has drifted
+        # before (this exact case's literal anchor went stale when the array was
+        # re-padded) and will drift again on the next re-alignment. `\s*` either side of
+        # `=>` tolerates any padding width instead of pinning to today's.
         "I4", "add an FX_ATTR_MAP row no effect claims",
         "fx_attributes_php",
-        "\t'fxMask'       => 'data-sgs-fx-mask',",
-        "\t'fxMask'       => 'data-sgs-fx-mask',\n\t'fxSelfTestUnclaimed' => 'data-sgs-fx-selftest-unclaimed',",
+        pattern=r"'fxMask'\s*=>\s*'data-sgs-fx-mask',",
+        replacement=r"\g<0>\n\t'fxSelfTestUnclaimed' => 'data-sgs-fx-selftest-unclaimed',",
     ),
     _Case(
+        # REGEX-anchored for the same reason as I4 above — the `'scrub'` row's `=>`
+        # padding is independently hand-aligned and has already drifted once against a
+        # literal anchor.
         "I5", "allow a param-scope key that has no FX_ATTR_MAP row",
         "fx_attributes_php",
-        "'scrub'            => array( 'fxScrub', 'fxEase' ),",
-        "'scrub'            => array( 'fxScrub', 'fxEase', 'fxSelfTestGhost' ),",
+        pattern=r"'scrub'\s*=>\s*array\(\s*'fxScrub',\s*'fxEase'\s*\),",
+        replacement=r"'scrub'            => array( 'fxScrub', 'fxEase', 'fxSelfTestGhost' ),",
     ),
     _Case(
         # Breaks I6 by ADDING a type to the render allowlist that neither the picker nor
@@ -797,14 +832,16 @@ def _self_test() -> int:
         for case in _CASES:
             path: Path = getattr(temp, case.attr)
             before = pristine[case.attr]
-            after = before.replace(case.old, case.new, 1)
-            if after == before:
+            after = case.apply(before)
+            if after is None:
                 failures.append(case.invariant)
+                anchor_desc = case.pattern if case.pattern is not None else case.old
                 print(
                     f"[fx-list-drift --self-test] {case.invariant}: FAIL — the break did "
-                    f"NOT land in {path.name} (anchor text not found). This is a false "
-                    "negative control, not a passing gate: nothing was broken, so "
-                    "'no violation' proves nothing. Update the anchor in _CASES."
+                    f"NOT land in {path.name} (anchor {anchor_desc!r} not found, or matched "
+                    "more than once). This is a false negative control, not a passing gate: "
+                    "nothing was broken, so 'no violation' proves nothing. Update the anchor "
+                    "in _CASES."
                 )
                 continue
             path.write_text(after, encoding="utf-8")

@@ -1,5 +1,29 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D728 — Two vacuous gates closed: an undefined-variable gate for render.php, and I4/I5's stale self-test anchors [INCIDENT]
+
+**Both items are the same defect in different clothes: a check that cannot fail, and therefore proves nothing.**
+
+**1 — Nothing in the ~55-gate prebuild chain could see an undefined variable in a `render.php`.** PHP evaluates it to `null` with an unsurfaced notice. That is how `hero/render.php`'s `$overlay_gradient` — one read, zero assignments, its whole history — silently replaced the client's configured gradient with the flat overlay colour on every render, through a fully client-reachable editor control. Evidence: `reports/visual-diff/hero-overlay-gradient-2026-08-21.md`.
+
+**Premise corrected before building: PHPStan level 0 does NOT catch this.** The owed-work prompt asserted it did ("level 0 catches undefined variables and is the industry default"). Measured instead of inherited: level 0 across all 83 blocks emits 1,294 errors and ZERO variable errors — `variable.undefined` is a **level 1** rule. A level-0 gate would have shipped completely vacuous, which is precisely the class of failure this session existed to end.
+
+**Second finding, same shape:** `phpstan.neon` already existed at level 5 and **excludes `src`** — the only directory where render templates live. It could never have seen this defect class. New separate config `phpstan-render.neon` (level 1, `src/blocks`, `includes` + bootstrap as `scanDirectories`/`scanFiles` so helpers resolve).
+
+**WP-injected variables handled narrowly, not by blanket suppression.** `$attributes`/`$content`/`$block` are 69 of 87 findings; three EXACT-message ignores pinned to `src/blocks/*/render.php`. A blanket `variable.undefined` ignore would have re-vacuumed the gate. Partial templates are deliberately NOT covered — their inherited variables go through the baseline so each stays a visible owed decision.
+
+**Baseline is 18 entries and every one was read before it was frozen** — the triage lives in the baseline's own header (2 correlated-guard false positives, 5 inherited-scope, 6 missing WooCommerce symbols, 2 missing own constant, 3 dead defensive guards). `count:` is load-bearing: a SECOND `$bwt` defect in `heading/render.php` raises the count and fails the gate.
+
+**Fails CLOSED when PHPStan is absent.** `vendor/` is gitignored, so a fresh clone or worktree has none. `check-render-undefined-vars.py` exits non-zero with the install command rather than skipping — a gate that passes where it cannot run is indistinguishable from one that cannot fail (the standing `check-no-inline.py` warn-and-pass trap).
+
+**2 — `check-fx-list-drift.py`'s I4/I5 self-test cases had gone stale on WHITESPACE.** `includes/fx-attributes.php` had its `=>` columns re-padded (`'fxMask'` 7→15 spaces, `'scrub'` 12→13), so the exact-string anchors matched nothing, nothing got broken, and "no violation" proved nothing. Classification (a) — the self-test could not construct a breaking case; the invariants themselves were sound and untouched. Fixed with `\s*`-tolerant regex anchors applied via `re.subn(count=1)` and REJECTED unless exactly one substitution lands, so a future re-alignment cannot silently re-vacuum them. I1/I2/I3/I6/I7 left on their working literal anchors.
+
+**Each gate was observed FAILING before being trusted.** Hero defect reintroduced at its real call site → caught at `render.php:1035`; I4/I5 → real violation messages. Then the inverse: fixture anchor corrupted → exit 1, not a silent pass; I4 anchor corrupted → `FAIL — unproven: I4`.
+
+⚠ **The first fx-drift negative control did not land** — the corruption assertion failed and the run passed anyway, which is the exact false-negative-control shape both items are about. Redone with an explicit "prove the corruption landed" assertion before trusting the result. **A negative control needs its own landing proof.**
+
+Wired into `prebuild` in the SAME commit that built it (the D338/D493 "built but unwired for three weeks" failure), and verified EXECUTING in the build log, not merely greppable in `package.json`.
+
 ## D727 [ROUTINE] — comments explain FUNCTION, not CHANGE; and the no-inline contract becomes one pointer per block (2026-08-21)
 
 **Bean's call, and it found a bigger shape than the code de-duplication did.** Comments here
