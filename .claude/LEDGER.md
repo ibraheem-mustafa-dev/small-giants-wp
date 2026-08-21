@@ -201,22 +201,18 @@ sees shared files · `1905257e` container background editable + 38 authorings ·
 contentWidth regression · `6bbd0c7c` `ebad91df` `0c44b0c6` resting border gradients + dead
 colour cleanup. Detail: the commits + `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
 
-### ⛔ CORRECTIONS TO STALE CLAIMS ABOVE — the shop track's section is out of date on these
+### ⛔ CORRECTIONS TO STALE CLAIMS ABOVE (all still binding)
 
 1. **"Gradients have never been observed working on these blocks" — REFUTED.** Gate 2 run
-   behaviourally on `sgs/brand-strip`: a `linear-gradient` hover rule paints, paired
-   `:hover, :focus-within`. That was an untested assumption, not a measured failure.
-2. **"`sgs/container` now gives NO horizontal gutter … looks like a regression from this
-   evening's container work" — NOT MINE, and now fixed.** Neither container commit contained a
-   padding line. Root cause: `163f9fa7` migrated 96 `core/group` instances to `sgs/container`,
-   correctly translating `layout:{"type":"constrained"}` (WordPress's own gutter) into
-   `contentWidth:"normal"` — and `class-sgs-container-wrapper.php:431` discarded it. Fixed in
-   `f9f4368b` + `2d291992`.
-3. **P2-6 is PARTIAL BY DESIGN, not incomplete.** 39 container authorings renamed. The
-   remaining `sgs/site-footer` (7) and `sgs/site-header-row` (3) MUST NOT be renamed until
-   those blocks migrate off native colour — renaming now makes WP discard them and the
-   footer loses its background silently. The 152 `fontSize` authorings are WP-native
-   typography and out of scope entirely.
+   behaviourally on `sgs/brand-strip`: a `linear-gradient` hover rule paints. An untested
+   assumption, not a measured failure.
+2. **"`sgs/container` gives NO horizontal gutter … a regression from the container work" — NOT
+   MINE, and fixed.** Root cause: `163f9fa7` migrated 96 `core/group` instances and correctly
+   translated `layout:{"type":"constrained"}` into `contentWidth:"normal"`, which
+   `class-sgs-container-wrapper.php:431` then discarded. Fixed in `f9f4368b` + `2d291992`.
+3. **P2-6 was PARTIAL BY DESIGN, and is now CLOSED** — site-footer and site-header-row were the
+   held-back pair; both were migrated + renamed by the shop track (see its section above). The
+   152 `fontSize` authorings are WP-native typography, out of scope.
 
 ### ✅ Completed earlier on this track, 2026-08-21 (archived)
 
@@ -265,16 +261,24 @@ deploy refuses a dirty tree. The reports are **evidence records, not gate tokens
 `memory/session-2026-08-21-colour-golden-completed.md` on 2026-08-21 to bring this file back under
 its byte cap. Nothing was edited or dropped.
 
-### 🔵 STILL WAITING ON BEAN
+### ✅ BOTH "WAITING ON BEAN" ITEMS ARE CLOSED — reconciled 2026-08-22
 
-1. **Sticky filter sidebar** — `position:sticky` applies but does nothing (no travel room:
-   panel 1154px is the tallest grid item AND taller than the viewport). ⛔ The obvious
-   `max-height + overflow-y` fix was MEASURED INERT — capped to 852px it still exceeds the
-   829px product column. Three specialists: don't build sticky yet; accordion-collapse the
-   filter groups instead. Sticky earns its place at ~50 products.
-2. **Cap-the-children vs the injected band** — council says adopt-with-changes, scoped
-   narrowly. A blanket swap deletes `@container`, the GSAP fx track, and grid-on-inner.
-   Fix `inspector-scan` rule 23's regex FIRST — it goes silently wrong, not red.
+Neither is pending. This section was written before the decisions that settled them, and left
+Bean apparently owing two rulings he had already effectively made.
+
+1. **Sticky filter sidebar — SOLVED, not waiting.** The shop-archive track's accordion
+   (`<details>`/`<summary>`) cut the panel 1154px → 505px, and sticky then held at its 24px
+   offset through a 300px scroll. That is exactly what this entry asked for: it said "don't
+   build sticky yet; accordion-collapse the filter groups instead", and that is what shipped.
+   ⚠ Both figures are live-DOM readings with no repo artefact — re-measure rather than cite them.
+2. **Cap-the-children vs the injected band — SETTLED BY D725/D726, the OPPOSITE way.** This
+   entry expected "adopt core's model, scoped narrowly". Bean ruled the other way: our
+   `contentWidth` already caps in the right place, so core's duplicate
+   `layout:{"type":"constrained"}` was DELETED from the last three templates (`c984a676`). One
+   cap per page, and it is ours. ⛔ **This entry's prerequisite — "fix `inspector-scan` rule
+   23's regex FIRST" — is now WRONG and must not be acted on.** It was only needed for the
+   migration we did not do; the regex is correct for the model we kept. The shop-archive
+   section above says the same, and says it first.
 
 ### Still open on this track (not started)
 
