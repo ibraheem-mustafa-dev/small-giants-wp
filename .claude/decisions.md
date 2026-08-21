@@ -1,5 +1,40 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D726 [ROUTINE] — the side-margin gate asks the wrong question and KEEPS asking it; closed, not fixed (2026-08-21)
+
+`class-sgs-container-wrapper.php` gates core's `.has-global-padding` on `$has_band_props`,
+so one `if` asks *"does this cap its content width?"* and uses the answer to decide *"should
+this have a side margin?"* — two unrelated questions sharing one answer. I raised this three
+times during the one-cap-per-page work, with escalating language, as though it were a defect.
+**Bean asked what I would actually do with it. Examined properly, the answer is: nothing.**
+
+**The outcome is correct in every case that exists.** A banded container is page content and
+must not touch the screen edge, so it gets the gutter. A full-bleed container is structure — a
+`<main>`, a header row, a footer row — and should not be indented by default, so it does not.
+Searched for a counter-example on the live canary and found none (0 footer or text nodes at the
+viewport edge on `/shop/` at 500px; an earlier flush reading did not reproduce after deploy).
+
+**It is the same rule Bean set for bare blocks in D725:** opting out of the container behaviour
+IS the choice, and the `padding` control is still right there. A full-bleed container that wants
+edge spacing authors padding, exactly as a bare block does.
+
+**Not changed because the fix costs more than the flaw.** 28 blocks route through this file,
+three override the band guard via `$opts['wrap_inner']` (hero split, product-card, physics-canvas),
+and it is a Rule 7 shared mechanism. Changing when the gutter applies means re-verifying header,
+footer, hero, card-grid and the shop filters live — real regression risk to buy a tidier
+conditional and zero user-visible change. The flaw is only that the code gets the RIGHT answer
+from the WRONG question; it becomes a bug only if someone needs a full-bleed container WITH an
+automatic gutter or a banded one WITHOUT, and both are expressible today by setting `padding`.
+
+**REOPEN ONLY ON:** a real case where a container needs a side margin its band-state will not
+give it and cannot author `padding` to get. Until then this is settled — the note now sits AT
+the gate, not only here, because that is where the next reader is standing.
+
+⚠ **Why this is recorded as CLOSED rather than left open.** An open item pointing at work that
+should not be done is exactly the D707 failure corrected earlier today: a stale instruction at
+the top of the log sending the next session to do the wrong thing on the wrong layer. A code
+smell narrated as a defect, and left dangling, costs the next session more than the smell does.
+
 ## D725 [ROUTINE] — one cap per page: core's constrained layout is deleted, and a bare block is intentionally unbanded (2026-08-21)
 
 **Bean-ruled, and his framing was the one that resolved it:** our `contentWidth` already does

@@ -1294,6 +1294,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Deliberately NOT gated on $do_wrap: the $container_queries and
 			// fx:horizontal-panel forces further down emit a band ELEMENT without
 			// band PROPS, i.e. no constrained cap, so they must not gain a gutter.
+			// ⛔ YES, THIS ASKS THE WRONG QUESTION — AND IT STAYS (D726, 2026-08-21).
+			// It asks "does this cap its content width?" and uses the answer to decide
+			// "should this have a side margin?" — two unrelated questions sharing one
+			// answer. That was raised as a defect during the one-cap-per-page work and
+			// examined properly rather than acted on. The OUTCOME is correct in every
+			// case that exists:
+			//   banded container   = page content -> must not touch the screen edge -> gutter
+			//   full-bleed container = structure (main / header-row / footer-row) -> no
+			//                          automatic indent, and it sets `padding` if it wants one
+			// That is the same rule Bean set for bare blocks in D725: opting out of the
+			// container behaviour IS the choice, and the padding control is still there.
+			// Searched for a counter-example live and found none — 0 footer/text nodes at
+			// the viewport edge on /shop/ at 500px.
+			//
+			// NOT changed because the fix is worse than the flaw: 28 blocks route through
+			// this file, three override the band guard via $opts['wrap_inner'], and it is
+			// a Rule 7 shared mechanism. Re-verifying header/footer/hero/card-grid/shop
+			// filters live buys a tidier conditional and zero visible change.
+			//
+			// REOPEN IT only on a real case: a container that needs a side margin its
+			// band-state will not give it, and cannot simply author `padding`. Until then
+			// this is settled — do not re-investigate it.
 			if ( $has_band_props && false !== $opt_wrap_inner ) {
 				$classes[] = 'has-global-padding';
 			}
