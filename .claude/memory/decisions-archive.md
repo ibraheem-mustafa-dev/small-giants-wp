@@ -366,6 +366,7 @@ Covers both legacy `**D<N>` and `## D<N>` heading formats in this file. Check he
 - D611 — DB role remediation part 2 CLOSED: 479 → 0, structural TIERs first, overrides la
 - D613 — editor-render-parity Phase 2 CLOSED: all 70 REAL-GAP findings fixed and shipped 
 - D614 — /qc-council on the closed 70-item backlog: 1 real bug found and fixed, Signal 4 
+- D617 — D609's last open question ruled: colour-state affordance is core's overlapping s
 
 
 ---
@@ -5855,4 +5856,14 @@ Rule derived from live data: a base attr with per-tier SIBLING ROWS is one tier 
 Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), per-project/client CLAUDE.md files, and scripts/*.py. 0 entries moved verbatim. Cross-referenced-by-a-kept-entry list (informational, not excluded from sweep): 
 
 ---
+
+## 2026-08-22 — Sweep: uncited D-numbers in the D617-D617 span
+
+Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), per-project/client CLAUDE.md files, and scripts/*.py. 1 entries moved verbatim. Cross-referenced-by-a-kept-entry list (informational, not excluded from sweep): D609<-['D617'], D618<-['D617']
+
+---
+
+## D617 — D609's last open question ruled: colour-state affordance is core's overlapping swatches, not a count badge [ROUTINE]
+
+**2026-08-14.** D609's amendment left one open question: Bean's originally-requested count badge vs core's `ZStack`-overlapping-swatches shape (`global-styles/color-panel.js:163-176`, WP 7.0.4 SHA `28c0dedc4eaf…`). **Bean's ruling: use core's overlapping swatches — match native.** Closes D609 clause 9a's row-shape question in full; no open items remain under D609. Feeds T4 in `~/.claude/plans/go-track-1b-playful-hamster.md`.
 
