@@ -1610,45 +1610,35 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
+							base: attributes.padding ?? {},
 							tablet: attributes.paddingTablet ?? {},
 							mobile: attributes.paddingMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
+							/* Breakpoint -> attr MAP, never a ternary. check-control-ux.js
+							   recognises this exact shape as its COMPLIANT IDIOM EXEMPTION; a
+							   bare computed ternary reads to the gate as an unwrapped direct
+							   write and fails the build with RESPONSIVE-FAMILY-WITHOUT-SWITCHER.
+							   Identical to container/edit.js. */
+							const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
+							setAttributes( { [ attrFor[ tier ] ]: next } );
 						} }
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
+							base: attributes.margin ?? {},
 							tablet: attributes.marginTablet ?? {},
 							mobile: attributes.marginMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
+							/* Breakpoint -> attr MAP, never a ternary. check-control-ux.js
+							   recognises this exact shape as its COMPLIANT IDIOM EXEMPTION; a
+							   bare computed ternary reads to the gate as an unwrapped direct
+							   write and fails the build with RESPONSIVE-FAMILY-WITHOUT-SWITCHER.
+							   Identical to container/edit.js. */
+							const attrFor = { base: 'margin', tablet: 'marginTablet', mobile: 'marginMobile' };
+							setAttributes( { [ attrFor[ tier ] ]: next } );
 						} }
 					/>
 				</PanelBody>

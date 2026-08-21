@@ -879,6 +879,15 @@
 				"desktop": {}
 			}
 		},
+		"padding": {
+			"type": "object",
+			"default": {},
+			"description": "Base (desktop) padding, owned outright — hero declares NO supports.spacing, so before 2026-08-21 this control wrote to style.spacing and WordPress DISCARDED it on save (D338/D587 class). Matches the D555/D707 container shape."
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"paddingTablet": {
 			"type": "object",
 			"default": {}
