@@ -2479,6 +2479,47 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// old behaviour and changes no rendering; it removes an
 				// ambiguity. Keep container/edit.js's gapCssValue() in step.
 				$obj_inner_props = array();
+
+				/*
+				 * BAND (Layer 2) properties get their OWN selector — they must never
+				 * ride on $grid_sel.
+				 *
+				 * $grid_sel (defined ~:1779) is `.uid>.sgs-container__inner` ONLY when
+				 * $grid_on_inner is true, which requires the block's own SGS `layout`
+				 * attr to be grid/flex. It falls back to the bare `.uid` otherwise. That
+				 * is correct for Layer-3 grid/flex properties, and WRONG for a Layer-2
+				 * band property, which belongs on the band element whenever one renders —
+				 * regardless of layout. Routing band CSS through $grid_sel put the band's
+				 * max-width and centring onto the OUTER box of every container that has a
+				 * band but no SGS layout attr, which is the common case.
+				 *
+				 * Three live defects, all one bug, all measured on the canary /shop/:
+				 *   1. The outer carried the band's max-width, so a container's BACKGROUND
+				 *      was capped at content width instead of filling its own box —
+				 *      violating D-1. Title area: 1232px wide inside a 1309px viewport.
+				 *   2. The outer carried margin-inline:auto. An auto inline margin on a
+				 *      grid item DISABLES stretch (CSS Box Alignment 4.1), so the item
+				 *      shrink-to-fits: sgs-site-footer__links rendered 47.98px inside a
+				 *      340.909px track. Proven by forcing margin-inline:0 live — it jumped
+				 *      to exactly 340.909px, and `justify-self:stretch` had ZERO effect,
+				 *      which is the signature of auto margins winning over stretch.
+				 *      NOT an empty-content artefact: the same column with the word
+				 *      "Links" in it still reached only 111.59px of the 340.909px track.
+				 *   3. A stray centring margin on clusters whose contentWidth is 'full'.
+				 *
+				 * The correct band rule was ALREADY being emitted alongside these, so the
+				 * outer pair was a duplicate on the wrong layer, not the only copy —
+				 * which is why removing it loses nothing.
+				 *
+				 * Gate on $opt_wrap_inner rather than $do_wrap (computed later, ~:2766):
+				 * a caller that explicitly suppresses the band (hero-split, product-card,
+				 * `wrap_inner => false`) has NO band element, so its band CSS must stay on
+				 * the outer or it would address a node that does not exist.
+				 */
+				$obj_band_props = array();
+				$band_obj_sel   = $uid
+					? ( false !== $opt_wrap_inner ? '.' . $uid . '>.sgs-container__inner' : '.' . $uid )
+					: '';
 				if ( isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) ) {
 					$obj_inner_props[] = array(
 						'value'        => $attributes['gap'],
@@ -2493,7 +2534,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					);
 				}
 				if ( isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
-					$obj_inner_props[] = array(
+					// BAND property (Layer 2) — routed to $band_obj_sel, NOT $grid_sel.
+					$obj_band_props[] = array(
 						'value'     => $attributes['contentWidth'],
 						'css'       => 'max-width',
 						// contentWidth tiers are TOKENS (normal/wide/full/literal); resolve
@@ -2685,6 +2727,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => $container_queries ) );
 				}
 
+				// Band (Layer 2) tier rules — own selector, see the $band_obj_sel note above.
+				if ( $obj_band_props && '' !== $band_obj_sel ) {
+					$responsive_css .= sgs_emit_responsive_css( $band_obj_sel, $obj_band_props, array( 'container' => $container_queries ) );
+				}
+
 				// CENTRING — the second half of a width band, and the flat path's
 				// missing twin. A `max-width` alone does NOT centre: the leftover space
 				// has to be shared explicitly. EVERY flat-path width rule emits
@@ -2716,8 +2763,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// rule that an empty value is UNSET, and it would silently start
 				// centring if a width ever arrived from another source. So require a
 				// REAL tier value.
-				if ( '' !== $grid_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
-					$responsive_css .= $grid_sel . '{margin-inline:auto}';
+				// Centring is a BAND property and follows $band_obj_sel, never $grid_sel
+				// — see the note at $band_obj_sel. On the outer it silently disabled
+				// grid-item stretch (defect 2 there).
+				if ( '' !== $band_obj_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
+					$responsive_css .= $band_obj_sel . '{margin-inline:auto}';
 				}
 
 				// OUTER shadow — tier-capable (Spec 35 Phase 1.4b, STAGE 2). VERIFIED
