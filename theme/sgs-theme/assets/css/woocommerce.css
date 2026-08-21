@@ -1864,3 +1864,47 @@ body.woocommerce-cart .with-empty-cart-icon,
 	background: var(--wp--preset--color--primary, currentColor);
 	background-clip: padding-box;
 }
+
+/* ── 8h. Two things WooCommerce paints that the panel must own ──
+
+ * 1. THE SLIDER'S FILLED BAR.
+ *
+ * WooCommerce renders `.range-bar` and paints it with an INLINE
+ * `linear-gradient(...)` written by its Interactivity JS, resolved to the theme
+ * TEXT colour — measured live as rgb(58,46,38) on a warm pink panel, which is
+ * the "slider is randomly black" report. There is no CSS rule to override: a
+ * CSSOM scan for rules matching that element returns NOTHING, because the value
+ * is on the element's own style attribute.
+ *
+ * `!important` is therefore load-bearing here, not laziness — it is the only way
+ * an author stylesheet beats an inline style, short of running our own JS after
+ * theirs on every slider interaction.
+ *
+ * The gradient is REBUILT rather than replaced with a flat colour, because the
+ * stops carry the meaning: --low and --high are set by WooCommerce on the parent
+ * `__range` element and inherit down, so re-using them keeps the filled region
+ * tracking the handles exactly as before. Only the colour changes.
+ *
+ * ⚠ An earlier pass here styled `__range-input-wrapper` and `__progress`. Those
+ * elements DO NOT EXIST in WooCommerce 11 — same dead-selector class as the
+ * chips. Kept only as a note so nobody re-adds them believing they do something. */
+.sgs-shop-filters .range-bar {
+	background-image: linear-gradient(
+		to right,
+		transparent var(--low, 0%),
+		var(--wp--preset--color--primary) var(--low, 0%),
+		var(--wp--preset--color--primary) var(--high, 100%),
+		transparent var(--high, 100%)
+	) !important;
+}
+
+/* 2. WOOCOMMERCE'S OWN APPLY BUTTON.
+ *
+ * `.wc-block-product-filters__apply` renders mid-panel in raw accent yellow and
+ * does the same job as the sheet footer's "Show results", which we build and
+ * style. Two controls for one action, one of them off-brand and in the wrong
+ * place. The SGS drawer owns this UX — the same reasoning that already hides
+ * their open-overlay trigger and overlay header. */
+.sgs-shop-filters .wc-block-product-filters__apply {
+	display: none;
+}
