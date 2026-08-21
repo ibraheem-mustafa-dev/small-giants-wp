@@ -80,10 +80,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/product-faq-schema.php';
 // values (mirrors sgs/quote + sgs/brand-strip).
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Extract content attributes.
 // ---------------------------------------------------------------------------
@@ -273,7 +269,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 
 // --- Width (base only — outer maxWidth). ---
 if ( $max_width ) {
-	$mw_safe = $sgs_css_length( $max_width );
+	$mw_safe = sgs_css_length_sanitise( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-inline:auto;}";
 	}
@@ -282,21 +278,10 @@ if ( $max_width ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -366,7 +351,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 // 8. Render. wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
 // leaving CSS combinators like `>` intact (contract §D — matches
 // SGS_Container_Wrapper + sgs/quote + sgs/brand-strip). Every value reaching
-// $scoped_css is pre-sanitised ($sgs_css_length / wp_style_engine_get_styles),
+// $scoped_css is pre-sanitised (sgs_css_length_sanitise() / wp_style_engine_get_styles),
 // so no un-sanitised value survives to here.
 // ---------------------------------------------------------------------------
 

@@ -41,13 +41,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 
-$sgs_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
 // rather than the per-request counter wp_unique_id(): identical header attributes
@@ -113,20 +106,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$sh_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$sh_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$sh_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$sh_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$sh_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$sh_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $sh_radius_raw ) && '' !== $sh_radius_raw ) {
-			$sh_border_args['radius'] = $sgs_css_length( $sh_radius_raw );
+			$sh_border_args['radius'] = sgs_css_length_sanitise( $sh_radius_raw );
 		} elseif ( is_array( $sh_radius_raw ) ) {
 			$sh_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sh_corner ) {
 				if ( ! empty( $sh_radius_raw[ $sh_corner ] ) ) {
-					$sh_radius_clean[ $sh_corner ] = $sgs_css_length( $sh_radius_raw[ $sh_corner ] );
+					$sh_radius_clean[ $sh_corner ] = sgs_css_length_sanitise( $sh_radius_raw[ $sh_corner ] );
 				}
 			}
 			if ( ! empty( $sh_radius_clean ) ) {

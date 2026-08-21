@@ -106,18 +106,10 @@ $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 // side/corner values — strips everything except digits, dot, %, and unit
 // letters so a value can never break out of its declaration. Mirrors
 // sgs/button/sgs/container's wrapper sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / font-style / text-transform / text-decoration).
 // Strips everything except letters + hyphen, so ;{}():digits can never break
 // out of the declaration into a new CSS rule.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // Border-radius — WP-native style.border.radius (string = uniform, or an
 // object with topLeft/topRight/bottomLeft/bottomRight keys). No tiers on this
 // block (contract confirmed — text has no borderRadiusTablet/Mobile attrs).
@@ -130,7 +122,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -145,10 +137,10 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 // custom OBJECT attr { top, right, bottom, left } — no WP-native border-width
 // support, no tiers (mirrors sgs/button's base-only contract).
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style  = $attributes['borderStyle'] ?? 'none';
@@ -287,7 +279,7 @@ if ( '' !== $custom_width && null !== $custom_width ) {
 // Engine below, not here). Emit per-side when sides differ, else shorthand.
 if ( $has_border_width && 'none' !== $border_style ) {
 	$bc = $border_colour ? sgs_colour_value( $border_colour ) : 'currentColor';
-	$bs = $sgs_css_keyword( $border_style );
+	$bs = sgs_css_keyword_sanitise( $border_style );
 
 	$bwt = '' !== $border_width_top ? $border_width_top : '0';
 	$bwr = '' !== $border_width_right ? $border_width_right : '0';
@@ -452,21 +444,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // @media rule on the SAME #{uid} selector, so plain source-order cascade lets
 // the narrower device tier win. Device-tier breakpoints are 1023/767 (§B2 —
 // the 768/1024 standard), NOT arbitrary visual breakpoints.
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $margin_tab_val ) {

@@ -31,17 +31,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 // own scoped <style> tag. Strips everything except letters, digits, dot, and
 // % so a Contributor-authored malicious value can never break out of the
 // declaration into a new CSS rule. Mirrors sgs/hero's proven sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / text-transform / font-weight / font-style) —
 // letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $source  = $attributes['source'] ?? 'manual';
 $variant = $attributes['variant'] ?? 'card';
 $items   = $attributes['items'] ?? array();
@@ -141,20 +133,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$cg_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$cg_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$cg_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$cg_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$cg_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$cg_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $cg_radius_raw ) && '' !== $cg_radius_raw ) {
-			$cg_border_args['radius'] = $sgs_css_length( $cg_radius_raw );
+			$cg_border_args['radius'] = sgs_css_length_sanitise( $cg_radius_raw );
 		} elseif ( is_array( $cg_radius_raw ) ) {
 			$cg_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $cg_corner ) {
 				if ( ! empty( $cg_radius_raw[ $cg_corner ] ) ) {
-					$cg_radius_clean[ $cg_corner ] = $sgs_css_length( $cg_radius_raw[ $cg_corner ] );
+					$cg_radius_clean[ $cg_corner ] = sgs_css_length_sanitise( $cg_radius_raw[ $cg_corner ] );
 				}
 			}
 			if ( ! empty( $cg_radius_clean ) ) {
@@ -191,16 +183,16 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$cg_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
 	}
 	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$cg_typography_args['letterSpacing'] = $sgs_css_length( $attributes['style']['typography']['letterSpacing'] );
+		$cg_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
 	}
 	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$cg_typography_args['textTransform'] = $sgs_css_keyword( $attributes['style']['typography']['textTransform'] );
+		$cg_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
 	}
 	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$cg_typography_args['fontWeight'] = $sgs_css_keyword( (string) $attributes['style']['typography']['fontWeight'] );
+		$cg_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
 	}
 	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$cg_typography_args['fontStyle'] = $sgs_css_keyword( $attributes['style']['typography']['fontStyle'] );
+		$cg_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
 	}
 	if ( ! empty( $cg_typography_args ) ) {
 		$cg_typography_scoped = wp_style_engine_get_styles(
@@ -245,12 +237,12 @@ if ( is_array( $card_border_width ) && array_filter( $card_border_width, static 
 	$card_border_width_sides = array();
 	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 		$side_value                = $card_border_width[ $side ] ?? '';
-		$card_border_width_sides[] = '' !== $side_value ? $sgs_css_length( $side_value ) : '0';
+		$card_border_width_sides[] = '' !== $side_value ? sgs_css_length_sanitise( $side_value ) : '0';
 	}
 	$card_state_vars[] = '--sgs-card-border-width:' . implode( ' ', $card_border_width_sides ) . ';';
 }
 if ( '' !== $card_radius ) {
-	$card_state_vars[] = '--sgs-card-radius:' . $sgs_css_length( $card_radius ) . ';';
+	$card_state_vars[] = '--sgs-card-radius:' . sgs_css_length_sanitise( $card_radius ) . ';';
 }
 if ( '' !== $card_shadow ) {
 	$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour ) . ';';
@@ -352,7 +344,7 @@ if ( '' !== $cg_preset_bg_slug ) {
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators like `>` intact (contract §D — matches SGS_Container_Wrapper +
 // sgs/hero). Every value reaching $card_grid_native_css is pre-sanitised
-// ($sgs_css_length / $sgs_css_keyword / wp_style_engine_get_styles), so no
+// (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so no
 // un-sanitised value survives to here.
 $card_grid_native_style_tag = $card_grid_native_css ? '<style id="' . esc_attr( $uid ) . '-native">' . wp_strip_all_tags( $card_grid_native_css ) . '</style>' : '';
 

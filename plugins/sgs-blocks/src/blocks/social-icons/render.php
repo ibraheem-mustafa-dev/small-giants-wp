@@ -212,14 +212,6 @@ $platform_brand_colours = array(
 // Security §D sanitisers — copied verbatim from sgs/heading + sgs/container.
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // Box-object interface contract §B: base padding/margin (WP-native, skip-
 // serialised) + responsive tiers (SGS custom object attrs).
@@ -275,7 +267,7 @@ $root_sel = '.' . $uid;
 $scoped_css = array();
 
 // --- Row gap + per-item colour custom properties (was inline `style=`). ---
-$gap_slug_raw = $sgs_css_keyword( str_replace( array( '.', '%' ), '', (string) $gap_raw ) );
+$gap_slug_raw = sgs_css_keyword_sanitise( str_replace( array( '.', '%' ), '', (string) $gap_raw ) );
 $gap_slug     = '' !== $gap_slug_raw ? $gap_slug_raw : preg_replace( '/[^0-9]/', '', (string) $gap_raw );
 $gap_slug     = '' !== $gap_slug ? $gap_slug : '20';
 $root_decls   = array(
@@ -374,21 +366,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 
 // --- Responsive padding/margin tiers — hand-built shorthand, scoped @media
 // on the same wrapper selector (contract §B2: tablet 1023px, mobile 767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -533,7 +514,7 @@ $scoped_css[] = "{$root_sel} .sgs-social-icons__item img{width:{$icon_size}px;he
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D). Every value reaching
-	// $scoped_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword /
+	// $scoped_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() /
 	// allowlists / wp_style_engine_get_styles / sgs_colour_value), so no
 	// un-sanitised value survives here.
 	?>

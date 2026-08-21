@@ -41,21 +41,14 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-tokens.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // CSS-keyword sanitiser — letters + hyphen only (for free-text keyword attrs
 // concatenated into raw CSS inside the scoped <style>). Mirrors sgs/hero.
-$sgs_nd_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS length/unit sanitiser — digits, dot, %, unit letters only.
-$sgs_nd_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── Legacy HTML-anchor salt (WP core's `supports.anchor` feature) for the uid
 // hash below. Vestigial: block.json declares `supports.anchor:false`, so WP
 // never populates this key for the CORE feature — but block.json now ALSO
@@ -319,7 +312,7 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 // existing default) emits nothing extra so an untouched drawer is unaffected.
 $sgs_nd_surface_opacity = isset( $attributes['surfaceOpacity'] ) ? (float) $attributes['surfaceOpacity'] : 1.0;
 $sgs_nd_surface_opacity = max( 0.0, min( 1.0, $sgs_nd_surface_opacity ) );
-$sgs_nd_surface_blur    = $sgs_nd_css_length( $attributes['surfaceBlur'] ?? '' );
+$sgs_nd_surface_blur    = sgs_css_length_sanitise( $attributes['surfaceBlur'] ?? '' );
 
 if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 	$sgs_nd_surface_decls = '';
@@ -353,20 +346,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$border_args['color'] = preg_replace( '/[;{}<>]/', '', sgs_colour_value( (string) $attributes['style']['border']['color'] ) );
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = $sgs_nd_css_keyword( $attributes['style']['border']['style'] );
+		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = $sgs_nd_css_length( $attributes['style']['border']['width'] );
+		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = $sgs_nd_css_length( $radius_raw );
+			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
 		} elseif ( is_array( $radius_raw ) ) {
 			$radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = $sgs_nd_css_length( $radius_raw[ $corner ] );
+					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 				}
 			}
 			if ( ! empty( $radius_clean ) ) {

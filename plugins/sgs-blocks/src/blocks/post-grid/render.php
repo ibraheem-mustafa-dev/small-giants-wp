@@ -25,6 +25,7 @@ use SGS\Blocks\Post_Grid_REST;
 use SGS\Blocks\Grid_Pagination;
 
 require_once dirname( __FILE__, 4 ) . '/includes/class-post-grid-rest.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 // dirname( __DIR__, 3 ) is the same directory as the dirname( __FILE__, 4 )
@@ -37,16 +38,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 // everything except letters, digits, dot, and % so a Contributor-authored
 // malicious value can never break out of the declaration. Mirrors sgs/hero's
 // proven sanitiser (contract §D).
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / font-weight / font-style) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // -------------------------------------------------------------------------
 // Normalise attributes with safe defaults.
 // -------------------------------------------------------------------------
@@ -440,20 +433,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = $sgs_css_length( $radius_raw );
+			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
 		} elseif ( is_array( $radius_raw ) ) {
 			$radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = $sgs_css_length( $radius_raw[ $corner ] );
+					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 				}
 			}
 			if ( ! empty( $radius_clean ) ) {
@@ -580,8 +573,8 @@ if ( $hover_text ) {
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
 // §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote + sgs/button).
-// Every value reaching $responsive_css is pre-sanitised ($sgs_css_length /
-// $sgs_css_keyword / wp_style_engine_get_styles), so no un-sanitised value
+// Every value reaching $responsive_css is pre-sanitised (sgs_css_length_sanitise() /
+// sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so no un-sanitised value
 // survives to here.
 if ( $responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $responsive_css built from pre-sanitised values only.

@@ -35,20 +35,13 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style). Letters + hyphen only. Mirrors sgs/hero.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so a border-width/radius value can never break out of its
 // declaration. Mirrors sgs/hero.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // Generate stable IDs for ARIA relationships.
 // The parent tabs block provides tab IDs; we derive the panel ID from the block's anchor.
 $block_id = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
@@ -121,20 +114,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$tab_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$tab_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$tab_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$tab_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$tab_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$tab_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $tab_radius_raw ) && '' !== $tab_radius_raw ) {
-			$tab_border_args['radius'] = $sgs_css_length( $tab_radius_raw );
+			$tab_border_args['radius'] = sgs_css_length_sanitise( $tab_radius_raw );
 		} elseif ( is_array( $tab_radius_raw ) ) {
 			$tab_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 				if ( ! empty( $tab_radius_raw[ $corner ] ) ) {
-					$tab_radius_clean[ $corner ] = $sgs_css_length( $tab_radius_raw[ $corner ] );
+					$tab_radius_clean[ $corner ] = sgs_css_length_sanitise( $tab_radius_raw[ $corner ] );
 				}
 			}
 			if ( ! empty( $tab_radius_clean ) ) {
@@ -160,8 +153,8 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // Output the block's own scoped color/border CSS (if any). wp_strip_all_tags
 // (NOT esc_html) blocks a </style> breakout while leaving CSS combinators
 // like `>` intact (contract §D — matches SGS_Container_Wrapper + sgs/hero).
-// Every value reaching $tab_responsive_css is pre-sanitised ($sgs_css_length /
-// $sgs_css_keyword / wp_style_engine_get_styles), so nothing un-sanitised
+// Every value reaching $tab_responsive_css is pre-sanitised (sgs_css_length_sanitise() /
+// sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so nothing un-sanitised
 // survives to here.
 if ( $tab_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below.

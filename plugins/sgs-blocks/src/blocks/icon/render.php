@@ -299,21 +299,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the same root selector (tablet max-width:1023px, mobile
 // max-width:767px). ---
-$sgs_icon_box_shorthand = static function ( array $box ) {
-	$top    = sgs_icon_css_length( $box['top'] ?? '' );
-	$right  = sgs_icon_css_length( $box['right'] ?? '' );
-	$bottom = sgs_icon_css_length( $box['bottom'] ?? '' );
-	$left   = sgs_icon_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_icon_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_icon_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_icon_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_icon_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {

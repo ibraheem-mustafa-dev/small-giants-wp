@@ -75,10 +75,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // sgs/quote + sgs/process-steps + sgs/container).
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Extract LAYOUT/STYLING scalar attributes with defaults.
 // ---------------------------------------------------------------------------
@@ -343,7 +339,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // operator set in the native Border panel; '1px' is the fallback for "no
 // width set" (matches the hover emission's own fallback below). ---
 $sgs_border_width_native = isset( $style_border_args['width'] ) && is_string( $style_border_args['width'] )
-	? $sgs_css_length( $style_border_args['width'] )
+	? sgs_css_length_sanitise( $style_border_args['width'] )
 	: '';
 if ( '' !== $sgs_border_gradient ) {
 	$sgs_border_gradient_width = '' !== $sgs_border_width_native ? $sgs_border_width_native : '1px';
@@ -352,13 +348,13 @@ if ( '' !== $sgs_border_gradient ) {
 
 // --- Width (kept-scalar, base only) ---
 if ( $sgs_content_width ) {
-	$cw_safe = $sgs_css_length( $sgs_content_width );
+	$cw_safe = sgs_css_length_sanitise( $sgs_content_width );
 	if ( '' !== $cw_safe ) {
 		$scoped_css[] = "{$root_sel}{width:{$cw_safe};}";
 	}
 }
 if ( $sgs_max_width ) {
-	$mw_safe = $sgs_css_length( $sgs_max_width );
+	$mw_safe = sgs_css_length_sanitise( $sgs_max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-inline:auto;}";
 	}
@@ -367,21 +363,10 @@ if ( $sgs_max_width ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -445,7 +430,7 @@ if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/quote + sgs/process-steps). Every value reaching $scoped_css is
-	// pre-sanitised ($sgs_css_length / allowlists / wp_style_engine_get_styles /
+	// pre-sanitised (sgs_css_length_sanitise() / allowlists / wp_style_engine_get_styles /
 	// sgs_colour_value), so no un-sanitised value survives to here.
 	$sgs_card_html .= '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 }

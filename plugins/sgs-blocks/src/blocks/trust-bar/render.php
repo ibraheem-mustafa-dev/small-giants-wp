@@ -29,17 +29,9 @@ $uid = wp_unique_id( 'sgs-tb-' );
 
 // CSS-keyword sanitiser — free-text attrs (border-style etc.) concatenated into
 // raw CSS declarations inside this block's scoped <style> tag. Letters + hyphen
-// only. Mirrors sgs/hero's $sgs_css_keyword (no-inline migration contract §D).
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
+// only. Mirrors sgs/hero's sgs_css_keyword_sanitise(no-inline migration contract §D).
 // CSS length/unit sanitiser — for free-text length values (border-width etc.)
-// concatenated into raw CSS declarations. Mirrors sgs/hero's $sgs_css_length.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
+// concatenated into raw CSS declarations. Mirrors sgs/hero's sgs_css_length_sanitise().
 // --- Shared attributes --------------------------------------------------------
 $badge_style  = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
 $badge_size   = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
@@ -175,20 +167,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$tb_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$tb_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$tb_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$tb_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$tb_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$tb_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $tb_radius_raw ) && '' !== $tb_radius_raw ) {
-			$tb_border_args['radius'] = $sgs_css_length( $tb_radius_raw );
+			$tb_border_args['radius'] = sgs_css_length_sanitise( $tb_radius_raw );
 		} elseif ( is_array( $tb_radius_raw ) ) {
 			$tb_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $tb_corner ) {
 				if ( ! empty( $tb_radius_raw[ $tb_corner ] ) ) {
-					$tb_radius_clean[ $tb_corner ] = $sgs_css_length( $tb_radius_raw[ $tb_corner ] );
+					$tb_radius_clean[ $tb_corner ] = sgs_css_length_sanitise( $tb_radius_raw[ $tb_corner ] );
 				}
 			}
 			if ( ! empty( $tb_radius_clean ) ) {

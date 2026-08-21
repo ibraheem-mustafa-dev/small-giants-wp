@@ -18,22 +18,15 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Strips everything
 // except letters, digits, dot, and % so a value can never break out of the
 // declaration into a new CSS rule. Mirrors sgs/hero's proven sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS aspect-ratio sanitiser — the aspectRatio attr stores values like
 // "1/1", "4/3", "16/9". Allows digits, dot, and "/" only.
 $sgs_css_ratio = static function ( $value ) {
@@ -298,20 +291,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$gallery_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$gallery_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$gallery_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$gallery_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$gallery_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$gallery_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $gallery_radius_raw ) && '' !== $gallery_radius_raw ) {
-			$gallery_border_args['radius'] = $sgs_css_length( $gallery_radius_raw );
+			$gallery_border_args['radius'] = sgs_css_length_sanitise( $gallery_radius_raw );
 		} elseif ( is_array( $gallery_radius_raw ) ) {
 			$gallery_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gallery_corner ) {
 				if ( ! empty( $gallery_radius_raw[ $gallery_corner ] ) ) {
-					$gallery_radius_clean[ $gallery_corner ] = $sgs_css_length( $gallery_radius_raw[ $gallery_corner ] );
+					$gallery_radius_clean[ $gallery_corner ] = sgs_css_length_sanitise( $gallery_radius_raw[ $gallery_corner ] );
 				}
 			}
 			if ( ! empty( $gallery_radius_clean ) ) {
@@ -655,7 +648,7 @@ $inner_html = ob_get_clean();
 // Output the gallery's own scoped <style> (color/border no-inline re-emit).
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 // CSS combinators like `>` intact. Every value reaching $gallery_responsive_css
-// is pre-sanitised ($sgs_css_length / $sgs_css_keyword / wp_style_engine_get_styles),
+// is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles),
 // so no un-sanitised value survives to here.
 if ( $gallery_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gallery_responsive_css built from pre-sanitised values only.

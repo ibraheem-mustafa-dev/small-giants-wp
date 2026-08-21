@@ -21,15 +21,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // CSS length/unit sanitiser — for free-text style-engine values concatenated
 // into raw CSS declarations inside this block's scoped <style> tag. Mirrors
 // sgs/hero's proven sanitiser (contract §D).
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $layout_mode = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'fixed-columns';
 // `columns` is a TIER OBJECT (Spec 35 pass 4) — the old columnsDesktop/columnsTablet/
 // columnsMobile flat trio is retired; resolve each tier from the object instead,
@@ -219,20 +211,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$fg_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$fg_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$fg_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$fg_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$fg_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$fg_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $fg_radius_raw ) && '' !== $fg_radius_raw ) {
-			$fg_border_args['radius'] = $sgs_css_length( $fg_radius_raw );
+			$fg_border_args['radius'] = sgs_css_length_sanitise( $fg_radius_raw );
 		} elseif ( is_array( $fg_radius_raw ) ) {
 			$fg_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $fg_corner ) {
 				if ( ! empty( $fg_radius_raw[ $fg_corner ] ) ) {
-					$fg_radius_clean[ $fg_corner ] = $sgs_css_length( $fg_radius_raw[ $fg_corner ] );
+					$fg_radius_clean[ $fg_corner ] = sgs_css_length_sanitise( $fg_radius_raw[ $fg_corner ] );
 				}
 			}
 			if ( ! empty( $fg_radius_clean ) ) {

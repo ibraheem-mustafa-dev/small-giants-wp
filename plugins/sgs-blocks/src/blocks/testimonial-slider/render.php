@@ -44,16 +44,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (textTransform / fontWeight / fontStyle / border-style) —
 // letters + hyphen only. Mirrors sgs/hero's proven sanitiser.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS length/unit sanitiser — for free-text length values (letterSpacing,
 // border width/radius) concatenated into raw CSS declarations.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── Attribute extraction ───────────────────────────────────────────────────
 $layout         = $attributes['layout'] ?? 'full';
 $side_image     = $attributes['sideImage'] ?? null;
@@ -169,20 +161,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$slider_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$slider_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$slider_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$slider_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$slider_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$slider_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $slider_radius_raw ) && '' !== $slider_radius_raw ) {
-			$slider_border_args['radius'] = $sgs_css_length( $slider_radius_raw );
+			$slider_border_args['radius'] = sgs_css_length_sanitise( $slider_radius_raw );
 		} elseif ( is_array( $slider_radius_raw ) ) {
 			$slider_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 				if ( ! empty( $slider_radius_raw[ $corner ] ) ) {
-					$slider_radius_clean[ $corner ] = $sgs_css_length( $slider_radius_raw[ $corner ] );
+					$slider_radius_clean[ $corner ] = sgs_css_length_sanitise( $slider_radius_raw[ $corner ] );
 				}
 			}
 			if ( ! empty( $slider_radius_clean ) ) {
@@ -218,16 +210,16 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$slider_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
 	}
 	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$slider_typography_args['letterSpacing'] = $sgs_css_length( $attributes['style']['typography']['letterSpacing'] );
+		$slider_typography_args['letterSpacing'] = sgs_css_length_sanitise( $attributes['style']['typography']['letterSpacing'] );
 	}
 	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$slider_typography_args['textTransform'] = $sgs_css_keyword( $attributes['style']['typography']['textTransform'] );
+		$slider_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
 	}
 	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$slider_typography_args['fontWeight'] = $sgs_css_keyword( (string) $attributes['style']['typography']['fontWeight'] );
+		$slider_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
 	}
 	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$slider_typography_args['fontStyle'] = $sgs_css_keyword( $attributes['style']['typography']['fontStyle'] );
+		$slider_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
 	}
 	if ( ! empty( $slider_typography_args ) ) {
 		$slider_typography_scoped = wp_style_engine_get_styles(
@@ -239,7 +231,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		}
 	}
 	if ( isset( $attributes['style']['typography']['textAlign'] ) && '' !== $attributes['style']['typography']['textAlign'] ) {
-		$slider_scoped_css .= $root_sel . '{text-align:' . $sgs_css_keyword( $attributes['style']['typography']['textAlign'] ) . '}';
+		$slider_scoped_css .= $root_sel . '{text-align:' . sgs_css_keyword_sanitise( $attributes['style']['typography']['textAlign'] ) . '}';
 	}
 }
 

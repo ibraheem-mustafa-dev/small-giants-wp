@@ -81,16 +81,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations. Strips everything except letters + hyphen.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ── Variant + content fields (typed, all optional) ──────────────────────────
 // Effective variant resolution (context inheritance from sgs/testimonial-slider):
 // 1. This block's own `variant` attribute, when explicitly set (non-empty) —
@@ -141,7 +133,7 @@ $quote_font_size = sgs_font_size_value( $attributes['quoteFontSize'] ?? '' );
 $quote_colour_raw      = (string) ( $attributes['quoteColour'] ?? '' );
 $quote_colour_gradient = (string) ( $attributes['quoteColourGradient'] ?? '' );
 $quote_style           = in_array( $attributes['quoteFontStyle'] ?? '', array( 'italic', 'normal' ), true ) ? $attributes['quoteFontStyle'] : '';
-$quote_line_height     = $sgs_css_length( trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) ) );
+$quote_line_height     = sgs_css_length_sanitise( trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) ) );
 $quote_margin_bot      = sgs_container_gap_value( $attributes['quoteMarginBottom'] ?? '' );
 $summary_font_size     = sgs_font_size_value( $attributes['summaryFontSize'] ?? '' );
 $summary_colour        = sgs_colour_value( $attributes['summaryColour'] ?? '' );
@@ -341,7 +333,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Outer width (kept-scalar family, contract §C — no tiers on this block). ---
 $width_decls = array();
 if ( $max_width ) {
-	$mw_safe = $sgs_css_length( $max_width );
+	$mw_safe = sgs_css_length_sanitise( $max_width );
 	if ( '' !== $mw_safe ) {
 		$width_decls[] = 'max-width:' . $mw_safe;
 		$width_decls[] = 'margin-inline:auto';
@@ -361,21 +353,10 @@ $padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attrib
 $margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -812,7 +793,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/quote). Every value reaching $scoped_css is pre-sanitised
-	// ($sgs_css_length / $sgs_css_keyword / sgs_colour_value / sgs_font_size_value /
+	// (sgs_css_length_sanitise() / sgs_css_keyword_sanitise() / sgs_colour_value / sgs_font_size_value /
 	// sgs_container_gap_value / in_array allowlists / wp_style_engine_get_styles),
 	// so no un-sanitised value survives to here.
 	echo wp_strip_all_tags( implode( '', $scoped_css ) );

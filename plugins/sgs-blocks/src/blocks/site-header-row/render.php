@@ -39,13 +39,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 
 // CSS length/keyword sanitisers for free-text style-engine values concatenated
 // into this block's scoped <style> (mirrors sgs/feature-grid contract §D).
-$sgs_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
 // md5( wp_json_encode( $attributes ) ) derivation rather than the per-request counter
 // wp_unique_id(): identical row attributes (rowSlot etc.) yield an identical uid on
@@ -112,20 +105,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$shr_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$shr_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$shr_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$shr_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$shr_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$shr_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $shr_radius_raw ) && '' !== $shr_radius_raw ) {
-			$shr_border_args['radius'] = $sgs_css_length( $shr_radius_raw );
+			$shr_border_args['radius'] = sgs_css_length_sanitise( $shr_radius_raw );
 		} elseif ( is_array( $shr_radius_raw ) ) {
 			$shr_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $shr_corner ) {
 				if ( ! empty( $shr_radius_raw[ $shr_corner ] ) ) {
-					$shr_radius_clean[ $shr_corner ] = $sgs_css_length( $shr_radius_raw[ $shr_corner ] );
+					$shr_radius_clean[ $shr_corner ] = sgs_css_length_sanitise( $shr_radius_raw[ $shr_corner ] );
 				}
 			}
 			if ( ! empty( $shr_radius_clean ) ) {

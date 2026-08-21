@@ -83,7 +83,7 @@ $picker_pill_bg_colour      = isset( $attributes['pickerPillBgColour'] ) ? sanit
 $picker_pill_text_colour    = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
 $picker_pill_border_colour  = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
 // Border-radius forwards are CSS-length STRINGS (e.g. "6px") — the option-picker
-// side reads them as strings, gates on '' !== and sanitises via $sgs_css_length,
+// side reads them as strings, gates on '' !== and sanitises via sgs_css_length_sanitise(),
 // so an explicit "0"/"0px" survives and empty = the picker's own default.
 $picker_pill_border_radius  = isset( $attributes['pickerPillBorderRadius'] ) ? sanitize_text_field( (string) $attributes['pickerPillBorderRadius'] ) : '';
 $picker_pill_sel_bg_colour  = isset( $attributes['pickerPillSelectedBgColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedBgColour'] ) : '';
@@ -150,13 +150,6 @@ if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
 // keyword). Strip everything outside the safe grammar so a Contributor-authored
 // value can never break out of the declaration into a new CSS rule. Mirrors
 // sgs/hero's proven sanitisers.
-$sgs_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ── Per-element typography (title heading + price) ──────────────────────
 // Font size/weight/style/line-height now come from the shared
 // TypographyControls component → sgs_typography_css_rule() scoped <style>
@@ -254,20 +247,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$sgs_pc_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$sgs_pc_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$sgs_pc_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$sgs_pc_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$sgs_pc_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
-			$sgs_pc_border_args['radius'] = $sgs_css_length( $sgs_pc_radius_raw );
+			$sgs_pc_border_args['radius'] = sgs_css_length_sanitise( $sgs_pc_radius_raw );
 		} elseif ( is_array( $sgs_pc_radius_raw ) ) {
 			$sgs_pc_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
 				if ( ! empty( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) ) {
-					$sgs_pc_radius_clean[ $sgs_pc_corner ] = $sgs_css_length( $sgs_pc_radius_raw[ $sgs_pc_corner ] );
+					$sgs_pc_radius_clean[ $sgs_pc_corner ] = sgs_css_length_sanitise( $sgs_pc_radius_raw[ $sgs_pc_corner ] );
 				}
 			}
 			if ( ! empty( $sgs_pc_radius_clean ) ) {

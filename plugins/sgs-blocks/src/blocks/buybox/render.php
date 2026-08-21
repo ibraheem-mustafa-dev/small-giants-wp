@@ -47,10 +47,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 // enabled (color is declared-but-disabled; padding is off).
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 /* ── 1. Resolve product ──────────────────────────────────────────────────── */
 
 // Core-blocks fallback markup (FR-30-2): simple products, WC absent, manifest
@@ -452,22 +448,11 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive margin tiers — SGS custom object attrs, hand-built shorthand,
 // scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
 // mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 $margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$margin_tab_val = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val = $sgs_box_shorthand( $margin_mobile_obj );
+$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
 
 if ( null !== $margin_tab_val ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";
@@ -486,7 +471,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 ob_start();
 ?>
 <?php if ( $scoped_css ) : ?>
-<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_sanitise() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	data-wp-interactive="sgs/product-card"

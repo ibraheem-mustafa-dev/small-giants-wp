@@ -49,14 +49,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 // 1. Security sanitisers (contract §D) — mirrors sgs/quote + sgs/brand-strip.
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Extract + validate attributes.
 // ---------------------------------------------------------------------------
@@ -68,7 +60,7 @@ $line_style          = in_array( $line_style_raw, $allowed_line_styles, true ) ?
 $width_unit_raw = $attributes['widthUnit'] ?? '%';
 $width_unit     = in_array( $width_unit_raw, array( 'px', '%' ), true ) ? $width_unit_raw : '%';
 
-$thickness_unit = $sgs_css_length( $attributes['thicknessUnit'] ?? 'px' );
+$thickness_unit = sgs_css_length_sanitise( $attributes['thicknessUnit'] ?? 'px' );
 $thickness_unit = '' !== $thickness_unit ? $thickness_unit : 'px';
 
 $colour = $attributes['colour'] ?? '';
@@ -276,21 +268,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {

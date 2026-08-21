@@ -56,10 +56,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // for hand-built box shorthand values (mirrors sgs/label + sgs/heading).
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // -------------------------------------------------------------------------
 // Attributes.
 // -------------------------------------------------------------------------
@@ -184,26 +180,15 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
 // shorthand, scoped @media on the SAME selector (contract: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 $sgs_padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
 $sgs_padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
 $sgs_margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $sgs_margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$sgs_padding_tab_val = $sgs_box_shorthand( $sgs_padding_tablet_obj );
-$sgs_padding_mob_val = $sgs_box_shorthand( $sgs_padding_mobile_obj );
-$sgs_margin_tab_val  = $sgs_box_shorthand( $sgs_margin_tablet_obj );
-$sgs_margin_mob_val  = $sgs_box_shorthand( $sgs_margin_mobile_obj );
+$sgs_padding_tab_val = sgs_box_object_shorthand( $sgs_padding_tablet_obj );
+$sgs_padding_mob_val = sgs_box_object_shorthand( $sgs_padding_mobile_obj );
+$sgs_margin_tab_val  = sgs_box_object_shorthand( $sgs_margin_tablet_obj );
+$sgs_margin_mob_val  = sgs_box_object_shorthand( $sgs_margin_mobile_obj );
 
 $sgs_tablet_decls = array();
 if ( null !== $sgs_padding_tab_val ) {
@@ -495,7 +480,7 @@ if ( $sgs_ps_is_dialog_mode ) {
 // -------------------------------------------------------------------------
 ?>
 <?php if ( $sgs_scoped_css ) : ?>
-<style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
+<style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_sanitise() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from get_block_wrapper_attributes() and esc_* functions. ?>>
 <?php if ( 'icon-expand' === $display ) : ?>

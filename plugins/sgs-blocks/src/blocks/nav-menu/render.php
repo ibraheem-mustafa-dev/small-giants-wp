@@ -666,13 +666,6 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 }
 
 // CSS-keyword / length sanitisers — free-text attrs concatenated into raw CSS.
-$sgs_nm_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-$sgs_nm_css_length  = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── 1. Deterministic content-addressed uid (CSS scope). ────────────────────
 // STOP-NO-KSORT: $attributes passed verbatim into the uid hash + the wrapper.
 $anchor_val = isset( $block->parsed_block['attrs']['anchor'] ) ? (string) $block->parsed_block['attrs']['anchor'] : '';
@@ -1169,7 +1162,7 @@ $burger_hover_slug = isset( $attributes['burgerHoverColour'] ) ? (string) $attri
 if ( '' !== $burger_hover_slug ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__burger:hover,' . $uid_sel . ' .sgs-nav-menu__burger:focus-visible{background-color:' . sgs_colour_value( $burger_hover_slug ) . ';}';
 }
-$burger_size = $sgs_nm_css_length( $attributes['burgerSize'] ?? '44px' );
+$burger_size = sgs_css_length_sanitise( $attributes['burgerSize'] ?? '44px' );
 if ( '' !== $burger_size ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__burger{width:' . $burger_size . ';height:' . $burger_size . ';min-width:' . $burger_size . ';min-height:' . $burger_size . ';}';
 }
@@ -1267,8 +1260,8 @@ foreach (
 		'--sgs-nm-submenu-colour'    => '' !== (string) ( $attributes['submenuColour'] ?? '' )
 			? sgs_colour_value( (string) $attributes['submenuColour'] )
 			: '',
-		'--sgs-nm-submenu-min-width' => $sgs_nm_css_length( $attributes['submenuMinWidth'] ?? '' ),
-		'--sgs-nm-submenu-radius'    => $sgs_nm_css_length( $attributes['submenuRadius'] ?? '' ),
+		'--sgs-nm-submenu-min-width' => sgs_css_length_sanitise( $attributes['submenuMinWidth'] ?? '' ),
+		'--sgs-nm-submenu-radius'    => sgs_css_length_sanitise( $attributes['submenuRadius'] ?? '' ),
 	) as $sgs_nm_var => $sgs_nm_val
 ) {
 	if ( '' !== $sgs_nm_val ) {

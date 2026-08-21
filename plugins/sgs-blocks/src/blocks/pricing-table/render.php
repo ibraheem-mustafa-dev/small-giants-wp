@@ -27,17 +27,13 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // CSS-keyword/slug sanitiser — for free-text attrs (border-style, colour
 // slugs) concatenated into raw CSS declarations inside this block's scoped
 // <style> tag. Letters, digits, hyphen only (preset colour slugs can contain
-// digits, e.g. "neutral-200"). Mirrors sgs/hero's $sgs_css_keyword, widened
+// digits, e.g. "neutral-200"). Mirrors sgs/hero's sgs_css_keyword_sanitise(), widened
 // for slug use per contract §D.
 $sgs_pt_css_slug = static function ( $value ) {
 	return preg_replace( '/[^A-Za-z0-9-]/', '', (string) $value );
 };
 
 // CSS-length sanitiser — letters, digits, dot, percent only.
-$sgs_pt_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── Attributes ──────────────────────────────────────────────────────────────
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11), though this block
 // only ever exposes/uses the desktop tier (no per-device columns UI exists).
@@ -420,17 +416,17 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$pt_border_args['style'] = preg_replace( '/[^a-zA-Z-]/', '', (string) $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$pt_border_args['width'] = $sgs_pt_css_length( $attributes['style']['border']['width'] );
+		$pt_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$pt_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $pt_radius_raw ) && '' !== $pt_radius_raw ) {
-			$pt_border_args['radius'] = $sgs_pt_css_length( $pt_radius_raw );
+			$pt_border_args['radius'] = sgs_css_length_sanitise( $pt_radius_raw );
 		} elseif ( is_array( $pt_radius_raw ) ) {
 			$pt_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $pt_corner ) {
 				if ( ! empty( $pt_radius_raw[ $pt_corner ] ) ) {
-					$pt_radius_clean[ $pt_corner ] = $sgs_pt_css_length( $pt_radius_raw[ $pt_corner ] );
+					$pt_radius_clean[ $pt_corner ] = sgs_css_length_sanitise( $pt_radius_raw[ $pt_corner ] );
 				}
 			}
 			if ( ! empty( $pt_radius_clean ) ) {

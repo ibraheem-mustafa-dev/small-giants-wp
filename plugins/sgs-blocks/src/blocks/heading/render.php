@@ -180,24 +180,16 @@ $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ?
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration. Mirrors sgs/button + sgs/container.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // (border-style / text-transform). Strips everything except letters + hyphen so
 // ;{}():digits can never break out of the declaration (contract §D).
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base only
 // (no tiers). No WP-native border-width support; colour/style stay scalar attrs.
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_sanitise( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_sanitise( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_sanitise( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_sanitise( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 // Border-radius — WP-native style.border.radius (string = uniform, or an object
@@ -212,7 +204,7 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_clean   = array();
 		$has_any_corner = false;
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_sanitise( $radius_raw[ $corner ] ) : '';
 			if ( '' !== $radius_clean[ $corner ] ) {
 				$has_any_corner = true;
 			}
@@ -294,7 +286,7 @@ if ( null !== $letter_spacing && '' !== $letter_spacing ) {
 	$text_decls[] = 'letter-spacing:' . floatval( $letter_spacing ) . $ls_unit;
 }
 if ( '' !== $text_transform ) {
-	$text_transform_safe = $sgs_css_keyword( $text_transform );
+	$text_transform_safe = sgs_css_keyword_sanitise( $text_transform );
 	if ( '' !== $text_transform_safe ) {
 		$text_decls[] = 'text-transform:' . $text_transform_safe;
 	}
@@ -563,22 +555,11 @@ if ( ! $inherit_style && function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME wrapper selector (contract §B / §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 if ( ! $inherit_style ) {
-	$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-	$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-	$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-	$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+	$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+	$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+	$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+	$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 	$tablet_box_decls = array();
 	if ( null !== $padding_tab_val ) {
@@ -650,8 +631,8 @@ $rendered_tag_escaped = tag_escape( $rendered_tag );
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper).
-	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length /
-	// $sgs_css_keyword / allowlists / floatval / wp_style_engine_get_styles /
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() /
+	// sgs_css_keyword_sanitise() / allowlists / floatval / wp_style_engine_get_styles /
 	// sgs_colour_value / sgs_shadow_value), so no un-sanitised value survives here.
 	?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>

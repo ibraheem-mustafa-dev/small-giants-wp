@@ -28,19 +28,12 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // CSS-keyword sanitiser — free-text style/border values concatenated into raw
 // CSS declarations (border-style). Strips everything except letters + hyphen
 // (contract §D). Mirrors sgs/hero + sgs/quote.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS-length sanitiser — for border-width / radius string values.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 $style         = $attributes['style'] ?? 'bordered';
 $icon_position = $attributes['iconPosition'] ?? 'right';
 $allow_multi   = ! empty( $attributes['allowMultiple'] );
@@ -76,20 +69,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = $sgs_css_length( $radius_raw );
+			$border_args['radius'] = sgs_css_length_sanitise( $radius_raw );
 		} elseif ( is_array( $radius_raw ) ) {
 			$radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
 				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = $sgs_css_length( $radius_raw[ $corner ] );
+					$radius_clean[ $corner ] = sgs_css_length_sanitise( $radius_raw[ $corner ] );
 				}
 			}
 			if ( ! empty( $radius_clean ) ) {

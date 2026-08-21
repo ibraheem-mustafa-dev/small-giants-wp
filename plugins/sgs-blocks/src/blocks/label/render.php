@@ -49,10 +49,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // (sgs_css_length_sanitise), so no local length closure is needed here.
 // ---------------------------------------------------------------------------
 
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
@@ -70,7 +66,7 @@ $font_family       = $attributes['fontFamily'] ?? '';
 // (WP silently discards a value written to an undeclared attr — D338).
 $font_size_obj     = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
 $font_size         = $font_size_obj['desktop'] ?? '';
-$font_size_unit    = $sgs_css_keyword( $attributes['fontSizeUnit'] ?? 'px' );
+$font_size_unit    = sgs_css_keyword_sanitise( $attributes['fontSizeUnit'] ?? 'px' );
 if ( '' === $font_size_unit ) {
 	$font_size_unit = 'px';
 }
@@ -154,15 +150,15 @@ if ( $font_weight ) {
 	}
 }
 if ( '' !== $line_height && null !== $line_height ) {
-	$lh_unit      = ( '' === $line_height_unit ) ? '' : $sgs_css_keyword( $line_height_unit );
+	$lh_unit      = ( '' === $line_height_unit ) ? '' : sgs_css_keyword_sanitise( $line_height_unit );
 	$root_decls[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
 }
 if ( '' !== $letter_spacing && null !== $letter_spacing ) {
-	$ls_unit      = $sgs_css_keyword( $letter_spacing_unit );
+	$ls_unit      = sgs_css_keyword_sanitise( $letter_spacing_unit );
 	$root_decls[] = 'letter-spacing:' . floatval( $letter_spacing ) . $ls_unit;
 }
 if ( $text_transform ) {
-	$text_transform_safe = $sgs_css_keyword( $text_transform );
+	$text_transform_safe = sgs_css_keyword_sanitise( $text_transform );
 	if ( '' !== $text_transform_safe ) {
 		$root_decls[] = 'text-transform:' . $text_transform_safe;
 	}
@@ -170,7 +166,7 @@ if ( $text_transform ) {
 if ( $text_decoration ) {
 	// Free-text historically; sanitise as a keyword (letters/hyphen only) —
 	// covers the legitimate values ('none', 'underline', 'line-through', etc.).
-	$text_decoration_safe = $sgs_css_keyword( $text_decoration );
+	$text_decoration_safe = sgs_css_keyword_sanitise( $text_decoration );
 	if ( '' !== $text_decoration_safe ) {
 		$root_decls[] = 'text-decoration:' . $text_decoration_safe;
 	}
@@ -354,7 +350,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 if ( $scoped_css ) :
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D). Every value reaching
-	// $scoped_css is pre-sanitised (the box helper's length/keyword sanitisers / $sgs_css_keyword /
+	// $scoped_css is pre-sanitised (the box helper's length/keyword sanitisers / sgs_css_keyword_sanitise() /
 	// allowlists / floatval / wp_style_engine_get_styles / sgs_colour_value),
 	// so no un-sanitised value survives here.
 	?>

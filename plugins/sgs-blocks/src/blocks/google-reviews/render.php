@@ -20,15 +20,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero's
 // proven sanitiser (strips everything except letters, digits, dot, %).
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $variant            = $attributes['variant'] ?? 'grid';
 
 /*
@@ -268,20 +260,20 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		$gr_border_args['color'] = (string) $attributes['style']['border']['color'];
 	}
 	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$gr_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+		$gr_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
 	}
 	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$gr_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+		$gr_border_args['width'] = sgs_css_length_sanitise( $attributes['style']['border']['width'] );
 	}
 	if ( isset( $attributes['style']['border']['radius'] ) ) {
 		$gr_radius_raw = $attributes['style']['border']['radius'];
 		if ( is_string( $gr_radius_raw ) && '' !== $gr_radius_raw ) {
-			$gr_border_args['radius'] = $sgs_css_length( $gr_radius_raw );
+			$gr_border_args['radius'] = sgs_css_length_sanitise( $gr_radius_raw );
 		} elseif ( is_array( $gr_radius_raw ) ) {
 			$gr_radius_clean = array();
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gr_corner ) {
 				if ( ! empty( $gr_radius_raw[ $gr_corner ] ) ) {
-					$gr_radius_clean[ $gr_corner ] = $sgs_css_length( $gr_radius_raw[ $gr_corner ] );
+					$gr_radius_clean[ $gr_corner ] = sgs_css_length_sanitise( $gr_radius_raw[ $gr_corner ] );
 				}
 			}
 			if ( ! empty( $gr_radius_clean ) ) {
@@ -485,7 +477,7 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
 				// sgs/social-icons' / sgs/pricing-table's per-item values) — every
 				// row renders `.sgs-google-reviews__breakdown-row` unconditionally
 				// (all 5 star tiers), so position is stable.
-				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__breakdown-row:nth-child(' . $gr_star_position . ') .sgs-google-reviews__breakdown-fill{--sgs-gr-pct:' . $sgs_css_length( $gr_pct ) . '%;}';
+				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__breakdown-row:nth-child(' . $gr_star_position . ') .sgs-google-reviews__breakdown-fill{--sgs-gr-pct:' . sgs_css_length_sanitise( $gr_pct ) . '%;}';
 				?>
 				<div class="sgs-google-reviews__breakdown-row" role="row">
 					<span class="sgs-google-reviews__breakdown-label" role="cell">
@@ -659,7 +651,7 @@ $inner_html = ob_get_clean();
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
 // §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote). Every value
-// reaching $gr_responsive_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword
+// reaching $gr_responsive_css is pre-sanitised (sgs_css_length_sanitise() / sgs_css_keyword_sanitise()
 // / wp_style_engine_get_styles), so no un-sanitised value survives to here.
 if ( $gr_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gr_responsive_css built from pre-sanitised values only.

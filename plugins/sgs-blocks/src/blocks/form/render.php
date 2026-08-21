@@ -44,10 +44,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // free-text keyword sgs/form's declared supports concatenate into scoped CSS;
 // fontSize/lineHeight are string values passed straight to
 // wp_style_engine_get_styles(), which sanitises them internally).
-$sgs_form_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $form_id           = $attributes['formId'] ?? '';
 $form_name         = $attributes['formName'] ?? '';
 $submit_label      = $attributes['submitLabel'] ?? __( 'Submit', 'sgs-blocks' );
@@ -146,7 +142,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
 		}
 		if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] ) {
-			$sgs_form_border['style'] = $sgs_form_css_keyword( $sgs_form_border_raw['style'] );
+			$sgs_form_border['style'] = sgs_css_keyword_sanitise( $sgs_form_border_raw['style'] );
 		}
 		if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
 			$sgs_form_border['width'] = $sgs_form_border_raw['width'];

@@ -45,10 +45,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // CSS-keyword sanitiser — letters + hyphen only (border-style).
-$sgs_ft_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // Block-private scoped color/border supports (no-inline contract §A). Mirrors
 // sgs/container's render.php pattern exactly: extract $attributes['style'],
@@ -87,7 +83,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$sgs_ft_border['color'] = (string) $sgs_ft_border_raw['color'];
 		}
 		if ( isset( $sgs_ft_border_raw['style'] ) && '' !== $sgs_ft_border_raw['style'] ) {
-			$sgs_ft_border['style'] = $sgs_ft_css_keyword( $sgs_ft_border_raw['style'] );
+			$sgs_ft_border['style'] = sgs_css_keyword_sanitise( $sgs_ft_border_raw['style'] );
 		}
 		if ( isset( $sgs_ft_border_raw['width'] ) && '' !== $sgs_ft_border_raw['width'] ) {
 			$sgs_ft_border['width'] = $sgs_ft_border_raw['width'];

@@ -32,14 +32,11 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $label = $attributes['label'] ?? __( 'Step', 'sgs-blocks' );
 
 // CSS-keyword sanitiser — letters + hyphen only (border-style).
-$sgs_fs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // Block-private scoped color/border supports (no-inline contract §A) — mirrors
 // sgs/container's render.php pattern.
@@ -75,7 +72,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$sgs_fs_border['color'] = (string) $sgs_fs_border_raw['color'];
 		}
 		if ( isset( $sgs_fs_border_raw['style'] ) && '' !== $sgs_fs_border_raw['style'] ) {
-			$sgs_fs_border['style'] = $sgs_fs_css_keyword( $sgs_fs_border_raw['style'] );
+			$sgs_fs_border['style'] = sgs_css_keyword_sanitise( $sgs_fs_border_raw['style'] );
 		}
 		if ( isset( $sgs_fs_border_raw['width'] ) && '' !== $sgs_fs_border_raw['width'] ) {
 			$sgs_fs_border['width'] = $sgs_fs_border_raw['width'];

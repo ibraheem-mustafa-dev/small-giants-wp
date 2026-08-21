@@ -61,10 +61,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // values (mirrors sgs/label + sgs/container).
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 $text            = $attributes['text'] ?? '';
 $collapsible     = ! empty( $attributes['collapsible'] );
 $collapsed_lines = isset( $attributes['collapsedLines'] ) ? max( 1, (int) $attributes['collapsedLines'] ) : 4;
@@ -90,17 +86,6 @@ $typography_css      = sgs_typography_css_rule( $attributes, '', $typography_sel
 // ---------------------------------------------------------------------------
 // 2. Box shorthand builder (hand-built, mirrors sgs/label/sgs/container).
 // ---------------------------------------------------------------------------
-
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
 
 // WP-native base padding/margin objects (skip-serialised — NOT auto-inlined).
 $base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
@@ -160,10 +145,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
 // mobile max-width:767px). ---
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -267,7 +252,7 @@ $output = '';
 if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
 	// leaving CSS combinators like `>` intact (contract §D). Every value
-	// reaching $scoped_css is pre-sanitised ($sgs_css_length /
+	// reaching $scoped_css is pre-sanitised (sgs_css_length_sanitise() /
 	// wp_style_engine_get_styles / sgs_typography_css_rule's own
 	// sanitisers), so no un-sanitised value survives here.
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>.
