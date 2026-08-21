@@ -13,7 +13,11 @@
 				<!-- FR-30-10 Step-10a: the buybox now owns the full product area (gallery + configurator
 				     in a 2-column CSS Grid). The old wp:columns (55% gallery | 45% buybox) is replaced
 				     with a single-column constrained group that holds the buybox block, which renders its
-				     own gallery column internally. sgs-pdp-gallery.html is no longer placed here.
+				     own gallery column internally. sgs-pdp-gallery.html is no longer placed here —
+				     and as of 2026-08-21 the PART ITSELF IS DELETED, not merely unplaced. It stayed
+				     registered in theme.json for two months, so it was editable in the Site Editor: a
+				     client could open "PDP: Product Gallery", edit it, save, and change nothing
+				     anywhere on the site. Deleting the file without the registration is the trap.
 				     single-product.html template version: 2.0.0 (2026-06-12). -->
 				<!-- wp:template-part {"slug":"sgs-pdp-buybox"} /-->
 

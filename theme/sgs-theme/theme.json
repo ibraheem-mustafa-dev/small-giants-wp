@@ -613,24 +613,9 @@
       "title": "Header"
     },
     {
-      "area": "header",
-      "name": "header-minimal",
-      "title": "Header (Minimal)"
-    },
-    {
       "area": "footer",
       "name": "footer",
       "title": "Footer"
-    },
-    {
-      "area": "footer",
-      "name": "footer-minimal",
-      "title": "Footer (Minimal)"
-    },
-    {
-      "area": "uncategorized",
-      "name": "sgs-pdp-gallery",
-      "title": "PDP: Product Gallery"
     },
     {
       "area": "uncategorized",
