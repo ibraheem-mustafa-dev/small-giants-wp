@@ -99,8 +99,25 @@ apply, never completely walled off from areas of potential.
      WebGPU successor. Assume this dependency gets swapped; do not weld effects to it.
    - **Fallback:** a visitor without WebGL (~2-3%, plus low-power modes) gets **the Tier V version of
      the same block** — never a blank canvas, never a hidden section.
-   - **Scope: a CLOSED LIST of effects**, exactly as Tier H is a closed list of libraries. First entry
-     is the fluid cursor field. "We have WebGL now" is precisely how a byte budget dies.
+   - **Scope: a CLOSED LIST of effects**, exactly as Tier H is a closed list of libraries. "We have
+     WebGL now" is precisely how a byte budget dies.
+     **CURRENT MEMBERSHIP — one entry: `surface-treatment` (FR-38-29, BUILT 2026-08-21).**
+     D479 originally named the fluid cursor field as the first entry; **Bean re-ordered the list at a
+     design gate on 2026-08-21** after a 6-seat adversarial council, and the substrate shipped
+     pointed at surface treatments instead. Re-ordering a closed list is not widening it — the list
+     is still closed and still one item long. The reasons, each verified in source before the swap:
+     (i) a genuine fluid simulation is MULTI-PASS (advection → divergence → Jacobi pressure →
+     gradient subtract, over ping-pong framebuffers) and the single-pass Tier W interface
+     structurally cannot express it; (ii) `fx-cursor-field.css:150-167` removes the cursor field
+     entirely on a coarse pointer, so on the majority of SME/charity traffic the fluid effect would
+     have been nothing at all; (iii) a dissipating dye field keeps moving after the pointer stops
+     and so owes an **SC 2.2.2** Pause/Stop/Hide answer that `prefers-reduced-motion` does not
+     supply; (iv) the gap register ranks surface treatments *"⭐ the most undervalued item in this
+     register"*. A static image treatment has no pointer gate, no autonomous motion and no
+     per-frame cost, so it dissolves (ii) and (iii) rather than mitigating them.
+     **The fluid field remains admissible later**, but it must first answer the multi-pass interface
+     question — and at that point OGL's pass/FBO machinery is exactly what it sells, so D479
+     decision 2 reopens with it (see `src/shared/effects/webgl/README.md`).
  **Three house contracts Tier W carries ON TOP of §1.6** (which binds it identically otherwise):
  **context-loss recovery** (the single most-reported WebGL complaint across every major library's
    issue tracker — iOS Safari discards the GPU context under memory pressure; never leave a dead
@@ -159,6 +176,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | MotionPath | **V default / G when scrubbed** — CSS `offset-path` handles autonomous path-follow cross-browser; the plugin is needed only for scroll-scrubbed path progress | element | Inspector on `sgs/decorative-image` | V variant ships without GSAP; G variant needs ScrollTrigger + MotionPathPlugin | off | decorative-image → other media blocks (permitted) |
 | Smooth scrolling (**Lenis** — was ScrollSmoother, D422) | **H** — no CSS mechanism for smoothed/lagged scroll, and the Tier G option (ScrollSmoother) can only achieve it by transforming a wrapper around page content, which silently breaks the shipped Spec 37 sticky header (§4.2) | **SITE** | SGS → Motion settings page | Default OFF; disabled in editor + wp-admin; disabled under reduced-motion (live + reactive); touch left native; **no wrapper, no template change — §4.2 resolution SUPERSEDED, nothing to resolve** | OFF | Site setting only (never per-block) |
 | Page transitions | **V** — cross-document View Transitions API is CSS-first, no GSAP, no router | SITE + per-template | Theme settings + per-template override | Progressive enhancement; unsupported browsers = normal navigation (defined fallback §3.5); reduced-motion = suppress | OFF | Site-wide → per-template variants |
+| Surface treatment (grain / halftone / duotone) — FR-38-29 | **W** — CSS moves and recolours a whole element, it cannot rewrite the pixels INSIDE one; GSAP animates VALUES and does not rasterise, so it cannot reach this either (§1.2b tests i + ii). Bounded to the image a block already renders (test iii); degrades to that untouched image (test iv); admitted by D479 + the 2026-08-21 design gate (test v) | block (image-bearing) | fx panel — treatment picker (thumbnails) + duotone `DesignTokenPicker` colours; intensity behind "+" | Needs a raster `<img>` in the block's subtree — a block rendering its `<img>` as the block ROOT (e.g. `sgs/decorative-image`) is offered it but no-ops, see FR-38-29; no conflict with any Tier V/G effect (it repaints a texture, it does not own transform/opacity) | off | Image-bearing blocks → any block whose subtree contains a raster image |
 | *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
 
 ## 3. The capability roster (nothing cut; curated defaults)
@@ -589,6 +607,59 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 
  **Nearest existing anchor:** FR-38-13's still-unbuilt *"hero decorative layers (draggable
   ornaments)"* roster entry — a sandbox is that idea generalised to a container.
+
+- **FR-38-29 Surface treatments — the first Tier W effect. BUILT + LIVE-VERIFIED 2026-08-21.**
+  Commits `af2d7cdf` / `481e6e55` / `2ad5d439`; evidence
+  `reports/visual-diff/tier-w-surface-2026-08-21.md`; canary
+  `/tier-w-surface-canary/` (page 2591).
+
+  A GPU shader repaints the raster image a block already renders. Three presets, chosen by
+  NAME with a thumbnail — never a raw uniform at the default level (gap register §3.1,
+  *"presets before parameters"*): **Grain** (film grain + contrast lift), **Halftone**
+  (luminance-driven dot screen), **Duotone** (Rec. 709 luminance mapped across two palette
+  colours). Duotone colours use `DesignTokenPicker` and store palette SLUGS, so re-theming
+  a site re-colours every treated image.
+
+ **Why Tier W and not V or G.** CSS moves and recolours a whole element; it cannot rewrite
+  the pixels inside one. GSAP animates VALUES and never rasterises. Both §1.2b admission
+  tests (i) and (ii) therefore hold. It is bounded to one surface (iii), degrades to the
+  untouched image (iv), and is admitted by D479 plus the 2026-08-21 design gate (v).
+
+ **STATIC — this is the load-bearing property, not an implementation detail.** It draws
+  ONCE and never animates: no rAF loop, no per-frame GPU cost, no SC 2.2.2 exposure, and
+  nothing for `prefers-reduced-motion` to gate (§10). It also carries no pointer gate, so
+  unlike FR-38-25's cursor field it renders on phones — which is where most SME and charity
+  traffic is.
+
+ **FAIL-OPEN BY CONSTRUCTION, NOT BY A FALLBACK BRANCH.** SSR renders the ordinary `<img>`.
+  JS hides it **only after a successful first draw**, setting `data-sgs-webgl-active="1"` at
+  the same moment. No WebGL2, a program that fails to LINK, a cross-origin (tainting)
+  texture, a shader that fails to compile, or JS never running all end with the untreated
+  photograph visible. There is no second code path to keep in sync, and a silently-dead
+  shader is DETECTABLE (the flag is absent) rather than indistinguishable from success.
+
+ **Measured, not reasoned:** 4,325 bytes gzip — **3.5% of D479's 120KB Tier W page
+  allowance**. Panel roster **32 blocks before, 32 after**; offered on 15 image-bearing
+  blocks. `creates_panel=1` was measured and REJECTED: it grew the roster to 39, and five of
+  the seven new panel hosts were `form-field-tiles` / `option-picker` / `social-icons` /
+  `star-rating` / `card-grid` — a form field acquiring a scroll-scrub panel is exactly the
+  containment failure D459 exists to prevent.
+
+ **Eligibility is STRUCTURAL, not declared.** The `image` provision token
+  (`generate-fx-qualifying-blocks.py`) is the UNION of `supports.sgs.imageControls === true`
+  and the block genuinely rendering an `<img>`. Measured 2026-08-21: `sgs/media` and
+  `sgs/decorative-image` both render one and **neither declares the flag**, so a
+  declaration-only predicate excluded the framework's two most obvious image blocks. Same
+  correction the `svg` → `svg-subtree` split already made.
+
+  ⚠ **KNOWN GAP, recorded not hidden (STOP-29).** A block that renders its `<img>` as the
+  block ROOT (`sgs/decorative-image` in "naked mode") is offered the treatment but **no-ops**
+  — the boot module looks for a nested `img`. 13 of the 15 offered blocks nest theirs and
+  work. Fixing it needs a re-parent or an injected wrapper, and `decorative-image`'s
+  responsive tiers use COMPOUND selectors on the `<img>` itself, so it is a design decision
+  with real blast radius, not a patch. `sgs/media` is separately not offered at all (it hosts
+  no fx panel and `creates_panel=0` correctly will not create one — the documented escape
+  hatch is `supports.sgs.fx.motionSurface: true` on that block).
 
 ### 3.4 SVG
 
@@ -1123,6 +1194,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Draggable | Static; Notice "Drag interactions are live-site only" |
 | DrawSVG / MorphSVG / MotionPath | End-state (fully drawn / final shape / resting position); optional replay toggle for load-triggered draw |
 | Physics/Custom easings | No standalone canvas story — a flavour; inherits its host effect's row |
+| Surface treatment (FR-38-29, Tier W) | **The untreated image**, plus a panel Notice: *"Surface treatments preview on the live site. Visitors without WebGL see the original image."* The render layer's editor-parity guard deliberately does not stamp during a ServerSideRender/REST render (there is no `wp_footer` and no module graph in that context to boot a canvas against), so the editor canvas shows exactly what a no-WebGL visitor sees — which is the honest preview, not a blank. ⚠ The client therefore picks a treatment they cannot see applied until they publish; the thumbnails in the picker exist to carry that choice. |
 | Smooth scrolling (Lenis) / page transitions | **Never active in editor or wp-admin** (FR-38-18/19 condition) — settings-surface help text states it |
 
 ## 10. Reduced-motion contract (per effect)
@@ -1148,6 +1220,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Page transitions | **Suppress:** instant navigation |
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
 | Cursor-reactive field — `floating-objects` type (FR-38-25, once built) | **Simplify to a fixed resting transform, never suppress the object.** Differs from the `glow`/`spotlight-mask` SIMPLIFY case above: those rest as a static PAINT (a legitimate finished state); an autonomously-moving OBJECT has no equivalent "just stop tracking" answer, because the object is content an operator placed deliberately (`degrade-to-more-content-never-less`). Under `prefers-reduced-motion: reduce` the object renders at its AUTHORED static position (`transform: none`), identical to the fail-open no-JS state — the reduced-motion state and the no-JS state are the SAME state, needing no separate code path. |
+| Surface treatment (FR-38-29, Tier W) | **NOTHING TO GATE — and that is a measured result, not an omission.** The effect draws ONCE and never animates, so there is no motion for `prefers-reduced-motion` to suppress. Output is **byte-identical** under `reduce` and under `no-preference` — verified live 2026-08-21 by comparing composited element screenshots (both 659,504 bytes, byte-identical), with the treated-vs-untreated comparison as the negative control proving the comparator can detect a real difference. ⛔ **Do NOT add a reduced-motion suppression here.** Hiding a static image treatment would remove content a client deliberately applied — the `degrade-to-more-content-never-less` failure — and there is deliberately no `@media (prefers-reduced-motion: reduce)` rule in `fx-surface-treatment.css` for the same reason. |
 | Carousel loop (FR-38-26) | **Suppress-equivalent (measured 2026-08-02):** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. Confirmed identical under reduce on 4 of 5 rollout blocks. Two blocks' own arrow-click code hardcoded `'smooth'` regardless of the preference — a defect in those blocks, not the loop module — fixed same day (`5c45f879`, `ba28ab92`); the one remaining hardcoded case (google-reviews autoplay) is correctly gated by an early return. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)

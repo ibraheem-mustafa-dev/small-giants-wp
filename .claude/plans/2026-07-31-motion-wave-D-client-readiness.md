@@ -111,9 +111,14 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   2. **A participant with its OWN `background-image` is deliberately not marked**, because our layer
      would replace it; that child keeps a visible seam. Clobbering a client's image is worse. A
      `::before` fallback is possible if the seam is ever reported.
-  3. **The participant walk runs at init only.** A child whose background is set or inserted later
-     will not participate until re-init. Fix if a dynamic case appears: a `MutationObserver` in
-     `cursor-field.js`, never per-block code.
+  3. ~~**The participant walk runs at init only.**~~ ✅ **CLOSED — this register was stale on its
+     own item.** Spec 38 §3.3 residual 4 records the fix landing **2026-08-02**: `cursor-field.js`
+     gained a bounded `MutationObserver` on the emitter (`childList` + `subtree` +
+     `attributeFilter: ['style','class']`), rAF-coalesced so a mutation burst costs one
+     computed-style pass per frame, created and disconnected inside the same `init`/`cleanup`
+     pair. Verified present in `src/shared/effects/cursor-field.js` (its docblock describes the
+     observer). Struck 2026-08-21 — a register that still lists a fixed item as open is the trap
+     its own sibling gap-register warns about.
 
 ### Step O — the drag text-selection symptom [OPEN — ⛔ Bean re-checks BY HAND]
   ⛔ **RULED 2026-08-01 (D449) — do NOT dispatch an agent at this.** The cause-agnostic `user-select`
