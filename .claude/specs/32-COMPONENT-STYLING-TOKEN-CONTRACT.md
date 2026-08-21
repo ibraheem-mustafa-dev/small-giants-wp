@@ -1,14 +1,21 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.6"
+spec_version: "1.7"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
 session_date: 2026-07-07
-last_verified: 2026-08-18
+last_verified: 2026-08-22
 status_history:
+  - 2026-08-22: v1.7 — §6.1(a2) migration marked DONE (D734): all 204 LENGTH-valued
+    `sgs_css_length_sanitise()` call sites migrated to `sgs_css_length_value()` across 56 files,
+    live-proven pre/post deploy. Corrected the comparison table's `var:preset|spacing|40` cell —
+    it claimed the hardened function "resolves" this value; measured, it passes the value
+    through UNCHANGED (no longer corrupted, but not resolved). Two call sites stay on the crude
+    function by design (`testimonial` `quoteLineHeight`, `google-reviews` `gr_pct`), named in the
+    new codemod `scripts/migrate-length-sanitiser.py`.
   - 2026-08-18: v1.6 — **S1 of the spec-verification programme.** All 219 checkable points re-verified against the tree or the live canary; every verdict carries a command and its raw output (roster: `.claude/reports/2026-08-18-spec32-points-roster.json`). Corrections landed: the 74-block roster → **83**; per-family MERGE counts re-derived (padding 9→**39**, margin 8→**41**, borderRadius 5→**11**, contentBandPadding 4→**7**); the `palestine-lives` half of §6.1's evidence base removed (the site no longer exists); §12.3 line numbers marked drifted; §12.5(b)'s "no snapshot is missing a slot" recorded as FALSE-when-written and now closed; §12.2 rewritten for the **21-slug** framework roster (`border-subtle` → `border`, plus `primary-text`/`info`/`info-light`/`success-light`/`error-light`). FR-32-5 ruled **DONE** (mechanism complete + live-proven; adoption ≠ completeness). FR-32-9 ruled **DONE** — the "lint/grep check per component" its own `Done when:` demanded had never been built and now exists (`check-preset-token-naming.py`, `check-palette-slug-refs.py`, both `prebuild`-wired, both `--self-test`-negative-controlled). FR-32-4/4a/10 + §6.1(e) + ACC-03/ACC-05 + NFR-02 + §6.2(d) all settled LIVE on a new permanent canary fixture, `/s1-probe-spec32/` (page 2502). **3 SUPERSEDED entries DELETED** after successor checks: the §12.3 hero-badge row (element removed at `908ec5a0`) and the §6.1(c) KEEP-SCALAR rows for `headlineMarginBottom`/`subHeadlineMarginBottom` (both attributes retired 2026-08-12, Spec 35 Phase 2.3). §5's accessibility NFR amended: `:focus-visible` vs `:focus-within` now follows the element, because a `:focus-visible` rule on a non-focusable container can never match. §12.2 records that `text-muted` IS the industry `text-secondary` role and that no `text-secondary` slug may be added.
   - 2026-08-01: v1.5 — added §12 Palette Token Semantics. The framework had never documented what each `theme.json` colour-preset slug MEANS, so `surface` was doing two contradictory jobs: `theme.json` `styles.color.background` makes it the PAGE substrate, while 33 blocks (74 call sites) also used it as their CARD/PANEL fill fallback — invisible cards wherever a client palette's `surface` isn't white (proven live on Mama's/sandybrown, `surface:#fbf3dc` = body background = testimonial card background). §12 defines substrate (`surface`) vs raised-must-be-seen-separate (`surface-alt`) vs ink-on-colour (`text-inverse`) for all 16 palette slots, and the 74 call sites were swept onto it (this session). Also fixed 3 wrong `border-subtle` fallbacks (`#0D5557` instead of the real `#D4DBE5`) and removed a Mama's-specific `#fbf3dc` hardcode from the client-agnostic `sgs/product-card` block. Spec 33 FR-33-2 amended in parallel (`plugins/sgs-blocks/scripts/theme-extractor/palette.py` `_synthesise_surface_alt`) so a re-extracted snapshot cannot recreate the collision.
   - 2026-07-28: §6.2(a) amended — the injection-class discovery (`f7da5f33`→`a367836b`): four
@@ -274,7 +281,7 @@ Enforcement: `scripts/migrate-render-closures.py` owns both families (`--survey`
 family. It is a script and not `sed` because several files use ALIGNED assignment
 (`$sgs_css_keyword  = static function`), which a literal-space find/replace silently skips.
 
-### (a2) Length sanitisation — the hardened function is the target (2026-08-21)
+### (a2) Length sanitisation — the migration is DONE (2026-08-22, D734)
 
 Two sanitisers exist and they are NOT equivalent:
 
@@ -282,17 +289,28 @@ Two sanitisers exist and they are NOT equivalent:
 |---|---|---|
 | `-10px` | `10px` — **sign silently lost** | `-10px` |
 | `calc(100% - 20px)` | `calc10020px` — **corrupted** | preserved |
-| `var:preset\|spacing\|40` | `varpresetspacing40` — **corrupted** | resolved |
+| `var:preset\|spacing\|40` | `varpresetspacing40` — **corrupted** | passed through unchanged ⚠ |
 | bare `16` | `16` — invalid CSS, renders nothing | `var(--wp--preset--spacing--16)` |
+
+⚠ **Corrected 2026-08-22 (measured, not assumed):** the `var:preset|spacing|40` cell previously
+claimed the hardened function "resolves" this value. It does not — it passes the raw string
+through UNCHANGED, which is still invalid CSS (the improvement is that it is no longer
+corrupted into `varpresetspacing40`, not that it now renders). No open work follows from this;
+recorded so a future reader doesn't build a fix for a "resolves" claim that was never true.
 
 The crude one is `preg_replace( '/[^A-Za-z0-9.%]/', '', … )` — it strips hyphens, spaces and
 parens unconditionally. `var:preset|spacing|40` is exactly what WP's `BoxControl` emits for a preset
 value, so that corruption is a live path, not a theoretical one.
 
-**`sgs_css_length_value()` is the target for every LENGTH-valued property**, and the precedent
-already ships: `sgs_container_gap_value()` (`helpers-container.php:114`) delegates to it, which is
-why bare-integer `gap` defaults (`"16"`, `"40"` on `sgs/container` and `sgs/gallery`) already
-resolve to preset vars correctly.
+**Every LENGTH-valued call site now uses `sgs_css_length_value()` — 204 across 56 files,
+migrated and deployed 2026-08-22 (D734).** `sgs_container_gap_value()`
+(`helpers-container.php:114`) was the pre-existing precedent this migration generalised; it
+still delegates to the hardened function, which is why bare-integer `gap` defaults (`"16"`,
+`"40"` on `sgs/container` and `sgs/gallery`) resolve to preset vars correctly. Two call sites
+stay on the crude function, named in `scripts/migrate-length-sanitiser.py`'s `EXCLUDE` list:
+`testimonial`'s `quoteLineHeight` (unitless-legal, see the box below) and `google-reviews`'
+`gr_pct` (a bare percentage the caller appends its own `%` onto — preset-wrapping a bare number
+there would emit invalid CSS, the same failure mode the migration exists to remove).
 
 ⛔ **The hardened function must NEVER be used for a UNITLESS-LEGAL property** — `line-height`,
 `opacity`, `z-index`, `flex-grow/shrink`, `font-weight`, `order`, `aspect-ratio`. It maps a bare

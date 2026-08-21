@@ -1,5 +1,50 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D734 — 204 length call sites migrated to the hardened sanitiser, live-proven before deploy [ROUTINE]
+
+**The rule, stated once:** `sgs_css_length_sanitise()` strips hyphens, spaces and parens
+unconditionally (`preg_replace('/[^A-Za-z0-9.%]/', '', …)`), so it silently loses the sign of
+`-10px`, flattens `16px 12px` to `16px12px`, and corrupts `calc(100% - 20px)` into
+`calc10020px`. `sgs_css_length_value()` (the hardened function, already the standard for every
+other length primitive) preserves all three and wraps a bare integer in a WP spacing-preset
+`var()`. Migrated every LENGTH-valued call site — 204 across 56 files — via a new codemod,
+`scripts/migrate-length-sanitiser.py`, mirroring `migrate-render-closures.py`'s
+survey/fix/check/self-test shape.
+
+**Two sites deliberately excluded, named in the script, not guessed at.** `testimonial`'s
+`quoteLineHeight` (unitless-legal — feeds `line-height`, so `2` would become
+`var(--wp--preset--spacing--2)`). `google-reviews`' `gr_pct` (a bare percentage the caller
+appends its own `%` onto — the hardened function would preset-wrap the bare number and produce
+`var(--wp--preset--spacing--42)%`, invalid CSS). The enumeration sweep that found the second one
+was a hazard-pattern scan for `sgs_css_length_value(` sites followed by a caller-appended CSS
+unit or numeric cast — it is not a coincidence there was exactly one.
+
+**Spec 32 §6.1(a2)'s own claim was wrong and is corrected there in the same session.** Its
+comparison table says the hardened function *resolves* `var:preset|spacing|40`. Measured, it
+does not — it passes the value through unchanged, which is still invalid CSS (no longer
+corrupted into `varpresetspacing40`, but not resolved either). Reported in the codemod's own
+docstring rather than silently repeated.
+
+**5 stranded `function_exists('sgs_css_length_sanitise')` guards retargeted**, not left dangling
+on a name that still exists but is no longer what the guarded call actually needs.
+
+**Live-proven, not just self-tested.** A dedicated probe page (border-radius `topLeft:
+"calc(20px + 1vw)"`) was fetched twice pre-deploy to confirm a stable baseline
+(`border-top-left-radius:calc20px1vw` — reproducing the corruption live, not just in a unit
+test), deployed, then fetched twice more: `border-top-left-radius:calc(20px + 1vw)`. Zero PHP
+fatals, zero new `debug.log` entries, payload-verify + motion-QA both green. Probe page deleted
+after capture — it was a throwaway fixture, not one of the load-bearing motion-QA canaries.
+
+**Visual-diff gate scoped-bypassed for 44 blocks, logged not silenced.** `check-markup-neutral.py`
+correctly refused to auto-clear these blocks (the sanitiser's return value does reach output),
+but the real behaviour delta is edge-case-only — negative signs, `calc()`, multi-value strings,
+bare integers — none of which exist in current shipped content, and the one edge case that IS
+live (`gr_pct`) was excluded from the migration rather than shipped untested. Each bypass entry
+carries that reasoning; `reports/visual-diff/manual-skips.log`.
+
+Commits `a2f6d5df` (migration) + `bbf13cc2` (skip-log) + `8a12a61d` (LEDGER close-out).
+Closes the 2026-08-21 consolidation programme (Phase 4 was its only remaining step).
+
 ## D733 — the vacuous-guard sweep finishes at 109, and the detector is what found the misses [ROUTINE]
 
 **The rule, stated once:** a `function_exists()` check on a CORE function is only meaningful when that function landed AFTER the plugin's declared minimum. Below the floor it is a false branch that has never been reachable. `sgs-blocks.php` and the theme both declare **"Requires at least: 6.7"**. 109 guards across two commits tested for functions their own floor guarantees.
@@ -4348,10 +4393,6 @@ Proven live (Playwright, sandybrown, page 2422): mounting into `group="color"` r
 `sgs/icon`'s `supports.color` sub-flags (`text`/`background`/`gradients`) flipped `true→false` in the same commit — `audit-block-uniformity.py`'s `supports_color_missing` gate only requires the `color` key present, not sub-flag values, so this satisfies the DB-contract signal while stopping native colour UI generation. Verified both directions: frontend markup byte-identical before/after (page 2421; `__experimentalSkipSerialization` already suppresses native output) — evidence `reports/visual-diff/icon-2026-08-14.md`. Editor-side (page 2422) confirms native ToolsPanel gone.
 
 **Not yet done:** rollout to the other ~49 blocks with `role='color'` — this session fixed only `sgs/icon`, per T4's instruction not to rush a wider rollout.
-
-## D617 — D609's last open question ruled: colour-state affordance is core's overlapping swatches, not a count badge [ROUTINE]
-
-**2026-08-14.** D609's amendment left one open question: Bean's originally-requested count badge vs core's `ZStack`-overlapping-swatches shape (`global-styles/color-panel.js:163-176`, WP 7.0.4 SHA `28c0dedc4eaf…`). **Bean's ruling: use core's overlapping swatches — match native.** Closes D609 clause 9a's row-shape question in full; no open items remain under D609. Feeds T4 in `~/.claude/plans/go-track-1b-playful-hamster.md`.
 
 ## D616 — nav-drawer submenu build merged direct to main, not via PR [ROUTINE]
 

@@ -173,14 +173,30 @@ owns the family rather than skipping it.
 and relied on its own `is_array()` guard, which the helper now owns internally. A typed-`array`
 parameter would throw TypeError and fatal the page. The riskiest existing caller sets the signature.
 
-⛔ **Still open, deliberately:** it does NOT migrate to the hardened `sgs_css_length_value()`.
-Enumerated 2026-08-21: **207 call sites across 56 files** (an earlier line here said "247 across 58"
-— that counted the definition and the `function_exists` guards as call sites; corrected the same day
-by classifying each match rather than counting raw hits). FIVE behaviour deltas, not the four
-long quoted here — the missed one is the worst, because `var:preset|spacing|40` (exactly what WP's
-`BoxControl` emits for a preset) is corrupted to `varpresetspacing40`. `helpers-css-safety.php`'s
-own header calls that a separate task and it must ship alone: it is a real behaviour change, and
-stacking it on a refactor makes both unfalsifiable.
+✅ **The hardened-function migration is DONE (D734, 2026-08-22).** It shipped as its own change,
+deliberately separate from this script — a real behaviour change stacked onto a refactor makes
+both unfalsifiable, so it never became a mode of `migrate-render-closures.py`. Own codemod,
+`scripts/migrate-length-sanitiser.py` (same survey/fix/check/self-test shape):
+
+```bash
+python scripts/migrate-length-sanitiser.py --survey        # census
+python scripts/migrate-length-sanitiser.py --fix           # dry run
+python scripts/migrate-length-sanitiser.py --fix --apply   # write
+python scripts/migrate-length-sanitiser.py --check         # gate
+python scripts/migrate-length-sanitiser.py --self-test      # 18 assertions + 2 negative controls
+```
+
+**204 call sites across 56 files** migrated to `sgs_css_length_value()` (the earlier "207 across
+56" line here, and "247 across 58" before that, both counted the definition and
+`function_exists` guards as call sites — corrected by classifying each match rather than
+counting raw hits). Two sites deliberately EXCLUDED, named in the script's `EXCLUDE` list, never
+guessed at: `testimonial`'s `quoteLineHeight` (unitless-legal — feeds `line-height`) and
+`google-reviews`' `gr_pct` (a bare percentage the caller appends its own `%` onto — preset-
+wrapping it would emit invalid CSS). Live-proven pre/post deploy on a dedicated probe page:
+`border-top-left-radius:calc20px1vw` (corrupted, before) → `border-top-left-radius:calc(20px + 1vw)`
+(correct, after). ⚠ **Spec 32 §6.1(a2)'s comparison table overclaims one cell** — it says the
+hardened function *resolves* `var:preset|spacing|40`; measured, it passes the value through
+UNCHANGED (no longer corrupted, but still not resolved). See D734.
 
 ### Vacuous core-function guards — `scripts/remove-vacuous-style-engine-guard.py` (D732/D733)
 
