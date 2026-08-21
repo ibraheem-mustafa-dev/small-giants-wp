@@ -1,8 +1,21 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:sgs/container {"tagName":"main","anchor":"main"} -->
+<!-- WIDTH MODEL (2026-08-21). ONE cap per page, and it is ours.
+     OUTER (maxWidth, default {} = no cap) paints full-bleed; INNER (contentWidth,
+     default "normal" = 1200px) holds the content. That pairing IS the model.
+     `<main>` is STRUCTURE, not content, so it says contentWidth:"full" and passes width
+     through — each section inside then paints edge-to-edge and caps its own words. This
+     is the shape archive-product.html already uses and which measured correct live.
+     ⛔ Do NOT re-add wp:post-content {"layout":{"type":"constrained"}}. It applied a
+     SECOND 1200px cap inside a container that already capped at 1200 — three stacked
+     caps doing one job, and the source of the outer/content width confusion. -->
+<!-- The title is LOOSE content, so it needs a container of its own once <main> stops
+     capping: it inherits contentWidth "normal" and is therefore banded + guttered. -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"full"}} -->
+<!-- wp:sgs/container {"tagName":"div"} -->
 <!-- wp:post-title {"level":1,"className":"sgs-page-title"} /-->
-<!-- wp:post-content {"layout":{"type":"constrained","contentSize":"1200px","wideSize":"1400px"}} /-->
+<!-- /wp:sgs/container -->
+<!-- wp:post-content /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

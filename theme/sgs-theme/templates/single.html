@@ -20,7 +20,9 @@
 
 	<!-- wp:post-featured-image {"align":"wide","style":{"border":{"radius":"8px"},"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}}} /-->
 
-	<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+	<!-- <main> above is deliberately an 800px prose band, so post-content needs no cap of
+	     its own — core's constrained layout here was a second cap inside the first. -->
+	<!-- wp:post-content /-->
 
 	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"top":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":"flex","justifyContent":"space-between","flexWrap":"wrap","fontSize":"small"} -->
 		<!-- wp:post-terms {"term":"post_tag","prefix":"Tags: "} /-->
