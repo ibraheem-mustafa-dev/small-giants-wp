@@ -127,7 +127,21 @@ $bg_image  = $attributes['backgroundImage'] ?? null;
 // every hero with no media and no configured overlay would render an opaque
 // full-bleed layer (caught live, 2026-08-11 — same session as the ungate).
 $overlay_colour_raw = $attributes['backgroundOverlayColour'] ?? '';
-$overlay_colour     = '' !== $overlay_colour_raw ? $overlay_colour_raw : 'text';
+// D718 (2026-08-21): the legacy `: 'text'` paint fallback is DELETED and hero now
+// gates its overlay exactly like SGS_Container_Wrapper does — no colour set, no
+// overlay. Bean: "why is the hero different anyway? They all be via the background
+// panel." He was right, and R-31-9/D152 already says so: one shared control that
+// behaves two ways is the divergence that rule calls a bug to remove.
+//
+// What was different, and why only part of it was justified: hero renders ALL its
+// own media layers so it controls their stacking, and its background image is a
+// REAL <img> with fetchpriority="high" (the preload scanner finds it; the wrapper's
+// CSS background-image is only discovered after the selector matches) — that is a
+// genuine LCP win and it stays. The two BEHAVIOURAL differences had no such
+// justification: painting `text` when the client chose nothing, and creating the
+// layer from a background image alone. git shows the `text` fallback PREDATES the
+// 2026-08-11 background-panel redesign — that session only added a guard stopping
+// it from triggering the span; nobody ever re-reasoned the colour itself.
 // D717 (2026-08-21) — SUPERSEDES D581's D5, which stood here as a
 // "`backgroundOverlayOpacity` no longer exists, alpha is the one dimming
 // mechanism" note. Alpha silently unlinks the client's palette token (see
@@ -1083,19 +1097,18 @@ if ( $has_standard_bg_image ) {
 // (the old gate required an image/video/SVG background to exist first);
 // (b) `overlayGradient`/`overlayGradientFrom/To/Angle` were never read into
 // this file at all, so the CSS rule could only ever emit a flat colour.
-$overlay_html       = '';
-$has_overlay_colour = $overlay_colour_raw || $overlay_gradient_value;
-if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $has_overlay_colour ) {
-	$overlay_html = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
-	// D717: one shared owner for the overlay's declaration set —
-	// SGS_Container_Wrapper paints the same layer for the other seven blocks
-	// through this identical call. hero opts out of the wrapper's own overlay
-	// (`no_overlay => true` below) and paints its own span, which is why the
-	// call is duplicated here and the LOGIC is not.
-	$overlay_decls = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity );
-	if ( '' !== $overlay_decls ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{' . $overlay_decls . '}';
-	}
+$overlay_html = '';
+// D718: the EXISTENCE test is now the shared helper's own return value, not a
+// separate hand-written condition. sgs_overlay_decls() returns '' when there is
+// nothing to paint, so "is there an overlay?" and "what does it paint?" are one
+// decision in one place. D717 unified the declaration building but left this
+// gating duplicated at both call sites — which is precisely how hero kept its
+// divergent behaviour through that change. SGS_Container_Wrapper gates the
+// identical way; the two sites can no longer drift apart on policy.
+$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, $overlay_gradient, $overlay_opacity );
+if ( '' !== $overlay_decls ) {
+	$overlay_html    = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
+	$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{' . $overlay_decls . '}';
 }
 
 // FR-22-6: all content (label, headline, sub-headline, CTAs) is rendered via

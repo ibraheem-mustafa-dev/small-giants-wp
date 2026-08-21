@@ -1419,8 +1419,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// validated through sgs_css_gradient_value() — a non-empty valid
 				// gradient wins over the flat colour, matching how WP core and
 				// Kadence/Spectra/Otter all resolve colour-vs-gradient.
-				$overlay_gradient_value = sgs_css_gradient_value( $overlay_gradient );
-				$has_overlay_colour     = $overlay_colour || $overlay_gradient_value;
+				// D718 (2026-08-21): the EXISTENCE test IS the shared helper's return value.
+				// sgs_overlay_decls() yields '' when there is nothing to paint, so "is there an
+				// overlay?" and "what does it paint?" are ONE decision in ONE place. D717
+				// unified the declaration building but left this gating hand-written at both
+				// call sites, which is exactly how sgs/hero kept a divergent overlay policy
+				// through that change. hero now gates identically.
+				$overlay_decls_computed = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity );
 
 				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
 				// — a colour or gradient set with NO media rendered nothing at all,
@@ -1434,7 +1439,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// `backgroundColour` base layer, declared AND rendered (verified per block
 				// 2026-08-21). This layer is an overlay and only an overlay — which is why
 				// it can carry a 30% default opacity without washing out a solid background.
-				if ( $has_overlay_colour ) {
+				if ( '' !== $overlay_decls_computed ) {
 					// D717 (2026-08-21) — SUPERSEDES D581's D5, which stood here as an
 					// explicit "do not reintroduce `backgroundOverlayOpacity`" prohibition.
 					// D5 was right that ONE transparency mechanism beats two; it picked the
@@ -1448,7 +1453,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// sgs_overlay_decls() owns the whole overlay declaration set, and
 					// sgs/hero's own `.sgs-hero__overlay` calls the same helper. Two
 					// drifting copies became one.
-					$overlay_decls = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity );
+					$overlay_decls = $overlay_decls_computed;
 					// No-inline contract (Spec 32): the overlay paint is emitted as a
 					// scoped `.{uid} .sgs-container__overlay` rule below — NOT inline on
 					// the span. safecss doesn't touch this raw-echoed span, but an inline

@@ -1,5 +1,49 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D718 [ROUTINE] — sgs/hero's overlay converges with the shared wrapper; the shared helper now owns the POLICY, not just the paint (2026-08-21)
+
+**Colour-golden track. Bean-ruled, and he found it by asking the right question:** *"Why is the
+hero different anyway? They all be via the background panel."* One shared control in one shared
+panel was producing two different behaviours. R-31-9 / D152 already covers this — a composite
+diverging from the shared wrapper is a bug to remove, not a contract to preserve.
+
+**What was genuinely different, and why only half of it was justified.** `sgs/hero` renders ALL
+its own media layers and passes `no_overlay => true`, so the wrapper does not paint a second
+one. That part is CORRECT and stays: hero's background image is a real `<img>` carrying
+`fetchpriority="high"` (`render.php:1053`), which the browser's preload scanner finds
+immediately, whereas the wrapper emits a CSS `background-image:url(...)`
+(`class-sgs-container-wrapper.php:1009`) that is only discovered once the stylesheet parses and
+the selector matches. On a hero — almost always the LCP element — that is a real Core Web Vitals
+difference. **If anything the other section blocks should adopt hero's approach, not the
+reverse** (parked, not done here).
+
+**The two behavioural differences had no such justification, and both are now removed:**
+1. Hero painted `'text'` when the client had chosen nothing. git shows that fallback PREDATES
+   the 2026-08-11 background-panel redesign; that session only added a guard stopping it from
+   *triggering* the span. Nobody ever re-reasoned the colour. It was legacy, not a decision.
+2. Hero created the overlay from a background image ALONE, where the wrapper requires a colour.
+
+Net effect: on all eight blocks, **no colour set means no overlay**. Identical, predictable.
+
+**The root cause, and the actual fix.** D717 added `sgs_overlay_decls()` and called it "one
+shared owner". It unified the *paint* — what declarations an overlay has — but left the
+*policy* — whether an overlay exists at all, and what colour when unset — hand-written
+separately at both call sites. **That is exactly how hero's divergence survived D717
+untouched.** Bean named this directly: *"I thought this was not going to be an issue since we
+agreed on making a new shared helper."* Both sites now derive existence from the helper's own
+return value (`'' === $decls` means no layer), so the two questions are one decision in one
+place and the call sites can no longer drift apart on policy.
+
+**Lesson worth generalising:** extracting a shared helper for the VALUE while leaving the
+CONDITION duplicated does not converge two implementations — it only makes them look converged.
+The divergence lives in the branch, not the expression.
+
+**Not chosen, and why.** Bean first proposed `accent` at 30% as hero's default. Measured against
+light hero text (`surface` / `text-inverse`) at 30% over a mid-tone photo: `text` 5.37:1,
+`accent` **2.78:1**, `accent-dark` 4.29:1 — and raising accent's opacity makes it WORSE (2.78 →
+1.72 at 80%), because a light-yellow scrim moves a photo *towards* light text rather than away.
+Convergence dissolved the question rather than answering it: there is no default colour now.
+
 ## D717 [INCIDENT] — `backgroundOverlayOpacity` restored, alpha retired: D581's D5 was right about simplicity, wrong about which mechanism (2026-08-21)
 
 **Colour-golden track. This SUPERSEDES D581's D5 (2026-08-11), which stood as an explicit
