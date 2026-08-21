@@ -12,6 +12,11 @@ The halftone one is the striking one. That's the effect your own gap register ca
 *"the most undervalued item in this register — makes stock photography look
 art-directed."*
 
+**Scroll down the page and watch them.** The treatments don't just sit there — each image
+arrives clean and the grain/halftone/duotone **develops in** as it scrolls into view. You
+flagged that the first build had no motion; that's fixed and verified. There's a "Reveal on
+scroll" switch in the editor, on by default, if a client wants it applied immediately.
+
 Screenshots, if you'd rather not open the site:
 `reports/visual-diff/assets/tier-w-A-grain.png`, `tier-w-B-halftone.png`,
 `tier-w-C-duotone.png`, `tier-w-D-control.png`.
@@ -70,9 +75,33 @@ markers for client-side updating? Full detail, evidence and the three candidate 
 I put the setting back to off, since leaving it on would download code on every shop page
 for an effect that provably does nothing there.
 
+# What changed after your note about motion
+
+You said: *"I can see grain and halftone being statically visible regarding the visual
+pattern. There's no scroll motion effect applied."* You were right, and it was a fair hit —
+I'd shipped a static image filter into a spec whose entire subject is motion, and when I put
+the choice to you I led with the accessibility wins and under-sold the plain consequence
+that nothing moves.
+
+It's now a scroll effect, and it's **additive**: the settled look is byte-identical to what
+you'd already seen, so nothing you approved changed. The image arrives clean and the
+treatment develops in as it scrolls up.
+
+I ran it that direction deliberately. The obvious reading — a treated image resolving *into*
+a clean photo — would mean the halftone you liked disappears once the page stops moving. This
+way the treatment is the destination, not the thing you lose.
+
+Driving it from scroll also keeps the accessibility position that made this the right first
+effect: WCAG's pause-control rule applies to motion that starts *on its own*. Scroll-driven
+motion is the visitor's own doing, exactly like the parallax already shipped. Under
+reduced-motion settings the image simply arrives fully treated with no animation — measured
+at 0.05% of the movement a normal visitor sees.
+
+Cost: +1,349 bytes. The whole effect is 5,674 bytes — **4.6% of the 120KB you allowed.**
+
 # The one decision I need from you
 
-**Does the duotone look right to you?**
+**Does the duotone look right now, and is the reveal the right speed?**
 
 Grain and halftone I'm happy with. Duotone came out muddy on the first render — the
 shader was mapping the photo's brightness onto the colour ramp without stretching it
