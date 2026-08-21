@@ -119,6 +119,22 @@ THREE probes that are standing checks with negative controls and stable fixtures
 are one-shot incident artefacts, runnable by hand, NOT claimed as covered. Promoting one
 means giving it a fixture and a negative control first.
 
+**LOAD-BEARING CANARY FIXTURES — the deploy gate depends on these four pages:**
+
+| Page | What it feeds |
+|---|---|
+| 2103 | scrub / scramble / split-reveal (good-by-default) |
+| 2109 | motion-path repeat-trigger (D451) |
+| 2113 | fx-morph geometry (D452) |
+| 2603 | pin-scrub pin + good-by-default |
+
+All four are titled `[GATE — DO NOT DELETE] …` on the canary so they survive a tidy-up.
+⛔ Deleting or emptying any of them **breaks every blocks deploy** until the fixture is
+rebuilt. This is a live risk, not a theoretical one: the hero verification report explicitly
+invited deletion of its own rig ("probe page 2602 is a test rig and can be deleted"), and
+D451's page 2083 is already a 404. Probes reference pages by **ID** (`?p=`), so renaming a
+title is safe but re-creating a page under a new ID is not.
+
 ⚠ **Canary fixtures rot, and a probe cannot tell you which failure you have.** D451 named
 page 2083; it is now a 404. Every probe reports UNANSWERED separately from a real failure —
 read its output rather than assuming a regression. ⛔ **The trashed fixtures 2023 / 2114
