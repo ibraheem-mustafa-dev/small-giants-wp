@@ -94,6 +94,38 @@ constant). Only OWN *panel*-count (not row-count, not the EXTENSION split) has b
 match live measurement. Do not quote ANY of its totals — panel-count included, once beyond a single
 verified block — as "what the client sees" without a fresh live check.
 
+### Live motion QA — `scripts/motion-qa/` + `npm run qa:motion` (D730)
+
+```bash
+npm run qa:motion                    # all standing live probes (what the deploy runs)
+npm run qa:motion:morph              # fx-morph changes SVG geometry (page 2113)
+npm run qa:motion:motion-path        # motion-path re-animates on pass 2 (page 2109)
+npm run qa:motion:good-by-default    # scrub/scramble/split-reveal/pin-scrub (pages 2103, 2603)
+```
+
+**Wired into `build-deploy.py` as `step_motion_qa()`** — ON by default for blocks deploys,
+after `step_verify_payload()`, opt out `--skip-motion-qa`.
+
+⛔ **NOT in `prebuild`, on purpose.** These need a LIVE canary. A network-dependent check
+in a BUILD gate can only fail when the canary is merely unreachable, or warn-and-pass —
+and warn-and-pass is exactly the vacuity `check-no-inline.py --live-default` already
+carries (it PASSES on a disconnected machine, so a green run there proves nothing).
+Post-deploy is the honest home: the canary is up by definition, and the payload gate has
+just proven the live plugin IS this run's payload.
+
+⚠ **Before D730 this directory held 13 probes with ZERO `package.json` references** — the
+D338/D493 "built but never wired" failure at directory scale. The runner registers only the
+THREE probes that are standing checks with negative controls and stable fixtures; the rest
+are one-shot incident artefacts, runnable by hand, NOT claimed as covered. Promoting one
+means giving it a fixture and a negative control first.
+
+⚠ **Canary fixtures rot, and a probe cannot tell you which failure you have.** D451 named
+page 2083; it is now a 404. Every probe reports UNANSWERED separately from a real failure —
+read its output rather than assuming a regression. ⛔ **The trashed fixtures 2023 / 2114
+carry PRE-migration authoring** (`"minHeight":"90vh"` as a flat string); `minHeight` became
+a tier object on 2026-08-11, so a flat value is silently coerced to `{}` and every spacer
+collapses. Restoring one gives a silently-broken page — author fresh instead.
+
 ### Shared-helper adoption — `scripts/migrate-render-closures.py` (D722)
 
 `includes/helpers-box.php` has carried byte-identical shared forms of three sanitiser closures

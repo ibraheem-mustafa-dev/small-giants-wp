@@ -1,5 +1,24 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D730 — pin-scrub fixture built and claim 7 closed; and a whole probe directory was unreachable [INCIDENT]
+
+**The wiring half is the more important half, and Bean caught it.** `scripts/motion-qa/` held **13 probes with ZERO references anywhere in `package.json`** — no gate, no alias, no pipeline. Each was written for one investigation and then became undiscoverable by convention. That is this repo's documented failure mode at directory scale (D338/D493: a gate unwired for three weeks while docs claimed it ran). The three probes added at D729 would have joined them.
+
+**Fix: `scripts/motion-qa/run-live-probes.mjs` + four `npm run qa:motion*` aliases, wired into `build-deploy.py` as `step_motion_qa()`, ON by default for blocks deploys, opt out `--skip-motion-qa`.**
+
+⛔ **Deliberately NOT in `prebuild`.** Every probe needs a live canary, and a network-dependent BUILD gate has only two possible behaviours, both bad: fail when the canary is merely unreachable, or warn-and-pass — which is exactly the vacuity `check-no-inline.py --live-default` already carries. Post-deploy is the honest home: the canary is up by definition and `step_verify_payload()` has just proven the live plugin IS this run's payload, so a regression there is attributable to the deploy rather than ambient state. It runs AFTER the payload gate so a stale payload is reported before motion is blamed.
+
+**Scope stated honestly:** the runner registers the THREE probes that are standing checks with negative controls and stable fixtures. The other probes are one-shot incident artefacts, still runnable by hand, and are NOT claimed as covered.
+
+**Claim 7 closed.** `pin` is shorthand — the shipped id is **`pin-scrub`**. The earlier "no page uses pin" was a wrong-token search, not an absent fixture. New canary page **2603**; all four effects SAFE by default, and pin-scrub holds **800px** of scroll against a `<body>` control holding **0px**.
+
+**Three probe bugs were caught by controls before any verdict was printed, which is the whole argument for having them:**
+1. A *sticky* control element moved only 56px over a 900px scroll — the guard rejected it rather than let `spread=0px` read as a successful pin.
+2. The element's document offset was measured while scrolled to the BOTTOM, where the pin had released and the pin-spacer had shifted it a full viewport — so the derived range missed the pin and reported working code as broken. Measure from scrollY 0.
+3. The first fixture used `"minHeight":"90vh"` copied from trashed page 2023. **`minHeight` became a TIER OBJECT `{desktop,tablet,mobile}` in the 2026-08-11 Spec 35 migration, so a flat string is silently coerced to `{}`** — every spacer collapsed and the page was 1709px instead of ~5000px. Not a bug: stale authoring. ⚠ The trashed fixtures 2023 and 2114 both carry pre-migration authoring; restoring one yields a silently-broken page.
+
+The pin detector asserts on **held viewport position over a scroll run**, not on `position:fixed` or a transform — ScrollTrigger may pin either way, and asserting on one would test GSAP internals rather than what a visitor sees.
+
 ## D729 — Three motion claims verified live; two were already deployed and one page had rotted [ROUTINE]
 
 Gap-register rows 4, 5 and 7 had sat UNVERIFIED. Each now carries a dated verdict and an evidence path, and each probe was proven able to FAIL before its pass was believed.

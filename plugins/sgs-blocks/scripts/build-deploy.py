@@ -878,6 +878,31 @@ def write_deploy_marker(use_alias: bool, target_key: str, dry_run: bool) -> int:
     return 0
 
 
+def step_motion_qa(dry_run: bool) -> int:
+    """Post-deploy LIVE motion regression check (D730).
+
+    ⛔ WHY THIS IS HERE AND NOT IN `prebuild`. Every motion probe needs a live canary.
+    A network-dependent check inside a BUILD gate can only fail when the canary is
+    merely unreachable, or warn-and-pass — and warn-and-pass is precisely the vacuity
+    `check-no-inline.py --live-default` already carries (it PASSES on a disconnected
+    machine, so a green run there proves nothing). Post-deploy is the honest home: the
+    canary is up by definition, and `step_verify_payload()` has just proven the live
+    plugin IS this run's payload, so a motion regression here is genuinely attributable
+    to this deploy rather than to ambient site state.
+
+    ⚠ Before this existed, `scripts/motion-qa/` held 13 probes with ZERO references in
+    `package.json` — an entire directory of the D338/D493 "built but never wired"
+    failure. Opting out with `--skip-motion-qa` re-creates it.
+    """
+    if dry_run:
+        log("[motion-qa] SKIPPED (--dry-run)")
+        return 0
+    log("[motion-qa] running live motion probes against the canary")
+    # npm is a shell shim on Windows; shell=False needs the .cmd form there.
+    npm = "npm.cmd" if os.name == "nt" else "npm"
+    return run([npm, "run", "qa:motion"], dry_run=False, cwd=PLUGIN_DIR)
+
+
 def step_verify_payload(use_alias: bool, wp_content: str, blocks: bool) -> int:
     """CHANGE-SPECIFIC verify: does the LIVE plugin match the payload we just shipped?
 
@@ -1095,6 +1120,9 @@ def parse_args() -> argparse.Namespace:
                    help="Skip the pre-deploy stored-content compatibility gate "
                         "(NOT recommended — it is the only check that catches a "
                         "deploy whose schemas strand or delete stored content).")
+    p.add_argument("--skip-motion-qa", action="store_true",
+                   help="skip the post-deploy live motion probes. Doing so is "
+                        "the D338 mistake: it makes the probes unreachable again.")
     p.add_argument("--skip-purge", action="store_true",
                    help="Skip the post-deploy cache purge (OPcache + LiteSpeed). "
                         "NOT recommended: the deploy still lands, but warm caches "
@@ -1273,6 +1301,18 @@ def main() -> int:
             print("[DEPLOYED-BUT-STALE] the deploy completed and the site responds, "
                   "but the LIVE plugin does not match this run's payload. Your code "
                   "is probably NOT what is running (D576).", flush=True)
+            return 1
+
+    # Post-deploy LIVE motion gate: do the shipped scroll effects still work?
+    # Runs after the payload gate so a STALE payload is reported before motion is blamed.
+    if deploy_blocks and not args.skip_motion_qa and not args.dry_run:
+        rc = step_motion_qa(args.dry_run)
+        if rc != 0:
+            print("[DEPLOYED-BUT-MOTION-REGRESSED] the deploy completed, the site "
+                  "responds and the payload matches, but a live motion probe failed. "
+                  "Read the probe output: it distinguishes a real regression from a "
+                  "rotted canary fixture, and re-running the deploy fixes neither.",
+                  flush=True)
             return 1
 
     # Post-deploy structural gate: live scoped-selector match audit.
