@@ -44,13 +44,18 @@
 	overflow: hidden;
 }
 
-.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__body,
-.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__close-preview {
+/* Both of these carry the block-name class as well, so they are (0,3,0) and beat
+   the (0,2,0) `display:flex` / `display:inline-flex` rules further down this file.
+   Without that they TIE on specificity and lose on order — a rule that loses is
+   indistinguishable from one that was never written, and the collapsed shell
+   silently stayed 231px tall with its body still laid out. */
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__body,
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__close-preview {
 	display: none;
 }
 
 /* Collapsed, the label stops being an overlay and becomes the strip itself. */
-.sgs-nav-drawer__editor--collapsed::before {
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed::before {
 	position: static;
 	display: block;
 	padding: 14px 12px;
