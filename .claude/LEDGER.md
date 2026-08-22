@@ -193,58 +193,64 @@ attribute WP discards. Their warning is met, not violated.
 | **Canary** | Canary content is a test rig. A regressed test page gets deleted, not protected. |
 
 
-## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-22
+## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-22 (end of session)
 
-**MERGED TO MAIN 2026-08-22 (`8803ea96`), all six gates green ON MAIN.** Branch
-`feat/colour-states-codemod`, 16 commits. The co-active session's 7 dirty files were
-re-checked immediately before merging — zero overlap with the 48 this branch touched — and
-were still intact afterwards. "Another session is active" is not itself a reason to block a
-merge: `comm -12` on their dirty paths vs the branch's changed paths answers it, and must be
-re-run right before merging because their tree moves.
+**All pushed to `origin/main`. Build GREEN. Canary DEPLOYED and QA Gate C PASSED live.**
+Executable front: `.claude/plans/go-colour-golden-track-flickering-wirth.md` — it carries
+the measured status, the remaining steps and the protocol. Read it, not this block.
 
-⛔ **THE PLAN CHANGED SHAPE TWICE, BOTH TIMES BEAN'S CALL. Read
-`.claude/plans/phase-colour-conformance.md` PROGRESS + EXACT REMAINING STEPS before doing
-anything.** (1) Per-block agent dispatch was stopped — D542 says >3 blocks means build the
-detector, not the edit. (2) The codemod that replaced it was ALSO stopped: patching 64
-bespoke colour implementations still leaves 64 of them. The agreed shape is **five variant
-HELPERS that blocks adopt**.
+**MEASURED (re-run, never quote):** rule 31 = **355** (below-min-states 181 / missing-gradient
+152 / native-colour-ui 22); ratchet **355**, zero slack; adoption surface **124 adoptable /
+113 refused / 4 adopted** (`colour-codemod/adopt.js --survey`).
 
-**BUILT:** rule 31 mechanism-aware + `kind` field (ratchet 413 -> 378) · `survey.js` census ·
-`scan-undeclared-setattributes.js` (NEW gate) · `fix.js` triad · **all five colour-variant
-helpers, each installable via one attr-name map** · `describeRow()` so the gate can SEE
-helper calls · `statesProvidedByParent` marker · ShadowControl restructured to one state
-axis with a single-state picker inside (Bean's ruling) · **22/22 ShadowControl mounts on the
-map** · `migrate-shadow-mounts.js`.
+**SHIPPED:** R0 (the 11 handover findings — the plugin was uncommittable for EVERY session
+until this landed) · R1 ratchet 388→355 with a two-way negative control · R2a `adopt.js`
+(built, self-tested, **NOT applied**) · R2b borderRow passthrough · QA Gate C live.
 
-**REMAINING (full detail + exit criteria in the plan doc):** R1 merge · R2 adopt the three
-row helpers across the roster (this is what deletes the 3,951 lines of inline colour JSX) ·
-R3 hover SHAPE attrs for full shadow symmetry · R4 the 29 genuinely autofixable rows ·
-R5 build + deploy + **QA Gate C (nothing has been live-verified yet)** · R6 ratchet + docs.
+**SHIPPED BUT NOT PLANNED — where the session actually went:**
+- `sgs/nav-drawer` handed to that session: it had NO text-colour control at all, and the
+  WCAG contrast value was the SOLE AUTHOR of its text colour. Now text colour + gradient,
+  close hover, background gradient, background image, operator-settable accessible name.
+- **Two exemption mechanisms rule 31 could not express.** Text-gradient exemption BY
+  MECHANISM (element manifest, stated once, no roster — cleared 23 and let sgs/button's
+  hand-written entry be deleted as a second owner). States exemption with a STRUCTURAL
+  anti-downgrade guard: REFUSED whenever the block already declares `<attr>Hover`, so
+  "cannot be hovered" is accepted and "hasn't wired hover yet" is not. Proven three ways.
+- **Text-block background layer** (heading/text/label): a text gradient was OVERWRITING or
+  CLIPPING the block's own background — both reachable with shipped controls. Background
+  moved to a `::after` layer; `isolation:isolate` is load-bearing, not decoration.
+- **Three broken editors fixed** — text/quote/testimonial threw ReferenceError.
 
-⚠ **NUMBERS THAT WILL MISLEAD YOU IF YOU INHERIT THEM SECOND-HAND:**
-- AUTOFIXABLE is **29 of 208 (14%)**, not the 161 (75%) first reported. The census had asked
-  "does the block emit colour?" instead of "can that emission carry a GRADIENT?". 132 rows
-  paint via a colour-valued CSS custom property, which cannot hold a gradient.
-- That ceiling is a CONSEQUENCE of hand-rolled paint, not a fact about the blocks — a shared
-  emitter dissolves it. It is the argument FOR adoption.
-- `block_attributes.derived_selector` is **NOT a CSS selector**. Verified: zero of its values
-  exist as classes anywhere. `sgs/accordion.headerColour` renders in the CHILD block via
-  providesContext. Never scope work from it.
-- `GridItemDefaultsPanel` "17-block defect" is **CLOSED — not a defect.** `KIND_PANELS.layout`
-  does not include the panel; the candidate blocks pass `kind="layout"` and correctly declare
-  no `gridItem*` attrs. A fix built on a bad probe was fully reverted.
+**REMAINING:** R2c special cases · R2d the 124-row sweep · R2e PHP emitters (**still zero
+callers**) · R3 hover shadow + GridItemDefaultsPanel · R4 folded into R2d · R5 editor-half
+verification · R6 wire the 5 unwired scripts.
 
-⛔ **FOUR FAILURE MODES THAT COST REAL TIME HERE — all four were invisible to every gate:**
-1. A `/tmp` redirect under Git Bash read back a STALE file three days old; every number
-   derived from it was wrong. Use PowerShell + an absolute `C:	mp\...` path.
-2. `makeFinding()` silently DISCARDED the `kind` field for six call sites — the emit code
-   existed and never fired. Read the emitted KEYS, not the call sites.
-3. A codemod dry run reported a perfect attribute map while dropping every `label=`. **Diff
-   the OUTPUT, not the dry run.**
-4. Escaping mangled a generated patch FOUR times, once writing a literal 0x08 byte into a
-   regex so it silently matched nothing. Change the INPUT (normalise it) rather than adding
-   escape depth.
+⛔ **STILL OWED LIVE** (QA Gate C proved the RENDER half only): slug-not-hex on save+reload
+in the editor; hover repaint under a REAL pointer; nav-drawer's image/text/gradient with the
+drawer OPEN. Evidence so far: `reports/visual-diff/colour-golden-qa-gate-c-2026-08-22.md`.
 
+⛔ **THREE GATE GAPS EXPOSED, each earned by a defect that reached `main`:**
+1. **Undefined JS references have NO gate** and broke three editors. The file is VALID
+   JavaScript — it parses, `node --check` passes, it fails only at runtime in the editor.
+   `check-undeclared-attrs.py` gates the INVERSE. A short `@babel/traverse` scope walk found
+   all three in one pass; it belongs in `prebuild`.
+2. **`extract-signatures.py` is NON-DETERMINISTIC** on `css_tier` for `columns` attrs — two
+   runs on an unchanged tree flipped post-grid and card-grid in OPPOSITE directions.
+3. **A `--fix` dry run can lie** — a prefix-trim diff printer reported a whole file changed.
+   `git diff` the OUTPUT, never the dry run.
+
+⛔ **METHOD TRAPS THAT COST TIME:** SGS block CSS is LIFTED to `uploads/sgs-css/<hash>.css`,
+so a page-source grep proves NOTHING · in a negative control restore by RE-APPLYING, never
+`git checkout --` (it deletes uncommitted work, not just the break) · never re-serialise a
+config without matching its own indent (2,503-line diff for a 25-line change) · a flat
+finding total hides a fix and a regression cancelling out — enumerate.
+
+⚠ **CROSS-SESSION:** worktrees do NOT isolate the DB or the canary. `/sgs-update` is global —
+main checkout, one at a time, announced here. Deploys: ONE session from the main checkout;
+the ownership gate refused a deploy today because the canary carried another branch —
+**MERGE, never `--takeover`**. `[gates-ok: …]` is NOT a real bypass and exists in neither
+hook; the real ones are `SGS_VISUAL_GATE_SKIP=<block>[,<block>]` + reason and
+`[batch-ok:<reason>]` for a merge. The visual gate is CHANGE-KEYED (`source_sha`).
 
 ## ▶ DOC-DEBT / MOTION-REGISTER TRACK — 2026-08-21 (a THIRD track; all pushed)
 
