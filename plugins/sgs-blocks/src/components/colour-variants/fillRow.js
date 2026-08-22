@@ -1,3 +1,5 @@
+import { __ } from '@wordpress/i18n';
+
 /**
  * fillRow — the FILL member of the five-variant colour family.
  *
@@ -24,6 +26,14 @@
  * boxShadowColour / cardShadowColour / tileShadowColour / navBg / backgroundColour —
  * all legitimate. Standardising them would rename stored attributes for zero user
  * gain, so this helper ADAPTS to whatever the block already declares.
+ *
+ * ⚠ STATE LABELS ARE TRANSLATED HERE. The inline rows this replaces all wrap
+ * 'Normal'/'Hover' in __( …, 'sgs-blocks' ). A first version of this helper hardcoded
+ * them as plain strings, which would have silently dropped two translatable strings
+ * per adopted row from the .pot — an i18n regression invisible to every gate, found by
+ * diffing against the real JSX it replaces rather than by review. The row LABEL stays
+ * the caller's responsibility (it is block-specific); only the state labels are owned
+ * here, because they are identical on every row in the family.
  *
  * @param {Object}   o
  * @param {string}   o.key            Row key, stable — used by rule 31 and by
@@ -54,7 +64,7 @@ export default function fillRow( { key, label, attrs, attributes, setAttributes 
 	// resolvable; the entries themselves are never generated.
 	const normal = {
 		key: 'normal',
-		label: 'Normal',
+		label: __( 'Normal', 'sgs-blocks' ),
 		value: attributes[ base ],
 		onChange: ( val ) => setAttributes( { [ base ]: val ?? '' } ),
 		// linked:true stores the PALETTE SLUG rather than a resolved hex, so a client's
@@ -71,7 +81,7 @@ export default function fillRow( { key, label, attrs, attributes, setAttributes 
 
 	const hoverState = {
 		key: 'hover',
-		label: 'Hover',
+		label: __( 'Hover', 'sgs-blocks' ),
 		value: attributes[ hover ],
 		onChange: ( val ) => setAttributes( { [ hover ]: val ?? '' } ),
 		linked: true,

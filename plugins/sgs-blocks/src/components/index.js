@@ -14,6 +14,8 @@ export {
 	resolveColourToken,
 } from './DesignTokenPicker';
 export { default as SgsColourPanel } from './SgsColourPanel';
+// Colour-variant row helpers (the five-variant family: 3 rows + 2 controls).
+export { default as fillRow } from './colour-variants/fillRow';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
 // `parseLinearGradient` / `buildGradientCss` were deleted by 837f7c97 (D636 storage
 // collapse) but stayed listed here, so the barrel advertised two bindings that resolve
