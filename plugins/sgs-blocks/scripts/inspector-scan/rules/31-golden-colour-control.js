@@ -549,6 +549,20 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 			}
 
 			if ( name === 'DesignTokenPicker' ) {
+				// ⭐ `statesProvidedByParent` — the picker is single-state because its
+				// ENCLOSING control owns the normal/hover axis (Bean's ruling 2026-08-22:
+				// "the colour picker should be single state because the whole panel should
+				// be 2 state"). Both states exist, one level up, so flagging this would be
+				// a FALSE POSITIVE across all 30 mounting blocks — and a gate that cries
+				// wolf is one people learn to skim. A literal JSX marker, statically
+				// resolvable, never a runtime predicate (D738).
+				//
+				// ⚠ THIS SCAN NEEDS ITS OWN CHECK. The per-block scan has an identical
+				// branch, and marking only that one left this finding live — the two walks
+				// are separate code paths over the same question, which is exactly the
+				// duplication describeRow() was introduced to end. Until they share a
+				// walker, a guard added to one must be added to both.
+				if ( findJsxAttr( node, 'statesProvidedByParent' ) ) return;
 				const statesExpr = jsxAttrExpr( node, 'states' );
 				const labelExpr = jsxAttrExpr( node, 'label' );
 				let labelText = null;
@@ -1026,6 +1040,18 @@ module.exports = {
 					}
 					const rowKey = labelText ? slugify( labelText ) : `standalone-line-${ line }`;
 
+					// ⭐ `statesProvidedByParent` — a single-state picker whose ENCLOSING
+					// control owns the normal/hover axis (Bean's ruling 2026-08-22 for
+					// shadow: "the colour picker should be single state because the whole
+					// panel should be 2 state"). Both states genuinely exist, one level
+					// up, so flagging the picker as below-minimum would be a FALSE
+					// POSITIVE — and a gate that cries wolf is one people learn to skim.
+					// A literal JSX marker, statically resolvable, never a runtime
+					// predicate (D738). It asserts WHERE the states live, not that the
+					// requirement is waived.
+					if ( findJsxAttr( node, 'statesProvidedByParent' ) ) {
+						return;
+					}
 					if ( statesExpr && statesExpr.type === 'ArrayExpression' ) {
 						checkRow( { rowKey, statesArray: statesExpr, gradientCapable: false, line } );
 					} else {
