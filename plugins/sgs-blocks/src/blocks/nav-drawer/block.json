@@ -123,6 +123,10 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"drawerBgGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"drawerTextColour": {
 			"type": "string",
 			"default": ""

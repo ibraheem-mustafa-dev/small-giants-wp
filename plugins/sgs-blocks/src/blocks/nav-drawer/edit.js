@@ -171,7 +171,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					fillRow( {
 						key: 'drawerBg',
 						label: __( 'Drawer background', 'sgs-blocks' ),
-						attrs: { base: 'drawerBg' },
+						attrs: {
+							base: 'drawerBg',
+							gradient: 'drawerBgGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),

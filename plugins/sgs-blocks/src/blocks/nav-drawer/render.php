@@ -208,6 +208,17 @@ $css = '';
 // Background + WCAG foreground on the dialog root.
 if ( '' !== $drawer_bg_slug ) {
 	$decls = 'background-color:var(--wp--preset--color--' . $drawer_bg_slug . ');';
+	// A background GRADIENT layers OVER the flat colour rather than replacing it.
+	// The canonical helper is gradient-wins (sgs_background_paint_value), but a drawer
+	// is an OVERLAY panel: if the gradient carries alpha, dropping the solid base makes
+	// the page behind it show through. Keeping both is what CSS layering already does,
+	// and the value still goes through the canonical sanitiser.
+	// No background-clip is involved here, so this does NOT hit the clipping problem
+	// that keeps the TEXT gradient off this element (see the body rule below).
+	$drawer_bg_gradient = sgs_css_gradient_value( $attributes['drawerBgGradient'] ?? '' );
+	if ( '' !== $drawer_bg_gradient ) {
+		$decls .= 'background-image:' . $drawer_bg_gradient . ';';
+	}
 	if ( '' !== $drawer_fg_hex ) {
 		// FALLBACK only — the WCAG pairing applies while the client has not
 		// chosen a text colour, and is overridden below when they have.
