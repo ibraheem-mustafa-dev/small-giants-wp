@@ -24,13 +24,50 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 	useSettings,
+	MediaUpload,
+	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
 	SelectControl,
+	Button,
 	Icon,
 } from '@wordpress/components';
+
+/** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
+const BG_SIZE_OPTIONS = [
+	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
+	{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
+	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
+];
+
+/** backgroundPosition control options — mirrors sgs/container's BackgroundPanel. */
+const BG_POSITION_OPTIONS = [
+	{ label: __( 'Centre centre', 'sgs-blocks' ), value: 'center center' },
+	{ label: __( 'Top centre', 'sgs-blocks' ), value: 'top center' },
+	{ label: __( 'Bottom centre', 'sgs-blocks' ), value: 'bottom center' },
+	{ label: __( 'Centre left', 'sgs-blocks' ), value: 'center left' },
+	{ label: __( 'Centre right', 'sgs-blocks' ), value: 'center right' },
+	{ label: __( 'Top left', 'sgs-blocks' ), value: 'top left' },
+	{ label: __( 'Top right', 'sgs-blocks' ), value: 'top right' },
+	{ label: __( 'Bottom left', 'sgs-blocks' ), value: 'bottom left' },
+	{ label: __( 'Bottom right', 'sgs-blocks' ), value: 'bottom right' },
+];
+
+/** backgroundRepeat control options — mirrors sgs/container's BackgroundPanel. */
+const BG_REPEAT_OPTIONS = [
+	{ label: __( 'No repeat', 'sgs-blocks' ), value: 'no-repeat' },
+	{ label: __( 'Repeat', 'sgs-blocks' ), value: 'repeat' },
+	{ label: __( 'Repeat X', 'sgs-blocks' ), value: 'repeat-x' },
+	{ label: __( 'Repeat Y', 'sgs-blocks' ), value: 'repeat-y' },
+];
+
+/** backgroundAttachment control options — mirrors sgs/container's BackgroundPanel. */
+const BG_ATTACHMENT_OPTIONS = [
+	{ label: __( 'Scroll', 'sgs-blocks' ), value: 'scroll' },
+	{ label: __( 'Fixed', 'sgs-blocks' ), value: 'fixed' },
+];
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
@@ -101,6 +138,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		drawerGap,
 		drawerPadding,
 		submenuModel,
+		ariaLabel,
+		backgroundImage,
+		backgroundSize,
+		backgroundPosition,
+		backgroundRepeat,
+		backgroundAttachment,
 	} = attributes;
 
 	// Desktop-tier anchor drives BOTH the editor preview shell shape and the
@@ -134,6 +177,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		backdropFilter: surfaceBlur ? `blur( ${ surfaceBlur } )` : undefined,
 		maxWidth: isCompact ? panelSize?.desktop || compactWidthFallback : undefined,
 		marginInline: isCompact ? 'auto' : undefined,
+		// Editor-only preview of the background image (render.php paints the same
+		// picture onto a `.{uid}::before` layer, never the root itself — see that
+		// file's comment). Layered UNDER the shellStyle backgroundColor above via
+		// backgroundBlendMode so a translucent panel colour still shows through,
+		// matching the frontend's colour-then-image paint order.
+		backgroundImage: backgroundImage?.url ? `url(${ backgroundImage.url })` : undefined,
+		backgroundSize: backgroundImage?.url ? backgroundSize : undefined,
+		backgroundPosition: backgroundImage?.url ? backgroundPosition : undefined,
+		backgroundRepeat: backgroundImage?.url ? backgroundRepeat : undefined,
+		backgroundAttachment: backgroundImage?.url && backgroundAttachment === 'fixed' ? 'fixed' : undefined,
 	};
 	const bodyStyle = {
 		alignItems: ALIGN_ITEMS[ drawerAlign ] || 'flex-start',
@@ -203,6 +256,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Settings tab ─────────────────────────────────────────── */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Drawer', 'sgs-blocks' ) }>
+					{ /* The dialog's accessible name. A site may run MORE THAN ONE drawer
+					   (that is what Drawer ID is for), and two dialogs both announced as
+					   "Navigation menu" cannot be told apart by a screen reader. */ }
+					<TextControl
+						label={ __( 'Accessible name', 'sgs-blocks' ) }
+						help={ __( 'How screen readers announce this drawer. Leave blank for “Navigation menu”; give each drawer its own name when a site has more than one.', 'sgs-blocks' ) }
+						value={ ariaLabel }
+						onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<TextControl
 						label={ __( 'Drawer ID', 'sgs-blocks' ) }
 						help={ __(
@@ -403,6 +467,81 @@ export default function Edit( { attributes, setAttributes } ) {
 							} );
 						} }
 					/>
+				</PanelBody>
+
+				{ /* Its OWN panel rather than folded into "Drawer container": that panel
+				   already carries ~10 controls, and inspector-scan rule 03 flags a PanelBody
+				   that dense with no ToolsPanel. Separate is also the clearer grouping. */ }
+				<PanelBody title={ __( 'Drawer background image', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* Background image — a SCOPED control (not <BackgroundPanel>, which is
+					     all-or-nothing and writes 17 attrs including video/SVG/parallax/
+					     Ken-burns/overlay-blend, none of which apply to a full-screen dialog).
+					     Painted on a `.{uid}::before` media layer by render.php, same
+					     pattern as sgs/container's own background image. */ }
+					<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
+						{ __( 'Background image', 'sgs-blocks' ) }
+					</p>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								setAttributes( { backgroundImage: { id: media.id, url: media.url, alt: media.alt } } )
+							}
+							allowedTypes={ [ 'image' ] }
+							value={ backgroundImage?.id }
+							render={ ( { open } ) => (
+								<div style={ { marginBottom: '8px' } }>
+									{ backgroundImage?.url ? (
+										<>
+											<img src={ backgroundImage.url } alt="" style={ { maxWidth: '100%', marginBottom: '8px' } } />
+											<Button variant="secondary" onClick={ () => setAttributes( { backgroundImage: undefined } ) } isDestructive>
+												{ __( 'Remove image', 'sgs-blocks' ) }
+											</Button>
+										</>
+									) : (
+										<Button variant="secondary" onClick={ open }>
+											{ __( 'Select image', 'sgs-blocks' ) }
+										</Button>
+									) }
+								</div>
+							) }
+						/>
+					</MediaUploadCheck>
+					{ backgroundImage?.url && (
+						<>
+							<SelectControl
+								label={ __( 'Size', 'sgs-blocks' ) }
+								value={ backgroundSize }
+								options={ BG_SIZE_OPTIONS }
+								onChange={ ( val ) => setAttributes( { backgroundSize: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<SelectControl
+								label={ __( 'Position', 'sgs-blocks' ) }
+								value={ backgroundPosition }
+								options={ BG_POSITION_OPTIONS }
+								onChange={ ( val ) => setAttributes( { backgroundPosition: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<SelectControl
+								label={ __( 'Repeat', 'sgs-blocks' ) }
+								value={ backgroundRepeat }
+								options={ BG_REPEAT_OPTIONS }
+								onChange={ ( val ) => setAttributes( { backgroundRepeat: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<SelectControl
+								label={ __( 'Attachment', 'sgs-blocks' ) }
+								value={ backgroundAttachment }
+								options={ BG_ATTACHMENT_OPTIONS }
+								onChange={ ( val ) => setAttributes( { backgroundAttachment: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				<PanelBody title={ __( 'Close button', 'sgs-blocks' ) } initialOpen={ false }>

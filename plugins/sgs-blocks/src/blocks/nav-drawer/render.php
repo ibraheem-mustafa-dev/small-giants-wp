@@ -26,8 +26,9 @@
  * behaviour (the D294 block-private-when-no-grid/section-machinery pattern).
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
- * drawerBg + WCAG-computed foreground, drawerAlign, drawerGap, drawerPadding, close-button colour and the skip-serialised __experimentalBorder
- * support are all emitted into this block's OWN scoped `.{uid}` <style> at CLASS specificity (never `#uid`, D303).
+ * drawerBg + WCAG-computed foreground, drawerAlign, drawerGap, drawerPadding, close-button colour, the background-image media layer
+ * (`.{uid}::before`) and the skip-serialised __experimentalBorder support are all emitted into this block's OWN scoped `.{uid}` <style>
+ * at CLASS specificity (never `#uid`, D303).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (menu, logo, CTA).
@@ -150,7 +151,7 @@ $align_items_map = array(
 );
 // Logical text-align equivalents of the same pick, for descendants whose BOX is
 // full-width (so align-items can move nothing) and whose LABEL is what must move.
-$text_align_map  = array(
+$text_align_map = array(
 	'left'   => 'start',
 	'center' => 'center',
 	'right'  => 'end',
@@ -196,6 +197,36 @@ $close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? sani
 $submenu_model = in_array( $attributes['submenuModel'] ?? 'accordion', array( 'accordion', 'drill-down' ), true )
 	? (string) $attributes['submenuModel']
 	: 'accordion';
+
+// ── Background image (backgroundImage + size/position/repeat/attachment).
+// Mirrors sgs/container's own media-LAYER pattern (class-sgs-container-wrapper.php,
+// "Background image — section kind only" block): the image paints on a
+// `.{uid}::before` pseudo-element, never on the dialog root itself, because the
+// root already carries drawerBg/drawerBgGradient (a `background-image` here
+// would simply overwrite the gradient rather than layering with it) and a
+// dedicated layer lets a future opacity/blend control dim the picture without
+// dimming the drawer's editable InnerBlocks content painted above it.
+// `.wp-block-sgs-nav-drawer` uses neither `::before` nor `::after` anywhere in
+// style.css, so the layer is free to claim (confirmed by reading the file).
+$bg_image         = $attributes['backgroundImage'] ?? array();
+$has_bg_image     = ! empty( $bg_image['url'] );
+$bg_size          = $attributes['backgroundSize'] ?? 'cover';
+$allowed_bg_sizes = array( 'cover', 'contain', 'auto' );
+if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
+	$bg_size = 'cover';
+}
+$bg_position        = $attributes['backgroundPosition'] ?? 'center center';
+$bg_position        = preg_replace( '/[^A-Za-z0-9\s%]/', '', (string) $bg_position );
+$bg_repeat          = $attributes['backgroundRepeat'] ?? 'no-repeat';
+$allowed_bg_repeats = array( 'no-repeat', 'repeat', 'repeat-x', 'repeat-y' );
+if ( ! in_array( $bg_repeat, $allowed_bg_repeats, true ) ) {
+	$bg_repeat = 'no-repeat';
+}
+$bg_attachment       = $attributes['backgroundAttachment'] ?? 'scroll';
+$allowed_attachments = array( 'scroll', 'fixed' );
+if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
+	$bg_attachment = 'scroll';
+}
 
 // ── Custom CSS escape hatch (non-device-breakpoint rules only, per contract).
 $custom_css = isset( $attributes['sgsCustomCss'] ) ? (string) $attributes['sgsCustomCss'] : '';
@@ -335,8 +366,8 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	// character set while still stripping anything that could break out of the
 	// declaration).
 	$sgs_nd_panel_desktop = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'desktop', '' )['value'] );
-	$sgs_nd_panel_tablet   = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
-	$sgs_nd_panel_mobile   = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
+	$sgs_nd_panel_tablet  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
+	$sgs_nd_panel_mobile  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
 
 	$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop );
 	$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet );
@@ -368,8 +399,8 @@ if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 		// color-mix() keeps the resolved token as the SOURCE colour (a palette
 		// change still recolours the translucent panel) while expressing the
 		// operator's chosen opacity — no separate alpha-channel attribute needed.
-		$sgs_nd_pct             = rtrim( rtrim( number_format( $sgs_nd_surface_opacity * 100, 2 ), '0' ), '.' );
-		$sgs_nd_pct             = '' !== $sgs_nd_pct ? $sgs_nd_pct : '0';
+		$sgs_nd_pct            = rtrim( rtrim( number_format( $sgs_nd_surface_opacity * 100, 2 ), '0' ), '.' );
+		$sgs_nd_pct            = '' !== $sgs_nd_pct ? $sgs_nd_pct : '0';
 		$sgs_nd_surface_decls .= 'background-color:color-mix(in srgb, var(--wp--preset--color--' . $drawer_bg_slug . ') ' . $sgs_nd_pct . '%, transparent);';
 	}
 	if ( '' !== $sgs_nd_surface_blur ) {
@@ -378,6 +409,29 @@ if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 	if ( '' !== $sgs_nd_surface_decls ) {
 		$css .= $root_sel . '{' . $sgs_nd_surface_decls . '}';
 	}
+}
+
+// ── Background image media layer (`.{uid}::before`). z-index:-1 keeps it below
+// the dialog's own background-colour/gradient paint and below the real
+// `.sgs-nav-drawer__body`/close-button children (both default z-index:auto,
+// which stacks above a negative-z sibling) — the drawer's editable content
+// always stays visible over the picture, mirroring sgs/container's identical
+// media-layer contract (class-sgs-container-wrapper.php).
+if ( $has_bg_image ) {
+	$sgs_nd_media_decls   = array();
+	$sgs_nd_media_decls[] = 'content:""';
+	$sgs_nd_media_decls[] = 'position:absolute';
+	$sgs_nd_media_decls[] = 'inset:0';
+	$sgs_nd_media_decls[] = 'z-index:-1';
+	$sgs_nd_media_decls[] = 'pointer-events:none';
+	$sgs_nd_media_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
+	$sgs_nd_media_decls[] = 'background-size:' . esc_attr( $bg_size );
+	$sgs_nd_media_decls[] = 'background-position:' . esc_attr( $bg_position );
+	$sgs_nd_media_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
+	if ( 'fixed' === $bg_attachment ) {
+		$sgs_nd_media_decls[] = 'background-attachment:fixed';
+	}
+	$css .= $root_sel . '::before{' . implode( ';', $sgs_nd_media_decls ) . '}';
 }
 
 // ── Skip-serialised WP-native __experimentalBorder support → scoped rule
@@ -511,7 +565,13 @@ $wrapper_args       = array(
 	'class'               => implode( ' ', $classes ),
 	'id'                  => $drawer_ref,
 	'data-sgs-nav-drawer' => '',
-	'aria-label'          => esc_attr__( 'Navigation menu', 'sgs-blocks' ),
+	// The dialog's accessible name. Operator-settable because this block supports
+	// MULTIPLE drawers on one site (that is what the Drawer ID exists for), and two
+	// dialogs both announced as "Navigation menu" cannot be told apart by a screen
+	// reader. Falls back to the generic name when unset, so nothing regresses.
+	'aria-label'          => '' !== ( $attributes['ariaLabel'] ?? '' )
+		? esc_attr( $attributes['ariaLabel'] )
+		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
 );
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 

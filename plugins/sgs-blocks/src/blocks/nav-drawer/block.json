@@ -123,9 +123,36 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"ariaLabel": {
+			"type": "string",
+			"default": ""
+		},
 		"drawerBgGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundImage": {
+			"type": "object",
+			"default": {}
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [ "cover", "contain", "auto" ]
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [ "no-repeat", "repeat", "repeat-x", "repeat-y" ]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [ "scroll", "fixed" ]
 		},
 		"drawerTextColour": {
 			"type": "string",
