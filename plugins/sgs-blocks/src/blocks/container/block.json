@@ -17,6 +17,9 @@
 	"textdomain": "sgs-blocks",
 	"icon": "layout",
 	"supports": {
+		"interactivity": {
+			"clientNavigation": true
+		},
 		"align": [
 			"wide",
 			"full"
@@ -338,6 +341,10 @@
 		},
 		"shadowColour": {
 			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"maxWidth": {
 			"type": "object",

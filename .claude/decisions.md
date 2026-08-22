@@ -1,5 +1,51 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D741 [INCIDENT] — FR-38-12 Flip closed: two real bugs, not one — sgs/container's missing interactivity declaration AND a MatchMedia#add() misuse (2026-08-22)
+
+D698/D699/D702/the 2026-08-21 report all left FR-38-12 "genuinely inconclusive" or
+"still dormant" across five separate sessions. Both remaining causes are now found,
+fixed, and live-verified — closing the item this session.
+
+**Bug 1 — same shape D702 already fixed for `sgs/text`, this time on `sgs/container`.**
+The toolbar wrapper inside the shop archive's Product Collection is `sgs/container`,
+which declared neither `supports.interactivity` nor `.clientNavigation`. WooCommerce's
+`ProductCollection\Controller::is_block_compatible()` marks the query dirty (disables
+client-side re-filtering site-wide) for any descendant that fails that check. Proven via
+a live A/B swap on sandybrown (toolbar `sgs/container` → `core/group`, identical layout,
+only the block type changed): `core/router.clientNavigationDisabled` disappeared
+entirely. `sgs/container` is honestly static (view.js: zero `data-wp-*`; render.php:
+no interactivity attrs for its own instance), matching D702's honesty bar. Fixed in
+`c01ed84a`, with a new CASE 3 in `check-blockjson-metadata-only.py` (predicted by
+D702's own closing note) so the pre-commit visual-diff gate correctly treats a bare
+`supports.interactivity` addition as metadata-only when the block proves it's honest.
+
+**Bug 2 — `fx-flip.js` itself: `context.add(fn)` is not `gsap.context().add(fn)`.**
+Read directly from `node_modules/gsap/src/gsap-core.js:2980-3003`: `context` in
+`initFlip()`'s scope is the `MatchMedia` instance `withMotionAllowed()` passes into
+every effect, and `MatchMedia#add()` has signature `(conditions, func, scope)` — never
+a bare function. `settle()` called `context.add(() => Flip.from(...))` with one
+argument; MatchMedia treated that function itself as `conditions`, wrapped it as
+`{matches: fn}`, then called `window.matchMedia(fn)` with a function coerced to a
+nonsense query string that never matches. `active` stayed falsy, so the wrapped
+`Flip.from()` call was registered but **never invoked** — `flipTween` held the truthy
+return of a no-op `MatchMedia#add()` call, not a real tween, so every upstream check
+(observer fired, `capturedState` set, `settle()` ran, "calling Flip.from") looked
+healthy while GSAP never ticked. This is why every prior session's live-triggered
+verification came back inconclusive rather than a clean pass/fail — the plumbing really
+was correct up to this one call. No sibling `gsap/fx-*.js` effect uses this pattern.
+Fixed in `da580d8e`: call `Flip.from()` directly (the returned teardown already kills
+`flipTween` manually, so GSAP's context auto-tracking was never load-bearing here).
+
+**Live verification, two independent measurements** (sandybrown, `animate_product_filtering`
+ON): (1) `getComputedStyle` mid-interaction showed real translate matrices
+(`matrix(1,0,0,1,336,106)` etc.) with `position:absolute` on the product `<li>`
+elements — GSAP Flip's exact absolute-positioning signature. (2) A `MutationObserver`
+on each `<li>`'s `style` attribute recorded 175 real mutations across a ~200ms window
+matching the tween's `duration:0.5`/`stagger:0.03` config, settling to a cleared style
+attribute on completion. Bean watched it live and confirmed.
+
+**FR-38-12 CLOSED.** Spec 38 §8's status line and the design-gate plan updated to match.
+
 ## D740 [INCIDENT] — ShadowControl unlinked the client's brand token on every pick, across 15 blocks (2026-08-22)
 
 **Found while a Hidden Decisions reviewer was sizing a PLAN step, not by any gate.** The reviewer

@@ -84,14 +84,15 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   **On-fail:** if it cannot land, AMEND Spec 38's success definition to say motion is applied by hand
   after a clone. Do not leave the claim standing unbuilt.
 
-### Step 20 — spec ↔ code reconciliation [OPEN — 2 of 5 remain]
+### Step 20 — spec ↔ code reconciliation [OPEN — 1 of 5 remain]
   **Model:** sonnet · **Time:** 30 min
   ✅ **(a) CLOSED** — `data-sgs-fx-momentum` IS in §11.2's grammar (`38-SGS-MOTION-SYSTEM.md:1310`).
   ✅ **(d) CLOSED** — `generate-fx-qualifying-blocks.py:390-394` now states `sgs/image-sequence`
   EXISTS as an agency-only block; the stale comment was corrected 2026-08-02 and says so.
-  ◐ **(b) MISPLACED, not missing** — the honest `fxShape`/`fxPath` seed-status text exists
-  (`:1414-1428`, the D427 amendment) but sits in **§11.2**. §11.3's mapping list (`:1446-1448`)
-  still omits both. Move or duplicate it there.
+  ✅ **(b) CLOSED 2026-08-22** — this register was stale on its own item. §11.3's mapping list
+  (`38-SGS-MOTION-SYSTEM.md:1447-1448`) was fixed 2026-08-21: `fxShape`/`fxPath` are now listed in
+  the 1:1 attr mapping, with a pointer note (`:1451-1454`) to the D427 amendment at §11.2 rather than
+  a duplicate of the status text. Verified live in the spec — nothing further to do.
   ⛔ **(c) IS A RULING, NOT A DELETE — this register was wrong to call the row "dead".**
   `seed-motion-fx-registry.py:575-604` documents the `scroll-smoother` `fx_effects` row as
   DELIBERATE: its `scope='site'` proves BY CONSTRUCTION that ScrollSmoother is structurally
@@ -100,7 +101,7 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   ○ **(e) OPEN** — `sgs_get_fx_qualifying_blocks()` still has zero callers, and
   `generated-fx-qualifying-blocks.php` is never `require`d by any PHP, so the function does not
   exist at runtime at all. Spec 38 (`:1120-1130`) already records this and recommends DELETE.
-  **Done when:** (b) and (e) are resolved and (c) has a D-numbered ruling.
+  **Done when:** (e) is resolved and (c) has a D-numbered ruling.
 
 ### Step R-residual — the cursor field's stated limits [OPEN, low priority]
   **Model:** sonnet · **Time:** 1 h
@@ -120,11 +121,14 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
      observer). Struck 2026-08-21 — a register that still lists a fixed item as open is the trap
      its own sibling gap-register warns about.
 
-### Step O — the drag text-selection symptom [OPEN — ⛔ Bean re-checks BY HAND]
+### Step O — the drag text-selection symptom [CLOSED 2026-08-22 — Bean confirmed by hand]
   ⛔ **RULED 2026-08-01 (D449) — do NOT dispatch an agent at this.** The cause-agnostic `user-select`
   mitigation shipped and is live. Scripted drags across Chromium, WebKit and Firefox could not
   reproduce the symptom, and per measurement-vs-eye **Bean's report STANDS over the null
   measurement**. An agent would re-run scripted drags and produce a fourth false pass.
+  ✅ **CLOSED 2026-08-22 — Bean's own by-hand recheck, exactly what this step was blocked on.**
+  Confirmed: the drag/text-selection symptom occurred on physics-simulated sliders, and that was
+  fixed too. This is the eye-over-null-measurement verdict D449 required — nothing further to do.
 
 ### Step U — file-length debt — SUPERSEDED 2026-08-21, see the plan [OPEN, reframed]
   **The register's four filenames and all four numbers were wrong** (they had grown: 815/947/619/

@@ -1,6 +1,11 @@
 # Design gate — FR-38-12 Flip, redirected to WooCommerce Product Collection
 
-**Status:** APPROVED (Bean, 2026-08-20) — ready to delegate to `wp-sgs-developer`.
+**Status:** BUILT + LIVE-VERIFIED, D741 (2026-08-22). Two bugs found and fixed on top of the
+build below: `sgs/container` (the shop archive's own Product Collection toolbar wrapper)
+tripped WooCommerce's client-nav kill-switch, and `fx-flip.js` called `MatchMedia#add()` with
+a bare function where it requires `(conditions, func)`, so `Flip.from()` was registered but
+never invoked. Full writeup: `.claude/decisions.md` D741. Archiving this file — its work is
+done.
 
 ## Why this exists
 

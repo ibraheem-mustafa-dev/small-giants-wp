@@ -58,6 +58,16 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php';
 
+// The CTA below always carries .sgs-button/.sgs-button--primary classes, but it
+// is raw HTML, not a real `sgs/button` InnerBlocks instance — so WordPress's
+// automatic "only load a block's style.css when that block is actually parsed
+// on the page" detection never sees it and skips `sgs-button-style`. On a page
+// with no OTHER real sgs/button instance, the CTA's base look (background,
+// padding, colour) never loads until something else happens to pull the
+// stylesheet in. Declaring the dependency explicitly, every render, removes
+// the coincidence.
+wp_enqueue_style( 'sgs-button-style' );
+
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
 $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';
