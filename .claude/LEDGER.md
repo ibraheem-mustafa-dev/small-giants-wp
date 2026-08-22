@@ -201,88 +201,55 @@ attribute WP discards. Their warning is met, not violated.
 | **Canary** | Canary content is a test rig. A regressed test page gets deleted, not protected. |
 
 
-## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-22 (end of session)
+## ▶ COLOUR-GOLDEN TRACK — 2026-08-23 (16/16 proven · ratchet AT the floor)
 
-**All pushed to `origin/main` (`03d22433`). Build GREEN. Canary DEPLOYED and verified live.**
-Plan: `.claude/plans/invoke-autopilot-before-doing-jazzy-iverson.md`.
+**All pushed. Build GREEN. Canary deployed + verified.** Detail lives in **D744-D750** and
+`reports/visual-diff/native-colour-ui-2026-08-22.md` — do NOT duplicate it here.
 
-**MEASURED (re-run, never quote):** rule 31 = **309** (below-min-states 167 /
-missing-gradient 136 / native-colour-ui **6**), from THREE consecutive agreeing runs on a
-settled tree. Was 355 at session start.
+**MEASURED (re-run TWICE, require agreement — never quote):** rule 31 = **309**
+(below-min-states 167 / missing-gradient 136 / native-colour-ui 6). Ratchet **309**, zero slack.
 
-⛔ **MEASURE RULE 31 TWICE AND REQUIRE AGREEMENT.** The scanner is non-deterministic while
-files are being written: 315 then 312 back-to-back with 3 agents active; 309/309/309 once
-the tree settled. A council rater reported 409/388/355 and I wrongly filed the cause as
-unproven after nine QUIET runs agreed — nine runs of the wrong condition.
+⛔ **Measure rule 31 twice.** The scanner reads a tree being written: it returned 315/312, then
+311, purely because other sessions had files in flight. Cost time three separate times today.
 
-**SHIPPED THIS SESSION**
-- **`check-undefined-refs.js`** — new prebuild gate for JSX identifiers referenced but never
-  bound. Valid JS, `node --check` passes, fails only at runtime in the editor. Found **2 live
-  editor crashes** on its first run (`ContainerWrapperControls.js:169` SelectControl never
-  imported; `GridItemDefaultsPanel.js:42` constant defined nowhere), both from the 2026-08-17
-  panel split, both in `src/components/`-shaped files a block.json-gated corpus never opens.
-  `prove-selftest-can-fail.py` extended to `.js` targets (both subprocess sites).
-- **QA Gate C editor half** — 3/3 PASS live, re-confirmed post-deploy.
-- **16 blocks off the competing native colour panel**, flag flip PAIRED with a block-private
-  gradient via `fillRow()` + `sgs_fill_states_css()`. Gives `helpers-colour-variants.php` its
-  FIRST CALLERS. product-card's whole root box onto one owner (23 → 19).
-- **`sgs/accordion-item`'s background colour was SILENTLY DEAD and now works** — the D684
-  raw-slug defect (`background-color:primary` is invalid CSS the browser drops). Cause proven
-  three ways. Evidence: `reports/visual-diff/native-colour-ui-2026-08-22.md`.
+**SHIPPED:** 2 new prebuild gates (`check-undefined-refs`, `check-text-gradient-companion`) ·
+16 blocks off the competing native colour panel, each flag flip PAIRED with a block-private
+gradient via `fillRow()`/`sgs_fill_states_css()` (gives `helpers-colour-variants.php` its FIRST
+callers) · **5 dead client controls fixed** (accordion-item bg; textColour on tab /
+testimonial-slider / trustpilot-reviews; cardPadding restored) · ratchet 355→309 · D744-D750.
 
-⛔ **RETRACTED 2026-08-23 — the "site-footer-row is broken" finding was FALSE.** It works;
-proven live (DOM + lifted CSS both carry `.sgs-sfr-d70fdc64.sgs-site-footer-row{background-image:
-linear-gradient(...)}`). The FAIL came from MY probe writing malformed JSON: it inserted the
-attribute at the first `}` after the block name, which closes `"padding":{}`, so WP could not
-parse the attributes and fell back to defaults. That explains every symptom — including three
-rows sharing one uid, which is impossible for `md5($attributes)` on rows with different
-`rowSlot`s. The tell was in the data and I read past it. `site-header-row` is byte-identical on
-every load-bearing line, so its code is sound too. **15/16 verified working, 0 defects.**
+**⛔ TWO FALSIFICATIONS — do not re-plan on them (D744):** the `adopt.js` sweep cannot lower
+rule 31 or add capability (its own self-test asserts the invariant; rule 31 never reads PHP;
+the findings need attributes adopt.js never writes). And the "22 uniform flips" never existed —
+1 of 22 was safe bare; for the rest core's panel was the client's ONLY gradient control.
 
-⚠ **LIVE CONFIG DEFECT (not ours, still real):** `sgs_active_header_cpt_id` = **1570**, a post
-that DOES NOT EXIST. `Sgs_Active_Layout::render_active('header')` fails closed, so the header
-silently falls back to the `sgs/framework-header-default` pattern and CPT 1655 ("T1 Header
-HideOnScroll") is orphaned — configured, published, never rendered. The footer pointer (1654)
-is valid, which is exactly why footer edits reached the render and header edits never could.
-**Bean's call:** repoint it at 1655, or accept the framework default as production.
+**⚠ METHOD (D750):** six probe artefacts were reported as defects before measurement killed
+them; ONE reached a commit and was retracted. **Parse block-attribute JSON, never string-splice
+it** — splicing at the first `}` lands inside `"padding":{}`, WP drops every attribute to
+defaults, and it looks exactly like a render bug. Two agent briefs omitted gates and both
+agents shipped a silent defect while honestly reporting green: **the coordinator re-runs the
+FULL gate set; per-agent green is not evidence.**
 
-**⛔ TWO FALSIFICATIONS — do not re-plan on the old premises**
-1. **R2d/R2e cannot lower rule 31 or add capability.** `adopt.js`'s OWN self-test asserts
-   `statesCount`/`hasGradient` do not drift; rule 31 never reads PHP (`grep -c` = 0); and the
-   333 findings need NEW ATTRIBUTES, which `adopt.js` explicitly never writes. It is a
-   de-duplication pass — relabel it before running it.
-2. **The "22 uniform one-line flips" do not exist.** Only 1 of 22 was safe to flip bare; the
-   rest needed a control added first or the flip REMOVES the client's only gradient.
+**NEXT SESSION — Bean's order (2026-08-23):**
+1. **The last 6 `native-colour-ui`** — `notice-banner` (no `backgroundColour` at all),
+   `icon-list` (background), `buybox`/`info-box`/`team-member` (bg+text+gradient). Each needs a
+   control ADDED before its flag can flip. Finishes the uniform class.
+2. **Structural block on `git stash` for subagents.** THREE ran it on this shared worktree
+   today despite explicit prohibition, once mid-write by another agent. Prose does not hold
+   this — it needs a hook.
+3. **The line-keyed baseline.** `08-raw-url-link`'s key embeds a LINE NUMBER; re-anchored SIX
+   times for code that never changed. Re-key on block + control identity, not position.
+4. **THEN PLAN the two behemoths** — below-min-states 167 + missing-gradient 136 (303 findings,
+   100+ sites). ⛔ Do NOT start hand-fixing. Design a DETERMINISTIC MECHANICAL batch method
+   first (survey→fix→check triad, D542) so execution is dumb and predictable. ⚠ `adopt.js`
+   CANNOT do it — it rewrites `edit.js` only, never `block.json`, and these need NEW
+   ATTRIBUTES. The tool must own all three layers: block.json attr + edit.js row + render emit.
 
-**REMAINING** — `notice-banner` (no `backgroundColour` at all), `icon-list` (background),
-`buybox`/`info-box`/`team-member` (background+text+gradient); the 303 below-min-states +
-missing-gradient findings; **`tab`/`testimonial-slider`/`trustpilot-reviews` still pass
-`textColour` RAW to the style engine — the same D684 defect on the TEXT path, their
-text-colour controls may be dead the same way.**
-
-**⚠ OWED:** 9 of the 16 migrated blocks were NOT individually captured (same mechanism, all
-static gates green — but a shared mechanism is an argument, not a measurement).
-`collapsible-text` is NOT VERIFIED (probe rendered nothing, correct for empty content).
-Bean's eye has not passed over any of it (R-31-13).
-
-**⚠ PROCESS, earned twice:** I under-specified two agent briefs and both shipped a silent
-client-facing defect while honestly reporting green — R2c DELETED `product-card`'s
-`cardPadding` render (control live, nothing rendering it), wave B left a permanently-true
-guard. `check-dead-controls` and `check-render-undefined-vars` were missing from the briefs.
-**The coordinator must re-run the FULL gate set; per-agent green is not evidence.**
-
-**⚠ A wave agent ran `git stash` on the shared worktree** despite an explicit prohibition,
-reverting every session's in-flight work including an agent still writing, then popped it. It
-recovered (verified independently, not taken on trust). It could easily not have.
-
-**⚠ STRUCTURAL:** `08-raw-url-link`'s baseline key EMBEDS A LINE NUMBER and has now been
-re-anchored **six times** (191→189→191→225→250→247) for code that has never changed once. Any
-edit above a finding turns accepted debt into a build-blocking net-new finding.
-
-**⚠ NO GATE covers the `sgs_text_decls` half-adoption trap** — omit the companion
-`sgs_text_colour_gradient_fallback_rule` and the client's gradient silently paints nothing
-with every gate green (rule 31 never reads PHP). Hand-verified on product-card only.
-
+**⚠ CANARY HEADER — settled (D749).** `sgs_active_header_cpt_id` pointed at post **1570, which
+does not exist**; the header silently fell back to the framework-default pattern, orphaning CPT
+1655. Bean ruled: use the default. Option is now **0** — a clean fallback, not a dangling
+deleted id. Verified: HTTP 200, 3 rows, 11 nav links, 0 console errors. **A pointer to a
+deleted post fails SILENTLY** — worth a gate asserting those pointers resolve.
 ## ▶ DOC-DEBT / MOTION-REGISTER TRACK — 2026-08-21 (a THIRD track; all pushed)
 
 **All on `origin/main`. Build GREEN. Canary deployed + live-verified.**
