@@ -69,12 +69,23 @@ def test_conservation_total_and_no_unrouted(conn):
     # produced ≥1 routed result. (writes may exceed decl_count when a decl produces
     # a list[Write]; here it doesn't, but the invariant is decl_results==decl_count.)
     assert result.decl_results == len(decls)
-    # The box props are honest tracked GAPs, not silent drops: padding (shorthand,
-    # pre-dispatch-expansion seam) is UNIMPLEMENTED_STUB; background-color has no
-    # OUTER attr on sgs/container so it is a faithful NO_DESTINATION.
-    assert {g.origin for g in result.gaps} == {
-        GapOrigin.UNIMPLEMENTED_STUB, GapOrigin.NO_DESTINATION
-    }
+    # padding (shorthand, pre-dispatch-expansion seam) is an honest tracked GAP —
+    # UNIMPLEMENTED_STUB, not a silent drop.
+    #
+    # background-color USED to be a NO_DESTINATION here, and this assertion said so.
+    # That stopped being true on 2026-08-20: `1905257e` gave sgs/container a real,
+    # client-reachable `backgroundColour` attribute (block.json:626, mapped at
+    # elements.wrapper.attrMap "css:background-color"), painted via
+    # sgs_background_paint_decl() at container/render.php:125-127. The DB row only
+    # caught up on 2026-08-22 when /sgs-update re-derived the classifier artefact,
+    # which had been stale for two days — so this test went red the moment the DB
+    # became CORRECT, not when anything broke.
+    #
+    # The transfer is now the faithful outcome (7-rules #1/#4), so it is asserted
+    # POSITIVELY below rather than the gap-set assertion merely being loosened —
+    # a future regression that silently stops transferring it must still fail here.
+    assert {g.origin for g in result.gaps} == {GapOrigin.UNIMPLEMENTED_STUB}
+    assert {w.attr: w.value for w in result.writes}.get("backgroundColour") == "#f5f0eb"
     assert result.unrouted() == []
 
 
@@ -84,7 +95,13 @@ def test_emit_produces_maxwidth_block_markup(conn):
     # No inner content → SELF-CLOSING form (WP save=null dynamic-block contract;
     # open+close fails block validation and drops the section on the rendered page —
     # wired-pipeline LANDED fix #2, 2026-07-01).
-    assert markup == '<!-- wp:sgs/container {"maxWidth":"1200px"} /-->'
+    # backgroundColour rides along since 1905257e (2026-08-20) gave sgs/container a
+    # real background-colour attribute — see the note in
+    # test_conservation_total_and_no_unrouted for why this expectation moved.
+    assert markup == (
+        '<!-- wp:sgs/container '
+        '{"backgroundColour":"#f5f0eb","maxWidth":"1200px"} /-->'
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -158,7 +175,11 @@ def test_metamorphic_bem_rename_identical(conn):
     # any draft BEM class produce identical output (the Ctx carries the slug, not a class).
     a = process_element(_ctx(conn), _rt_decls())
     b = process_element(_ctx(conn), _rt_decls())
-    assert a.attrs() == b.attrs() == {"maxWidth": "1200px"}
+    # The metamorphic property under test is a == b (name-free routing); the literal
+    # dict is only the current transfer set, which gained backgroundColour at
+    # 1905257e (2026-08-20). Both halves kept: the invariant AND the exact set.
+    assert a.attrs() == b.attrs()
+    assert a.attrs() == {"backgroundColour": "#f5f0eb", "maxWidth": "1200px"}
 
 
 def test_metamorphic_px_scale_by_k(conn):

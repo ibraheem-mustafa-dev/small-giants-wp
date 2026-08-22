@@ -207,7 +207,24 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # to the generic string-verbatim branch below, which would write a bare
     # "1px" into an attr_type='object' destination (render.php's is_array()
     # guard drops it) or leave a raw "var(--border)" un-tokenised).
-    if db_lookup.box_family_for(ctx.block_slug, attr) == attr:
+    # Self-merge gate: two DB shapes both mean "attr is a box-family base",
+    # and only ONE of them is `box_family_for(attr) == attr` (the
+    # self-referencing shape, e.g. sgs/button.borderWidth). VERIFIED
+    # 2026-08-22 that `sgs/container.margin`/`padding` use the OTHER shape —
+    # box_family IS NULL on the base row itself, and only the Tablet/Mobile
+    # siblings carry `box_family='margin'`/`'padding'` POINTING BACK at the
+    # base. Querying "does any OTHER row for this block declare
+    # box_family=<attr>?" catches both shapes uniformly and is a strictly
+    # NARROWER, DB-driven, no-slug-literal check (R-31-1) than gating on
+    # attr_type='object' alone — that column is shared by many non-box
+    # tier/config objects (contentWidth, gap, columns, gridTemplateColumns)
+    # that must NOT be routed through the box-shorthand parser.
+    _box_family = db_lookup.box_family_for(ctx.block_slug, attr)
+    _is_box_family_base = _box_family == attr or ctx.conn.execute(
+        "SELECT 1 FROM block_attributes WHERE block_slug=? AND box_family=?",
+        (ctx.block_slug, attr),
+    ).fetchone() is not None
+    if _is_box_family_base:
         from converter.services.root_supports import (
             _parse_padding_shorthand as _parse_box_shorthand_value,
         )
@@ -217,6 +234,26 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
                 f"box shorthand for merged object attr {attr!r}",
+            )
+        # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not
+        # lifted: the band-rule emitter (class-sgs-container-wrapper.php
+        # ~2721-2726) already writes `margin-inline:auto` on the `__inner`
+        # band whenever a band max-width/contentWidth tier resolves, so this
+        # centring is reproduced by construction at the CORRECT layer. Lifting
+        # it onto the OUTER margin attr as well would be (a) the wrong layer
+        # and (b) a duplicate; `auto` is also not a real box-object side value
+        # for this attr (lengths only) even where it would be spuriously
+        # well-formed. Gated on the CSS SHAPE (left==right=="auto"), never on
+        # owning_slug/block name — true for every band on every composite
+        # mirroring sgs/container (R-31-9).
+        if sides["left"] == sides["right"] == "auto":
+            return gap_writer(
+                ctx, decl, GapOrigin.EXCLUDED,
+                f"{prop} left/right are both 'auto' — horizontal centring is "
+                f"already reproduced by the band's contentWidth rule "
+                f"(class-sgs-container-wrapper.php margin-inline:auto), so "
+                f"lifting it onto the OUTER {attr!r} attr would be the wrong "
+                f"layer and a duplicate.",
             )
         return Write(attr=attr, value=sides, property=prop, tier=decl.tier)
 
