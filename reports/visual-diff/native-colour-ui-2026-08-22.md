@@ -1,0 +1,137 @@
+# Visual diff — native-colour-ui migration (16 blocks)
+
+verdict: PASS
+first_paint_capture_passed: true
+
+**Target:** sandybrown canary. **Date:** 2026-08-22.
+**Deployed:** `main @ 67ad6578` via `build-deploy.py --target sandybrown --blocks-only`
+(exit 0, 244s; motion-QA probes all green).
+**Harness:** `plugins/sgs-blocks/scripts/qa/capture-native-colour-ui.js`.
+
+⚠ **Read the coverage table before quoting this as a blanket PASS.** 7 of the 16
+migrated blocks were captured directly. The other 9 share the identical mechanism
+but were NOT individually captured, and are recorded here as such rather than
+counted as verified.
+
+---
+
+## What the change was
+
+16 blocks declared `supports.color.gradients: true`, so WordPress rendered its own
+colour panel in the Styles tab competing with the SGS panel — the client saw two
+and could not tell which won. For 20 of the 22 findings, core's panel was also the
+client's **only** gradient control.
+
+The flag flip was therefore PAIRED with a block-private `backgroundColourGradient`
+(+ hover siblings) exposed through `fillRow()`, and the render moved from
+`wp_style_engine_get_styles` to `sgs_fill_states_css()`. Capability moves; it does
+not disappear.
+
+## Method
+
+Probe pages authored via REST with exact attribute combinations, `getComputedStyle`
+read from the live DOM at 1440px, `::after` measured separately (several of these
+blocks paint background on that layer to avoid the `background-clip:text`
+collision — measuring only the root would read as a false failure). Probe pages
+deleted afterwards.
+
+⛔ SGS block CSS is **lifted** to `uploads/sgs-css/<hash>.css`, so a page-source
+grep proves nothing. Everything here is computed style on the painted node.
+
+⚠ Expected colours resolve from THIS site's live palette, never `theme.json` —
+the canary runs a client snapshot that overrides it. Live values:
+`primary #e68a95` → `rgb(230,138,149)`, `accent #f5d050` → `rgb(245,208,80)`.
+
+---
+
+## Results
+
+### Capability — the new gradient paints (7/7 captured)
+
+Every block captured with `backgroundColourGradient` set rendered
+`linear-gradient(135deg, rgb(230,138,149) 0%, rgb(245,208,80) 100%)` on its root:
+
+`accordion-item` · `quote` · `feature-grid` · `product-faq` · `tab` ·
+`trustpilot-reviews` · `multi-button`
+
+This is a control the client did not have on these blocks before.
+
+### Neutrality — and one block that was NOT neutral, because it was broken
+
+| Block | BEFORE (pre-deploy) | AFTER | Reading |
+|---|---|---|---|
+| `quote` `backgroundColour:accent` | `rgb(245,208,80)` | `rgb(245,208,80)` | **NEUTRAL** |
+| `accordion-item` `backgroundColour:primary` | **`rgba(0,0,0,0)`** | **`rgb(230,138,149)`** | **CHANGED — a fix** |
+
+## ⛔ The significant finding: accordion-item had the D684 raw-slug defect
+
+`sgs/accordion-item`'s background colour **was silently doing nothing** and now
+works. This was not planned and is not cosmetic — the client's background-colour
+control on that block was dead.
+
+Cause proven three independent ways, not inferred:
+
+1. **The removed code.** The pre-migration emit was
+   `$color_args['background'] = (string) $attributes['backgroundColour'];`
+   passed straight to `wp_style_engine_get_styles` with **no `sgs_colour_value()`
+   resolution**.
+2. **The new path resolves.** `sgs_fill_states_css` → `sgs_background_paint_decl`
+   → `sgs_background_paint_value` → `sgs_colour_value( $colour )`
+   (`helpers-tokens.php:804`), which turns the slug into
+   `var(--wp--preset--color--primary)`.
+3. **The live measurement.** Transparent before, resolved after, with nothing else
+   on that path changed.
+
+This is verbatim the **D684** defect the project CLAUDE.md records for
+`site-header-row`/`site-footer-row`: *"the style engine neither resolves nor
+rejects a bare slug, it emits the literal `background-color:primary;`, which is
+invalid CSS the browser drops."* CLAUDE.md's own generalisation — *"any block
+feeding a DesignTokenPicker value to the style engine RAW has this defect"* — is
+confirmed here on a block nobody had checked.
+
+**Still owed:** `tab`, `testimonial-slider` and `trustpilot-reviews` were reported
+during the migration as still passing `textColour` RAW to the style engine. That
+is the same defect on the TEXT path, out of scope for this background-only change,
+and it means those blocks' text-colour controls may be dead in the same way. Worth
+its own pass.
+
+---
+
+## Coverage — what was and was not captured
+
+| Captured directly (7) | Not captured (9) |
+|---|---|
+| accordion-item, quote, feature-grid, product-faq, tab, trustpilot-reviews, multi-button | collapsible-text, form-field-tiles, form-step, physics-canvas, product-faq-item, site-footer-row, site-header-row, testimonial-slider, product-card |
+
+**`collapsible-text` — NOT VERIFIED, and the reason matters.** Its probe rendered
+nothing (`present: false`). That is almost certainly correct behaviour, not a
+defect: the block renders nothing on empty content by design (plugin CLAUDE.md).
+The probe supplied no content, so it proved nothing either way. Recorded as NOT
+VERIFIED rather than passed.
+
+The remaining 8 uncaptured blocks received the byte-identical mechanism (same
+helper call, same attribute names, same emitter) and passed every static gate, but
+**a shared mechanism is an argument, not a measurement.** They are not claimed as
+visually verified here.
+
+## Regression check
+
+`check-colour-editor-roundtrip.js` re-run post-deploy: **PASS 3 · FAIL 0 · NOT RUN 0**
+— slug-not-hex across save+reload, hover repaint under a real pointer, and
+nav-drawer's three properties with the drawer opened by a real burger click.
+
+## Gates at the deployed commit
+
+`dead-controls` · `inspector-scan --check` · `check-undefined-refs` ·
+`check-render-undefined-vars` · `audit-inline-styling` · `check-undeclared-attrs`
+— all exit 0. `npm run build` exit 0.
+
+Rule 31: **355 → 309** (three consecutive agreeing runs on a settled tree).
+`native-colour-ui` 22 → 6.
+
+## Not covered here
+
+- The 309 remaining rule-31 findings. This proves the migrated rows behave; it
+  says nothing about the rows still lacking a hover or gradient attribute.
+- Bean's eye. R-31-13: measurement and the eye are co-authoritative, and only one
+  of them is in this document.
