@@ -97,7 +97,60 @@ its own pass.
 
 ---
 
-## Coverage — what was and was not captured
+## ADDENDUM 2026-08-22 (later) — the TEXT path was dead too, on three blocks
+
+The "still owed" note above was actioned the same session and the defect was real.
+`textColour` did NOTHING for the client on three blocks. Measured live BEFORE the
+fix, then again after, with the same probe script:
+
+| Block | BEFORE | AFTER |
+|---|---|---|
+| `tab` | `rgb(58, 46, 38)` | **`rgb(230, 138, 149)`** |
+| `testimonial-slider` | `rgb(58, 46, 38)` | **`rgb(230, 138, 149)`** |
+| `trustpilot-reviews` | `rgb(58, 46, 38)` | **`rgb(230, 138, 149)`** |
+
+`rgb(58,46,38)` is the inherited body colour — the block's own setting was doing
+nothing. Same cause as the background path: the raw palette slug went to
+`wp_style_engine_get_styles()`, which emits literal `color:primary` and the browser
+drops it. Fixed by routing through `sgs_colour_value()` (`056a1744`), deployed and
+re-measured with the identical script — a clean controlled before/after.
+
+**D684 is now confirmed on FOUR blocks across TWO paths.** CLAUDE.md's
+generalisation ("any block feeding a DesignTokenPicker value to the style engine
+RAW has this defect") should be treated as a live checklist, not a caution.
+
+## Coverage — corrected 2026-08-22 (later)
+
+A second pass captured the 9 blocks this report originally declined to claim.
+**13 of 16 are now verified.**
+
+| Verified (13) | Not verifiable by page-content probing (3) |
+|---|---|
+| accordion-item, quote, feature-grid, product-faq, tab, trustpilot-reviews, multi-button, physics-canvas, testimonial-slider, product-card, product-faq-item, form-step, form-field-tiles | collapsible-text, site-header-row, site-footer-row |
+
+⛔ **THREE FALSE FAILURES were reported and retracted in that pass. The retraction
+matters more than the passes.**
+
+- `form-field-tiles` first read as FAIL because the probe measured the block
+  WRAPPER; the gradient paints correctly on the inner `.sgs-form-field--tiles`,
+  which is the element the CSS targets. A confident code-reading story ("CSS
+  emitted to a dead selector") had already been written and was FALSE — only the
+  measurement caught it.
+- `site-header-row` / `site-footer-row` read as FAIL because a unique marker
+  planted in the probe appeared NOWHERE in the page, and THREE elements of that
+  class existed: the measurement was of the site's REAL header. Page content cannot
+  inject into a template part.
+
+All three were probe defects, not code defects. The discipline that saved them was
+refusing to accept "the element is present and looks wrong" without separating
+*my probe is wrong* from *the code is wrong*.
+
+**The remaining 3 are a limitation of the method, not a pass.** `collapsible-text`
+renders nothing from a bare attribute; the two row blocks need a template context
+(they declare `parent: ['sgs/site-header'|'sgs/site-footer']`). Verifying them
+needs the site editor, not a published page.
+
+### Original first-pass coverage (superseded by the table above)
 
 | Captured directly (7) | Not captured (9) |
 |---|---|
