@@ -294,6 +294,10 @@
 		"transitionEasing": {
 			"type": "string",
 			"default": "ease-in-out"
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

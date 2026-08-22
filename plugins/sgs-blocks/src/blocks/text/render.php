@@ -521,6 +521,12 @@ if ( $has_hover ) {
 	if ( $hover_decls ) {
 		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
 		$css_hover  = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
+if ( '' !== ( $attributes['firstLetterColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['firstLetterColourHover'] );
+}
+if ( '' !== ( $attributes['borderColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'border-color:' . sgs_colour_value( $attributes['borderColourHover'] );
+}
 		$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
 		$css_hover .= sgs_text_colour_gradient_fallback_rule( $scope . ':hover,' . $scope . ':focus-visible', $hover_colour_effective );
 

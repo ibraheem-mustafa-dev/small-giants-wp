@@ -441,6 +441,9 @@ if ( $wrapper_vars ) {
 if ( $hover_decls ) {
 	// Via the ONE shared hover-colour helper, which also emits the
 	// `:focus-visible` twin a keyboard user needs.
+if ( '' !== ( $attributes['quoteColourHover'] ?? '' ) ) {
+	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['quoteColourHover'] );
+}
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 

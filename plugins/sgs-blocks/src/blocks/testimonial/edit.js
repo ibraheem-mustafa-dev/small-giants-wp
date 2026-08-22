@@ -422,6 +422,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { quoteColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: quoteColourHover,
+								onChange: ( val ) =>
+									setAttributes( { quoteColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
 					showSummary && {
