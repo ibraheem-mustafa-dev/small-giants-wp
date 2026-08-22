@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-08-20 19:02:08 UTC
+# Stage 3 Style Variation Sync — 2026-08-22 17:16:33 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 171 | Conflicts: 130
+Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 173 | Conflicts: 130
 
 ## Per-client results
 
@@ -68,7 +68,7 @@ Inserted: 0 | Skipped: 17 | Conflicts: 13
 
 ### mamas-munches
 
-Inserted: 0 | Skipped: 27 | Conflicts: 24
+Inserted: 0 | Skipped: 29 | Conflicts: 24
 
 - CONFLICT: color-accent (framework='#C9A84C', client='#f5d050') → inserted as mamas-munches-color-accent
 - CONFLICT: color-border (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border

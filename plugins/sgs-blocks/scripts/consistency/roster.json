@@ -1071,7 +1071,7 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": false,
+        "media": true,
         "animation": false
       },
       "qualifies": {

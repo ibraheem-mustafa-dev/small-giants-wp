@@ -1131,7 +1131,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "desktop",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2260,6 +2260,42 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "backgroundImage",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "backgroundPosition",
+      "fields": {
+        "css_property": "background-position",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "backgroundRepeat",
+      "fields": {
+        "css_property": "background-repeat",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "backgroundSize",
+      "fields": {
+        "css_property": "background-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "drawerAlign",
       "fields": {
         "css_property": "align-items",
@@ -2279,6 +2315,13 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "drawerBgGradient",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "surfaceOpacity",
       "fields": {
         "css_property": "background-color"
@@ -2290,6 +2333,14 @@
       "fields": {
         "css_property": "color",
         "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "toggleCloseColourHover",
+      "fields": {
+        "css_property": "color",
+        "css_state": "hover"
       }
     },
     {
@@ -2760,7 +2811,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -4180,7 +4231,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6080,7 +6131,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "wrapper"
+        "css_element": "background"
       }
     },
     {
@@ -6088,7 +6139,7 @@
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "wrapper"
+        "css_element": "background"
       }
     },
     {
@@ -6097,7 +6148,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "wrapper",
+        "css_element": "background",
         "css_state": "hover"
       }
     },
@@ -6106,7 +6157,7 @@
       "attr": "backgroundColourHoverGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "wrapper",
+        "css_element": "background",
         "css_state": "hover"
       }
     },
@@ -6479,7 +6530,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "wrapper"
+        "css_element": "background"
       }
     },
     {
@@ -6503,6 +6554,14 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
         "css_element": "wrapper"
       }
     },
@@ -8295,7 +8354,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "wrapper"
+        "css_element": "background"
       }
     },
     {
@@ -8303,7 +8362,7 @@
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "wrapper"
+        "css_element": "background"
       }
     },
     {
@@ -8312,7 +8371,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "wrapper",
+        "css_element": "background",
         "css_state": "hover"
       }
     },
@@ -8321,7 +8380,7 @@
       "attr": "backgroundColourHoverGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "wrapper",
+        "css_element": "background",
         "css_state": "hover"
       }
     },
