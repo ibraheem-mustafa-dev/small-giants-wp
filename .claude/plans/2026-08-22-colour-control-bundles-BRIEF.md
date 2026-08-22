@@ -4,102 +4,168 @@ project: small-giants-wp
 spec_id: 39
 status: AWAITING-BEAN
 date: 2026-08-22
+revision: 2 (rewritten after /qc-council — revision 1's premise was wrong)
 ---
 
-# Colour control bundles — one helper per mechanism
+# Colour control conformance — enforced recipes, not control bundles
 
-**Bean's ask, 2026-08-22:** *"can we use those 3 helpers to make 3 full helpers that group up the
-full set of controls for each type that come with the extra gradient controls?"* plus a fourth:
-*"an overlay helper … the same functionally to the bg popover but with the alpha channel removed,
-the control row looks different … and a separate opacity control paired with it."*
+> **Revision 1 proposed "3-5 control bundles, one per paint mechanism." A QC council falsified that
+> premise.** This is not a patch — the unit of work changed. Revision 1 survives in git, and the
+> reason it was wrong is the most useful thing in this document.
 
-## The problem, in one line
+## What the council killed, and why it matters
 
-**The paint layer knows there are three gradient mechanisms. The control layer does not.**
+**There is no per-mechanism seam in the control layer to cut along.** Verified against
+`src/blocks/heading/`:
 
-- PHP is already partitioned: `sgs_background_paint_decl` (fill), `sgs_text_colour_decl`
-  (`background-clip:text` + `color:transparent`), `sgs_border_gradient_css` (masked `::before`).
-- JS is not: one generic row (`DesignTokenPicker` + states), one text-specific control, one overlay
-  adapter.
+| Row | edit.js shape | render.php helper |
+|---|---|---|
+| `text` (`edit.js:293`) | `states[]` + `gradientValue`/`onGradientChange`, **plus `gradientCapable: true` (`:295`)** | `sgs_text_colour_decl()` (`render.php:267`) |
+| `background` (`edit.js:318`) | `states[]` + `gradientValue`/`onGradientChange` | `sgs_background_paint_decl()` (`render.php:337`) |
+| `border` (`edit.js:344`) | `states[]` + `gradientValue`/`onGradientChange` | `sgs_border_gradient_css()` |
 
-The enforcement programme doc states the consequence exactly, and it is already quoted in the
-scan-set addendum:
+**One row shape serves all three mechanisms.** A single boolean (`gradientCapable`) separates text,
+because text needs `background-clip:text`. Background and border are **indistinguishable
+client-side** — the mechanism is chosen entirely by which PHP helper `render.php` calls.
+
+So "a control bundle per mechanism" had nothing to cut along. That is why revision 1 could not say
+what a bundle *was* in code — a component, a config field, or a copy-paste pattern. On this
+architecture the honest answer is none of them.
+
+⛔ Revision 1 also said **"copied from its reference block"**, which reads as duplicating JSX into
+each qualifying block. That is the exact anti-pattern D717/D718 warn about: *a helper that owns the
+value but not the condition makes two implementations look converged without converging them.*
+
+## The real shape: an enforced RECIPE
+
+The controls are already uniform. What is unenforced is the **pairing**:
+
+> **row shape → paint helper → required sibling attributes**
+
+A row is correct when its gradient path matches the helper that consumes it. Nothing checks that
+today, which is exactly the gap the enforcement programme doc names:
 
 > *"A binary 'does a gradient path exist?' check is INSUFFICIENT: **a text row wired to the
 > background mechanism would PASS while rendering nothing.**"*
+> — verbatim, `.claude/reports/2026-08-20-colour-golden-scan-set.md:539-541`
 
-So rule 31's **193 `row-missing-gradient` findings are a FLOOR with an unknown false-pass rate.**
-It counts rows with no gradient path at all and cannot see a row wired to the wrong one.
+**The deliverable is therefore almost entirely the detector, not the controls.**
 
-## The bundles
+### The three recipes
 
-THREE paint mechanisms (what the CSS does) but FIVE control bundles (what a client configures).
-That distinction is the design: overlay is not a fourth CSS mechanism, it is the fill mechanism on
-a scrim element plus properties only an overlay has.
-
-| Bundle | Paint mechanism | Extras it owns | Reference to copy |
+| Recipe | Paint helper | Row shape | Required siblings |
 |---|---|---|---|
-| Fill / background | `background-image` on the element's own box | gradient stops/angle | `sgs/container` background row |
-| **Overlay** | same fill, on a scrim element | **opacity (per-tier), blend mode, alpha OFF** | the Background panel as it stands after D717/D738/D739 |
-| Text | `background-clip:text` + `color:transparent` | gradient stops/angle + the `@supports` fallback rule | `sgs/heading` text row |
-| Border | masked `::before` | gradient stops/angle + width | `sgs/heading` border-colour row |
-| Shadow | **colour only** | none — `box-shadow` takes a colour, a gradient is not expressible | `ShadowControl` |
+| Fill / background | `sgs_background_paint_decl()` | `states[]` + per-state gradient | `{attr}Gradient` per state |
+| Text | `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()` | same + `gradientCapable: true` | `{attr}Gradient` per state |
+| Border | `sgs_border_gradient_css()` | `states[]` + per-state gradient | `{attr}Gradient` per state |
 
-**Bean's exception is correct and structural:** shadows are the one colour row that can never carry
-a gradient, because CSS has no gradient form for `box-shadow`.
+**Overlay is the fill recipe applied to a scrim element**, plus properties only an overlay has
+(`opacity` per tier, `mix-blend-mode`) — see open question 1 on where those live.
 
-### Overlay bundle — the specifics Bean named
+**Shadow has NO gradient recipe.** `box-shadow` takes a colour; a gradient there is invalid CSS.
 
-- Alpha channel REMOVED. This is D717: `DesignTokenPicker` stores a palette SLUG only on exact
-  string equality, so lowering alpha stores a raw hex and silently unlinks the client's brand
-  token. Opacity is the sanctioned transparency mechanism precisely because it leaves the stored
-  colour intact.
-- The row PRESENTATION and HELP TEXT stay as they are today — Bean's explicit call.
-- Opacity travels WITH the colour in the bundle, and carries the device axis (D739).
+## Shadow: exempt BY MECHANISM, not per block (Bean-ruled 2026-08-22)
 
-⛔ **Recommendation on "slider + boolean": ship the SLIDER ALONE, with `allowReset`.** A boolean
-beside it means two attributes owning one piece of state, and they can disagree (boolean on, slider
-unset). That is the two-owners defect this codebase keeps rediscovering, and it would re-add
-attributes one day after D739 removed two per block. `allowReset` already expresses "unset =
-inherit desktop"; if discoverability is the worry, strengthen the help sentence rather than adding
-a second source of truth. **Bean to confirm.**
+Revision 1 proposed a per-block `supports.sgs.colourExemptions` entry. **Bean challenged it and was
+right.** All three exemptions live in the tree today:
 
-## A correction to the three-mechanism model, from D738
+| Block | Row | Reason is... |
+|---|---|---|
+| `button` | text | **block-specific** (no wrapper; the same element carries the background) |
+| `site-header` | text | **block-specific** (its own background) |
+| `post-grid` | shadow | **a universal CSS fact** — identical on every block with a shadow row |
 
-The programme doc lists `GradientOverlayControl` as its own mechanism BECAUSE it was single-state
-by construction. **D738 removed that constraint** — it is now a thin adapter over the generic row
-and renders Normal/Hover as tabs. So on the CONTROL side there are two shapes (generic-with-states,
-and text); on the PAINT side there are three. **Key the bundles to the PAINT mechanism** — that is
-what determines whether a row renders anything.
+The exemption contract's own rule: *"A reason string is REQUIRED and must not be boilerplate. An
+exemption without a real reason is itself a finding."* Declaring the remaining shadow rows would
+produce N copies of one sentence — boilerplate by construction, each copy then a finding. **The
+mechanism defeats itself at scale.** It exists for "this block is special"; no shadow row is
+special.
 
-## Build order — detector FIRST, not last
+**Ruling: the detector learns that a shadow row's helper has no gradient form. Stated once.**
+Consequence: `post-grid`'s existing shadow exemption should then be REMOVED — once the detector
+knows, that declaration is a second owner of the same fact, and if the two ever disagree the
+per-block one silently wins.
 
-This project's triad rule (D542) is that when an item touches more than ~3 blocks, the first
-deliverable is the detector. It binds here for a specific reason: **without a mechanism-aware
-detector we cannot prove the rollout worked**, because the current check passes a wrongly-wired row.
+## The detector work — scoped honestly
 
-1. **Make rule 31's `row-missing-gradient` mechanism-aware.** For each row, derive the property it
-   paints and assert the gradient path matches THAT mechanism. Expected population must be declared
-   before the first live run (`_meta.zeroIsAClaim`), by a method independent of the rule's own code.
-   The 193 will move; the direction is not predictable in advance and must be reconciled by
-   ENUMERATION, not by subtracting totals.
-2. **Build the five bundles**, each copied from its reference block above.
-3. **Roll out per bundle**, re-running the detector between each.
-4. **Ratchet down** rule 31's `openBacklog` after each wave so the gain cannot silently regress.
+⛔ **Rule 31 has NO `render.php` access today.** It declares
+`needs: ['ast:edit.js', 'json:block.json']`
+(`scripts/inspector-scan/rules/31-golden-colour-control.js:424`). Sibling rules (21, 28, 30, 33,
+34) already declare `text:render.php`, so the plumbing exists — rule 31 just does not use it.
+
+Mechanism-awareness therefore needs a **cross-file, cross-language join** the rule has never done:
+resolve, per colour attribute, which PHP helper consumes it (PHP is not AST-parsed anywhere in this
+JS toolchain — it is text/regex), then join that back to the JS row from the existing edit.js walk.
+
+**That is a rewrite of the `row-missing-gradient` check, not a patch.** Rule 31 already documents 12
+blind spots on the simpler same-file check it does today.
+
+It must fix BOTH directions — revision 1 described only the first:
+
+- **False PASS** — a row wired to the wrong mechanism (the programme doc's case).
+- **False FAIL** — a shadow row demanded to carry a gradient it cannot have.
+
+## Counts — measure, never cache
+
+⛔ **Do not quote a number from this document.** Revision 1 cached "193 `row-missing-gradient`"; it
+measured **194** the same day. Every cached count in this project has drifted.
+
+Run it and quote the result with today's date:
+
+    node plugins/sgs-blocks/scripts/inspector-scan/run.js --check --json
+
+Rule 31's aggregate is ratcheted in `rules.json` and is the only figure that self-corrects.
+
+## Reference blocks — corrected
+
+⛔ **Revision 1 named `sgs/heading`'s border-colour row as the border reference. It is
+NON-CONFORMANT** — `sgs/heading`'s only two rule-31 findings ARE its border rows (`edit.js:343`,
+`edit.js:477`), and the fix clearing both is declaring a `borderColourHover` sibling. Copying it
+would have propagated the defect to every block adopting the recipe.
+
+| Recipe | Reference | Status |
+|---|---|---|
+| Fill / background | `sgs/container` | **0 rule-31 findings** — clean |
+| Text | `sgs/heading` text row (`edit.js:293-316`) | clean |
+| Border | **none yet** — fix heading's border row FIRST, then it becomes the reference | 2 findings |
+| Shadow | `ShadowControl.js` | colour-only by design |
 
 ## Open questions for Bean
 
-1. **Slider + boolean, or slider alone?** Recommendation above: slider alone.
-2. **Does the shadow bundle exist as a fifth helper** (gradients structurally disabled), or stay
-   the standalone `ShadowControl` it is now? A fifth helper buys uniformity; staying put avoids
-   wrapping a control that has no gradient story to tell.
-3. **Gradient parallax — design in now, or add after the bundles land?** It does not exist yet
-   (verified: zero attributes across 83 blocks, zero code; the 2026-08-14 council recorded it as
-   "a different one that does not exist yet … under investigation as its own item"). Its natural
-   home is inside each gradient-capable bundle, which argues for designing the seam now even if the
-   effect ships later.
+1. **Where do overlay opacity + blend mode live?** `SgsColourPanel`'s row contract has NO field for
+   either (`SgsColourPanel.js:72-101`: `{key, label, states, gradientCapable, borderStyle,
+   onBorderStyleChange}`). So either that shared contract grows two fields — **a change 64 mounting
+   blocks depend on, which Rule 7 says needs a design gate and your sign-off** — or overlay stays a
+   separate cluster inside `BackgroundPanel` and simply is not an `SgsColourPanel` row. Revision 1
+   listed it as a peer of the other four without noticing it cannot be one.
+2. **Slider alone, or slider + boolean, for overlay opacity?** Recommendation: **slider alone**.
+   `allowReset` already expresses "unset = inherit desktop" (`BackgroundPanel.js:207`); a boolean
+   beside it means two attributes owning one piece of state, and they can disagree.
+3. **Fix heading's border row first?** It is the blocker for having any border reference at all.
 
 ## Explicitly NOT in scope
 
-The 413 open rule-31 findings. This brief changes the SHAPE the standard enforces; paying down the
-existing backlog is separate, ratcheted work.
+The existing rule-31 backlog. This brief changes the SHAPE the standard enforces; paying the
+backlog down is separate, ratcheted work.
+
+## Council record
+
+Two raters, read-only, every finding cited to `file:line`. Verdicts: *"not safe to build from as
+written"* and *"no — I could not build this on Monday without asking several architecture-level
+questions first."*
+
+Caught by the council, missed by the author:
+
+- the missing per-mechanism seam (premise-breaking)
+- "five bundles" asserted as settled while an open question asked whether the fifth should exist
+- "copied from" ambiguous between a shared component and duplicated JSX
+- rule 31's lack of `render.php` access
+- `SgsColourPanel`'s missing opacity/blend-mode fields
+- the non-conformant border reference block
+- **D-number errors the author introduced the same day**: the hover-tab work is **D738**, but
+  **D735** (an unrelated gates commit) was stamped into BOTH `golden-controls.json` and
+  `rules.json`. Both corrected. Mechanism-C retirement is **D736**, not D738.
+
+Caught by the author's own structural pre-gates before rater dispatch: the stale 193, the
+non-conformant border reference, the shadow false-fails, and the two-vs-three mechanism-count
+conflict between the brief and `golden-controls.json`.
