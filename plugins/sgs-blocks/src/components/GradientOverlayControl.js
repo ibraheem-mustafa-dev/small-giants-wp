@@ -64,7 +64,16 @@ import DesignTokenPicker from './DesignTokenPicker';
 const DEFAULT_ATTR_NAMES = {
 	gradient: 'overlayGradient',
 	solid: 'backgroundOverlayColour',
+	// Hover siblings are OPTIONAL. When a caller supplies them, this control
+	// renders Normal and Hover as TABS INSIDE ONE POPOVER rather than as two
+	// separate rows — `DesignTokenPicker` already switches to its tab shape
+	// the moment it receives more than one state (see its `hasStates`). The
+	// whole point of the D4 adapter was to make that reachable here; a second
+	// row would duplicate a row shape the shared picker already owns.
+	solidHover: 'backgroundOverlayColourHover',
+	gradientHover: 'overlayGradientHover',
 };
+
 
 export default function GradientOverlayControl( {
 	attributes,
@@ -72,11 +81,6 @@ export default function GradientOverlayControl( {
 	attrNames = DEFAULT_ATTR_NAMES,
 	solidLabel = __( 'Overlay colour', 'sgs-blocks' ),
 } ) {
-	const {
-		[ attrNames.gradient ]: gradientValue = '',
-		[ attrNames.solid ]: solidColour,
-	} = attributes;
-
 	return (
 		<DesignTokenPicker
 			label={ solidLabel }
@@ -100,26 +104,64 @@ export default function GradientOverlayControl( {
 			// this adapter.
 			enableAlpha={ false }
 			gradientEnableAlpha
+			/*
+			 * TWO LITERAL ENTRIES, deliberately — not a .map() over a spec
+			 * list. inspector-scan rule 31 resolves a row's state count by
+			 * READING THIS ARRAY STATICALLY; it follows array literals,
+			 * spreads and conditionals, but it cannot evaluate a runtime
+			 * `.filter( spec => attrNames[ spec.key ] )` because the
+			 * predicate depends on a prop. A first version of this fix used
+			 * exactly that shape: the control really did render both states,
+			 * and the gate reported "carries 1 state" — the code improved
+			 * while the detector went blind, which is strictly worse than
+			 * the honest finding it replaced. The duplication below is the
+			 * price of staying legible to the gate that enforces it.
+			 *
+			 * Hover is emitted ONLY when the caller's attrNames carries the
+			 * pair, so the shape-divider rows and hero's media/content
+			 * backgrounds (which pass a custom map without hover keys) keep
+			 * exactly one state and no tab strip.
+			 */
 			states={ [
 				{
 					key: 'normal',
 					label: solidLabel,
-					value: solidColour,
+					value: attributes[ attrNames.solid ],
 					linked: true,
-					onChange: ( val ) => {
+					onChange: ( val ) =>
 						setAttributes( {
 							[ attrNames.solid ]: val ?? '',
-							// Switching to a solid pick always clears any
-							// stored gradient so the two paths never
-							// disagree about which is "current" — see the
-							// docblock's semantic-ruling note above.
+							// A solid pick always clears that state's stored
+							// gradient so the two paths never disagree about
+							// which is "current" — the semantic ruling in the
+							// docblock above.
 							[ attrNames.gradient ]: '',
-						} );
-					},
-					gradientValue,
+						} ),
+					gradientValue: attributes[ attrNames.gradient ] || '',
 					onGradientChange: ( val ) =>
 						setAttributes( { [ attrNames.gradient ]: val ?? '' } ),
 				},
+				...( attrNames.solidHover
+					? [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes[ attrNames.solidHover ],
+								linked: true,
+								onChange: ( val ) =>
+									setAttributes( {
+										[ attrNames.solidHover ]: val ?? '',
+										[ attrNames.gradientHover ]: '',
+									} ),
+								gradientValue:
+									attributes[ attrNames.gradientHover ] || '',
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										[ attrNames.gradientHover ]: val ?? '',
+									} ),
+							},
+					  ]
+					: [] ),
 			] }
 		/>
 	);

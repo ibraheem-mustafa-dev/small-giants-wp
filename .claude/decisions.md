@@ -1,5 +1,72 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D738 [INCIDENT] — hover becomes a popover TAB, not a second row; the golden spec had predicted this failure in writing (2026-08-22)
+
+**Bean caught it in one line: *"We already have hover as a popover tab though."* He was right, and
+the miss is instructive enough to record in full.**
+
+`DesignTokenPicker` renders an in-popover tab strip the moment it receives more than one state
+(`hasStates = states.length > 1`, `DesignTokenPicker.js:232`, tabs at `:316-344`). The canonical
+shape for a hover colour is therefore ONE row with TWO states — not two rows. D736 shipped it as
+a second `<GradientOverlayControl>` mount instead.
+
+### The standard did not fail. It predicted this exact failure, in writing.
+
+`golden-controls.json` already carried, for this control:
+
+> `"independentlySufficient": false` … `"constraint": "SINGLE-STATE BY CONSTRUCTION — it has no
+> states concept. A row needing hover cannot use it."`
+
+And `inspector-scan` rule 31 was ALREADY flagging that row with both findings
+(`row-below-minimum-states`, `row-missing-gradient`) and its FIX text ALREADY named the blueprint
+block to copy: *"see `sgs/button` edit.js:381-399"* (hover state) and *":410-420"* (gradient
+toggle). The spec, the detector and the blueprint were all correct and all present.
+
+**Three causes, two of them the coordinator's:**
+1. **The dispatch brief scoped the agent to `BackgroundPanel.js` and explicitly forbade
+   `src/components/`** — fencing off the ONLY file where the single-state constraint could be
+   lifted. The agent's choices were a second row or nothing; it chose the second row and flagged
+   it honestly. It did what it was told.
+2. **The brief was written from the design doc's step list without reading the governing spec.**
+   That one sentence — *"a row needing hover cannot use it"* — WAS the brief.
+3. **Rule 31 is advisory with a ~414 backlog**, so a new non-conformant row is finding 415 of 414
+   and nothing goes red. A standard that is enforceable in principle and unenforced in practice.
+
+### ⛔ The fix's own first attempt blinded the detector — recorded because it is the subtler trap
+
+The first version built the states with `STATE_SPECS.filter( … ).map( … )`. It rendered both
+states CORRECTLY. But rule 31 resolves a row's state count STATICALLY and cannot evaluate a
+predicate that depends on a prop, so it reported *"carries 1 state"* — and the total went UP,
+414 → 415. **The code improved while the gate went blind, which is strictly worse than the honest
+finding it replaced.** Rewritten as two LITERAL array entries (hover behind a conditional spread,
+a shape the resolver follows). Both findings on that row now clear. A comment at the call site
+says why the duplication is deliberate, so nobody "tidies" it back into a `.map()`.
+
+### Changes
+
+- `GradientOverlayControl` takes an optional `solidHover`/`gradientHover` pair in `attrNames` and
+  emits a second state when present → Normal/Hover tabs in one popover. Callers passing a custom
+  map without those keys (the two shape-divider rows, hero's media/content backgrounds) keep one
+  state and no tab strip, unchanged.
+- `BackgroundPanel`'s second hover mount DELETED. The hover pair is handed over on the DESKTOP
+  tier only — there are deliberately no per-tier hover attributes, and offering a hover tab on
+  tablet/mobile would write to an attribute no `block.json` declares, which WordPress discards
+  from the editor schema in silence.
+- **`golden-controls.json` corrected.** Its constraint text was now FALSE — the contract
+  disagreed with the code it governs. The correction keeps the original sentence and explains
+  that it was accurate when written and load-bearing.
+- **Rule 31's ratchet lowered 418 → 413.** It had FIVE findings of slack against the live tree,
+  so a brand-new non-conformant colour row could have landed without the ratchet firing.
+
+**Negative control on the ratchet, run in both directions with real exit codes** (not a printed
+warning, which enforces nothing): ceiling at 412 with 413 live → `run.js --check` exits **1**;
+restored to 413 → exits **0**. `inspector-scan --check` is in `prebuild`, so the next
+non-conformant colour row fails the build.
+
+**Method note, and it is the same one this project keeps relearning:** the delta was reconciled by
+ENUMERATING the findings on the two changed files (both cleared, zero remaining), not by
+subtracting totals measured at different tree states while other agents were mid-write.
+
 ## D737 [ROUTINE] — overlay hover, responsive tiers and blend mode, all through the ONE shared helper (2026-08-22)
 
 **Colour-golden track. Closes build-order steps 6 and 8.**

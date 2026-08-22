@@ -161,6 +161,25 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 							attrNames={ {
 								solid: `backgroundOverlayColour${ suffix }`,
 								gradient: `overlayGradient${ suffix }`,
+								// Hover belongs to the BASE attrs only, so the
+								// pair is handed over on the desktop tier alone
+								// and the control renders Normal/Hover as tabs
+								// inside one popover. There are deliberately no
+								// per-tier hover attributes: offering a hover tab
+								// on tablet/mobile would write to an attribute no
+								// block.json declares, which WordPress discards
+								// from the editor schema in silence — the client
+								// would set a colour and watch it vanish on
+								// reload. Omitting the keys drops those tiers back
+								// to a single state and no tab strip.
+								...( 'desktop' === bp
+									? {
+											solidHover:
+												'backgroundOverlayColourHover',
+											gradientHover:
+												'overlayGradientHover',
+									  }
+									: {} ),
 							} }
 							solidLabel={ __( 'Overlay colour', 'sgs-blocks' ) }
 						/>
@@ -210,28 +229,6 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
-			/>
-			{ /* Hover state — a second mount of the same shared overlay
-			   control, pointed at the *Hover sibling attrs via `attrNames`.
-			   Reuses GradientOverlayControl exactly as-is (props only,
-			   no fork): D4's thin-adapter rebuild is what made a sibling
-			   attribute pair reachable at all — see that file's own
-			   docblock. A separate mount (rather than one control with an
-			   internal Normal/Hover tab) because GradientOverlayControl's
-			   `states` array is hardcoded to a single 'normal' entry today;
-			   extending it to accept a second state is out of this file's
-			   scope (BackgroundPanel.js only). Not wrapped in
-			   <ResponsiveControl> — hover is a separate axis from tier, not
-			   a fourth tier, so it stays outside that switcher entirely
-			   (nothing here for rule 26 to flag). */ }
-			<GradientOverlayControl
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				attrNames={ {
-					solid: 'backgroundOverlayColourHover',
-					gradient: 'overlayGradientHover',
-				} }
-				solidLabel={ __( 'Overlay colour (hover)', 'sgs-blocks' ) }
 			/>
 			<TabPanel
 				tabs={ [
