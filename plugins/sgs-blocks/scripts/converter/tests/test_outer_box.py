@@ -22,9 +22,9 @@ from converter.orchestrator import emit_block_markup, process_element
 from converter.db.db_lookup import SGS_DB
 
 
-def _ctx(conn: sqlite3.Connection, *, is_root: bool = True) -> Ctx:
+def _ctx(conn: sqlite3.Connection, *, is_root: bool = True, block_slug: str = "sgs/container") -> Ctx:
     return Ctx(
-        block_slug="sgs/container",
+        block_slug=block_slug,
         container_kind="section",
         delegates_content=1,
         variant_value=None,
@@ -120,12 +120,26 @@ def test_non_device_tier_max_width_is_gapped(conn):
     assert not any(w.attr == "maxWidth" for w in result.writes)
 
 
-def test_align_finalise_full_on_max_width_absence(conn):
-    # Spec 31 §3.A.3: an OUTER element with NO base max-width and a block that
-    # supports align:full gets a synthetic align:"full" (full-bleed default),
-    # appended OUTSIDE the conservation count.
+def test_align_finalise_NOT_emitted_for_container_which_dropped_the_support(conn):
+    # 2026-08-23: sgs/container no longer declares supports.align, so align_finalise()
+    # must emit NOTHING for it. This is the regression guard for that removal — the
+    # whole align mechanism was measured inert on the live canary (stripping
+    # .alignfull from a real element changed nothing: left, width and all four
+    # margins identical), and no SGS-BEM draft can express alignwide/alignfull at
+    # all, so emitting it was inventing a WordPress idiom the draft never stated.
+    # Full-bleed comes from maxWidth defaulting to {} — no outer cap — not from align.
     decls = [Decl("padding", "40px", "Base")]
     result = process_element(_ctx(conn), decls)
+    assert "align" not in result.attrs()
+
+
+def test_align_finalise_still_fires_for_a_block_that_DOES_support_align(conn):
+    # POSITIVE CONTROL for the test above. Without this pair, "no align emitted"
+    # would pass just as happily if align_finalise() were broken outright, and the
+    # test above would be vacuous. sgs/card-grid still declares supports.align, so
+    # the mechanism itself must still work — only sgs/container's DECLARATION changed.
+    decls = [Decl("padding", "40px", "Base")]
+    result = process_element(_ctx(conn, block_slug="sgs/card-grid"), decls)
     assert result.attrs().get("align") == "full"
 
 
@@ -154,8 +168,11 @@ def test_align_finalise_synthetic_write_carries_sentinel_property(conn):
     # FIX 2: the synthetic align write must carry the sentinel property
     # '__align_finalise__' (not 'max-width'), so the F5 ledger join does not
     # mis-key it onto a real declaration (D240).
+    # Retargeted 2026-08-23 to sgs/card-grid: sgs/container no longer declares
+    # supports.align, so it emits no synthetic write at all and this assertion
+    # would test nothing on it. The sentinel contract itself is unchanged.
     decls = [Decl("padding", "40px", "Base")]
-    result = process_element(_ctx(conn), decls)
+    result = process_element(_ctx(conn, block_slug="sgs/card-grid"), decls)
     synth = [w for w in result.writes if w.attr == "align"]
     assert synth and synth[0].property == "__align_finalise__"
 

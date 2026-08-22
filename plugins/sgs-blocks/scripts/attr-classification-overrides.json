@@ -1,2810 +1,2842 @@
 {
-	"_doc": "attr-classification-overrides.json — the hand-authored, reseed-durable OVERRIDE layer for block_attributes classification corrections (role/derived_selector/css_property/css_element/css_state/css_tier/box_family/etc). Lifted verbatim from sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (Bean request, 2026-07-21). This is the single source of truth Bean asked for — sgs-update-v2.py now READS this file rather than declaring the dict inline. Applied AFTER the derived classifier layer (css-property-classifications.json) as Stage 1 sub-step C, so an override here wins on any field conflict with the derived layer. Records here exist to correct genuine mis-derivations OR to record cases where what the code DOES and what it MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but is a COLOUR value type) — never to correct plain accuracy bugs in the classifier, which should be fixed at the classifier itself. Two entries added 2026-07-21 for the value-type-vs-delivery-property fix: sgs/tabs tabIndicatorColour/tabActiveIndicatorColour resolve via the classifier chain-walk to box-shadow (render.php:84-100 colour_props array -> style.css:120 inset box-shadow underline) — accurate but unusable for a consumer picking a control type. The manifest (tabs/block.json supports.sgs.elements.tab.attrMap) already declares these as css:border-color (its own documented rationale: the active variant renders via [aria-selected='true'], not CSS :active, and drives the underline/box-shadow INDICATOR colour). css_property overridden here to border-color to match that already-established, coordinator-approved manifest vocabulary — a colour-family property a consumer control-picker can route to a colour picker, not a shadow control. 18 entries added 2026-07-22 (Spec 31 coupled UN-EXCLUDE + HOVER-LIFT): scaleHover (10 blocks, excl. sgs/post-grid whose scaleHover is a per-item css_element=card derived-selector attr with a multi-property css_property, out of this base-domain resolver channel) / grayscaleHover (4 blocks) / imageZoomHover (4 blocks incl. sgs/post-grid, whose imageZoomHover IS root-scoped) now carry css_property=transform|filter + css_state=hover — these attrs have NO un-suffixed base sibling (the effect only ever exists as a hover interaction), so the new converter.db.db_lookup.attr_for_state_property direct-lookup channel resolves them by (css_property, css_state) rather than the base+Hover-suffix-append convention tabIndicatorColour-style pairs use. 1 entry added 2026-08-02 (property_suffixes Rating/Speed suffix-role fix, migrations/2026-08-01-rating-speed-suffix-role.py): the property_suffixes 'Rating' suffix was reclassified from the wrong 'number-css-px' to the common case 'behaviour' (it is right for 3 of the 4 attrs it matches: sgs/star-rating.maxRating, sgs/google-reviews.minRating, sgs/testimonial.showRating are all configuration, not content). sgs/star-rating.rating is the one genuine exception — the star/numeric rating VALUE ITSELF, a content-bearing display value matching the existing 'rating' role's own exemplar (sgs/testimonial.ratingStars, registered by migrations/2026-06-21-register-rating-role.py). Declared here as a single-attr override rather than bending the suffix rule to fit the minority case, per this layer's job (Layer 3, applied LAST, wins over the suffix-derived role on any conflict) — see check_css_property_reseed.py's docstring for the layering contract.",
-	"entries": [
-		{
-			"slug": "sgs/heading",
-			"attr": "level",
-			"fields": {
-				"role": "tag-identity"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "mediaType",
-			"fields": {
-				"role": "tag-identity"
-			}
-		},
-		{
-			"slug": "sgs/icon-list",
-			"attr": "headingLevel",
-			"fields": {
-				"role": "tag-identity"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "headingLevel",
-			"fields": {
-				"role": "tag-identity"
-			}
-		},
-		{
-			"slug": "sgs/product-faq",
-			"attr": "headingLevel",
-			"fields": {
-				"role": "tag-identity"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "labelFontSize",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "labelFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "labelFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "labelFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "labelFontWeight",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "labelColour",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "bgSvgTextShadow",
-			"fields": {
-				"role": "behaviour",
-				"derived_selector": null
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "title",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__title"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "titleColour",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__title"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "titleFontSize",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__title"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "titleFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__title"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "titleFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__title"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "titleFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-trust-bar__title"
-			}
-		},
-		{
-			"slug": "sgs/counter",
-			"attr": "accentStroke",
-			"fields": {
-				"role": "behaviour",
-				"derived_selector": null
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "bgSvgTextShadow",
-			"fields": {
-				"role": "behaviour",
-				"derived_selector": null
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "bgSvgTextShadow",
-			"fields": {
-				"role": "behaviour",
-				"derived_selector": null
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "bgSvgTextShadow",
-			"fields": {
-				"role": "behaviour",
-				"derived_selector": null
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "titleColour",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__title"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "titleFontSize",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__title"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "titleFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__title"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "titleFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__title"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "titleFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__title"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "subtitleColour",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__subtitle"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "subtitleFontSize",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__subtitle"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "subtitleFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__subtitle"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "subtitleFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__subtitle"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "subtitleFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__subtitle"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionColour",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionFontFamily",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionFontSize",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionFontWeight",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionLineHeight",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionLineHeightUnit",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionTextDecoration",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionTextTransform",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleFontSize",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleFontWeight",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleLineHeight",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "titleLineHeightUnit",
-			"fields": {
-				"derived_selector": ".sgs-product-card__title"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "descColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__description"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "descFontSize",
-			"fields": {
-				"derived_selector": ".sgs-product-card__description"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "descFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-product-card__description"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "descFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-product-card__description"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "descFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-product-card__description"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "descLineHeight",
-			"fields": {
-				"derived_selector": ".sgs-product-card__description"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "descLineHeightUnit",
-			"fields": {
-				"derived_selector": ".sgs-product-card__description"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "priceNoteColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__price-note"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "priceNoteFontSize",
-			"fields": {
-				"derived_selector": ".sgs-product-card__price-note"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "priceNoteFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-product-card__price-note"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "priceNoteFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-product-card__price-note"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "priceNoteFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-product-card__price-note"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagFontSize",
-			"fields": {
-				"derived_selector": ".sgs-product-card__tag"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-product-card__tag"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-product-card__tag"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-product-card__tag"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillFontSize",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillFontSizeUnit",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillFontSizeTablet",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillFontSizeMobile",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillFontWeight",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillTextColour",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillBorderColour",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "priceLarge",
-			"fields": {
-				"role": "text-content",
-				"derived_selector": ".sgs-product-card__price"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "priceNote",
-			"fields": {
-				"canonical_slot": null,
-				"derived_selector": ".sgs-product-card__price-note"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "packSizes",
-			"fields": {
-				"canonical_slot": "pill",
-				"derived_selector": ".sgs-product-card__pill"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "trialTag",
-			"fields": {
-				"derived_selector": ".sgs-product-card__tag--trial"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagBackgroundColour",
-			"fields": {
-				"canonical_slot": "label",
-				"derived_selector": ".sgs-product-card__tag--trial"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagTextColour",
-			"fields": {
-				"canonical_slot": "label",
-				"derived_selector": ".sgs-product-card__tag--trial"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagBorderRadius",
-			"fields": {
-				"canonical_slot": "label",
-				"derived_selector": ".sgs-product-card__tag--trial"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "tagPadding",
-			"fields": {
-				"canonical_slot": "label",
-				"derived_selector": ".sgs-product-card__tag--trial",
-				"role": "layout",
-				"_note": "2026-08-05 (Bean): role CORRECTED visual -> layout. `visual` was a copy-paste from the sibling tagBorderRadius (where visual IS right for border-radius); padding is spacing, which is what `layout` means per its roles.json entry. Bean asked for the hand role to be DROPPED so a mechanism would derive it -- tested empirically and it does NOT: decompose_attr_name proposes 'layout' in isolation, but with the role field removed and the row cleared, a full reseed left it NULL (attr_type='object', css_property NULL, so neither the main assignment nor the styling backstop claims it). Declared by hand with the CORRECT value rather than left unclassified. RETIREMENT CONDITION: remove when a reseed can assign 'layout' to this row unaided -- verify by clearing it and reseeding."
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "name",
-			"fields": {
-				"derived_selector": ".sgs-team-member__name"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "role",
-			"fields": {
-				"derived_selector": ".sgs-team-member__role"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "photo",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-team-member__photo"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "memberMedia",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-team-member__photo"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "quoteFontStyle",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__quote"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "nameFontWeight",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__name"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "orgColour",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__org"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "summaryColour",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__summary"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "summaryFontSize",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__summary"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "ratingSize",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__rating"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "avatarMedia",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-testimonial__avatar"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "orgLogo",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-testimonial__logo"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "workMedia",
-			"fields": {
-				"role": "image-object",
-				"derived_selector": ".sgs-testimonial__work"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "items",
-			"fields": {
-				"derived_selector": ".sgs-card-grid__item"
-			}
-		},
-		{
-			"slug": "sgs/icon-list",
-			"attr": "items",
-			"fields": {
-				"derived_selector": ".sgs-icon-list__item"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "badges",
-			"fields": {
-				"derived_selector": ".sgs-hero__badge"
-			}
-		},
-		{
-			"slug": "core/button",
-			"attr": "text",
-			"fields": {
-				"derived_selector": "a,button"
-			}
-		},
-		{
-			"slug": "core/button",
-			"attr": "url",
-			"fields": {
-				"derived_selector": "a"
-			}
-		},
-		{
-			"slug": "core/heading",
-			"attr": "content",
-			"fields": {
-				"derived_selector": "h1,h2,h3,h4,h5,h6"
-			}
-		},
-		{
-			"slug": "core/image",
-			"attr": "alt",
-			"fields": {
-				"derived_selector": "img"
-			}
-		},
-		{
-			"slug": "core/image",
-			"attr": "caption",
-			"fields": {
-				"derived_selector": "figcaption"
-			}
-		},
-		{
-			"slug": "core/image",
-			"attr": "url",
-			"fields": {
-				"derived_selector": "img"
-			}
-		},
-		{
-			"slug": "core/list-item",
-			"attr": "content",
-			"fields": {
-				"derived_selector": "li"
-			}
-		},
-		{
-			"slug": "core/paragraph",
-			"attr": "content",
-			"fields": {
-				"derived_selector": "p"
-			}
-		},
-		{
-			"slug": "core/quote",
-			"attr": "citation",
-			"fields": {
-				"derived_selector": "cite"
-			}
-		},
-		{
-			"slug": "core/quote",
-			"attr": "value",
-			"fields": {
-				"derived_selector": "blockquote"
-			}
-		},
-		{
-			"slug": "sgs/accordion-item",
-			"attr": "title",
-			"fields": {
-				"derived_selector": ".sgs-accordion-item__title"
-			}
-		},
-		{
-			"slug": "sgs/counter",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-counter__label"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "headline",
-			"fields": {
-				"derived_selector": ".sgs-cta-section__headline, h1, h2"
-			}
-		},
-		{
-			"slug": "sgs/form-field-address",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-address__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-checkbox",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-checkbox__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-consent",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-consent__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-date",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-date__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-email",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-email__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-file",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-file__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-number",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-number__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-phone",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-phone__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-radio",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-radio__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-select",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-select__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-text",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-text__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-textarea",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-textarea__label"
-			}
-		},
-		{
-			"slug": "sgs/form-field-tiles",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-field-tiles__label"
-			}
-		},
-		{
-			"slug": "sgs/form-review",
-			"attr": "heading",
-			"fields": {
-				"derived_selector": ".sgs-form-review__heading"
-			}
-		},
-		{
-			"slug": "sgs/form-step",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-form-step__label"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "ctaPrimaryText",
-			"fields": {
-				"derived_selector": ".sgs-hero__cta--primary"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "ctaPrimaryUrl",
-			"fields": {
-				"derived_selector": ".sgs-hero__cta--primary"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "ctaSecondaryText",
-			"fields": {
-				"derived_selector": ".sgs-hero__cta--secondary"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "ctaSecondaryUrl",
-			"fields": {
-				"derived_selector": ".sgs-hero__cta--secondary"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "headline",
-			"fields": {
-				"derived_selector": ".sgs-hero__headline, h1, h2"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "subHeadline",
-			"fields": {
-				"derived_selector": ".sgs-hero__sub-headline, p"
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "ariaLabel",
-			"fields": {
-				"derived_selector": ".sgs-icon, [aria-label]"
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "iconSource",
-			"fields": {
-				"derived_selector": ".sgs-icon__glyph, [data-icon-source]"
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "linkTarget",
-			"fields": {
-				"derived_selector": ".sgs-icon__link, a"
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "linkUrl",
-			"fields": {
-				"derived_selector": ".sgs-icon__link, a"
-			}
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "description",
-			"fields": {
-				"derived_selector": ".sgs-info-box__description"
-			}
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "heading",
-			"fields": {
-				"derived_selector": ".sgs-info-box__heading"
-			}
-		},
-		{
-			"slug": "sgs/mega-menu",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-mega-menu__label"
-			}
-		},
-		{
-			"slug": "sgs/mobile-nav",
-			"attr": "ctaText",
-			"fields": {
-				"derived_selector": ".sgs-mobile-nav__cta--primary"
-			}
-		},
-		{
-			"slug": "sgs/mobile-nav",
-			"attr": "ctaUrl",
-			"fields": {
-				"derived_selector": ".sgs-mobile-nav__cta--primary"
-			}
-		},
-		{
-			"slug": "sgs/notice-banner",
-			"attr": "text",
-			"fields": {
-				"derived_selector": ".sgs-notice-banner__text"
-			}
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "width",
-			"fields": {
-				"derived_selector": ".sgs-responsive-logo__image, img"
-			}
-		},
-		{
-			"slug": "sgs/star-rating",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-star-rating__label"
-			}
-		},
-		{
-			"slug": "sgs/tab",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-tab__label"
-			}
-		},
-		{
-			"slug": "sgs/table-of-contents",
-			"attr": "title",
-			"fields": {
-				"derived_selector": ".sgs-table-of-contents__title"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "nameColour",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__heading, .sgs-testimonial__author"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "quote",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "reviewerName",
-			"fields": {
-				"role": "content",
-				"derived_selector": ".sgs-testimonial__name, .sgs-testimonial__author"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "quoteColour",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "quoteFontSize",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "quoteLineHeight",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
-			}
-		},
-		{
-			"slug": "sgs/timeline",
-			"attr": "entries",
-			"fields": {
-				"derived_selector": ".sgs-timeline__item"
-			}
-		},
-		{
-			"slug": "sgs/whatsapp-cta",
-			"attr": "label",
-			"fields": {
-				"derived_selector": ".sgs-whatsapp-cta__label"
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "iconName",
-			"fields": {
-				"derived_selector": ".sgs-icon__glyph, [data-icon-name]",
-				"role": "icon-lucide",
-				"_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-lucide' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "emojiChar",
-			"fields": {
-				"role": "icon-emoji",
-				"derived_selector": ".sgs-icon__emoji"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "imageAlt",
-			"fields": {
-				"role": "image-alt",
-				"alt_companion_attr": "image"
-			}
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "imageAlt",
-			"fields": {
-				"role": "image-alt",
-				"alt_companion_attr": "imageUrl"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
-			"attr": "imageAlt",
-			"fields": {
-				"role": "image-alt",
-				"alt_companion_attr": "imageUrl"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attribution",
-			"fields": {
-				"emit_shape": "nested",
-				"canonical_slot": "attribution",
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillBgColour",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillSelectedBgColour",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillSelectedTextColour",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillSelectedBorderColour",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillBorderRadius",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillSelectedBorderRadius",
-			"fields": {
-				"derived_selector": ".sgs-option-picker__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillBgColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillTextColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillBorderColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillSelectedBgColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillSelectedTextColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillSelectedBorderColour",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillBorderRadius",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "pickerPillSelectedBorderRadius",
-			"fields": {
-				"derived_selector": ".sgs-product-card__pill--active"
-			}
-		},
-		{
-			"slug": "sgs/nav-menu",
-			"attr": "navBg",
-			"fields": {
-				"css_property": "background-color",
-				"role": "color",
-				"css_element": "wrapper"
-			}
-		},
-		{
-			"slug": "sgs/tabs",
-			"attr": "tabIndicatorColour",
-			"fields": {
-				"css_property": "border-color"
-			}
-		},
-		{
-			"slug": "sgs/tabs",
-			"attr": "tabActiveIndicatorColour",
-			"fields": {
-				"css_property": "border-color"
-			}
-		},
-		{
-			"slug": "sgs/button",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "scaleHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "scaleHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/heading",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "scaleHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "scaleHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "scaleHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "scaleHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/text",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "grayscaleHover",
-			"fields": {
-				"css_property": "filter",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			},
-			"_why": "css_element PINNED 2026-08-15. The css_element reset added to sgs-update-v2.py the same day cleared this value because the derivation cannot re-derive it for THIS block: post-grid's hover-zoom rule targets `.sgs-post-grid__img` (style.css:488) while 13 other rules in the same file use `.sgs-post-grid__image`, and the manifest declares `image` — one block, two class names for one element. Without this pin `lift_per_element_state` stops routing the attr and post-grid's image hover-zoom is SILENTLY DROPPED on every clone, the exact defect converter/tests/test_per_element_state_lift.py exists to prevent (this attr is one of the five named in its docstring). Siblings card-grid/gallery/team-member are unaffected — their selectors end in `__image`, matching their manifests. DO NOT remove this pin to tidy up: fix post-grid's own `__img` vs `__image` split first, re-verify that test, THEN remove."
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "backgroundColourHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "boxShadowHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "textColourHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "backgroundColourHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "borderColourHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "textColourHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionFontStyle",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionMarginTop",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionMarginTopTablet",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionMarginTopMobile",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "attributionMarginUnit",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
-			"slug": "sgs/star-rating",
-			"attr": "rating",
-			"fields": {
-				"role": "rating"
-			}
-		},
-		{
-			"_why": "Track B, 2026-08-04. The `price` slot lists \"ribbon\" among its own aliases, and load_slot_aliases() builds its map first-writer-wins over an unordered scan, so `price` claims the name before the dedicated `ribbon` slot (which exists) can register its own. A draft authoring a cta-section ribbon writes .sgs-cta-section__ribbon, which the price-derived selector cannot match. Measured: 10 such alias collisions exist, 4 touch a live sgs/% attr, 3 are wrong. Fixed by override, NOT by de-duplicating slots.aliases: 179 of 1170 attrs depend on that alias layer for genuine synonym work (title->heading, url->link, columns->column), so removing it would break ~175 rows to fix 3.",
-			"slug": "sgs/cta-section",
-			"attr": "ribbon",
-			"fields": {
-				"canonical_slot": "ribbon",
-				"derived_selector": ".sgs-cta-section__ribbon"
-			}
-		},
-		{
-			"_why": "Track B, 2026-08-04. Same alias-collision class: the `text` slot claims \"caption\" as an alias, so sgs/media.caption seeded canonical_slot='text'. The block genuinely renders .sgs-media__caption (verified: 2 occurrences in its own source), which is what a draft would author.",
-			"slug": "sgs/media",
-			"attr": "caption",
-			"fields": {
-				"canonical_slot": "caption",
-				"derived_selector": ".sgs-media__caption"
-			}
-		},
-		{
-			"_why": "Track B, 2026-08-04. Same alias-collision class, opposite remedy: the `card` slot claims \"step\" as an alias, so a number field's numeric increment (e.g. 0.01) seeded canonical_slot='card'. This attr is not a content slot at all, so the correct value is NULL rather than a better slot name — matching the sgs/product-card.priceNote precedent above. Corroborated independently by the Track A fingerprint, whose D1 detector vetoed this attr after examining every usage site.",
-			"slug": "sgs/form-field-number",
-			"attr": "step",
-			"fields": {
-				"canonical_slot": null
-			}
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "logoUrl",
-			"fields": {
-				"role": "image-object",
-				"_note": "The string image attr `alt` names via alt_companion_attr. Must be role='image-object' AND attr_type='string' together — walk.py:295 requires both before it will capture alt text."
-			}
-		},
-		{
-			"slug": "sgs/before-after",
-			"attr": "beforeVideoAlt",
-			"fields": {
-				"role": "a11y-text",
-				"_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `beforeVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
-			}
-		},
-		{
-			"slug": "sgs/before-after",
-			"attr": "afterVideoAlt",
-			"fields": {
-				"role": "a11y-text",
-				"_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `afterVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "dashiconName",
-			"fields": {
-				"role": "icon-dashicon",
-				"_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-dashicon' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "wpIconName",
-			"fields": {
-				"role": "icon-wp-icon",
-				"_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-wp-icon' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "summaryPhrase",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__summary"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "orgName",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__org"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "reviewDate",
-			"fields": {
-				"derived_selector": ".sgs-testimonial__date"
-			}
-		},
-		{
-			"slug": "sgs/accordion",
-			"attr": "faqSchema",
-			"fields": {
-				"role": "technical",
-				"_reason": "2026-08-13 (D603 inspector-uniformity role remediation). Was 'boolean-visibility' — wrong direction: this toggles whether an invisible JSON-LD FAQPage schema block is emitted (render.php wraps a wp_json_encode() call), not whether any element becomes visible. 'technical' already covers non-visual, machine-facing config (sgs/button.rel, sgs/form.successRedirect, form-field-*.fieldName) — same shape."
-			}
-		},
-		{
-			"slug": "sgs/accordion",
-			"attr": "allowMultiple",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Was NULL (unclassified). Pure interaction-behaviour flag (whether multiple accordion panels can be open at once) — no property_suffixes suffix match, confirmed interaction-only by this session's editor-render-parity triage. 'behaviour' is the established role for pure-configuration flags with zero visual/content effect (precedent: sgs/star-rating.maxRating, sgs/google-reviews.minRating, sgs/testimonial.showRating)."
-			}
-		},
-		{
-			"slug": "sgs/accordion",
-			"attr": "defaultOpen",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Was NULL. Sets which panel starts open — an interaction/initial-state flag, confirmed interaction-only by this session's editor-render-parity triage. Same 'behaviour' precedent as allowMultiple."
-			}
-		},
-		{
-			"slug": "sgs/buybox",
-			"attr": "dragMomentum",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Was 'styling' — wrong: pure carousel drag-physics JS behaviour flag (view.js), zero CSS/visual output. Same fix applied identically across all 5 blocks that declare this attr (sgs/buybox, sgs/gallery, sgs/google-reviews, sgs/post-grid, sgs/trustpilot-reviews) — one shared shape, not a per-block judgement call."
-			}
-		},
-		{
-			"slug": "sgs/buybox",
-			"attr": "loopCarousel",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Was 'styling' — wrong: pure carousel-looping JS behaviour flag, zero CSS/visual output. Same fix applied identically across all 5 blocks that declare this attr."
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "dragMomentum",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "loopCarousel",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/google-reviews",
-			"attr": "dragMomentum",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603, the originally cited example). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/google-reviews",
-			"attr": "loopCarousel",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603, the originally cited example). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "dragMomentum",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "loopCarousel",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "dragMomentum",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "loopCarousel",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxStart",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607, /qc-council follow-up on D604). Was 'styling'. SAME root cause as dragMomentum/loopCarousel, missed in the first pass because that pass searched by attribute NAME rather than by the structural signal: css_property already carries the fx:* pseudo-namespace marker (seed-motion-fx-registry.py) which assign-canonical.py's TIER 3 generic-styling-backstop (WHERE role IS NULL AND css_property IS NOT NULL -> 'styling') does not special-case — it treats ANY non-null css_property as CSS paint, including the fx:* markers. ⛔ This override is a STOPGAP, not the real fix — the real fix is a TIER 3.15-shaped upgrade pass in assign-canonical.py (css_property LIKE 'fx:%' AND role='styling' -> 'behaviour'), which would self-correct this row AND every future fx:* attribute without needing an override entry per instance. Flagged to Bean 2026-08-13, not built (shared classifier mechanism, design-gate per CLAUDE.md Rule 7)."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxEnd",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxScrub",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxPin",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607). Was NULL (css_property also NULL — not yet seeded into the fx:* namespace by seed-motion-fx-registry.py, unlike its siblings fxStart/fxEnd/fxScrub). Same family, same confirmed INTERACTION-ONLY classification from this session's editor-render-parity triage — seeded here for consistency with its siblings rather than left as an unexplained gap."
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "css-gate",
-				"css_property": "animation"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "css-gate",
-				"css_property": "animation"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "css-gate",
-				"css_property": "animation"
-			}
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "css-gate",
-				"css_property": "animation"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "css-gate",
-				"css_property": "animation"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "css-gate",
-				"css_property": "animation"
-			}
-		},
-		{
-			"slug": "sgs/buybox",
-			"attr": "dragToScroll",
-			"fields": {
-				"role": "behaviour",
-				"css_property": "fx:draggable"
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "dragToScroll",
-			"fields": {
-				"role": "behaviour",
-				"css_property": "fx:draggable"
-			}
-		},
-		{
-			"slug": "sgs/google-reviews",
-			"attr": "dragToScroll",
-			"fields": {
-				"role": "behaviour",
-				"css_property": "fx:draggable"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "dragToScroll",
-			"fields": {
-				"role": "behaviour",
-				"css_property": "fx:draggable"
-			}
-		},
-		{
-			"slug": "sgs/testimonial-slider",
-			"attr": "dragToScroll",
-			"fields": {
-				"role": "behaviour",
-				"css_property": "fx:draggable"
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "dragToScroll",
-			"fields": {
-				"role": "behaviour",
-				"css_property": "fx:draggable"
-			}
-		},
-		{
-			"slug": "sgs/google-reviews",
-			"attr": "autoplay",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/testimonial-slider",
-			"attr": "autoplay",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "autoplay",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "shapeDividerTopFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "shapeDividerTopInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "shapeDividerBottomFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "shapeDividerBottomInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shapeDividerTopFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shapeDividerTopInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shapeDividerBottomFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shapeDividerBottomInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "shapeDividerTopFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "shapeDividerTopInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "shapeDividerBottomFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "shapeDividerBottomInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "shapeDividerTopFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "shapeDividerTopInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "shapeDividerBottomFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "shapeDividerBottomInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "shapeDividerTopFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "shapeDividerTopInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "shapeDividerBottomFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "shapeDividerBottomInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "shapeDividerTopFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "shapeDividerTopInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "shapeDividerBottomFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "shapeDividerBottomInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/star-rating",
-			"attr": "schemaEnabled",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "schemaEnabled",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "overlayGradientAngle",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "overlayGradientAngle",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "overlayGradientAngle",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "overlayGradientAngle",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "overlayGradientAngle",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "headerHideOnScroll",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "headerShrink",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "headerSticky",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "headerTransparent",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-header-row",
-			"attr": "rowHideOnScroll",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-header-row",
-			"attr": "rowShrink",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-header-row",
-			"attr": "rowTransparent",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-footer-row",
-			"attr": "rowHideOnScroll",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-footer-row",
-			"attr": "rowShrink",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/site-footer-row",
-			"attr": "rowTransparent",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "categoryTerm",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "count",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "handpickedIds",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "productCategories",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "productIds",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "productLimit",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "productTags",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "queryCategory",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "queryPostsPerPage",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "categories",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "excerptLength",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "offset",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "postsPerPage",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "tags",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "overrideElements",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/product-card",
-			"attr": "visibleAxes",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/product-search",
-			"attr": "maxResults",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/filter-search",
-			"attr": "threshold",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "buttons",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "stats",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/form-field-address",
-			"attr": "fields",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/form-field-checkbox",
-			"attr": "options",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/form-field-file",
-			"attr": "allowedTypes",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/form-field-radio",
-			"attr": "options",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/form-field-select",
-			"attr": "options",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/form-field-tiles",
-			"attr": "tiles",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "optionItems",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "mediaItems",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/social-icons",
-			"attr": "icons",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "socialLinks",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/table-of-contents",
-			"attr": "headingLevels",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/physics-canvas",
-			"attr": "physicsBounce",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/physics-canvas",
-			"attr": "physicsEdgeResistance",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/physics-canvas",
-			"attr": "physicsGravity",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/timeline",
-			"attr": "revealStagger",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
-			"attr": "pathDrawTriggerOffset",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/nav-menu",
-			"attr": "submenuCloseGrace",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/form",
-			"attr": "rateLimit",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "desktopFrameCount",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "desktopFramePad",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "mobileFrameCount",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "mobileFramePad",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "tabletFrameCount",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "tabletFramePad",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/counter",
-			"attr": "number",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/countdown-timer",
-			"attr": "evergreenHours",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/countdown-timer",
-			"attr": "evergreenMinutes",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/google-reviews",
-			"attr": "maxReviews",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/icon-list",
-			"attr": "menuRef",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/nav-menu",
-			"attr": "ref",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "logoSwitchCustomPx",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "svgAnimationSource",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/separator",
-			"attr": "gradientAngle",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/table-of-contents",
-			"attr": "scrollOffset",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "ratingStars",
-			"fields": {
-				"role": "rating"
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "reviewsAverage",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "totalReviews",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "trustScore",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
-			"attr": "decorMedia",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
-			"attr": "rotation",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/mega-panel",
-			"attr": "asideSeparator",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "splitSvg",
-			"fields": {
-				"role": "svg"
-			}
-		},
-		{
-			"slug": "sgs/form-field-textarea",
-			"attr": "rows",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "contentImpact",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/star-rating",
-			"attr": "schemaItemName",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/trustpilot-reviews",
-			"attr": "showSchema",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/star-rating",
-			"attr": "schemaReviewCount",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "textAlign",
-			"fields": {
-				"css_property": null
-			},
-			"_why": "STRAY css_property cleared 2026-08-15. The attribute is NOT the emitter — the block's own docblock (render.php:14,21) states 'textAlign (native typography support — targets the headline child)' and 'textAlign is handled by the single native textAlign support'. block.json confirms supports.typography.textAlign=true, and the headline element's attrMap routes css:text-align to `native:typography.textAlign`, NOT to this attr. The bare `textAlign` string attribute is a vestigial declaration; its css_property='text-align' was a rogue seed the derived classifier never claims, so db-consistency flagged it as 'would vanish on the next reseed'. Pinning it to null makes the DB state match the truth durably instead of oscillating each reseed."
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "ratingScaleMax",
-			"fields": {
-				"role": "rating"
-			},
-			"_why": "2026-08-15 element-manifest style-defect audit. Was role='layout' purely because the attr name ends in the (now REMOVED) property_suffixes 'Max' suffix row -- see that file's own '__why_min_max_removed' note. assign-canonical.py's peel_property_suffix() matched on the NAME ENDING alone with zero check against actual emission. Verified against render.php:125 ($rating_scale_max = trim((string)($attributes['ratingScaleMax'] ?? '10'))), :473 (feeds the displayed 'X out of N' text) and :654 (feeds the Schema.org Review bestRating value) -- ratingScaleMax never reaches CSS. It is the scale denominator for the SAME rating family as sgs/testimonial.ratingStars, which already carries role='rating' (roles.json: 'Star/numeric rating value -- a content-bearing display value, not a styling property'). role='rating' here matches that established, already-verified sibling exactly rather than inventing a new value."
-		},
-		{
-			"slug": "sgs/form-field-number",
-			"attr": "max",
-			"fields": {
-				"role": "technical"
-			},
-			"_why": "2026-08-15 element-manifest style-defect audit. Same property_suffixes 'Max' over-broad match as sgs/testimonial.ratingScaleMax (see that entry + the property-suffixes.json '__why_min_max_removed' note) -- this is the OTHER of the suffix's only 2 real occurrences, and it is also not CSS. Verified against render.php:20 ($max = $attributes['max'] ?? '') and :29-30 (if (!empty($max)) { $extra_attrs[] = 'max=\"' . esc_attr($max) . '\"'; }) -- it renders as the native HTML <input type=number max=\"\"> validation attribute, never a CSS declaration. role='technical' matches roles.json's own definition verbatim: 'a machine-facing value -- a form-processing key, an element id or cross-block reference... EVIDENCE REQUIRED -- assigned ONLY from a Detector-1 VETO: walked every usage site... found NONE content-bearing'. That is exactly what the render.php read above proves for this attr."
-		},
-		{
-			"slug": "sgs/form-field-number",
-			"attr": "min",
-			"fields": {
-				"role": "technical"
-			},
-			"_why": "2026-08-15 element-manifest style-defect audit. Found while checking the blast radius of removing the sibling 'Max' suffix row (property_suffixes had a parallel 'Min' row, same role='layout', same 'Added by Spec 15 P3 §3.8 gap remediation' seed, also now REMOVED -- see property-suffixes.json '__why_min_max_removed'). This is the suffix's ONLY real occurrence. Verified against render.php:19 ($min = $attributes['min'] ?? '') and :25-26 (if (!empty($min)) { $extra_attrs[] = 'min=\"' . esc_attr($min) . '\"'; }) -- renders as the native HTML <input type=number min=\"\"> validation attribute, never CSS. role='technical' for the same reason as its sibling 'max' attr on this block."
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"derived_selector": ".sgs-cta-section__shadow"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "iconCircleShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "icon-badge"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/trust-bar",
-			"attr": "badgeImageShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "badge-img"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "cardShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "item",
-				"derived_selector": ".sgs-card-grid__card"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "shadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "item",
-				"css_state": "hover"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "cardShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"derived_selector": ".sgs-team-member__card",
-				"css_layer": "OUTER"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "shadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"css_state": "hover"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/brand-strip",
-			"attr": "tileShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "tile"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "shadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_state": "hover",
-				"css_layer": "OUTER"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "shadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"css_state": "hover"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — same class as the other 8 shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation). Overridden to box-shadow-color for consistency, even though this one did not raise an F6 error unclassified (css_property=None, css_element=None) — giving it the same explicit classification as its siblings rather than leaving it the only one of the nine still unclassified."
-		},
-		{
-			"slug": "sgs/before-after",
-			"attr": "boxShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "frame",
-				"css_layer": "OUTER",
-				"derived_selector": ".wp-block-sgs-before-after"
-			},
-			"_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/before-after's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render.php line ~195. Element is 'frame' (block.json's own isWrapper:true element for this content-KIND block), scoped to the block's root class since the frame IS the block wrapper — no separate BEM sub-element exists for it. css_layer:OUTER added after the F6 reseed-survival check reported the DB's derived value as ('box-shadow-color','OUTER') — matches the sgs/team-member.cardShadowColour sibling override above, which also carries css_layer:OUTER."
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "shadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "card",
-				"css_state": "hover"
-			},
-			"_why": "2026-08-16 shadow colour-architecture migration — sgs/post-grid's shadowHover moved off its preset-only SelectControl onto ShadowControl (Spec 35 Part F banned-anti-pattern fix), following the SAME D621/D622 pattern as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation of why the static extractor mis-derives this attr without the override). css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card') — the shape sibling shadowHover is now declared in that element's states.hover.attrMap as 'css:box-shadow', so this colour override mirrors its css_element/css_state so cloning scopes both to the same element."
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "shadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "card"
-			},
-			"_why": "2026-08-20 — companion override for the new resting `shadow` attribute (added to close a STATE_WITHOUT_BASE conformance gap: the client could style shadowHover but had no resting shadow). Same D621/D622 shadow colour-architecture pattern as the shadowHoverColour override directly above — the static extractor mis-derives a shadow-colour attr without an explicit override, same as every other companion entry in this file. css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card'), where the shape sibling `shadow` is now declared on the BASE attrMap as 'css:box-shadow' (no css_state, unlike the hover companion above, since this is the resting state)."
-		},
-		{
-			"slug": "sgs/media",
-			"attr": "boxShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "media",
-				"css_layer": "OUTER",
-				"derived_selector": ".sgs-media__img, .sgs-media__video"
-			},
-			"_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the sgs/before-after override above (see sgs/card-grid.cardShadowColour for the full original explanation) — sgs/media's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render time. Element is 'media' (block.json's own isWrapper:true element, attrMap already declares 'css:box-shadow':'boxShadow' on it), derived_selector matches the block's own selectors.filter.duotone/dimensions.aspectRatio entries (.sgs-media__img, .sgs-media__video) since that's where the shadow visually paints. css_layer:OUTER carried forward from the sgs/before-after sibling entry's F6 reseed-survival fix (same DB-derived shape for this property)."
-		},
-		{
-			"slug": "sgs/button",
-			"attr": "boxShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"css_layer": "OUTER"
-			},
-			"_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling boxShadowColour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). Same class as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation): css_property overridden to box-shadow-color so the colour attr no longer contends with its shape sibling (boxShadow, already classified css_element='wrapper'/css_layer='OUTER' via the pre-existing css-property-classifications.json entry) for the box-shadow slot. css_layer:OUTER declared explicitly because leaving it unset produced a reseed-survival mismatch (DB derives 'OUTER' from the shape sibling; a bare-None override is wiped every reseed per STOP-24)."
-		},
-		{
-			"slug": "sgs/button",
-			"attr": "boxShadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"css_layer": "OUTER",
-				"css_state": "hover"
-			},
-			"_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — same class as sgs/button.boxShadowColour above; hover-state companion of boxShadowHover (now declared in block.json's button element states.hover.attrMap as 'css:box-shadow')."
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "boxShadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"css_layer": "OUTER"
-			},
-			"_why": "2026-08-16 sgs/quote D632 residual closed — the one block explicitly deferred from the original shadow colour-architecture migration (mirrors D621/D622) because a concurrent session held live uncommitted edits on this file at the time; that session has since merged and the checkout is clean. Same class as every other shadow-colour companion-attr override in this file (see sgs/card-grid.cardShadowColour for the full explanation): css_property overridden to box-shadow-color so the colour attr no longer contends with its shape sibling (boxShadow, css_element='wrapper'/css_layer='OUTER' via the pre-existing css-property-classifications.json entry) for the box-shadow slot."
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "boxShadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"css_layer": "OUTER",
-				"css_state": "hover"
-			},
-			"_why": "2026-08-16 sgs/quote D632 residual closed — same class as sgs/quote.boxShadowColour above; hover-state companion of boxShadowHover (declared in block.json's box element states.hover.attrMap as 'css:box-shadow')."
-		}
-	]
+  "_doc": "attr-classification-overrides.json — the hand-authored, reseed-durable OVERRIDE layer for block_attributes classification corrections (role/derived_selector/css_property/css_element/css_state/css_tier/box_family/etc). Lifted verbatim from sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (Bean request, 2026-07-21). This is the single source of truth Bean asked for — sgs-update-v2.py now READS this file rather than declaring the dict inline. Applied AFTER the derived classifier layer (css-property-classifications.json) as Stage 1 sub-step C, so an override here wins on any field conflict with the derived layer. Records here exist to correct genuine mis-derivations OR to record cases where what the code DOES and what it MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but is a COLOUR value type) — never to correct plain accuracy bugs in the classifier, which should be fixed at the classifier itself. Two entries added 2026-07-21 for the value-type-vs-delivery-property fix: sgs/tabs tabIndicatorColour/tabActiveIndicatorColour resolve via the classifier chain-walk to box-shadow (render.php:84-100 colour_props array -> style.css:120 inset box-shadow underline) — accurate but unusable for a consumer picking a control type. The manifest (tabs/block.json supports.sgs.elements.tab.attrMap) already declares these as css:border-color (its own documented rationale: the active variant renders via [aria-selected='true'], not CSS :active, and drives the underline/box-shadow INDICATOR colour). css_property overridden here to border-color to match that already-established, coordinator-approved manifest vocabulary — a colour-family property a consumer control-picker can route to a colour picker, not a shadow control. 18 entries added 2026-07-22 (Spec 31 coupled UN-EXCLUDE + HOVER-LIFT): scaleHover (10 blocks, excl. sgs/post-grid whose scaleHover is a per-item css_element=card derived-selector attr with a multi-property css_property, out of this base-domain resolver channel) / grayscaleHover (4 blocks) / imageZoomHover (4 blocks incl. sgs/post-grid, whose imageZoomHover IS root-scoped) now carry css_property=transform|filter + css_state=hover — these attrs have NO un-suffixed base sibling (the effect only ever exists as a hover interaction), so the new converter.db.db_lookup.attr_for_state_property direct-lookup channel resolves them by (css_property, css_state) rather than the base+Hover-suffix-append convention tabIndicatorColour-style pairs use. 1 entry added 2026-08-02 (property_suffixes Rating/Speed suffix-role fix, migrations/2026-08-01-rating-speed-suffix-role.py): the property_suffixes 'Rating' suffix was reclassified from the wrong 'number-css-px' to the common case 'behaviour' (it is right for 3 of the 4 attrs it matches: sgs/star-rating.maxRating, sgs/google-reviews.minRating, sgs/testimonial.showRating are all configuration, not content). sgs/star-rating.rating is the one genuine exception — the star/numeric rating VALUE ITSELF, a content-bearing display value matching the existing 'rating' role's own exemplar (sgs/testimonial.ratingStars, registered by migrations/2026-06-21-register-rating-role.py). Declared here as a single-attr override rather than bending the suffix rule to fit the minority case, per this layer's job (Layer 3, applied LAST, wins over the suffix-derived role on any conflict) — see check_css_property_reseed.py's docstring for the layering contract.",
+  "entries": [
+    {
+      "slug": "sgs/heading",
+      "attr": "level",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "mediaType",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "headingLevel",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "headingLevel",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "headingLevel",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSize",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelColour",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "title",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleColour",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "accentStroke",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleColour",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleColour",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionColour",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontFamily",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSize",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLineHeight",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLineHeightUnit",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionTextDecoration",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionTextTransform",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleLineHeight",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleLineHeightUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSize",
+      "fields": {
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLineHeight",
+      "fields": {
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLineHeightUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSize",
+      "fields": {
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSize",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSize",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillTextColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBorderColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceLarge",
+      "fields": {
+        "role": "text-content",
+        "derived_selector": ".sgs-product-card__price"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNote",
+      "fields": {
+        "canonical_slot": null,
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "packSizes",
+      "fields": {
+        "canonical_slot": "pill",
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "trialTag",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagBackgroundColour",
+      "fields": {
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagTextColour",
+      "fields": {
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagBorderRadius",
+      "fields": {
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagPadding",
+      "fields": {
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial",
+        "role": "layout",
+        "_note": "2026-08-05 (Bean): role CORRECTED visual -> layout. `visual` was a copy-paste from the sibling tagBorderRadius (where visual IS right for border-radius); padding is spacing, which is what `layout` means per its roles.json entry. Bean asked for the hand role to be DROPPED so a mechanism would derive it -- tested empirically and it does NOT: decompose_attr_name proposes 'layout' in isolation, but with the role field removed and the row cleared, a full reseed left it NULL (attr_type='object', css_property NULL, so neither the main assignment nor the styling backstop claims it). Declared by hand with the CORRECT value rather than left unclassified. RETIREMENT CONDITION: remove when a reseed can assign 'layout' to this row unaided -- verify by clearing it and reseeding."
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "name",
+      "fields": {
+        "derived_selector": ".sgs-team-member__name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "role",
+      "fields": {
+        "derived_selector": ".sgs-team-member__role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "photo",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-team-member__photo"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "memberMedia",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-team-member__photo"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteFontStyle",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__quote"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "orgColour",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__org"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryColour",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__summary"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryFontSize",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__summary"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingSize",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__rating"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "avatarMedia",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-testimonial__avatar"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "orgLogo",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-testimonial__logo"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "workMedia",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-testimonial__work"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "items",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "items",
+      "fields": {
+        "derived_selector": ".sgs-icon-list__item"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "badges",
+      "fields": {
+        "derived_selector": ".sgs-hero__badge"
+      }
+    },
+    {
+      "slug": "core/button",
+      "attr": "text",
+      "fields": {
+        "derived_selector": "a,button"
+      }
+    },
+    {
+      "slug": "core/button",
+      "attr": "url",
+      "fields": {
+        "derived_selector": "a"
+      }
+    },
+    {
+      "slug": "core/heading",
+      "attr": "content",
+      "fields": {
+        "derived_selector": "h1,h2,h3,h4,h5,h6"
+      }
+    },
+    {
+      "slug": "core/image",
+      "attr": "alt",
+      "fields": {
+        "derived_selector": "img"
+      }
+    },
+    {
+      "slug": "core/image",
+      "attr": "caption",
+      "fields": {
+        "derived_selector": "figcaption"
+      }
+    },
+    {
+      "slug": "core/image",
+      "attr": "url",
+      "fields": {
+        "derived_selector": "img"
+      }
+    },
+    {
+      "slug": "core/list-item",
+      "attr": "content",
+      "fields": {
+        "derived_selector": "li"
+      }
+    },
+    {
+      "slug": "core/paragraph",
+      "attr": "content",
+      "fields": {
+        "derived_selector": "p"
+      }
+    },
+    {
+      "slug": "core/quote",
+      "attr": "citation",
+      "fields": {
+        "derived_selector": "cite"
+      }
+    },
+    {
+      "slug": "core/quote",
+      "attr": "value",
+      "fields": {
+        "derived_selector": "blockquote"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "title",
+      "fields": {
+        "derived_selector": ".sgs-accordion-item__title"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-counter__label"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "headline",
+      "fields": {
+        "derived_selector": ".sgs-cta-section__headline, h1, h2"
+      }
+    },
+    {
+      "slug": "sgs/form-field-address",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-address__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-checkbox__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-consent",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-consent__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-date",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-date__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-email",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-email__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-file",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-file__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-number",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-number__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-phone",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-phone__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-radio",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-radio__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-select",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-select__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-text__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-textarea__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-tiles__label"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "heading",
+      "fields": {
+        "derived_selector": ".sgs-form-review__heading"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-step__label"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaPrimaryText",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaPrimaryUrl",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaSecondaryText",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--secondary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaSecondaryUrl",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--secondary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "headline",
+      "fields": {
+        "derived_selector": ".sgs-hero__headline, h1, h2"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "subHeadline",
+      "fields": {
+        "derived_selector": ".sgs-hero__sub-headline, p"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "ariaLabel",
+      "fields": {
+        "derived_selector": ".sgs-icon, [aria-label]"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "iconSource",
+      "fields": {
+        "derived_selector": ".sgs-icon__glyph, [data-icon-source]"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "linkTarget",
+      "fields": {
+        "derived_selector": ".sgs-icon__link, a"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "linkUrl",
+      "fields": {
+        "derived_selector": ".sgs-icon__link, a"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "description",
+      "fields": {
+        "derived_selector": ".sgs-info-box__description"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "heading",
+      "fields": {
+        "derived_selector": ".sgs-info-box__heading"
+      }
+    },
+    {
+      "slug": "sgs/mega-menu",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-mega-menu__label"
+      }
+    },
+    {
+      "slug": "sgs/mobile-nav",
+      "attr": "ctaText",
+      "fields": {
+        "derived_selector": ".sgs-mobile-nav__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/mobile-nav",
+      "attr": "ctaUrl",
+      "fields": {
+        "derived_selector": ".sgs-mobile-nav__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "text",
+      "fields": {
+        "derived_selector": ".sgs-notice-banner__text"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "width",
+      "fields": {
+        "derived_selector": ".sgs-responsive-logo__image, img"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-star-rating__label"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-tab__label"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "title",
+      "fields": {
+        "derived_selector": ".sgs-table-of-contents__title"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameColour",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__heading, .sgs-testimonial__author"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quote",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "reviewerName",
+      "fields": {
+        "role": "content",
+        "derived_selector": ".sgs-testimonial__name, .sgs-testimonial__author"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteColour",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteFontSize",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLineHeight",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "entries",
+      "fields": {
+        "derived_selector": ".sgs-timeline__item"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-whatsapp-cta__label"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "iconName",
+      "fields": {
+        "derived_selector": ".sgs-icon__glyph, [data-icon-name]",
+        "role": "icon-lucide",
+        "_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-lucide' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "emojiChar",
+      "fields": {
+        "role": "icon-emoji",
+        "derived_selector": ".sgs-icon__emoji"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "imageAlt",
+      "fields": {
+        "role": "image-alt",
+        "alt_companion_attr": "image"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "imageAlt",
+      "fields": {
+        "role": "image-alt",
+        "alt_companion_attr": "imageUrl"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "imageAlt",
+      "fields": {
+        "role": "image-alt",
+        "alt_companion_attr": "imageUrl"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attribution",
+      "fields": {
+        "emit_shape": "nested",
+        "canonical_slot": "attribution",
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBgColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedBgColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedTextColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedBorderColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBorderRadius",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedBorderRadius",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillBgColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillTextColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillBorderColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedBgColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedTextColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedBorderColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillBorderRadius",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedBorderRadius",
+      "fields": {
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "navBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "tabIndicatorColour",
+      "fields": {
+        "css_property": "border-color"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "tabActiveIndicatorColour",
+      "fields": {
+        "css_property": "border-color"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover",
+        "css_element": "image"
+      },
+      "_why": "css_element PINNED 2026-08-15. The css_element reset added to sgs-update-v2.py the same day cleared this value because the derivation cannot re-derive it for THIS block: post-grid's hover-zoom rule targets `.sgs-post-grid__img` (style.css:488) while 13 other rules in the same file use `.sgs-post-grid__image`, and the manifest declares `image` — one block, two class names for one element. Without this pin `lift_per_element_state` stops routing the attr and post-grid's image hover-zoom is SILENTLY DROPPED on every clone, the exact defect converter/tests/test_per_element_state_lift.py exists to prevent (this attr is one of the five named in its docstring). Siblings card-grid/gallery/team-member are unaffected — their selectors end in `__image`, matching their manifests. DO NOT remove this pin to tidy up: fix post-grid's own `__img` vs `__image` split first, re-verify that test, THEN remove."
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "textColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "textColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontStyle",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionMarginTop",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionMarginTopTablet",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionMarginTopMobile",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionMarginUnit",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "rating",
+      "fields": {
+        "role": "rating"
+      }
+    },
+    {
+      "_why": "Track B, 2026-08-04. The `price` slot lists \"ribbon\" among its own aliases, and load_slot_aliases() builds its map first-writer-wins over an unordered scan, so `price` claims the name before the dedicated `ribbon` slot (which exists) can register its own. A draft authoring a cta-section ribbon writes .sgs-cta-section__ribbon, which the price-derived selector cannot match. Measured: 10 such alias collisions exist, 4 touch a live sgs/% attr, 3 are wrong. Fixed by override, NOT by de-duplicating slots.aliases: 179 of 1170 attrs depend on that alias layer for genuine synonym work (title->heading, url->link, columns->column), so removing it would break ~175 rows to fix 3.",
+      "slug": "sgs/cta-section",
+      "attr": "ribbon",
+      "fields": {
+        "canonical_slot": "ribbon",
+        "derived_selector": ".sgs-cta-section__ribbon"
+      }
+    },
+    {
+      "_why": "Track B, 2026-08-04. Same alias-collision class: the `text` slot claims \"caption\" as an alias, so sgs/media.caption seeded canonical_slot='text'. The block genuinely renders .sgs-media__caption (verified: 2 occurrences in its own source), which is what a draft would author.",
+      "slug": "sgs/media",
+      "attr": "caption",
+      "fields": {
+        "canonical_slot": "caption",
+        "derived_selector": ".sgs-media__caption"
+      }
+    },
+    {
+      "_why": "Track B, 2026-08-04. Same alias-collision class, opposite remedy: the `card` slot claims \"step\" as an alias, so a number field's numeric increment (e.g. 0.01) seeded canonical_slot='card'. This attr is not a content slot at all, so the correct value is NULL rather than a better slot name — matching the sgs/product-card.priceNote precedent above. Corroborated independently by the Track A fingerprint, whose D1 detector vetoed this attr after examining every usage site.",
+      "slug": "sgs/form-field-number",
+      "attr": "step",
+      "fields": {
+        "canonical_slot": null
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "logoUrl",
+      "fields": {
+        "role": "image-object",
+        "_note": "The string image attr `alt` names via alt_companion_attr. Must be role='image-object' AND attr_type='string' together — walk.py:295 requires both before it will capture alt text."
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "beforeVideoAlt",
+      "fields": {
+        "role": "a11y-text",
+        "_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `beforeVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "afterVideoAlt",
+      "fields": {
+        "role": "a11y-text",
+        "_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `afterVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "dashiconName",
+      "fields": {
+        "role": "icon-dashicon",
+        "_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-dashicon' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "wpIconName",
+      "fields": {
+        "role": "icon-wp-icon",
+        "_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-wp-icon' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryPhrase",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__summary"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "orgName",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__org"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "reviewDate",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__date"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "faqSchema",
+      "fields": {
+        "role": "technical",
+        "_reason": "2026-08-13 (D603 inspector-uniformity role remediation). Was 'boolean-visibility' — wrong direction: this toggles whether an invisible JSON-LD FAQPage schema block is emitted (render.php wraps a wp_json_encode() call), not whether any element becomes visible. 'technical' already covers non-visual, machine-facing config (sgs/button.rel, sgs/form.successRedirect, form-field-*.fieldName) — same shape."
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "allowMultiple",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was NULL (unclassified). Pure interaction-behaviour flag (whether multiple accordion panels can be open at once) — no property_suffixes suffix match, confirmed interaction-only by this session's editor-render-parity triage. 'behaviour' is the established role for pure-configuration flags with zero visual/content effect (precedent: sgs/star-rating.maxRating, sgs/google-reviews.minRating, sgs/testimonial.showRating)."
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "defaultOpen",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was NULL. Sets which panel starts open — an interaction/initial-state flag, confirmed interaction-only by this session's editor-render-parity triage. Same 'behaviour' precedent as allowMultiple."
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was 'styling' — wrong: pure carousel drag-physics JS behaviour flag (view.js), zero CSS/visual output. Same fix applied identically across all 5 blocks that declare this attr (sgs/buybox, sgs/gallery, sgs/google-reviews, sgs/post-grid, sgs/trustpilot-reviews) — one shared shape, not a per-block judgement call."
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was 'styling' — wrong: pure carousel-looping JS behaviour flag, zero CSS/visual output. Same fix applied identically across all 5 blocks that declare this attr."
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603, the originally cited example). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603, the originally cited example). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxStart",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607, /qc-council follow-up on D604). Was 'styling'. SAME root cause as dragMomentum/loopCarousel, missed in the first pass because that pass searched by attribute NAME rather than by the structural signal: css_property already carries the fx:* pseudo-namespace marker (seed-motion-fx-registry.py) which assign-canonical.py's TIER 3 generic-styling-backstop (WHERE role IS NULL AND css_property IS NOT NULL -> 'styling') does not special-case — it treats ANY non-null css_property as CSS paint, including the fx:* markers. ⛔ This override is a STOPGAP, not the real fix — the real fix is a TIER 3.15-shaped upgrade pass in assign-canonical.py (css_property LIKE 'fx:%' AND role='styling' -> 'behaviour'), which would self-correct this row AND every future fx:* attribute without needing an override entry per instance. Flagged to Bean 2026-08-13, not built (shared classifier mechanism, design-gate per CLAUDE.md Rule 7)."
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxEnd",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxScrub",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxPin",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607). Was NULL (css_property also NULL — not yet seeded into the fx:* namespace by seed-motion-fx-registry.py, unlike its siblings fxStart/fxEnd/fxScrub). Same family, same confirmed INTERACTION-ONLY classification from this session's editor-render-parity triage — seeded here for consistency with its siblings rather than left as an unexplained gap."
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "autoplay",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "autoplay",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "autoplay",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "schemaEnabled",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "schemaEnabled",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerHideOnScroll",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerShrink",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerSticky",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerTransparent",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "rowHideOnScroll",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "rowShrink",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "rowTransparent",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "rowHideOnScroll",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "rowShrink",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "rowTransparent",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "categoryTerm",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "count",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "handpickedIds",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productCategories",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productIds",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productLimit",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productTags",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "queryCategory",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "queryPostsPerPage",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categories",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptLength",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "offset",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "postsPerPage",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "tags",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "overrideElements",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "visibleAxes",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "maxResults",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/filter-search",
+      "attr": "threshold",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "buttons",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "stats",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-address",
+      "attr": "fields",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "options",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-file",
+      "attr": "allowedTypes",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-radio",
+      "attr": "options",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-select",
+      "attr": "options",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tiles",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "optionItems",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "mediaItems",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "icons",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinks",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "headingLevels",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "physicsBounce",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "physicsEdgeResistance",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "physicsGravity",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "revealStagger",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "pathDrawTriggerOffset",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuCloseGrace",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "rateLimit",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "desktopFrameCount",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "desktopFramePad",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "mobileFrameCount",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "mobileFramePad",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "tabletFrameCount",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "tabletFramePad",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "number",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "evergreenHours",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "evergreenMinutes",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "maxReviews",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "menuRef",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "ref",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "logoSwitchCustomPx",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "svgAnimationSource",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "gradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "scrollOffset",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingStars",
+      "fields": {
+        "role": "rating"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "reviewsAverage",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "totalReviews",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "trustScore",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "decorMedia",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "rotation",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "asideSeparator",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitSvg",
+      "fields": {
+        "role": "svg"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "rows",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "contentImpact",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "schemaItemName",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "showSchema",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "schemaReviewCount",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": null
+      },
+      "_why": "STRAY css_property cleared 2026-08-15. The attribute is NOT the emitter — the block's own docblock (render.php:14,21) states 'textAlign (native typography support — targets the headline child)' and 'textAlign is handled by the single native textAlign support'. block.json confirms supports.typography.textAlign=true, and the headline element's attrMap routes css:text-align to `native:typography.textAlign`, NOT to this attr. The bare `textAlign` string attribute is a vestigial declaration; its css_property='text-align' was a rogue seed the derived classifier never claims, so db-consistency flagged it as 'would vanish on the next reseed'. Pinning it to null makes the DB state match the truth durably instead of oscillating each reseed."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingScaleMax",
+      "fields": {
+        "role": "rating"
+      },
+      "_why": "2026-08-15 element-manifest style-defect audit. Was role='layout' purely because the attr name ends in the (now REMOVED) property_suffixes 'Max' suffix row -- see that file's own '__why_min_max_removed' note. assign-canonical.py's peel_property_suffix() matched on the NAME ENDING alone with zero check against actual emission. Verified against render.php:125 ($rating_scale_max = trim((string)($attributes['ratingScaleMax'] ?? '10'))), :473 (feeds the displayed 'X out of N' text) and :654 (feeds the Schema.org Review bestRating value) -- ratingScaleMax never reaches CSS. It is the scale denominator for the SAME rating family as sgs/testimonial.ratingStars, which already carries role='rating' (roles.json: 'Star/numeric rating value -- a content-bearing display value, not a styling property'). role='rating' here matches that established, already-verified sibling exactly rather than inventing a new value."
+    },
+    {
+      "slug": "sgs/form-field-number",
+      "attr": "max",
+      "fields": {
+        "role": "technical"
+      },
+      "_why": "2026-08-15 element-manifest style-defect audit. Same property_suffixes 'Max' over-broad match as sgs/testimonial.ratingScaleMax (see that entry + the property-suffixes.json '__why_min_max_removed' note) -- this is the OTHER of the suffix's only 2 real occurrences, and it is also not CSS. Verified against render.php:20 ($max = $attributes['max'] ?? '') and :29-30 (if (!empty($max)) { $extra_attrs[] = 'max=\"' . esc_attr($max) . '\"'; }) -- it renders as the native HTML <input type=number max=\"\"> validation attribute, never a CSS declaration. role='technical' matches roles.json's own definition verbatim: 'a machine-facing value -- a form-processing key, an element id or cross-block reference... EVIDENCE REQUIRED -- assigned ONLY from a Detector-1 VETO: walked every usage site... found NONE content-bearing'. That is exactly what the render.php read above proves for this attr."
+    },
+    {
+      "slug": "sgs/form-field-number",
+      "attr": "min",
+      "fields": {
+        "role": "technical"
+      },
+      "_why": "2026-08-15 element-manifest style-defect audit. Found while checking the blast radius of removing the sibling 'Max' suffix row (property_suffixes had a parallel 'Min' row, same role='layout', same 'Added by Spec 15 P3 §3.8 gap remediation' seed, also now REMOVED -- see property-suffixes.json '__why_min_max_removed'). This is the suffix's ONLY real occurrence. Verified against render.php:19 ($min = $attributes['min'] ?? '') and :25-26 (if (!empty($min)) { $extra_attrs[] = 'min=\"' . esc_attr($min) . '\"'; }) -- renders as the native HTML <input type=number min=\"\"> validation attribute, never CSS. role='technical' for the same reason as its sibling 'max' attr on this block."
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "derived_selector": ".sgs-cta-section__shadow"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "iconCircleShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "icon-badge"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "badgeImageShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "badge-img"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "item",
+        "derived_selector": ".sgs-card-grid__card"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "item",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "derived_selector": ".sgs-team-member__card",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "tileShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "tile"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_state": "hover",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — same class as the other 8 shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation). Overridden to box-shadow-color for consistency, even though this one did not raise an F6 error unclassified (css_property=None, css_element=None) — giving it the same explicit classification as its siblings rather than leaving it the only one of the nine still unclassified."
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "frame",
+        "css_layer": "OUTER",
+        "derived_selector": ".wp-block-sgs-before-after"
+      },
+      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/before-after's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render.php line ~195. Element is 'frame' (block.json's own isWrapper:true element for this content-KIND block), scoped to the block's root class since the frame IS the block wrapper — no separate BEM sub-element exists for it. css_layer:OUTER added after the F6 reseed-survival check reported the DB's derived value as ('box-shadow-color','OUTER') — matches the sgs/team-member.cardShadowColour sibling override above, which also carries css_layer:OUTER."
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "card",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-16 shadow colour-architecture migration — sgs/post-grid's shadowHover moved off its preset-only SelectControl onto ShadowControl (Spec 35 Part F banned-anti-pattern fix), following the SAME D621/D622 pattern as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation of why the static extractor mis-derives this attr without the override). css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card') — the shape sibling shadowHover is now declared in that element's states.hover.attrMap as 'css:box-shadow', so this colour override mirrors its css_element/css_state so cloning scopes both to the same element."
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "card"
+      },
+      "_why": "2026-08-20 — companion override for the new resting `shadow` attribute (added to close a STATE_WITHOUT_BASE conformance gap: the client could style shadowHover but had no resting shadow). Same D621/D622 shadow colour-architecture pattern as the shadowHoverColour override directly above — the static extractor mis-derives a shadow-colour attr without an explicit override, same as every other companion entry in this file. css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card'), where the shape sibling `shadow` is now declared on the BASE attrMap as 'css:box-shadow' (no css_state, unlike the hover companion above, since this is the resting state)."
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "media",
+        "css_layer": "OUTER",
+        "derived_selector": ".sgs-media__img, .sgs-media__video"
+      },
+      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the sgs/before-after override above (see sgs/card-grid.cardShadowColour for the full original explanation) — sgs/media's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render time. Element is 'media' (block.json's own isWrapper:true element, attrMap already declares 'css:box-shadow':'boxShadow' on it), derived_selector matches the block's own selectors.filter.duotone/dimensions.aspectRatio entries (.sgs-media__img, .sgs-media__video) since that's where the shadow visually paints. css_layer:OUTER carried forward from the sgs/before-after sibling entry's F6 reseed-survival fix (same DB-derived shape for this property)."
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling boxShadowColour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). Same class as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation): css_property overridden to box-shadow-color so the colour attr no longer contends with its shape sibling (boxShadow, already classified css_element='wrapper'/css_layer='OUTER' via the pre-existing css-property-classifications.json entry) for the box-shadow slot. css_layer:OUTER declared explicitly because leaving it unset produced a reseed-survival mismatch (DB derives 'OUTER' from the shape sibling; a bare-None override is wiped every reseed per STOP-24)."
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — same class as sgs/button.boxShadowColour above; hover-state companion of boxShadowHover (now declared in block.json's button element states.hover.attrMap as 'css:box-shadow')."
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-16 sgs/quote D632 residual closed — the one block explicitly deferred from the original shadow colour-architecture migration (mirrors D621/D622) because a concurrent session held live uncommitted edits on this file at the time; that session has since merged and the checkout is clean. Same class as every other shadow-colour companion-attr override in this file (see sgs/card-grid.cardShadowColour for the full explanation): css_property overridden to box-shadow-color so the colour attr no longer contends with its shape sibling (boxShadow, css_element='wrapper'/css_layer='OUTER' via the pre-existing css-property-classifications.json entry) for the box-shadow slot."
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-16 sgs/quote D632 residual closed — same class as sgs/quote.boxShadowColour above; hover-state companion of boxShadowHover (declared in block.json's box element states.hover.attrMap as 'css:box-shadow')."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderWidth",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — AmbiguousLayerAttrError: (sgs/product-card, CONTENT, border-width) declared TWO candidate attrs, 'borderWidth' and 'ctaBorderWidth'. Both were derived with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick, failing 5 converter tests. Their css_element values already distinguish them correctly — borderWidth is 'wrapper' (the card's own outer box), ctaBorderWidth is 'cta' (the button inside it) — but the resolver keys on (layer, property), not element, so the element difference never reached it. Declaring borderWidth as OUTER puts each attr in its own layer and leaves ctaBorderWidth as the sole CONTENT owner of border-width. Same shape as the sgs/team-member.cardShadowColour and sgs/before-after.boxShadowColour overrides above, which resolved the identical error class. Surfaced by the 2026-08-22 reseed rather than introduced by it: both classification rows date from 20ea88fe."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderStyle",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — same AmbiguousLayerAttrError class as the sgs/product-card.borderWidth override above. The card's OWN outer box and the CTA button inside it both declare this CSS property with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick. Their css_element already distinguishes them ('wrapper' vs 'cta') but the resolver keys on (layer, property), not element. Declaring the WRAPPER attr as OUTER leaves the cta* attr the sole CONTENT owner. Scoped deliberately to the two-member wrapper-vs-cta groups — the many-element groups (color, font-size) share a property across title/price/description/tag and have NOT errored, so their resolution path is different and is left untouched rather than changed on a guess."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderColour",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — same AmbiguousLayerAttrError class as the sgs/product-card.borderWidth override above. The card's OWN outer box and the CTA button inside it both declare this CSS property with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick. Their css_element already distinguishes them ('wrapper' vs 'cta') but the resolver keys on (layer, property), not element. Declaring the WRAPPER attr as OUTER leaves the cta* attr the sole CONTENT owner. Scoped deliberately to the two-member wrapper-vs-cta groups — the many-element groups (color, font-size) share a property across title/price/description/tag and have NOT errored, so their resolution path is different and is left untouched rather than changed on a guess."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-23 — same AmbiguousLayerAttrError class as the sgs/product-card.borderWidth override above. The card's OWN outer box and the CTA button inside it both declare this CSS property with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick. Their css_element already distinguishes them ('wrapper' vs 'cta') but the resolver keys on (layer, property), not element. Declaring the WRAPPER attr as OUTER leaves the cta* attr the sole CONTENT owner. Scoped deliberately to the two-member wrapper-vs-cta groups — the many-element groups (color, font-size) share a property across title/price/description/tag and have NOT errored, so their resolution path is different and is left untouched rather than changed on a guess."
+    }
+  ]
 }

@@ -900,6 +900,34 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( ! in_array( $flex_direction, $allowed_flex_direction, true ) ) {
 				$flex_direction = '';
 			}
+
+			// <main> stacks by default (2026-08-23, Bean-directed). A <main> is the
+			// page's one content landmark and its children are page SECTIONS, so a row
+			// axis is never the right answer for it. D742 changed the generic container's
+			// `layout` default to "flex" with flexDirection left blank — correct for a
+			// generic container, since blank resolves to CSS's own `row` and that keeps
+			// the converter's draft->clone mapping honest (R-1) — but it is retroactive
+			// across every instance that never set the attr, and NONE of the theme's nine
+			// <main> containers had. Measured live on the product page before this landed:
+			// three sections laid out horizontally at 634/1328/1328px on a 1454px viewport,
+			// the buybox band's background covering under half the page.
+			//
+			// ⚠ This is a FALLBACK, not an override, and the distinction is load-bearing:
+			// it fires ONLY when flexDirection is blank (genuinely unset — WP omits an
+			// attribute equal to its default, and this one defaults to ''), so an operator
+			// who deliberately picks `row` still gets `row`. An override would leave the
+			// direction control visibly present and silently inert, which is precisely the
+			// defect `supports.align` was removed for the day before this.
+			//
+			// No cloning impact: the converter never emits `tagName` at all (verified —
+			// zero occurrences across converter/), so `main` reaches this code only from a
+			// hand-authored theme template. `layout` cannot be the lever instead, because
+			// it now DEFAULTS to "flex" and WP does not serialise a value equal to its
+			// default — an authored "flex" and an absent key are indistinguishable here,
+			// the same absent-vs-default trap this session already hit twice.
+			if ( 'main' === $html_tag && '' === $flex_direction ) {
+				$flex_direction = 'column';
+			}
 			if ( ! in_array( $flex_wrap, $allowed_flex_wrap, true ) ) {
 				$flex_wrap = '';
 			}
