@@ -2,12 +2,57 @@
 doc_type: brief
 project: small-giants-wp
 governing_spec: 35-BLOCK-INSPECTOR-UX-STANDARD.md (Part O — colour controls)
-status: AWAITING-BEAN
+status: EXECUTED (detector) + SUPERSEDED (unit of work) — see the OUTCOME block below
 date: 2026-08-22
 revision: 2 (rewritten after /qc-council — revision 1's premise was wrong)
 ---
 
 # Colour control conformance — enforced recipes, not control bundles
+
+## OUTCOME 2026-08-22 — read this before the brief below
+
+**The detector half of this brief was BUILT and SHIPPED.** rule 31 is mechanism-aware, every
+finding carries a `kind`, the ratchet moved 413 -> 378, and `survey.js` is the census. That is
+this document's core proposal, delivered.
+
+**The unit of work then changed again, on Bean's call, and this brief did not predict it.**
+Bean ruled for **five variant HELPERS that blocks adopt** — fill/text/border as row helpers,
+overlay/shadow as standalone controls — each installable with one attribute-name map. All five
+are built. Live status + the exact steps left: `.claude/plans/phase-colour-conformance.md`.
+
+### ⭐ THE COUNCIL WAS RIGHT, AND THAT IS WHY THE HELPERS LOOK THE WAY THEY DO
+
+It is tempting to read Bean's helper ruling as vindicating revision 1's "control bundles" and
+overturning the council. It does not, and the distinction is the useful part:
+
+- The council's finding was that **there is no per-mechanism seam IN THE CONTROL LAYER** — one
+  row shape serves fill, text and border, separated only by `gradientCapable`. That was
+  verified against `sgs/heading` and it is **still true**. It was confirmed again by building
+  the helpers: `textRow.js` and `borderRow.js` came out as near-clones of `fillRow.js`, exactly
+  as the council's evidence predicted. Had I expected three genuinely different controls, that
+  similarity would have looked like a mistake instead of a confirmation.
+- The seam that DOES exist is in the **paint layer**, and the helpers cut along it:
+  `sgs_fill_decls()` / `sgs_text_decls()` return per-state declarations, while
+  `sgs_border_states_css()` returns finished CSS because `sgs_border_gradient_css()` takes both
+  states in ONE call. Three mechanisms, three genuinely different PHP shapes.
+- So the helpers are not "bundles per mechanism". They are **one repeated row shape extracted
+  once**, paired to the correct emitter. Their value is deleting 3,951 lines of hand-assembled
+  JSX across 64 blocks and making the recipe the DEFAULT — not separating mechanisms that were
+  never separate client-side.
+
+**The two halves are complementary, not competing:** the detector ENFORCES the recipe; the
+helpers make the recipe what you get for free. This brief argued the first and Bean added the
+second.
+
+### What this brief got wrong, kept for the record
+
+- It scoped the work as per-block migration. Bean stopped that twice — D542 (>3 blocks means
+  build the detector, not the edit), then again because patching 64 bespoke implementations
+  leaves 64 bespoke implementations.
+- Its "Counts — measure, never cache" instruction was right and I still broke it: the first
+  AUTOFIXABLE figure (161, 75%) was wrong because the census asked "does the block emit
+  colour?" instead of "can that emission carry a GRADIENT?". True figure 29 of 208 (14%).
+
 
 > **Revision 1 proposed "3-5 control bundles, one per paint mechanism." A QC council falsified that
 > premise.** This is not a patch — the unit of work changed. Revision 1 survives in git, and the

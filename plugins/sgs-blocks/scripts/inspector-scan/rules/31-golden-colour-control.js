@@ -139,22 +139,6 @@ const { makeFinding } = require( '../core/finding' );
 const { hasRealReason } = require( '../core/baseline' );
 const { resolveComponentFiles } = require( '../core/components' );
 
-// Given a states ArrayExpression, resolve the 'normal' state's GRADIENT
-// attribute name (the sibling {attr}Gradient this row's per-state gradient
-// toggle writes to) — the mechanism-disambiguation signal recordRowMechanism
-// needs; see its own header comment for why the base attr alone is ambiguous.
-function normalStateGradientAttrName( statesArray ) {
-	if ( ! statesArray || statesArray.type !== 'ArrayExpression' ) return null;
-	for ( const el of statesArray.elements ) {
-		if ( ! el || el.type !== 'ObjectExpression' ) continue;
-		if ( stringLiteralValue( objProp( el, 'key' ) ) === 'normal' ) {
-			return resolveAttrName( objProp( el, 'gradientValue' ) );
-		}
-	}
-	const first = statesArray.elements.find( ( el ) => el && el.type === 'ObjectExpression' );
-	return first ? resolveAttrName( objProp( first, 'gradientValue' ) ) : null;
-}
-
 const RAW_COLOUR_COMPONENT_NAMES = new Set( [
 	'ColorPalette',
 	'ColorGradientControl',
@@ -195,6 +179,8 @@ const {
 	reachedComponents,
 	resolveMechanismFromCssProperty,
 	getColourCssPropertyMap,
+	normalStateGradientAttrName,
+	describeRow,
 } = require( '../core/golden' );
 
 // ── Shared-owner scan helpers (C4 step 2, 2026-08-20) ────────────────────
@@ -563,6 +549,20 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 			}
 
 			if ( name === 'DesignTokenPicker' ) {
+				// ⭐ `statesProvidedByParent` — the picker is single-state because its
+				// ENCLOSING control owns the normal/hover axis (Bean's ruling 2026-08-22:
+				// "the colour picker should be single state because the whole panel should
+				// be 2 state"). Both states exist, one level up, so flagging this would be
+				// a FALSE POSITIVE across all 30 mounting blocks — and a gate that cries
+				// wolf is one people learn to skim. A literal JSX marker, statically
+				// resolvable, never a runtime predicate (D738).
+				//
+				// ⚠ THIS SCAN NEEDS ITS OWN CHECK. The per-block scan has an identical
+				// branch, and marking only that one left this finding live — the two walks
+				// are separate code paths over the same question, which is exactly the
+				// duplication describeRow() was introduced to end. Until they share a
+				// walker, a guard added to one must be added to both.
+				if ( findJsxAttr( node, 'statesProvidedByParent' ) ) return;
 				const statesExpr = jsxAttrExpr( node, 'states' );
 				const labelExpr = jsxAttrExpr( node, 'label' );
 				let labelText = null;
@@ -694,11 +694,28 @@ module.exports = {
 				? blockJson.supports.sgs.colourExemptions
 				: null;
 
-		function checkRow( { rowKey, statesArray, gradientCapable, line } ) {
+		// The *Override params carry a row resolved from a colour-variant HELPER call
+		// (fillRow({...})), whose states are GENERATED inside the helper and are
+		// therefore never a literal ArrayExpression here. Without them an adopted row
+		// is INVISIBLE to this rule: it renders correctly, silently stops being
+		// checked, and the finding count FALLS — which reads as progress. Measured on
+		// the survey side, adopting a single row moved the census 255 -> 254.
+		// describeRow() in core/golden.js is the one normaliser both this rule and the
+		// survey use, so they cannot drift on what a row is.
+		function checkRow( { rowKey, statesArray, gradientCapable, line,
+			statesCountOverride = null, hasGradientOverride = null,
+			attrNameOverride = null, gradientAttrNameOverride = null } ) {
 			const statesCount =
-				statesArray && statesArray.type === 'ArrayExpression' ? statesArray.elements.length : 1;
-			const attrName = normalStateAttrName( statesArray );
-			const gradientAttrName = normalStateGradientAttrName( statesArray );
+				statesCountOverride !== null
+					? statesCountOverride
+					: statesArray && statesArray.type === 'ArrayExpression'
+					? statesArray.elements.length
+					: 1;
+			const attrName = attrNameOverride !== null ? attrNameOverride : normalStateAttrName( statesArray );
+			const gradientAttrName =
+				gradientAttrNameOverride !== null
+					? gradientAttrNameOverride
+					: normalStateGradientAttrName( statesArray );
 			const required = requiredStatesFor( elements, attrName );
 			const mechanismInfo = recordRowMechanism( ctx, block.slug, rowKey, attrName, gradientAttrName );
 
@@ -736,8 +753,12 @@ module.exports = {
 			// falls back to the pre-Step-3 binary check (never guessed at) so
 			// this rewrite cannot silently reduce coverage for the 157
 			// attributes with no css_property yet.
-			const statesHasGradient = statesArrayHasGradient( statesArray );
-			const hasAnyGradient = gradientCapable === true || statesHasGradient;
+			const statesHasGradient =
+				hasGradientOverride !== null ? hasGradientOverride : statesArrayHasGradient( statesArray );
+			const hasAnyGradient =
+				hasGradientOverride !== null
+					? hasGradientOverride
+					: gradientCapable === true || statesHasGradient;
 			const isShadowMechanism = mechanismInfo.mechanisms.includes( 'shadow' );
 
 			if ( ! isShadowMechanism ) {
@@ -976,8 +997,24 @@ module.exports = {
 				if ( name === 'SgsColourPanel' ) {
 					const rowsExpr = jsxAttrExpr( node, 'rows' );
 					if ( ! rowsExpr ) return;
-					const rowObjs = resolveRowObjects( rowsExpr );
-					for ( const rowObj of rowObjs ) {
+					for ( const el of resolveArrayLike( rowsExpr, 0 ) ) {
+						const d = describeRow( el );
+						if ( ! d ) continue;
+						if ( d.viaHelper ) {
+							checkRow( {
+								rowKey: d.rowKey || `row-line-${ line }`,
+								statesArray: null,
+								gradientCapable: false,
+								line: d.line || line,
+								statesCountOverride: d.statesCount,
+								hasGradientOverride: d.hasGradient,
+								attrNameOverride: d.attrName,
+								gradientAttrNameOverride: d.gradientAttrName,
+							} );
+							continue;
+						}
+						const rowObj = unwrapRowObject( el );
+						if ( ! rowObj ) continue;
 						const rowKey = stringLiteralValue( objProp( rowObj, 'key' ) ) || `row-line-${ line }`;
 						const statesArray = objProp( rowObj, 'states' );
 						const gradientCapable = booleanLiteralValue( objProp( rowObj, 'gradientCapable' ) );
@@ -1003,6 +1040,18 @@ module.exports = {
 					}
 					const rowKey = labelText ? slugify( labelText ) : `standalone-line-${ line }`;
 
+					// ⭐ `statesProvidedByParent` — a single-state picker whose ENCLOSING
+					// control owns the normal/hover axis (Bean's ruling 2026-08-22 for
+					// shadow: "the colour picker should be single state because the whole
+					// panel should be 2 state"). Both states genuinely exist, one level
+					// up, so flagging the picker as below-minimum would be a FALSE
+					// POSITIVE — and a gate that cries wolf is one people learn to skim.
+					// A literal JSX marker, statically resolvable, never a runtime
+					// predicate (D738). It asserts WHERE the states live, not that the
+					// requirement is waived.
+					if ( findJsxAttr( node, 'statesProvidedByParent' ) ) {
+						return;
+					}
 					if ( statesExpr && statesExpr.type === 'ArrayExpression' ) {
 						checkRow( { rowKey, statesArray: statesExpr, gradientCapable: false, line } );
 					} else {

@@ -317,6 +317,36 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 
 ## Framework: blocks, theme, specs
 
+### P-OVERLAY-MASK-SHAPE - a mask/shape for the background overlay
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-22
+
+Let the overlay be MASKED to a shape (`mask-image` / `clip-path`) rather than always
+filling its element as a rectangle. Bean's idea, 2026-08-22, explicitly POST-LAUNCH.
+
+Cheaper than it sounds, and the reasons are structural rather than optimistic:
+- The overlay already renders as its OWN scrim element with its own declaration set,
+  built in ONE place (`sgs_overlay_decls()` / `sgs_overlay_decls_for()`). A mask is one
+  more declaration on an element that already exists - no new DOM, no new selector, no
+  new state plumbing.
+- `clip-path` / `mask-image` are ALREADY used in this tree (before-after,
+  google-reviews, mega-panel render.php; audio, before-after style.css), so the
+  technique is not novel here.
+- It composes free with what already exists: masked gradient overlays, masked hover
+  states, per-device masks all fall out of the existing overlay contract.
+
+⚠ THE COST IS THE SHAPE LIBRARY, NOT THE CSS. `ShapeDividersPanel.js` exists but a scan
+found NO reusable preset list inside it, so shapes must be sourced or authored, plus a
+picker UI. Size this from the preset work, never from the CSS plumbing - the plumbing is
+the small half.
+
+⛔ Do NOT fold this into the five-variant colour-helper rollout. That work makes existing
+capability installable; this ADDS a capability. Mixing them makes a regression in either
+one unattributable.
+
+**Trigger:** post-launch, once the five colour variants are adopted across the block
+roster and the inspector surface is stable.
+
+
 *61 open entries (re-derived 2026-07-31 from a `**Bucket:** framework` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
 ### P-9 — Remaining bucket-2 blocks + timeline rework

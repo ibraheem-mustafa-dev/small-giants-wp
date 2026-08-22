@@ -67,6 +67,7 @@ $connector_style         = $attributes['connectorStyle'] ?? 'line';
 $number_style            = $attributes['numberStyle'] ?? 'circle';
 $number_colour           = $attributes['numberColour'] ?? '';
 $number_background       = $attributes['numberBackground'] ?? '';
+$number_background_gradient = sgs_css_gradient_value( $attributes['numberBackgroundGradient'] ?? '' );
 $title_colour            = $attributes['titleColour'] ?? '';
 $description_colour      = $attributes['descriptionColour'] ?? '';
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
@@ -262,6 +263,9 @@ if ( $hover_text_colour ) {
 if ( $hover_border_colour ) {
 	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
+if ( '' !== ( $attributes['numberBackgroundHover'] ?? '' ) ) {
+	$hover_decls[] = 'background-color:' . sgs_colour_value( $attributes['numberBackgroundHover'] );
+}
 if ( $hover_decls ) {
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
@@ -351,7 +355,7 @@ if ( $number_colour ) {
 	$num_decls[] = 'color:' . sgs_colour_value( $number_colour );
 }
 if ( $number_background ) {
-	$num_decls[] = 'background-color:' . sgs_colour_value( $number_background );
+	$num_decls[] = sgs_background_paint_decl( $number_background, $number_background_gradient );
 }
 if ( $num_decls ) {
 	$scoped_css[] = "{$num_scope}{" . implode( ';', $num_decls ) . ';}';

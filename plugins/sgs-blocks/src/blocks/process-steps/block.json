@@ -70,7 +70,12 @@
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout", "motion" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"motion"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
@@ -101,7 +106,9 @@
 				"title": {
 					"label": "Step title",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"attrMap": {
 						"css:color": "titleColour",
@@ -119,7 +126,10 @@
 				"number": {
 					"label": "Step number badge",
 					"order": 3,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "number",
 					"attrMap": {
 						"css:color": "numberColour",
@@ -130,7 +140,9 @@
 				"description": {
 					"label": "Step description",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "description",
 					"attrMap": {
 						"css:color": "descriptionColour"
@@ -146,7 +158,9 @@
 				"animation": {
 					"label": "Scroll-reveal animation",
 					"order": 6,
-					"clusters": [ "animation" ],
+					"clusters": [
+						"animation"
+					],
 					"attrMap": {
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
@@ -207,7 +221,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"connectorStyle": {
@@ -326,6 +347,14 @@
 		"sgsAnimationEasing": {
 			"type": "string",
 			"default": "ease-out"
+		},
+		"numberBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"numberBackgroundHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

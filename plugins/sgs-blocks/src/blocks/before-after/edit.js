@@ -764,18 +764,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						<ShadowControl
 							label={ __( 'Shadow', 'sgs-blocks' ) }
-							value={ boxShadow }
-							onChange={ ( val ) =>
-								setAttributes( { boxShadow: val } )
-							}
-							colour={ boxShadowColour }
-							onColourChange={ ( val ) =>
-								setAttributes( { boxShadowColour: val } )
-							}
-							colourHover={ attributes.boxShadowColourHover }
-							onColourHoverChange={ ( val ) =>
-								setAttributes( { boxShadowColourHover: val } )
-							}
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'boxShadow',
+								colour: 'boxShadowColour',
+								hoverColour: 'boxShadowColourHover',
+							} }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

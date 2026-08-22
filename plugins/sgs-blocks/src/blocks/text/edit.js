@@ -449,6 +449,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { borderColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
 					{
@@ -464,6 +471,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 								gradientValue: firstLetterColourGradient,
 								onGradientChange: ( val ) => setAttributes( { firstLetterColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: firstLetterColourHover,
+								onChange: ( val ) => setAttributes( { firstLetterColourHover: val ?? '' } ),
+								linked: true,
 							},
 						],
 					},

@@ -69,6 +69,7 @@ $sgs_card_style          = isset( $attributes['cardStyle'] ) ? $attributes['card
 $sgs_hover_effect        = isset( $attributes['effectHover'] ) ? $attributes['effectHover'] : 'lift';
 $sgs_icon_position       = isset( $attributes['iconPosition'] ) ? $attributes['iconPosition'] : 'top';
 $sgs_hover_bg            = isset( $attributes['backgroundColourHover'] ) ? $attributes['backgroundColourHover'] : '';
+$sgs_hover_bg_gradient = sgs_css_gradient_value( $attributes['backgroundColourHoverGradient'] ?? '' );
 $sgs_hover_text          = isset( $attributes['textColourHover'] ) ? $attributes['textColourHover'] : '';
 $sgs_hover_border        = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
 // D636 border-colour gradient — sibling attribute, wins over $sgs_hover_border when set.
@@ -165,7 +166,7 @@ $sgs_wrapper_styles = array_merge( $sgs_wrapper_styles, sgs_transition_vars( $at
 // resting-value fallback is needed for the per-variant background.
 $sgs_hover_decls = array();
 if ( $sgs_hover_bg ) {
-	$sgs_hover_decls[] = 'background-color:' . sgs_colour_value( $sgs_hover_bg );
+	$sgs_hover_decls[] = sgs_background_paint_decl( $sgs_hover_bg, $sgs_hover_bg_gradient );
 }
 if ( $sgs_hover_text ) {
 	$sgs_hover_decls[] = 'color:' . sgs_colour_value( $sgs_hover_text );

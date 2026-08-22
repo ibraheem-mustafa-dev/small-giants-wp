@@ -36,16 +36,35 @@ def find_db() -> Path:
 
 
 def main() -> int:
+    # --rich is OPT-IN and additive. The DEFAULT output shape is unchanged and
+    # must stay that way: rule 31 (core/golden.js getColourCssPropertyMap) reads
+    # it as { slug: { attr: css_property|null } } and a shape change there would
+    # silently break the gate. The codemod needs derived_selector + attr_type as
+    # well, and giving it its own exporter would create a SECOND reader of the
+    # same table free to drift from this one. One script, one query, two
+    # projections.
+    rich = "--rich" in sys.argv
+
     db_path = find_db()
     conn = sqlite3.connect(str(db_path))
     cur = conn.cursor()
     cur.execute(
-        "SELECT block_slug, attr_name, css_property FROM block_attributes "
+        "SELECT block_slug, attr_name, css_property, derived_selector, attr_type, "
+        "css_element, css_state FROM block_attributes "
         "WHERE role IN ('color', 'colour-gradient')"
     )
     out = {}
-    for block_slug, attr_name, css_property in cur.fetchall():
-        out.setdefault(block_slug, {})[attr_name] = css_property or None
+    for slug, attr, css_property, derived_selector, attr_type, css_element, css_state in cur.fetchall():
+        if rich:
+            out.setdefault(slug, {})[attr] = {
+                "css_property": css_property or None,
+                "derived_selector": derived_selector or None,
+                "attr_type": attr_type or None,
+                "css_element": css_element or None,
+                "css_state": css_state or None,
+            }
+        else:
+            out.setdefault(slug, {})[attr] = css_property or None
     conn.close()
     json.dump(out, sys.stdout)
     return 0

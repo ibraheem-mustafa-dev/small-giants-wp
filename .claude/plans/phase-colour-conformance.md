@@ -6,7 +6,7 @@ project: small-giants-wp
 governing_spec: 35-BLOCK-INSPECTOR-UX-STANDARD.md (Part O — colour controls)
 date: 2026-08-22
 docscore_grade: pending
-status: READY-TO-EXECUTE — Wave 1 reworked 2026-08-22 (Step 2 is now a DB lookup, not a render.php scan)
+status: IN PROGRESS — detector + 5 helpers built (branch feat/colour-states-codemod, 15 commits, pushed). Adoption + QA Gate C remain. See PROGRESS below.
 ---
 
 # Phase — Colour control conformance
@@ -21,6 +21,99 @@ detector rewrite; it is now a DB lookup against a column that already exists, wh
 architectural judgement that justified opus. Waves 2-3 were already mechanical and delegated.
 
 **Docscore:** pending (Stage 7)
+
+## PROGRESS — 2026-08-22 (read this before the criteria below)
+
+⛔ **THE PLAN'S ORIGINAL SHAPE WAS WRONG AND WAS REPLACED MID-EXECUTION.** Steps 1-7 below
+assumed per-block migration of colour rows. Bean stopped that twice: first because
+per-block agent dispatch violates D542 (>3 blocks -> build the detector, not the edit),
+then because a CODEMOD that patches 64 bespoke implementations still leaves 64 bespoke
+implementations. The agreed shape is **five variant HELPERS that blocks adopt**. Steps 1-4
+(detector) still stand as written; Steps 5-6 (per-block migration) are SUPERSEDED by
+adoption.
+
+### Built and committed — branch `feat/colour-states-codemod`, pushed, all gates green
+
+| Piece | State |
+|---|---|
+| rule 31 mechanism-aware, `kind` field, ratchet 413 -> 378 | done |
+| `survey.js` census + honest extensibility verdicts | done |
+| `scan-undeclared-setattributes.js` (NEW gate) | done — caught 3 real defects, one shipped by me |
+| `fix.js` (survey/fix/check/self-test, 15 assertions) | done — 6 rows conformant |
+| 5 colour-variant helpers, all installable via an attr-name map | done |
+| `describeRow()` — gate can SEE helper calls | done |
+| `statesProvidedByParent` marker | done |
+| ShadowControl: one state axis, single-state picker inside | done (Bean's ruling) |
+| 22/22 ShadowControl mounts on the `attrNames` map | done |
+| `migrate-shadow-mounts.js` (survey/apply/check) | done |
+
+### Measured reality that changed the plan
+
+- **AUTOFIXABLE is 29 of 208 (14%), not the 161 (75%) first reported.** The census asked
+  "does the block emit colour?" not "can that emission carry a GRADIENT?". 132 rows paint
+  through a colour-valued CSS custom property, which cannot hold a gradient.
+- **That ceiling is a CONSEQUENCE of hand-rolled paint, not a fact about the blocks.** A
+  shared emitter owns the paint, so adoption dissolves it. This is why adoption, not
+  patching, is the route.
+- **3,951 lines of inline colour-row JSX across 64 blocks** is what adoption deletes.
+- `GridItemDefaultsPanel` "defect" — **CLOSED, not a defect.** `KIND_PANELS.layout` does
+  not include it; all candidate blocks pass `kind="layout"` and correctly declare no
+  `gridItem*` attrs. A fix was built on a bad probe and fully reverted.
+
+---
+
+## EXACT REMAINING STEPS TO CLOSE
+
+### R1 — Merge the branch to `main`
+**BLOCKED, not forgotten.** `main`'s checkout has ~18 dirty files from a co-active session;
+merging would change HEAD under their edits. Branch is pushed and safe.
+**Do when:** main's tree is clean. `git merge feat/colour-states-codemod`, then re-run the
+six gates. No conflicts expected (branch already merged main twice).
+
+### R2 — Adopt `fillRow` / `textRow` / `borderRow` across the roster
+The main remaining work and the one that pays for the helpers.
+- Drive it with a codemod mode, NOT per-block agents (D542).
+- `describeRow()` already keeps rule 31 and the survey sighted through helper calls —
+  verified both directions, so adoption cannot blind the gate.
+- ⛔ **Verify reachability per site BEFORE editing.** The GridItemDefaultsPanel reversal
+  came from a probe that counted comments and named-export imports as real mounts.
+- ⛔ **Diff the OUTPUT, not just the dry run.** A dry run reported a perfect attribute map
+  while silently dropping every `label=`; only `git diff` caught it.
+- **Exit:** inline colour-row JSX materially reduced from 3,951 lines; rule 31 not risen;
+  undeclared-attr scan CLEAN.
+
+### R3 — Hover SHAPE attributes for full shadow symmetry
+`ShadowControl` SUPPORTS `valueHover`/`onValueHoverChange`; no block passes them yet, so no
+block has a hover shape in practice — only a hover colour.
+- Add a hover-shape attribute per mounting block + the `hover` key in its `attrNames` map.
+- `sgs_shadow_decls()` already reads it and falls back to the resting shape when absent, so
+  this is additive and cannot regress the 8 blocks that recolour-only on hover.
+- **Exit:** a hover shadow can lift/grow/soften, not merely recolour.
+
+### R4 — The 29 genuinely autofixable rows
+16 `helper-at-existing-selector`, 12 `wire-state-emitter`, 1 `wrapper-emits`.
+⚠ 5 of the 16 are keyed as hover (`shadowHover`, `hover-border`) — they ARE the hover state
+and need a **normal** state added, not a second hover. Determine direction from render.php
+evidence, never from the row key's spelling.
+
+### R5 — Build, deploy, QA Gate C (unchanged from the original plan)
+`npm run build` -> `build-deploy.py --target sandybrown --blocks-only` -> Playwright editor
+login sampling **one row per mechanism** (fill, text, border, overlay, shadow), each: pick a
+palette colour, save, RELOAD, assert the stored value is the SLUG not a hex, and confirm a
+hover repaints under a real pointer.
+⛔ Nothing in this phase has been verified live yet. Every visual-diff gate skip taken so
+far was logged as "additive, no live screenshot, NOT claiming a PASS" — this is where that
+debt is settled.
+
+### R6 — Ratchet down + docs (original Step 7)
+Lower rule 31's `openBacklog` to the measured floor with a stated reason, write the D-entry,
+update the LEDGER, write the visual-diff evidence report, run `handoff-preflight.py --check`.
+⚠ In a fresh worktree that gate reports one dangling link
+(`specs/README.md -> 02-SGS-BLOCKS-REFERENCE.md`) — a GITIGNORED generated file, absent from
+any worktree, present on main where the same gate passes 0 failures. Not a defect; do not
+"fix" it.
+
+---
 
 ## Phase success criteria (done when)
 

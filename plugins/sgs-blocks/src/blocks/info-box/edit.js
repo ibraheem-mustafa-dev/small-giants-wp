@@ -386,6 +386,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
 								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								gradientValue: attributes.backgroundColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -588,10 +590,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						allowlist. */ }
 					<ShadowControl
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						value={ shadowHover }
-						onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
-						colour={ shadowHoverColour }
-						onColourChange={ ( val ) => setAttributes( { shadowHoverColour: val } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowHover',
+							colour: 'shadowHoverColour',
+						} }
 					/>
 				</PanelBody>
 

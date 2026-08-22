@@ -697,18 +697,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						<ShadowControl
 							label={ __( 'Tile shadow', 'sgs-blocks' ) }
-							value={ tileShadow }
-							onChange={ ( val ) =>
-								setAttributes( { tileShadow: val } )
-							}
-							colour={ tileShadowColour }
-							onColourChange={ ( val ) =>
-								setAttributes( { tileShadowColour: val } )
-							}
-							colourHover={ attributes.tileShadowColourHover }
-							onColourHoverChange={ ( val ) =>
-								setAttributes( { tileShadowColourHover: val } )
-							}
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'tileShadow',
+								colour: 'tileShadowColour',
+								hoverColour: 'tileShadowColourHover',
+							} }
 						/>
 					</ToolsPanelItem>
 

@@ -358,6 +358,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: iconBorderColourHover,
 									onChange: ( val ) => setAttributes( { iconBorderColourHover: val ?? '' } ),
+									gradientValue: attributes.iconBorderColourHoverGradient,
+									onGradientChange: ( val ) => setAttributes( { iconBorderColourHoverGradient: val ?? '' } ),
 									linked: true,
 								},
 							],

@@ -342,6 +342,9 @@ if ( $has_scale ) {
 	$hover_rules[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
 }
 
+if ( '' !== ( $attributes['borderColourHover'] ?? '' ) ) {
+	$hover_rules[] = 'border-color:' . sgs_colour_value( $attributes['borderColourHover'] );
+}
 if ( $hover_rules || $has_scale ) {
 	$scoped_css[] = "{$root_sel}{transition:transform {$transition_duration}ms {$transition_easing},box-shadow {$transition_duration}ms {$transition_easing},background-color {$transition_duration}ms {$transition_easing},color {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";

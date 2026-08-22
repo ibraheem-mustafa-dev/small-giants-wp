@@ -41,6 +41,7 @@ import {
 	Button,
 	ButtonGroup,
 	ToggleControl,
+	TabPanel,
 } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
 import { UnitControl } from './primitives';
@@ -121,7 +122,43 @@ export default function ShadowControl( {
 	onColourChange,
 	colourHover,
 	onColourHoverChange,
+	// Hover SHAPE (Bean's full-symmetry ruling 2026-08-22): before this, only the
+	// COLOUR was per-state, so a hover shadow could recolour but never lift, grow or
+	// soften. Optional — a caller supplying neither hover prop keeps the single-state
+	// control, exactly as fillRow keeps one state when given no hover attribute.
+	valueHover,
+	onValueHoverChange,
+	// ⭐ INSTALL-IN-ONE-CALL (Bean 2026-08-22: "I want that and the shadow control to be
+	// in a helper so it's easy to install them in new places and we don't need to keep
+	// rebuilding those 2 variants"). Pass `attributes` + `setAttributes` + an `attrNames`
+	// map and the four value/onChange pairs are derived here, matching the shape
+	// GradientOverlayControl already had. Installing shadow somewhere new becomes one
+	// mount with one map instead of six hand-wired props.
+	//
+	// ⚠ FULLY BACKWARDS-COMPATIBLE, and that is not optional: 22 existing mount sites
+	// pass the explicit props. The explicit props WIN when both are supplied, so a
+	// partially-migrated caller is never silently overridden by a map it also passed.
+	attributes,
+	setAttributes,
+	attrNames,
 } ) {
+	// Derive the explicit pairs from the map, without clobbering anything explicit.
+	if ( attrNames && attributes && setAttributes ) {
+		const bind = ( key, current, currentSetter ) => {
+			const attr = attrNames[ key ];
+			if ( ! attr || current !== undefined || typeof currentSetter === 'function' ) {
+				return [ current, currentSetter ];
+			}
+			return [
+				attributes[ attr ],
+				( next ) => setAttributes( { [ attr ]: next ?? '' } ),
+			];
+		};
+		[ value, onChange ] = bind( 'base', value, onChange );
+		[ colour, onColourChange ] = bind( 'colour', colour, onColourChange );
+		[ valueHover, onValueHoverChange ] = bind( 'hover', valueHover, onValueHoverChange );
+		[ colourHover, onColourHoverChange ] = bind( 'hoverColour', colourHover, onColourHoverChange );
+	}
 	// Defensive fallback (incident 2026-08-20): 5 of 22 mount sites passed no
 	// `onColourChange`, so picking a shadow colour threw `TypeError:
 	// onColourChange is not a function` and blanked the whole inspector
@@ -151,7 +188,23 @@ export default function ShadowControl( {
 	// Two-state row only when the caller actually wired a hover sibling —
 	// a mount with no meaningful hover state (documented per call site)
 	// keeps rendering the single-state row it always has.
-	const hasHoverState = typeof onColourHoverChange === 'function';
+	// Same defensive shape as safeOnColourChange/safeOnColourHoverChange above. A mount
+	// that opts into hover but wires only the colour half would otherwise throw on the
+	// first shape edit in the Hover tab — the 2026-08-20 incident that blanked the whole
+	// inspector sidebar, in a new place.
+	const safeOnValueHoverChange =
+		onValueHoverChange ||
+		( () => {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'ShadowControl: onValueHoverChange prop is missing — the hover SHAPE fields will not update the block. Pass `valueHover` + `onValueHoverChange` from the caller.'
+			);
+		} );
+	// Hover is offered when EITHER half is wired, so a caller migrating incrementally
+	// still gets the tab (with the unwired half warning rather than crashing) instead of
+	// silently falling back to a single state and looking like it worked.
+	const hasHoverState =
+		typeof onColourHoverChange === 'function' || typeof onValueHoverChange === 'function';
 	// `useSettings( 'shadow.presets' )` can resolve to EITHER a flat array
 	// (already-merged) OR WordPress's origin-keyed object
 	// `{ default: [...], theme: [...], custom: [...] }` (raw feature shape,
@@ -173,6 +226,72 @@ export default function ShadowControl( {
 		( preset, i ) =>
 			mergedPresets.findIndex( ( p ) => p.slug === preset.slug ) === i
 	);
+	return (
+		<BaseControl label={ label } __nextHasNoMarginBottom>
+			{ /* ⭐ ONE STATE AXIS, AT THE TOP (Bean's ruling 2026-08-22): "in the case of
+			   shadow, the colour picker should be single state because the whole panel
+			   should be 2 state". The tabs below own normal/hover for the ENTIRE builder —
+			   presets, offsets, blur, spread, colour and inset all belong to the selected
+			   state. The previous shape put a 2-state axis on the COLOUR PICKER ALONE, which
+			   meant a client picked "Hover" in two different places to mean one thing, and
+			   the shape was not per-state at all.
+			   The inner picker is therefore SINGLE-state and carries `statesProvidedByParent`
+			   so rule 31 does not read it as a below-minimum row: both states genuinely
+			   exist, one level up, and the marker names where. */ }
+			{ hasHoverState ? (
+				<TabPanel
+					className="sgs-shadow-control__states"
+					tabs={ [
+						{ name: 'normal', title: __( 'Normal', 'sgs-blocks' ) },
+						{ name: 'hover', title: __( 'Hover', 'sgs-blocks' ) },
+					] }
+				>
+					{ ( tab ) =>
+						tab.name === 'hover' ? (
+							<ShadowStateBuilder
+								value={ valueHover }
+								onChange={ safeOnValueHoverChange }
+								colour={ colourHover }
+								onColourChange={ safeOnColourHoverChange }
+								presets={ presets }
+							/>
+						) : (
+							<ShadowStateBuilder
+								value={ value }
+								onChange={ onChange }
+								colour={ colour }
+								onColourChange={ safeOnColourChange }
+								presets={ presets }
+							/>
+						)
+					}
+				</TabPanel>
+			) : (
+				<ShadowStateBuilder
+					value={ value }
+					onChange={ onChange }
+					colour={ colour }
+					onColourChange={ safeOnColourChange }
+					presets={ presets }
+				/>
+			) }
+		</BaseControl>
+	);
+}
+
+/**
+ * ONE state's worth of shadow builder — presets, offsets, blur, spread, colour, inset.
+ *
+ * Extracted 2026-08-22 so the SAME builder renders per state inside ShadowControl's
+ * tabs. Before this, only the COLOUR was per-state and the shape was shared, so a hover
+ * shadow could recolour but never lift, grow or soften — Bean ruled for full symmetry
+ * (shape AND colour, both states).
+ *
+ * `presets` is resolved ONCE by the parent and passed down: it is identical for both
+ * states, and resolving it per instance would duplicate the origin-precedence merge and
+ * let the two states drift.
+ */
+function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets } ) {
 	const parts = parseShadow( value ) || DEFAULT_PARTS;
 
 	const updatePart = ( key, next ) => {
@@ -180,7 +299,7 @@ export default function ShadowControl( {
 	};
 
 	return (
-		<BaseControl label={ label } __nextHasNoMarginBottom>
+		<>
 			<div className="sgs-shadow-control__presets">
 				<ButtonGroup>
 					<Button
@@ -255,36 +374,14 @@ export default function ShadowControl( {
 					   Consequence, stated not hidden: lowering alpha still stores a raw
 					   colour. A palette pick at full alpha now stores the slug, which is
 					   the common case and a strict improvement on storing a hex always. */ }
-					{ hasHoverState ? (
-						<DesignTokenPicker
-							label={ __( 'Shadow colour', 'sgs-blocks' ) }
-							enableAlpha
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: colour,
-									onChange: ( v ) => safeOnColourChange( v || DEFAULT_COLOUR ),
-									linked: true,
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: colourHover,
-									onChange: ( v ) => safeOnColourHoverChange( v || DEFAULT_COLOUR ),
-									linked: true,
-								},
-							] }
-						/>
-					) : (
-						<DesignTokenPicker
-							label={ __( 'Shadow colour', 'sgs-blocks' ) }
-							value={ colour }
-							onChange={ ( v ) => safeOnColourChange( v || DEFAULT_COLOUR ) }
-							linked
-							enableAlpha
-						/>
-					) }
+					<DesignTokenPicker
+						label={ __( 'Shadow colour', 'sgs-blocks' ) }
+						value={ colour }
+						onChange={ ( v ) => onColourChange( v || DEFAULT_COLOUR ) }
+						linked
+						enableAlpha
+						statesProvidedByParent
+					/>
 					<ToggleControl
 						label={ __( 'Inset (inner shadow)', 'sgs-blocks' ) }
 						checked={ parts.inset }
@@ -293,6 +390,6 @@ export default function ShadowControl( {
 					/>
 				</div>
 			) }
-		</BaseControl>
+		</>
 	);
 }

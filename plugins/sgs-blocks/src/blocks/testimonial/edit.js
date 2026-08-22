@@ -422,6 +422,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { quoteColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: quoteColourHover,
+								onChange: ( val ) =>
+									setAttributes( { quoteColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
 					showSummary && {
@@ -1151,14 +1159,12 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						>
 							<ShadowControl
 								label={ __( 'Hover shadow', 'sgs-blocks' ) }
-								value={ shadowHover }
-								onChange={ ( val ) =>
-									setAttributes( { shadowHover: val } )
-								}
-								colour={ shadowHoverColour }
-								onColourChange={ ( val ) =>
-									setAttributes( { shadowHoverColour: val } )
-								}
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ {
+									base: 'shadowHover',
+									colour: 'shadowHoverColour',
+								} }
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

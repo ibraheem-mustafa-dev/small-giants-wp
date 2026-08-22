@@ -335,6 +335,14 @@
 				"linear"
 			],
 			"default": "ease"
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"firstLetterColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

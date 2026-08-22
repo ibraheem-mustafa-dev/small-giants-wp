@@ -494,6 +494,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: navBg,
 					onChange: ( val ) => setAttributes( { navBg: val ?? '' } ),
+					gradientValue: attributes.navBgGradient,
+					onGradientChange: ( val ) => setAttributes( { navBgGradient: val ?? '' } ),
 					linked: true,
 				},
 				{

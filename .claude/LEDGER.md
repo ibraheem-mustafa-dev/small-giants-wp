@@ -195,76 +195,53 @@ attribute WP discards. Their warning is met, not violated.
 
 ## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-22
 
-**All pushed to `origin/main`. Build GREEN. Canary deployed + live-verified.**
+**Branch `feat/colour-states-codemod` — 15 commits, PUSHED, all six gates green. NOT merged.**
+`main` had ~18 dirty files from a co-active session; merging would change HEAD under their
+edits. Merge when main is quiet, then re-run the gates.
 
-### ⛔ THE LIVE FRONT — read the plan, not this section
+⛔ **THE PLAN CHANGED SHAPE TWICE, BOTH TIMES BEAN'S CALL. Read
+`.claude/plans/phase-colour-conformance.md` PROGRESS + EXACT REMAINING STEPS before doing
+anything.** (1) Per-block agent dispatch was stopped — D542 says >3 blocks means build the
+detector, not the edit. (2) The codemod that replaced it was ALSO stopped: patching 64
+bespoke colour implementations still leaves 64 of them. The agreed shape is **five variant
+HELPERS that blocks adopt**.
 
-**`.claude/plans/phase-colour-conformance.md`** — status **NOT-READY**, deliberately. It carries 10
-pre-answered decisions from a Hidden Decisions pass and names the rework Wave 1 needs first.
-Governing brief: `.claude/plans/2026-08-22-colour-control-bundles-BRIEF.md` (revision 2 — revision
-1's premise was falsified by a council; the brief explains why, and that is the useful part).
+**BUILT:** rule 31 mechanism-aware + `kind` field (ratchet 413 -> 378) · `survey.js` census ·
+`scan-undeclared-setattributes.js` (NEW gate) · `fix.js` triad · **all five colour-variant
+helpers, each installable via one attr-name map** · `describeRow()` so the gate can SEE
+helper calls · `statesProvidedByParent` marker · ShadowControl restructured to one state
+axis with a single-state picker inside (Bean's ruling) · **22/22 ShadowControl mounts on the
+map** · `migrate-shadow-mounts.js`.
 
-⛔ **The blocker, measured by a COMMITTED script across all 83 blocks:** **25** call a colour helper directly; **18** route through `SGS_Container_Wrapper` (the helper call lives in a shared file); **40** have no recognisable colour paint call. **58 of 83 are invisible to a per-block scan.** Derived by `plugins/sgs-blocks/scripts/census-colour-paint-route.py` — re-run it, do not cite this line.
-All three reference blocks sit in the resolvable 25 — the first draft generalised from a sample
-drawn entirely from the easy end. **Step 2 needs a PHP shared-owner resolver before Wave 3 can be
-scoped.** ⚠ The first figure here was 26/17/40 from an uncommitted shell loop; an independent QC
-agent could not reproduce it, and the script found the loop had matched a helper name inside a
-COMMENT. The script strips comments and states its tie-break.
+**REMAINING (full detail + exit criteria in the plan doc):** R1 merge · R2 adopt the three
+row helpers across the roster (this is what deletes the 3,951 lines of inline colour JSX) ·
+R3 hover SHAPE attrs for full shadow symmetry · R4 the 29 genuinely autofixable rows ·
+R5 build + deploy + **QA Gate C (nothing has been live-verified yet)** · R6 ratchet + docs.
 
-### Shipped 2026-08-22 (D738, D739, D740)
+⚠ **NUMBERS THAT WILL MISLEAD YOU IF YOU INHERIT THEM SECOND-HAND:**
+- AUTOFIXABLE is **29 of 208 (14%)**, not the 161 (75%) first reported. The census had asked
+  "does the block emit colour?" instead of "can that emission carry a GRADIENT?". 132 rows
+  paint via a colour-valued CSS custom property, which cannot hold a gradient.
+- That ceiling is a CONSEQUENCE of hand-rolled paint, not a fact about the blocks — a shared
+  emitter dissolves it. It is the argument FOR adoption.
+- `block_attributes.derived_selector` is **NOT a CSS selector**. Verified: zero of its values
+  exist as classes anywhere. `sgs/accordion.headerColour` renders in the CHILD block via
+  providesContext. Never scope work from it.
+- `GridItemDefaultsPanel` "17-block defect" is **CLOSED — not a defect.** `KIND_PANELS.layout`
+  does not include the panel; the candidate blocks pass `kind="layout"` and correctly declare
+  no `gridItem*` attrs. A fix built on a bad probe was fully reverted.
 
-- **D738** — overlay hover is a popover TAB, not a second row. `GradientOverlayControl` takes a
-  normal+hover pair. ⛔ Its FIRST fix used `.filter().map()`, which renders correctly but is not
-  statically resolvable: rule 31 reported "carries 1 state" and the total went UP. **Code improved,
-  detector blinded.** Rewritten as literal entries — do not reintroduce a computed states array.
-- **D739** — the responsive tier axis moved OFF colour and ONTO opacity. Colour was the framework's
-  ONLY responsive colour; opacity, the thing that actually varies per device, was single-value.
-  8 overlay attrs per block, down from 10. Live: desktop 0.6 / mobile 0.15, colour identical.
-- **D740** — `ShadowControl` had NO `linked`, so it stored a raw colour on EVERY pick and never a
-  palette slug, across **15 blocks**. D717's defect on a different control: D717's census covered
-  `SgsColourPanel` ROWS and this is a standalone component, so "the only one missing linked" was
-  true of the corpus examined and false of the framework. ⚠ `enableAlpha` STAYS ON here (a shadow
-  has no separate opacity attr; removing it would delete a capability). Lowering alpha still stores
-  a raw colour — stated, not hidden.
-- **Rule 31 ratchet 418 → 413**, negative-controlled both ways with real exit codes.
-- **D-number correction:** the hover-tab work is D738. **D735 had been stamped into BOTH
-  `golden-controls.json` and `inspector-scan/rules.json`** — the canonical contract and the
-  enforcement config were pointing at an unrelated gates commit. Both fixed.
+⛔ **FOUR FAILURE MODES THAT COST REAL TIME HERE — all four were invisible to every gate:**
+1. A `/tmp` redirect under Git Bash read back a STALE file three days old; every number
+   derived from it was wrong. Use PowerShell + an absolute `C:	mp\...` path.
+2. `makeFinding()` silently DISCARDED the `kind` field for six call sites — the emit code
+   existed and never fired. Read the emitted KEYS, not the call sites.
+3. A codemod dry run reported a perfect attribute map while dropping every `label=`. **Diff
+   the OUTPUT, not the dry run.**
+4. Escaping mangled a generated patch FOUR times, once writing a literal 0x08 byte into a
+   regex so it silently matched nothing. Change the INPUT (normalise it) rather than adding
+   escape depth.
 
-### Still open on this track
-
-1. **Mechanism-aware `row-missing-gradient`** — now the phase plan's Wave 1. Must fix BOTH
-   directions: false-PASS (a row wired to the wrong mechanism) and false-FAIL (13 shadow rows
-   demanded a gradient `box-shadow` cannot have).
-2. **Defect-level matching** rule 31 ↔ colour-coverage — both compute `attrName` and both discard
-   it; that is the join key.
-3. **`sgs/heading`'s border rows** are 2 of the findings. ⭐ Do NOT fix first to get a reference —
-   `sgs/button` is already conformant (2 states, gradient per state, renders via
-   `sgs_border_gradient_css` at `render.php:894`). Heading becomes a CONSUMER of the recipe.
-4. ~~Theme-snapshot slug-valued palette entries~~ — ✅ **FIXED 2026-08-22**, 0 remaining.
-
-### Method note (earned today, three times)
-
-**Three gates caught three defects in the coordinator's own work in one sequence** — a duplicated
-label, a forgotten second paint site in hero, and an orphaned block referencing deleted variables.
-**None would have been caught by reading the diff.** The third was caught by a gate built that same
-morning. Separately: two independent reviewers found the same wrong file path in a plan, where the
-consequence was not a stall but a silent component FORK.
-
-## Pointers
-
-| For | Read |
-|---|---|
-| Executable plan | `.claude/plans/phase-shop-container-remediation.md` |
-| Full evidence + decisions | `.claude/plans/2026-08-20-shop-archive-remediation-design.md` |
-| Colour-golden master table + status | `.claude/reports/2026-08-20-colour-golden-scan-set.md` |
-| Colour-golden raw evidence (8 scanners) | `.claude/reports/2026-08-20-colour-golden-raw/` |
-| Structural defences / STOP catalogue | `.claude/STOP-CATALOGUE.md` |
-| D-numbered log | `.claude/decisions.md` (ceiling verified via the `^## D[0-9]+` anchored grep) |
-| Parked work | `.claude/parking.md` |
-| Deploy | `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — never `--allow-dirty`, never `--skip-verify` (D336) |
-
----
 
 ## ▶ DOC-DEBT / MOTION-REGISTER TRACK — 2026-08-21 (a THIRD track; all pushed)
 

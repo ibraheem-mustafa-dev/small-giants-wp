@@ -111,3 +111,4 @@ require_once __DIR__ . '/helpers-list-markers.php';
 require_once __DIR__ . '/helpers-mega-render.php';
 require_once __DIR__ . '/helpers-row-behaviour.php';
 require_once __DIR__ . '/helpers-svg-gradient.php';
+require_once __DIR__ . '/helpers-colour-variants.php';
