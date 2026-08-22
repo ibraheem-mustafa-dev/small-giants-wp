@@ -97,7 +97,6 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 // SGS flat colour attrs (D635 pattern — native color.text/color.background
 // supports are off; the SgsColourPanel writes here instead).
 $style_color_text = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
-$style_color_bg   = isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
@@ -172,9 +171,6 @@ $color_args = array();
 if ( '' !== $style_color_text ) {
 	$color_args['text'] = $style_color_text;
 }
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
 if ( ! empty( $color_args ) ) {
 	$color_scoped_styles = wp_style_engine_get_styles(
 		array( 'color' => $color_args ),
@@ -183,6 +179,32 @@ if ( ! empty( $color_args ) ) {
 	if ( ! empty( $color_scoped_styles['css'] ) ) {
 		$scoped_css[] = $color_scoped_styles['css'];
 	}
+}
+
+// Background (colour + gradient, resting + hover) is owned by the shared fill
+// emitter, NOT by the style engine and NOT by supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client saw
+// two and could not tell which won. This block never actually READ
+// $attributes['style']['color']['gradient'] (verified by grep — no occurrence
+// in the pre-fix file), so the native gradient control was already dead: any
+// gradient an operator picked there painted nothing. Switching the flag off
+// alone would still have left backgroundColour without a gradient option, so
+// the flip is paired with a block-private backgroundColourGradient exposed
+// through fillRow(), giving the client a working control where none existed.
+$sgs_ct_fill_css = sgs_fill_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $sgs_ct_fill_css ) {
+	$scoped_css[] = $sgs_ct_fill_css;
 }
 
 if ( '' !== $typography_css ) {

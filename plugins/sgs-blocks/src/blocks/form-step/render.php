@@ -50,17 +50,12 @@ $sgs_fs_supports_classes = array( 'sgs-form-step' );
 $sgs_fs_style_engine_input = array();
 
 // SGS flat colour attrs (D635 pattern — native color.text/color.background
-// supports are off; the SgsColourPanel writes here instead). Gradient stays
-// on the WP-native style.color.gradient path (gradients support unchanged).
+// supports are off; the SgsColourPanel writes here instead). Background
+// (colour + gradient, resting + hover) is owned by the shared fill emitter
+// below, NOT by the style engine and NOT by supports.color.gradients.
 $sgs_fs_color_args = array();
 if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 	$sgs_fs_color_args['text'] = (string) $attributes['textColour'];
-}
-if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-	$sgs_fs_color_args['background'] = (string) $attributes['backgroundColour'];
-}
-if ( isset( $sgs_fs_style_group['color']['gradient'] ) && '' !== $sgs_fs_style_group['color']['gradient'] ) {
-	$sgs_fs_color_args['gradient'] = (string) $sgs_fs_style_group['color']['gradient'];
 }
 if ( ! empty( $sgs_fs_color_args ) ) {
 	$sgs_fs_style_engine_input['color'] = $sgs_fs_color_args;
@@ -85,16 +80,46 @@ if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['
 	}
 }
 
-if ( ! empty( $sgs_fs_style_engine_input ) ) {
-	$sgs_fs_uid = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-	$sgs_fs_sel = '.' . $sgs_fs_uid . '.sgs-form-step';
+// uid/selector are computed UNCONDITIONALLY — the fill emitter below needs a
+// scoped selector regardless of whether the style-engine branch has anything
+// to emit (background is no longer part of $sgs_fs_style_engine_input).
+$sgs_fs_uid = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_fs_sel = '.' . $sgs_fs_uid . '.sgs-form-step';
 
+if ( ! empty( $sgs_fs_style_engine_input ) ) {
 	$sgs_fs_engine_styles = wp_style_engine_get_styles(
 		$sgs_fs_style_engine_input,
 		array( 'selector' => $sgs_fs_sel )
 	);
 	if ( ! empty( $sgs_fs_engine_styles['css'] ) ) {
 		$sgs_fs_supports_css       = $sgs_fs_engine_styles['css'];
+		$sgs_fs_supports_classes[] = $sgs_fs_uid;
+	}
+}
+
+// Background (colour + gradient, resting + hover) is owned by the shared fill
+// emitter, NOT by the style engine and NOT by supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client saw
+// two and could not tell which won. Switching the flag off alone would have
+// REMOVED the only gradient control this block had, because the sole gradient
+// read was $sgs_fs_style_group['color']['gradient'] (core's own storage). The
+// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+// exposed through fillRow(), so capability is moved rather than lost.
+$sgs_fs_fill_css = sgs_fill_states_css(
+	$sgs_fs_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $sgs_fs_fill_css ) {
+	$sgs_fs_supports_css .= $sgs_fs_fill_css;
+	if ( ! in_array( $sgs_fs_uid, $sgs_fs_supports_classes, true ) ) {
 		$sgs_fs_supports_classes[] = $sgs_fs_uid;
 	}
 }

@@ -25,7 +25,7 @@
 		},
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
@@ -81,6 +81,18 @@
 			"default": {}
 		},
 		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

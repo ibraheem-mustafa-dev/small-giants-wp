@@ -24,7 +24,7 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
@@ -149,6 +149,18 @@
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
 		},
 		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
