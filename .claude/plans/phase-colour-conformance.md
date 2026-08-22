@@ -131,7 +131,7 @@ project has drifted.
     Time:        40 min
     Tooling:     Bash, node
     On-Fail:     Revert the rule file; the ratchet must stay green
-    Prompt:      See `prompts/step-2-mechanism-resolver.md`
+    Prompt:      `.claude/prompts/step-2-mechanism-resolver.md` (WRITTEN)
     Test:
       Happy:       sgs/heading resolves text->sgs_text_colour_decl, background->sgs_background_paint_decl, border->sgs_border_gradient_css
       Edge:        A row whose attribute is read via a computed key -> reported UNRESOLVED, never guessed
@@ -140,7 +140,7 @@ project has drifted.
 
 ## Step 2a — Give every rule-31 finding a machine-readable `kind`
 
-    Model:       haiku
+    Model:       inline (trivial + additive; delegating costs more than doing it)
     Action:      Add a `kind` string field to every rule-31 finding object, naming its axis:
                  below-min-states | missing-gradient | native-colour-ui | banned-lookalike |
                  roster-surface-unknown. Purely additive — no assertion changes.
@@ -154,7 +154,6 @@ project has drifted.
     Time:        10 min
     Tooling:     Bash, node, python
     On-Fail:     Revert; no assertion depended on it
-    Prompt:      See `prompts/step-2a-kind-field.md`
     Test:
       Happy:       `--json` findings all have a non-null `kind`
       Edge:        A finding whose axis is ambiguous -> named explicitly, never defaulted silently
@@ -193,7 +192,7 @@ means "grep a substring you invent yourself", and two agents will draw the bound
     Time:        45 min
     Tooling:     Bash, node
     On-Fail:     Revert; re-measure to confirm the count returns to its pre-step value
-    Prompt:      See `prompts/step-3-mechanism-assertion.md`
+    Prompt:      `.claude/prompts/step-3-mechanism-assertion.md` (WRITTEN)
     Test:
       Happy:       A shadow row is no longer flagged missing-gradient
       Edge:        A text row wired to the BACKGROUND mechanism is newly flagged (the false-PASS case)
@@ -215,7 +214,10 @@ means "grep a substring you invent yourself", and two agents will draw the bound
     Time:        ⛔ NOT ESTIMATED — size it from Step 3's actual output. Enumerated, never guessed.
     Tooling:     Bash, node
     On-Fail:     Revert per row; each is independent
-    Prompt:      See `prompts/step-3b-fix-miswired.md`
+    Prompt:      ⛔ NOT PRE-WRITTEN, deliberately. This step's scope IS Step 3's output — the
+                 list of newly-flagged miswired rows does not exist until Step 3 runs. Writing a
+                 cold prompt now would state a scope nobody has measured. Write it at dispatch
+                 time via /subagent-prompt, using Step 3's actual enumeration.
     Test:
       Happy:       A text row that was painting through the background mechanism now routes to
                    sgs_text_colour_decl and renders visibly
@@ -230,7 +232,7 @@ with no repair step is a backlog entry pretending to be a fix.
 
 ## Step 4 — Remove post-grid's shadow exemption
 
-    Model:       haiku
+    Model:       inline (deletes ONE json entry; a cold prompt costs more than the edit)
     Action:      Delete the `colourExemptions.shadow` entry from post-grid/block.json. It is now a
                  second owner of a fact the detector states.
     Files:       plugins/sgs-blocks/src/blocks/post-grid/block.json
@@ -243,7 +245,6 @@ with no repair step is a backlog entry pretending to be a fix.
     Time:        5 min
     Tooling:     Bash, python
     On-Fail:     Restore the entry
-    Prompt:      See `prompts/step-4-remove-exemption.md`
     Test:
       Happy:       Rule 31 finding count unchanged after removal
       Edge:        JSON still parses
@@ -284,7 +285,7 @@ with no repair step is a backlog entry pretending to be a fix.
     Tooling:     Bash, node
     On-Fail:     Revert the component; the ratchet catches any rise
     Cold-Entry:  This plan + the brief + golden-controls.json recipes + reports/qa-gate-b-worklist.json
-    Prompt:      See `prompts/step-5a-grid-item-panel.md`
+    Prompt:      `.claude/prompts/step-5a-grid-item-panel.md` (WRITTEN)
     Test:
       Happy:       The 6 findings clear
       Edge:        A mounting block missing a sibling attr -> enumerated + declared, never skipped
@@ -315,7 +316,10 @@ with no repair step is a backlog entry pretending to be a fix.
     Tooling:     Bash, node
     On-Fail:     Revert component + all touched blocks; this is the largest blast radius in the phase
     Cold-Entry:  This plan + Step 5a's report + golden-controls.json recipes
-    Prompt:      See `prompts/step-5b-shadow-hover.md`
+    Prompt:      ⛔ NOT PRE-WRITTEN, deliberately — same reason as 3b. This step is marked NOT
+                 ESTIMATED; its file list is whatever the enumeration of ShadowControl's mounting
+                 blocks returns, including which need a `:hover` rule in render.php. Write the
+                 prompt after that enumeration, never before.
     Test:
       Happy:       Shadow hover repaints on a real pointer hover, live
       Edge:        A block whose shadow renders via a preset slug (self-contained, no colour) — must
@@ -365,7 +369,8 @@ with no repair step is a backlog entry pretending to be a fix.
                  hand-paste a worklist into the prompt, it is not reproducible)
                  + Step 5a's touched-blocks report: any shadow row listed there is PRE-CLEARED —
                  VERIFY ONLY, do not re-touch it, or two agents will "fix" the same row differently.
-    Prompt:      See `prompts/step-6-block-migration.md` (parameterised by block list)
+    Prompt:      `.claude/prompts/step-6-block-migration.md` (WRITTEN — parameterise per agent
+                 with that agent's own block list; everything else is identical)
     Test:
       Happy:       Named blocks drop to 0 findings
       Edge:        A row whose mechanism is UNRESOLVED -> reported, not guessed at
