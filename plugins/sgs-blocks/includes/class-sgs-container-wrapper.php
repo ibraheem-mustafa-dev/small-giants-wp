@@ -800,6 +800,33 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$grid_item_shadow_colour = is_array( $grid_item_shadow_colour ) ? '' : $grid_item_shadow_colour;
 			$grid_item_text_colour   = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
 
+			// Grid-item background/text-colour HOVER + gradient siblings (Step 5a,
+			// phase-colour-conformance.md, 2026-08-22 — closes rule 31's
+			// GridItemDefaultsPanel.js findings). Reuses the SAME two helpers
+			// container's own root background/text rows already call
+			// (sgs_background_paint_decl() / sgs_resolve_text_colour_or_gradient()
+			// + sgs_text_colour_decl()) — no new PHP mechanism invented. Emission
+			// is scoped-CSS, not another `--sgs-gi-*` custom property, because
+			// unlike the resting-only case the DECLARATION PROPERTY itself
+			// differs between a solid colour and a gradient
+			// (background-color vs background-image; a single custom property
+			// cannot express that), same reasoning as the border-gradient block
+			// below. Same is_array guard rationale as every other gridItem* var
+			// above.
+			$grid_item_background_hover          = $attributes['gridItemBackgroundHover'] ?? '';
+			$grid_item_background_gradient       = $attributes['gridItemBackgroundGradient'] ?? '';
+			$grid_item_background_hover_gradient = $attributes['gridItemBackgroundHoverGradient'] ?? '';
+			$grid_item_background_hover          = is_array( $grid_item_background_hover ) ? '' : $grid_item_background_hover;
+			$grid_item_background_gradient       = is_array( $grid_item_background_gradient ) ? '' : $grid_item_background_gradient;
+			$grid_item_background_hover_gradient = is_array( $grid_item_background_hover_gradient ) ? '' : $grid_item_background_hover_gradient;
+
+			$grid_item_text_colour_hover          = $attributes['gridItemTextColourHover'] ?? '';
+			$grid_item_text_colour_gradient       = $attributes['gridItemTextColourGradient'] ?? '';
+			$grid_item_text_colour_hover_gradient = $attributes['gridItemTextColourHoverGradient'] ?? '';
+			$grid_item_text_colour_hover          = is_array( $grid_item_text_colour_hover ) ? '' : $grid_item_text_colour_hover;
+			$grid_item_text_colour_gradient       = is_array( $grid_item_text_colour_gradient ) ? '' : $grid_item_text_colour_gradient;
+			$grid_item_text_colour_hover_gradient = is_array( $grid_item_text_colour_hover_gradient ) ? '' : $grid_item_text_colour_hover_gradient;
+
 			// QB-1 advanced grid attrs (section + layout kinds only).
 			// is_array guard (Spec 35 pass 3b, 2026-08-11) — SAME shape as
 			// $grid_template's guard at :234-235. gridTemplateRows is now
@@ -1880,7 +1907,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// D636 border-gradient rollout (residual scope) — a grid-item gradient
 				// border is masked ::before CSS, which (like the shape-divider rules
 				// above) can only ever be a scoped .$uid rule, never inline.
-				|| '' !== $grid_item_border_gradient;
+				|| '' !== $grid_item_border_gradient
+				// Step 5a (phase-colour-conformance.md, 2026-08-22) — grid-item
+				// background/text-colour hover + gradient. Same reasoning as the
+				// border gradient immediately above: the declaration PROPERTY
+				// differs between solid and gradient, so it can only ever be a
+				// scoped .$uid rule.
+				|| '' !== $grid_item_background_hover
+				|| '' !== $grid_item_background_gradient
+				|| '' !== $grid_item_background_hover_gradient
+				|| '' !== $grid_item_text_colour_hover
+				|| '' !== $grid_item_text_colour_gradient
+				|| '' !== $grid_item_text_colour_hover_gradient;
 
 			$uid = '';
 			if ( $needs_uid ) {
@@ -1927,6 +1965,50 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					'' !== $grid_item_border_gradient_hover ? $grid_item_border_gradient_hover : null,
 					'' !== $grid_item_border_width ? $grid_item_border_width : '2px'
 				);
+			}
+
+			// Grid-item background hover/gradient (Step 5a, phase-colour-conformance.
+			// md, 2026-08-22). Resting `--sgs-gi-bg` stays the existing GLOBAL
+			// custom-property rule in style.css untouched — this only fires when a
+			// hover or gradient value is genuinely set, reusing
+			// sgs_background_paint_decl(), the SAME helper container's own root
+			// background row already calls.
+			if ( $uid && ( '' !== $grid_item_background_gradient || '' !== $grid_item_background_hover || '' !== $grid_item_background_hover_gradient ) ) {
+				$gi_bg_sel          = '.' . $uid . '.sgs-container--grid > .sgs-container';
+				$gi_bg_resting_decl = sgs_background_paint_decl( $grid_item_background, $grid_item_background_gradient );
+				if ( '' !== $gi_bg_resting_decl ) {
+					$responsive_css .= $gi_bg_sel . '{' . $gi_bg_resting_decl . ';}';
+				}
+				$gi_bg_hover_decl = sgs_background_paint_decl( $grid_item_background_hover, $grid_item_background_hover_gradient );
+				if ( '' !== $gi_bg_hover_decl ) {
+					$responsive_css .= $gi_bg_sel . ':hover,' . $gi_bg_sel . ':focus-within{' . $gi_bg_hover_decl . ';}';
+				}
+			}
+
+			// Grid-item text-colour hover/gradient (Step 5a). Text needs
+			// background-clip:text for a gradient — a single custom property
+			// cannot express that — so this reuses sgs_resolve_text_colour_or_
+			// gradient() + sgs_text_colour_decl() + sgs_text_colour_gradient_
+			// fallback_rule(), the SAME three helpers container's own root text
+			// row already calls.
+			if ( $uid && ( '' !== $grid_item_text_colour_gradient || '' !== $grid_item_text_colour_hover || '' !== $grid_item_text_colour_hover_gradient ) ) {
+				$gi_text_sel     = '.' . $uid . '.sgs-container--grid > .sgs-container';
+				$gi_text_resting = sgs_resolve_text_colour_or_gradient( $grid_item_text_colour, $grid_item_text_colour_gradient );
+				if ( '' !== $gi_text_resting ) {
+					$gi_text_resting_decl = sgs_text_colour_decl( $gi_text_resting );
+					if ( '' !== $gi_text_resting_decl ) {
+						$responsive_css .= $gi_text_sel . '{' . $gi_text_resting_decl . ';}';
+						$responsive_css .= sgs_text_colour_gradient_fallback_rule( $gi_text_sel, $gi_text_resting );
+					}
+				}
+				$gi_text_hover = sgs_resolve_text_colour_or_gradient( $grid_item_text_colour_hover, $grid_item_text_colour_hover_gradient );
+				if ( '' !== $gi_text_hover ) {
+					$gi_text_hover_decl = sgs_text_colour_decl( $gi_text_hover );
+					if ( '' !== $gi_text_hover_decl ) {
+						$responsive_css .= $gi_text_sel . ':hover{' . $gi_text_hover_decl . ';}' . $gi_text_sel . ':focus-within{' . $gi_text_hover_decl . ';}';
+						$responsive_css .= sgs_text_colour_gradient_fallback_rule( $gi_text_sel . ':hover', $gi_text_hover );
+					}
+				}
 			}
 
 			// Grid/flex scoped-CSS selector — the __inner content band when

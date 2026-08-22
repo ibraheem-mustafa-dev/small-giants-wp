@@ -2,69 +2,72 @@
 
 Repo: `c:\Users\Bean\Projects\small-giants-wp`.
 
-## Constraints (violating these breaks other work)
+**STATUS: DONE (2026-08-22).** This file previously described a render.php text-scan approach. A
+council tracer measured that approach and found it unsound before it was built — the shared wrapper
+calls neither `sgs_background_paint_decl` nor `sgs_text_colour_decl` anywhere across its 3,243
+lines, so wrapper-routed blocks could never resolve fill/text that way. Bean steered to a DB-first
+resolver instead. This file now records what actually shipped, for the next reader.
 
-- **Run NO git command.** Not status, add, commit, stash or checkout.
-- **Do NOT run `npm run build`.** The coordinator builds once per wave.
-- **Touch ONLY** `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js`.
+## What shipped
 
-## Read first
+Rule 31 resolves a colour row's mechanism from `block_attributes.css_property` — the declarative
+routing column Spec 31 R-31-1 (DB-first, no hardcoded dicts) already requires blocks to populate —
+never by scanning render.php.
 
-1. That rule file's own header docblock — it documents **12 existing blind spots**. You are adding
-   a capability on top of a rule that already under-resolves; know where before you start.
-2. `plugins/sgs-blocks/scripts/consistency/golden-controls.json` → `controls.colour`.
-3. Sibling rules 21, 28, 30, 33, 34 — they already declare `text:render.php`, so the plumbing you
-   need exists. Copy their declaration shape.
+- **`plugins/sgs-blocks/scripts/inspector-scan/export-colour-css-property.py`** — a thin DB read
+  (same `DB_CANDIDATES` pattern as `sync-container-wrapping-blocks.py`). Prints
+  `{ block_slug: { attr_name: css_property|null } }` to stdout for every `block_attributes` row
+  with `role IN ('color', 'colour-gradient')`.
+- **`plugins/sgs-blocks/scripts/inspector-scan/core/golden.js`** — three new exports:
+  - `MECHANISM_BY_CSS_PROPERTY` — the map (`color`/`color-gradient` → text; `background-color`/
+    `background-image`/`background-color-gradient` → fill; `border-color`/`border-color-gradient`/
+    `outline-color` → border; `box-shadow-color` → shadow; `stroke` → stroke).
+  - `resolveMechanismFromCssProperty( cssProperty )` — returns `{ mechanisms: string[], unresolved
+    }`. A **compound** value (comma-joined — confirmed live, e.g. `"background-color,color"`, one
+    attribute painting two CSS properties at once) resolves to every mechanism it names; a row is
+    correct if it matches ANY of them. Empty/null/unrecognised → `unresolved: true`, never guessed
+    from the attribute's own name.
+  - `getColourCssPropertyMap( ctx )` — shells out to the Python export script via
+    `child_process.spawnSync`, memoised on `ctx` (same pattern as `roster.js` calling
+    `build-roster.py`, and as rule 31's own pre-existing `getSharedOwnerScan`). **Fails closed**: a
+    non-zero exit or empty stdout throws, rather than silently resolving every row as unresolved
+    (which would look identical to "the mechanism axis found nothing wrong").
+- **`plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js`** —
+  `recordRowMechanism()` is called once per PER-BLOCK row (inside `checkRow`), and:
+  - stores `{ block, rowKey, attrName, cssProperty, mechanisms, unresolved }` on
+    `ctx.__rule31RowMechanisms` for Step 3 to assert against — **no finding is pushed, no assertion
+    changed**;
+  - on the first call in a run, prints a DB-WIDE unresolved count to stderr (not scoped to rows
+    actually visited during the JS walk), satisfying "the run reports an explicit UNRESOLVED count".
 
-## The job
+**Shared-owner rows are deliberately NOT resolved** (`scanSharedOwnerRows` — a shared file can be
+mounted by several blocks, and a bound attribute name is only meaningful per mounting block; same
+class of blind spot as the existing shared-row `colourExemptions` gap the header already declares).
 
-Add `text:render.php` to rule 31's `needs`, then build a resolver that answers, per colour
-attribute: **which PHP helper actually consumes this?**
+## Measured result (re-run before trusting; this is a snapshot)
 
-The four paint helpers:
-`sgs_background_paint_decl` · `sgs_text_colour_decl` · `sgs_border_gradient_css` · `sgs_overlay_decls`
-
-⛔ **`sgs_colour_value()` is NOT a paint helper.** It is the slug→`var()` resolver and appears in
-far more places, on values that are not a paint. Counting it answers a different question.
-
-### The resolution algorithm — stated so two implementers converge
-
-- Follow **at most ONE intermediate variable hop** from the `$attributes[...]` read to the helper
-  call (e.g. `$attr → $var → helper($var)`).
-- Anything longer, or a computed key, is **UNRESOLVED**. Never guess.
-- Strip PHP comments before scanning. A helper name inside a comment is prose, not a call — this
-  repo has been bitten by exactly that.
-
-### The shared-owner case — do not skip it
-
-A per-block scan is **not sufficient**. Measured by
-`plugins/sgs-blocks/scripts/census-colour-paint-route.py` (run it): only **25** of 83 blocks call a
-paint helper directly. **18** route through `SGS_Container_Wrapper::render()`, where the paint
-happens in `includes/class-sgs-container-wrapper.php` — a shared file the per-block scan never
-reads. **40** call neither.
-
-So when a block routes through the wrapper, resolve from the wrapper, mirroring what
-`reachedComponents()` already does for shared JSX on the JS side.
-
-⚠ If the wrapper's own routing turns out to make per-attribute resolution ambiguous, **STOP and
-report that** — it is a finding about the plan's foundation, not a problem to code around.
-
-## Hard boundary for this step
-
-**Change NO assertion.** This step only makes the mechanism VISIBLE. The total finding count must
-be **unchanged** when you are done. If it moved, you altered an assertion — revert that part.
-
-Report an explicit **UNRESOLVED count**. That number is the honest blind-spot figure and the next
-step depends on it.
+`node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` →
+**157 of 517** colour attrs UNRESOLVED, gate rules 0 gating findings, advisory findings **1129**
+(unchanged from the pre-Step-2 baseline — confirmed by running `--check` before and after this
+step's edits and diffing the SUMMARY line). Rule 31's own live-scan finding count: **413**
+(unchanged). Self-test: `RULE 31-golden-colour-control — PASS`.
 
 ## Verify
 
-- `node scripts/inspector-scan/run.js --check` exits 0 and the total is unchanged.
-- `sgs/heading` resolves three different mechanisms: text → `sgs_text_colour_decl`, background →
-  `sgs_background_paint_decl`, border → `sgs_border_gradient_css`. Confirm all three.
-- A block with no render.php does not crash the rule.
+```bash
+node plugins/sgs-blocks/scripts/inspector-scan/run.js --check     # exit 0, advisory findings 1129
+node plugins/sgs-blocks/scripts/inspector-scan/run.js --self-test # RULE 31 — PASS
+```
 
-## Report
+`sgs/heading` resolves three mechanisms from the DB: `textColour` → text (`color`), `backgroundColour`
+→ fill (`background-color`), `borderColour` → border (`border-color`) — confirmed via
+`python plugins/sgs-blocks/scripts/inspector-scan/export-colour-css-property.py` piped to a quick
+`json.load` check on `sgs/heading`.
 
-The UNRESOLVED count and its composition. Whether the wrapper case resolved cleanly or is
-ambiguous. Anything you could not do — named, never worked around silently.
+## Handed to Step 2b / Step 3
+
+- The **157 unresolved** attrs are Step 2b's seeding worklist (re-derive the exact split by
+  running `census-colour-paint-route.py --json` against the CURRENT tree — cached splits in the
+  plan doc were already stale before this step ran; see the plan's own repeated warning).
+- `ctx.__rule31RowMechanisms` is populated and ready for Step 3's mechanism-aware gradient
+  assertion — Step 3 is what actually changes which findings fire; this step deliberately does not.

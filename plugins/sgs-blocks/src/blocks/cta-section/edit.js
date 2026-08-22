@@ -250,6 +250,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						   so WordPress's native colour UI does not compete with this row (rule 31). */
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',

@@ -643,6 +643,85 @@ function slugify( s ) {
 		.replace( /^-+|-+$/g, '' );
 }
 
+// ── Mechanism resolution (Step 2, phase-colour-conformance.md, 2026-08-22) ──
+// Rule 31 asks "which PAINT MECHANISM does this colour row use?" by reading
+// `block_attributes.css_property` — the declarative routing column Spec 31
+// R-31-1 (DB-first, no hardcoded dicts) already requires blocks to populate —
+// rather than scanning render.php. A council tracer measured the render.php
+// scan and found it unsound: the shared wrapper calls neither
+// `sgs_background_paint_decl` nor `sgs_text_colour_decl` anywhere across its
+// 3,243 lines, so wrapper-routed blocks could never resolve fill/text that
+// way, and the dominant real pattern (a bare `sgs_colour_value()` embedded in
+// a hand-written CSS string) has no helper-name vocabulary to match at all.
+// The DB column already answers the question the scan was trying to ask.
+const MECHANISM_BY_CSS_PROPERTY = {
+	color: 'text',
+	'color-gradient': 'text',
+	'background-color': 'fill',
+	'background-image': 'fill',
+	'background-color-gradient': 'fill',
+	'border-color': 'border',
+	'border-color-gradient': 'border',
+	'outline-color': 'border',
+	'box-shadow-color': 'shadow',
+	stroke: 'stroke',
+};
+
+/**
+ * Resolve a `css_property` DB value to the set of mechanisms it satisfies.
+ * Returns `{ mechanisms: string[], unresolved: boolean }`. A compound value
+ * (comma-joined, e.g. "background-color,color" — one attribute painting two
+ * CSS properties at once, confirmed live in this DB) resolves to EVERY
+ * mechanism it names; a row is correct if it matches ANY of them. An empty/
+ * null/unrecognised value is UNRESOLVED — never guessed from the attr's name.
+ */
+function resolveMechanismFromCssProperty( cssProperty ) {
+	if ( ! cssProperty ) return { mechanisms: [], unresolved: true };
+	const parts = String( cssProperty )
+		.split( ',' )
+		.map( ( p ) => p.trim() )
+		.filter( Boolean );
+	const mechanisms = [];
+	for ( const part of parts ) {
+		const m = MECHANISM_BY_CSS_PROPERTY[ part ];
+		if ( m && ! mechanisms.includes( m ) ) mechanisms.push( m );
+	}
+	return { mechanisms, unresolved: mechanisms.length === 0 };
+}
+
+const EXPORT_COLOUR_CSS_PROPERTY_SCRIPT = path.join(
+	__dirname,
+	'..',
+	'export-colour-css-property.py'
+);
+
+/**
+ * The DB's { block_slug: { attr_name: css_property|null } } colour-attribute
+ * map, shelled out to Python once per ctx and memoised on it — same pattern
+ * as rule 31's `getSharedOwnerScan`/roster.js's `build-roster.py` call.
+ * FAILS CLOSED: a DB the export script cannot reach throws rather than
+ * silently resolving every row as unresolved, which would look identical to
+ * "the mechanism axis found nothing wrong" — the exact false-clean this rule
+ * exists to prevent.
+ */
+function getColourCssPropertyMap( ctx ) {
+	if ( ctx.__colourCssPropertyMap ) return ctx.__colourCssPropertyMap;
+	const { spawnSync } = require( 'child_process' );
+	const result = spawnSync( 'python', [ EXPORT_COLOUR_CSS_PROPERTY_SCRIPT ], {
+		encoding: 'utf8',
+	} );
+	if ( result.status !== 0 || ! result.stdout ) {
+		throw new Error(
+			'getColourCssPropertyMap: export-colour-css-property.py failed to read ' +
+				'sgs-framework.db — refusing to silently treat every colour row as ' +
+				`unresolved. stderr: ${ result.stderr || '(none)' }`
+		);
+	}
+	const map = JSON.parse( result.stdout );
+	ctx.__colourCssPropertyMap = map;
+	return map;
+}
+
 module.exports = {
 	loadSchema,
 	loadMergedSchema,
@@ -673,4 +752,7 @@ module.exports = {
 	statesArrayHasGradient,
 	requiredStatesFor,
 	slugify,
+	MECHANISM_BY_CSS_PROPERTY,
+	resolveMechanismFromCssProperty,
+	getColourCssPropertyMap,
 };

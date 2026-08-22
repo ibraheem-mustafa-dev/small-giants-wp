@@ -139,6 +139,22 @@ const { makeFinding } = require( '../core/finding' );
 const { hasRealReason } = require( '../core/baseline' );
 const { resolveComponentFiles } = require( '../core/components' );
 
+// Given a states ArrayExpression, resolve the 'normal' state's GRADIENT
+// attribute name (the sibling {attr}Gradient this row's per-state gradient
+// toggle writes to) — the mechanism-disambiguation signal recordRowMechanism
+// needs; see its own header comment for why the base attr alone is ambiguous.
+function normalStateGradientAttrName( statesArray ) {
+	if ( ! statesArray || statesArray.type !== 'ArrayExpression' ) return null;
+	for ( const el of statesArray.elements ) {
+		if ( ! el || el.type !== 'ObjectExpression' ) continue;
+		if ( stringLiteralValue( objProp( el, 'key' ) ) === 'normal' ) {
+			return resolveAttrName( objProp( el, 'gradientValue' ) );
+		}
+	}
+	const first = statesArray.elements.find( ( el ) => el && el.type === 'ObjectExpression' );
+	return first ? resolveAttrName( objProp( first, 'gradientValue' ) ) : null;
+}
+
 const RAW_COLOUR_COMPONENT_NAMES = new Set( [
 	'ColorPalette',
 	'ColorGradientControl',
@@ -177,6 +193,8 @@ const {
 	requiredStatesFor,
 	slugify,
 	reachedComponents,
+	resolveMechanismFromCssProperty,
+	getColourCssPropertyMap,
 } = require( '../core/golden' );
 
 // ── Shared-owner scan helpers (C4 step 2, 2026-08-20) ────────────────────
@@ -199,6 +217,104 @@ function discoverBlockDirNames( ctx ) {
 		const full = path.join( ctx.blocksDir, name );
 		return fs.statSync( full ).isDirectory() && fs.existsSync( path.join( full, 'block.json' ) );
 	} );
+}
+
+/**
+ * Resolve + record ONE per-block row's paint mechanism (Step 2,
+ * phase-colour-conformance.md) via `block_attributes.css_property`. Purely
+ * additive: it stores the result on `ctx.__rule31RowMechanisms` for a future
+ * step to assert against, and never itself pushes a finding or otherwise
+ * changes what this rule reports — QA Gate A's requirement is that Step 2
+ * makes mechanism VISIBLE without moving the finding count.
+ *
+ * On the FIRST call in a run, also prints a DB-wide (not merely
+ * rows-seen-so-far) UNRESOLVED count to stderr, satisfying the plan's "the
+ * run reports an explicit UNRESOLVED count" without inventing a new JSON
+ * output surface this step doesn't otherwise need.
+ *
+ * Shared-owner rows (scanSharedOwnerRows) are deliberately NOT resolved here
+ * — same reasoning as the existing colourExemptions blind spot for shared
+ * rows (header BLIND SPOTS): one owner file can be mounted by several blocks,
+ * and a bound attribute name is only meaningful per mounting block.
+ */
+function recordRowMechanism( ctx, blockSlug, rowKey, attrName, gradientAttrName ) {
+	const map = getColourCssPropertyMap( ctx );
+	if ( ! ctx.__rule31MechanismSummaryPrinted ) {
+		ctx.__rule31MechanismSummaryPrinted = true;
+		let total = 0;
+		let unresolved = 0;
+		for ( const attrs of Object.values( map ) ) {
+			for ( const cssProperty of Object.values( attrs ) ) {
+				total++;
+				if ( resolveMechanismFromCssProperty( cssProperty ).unresolved ) unresolved++;
+			}
+		}
+		process.stderr.write(
+			`[rule 31] mechanism resolution: ${ unresolved } of ${ total } colour attrs UNRESOLVED ` +
+				'(block_attributes.css_property empty or unrecognised — never guessed from the attr name)\n'
+		);
+	}
+
+	if ( ! ctx.__rule31RowMechanisms ) ctx.__rule31RowMechanisms = [];
+
+	// GROUND-TRUTH (2026-08-22, caught by this rule's own negative control):
+	// a base attr alone is AMBIGUOUS. `css_property:'color'` is shared by
+	// genuine TEXT rows (sgs/heading.textColour) AND SVG-icon rows painted via
+	// CSS `color` + `fill:currentColor` (sgs/icon.iconColour) — but their
+	// GRADIENT SIBLING disambiguates them cleanly: textColourGradient is
+	// `color-gradient` (text), iconColourGradient is `stroke` (a real,
+	// separate SVG-gradient helper, `sgs_svg_stroke_gradient()`, distinct from
+	// both `sgs_text_colour_decl` and the plain per-state fill/border toggle).
+	// Resolving ONLY the base attr flagged 12 live icon-colour rows as
+	// "mechanism-mismatch" — a false alarm that would have sent an agent to
+	// break 12 WORKING SVG gradients by adding gradientCapable:true to them.
+	// The gradient sibling's mechanism is preferred when it resolves (more
+	// specific evidence — it names the exact CSS the GRADIENT ITSELF uses,
+	// which is precisely the question gradientPathMatchesMechanism asks);
+	// the base attr is the fallback for a row with no gradient sibling at all
+	// (e.g. a genuinely gradient-exempt shadow row) or one whose sibling
+	// hasn't been seeded yet.
+	const cssProperty = attrName && map[ blockSlug ] ? map[ blockSlug ][ attrName ] ?? null : null;
+	const gradientCssProperty =
+		gradientAttrName && map[ blockSlug ] ? map[ blockSlug ][ gradientAttrName ] ?? null : null;
+	const base = resolveMechanismFromCssProperty( cssProperty );
+	const grad = resolveMechanismFromCssProperty( gradientCssProperty );
+	const mechanisms = Array.from( new Set( [ ...grad.mechanisms, ...base.mechanisms ] ) );
+	const effectiveMechanisms = grad.mechanisms.length ? grad.mechanisms : base.mechanisms;
+
+	const record = {
+		block: blockSlug,
+		rowKey,
+		attrName,
+		cssProperty,
+		gradientAttrName,
+		gradientCssProperty,
+		mechanisms,
+		effectiveMechanisms,
+		unresolved: mechanisms.length === 0 || ! attrName,
+	};
+	ctx.__rule31RowMechanisms.push( record );
+	return record;
+}
+
+/**
+ * Does a row's ACTUAL gradient wiring match the mechanism its bound
+ * attribute's `css_property` resolves to (Step 3, phase-colour-conformance.
+ * md)? Text needs `background-clip:text`, which ONLY `gradientCapable:true`
+ * (-> GradientCapableColourControl) provides — a per-state `gradientValue`
+ * toggle there would paint a background gradient BEHIND the text, not clip
+ * the text itself, so it does not count. Fill/border/stroke need the
+ * opposite: a per-state gradient toggle; `gradientCapable:true` alone (the
+ * text-only mechanism) does nothing for those. An unrecognised/multi-
+ * mechanism set accepts either shape (the mechanism resolver already exposes
+ * a comma-compound attribute as satisfying ANY of its named mechanisms).
+ */
+function gradientPathMatchesMechanism( mechanisms, gradientCapable, statesHasGradient ) {
+	if ( mechanisms.includes( 'text' ) ) return gradientCapable === true;
+	if ( mechanisms.some( ( m ) => m === 'fill' || m === 'border' || m === 'stroke' ) ) {
+		return statesHasGradient === true;
+	}
+	return gradientCapable === true || statesHasGradient === true;
 }
 
 /**
@@ -253,6 +369,64 @@ function getSharedOwnerScan( ctx ) {
  * the header note. Emits ONE finding per rowKey, `block: null`, carrying
  * `mountedBy` for the per-block worklist.
  */
+/**
+ * Resolve a SHARED row's paint mechanism by checking every mounting block's
+ * OWN attribute binding — not the owner file, which carries no attribute
+ * names of its own (Step 3, phase-colour-conformance.md, extended past its
+ * original per-block-only scope once ShadowControl.js proved to be where
+ * every real shadow row in the tree actually lives). For each mounting
+ * block, finds the JSXOpeningElement whose tag name equals the owner
+ * component's own basename (this codebase's consistent default-import
+ * convention — verified: every mounting file imports e.g. `ShadowControl`
+ * under that exact identifier, never a local alias) and resolves its
+ * `colour` prop (ShadowControl's own prop name for the colour value it
+ * passes through to its internal DesignTokenPicker — verified live,
+ * `button/edit.js:996` `colour={ boxShadowColour }`, distinct from its
+ * `value` prop which carries the shadow DEPTH preset, not the colour) back
+ * to an attribute name via the same `resolveAttrName` per-block rows
+ * already use. A mechanism is trusted only
+ * if it resolves for at least one mounting block — unlike colourExemptions
+ * (genuinely ambiguous: different blocks can declare different reasons),
+ * the underlying CSS mechanism is a property of the shared CONTROL's role,
+ * not of which block mounts it, so agreement across mounting blocks is
+ * expected and a single resolved block is sufficient evidence.
+ */
+function resolveSharedRowMechanism( ctx, ownerFile, mountedByList ) {
+	const map = getColourCssPropertyMap( ctx );
+	const ownerTagName = path.basename( ownerFile, path.extname( ownerFile ) );
+	const allMechanisms = new Set();
+	let anyResolved = false;
+
+	for ( const blockSlug of mountedByList ) {
+		const tail = blockSlug.replace( /^sgs\//, '' );
+		const mountEditFile = path.join( ctx.blocksDir, tail, 'edit.js' );
+		const parsed = ctx.cache.parse( mountEditFile );
+		if ( ! parsed.ok ) continue;
+
+		let attrName = null;
+		ctx.cache.traverse( mountEditFile, {
+			JSXOpeningElement( nodePath ) {
+				if ( attrName ) return;
+				const node = nodePath.node;
+				if ( jsxName( node ) !== ownerTagName ) return;
+				attrName = resolveAttrName(
+					jsxAttrExpr( node, 'colour' ) || jsxAttrExpr( node, 'value' )
+				);
+			},
+		} );
+		if ( ! attrName ) continue;
+
+		const cssProperty = map[ blockSlug ] ? map[ blockSlug ][ attrName ] ?? null : null;
+		const { mechanisms, unresolved } = resolveMechanismFromCssProperty( cssProperty );
+		if ( ! unresolved ) {
+			anyResolved = true;
+			mechanisms.forEach( ( m ) => allMechanisms.add( m ) );
+		}
+	}
+
+	return { mechanisms: Array.from( allMechanisms ), unresolved: ! anyResolved };
+}
+
 function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 	const findings = [];
 
@@ -327,12 +501,15 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 						'this state writes to, or WordPress silently discards it on save.',
 					keyParts: [ 'shared-row-below-minimum-states', rowKey, String( line ) ],
 				} ),
+				kind: 'below-min-states',
 				mountedBy: mountedByList,
 			} );
 		}
 
 		const hasGradient = gradientCapable === true || statesArrayHasGradient( statesArray );
-		if ( ! hasGradient ) {
+		const sharedMechanism = resolveSharedRowMechanism( ctx, file, mountedByList );
+		const sharedShadowExempt = sharedMechanism.mechanisms.includes( 'shadow' );
+		if ( ! hasGradient && ! sharedShadowExempt ) {
 			findings.push( {
 				...makeFinding( {
 					rule: ruleId,
@@ -356,6 +533,7 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 						'writes to, or WordPress silently discards it on save.',
 					keyParts: [ 'shared-row-missing-gradient', rowKey, String( line ) ],
 				} ),
+				kind: 'missing-gradient',
 				mountedBy: mountedByList,
 			} );
 		}
@@ -436,8 +614,8 @@ module.exports = {
 		// CLEAN". This does not gate the other four checks (none of them read
 		// `block.surfaces`), it only documents the trap's existence.
 		if ( block.surfaces === null ) {
-			findings.push(
-				makeFinding( {
+			findings.push( {
+				...makeFinding( {
 					rule: ruleId,
 					block: block.slug,
 					file: null,
@@ -452,8 +630,9 @@ module.exports = {
 						'Regenerate roster.json (`python scripts/consistency/build-roster.py`) so this ' +
 						'block gets a roster entry, then re-run the scan to get a real answer for this block.',
 					keyParts: [ 'roster-surface-unknown' ],
-				} )
-			);
+				} ),
+				kind: 'roster-surface-unknown',
+			} );
 		}
 
 		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
@@ -481,8 +660,8 @@ module.exports = {
 						break;
 					}
 				}
-				findings.push(
-					makeFinding( {
+				findings.push( {
+					...makeFinding( {
 						rule: ruleId,
 						block: block.slug,
 						file: blockJsonPath,
@@ -500,8 +679,9 @@ module.exports = {
 							'Cross-cutting A for sequencing — retire native supports as its own tracked pass, ' +
 							'not ad hoc per finding.',
 						keyParts: [ 'native-colour-ui', trueFlags.sort().join( ',' ) ],
-					} )
-				);
+					} ),
+					kind: 'native-colour-ui',
+				} );
 			}
 		}
 
@@ -518,12 +698,14 @@ module.exports = {
 			const statesCount =
 				statesArray && statesArray.type === 'ArrayExpression' ? statesArray.elements.length : 1;
 			const attrName = normalStateAttrName( statesArray );
+			const gradientAttrName = normalStateGradientAttrName( statesArray );
 			const required = requiredStatesFor( elements, attrName );
+			const mechanismInfo = recordRowMechanism( ctx, block.slug, rowKey, attrName, gradientAttrName );
 
 			// ── (3) row-below-minimum-states ─────────────────────────────────
 			if ( statesCount < required ) {
-				findings.push(
-					makeFinding( {
+				findings.push( {
+					...makeFinding( {
 						rule: ruleId,
 						block: block.slug,
 						file: editFile,
@@ -539,44 +721,93 @@ module.exports = {
 							'— see sgs/button edit.js:381-399 for the canonical 2-state shape, or sgs/tabs ' +
 							'edit.js:176-199 for the 3-state normal/hover/active shape).',
 						keyParts: [ 'row-below-minimum-states', rowKey, String( line ) ],
-					} )
-				);
+					} ),
+					kind: 'below-min-states',
+				} );
 			}
 
-			// ── (4) row-missing-gradient ──────────────────────────────────────
-			const hasGradient = gradientCapable === true || statesArrayHasGradient( statesArray );
-			if ( ! hasGradient ) {
-				const exemption = colourExemptions ? colourExemptions[ rowKey ] : null;
-				const exempt =
-					exemption &&
-					exemption.rule === 'gradient' &&
-					hasRealReason( exemption.reason );
-				if ( ! exempt ) {
-					findings.push(
-						makeFinding( {
-							rule: ruleId,
-							block: block.slug,
-							file: editFile,
-							line,
-							severity: 'warn',
-							detail:
-								`${ editFile }:${ line } — colour row "${ rowKey }" has no gradient path (no ` +
-								'gradientValue/onGradientChange on any state, and no gradientCapable:true) and ' +
-								'no declared exemption (golden-controls.json controls.colour.gradient — ' +
-								'required, with declared exemptions).',
-							fix:
-								'Add a per-state gradient toggle (gradientValue + onGradientChange, backed by a ' +
-								'sibling {attr}Gradient attribute — see sgs/button edit.js:410-420) for ' +
-								'background/border/icon colours, or gradientCapable:true + ' +
-								'GradientCapableColourControl for text colour. If this row genuinely has no ' +
-								'valid gradient form (e.g. a shadow colour), declare the exemption at ' +
-								`block.json supports.sgs.colourExemptions.${ JSON.stringify(
-									rowKey
-								) } = { "rule": "gradient", "reason": "<specific reason>" } — a boilerplate reason ` +
-								'will not suppress this finding.',
-							keyParts: [ 'row-missing-gradient', rowKey, String( line ) ],
-						} )
+			// ── (4) row-missing-gradient / mechanism-mismatch ────────────────
+			// Step 3 (phase-colour-conformance.md): mechanism-aware, BOTH
+			// directions. A shadow-mechanism row is EXEMPT (box-shadow has no
+			// gradient form) — this SUPERSEDES any per-block block.json
+			// colourExemptions entry for the row, per S-3 (the mechanism is
+			// stated once here rather than declared per block; Step 4 removes
+			// post-grid's now-redundant exemption). An UNRESOLVED mechanism
+			// falls back to the pre-Step-3 binary check (never guessed at) so
+			// this rewrite cannot silently reduce coverage for the 157
+			// attributes with no css_property yet.
+			const statesHasGradient = statesArrayHasGradient( statesArray );
+			const hasAnyGradient = gradientCapable === true || statesHasGradient;
+			const isShadowMechanism = mechanismInfo.mechanisms.includes( 'shadow' );
+
+			if ( ! isShadowMechanism ) {
+				const mechanismKnown = ! mechanismInfo.unresolved;
+				const mismatched =
+					mechanismKnown &&
+					hasAnyGradient &&
+					! gradientPathMatchesMechanism(
+						mechanismInfo.effectiveMechanisms,
+						gradientCapable,
+						statesHasGradient
 					);
+
+				if ( ! hasAnyGradient || mismatched ) {
+					const exemption = colourExemptions ? colourExemptions[ rowKey ] : null;
+					const exempt =
+						exemption &&
+						exemption.rule === 'gradient' &&
+						hasRealReason( exemption.reason );
+					if ( ! exempt ) {
+						const mechanismText = mechanismKnown
+							? ` (resolved mechanism: ${ mechanismInfo.mechanisms.join( '/' ) }, from ` +
+							  `css_property "${ mechanismInfo.cssProperty }")`
+							: ' (mechanism UNRESOLVED — block_attributes.css_property is empty for this attribute)';
+						findings.push( {
+							...makeFinding( {
+								rule: ruleId,
+								block: block.slug,
+								file: editFile,
+								line,
+								severity: 'warn',
+								detail: mismatched
+									? `${ editFile }:${ line } — colour row "${ rowKey }" has a gradient path, but ` +
+									  `it does not match this row's paint mechanism${ mechanismText }. A ${
+											mechanismInfo.mechanisms.includes( 'text' ) ? 'text' : 'fill/border/stroke'
+									  } row needs ${
+											mechanismInfo.mechanisms.includes( 'text' )
+												? 'gradientCapable:true (background-clip:text)'
+												: 'a per-state gradientValue/onGradientChange toggle'
+									  }, not the other shape.`
+									: `${ editFile }:${ line } — colour row "${ rowKey }" has no gradient path (no ` +
+									  'gradientValue/onGradientChange on any state, and no gradientCapable:true) and ' +
+									  `no declared exemption${ mechanismText } (golden-controls.json controls.colour` +
+									  '.gradient — required, with declared exemptions).',
+								fix: mismatched
+									? mechanismInfo.mechanisms.includes( 'text' )
+										? 'Add gradientCapable:true + GradientCapableColourControl for this text row ' +
+										  '— a per-state gradientValue toggle paints a background gradient BEHIND the ' +
+										  'text, it does not clip the text itself.'
+										: 'Add a per-state gradient toggle (gradientValue + onGradientChange, backed ' +
+										  'by a sibling {attr}Gradient attribute — see sgs/button edit.js:410-420) — ' +
+										  'gradientCapable:true is the text-only mechanism and does nothing here.'
+									: 'Add a per-state gradient toggle (gradientValue + onGradientChange, backed by a ' +
+									  'sibling {attr}Gradient attribute — see sgs/button edit.js:410-420) for ' +
+									  'background/border/icon colours, or gradientCapable:true + ' +
+									  'GradientCapableColourControl for text colour. If this row genuinely has no ' +
+									  'valid gradient form (e.g. a shadow colour), declare the exemption at ' +
+									  `block.json supports.sgs.colourExemptions.${ JSON.stringify(
+											rowKey
+									  ) } = { "rule": "gradient", "reason": "<specific reason>" } — a boilerplate reason ` +
+									  'will not suppress this finding.',
+								keyParts: [
+									mismatched ? 'mechanism-mismatch' : 'row-missing-gradient',
+									rowKey,
+									String( line ),
+								],
+							} ),
+							kind: mismatched ? 'mechanism-mismatch' : 'missing-gradient',
+						} );
+					}
 				}
 			}
 		}
@@ -691,8 +922,8 @@ module.exports = {
 
 				// ── (2) banned-lookalike ─────────────────────────────────────────
 				if ( RAW_COLOUR_COMPONENT_NAMES.has( name ) ) {
-					findings.push(
-						makeFinding( {
+					findings.push( {
+						...makeFinding( {
 							rule: ruleId,
 							block: block.slug,
 							file: editFile,
@@ -711,13 +942,14 @@ module.exports = {
 								name +
 								'> lacks.',
 							keyParts: [ 'banned-lookalike', name, String( line ) ],
-						} )
-					);
+						} ),
+						kind: 'banned-lookalike',
+					} );
 					return;
 				}
 				if ( name === 'TextControl' && jsxAttrStringValue( node, 'type' ) === 'color' ) {
-					findings.push(
-						makeFinding( {
+					findings.push( {
+						...makeFinding( {
 							rule: ruleId,
 							block: block.slug,
 							file: editFile,
@@ -731,8 +963,9 @@ module.exports = {
 								'Replace with DesignTokenPicker (src/components/DesignTokenPicker.js), which ' +
 								'renders the theme colour palette instead of a raw browser colour input.',
 							keyParts: [ 'banned-lookalike', 'TextControl-type-color', String( line ) ],
-						} )
-					);
+						} ),
+						kind: 'banned-lookalike',
+					} );
 					return;
 				}
 

@@ -715,6 +715,18 @@
 			"type": "string",
 			"default": ""
 		},
+		"gridItemBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"gridItemBorder": {
 			"type": "string",
 			"default": ""
@@ -742,6 +754,18 @@
 			"default": ""
 		},
 		"gridItemTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -187,12 +187,7 @@
 				],
 				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
 			},
-			"colourExemptions": {
-				"shadow": {
-					"rule": "gradient",
-					"reason": "CSS box-shadow takes a COLOUR, not a gradient — `box-shadow: 0 2px 4px linear-gradient(...)` is not valid CSS and no browser accepts it. This row's value is composed into the shadow by sgs_shadow_value_composed(), so there is no mechanism a gradient could travel through. Distinct from the background/border/icon rows on this same block, which DO have a valid gradient form and are NOT exempt. Added 2026-08-20 with the resting shadow control."
-				}
-			}
+			"colourExemptions": {}
 		}
 	},
 	"selectors": {

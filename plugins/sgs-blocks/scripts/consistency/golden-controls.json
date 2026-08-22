@@ -55,6 +55,39 @@
   "controls": {
     "colour": {
       "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 (canonical) + §1 field 9 (the state + shape rule)",
+      "recipes": {
+        "_note": "Source: .claude/plans/2026-08-22-colour-control-bundles-BRIEF.md 'The five members of the colour-control family' table (Bean-ruled 2026-08-22). This is the SINGLE contract both the rule-31 detector and every migration agent read for 'what does a conformant row/control look like' — so two agents cannot interpret the recipe differently. Only 0-rule-31-findings-for-that-row is CHECKABLE (enforced by a rule); rowShape/livesAs here are migration GUIDANCE, not gates (see phase-colour-conformance.md P-6).",
+        "fill": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "sgs_background_paint_decl()",
+          "rowShape": "states[] + per-state gradient",
+          "requiredSiblings": "{attr}Gradient per state"
+        },
+        "text": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "sgs_text_colour_decl() + sgs_text_colour_gradient_fallback_rule()",
+          "rowShape": "states[] + per-state gradient, plus gradientCapable: true (needs background-clip:text)",
+          "requiredSiblings": "{attr}Gradient per state"
+        },
+        "border": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "sgs_border_gradient_css()",
+          "rowShape": "states[] + per-state gradient",
+          "requiredSiblings": "{attr}Gradient per state"
+        },
+        "overlay": {
+          "livesAs": "SIBLING control (in BackgroundPanel) — NOT a SgsColourPanel row (Bean-ruled 2026-08-22: 'still a variation of the colour control which makes it a sibling control')",
+          "paintHelper": "sgs_overlay_decls() — fill applied to a scrim element",
+          "rowShape": "same states[] shape as the panel rows, alpha OFF, own row presentation + help text",
+          "requiredSiblings": "{attr}Gradient per state, plus backgroundOverlayOpacity{,Tablet,Mobile} and backgroundOverlayBlendMode"
+        },
+        "shadow": {
+          "livesAs": "SgsColourPanel row",
+          "paintHelper": "colour only — no gradient helper exists BY DESIGN (box-shadow takes a colour; a gradient there is invalid CSS)",
+          "rowShape": "states[], NO gradient path — gradient-EXEMPT by mechanism, not by per-block declaration",
+          "requiredSiblings": "none"
+        }
+      },
       "canonical": {
         "panel": {
           "component": "SgsColourPanel",

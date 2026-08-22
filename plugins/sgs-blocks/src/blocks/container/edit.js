@@ -359,6 +359,7 @@ export default function Edit({ attributes, setAttributes, name }) {
                  there was no reachable text control at all. */
               key: 'text',
               label: __( 'Text colour', 'sgs-blocks' ),
+              gradientCapable: true,
               states: [
                 {
                   key: 'normal',
