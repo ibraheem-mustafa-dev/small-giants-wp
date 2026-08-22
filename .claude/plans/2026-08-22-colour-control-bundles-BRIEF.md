@@ -51,18 +51,37 @@ today, which is exactly the gap the enforcement programme doc names:
 
 **The deliverable is therefore almost entirely the detector, not the controls.**
 
-### The three recipes
+### The five members of the colour-control family
 
-| Recipe | Paint helper | Row shape | Required siblings |
-|---|---|---|---|
-| Fill / background | `sgs_background_paint_decl()` | `states[]` + per-state gradient | `{attr}Gradient` per state |
-| Text | `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()` | same + `gradientCapable: true` | `{attr}Gradient` per state |
-| Border | `sgs_border_gradient_css()` | `states[]` + per-state gradient | `{attr}Gradient` per state |
+**Bean-ruled 2026-08-22:** *"Overlay is not a part of that panel but it's still a variation of the
+colour control which makes it a sibling control, so all 5 should exist."*
 
-**Overlay is the fill recipe applied to a scrim element**, plus properties only an overlay has
-(`opacity` per tier, `mix-blend-mode`) — see open question 1 on where those live.
+That ruling is what makes the family coherent. Four members are `SgsColourPanel` ROWS; overlay is a
+SIBLING CONTROL living outside the panel. They are peers in the family, not peers in the panel.
+
+| Member | Lives as | Paint helper | Row/control shape | Required siblings |
+|---|---|---|---|---|
+| Fill / background | `SgsColourPanel` row | `sgs_background_paint_decl()` | `states[]` + per-state gradient | `{attr}Gradient` per state |
+| Text | `SgsColourPanel` row | `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()` | same + `gradientCapable: true` | `{attr}Gradient` per state |
+| Border | `SgsColourPanel` row | `sgs_border_gradient_css()` | `states[]` + per-state gradient | `{attr}Gradient` per state |
+| **Overlay** | **SIBLING control** (in `BackgroundPanel`) | `sgs_overlay_decls()` — fill applied to a scrim element | same `states[]` shape, alpha OFF, own row presentation + help text | `{attr}Gradient` per state, **plus** `backgroundOverlayOpacity{,Tablet,Mobile}` and `backgroundOverlayBlendMode` |
+| Shadow | `SgsColourPanel` row | colour only | `states[]`, **no gradient path** | none |
 
 **Shadow has NO gradient recipe.** `box-shadow` takes a colour; a gradient there is invalid CSS.
+
+⛔ **Why "sibling, not row" is the load-bearing distinction.** A council rater raised it as a
+blocker: overlay needs `opacity` and `blend mode`, and `SgsColourPanel`'s row contract has neither
+(`SgsColourPanel.js:72-101`). Making it a row would mean growing a shared contract **64 mounting
+blocks depend on** — a Rule 7 change needing a design gate. Bean's ruling dissolves that objection
+rather than paying for it: overlay was never a row, so the contract does not change and no design
+gate is needed. Its extras live on the sibling control, where they already are today.
+
+✅ **And the sibling shape is ENFORCEABLE by the detector that already exists** — this was verified,
+not assumed. Rule 31 resolves shared components through `reachedComponents()` over `src/components/`
+(`rules/31-golden-colour-control.js:74,223`), independent of panel rows. Live proof: it flagged
+`GradientOverlayControl.js:98` as a **SHARED colour row** carrying two findings, and both cleared
+when that control was given a real normal+hover states pair (D738, `f09255b6`, ratchet 418 → 413).
+A sibling control is therefore a first-class citizen of the standard, not an exception to it.
 
 ## Shadow: exempt BY MECHANISM, not per block (Bean-ruled 2026-08-22)
 
@@ -132,12 +151,10 @@ would have propagated the defect to every block adopting the recipe.
 
 ## Open questions for Bean
 
-1. **Where do overlay opacity + blend mode live?** `SgsColourPanel`'s row contract has NO field for
-   either (`SgsColourPanel.js:72-101`: `{key, label, states, gradientCapable, borderStyle,
-   onBorderStyleChange}`). So either that shared contract grows two fields — **a change 64 mounting
-   blocks depend on, which Rule 7 says needs a design gate and your sign-off** — or overlay stays a
-   separate cluster inside `BackgroundPanel` and simply is not an `SgsColourPanel` row. Revision 1
-   listed it as a peer of the other four without noticing it cannot be one.
+1. ~~**Where do overlay opacity + blend mode live?**~~ ✅ **RULED 2026-08-22 — overlay is a SIBLING
+   control, not an `SgsColourPanel` row.** Its extras stay on the sibling control, where they
+   already are. `SgsColourPanel`'s row contract is UNCHANGED, so the 64-block Rule 7 design gate
+   the council flagged does not apply. See the family table above.
 2. **Slider alone, or slider + boolean, for overlay opacity?** Recommendation: **slider alone**.
    `allowReset` already expresses "unset = inherit desktop" (`BackgroundPanel.js:207`); a boolean
    beside it means two attributes owning one piece of state, and they can disagree.
@@ -160,7 +177,9 @@ Caught by the council, missed by the author:
 - "five bundles" asserted as settled while an open question asked whether the fifth should exist
 - "copied from" ambiguous between a shared component and duplicated JSX
 - rule 31's lack of `render.php` access
-- `SgsColourPanel`'s missing opacity/blend-mode fields
+- `SgsColourPanel`'s missing opacity/blend-mode fields — raised as a blocker, then DISSOLVED by
+  Bean's sibling-control ruling rather than paid for: overlay was never a row, so the shared
+  contract does not change and no Rule 7 design gate applies
 - the non-conformant border reference block
 - **D-number errors the author introduced the same day**: the hover-tab work is **D738**, but
   **D735** (an unrelated gates commit) was stamped into BOTH `golden-controls.json` and
