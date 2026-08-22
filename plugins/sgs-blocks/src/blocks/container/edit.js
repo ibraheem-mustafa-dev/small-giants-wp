@@ -199,6 +199,55 @@ function textPaintPreview( colour, gradient, palette ) {
 	return resolved ? { color: resolved } : {};
 }
 
+// The same allowlist `sgs_overlay_decls()` (helpers-tokens.php) enforces server-side —
+// mirrored here rather than trusted as "any string is harmless in CSS", so the editor
+// preview and the frontend refuse the identical out-of-enum set, not just a similar one.
+const OVERLAY_BLEND_MODES = [
+	'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge',
+	'color-burn', 'soft-light', 'hard-light', 'difference', 'exclusion',
+];
+
+/**
+ * Resolve the container's own overlay LAYER to a paintable canvas preview —
+ * mirrors `sgs_overlay_decls()` (helpers-tokens.php) exactly, the single shared
+ * owner class-sgs-container-wrapper.php and sgs/hero's `.sgs-hero__overlay`
+ * both call server-side (D717/D718: "the EXISTENCE test IS the shared helper's
+ * return value" — colour/gradient/opacity/blend-mode are ONE decision, not
+ * layered ad hoc). Resting state only (P2-4b scope) — hover and responsive
+ * opacity tiers are deferred.
+ *
+ * @param {string}        colour     backgroundOverlayColour attribute value.
+ * @param {string}        gradient   overlayGradient attribute value.
+ * @param {number|string} opacity    backgroundOverlayOpacity, 0-100. 100/empty/
+ *                                   null emits no opacity override (CSS default).
+ * @param {string}        blendMode  backgroundOverlayBlendMode attribute value.
+ * @param {Array}         palette    Active theme colour palette.
+ * @return {Object} CSS custom properties for the `::after` mirror in
+ *                   editor.css, plus a `hasOverlay` flag — {} / false when
+ *                   there is nothing to paint, mirroring the PHP helper's `''`.
+ */
+function overlayPaintPreview( colour, gradient, opacity, blendMode, palette ) {
+	const paint = backgroundPaintPreview( colour, gradient, palette );
+	if ( ! paint.backgroundImage && ! paint.backgroundColor ) {
+		return { hasOverlay: false, vars: {} };
+	}
+	const vars = {
+		'--sgs-ed-overlay-image': paint.backgroundImage || 'none',
+		'--sgs-ed-overlay-colour': paint.backgroundColor || 'transparent',
+	};
+	const numericOpacity = parseFloat( opacity );
+	if ( '' !== opacity && null != opacity && ! Number.isNaN( numericOpacity ) ) {
+		const pct = Math.max( 0, Math.min( 100, numericOpacity ) );
+		if ( 100 !== pct ) {
+			vars[ '--sgs-ed-overlay-opacity' ] = pct / 100;
+		}
+	}
+	if ( blendMode && 'normal' !== blendMode && OVERLAY_BLEND_MODES.includes( blendMode ) ) {
+		vars[ '--sgs-ed-overlay-blend' ] = blendMode;
+	}
+	return { hasOverlay: true, vars };
+}
+
 export default function Edit({ attributes, setAttributes, name }) {
   const {
     layout,
@@ -228,6 +277,10 @@ export default function Edit({ attributes, setAttributes, name }) {
     textColourHoverGradient,
     bgParallax = false,
     gridAutoRows = "",
+    backgroundOverlayColour,
+    overlayGradient,
+    backgroundOverlayOpacity,
+    backgroundOverlayBlendMode,
   } = attributes;
 
   // D288/D636: colours are stored as theme-token SLUGS or a custom hex, and
@@ -252,6 +305,14 @@ export default function Edit({ attributes, setAttributes, name }) {
   const hasBgImage = !!backgroundImage?.url;
   const hasBgVideo = !!bgVideo?.url;
 
+  const overlayPreview = overlayPaintPreview(
+    backgroundOverlayColour,
+    overlayGradient,
+    backgroundOverlayOpacity,
+    backgroundOverlayBlendMode,
+    colourPalette
+  );
+
   const style = {
     gap: gapCssValue( gap, previewTier ),
     minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
@@ -274,6 +335,10 @@ export default function Edit({ attributes, setAttributes, name }) {
     ...(bgKenBurns && hasBgImage && {
       "--sgs-ken-burns-duration": `${bgAnimationDuration}s`,
     }),
+    // Overlay layer — a ::after mirror in editor.css, same reasoning as the
+    // background-image ::before above: painting it on the element itself
+    // would dim the client's real content, not just the decorative layer.
+    ...overlayPreview.vars,
     // Base (SGS-owned) background paint — the OUTER-most layer, below the
     // media ::before and the overlay span. Text paint is applied AFTER
     // background so it wins the shared `backgroundImage` key exactly as the
@@ -429,6 +494,7 @@ export default function Edit({ attributes, setAttributes, name }) {
     className,
     hasBgImage && !hasBgVideo ? "sgs-container--has-bg-media" : "",
     bgParallax ? "sgs-container--parallax" : "",
+    overlayPreview.hasOverlay ? "sgs-container--has-overlay" : "",
   ]
     .filter( Boolean )
     .join( " " );

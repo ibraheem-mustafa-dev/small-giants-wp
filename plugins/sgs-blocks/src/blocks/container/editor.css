@@ -38,3 +38,34 @@
 	background-repeat: var( --sgs-ed-bg-repeat, no-repeat );
 	background-attachment: var( --sgs-ed-bg-attachment, scroll );
 }
+
+/* ===== Editor overlay layer (P2-4b, 2026-08-22) =====
+   Mirrors the frontend's `.sgs-container__overlay` span (style.css) — a real,
+   separate paint layer above the background image but below the client's own
+   content (frontend z-index: image -1 / overlay 0 / content 1), so a dimmed
+   overlay never dims the InnerBlocks content sitting on top of it. The editor
+   uses a ::after pseudo-element instead of a real DOM node (the same choice
+   already made for the background-image ::before above) — inserting a real
+   sibling span ahead of the InnerBlocks children would need restructuring
+   BOTH of edit.js's content-band / no-band JSX branches for a purely visual
+   layer.
+
+   Gated on .sgs-container--has-overlay (added by edit.js only when the
+   shared overlayPaintPreview() helper — the JS mirror of the PHP
+   sgs_overlay_decls() single source of truth — resolves actual paint), same
+   pattern as .sgs-container--has-bg-media above. */
+.sgs-container--has-overlay {
+	position: relative;
+}
+
+.sgs-container--has-overlay::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image: var( --sgs-ed-overlay-image, none );
+	background-color: var( --sgs-ed-overlay-colour, transparent );
+	opacity: var( --sgs-ed-overlay-opacity, 1 );
+	mix-blend-mode: var( --sgs-ed-overlay-blend, normal );
+}
