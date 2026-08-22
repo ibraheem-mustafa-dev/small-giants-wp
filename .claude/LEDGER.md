@@ -230,6 +230,22 @@ unproven after nine QUIET runs agreed — nine runs of the wrong condition.
   raw-slug defect (`background-color:primary` is invalid CSS the browser drops). Cause proven
   three ways. Evidence: `reports/visual-diff/native-colour-ui-2026-08-22.md`.
 
+⛔ **RETRACTED 2026-08-23 — the "site-footer-row is broken" finding was FALSE.** It works;
+proven live (DOM + lifted CSS both carry `.sgs-sfr-d70fdc64.sgs-site-footer-row{background-image:
+linear-gradient(...)}`). The FAIL came from MY probe writing malformed JSON: it inserted the
+attribute at the first `}` after the block name, which closes `"padding":{}`, so WP could not
+parse the attributes and fell back to defaults. That explains every symptom — including three
+rows sharing one uid, which is impossible for `md5($attributes)` on rows with different
+`rowSlot`s. The tell was in the data and I read past it. `site-header-row` is byte-identical on
+every load-bearing line, so its code is sound too. **15/16 verified working, 0 defects.**
+
+⚠ **LIVE CONFIG DEFECT (not ours, still real):** `sgs_active_header_cpt_id` = **1570**, a post
+that DOES NOT EXIST. `Sgs_Active_Layout::render_active('header')` fails closed, so the header
+silently falls back to the `sgs/framework-header-default` pattern and CPT 1655 ("T1 Header
+HideOnScroll") is orphaned — configured, published, never rendered. The footer pointer (1654)
+is valid, which is exactly why footer edits reached the render and header edits never could.
+**Bean's call:** repoint it at 1655, or accept the framework default as production.
+
 **⛔ TWO FALSIFICATIONS — do not re-plan on the old premises**
 1. **R2d/R2e cannot lower rule 31 or add capability.** `adopt.js`'s OWN self-test asserts
    `statesCount`/`hasGradient` do not drift; rule 31 never reads PHP (`grep -c` = 0); and the

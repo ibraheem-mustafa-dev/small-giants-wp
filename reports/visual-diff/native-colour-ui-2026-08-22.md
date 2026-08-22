@@ -183,7 +183,53 @@ instruments cannot reach them:
 | Template-part edit | Patch never reaches the rendered output (uid invariant) |
 | Cache purge | Ruled out as the cause — both layers purged, no change |
 
-### RESOLVED — the render source is a CPT, and one block IS broken
+### ⛔ RETRACTED 2026-08-23 — there is NO defect. The "proven defect" below was a broken test harness.
+
+**`sgs/site-footer-row` works.** The FAIL recorded further down was produced by a bug in
+the probe, and the conclusion built on it was wrong. Read this box before the section it
+corrects.
+
+**Independent live proof (a fresh agent, told to fact-check the brief it was given):**
+set `backgroundColourGradient` on CPT 1654's top row, purged both caches, then read the
+DOM and the lifted stylesheet directly —
+
+```
+DOM:  <div class="sgs-container sgs-site-footer-row sgs-sfr-d70fdc64 … ">
+CSS:  .sgs-sfr-d70fdc64.sgs-site-footer-row{background-image:linear-gradient(135deg,#ff0000 0%,#0000ff 100%)}
+```
+
+Selector and element match on the same node. Every `.sgs-container-d70fdc64` rule in the
+same sheet touches only grid/gap/container-type — no competing background rule, no
+specificity fight. CPT restored byte-identical.
+
+**Root cause of the false finding — my patcher wrote malformed JSON.** It inserted the
+attribute at the FIRST `}` after the block name. The real row markup is
+`{"rowSlot":"top","columns":2,"padding":{},"rowShrink":{}}`, so that first `}` closes
+`"padding":{}`, producing:
+
+```
+"padding":{,"backgroundColourGradient":"linear-gradient(…)"}      <- invalid
+```
+
+WordPress could not parse the attributes and fell back to defaults. That single bug
+explains EVERY symptom the "defect" was built on: all three rows rendering the IDENTICAL
+uid `sgs-sfr-187937be` (identical defaults), no gradient, and the uid absent from the CSS.
+The tell was in the data all along — three rows with different `rowSlot` values cannot
+share a uid derived from `md5( wp_json_encode( $attributes ) )`.
+
+**Consequence for `sgs/site-header-row`:** its render path is byte-identical to the
+footer's at every load-bearing line (uid derivation :47, `$root_sel` :57, the
+`sgs_fill_states_css()` call, the scoped `<style>` print) — a normalised whole-file diff
+leaves only comments. With the footer proven working, the header's code is sound too. Its
+live render remains gated by the orphaned `sgs_active_header_cpt_id` pointer (below),
+which is a CONFIG issue, not a code defect.
+
+**Corrected tally: 15 of 16 verified working, 0 defects, 1 (site-header-row) not live-
+reachable until the header pointer is settled.**
+
+---
+
+### (superseded) RESOLVED — the render source is a CPT, and one block IS broken
 
 Bean supplied the missing fact: **the header and footer are CPT-based**, not
 template parts. The real sources are `sgs_header` id **1655** and `sgs_footer` id
