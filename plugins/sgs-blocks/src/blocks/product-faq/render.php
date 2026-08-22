@@ -145,15 +145,23 @@ if ( ! has_action( 'wp_footer', 'sgs_emit_faq_page_jsonld' ) ) {
 // has full native width/style/color/radius support, matches sgs/brand-strip).
 // ---------------------------------------------------------------------------
 
-// D635-pattern migration: background/text now read from the flat
-// backgroundColour/textColour attrs (SgsColourPanel), not native
-// style.color.background/.text (supports.color.background/.text are now
-// false). Gradient stays native (supports.color.gradients unchanged).
-$style_color_text     = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
-$style_color_bg       = isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '';
-$style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
-$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// D635-pattern migration: text now reads from the flat textColour attr
+// (SgsColourPanel), not native style.color.text (supports.color.text is now
+// false). Background (colour + gradient, resting + hover) is owned by the
+// shared fill emitter below, NOT by the style engine and NOT by
+// supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client
+// saw two and could not tell which won. Switching the flag off alone would
+// have REMOVED the only gradient control this block had, because the sole
+// gradient read was $attributes['style']['color']['gradient'] (core's own
+// storage). The flag flip is therefore PAIRED with a block-private
+// backgroundColourGradient exposed through fillRow(), so capability is moved
+// rather than lost.
+$style_color_text = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 $style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
 $style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
@@ -223,14 +231,22 @@ $color_args = array();
 if ( '' !== $style_color_text ) {
 	$color_args['text'] = $style_color_text;
 }
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( '' !== $style_color_gradient ) {
-	$color_args['gradient'] = $style_color_gradient;
-}
 if ( ! empty( $color_args ) ) {
 	$base_style_engine_args['color'] = $color_args;
+}
+
+$sgs_pf_fill_css = sgs_fill_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $sgs_pf_fill_css ) {
+	$scoped_css[] = $sgs_pf_fill_css;
 }
 
 $typography_args = array();

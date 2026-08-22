@@ -10,6 +10,7 @@ import {
 	ResponsiveOverride,
 	ShadowControl,
 	SgsColourPanel,
+	fillRow,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
@@ -63,7 +64,7 @@ const ALLOWED_BLOCKS = [
  */
 
 export default function Edit( { attributes, setAttributes, name } ) {
-	const { physicsGravity, physicsBounce, physicsEdgeResistance, backgroundColour } = attributes;
+	const { physicsGravity, physicsBounce, physicsEdgeResistance } = attributes;
 
 	const blockProps = useBlockProps();
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -79,23 +80,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			    Text colour row — every allowed child is decorative/non-textual and
 			    sgs/icon always sets its own explicit colour, so inherited `color` never
 			    painted anything visible on this block (see block.json's element note).
-			    No hover state exists on this attr, so a single 'normal' state. */ }
+			    Background row is now the FILL variant (fillRow) — gradient + hover
+			    moved off the native panel (supports.color.gradients was true,
+			    competing with this SGS panel) onto block-private backgroundColour{
+			    Hover,Gradient,HoverGradient} attrs, so capability is moved rather
+			    than lost. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 

@@ -47,37 +47,54 @@ $sgs_ps_supports_classes = array();
 
 $sgs_ps_engine_input = array();
 
-// D635-pattern migration: background now reads from the flat backgroundColour
-// attr (SgsColourPanel), not native style.color.background (supports.color.
-// background is now false). Text was turned off with no replacement attr
+// D635-pattern migration: text was turned off with no replacement attr
 // (block.json's element note: decorative-only children never inherit `color`
-// visibly). Gradient stays native (supports.color.gradients unchanged).
-$sgs_ps_color_args = array();
-if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-	$sgs_ps_color_args['background'] = (string) $attributes['backgroundColour'];
-}
-if ( ! empty( $sgs_ps_style_group['color']['gradient'] ) ) {
-	$sgs_ps_color_args['gradient'] = (string) $sgs_ps_style_group['color']['gradient'];
-}
-if ( ! empty( $sgs_ps_color_args ) ) {
-	$sgs_ps_engine_input['color'] = $sgs_ps_color_args;
-}
+// visibly). Background (colour + gradient, resting + hover) is owned by the
+// shared fill emitter below, NOT by the style engine and NOT by
+// supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client
+// saw two and could not tell which won. Switching the flag off alone would
+// have REMOVED the only gradient control this block had, because the sole
+// gradient read was $sgs_ps_style_group['color']['gradient'] (core's own
+// storage). The flag flip is therefore PAIRED with a block-private
+// backgroundColourGradient exposed through fillRow(), so capability is moved
+// rather than lost.
 if ( ! empty( $sgs_ps_style_group['border'] ) && is_array( $sgs_ps_style_group['border'] ) ) {
 	$sgs_ps_engine_input['border'] = $sgs_ps_style_group['border'];
 }
 
-if ( ! empty( $sgs_ps_engine_input ) ) {
-	$sgs_ps_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-	$sgs_ps_sel = '.' . $sgs_ps_uid . '.wp-block-sgs-physics-canvas';
+// Uid is computed UNCONDITIONALLY (not just when the style engine has
+// output) — the shared fill emitter below always needs a stable selector to
+// attach to, and the uid class must always be present on the wrapper for
+// that selector to resolve.
+$sgs_ps_uid                = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_ps_sel                = '.' . $sgs_ps_uid . '.wp-block-sgs-physics-canvas';
+$sgs_ps_supports_classes[] = $sgs_ps_uid;
 
+if ( ! empty( $sgs_ps_engine_input ) ) {
 	$sgs_ps_engine_styles = wp_style_engine_get_styles(
 		$sgs_ps_engine_input,
 		array( 'selector' => $sgs_ps_sel )
 	);
 	if ( ! empty( $sgs_ps_engine_styles['css'] ) ) {
-		$sgs_ps_supports_css       = $sgs_ps_engine_styles['css'];
-		$sgs_ps_supports_classes[] = $sgs_ps_uid;
+		$sgs_ps_supports_css = $sgs_ps_engine_styles['css'];
 	}
+}
+
+$sgs_ps_fill_css = sgs_fill_states_css(
+	$sgs_ps_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $sgs_ps_fill_css ) {
+	$sgs_ps_supports_css .= $sgs_ps_fill_css;
 }
 
 $sgs_ps_preset_bg       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
@@ -118,9 +135,11 @@ $sgs_ps_wrapper_opts = array(
 		'aria-hidden'              => 'true',
 	),
 );
-if ( ! empty( $sgs_ps_supports_classes ) ) {
-	$sgs_ps_wrapper_opts['extra_classes'] = $sgs_ps_supports_classes;
-}
+// Unconditional: the uid class is pushed onto $sgs_ps_supports_classes above on
+// every render (it has to be — the scoped fill CSS keys on it), so this array is
+// never empty and the `! empty()` guard that used to sit here could never be
+// false. A guard that cannot fail reads like a condition and is not one.
+$sgs_ps_wrapper_opts['extra_classes'] = $sgs_ps_supports_classes;
 
 // Migrated to SGS_Container_Wrapper::resolve_kind() 2026-08-16 (D626/D633
 // step 6, Phase B, second pass) after 2113eeb6 fixed the helper. An earlier

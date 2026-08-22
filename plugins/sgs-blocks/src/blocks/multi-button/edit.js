@@ -12,6 +12,7 @@ import {
 	ResponsiveOverride,
 	SpacingControl,
 	SgsColourPanel,
+	fillRow,
 	ResponsiveBoxControl,
 	DesignTokenPicker,
 	SGS_FONT_WEIGHT_OPTIONS,
@@ -96,7 +97,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		justifyContent,
 		flexWrap,
 		alignItems,
-		backgroundColour,
 		textColour,
 		childBtnBackground,
 		childBtnTextColour,
@@ -172,24 +172,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* D635-pattern migration: native Text/Background colour panel replaced by
 			    flat backgroundColour/textColour attrs surfaced via the shared SgsColourPanel
 			    (matches testimonial-slider/process-steps/quote/heading/card-grid/text).
-			    No hover-colour attrs exist on this block, so each row has a single
-			    'normal' state only. Gradients stay on the native panel (unchanged). */ }
+			    Background row is now the FILL variant (fillRow) — gradient + hover moved
+			    off the native panel (supports.color.gradients was true, competing with
+			    this SGS panel) onto block-private backgroundColour{Hover,Gradient,
+			    HoverGradient} attrs, so capability is moved rather than lost. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),

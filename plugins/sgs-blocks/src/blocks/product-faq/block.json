@@ -26,7 +26,7 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -87,6 +87,18 @@
 	},
 	"attributes": {
 		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -141,22 +141,39 @@ $css .= '}}';
 // pattern).
 
 $mb_color_border = array();
-// D635-pattern migration: background/text now read from the flat
-// backgroundColour/textColour attrs (SgsColourPanel), not native
-// style.color.background/.text (supports.color.background/.text are now
-// false). Gradient stays native (supports.color.gradients unchanged).
+// D635-pattern migration: text now reads from the flat textColour attr
+// (SgsColourPanel), not native style.color.text (supports.color.text is now
+// false). Background (colour + gradient, resting + hover) is owned by the
+// shared fill emitter below, NOT by the style engine and NOT by
+// supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client
+// saw two and could not tell which won. Switching the flag off alone would
+// have REMOVED the only gradient control this block had, because the sole
+// gradient read was $attributes['style']['color']['gradient'] (core's own
+// storage). The flag flip is therefore PAIRED with a block-private
+// backgroundColourGradient exposed through fillRow(), so capability is moved
+// rather than lost.
 $mb_color_args = array();
 if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 	$mb_color_args['text'] = (string) $attributes['textColour'];
 }
-if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-	$mb_color_args['background'] = (string) $attributes['backgroundColour'];
-}
-if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-	$mb_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-}
 if ( ! empty( $mb_color_args ) ) {
 	$mb_color_border['color'] = $mb_color_args;
+}
+$mb_fill_css = sgs_fill_states_css(
+	'.' . $uid . '.sgs-multi-button',
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $mb_fill_css ) {
+	$css .= $mb_fill_css;
 }
 if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
 	$mb_color_border['border'] = $attributes['style']['border'];
