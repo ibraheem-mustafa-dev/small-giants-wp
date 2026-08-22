@@ -31,9 +31,11 @@ import {
 	PanelBody,
 	TextControl,
 	SelectControl,
+	ToggleControl,
 	Button,
 	Icon,
 } from '@wordpress/components';
+import { useState } from '@wordpress/element';
 
 /** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
 const BG_SIZE_OPTIONS = [
@@ -169,6 +171,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	// contract; resolveColourToken() handles both.
 	const compactWidthFallback =
 		anchorDesktop === 'centred' ? '480px' : '360px';
+
+	// Editor-only preview state. Deliberately component state and NOT a block
+	// attribute: it must never serialise into saved content. Deliberately NOT
+	// derived from isSelected either — core/navigation avoids that for its
+	// overlay so the canvas does not reflow as the operator moves between blocks.
+	const [ previewOpen, setPreviewOpen ] = useState( false );
 	const shellStyle = {
 		backgroundColor:
 			surfaceOpacity < 1 && drawerBg
@@ -199,7 +207,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		// the text-swap/burger-morph CSS (style.css:314-345, scoped under that
 		// modifier class) never applies, and the canvas always shows the
 		// separate-x icon regardless of the closeStyle control.
-		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }`,
+		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }`,
 		style: shellStyle,
 	} );
 
@@ -256,6 +264,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Settings tab ─────────────────────────────────────────── */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Drawer', 'sgs-blocks' ) }>
+					{ /* The drawer is closed on the frontend, so the canvas shows a
+					   collapsed strip by default rather than a full-height panel over
+					   the template. This opens it for editing; it is editor-only and
+					   is never saved. */ }
+					<ToggleControl
+						label={ __( 'Preview drawer open', 'sgs-blocks' ) }
+						help={ __( 'Expands the drawer in the editor so you can edit its contents. Affects this editing session only — it is not saved and does not change the site.', 'sgs-blocks' ) }
+						checked={ previewOpen }
+						onChange={ setPreviewOpen }
+						__nextHasNoMarginBottom
+					/>
 					{ /* The dialog's accessible name. A site may run MORE THAN ONE drawer
 					   (that is what Drawer ID is for), and two dialogs both announced as
 					   "Navigation menu" cannot be told apart by a screen reader. */ }
