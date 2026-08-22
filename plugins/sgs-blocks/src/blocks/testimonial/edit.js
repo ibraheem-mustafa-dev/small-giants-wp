@@ -187,6 +187,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		quoteFontSize,
 		quoteMarginBottom,
 		quoteColour,
+		quoteColourHover,
 		quoteColourGradient,
 		quoteFontStyle,
 		quoteLineHeight,

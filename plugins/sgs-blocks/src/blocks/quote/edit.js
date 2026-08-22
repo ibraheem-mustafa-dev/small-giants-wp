@@ -304,6 +304,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderWidth,
 		borderStyle,
 		borderColour,
+		borderColourHover,
 		borderColourGradient,
 		boxShadow,
 		boxShadowHover,
