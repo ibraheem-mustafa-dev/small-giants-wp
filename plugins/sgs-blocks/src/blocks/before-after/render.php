@@ -94,6 +94,7 @@ $start_position = max( 0, min( 100, $start_position ) );
 
 $box_shadow        = $attributes['boxShadow'] ?? '';
 $box_shadow_colour = $attributes['boxShadowColour'] ?? '';
+$box_shadow_colour_hover = $attributes['boxShadowColourHover'] ?? '';
 
 // `maxWidth` is a TIER OBJECT (Spec 35) — ONE attr holding
 // {desktop,tablet,mobile}, read through the shared normaliser.
@@ -181,6 +182,14 @@ if ( 'none' !== $border_style ) {
 }
 if ( $box_shadow ) {
 	$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
+}
+// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
+// with the hover colour composed in.
+if ( $box_shadow && $box_shadow_colour_hover ) {
+	$box_shadow_hover_value = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour_hover );
+	if ( '' !== $box_shadow_hover_value ) {
+		$scoped_css[] = "{$root_sel}:hover,{$root_sel}:focus-within{box-shadow:{$box_shadow_hover_value};}";
+	}
 }
 if ( $max_width ) {
 	$mw_safe = sgs_css_length_value( $max_width );

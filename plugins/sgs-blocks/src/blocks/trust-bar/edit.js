@@ -433,6 +433,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								onChange: ( val ) => setAttributes( { iconCircleShadowColour: val ?? '' } ),
 								linked: true,
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.iconCircleShadowColourHover,
+								onChange: ( val ) => setAttributes( { iconCircleShadowColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
 					badgeStyle === 'image-badge' && badgeImageShadow && {
@@ -444,6 +451,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: badgeImageShadowColour,
 								onChange: ( val ) => setAttributes( { badgeImageShadowColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.badgeImageShadowColourHover,
+								onChange: ( val ) => setAttributes( { badgeImageShadowColourHover: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -683,6 +697,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
 						colour={ attributes.shadowColour }
 						onColourChange={ ( val ) => setAttributes( { shadowColour: val } ) }
+						colourHover={ attributes.shadowColourHover }
+						onColourHoverChange={ ( val ) => setAttributes( { shadowColourHover: val } ) }
 					/>
 				</PanelBody>
 
@@ -777,6 +793,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							onChange={ ( val ) => setAttributes( { iconCircleShadow: val } ) }
 							colour={ iconCircleShadowColour }
 							onColourChange={ ( val ) => setAttributes( { iconCircleShadowColour: val } ) }
+							colourHover={ attributes.iconCircleShadowColourHover }
+							onColourHoverChange={ ( val ) => setAttributes( { iconCircleShadowColourHover: val } ) }
 						/>
 						<DesignTokenPicker
 							label={ __( 'Icon colour', 'sgs-blocks' ) }
@@ -847,6 +865,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							onChange={ ( val ) => setAttributes( { badgeImageShadow: val } ) }
 							colour={ badgeImageShadowColour }
 							onColourChange={ ( val ) => setAttributes( { badgeImageShadowColour: val } ) }
+							colourHover={ attributes.badgeImageShadowColourHover }
+							onColourHoverChange={ ( val ) => setAttributes( { badgeImageShadowColourHover: val } ) }
 						/>
 					</PanelBody>
 				) }

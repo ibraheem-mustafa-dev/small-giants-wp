@@ -449,6 +449,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { tileShadowColour: val ?? '' } ),
 								linked: true,
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.tileShadowColourHover,
+								onChange: ( val ) => setAttributes( { tileShadowColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
 				] }
@@ -697,6 +704,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							colour={ tileShadowColour }
 							onColourChange={ ( val ) =>
 								setAttributes( { tileShadowColour: val } )
+							}
+							colourHover={ attributes.tileShadowColourHover }
+							onColourHoverChange={ ( val ) =>
+								setAttributes( { tileShadowColourHover: val } )
 							}
 						/>
 					</ToolsPanelItem>

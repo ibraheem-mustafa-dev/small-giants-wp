@@ -120,6 +120,7 @@
 		"marginMobile": { "type": "object", "default": {} },
 		"shadow": { "type": "string" },
 		"shadowColour": { "type": "string" },
+		"shadowColourHover": { "type": "string", "default": "" },
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",

@@ -93,6 +93,7 @@ $border_radius_mobile_obj  = is_array( $attributes['borderRadiusMobile'] ?? null
 
 $box_shadow        = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
 $box_shadow_colour = isset( $attributes['boxShadowColour'] ) ? (string) $attributes['boxShadowColour'] : '';
+$box_shadow_colour_hover = isset( $attributes['boxShadowColourHover'] ) ? (string) $attributes['boxShadowColourHover'] : '';
 $opacity           = isset( $attributes['opacity'] ) ? floatval( $attributes['opacity'] ) : 1.0;
 $opacity    = max( 0.0, min( 1.0, $opacity ) );
 
@@ -307,6 +308,15 @@ if ( '' !== $box_shadow ) {
 $media_base_css = '';
 if ( $media_base_decls ) {
 	$media_base_css = $id_sel . '{' . implode( ';', $media_base_decls ) . '}';
+}
+
+// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
+// with the hover colour composed in.
+if ( '' !== $box_shadow && '' !== $box_shadow_colour_hover ) {
+	$box_shadow_hover_css = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour_hover );
+	if ( '' !== $box_shadow_hover_css ) {
+		$media_base_css .= $id_sel . ':hover,' . $id_sel . ':focus-within{box-shadow:' . $box_shadow_hover_css . '}';
+	}
 }
 
 // Native border group (colour/width/style/radius) — base only, via the

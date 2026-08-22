@@ -99,13 +99,29 @@ const DEFAULT_COLOUR = 'rgba(0,0,0,0.1)';
 
 /**
  * @param {Object}   props
- * @param {string}   props.label           Field label.
- * @param {string}   [props.value]         Stored raw box-shadow SHAPE string (or theme slug).
- * @param {Function} props.onChange        Receives the next raw box-shadow SHAPE string.
- * @param {string}   [props.colour]        Current colour value — externally owned (SgsColourPanel row).
- * @param {Function} props.onColourChange  Setter for the externally-owned colour attribute.
+ * @param {string}   props.label               Field label.
+ * @param {string}   [props.value]             Stored raw box-shadow SHAPE string (or theme slug).
+ * @param {Function} props.onChange            Receives the next raw box-shadow SHAPE string.
+ * @param {string}   [props.colour]            Current NORMAL-state colour value — externally owned (SgsColourPanel row).
+ * @param {Function} props.onColourChange      Setter for the externally-owned normal-state colour attribute.
+ * @param {string}   [props.colourHover]       Current HOVER-state colour value — externally owned sibling attribute
+ *                                              (Rule 31: a colour row must carry >=2 states). Omit on a mount that has
+ *                                              no meaningful hover state (e.g. a mount that IS itself a dedicated
+ *                                              "…(hover)" shadow control, or a self-contained preset-slug shadow) —
+ *                                              the row then stays single-state, exactly as before this change.
+ * @param {Function} [props.onColourHoverChange] Setter for the hover-state colour attribute. Required whenever
+ *                                              `colourHover` is meaningful; see the `colour`/`onColourChange`
+ *                                              defensive-fallback note below — the same protection applies here.
  */
-export default function ShadowControl( { label, value, onChange, colour, onColourChange } ) {
+export default function ShadowControl( {
+	label,
+	value,
+	onChange,
+	colour,
+	onColourChange,
+	colourHover,
+	onColourHoverChange,
+} ) {
 	// Defensive fallback (incident 2026-08-20): 5 of 22 mount sites passed no
 	// `onColourChange`, so picking a shadow colour threw `TypeError:
 	// onColourChange is not a function` and blanked the whole inspector
@@ -120,6 +136,22 @@ export default function ShadowControl( { label, value, onChange, colour, onColou
 				'ShadowControl: onColourChange prop is missing — the colour field will not update the block. Pass `colour` + `onColourChange` from the caller (see cta-section/edit.js for the reference wiring).'
 			);
 		} );
+	// Same defensive shape as safeOnColourChange above, for the hover sibling
+	// added under Rule 31 (2026-08-22). A mount that passes `colourHover`
+	// without a real `onColourHoverChange` would otherwise blank the sidebar
+	// exactly like the 2026-08-20 incident this file already guards against.
+	const safeOnColourHoverChange =
+		onColourHoverChange ||
+		( () => {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'ShadowControl: onColourHoverChange prop is missing — the hover colour field will not update the block. Pass `colourHover` + `onColourHoverChange` from the caller.'
+			);
+		} );
+	// Two-state row only when the caller actually wired a hover sibling —
+	// a mount with no meaningful hover state (documented per call site)
+	// keeps rendering the single-state row it always has.
+	const hasHoverState = typeof onColourHoverChange === 'function';
 	// `useSettings( 'shadow.presets' )` can resolve to EITHER a flat array
 	// (already-merged) OR WordPress's origin-keyed object
 	// `{ default: [...], theme: [...], custom: [...] }` (raw feature shape,
@@ -223,13 +255,36 @@ export default function ShadowControl( { label, value, onChange, colour, onColou
 					   Consequence, stated not hidden: lowering alpha still stores a raw
 					   colour. A palette pick at full alpha now stores the slug, which is
 					   the common case and a strict improvement on storing a hex always. */ }
-					<DesignTokenPicker
-						label={ __( 'Shadow colour', 'sgs-blocks' ) }
-						value={ colour }
-						onChange={ ( v ) => safeOnColourChange( v || DEFAULT_COLOUR ) }
-						linked
-						enableAlpha
-					/>
+					{ hasHoverState ? (
+						<DesignTokenPicker
+							label={ __( 'Shadow colour', 'sgs-blocks' ) }
+							enableAlpha
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: colour,
+									onChange: ( v ) => safeOnColourChange( v || DEFAULT_COLOUR ),
+									linked: true,
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: colourHover,
+									onChange: ( v ) => safeOnColourHoverChange( v || DEFAULT_COLOUR ),
+									linked: true,
+								},
+							] }
+						/>
+					) : (
+						<DesignTokenPicker
+							label={ __( 'Shadow colour', 'sgs-blocks' ) }
+							value={ colour }
+							onChange={ ( v ) => safeOnColourChange( v || DEFAULT_COLOUR ) }
+							linked
+							enableAlpha
+						/>
+					) }
 					<ToggleControl
 						label={ __( 'Inset (inner shadow)', 'sgs-blocks' ) }
 						checked={ parts.inset }

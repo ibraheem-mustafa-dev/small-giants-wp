@@ -284,6 +284,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								onChange: ( val ) => setAttributes( { shadowColour: val ?? '' } ),
 								linked: true,
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.shadowColourHover,
+								onChange: ( val ) => setAttributes( { shadowColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
 					{
@@ -463,6 +470,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
 						colour={ attributes.shadowColour }
 						onColourChange={ ( val ) => setAttributes( { shadowColour: val } ) }
+						colourHover={ attributes.shadowColourHover }
+						onColourHoverChange={ ( val ) => setAttributes( { shadowColourHover: val } ) }
 					/>
 				</PanelBody>
 

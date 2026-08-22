@@ -88,6 +88,7 @@ $hover_border_gradient      = sgs_css_gradient_value( $attributes['itemBorderCol
 // deprecation needed (D270 no-deprecations policy).
 $tile_shadow         = $attributes['tileShadow'] ?? '';
 $tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
+$tile_shadow_colour_hover = $attributes['tileShadowColourHover'] ?? '';
 $hover_bg_colour     = $attributes['itemBackgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['itemTextColourHover'] ?? '';
 $hover_border_colour = $attributes['itemBorderColourHover'] ?? '';
@@ -397,6 +398,14 @@ if ( '' !== $tile_shadow ) {
 	$safe_tile_shadow_value = sgs_shadow_value_composed( $tile_shadow, $tile_shadow_colour );
 	if ( '' !== $safe_tile_shadow_value ) {
 		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{box-shadow:{$safe_tile_shadow_value};}";
+	}
+}
+// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
+// with the hover colour composed in.
+if ( '' !== $tile_shadow && '' !== $tile_shadow_colour_hover ) {
+	$safe_tile_shadow_hover_value = sgs_shadow_value_composed( $tile_shadow, $tile_shadow_colour_hover );
+	if ( '' !== $safe_tile_shadow_hover_value ) {
+		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item:hover,{$root_sel} .sgs-brand-strip__item:focus-within{box-shadow:{$safe_tile_shadow_hover_value};}";
 	}
 }
 

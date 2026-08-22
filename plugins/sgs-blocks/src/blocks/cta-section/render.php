@@ -105,6 +105,7 @@ $gradient_preset          = in_array( $attributes['gradientPreset'] ?? '', $allo
 // extra_styles. $cta_helper_attrs nulls `shadow` below (C3 double-emit
 // guard) so the wrapper never re-emits it.
 $shadow_value = sgs_shadow_value_composed( $attributes['shadow'] ?? '', $attributes['shadowColour'] ?? '' );
+$shadow_value_hover = sgs_shadow_value_composed( $attributes['shadow'] ?? '', $attributes['shadowColourHover'] ?? '' );
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
 // §B3-style scoping — matches the container/hero/quote convention).
@@ -195,6 +196,13 @@ $has_bg_image_class = $has_image_bg;
 
 if ( $shadow_value ) {
 	$responsive_css .= $root_sel . '{box-shadow:' . $shadow_value . '}';
+}
+
+// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
+// with the hover colour composed in. Only emitted when a hover colour is set,
+// so no shadow attr set at all still emits no CSS.
+if ( $shadow_value && $shadow_value_hover && ( $attributes['shadowColourHover'] ?? '' ) ) {
+	$responsive_css .= $root_sel . ':hover,' . $root_sel . ':focus-within{box-shadow:' . $shadow_value_hover . '}';
 }
 
 // Build wrapper classes.

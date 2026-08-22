@@ -1655,6 +1655,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
 						colour={ attributes.shadowColour }
 						onColourChange={ ( val ) => setAttributes( { shadowColour: val } ) }
+						colourHover={ attributes.shadowColourHover }
+						onColourHoverChange={ ( val ) => setAttributes( { shadowColourHover: val } ) }
 					/>
 				</PanelBody>
 

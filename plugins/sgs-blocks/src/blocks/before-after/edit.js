@@ -488,6 +488,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: boxShadowColour,
 								onChange: ( val ) => setAttributes( { boxShadowColour: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.boxShadowColourHover,
+								onChange: ( val ) => setAttributes( { boxShadowColourHover: val ?? '' } ),
+							},
 						],
 					},
 				] }
@@ -765,6 +771,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							colour={ boxShadowColour }
 							onColourChange={ ( val ) =>
 								setAttributes( { boxShadowColour: val } )
+							}
+							colourHover={ attributes.boxShadowColourHover }
+							onColourHoverChange={ ( val ) =>
+								setAttributes( { boxShadowColourHover: val } )
 							}
 						/>
 					</ToolsPanelItem>

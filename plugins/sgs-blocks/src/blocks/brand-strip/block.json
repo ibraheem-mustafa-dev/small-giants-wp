@@ -360,6 +360,10 @@
 		"tileShadowColour": {
 			"type": "string"
 		},
+		"tileShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"itemBackgroundColourHover": {
 			"type": "string",
 			"default": ""

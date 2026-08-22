@@ -357,6 +357,10 @@
 		"boxShadowColour": {
 			"type": "string"
 		},
+		"boxShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"opacity": {
 			"type": "number",
 			"default": 1

@@ -387,6 +387,10 @@
 		"iconCircleShadowColour": {
 			"type": "string"
 		},
+		"iconCircleShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"badgeImageBorderRadius": {
 			"type": "string",
 			"default": ""
@@ -401,6 +405,10 @@
 		},
 		"badgeImageShadowColour": {
 			"type": "string"
+		},
+		"badgeImageShadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"badgeImageObjectFit": {
 			"type": "string",
@@ -595,6 +603,10 @@
 		},
 		"shadowColour": {
 			"type": "string"
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
 		},
 		"maxWidth": {
 			"type": "object",

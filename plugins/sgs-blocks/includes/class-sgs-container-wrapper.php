@@ -447,6 +447,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// shape above — a tiered object would TypeError-fatal the ?string hint.
 			$shadow_colour = $attributes['shadowColour'] ?? '';
 			$shadow_colour = is_array( $shadow_colour ) ? '' : $shadow_colour;
+			// HOVER-state sibling (Rule 31, 2026-08-22): ShadowControl's colour
+			// row is now two-state (normal/hover) for the four blocks routing
+			// their outer shadow through this shared wrapper — container, hero,
+			// physics-canvas, trust-bar (main shadow only; its icon-circle/
+			// badge-image shadows are block-private and handled in their own
+			// render.php). Hover reuses the resting SHAPE, only the colour
+			// differs, mirroring how the existing backgroundColourHover/
+			// textColourHover pairs work per-block.
+			$shadow_colour_hover = $attributes['shadowColourHover'] ?? '';
+			$shadow_colour_hover = is_array( $shadow_colour_hover ) ? '' : $shadow_colour_hover;
 			$max_width     = $attributes['maxWidth'] ?? '';
 			$max_width     = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
@@ -2057,6 +2067,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// viewport tier (responsive min-height / bg override) still wins per viewport.
 			if ( $base_outer_decls && $uid ) {
 				$responsive_css .= '.' . $uid . '{' . implode( ';', $base_outer_decls ) . '}';
+			}
+
+			// HOVER-state outer shadow colour (Rule 31, 2026-08-22) — same shape
+			// as the resting rule above, reusing the resting shadow SHAPE with the
+			// hover-state colour composed in. Emitted only when a hover colour is
+			// actually set, so a block never using the hover state adds no CSS.
+			if ( $shadow && $shadow_colour_hover && $uid ) {
+				$shadow_hover_value = sgs_shadow_value_composed( $shadow, $shadow_colour_hover );
+				if ( '' !== $shadow_hover_value ) {
+					$responsive_css .= '.' . $uid . ':hover,.' . $uid . ':focus-within{box-shadow:' . $shadow_hover_value . '}';
+				}
 			}
 
 			// MEDIA LAYER scoped rule (Phase 1, 2026-08-08) — the background image

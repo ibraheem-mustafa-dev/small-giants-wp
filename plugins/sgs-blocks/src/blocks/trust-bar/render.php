@@ -64,12 +64,14 @@ $root_text_colour_hover          = $attributes['textColourHover'] ?? '';
 $root_text_colour_hover_gradient = $attributes['textColourHoverGradient'] ?? '';
 $icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
 $icon_circle_shadow_colour = isset( $attributes['iconCircleShadowColour'] ) ? (string) $attributes['iconCircleShadowColour'] : '';
+$icon_circle_shadow_colour_hover = isset( $attributes['iconCircleShadowColourHover'] ) ? (string) $attributes['iconCircleShadowColourHover'] : '';
 
 // --- image-badge attributes (mirrors icon-circle's own control set) -----------
 $badge_image_border_radius = isset( $attributes['badgeImageBorderRadius'] ) ? (string) $attributes['badgeImageBorderRadius'] : '';
 $badge_image_size          = isset( $attributes['badgeImageSize'] ) ? absint( $attributes['badgeImageSize'] ) : 60;
 $badge_image_shadow        = isset( $attributes['badgeImageShadow'] ) ? (string) $attributes['badgeImageShadow'] : '';
 $badge_image_shadow_colour = isset( $attributes['badgeImageShadowColour'] ) ? (string) $attributes['badgeImageShadowColour'] : '';
+$badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHover'] ) ? (string) $attributes['badgeImageShadowColourHover'] : '';
 $badge_image_object_fit    = sanitize_html_class( $attributes['badgeImageObjectFit'] ?? 'contain' );
 // $columns and $gap_slug are no longer needed locally:
 // - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
@@ -155,6 +157,18 @@ $root_sel  = $uid_scope . '.wp-block-sgs-trust-bar';
 // internally (reads $attributes['style']['spacing'] directly) — not duplicated
 // here.
 $tb_extra_scoped_css = '';
+
+// HOVER-state shadow colours (Rule 31, 2026-08-22) — reuse the resting shadow
+// SHAPE with the hover colour composed in, emitted as scoped :hover/:focus-within
+// rules (a custom property can't carry pseudo-state on its own, unlike the
+// resting shape above which is inline via $styles[]). Deferred to here because
+// $uid_scope isn't defined at the icon-circle/$styles[] block above.
+if ( 'icon-circle' === $badge_style && '' !== $icon_circle_shadow_colour_hover ) {
+	$safe_icon_circle_shadow_hover = sgs_shadow_value_composed( $icon_circle_shadow, $icon_circle_shadow_colour_hover );
+	if ( '' !== $safe_icon_circle_shadow_hover ) {
+		$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__circle:hover,' . $uid_scope . ' .sgs-trust-bar__circle:focus-within{box-shadow:' . $safe_icon_circle_shadow_hover . '}';
+	}
+}
 
 $tb_style_engine_args = array();
 
@@ -344,6 +358,15 @@ if ( 'image-badge' === $badge_style ) {
 	}
 
 	$tb_extra_scoped_css .= $img_sel . '{' . implode( ';', $img_decls ) . '}';
+
+	// HOVER-state shadow colour (Rule 31, 2026-08-22) — same shape as the
+	// icon-circle hover rule above.
+	if ( '' !== $badge_image_shadow_colour_hover ) {
+		$safe_badge_image_shadow_hover = sgs_shadow_value_composed( $badge_image_shadow, $badge_image_shadow_colour_hover );
+		if ( '' !== $safe_badge_image_shadow_hover ) {
+			$tb_extra_scoped_css .= $img_sel . ':hover,' . $img_sel . ':focus-within{box-shadow:' . $safe_badge_image_shadow_hover . '}';
+		}
+	}
 }
 
 // --- Build badge items HTML ---------------------------------------------------
