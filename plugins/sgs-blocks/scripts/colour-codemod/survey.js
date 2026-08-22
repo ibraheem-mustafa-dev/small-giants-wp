@@ -87,6 +87,74 @@ function loadDbRows() {
 	return JSON.parse( out );
 }
 
+/**
+ * Can this attribute's EXISTING paint path carry a gradient?
+ *
+ * ⛔ THIS IS THE QUESTION THE FIRST TWO VERSIONS OF THIS SURVEY DID NOT ASK, and it
+ * cost a whole task. `AUTOFIXABLE:helper-at-existing-selector` only ever established
+ * that the block emits colour SOMEWHERE it owns. Task 2 was scoped at 38 rows on that
+ * verdict and delivered 2, because 19 of 24 gradient rows paint through a CSS CUSTOM
+ * PROPERTY holding a colour (`--sgs-mm-card`, `--sgs-tab-text`). A custom property
+ * holding a colour cannot carry a gradient — a gradient is `background-image`, a
+ * different CSS property. Those rows were correctly refused by the fixer, but the
+ * census had already promised them. A census that over-promises is worse than one that
+ * under-counts: it scopes work that cannot be delivered.
+ *
+ * BIASED CONSERVATIVE ON PURPOSE: returns false unless extensibility is PROVEN.
+ * Under-promising costs a re-measure; over-promising costs a task.
+ *
+ * Two hops, because that is the shape the tree actually uses (verified):
+ *   $nav_bg = isset( $attributes['navBg'] ) ? (string) $attributes['navBg'] : '';
+ *   ... sgs_background_paint_decl( $nav_bg, $nav_bg_gradient )
+ */
+const GRADIENT_CAPABLE_HELPERS = [
+	'sgs_background_paint_decl',
+	'sgs_border_gradient_css',
+	'sgs_resolve_text_colour_or_gradient',
+];
+
+function gradientExtensibility( php, attr ) {
+	if ( ! php || ! attr ) return { extensible: false, reason: 'no-render-source' };
+
+	// No regex-escaping needed anywhere below: an attribute name is always a plain
+	// JS identifier and a PHP local is always [A-Za-z_][A-Za-z0-9_]*. An earlier
+	// version carried escape() calls "for safety" and the escaping itself was the
+	// only thing that broke — unnecessary defence against impossible input.
+	const HELPERS = GRADIENT_CAPABLE_HELPERS.join( '|' );
+
+	// Hop 1 — the attribute read directly as a gradient-capable helper's argument.
+	const direct = new RegExp( '(' + HELPERS + ')\\([^)]*attributes\\[\\s*[\'"]' + attr + '[\'"]' );
+	if ( direct.test( php ) ) return { extensible: true, reason: 'direct-helper-arg' };
+
+	// Hop 2 — the attribute is bound to a local $var; is THAT var passed to one?
+	const bind = new RegExp(
+		'\\$([A-Za-z_][A-Za-z0-9_]*)\\s*=[^;\\n]*attributes\\[\\s*[\'"]' + attr + '[\'"]',
+		'g'
+	);
+	const vars = [];
+	let m;
+	while ( ( m = bind.exec( php ) ) !== null ) vars.push( m[ 1 ] );
+
+	for ( const v of vars ) {
+		if ( new RegExp( '(' + HELPERS + ')\\([^)]*\\$' + v + '\\b' ).test( php ) ) {
+			return { extensible: true, reason: 'helper-via-local-var' };
+		}
+	}
+
+	// Negative evidence — NAME the blocker, so a refusal is actionable, not a shrug.
+	for ( const v of vars ) {
+		if ( new RegExp( '--sgs-[a-z0-9-]+\\s*:[^;]*\\$' + v + '\\b' ).test( php ) ) {
+			return { extensible: false, reason: 'paints-via-colour-valued-custom-property' };
+		}
+	}
+	for ( const v of vars ) {
+		if ( new RegExp( 'sgs_text_colour_decl\\([^)]*\\$' + v + '\\b' ).test( php ) ) {
+			return { extensible: false, reason: 'text-colour-decl-takes-no-gradient' };
+		}
+	}
+	return { extensible: false, reason: 'no-gradient-capable-paint-path-found' };
+}
+
 function blockDirs() {
 	return fs
 		.readdirSync( BLOCKS_DIR )
@@ -245,6 +313,15 @@ function main() {
 				verdict = 'REFUSED:unresolvable-attr';
 			} else if ( ! mechanism ) {
 				verdict = 'REFUSED:no-css_property';
+			} else if ( needsGradient && ! gradientExtensibility( php, row.attr ).extensible ) {
+				// A row needing a GRADIENT is only autofixable if its EXISTING paint
+				// path can actually carry one. This is the check whose absence scoped
+				// Task 2 at 38 rows and delivered 2: 19 of 24 gradient rows paint via a
+				// colour-valued CSS custom property, which cannot hold a gradient.
+				// The reason is carried in the verdict so a refusal is actionable.
+				verdict =
+					'REFUSED:gradient-not-extensible:' +
+					gradientExtensibility( php, row.attr ).reason;
 			} else if ( emitsState ) {
 				// Block already emits state-aware colour CSS at its own selector:
 				// a shared helper adds the hover variant at that SAME selector.
