@@ -183,10 +183,44 @@ instruments cannot reach them:
 | Template-part edit | Patch never reaches the rendered output (uid invariant) |
 | Cache purge | Ruled out as the cause — both layers purged, no change |
 
-**Owed:** find what actually supplies the rendered header/footer on this canary
-(a different template, a plugin filter, or a second template-part record) before
-attempting verification again. Until then these two blocks are UNVERIFIED, and
-should not be reported as either passing or failing.
+### RESOLVED — the render source is a CPT, and one block IS broken
+
+Bean supplied the missing fact: **the header and footer are CPT-based**, not
+template parts. The real sources are `sgs_header` id **1655** and `sgs_footer` id
+**1654** (`class-sgs-block-cpts.php:38,41`), each holding 3 rows — matching the 3
+rendered rows exactly. Every earlier instrument was editing a `wp_template_part`
+record that never renders, which is why four attempts read as stale.
+
+Re-run against the CPT, with both caches purged and each restore verified:
+
+| Block | pageFresh | Painted | Verdict |
+|---|---|---|---|
+| `sgs/site-footer-row` | **true** (uid changed — the edit REACHED the render) | none | **FAIL — real defect** |
+| `sgs/site-header-row` | false | none | still UNVERIFIED |
+
+**`sgs/site-footer-row` does not paint its background gradient.** This is a proven
+defect, not a probe artefact: the attribute stored, the page demonstrably
+re-rendered (the uid is `md5($attributes)` and it changed), and nothing painted.
+
+**Diagnosis for the fix.** With the gradient set on all 3 rows:
+- all three render `sgs-sfr-187937be` **and** `sgs-container-187937be` (same hash,
+  two prefixes);
+- that row uid appears in **neither** the inline CSS **nor** the lifted
+  `uploads/sgs-css/*.css`, so no scoped rule is emitted for it at all;
+- yet a `135deg` gradient IS present in the inline CSS — i.e. the paint exists but
+  is not attached to the row-uid selector `sgs_fill_states_css()` was given.
+
+So the emit is being lost or mis-scoped between `sgs_fill_states_css( $root_sel, … )`
+and the printed `<style>`. That is the thread to pull.
+
+`sgs/site-header-row` remains unverified: even against the CPT, with page cache,
+object cache and transients all flushed, the header's uid never changes — a further
+selection or caching layer sits in front of `sgs_header` 1655. Given it received the
+IDENTICAL wave-C change as the footer, it should be **assumed affected until
+proven otherwise**, but it is not claimed here.
+
+**FINAL TALLY: 14 PASS · 1 FAIL (site-footer-row, real) · 1 UNVERIFIED
+(site-header-row).**
 
 ⛔ **THREE FALSE FAILURES were reported and retracted in that pass. The retraction
 matters more than the passes.**
