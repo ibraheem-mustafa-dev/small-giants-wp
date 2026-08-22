@@ -105,57 +105,57 @@ project has drifted.
       Fail:        Invalid JSON -> the file is the contract; a broken contract fails every gate
       Integration: `node scripts/inspector-scan/run.js --check` still exits 0
 
-## Step 2 — Teach rule 31 to read render.php
+## Step 2 — Resolve each row's mechanism from the DB, NOT from scanning render.php
 
     Model:       sonnet
-    Action:      Add `text:render.php` to rule 31's `needs` and build the mechanism resolver: for
-                 each colour attribute, find which PHP helper consumes it. Do NOT change any
-                 assertion yet — this step only makes the mechanism VISIBLE and logs it.
-                 ⛔ A PER-BLOCK scan is NOT sufficient and will silently under-resolve. MEASURED by `scripts/census-colour-paint-route.py` (committed; re-run it): only 25 call a colour helper directly; 18 route through
-                 `SGS_Container_Wrapper::render()` (the helper call lives in a shared PHP file the
-                 per-block scan never reads); 40 have no recognisable colour paint call at all.
-                 So this step MUST also resolve calls made from
-                 `includes/class-sgs-container-wrapper.php` when a block routes through it —
-                 mirroring what `reachedComponents()` already does for shared JSX.
-                 ⛔ BUT THAT ONLY CLOSES HALF THE BLIND SPOT, and the plan previously overstated it.
-                 MEASURED: the wrapper contains ZERO calls to `sgs_background_paint_decl` or
-                 `sgs_text_colour_decl` (grep returns 0 across its 3,243 lines). It calls
-                 `sgs_overlay_decls(` (:1560, :2017) and `sgs_border_gradient_css(` (:1924, scoped
-                 to the GRID-ITEM border pair only). So a wrapper-routed block's OVERLAY and
-                 GRID-ITEM-BORDER rows resolve; its FILL and TEXT rows do NOT, under any code path.
-                 ⛔ THE VOCABULARY MUST WIDEN OR MOST OF THE TREE STAYS UNRESOLVED. The 40 "neither"
-                 blocks are at least THREE populations, and the dominant one is not exotic:
-                   (a) a bare `sgs_colour_value(` call hand-embedded into a CSS string — e.g.
-                       `team-member/render.php:544` emits `…__name{color:' . sgs_colour_value(…)`;
-                       also `label:138`, `separator:147`, `breadcrumbs:120-123`. This is REAL paint
-                       and the 4-helper vocabulary cannot see it.
-                   (b) a different helper family — `business-info:88` uses
-                       `sgs_svg_stroke_gradient()`.
-                   (c) native WP colour supports with no PHP helper at all.
-                 ⛔ ALSO ADD `sgs_shadow_value_composed(` (helpers-tokens.php:703, 12 blocks direct
-                 + 2 wrapper sites). It is deliberately NOT in the census's helper list, so without
-                 it every shadow row lands UNRESOLVED — which would silently break Step 3's shadow
-                 exemption, since that only fires for a row resolved AS shadow.
-                 RESOLUTION ALGORITHM, stated so two implementers converge: follow at most ONE
-                 intermediate variable hop from the `$attributes[...]` read to the helper call
-                 (e.g. `$attr -> $var -> helper($var)`); anything longer, or a computed key, is
-                 UNRESOLVED. Never guess a mechanism.
+    Action:      Rule 31 reads each colour row's PAINT MECHANISM from `block_attributes.css_property`
+                 — the declarative routing column that already exists — and maps it to a mechanism:
+                   color | color-gradient                                   -> TEXT
+                   background-color | background-image | *-gradient          -> FILL
+                   border-color | border-color-gradient | outline-color      -> BORDER
+                   box-shadow-color                                          -> SHADOW (no gradient)
+                   stroke                                                    -> SVG STROKE
+                 An attribute with an EMPTY css_property is UNRESOLVED — reported, never guessed.
     Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js
-    Inputs:      Step 1's recipes block; sibling rules 21/28/30/33/34 already declare text:render.php
-    Outcome:     A `--json` run emits a resolved mechanism per row; count of UNRESOLVED rows is
-                 reported and is the honest blind-spot figure
+    Inputs:      Step 1's recipes; the `block_attributes` table via
+                 `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`
+    Outcome:     Every colour row carries a resolved mechanism or an explicit UNRESOLVED, sourced
+                 from the DB
     Exec:        SEQUENTIAL
     Deps:        Step 1
     Marker:      (none)
-    Time:        40 min
-    Tooling:     Bash, node
+    Time:        25 min
+    Tooling:     Bash, node, sgs-db.py
     On-Fail:     Revert the rule file; the ratchet must stay green
-    Prompt:      `.claude/prompts/step-2-mechanism-resolver.md` (WRITTEN)
+    Prompt:      `.claude/prompts/step-2-mechanism-resolver.md` (⚠ REWRITE IT FIRST — it still
+                 describes the render.php scan this step replaced)
     Test:
-      Happy:       sgs/heading resolves text->sgs_text_colour_decl, background->sgs_background_paint_decl, border->sgs_border_gradient_css
-      Edge:        A row whose attribute is read via a computed key -> reported UNRESOLVED, never guessed
-      Fail:        render.php missing for a static block -> row reported UNRESOLVED, rule does not crash
-      Integration: Total finding count UNCHANGED at this step (visibility only, no new assertions)
+      Happy:       sgs/heading's three rows resolve TEXT / FILL / BORDER from their css_property
+      Edge:        An attr with empty css_property -> UNRESOLVED, never inferred from its NAME
+      Fail:        DB unreachable -> the rule fails closed, never silently resolves nothing
+      Integration: Total finding count UNCHANGED (this step only makes mechanism VISIBLE)
+
+⭐ **THIS REPLACES A RENDER.PHP SCAN, ON BEAN'S STEER, AND THE COUNCIL HAD ALREADY KILLED THE OLD
+SHAPE.** The previous Step 2 proposed a cross-file, cross-language regex resolver over `render.php`.
+A council tracer measured it and returned *"not sound enough to build on as currently scoped"*:
+the shared wrapper contains **ZERO** calls to `sgs_background_paint_decl` or `sgs_text_colour_decl`
+across its 3,243 lines, so wrapper-routed blocks could never resolve their fill or text rows; and
+the 4-helper vocabulary could not see the dominant real pattern — a bare `sgs_colour_value()`
+hand-embedded in a CSS string (`team-member/render.php:544`, `label:138`, `separator:147`).
+
+**The DB already answers the question the scan was trying to ask.** MEASURED:
+`block_attributes.css_property` is populated for **320 of 439** colour attributes (73%), and its
+values map cleanly onto the five mechanisms — including `stroke` (13), which is exactly the
+"unnamed helper family" the tracer flagged on `sgs/business-info`.
+
+It is also what R-31-1 requires: **DB-first, no hardcoded dicts.** A regex vocabulary of helper
+names hand-maintained inside a lint rule is precisely the hardcoded lookup that rule bans. The
+render.php scan was off-pattern as well as insufficient.
+
+⛔ **The remaining gap is DATA, not CODE: 119 colour attributes have an empty `css_property`.**
+That is a seeding task with an enumerable worklist, not a resolver to engineer — and it is
+honestly measurable, which the scan's blind spots were not. Size it from the query, not from an
+estimate.
 
 ## Step 2a — Give every rule-31 finding a machine-readable `kind`
 
