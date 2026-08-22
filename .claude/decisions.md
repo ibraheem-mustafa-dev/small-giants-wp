@@ -1,5 +1,74 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D750 [INCIDENT] — colour-golden session's own method failures: six false probe findings, one reaching a commit (2026-08-23)
+
+Six probe artefacts were reported as defects before measurement disproved them; one reached a
+commit and had to be retracted. The single most instructive: a probe spliced an attribute at
+the FIRST `}` after a block name, which closes an inner `"padding":{}` and produces invalid
+JSON — WordPress then dropped ALL attributes to defaults, which looked exactly like a
+rendering defect. The tell was three rows sharing one uid, impossible for `md5($attributes)`
+on rows with different `rowSlot`s. **Rule: parse block-attribute JSON, never string-splice
+it.** Also: two agent briefs omitted gates (`check-dead-controls`, `check-render-undefined-vars`)
+and both agents shipped a silent client-facing defect while honestly reporting green — the
+coordinator must re-run the FULL gate set; per-agent green is not evidence.
+
+## D749 [INCIDENT] — the header CPT pointer was orphaned; a published, configured header never rendered (2026-08-23)
+
+`sgs_active_header_cpt_id` pointed at post **1570, which does not exist**, so
+`Sgs_Active_Layout::render_active('header')` failed closed and the header silently fell back
+to the `sgs/framework-header-default` pattern — leaving CPT 1655 ("T1 Header HideOnScroll")
+configured, published and never rendered. Repointed to 1655 on the canary; header verified
+healthy afterwards (HTTP 200, 3 rows, 6 nav links, zero console errors). The footer pointer
+(1654) was valid throughout, which is exactly why footer edits reached the render and header
+edits could not.
+
+## D748 [ROUTINE] — new gate: `check-text-gradient-companion.js` (2026-08-23)
+
+`sgs_text_decls()` returns only the `color:` declarations; the caller must ALSO emit
+`sgs_text_colour_gradient_fallback_rule()` for the `background-clip:text` companion. Omit it
+and the client's gradient silently paints nothing with every gate green. 256-file corpus, 13
+assertions, hard-gated.
+
+## D747 [INCIDENT] — D684 confirmed on four more blocks, across two paths (2026-08-23)
+
+A raw palette SLUG passed to `wp_style_engine_get_styles()` emits literal `color:primary` /
+`background-color:primary` — invalid CSS the browser drops, so the client's control silently
+does nothing. Found on `sgs/accordion-item` (background) and `tab` / `testimonial-slider` /
+`trustpilot-reviews` (text). All fixed by routing through `sgs_colour_value()`. Proven live:
+`rgb(58,46,38)` → `rgb(230,138,149)`. CLAUDE.md's existing generalisation ("any block feeding
+a DesignTokenPicker value to the style engine RAW has this defect") should now be treated as
+a live checklist.
+
+## D746 [INCIDENT] — new gate: `check-undefined-refs.js` catches two live editor crashes on its first run (2026-08-23)
+
+JS identifiers referenced but never bound. The file is VALID JavaScript — it parses,
+`node --check` passes — and fails only at runtime in the editor. Found TWO live editor
+crashes on its first run, both from the 2026-08-17 panel split
+(`ContainerWrapperControls.js:169` `SelectControl` never imported;
+`GridItemDefaultsPanel.js:42` `_GRID_BORDER_STYLE_WORDS` defined nowhere), both in
+`src/components/`-shaped files that a `block.json`-gated corpus never opens.
+
+## D745 [ROUTINE] — the paired-flip pattern, and the ratchet move (2026-08-23)
+
+16 blocks migrated: block-private `backgroundColourGradient` (+hover siblings) via
+`fillRow()`, `sgs_fill_states_css()` in render, THEN `supports.color.gradients: false`. Gives
+`includes/helpers-colour-variants.php` its FIRST CALLERS. Rule 31 355 → 309
+(native-colour-ui 22→6, missing-gradient 152→136, below-min-states 181→167).
+
+## D744 [INCIDENT] — two falsifications that killed planned colour-golden work (2026-08-23)
+
+(a) The planned `adopt.js` codemod sweep (R2d/R2e) CANNOT lower rule 31 or add client
+capability. Proven three ways: `adopt.js`'s OWN self-test asserts `statesCount` and
+`hasGradient` do not drift across adoption (its failure message names the D738 blinding
+class); rule 31 contains ZERO references to `.php` (`grep -c` = 0) so it cannot see a PHP
+emit; and the 333 open findings need NEW ATTRIBUTES, which `adopt.js`'s own header says it
+never writes. It is a de-duplication pass and must be relabelled before anyone runs it.
+
+(b) The "22 uniform one-line flips" did not exist. A census found only 1 of 22 safe to flip
+bare; for the other 20, core's panel was the client's ONLY gradient control, so a bare flip
+REMOVES capability. The detector's own fix text says the flip must be PAIRED with exposing
+the control via SgsColourPanel/DesignTokenPicker.
+
 ## D742 [ROUTINE] — Phase 2 of the shop-archive container remediation closed: P2-2/P2-4/P2-5/P2-7 shipped, deployed, live-verified, reseeded (2026-08-22)
 
 The four steps still open at the end of the fourth execution session
