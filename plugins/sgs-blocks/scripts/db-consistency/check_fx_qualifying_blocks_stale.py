@@ -12,9 +12,13 @@ scripts/generate-fx-qualifying-blocks.py computes a block -> qualifying-
 effects map from THREE live sources: every block.json's containerKind/
 fx.draggable/fx.pairedFilter support flags, every edit.js's RichText usage,
 and the `fx_effects` DB table's scope/requires columns. It writes that map
-to two shipped artefacts:
+to ONE shipped artefact:
   - src/blocks/extensions/generated-fx-qualifying-blocks.json (JS consumer)
-  - includes/generated-fx-qualifying-blocks.php (PHP consumer)
+
+⛔ There is no PHP mirror. includes/generated-fx-qualifying-blocks.php was
+deleted: nothing required it and `sgs_get_fx_qualifying_blocks()` had zero
+callers, so it regenerated on every run purely to be dead code. Do not
+reinstate it — Spec 38 recommends deletion.
 
 Any of the following can silently invalidate those artefacts WITHOUT the
 generator being re-run:
@@ -71,7 +75,7 @@ except Exception as exc:  # noqa: BLE001
         f"[check_fx_qualifying_blocks_stale] Failed to load generate-fx-qualifying-blocks.py: {exc}"
     ) from exc
 
-for _sym in ("compute_map", "JSON_OUTPUT", "PHP_OUTPUT"):
+for _sym in ("compute_map", "JSON_OUTPUT"):
     if not hasattr(_generator_mod, _sym):
         raise ImportError(
             f"[check_fx_qualifying_blocks_stale] generate-fx-qualifying-blocks.py has no "

@@ -287,16 +287,19 @@ deployed and readable at runtime; the DB is not, verified: no PHP in this
 project opens SQLite). It reads the DB ONLY for `fx_effects.scope`/`requires`
 (the effect side), since that table has no block.json equivalent.
 
-OUTPUT (two files, ONE computation, deterministic, no timestamps)
+OUTPUT (ONE file, deterministic, no timestamps)
 ----------------------------------------------------------------------------
-1. src/blocks/extensions/generated-fx-qualifying-blocks.json — plain JSON,
-   `{ "sgs/heading": ["scrub", "split-reveal"], ... }`, imported directly by
-   fx.js (webpack bundles .json imports natively — no codegen step needed).
-2. includes/generated-fx-qualifying-blocks.php — the identical map as a PHP
-   array behind `sgs_get_fx_qualifying_blocks()`, mirroring
-   generate-fx-effects-php.py's shape exactly (same no-timestamp rationale —
-   see that file's own comment on why: a dirty-always file makes the
-   deploy-gate's dirty check meaningless).
+src/blocks/extensions/generated-fx-qualifying-blocks.json — plain JSON,
+`{ "sgs/heading": ["scrub", "split-reveal"], ... }`, imported directly by
+fx.js (webpack bundles .json imports natively — no codegen step needed).
+No timestamp is emitted: a dirty-always file makes the deploy-gate's dirty
+check meaningless.
+
+⛔ Do NOT reinstate a PHP mirror of this map. A previous
+includes/generated-fx-qualifying-blocks.php emitted the same data behind
+`sgs_get_fx_qualifying_blocks()`; nothing ever required the file and the
+function had zero callers, so it regenerated on every run purely to be dead.
+Spec 38 recommends deletion. The JSON is the single consumer-facing artefact.
 
 Run: python plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py
 """
@@ -315,7 +318,6 @@ DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 JSON_OUTPUT = BLOCKS_DIR / "extensions" / "generated-fx-qualifying-blocks.json"
-PHP_OUTPUT = PLUGIN_ROOT / "includes" / "generated-fx-qualifying-blocks.php"
 
 # The retained, documented exception — see module docstring's 'svg' section.
 # Spec 38 §2 DrawSVG row, Exposure-surface column, ORIGINALLY cited this
@@ -941,65 +943,6 @@ def _render_json(fx_map: dict[str, list[str]]) -> str:
     return json.dumps(fx_map, indent="\t", sort_keys=True) + "\n"
 
 
-def _render_php(fx_map: dict[str, list[str]]) -> str:
-    """Pure function mirroring `_write_php`'s bytes, without touching disk."""
-    total_blocks = len(fx_map)
-    lines = [
-        "<?php",
-        "/**",
-        " * Auto-generated Spec 38 motion-fx block -> qualifying-effects map — DO NOT EDIT.",
-        " *",
-        " * Generated from block.json (containerKind / bgSvgContent / fx.draggable /",
-        " * fx.pairedFilter / fx.providesNatively), each block's edit.js (RichText",
-        " * usage), each block's style.css|style.scss (desktop-reachable",
-        " * `overflow-x: auto|scroll`), and the `fx_effects` DB table's scope/requires",
-        " * columns by scripts/generate-fx-qualifying-blocks.py. To change these",
-        " * values, edit the relevant block.json / stylesheet / seed-motion-fx-",
-        " * registry.py, then re-run this generator.",
-        " *",
-        f" * Blocks with at least one qualifying effect: {total_blocks}",
-        " *",
-        " * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 + §7.",
-        " *",
-        " * Auto-generated — exempt from the 300-line limit.",
-        " *",
-        " * @package SGS\\Blocks",
-        " */",
-        "",
-        "defined( 'ABSPATH' ) || exit;",
-        "",
-        "/**",
-        " * Return the Spec 38 fx block -> qualifying-effects map.",
-        " *",
-        " * Keyed by block name (e.g. `sgs/heading`). Each value is the list of",
-        " * `data-sgs-fx` grammar values (Spec 38 §11.2) that block structurally",
-        " * qualifies for — an effect whose `fx_effects.scope` is 'site', 'paired',",
-        " * or 'flavour' NEVER appears here, by construction (see the generator's",
-        " * module docstring \"STRUCTURAL SCOPE GATE\").",
-        " *",
-        " * Uses a static variable so the array is only built once per request.",
-        " *",
-        " * @return array<string,string[]>",
-        " */",
-        "function sgs_get_fx_qualifying_blocks() {",
-        "\tstatic $map = null;",
-        "\tif ( null === $map ) {",
-        "\t\t$map = array(",
-    ]
-    for block_slug in sorted(fx_map):
-        effects = fx_map[block_slug]
-        effects_php = ", ".join(_php_string_literal(e) for e in effects)
-        lines.append(f"\t\t\t{_php_string_literal(block_slug)} => array( {effects_php} ),")
-    lines.extend([
-        "\t\t);",
-        "\t}",
-        "\treturn $map;",
-        "}",
-        "",
-    ])
-    return "\n".join(lines)
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -1007,9 +950,9 @@ def main() -> int:
         action="store_true",
         help=(
             "Compute the map in memory and diff against the committed "
-            "generated-fx-qualifying-blocks.php / .json instead of writing. "
-            "Exits 0 if they match, 1 (naming both files) if the committed "
-            "artefacts are stale. Never writes to disk."
+            "generated-fx-qualifying-blocks.json instead of writing. "
+            "Exits 0 if they match, 1 (naming the file) if the committed "
+            "artefact is stale. Never writes to disk."
         ),
     )
     args = parser.parse_args()
@@ -1029,14 +972,11 @@ def main() -> int:
 
     fx_map = compute_map()
     json_source = _render_json(fx_map)
-    php_source = _render_php(fx_map)
 
     if args.check:
         stale = []
         if not JSON_OUTPUT.exists() or JSON_OUTPUT.read_text(encoding="utf-8") != json_source:
             stale.append(str(JSON_OUTPUT))
-        if not PHP_OUTPUT.exists() or PHP_OUTPUT.read_text(encoding="utf-8") != php_source:
-            stale.append(str(PHP_OUTPUT))
         if stale:
             print(
                 "[generate-fx-qualifying-blocks] STALE — the committed generated "
@@ -1055,10 +995,8 @@ def main() -> int:
 
     JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     JSON_OUTPUT.write_text(json_source, encoding="utf-8")
-    PHP_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    PHP_OUTPUT.write_text(php_source, encoding="utf-8")
     print(
-        f"[generate-fx-qualifying-blocks] Generated {JSON_OUTPUT} and {PHP_OUTPUT} "
+        f"[generate-fx-qualifying-blocks] Generated {JSON_OUTPUT} "
         f"with {len(fx_map)} qualifying block(s)."
     )
     for block_slug in sorted(fx_map):
