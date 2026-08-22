@@ -6,7 +6,7 @@ project: small-giants-wp
 governing_spec: 35-BLOCK-INSPECTOR-UX-STANDARD.md (Part O — colour controls)
 date: 2026-08-22
 docscore_grade: pending
-status: IN PROGRESS — detector + 5 helpers built (branch feat/colour-states-codemod, 15 commits, pushed). Adoption + QA Gate C remain. See PROGRESS below.
+status: IN PROGRESS — detector + 5 helpers built and MERGED TO MAIN (2026-08-22, merge 8803ea96). R2-R6 remain: adoption, hover shape, 29 rows, QA Gate C, ratchet. See PROGRESS below.
 ---
 
 # Phase — Colour control conformance
@@ -64,11 +64,21 @@ adoption.
 
 ## EXACT REMAINING STEPS TO CLOSE
 
-### R1 — Merge the branch to `main`
-**BLOCKED, not forgotten.** `main`'s checkout has ~18 dirty files from a co-active session;
-merging would change HEAD under their edits. Branch is pushed and safe.
-**Do when:** main's tree is clean. `git merge feat/colour-states-codemod`, then re-run the
-six gates. No conflicts expected (branch already merged main twice).
+### R1 — Merge the branch to `main` — ✅ DONE 2026-08-22 (merge `8803ea96`)
+
+Merged on Bean's instruction. The earlier "blocked" call was over-cautious: the co-active
+session's dirty files were re-checked IMMEDIATELY BEFORE merging and had **zero overlap**
+with the 48 this branch touches, so their uncommitted work could not be disturbed. All
+seven of their dirty files were still present and untouched afterwards, verified.
+
+All six gates re-run ON MAIN after the merge: inspector-scan 0, check-dead-controls 0,
+check-duplicate-controls 0, undeclared-attr scan CLEAN, migrate-shadow-mounts --check
+CLEAN, rule 31 self-test PASS at 378.
+
+⭐ **The reusable check, not the outcome:** "another session is active" is not by itself a
+reason to block a merge. `comm -12` on their dirty paths against the branch's changed paths
+answers it in one command. Re-run it immediately before merging, never once at the start —
+their tree moves.
 
 ### R2 — Adopt `fillRow` / `textRow` / `borderRow` across the roster
 The main remaining work and the one that pays for the helpers.

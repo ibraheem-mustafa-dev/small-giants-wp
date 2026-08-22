@@ -195,9 +195,12 @@ attribute WP discards. Their warning is met, not violated.
 
 ## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-22
 
-**Branch `feat/colour-states-codemod` — 15 commits, PUSHED, all six gates green. NOT merged.**
-`main` had ~18 dirty files from a co-active session; merging would change HEAD under their
-edits. Merge when main is quiet, then re-run the gates.
+**MERGED TO MAIN 2026-08-22 (`8803ea96`), all six gates green ON MAIN.** Branch
+`feat/colour-states-codemod`, 16 commits. The co-active session's 7 dirty files were
+re-checked immediately before merging — zero overlap with the 48 this branch touched — and
+were still intact afterwards. "Another session is active" is not itself a reason to block a
+merge: `comm -12` on their dirty paths vs the branch's changed paths answers it, and must be
+re-run right before merging because their tree moves.
 
 ⛔ **THE PLAN CHANGED SHAPE TWICE, BOTH TIMES BEAN'S CALL. Read
 `.claude/plans/phase-colour-conformance.md` PROGRESS + EXACT REMAINING STEPS before doing
