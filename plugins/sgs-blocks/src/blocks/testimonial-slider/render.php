@@ -128,14 +128,35 @@ $slider_color_args = array();
 if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 	$slider_color_args['text'] = (string) $attributes['textColour'];
 }
-if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-	$slider_color_args['background'] = (string) $attributes['backgroundColour'];
-}
-if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-	$slider_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-}
 if ( ! empty( $slider_color_args ) ) {
 	$slider_style_engine_args['color'] = $slider_color_args;
+}
+
+// Background (colour + gradient, resting + hover) is owned by the shared fill
+// emitter, NOT by the style engine and NOT by supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client saw
+// two and could not tell which won. Switching the flag off alone would have
+// REMOVED the only gradient control this block had, because the sole gradient
+// read was $attributes['style']['color']['gradient'] (core's own storage). The
+// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+// exposed through fillRow(), so capability is moved rather than lost. The
+// existing $hover_bg_colour hover-colour rule further below stays as-is for
+// TEXT/BORDER hover, but background hover now routes through this emitter
+// too so gradient hover is honoured — see the $slider_hover_decls guard below.
+$slider_fill_css = sgs_fill_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $slider_fill_css ) {
+	$slider_scoped_css .= $slider_fill_css;
 }
 
 $slider_border_args = array();

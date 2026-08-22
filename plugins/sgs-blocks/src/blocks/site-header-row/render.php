@@ -82,14 +82,28 @@ if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
 		$shr_color_args['text'] = $shr_text_value;
 	}
 }
-if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ) {
-	$shr_bg_value = sgs_colour_value( (string) $attributes['backgroundColour'] );
-	if ( '' !== $shr_bg_value ) {
-		$shr_color_args['background'] = $shr_bg_value;
-	}
-}
-if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-	$shr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+// Background (colour + gradient, resting + hover) is owned by the shared fill
+// emitter, NOT by the style engine and NOT by supports.color.gradients.
+//
+// supports.color.gradients was `true` here, so CORE rendered its own gradient
+// panel in the Styles tab, competing with the SGS colour panel — the client saw
+// two and could not tell which won. Switching the flag off alone would have
+// REMOVED the only gradient control this block had, because the sole gradient
+// read was $attributes['style']['color']['gradient'] (core's own storage). The
+// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+// exposed through fillRow(), so capability is moved rather than lost.
+$shr_fill_css = sgs_fill_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $shr_fill_css ) {
+	$css .= $shr_fill_css;
 }
 if ( ! empty( $shr_color_args ) ) {
 	$shr_style_engine_args['color'] = $shr_color_args;

@@ -20,6 +20,7 @@ import {
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
 	SgsColourPanel,
+	fillRow,
 } from '../../components';
 import { resolveResponsiveTier } from '../../utils';
 
@@ -200,7 +201,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridAutoRows,
 		gridTemplateColumns,
 		gridTemplateRows,
-		backgroundColour,
 		textColour,
 		templateMode = 'free',
 	} = attributes;
@@ -331,20 +331,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Row background', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Row text colour', 'sgs-blocks' ),

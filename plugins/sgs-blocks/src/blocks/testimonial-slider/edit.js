@@ -22,7 +22,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { SgsColourPanel } from '../../components';
+import { SgsColourPanel, fillRow } from '../../components';
 import { colourVar } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -80,9 +80,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showArrows,
 		slidesVisible,
 		cardStyle,
-		backgroundColour,
 		textColour,
-		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
 		borderColourHoverGradient,
@@ -141,28 +139,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),

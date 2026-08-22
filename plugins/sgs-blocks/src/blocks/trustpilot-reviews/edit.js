@@ -10,7 +10,7 @@ import {
 	InspectorControls,
 	useBlockProps,
 } from '@wordpress/block-editor';
-import { ResponsiveOverride, SgsColourPanel } from '../../components';
+import { ResponsiveOverride, SgsColourPanel, fillRow } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -104,7 +104,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 		dragMomentum,
 		loopCarousel,
-		backgroundColour,
 		textColour,
 	} = attributes;
 
@@ -183,20 +182,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),

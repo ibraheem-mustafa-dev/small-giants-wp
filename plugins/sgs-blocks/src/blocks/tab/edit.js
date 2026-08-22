@@ -4,10 +4,10 @@ import { TextControl, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SgsColourPanel } from '../../components';
+import { SgsColourPanel, fillRow } from '../../components';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { label, backgroundColour, textColour } = attributes;
+	const { label, textColour } = attributes;
 
 	// Determine which tab index this block occupies in the parent.
 	const tabIndex = useSelect(
@@ -98,20 +98,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
