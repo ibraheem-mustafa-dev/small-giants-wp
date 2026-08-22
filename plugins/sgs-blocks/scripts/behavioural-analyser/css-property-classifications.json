@@ -288,6 +288,27 @@
     },
     {
       "slug": "sgs/brand-strip",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
       "attr": "tileBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -646,7 +667,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "GRID"
       }
     },
@@ -942,13 +963,6 @@
       }
     },
     {
-      "slug": "sgs/cta-section",
-      "attr": "textColourHover",
-      "fields": {
-        "css_property": "color"
-      }
-    },
-    {
       "slug": "sgs/decorative-image",
       "attr": "maxWidthPercent",
       "fields": {
@@ -1116,7 +1130,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "desktop",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -1307,17 +1321,20 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundColourHover",
+      "attr": "backgroundOverlayOpacityMobile",
       "fields": {
-        "css_property": "background-color"
+        "css_property": "opacity",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "overlay"
       }
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundOverlayColour",
+      "attr": "backgroundOverlayOpacityTablet",
       "fields": {
-        "css_property": "background-color",
-        "role": "color",
+        "css_property": "opacity",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "overlay"
       }
@@ -1617,15 +1634,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "splitImageMobileObjectPosition",
       "fields": {
         "css_property": "object-position",
@@ -1665,9 +1673,23 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "textColourHover",
       "fields": {
-        "css_property": "color"
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -4075,7 +4097,20 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
-        "css_element": "label"
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -4123,7 +4158,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -4338,6 +4373,65 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "spectrum"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "backgroundColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -4663,6 +4757,16 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "bgAnimationDuration",
       "fields": {
         "css_property": "anim:duration",
@@ -4837,6 +4941,15 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -4855,11 +4968,60 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -4898,6 +5060,16 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "bgAnimationDuration",
       "fields": {
         "css_property": "anim:duration",
@@ -5086,6 +5258,46 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -5895,6 +6107,37 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "bgAnimationDuration",
       "fields": {
         "css_property": "anim:duration",
@@ -5907,6 +6150,15 @@
       "attr": "bgParallax",
       "fields": {
         "css_property": "anim:parallax",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6004,6 +6256,15 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "overlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
@@ -6062,6 +6323,14 @@
         "css_property": "stroke",
         "role": "color",
         "css_element": "item-icon"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6893,6 +7162,46 @@
     },
     {
       "slug": "sgs/site-footer",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundColourHoverGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
       "attr": "backgroundPosition",
       "fields": {
         "css_property": "background-position",
@@ -7006,6 +7315,27 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -8032,6 +8362,27 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-image",
@@ -8332,6 +8683,46 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "marginMobile",
+      "fields": {
+        "css_property": "margin",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "marginTablet",
+      "fields": {
+        "css_property": "margin",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "paddingMobile",
+      "fields": {
+        "css_property": "padding",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "paddingTablet",
+      "fields": {
+        "css_property": "padding",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
