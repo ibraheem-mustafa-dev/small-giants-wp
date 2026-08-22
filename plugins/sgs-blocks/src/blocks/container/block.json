@@ -198,7 +198,7 @@
 	"attributes": {
 		"layout": {
 			"type": "string",
-			"default": ""
+			"default": "flex"
 		},
 		"tagName": {
 			"type": "string",

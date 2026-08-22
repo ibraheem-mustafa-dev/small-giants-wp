@@ -47,7 +47,7 @@ const ALIGN_CONTENT_OPTIONS = [
 
 export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) {
 	const {
-		layout = 'stack',
+		layout = 'flex',
 		alignItems = 'start',
 		justifyItems = 'stretch',
 		alignContent = 'stretch',

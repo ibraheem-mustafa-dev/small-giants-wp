@@ -254,7 +254,7 @@ export default function Edit({ attributes, setAttributes, name }) {
 
   const className = [
     "sgs-container",
-    `sgs-container--${layout}`,
+    layout && `sgs-container--${layout}`,
   ]
     .filter(Boolean)
     .join(" ");
