@@ -844,12 +844,13 @@ $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
  * on the drawer's copy styles ONLY the drawer — no per-context plumbing.
  */
 $nav_bg       = isset( $attributes['navBg'] ) ? (string) $attributes['navBg'] : '';
+$nav_bg_gradient = sgs_css_gradient_value( $attributes['navBgGradient'] ?? '' );
 $nav_colour   = isset( $attributes['navColour'] ) ? (string) $attributes['navColour'] : '';
 $nav_bg_hover = isset( $attributes['navBgHover'] ) ? (string) $attributes['navBgHover'] : '';
 
 $nav_decls = '';
 if ( '' !== $nav_bg ) {
-	$nav_decls .= 'background-color:' . sgs_colour_value( $nav_bg ) . ';';
+	$nav_decls .= sgs_background_paint_decl( $nav_bg, $nav_bg_gradient ) . ';';
 }
 if ( '' !== $nav_colour ) {
 	$nav_decls .= 'color:' . sgs_colour_value( $nav_colour ) . ';';

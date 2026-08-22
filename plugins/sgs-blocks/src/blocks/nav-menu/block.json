@@ -107,7 +107,9 @@
 				"indicator": {
 					"label": "Sliding indicator",
 					"order": 5,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"attrMap": {
 						"css:background-color": "indicatorColour"
 					},
@@ -390,6 +392,10 @@
 		"submenuPadding": {
 			"type": "object",
 			"default": {}
+		},
+		"navBgGradient": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

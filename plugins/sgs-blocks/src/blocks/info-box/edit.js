@@ -386,6 +386,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
 								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								gradientValue: attributes.backgroundColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
