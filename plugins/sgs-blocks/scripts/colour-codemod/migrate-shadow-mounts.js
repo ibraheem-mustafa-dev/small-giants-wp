@@ -72,7 +72,18 @@ function classifyMount( body, declared ) {
 	for ( const [ vp, sp, key ] of PAIRS ) {
 		if ( ! new RegExp( '\\b' + vp + '=' ).test( body ) ) continue;
 
-		const vm = new RegExp( vp + '=\\{\\s*(?:attributes\\.)?(\\w+)\\s*\\}' ).exec( body );
+		// Accepts a bare binding, an `attributes.X` read, and a redundant `|| ''`
+		// fallback. That fallback is a VERIFIED no-op, not an assumed one: parseShadow()
+		// opens with `if ( ! value ) return null`, and every other use of `value` in the
+		// component is a falsy check, so undefined and empty-string are indistinguishable
+		// to it. Five mounts (container, cta-section, hero, physics-canvas, one trust-bar)
+		// were refused on this alone - a defensive idiom, not a different binding.
+		// Strip the fallback BEFORE matching rather than widening the pattern to
+		// tolerate it. Encoding a quoted empty-string inside a character class inside a
+		// JS string inside a generated patch is how the previous three attempts at this
+		// line got mangled; normalising the input keeps the pattern trivial.
+		const norm = body.replace( /\|\|\s*(?:''|"")/g, '' );
+		const vm = new RegExp( vp + '=\\{\\s*(?:attributes\\.)?(\\w+)\\s*\\}' ).exec( norm );
 		if ( ! vm ) return { ok: false, reason: `${ vp }= is not a plain binding` };
 
 		const sm = new RegExp(

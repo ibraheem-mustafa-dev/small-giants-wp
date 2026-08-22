@@ -693,12 +693,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ attributes.shadow || '' }
-						onChange={ ( val ) => setAttributes( { shadow: val } ) }
-						colour={ attributes.shadowColour }
-						onColourChange={ ( val ) => setAttributes( { shadowColour: val } ) }
-						colourHover={ attributes.shadowColourHover }
-						onColourHoverChange={ ( val ) => setAttributes( { shadowColourHover: val } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadow',
+							colour: 'shadowColour',
+							hoverColour: 'shadowColourHover',
+						} }
 					/>
 				</PanelBody>
 
