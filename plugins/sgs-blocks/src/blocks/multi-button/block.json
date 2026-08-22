@@ -44,6 +44,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"containerKind": "layout",
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
