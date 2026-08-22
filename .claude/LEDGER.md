@@ -17,6 +17,11 @@ track owns `## ▶ COLOUR-GOLDEN TRACK`. The **Tier W / motion** track owns
 `## ▶ TIER W (MOTION) TRACK` at the bottom and is CLOSED — nothing is pending there.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 
+⭐ **If you are the colour-golden track, do NOT start from that section.** Read
+`.claude/plans/phase-colour-conformance.md` — it is the executable front and carries 10
+pre-answered decisions. It is marked **NOT-READY on purpose**: Wave 1's resolver premise was
+measured and found blind to most of the tree. The ledger section is status; the plan is the work.
+
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
 Shipped, deployed, canary-verified (D731/D732/D733/Phase 4): one shared corner-shorthand
@@ -188,128 +193,62 @@ attribute WP discards. Their warning is met, not violated.
 | **Canary** | Canary content is a test rig. A regressed test page gets deleted, not protected. |
 
 
-## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-21 (this is the OTHER track; shop-archive is above)
+## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-22
 
-**16 commits, all on `origin/main`, all gate-verified. Deployed `--blocks-only` x3.**
-`0c44b0c6` `ed517135` `70c88348` `e81ea92a` `6bbd0c7c` `ebad91df` `20332725` `1905257e`
-`231df3be` `52b96e68` `f9f4368b` `79969443` `2d291992`
+**All pushed to `origin/main`. Build GREEN. Canary deployed + live-verified.**
 
-### Shipped earlier on this track
+### ⛔ THE LIVE FRONT — read the plan, not this section
 
-`70c88348` ShadowControl crash · `e81ea92a` D338 corrected framework-wide · `20332725` rule 31
-sees shared files · `1905257e` container background editable + 38 authorings · `2d291992`
-contentWidth regression · `6bbd0c7c` `ebad91df` `0c44b0c6` resting border gradients + dead
-colour cleanup. Detail: the commits + `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
+**`.claude/plans/phase-colour-conformance.md`** — status **NOT-READY**, deliberately. It carries 10
+pre-answered decisions from a Hidden Decisions pass and names the rework Wave 1 needs first.
+Governing brief: `.claude/plans/2026-08-22-colour-control-bundles-BRIEF.md` (revision 2 — revision
+1's premise was falsified by a council; the brief explains why, and that is the useful part).
 
-### ⛔ CORRECTIONS TO STALE CLAIMS ABOVE (all still binding)
+⛔ **The blocker, measured across all 83 blocks:** a per-block `render.php` scan can resolve the
+paint mechanism for only **26**. **17** route through `SGS_Container_Wrapper` (the helper call lives
+in a shared file), and **40** have no recognisable colour paint call at all. All three reference
+blocks sit in the easy 26 — the first draft generalised from a sample drawn entirely from the
+resolvable end. **Step 2 needs a PHP shared-owner resolver before Wave 3 can be scoped.**
 
-1. **"Gradients have never been observed working on these blocks" — REFUTED.** Gate 2 run
-   behaviourally on `sgs/brand-strip`: a `linear-gradient` hover rule paints. An untested
-   assumption, not a measured failure.
-2. **"`sgs/container` gives NO horizontal gutter … a regression from the container work" — NOT
-   MINE, and fixed.** Root cause: `163f9fa7` migrated 96 `core/group` instances and correctly
-   translated `layout:{"type":"constrained"}` into `contentWidth:"normal"`, which
-   `class-sgs-container-wrapper.php:431` then discarded. Fixed in `f9f4368b` + `2d291992`.
-3. **P2-6 was PARTIAL BY DESIGN, and is now CLOSED** — site-footer and site-header-row were the
-   held-back pair; both were migrated + renamed by the shop track (see its section above). The
-   152 `fontSize` authorings are WP-native typography, out of scope.
+### Shipped 2026-08-22 (D738, D739, D740)
 
-### ✅ Completed earlier on this track, 2026-08-21 (archived)
+- **D738** — overlay hover is a popover TAB, not a second row. `GradientOverlayControl` takes a
+  normal+hover pair. ⛔ Its FIRST fix used `.filter().map()`, which renders correctly but is not
+  statically resolvable: rule 31 reported "carries 1 state" and the total went UP. **Code improved,
+  detector blinded.** Rewritten as literal entries — do not reintroduce a computed states array.
+- **D739** — the responsive tier axis moved OFF colour and ONTO opacity. Colour was the framework's
+  ONLY responsive colour; opacity, the thing that actually varies per device, was single-value.
+  8 overlay attrs per block, down from 10. Live: desktop 0.6 / mobile 0.15, colour identical.
+- **D740** — `ShadowControl` had NO `linked`, so it stored a raw colour on EVERY pick and never a
+  palette slug, across **15 blocks**. D717's defect on a different control: D717's census covered
+  `SgsColourPanel` ROWS and this is a standalone component, so "the only one missing linked" was
+  true of the corpus examined and false of the framework. ⚠ `enableAlpha` STAYS ON here (a shadow
+  has no separate opacity attr; removing it would delete a capability). Lowering alpha still stores
+  a raw colour — stated, not hidden.
+- **Rule 31 ratchet 418 → 413**, negative-controlled both ways with real exit codes.
+- **D-number correction:** the hover-tab work is D738. **D735 had been stamped into BOTH
+  `golden-controls.json` and `inspector-scan/rules.json`** — the canonical contract and the
+  enforcement config were pointing at an unrelated gates commit. Both fixed.
 
-Container + shop work, the colour-surface text-colour landings (`sgs/container` `0f2c167f`,
-`sgs/cta-section` `7b9357cc`), and QC Gate 2 closing on hero + trust-bar are all COMPLETE.
-Sections moved VERBATIM to `memory/session-2026-08-21-colour-golden-completed.md` to keep this
-file under its byte cap — nothing edited or dropped. Detail also in `decisions.md`, the commits,
-and `.claude/reports/2026-08-21-HANDOVER-container-and-shop-completion.md`.
+### Still open on this track
 
-### ✅ STEP 4 + hero convergence — SHIPPED, DEPLOYED, LIVE-VERIFIED 2026-08-21 (D717, D718)
+1. **Mechanism-aware `row-missing-gradient`** — now the phase plan's Wave 1. Must fix BOTH
+   directions: false-PASS (a row wired to the wrong mechanism) and false-FAIL (13 shadow rows
+   demanded a gradient `box-shadow` cannot have).
+2. **Defect-level matching** rule 31 ↔ colour-coverage — both compute `attrName` and both discard
+   it; that is the join key.
+3. **`sgs/heading`'s border rows** are 2 of the findings. ⭐ Do NOT fix first to get a reference —
+   `sgs/button` is already conformant (2 states, gradient per state, renders via
+   `sgs_border_gradient_css` at `render.php:894`). Heading becomes a CONSUMER of the recipe.
+4. ~~Theme-snapshot slug-valued palette entries~~ — ✅ **FIXED 2026-08-22**, 0 remaining.
 
-`88d7cf14` `7dff615b` `bcb38d5f` `135b3284` `b64d40b0`. Evidence:
-`reports/visual-diff/d717-overlay-opacity-2026-08-21.md`. Full reasoning: D717 + D718.
+### Method note (earned today, three times)
 
-**D717 — `backgroundOverlayOpacity` (default 30) on the 8 blocks mounting `<BackgroundPanel>`,
-one `RangeControl` reaching all 8; `linked` + `enableAlpha={false}` on the shared picker.**
-Supersedes D581's D5: one transparency mechanism was right, alpha was the wrong one — it
-silently unlinks the palette token. ⛔ **The brief blamed alpha; the larger half came from
-reading source** — that mount was the ONLY colour row missing `linked` (against ~40), so it
-stored a raw hex on EVERY pick. Negative control on pre-fix deployed code: "Primary" stored
-`#e68a95`; same gesture post-fix stored `primary`. New shared owner `sgs_overlay_decls()`.
-
-**D718 — hero's overlay converged with the wrapper.** Bean: *"why is the hero different anyway?"*
-Removed the legacy `: 'text'` fallback (git shows it PREDATES the 2026-08-11 redesign — never a
-decision) and the background-image-alone trigger. **All 8 blocks: no colour set = no overlay.**
-⛔ **Why D717 didn't already fix it:** it unified the PAINT but left the POLICY hand-written at
-both call sites. **A helper owning the value but not the CONDITION makes two implementations
-LOOK converged without converging them.** Both now derive existence from the helper's return.
-
-**Not chosen:** `accent`@30 as hero's default — light hero text over a mid photo: `text` 5.37:1,
-`accent` **2.78:1**; more accent opacity is WORSE (1.72 at 80%). Convergence dissolved it.
-
-⛔ **My corrections:** (a) I argued 30% would wash out plain backgrounds — Bean was right, all 8
-render their own `backgroundColour`; my source was a wrapper comment stale since `1905257e`,
-**corrected in place**. (b) "2 blocks" was 2 PAINT SITES; the control reaches 8. (c) I reported
-D717's four review questions "answered empirically" when Q4 was only NAMED — Bean's questions
-forced the measurement and it changed the finding. My call that a council added nothing was wrong.
-
-⚠ **Visual-diff gate scoped-skipped** (logged) each time: capture needs the deployed build,
-deploy refuses a dirty tree. The reports are **evidence records, not gate tokens** —
-`source_sha` is `NOT-COMPUTABLE`, so none can wave through a future commit.
-
-### ✅ D724 — shared wrapper renders a simple section background as a real `<img>` (2026-08-21)
-
-**CLOSED — shipped, deployed, live-verified. Nothing pending.** Full section moved VERBATIM to
-`memory/session-2026-08-21-colour-golden-completed.md` on 2026-08-21 to bring this file back under
-its byte cap. Nothing was edited or dropped.
-
-### ✅ BOTH "WAITING ON BEAN" ITEMS ARE CLOSED — reconciled 2026-08-22
-
-Neither is pending. This section was written before the decisions that settled them, and left
-Bean apparently owing two rulings he had already effectively made.
-
-1. **Sticky filter sidebar — SOLVED, not waiting.** The shop-archive track's accordion
-   (`<details>`/`<summary>`) cut the panel 1154px → 505px, and sticky then held at its 24px
-   offset through a 300px scroll. That is exactly what this entry asked for: it said "don't
-   build sticky yet; accordion-collapse the filter groups instead", and that is what shipped.
-   ⚠ Both figures are live-DOM readings with no repo artefact — re-measure rather than cite them.
-2. **Cap-the-children vs the injected band — SETTLED BY D725/D726, the OPPOSITE way.** This
-   entry expected "adopt core's model, scoped narrowly". Bean ruled the other way: our
-   `contentWidth` already caps in the right place, so core's duplicate
-   `layout:{"type":"constrained"}` was DELETED from the last three templates (`c984a676`). One
-   cap per page, and it is ours. ⛔ **This entry's prerequisite — "fix `inspector-scan` rule
-   23's regex FIRST" — is now WRONG and must not be acted on.** It was only needed for the
-   migration we did not do; the regex is correct for the model we kept. The shop-archive
-   section above says the same, and says it first.
-
-### Still open on this track (not started)
-
-1. **Gradient mechanism-awareness** — `row-missing-gradient` (193) checks "does *a* gradient
-   path exist", not "is it mechanism-correct". A text row wired to the background mechanism
-   passes clean while rendering nothing. 3-mechanism model specified in the report's ADDENDUM.
-2. **Defect-level matching** rule 31 ↔ colour-coverage. Both sides compute `attrName` and
-   both DISCARD it — that is the join key.
-3. ~~Gate 2 on hero + trust-bar~~ — ✅ **CLOSED 2026-08-21.** Verified with a real editor
-   login: colour picked, stored as a SLUG, resting paints, REAL POINTER HOVER repaints
-   (hero primary→accent, trust-bar success→cookie-brown). Zero console errors.
-4. ~~`textColour` parent/child ruling~~ — ✅ **SETTLED 2026-08-21, D713.** A section-class
-   block parents any non-section block with no forced parent, so a parent-level textColour is
-   the INHERITABLE cascade default; the child's control overrides one instance. Keep both.
-   Applied to all 8 baseline entries. ⛔ `sgs/modal` is EXCLUDED (a UI shell, not a page
-   section) — built, then reverted in full on Bean's call.
-5. **Theme-snapshot slug-valued palette entries** — `sites/mamas-munches/theme-snapshot.json`
-   has 2 (`client-surface-pink: "surface-pink"`, `client-text: "text"`). Confirmed, not fixed.
-6. **`css:box-shadow-color` canonical shape** — registry says a `DesignTokenPicker` row inside
-   `SgsColourPanel`, not a lone field on the shadow builder. Rule 31's widened scan
-   independently flagged the same thing.
-
-### Method note (colour track)
-
-**Resolve every match back to its owner before concluding.** Every measurement error across
-this track's sessions was the same bug — matching a pattern without checking what produced it:
-greps hitting comments; a specificity computed from a `selectorText` sliced to 70 chars; a
-16-class list read through `head -6` and reported as a missing class. Full write-ups in
-`memory/feedback_resolve_every_match_back_to_its_owner.md` and the visual-diff reports.
-
----
+**Three gates caught three defects in the coordinator's own work in one sequence** — a duplicated
+label, a forgotten second paint site in hero, and an orphaned block referencing deleted variables.
+**None would have been caught by reading the diff.** The third was caught by a gate built that same
+morning. Separately: two independent reviewers found the same wrong file path in a plan, where the
+consequence was not a stall but a silent component FORK.
 
 ## Pointers
 
