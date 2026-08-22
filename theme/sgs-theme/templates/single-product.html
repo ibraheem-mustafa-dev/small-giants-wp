@@ -2,7 +2,14 @@
      do not add a separate gallery block here. -->
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:sgs/container {"tagName":"main","anchor":"main"} -->
+<!-- WIDTH MODEL. `<main>` is STRUCTURE, not content: it says contentWidth:"full" and
+     passes width through, so each section below paints its own background edge-to-edge
+     and caps its own words. Stating it EXPLICITLY matters — with no key at all this
+     container fell through to block.json's "normal" default and banded every child at
+     1200px, which double-capped every section that already sets its own band and
+     stopped the surface-alt strips reaching the page edges. An absent key is an
+     accident; a stated one is a decision. -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"full"}} -->
 
 	<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"}} -->
 
