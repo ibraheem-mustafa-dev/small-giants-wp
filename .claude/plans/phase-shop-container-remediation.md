@@ -696,6 +696,66 @@ Not invented: each line is a check that caught something real on 2026-08-21.
 **Done-when, per template:** all seven pass, measured live, with the evidence in the commit
 message. Not "the markup looks right".
 
+## ▶ PHASE 3 STATUS — WAVE A CLOSED 2026-08-23, WAVE C NOT STARTED
+
+**Wave A (static audit across all 10 surfaces): COMPLETE.** 10 parallel agents, one per
+surface. Zero FAILs; `archive-product.html` confirmed as the reference. Register:
+`.claude/reports/2026-08-22-phase3-template-audit-register.md`.
+
+Both global gates were run ONCE and attributed rather than per-agent — both scripts are
+whole-repo and take no file argument, so a per-surface run returns the same result ten
+times and attributes nothing. `migrate-theme-native-spacing.py --check` PASS;
+`check-no-core-blocks.py` clean across 58 files. Every `core/*` block in the templates is
+genuinely unmapped in `block-replacements.json` — gap candidates, never violations.
+
+### Shipped during Wave A
+
+| Commit | What |
+|---|---|
+| `84f76200` | The audit register itself |
+| `2d98570e` | `supports.align` removed from `sgs/container` + 38 authorings stripped + Spec 31 L1 amended |
+| `d6dd7817` | `/sgs-update` reseed — the stale `block_supports` align row pruned |
+| `4b9d3abe` | extract-signatures `css_tier` determinism + Stage 2 SSL unblocked |
+| `75ddd7fb` | `single-product.html` `<main>` width stated explicitly (was double-capping) |
+| `c6e6d61a` | All nine `<main>` set `layout:"stack"` — they were laying sections out in a ROW |
+| `6d4a1637` | `<main>` column fallback in the wrapper + align tests repaired + 4 product-card overrides |
+
+**The align finding is the headline.** The whole mechanism was measured inert: stripping
+`.alignfull` from a real element in a real `.wp-block-post-content` context changed
+nothing — left, width and all four margins identical, and an A/B against an unaligned
+sibling was byte-identical. Core's breakout rule resolves
+`calc(var(--wp--style--root--padding-left) * -1)` against a variable that is EMPTY at
+`:root`. No SGS-BEM draft can express alignwide/alignfull — there is no such CSS property
+— so emitting it failed the R-1 honest-mapping test. Full-bleed comes from `maxWidth`
+defaulting to `{}`. Canary DB held **0** align authorings, so nothing stored depended on it.
+
+### STILL OPEN — the work Wave C owes
+
+1. **Checks 5 and 7 live, per surface** — computed styles at 375/768/1440 and the
+   canvas-moves test. This is the bulk of Phase 3 and none of it has run.
+2. **U-1 — `main` is not selectable in the editor.** `container/block.json`'s `tagName`
+   enum has 9 values including `main`; `edit.js` `TAG_NAME_OPTIONS` lists 8. The comment
+   above that array states the invariant it breaks. One line, not yet done.
+3. **U-3 — heading skip.** `archive.html:21` and `search.html:16` set `post-title`
+   `level:3` under an unset `query-title` (h1). `index.html` omits the level and is
+   correct. Two one-line changes, not yet done.
+4. **U-4 — redundant nested `contentWidth`** in five files. Cosmetic.
+5. **The `<main>` column fallback (`6d4a1637`) is NOT live-verified.** All nine templates
+   state `layout:"stack"` explicitly, so the fallback never executes in the theme. Treat
+   as unproven until something exercises it.
+
+### Content constraints found on the canary — read before planning Wave C
+
+- **9 posts, 135 pages, 5 products, 1 category, and ZERO approved comments.** `single.html`
+  has 14 comment-related blocks that cannot be demonstrated without seeding one.
+- **`index.html` is genuinely unreachable** — `show_on_front=posts` with `page_for_posts=0`,
+  so `front-page.html` intercepts. That is the healthy state for a fallback template, not a
+  defect, but it means check 5 cannot be run against it.
+- **`front-page.html` renders ~104 chars and ZERO `<h1>`.** The template being a thin shell
+  is CORRECT for a block theme; the mismatch is that the site is set to show latest posts
+  while the template contains `post-content`, which renders one page's content. That is a
+  Settings → Reading decision, not a template defect.
+
 ## The templates, ordered
 
 | # | Template | Size | Containers | Known state |
