@@ -3,6 +3,7 @@ import {
   useBlockProps,
   useInnerBlocksProps,
   InspectorControls,
+  useSettings,
 } from "@wordpress/block-editor";
 import {
   PanelBody,
@@ -11,7 +12,7 @@ import {
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken } from "../../components";
 import { resolveShadowPreview, resolveResponsiveTier } from "../../utils";
 import {
   LayoutPanel,
@@ -101,6 +102,103 @@ function resolveContentWidthPreview( value ) {
 	return v;
 }
 
+/**
+ * Box-object interface contract §1: build an editor-preview shorthand from a
+ * 4-side box object — mirrors the pattern already used across every other
+ * block's edit.js (e.g. icon-list/edit.js) and render.php's own hand-built
+ * shorthand, so the canvas preview matches the frontend.
+ *
+ * @param {Object|undefined} box  {top,right,bottom,left}, each an already
+ *                                 unit-bearing CSS length string or absent.
+ * @return {string|undefined} A 4-value CSS shorthand, or undefined when no
+ *                             side is set.
+ */
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const keys = [ 'top', 'right', 'bottom', 'left' ];
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
+/**
+ * padding/margin are NOT tier objects on this block — they are a flat trio of
+ * OWNED box attrs (`padding`/`paddingTablet`/`paddingMobile`, each its own
+ * {top,right,bottom,left}), the pre-tier-object shape (Spec 35 / D555). The
+ * frontend emits the base box through the style engine, then a tablet/mobile
+ * `@media` rule for EACH side that tier explicitly sets — an unset side at a
+ * narrower tier keeps whatever the wider tier declared (ordinary CSS cascade,
+ * both `max-width` queries can be simultaneously true). This mirrors that:
+ * merge tablet's declared sides over base, then mobile's over that.
+ *
+ * @param {Object|undefined} base   Desktop/base box.
+ * @param {Object|undefined} tablet Tablet box (only declared sides override).
+ * @param {Object|undefined} mobile Mobile box (only declared sides override).
+ * @param {string}           tier   Active preview tier.
+ * @return {Object} Merged box for the active tier.
+ */
+function resolveBoxTierPreview( base, tablet, mobile, tier ) {
+	const merged = { ...( base && typeof base === 'object' ? base : {} ) };
+	if ( tier === 'tablet' || tier === 'mobile' ) {
+		const t = tablet && typeof tablet === 'object' ? tablet : {};
+		[ 'top', 'right', 'bottom', 'left' ].forEach( ( key ) => {
+			if ( t[ key ] ) merged[ key ] = t[ key ];
+		} );
+	}
+	if ( tier === 'mobile' ) {
+		const m = mobile && typeof mobile === 'object' ? mobile : {};
+		[ 'top', 'right', 'bottom', 'left' ].forEach( ( key ) => {
+			if ( m[ key ] ) merged[ key ] = m[ key ];
+		} );
+	}
+	return merged;
+}
+
+/**
+ * Resolve a flat colour + its sibling gradient to a paintable BACKGROUND
+ * preview — mirrors `sgs_background_paint_decl()` (helpers-tokens.php): a
+ * valid gradient always wins over the flat colour. The gradient attribute
+ * stores a complete, already-valid CSS gradient function (validated server-
+ * side by `sgs_css_gradient_value()` on save/render), so the editor preview
+ * can use it verbatim — only the FLAT colour can be a design-token slug that
+ * needs `resolveColourToken()` against the live palette (D288).
+ *
+ * @param {string}      colour   Flat colour attribute value (slug or CSS colour).
+ * @param {string}      gradient Sibling gradient attribute value.
+ * @param {Array}       palette  Active theme colour palette.
+ * @return {Object} A partial style object — {} when both inputs are empty.
+ */
+function backgroundPaintPreview( colour, gradient, palette ) {
+	if ( gradient ) {
+		return { backgroundImage: gradient };
+	}
+	const resolved = resolveColourToken( colour, palette );
+	return resolved ? { backgroundColor: resolved } : {};
+}
+
+/**
+ * Same resolution rule as `backgroundPaintPreview()`, but for TEXT colour —
+ * mirrors `sgs_text_colour_decl()`: a gradient renders via
+ * `background-image` + `background-clip:text` + `color:transparent` (the
+ * gradient-text technique), a flat colour renders via `color`.
+ *
+ * @param {string} colour   Flat colour attribute value (slug or CSS colour).
+ * @param {string} gradient Sibling gradient attribute value.
+ * @param {Array}  palette  Active theme colour palette.
+ * @return {Object} A partial style object — {} when both inputs are empty.
+ */
+function textPaintPreview( colour, gradient, palette ) {
+	if ( gradient ) {
+		return {
+			backgroundImage: gradient,
+			WebkitBackgroundClip: 'text',
+			backgroundClip: 'text',
+			color: 'transparent',
+		};
+	}
+	const resolved = resolveColourToken( colour, palette );
+	return resolved ? { color: resolved } : {};
+}
+
 export default function Edit({ attributes, setAttributes, name }) {
   const {
     layout,
@@ -128,7 +226,16 @@ export default function Edit({ attributes, setAttributes, name }) {
     textColourGradient,
     textColourHover,
     textColourHoverGradient,
+    bgParallax = false,
+    gridAutoRows = "",
   } = attributes;
+
+  // D288/D636: colours are stored as theme-token SLUGS or a custom hex, and
+  // gradients as a raw CSS gradient string — resolved the same way the
+  // button block's editor preview does (resolveColourToken against the live
+  // palette), so a preset applied in the inspector actually shows on canvas
+  // rather than looking like a no-op.
+  const [ colourPalette ] = useSettings( "color.palette" );
 
   // Active device tier for the preview, read from the SAME source the inspector's
   // global device toggle writes (`core/editor` getDeviceType) — mirrors
@@ -167,7 +274,30 @@ export default function Edit({ attributes, setAttributes, name }) {
     ...(bgKenBurns && hasBgImage && {
       "--sgs-ken-burns-duration": `${bgAnimationDuration}s`,
     }),
+    // Base (SGS-owned) background paint — the OUTER-most layer, below the
+    // media ::before and the overlay span. Text paint is applied AFTER
+    // background so it wins the shared `backgroundImage` key exactly as the
+    // frontend's decl order does when BOTH a background gradient and a text
+    // gradient are set (helpers-tokens.php's $sgs_container_resting_decls:
+    // background pushed first, text pushed second — same last-wins result).
+    ...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+    ...textPaintPreview( textColour, textColourGradient, colourPalette ),
   };
+
+  // Responsive padding/margin (Spec 35 / D555) — a flat trio of OWNED box
+  // attrs, not a single tier-object attribute (unlike gap/minHeight/maxWidth
+  // above), so it resolves via resolveBoxTierPreview() rather than
+  // resolveResponsiveTier(). Previously never applied to the canvas at all —
+  // the inspector's ResponsiveBoxControl wrote the attrs correctly but
+  // nothing here read them back.
+  const paddingPreview = boxShorthand(
+    resolveBoxTierPreview( attributes.padding, attributes.paddingTablet, attributes.paddingMobile, previewTier )
+  );
+  if ( paddingPreview ) style.padding = paddingPreview;
+  const marginPreview = boxShorthand(
+    resolveBoxTierPreview( attributes.margin, attributes.marginTablet, attributes.marginMobile, previewTier )
+  );
+  if ( marginPreview ) style.margin = marginPreview;
 
   if (layout === "grid") {
     style.display = "grid";
@@ -186,6 +316,13 @@ export default function Edit({ attributes, setAttributes, name }) {
     style.gridTemplateColumns = String( gtcDesktop ?? '' ).trim()
       ? String( gtcDesktop ).trim()
       : `repeat(${ columnsDesktop || 2 }, 1fr)`;
+    // gridAutoRows is a plain scalar on this block (not yet tier-capable in
+    // its own block.json — see class-sgs-container-wrapper.php's D549 guard),
+    // so it previews unconditionally for the grid layout, same as the other
+    // QB-1 grid-track properties.
+    if ( gridAutoRows ) {
+      style.gridAutoRows = gridAutoRows;
+    }
     style.alignItems = alignItems;
     if ( justifyItems && justifyItems !== "stretch" ) {
       style.justifyItems = justifyItems;
@@ -243,7 +380,7 @@ export default function Edit({ attributes, setAttributes, name }) {
   // full-bleed outer while rendering them on the capped band.
   const gridOnInner = ( layout === "grid" || layout === "flex" ) && hasBandProps;
   if ( gridOnInner ) {
-    for ( const key of [ "display", "gridTemplateColumns", "gap", "alignItems",
+    for ( const key of [ "display", "gridTemplateColumns", "gridAutoRows", "gap", "alignItems",
                          "justifyItems", "alignContent", "flexWrap" ] ) {
       if ( style[ key ] !== undefined ) {
         bandStyle[ key ] = style[ key ];
@@ -283,7 +420,16 @@ export default function Edit({ attributes, setAttributes, name }) {
   // exists ONLY on containers that actually have a background image — every
   // other container in the canvas is untouched (mirrors the frontend, where the
   // layer's box properties are only emitted when there is media to paint).
-  const editorClassName = [ className, hasBgImage && !hasBgVideo ? "sgs-container--has-bg-media" : "" ]
+  // bgParallax: mirrors the frontend's `sgs-container--parallax` class
+  // (class-sgs-container-wrapper.php ~:1455) — full scroll-driven playback
+  // isn't previewed in a static canvas, but the class itself IS what the
+  // frontend gates its `background-attachment:fixed` styling on, so applying
+  // it here at least shows the state took effect instead of looking silent.
+  const editorClassName = [
+    className,
+    hasBgImage && !hasBgVideo ? "sgs-container--has-bg-media" : "",
+    bgParallax ? "sgs-container--parallax" : "",
+  ]
     .filter( Boolean )
     .join( " " );
 
@@ -408,7 +554,11 @@ export default function Edit({ attributes, setAttributes, name }) {
             />
           ) }
           <hr style={ { margin: "16px 0" } } />
-          <LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
+          <LayoutPanel
+            attributes={ attributes }
+            setAttributes={ setAttributes }
+            enableIntrinsicColumns
+          />
           <hr style={ { margin: "16px 0" } } />
           <WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
           { /* `minHeight` is a TIER OBJECT — {desktop,tablet,mobile} — so it uses
