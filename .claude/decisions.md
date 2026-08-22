@@ -1,5 +1,52 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D740 [INCIDENT] — ShadowControl unlinked the client's brand token on every pick, across 15 blocks (2026-08-22)
+
+**Found while a Hidden Decisions reviewer was sizing a PLAN step, not by any gate.** The reviewer
+was checking whether `ShadowControl` could gain a hover state in 45 minutes. Reading it to answer
+that surfaced something else entirely.
+
+`ShadowControl.js` mounted its `DesignTokenPicker` with **no `linked` prop**:
+
+```jsx
+<DesignTokenPicker value={ colour } onChange={ … } enableAlpha />
+```
+
+Without `linked`, `makeChangeHandler()` takes the `! linked` branch and stores the picked CSS
+colour verbatim. **It never stores a palette slug — not on any pick, at any alpha.** So a client
+choosing their own brand colour for a shadow froze a raw hex, and a later rebrand left it behind.
+
+**This is D717's defect on a different control.** D717 found the overlay row was the only colour row
+missing `linked` — measured against ~40 that had it. That measurement was of `SgsColourPanel` ROWS.
+`ShadowControl` is a standalone shared component and was never in the population, so "the only one"
+was true of the set examined and false of the framework. ⭐ **A census is only as wide as its
+corpus, and D717 never said which corpus it had used.**
+
+**Reach: 16 JSX mounts across 15 blocks** (before-after, brand-strip, button, card-grid, container,
+cta-section, hero, info-box, media, physics-canvas, post-grid, quote, team-member, testimonial,
+trust-bar) — enumerated with `grep -rl`, not estimated.
+
+**Fixed by adding `linked`.** Verified safe BEFORE the edit rather than after: the consumer
+resolves slugs — `sgs_shadow_value_composed()` passes the colour through `sgs_colour_value()`
+(`helpers-tokens.php:717`), so a stored slug becomes `var(--wp--preset--color--…)`. Had it not, this
+would have shipped the D684 defect (a bare slug reaching CSS, which the browser silently drops).
+
+⚠ **`enableAlpha` DELIBERATELY STAYS ON, unlike the overlay — this is not an oversight.** The
+overlay could lose alpha because `backgroundOverlayOpacity` was built to carry transparency instead
+(D717/D739). A shadow has NO equivalent attribute, and a translucent shadow is the normal case, so
+removing alpha would DELETE a capability rather than relocate it. **Consequence stated rather than
+hidden: lowering alpha still stores a raw colour.** A palette pick at full alpha now stores the
+slug, which is the common case and a strict improvement on storing a hex always. Bean may want to
+revisit the trade by giving shadows their own opacity attribute; that is a bigger change and is not
+this fix.
+
+**Not done, named:** the hover state that prompted the reading. It is a component API change plus a
+sibling attribute in every mounting block plus a real `:hover` rule in each `render.php` — without
+the render half the control is dead under HC2 and `check-dead-controls.js` fails the build. Split
+out as its own plan step (5b) and deliberately NOT sized inside another step's budget, because the
+original estimate covered it and `GridItemDefaultsPanel` together and was wrong by roughly an order
+of magnitude.
+
 ## D739 [ROUTINE] — the overlay's responsive tier axis moves OFF colour and ONTO opacity (2026-08-22)
 
 **Bean, on the D738 hover fix: "there'd only be a responsive hover tab if there was a responsive

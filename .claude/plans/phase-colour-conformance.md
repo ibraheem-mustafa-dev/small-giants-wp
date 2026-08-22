@@ -221,34 +221,75 @@ means "grep a substring you invent yourself", and two agents will draw the bound
     Fail:    Re-measure by ENUMERATION, never by subtracting totals across tree states
     Marker:  QA
 
-## Step 5 — Shared-component rows (HIGHEST LEVERAGE — do before per-block work)
+## Step 5a — GridItemDefaultsPanel (highest leverage, well-scoped)
 
     Model:       sonnet
-    Action:      Bring `GridItemDefaultsPanel.js` (6 findings, reaches 20 blocks) and
-                 `ShadowControl.js` (2 findings, reaches 29 blocks) to the recipe. Each mounting
-                 block must already declare the sibling attributes the new states write to, or WP
-                 discards them from the editor schema in silence — enumerate and declare those too.
+    Action:      Bring the colour rows in GridItemDefaultsPanel to the recipe. 6 findings; the panel
+                 is reached by 20 blocks, so one edit clears all of them. Every mounting block must
+                 already declare the sibling attributes the new states write to, or WordPress
+                 discards them from the editor schema in silence.
     Files:       plugins/sgs-blocks/src/blocks/container/components/GridItemDefaultsPanel.js
-                 (VERIFIED PATH — it is NOT under src/components/. resolveComponentFiles() scans
-                 BOTH directories with no de-duplication, so creating it at the wrong path would
-                 silently FORK a component that reaches 20 blocks: one copy live, one stale.)
-                 plugins/sgs-blocks/src/components/ShadowControl.js
-                 plus the block.json files the agent enumerates (reported BEFORE editing)
+                 (VERIFIED PATH — NOT src/components/. resolveComponentFiles() scans both
+                 directories with no de-duplication, so a file created at the wrong path silently
+                 FORKS a component reaching 20 blocks: one copy live, one stale.)
+                 plus the block.json files the agent enumerates and REPORTS BEFORE EDITING
     Inputs:      Step 1 recipes; S-4 reference blocks
-    Outcome:     Both shared rows conformant; rule 31 drops by the enumerated amount
+    Outcome:     GridItemDefaultsPanel's 6 findings clear; rule 31 drops by the enumerated amount
     Exec:        SEQUENTIAL
     Deps:        QA Gate B
     Marker:      SESSION-START
     Time:        45 min
     Tooling:     Bash, node
-    On-Fail:     Revert both components; the ratchet catches any rise
-    Cold-Entry:  This plan + the brief + golden-controls.json recipes
-    Prompt:      See `prompts/step-5-shared-rows.md`
+    On-Fail:     Revert the component; the ratchet catches any rise
+    Cold-Entry:  This plan + the brief + golden-controls.json recipes + reports/qa-gate-b-worklist.json
+    Prompt:      See `prompts/step-5a-grid-item-panel.md`
     Test:
-      Happy:       Both components' findings clear
-      Edge:        A mounting block missing a sibling attr -> enumerated and declared, not skipped
-      Fail:        A control writing to an undeclared attr -> reload test loses the value; catch via editor check
+      Happy:       The 6 findings clear
+      Edge:        A mounting block missing a sibling attr -> enumerated + declared, never skipped
+      Fail:        A control writing to an undeclared attr -> value lost on reload; caught at Gate C
       Integration: build green; ratchet lowered
+
+## Step 5b — ShadowControl hover state (RE-SIZE BEFORE RUNNING)
+
+    Model:       sonnet
+    Action:      Give ShadowControl's colour row a `states[]` array with normal + hover. This is a
+                 COMPONENT API CHANGE, not a prop tweak: it needs a second colour prop pair, a new
+                 sibling attribute in EVERY mounting block's block.json, AND a real `:hover` CSS
+                 rule in each block's render.php — without the render half the control is dead under
+                 HC2 and `check-dead-controls.js` fails the build.
+    Files:       plugins/sgs-blocks/src/components/ShadowControl.js + the 15 mounting blocks'
+                 edit.js, block.json AND render.php (enumerate first — measured 16 JSX mounts across
+                 15 blocks: before-after, brand-strip, button, card-grid, container, cta-section,
+                 hero, info-box, media, physics-canvas, post-grid, quote, team-member, testimonial,
+                 trust-bar)
+    Inputs:      Step 5a's completion report
+    Outcome:     ShadowControl's 2 findings clear AND no block gains a dead control
+    Exec:        SEQUENTIAL
+    Deps:        Step 5a
+    Marker:      SESSION-START
+    Time:        ⛔ NOT ESTIMATED — size it after enumerating the render.php work. The original
+                 45-minute budget covered this and GridItemDefaultsPanel TOGETHER and was wrong by
+                 roughly an order of magnitude. Do not start this inside another step's budget.
+    Tooling:     Bash, node
+    On-Fail:     Revert component + all touched blocks; this is the largest blast radius in the phase
+    Cold-Entry:  This plan + Step 5a's report + golden-controls.json recipes
+    Prompt:      See `prompts/step-5b-shadow-hover.md`
+    Test:
+      Happy:       Shadow hover repaints on a real pointer hover, live
+      Edge:        A block whose shadow renders via a preset slug (self-contained, no colour) — must
+                   not gain a meaningless hover colour
+      Fail:        NEGATIVE CONTROL: a hover attr declared but never rendered -> check-dead-controls
+                   must go RED. Observe it.
+      Integration: build green; ratchet lowered
+
+    ✅ ALREADY DONE (D740, this session): ShadowControl's picker was missing `linked`, so it stored a
+    raw colour on EVERY pick and never a palette slug — the client's brand token unlinked across all
+    15 blocks the moment they chose a shadow colour. Same defect D717 fixed on the overlay. Fixed;
+    safe because `sgs_shadow_value_composed()` resolves the colour through `sgs_colour_value()`
+    (`helpers-tokens.php:717`). ⚠ `enableAlpha` DELIBERATELY STAYS ON here, unlike the overlay: a
+    shadow legitimately wants alpha and there is no separate shadow-opacity attribute to carry it,
+    so removing it would delete a capability rather than relocate it. Consequence stated, not
+    hidden: lowering alpha still stores a raw colour. **Bean may want to revisit that trade.**
 
 ## Step 6a-6d — Per-block migration, PARALLEL, disjoint file sets
 

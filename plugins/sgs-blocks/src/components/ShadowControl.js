@@ -209,10 +209,25 @@ export default function ShadowControl( { label, value, onChange, colour, onColou
 							__next40pxDefaultSize
 						/>
 					</div>
+					{ /* D740: `linked` was MISSING here, so this picker stored a raw CSS
+					   colour on EVERY pick and never a palette slug — the client's brand
+					   token was unlinked the moment they chose a shadow colour, across
+					   every block mounting this control. Same defect D717 fixed on the
+					   overlay row; this control was simply never audited for it.
+					   Safe because the consumer resolves slugs: sgs_shadow_value_composed()
+					   passes the colour through sgs_colour_value() (helpers-tokens.php:717).
+					   ⚠ enableAlpha DELIBERATELY STAYS ON, unlike the overlay. A shadow
+					   legitimately wants alpha (a 20%-black shadow is the normal case) and
+					   there is NO separate shadow-opacity attribute to carry it, so
+					   removing it would delete a real capability rather than relocate it.
+					   Consequence, stated not hidden: lowering alpha still stores a raw
+					   colour. A palette pick at full alpha now stores the slug, which is
+					   the common case and a strict improvement on storing a hex always. */ }
 					<DesignTokenPicker
 						label={ __( 'Shadow colour', 'sgs-blocks' ) }
 						value={ colour }
 						onChange={ ( v ) => safeOnColourChange( v || DEFAULT_COLOUR ) }
+						linked
 						enableAlpha
 					/>
 					<ToggleControl
