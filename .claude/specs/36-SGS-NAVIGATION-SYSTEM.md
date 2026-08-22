@@ -409,6 +409,31 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
 | Inner element spacing | `drawerGap` | object `{desktop,tablet,mobile}` | `{desktop:"20px"}` | gap between child rows |
 | Popup padding | `drawerPadding` | object `{desktop:{top,right,bottom,left},…}` | `{}` | replaces any hardcoded padding; emitted via `sgs_emit_responsive_css` |
 
+**Editor-canvas preview is collapsed by default, never opened by `isSelected` (2026-08-22, `fa2fb79d` + `6425f728`).**
+`edit.js` cannot render the real `<dialog>` — a closed `<dialog>` cannot host an editable InnerBlocks region and
+`<ServerSideRender>` cannot host one at all — so it renders a `<div>` preview shell instead. That is deliberate and
+unchanged. What changed is the shell's SIZE. `style.css`'s real-dialog `width:100vw` / `height:100dvh` also land on
+the shell inside the editor canvas, because WP enqueues a block's `style` there too and `useBlockProps` puts
+`wp-block-sgs-nav-drawer` on the shell alongside `sgs-nav-drawer__editor`. With no opposing height/width in
+`editor.css`, the shell filled the entire canvas fold — measured 771px against a 771px viewport, i.e. exactly 100dvh.
+`min-height` cannot fix this; it loses to an explicit `height`.
+
+The fix mirrors what `core/navigation` does for its own overlay (collapsed in BOTH `style.scss` and `editor.scss`,
+opened by an explicit control and deliberately NOT by `isSelected`, which would reflow the canvas every time the
+operator selects a different block):
+
+- **Collapsed (default)** — a summary strip carrying the existing "Mobile drawer (preview)" label. The body is
+  hidden with CSS, never unmounted, so the drawer's children cannot be dropped and stay reachable in List View.
+- **Expanded** — an InspectorControls `ToggleControl` labelled **"Preview drawer open"**; the shell is bounded to
+  420px with its own scroll, plus the height/width neutralisers that cancel `style.css`'s viewport sizing.
+
+**The toggle is component state (`useState`), not a block attribute — it must never serialise into saved content;
+an editor preview is not a property of the page.** `editor.css` compiles to `index.css` (`editorStyle`) and never
+reaches the frontend, and no `display` is added to the dialog's base rule, so STOP-DIALOG-DISPLAY-GATE stays intact.
+
+Deliberately NOT given its own FR-ID: this is an editor-UX correction inside FR-36-6's existing scope (the drawer
+block's own behaviour), not a new capability.
+
 ### FR-36-7 — Shared nav plumbing utility (framework-reusable)
 One `viewScriptModule` + `store('sgs/nav', …)` (public API — the established SGS pattern; NOT core-nav's
 private store) for open/close/focus/`inert`/intent-timing across the disclosure + dialog surfaces. A UTILITY

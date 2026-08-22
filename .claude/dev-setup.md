@@ -2,7 +2,7 @@
 doc_type: dev-setup
 project: small-giants-wp
 title: SGS WordPress Framework — Developer Setup & Operations
-last_updated: 2026-05-30
+last_updated: 2026-08-22
 split_from: .claude/architecture.md (Part C)
 split_date: 2026-05-24
 ---

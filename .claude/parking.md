@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-08-12
+last_updated: 2026-08-22
 note: "OPEN deferred work ONLY. Four permitted Status values (OPEN | PARTIAL | BLOCKED | DEFERRED) and six buckets. The moment an entry is finished it moves VERBATIM to memory/parking-archive.md under a dated pass heading - enforced mechanically by .claude/hooks/handoff-preflight.py, not by prose. Normalised 2026-07-29: 296KB -> this, one layout, one Status syntax, shipped history stripped to residual scope. Pre-normalise copy: memory/archived-2026-07-28-parking-pre-normalise.md."
 ---
 
@@ -43,7 +43,7 @@ HTML-only edit (no code change) so the page can clone to `sgs/option-picker` blo
 *(Merged 2026-08-12 with the duplicate `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM`, parked 2026-06-03 —
 same file, same underlying issue. Superseded entry archived to `memory/parking-archive.md`.)*
 
-*58 entries total (measured 2026-08-14 via `grep -c "^### P-"`, excluding the fenced template example). Re-measure, do not trust this line.*
+*Entry count is deliberately NOT cached here — it drifted to three different figures (58 here, 61 below, 62 raw) before this line was cut on 2026-08-22. Measure it: `grep -c "^### P-" .claude/parking.md` minus the fenced template example, or read `handoff-preflight.py --check`.*
 
 ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
 

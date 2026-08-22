@@ -5,7 +5,7 @@ project: small-giants-wp
 title: SGS Mega-Menu Architectural Foundation
 spec: 36-SGS-NAVIGATION-SYSTEM.md (FR-36-2/3/4/5/7/8/10/13/17)
 date: 2026-07-24
-status: EXECUTED-IN-PART — the re-scoped core build shipped and Gate 3 closed live (D399/D401, 2026-07-28); this plan is not archived because the declared follow-ons (P-MEGA-FOLLOWON-DEFERRALS) are still pending
+status: EXECUTED-IN-PART, ARCHIVED 2026-08-22 — the re-scoped core build shipped and Gate 3 closed live (D399/D401, 2026-07-28). The declared follow-ons are still pending, but they are tracked in their own right at parking.md `P-MEGA-FOLLOWON-DEFERRALS` (Status: DEFERRED, verified 2026-08-22), so the work is not lost by archiving the plan. This line previously read "this plan is not archived" while the file sat in archive/ — a contradiction, since the follow-ons' home is parking, not this doc.
 owner: framework
 ---
 

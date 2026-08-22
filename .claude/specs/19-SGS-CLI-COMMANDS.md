@@ -457,7 +457,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
 
 The primary pipeline orchestrator for the SGS clone workflow. Runs all pipeline stages
 (extraction, recognition, conversion, deploy). Accepts `--converter-v2` flag to route
-through the Spec 22 universal walker converter.
+through the Spec 31 §13 universal walker converter.
 
 ```bash
 # Standard full run
@@ -560,7 +560,7 @@ Container-inheritance audit + KIND-classification script at `plugins/sgs-blocks/
 
 **Writes** `block_composition.wraps_block + container_kind` to canonical `sgs-framework.db`. **Never auto-edits block.json** — operator review gate for `containerKind` operator-override attribute is separate. Per-block diff Markdown at `pipeline-state/container-inheritance-sync/<date>/<block>.diff.md`.
 
-**Current roster (post-D152):** 28 blocks with `wraps_block` + `container_kind` populated. Original P-D6-THRESHOLD-RETUNE target (20–30+) met. See Spec 22 §FR-22-21 for the canonical wrapper-conversion procedure.
+**Current roster (post-D152):** 28 blocks with `wraps_block` + `container_kind` populated. Original P-D6-THRESHOLD-RETUNE target (20–30+) met. See Spec 31 §13 FR-31-21 for the canonical wrapper-conversion procedure.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py

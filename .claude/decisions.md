@@ -77,6 +77,57 @@ comments) and once by unrelated live uncommitted work sitting in the shared main
 Neither was touched directly — both waited for the owning session to resolve, then
 retried. The deploy that shipped this work (`sandybrown`) also carried unrelated
 concurrent commits from the colour-golden and nav-drawer tracks; all green together.
+## D743 [INCIDENT] — the editor was showing three different lies: a full-height drawer, six false validation errors, and seventeen false gate findings (2026-08-22)
+
+Bean opened the template editor and found the mobile drawer covering the fold on every
+template, plus error banners on several blocks. Three separate causes, all of them
+"looks broken but the code is fine" or its inverse.
+
+**1. The drawer shell was 100dvh in the editor.** `sgs/nav-drawer` renders a `<div>`
+preview shell in the editor rather than the real `<dialog>` — correct and unchanged,
+since a closed `<dialog>` cannot host an editable InnerBlocks region. But `style.css`'s
+real-dialog `width:100vw` / `height:100dvh` also land on that shell, because WP enqueues
+a block's `style` inside the editor canvas and `useBlockProps` puts
+`wp-block-sgs-nav-drawer` on the shell alongside `sgs-nav-drawer__editor`. `editor.css`
+set position and `min-height` but never `height`/`width`, so the viewport rules won
+unopposed — measured 771px against a 771px canvas. Fixed by adopting `core/navigation`'s
+own overlay pattern: collapsed summary strip by default, expanded via an explicit
+"Preview drawer open" inspector toggle, never by `isSelected` (which would reflow the
+canvas on every block-select). Component state, not a block attribute — it must not
+serialise. Recorded in Spec 36 FR-36-6; the general trap is now Spec 32 §5.
+
+**2. Six blocks failed validation because of developer COMMENTS.** `sgs/container` and
+`sgs/tab` both have `render.php` AND a `save()` returning `<InnerBlocks.Content />` —
+non-null, so WP still validates them. A raw HTML comment interleaved between their inner
+blocks is content `save()` never regenerates. **"Dynamic block" and "unvalidated block"
+are not the same thing, and that gap is where these lived.** Seven comments removed; the
+three carrying real traps were condensed and hoisted to depth 0, outside any block's
+content region.
+
+**3. The `woocommerce/single-product` wrapper was providing nothing.** Its block.json has
+`usesContext` but NO `providesContext`; WooCommerce's own single-product template uses
+`legacy-template` instead; ours set no `productId`; and live DOM measurement put it at
+exactly its child's width, constraining nothing. Removed rather than patching its stale
+WC 11.0.1 class, which would have re-broken on WC's next change. Its one coupled attr
+moved with it: product-rating goes `isDescendentOfSingleProductBlock` ->
+`isDescendentOfSingleProductTemplate`, which is both truthful and the correct variant
+(same-page `#reviews` anchor, not an absolute URL reloading the current page).
+
+**4. All 17 findings from `check-undeclared-attrs.py` were false.** Its R3-a
+corpus-widening resolves capitalised JSX tags to the files that define them and folds
+those in — but scanned tags BEFORE stripping comments. `sgs/nav-drawer` carries a comment
+reading "a SCOPED control (not `<BackgroundPanel>`...)" documenting a deliberate decision
+NOT to mount it; that comment caused BackgroundPanel's whole source to be folded in and
+its background attributes charged to nav-drawer. The comment recording the correct
+decision is what manufactured the accusation. Fixed on `main` (`1693918f`) since it was
+failing the build for every co-active session.
+
+**Method note worth keeping.** Every defect above was found by measuring the live thing
+and none by reading the code. The collapse itself shipped visibly wrong first — 771px
+came down to 231px while the body stayed `display:flex`, because two rules tied at
+(0,2,0) and the loser sat earlier in the file. **A CSS rule that loses is
+indistinguishable from one that was never written**; only the computed value separates
+them. Commits: `754475a4`, `1693918f`, `fa2fb79d`, `6425f728`, `d6d82651`.
 
 ## D741 [INCIDENT] — FR-38-12 Flip closed: two real bugs, not one — sgs/container's missing interactivity declaration AND a MatchMedia#add() misuse (2026-08-22)
 

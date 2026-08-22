@@ -159,7 +159,7 @@ sgs/content-collection  ---loop template---->  dual-mode card (sgs/product-card)
 - **Data source:** custom CPT, registered per-site. No WooCommerce required for the base layer.
 - **Query engine:** `sgs/card-grid` collection mode with its own `WP_Query` (was the dedicated `sgs/content-collection` block until D529). Named selection presets are resolved via `WP_Query` args in `render.php`. The `query_loop_block_query_vars` PHP filter is not needed (Open Question FR-24 #1 resolved, Phase E 2026-06-03).
 - **Field surfacing:** Block Bindings API (`register_meta(show_in_rest:true)` + `register_block_bindings_source()` for computed/derived fields such as formatted price).
-- **Card:** the existing presentational cards, made dual-mode (FR-24-2). Typed mode equals the FR-31-6 InnerBlocks shape (Spec 22), so the clone pipeline is unaffected.
+- **Card:** the existing presentational cards, made dual-mode (FR-24-2). Typed mode equals the FR-31-6 InnerBlocks shape (Spec 31 §13), so the clone pipeline is unaffected.
 - **D149 / D151 dual-source Bound mode (decided 2026-06-02, refined 2026-06-03).** The card's Bound-mode data source is dual-source: when WooCommerce is present, the card binds to WooCommerce-native product data (price/image/stock/variations via WC's own meta and REST endpoints); when WooCommerce is absent, it falls back to the `sgs_product` CPT meta. The source is auto-detected from the product picker (no client-facing WC/CPT toggle). `custom-fields` CPT support is a REST-exposure flag, not a storage choice.
 
 ### Variable-product configurator layer
@@ -317,7 +317,7 @@ Each card field slot declares `allowedBindings`; a card registered as a synced p
 
 ### FR-24-9 -- Clone-pipeline compatibility
 
-The dual-mode card's Typed mode is exactly the FR-31-6 InnerBlocks shape the converter already emits (see Spec 22). The query-driven layer is additive. The converter keeps emitting Typed cards; Bound/collection is an operator-authoring feature, not a converter output.
+The dual-mode card's Typed mode is exactly the FR-31-6 InnerBlocks shape the converter already emits (see Spec 31 §13). The query-driven layer is additive. The converter keeps emitting Typed cards; Bound/collection is an operator-authoring feature, not a converter output.
 
 ### FR-24-10 -- Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01)
 
@@ -412,7 +412,7 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 4. An empty query renders the designed placeholder, not a blank region.
 5. A marketing site with the product type DISABLED ships no product CPT, no extra weight.
 6. The same collection block, pointed at `sgs_testimonial`, works with zero new block code.
-7. The clone pipeline still emits Typed cards unchanged (Spec 22 regression check passes).
+7. The clone pipeline still emits Typed cards unchanged (Spec 31 §13 regression check passes).
 
 ---
 
@@ -496,7 +496,7 @@ Each FR carries a build-model recommendation and a holistic test strategy.
 **FR-27-H3 -- Tax-context-correct caching.** Seed BOTH ex- and inc-tax display values into the manifest (so a cached page serves the right one per the customer's tax context) OR render the price as a cache-excluded fragment with vary-on-tax-context. Round via WC semantics (`wc_get_price_to_display()`), never own division; honour `wc_get_price_decimals()`.
 - Done when: a tax-exempt (B2B) and a standard customer each see the correct price from the same cached page; the card price matches the cart price (no rounding drift). Model: sonnet. Test: B2B-exempt + standard customer on a cached page; card-vs-cart price parity.
 
-**FR-27-I-MVP -- Inter-block state + cloning compatibility + dev fixture.** The card owns the store + shared context; option-pickers read/write it (the inter-block-state model in the architecture section). The converter keeps emitting Typed option-pickers unchanged (Spec 22/D153); the Typed shape stays a deprecation-free subset after `sourceMode` + swatch attrs are added (a Jest block.json schema-compat test + a PHPUnit deprecation test assert this). Typed mode has no cross-attribute availability (WC Bound required for C1); this is stated. A `seed-48-sku-fixture.php` dev script (WC PHP API, not the authoring path) creates the test product for Phases 1-2.
+**FR-27-I-MVP -- Inter-block state + cloning compatibility + dev fixture.** The card owns the store + shared context; option-pickers read/write it (the inter-block-state model in the architecture section). The converter keeps emitting Typed option-pickers unchanged (Spec 31 §13/D153); the Typed shape stays a deprecation-free subset after `sourceMode` + swatch attrs are added (a Jest block.json schema-compat test + a PHPUnit deprecation test assert this). Typed mode has no cross-attribute availability (WC Bound required for C1); this is stated. A `seed-48-sku-fixture.php` dev script (WC PHP API, not the authoring path) creates the test product for Phases 1-2.
 - Done when: shared-context swap works; a clone run emits Typed pickers unchanged + schema-compat tests pass; the seed script builds the 48-SKU fixture. Model: sonnet. Test: clone + schema-compat + fixture-seed.
 
 #### Phase 2 -- Display + SEO + AI-visible (after the MVP sells)
@@ -626,6 +626,6 @@ Not a plugin for sale. This is the commerce engine of the SGS AI website builder
 ## Cross-references
 
 - **Absorbs (retired):** Spec 24 (query-driven content cards), Spec 25 (WooCommerce experience layer). Do not edit those files.
-- **Aligns with:** Spec 22 (cloning pipeline, option-picker emit unchanged), Spec 26 (global styles / auto-contrast, pending decision), Spec 11 (button presets).
+- **Aligns with:** Spec 31 §13 (cloning pipeline, option-picker emit unchanged), Spec 26 (global styles / auto-contrast, pending decision), Spec 11 (button presets).
 - **Key decisions:** D144 (option-picker ratification), D148 (CPT + cart + option-picker ships), D149 (dual-source architecture), D151 (wrapper+bridge model, add-to-cart in Phase C), D-pending (Option A ratified; WC source of truth; no mirror; clean-slate; MVP-first re-scope; closed-loop moat; AI-builder = roadmap).
 - **Primary files:** `includes/class-product-bindings.php`, `includes/content-types/class-product-cpt.php`, `src/blocks/product-card/`, `src/blocks/option-picker/`, `src/blocks/card-grid/`, `src/blocks/cart/`, `/sgs/v1/cart/add-item` (proxy endpoint).

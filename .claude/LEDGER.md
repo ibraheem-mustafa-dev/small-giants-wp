@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-20
+last_updated: 2026-08-22
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -11,11 +11,12 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 **Invoke `/autopilot` first.**
 
-⚠ **FOUR TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
+⚠ **FIVE TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
 The shop-archive / R-3 track owns the sections immediately below. The **colour-golden**
 track owns `## ▶ COLOUR-GOLDEN TRACK`. The **Tier W / motion** track owns
 `## ▶ TIER W (MOTION) TRACK` at the bottom and is CLOSED — nothing is pending there.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
+The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
 ⭐ **If you are the colour-golden track, do NOT start from that section.** Read
 `.claude/plans/phase-colour-conformance.md` — it is the executable front and carries 10
@@ -340,6 +341,25 @@ Full section — what shipped and the four things deliberately NOT done — move
 `memory/session-2026-08-21-tier-w-closed.md` on 2026-08-21 to bring this file back under its
 byte cap. That archive's own FR-38-12 Flip finding is now STALE — see below, D741 supersedes
 it. For motion work the open register is `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
+
+## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D742)
+
+Drawer covered the fold in every template editor; several blocks errored. Three
+unrelated causes, all closed. Detail in D742.
+
+- **Drawer shell was exactly `100dvh`** (771px in a 771px canvas): `style.css`'s
+  real-`<dialog>` sizing lands on the editor preview shell and `editor.css` never opposed
+  it. Now a 46px strip, expanded by a **"Preview drawer open"** toggle (component state,
+  never serialised). Capture: `reports/visual-diff/nav-drawer-2026-08-22.md`.
+- **Six validation errors** — comments inside `sgs/container` / `sgs/tab` inner content;
+  both have `render.php` AND a non-null `save()`: *dynamic ≠ unvalidated*. Also dropped the
+  `woocommerce/single-product` wrapper (no `providesContext`). **0 bad / 20 surfaces**.
+- **`check-undeclared-attrs.py`** — 17 findings, all false, all nav-drawer: it read JSX
+  tags before stripping comments. Fixed on `main` (`1693918f`); it broke every build.
+
+⚠ **Not ours:** the canary intermittently 500s (`Error establishing a database connection`)
+under the ~12 concurrent block-renderer calls a template load fires, producing phantom
+"Error loading block" banners that vanish on reload. Infrastructure — don't chase it.
 
 ## ▶ FR-38-12 FLIP — CLOSED 2026-08-22 (D741)
 
