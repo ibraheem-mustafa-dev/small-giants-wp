@@ -303,7 +303,19 @@ Not parked; pick up any time. 20 densest files done (~370 lines), ~70 remain at 
 live-verified: Spec 38's fourth tier (WebGL, D479) now exists, with FR-38-29 surface treatments
 on 15 image-bearing blocks at 5,674 bytes gzip. D714-D716.
 
-Full section — what shipped, the four things deliberately NOT done, and the FR-38-12 Flip
-finding — moved VERBATIM to `memory/session-2026-08-21-tier-w-closed.md` on 2026-08-21 to bring
-this file back under its byte cap. Nothing was edited or dropped. For motion work the open
-register is `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`, not that archive.
+Full section — what shipped and the four things deliberately NOT done — moved VERBATIM to
+`memory/session-2026-08-21-tier-w-closed.md` on 2026-08-21 to bring this file back under its
+byte cap. That archive's own FR-38-12 Flip finding is now STALE — see below, D741 supersedes
+it. For motion work the open register is `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
+
+## ▶ FR-38-12 FLIP — CLOSED 2026-08-22 (D741)
+
+**Nothing pending.** Five prior sessions (D698, D699, D702, the 2026-08-21 report, the
+2026-08-21 Tier W close above) left it genuinely inconclusive or dormant. Two real bugs, both
+found and fixed same session: (1) `sgs/container` — the shop archive's own Product Collection
+toolbar wrapper — tripped WooCommerce's client-nav kill-switch, same shape D702 already fixed
+for `sgs/text` (`c01ed84a`); (2) `fx-flip.js`'s `settle()` called `MatchMedia#add(fn)` with a
+bare function where the API requires `(conditions, func)`, so `Flip.from()` was registered but
+never invoked — every upstream check looked healthy while GSAP never ticked (`da580d8e`). Live
+on sandybrown, `animate_product_filtering` ON, Bean watched it animate. Full writeup:
+`decisions.md` D741. Spec 38 §3.3 FR-38-12 updated to SHIPPED. Design-gate plan archived.

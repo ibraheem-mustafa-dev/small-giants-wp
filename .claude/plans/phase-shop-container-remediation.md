@@ -231,9 +231,13 @@ and committing concurrently. Consequences that matter to whoever reads this next
 
 ### Off-plan work completed the same session (Bean-directed, not in this plan)
 
-- **FR-38-12 Flip** — root-caused, fixed, opus-reviewed (two Critical findings fixed, incl. a
-  per-frame layout read that would have breached the CWV budget), deployed. ⚠ **It still does not
-  animate** on a valid test case; eight causes eliminated, the ninth unfound. Toggle left OFF.
+- **FR-38-12 Flip — CLOSED 2026-08-22, D741.** The ninth cause (this note's own "unfound") turned
+  out to be two: `sgs/container` (the shop archive's toolbar wrapper) was itself tripping WC's
+  client-nav kill-switch, same shape as the P1-1 `sgs/text` fix above; and `fx-flip.js`'s
+  `settle()` called `MatchMedia#add(fn)` with a bare function where the API requires
+  `(conditions, func)`, so `Flip.from()` was registered but never invoked. Both fixed
+  (`c01ed84a`, `da580d8e`), live-verified two independent ways, `animate_product_filtering` ON.
+  Full writeup: `decisions.md` D741.
 - **Element-manifest style-defect debt 12 → 0** and the baseline dropped to zero.
 - **`STATE_WITHOUT_BASE` 4 → 2** — `sgs/post-grid` gained a resting shadow control; `scaleHover`
   reclassified via a new `noBaseByDesign` mechanism. Remaining 2 handed to the colour-golden track.
