@@ -155,10 +155,38 @@ served from the LiteSpeed page cache, and authenticating did not reliably settle
 a defect would be as wrong as calling it a pass. What is certain: the attribute
 stores correctly, the restore is clean, and the canary is unmodified.
 
-**Owed:** a dedicated pass with the page cache positively purged (not assumed) —
-`build-deploy.py`'s `step_purge_caches()` does both OPCache and LiteSpeed, so
-deploying with the attribute authored in the template, rather than REST-patching it
-underneath a cache, is the instrument that would settle it.
+### Fourth attempt — cache ruled OUT, and the real blocker identified
+
+The "stale cache" theory above was tested and is WRONG. With every row patched (3
+header, 2 footer), `write=200`, the stored content confirmed to contain the
+gradient, and **both** cache layers positively purged over SSH
+(`wp litespeed-purge all && wp cache flush`, each confirmed "Success"), the rendered
+uids were STILL byte-identical to the pre-patch set.
+
+`uid = substr( md5( wp_json_encode( $attributes ) ), 0, 8 )`, so an added attribute
+MUST change it. It did not. **The patches provably never reach the rendered
+output.** A further inconsistency points the same way: the footer template part
+contains 2 patchable rows but the page renders 3.
+
+**Therefore the rendered header/footer does not come from the `sgs-theme//header` /
+`//footer` DB template part being edited** — even though REST reports that record as
+`source: custom`, `status: publish`, and the theme's own `parts/header.html`
+contains ZERO `sgs/site-header-row`.
+
+⛔ **This is NOT evidence of a defect in either block.** It is evidence that four
+instruments cannot reach them:
+
+| Instrument | Why it fails |
+|---|---|
+| Page content | Cannot inject into a template part |
+| REST block-renderer | Returns empty — supplies no InnerBlocks, block guards on empty content |
+| Template-part edit | Patch never reaches the rendered output (uid invariant) |
+| Cache purge | Ruled out as the cause — both layers purged, no change |
+
+**Owed:** find what actually supplies the rendered header/footer on this canary
+(a different template, a plugin filter, or a second template-part record) before
+attempting verification again. Until then these two blocks are UNVERIFIED, and
+should not be reported as either passing or failing.
 
 ⛔ **THREE FALSE FAILURES were reported and retracted in that pass. The retraction
 matters more than the passes.**
