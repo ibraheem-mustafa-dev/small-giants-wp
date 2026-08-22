@@ -252,6 +252,12 @@
 			"type": "number",
 			"default": 30
 		},
+		"backgroundOverlayOpacityTablet": {
+			"type": "number"
+		},
+		"backgroundOverlayOpacityMobile": {
+			"type": "number"
+		},
 		"backgroundPosition": {
 			"type": "string",
 			"default": "center center"
@@ -355,23 +361,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"backgroundOverlayColourTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"backgroundOverlayColourMobile": {
-			"type": "string",
-			"default": ""
-		},
 		"overlayGradientHover": {
-			"type": "string",
-			"default": ""
-		},
-		"overlayGradientTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"overlayGradientMobile": {
 			"type": "string",
 			"default": ""
 		},

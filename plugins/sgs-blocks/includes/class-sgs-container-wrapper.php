@@ -414,10 +414,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// extra for that state/tier.
 			$overlay_colour_hover    = $attributes['backgroundOverlayColourHover'] ?? '';
 			$overlay_gradient_hover  = $attributes['overlayGradientHover'] ?? '';
-			$overlay_colour_tablet   = $attributes['backgroundOverlayColourTablet'] ?? '';
-			$overlay_colour_mobile   = $attributes['backgroundOverlayColourMobile'] ?? '';
-			$overlay_gradient_tablet = $attributes['overlayGradientTablet'] ?? '';
-			$overlay_gradient_mobile = $attributes['overlayGradientMobile'] ?? '';
+			// D739: the responsive tier axis lives on OPACITY, not colour. A
+			// per-device overlay need is "a heavier scrim on the small screen",
+			// which is an opacity change rather than a different hue. The tier
+			// COLOUR attrs this replaces were the framework's only responsive
+			// colour, and crossing tier x state also produced an incoherent
+			// control — a hover tab that appeared on the desktop tier alone.
+			// null means "this tier does not override".
+			$overlay_opacity_tablet  = $attributes['backgroundOverlayOpacityTablet'] ?? null;
+			$overlay_opacity_mobile  = $attributes['backgroundOverlayOpacityMobile'] ?? null;
 			$overlay_blend_mode      = $attributes['backgroundOverlayBlendMode'] ?? '';
 			$bg_video                = $attributes['bgVideo'] ?? null;
 			$bg_video_tablet         = $attributes['bgVideoTablet'] ?? null;
@@ -2019,24 +2024,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 				}
 
-				// Overlay responsive TIERS (D6, 2026-08-22) — project-standard
-				// 768/1024 breakpoints (tablet max-width:1023px, mobile
-				// max-width:767px). Emitted only when a tier explicitly sets its
-				// own colour/gradient; an unset tier inherits the desktop rule
-				// above via ordinary cascade — no hand-rolled fallback value
-				// needed, matching every other tier in this file (e.g. the
-				// background-image tiers a few lines up).
-				if ( '' !== $overlay_colour_tablet || '' !== $overlay_gradient_tablet ) {
-					$overlay_tablet_paint = sgs_overlay_decls( $overlay_colour_tablet, $overlay_gradient_tablet );
-					if ( '' !== $overlay_tablet_paint ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-container__overlay{' . $overlay_tablet_paint . '}}';
-					}
+				// Overlay responsive TIERS (D739) — the tier axis is OPACITY, not colour.
+				// Project-standard 768/1024 breakpoints (tablet max-width:1023px, mobile
+				// max-width:767px). Emitted only when a tier explicitly overrides; an
+				// unset tier inherits the desktop rule by ordinary cascade.
+				//
+				// ONLY the opacity declaration is re-emitted, never the whole paint.
+				// Colour, gradient and blend mode are deliberately NOT per-tier, so
+				// restating them inside a @media block would create a SECOND owner for
+				// the same properties — and the tier rule would then silently outrank a
+				// later desktop edit at the same specificity. Two owners for one
+				// property is the defect, not the fix.
+				if ( null !== $overlay_opacity_tablet && '' !== $overlay_opacity_tablet ) {
+					$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
 				}
-				if ( '' !== $overlay_colour_mobile || '' !== $overlay_gradient_mobile ) {
-					$overlay_mobile_paint = sgs_overlay_decls( $overlay_colour_mobile, $overlay_gradient_mobile );
-					if ( '' !== $overlay_mobile_paint ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-container__overlay{' . $overlay_mobile_paint . '}}';
-					}
+				if ( null !== $overlay_opacity_mobile && '' !== $overlay_opacity_mobile ) {
+					$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
 				}
 			}
 

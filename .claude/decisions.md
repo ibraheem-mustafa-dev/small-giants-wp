@@ -1,5 +1,73 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D739 [ROUTINE] — the overlay's responsive tier axis moves OFF colour and ONTO opacity (2026-08-22)
+
+**Bean, on the D738 hover fix: "there'd only be a responsive hover tab if there was a responsive
+colour control as they are tied together."** He was right that the two axes are coupled, and
+chasing that coupling found the real defect: **the tier axis was on the wrong property.**
+
+### Two measurements that settled it
+
+1. **`backgroundOverlayColour{Tablet,Mobile}` were the ONLY responsive colour attributes in the
+   entire framework.** Enumerated, not estimated: across all 83 blocks, no other colour attribute
+   carries a tier suffix. The 8 overlay blocks were the sole instance, introduced the day before.
+2. **`backgroundOverlayOpacity` — the property that actually varies per device — was
+   single-value.** "A heavier scrim on the small screen" is an OPACITY change, not a different
+   hue, and it was inexpressible.
+
+So the device axis sat on the property that rarely needs it, and was missing from the one that does.
+
+### Why the coupling made it visible
+
+Crossing tier x state gave ONE property THREE axes: the global device switcher (outside the
+popover), Normal/Hover tabs (inside), and a Solid/Gradient toggle (inside each tab). Two of the
+three live in different places on screen. D738 had to offer the hover tab on the desktop tier
+alone — because there are deliberately no per-tier hover attributes, and a hover tab on tablet
+would write to an attribute no `block.json` declares, which WordPress discards from the editor
+schema in silence. That seam is what Bean spotted.
+
+### Change
+
+Colour now has exactly the golden shape every other colour control has — ONE row, Normal/Hover
+tabs, Solid/Gradient inside each tab, no tier wrapper. Opacity carries the device axis as a plain
+`RangeControl` inside `ResponsiveControl`, which nests without conflict. Net **8 overlay
+attributes per block, down from 10**.
+
+- Codemod `scripts/migrate-overlay-tier-axis.py` (survey/fix/check/self-test). It edits the
+  attribute blocks as TEXT rather than re-serialising the JSON — a `json.dumps()` pass would
+  reformat every untouched key and, on a CRLF checkout, rewrite every line ending. Diff is 16
+  lines removed / 6 added per file, exactly the four dropped and two added.
+- Both paint sites updated: the shared wrapper AND `sgs/hero`, which opts out of the wrapper's
+  overlay and paints its own.
+- Only the OPACITY declaration is re-emitted per tier. Colour, gradient and blend mode are
+  deliberately not per-tier, so restating them inside a `@media` block would make the tier rule a
+  second owner of those properties and it would silently outrank a later desktop edit.
+
+### Three gates caught three real defects in MY work, in sequence
+
+1. **`inspector-scan` rule 29 (duplicate-visible-label)** — I wrapped a labelled `RangeControl`
+   in a labelled `ResponsiveControl`, so the operator would read "Overlay opacity" twice. Fixed
+   with `hideLabelFromVision`, which keeps the accessible name: a control with NO accessible name
+   is worse than a duplicated one.
+2. **`audit-block-file-consistency`** — 4 `undeclared_render_ref` on `sgs/hero`. I had updated the
+   shared wrapper and forgotten hero's own copy. **This is D718's lesson recurring within a day:
+   hero is a SECOND OWNER of this paint, and a change to the shared owner does not reach it.**
+3. **`check-render-undefined-vars`** (built THIS MORNING from the unenforced-prohibition register,
+   D728) — my line-range replacement's end marker matched the TABLET block's closing brace, so the
+   MOBILE block survived, still referencing deleted variables. An undefined variable in render.php
+   evaluates to null with an unsurfaced notice: the client's setting would have silently done
+   nothing. **The gate written this morning caught the coordinator's own bug this afternoon.**
+
+**None of these three would have been caught by reading the diff.** Each is the class of defect its
+gate exists for, and each was mine.
+
+### Not done, named
+
+`sgs/hero`'s own overlay and the shared wrapper still duplicate the tier-emission LOGIC (two copies
+of the same `@media` construction). D718 moved the overlay's paint and existence policy into
+`sgs_overlay_decls()`; the tier emission has not had the same treatment. Recorded, not silently
+left.
+
 ## D738 [INCIDENT] — hover becomes a popover TAB, not a second row; the golden spec had predicted this failure in writing (2026-08-22)
 
 **Bean caught it in one line: *"We already have hover as a popover tab though."* He was right, and

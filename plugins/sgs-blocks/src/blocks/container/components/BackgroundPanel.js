@@ -139,77 +139,78 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 					'sgs-blocks'
 				) }
 			</p>
-			{ /* Overlay colour — ONE <ResponsiveControl> covering all three tiers,
-			   not a standalone base control plus a separate tier override.
-			   inspector-scan rule 26 flags a responsive wrapper whose desktop
-			   branch renders static "set above" text instead of a real control
-			   (a duplicate-control smell: two controls for one property, with
-			   a hole where the desktop control should be) — so the desktop
-			   branch below renders the SAME GradientOverlayControl the base
-			   attrs (`backgroundOverlayColour`/`overlayGradient`) always used,
-			   just now reached via the tier switcher rather than sitting
-			   outside it. Nothing stored changes: desktop still reads/writes
-			   the un-suffixed attrs. */ }
-			<ResponsiveControl label={ __( 'Overlay colour', 'sgs-blocks' ) }>
-				{ ( bp ) => {
-					const suffix =
-						'desktop' === bp ? '' : ( 'tablet' === bp ? 'Tablet' : 'Mobile' );
-					return (
-						<GradientOverlayControl
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ {
-								solid: `backgroundOverlayColour${ suffix }`,
-								gradient: `overlayGradient${ suffix }`,
-								// Hover belongs to the BASE attrs only, so the
-								// pair is handed over on the desktop tier alone
-								// and the control renders Normal/Hover as tabs
-								// inside one popover. There are deliberately no
-								// per-tier hover attributes: offering a hover tab
-								// on tablet/mobile would write to an attribute no
-								// block.json declares, which WordPress discards
-								// from the editor schema in silence — the client
-								// would set a colour and watch it vanish on
-								// reload. Omitting the keys drops those tiers back
-								// to a single state and no tab strip.
-								...( 'desktop' === bp
-									? {
-											solidHover:
-												'backgroundOverlayColourHover',
-											gradientHover:
-												'overlayGradientHover',
-									  }
-									: {} ),
-							} }
-							solidLabel={ __( 'Overlay colour', 'sgs-blocks' ) }
-						/>
-					);
-				} }
-			</ResponsiveControl>
+			{ /* Overlay colour — ONE row, deliberately NOT inside <ResponsiveControl>.
+			   D739 moved the device axis onto OPACITY below. Colour now has exactly the
+			   golden shape every other colour control in the framework has: one row,
+			   Normal/Hover tabs, a Solid/Gradient toggle inside each tab.
+			   Previously this ALSO sat inside the device switcher, giving one property
+			   three axes with two of them in different places on screen — which is what
+			   produced the seam Bean caught: a hover tab visible on the desktop tier
+			   only. Colour rarely varies by device; scrim WEIGHT does. */ }
+			<GradientOverlayControl
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				solidLabel={ __( 'Overlay colour', 'sgs-blocks' ) }
+			/>
 			{ /* D717 (2026-08-21). REPLACES the colour picker's alpha channel as the
 			   overlay's transparency mechanism — see the help-text comment above for
 			   why alpha was actively harmful. Reaches all eight blocks that mount this
 			   panel (container, cta-section, hero, multi-button, physics-canvas,
 			   site-footer, site-header, trust-bar) with no per-block wiring, and is
 			   painted by the one shared owner, sgs_overlay_decls(). */ }
-			<RangeControl
-				label={ __( 'Overlay opacity', 'sgs-blocks' ) }
-				help={ __(
-					'How solid the overlay is. Lower it to let an image or video behind show through.',
-					'sgs-blocks'
-				) }
-				value={ backgroundOverlayOpacity }
-				onChange={ ( val ) =>
-					setAttributes( {
-						backgroundOverlayOpacity: undefined === val ? 30 : val,
-					} )
-				}
-				min={ 0 }
-				max={ 100 }
-				step={ 1 }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-			/>
+			<ResponsiveControl label={ __( 'Overlay opacity', 'sgs-blocks' ) }>
+				{ ( bp ) => {
+					// D739: opacity carries the device axis, because what varies per
+					// device is HOW HEAVY the scrim is, not what colour it is. Desktop
+					// writes the base attr; a tier writes its own and is left UNDEFINED
+					// when unset, so it inherits desktop by ordinary cascade instead of
+					// pinning a duplicate value that would then fight a later edit.
+					const key =
+						'desktop' === bp
+							? 'backgroundOverlayOpacity'
+							: 'tablet' === bp
+							? 'backgroundOverlayOpacityTablet'
+							: 'backgroundOverlayOpacityMobile';
+					return (
+						<RangeControl
+							label={ __( 'Overlay opacity', 'sgs-blocks' ) }
+							// <ResponsiveControl> paints its own label span
+							// unconditionally, so the visible text would appear TWICE
+							// without this. The label prop stays for the accessible
+							// name — hiding it from vision is not the same as removing
+							// it, and a RangeControl with no accessible name is worse
+							// than a duplicated one. Caught by inspector-scan rule 29.
+							hideLabelFromVision
+							help={
+								'desktop' === bp
+									? __(
+											'How solid the overlay is. Lower it to let an image or video behind show through.',
+											'sgs-blocks'
+									  )
+									: __(
+											'Leave unset to use the desktop value. Set it to make the scrim heavier or lighter at this screen size.',
+											'sgs-blocks'
+									  )
+							}
+							value={ attributes[ key ] }
+							onChange={ ( val ) =>
+								setAttributes( {
+									[ key ]:
+										undefined === val
+											? ( 'desktop' === bp ? 30 : undefined )
+											: val,
+								} )
+							}
+							min={ 0 }
+							max={ 100 }
+							step={ 1 }
+							allowReset
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					);
+				} }
+			</ResponsiveControl>
 			{ /* Blend mode — the plain CSS `mix-blend-mode` keyword the overlay
 			   paints with against whatever sits behind it (media, block
 			   background). Options list mirrors block.json's enum verbatim;

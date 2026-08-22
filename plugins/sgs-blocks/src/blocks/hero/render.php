@@ -101,10 +101,13 @@ $overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient']
 // calls), never a second hand-rolled resolver here.
 $overlay_colour_hover_raw    = $attributes['backgroundOverlayColourHover'] ?? '';
 $overlay_gradient_hover_raw  = $attributes['overlayGradientHover'] ?? '';
-$overlay_colour_tablet_raw   = $attributes['backgroundOverlayColourTablet'] ?? '';
-$overlay_colour_mobile_raw   = $attributes['backgroundOverlayColourMobile'] ?? '';
-$overlay_gradient_tablet_raw = $attributes['overlayGradientTablet'] ?? '';
-$overlay_gradient_mobile_raw = $attributes['overlayGradientMobile'] ?? '';
+// D739: hero paints its OWN overlay (it opts out of the wrapper's), so it needs
+// its own copy of the tier reads — and this is the SECOND OWNER that made D718's
+// lesson recur: updating the shared wrapper alone left these four stranded, which
+// audit-block-file-consistency caught as undeclared_render_ref. The tier axis is
+// OPACITY now; null means this tier does not override.
+$overlay_opacity_tablet = $attributes['backgroundOverlayOpacityTablet'] ?? null;
+$overlay_opacity_mobile = $attributes['backgroundOverlayOpacityMobile'] ?? null;
 $overlay_blend_mode          = $attributes['backgroundOverlayBlendMode'] ?? '';
 // The split column's sources are TYPED, one family per media kind:
 // splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a
@@ -1053,21 +1056,16 @@ if ( '' !== $overlay_decls ) {
 		}
 	}
 
-	// Overlay responsive TIERS (D6, 2026-08-22) — project-standard 768/1024
-	// breakpoints. Emitted only when a tier explicitly sets its own colour/
-	// gradient; an unset tier inherits the desktop rule above via ordinary
-	// cascade.
-	if ( '' !== $overlay_colour_tablet_raw || '' !== $overlay_gradient_tablet_raw ) {
-		$overlay_tablet_paint = sgs_overlay_decls( $overlay_colour_tablet_raw, $overlay_gradient_tablet_raw );
-		if ( '' !== $overlay_tablet_paint ) {
-			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__overlay{' . $overlay_tablet_paint . '}}';
-		}
+	// Overlay responsive TIERS (D739) — the tier axis is OPACITY, not colour.
+	// Project-standard 768/1024 breakpoints. Only the opacity declaration is
+	// re-emitted: colour, gradient and blend mode are deliberately NOT per-tier,
+	// so restating them here would make the @media rule a second owner of those
+	// properties and it would silently outrank a later desktop edit.
+	if ( null !== $overlay_opacity_tablet && '' !== $overlay_opacity_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
 	}
-	if ( '' !== $overlay_colour_mobile_raw || '' !== $overlay_gradient_mobile_raw ) {
-		$overlay_mobile_paint = sgs_overlay_decls( $overlay_colour_mobile_raw, $overlay_gradient_mobile_raw );
-		if ( '' !== $overlay_mobile_paint ) {
-			$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__overlay{' . $overlay_mobile_paint . '}}';
-		}
+	if ( null !== $overlay_opacity_mobile && '' !== $overlay_opacity_mobile ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
 	}
 }
 
