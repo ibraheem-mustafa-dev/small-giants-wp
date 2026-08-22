@@ -203,62 +203,69 @@ attribute WP discards. Their warning is met, not violated.
 
 ## ▶ COLOUR-GOLDEN TRACK — LIVE STATUS 2026-08-22 (end of session)
 
-**All pushed to `origin/main`. Build GREEN. Canary DEPLOYED and QA Gate C PASSED live.**
-Executable front: `.claude/plans/go-colour-golden-track-flickering-wirth.md` — it carries
-the measured status, the remaining steps and the protocol. Read it, not this block.
+**All pushed to `origin/main` (`03d22433`). Build GREEN. Canary DEPLOYED and verified live.**
+Plan: `.claude/plans/invoke-autopilot-before-doing-jazzy-iverson.md`.
 
-**MEASURED (re-run, never quote):** rule 31 = **355** (below-min-states 181 / missing-gradient
-152 / native-colour-ui 22); ratchet **355**, zero slack; adoption surface **124 adoptable /
-113 refused / 4 adopted** (`colour-codemod/adopt.js --survey`).
+**MEASURED (re-run, never quote):** rule 31 = **309** (below-min-states 167 /
+missing-gradient 136 / native-colour-ui **6**), from THREE consecutive agreeing runs on a
+settled tree. Was 355 at session start.
 
-**SHIPPED:** R0 (the 11 handover findings — the plugin was uncommittable for EVERY session
-until this landed) · R1 ratchet 388→355 with a two-way negative control · R2a `adopt.js`
-(built, self-tested, **NOT applied**) · R2b borderRow passthrough · QA Gate C live.
+⛔ **MEASURE RULE 31 TWICE AND REQUIRE AGREEMENT.** The scanner is non-deterministic while
+files are being written: 315 then 312 back-to-back with 3 agents active; 309/309/309 once
+the tree settled. A council rater reported 409/388/355 and I wrongly filed the cause as
+unproven after nine QUIET runs agreed — nine runs of the wrong condition.
 
-**SHIPPED BUT NOT PLANNED — where the session actually went:**
-- `sgs/nav-drawer` handed to that session: it had NO text-colour control at all, and the
-  WCAG contrast value was the SOLE AUTHOR of its text colour. Now text colour + gradient,
-  close hover, background gradient, background image, operator-settable accessible name.
-- **Two exemption mechanisms rule 31 could not express.** Text-gradient exemption BY
-  MECHANISM (element manifest, stated once, no roster — cleared 23 and let sgs/button's
-  hand-written entry be deleted as a second owner). States exemption with a STRUCTURAL
-  anti-downgrade guard: REFUSED whenever the block already declares `<attr>Hover`, so
-  "cannot be hovered" is accepted and "hasn't wired hover yet" is not. Proven three ways.
-- **Text-block background layer** (heading/text/label): a text gradient was OVERWRITING or
-  CLIPPING the block's own background — both reachable with shipped controls. Background
-  moved to a `::after` layer; `isolation:isolate` is load-bearing, not decoration.
-- **Three broken editors fixed** — text/quote/testimonial threw ReferenceError.
+**SHIPPED THIS SESSION**
+- **`check-undefined-refs.js`** — new prebuild gate for JSX identifiers referenced but never
+  bound. Valid JS, `node --check` passes, fails only at runtime in the editor. Found **2 live
+  editor crashes** on its first run (`ContainerWrapperControls.js:169` SelectControl never
+  imported; `GridItemDefaultsPanel.js:42` constant defined nowhere), both from the 2026-08-17
+  panel split, both in `src/components/`-shaped files a block.json-gated corpus never opens.
+  `prove-selftest-can-fail.py` extended to `.js` targets (both subprocess sites).
+- **QA Gate C editor half** — 3/3 PASS live, re-confirmed post-deploy.
+- **16 blocks off the competing native colour panel**, flag flip PAIRED with a block-private
+  gradient via `fillRow()` + `sgs_fill_states_css()`. Gives `helpers-colour-variants.php` its
+  FIRST CALLERS. product-card's whole root box onto one owner (23 → 19).
+- **`sgs/accordion-item`'s background colour was SILENTLY DEAD and now works** — the D684
+  raw-slug defect (`background-color:primary` is invalid CSS the browser drops). Cause proven
+  three ways. Evidence: `reports/visual-diff/native-colour-ui-2026-08-22.md`.
 
-**REMAINING:** R2c special cases · R2d the 124-row sweep · R2e PHP emitters (**still zero
-callers**) · R3 hover shadow + GridItemDefaultsPanel · R4 folded into R2d · R5 editor-half
-verification · R6 wire the 5 unwired scripts.
+**⛔ TWO FALSIFICATIONS — do not re-plan on the old premises**
+1. **R2d/R2e cannot lower rule 31 or add capability.** `adopt.js`'s OWN self-test asserts
+   `statesCount`/`hasGradient` do not drift; rule 31 never reads PHP (`grep -c` = 0); and the
+   333 findings need NEW ATTRIBUTES, which `adopt.js` explicitly never writes. It is a
+   de-duplication pass — relabel it before running it.
+2. **The "22 uniform one-line flips" do not exist.** Only 1 of 22 was safe to flip bare; the
+   rest needed a control added first or the flip REMOVES the client's only gradient.
 
-⛔ **STILL OWED LIVE** (QA Gate C proved the RENDER half only): slug-not-hex on save+reload
-in the editor; hover repaint under a REAL pointer; nav-drawer's image/text/gradient with the
-drawer OPEN. Evidence so far: `reports/visual-diff/colour-golden-qa-gate-c-2026-08-22.md`.
+**REMAINING** — `notice-banner` (no `backgroundColour` at all), `icon-list` (background),
+`buybox`/`info-box`/`team-member` (background+text+gradient); the 303 below-min-states +
+missing-gradient findings; **`tab`/`testimonial-slider`/`trustpilot-reviews` still pass
+`textColour` RAW to the style engine — the same D684 defect on the TEXT path, their
+text-colour controls may be dead the same way.**
 
-⛔ **THREE GATE GAPS EXPOSED, each earned by a defect that reached `main`:**
-1. **Undefined JS references have NO gate** and broke three editors. The file is VALID
-   JavaScript — it parses, `node --check` passes, it fails only at runtime in the editor.
-   `check-undeclared-attrs.py` gates the INVERSE. A short `@babel/traverse` scope walk found
-   all three in one pass; it belongs in `prebuild`.
-2. **`extract-signatures.py` is NON-DETERMINISTIC** on `css_tier` for `columns` attrs — two
-   runs on an unchanged tree flipped post-grid and card-grid in OPPOSITE directions.
-3. **A `--fix` dry run can lie** — a prefix-trim diff printer reported a whole file changed.
-   `git diff` the OUTPUT, never the dry run.
+**⚠ OWED:** 9 of the 16 migrated blocks were NOT individually captured (same mechanism, all
+static gates green — but a shared mechanism is an argument, not a measurement).
+`collapsible-text` is NOT VERIFIED (probe rendered nothing, correct for empty content).
+Bean's eye has not passed over any of it (R-31-13).
 
-⛔ **METHOD TRAPS THAT COST TIME:** SGS block CSS is LIFTED to `uploads/sgs-css/<hash>.css`,
-so a page-source grep proves NOTHING · in a negative control restore by RE-APPLYING, never
-`git checkout --` (it deletes uncommitted work, not just the break) · never re-serialise a
-config without matching its own indent (2,503-line diff for a 25-line change) · a flat
-finding total hides a fix and a regression cancelling out — enumerate.
+**⚠ PROCESS, earned twice:** I under-specified two agent briefs and both shipped a silent
+client-facing defect while honestly reporting green — R2c DELETED `product-card`'s
+`cardPadding` render (control live, nothing rendering it), wave B left a permanently-true
+guard. `check-dead-controls` and `check-render-undefined-vars` were missing from the briefs.
+**The coordinator must re-run the FULL gate set; per-agent green is not evidence.**
 
-⚠ **CROSS-SESSION:** worktrees do NOT isolate the DB or the canary. `/sgs-update` is global —
-main checkout, one at a time, announced here. Deploys: ONE session from the main checkout;
-the ownership gate refused a deploy today because the canary carried another branch —
-**MERGE, never `--takeover`**. `[gates-ok: …]` is NOT a real bypass and exists in neither
-hook; the real ones are `SGS_VISUAL_GATE_SKIP=<block>[,<block>]` + reason and
-`[batch-ok:<reason>]` for a merge. The visual gate is CHANGE-KEYED (`source_sha`).
+**⚠ A wave agent ran `git stash` on the shared worktree** despite an explicit prohibition,
+reverting every session's in-flight work including an agent still writing, then popped it. It
+recovered (verified independently, not taken on trust). It could easily not have.
+
+**⚠ STRUCTURAL:** `08-raw-url-link`'s baseline key EMBEDS A LINE NUMBER and has now been
+re-anchored **six times** (191→189→191→225→250→247) for code that has never changed once. Any
+edit above a finding turns accepted debt into a build-blocking net-new finding.
+
+**⚠ NO GATE covers the `sgs_text_decls` half-adoption trap** — omit the companion
+`sgs_text_colour_gradient_fallback_rule` and the client's gradient silently paints nothing
+with every gate green (rule 31 never reads PHP). Hand-verified on product-card only.
 
 ## ▶ DOC-DEBT / MOTION-REGISTER TRACK — 2026-08-21 (a THIRD track; all pushed)
 
