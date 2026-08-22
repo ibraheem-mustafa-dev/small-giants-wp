@@ -667,7 +667,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "GRID"
       }
     },
@@ -959,7 +959,8 @@
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -1130,7 +1131,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "desktop",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -1868,16 +1869,6 @@
     },
     {
       "slug": "sgs/info-box",
-      "attr": "backgroundColourHover",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/info-box",
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -1992,7 +1983,8 @@
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -2526,13 +2518,6 @@
     },
     {
       "slug": "sgs/nav-menu",
-      "attr": "navBg",
-      "fields": {
-        "css_property": "background-color"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
       "attr": "navBgHover",
       "fields": {
         "css_property": "background-color",
@@ -2951,11 +2936,9 @@
     },
     {
       "slug": "sgs/process-steps",
-      "attr": "numberBackground",
+      "attr": "numberBackgroundHover",
       "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "number"
+        "css_property": "background-color"
       }
     },
     {
@@ -3332,6 +3315,13 @@
         "css_property": "border-color",
         "role": "color",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color"
       }
     },
     {
@@ -3747,6 +3737,13 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "quoteColourHover",
+      "fields": {
+        "css_property": "color"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "scaleHover",
       "fields": {
         "css_property": "transform"
@@ -3843,6 +3840,13 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -3883,6 +3887,13 @@
         "css_property": "color",
         "role": "color",
         "css_element": "first-letter"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "firstLetterColourHover",
+      "fields": {
+        "css_property": "color"
       }
     },
     {
@@ -4006,7 +4017,8 @@
       "attr": "badgeImageShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "badge-img"
+        "css_element": "badge-img",
+        "css_state": "hover"
       }
     },
     {
@@ -4039,7 +4051,8 @@
       "attr": "iconCircleShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "icon-badge"
+        "css_element": "icon-badge",
+        "css_state": "hover"
       }
     },
     {
@@ -6327,6 +6340,16 @@
     },
     {
       "slug": "sgs/info-box",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -6919,6 +6942,15 @@
       "fields": {
         "css_property": "tag",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "number"
       }
     },
     {
