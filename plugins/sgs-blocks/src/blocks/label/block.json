@@ -57,14 +57,24 @@
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
 						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
 						"css:text-align": "textAlign",
 						"css:font-family": "fontFamily",
-						"css:background-color": "backgroundColour",
 						"css:padding": "padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-radius": "borderRadius"
 					},
-					"_note": "Single-semantic-element block — the <span> root IS the wrapper (render.php:63, block-level element by contract). `padding` support is declared `false` (spacing.padding=false) — padding is instead the SGS custom object attr `padding` (pill-gated, base + paddingTablet/paddingMobile tiers), not native. No __experimentalBorder support at all — border-radius is the scalar `borderRadius` attr, and border-width/style/colour have no controls on this block (honest gaps: label has no border feature). No box-shadow, no hover states, no width/height/gap/aspect-ratio attrs — all honest gaps; label is a small text chip with no image surface (no fill members beyond background-color)."
+					"_note": "Single-semantic-element block — the <span> root IS the wrapper (render.php:63, block-level element by contract). `padding` support is declared `false` (spacing.padding=false) — padding is instead the SGS custom object attr `padding` (pill-gated, base + paddingTablet/paddingMobile tiers), not native. No __experimentalBorder support at all — border-radius is the scalar `borderRadius` attr, and border-width/style/colour have no controls on this block (honest gaps: label has no border feature). No box-shadow, no hover states, no width/height/gap/aspect-ratio attrs — all honest gaps; label is a small text chip with no image surface beyond `background-color`, which now lives on its own `background` element below (2026-08-22, text/background pseudo-element split) rather than sharing this element — `css:color`'s `background-clip:text` gradient mode would otherwise overwrite/clip a background painted on the SAME node."
+				},
+				"background": {
+					"label": "Background",
+					"order": 2,
+					"clusters": [ "fill" ],
+					"isWrapper": false,
+					"attrMap": {
+						"css:background-color": "backgroundColour"
+					},
+					"_note": "The block's own background paint, moved off the `label` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`label` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`. No gradient/hover siblings exist on this block's `backgroundColour` — a flat colour only."
 				}
 			}
 		}
@@ -82,6 +92,11 @@
 		"textColour": {
 			"type": "string",
 			"default": "primary"
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the label text with a masked-glyph gradient instead of a flat colour (D636 shape). Non-empty wins over textColour at render time."
 		},
 		"backgroundColour": {
 			"type": "string",

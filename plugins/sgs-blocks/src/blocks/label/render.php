@@ -55,8 +55,12 @@ $text = $attributes['text'] ?? '';
 // converter never emits one.
 $tag_name          = 'span';
 $text_colour       = $attributes['textColour'] ?? '';
-$background_colour = $attributes['backgroundColour'] ?? '';
-$font_family       = $attributes['fontFamily'] ?? '';
+// D636 shape — sibling gradient attribute, wins over $text_colour when set+
+// valid (mirrors sgs/heading/sgs/text; added here 2026-08-22 alongside the
+// text/background pseudo-element split).
+$text_colour_gradient = $attributes['textColourGradient'] ?? '';
+$background_colour    = $attributes['backgroundColour'] ?? '';
+$font_family          = $attributes['fontFamily'] ?? '';
 // fontSize is OBJECT-typed {desktop,tablet,mobile} (Spec 35 tier-object
 // migration) — normalise via the shared helper rather than raw-bracket-reading
 // a Tablet/Mobile SIBLING attr that no longer exists in this block's schema
@@ -126,7 +130,19 @@ $margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attribut
 $style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
 $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// `color.background` support is declared FALSE in block.json, so WP never
+// registers/writes a `backgroundColor` attr through the editor — but PHP
+// does not drop an undeclared attr written by hand-authored pattern/theme
+// content (D338). Fold a hand-authored preset slug into the SAME
+// background-paint path as the custom backgroundColour attr (used by the
+// `::after` background layer below) rather than adding WP's native
+// `has-{slug}-background-color` class: that class paints `!important`
+// directly on the root, which is exactly the text-gradient clip conflict
+// this file's `::after` background layer exists to avoid.
+$preset_bg_slug = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' === $background_colour && '' !== $preset_bg_slug ) {
+	$background_colour = $preset_bg_slug;
+}
 
 // ---------------------------------------------------------------------------
 // 3. Build the root element's declarations (scoped, NOT inline).
@@ -134,12 +150,23 @@ $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_clas
 
 $root_decls = array();
 
-if ( $text_colour ) {
-	$root_decls[] = 'color:' . sgs_colour_value( $text_colour );
+// D636 shape — sibling gradient attribute wins when set+valid; the gradient
+// path paints through the glyphs via background-clip:text (sgs_text_colour_
+// decl()), which is why the block's own background paint (below) is moved
+// off this same root element onto a `::after` layer instead.
+$text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
+if ( '' !== $text_colour_effective ) {
+	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
+	if ( '' !== $text_colour_decl ) {
+		$root_decls[] = $text_colour_decl;
+	}
 }
-// Background, border-radius, padding + the display model are BOX properties,
-// emitted below via the shared sgs_label_box_css_rule() helper (the SAME
-// renderer the product-card trial tag uses) — never here in $root_decls.
+// Background, border-radius, padding + the display model are BOX properties.
+// Border-radius/padding/display are emitted below via the shared
+// sgs_label_box_css_rule() helper (the SAME renderer the product-card trial
+// tag uses); background paint is NOT passed into that helper any more — it
+// is emitted on a `::after` pseudo-element layer instead (step 4b), so the
+// text-gradient clip above cannot reach it.
 if ( $font_weight ) {
 	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
 	if ( '' !== $font_weight_safe ) {
@@ -194,6 +221,12 @@ $scoped_css = array();
 
 if ( $root_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+}
+// D636 — old-browser fallback for a gradient textColour; a no-op (returns
+// '') when $text_colour was a flat colour.
+$text_colour_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
+if ( '' !== $text_colour_fallback_rule ) {
+	$scoped_css[] = $text_colour_fallback_rule;
 }
 
 // --- Base font-size — base + tablet + mobile on the SAME selector so the
@@ -269,13 +302,16 @@ if ( ! $has_style_variant ) {
 	}
 }
 
+// NOTE: 'background' is deliberately NOT passed to this shared helper any
+// more — sgs_label_box_css_rule() paints it onto $root_sel directly, which
+// the text-gradient clip above (background-clip:text) would overwrite/clip.
+// Background paint is emitted separately below on a `::after` layer instead.
 $box_css = sgs_label_box_css_rule(
 	array(
 		'padding'       => $padding_obj,
 		'paddingTablet' => $padding_tablet_obj,
 		'paddingMobile' => $padding_mobile_obj,
 		'radius'        => $radius_value,
-		'background'    => $background_colour,
 		'display'       => $label_display,
 		'fullWidth'     => $label_fullwidth,
 	),
@@ -283,6 +319,17 @@ $box_css = sgs_label_box_css_rule(
 );
 if ( '' !== $box_css ) {
 	$scoped_css[] = $box_css;
+}
+
+// --- Block background — painted on a `::after` layer, never the root
+// itself (this block has no gradient background attribute, only a flat
+// colour, and no hover state). See sgs_block_background_layer_css(). ---
+$background_layer_css = sgs_block_background_layer_css(
+	$root_sel,
+	sgs_background_paint_decl( $background_colour, '' )
+);
+if ( '' !== $background_layer_css ) {
+	$scoped_css[] = $background_layer_css;
 }
 
 // --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
@@ -330,13 +377,14 @@ if ( ! empty( $color_args ) ) {
 
 $root_classes = array( 'wp-block-sgs-label', $uid );
 
+// Preset TEXT colour slug re-adds the standard has-* class (it sets colour
+// from the theme palette). The background preset slug does NOT get its
+// native class here — it was folded into $background_colour above and
+// paints through the `::after` background layer instead (see that fold's
+// comment).
 if ( '' !== $preset_text_slug ) {
 	$root_classes[] = 'has-text-color';
 	$root_classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$root_classes[] = 'has-background';
-	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 }
 
 $wrapper_attrs = get_block_wrapper_attributes(

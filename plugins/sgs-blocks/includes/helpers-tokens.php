@@ -837,6 +837,56 @@ function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string
 }
 
 /**
+ * Move a block's own BLOCK BACKGROUND paint off the element itself onto a
+ * `::after` pseudo-element layer, so a sibling text-gradient
+ * (`sgs_text_colour_decl()`'s `background-clip:text`) painted on the SAME
+ * element cannot overwrite it (both use `background-image`) or clip it to
+ * the glyph shapes (both are subject to the same `background-clip`).
+ *
+ * WHY `::after` AND NOT `::before`: `sgs_border_gradient_css()` already owns
+ * `::before` on every block this applies to (heading/text/label all call it
+ * for their border-colour-gradient capability — a masked ring painted via
+ * `{$selector}::before`). Two pseudo-elements cannot share one selector, so
+ * this layer takes the only slot left. Paint order does not matter: both
+ * pseudo-elements are absolutely positioned with `inset:0`, and this layer's
+ * `z-index:-1` keeps it behind everything else inside the stacking context
+ * `isolation:isolate` creates on the root — the border ring (auto z-index)
+ * and the text glyphs both still paint above it regardless of source order.
+ *
+ * `isolation:isolate` (NOT `z-index:0`) is deliberate: `position:relative`
+ * alone does not create a stacking context, so a `z-index:-1` child can
+ * escape BEHIND an ancestor's own background (e.g. this element nested
+ * inside an `sgs/container` that paints its own background) and vanish.
+ * `isolation` creates the stacking context the negative z-index needs
+ * without pulling the root itself out of `auto` stacking among its own
+ * siblings — a side effect a bare `z-index:0` would additionally cause.
+ *
+ * A NO-OP (returns '') when both paint declarations are empty, so a block
+ * with no background renders byte-identical CSS to before this helper
+ * existed.
+ *
+ * @param string $selector         Scoped selector for the block root (e.g. `.{uid}.wp-block-sgs-heading`).
+ * @param string $paint_decl       Resting-state paint, already resolved by `sgs_background_paint_decl()` (e.g. `background-color:...` or `background-image:...`). Empty = no resting paint.
+ * @param string $hover_paint_decl Hover-state paint, same shape. Empty = no hover paint. Skipped when identical to $paint_decl.
+ * @return string Scoped CSS (the root's position/isolation rule + one or two `::after` rules), or '' when there is no paint at all.
+ */
+function sgs_block_background_layer_css( string $selector, string $paint_decl, string $hover_paint_decl = '' ): string {
+	if ( '' === $paint_decl && '' === $hover_paint_decl ) {
+		return '';
+	}
+
+	$css  = "{$selector}{position:relative;isolation:isolate;}";
+	$css .= "{$selector}::after{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;";
+	$css .= $paint_decl . ';}';
+
+	if ( '' !== $hover_paint_decl && $hover_paint_decl !== $paint_decl ) {
+		$css .= "{$selector}:hover::after,{$selector}:focus-within::after{{$hover_paint_decl};}";
+	}
+
+	return $css;
+}
+
+/**
  * Resolve an overlay LAYER's complete CSS declaration set — colour/gradient
  * paint plus its own opacity (D717, 2026-08-21) plus its own blend mode
  * (D6/Step 8, 2026-08-22).

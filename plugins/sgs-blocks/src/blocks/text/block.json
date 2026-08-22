@@ -66,10 +66,8 @@
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
 						"css:color": "textColour",
-						"css:background-image": "backgroundColourGradient",
 						"css:text-align": "textAlign",
 						"css:font-family": "fontFamily",
-						"css:background-color": "backgroundColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
@@ -88,15 +86,32 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
-								"css:background-image": "backgroundColourHoverGradient",
-								"css:background-color": "backgroundColourHover",
 								"css:box-shadow": "boxShadowHover",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover"
 							}
 						}
 					},
-					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color/background-color map to the SGS custom textColour/backgroundColour attrs directly, not native:. No `layer` — no children to arrange. scaleHover has no Spec 35 vocabulary member and is left unclaimed."
+					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color maps to the SGS custom textColour attr directly, not native:. No `layer` — no children to arrange. scaleHover has no Spec 35 vocabulary member and is left unclaimed. `css:background-color`/`css:background-image` (+ their Hover siblings) moved OFF this element onto the new `background` element below (2026-08-22, text/background pseudo-element split) — this element's `css:color-gradient` paints via `background-clip:text`, which would otherwise overwrite/clip a background painted on the SAME node."
+				},
+				"background": {
+					"label": "Background",
+					"order": 3,
+					"clusters": [ "fill" ],
+					"isWrapper": false,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The block's own background paint, moved off the `text` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`text` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`."
 				},
 				"first-letter": {
 					"label": "Drop cap (first letter)",

@@ -245,7 +245,19 @@ $style_color_text     = isset( $attributes['style']['color']['text'] ) ? (string
 $style_color_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
 $style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
 $preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// `color.background` support is declared FALSE in block.json, so WP never
+// registers/writes a `backgroundColor` attr through the editor — but PHP
+// does not drop an undeclared attr written by hand-authored pattern/theme
+// content (D338). Fold a hand-authored preset slug into the SAME background-
+// paint path as the custom backgroundColour attr (below) rather than adding
+// WP's native `has-{slug}-background-color` class: that class paints
+// `!important` directly on the root element, which is exactly the conflict
+// the `::after` background layer exists to avoid (a text gradient's
+// `background-clip:text` would clip it to the glyph shapes same as before).
+$preset_bg_slug = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' === $background_colour && '' === $background_colour_gradient && '' !== $preset_bg_slug ) {
+	$background_colour = $preset_bg_slug;
+}
 
 // ---------------------------------------------------------------------------
 // 3. Build the text element's typography declarations (scoped, NOT inline).
@@ -330,10 +342,12 @@ if ( '' !== $text_wrap && in_array( $text_wrap, $allowed_text_wrap, true ) ) {
 $wrapper_decls = array();
 
 if ( ! $inherit_style ) {
-	$background_decl = sgs_background_paint_decl( $background_colour, $background_colour_gradient );
-	if ( $background_decl ) {
-		$wrapper_decls[] = $background_decl;
-	}
+	// Block-background paint moved OFF this decl list onto a `::after`
+	// pseudo-element layer (step 5) — a text gradient painted on THIS SAME
+	// element via `sgs_text_colour_decl()` uses `background-clip:text`,
+	// which silently overwrites (same `background-image` property) or clips
+	// (same box) a background painted directly on the root. See
+	// `sgs_block_background_layer_css()` in helpers-tokens.php.
 	// $border_style is allowlist-validated above (stronger than the keyword regex).
 	if ( $border_style && 'none' !== $border_style ) {
 		$wrapper_decls[] = 'border-style:' . $border_style;
@@ -389,10 +403,9 @@ if ( '' !== $hover_colour_effective ) {
 		$hover_rules[] = $hover_colour_decl;
 	}
 }
-$hover_background_decl = sgs_background_paint_decl( $hover_background, $hover_background_gradient );
-if ( $hover_background_decl ) {
-	$hover_rules[] = $hover_background_decl;
-}
+// Hover background paint is NOT joined into $hover_rules (which targets the
+// root element) — it is emitted on the `::after` background layer instead,
+// alongside the resting-state background, in step 5b below.
 if ( $box_shadow_hover ) {
 	$hover_rules[] = 'box-shadow:' . sgs_shadow_value( $box_shadow_hover );
 }
@@ -495,6 +508,26 @@ if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
 }
 
+// --- Block background — painted on a `::after` layer, never the root itself.
+// A text gradient on this same element (sgs_text_colour_decl()) uses
+// background-clip:text, which would overwrite/clip a background painted
+// directly on the root — see sgs_block_background_layer_css(). ---
+if ( ! $inherit_style ) {
+	$background_layer_css = sgs_block_background_layer_css(
+		$root_sel,
+		sgs_background_paint_decl( $background_colour, $background_colour_gradient ),
+		sgs_background_paint_decl( $hover_background, $hover_background_gradient )
+	);
+	if ( '' !== $background_layer_css ) {
+		$scoped_css[] = $background_layer_css;
+		// Keep the ::after layer's own background transition in step with the
+		// root's hover transition above (only relevant when a hover state exists).
+		if ( $hover_rules || $has_scale ) {
+			$scoped_css[] = "{$root_sel}::after{transition:background-color {$transition_duration}ms {$transition_easing},background-image {$transition_duration}ms {$transition_easing};}";
+		}
+	}
+}
+
 // --- Border gradient (D636 border builder) — masked ::before, wins over the flat
 // border-color decl above (emitted after it so the cascade favours the mask). ---
 if ( ! $inherit_style && '' !== $border_colour_gradient ) {
@@ -594,16 +627,15 @@ if ( $is_subheading ) {
 	$root_classes[] = 'wp-block-sgs-heading--subheading';
 }
 
-// Preset colour slugs — the `color` support is skip-serialised, so re-add the
-// standard has-* classes manually (they set the colour from the theme palette).
+// Preset TEXT colour slug — the `color` support is skip-serialised, so
+// re-add the standard has-* class manually (it sets the colour from the
+// theme palette). The background preset slug does NOT get its native class
+// here — it was folded into $background_colour above and paints through the
+// `::after` background layer instead (see that fold's comment).
 if ( ! $inherit_style ) {
 	if ( '' !== $preset_text_slug ) {
 		$root_classes[] = 'has-text-color';
 		$root_classes[] = 'has-' . $preset_text_slug . '-color';
-	}
-	if ( '' !== $preset_bg_slug ) {
-		$root_classes[] = 'has-background';
-		$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 	}
 }
 

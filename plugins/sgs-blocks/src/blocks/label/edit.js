@@ -17,6 +17,7 @@ import {
 	sgsNormaliseLength,
 	sgsHasLength,
 	sgsLengthPreview,
+	resolveTextColourPreviewStyle,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
@@ -121,6 +122,7 @@ function boxShorthand( box ) {
 function buildStyle( attributes ) {
 	const {
 		textColour,
+		textColourGradient,
 		backgroundColour,
 		fontFamily,
 		fontSize,
@@ -154,7 +156,7 @@ function buildStyle( attributes ) {
 			: fontSize;
 
 	const previewStyle = {
-		color: colourVar( textColour ) || undefined,
+		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
 		fontFamily: fontFamily || undefined,
 		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit }` : undefined,
 		fontWeight: fontWeight || undefined,
@@ -209,6 +211,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		text,
 		style,
 		textColour,
+		textColourGradient,
 		backgroundColour,
 		fontSize,
 		fontSizeUnit,
@@ -246,6 +249,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -253,6 +257,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},

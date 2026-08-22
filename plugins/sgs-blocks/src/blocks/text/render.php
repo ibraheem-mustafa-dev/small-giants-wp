@@ -222,10 +222,12 @@ if ( '' !== $text_colour_effective ) {
 	}
 }
 
-$background_decl = sgs_background_paint_decl( $background_colour, $background_colour_gradient );
-if ( $background_decl ) {
-	$base_decls[] = $background_decl;
-}
+// Block-background paint is NOT joined into $base_decls (the root element) —
+// a text gradient on this same element (sgs_text_colour_decl() above) uses
+// background-clip:text, which would overwrite (same background-image
+// property) or clip (same box) a background painted directly on the root.
+// It is emitted on a `::after` pseudo-element layer instead, in step 6b
+// below — see sgs_block_background_layer_css() in helpers-tokens.php.
 
 if ( $font_weight ) {
 	$base_decls[] = 'font-weight:' . esc_attr( $font_weight );
@@ -376,6 +378,27 @@ if ( '' !== $border_colour_gradient ) {
 	$css_base_decls       .= sgs_border_gradient_css( $scope, $border_colour_gradient, null, $border_gradient_width );
 }
 
+// Block background — painted on a `::after` layer, never the root itself. A
+// text gradient on this same element (sgs_text_colour_decl() above) uses
+// background-clip:text, which would overwrite/clip a background painted
+// directly on the root. See sgs_block_background_layer_css().
+$background_layer_hover_decl = sgs_background_paint_decl( $hover_background, $hover_background_gradient );
+$background_layer_css        = sgs_block_background_layer_css(
+	$scope,
+	sgs_background_paint_decl( $background_colour, $background_colour_gradient ),
+	$background_layer_hover_decl
+);
+if ( '' !== $background_layer_css ) {
+	$css_base_decls .= $background_layer_css;
+	// Keep the ::after layer's own background transition in step with the
+	// root's hover transition (built further below) when a hover BACKGROUND
+	// is actually set — $has_hover itself is computed later in this file, so
+	// checked directly here rather than relying on it out of order.
+	if ( '' !== $background_layer_hover_decl ) {
+		$css_base_decls .= $scope . '::after{transition:background-color ' . $transition_duration . 'ms ' . $transition_easing . ',background-image ' . $transition_duration . 'ms ' . $transition_easing . ';}';
+	}
+}
+
 // Base padding/margin/border-radius — Box-object interface contract (b): the
 // block declares __experimentalSkipSerialization on spacing + border.radius
 // supports, so WP does NOT auto-inline these; $attributes['style'] is still
@@ -503,10 +526,8 @@ if ( $has_hover ) {
 			$hover_decls[] = $hover_colour_decl;
 		}
 	}
-	$hover_background_decl = sgs_background_paint_decl( $hover_background, $hover_background_gradient );
-	if ( $hover_background_decl ) {
-		$hover_decls[] = $hover_background_decl;
-	}
+	// Hover background paint is NOT joined into $hover_decls (the root element)
+	// — it is emitted on the `::after` background layer instead, in step 6b.
 	if ( null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001 ) {
 		$hover_decls[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
 	}
