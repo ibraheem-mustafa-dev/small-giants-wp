@@ -137,6 +137,41 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 const { hasRealReason } = require( '../core/baseline' );
+
+/**
+ * Does this attribute's element ALSO paint a background?
+ *
+ * A text gradient is `background-image` plus `background-clip:text`, and
+ * background-clip clips the element's WHOLE background painting area to the
+ * glyph shapes — background-COLOUR included. So on an element that carries its
+ * own background, a text gradient would clip that background to the letters and
+ * destroy the fill. The text row on such an element has no valid gradient form.
+ *
+ * ⭐ STATED ONCE HERE, NOT PER BLOCK (Bean's ruling 2026-08-22; the same shape as
+ * the shadow exemption, S-3). The fact is read from the element manifest — an
+ * element whose attrMap maps both a `css:color*` and a `css:background*` member
+ * IS the shared element — so no block list is hardcoded and no per-block
+ * `colourExemptions` entry has to be written and then kept honest. sgs/button is
+ * the canonical case: D288 makes the <a> itself the block root, so its `button`
+ * element maps css:color alongside css:background-color/background-image, while
+ * its separate `icon` element maps css:color alone and stays gradient-capable.
+ *
+ * @param {Object} elements supports.sgs.elements
+ * @param {string} attrName The row's resting attribute name.
+ * @return {boolean} True when text and background share one element.
+ */
+function textSharesElementWithBackground( elements, attrName ) {
+	if ( ! attrName || ! elements || typeof elements !== 'object' ) return false;
+	for ( const el of Object.values( elements ) ) {
+		if ( ! el || typeof el !== 'object' || ! el.attrMap ) continue;
+		const members = Object.keys( el.attrMap );
+		if ( ! Object.values( el.attrMap ).includes( attrName ) ) continue;
+		const paintsText = members.some( ( m ) => m.startsWith( 'css:color' ) );
+		const paintsBackground = members.some( ( m ) => m.startsWith( 'css:background' ) );
+		return paintsText && paintsBackground;
+	}
+	return false;
+}
 const { resolveComponentFiles } = require( '../core/components' );
 
 const RAW_COLOUR_COMPONENT_NAMES = new Set( [
@@ -720,7 +755,34 @@ module.exports = {
 			const mechanismInfo = recordRowMechanism( ctx, block.slug, rowKey, attrName, gradientAttrName );
 
 			// ── (3) row-below-minimum-states ─────────────────────────────────
-			if ( statesCount < required ) {
+			//
+			// A row may be exempted from the state floor, but ONLY for a row whose
+			// element cannot be hovered at all — a drawer PANEL, a section
+			// background, body text. Never for a row whose block simply has not
+			// wired hover yet (Bean's ruling, 2026-08-22).
+			//
+			// ⭐ THAT DISTINCTION IS ENFORCED STRUCTURALLY, NOT BY THE PROSE. A reason
+			// string alone would decay into the boilerplate the brief predicted for
+			// shadows ("N copies of one sentence, each copy then a finding"). So the
+			// exemption is REFUSED whenever the block already declares a matching
+			// `<attr>Hover` attribute: if that attribute exists, the element
+			// demonstrably CAN carry a hover state, and claiming otherwise would be a
+			// capability downgrade dressed as conformance. sgs/button.colourText is
+			// the case this protects — it declares colourTextHover and had a real
+			// hover text colour under WP-native colour support; it must never become
+			// states-exempt.
+			const statesExemption = colourExemptions ? colourExemptions[ rowKey ] : null;
+			const hoverAttrExists =
+				!! attrName &&
+				!! ( blockJson && blockJson.attributes && blockJson.attributes[ attrName + 'Hover' ] );
+			const statesExempt =
+				statesCount >= 1 &&
+				!! statesExemption &&
+				statesExemption.rule === 'states' &&
+				hasRealReason( statesExemption.reason ) &&
+				! hoverAttrExists;
+
+			if ( statesCount < required && ! statesExempt ) {
 				findings.push( {
 					...makeFinding( {
 						rule: ruleId,
@@ -734,9 +796,18 @@ module.exports = {
 							'.json controls.colour.states — minimum 2, or 1 + the states declared on this ' +
 							'attribute\'s matching supports.sgs.elements entry).',
 						fix:
-							`Add the missing state(s) to this row's states array (a "hover" state at minimum ` +
-							'— see sgs/button edit.js:381-399 for the canonical 2-state shape, or sgs/tabs ' +
-							'edit.js:176-199 for the 3-state normal/hover/active shape).',
+							hoverAttrExists && statesExemption && statesExemption.rule === 'states'
+								? `EXEMPTION REFUSED: this block declares "${ attrName }Hover", so this element ` +
+								  'CAN carry a hover state — the row is unwired, not un-hoverable. Wire the ' +
+								  'hover state instead of exempting it; exempting here would remove a ' +
+								  'capability the block already has.'
+								: `Add the missing state(s) to this row's states array (a "hover" state at minimum ` +
+								  '— see sgs/button edit.js:381-399 for the canonical 2-state shape, or sgs/tabs ' +
+								  'edit.js:176-199 for the 3-state normal/hover/active shape). If this row paints ' +
+								  'an element that CANNOT be hovered (a panel, a section background, body text), ' +
+								  'declare block.json supports.sgs.colourExemptions."' + rowKey + '" = ' +
+								  '{ "rule": "states", "reason": "<why this element has no hover state>" } — a ' +
+								  'boilerplate reason will not suppress this finding.',
 						keyParts: [ 'row-below-minimum-states', rowKey, String( line ) ],
 					} ),
 					kind: 'below-min-states',
@@ -774,10 +845,16 @@ module.exports = {
 
 				if ( ! hasAnyGradient || mismatched ) {
 					const exemption = colourExemptions ? colourExemptions[ rowKey ] : null;
+					// A TEXT row sharing its element with a background has no valid
+					// gradient form — exempt BY MECHANISM, stated once (see
+					// textSharesElementWithBackground). This supersedes any per-block
+					// entry for that case, exactly as the shadow exemption does.
+					const sharedElementTextExempt =
+						mechanismInfo.effectiveMechanisms.includes( 'text' ) &&
+						textSharesElementWithBackground( elements, attrName );
 					const exempt =
-						exemption &&
-						exemption.rule === 'gradient' &&
-						hasRealReason( exemption.reason );
+						sharedElementTextExempt ||
+						( exemption && exemption.rule === 'gradient' && hasRealReason( exemption.reason ) );
 					if ( ! exempt ) {
 						const mechanismText = mechanismKnown
 							? ` (resolved mechanism: ${ mechanismInfo.mechanisms.join( '/' ) }, from ` +

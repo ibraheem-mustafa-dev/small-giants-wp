@@ -53,12 +53,6 @@
 					"borderRadiusMobile"
 				]
 			},
-			"colourExemptions": {
-				"text": {
-					"rule": "gradient",
-					"reason": "A text gradient needs background-clip:text, which hijacks the element's own background box. sgs/button has no wrapper (D288 — the <a>/<button> IS the block root), so the SAME element carries colourBackground/colourBackgroundGradient. Enabling it here would let a text gradient silently overwrite the button's own background-image and clip the whole fill to the glyph shapes, destroying the button's background outside the text. Same mechanism, same reason as sgs/site-header's exemption on its wrapper row."
-				}
-			},
 			"elements": {
 				"button": {
 					"label": "Button",
