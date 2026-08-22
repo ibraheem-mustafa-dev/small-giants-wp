@@ -116,8 +116,26 @@ project has drifted.
                  per-block scan never reads); 40 have no recognisable colour paint call at all.
                  So this step MUST also resolve calls made from
                  `includes/class-sgs-container-wrapper.php` when a block routes through it —
-                 mirroring what `reachedComponents()` already does for shared JSX — and MUST triage
-                 the 40 "neither" blocks rather than silently reporting them as clean.
+                 mirroring what `reachedComponents()` already does for shared JSX.
+                 ⛔ BUT THAT ONLY CLOSES HALF THE BLIND SPOT, and the plan previously overstated it.
+                 MEASURED: the wrapper contains ZERO calls to `sgs_background_paint_decl` or
+                 `sgs_text_colour_decl` (grep returns 0 across its 3,243 lines). It calls
+                 `sgs_overlay_decls(` (:1560, :2017) and `sgs_border_gradient_css(` (:1924, scoped
+                 to the GRID-ITEM border pair only). So a wrapper-routed block's OVERLAY and
+                 GRID-ITEM-BORDER rows resolve; its FILL and TEXT rows do NOT, under any code path.
+                 ⛔ THE VOCABULARY MUST WIDEN OR MOST OF THE TREE STAYS UNRESOLVED. The 40 "neither"
+                 blocks are at least THREE populations, and the dominant one is not exotic:
+                   (a) a bare `sgs_colour_value(` call hand-embedded into a CSS string — e.g.
+                       `team-member/render.php:544` emits `…__name{color:' . sgs_colour_value(…)`;
+                       also `label:138`, `separator:147`, `breadcrumbs:120-123`. This is REAL paint
+                       and the 4-helper vocabulary cannot see it.
+                   (b) a different helper family — `business-info:88` uses
+                       `sgs_svg_stroke_gradient()`.
+                   (c) native WP colour supports with no PHP helper at all.
+                 ⛔ ALSO ADD `sgs_shadow_value_composed(` (helpers-tokens.php:703, 12 blocks direct
+                 + 2 wrapper sites). It is deliberately NOT in the census's helper list, so without
+                 it every shadow row lands UNRESOLVED — which would silently break Step 3's shadow
+                 exemption, since that only fires for a row resolved AS shadow.
                  RESOLUTION ALGORITHM, stated so two implementers converge: follow at most ONE
                  intermediate variable hop from the `$attributes[...]` read to the helper call
                  (e.g. `$attr -> $var -> helper($var)`); anything longer, or a computed key, is
@@ -325,8 +343,10 @@ with no repair step is a backlog entry pretending to be a fix.
       Happy:       Shadow hover repaints on a real pointer hover, live
       Edge:        A block whose shadow renders via a preset slug (self-contained, no colour) — must
                    not gain a meaningless hover colour
-      Fail:        NEGATIVE CONTROL: a hover attr declared but never rendered -> check-dead-controls
-                   must go RED. Observe it.
+      Fail:        NEGATIVE CONTROL — must be a LIVE check, not check-dead-controls (see the
+                   Action note: CHECK 5 is advisory and cannot go red). Declare a hover attr, wire
+                   the control, do NOT add the `:hover` rule, deploy, and confirm on the canary
+                   that hovering changes NOTHING. Then add the rule and confirm it repaints.
       Integration: build green; ratchet lowered
 
     ✅ ALREADY DONE (D740, this session): ShadowControl's picker was missing `linked`, so it stored a
@@ -466,7 +486,7 @@ across all 83 blocks:
 | render.php pattern | Blocks |
 |---|---|
 | Calls a colour helper DIRECTLY | **25** |
-| Routes via `SGS_Container_Wrapper::render()` | **17** — the helper call lives in a shared file the per-block scan never reads |
+| Routes via `SGS_Container_Wrapper::render()` | **18** — the helper call lives in a shared file the per-block scan never reads |
 | Neither | **40** — no recognisable colour paint call at all |
 
 ⭐ **All three reference blocks (`container`, `heading`, `button`) are in the resolvable 25.** The plan
