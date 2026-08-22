@@ -596,10 +596,12 @@ concluding "this block emits no `<nav>`" from a grep that could not match, becau
 from another file. Grepping for absence would have repeated the documented mistake. The proof was
 reading the `printf()` at the end of the file.
 
-**Scale + state:** 20 densest files done, ~370 lines removed across 78 files; ~70 files remain as
-an open, unblocked cleanup track (`.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`,
-ready-to-run prompt at `.claude/prompts/2026-08-21-owed-C-comment-narrative-cleanup.md`). NOT parked —
-parking is for BLOCKED or POSTPONED work only.
+**Scale + state (as at 2026-08-21):** 20 densest files done, ~370 lines removed across 78 files;
+~70 files remained as an open, unblocked cleanup track. ✅ **CLOSED 2026-08-22** — the whole track
+finished at ~91 files / ~593 lines (`ec8166e9`, `c765e6cb`, `1ac16ec9`, `2d198176`, `f28b036a`).
+Its plan + prompt files were DELETED on completion; the surviving artefact is
+`.claude/reports/2026-08-21-unenforced-prohibition-register.md`. NOT parked — parking is for
+BLOCKED or POSTPONED work only.
 
 **Two traps for anyone continuing.** Removing comments can make consecutive assignments contiguous
 and trip a phpcs alignment sniff — the comment was acting as a GROUP SEPARATOR, so fix it by

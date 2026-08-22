@@ -271,40 +271,51 @@ no-inline prose → one pointer per block · `R-22-14`→`R-31-14` ×14 · scrol
 **⛔ Detail, owed follow-ups, and the 11-gate-backed-vs-37-UNENFORCED split:
 `.claude/reports/2026-08-21-unenforced-prohibition-register.md`. Read before continuing.**
 
-## ▶ CLEANUP TRACK — comment-narrative trim: ALL FILES REVIEWED 2026-08-22
+## ▶ CLEANUP TRACK — comment-narrative trim: CLOSED 2026-08-22
 
-**~91 files reviewed, ~593 lines of change-narrative cut. Nothing unreviewed remains.**
-Batch 1 (21 files) + batch 2 `ec8166e9` (23 files, pushed) + batch 3 (31 files, VERIFIED but
-UNCOMMITTED). Detail: `.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`.
+**Done, committed, pushed. Do not re-open this to "continue" it.** ~91 files reviewed,
+~593 lines of change-narrative removed. Commits: `8fee70ac`/`6aa55619`/`4313227c` (batch 1,
+21 files) · `ec8166e9` (batch 2, 23) · `c765e6cb` (batch 3, 31) · `1ac16ec9` (dead fx PHP
+mirror) · `2d198176` (/sgs-update reseed) · `f28b036a` (docs).
 
-⚠ **Do NOT re-run the detector's `--survey` and conclude work remains.** It ranks CANDIDATES,
-not removables; `nav-menu` (349) and `hero` (338) still top the list and were both trimmed in
-batch 1. Realised removal rate is 11-14%.
+The plan + prompt files are DELETED — the track is finished and they would only be
+re-executed by mistake. The prohibition register survives at
+`.claude/reports/2026-08-21-unenforced-prohibition-register.md` (reports are permanent).
 
-**Owed item closed:** the `card-grid` duplicate `$hover_bg_gradient` was already fixed by
-`a9ea9b8f`; the track doc's claim was true when written and stale a day later.
-**Owed item done:** `generated-fx-qualifying-blocks.php` deleted + the generator stopped emitting
-it (Spec 38); proven by running the generator and confirming it does not reappear, with a
+⚠ **Do NOT re-run `extract-comment-narrative.py --survey` and conclude work remains.** It
+ranks CANDIDATES, not removables. `nav-menu` (349) and `hero` (338) still top the list and
+were both trimmed in batch 1; realised removal rate is 11-14%. Misleading read cold.
+
+**Both owed items closed.** `card-grid`'s duplicate `$hover_bg_gradient` was already fixed
+by `a9ea9b8f` — the claim was true when written and stale a day later.
+`generated-fx-qualifying-blocks.php` is deleted and the generator no longer emits it
+(Spec 38) — proven by running the generator and confirming it does not reappear, with a
 negative control on `check_fx_qualifying_blocks_stale.py`.
 
-### ⛔ BLOCKED — and it blocks EVERY track, not just this one
+### ⛔ HANDED TO THE COLOUR-GOLDEN TRACK — open, and it blocks EVERY track
 
-`.githooks/pre-commit` runs `db-consistency/run.py --check` unconditionally for any staged path
-under `plugins/sgs-blocks/`, and **has no bypass token**. It currently reports 4 NEW violations,
-so **no commit touching the plugin can land** until they are closed.
+A `/sgs-update` reseed EXPOSED 7 element-manifest orphans + 4 reseed-survival defects in
+that track's colour work (evidence it exposed rather than caused: the failing manifest gate
+reads only `block.json` files and the reseed touched none). **NOT baselined** — three are
+live clone-misrouting defects and the baseline file stores keys with no reasons.
 
-The 4 (plus 7 element-manifest orphans) are the colour-golden track's colour work. A `/sgs-update`
-reseed EXPOSED them; it did not cause them — the failing manifest gate reads only `block.json`
-files and the reseed touched none. Deliberately NOT baselined: three are live clone-misrouting
-defects and the baseline file stores no reasons.
+`.githooks/pre-commit` runs `db-consistency --check` unconditionally for any staged path
+under `plugins/sgs-blocks/` and **has no bypass token**, so until these close, every commit
+to the plugin needs `--no-verify`. This track's last three commits did exactly that, after
+running all six other gates by hand and recording each exit code in the commit message.
 
-**Full handover, with the fix each one needs:
-`.claude/reports/2026-08-22-handover-to-colour-golden-track.md`** — sent to that track 2026-08-22.
+**Full handover with the fix each needs:
+`.claude/reports/2026-08-22-handover-to-colour-golden-track.md`** (sent 2026-08-22).
 
-⚠ **That gate's suggested fix is WRONG** — it says add `"css:border-color": "borderColourHover"`
-to a base `attrMap`, but the blocks declare both the base and hover attrs, which collide on that
-key. Correct mechanism is `states.hover` (0 of 83 blocks use the suggested shape; 16 use
-`states.hover`).
+⚠ **That gate's suggested fix is WRONG** — it says map `"css:border-color"` to
+`"borderColourHover"` on a base `attrMap`, but the blocks declare BOTH base and hover attrs,
+which collide on that key. Correct mechanism is `states.hover` (0 of 83 blocks use the
+suggested shape; 16 use `states.hover`).
+
+⚠ **`sgs/text.firstLetterColourHover` must NOT be declared until its code is fixed** —
+`text/render.php:519-524` sits inside `if ( $hover_decls )`, so it and `borderColourHover`
+are DEAD CONTROLS unless another hover setting already fired, and it paints the root rather
+than `::first-letter`.
 
 ## ▶ TIER W (MOTION) TRACK — CLOSED 2026-08-21
 

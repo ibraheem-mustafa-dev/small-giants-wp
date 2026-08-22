@@ -143,10 +143,10 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   is documentation. Rank targets by duplication DENSITY, never raw line count.
   **Where this went (all IN-REPO — the earlier pointer was to a `~/.claude/` path a fresh session
   on another machine cannot read):** the owed list + the 11-gate-backed-vs-37-UNENFORCED
-  prohibition split is `.claude/reports/2026-08-21-unenforced-prohibition-register.md`; the
-  remaining ~70-file comment sweep is an open unblocked track at
-  `.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`; three ready-to-paste session
-  prompts are in `.claude/prompts/`. Decisions: D722 (closures), D723 (scroll-smoother),
+  prohibition split is `.claude/reports/2026-08-21-unenforced-prohibition-register.md` (extended
+  2026-08-22 with a second classification pass). The ~70-file comment sweep is ✅ **DONE** — the
+  track closed 2026-08-22 at ~91 files / ~593 lines, and its plan + prompt files were deleted on
+  completion, so do not go looking for them. Decisions: D722 (closures), D723 (scroll-smoother),
   D727 (comments explain function, not change).
 
 ### Step 21 — re-run the adversarial council [OPEN — DELIBERATELY LAST]
