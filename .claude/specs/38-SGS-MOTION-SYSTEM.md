@@ -279,6 +279,16 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   as FR-38-18/19), injected by a `render_block_woocommerce/product-collection` PHP filter
   following the codebase's existing injector pattern; v1 scope is Product Collection only, no
   core Query Loop. No-GSAP/reduced-motion fallback is unchanged (instant re-layout).
+
+  ✅ **SHIPPED + LIVE-VERIFIED, D741 (2026-08-22).** Two independent bugs closed it: (1)
+  `sgs/container` — the shop archive's Product Collection toolbar wrapper — was itself
+  tripping WooCommerce's client-nav kill-switch (same shape D702 found for `sgs/text`); (2)
+  `fx-flip.js`'s `settle()` called `context.add(fn)` on a `MatchMedia` instance, whose `.add()`
+  requires `(conditions, func)` — the bare-function call silently registered `Flip.from()`
+  against a never-matching query, so it was never invoked despite every upstream check looking
+  healthy. Both fixed; live-verified via real translate matrices + `position:absolute` mid-tween
+  and 175 genuine `style`-attribute mutations matching the tween's timing. `animate_product_filtering`
+  is ON on the canary. Full root-cause writeup: `decisions.md` D741.
 - **FR-38-13 Draggable + Inertia — curated roster + opt-in mechanism.** Roster v1:
   `sgs/gallery` (drag-to-scroll carousel upgrade), `sgs/testimonial-slider` (same),
  **`sgs/before-after` (NET-NEW block — DB-verified absent, Wave C)**, `sgs/hero` decorative
@@ -1229,9 +1239,10 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   > hold). The `header-behaviours.css` comment should be corrected to match the real DOM.
 - **Wave C — interaction + SVG + toys.**
   Draggable roster (FR-38-13) incl. **NET-NEW `sgs/before-after`** (needs Draggable — cannot
-  come earlier), Flip pairing (FR-38-12 — **premise ruled FALSE by D426, see §3.3; not built,
-  stays open as a design gate/research point, not the "one place Wave C edits shipped blocks"
-  it reads as below**), DrawSVG + **Vivus retirement** (FR-38-15), MorphSVG (FR-38-16,
+  come earlier), Flip pairing (FR-38-12 — original `sgs/filter-search`↔`sgs/card-grid` premise
+  ruled FALSE by D426, see §3.3; **redirected to WooCommerce Product Collection and SHIPPED,
+  D741 (2026-08-22) — animates live on the shop archive, `animate_product_filtering` ON**),
+  DrawSVG + **Vivus retirement** (FR-38-15), MorphSVG (FR-38-16,
   P-10 revival), MotionPath scrubbed mode (FR-38-17 — its Tier V `offset-path` variant may ship
   any time, no GSAP needed), ScrambleText (FR-38-11), `sgs/image-sequence` + asset-pipeline
   tooling (FR-38-9). Stretch: Tier V asset migration onto the registry (FR-38-24).
