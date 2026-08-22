@@ -155,10 +155,44 @@ It is also what R-31-1 requires: **DB-first, no hardcoded dicts.** A regex vocab
 names hand-maintained inside a lint rule is precisely the hardcoded lookup that rule bans. The
 render.php scan was off-pattern as well as insufficient.
 
-⛔ **The remaining gap is DATA, not CODE: 119 colour attributes have an empty `css_property`.**
-That is a seeding task with an enumerable worklist, not a resolver to engineer — and it is
-honestly measurable, which the scan's blind spots were not. Size it from the query, not from an
-estimate.
+⛔ **The remaining gap is DATA, not CODE — and it is CENSUS-INFORMED, not a manual pile**
+(Bean's steer, 2026-08-22).
+
+**Denominator, corrected by enumeration after FOUR instrument bugs in one sitting:**
+
+| Scope | Gap attrs | Blocks | In scope? |
+|---|---|---|---|
+| `sgs/*` | **88** | 21 | YES |
+| `core/*` | 46 | 12 | **NO** — WordPress core blocks; SGS never classified them and should not |
+| Total the raw query returns | 134 | 33 | — |
+
+⚠ Quote **88**, not 134 and not 119. The 134 includes `core/*`; the 119 came from a narrower role
+predicate that dropped 15 `role='colour-gradient'` rows, which ARE colour rows (the gradient
+siblings). Re-derive with the query, never from this table.
+
+**Split the 88 by what the census already knows about each block's paint route** — the census
+records WHICH helpers each block calls, not merely a bucket:
+
+| Census route | Gap attrs | Blocks | What it buys the seeder |
+|---|---|---|---|
+| `direct` | **49** | 12 | The block's helper calls are known, so the mechanism is CONSTRAINED — often to a single candidate. Derive, then confirm. |
+| `wrapper` | 30 | 6 | Overlay + grid-item-border resolvable from the wrapper; fill/text NOT (the wrapper calls neither helper). |
+| `neither` | 9 | 3 | No helper evidence anywhere. The only genuinely hand-inspected set. |
+
+Regenerate with `python plugins/sgs-blocks/scripts/census-colour-paint-route.py --json`.
+
+⛔ **AGREEMENT BETWEEN THE TWO IS NOT INDEPENDENT CONFIRMATION.** Both the DB classifier
+(`extract-signatures.py`, whose docstring line 4 says it "Reads every SGS block's render.php") and
+the census read the SAME source. They are two ALGORITHMS over one source, not two instruments. So:
+- where they agree, that is one source read twice — useful, not proof;
+- where they DISAGREE, one algorithm is wrong and it is worth a finding;
+- the only genuinely independent check on a mechanism remains **the live editor test at QA Gate C.**
+
+⭐ **Why this matters more than the arithmetic.** A first draft of this step read the mechanism from
+the DB alone. That makes the detector trust the very declaration it exists to check — and the
+headline defect this phase was built to catch (a row wired to the WRONG mechanism) is *precisely* a
+case where the declaration and the render disagree. Resolving mechanism from the declaration would
+define that bug out of existence.
 
 ## Step 2b — Seed the missing `css_property` values FROM THE CENSUS, not by hand
 
