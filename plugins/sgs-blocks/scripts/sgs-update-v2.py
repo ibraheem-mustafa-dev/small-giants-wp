@@ -2967,8 +2967,43 @@ import html as _html_module
 import html.parser as _html_parser
 import os
 import re
+import ssl as _ssl
 import urllib.error
 import urllib.request
+
+_SSL_CTX: "_ssl.SSLContext | None" = None
+
+
+def _ssl_context() -> "_ssl.SSLContext":
+    """Verifying SSL context that trusts certifi's CA bundle, not the platform store.
+
+    WHY (2026-08-22). Stage 2's live scrape failed on FIVE upstream sources with
+    ``CERTIFICATE_VERIFY_FAILED: certificate has expired``, and the natural reading —
+    that WordPress.org's certificate had lapsed — is wrong. Measured:
+
+      * the leaf cert is VALID (``developer.wordpress.org``, Let's Encrypt, notAfter
+        Oct 23 2026 — checked while it was failing on Aug 22);
+      * upgrading ``certifi`` 2026.01.04 -> 2026.07.22 did NOT fix it;
+      * the same host verifies fine against ``certifi.where()`` and fails against
+        ``ssl.create_default_context()`` in the same process, back to back.
+
+    So the expired certificate is a ROOT in the WINDOWS trust store, which
+    ``create_default_context()`` loads on this platform. Pinning to certifi is the
+    standard fix (it is what ``requests`` does by default) and keeps verification
+    fully ON — this is NOT ``CERT_NONE`` and must never be relaxed into one.
+
+    Falls back to the platform default if certifi is absent, so the script still runs
+    on a machine without it rather than failing closed on an optional dependency.
+    """
+    global _SSL_CTX
+    if _SSL_CTX is None:
+        try:
+            import certifi
+
+            _SSL_CTX = _ssl.create_default_context(cafile=certifi.where())
+        except Exception:
+            _SSL_CTX = _ssl.create_default_context()
+    return _SSL_CTX
 
 
 def _github_api_get(url: str, github_token: str | None = None) -> dict | list | None:
@@ -2982,7 +3017,7 @@ def _github_api_get(url: str, github_token: str | None = None) -> dict | list | 
     if github_token:
         req.add_header("Authorization", f"token {github_token}")
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=30, context=_ssl_context()) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
             return json.loads(raw)
     except urllib.error.HTTPError as exc:
@@ -3008,7 +3043,7 @@ def _http_fetch(url: str) -> str:
         "User-Agent",
         "Mozilla/5.0 (compatible; sgs-update-v2/1.0; +https://smallgiants.studio)",
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with urllib.request.urlopen(req, timeout=30, context=_ssl_context()) as resp:
         charset = "utf-8"
         ct = resp.headers.get_content_charset()
         if ct:

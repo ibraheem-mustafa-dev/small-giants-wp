@@ -667,7 +667,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "GRID"
       }
     },
@@ -2811,7 +2811,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "desktop",
         "css_layer": "GRID",
         "css_element": "inner"
       }

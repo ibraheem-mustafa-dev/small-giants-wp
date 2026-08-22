@@ -1133,6 +1133,9 @@ def _normalise_shorthand(
 # docstring). "desktop" is accepted as an explicit suffix too, since some var names
 # spell the base tier out rather than leaving it bare.
 _TIER_SUFFIX_RE = re.compile(r"-(desktop|tablet|mobile)$")
+# Tier precedence for _derive_tier when a chain touches MORE THAN ONE tier var.
+# Desktop first: it is the base member of a responsive family (see _derive_tier).
+_TIER_PRECEDENCE = {"desktop": 0, "tablet": 1, "mobile": 2}
 
 
 def _resolve_var_chain(
@@ -1257,12 +1260,31 @@ def _derive_tier(
             member of a family expressed directly at the attribute level -> 'desktop'.
       4. Otherwise None — genuinely no responsive family involves this attribute.
     """
-    for cv in chain_vars:
-        m = _TIER_SUFFIX_RE.search(cv)
-        if m:
-            return m.group(1)
+    # DETERMINISM (2026-08-22). `chain_vars` is a SET, and Python salts string hashing
+    # per process, so set-iteration order differs between runs. The old code did
+    # `for cv in chain_vars: ... return` — first match wins — so an attr whose chain
+    # legitimately touches SEVERAL tier vars (every `columns` attr does: it feeds
+    # --…-desktop, --…-tablet and --…-mobile) resolved to a DIFFERENT tier depending on
+    # which var the set happened to yield first. Two runs on an unchanged tree flipped
+    # sgs/card-grid, sgs/gallery and sgs/post-grid, in opposite directions, three
+    # separate sessions running (D742 + the colour-golden track + 2026-08-22), each
+    # reverting the diff by hand without the cause ever being found.
+    #
+    # Fixed by collecting ALL tier hits over a SORTED iteration and picking by explicit
+    # precedence rather than by whichever arrived first. Desktop wins because it is the
+    # BASE member of a responsive family — the same answer precedence rule 2 below
+    # already returns for an unsuffixed base var whose tier siblings exist.
+    # Single-suffix chains (the overwhelming majority) are unaffected: one hit, one
+    # answer, identical to before.
+    tier_hits = [
+        m.group(1)
+        for cv in sorted(chain_vars)
+        if (m := _TIER_SUFFIX_RE.search(cv))
+    ]
+    if tier_hits:
+        return min(tier_hits, key=lambda t: _TIER_PRECEDENCE.get(t, 99))
     if chain_vars and known_vars:
-        for cv in chain_vars:
+        for cv in sorted(chain_vars):
             if any(f"{cv}-{suffix}" in known_vars for suffix in ("desktop", "tablet", "mobile")):
                 return "desktop"
     if not chain_vars:

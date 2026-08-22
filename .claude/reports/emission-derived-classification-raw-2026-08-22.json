@@ -1,8 +1,8 @@
 {
   "task_a": {
-    "resolved_count": 491,
-    "css_property_written": 1007,
-    "css_layer_written": 479,
+    "resolved_count": 498,
+    "css_property_written": 1026,
+    "css_layer_written": 483,
     "unit_attrs_excluded": 11,
     "tier_inherited": 6,
     "unit_control_written": 0,
@@ -842,10 +842,16 @@
         "background-color",
         "color"
       ],
+      "sgs/nav-drawer::drawerBgGradient": [
+        "background-image"
+      ],
       "sgs/nav-drawer::drawerAlign": [
         "align-items"
       ],
       "sgs/nav-drawer::toggleCloseColour": [
+        "color"
+      ],
+      "sgs/nav-drawer::toggleCloseColourHover": [
         "color"
       ],
       "sgs/nav-drawer::anchor": [
@@ -853,6 +859,18 @@
       ],
       "sgs/nav-drawer::surfaceOpacity": [
         "background-color"
+      ],
+      "sgs/nav-drawer::backgroundImage": [
+        "background-image"
+      ],
+      "sgs/nav-drawer::backgroundSize": [
+        "background-size"
+      ],
+      "sgs/nav-drawer::backgroundPosition": [
+        "background-position"
+      ],
+      "sgs/nav-drawer::backgroundRepeat": [
+        "background-repeat"
       ],
       "sgs/nav-menu::navColour": [
         "color"
@@ -1140,6 +1158,9 @@
       ],
       "sgs/product-card::cardPadding": [
         "padding"
+      ],
+      "sgs/product-card::borderStyle": [
+        "border-style"
       ],
       "sgs/product-card::tagTextColour": [
         "color"
@@ -2017,10 +2038,26 @@
       },
       {
         "block": "sgs/nav-drawer",
+        "attr": "backgroundImage",
+        "role": "image-object",
+        "css_property": [
+          "background-image"
+        ]
+      },
+      {
+        "block": "sgs/nav-drawer",
         "attr": "drawerAlign",
         "role": "styling",
         "css_property": [
           "align-items"
+        ]
+      },
+      {
+        "block": "sgs/nav-drawer",
+        "attr": "drawerBgGradient",
+        "role": "colour-gradient",
+        "css_property": [
+          "background-image"
         ]
       },
       {
@@ -2160,6 +2197,14 @@
       },
       {
         "block": "sgs/process-steps",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/product-card",
         "attr": "borderStyle",
         "role": "visual",
         "css_property": [
@@ -3530,11 +3575,6 @@
       },
       {
         "block": "sgs/nav-drawer",
-        "control": "TextControl",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/nav-drawer",
         "control": "ResponsiveControl",
         "reason": "no attribute reference found in value/checked/onChange"
       },
@@ -3546,11 +3586,6 @@
       {
         "block": "sgs/nav-drawer",
         "control": "ResponsiveControl",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/nav-drawer",
-        "control": "MediaUpload",
         "reason": "no attribute reference found in value/checked/onChange"
       },
       {
@@ -3561,26 +3596,6 @@
       {
         "block": "sgs/nav-drawer",
         "control": "Button",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/nav-drawer",
-        "control": "SelectControl",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/nav-drawer",
-        "control": "SelectControl",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/nav-drawer",
-        "control": "SelectControl",
-        "reason": "no attribute reference found in value/checked/onChange"
-      },
-      {
-        "block": "sgs/nav-drawer",
-        "control": "SelectControl",
         "reason": "no attribute reference found in value/checked/onChange"
       },
       {
@@ -3906,6 +3921,11 @@
       {
         "block": "sgs/product-card",
         "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "ResponsiveBorderRadiusControl",
         "reason": "no attribute reference found in value/checked/onChange"
       },
       {
