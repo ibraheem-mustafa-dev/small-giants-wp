@@ -125,8 +125,19 @@ $slider_scoped_css = '';
 $slider_style_engine_args = array();
 
 $slider_color_args = array();
+// ⚠ EVERY value goes through sgs_colour_value() before the style engine
+// (D684). DesignTokenPicker stores a token SLUG ('primary') when a palette
+// swatch is picked with linked:true. wp_style_engine_get_styles() neither
+// resolves nor rejects a bare slug — it emits the literal `color:primary;`,
+// invalid CSS the browser drops, so the client's chosen text colour silently
+// does nothing (proven live on the canary). sgs_colour_value() maps a slug to
+// var(--wp--preset--color--…), passes a raw hex through unchanged, and
+// rejects a declaration breakout. Mirrors sgs/site-header-row.
 if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$slider_color_args['text'] = (string) $attributes['textColour'];
+	$slider_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+	if ( '' !== $slider_text_value ) {
+		$slider_color_args['text'] = $slider_text_value;
+	}
 }
 if ( ! empty( $slider_color_args ) ) {
 	$slider_style_engine_args['color'] = $slider_color_args;

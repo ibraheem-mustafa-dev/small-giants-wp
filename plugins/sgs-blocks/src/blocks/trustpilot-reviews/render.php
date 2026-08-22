@@ -238,8 +238,19 @@ $tp_responsive_css = '';
 $tp_style_engine_args = array();
 
 $tp_color_args = array();
+// ⚠ EVERY value goes through sgs_colour_value() before the style engine
+// (D684). DesignTokenPicker stores a token SLUG ('primary') when a palette
+// swatch is picked with linked:true. wp_style_engine_get_styles() neither
+// resolves nor rejects a bare slug — it emits the literal `color:primary;`,
+// invalid CSS the browser drops, so the client's chosen text colour silently
+// does nothing (proven live on the canary). sgs_colour_value() maps a slug to
+// var(--wp--preset--color--…), passes a raw hex through unchanged, and
+// rejects a declaration breakout. Mirrors sgs/site-header-row.
 if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$tp_color_args['text'] = (string) $attributes['textColour'];
+	$tp_text_value = sgs_colour_value( (string) $attributes['textColour'] );
+	if ( '' !== $tp_text_value ) {
+		$tp_color_args['text'] = $tp_text_value;
+	}
 }
 if ( ! empty( $tp_color_args ) ) {
 	$tp_style_engine_args['color'] = $tp_color_args;
