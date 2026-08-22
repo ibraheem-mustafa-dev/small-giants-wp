@@ -1,3 +1,7 @@
+<!-- Description tab uses core/post-content, NOT woocommerce/product-details:
+     that block emits WC's whole classic tab set, nesting a tab row inside this tab.
+     Allergen tab (Spec 30 FR-30-13f) is a statutory slot — operators must replace
+     its sample copy with accurate per-product allergen information before publishing. -->
 <!-- Product details band — default/surface background (alternates with surface-alt hero band above) -->
 <!-- wp:sgs/container {"tagName":"div","align":"full","contentWidth":{"desktop":"normal"}} -->
 
@@ -8,10 +12,6 @@
 		<!-- wp:sgs/tabs {"orientation":"horizontal","tabStyle":"underline","tabAlignment":"left"} -->
 
 			<!-- wp:sgs/tab {"label":"Description"} -->
-				<!-- core/post-content renders the product's long description on a product post.
-				     NOT woocommerce/product-details — that block emits WC's whole CLASSIC tab set
-				     (Description / Additional information / Reviews), which nested a second tab
-				     row inside this tab (caught live 2026-06-11). -->
 				<!-- wp:post-content /-->
 			<!-- /wp:sgs/tab -->
 
@@ -24,9 +24,6 @@
 			<!-- /wp:sgs/tab -->
 
 			<!-- wp:sgs/tab {"label":"Allergens"} -->
-				<!-- Spec 30 FR-30-13(f): statutory allergen disclosure slot (food clients).
-				     Operators must replace the sample copy below with accurate product-specific
-				     allergen information before publishing. -->
 				<!-- wp:sgs/text {"text":"Contains: <strong>wheat (gluten)</strong>. May contain traces of nuts, milk, eggs, and soya. Produced in a facility that handles all major allergens. Always check the product label before consuming."} /-->
 			<!-- /wp:sgs/tab -->
 

@@ -1,39 +1,23 @@
+<!-- The buybox owns the whole product area (gallery + configurator in one grid) —
+     do not add a separate gallery block here. -->
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
 <!-- wp:sgs/container {"tagName":"main","anchor":"main"} -->
 
-	<!-- wp:woocommerce/single-product -->
-	<div class="wp-block-woocommerce-single-product">
+	<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"}} -->
 
-		<!-- Product hero band: surface-alt background, full viewport width, constrained inner content -->
-		<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"}} -->
+		<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}} -->
 
-			<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}} -->
-
-				<!-- FR-30-10 Step-10a: the buybox now owns the full product area (gallery + configurator
-				     in a 2-column CSS Grid). The old wp:columns (55% gallery | 45% buybox) is replaced
-				     with a single-column constrained group that holds the buybox block, which renders its
-				     own gallery column internally. sgs-pdp-gallery.html is no longer placed here —
-				     and as of 2026-08-21 the PART ITSELF IS DELETED, not merely unplaced. It stayed
-				     registered in theme.json for two months, so it was editable in the Site Editor: a
-				     client could open "PDP: Product Gallery", edit it, save, and change nothing
-				     anywhere on the site. Deleting the file without the registration is the trap.
-				     single-product.html template version: 2.0.0 (2026-06-12). -->
-				<!-- wp:template-part {"slug":"sgs-pdp-buybox"} /-->
-
-			<!-- /wp:sgs/container -->
+			<!-- wp:template-part {"slug":"sgs-pdp-buybox"} /-->
 
 		<!-- /wp:sgs/container -->
 
-	</div>
-	<!-- /wp:woocommerce/single-product -->
+	<!-- /wp:sgs/container -->
 
-	<!-- Product content area (description, trust signals) — default surface background -->
 	<!-- wp:sgs/container {"tagName":"div","align":"full","contentWidth":{"desktop":"normal"}} -->
 		<!-- wp:template-part {"slug":"sgs-pdp-content"} /-->
 	<!-- /wp:sgs/container -->
 
-	<!-- Related products — surface-alt band (matches hero; distinct from default content band above) -->
 	<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"}} -->
 
 		<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}} -->

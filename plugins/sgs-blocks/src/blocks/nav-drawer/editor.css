@@ -1,22 +1,64 @@
 /**
  * SGS Nav Drawer — editor stylesheet.
  *
- * In the editor the drawer is shown as an OPEN, styled preview shell so its
- * InnerBlocks content (menu / logo / CTA) stays editable in place — a native
- * `<dialog>` cannot host an editable InnerBlocks region while closed, and
- * ServerSideRender cannot host editable InnerBlocks at all, so edit.js renders a
- * styled editor shell instead (the standard InnerBlocks-container pattern, cf.
- * core/group, core/cover). The shell's live styling (background / padding / gap /
- * alignment) is applied by edit.js from the same attributes render.php reads, so
- * SETTINGS are reflected without drift.
+ * In the editor the drawer is a COLLAPSED summary strip by default, expanded by an
+ * explicit "Preview drawer open" toggle in the inspector — the same shape
+ * core/navigation uses for its overlay (collapsed in both style.scss and
+ * editor.scss, opened by an explicit control, deliberately NOT gated on isSelected
+ * so the canvas does not reflow as the operator moves between blocks).
+ *
+ * It is a styled <div> shell rather than the real <dialog>: a closed <dialog>
+ * cannot host an editable InnerBlocks region, and ServerSideRender cannot host
+ * editable InnerBlocks at all. Collapsing hides the body with CSS and never
+ * unmounts it, so nothing can drop the drawer's children. The shell's live styling
+ * (background / padding / gap / alignment) is applied by edit.js from the same
+ * attributes render.php reads, so SETTINGS are reflected without drift.
  */
 
+/* style.css (the block's `style`, which WP also enqueues INSIDE the editor canvas)
+   gives the real <dialog> `width:100vw` and `height:100dvh`. Those apply to this
+   shell too, because useBlockProps puts `wp-block-sgs-nav-drawer` on it alongside
+   `sgs-nav-drawer__editor`. Neutralise both here or the preview fills the canvas
+   and hides the template the operator opened. `min-height` cannot do this on its
+   own — it loses to an explicit `height`.
+
+   `max-width` here only cancels style.css's `max-width:100vw`; it does NOT set the
+   compact-anchor width, which edit.js applies inline (and inline wins regardless). */
 .wp-block-sgs-nav-drawer.sgs-nav-drawer__editor {
 	position: relative;
 	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+	max-height: 420px;
 	min-height: 240px;
 	border-radius: 6px;
+	overflow-y: auto;
+}
+
+/* Collapsed (default): a summary strip. The body is hidden, never unmounted, so
+   the drawer's children survive untouched and stay reachable in List View. */
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed {
+	min-height: 0;
+	max-height: none;
 	overflow: hidden;
+}
+
+/* Both of these carry the block-name class as well, so they are (0,3,0) and beat
+   the (0,2,0) `display:flex` / `display:inline-flex` rules further down this file.
+   Without that they TIE on specificity and lose on order — a rule that loses is
+   indistinguishable from one that was never written, and the collapsed shell
+   silently stayed 231px tall with its body still laid out. */
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__body,
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed .sgs-nav-drawer__close-preview {
+	display: none;
+}
+
+/* Collapsed, the label stops being an overlay and becomes the strip itself. */
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor--collapsed::before {
+	position: static;
+	display: block;
+	padding: 14px 12px;
 }
 
 /* The preview close × — non-functional in the editor, shown so the operator
