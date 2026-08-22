@@ -62,7 +62,7 @@
 import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 
 import { WidthPanel } from './WidthPanel';
 import { LayoutPanel } from './LayoutPanel';

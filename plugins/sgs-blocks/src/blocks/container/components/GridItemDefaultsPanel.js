@@ -35,6 +35,12 @@ const GRID_ITEM_BORDER_STYLES = [
 	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
 ];
 
+// Every CSS border-style keyword, NOT the subset offered by
+// GRID_ITEM_BORDER_STYLES above — this parses a border shorthand that may
+// already carry any of them (`1px groove red`). Narrowing it to the picker's
+// options would silently mis-parse those values as a colour.
+const _GRID_BORDER_STYLE_WORDS = [ 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'none' ];
+
 function _gridBorderParts( value ) {
 	const out = { width: '', style: '', colour: '' };
 	const tokens = String( value || '' ).trim().split( /\s+/ ).filter( Boolean );
