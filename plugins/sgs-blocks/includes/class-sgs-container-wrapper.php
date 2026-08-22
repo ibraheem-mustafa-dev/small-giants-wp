@@ -1197,7 +1197,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gtc_base = '' !== trim( (string) $grid_template )
 						? sgs_sanitize_grid_template( $grid_template )
 						: ( $intrinsic_columns
-							? sgs_intrinsic_columns_track( absint( $columns ), sgs_container_tier_gap( $attributes, 'desktop' ) )
+							? sgs_intrinsic_columns_track( absint( $columns ), sgs_container_tier_gap( $attributes, 'desktop' ), sgs_container_tier_min_column_width( $attributes, 'desktop' ) )
 							: 'repeat(' . absint( $columns ) . ',1fr)' );
 					// An object-shaped gridTemplateColumns owns emission via
 					// sgs_emit_responsive_css(); suppress the legacy columns/base fallback
@@ -2421,13 +2421,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						// ever being organic.
 						if ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
 							$tablet_track    = $intrinsic_columns
-								? sgs_intrinsic_columns_track( absint( $columns_tablet ), sgs_container_tier_gap( $attributes, 'tablet' ) )
+								? sgs_intrinsic_columns_track( absint( $columns_tablet ), sgs_container_tier_gap( $attributes, 'tablet' ), sgs_container_tier_min_column_width( $attributes, 'tablet' ) )
 								: 'repeat(' . absint( $columns_tablet ) . ',1fr)';
 							$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . $tablet_track . '}}';
 						}
 						if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
 							$mobile_track    = $intrinsic_columns
-								? sgs_intrinsic_columns_track( absint( $columns_mobile ), sgs_container_tier_gap( $attributes, 'mobile' ) )
+								? sgs_intrinsic_columns_track( absint( $columns_mobile ), sgs_container_tier_gap( $attributes, 'mobile' ), sgs_container_tier_min_column_width( $attributes, 'mobile' ) )
 								: 'repeat(' . absint( $columns_mobile ) . ',1fr)';
 							$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . $mobile_track . '}}';
 						}

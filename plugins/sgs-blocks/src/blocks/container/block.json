@@ -45,6 +45,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"intrinsicColumns": true,
 			"enabledExtensions": [
 				"width",
 				"layout",
@@ -234,6 +235,14 @@
 		"gap": {
 			"type": "object",
 			"default": {}
+		},
+		"minColumnWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"minColumnWidthUnit": {
+			"type": "string",
+			"default": "px"
 		},
 		"backgroundImage": {
 			"type": "object"

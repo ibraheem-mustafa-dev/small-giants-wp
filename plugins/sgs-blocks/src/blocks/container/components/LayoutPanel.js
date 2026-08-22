@@ -13,6 +13,7 @@
 import { __ } from '@wordpress/i18n';
 import { SelectControl, RangeControl, TextControl } from '@wordpress/components';
 import { ResponsiveControl, ResponsiveOverride, SpacingControl } from '../../../components';
+import { UnitControl } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 
 const LAYOUT_OPTIONS = [
@@ -45,19 +46,39 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) {
+export function LayoutPanel( {
+	attributes,
+	setAttributes,
+	showLayout = true,
+	// P2-5: minColumnWidth/minColumnWidthUnit are declared ONLY on sgs/container's
+	// own block.json today. LayoutPanel is shared by ~30 blocks (see file header);
+	// rendering this control unconditionally would destructure an attribute most
+	// callers' schemas don't declare, which WordPress silently discards on save
+	// (caught live by check-undeclared-attrs.py flagging sgs/cta-section,
+	// sgs/gallery, sgs/trust-bar). Opt-in, same shape as `showLayout` above — a
+	// caller whose own block.json declares supports.sgs.intrinsicColumns passes
+	// true.
+	enableIntrinsicColumns = false,
+} ) {
 	const {
 		layout = 'flex',
 		alignItems = 'start',
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
-		// columns, gridTemplateColumns and gridTemplateRows are TIER OBJECTS
-		// (columns: pass 4; grid template props: pass 3a/3b) and are read via
-		// attributes.columns / attributes.gridTemplateColumns /
-		// attributes.gridTemplateRows at their controls below, not destructured
+		// columns, gridTemplateColumns, gridTemplateRows and minColumnWidth are
+		// TIER OBJECTS (columns: pass 4; grid template props: pass 3a/3b;
+		// minColumnWidth: P2-5) and are read via attributes.columns /
+		// attributes.gridTemplateColumns / attributes.gridTemplateRows /
+		// attributes.minColumnWidth at their controls below, not destructured
 		// with a scalar default — which would mask the object.
 		gridAutoRows = '',
 	} = attributes;
+	// minColumnWidthUnit is read inline (attributes.minColumnWidthUnit) inside the
+	// enableIntrinsicColumns-gated block below, not destructured here — it is only
+	// ever declared on a caller whose own block.json opts in (see the prop
+	// docblock above), and destructuring it unconditionally at the top of a
+	// shared component used by ~30 blocks is exactly what check-undeclared-attrs
+	// flags (caught live on sgs/cta-section, sgs/gallery, sgs/trust-bar).
 
 	return (
 		<>
@@ -272,6 +293,74 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 							/>
 						) }
 					</ResponsiveOverride>
+
+					{ enableIntrinsicColumns && (
+						<>
+							{ /*
+								  `minColumnWidth` is a TIER OBJECT (P2-5) — same shape as
+								  `gridTemplateColumns` above, so it uses ResponsiveOverride.
+								  Unlike gridTemplateColumns it pairs with a single FLAT
+								  `minColumnWidthUnit` attribute (not tiered) — mirroring
+								  sgs/feature-grid's `minItemWidth`/`minItemWidthUnit` pair —
+								  because the unit rarely needs to change per breakpoint while
+								  the numeric floor does. Sets the BASIS a client-configured
+								  auto-fit column may shrink to before one drops to the next
+								  row (`sgs_intrinsic_columns_track()`, helpers-container.php).
+								  Gated on `enableIntrinsicColumns` (see the prop docblock
+								  above) rather than rendered unconditionally, because only
+								  callers whose own block.json declares
+								  `supports.sgs.intrinsicColumns` also declare the
+								  `minColumnWidth`/`minColumnWidthUnit` attributes — currently
+								  `sgs/container` alone.
+								*/ }
+							<ResponsiveOverride
+								label={ __( 'Minimum column width', 'sgs-blocks' ) }
+								value={ attributes.minColumnWidth }
+								onChange={ ( obj ) => setAttributes( { minColumnWidth: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
+									const minColumnWidthUnit = attributes.minColumnWidthUnit || 'px';
+									return (
+									<UnitControl
+										value={
+											'' !== ownValue && null != ownValue
+												? `${ ownValue }${ minColumnWidthUnit }`
+												: ''
+										}
+										placeholder={
+											inherited && '' !== effectiveValue && null != effectiveValue
+												? `${ effectiveValue }${ minColumnWidthUnit }`
+												: ''
+										}
+										units={ [
+											{ value: 'px', label: 'px', default: 200 },
+											{ value: 'em', label: 'em', default: 10 },
+											{ value: 'rem', label: 'rem', default: 10 },
+										] }
+										onChange={ ( val ) => {
+											if ( ! val ) {
+												setOwnValue( undefined );
+												return;
+											}
+											const unit = val.replace( /[\d.]+/, '' ) || 'px';
+											const num = parseFloat( val );
+											setOwnValue( Number.isNaN( num ) ? undefined : num );
+											if ( unit !== minColumnWidthUnit ) {
+												setAttributes( { minColumnWidthUnit: unit } );
+											}
+										} }
+										help={ __(
+											'The floor a grid column may shrink to before one drops to the next row. Leave empty to use the framework default (16rem).',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									);
+								} }
+							</ResponsiveOverride>
+						</>
+					) }
 
 					<TextControl
 						label={ __( 'Auto rows', 'sgs-blocks' ) }
