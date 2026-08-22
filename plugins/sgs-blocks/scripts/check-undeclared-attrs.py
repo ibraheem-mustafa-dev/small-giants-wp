@@ -349,9 +349,15 @@ def scan_edit_file(edit_file: pathlib.Path, block_name: str) -> Tuple[Set[str], 
     # capitalised JSX tag referenced in edit.js to the file that DEFINES it
     # (via the JS resolver, `components.js` — never by import-path string
     # matching) and fold its source in too.
+    # A component named only inside a COMMENT must not widen the corpus.
+    # nav-drawer documents that it deliberately does NOT mount <BackgroundPanel>;
+    # scanning tags before stripping comments folded that panel in anyway and
+    # charged its attributes to nav-drawer.
+    _tag_src = re.sub(r'//.*$', '', src, flags=re.MULTILINE)
+    _tag_src = re.sub(r'/\*.*?\*/', '', _tag_src, flags=re.DOTALL)
     component_map = load_component_file_map()
     seen_files = {str(edit_file.resolve())}
-    for tag_name in set(JSX_TAG_RE.findall(src)):
+    for tag_name in set(JSX_TAG_RE.findall(_tag_src)):
         component_path = component_map.get(tag_name)
         if not component_path or component_path in seen_files:
             continue
