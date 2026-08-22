@@ -229,3 +229,132 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 		! empty( $map['width'] ) ? (string) $map['width'] : '2px'
 	);
 }
+
+/**
+ * Build the OVERLAY DECLARATIONS for a block, per state.
+ *
+ * ⛔ WHY THIS EXISTS WHEN sgs_overlay_decls() ALREADY DOES. That one takes VALUES
+ * ( $colour, $gradient, $opacity, $blend_mode ) — it is a PRIMITIVE, so every installing
+ * block hand-reads four attributes and passes them positionally. This is the FAÇADE:
+ * the block passes its own attribute NAMES once, matching sgs_fill_decls/sgs_text_decls,
+ * so installing overlay somewhere new is one call rather than four reads plus a call.
+ * Bean 2026-08-22: "I want that and the shadow control to be in a helper so it's easy to
+ * install them in new places and we don't need to keep rebuilding those 2 variants."
+ *
+ * The JS half needed no equivalent: GradientOverlayControl already takes an `attrNames`
+ * map. Overlay was half-installable — JS yes, PHP no.
+ *
+ * @param array $attributes The block's attributes.
+ * @param array $map        The block's OWN attribute names. Keys mirror
+ *                          GradientOverlayControl's attrNames so one map can drive both
+ *                          halves: [ 'solid', 'gradient', 'solid_hover',
+ *                          'gradient_hover', 'opacity', 'blend_mode' ].
+ * @return array{normal: string[], hover: string[]} Declarations per state; both empty
+ *                          when nothing is set.
+ */
+function sgs_overlay_decls_for( array $attributes, array $map ): array {
+	$out = array(
+		'normal' => array(),
+		'hover'  => array(),
+	);
+
+	$read = static function ( ?string $key ) use ( $attributes ) {
+		if ( ! $key ) {
+			return null;
+		}
+		return $attributes[ $key ] ?? null;
+	};
+
+	// Opacity and blend mode belong to the RESTING overlay only. They are not
+	// per-state: there is one opacity attribute, and duplicating it per state would be
+	// two attributes owning one value — the shape Bean rejected for the overlay
+	// boolean (S-2). A hover overlay changes its PAINT, not its transparency.
+	$normal = sgs_overlay_decls(
+		$read( $map['solid'] ?? null ),
+		$read( $map['gradient'] ?? null ),
+		$read( $map['opacity'] ?? null ),
+		$read( $map['blend_mode'] ?? null )
+	);
+	if ( '' !== $normal ) {
+		$out['normal'][] = $normal;
+	}
+
+	$hover = sgs_overlay_decls(
+		$read( $map['solid_hover'] ?? null ),
+		$read( $map['gradient_hover'] ?? null ),
+		null,
+		null
+	);
+	if ( '' !== $hover ) {
+		$out['hover'][] = $hover;
+	}
+
+	return $out;
+}
+
+/**
+ * Build the SHADOW DECLARATIONS for a block, per state.
+ *
+ * Façade over sgs_shadow_value_composed( $shape, $colour ), which takes VALUES. Same
+ * reason as the overlay façade above: installing shadow somewhere new should be one
+ * call with the block's own attribute names, not four reads and two compositions.
+ *
+ * ⛔ SHADOW IS GRADIENT-EXEMPT BY MECHANISM, and there is deliberately no gradient key
+ * in the map. `box-shadow` takes a colour; a gradient there is invalid CSS the browser
+ * drops. rule 31 already encodes this exemption centrally so it is never declared
+ * per block.
+ *
+ * ⭐ THE HOVER SHAPE IS A REAL KEY, not a copy of the resting one. Bean's full-symmetry
+ * ruling (2026-08-22) is that a hover shadow can LIFT, GROW and SOFTEN, not merely
+ * recolour — so 'hover' names the hover SHAPE attribute and 'hover_colour' its colour.
+ * A caller supplying only 'hover_colour' still gets a hover rule, composed against the
+ * RESTING shape, which is the pre-symmetry behaviour and remains valid.
+ *
+ * @param array $attributes The block's attributes.
+ * @param array $map        The block's OWN attribute names:
+ *                          [ 'base' => 'boxShadow', 'colour' => 'boxShadowColour',
+ *                            'hover' => 'boxShadowHover', 'hover_colour' => '…' ].
+ * @return array{normal: string[], hover: string[]} Declarations per state; both empty
+ *                          when nothing is set.
+ */
+function sgs_shadow_decls( array $attributes, array $map ): array {
+	$out = array(
+		'normal' => array(),
+		'hover'  => array(),
+	);
+
+	if ( empty( $map['base'] ) ) {
+		return $out;
+	}
+
+	$read = static function ( ?string $key ) use ( $attributes ): string {
+		if ( ! $key ) {
+			return '';
+		}
+		return isset( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';
+	};
+
+	$base_shape = $read( $map['base'] );
+
+	$normal = sgs_shadow_value_composed( $base_shape, $read( $map['colour'] ?? null ) );
+	if ( '' !== $normal ) {
+		$out['normal'][] = 'box-shadow:' . $normal;
+	}
+
+	// Fall back to the resting SHAPE when only a hover colour is wired — see the
+	// note above. Without this a caller that has not yet adopted the hover shape
+	// would silently lose its existing hover-colour behaviour.
+	$hover_shape  = $read( $map['hover'] ?? null );
+	$hover_colour = $read( $map['hover_colour'] ?? null );
+	if ( '' !== $hover_shape || '' !== $hover_colour ) {
+		$hover = sgs_shadow_value_composed(
+			'' !== $hover_shape ? $hover_shape : $base_shape,
+			'' !== $hover_colour ? $hover_colour : $read( $map['colour'] ?? null )
+		);
+		if ( '' !== $hover ) {
+			$out['hover'][] = 'box-shadow:' . $hover;
+		}
+	}
+
+	return $out;
+}

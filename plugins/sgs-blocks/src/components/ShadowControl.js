@@ -128,7 +128,37 @@ export default function ShadowControl( {
 	// control, exactly as fillRow keeps one state when given no hover attribute.
 	valueHover,
 	onValueHoverChange,
+	// ⭐ INSTALL-IN-ONE-CALL (Bean 2026-08-22: "I want that and the shadow control to be
+	// in a helper so it's easy to install them in new places and we don't need to keep
+	// rebuilding those 2 variants"). Pass `attributes` + `setAttributes` + an `attrNames`
+	// map and the four value/onChange pairs are derived here, matching the shape
+	// GradientOverlayControl already had. Installing shadow somewhere new becomes one
+	// mount with one map instead of six hand-wired props.
+	//
+	// ⚠ FULLY BACKWARDS-COMPATIBLE, and that is not optional: 22 existing mount sites
+	// pass the explicit props. The explicit props WIN when both are supplied, so a
+	// partially-migrated caller is never silently overridden by a map it also passed.
+	attributes,
+	setAttributes,
+	attrNames,
 } ) {
+	// Derive the explicit pairs from the map, without clobbering anything explicit.
+	if ( attrNames && attributes && setAttributes ) {
+		const bind = ( key, current, currentSetter ) => {
+			const attr = attrNames[ key ];
+			if ( ! attr || current !== undefined || typeof currentSetter === 'function' ) {
+				return [ current, currentSetter ];
+			}
+			return [
+				attributes[ attr ],
+				( next ) => setAttributes( { [ attr ]: next ?? '' } ),
+			];
+		};
+		[ value, onChange ] = bind( 'base', value, onChange );
+		[ colour, onColourChange ] = bind( 'colour', colour, onColourChange );
+		[ valueHover, onValueHoverChange ] = bind( 'hover', valueHover, onValueHoverChange );
+		[ colourHover, onColourHoverChange ] = bind( 'hoverColour', colourHover, onColourHoverChange );
+	}
 	// Defensive fallback (incident 2026-08-20): 5 of 22 mount sites passed no
 	// `onColourChange`, so picking a shadow colour threw `TypeError:
 	// onColourChange is not a function` and blanked the whole inspector
