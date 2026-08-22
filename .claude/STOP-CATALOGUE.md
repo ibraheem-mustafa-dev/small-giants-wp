@@ -1158,6 +1158,22 @@ it as prose, never as the token (see STOP-67 vs STOP-67-GATE-ANOMALY for why tha
 - **STOP-34** — reproduce on the real node not a synthetic one — root-cause a converter bug against the REAL draft/page node, not a synthetic/handwritten test fixture — a synthetic test can mask the actual failure path (e.g. a synthetic multi-button test used a named-root-class path that a real full-homepage run didn't).
 - **STOP-35** — default is container deviation — the new engine's recognition step must default an unrecognised (slug-None) section to `sgs/container` + recurse (FR-31-4), never fail loud — failing loud on the default case blocks the majority of real homepage sections from converting at all.
 - **STOP-39** — solo coding subagent only — dispatch mechanical build work to ONE coding subagent at a time, foreground, named files, "do the work yourself, spawn no agents"; NEVER 2+ concurrent writers on shared files; read-only reviewers/tracers/research agents may still run in parallel. Coding subagents "cascade-fail" on this pipeline when used in the banned 2+-writer shape — build INLINE instead.
+  - ⭐ **SCOPE RULED BY BEAN 2026-08-22: STOP-39 binds ONE WRITER PER FILE, not one agent at a
+    time.** Parallel coding subagents are PERMITTED when their file sets are DISJOINT. The ban is
+    on two writers touching the same file, which is what "cascade-fail" describes and what the
+    originating incident actually was — `STOP-CATALOGUE.md:2439` restates it as *"one writer per
+    file … violated by the ORCHESTRATOR rather than by parallel subagents."*
+  - ⚠ **Why this clarification exists, recorded so it is not re-litigated:** the entry's headline
+    ("ONE coding subagent at a time") and its closing sentence ("build INLINE instead") read as a
+    blanket ban on parallelism, while its middle clause says "on shared files". A council rater
+    flagged the contradiction on 2026-08-22 against a plan dispatching 4 agents on disjoint block
+    sets, and it had to be escalated because the entry could not settle its own scope. **The
+    defence is NOT weakened:** 2+ writers on one file remains banned, and the orchestrator is
+    explicitly one of the writers it counts.
+  - ⛔ **The load-bearing companion is S-7 / STOP-PATH-SCOPED-COMMIT.** Disjoint agents are safe
+    only if the INTEGRATION COMMIT is exact-path-scoped. `87d904a6` proved the real failure mode is
+    the coordinator sweeping a co-active track's work with a GLOB pathspec — parallelism was never
+    the defect there.
 - **STOP-40** — verify against the drafts actual layout not a glance — don't declare a converted section "fixed" just because it now renders as *a* grid with the right item count; check it against the DRAFT's ACTUAL desktop layout (e.g. a 2×2 grid is not "fixed" if the draft wants 4-in-a-row) — a superficial visual glance can pass a wrong layout.
 - **STOP-41** — no slug literal gate covers shared extractors too — the `no_slug_literal` gate (R-31-1 DB-first enforcement) must also cover per-slot/per-role literal carve-outs moved into shared/un-gated helper files (e.g. `field_extractors`), not just the originally-scanned files — a carve-out relocated to an ungated file silently escapes the gate. *(reconstructed from citation glosses, not a verbatim original)*
 - **STOP-42** — computed css diff keyed by content not class — clone-fidelity measurement must compare getComputedStyle values on the LIVE clone vs the SOURCE draft, matched by normalised TEXT CONTENT (not BEM class or source-declaration diff) — this is CLAUDE.md root-cause rule 4a's project-level name.

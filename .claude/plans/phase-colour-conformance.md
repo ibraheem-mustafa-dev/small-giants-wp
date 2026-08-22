@@ -69,6 +69,7 @@ project has drifted.
 | S-5 | Detector FIRST, migration second (D542 triad). Without mechanism-awareness we cannot prove the rollout worked. | brief |
 | S-6 | No agent runs git, deploys, or `npm run build`. The coordinator integrates and builds once per wave. | this session's incident |
 | S-7 | **The COORDINATOR's own integration commit is EXACT-PATH-SCOPED — never a glob, never `git add -A`, never `--amend`.** Enumerate the literal filenames. | `87d904a6` + STOP-PATH-SCOPED-COMMIT |
+| S-8 | **Wave 3's four parallel coding agents are PERMITTED.** Bean ruled 2026-08-22 that STOP-39 binds ONE WRITER PER FILE, not one agent at a time — disjoint file sets are fine. A council rater had escalated the entry's headline as a possible blanket ban; the entry now states its own scope. 2+ writers on one file remains banned, and the orchestrator counts as a writer. | Bean 2026-08-22 + STOP-39 |
 
 ## Reference blocks (verified, not assumed)
 
