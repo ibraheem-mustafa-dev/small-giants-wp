@@ -30,19 +30,15 @@
  *
  * maxWidth (kept-scalar width family, base only — no tiers, matches the
  * pre-existing attr) is reproduced scoped on the root: max-width +
- * margin-inline:auto. contentWidth was REMOVED (this block never rendered an
- * inner band — the old wrapper only emitted a separate __inner band div when
- * contentWidth or band padding/background were set, neither ever used by this
- * block, so contentWidth was a second `width:` on this same root under a name
- * that promised a layer that didn't exist).
+ * margin-inline:auto. This block never renders an inner band, so there is
+ * no separate content-width layer.
  *
- * gap/gapTablet/gapMobile were REMOVED (D-migration, 2026-07-10): the shared
- * wrapper gates gap CSS to section/layout kinds only (never content kind — see
+ * gap is not emitted on this block: the shared wrapper gates gap CSS to
+ * section/layout kinds only (never content kind — see
  * class-sgs-container-wrapper.php `$is_section || $is_layout` gate on every
- * gap emission path), so these 3 attrs were dead on this block since the day
- * SGS_Container_Wrapper('content') was wired up. No editor control ever
- * existed for them either (ContainerWrapperControls kind="content" only
- * renders WidthPanel + spacing — no LayoutPanel/gap for content kind).
+ * gap emission path), and no editor control exists for it either
+ * (ContainerWrapperControls kind="content" only renders WidthPanel + spacing
+ * — no LayoutPanel/gap for content kind).
  *
  * Strategy chosen for the FAQPage JSON-LD collector: wp_footer hook over a
  * per-block printf(). Reason: the FAQ block is a content block that may
@@ -51,13 +47,9 @@
  * questions, and emit exactly one <script> tag — the correct schema
  * structure. A static-flag approach with "first block wins" would silently
  * drop items from later instances, which violates the spec requirement of one
- * merged mainEntity array. UNCHANGED by this migration.
+ * merged mainEntity array.
  *
- * @since 2026-07-10  No-inline migration: WP supports skip-serialised +
- *                    scoped output; SGS_Container_Wrapper dropped (content-
- *                    kind, box+width only); paddingTablet/paddingMobile/
- *                    marginTablet/marginMobile tier attrs added; dead
- *                    gap/gapTablet/gapMobile attrs removed.
+ * @since 2026-07-10
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (faq items).

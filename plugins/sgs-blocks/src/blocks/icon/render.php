@@ -34,19 +34,9 @@
  * (Spec 32 §6.1c) — it stays a scalar attribute, emitted into the scoped
  * <style> as `--sgs-icon-shape-padding` (see step 4 below).
  *
- * @since 2026-06-02  v0.2.0 - shape backgrounds + hover controls.
- * @since 2026-07-10  v0.3.0 - no-inline migration: color/background-color +
- *                             backgroundPadding scoped; WP color/spacing
- *                             skip-serialised + box-object tiers added.
- * @since 2026-07-18  v0.3.0 - zero-inline amendment (D345): the remaining
- *                             inline `--var` custom-property VALUES
- *                             (--sgs-icon-size / --sgs-icon-hover-colour /
- *                             --sgs-icon-hover-shape-colour /
- *                             --sgs-icon-hover-scale / --sgs-icon-outline-
- *                             colour) moved from the wrapper's inline `style`
- *                             attribute into the scoped `.{uid}` rule; the
- *                             `'style'` key is no longer passed to
- *                             get_block_wrapper_attributes().
+ * @since 2026-06-02  v0.2.0
+ * @since 2026-07-10  v0.3.0 — no-inline migration.
+ * @since 2026-07-18  v0.3.0 — zero-inline amendment (D345).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).

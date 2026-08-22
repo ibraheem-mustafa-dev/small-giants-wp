@@ -70,12 +70,9 @@ $allowed_alignments = array( 'left', 'center', 'right' );
 $alignment_raw      = $attributes['alignment'] ?? 'center';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'center';
 
-// Collapsed 2026-08-16 (D643) from the 4-scalar gradientEnabled/ColourStart/
-// ColourEnd/Angle family to ONE complete CSS gradient string, matching the D636
-// storage contract. This was the LAST pre-D636 gradient family in the tree —
-// commit 837f7c97 collapsed nine of them across six blocks and missed this one.
 // A non-empty validated gradient wins over the flat `colour`; no boolean
-// discriminator (an empty string is the "off" state).
+// discriminator (an empty string is the "off" state). Storage matches the
+// D636 gradient contract (one complete CSS gradient string).
 $line_gradient = sgs_css_gradient_value( $attributes['lineGradient'] ?? '' );
 $has_gradient  = '' !== $line_gradient;
 

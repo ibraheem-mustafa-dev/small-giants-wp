@@ -176,12 +176,9 @@ $style_line_height = isset( $style_obj['typography']['lineHeight'] ) ? (string) 
 // reliably merge that class into get_block_wrapper_attributes() for a dynamic
 // block (verified pattern: class-sgs-container-wrapper.php's identical fix for
 // container-equivalent composites) — emit it explicitly.
-// ⛔ KEY CORRECTED 2026-08-15. This read ONLY the top-level `textAlign`, but the
-// native control WP renders from `supports.typography.textAlign` writes to
-// `style.typography.textAlign` — verified live on the canary. So a client set the
-// alignment, it saved, and this stayed empty, emitting no class: a silent no-op.
-// Identical defect and fix to sgs/cta-section (same session). The top-level read
-// is KEPT as the fallback because the cloning converter writes that key.
+// Reads `style.typography.textAlign` (the native control's target) first; the
+// top-level `textAlign` is kept as a fallback because the cloning converter
+// writes that key.
 $text_align = $attributes['style']['typography']['textAlign']
 	?? ( $attributes['textAlign'] ?? '' );
 if ( ! in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {

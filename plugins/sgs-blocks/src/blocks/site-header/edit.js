@@ -14,7 +14,7 @@ import {
 	Button,
 	BoxControl,
 } from '@wordpress/components';
-// No-inline migration (2026-08-05, D-pending): sgs/site-header no longer uses
+// No-inline migration: sgs/site-header no longer uses
 // <ContainerWrapperControls>'s ResponsiveSpacingPanel — its flat
 // paddingTopTablet/…/marginLeftMobile attrs are LEGACY and became dead
 // controls once paddingTablet/paddingMobile/marginTablet/marginMobile became
@@ -312,7 +312,7 @@ function meetsWCAG_AA( ratio, isLargeText = false ) {
 // Three fixed rows. The middle row is pre-filled to match the current site
 // header (logo + navigation + cart) so content parity holds on first insert.
 // The mobile burger + drawer are owned entirely by sgs/nav-menu + sgs/nav-drawer
-// (Spec 36 rebuild, FR-37-21 — sgs/adaptive-nav retired) — no separate toggle
+// (Spec 36 rebuild, FR-37-21) — no separate toggle
 // block. Top and bottom rows start empty and emit zero output until an
 // operator adds elements (Spec 37 §3.4 empty-row-zero-output, verified FR-37-9).
 const TEMPLATE = [
@@ -328,7 +328,7 @@ const TEMPLATE = [
 			// sgs/nav-menu — matches the live header part / sgs_header CPT so a
 			// fresh insert doesn't re-arm the WooCommerce mini-cart/customer-account
 			// auto-injection that WC hooks onto core/navigation via Block Hooks
-			// (FR-37-21: was sgs/adaptive-nav, now retired).
+			// (FR-37-21).
 			[
 				'sgs/nav-menu',
 				{
@@ -448,8 +448,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		style,
 	} = attributes;
 
-	// P-HEADER-SIMPLICITY-FINDINGS finding 2 follow-up (2026-08-13, Bean's
-	// design note): Shrink on scroll is CONCEPTUALLY a sub-behaviour of
+	// P-HEADER-SIMPLICITY-FINDINGS finding 2 follow-up: Shrink on scroll is CONCEPTUALLY a sub-behaviour of
 	// Sticky on scroll, not an independent toggle. Proven, not assumed:
 	// render.php's shrink animation (`animation-timeline:
 	// scroll(root block); animation-range: 0 200px`, render.php:238) and its
@@ -475,22 +474,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// hero showing through to protect against, so the control has nothing to
 	// decide until Transparent is on. Hidden otherwise, for the same reason
 	// Shrink is hidden until Sticky is on.
-	//
-	// ⚑ This comment used to cite class-sgs-header-behaviours.php's silent
-	// 'none' -> 'scrim' auto-upgrade as the justification. That upgrade was
-	// REMOVED (2026-08-19) — see the advisory immediately below, which replaced
-	// it. The control's visibility rule is unchanged; only its reason is.
 	const isTransparentOn = isOnAtAnyTier( headerTransparent );
 
-	// WCAG 1.4.3 ADVISORY (2026-08-19). Until this change the PHP resolver
-	// SILENTLY rewrote a client's explicit 'none' to 'scrim' whenever
-	// Transparent resolved on (class-sgs-header-behaviours.php). The header was
-	// protected, but the client's own choice was discarded with nothing shown
-	// to say so — which breached the locked project rule that operator
-	// accessibility failures are NOTICES, never enforcement. The rewrite is
-	// gone; this advisory replaces it. We state the risk, offer the fix as one
-	// click, and then honour whatever the client decides. Precedent: WordPress
-	// core's own ContrastChecker warns and never enforces.
+	// WCAG 1.4.3 ADVISORY. The PHP resolver never silently rewrites a
+	// client's explicit 'none' to 'scrim' when Transparent resolves on —
+	// the locked project rule is that operator accessibility failures are
+	// NOTICES, never enforcement, so this advisory states the risk, offers
+	// the fix as one click, and honours whatever the client decides.
+	// Precedent: WordPress core's own ContrastChecker warns and never enforces.
 	//
 	// Evaluated PER TIER, not once for the block: contrastSafe is a per-device
 	// object now, so a header transparent on desktop but solid on phone carries

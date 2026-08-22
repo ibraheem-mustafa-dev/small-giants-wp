@@ -32,19 +32,7 @@ defined( 'ABSPATH' ) || exit;
 // (SVG animation path). Neither is autoloaded — the plugin bootstrap loads only
 // includes/forms/field-render-helpers.php — so both resolve ONLY through
 // render-helpers.php, which is the documented single entry point for every shared
-// helper (see its own docblock). This file was the ONLY render.php in the plugin
-// calling a shared sgs_* helper without requiring it (swept 2026-07-27: 1 of 81),
-// which made it a fatal "Call to undefined function" whenever this block rendered
-// without some OTHER block having loaded the helper first.
-//
-// It survived because the failure is ORDER-DEPENDENT, not deterministic: on a page
-// where any sibling block rendered first, the helper was already in memory and the
-// logo rendered fine. Rendered alone — a REST GET of a header CPT, or a page whose
-// header is the first SGS block — it fataled to a white screen. Live-proven on the
-// canary: 6/6 isolated renders of this block returned HTTP 500, while four
-// pre-existing header/footer posts returned 200 because none contained a logo.
-// The immutable default header (FR-37-4) DOES contain one, so clearing the active
-// header could have white-screened the site.
+// helper (see its own docblock).
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -171,10 +159,9 @@ $sel      = '.' . $uid . '.wp-block-sgs-responsive-logo';
 
 $scoped_css = array();
 
-// --- Logo width custom property — was previously the block's sole inline
-// `style="--logo-width:Npx"` declaration on the wrapper (D345: inline `--var`
-// is now forbidden, no exception for custom-property values). Moved into the
-// same scoped uid-class rule as every other declaration on this block. ---
+// --- Logo width custom property (D345: inline `--var` is forbidden, no
+// exception for custom-property values). Lives in the same scoped uid-class
+// rule as every other declaration on this block. ---
 $scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
 
 // --- Explicit left-alignment default (FR-36-22 basics) — NN/g: a left-aligned

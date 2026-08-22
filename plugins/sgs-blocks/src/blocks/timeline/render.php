@@ -9,9 +9,8 @@
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. Block-private LEAF pattern (mirrors sgs/label/sgs/quote).
  * The `--sgs-connector-colour` / `--sgs-date-colour` / `--sgs-reveal-stagger`
  * custom-property VALUES route to the scoped `.{uid}` rule like everything
- * else — inline `--var` was FORBIDDEN by the FR-32-4 amendment (2026-07-18,
- * D345). The older "a --var:value is not a property declaration" reading is
- * superseded.
+ * else — inline `--var` is FORBIDDEN by the FR-32-4 amendment (2026-07-18,
+ * D345).
  *
  * BOX-GROUP (contract §B): `padding`/`margin` are WP-native
  * style.spacing.* objects (base) + SGS object tiers (paddingTablet/Mobile,
@@ -24,10 +23,6 @@
  * Typography is routed to `.sgs-timeline__title` (per the declared
  * `selectors.typography` in block.json) rather than the root — the title is
  * the element the typography controls are meant to style.
- *
- * @since 0.1.0
- * @since 2026-07-10  No-inline migration (skip-serialised supports + box
- *                    objects + scoped output).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — dynamic block).
@@ -94,11 +89,9 @@ foreach ( array( 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform', 'fo
 
 // `textAlign` is NOT nested under style.typography — WP's typography.textAlign
 // support injects it as a TOP-LEVEL $attributes['textAlign'] string (mirrors
-// sgs/notice-banner + sgs/countdown-timer). It was previously looked for
-// inside $style_typography_raw above, where it can never exist — a dead-read,
-// not merely a dead-write. block.json maps css:text-align to the `title`
-// element (`.sgs-timeline__title`), so it is scoped there, not the root <ol>
-// (DB-first element manifest, R-31-1).
+// sgs/notice-banner + sgs/countdown-timer). block.json maps css:text-align to
+// the `title` element (`.sgs-timeline__title`), so it is scoped there, not
+// the root <ol> (DB-first element manifest, R-31-1).
 $text_align_raw = $attributes['textAlign'] ?? '';
 $text_align     = in_array( $text_align_raw, array( 'left', 'center', 'right' ), true ) ? $text_align_raw : '';
 
@@ -353,9 +346,7 @@ if ( $reveal_stagger > 0 ) {
 // frontend just as much as an inline property declaration — FR-32-1's done-when
 // is "no `style` attribute at all", explicitly including a custom-property
 // value. They route to the block's own scoped `.{uid}.sgs-timeline` rule
-// instead. (An earlier docblock here claimed a `--var:value` "stays" because it
-// is not a property declaration; that was written BEFORE the D345 amendment and
-// is superseded — a dated opinion, not a live exemption.)
+// instead.
 if ( $wrapper_style_parts ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_style_parts ) . ';}';
 }

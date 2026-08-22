@@ -11,9 +11,8 @@
  *
  * The `--sgs-countdown-number-colour` / `--sgs-countdown-label-colour` custom-
  * property VALUES are emitted into the same scoped `.{uid}` <style> tag above
- * (FR-32-4, D345 — inline `style="--x:y"` on the frontend is forbidden; the
- * pre-D345 "custom-property values may stay inline" reading of contract §A is
- * superseded). No `style` key is ever passed to get_block_wrapper_attributes().
+ * (FR-32-4, D345 — inline `style="--x:y"` on the frontend is forbidden). No
+ * `style` key is ever passed to get_block_wrapper_attributes().
  *
  * BOX-GROUP (contract §B): base padding/margin/border-radius/border-width/
  * border-style/border-colour are all WP-native `style.spacing.*` /
@@ -28,10 +27,6 @@
  * KEEPS its wrapper (contract §B3). Because `anchor` support is declared,
  * the scoped uid is a CLASS (never an `id`) so it never collides with the
  * anchor id (contract §B3 / mirrors sgs/quote).
- *
- * @since 2026-05-16  Initial.
- * @since 2026-07-10  No-inline migration (skip-serialised supports + scoped
- *                    `.{uid}` <style> + box-object tiers).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
@@ -221,9 +216,8 @@ if ( '' !== $text_align ) {
 }
 
 // --- Number/label colour custom-property VALUES (FR-32-4, D345) — scoped, NOT
-// inline. Previously an inline `style="--x:y"` attribute on the root; the
-// values are sanitised via sgs_colour_value() exactly as before, just routed
-// into the same scoped <style> tag instead of get_block_wrapper_attributes().
+// inline. Values are sanitised via sgs_colour_value() and routed into the
+// same scoped <style> tag rather than get_block_wrapper_attributes().
 //
 // D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
 // a gradient value cannot ride a `color: var(--x)` custom property (the

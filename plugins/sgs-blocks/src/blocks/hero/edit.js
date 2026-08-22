@@ -34,7 +34,7 @@ import {
 	resolveShadowPreview,
 	colourVar,
 } from '../../utils';
-// No-inline migration (2026-07-09): hero no longer uses the default
+// No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // per-grid-area panels write to LEGACY FLAT attrs, which would become dead
 // controls once contentBandPadding / contentPadding / mediaPadding become box
@@ -250,15 +250,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		// separate, pre-existing gap — see edit.js's absence of any "Hover" panel);
 		// this row is deliberately added independent of that gap.
 		borderColourGradient,
-		// D702 — root background/text colour, resting + hover pairs. The
-		// wrapper element's manifest `css:background-color`/`css:color` were
-		// pointed at a `native:color.background` attribute WordPress never
-		// registered (supports.color was absent), so backgroundColourHover/
-		// textColourHover were declared + rendered (render.php:208-211,
-		// 370-378) but bound to nothing on the editor side, and had no resting
-		// counterpart at all. Mirrors sgs/testimonial-slider's `slider`
-		// element (backgroundColour/textColour + Hover siblings) — TWO states
-		// per row (normal + hover), gradient-capable on both rows.
+		// D702 — root background/text colour, resting + hover pairs. Mirrors
+		// sgs/testimonial-slider's `slider` element (backgroundColour/textColour
+		// + Hover siblings) — TWO states per row (normal + hover),
+		// gradient-capable on both rows.
 		backgroundColour,
 		backgroundColourGradient,
 		backgroundColourHover,
@@ -1676,10 +1671,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					const resolvedColourRaw = backgroundOverlayColour || '';
 					// `overlayGradient` IS the complete CSS gradient string since the
 					// D636 storage collapse (837f7c97) — no angle/from/to scalars to
-					// rebuild from. This previously gated on `overlayGradientFrom`, an
-					// attribute that commit deleted, so the gradient branch could never
-					// be reached and the (also-deleted) builder it called was dead.
-					// Fixed 2026-08-16 (D643).
+					// rebuild from.
 					const hasOverlayColour = !! resolvedColourRaw || !! overlayGradient;
 					const showsOverlay =
 						( ! isSplit && !! backgroundImage?.url ) ||

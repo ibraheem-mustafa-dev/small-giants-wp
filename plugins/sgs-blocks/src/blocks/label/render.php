@@ -51,8 +51,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 
 $text = $attributes['text'] ?? '';
-// User-facing HTML-tag chooser removed (2026-07-05) — the converter never
-// emitted this attr; sgs/label always renders a <span>.
+// sgs/label always renders a <span> — there is no HTML-tag chooser; the
+// converter never emits one.
 $tag_name          = 'span';
 $text_colour       = $attributes['textColour'] ?? '';
 $background_colour = $attributes['backgroundColour'] ?? '';
@@ -86,11 +86,11 @@ $text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( 
 $allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
 $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
 
-// Style-variant detection. Padding / background / radius now paint on VALUE-
-// PRESENCE (ungated 2026-07-12): the pill block-styles are one-click convenience
-// presets that SET those values, no longer the gate that renders them. The only
-// thing still keyed on a variant is the DISPLAY model — when an is-style-* class
-// is present the variant's own CSS owns display, so render.php emits none.
+// Style-variant detection. Padding / background / radius paint on VALUE-
+// PRESENCE: the pill block-styles are one-click convenience presets that SET
+// those values, not a gate on whether they render. The only thing still keyed
+// on a variant is the DISPLAY model — when an is-style-* class is present the
+// variant's own CSS owns display, so render.php emits none.
 $extra_classes     = isset( $attributes['className'] ) ? $attributes['className'] : '';
 $has_style_variant = ( false !== strpos( $extra_classes, 'is-style-' ) );
 $full_width        = ! empty( $attributes['fullWidth'] );

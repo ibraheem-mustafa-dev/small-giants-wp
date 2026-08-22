@@ -38,15 +38,6 @@
  * @media 1023/767); border-width = SGS custom object attr (no tiers, matches
  * the pre-existing base-only contract).
  *
- * @since 2026-05-17  Initial — sgs/quote block
- * @since 2026-06-04  WS-4 composite-mirror: outer wrapper via SGS_Container_Wrapper (kind='content').
- * @since 2026-07-05  ONE content model: legacy body[] array attr + dual-path
- *                    $content/$attributes['body'] branching REMOVED.
- * @since 2026-07-09  100% no-inline + 100% box-group migration: box families →
- *                    objects; dropped SGS_Container_Wrapper (qc-council P2 —
- *                    block-private is more robust for no-inline); the
- *                    <blockquote> IS the block root; ALL CSS scoped block-private.
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered InnerBlocks output (the body paragraphs —
  *                           sgs/text children, or any text-capable block an

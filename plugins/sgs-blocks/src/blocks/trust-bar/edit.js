@@ -13,15 +13,15 @@ import {
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier } from '../../utils';
-// No-inline migration (2026-07-10): trust-bar no longer uses the default
-// <ContainerWrapperControls> aggregator — its unconditional "Content band" /
-// "Responsive spacing" panels write to LEGACY FLAT attrs (contentBandPaddingTop,
-// paddingTopTablet, …), which are now REMOVED box-object attrs on this block
+// trust-bar does not use the default <ContainerWrapperControls> aggregator —
+// its "Content band" / "Responsive spacing" panels write to flat attrs
+// (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
+// its padding/margin/content-band values are box-object attrs
 // (paddingTablet/paddingMobile/marginTablet/marginMobile/contentBandPadding+
-// Tablet+Mobile). Import the individual panels still needed instead (mirrors
-// sgs/container's + sgs/hero's own edit.js) and roll trust-bar's own "Padding &
-// margin" / "Content band" panels below using ResponsiveBoxControl bound to the
-// object attrs.
+// Tablet+Mobile). The individual panels needed are imported instead (mirrors
+// sgs/container's + sgs/hero's own edit.js), and trust-bar rolls its own
+// "Padding & margin" / "Content band" panels below using ResponsiveBoxControl
+// bound to the object attrs.
 import {
 	WidthPanel,
 	LayoutPanel,

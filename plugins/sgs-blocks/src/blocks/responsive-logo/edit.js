@@ -176,10 +176,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	// `maxWidth` AND `maxHeight` are both TIER OBJECTS as of Spec 35 pass 2
-	// (2026-08-11) — ONE attr each holding {desktop,tablet,mobile}. Neither has
-	// a per-tier attr map any more (D563's flat `maxHeightAttrMap` sibling was
-	// retired in the same pass that folded `maxHeightTablet`/`maxHeightMobile`
-	// into the object).
+	// (2026-08-11) — ONE attr each holding {desktop,tablet,mobile}.
 	//
 	// The per-tier VALUE stays a bare NUMBER paired with the block-level
 	// `maxWidthUnit`/`maxHeightUnit` — the tier axis and the unit are separate
@@ -200,18 +197,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { maxHeightUnit: unit } );
 	};
 
-	// The picker now persists BOTH the attachment ID and its URL, to the declared
+	// The picker persists BOTH the attachment ID and its URL, to the declared
 	// `logoId*` / `logoUrl*` attribute pairs — the shape every other SGS image
 	// block uses (sgs/media imageId + imageUrl).
-	//
-	// This replaces `_desktopLogoUrl` / `_tabletLogoUrl` / `_mobileLogoUrl`, which
-	// were written by setAttributes but never DECLARED in block.json. WordPress
-	// silently discards any attribute a block does not declare — no error, no
-	// warning — so those values existed only in editor memory for the length of a
-	// session and were gone on reload. That is the exact class
-	// `check-dead-pattern-attrs.py` was built for at D338 (45 found, 39 fixed),
-	// and it is why the old comment's "not persisted as attribute" was accurate
-	// while describing a silent data loss rather than a design.
 	//
 	// Persisting the URL is also what makes the a11y half work: `image-alt` pairs
 	// an alt attr to a sibling image attr via `alt_companion_attr`, and
@@ -250,14 +238,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { svgAnimationSource: undefined } );
 	};
 
-	// Preview URLs now come from the DECLARED, PERSISTED attrs. The previous
-	// `attributes._desktopLogoUrl` reads were the visible symptom of the silent
-	// discard described above: WordPress drops undeclared attributes, so after a
-	// save-and-reload every one of these was undefined and each slot fell back to
-	// its placeholder — the operator's chosen logo appeared to vanish from the
-	// editor even though the ID had been stored correctly and the FRONTEND
-	// rendered fine. A bug that only shows on reload, and only in the editor,
-	// which is a surface no gate in this repo covers.
+	// Preview URLs come from the DECLARED, PERSISTED attrs.
 	const desktopUrl = attributes.logoUrl;
 	const tabletUrl  = attributes.logoUrlTablet;
 	const mobileUrl  = attributes.logoUrlMobile;

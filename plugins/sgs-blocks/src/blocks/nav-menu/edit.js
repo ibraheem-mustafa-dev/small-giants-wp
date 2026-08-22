@@ -283,11 +283,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				);
 			const keyOf = ( item ) => `id:${ item.object_id ?? item.id }`;
 			/*
-			 * Children are INCLUDED. This used to `.filter( item => ! item.parent )`,
-			 * which meant a client could never tick a nested item as featured even
-			 * though render.php marks one happily — the capability existed with no
-			 * way to reach it. Walked parent-first so each child's identifier is
-			 * path-qualified against a parent that has already been resolved.
+			 * Children are INCLUDED — a client can tick a nested item as featured,
+			 * matching what render.php already marks. Walked parent-first so each
+			 * child's identifier is path-qualified against a parent that has
+			 * already been resolved.
 			 */
 			const byParent = new Map();
 			all.forEach( ( item ) => {
@@ -459,10 +458,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps();
 
 	// D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
-	// FIRST so it sits at the top of the Styles tab). Replaces every scattered
-	// DesignTokenPicker/StateToggleControl colour control that used to live in
-	// the Nav container / Items / Underline / Featured / Burger / Effects /
-	// Dropdown panels below. Every state below carries `linked: true` (D619).
+	// FIRST so it sits at the top of the Styles tab). Every state below carries
+	// `linked: true` (D619).
 	//
 	// itemColourHover/itemBgHover/itemRadiusHover: GROUND-TRUTH checked against
 	// render.php (2026-08-15 rebuild) — `$hover_targets` (line ~953) is now

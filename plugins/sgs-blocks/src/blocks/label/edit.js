@@ -63,12 +63,11 @@ const LINE_HEIGHT_UNITS = [
 
 /**
  * Build the fontSize reset value for the font-size responsive family owned by
- * <TypographyControls>. fontSize is now an OBJECT-typed {desktop,tablet,
- * mobile} attr (Spec 35 tier-object migration) — the retired flat
- * fontSizeTablet/fontSizeMobile sibling attrs no longer exist in this block's
- * schema, so resetting them individually would silently no-op (WP discards a
- * write to an undeclared attr). Reset the WHOLE object back to the block's own
- * default (block.json: `{"desktop":12}`) instead.
+ * <TypographyControls>. fontSize is an OBJECT-typed {desktop,tablet,mobile}
+ * attr (Spec 35 tier-object migration) — resetting a Tablet/Mobile sibling
+ * individually would silently no-op (WP discards a write to an undeclared
+ * attr), so the WHOLE object resets to the block's own default
+ * (block.json: `{"desktop":12}`) instead.
  */
 function resetFontSizeResponsive() {
 	return {

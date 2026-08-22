@@ -411,10 +411,8 @@ ob_start();
 				// sgs/social-icons' / sgs/card-grid's per-item values) — every
 				// image renders `.sgs-gallery__item` unconditionally, so position
 				// is stable. $sgs_css_ratio allows digits, dot, and the "/" the
-				// aspect-ratio grammar needs (e.g. "16/9"). Previously an inline
-				// `style="…"` (also emitting a bare `style=""` when both were
-				// unset — itself an FR-32-1 breach); now no `style` attribute is
-				// ever written on the item.
+				// aspect-ratio grammar needs (e.g. "16/9"). No `style` attribute
+				// is ever written on the item (FR-32-1 forbids a bare `style=""`).
 				$item_style_decls = array();
 				if ( $aspect_ratio ) {
 					$item_style_decls[] = '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio );

@@ -73,9 +73,8 @@ $badge_image_shadow        = isset( $attributes['badgeImageShadow'] ) ? (string)
 $badge_image_shadow_colour = isset( $attributes['badgeImageShadowColour'] ) ? (string) $attributes['badgeImageShadowColour'] : '';
 $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHover'] ) ? (string) $attributes['badgeImageShadowColourHover'] : '';
 $badge_image_object_fit    = sanitize_html_class( $attributes['badgeImageObjectFit'] ?? 'contain' );
-// $columns and $gap_slug are no longer needed locally:
-// - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
-// - gap is consumed by the shared wrapper helper directly from $attributes['gap'].
+// Grid columns are driven by the gridTemplateColumns attr via the shared wrapper helper.
+// Gap is consumed by the shared wrapper helper directly from $attributes['gap'].
 
 // --- Auto-scroll attributes --------------------------------------------------
 $auto_scroll       = ! empty( $attributes['autoScroll'] );
@@ -96,9 +95,9 @@ $title_colour_val  = sgs_colour_value( $title_colour );
 $label_colour_val  = sgs_colour_value( $label_colour );
 
 // --- Wrapper CSS custom properties --------------------------------------------
-// Note: gap is now handled universally by the shared wrapper helper (WS-4 mirror).
-// The helper reads the `gap` attr and emits `gap:var(--wp--preset--spacing--N)` as
-// an inline style when layout="grid". --sgs-trust-bar-gap is no longer emitted here.
+// Gap is handled by the shared wrapper helper (WS-4 mirror), which reads the
+// `gap` attr and emits `gap:var(--wp--preset--spacing--N)` as an inline style
+// when layout="grid".
 $styles = array();
 
 if ( 'icon-circle' === $badge_style ) {
@@ -213,13 +212,11 @@ if ( ! empty( $tb_style_engine_args ) ) {
 }
 
 // --- Root-element background + text colour (+ hover), no-inline contract. ----
-// supports.color is now ALL-FALSE (native colour UI retired in favour of the
-// SgsColourPanel rows below), so the has-*-color / has-*-background-color
-// native-class re-add that used to live here is gone with it — those classes
-// existed only to keep WP's OWN preset-palette CSS resolving; this block now
-// paints background/text itself via scoped CSS, mirrors
-// sgs/site-header-row's colour block + sgs/text's gradient-capable text-colour
-// mechanism (D636 — the sibling `{attr}Gradient` wins over the flat value).
+// supports.color is ALL-FALSE (native colour UI retired in favour of the
+// SgsColourPanel rows below); this block paints background/text itself via
+// scoped CSS, mirroring sgs/site-header-row's colour block + sgs/text's
+// gradient-capable text-colour mechanism (D636 — the sibling `{attr}Gradient`
+// wins over the flat value).
 $tb_root_colour_decls = array();
 
 $tb_bg_decl = sgs_background_paint_decl( $root_background_colour, $root_background_colour_gradient );

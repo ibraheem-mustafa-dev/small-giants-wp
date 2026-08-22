@@ -32,14 +32,9 @@ import {
  * nothing.
  *
  * Mirrors the FRONTEND emitter (sgs_responsive_format_atom_value):
- *  - Bare number (e.g. "24") → "24px". ⚠ This is a DELIBERATE change of
- *    meaning, Bean-ruled 2026-08-10. It previously resolved to
- *    var(--wp--preset--spacing--24) — a spacing-SCALE slug, where slug 30 is
- *    1rem and slug 20 is 0.5rem, so a bare number meant something quite
- *    unlike its face value. A bare number now means px everywhere, matching
- *    every other numeric control an operator touches. Block defaults that
- *    relied on the old slug meaning were rewritten to explicit lengths in the
- *    same change, so nothing renders differently because of this.
+ *  - Bare number (e.g. "24") → "24px". ⚠ This is a DELIBERATE, Bean-ruled
+ *    meaning: a bare number means px everywhere, matching every other
+ *    numeric control an operator touches.
  *  - Raw CSS length ("16px", "1.5rem", "clamp(...)") → pass through
  *  - Empty → undefined (so the style key is omitted)
  *

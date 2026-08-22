@@ -26,10 +26,6 @@
  * base only (no tiers, matches the DONE checklist's border-radius-only tier
  * requirement).
  *
- * @since 2026-07-10  No-inline migration: WP supports skip-serialised +
- *                    scoped output; padding/margin/border-radius tier attrs
- *                    added; view.js animation-pause moved off inline style.
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var \WP_Block $block      Block instance.

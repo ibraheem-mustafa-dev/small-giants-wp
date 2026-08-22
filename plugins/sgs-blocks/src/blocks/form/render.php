@@ -16,16 +16,14 @@
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  * The wrapper handles base+tier padding/margin scoped internally
- * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs, new
- * this migration — box-group contract §B). color/typography/border are
- * block-private (mirrors sgs/container's render.php pattern): extracted from
+ * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs —
+ * box-group contract §B). color/typography/border are block-private
+ * (mirrors sgs/container's render.php pattern): extracted from
  * $attributes['style'], emitted into a scoped `<style>` keyed to a
  * content-hash uid CLASS, fed to the wrapper via `extra_classes`. The submit
- * button's colour (previously inline style="") is now a scoped rule on
- * `.uid .sgs-form__button--submit`; the honeypot's off-screen positioning
- * (previously inline style="position:absolute;...") now relies solely on the
- * pre-existing `.sgs-form__honeypot` rule in style.css — the div carries only
- * its class.
+ * button's colour is a scoped rule on `.uid .sgs-form__button--submit`; the
+ * honeypot's off-screen positioning relies solely on the pre-existing
+ * `.sgs-form__honeypot` rule in style.css — the div carries only its class.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
@@ -285,14 +283,9 @@ if ( $is_multi_step ) :
 <?php endif; ?>
 
 <?php
-// ACCESSIBLE NAME (2026-08-06, Bean). `formName` had an editor control (edit.js:97)
-// and two variations seeding translatable copy ("Contact Us", "Newsletter Signup",
-// includes/variations/sgs-form-variations.php:79,114) — and NOTHING rendered it: it
-// was assigned to $form_name above and read by no one, so a client could type a form
-// name and nothing happened. That is the Spec 35 failure mode (a control that needs
-// code to mean anything is not done), and it left every SGS form without an
-// accessible name, which is a real WCAG 2.1 gap when a page carries more than one
-// form — a screen-reader user hears "form" twice with nothing to tell them apart.
+// ACCESSIBLE NAME. Without an accessible name every SGS form is a real WCAG 2.1
+// gap when a page carries more than one form — a screen-reader user hears
+// "form" twice with nothing to tell them apart.
 //
 // Rendered as aria-label rather than a visible heading DELIBERATELY: a visible title
 // is the operator's own sgs/heading block placed above the form, and emitting a

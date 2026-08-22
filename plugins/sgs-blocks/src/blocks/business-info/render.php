@@ -412,9 +412,9 @@ if ( '' !== $sgs_bi_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-business-info__icon svg{" . $sgs_bi_stroke_grad['css'] . ';}';
 }
 
-// --- Colour bridge (icon/text/label) — was an inline `style` attr, now a
-// scoped custom-property declaration; style.css's var(--sgs-bi-*, currentColor)
-// consumption is unchanged. Each custom property is emitted ONLY when the
+// --- Colour bridge (icon/text/label) — a scoped custom-property declaration;
+// style.css consumes it via var(--sgs-bi-*, currentColor). Each custom
+// property is emitted ONLY when the
 // attribute resolves to a non-empty value (an explicit override) — an unset
 // attribute means "no override", so no declaration is written at all and
 // style.css's currentColor fallback takes over, inheriting the surrounding

@@ -14,8 +14,7 @@
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
- * Hover COLOUR is no longer a custom-property VALUE at all: since
- * 2026-08-19 it is emitted as a real scoped declaration by the shared
+ * Hover COLOUR is emitted as a real scoped declaration by the shared
  * `sgs_emit_state_colour_css()`. The remaining custom properties here
  * (transition timing, hover scale/shadow) are still scoped values — a
  * `--var: value` is a value, not a declaration.
@@ -36,9 +35,6 @@
  * scalar attrs. Per-step number/title/description colours stay scalar
  * (single-value families, contract §C) but move from inline `style="…"` to
  * scoped descendant rules.
- *
- * @since 2026-05-15  Static-to-dynamic conversion
- * @since 2026-07-10  100% no-inline + box-group migration (D297 rollout).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).

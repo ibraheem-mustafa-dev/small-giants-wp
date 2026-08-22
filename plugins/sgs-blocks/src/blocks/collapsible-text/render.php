@@ -42,11 +42,6 @@
  * @var string    $content    InnerBlocks HTML (unused — text is a scalar attr).
  * @var \WP_Block $block      Block instance.
  *
- * @since 2026-06-11  P-D213 initial build.
- * @since 2026-07-10  No-inline migration (scoped colour/spacing + tiers).
- * @since 2026-07-18  Collapsed-lines custom property moved from inline
- *                    `style="--var"` to scoped class-level rule (D345).
- *
  * @package SGS\Blocks
  */
 
