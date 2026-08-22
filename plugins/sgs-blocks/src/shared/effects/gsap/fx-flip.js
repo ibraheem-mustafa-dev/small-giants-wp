@@ -268,23 +268,38 @@ export function initFlip( el ) {
 
 			Flip.killFlipsOf( productNodes( el ) );
 
-			flipTween = context.add( () =>
-				Flip.from( state, {
-					duration: 0.5,
-					ease: 'power2.out',
-					// Per-item stagger, so a re-filter reads as cards resettling one
-					// after another rather than the whole grid snapping as one block.
-					stagger: 0.03,
-					// A card moving between positions passes over cards mid-transit;
-					// `absolute` takes each flipping element out of flow for the
-					// duration so those overlaps don't fight the grid's own layout.
-					absolute: true,
-					nested: true,
-					onComplete: () => {
-						flipTween = null;
-					},
-				} )
-			);
+			// NOT context.add(fn) — `context` here is the MatchMedia instance
+			// withMotionAllowed() passes into every effect's setup(gsap, context),
+			// and MatchMedia#add() has signature (conditions, func, scope), never
+			// a bare single function. Calling it with just an arrow function makes
+			// GSAP treat that function itself AS the "conditions" argument: it
+			// gets wrapped as {matches: fn}, then window.matchMedia(fn) is called
+			// with a function coerced to a (nonsense) query string, which never
+			// matches — so `active` stays falsy and the wrapped callback (the
+			// actual Flip.from() call) is registered but NEVER INVOKED. This was
+			// the entire cause of FR-38-12 never animating: the module reached
+			// this line and returned a truthy `flipTween` every time (the return
+			// value of a no-op MatchMedia#add() call, not a Flip tween), so every
+			// upstream check ("did settle() run", "was Flip.from called") looked
+			// healthy while nothing GSAP actually managed ever ticked.
+			// Cleanup here doesn't need GSAP's context auto-tracking anyway —
+			// `flipTween?.kill()` in the returned teardown already handles it
+			// manually — so call Flip.from() directly.
+			flipTween = Flip.from( state, {
+				duration: 0.5,
+				ease: 'power2.out',
+				// Per-item stagger, so a re-filter reads as cards resettling one
+				// after another rather than the whole grid snapping as one block.
+				stagger: 0.03,
+				// A card moving between positions passes over cards mid-transit;
+				// `absolute` takes each flipping element out of flow for the
+				// duration so those overlaps don't fight the grid's own layout.
+				absolute: true,
+				nested: true,
+				onComplete: () => {
+					flipTween = null;
+				},
+			} );
 		};
 
 		const observer = new MutationObserver( ( records ) => {
