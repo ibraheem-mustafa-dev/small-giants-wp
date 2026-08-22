@@ -119,14 +119,46 @@ re-measured with the identical script — a clean controlled before/after.
 generalisation ("any block feeding a DesignTokenPicker value to the style engine
 RAW has this defect") should be treated as a live checklist, not a caution.
 
-## Coverage — corrected 2026-08-22 (later)
+## Coverage — final 2026-08-22: **14 of 16 verified, 2 UNRESOLVED**
 
-A second pass captured the 9 blocks this report originally declined to claim.
-**13 of 16 are now verified.**
-
-| Verified (13) | Not verifiable by page-content probing (3) |
+| Verified (14) | Unresolved (2) |
 |---|---|
-| accordion-item, quote, feature-grid, product-faq, tab, trustpilot-reviews, multi-button, physics-canvas, testimonial-slider, product-card, product-faq-item, form-step, form-field-tiles | collapsible-text, site-header-row, site-footer-row |
+| accordion-item, quote, feature-grid, product-faq, tab, trustpilot-reviews, multi-button, physics-canvas, testimonial-slider, product-card, product-faq-item, form-step, form-field-tiles, **collapsible-text** | **site-header-row, site-footer-row** |
+
+`collapsible-text` PASSES — the earlier NOT VERIFIED was a probe bug: it set
+`content`, an attribute the block does not declare. Its real attribute is `text`,
+and `render.php` returns early on empty text. With the correct attribute the block
+renders (161 chars) and the gradient paints on the root.
+
+### ⛔ site-header-row / site-footer-row — UNRESOLVED, and deliberately not called either way
+
+These declare `parent: ['sgs/site-header'|'sgs/site-footer']` and early-return on
+empty inner content (`if ( '' === trim( (string) $content ) ) return '';`). Three
+instruments were tried:
+
+1. **Page content** — cannot inject into a template part. A unique marker appeared
+   NOWHERE on the page while THREE elements of the class existed: the measurement
+   was of the site's REAL header. False failure.
+2. **REST block-renderer** — returns 200 with an EMPTY body, because it supplies no
+   InnerBlocks and the block's own guard then renders nothing.
+3. **Editing the real template part** (`sgs-theme//header` / `//footer`), measuring
+   a live page, and restoring. Restore VERIFIED byte-for-byte both times.
+
+Instrument 3 produced **contradictory evidence across runs**: one run reported the
+rendered uids CHANGED after the patch (proving the page re-rendered, which would
+make a non-painting result a real defect); a later run showed the uid UNCHANGED at
+`sgs-shr-cb6b4850` with no scoped rule in either the inline or the lifted CSS
+(proving staleness, which makes the result meaningless). Anonymous requests are
+served from the LiteSpeed page cache, and authenticating did not reliably settle it.
+
+**Both readings cannot be true, so neither is reported as a verdict.** Calling this
+a defect would be as wrong as calling it a pass. What is certain: the attribute
+stores correctly, the restore is clean, and the canary is unmodified.
+
+**Owed:** a dedicated pass with the page cache positively purged (not assumed) —
+`build-deploy.py`'s `step_purge_caches()` does both OPCache and LiteSpeed, so
+deploying with the attribute authored in the template, rather than REST-patching it
+underneath a cache, is the instrument that would settle it.
 
 ⛔ **THREE FALSE FAILURES were reported and retracted in that pass. The retraction
 matters more than the passes.**
