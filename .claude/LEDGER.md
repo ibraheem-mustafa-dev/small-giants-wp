@@ -271,11 +271,40 @@ no-inline prose → one pointer per block · `R-22-14`→`R-31-14` ×14 · scrol
 **⛔ Detail, owed follow-ups, and the 11-gate-backed-vs-37-UNENFORCED split:
 `.claude/reports/2026-08-21-unenforced-prohibition-register.md`. Read before continuing.**
 
-## ▶ CLEANUP TRACK — comment-narrative trim, ~70 files (OPEN, unblocked)
+## ▶ CLEANUP TRACK — comment-narrative trim: ALL FILES REVIEWED 2026-08-22
 
-Not parked; pick up any time. 20 densest files done (~370 lines), ~70 remain at ~9 each.
-**Rules, tooling, owed items + a ready session prompt:
-`.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`.**
+**~91 files reviewed, ~593 lines of change-narrative cut. Nothing unreviewed remains.**
+Batch 1 (21 files) + batch 2 `ec8166e9` (23 files, pushed) + batch 3 (31 files, VERIFIED but
+UNCOMMITTED). Detail: `.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`.
+
+⚠ **Do NOT re-run the detector's `--survey` and conclude work remains.** It ranks CANDIDATES,
+not removables; `nav-menu` (349) and `hero` (338) still top the list and were both trimmed in
+batch 1. Realised removal rate is 11-14%.
+
+**Owed item closed:** the `card-grid` duplicate `$hover_bg_gradient` was already fixed by
+`a9ea9b8f`; the track doc's claim was true when written and stale a day later.
+**Owed item done:** `generated-fx-qualifying-blocks.php` deleted + the generator stopped emitting
+it (Spec 38); proven by running the generator and confirming it does not reappear, with a
+negative control on `check_fx_qualifying_blocks_stale.py`.
+
+### ⛔ BLOCKED — and it blocks EVERY track, not just this one
+
+`.githooks/pre-commit` runs `db-consistency/run.py --check` unconditionally for any staged path
+under `plugins/sgs-blocks/`, and **has no bypass token**. It currently reports 4 NEW violations,
+so **no commit touching the plugin can land** until they are closed.
+
+The 4 (plus 7 element-manifest orphans) are the colour-golden track's colour work. A `/sgs-update`
+reseed EXPOSED them; it did not cause them — the failing manifest gate reads only `block.json`
+files and the reseed touched none. Deliberately NOT baselined: three are live clone-misrouting
+defects and the baseline file stores no reasons.
+
+**Full handover, with the fix each one needs:
+`.claude/reports/2026-08-22-handover-to-colour-golden-track.md`** — sent to that track 2026-08-22.
+
+⚠ **That gate's suggested fix is WRONG** — it says add `"css:border-color": "borderColourHover"`
+to a base `attrMap`, but the blocks declare both the base and hover attrs, which collide on that
+key. Correct mechanism is `states.hover` (0 of 83 blocks use the suggested shape; 16 use
+`states.hover`).
 
 ## ▶ TIER W (MOTION) TRACK — CLOSED 2026-08-21
 

@@ -1,14 +1,32 @@
 ---
 doc_type: plan
 date: 2026-08-21
-status: OPEN — not blocked, pick up any time
+status: PARTIAL — all files reviewed; 31 trimmed files BLOCKED on a shared pre-commit gate
 ---
 
-# Cleanup track — comment-narrative trim, ~70 files remaining
+# Cleanup track — comment-narrative trim
 
-**Not blocked and not parked.** Straightforward work anyone can pick up in any session. The 20
-densest files are done (~370 lines removed); ~70 files still carry change-narrative comments,
-averaging ~9 lines each.
+## Status 2026-08-22 — every candidate file has now been REVIEWED
+
+| | Files | Lines cut |
+|---|---|---|
+| Batch 1 (2026-08-21) | 21 | ~370 |
+| Batch 2 (`ec8166e9`) | 23 | 131 |
+| Batch 3 (pending commit) | 31 | 92 |
+| **Reviewed, nothing to cut** | ~16 | — |
+
+**No file remains unreviewed.** Roughly 593 lines of change-narrative removed across ~91 files.
+
+⛔ **Batch 3's 31 files are verified but UNCOMMITTED**, blocked by `.githooks/pre-commit`, which
+runs `db-consistency/run.py --check` unconditionally for any staged path under
+`plugins/sgs-blocks/` and has **no bypass token**. The 4 violations are the colour-golden track's
+— handed over in `.claude/reports/2026-08-22-handover-to-colour-golden-track.md`. The moment that
+gate is green, stage the 31 files by exact filename and commit; they need no rework.
+
+⚠ **Do NOT re-run `--survey` and conclude there is work left.** `nav-menu` (349) and `hero` (338)
+still rank top because the detector counts CANDIDATES, and most candidates are legitimate keeps —
+the realised removal rate is 11-14%. Both were trimmed in batch 1. Judge remaining work by the
+table above, not by the survey's ranking.
 
 ## Why this exists
 
@@ -67,11 +85,28 @@ D345 had moved into scoped CSS. Report contradictions with evidence; do NOT fix 
 unilaterally, and never prove one by a grep that finds nothing — that failure is itself recorded
 in `nav-menu`'s own comments.
 
-## Two small items owed here
+## One small item owed here
 
-1. `card-grid/render.php` has a duplicated `$hover_bg_gradient` assignment (pre-existing at HEAD,
-   dead — the second overwrites the first with the same value). One-line delete, executable.
-2. `generated-fx-qualifying-blocks.php` is dead at runtime — nothing `require`s it, its function
-   has zero callers, and Spec 38 recommends deletion. ⛔ But it REGENERATES on every build, so
-   deleting the file alone achieves nothing; the generator must stop emitting it. Its sibling
-   `generated-fx-qualifying-blocks.json` IS live (imported by `extensions/fx.js:49`) and stays.
+~~1. `card-grid/render.php` duplicated `$hover_bg_gradient` assignment.~~ **✅ NO LONGER OWED —
+verified 2026-08-22.** It was fixed by `a9ea9b8f` *"refactor(card-grid): hover colour via the
+shared helper, two emit sites into one"*. At HEAD there is exactly one assignment
+(`card-grid/render.php:65`). The claim above was true when written and stale a day later — the
+same confident-wrongness this track exists to remove. **Do not dispatch it.**
+
+2. `generated-fx-qualifying-blocks.php` is dead at runtime — re-proven 2026-08-22: zero
+   `require`/`include` anywhere in PHP, and `sgs_get_fx_qualifying_blocks()` (its line 37) has zero
+   callers, the only grep hit being its own declaration. Spec 38 recommends deletion. ⛔ But it
+   REGENERATES on every build, so deleting the file alone achieves nothing; the generator must stop
+   emitting it.
+
+   ⚠ **Real paths — every path this entry originally gave was wrong:**
+   - dead artefact: `plugins/sgs-blocks/includes/generated-fx-qualifying-blocks.php`
+   - generator to change: `plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py` (emit
+     described at its lines 292–301)
+   - live sibling, **keep**: `plugins/sgs-blocks/src/blocks/extensions/generated-fx-qualifying-blocks.json`
+   - its importer: `plugins/sgs-blocks/src/blocks/extensions/fx.js:49`
+
+   ⛔ **Not a file delete — a 3-file change touching a build gate.**
+   `scripts/db-consistency/check_fx_qualifying_blocks_stale.py` names the PHP file as a "PHP
+   consumer" at its line 17. Read that script before editing the generator and update its header in
+   the same commit.

@@ -130,8 +130,9 @@ occurrences INCLUDING comments. Re-baseline ONCE after the whole batch, never mi
 
 **Model:** sonnet · **Time:** 30 min · **Deps:** Phase 2 pushed
 These are executable changes and must NOT ride in a comment-only commit.
-1. `card-grid/render.php` has a duplicated `$hover_bg_gradient` assignment (pre-existing at HEAD,
-   twice, the second overwriting the first with the same value). One-line delete.
+1. ~~`card-grid/render.php` duplicated `$hover_bg_gradient` assignment.~~ **NO LONGER OWED —
+   verified 2026-08-22.** Fixed by `a9ea9b8f`; one assignment remains at `render.php:65`. Do not
+   dispatch it. See the track doc for the corrected entry.
 2. `generated-fx-qualifying-blocks.php` is dead at runtime — nothing requires it, its function has
    zero callers, Spec 38 recommends deletion. ⛔ It REGENERATES on every build, so deleting the
    file alone achieves nothing; the generator must stop emitting it. Its sibling
