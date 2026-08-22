@@ -10,7 +10,7 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { colourVar } from '../../utils';
-import { SgsColourPanel } from '../../components';
+import { SgsColourPanel, fillRow } from '../../components';
 
 const CHEVRON_SVG = (
 	<svg
@@ -118,20 +118,18 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),

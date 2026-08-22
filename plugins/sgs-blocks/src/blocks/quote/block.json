@@ -94,7 +94,7 @@
 		"html": false,
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},

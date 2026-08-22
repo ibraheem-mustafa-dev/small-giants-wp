@@ -201,11 +201,10 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 }
 
 // WP `color`/`typography` support values (skip-serialised → NOT auto-inlined).
-$style_color_text     = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
-$style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
-$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 $style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
 $style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
@@ -426,9 +425,14 @@ if ( ! $inherit_style ) {
 	if ( '' !== $style_color_bg ) {
 		$color_args['background'] = $style_color_bg;
 	}
-	if ( '' !== $style_color_gradient ) {
-		$color_args['gradient'] = $style_color_gradient;
-	}
+	// supports.color.gradients is now FALSE, so nothing in the editor can write
+	// $attributes['style']['color']['gradient'] any more. The block's own
+	// backgroundColourGradient (read at the top, painted via
+	// sgs_background_paint_decl) is the single owner of the background gradient.
+	// The `$color_args['gradient'] = $style_color_gradient` branch that stood here
+	// was the SECOND owner and is now unreachable — removed rather than left as
+	// dead code that reads like a live feature. Verified before removing that zero
+	// theme patterns or templates author a native gradient on an sgs/quote instance.
 	if ( ! empty( $color_args ) ) {
 		$base_style_engine_args['color'] = $color_args;
 	}
