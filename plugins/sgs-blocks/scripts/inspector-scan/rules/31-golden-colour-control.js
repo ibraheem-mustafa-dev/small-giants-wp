@@ -139,22 +139,6 @@ const { makeFinding } = require( '../core/finding' );
 const { hasRealReason } = require( '../core/baseline' );
 const { resolveComponentFiles } = require( '../core/components' );
 
-// Given a states ArrayExpression, resolve the 'normal' state's GRADIENT
-// attribute name (the sibling {attr}Gradient this row's per-state gradient
-// toggle writes to) — the mechanism-disambiguation signal recordRowMechanism
-// needs; see its own header comment for why the base attr alone is ambiguous.
-function normalStateGradientAttrName( statesArray ) {
-	if ( ! statesArray || statesArray.type !== 'ArrayExpression' ) return null;
-	for ( const el of statesArray.elements ) {
-		if ( ! el || el.type !== 'ObjectExpression' ) continue;
-		if ( stringLiteralValue( objProp( el, 'key' ) ) === 'normal' ) {
-			return resolveAttrName( objProp( el, 'gradientValue' ) );
-		}
-	}
-	const first = statesArray.elements.find( ( el ) => el && el.type === 'ObjectExpression' );
-	return first ? resolveAttrName( objProp( first, 'gradientValue' ) ) : null;
-}
-
 const RAW_COLOUR_COMPONENT_NAMES = new Set( [
 	'ColorPalette',
 	'ColorGradientControl',
@@ -195,6 +179,8 @@ const {
 	reachedComponents,
 	resolveMechanismFromCssProperty,
 	getColourCssPropertyMap,
+	normalStateGradientAttrName,
+	describeRow,
 } = require( '../core/golden' );
 
 // ── Shared-owner scan helpers (C4 step 2, 2026-08-20) ────────────────────
@@ -694,11 +680,28 @@ module.exports = {
 				? blockJson.supports.sgs.colourExemptions
 				: null;
 
-		function checkRow( { rowKey, statesArray, gradientCapable, line } ) {
+		// The *Override params carry a row resolved from a colour-variant HELPER call
+		// (fillRow({...})), whose states are GENERATED inside the helper and are
+		// therefore never a literal ArrayExpression here. Without them an adopted row
+		// is INVISIBLE to this rule: it renders correctly, silently stops being
+		// checked, and the finding count FALLS — which reads as progress. Measured on
+		// the survey side, adopting a single row moved the census 255 -> 254.
+		// describeRow() in core/golden.js is the one normaliser both this rule and the
+		// survey use, so they cannot drift on what a row is.
+		function checkRow( { rowKey, statesArray, gradientCapable, line,
+			statesCountOverride = null, hasGradientOverride = null,
+			attrNameOverride = null, gradientAttrNameOverride = null } ) {
 			const statesCount =
-				statesArray && statesArray.type === 'ArrayExpression' ? statesArray.elements.length : 1;
-			const attrName = normalStateAttrName( statesArray );
-			const gradientAttrName = normalStateGradientAttrName( statesArray );
+				statesCountOverride !== null
+					? statesCountOverride
+					: statesArray && statesArray.type === 'ArrayExpression'
+					? statesArray.elements.length
+					: 1;
+			const attrName = attrNameOverride !== null ? attrNameOverride : normalStateAttrName( statesArray );
+			const gradientAttrName =
+				gradientAttrNameOverride !== null
+					? gradientAttrNameOverride
+					: normalStateGradientAttrName( statesArray );
 			const required = requiredStatesFor( elements, attrName );
 			const mechanismInfo = recordRowMechanism( ctx, block.slug, rowKey, attrName, gradientAttrName );
 
@@ -736,8 +739,12 @@ module.exports = {
 			// falls back to the pre-Step-3 binary check (never guessed at) so
 			// this rewrite cannot silently reduce coverage for the 157
 			// attributes with no css_property yet.
-			const statesHasGradient = statesArrayHasGradient( statesArray );
-			const hasAnyGradient = gradientCapable === true || statesHasGradient;
+			const statesHasGradient =
+				hasGradientOverride !== null ? hasGradientOverride : statesArrayHasGradient( statesArray );
+			const hasAnyGradient =
+				hasGradientOverride !== null
+					? hasGradientOverride
+					: gradientCapable === true || statesHasGradient;
 			const isShadowMechanism = mechanismInfo.mechanisms.includes( 'shadow' );
 
 			if ( ! isShadowMechanism ) {
@@ -976,8 +983,24 @@ module.exports = {
 				if ( name === 'SgsColourPanel' ) {
 					const rowsExpr = jsxAttrExpr( node, 'rows' );
 					if ( ! rowsExpr ) return;
-					const rowObjs = resolveRowObjects( rowsExpr );
-					for ( const rowObj of rowObjs ) {
+					for ( const el of resolveArrayLike( rowsExpr, 0 ) ) {
+						const d = describeRow( el );
+						if ( ! d ) continue;
+						if ( d.viaHelper ) {
+							checkRow( {
+								rowKey: d.rowKey || `row-line-${ line }`,
+								statesArray: null,
+								gradientCapable: false,
+								line: d.line || line,
+								statesCountOverride: d.statesCount,
+								hasGradientOverride: d.hasGradient,
+								attrNameOverride: d.attrName,
+								gradientAttrNameOverride: d.gradientAttrName,
+							} );
+							continue;
+						}
+						const rowObj = unwrapRowObject( el );
+						if ( ! rowObj ) continue;
 						const rowKey = stringLiteralValue( objProp( rowObj, 'key' ) ) || `row-line-${ line }`;
 						const statesArray = objProp( rowObj, 'states' );
 						const gradientCapable = booleanLiteralValue( objProp( rowObj, 'gradientCapable' ) );

@@ -28,7 +28,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, fillRow } from '../../components';
 import { colourVar } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -279,28 +279,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					{
+					fillRow( {
 						key: 'numberBackground',
 						label: __( 'Number background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: numberBackground,
-								onChange: ( val ) => setAttributes( { numberBackground: val ?? '' } ),
-								gradientValue: attributes.numberBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { numberBackgroundGradient: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: numberBackgroundHover,
-								onChange: ( val ) => setAttributes( { numberBackgroundHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'numberBackground',
+							hover: 'numberBackgroundHover',
+							gradient: 'numberBackgroundGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'title',
 						label: __( 'Title colour', 'sgs-blocks' ),

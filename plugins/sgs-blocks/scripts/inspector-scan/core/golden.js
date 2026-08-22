@@ -547,6 +547,118 @@ function unwrapRowObject( node ) {
 	return n && n.type === 'ObjectExpression' ? n : null;
 }
 
+// Given a states ArrayExpression, resolve the 'normal' state's GRADIENT
+// attribute name (the sibling {attr}Gradient this row's per-state gradient
+// toggle writes to) — the mechanism-disambiguation signal recordRowMechanism
+// needs; see its own header comment for why the base attr alone is ambiguous.
+//
+// MOVED HERE from rules/31-golden-colour-control.js 2026-08-22: describeRow()
+// below needs it too, and a row-resolution primitive with two consumers belongs
+// in the shared engine — the same reasoning that extracted the rest of these.
+// Leaving a private copy in the rule would be a second interpretation of the
+// same question, which is precisely what this file exists to prevent.
+function normalStateGradientAttrName( statesArray ) {
+	if ( ! statesArray || statesArray.type !== 'ArrayExpression' ) return null;
+	for ( const el of statesArray.elements ) {
+		if ( ! el || el.type !== 'ObjectExpression' ) continue;
+		if ( stringLiteralValue( objProp( el, 'key' ) ) === 'normal' ) {
+			return resolveAttrName( objProp( el, 'gradientValue' ) );
+		}
+	}
+	const first = statesArray.elements.find( ( el ) => el && el.type === 'ObjectExpression' );
+	return first ? resolveAttrName( objProp( first, 'gradientValue' ) ) : null;
+}
+
+// ── Colour-variant row HELPERS ────────────────────────────────────────────
+// The five-variant family replaces hand-assembled row objects with helper calls
+// (3 rows: fill/text/border; overlay and shadow are standalone controls, not rows).
+//
+// ⛔ WITHOUT THIS, ADOPTING A HELPER BLINDS THE GATE. Measured 2026-08-22: adopting
+// fillRow in sgs/process-steps made its `numberBackground` row VANISH from the census
+// (7 visible rows -> 6, tree total 255 -> 254). The row rendered perfectly and became
+// invisible to every static check, and the finding count DROPPED — which reads exactly
+// like progress. Same class as D738, at architectural scale: across 64 blocks the
+// census would have reported near-zero findings while measuring nothing.
+const ROW_HELPER_NAMES = new Set( [ 'fillRow', 'textRow', 'borderRow' ] );
+
+/**
+ * A call to a known row helper, or null.
+ *
+ * Only a DIRECT identifier callee counts (`fillRow( {...} )`). A member call
+ * (`x.fillRow(…)`) or an aliased import is deliberately NOT resolved — guessing there
+ * would be worse than the honest miss, and the miss is visible as a row that never
+ * appears in the census rather than as a wrong number.
+ */
+function rowHelperCall( node ) {
+	let n = node;
+	while ( n && n.type === 'LogicalExpression' ) n = n.right;
+	if ( ! n || n.type !== 'CallExpression' ) return null;
+	if ( ! n.callee || n.callee.type !== 'Identifier' ) return null;
+	if ( ! ROW_HELPER_NAMES.has( n.callee.name ) ) return null;
+	const arg = n.arguments && n.arguments[ 0 ];
+	if ( ! arg || arg.type !== 'ObjectExpression' ) return null;
+	return { helper: n.callee.name, arg, node: n };
+}
+
+/**
+ * Normalise EITHER shape — a literal row object or a row-helper call — into the
+ * facts every consumer needs. One interpretation, two callers (rule 31 + survey),
+ * so the two can never drift on what a row is.
+ *
+ * ⚠ THIS ENCODES THE HELPER'S CONTRACT and is therefore COUPLED to it. The mapping
+ * below mirrors fillRow's own `states: hover ? [ normal, hoverState ] : [ normal ]`.
+ * If a helper gains a third state or renames an attrs key, THIS MUST CHANGE IN THE
+ * SAME COMMIT — otherwise the census silently misreports. That coupling is the price
+ * of static resolution; it is stated here rather than left to be discovered.
+ *
+ * @param {Object} node A rows-array element.
+ * @return {Object|null} { rowKey, statesArray, statesCount, hasGradient, attrName,
+ *                         viaHelper, line } or null when the element is neither shape.
+ */
+function describeRow( node ) {
+	const helper = rowHelperCall( node );
+	if ( helper ) {
+		const { arg } = helper;
+		const attrs = objProp( arg, 'attrs' );
+		const attrsObj = attrs && attrs.type === 'ObjectExpression' ? attrs : null;
+		const nameOf = ( k ) => {
+			const p = attrsObj ? objProp( attrsObj, k ) : null;
+			return stringLiteralValue( p );
+		};
+		const base = nameOf( 'base' );
+		const hover = nameOf( 'hover' );
+		const gradient = nameOf( 'gradient' );
+		const hoverGradient = nameOf( 'hoverGradient' );
+		return {
+			rowKey: stringLiteralValue( objProp( arg, 'key' ) ) || null,
+			statesArray: null, // generated inside the helper — never a literal here
+			statesCount: base ? 1 + ( hover ? 1 : 0 ) : 0,
+			hasGradient: !! ( gradient || hoverGradient ),
+			attrName: base || null,
+			gradientAttrName: gradient || hoverGradient || null,
+			viaHelper: helper.helper,
+			line: helper.node.loc ? helper.node.loc.start.line : 0,
+		};
+	}
+
+	const obj = unwrapRowObject( node );
+	if ( ! obj ) return null;
+	const statesArray = objProp( obj, 'states' );
+	const isArr = statesArray && statesArray.type === 'ArrayExpression';
+	return {
+		rowKey: stringLiteralValue( objProp( obj, 'key' ) ) || null,
+		statesArray: isArr ? statesArray : null,
+		statesCount: isArr ? statesArray.elements.length : 1,
+		hasGradient:
+			booleanLiteralValue( objProp( obj, 'gradientCapable' ) ) === true ||
+			statesArrayHasGradient( statesArray ),
+		attrName: normalStateAttrName( statesArray ),
+		gradientAttrName: normalStateGradientAttrName( statesArray ),
+		viaHelper: null,
+		line: obj.loc ? obj.loc.start.line : 0,
+	};
+}
+
 function objProp( objExpr, name ) {
 	if ( ! objExpr || objExpr.type !== 'ObjectExpression' ) return null;
 	const p = objExpr.properties.find(
@@ -743,12 +855,16 @@ module.exports = {
 	jsxAttrExpr,
 	jsxAttrStringValue,
 	unwrapRowObject,
+	rowHelperCall,
+	describeRow,
+	ROW_HELPER_NAMES,
 	objProp,
 	objHasProp,
 	stringLiteralValue,
 	booleanLiteralValue,
 	resolveAttrName,
 	normalStateAttrName,
+	normalStateGradientAttrName,
 	statesArrayHasGradient,
 	requiredStatesFor,
 	slugify,

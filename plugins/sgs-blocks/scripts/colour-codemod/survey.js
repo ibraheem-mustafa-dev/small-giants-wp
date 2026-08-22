@@ -61,6 +61,7 @@ const {
 	statesArrayHasGradient,
 	slugify,
 	resolveMechanismFromCssProperty,
+	describeRow,
 } = require( '../inspector-scan/core/golden' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
@@ -215,19 +216,22 @@ function rowsInFile( cache, file ) {
 			if ( name === 'SgsColourPanel' ) {
 				const rowsExpr = jsxAttrExpr( node, 'rows' );
 				if ( ! rowsExpr ) return;
-				const objs = resolveArrayLike( rowsExpr, 0 ).map( unwrapRowObject ).filter( Boolean );
-				for ( const rowObj of objs ) {
-					const statesArray = objProp( rowObj, 'states' );
-					const isArr = statesArray && statesArray.type === 'ArrayExpression';
+				// describeRow normalises BOTH shapes — a literal row object and a
+				// colour-variant helper CALL (fillRow({...})). Reading only
+				// ObjectExpressions here is what made an adopted row VANISH from the
+				// census (255 -> 254) while still rendering perfectly: the count fell,
+				// which reads like progress. One shared normaliser so rule 31 and this
+				// survey can never disagree about what a row is.
+				for ( const el of resolveArrayLike( rowsExpr, 0 ) ) {
+					const d = describeRow( el );
+					if ( ! d ) continue;
 					rows.push( {
-						rowKey: stringLiteralValue( objProp( rowObj, 'key' ) ) || 'row-line-' + line,
-						line: rowObj.loc ? rowObj.loc.start.line : line,
-						statesCount: isArr ? statesArray.elements.length : 1,
-						attr: normalStateAttrName( statesArray ),
-						hasGradient:
-							booleanLiteralValue( objProp( rowObj, 'gradientCapable' ) ) === true ||
-							statesArrayHasGradient( statesArray ),
-						via: 'SgsColourPanel',
+						rowKey: d.rowKey || 'row-line-' + line,
+						line: d.line || line,
+						statesCount: d.statesCount,
+						attr: d.attrName,
+						hasGradient: d.hasGradient,
+						via: d.viaHelper ? 'helper:' + d.viaHelper : 'SgsColourPanel',
 					} );
 				}
 				return;
