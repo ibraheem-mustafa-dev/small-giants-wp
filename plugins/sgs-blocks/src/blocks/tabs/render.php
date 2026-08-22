@@ -55,9 +55,8 @@ foreach ( $block->inner_blocks as $inner_block ) {
 			: __( 'Tab', 'sgs-blocks' ),
 		// Render the EXISTING WP_Block instance — it carries the inherited
 		// block context (postId/postType). Re-constructing from parsed_block
-		// without passing context stripped it, so context-dependent children
-		// (core/post-content in the PDP details tab) rendered EMPTY.
-		// Root-caused live on the canary 2026-06-11.
+		// without passing context strips it, so context-dependent children
+		// (core/post-content in the PDP details tab) render EMPTY.
 		'content' => $inner_block->render(),
 	);
 }

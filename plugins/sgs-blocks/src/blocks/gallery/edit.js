@@ -22,7 +22,7 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 // arrival: every field wrote to contentBandBackground/contentBandPaddingTop* etc.,
 // none of which gallery's block.json ever declared, so WordPress silently discarded
 // every value a client entered. Same defect class as the ResponsiveSpacingPanel this
-// file already removed (see the Spec 37 note below) — removed 2026-08-11, Track 1b.
+// file already removed (see the Spec 37 note below).
 import {
 	LayoutPanel,
 } from '../container/components/ContainerWrapperControls';

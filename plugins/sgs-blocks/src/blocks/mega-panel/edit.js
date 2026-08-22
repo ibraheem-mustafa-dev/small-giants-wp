@@ -6,21 +6,18 @@
  * (CF-5) — it is insert-time only, chosen by the starter pattern that
  * inserts this block, so it never appears here.
  *
- * FLEXIBLE COLUMNS (QC-fix 2026-07-24, Bean-directed): the panel accepts a
- * free 1-N mix of `sgs/mega-group` / `sgs/mega-aside` children — add,
- * remove, reorder freely (no `contentOnly` lock at THIS level). The number
- * of columns is simply the number of mega-group children an operator has
- * added; there is no separate `columnCount` attribute any more. Each
- * individual mega-group/mega-aside still locks its OWN internal template
- * (mega-group: heading+icon-list; mega-aside: media+LABEL+heading+text+button
- * — five children, see `mega-aside/edit.js:37`; `templateLock: 'insert'` on
- * their own edit.js, fixed from `'all'` 2026-08-17/D652 — `'all'` re-ran
- * WordPress's template-sync on every mount and silently dropped stored
- * content that didn't line up with the template by position) so an operator
- * cannot break THEIR shape, but can freely
- * select and edit any nested block's own settings (e.g. sgs/icon-list's
- * link controls) — the previous `contentOnly` lock at the panel level
- * suppressed the inspector for that whole subtree, which is what hid them.
+ * FLEXIBLE COLUMNS (Bean-directed): the panel accepts a free 1-N mix of
+ * `sgs/mega-group` / `sgs/mega-aside` children — add, remove, reorder freely
+ * (no `contentOnly` lock at THIS level). The number of columns is simply the
+ * number of mega-group children an operator has added; there is no separate
+ * `columnCount` attribute. Each individual mega-group/mega-aside still locks
+ * its OWN internal template (mega-group: heading+icon-list; mega-aside:
+ * media+LABEL+heading+text+button — five children, see
+ * `mega-aside/edit.js:37`; `templateLock: 'insert'` on their own edit.js —
+ * `'all'` re-runs WordPress's template-sync on every mount and silently
+ * drops stored content that doesn't line up with the template by position,
+ * so an operator cannot break THEIR shape, but can freely select and edit
+ * any nested block's own settings (e.g. sgs/icon-list's link controls).
  *
  * The canvas itself proves the "parent paints child" mechanism (CF-10) live:
  * this component sets the SAME `data-mega-style` / `data-mega-scheme` /
@@ -194,7 +191,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const accentTextValue = colourVar( accentTextColour ) || 'var(--wp--preset--color--accent)';
 	const accentImageValue = colourVar( accentBackgroundImage ) || 'var(--wp--preset--color--accent)';
 	const shellStyle = {
-		// Split from the old single `--sgs-mm-accent` (D643) — style.css derives
+		// Per-role accent custom properties (D643) — style.css derives
 		// --sgs-mm-soft / --sgs-mm-soft-image from -bg / -image via color-mix();
 		// -text / -border are consumed directly.
 		'--sgs-mm-accent-bg': accentBackgroundValue,

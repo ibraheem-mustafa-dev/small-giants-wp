@@ -69,10 +69,6 @@ const TEXT_ALIGN_OPTIONS = [
 	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
-// BORDER_STYLE_OPTIONS removed 2026-08-19 — border style now uses
-// BorderStyleControl (inside DesignTokenPicker's border-colour popover),
-// matching native's 3-option icon picker, not this 9-option dropdown.
-
 const LETTER_SPACING_UNITS = [
 	{ value: 'em', label: 'em', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },

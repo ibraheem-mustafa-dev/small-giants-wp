@@ -52,8 +52,8 @@ $heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_
 	: 'h3';
 $title_colour = $attributes['titleColour'] ?? '';
 $price_colour = $attributes['priceColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+// D636 sibling-attribute shape — mirrors sgs/container's shipped
+// backgroundOverlayColour/overlayGradient.
 $price_colour_gradient = $attributes['priceColourGradient'] ?? '';
 $feature_colour        = $attributes['featureColour'] ?? '';
 $cta_style             = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
@@ -213,9 +213,9 @@ foreach ( $plans as $plan_index => $plan ) {
 
 	// ── Per-plan ribbon ───────────────────────────────────────────────────────
 	// ribbonColour VARIES per plan (plan-array data), so it cannot be a single
-	// scoped rule on the block root. FR-32-4 (D345) forbids the inline
-	// `style="--x:y"` this used to write per plan card; instead the resolved
-	// colour is emitted into a `:nth-child(N)` scoped rule (same mechanism as
+	// scoped rule on the block root. FR-32-4 (D345) forbids inline
+	// `style="--x:y"`; instead the resolved colour is emitted into a
+	// `:nth-child(N)` scoped rule (same mechanism as
 	// sgs/social-icons' per-item brand colour, social-icons/render.php ~458) —
 	// N is this plan's 1-based position among ALL plan cards (every plan
 	// renders its `.sgs-pricing-table__plan` wrapper unconditionally, so the

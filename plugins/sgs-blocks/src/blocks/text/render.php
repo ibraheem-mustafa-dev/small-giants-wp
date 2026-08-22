@@ -15,13 +15,8 @@
  * using the block anchor id (or a generated unique id) so multiple instances
  * on the same page never collide.
  *
- * @since 2026-05-17  Phase 9 — sgs/text block
- * @since 2026-05-17  Peer-parity attrs: background, border, box-shadow, hover,
- *                    customWidth, per-viewport letter-spacing, inheritStyle.
- * @since 2026-06-01  Variant styling uses WordPress block styles
- *                    (is-style-quote / is-style-caption / is-style-lead),
- *                    not a variantStyle attribute.
- * @since 2026-07-09  Box-object no-inline styling migration (Spec 32 §6.1).
+ * Variant styling uses WordPress block styles (is-style-quote /
+ * is-style-caption / is-style-lead), not a variantStyle attribute.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — block is leaf-level).

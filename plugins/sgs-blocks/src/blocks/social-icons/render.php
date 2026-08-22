@@ -8,12 +8,10 @@
  * emitted scoped via wp_style_engine_get_styles() into the block's own
  * <style> tag, mirroring sgs/heading + sgs/quote.
  *
- * @since 2026-07-10  Closed a residual gap: `typography` support was declared
- * (textAlign) without `__experimentalSkipSerialization`, so any populated
- * `style.typography` value would have auto-inlined onto the wrapper. Now
- * skip-serialised + read back and emitted scoped (same mechanism as color/
- * spacing above), so the wrapper stays inline-free regardless of which
- * typography sub-features are enabled in future.
+ * `typography` support (textAlign) is skip-serialised, read back, and
+ * emitted scoped (same mechanism as color/spacing above), so the wrapper
+ * stays inline-free regardless of which typography sub-features are
+ * enabled in future.
  *
  * BOX-GROUP (contract §B): padding/margin are box objects. Base = WP-native
  * style.spacing.padding/margin (skip-serialised); tiers = paddingTablet/
@@ -37,16 +35,13 @@ use SGS\Blocks\Sgs_Site_Info;
 $source_raw          = $attributes['source'] ?? 'manual';
 $source              = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
 $icon_size           = (int) ( $attributes['iconSize'] ?? 24 );
-// D643: `iconColour`/`iconColourHover` split into one attribute PER real CSS
-// property (background-color / border-color / color) — the block's own
-// block.json used to document these as a "genuine 3-property shorthand"
-// because the resting/hover token fed up to 3 different declarations
-// depending on `iconStyle` (plain: color; filled: background; outlined:
-// border-color + color — simultaneously, both from the same value). A single
+// D643: `iconColour`/`iconColourHover` are split into one attribute PER real
+// CSS property (background-color / border-color / color) because the
+// resting/hover token can feed up to 3 different declarations depending on
+// `iconStyle` (plain: color; filled: background; outlined: border-color +
+// color — simultaneously, both from the same value), and a single
 // gradient-capable value can't serve all three (a gradient is not a valid
-// border-color or currentColor value), so each property now has its own
-// attribute + default, each preserving the ORIGINAL shared default exactly
-// (text-muted resting / primary hover) so existing rendering is unchanged.
+// border-color or currentColor value).
 $icon_background        = $attributes['iconBackground'] ?? 'text-muted';
 $icon_background_hover  = $attributes['iconBackgroundHover'] ?? 'primary';
 $icon_border_colour       = $attributes['iconBorderColour'] ?? 'text-muted';

@@ -360,11 +360,9 @@ $arrow_prev_html = '';
 $arrow_next_html = '';
 if ( $show_arrows && $total_testimonials > 0 ) {
 	// Chevron SVGs from the shared Lucide icon library (same mechanism used by
-	// sgs/accordion-item + sgs/nav-menu) — replaces the old bare ‹ / › text
-	// glyph, which rendered as an 8×24px mark rattling around inside the
-	// 44px circular button. The SVG is trusted static markup from
-	// sgs_get_lucide_icon() (mirrors the escaping pattern used elsewhere in
-	// this codebase for the same helper).
+	// sgs/accordion-item + sgs/nav-menu). The SVG is trusted static markup
+	// from sgs_get_lucide_icon() (mirrors the escaping pattern used elsewhere
+	// in this codebase for the same helper).
 	$arrow_prev_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-left' ) : '';
 	$arrow_next_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-right' ) : '';
 

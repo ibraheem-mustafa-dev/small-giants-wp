@@ -43,11 +43,10 @@ import { UnitControl } from '../../components/primitives';
  * this block is dynamic (render.php), so nothing here is persisted to
  * post_content.
  *
- * HC2 cleanup (2026-06-08): the per-element colour / font-size / icon-size and
- * legacy-link controls were removed. They were dead — the child blocks
- * (sgs/icon, sgs/heading, sgs/text, sgs/multi-button) own their own colour,
- * font size and link, so the parent controls set attributes render.php never
- * read. The removed attrs survive only in block.json as historical schema; no deprecated.js exists (D271).
+ * Child blocks (sgs/icon, sgs/heading, sgs/text, sgs/multi-button) own their
+ * own colour, font size and link, so the parent controls set attributes
+ * render.php never reads. Removed attrs survive only in block.json as
+ * historical schema; no deprecated.js exists (D271).
  */
 
 const LENGTH_UNITS = [

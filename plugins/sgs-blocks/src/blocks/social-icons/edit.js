@@ -153,8 +153,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// WP-native style.spacing.* object read by render.php's style engine call.
 	// NOTE: `style` here is WP's native style-support object attribute (holds
 	// style.spacing/style.color) — distinct from this block's own `iconStyle`
-	// attribute (plain/filled/outlined/pill variant), which previously shared
-	// the name `style` and collided with WP's object. Renamed 2026-07-10.
+	// attribute (plain/filled/outlined/pill variant).
 	const basePadding = style?.spacing?.padding;
 	const baseMargin = style?.spacing?.margin;
 	const previewStyle = {};
@@ -171,9 +170,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 	// 'theme' mode drives every item's resting background/border/glyph colour
 	// via these 3 custom properties (style.css .sgs-social-icons__item{color:
-	// var(--sgs-social-glyph)} etc — D643 split, was one shared
-	// --sgs-social-colour var); 'brand' mode overrides per item instead
-	// (applied on each item below).
+	// var(--sgs-social-glyph)} etc — D643); 'brand' mode overrides per item
+	// instead (applied on each item below).
 	if ( 'theme' === colourMode ) {
 		// The DesignTokenPickers here have no `linked` prop, so they always
 		// store a raw CSS value, never a slug -- resolveColourToken() (not
@@ -188,10 +186,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			previewStyle[ '--sgs-social-glyph' ] = resolveColourToken( iconGlyphColour, palette );
 		}
 	}
-	// Fix 3: hover colours are written UNCONDITIONALLY (independent of
-	// colourMode, matching render.php + style.css's `:hover` rules) so a real
-	// mouse hover on the editor canvas (a live DOM, not a static screenshot)
-	// shows the same colour the frontend does.
+	// Hover colours are written UNCONDITIONALLY (independent of colourMode,
+	// matching render.php + style.css's `:hover` rules) so a real mouse hover
+	// on the editor canvas (a live DOM, not a static screenshot) shows the
+	// same colour the frontend does.
 	if ( iconBackgroundHover ) {
 		previewStyle[ '--sgs-social-bg-hover' ] = resolveColourToken( iconBackgroundHover, palette );
 	}
@@ -202,14 +200,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		previewStyle[ '--sgs-social-glyph-hover' ] = resolveColourToken( iconGlyphColourHover, palette );
 	}
 
-	// Fix 1/2: mirrors render.php's $item_size — the clickable hit area is
+	// Mirrors render.php's $item_size — the clickable hit area is
 	// floored at 44px (WCAG 2.5.8) and grows past the glyph size for the
 	// filled/outlined/pill variants (extra padding), while the glyph itself
 	// always renders at the operator-chosen iconSize. Using the real value
-	// here (not a fixed box) is what stops the filled/outlined/pill variants
-	// visually "clipping" the preview — a real SVG at iconSize always fits
-	// inside a box floored at 44px, where the old raw platform-slug TEXT could
-	// overflow a small circular badge with no overflow guard.
+	// here (not a fixed box) means a real SVG at iconSize always fits inside
+	// a box floored at 44px.
 	const itemSize = Math.max( 44, iconSize + ( 'plain' === iconStyle ? 0 : 16 ) );
 
 	const blockProps = useBlockProps( {

@@ -75,20 +75,19 @@ $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
 $tile_border_gradient       = sgs_css_gradient_value( $attributes['tileBorderColourGradient'] ?? '' );
 $hover_border_gradient      = sgs_css_gradient_value( $attributes['itemBorderColourHoverGradient'] ?? '' );
 // Raw CSS box-shadow VALUE (or theme shadow-preset slug) from the shared
-// ShadowControl builder — replaces the old none/small/medium enum SelectControl
-// (Spec 35 Task 2 element-first rebuild). A pre-migration legacy string such as
-// "small"/"medium" (neither a raw shadow nor a real theme.json shadow preset
-// slug — those are sm/md/lg/glow) falls through sgs_shadow_value() to an
-// unresolvable `var(--wp--preset--shadow--small)`, which the browser simply
-// ignores (initial box-shadow: none) — graceful degrade, no crash, no
-// deprecation needed (D270 no-deprecations policy).
+// ShadowControl builder. A legacy string such as "small"/"medium" (neither a
+// raw shadow nor a real theme.json shadow preset slug — those are
+// sm/md/lg/glow) falls through sgs_shadow_value() to an unresolvable
+// `var(--wp--preset--shadow--small)`, which the browser simply ignores
+// (initial box-shadow: none) — graceful degrade, no crash, no deprecation
+// needed (D270 no-deprecations policy).
 $tile_shadow         = $attributes['tileShadow'] ?? '';
 $tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
 $tile_shadow_colour_hover = $attributes['tileShadowColourHover'] ?? '';
 $hover_bg_colour     = $attributes['itemBackgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['itemTextColourHover'] ?? '';
 $hover_border_colour = $attributes['itemBorderColourHover'] ?? '';
-// Root-element colour + gradient + hover (2026-08-20) -- paints the block's OWN
+// Root-element colour + gradient + hover -- paints the block's OWN
 // root `<div>` (see $root_sel below), distinct from tileBackgroundColour (the
 // 'tile' element) and the item*Hover attrs above (the 'item' element, the
 // nested hover surface). D636 sibling-attribute shape: gradient wins over the
@@ -307,7 +306,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 }
 
 // --- Root background + text colour (client-controlled, SgsColourPanel
-// 'rootBackground'/'rootText' rows, 2026-08-20). Background: gradient (via
+// 'rootBackground'/'rootText' rows). Background: gradient (via
 // background-image) wins over the flat colour when set+valid
 // (sgs_background_paint_decl()). Text: resolved through the same
 // gradient-wins-flat rule then painted via sgs_text_colour_decl() -- a
@@ -381,8 +380,7 @@ if ( '' !== $tile_border_gradient ) {
 	);
 }
 
-// --- Tile shadow (Spec 35 Task 2 — ShadowControl builder replaces the old
-// none/small/medium enum). `sgs_shadow_value()` accepts either a raw CSS
+// --- Tile shadow (ShadowControl builder). `sgs_shadow_value()` accepts either a raw CSS
 // box-shadow string (the builder's normal output — colour normalised to hex
 // so it survives `safecss_filter_attr()`-style stripping even though this
 // channel isn't subject to it) or a bare theme shadow-preset slug picked from

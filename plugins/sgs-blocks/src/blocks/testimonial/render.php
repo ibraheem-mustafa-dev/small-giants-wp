@@ -39,11 +39,6 @@
  * tiers are the paddingTablet/paddingMobile/marginTablet/marginMobile
  * object attrs (scoped @media 1023/767, hand-built shorthand — matches quote).
  *
- * @since 2026-06-11  D8 rebuild — typed dynamic block.
- * @since 2026-07-10  100% no-inline + box-group migration (block-private,
- *                    quote pattern).
- * @since 2026-07-18  D345 zero-inline tightening (matches sgs/info-box).
- *
  * @var array     $attributes Block attributes.
  * @var string    $content    Unused (typed rebuild — no InnerBlocks).
  * @var \WP_Block $block      Block instance.

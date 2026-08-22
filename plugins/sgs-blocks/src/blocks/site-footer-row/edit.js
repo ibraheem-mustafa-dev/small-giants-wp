@@ -201,8 +201,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Local UI state — never persisted, never rendered on the front end.
 	const [ previewShrunk, setPreviewShrunk ] = useState( false );
 
-	// The editor preview previously ignored the row's padding entirely, so an
-	// operator could not see their own spacing OR what shrink would do to it.
 	// Mirror the desktop tier here (the tier the editor canvas represents), and
 	// halve top/bottom while previewing — the same 0.5 ratio render.php emits.
 	const previewPad =
@@ -246,9 +244,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor preview mirrors the frontend. D456: the grid preview uses the SAME
 	// bounded auto-fit track list the wrapper emits, not `repeat(N,1fr)` — the
 	// count is a CEILING, so a fixed-N preview would show the operator more
-	// columns than the front end renders at the same width. The header row's
-	// editor surface had exactly this divergence before D455; do not
-	// reintroduce it here by "simplifying" this back to repeat().
+	// columns than the front end renders at the same width. Do not
+	// "simplify" this back to repeat().
 	// Kept in step with sgs_intrinsic_columns_track() (helpers-container.php).
 	// gridTemplateColumns/gridTemplateRows are TIER OBJECTS ({desktop,tablet,mobile}) —
 	// resolve the desktop tier, same pattern as `columns`/`gap` above. An explicit

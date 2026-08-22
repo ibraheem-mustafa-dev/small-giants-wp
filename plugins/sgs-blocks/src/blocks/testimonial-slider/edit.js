@@ -1,11 +1,9 @@
 /**
  * SGS Testimonial Slider — editor component.
  *
- * FR-22-6 InnerBlocks migration (2026-05-30):
- * The previous custom repeater (testimonials array + TextareaControl rows)
- * is replaced with useInnerBlocksProps. Operators add/remove/reorder
- * sgs/testimonial blocks natively via the block inserter and drag handles.
- * All slider CONFIG controls (layout, autoplay, speed, dots/arrows, card style,
+ * Uses useInnerBlocksProps. Operators add/remove/reorder sgs/testimonial
+ * blocks natively via the block inserter and drag handles. All slider
+ * CONFIG controls (layout, autoplay, speed, dots/arrows, card style,
  * colours, hover) remain in the inspector panel.
  */
 import { __ } from '@wordpress/i18n';
@@ -132,17 +130,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	// state per row (background/text), matching quote/heading. Border stays
 	// hover-only — no border-colour base attr exists on this block.
 	//
-	// UPDATED (2026-08-16): previously the normal state here read/wrote
-	// native `style.color.background`/`.text` with `supports.color`
-	// left `true`, because flipping that flag off broke the element-manifest
+	// The normal state reads/writes flat `backgroundColour`/`textColour`
+	// attrs (the same pattern quote/heading/card-grid/text already use), not
+	// native `style.color.background`/`.text` — the element-manifest
 	// checker's BASE resolution for this element's declared `states.hover`
-	// (`attrMap` pointed at `native:color.background`/`native:color.text`,
-	// which the checker only resolves when `supports.color.*` is `true` —
-	// measured: gate rose from 1 to 5, `npm run audit:element-manifest`).
-	// Fixed at the root by moving the manifest's base `attrMap` onto flat
-	// `backgroundColour`/`textColour` attrs (the same pattern quote/heading/
-	// card-grid/text already use) — `supports.color.background`/`.text` are
-	// now `false` and the native Text/Background panel no longer renders.
+	// only resolves an `attrMap` pointing at `native:color.*` when
+	// `supports.color.*` is `true`, so `supports.color.background`/`.text`
+	// stay `false` and the native Text/Background panel does not render.
 	return (
 		<>
 			<SgsColourPanel

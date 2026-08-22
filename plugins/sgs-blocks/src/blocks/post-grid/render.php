@@ -65,11 +65,10 @@ $columns_tablet = absint( $columns_obj['tablet'] ?? 2 );
 $columns_mobile = absint( $columns_obj['mobile'] ?? 1 );
 // Gap: resolved via the shared helper (handles raw CSS lengths + back-compat).
 // Falls back to "30px" matching the block.json default.
-// Back-compat: pre-consolidation posts stored a bare digit string (e.g. "30")
-// that render.php rendered as absint().'px'. Append "px" before the helper so
-// sgs_container_gap_value() treats it as a raw CSS length, not a preset slug.
-// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10) - casting the array would emit
-// "Array to string conversion" on every render plus literal `gap:Array`.
+// Back-compat: a bare digit string (e.g. "30") is appended with "px" before the
+// helper so sgs_container_gap_value() treats it as a raw CSS length, not a preset slug.
+// `gap` is a TIER OBJECT — casting the array would emit "Array to string conversion"
+// on every render plus literal `gap:Array`.
 $gap_obj = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
 $gap_raw = (string) ( $gap_obj['desktop'] ?? '' );
 if ( '' === $gap_raw ) {
@@ -367,12 +366,10 @@ if ( 'carousel' === $layout ) {
 }
 
 // --- Pagination.
-// Delegated to the shared Grid_Pagination helper (2026-08-01). The markup this
-// block emitted inline was the proven implementation, so it BECAME the helper:
-// MODE_AJAX output is byte-identical to what stood here before, which keeps
-// view.js's selectors (.sgs-post-grid__page-btn / __load-more / __sentinel and
-// their data-* attributes) working untouched. sgs/card-grid now renders from
-// the same helper in MODE_LINK, so there is exactly one copy of this markup.
+// Delegated to the shared Grid_Pagination helper. MODE_AJAX output keeps view.js's
+// selectors (.sgs-post-grid__page-btn / __load-more / __sentinel and their data-*
+// attributes) working. sgs/card-grid renders from the same helper in MODE_LINK, so
+// there is exactly one copy of this markup.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Grid_Pagination::render() escapes every interpolated value internally.
 echo Grid_Pagination::render(
 	array(
@@ -509,20 +506,14 @@ if ( '' !== $post_grid_preset_bg_slug ) {
 // documents, so the two cannot drift apart.
 $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . Post_Grid_REST::card_vars_decls( $card_params ) . '}';
 
-// Hover colour shifts (background/text/border) — converted from the
-// --sgs-hover-bg/text/border custom-property + static-CSS-fallback pattern
-// (info-box's original shape) to per-instance scoped rules via
+// Hover colour shifts (background/text/border) — per-instance scoped rules via
 // sgs_emit_state_colour_css(), same as sgs/info-box and sgs/cta-section.
-// Bean-locked: no hardcoded fallback colour — an unset hover colour now
-// renders NO hover change at all (previously it silently fell back to a
-// theme colour via the static CSS's `var(--x, <fallback>)`).
+// Bean-locked: no hardcoded fallback colour — an unset hover colour renders NO
+// hover change at all.
 $post_grid_card_sel = $root_sel . ' .sgs-post-grid__card';
 
-// Background: the two variant rules that used to exist here (minimal vs
-// non-minimal) differed ONLY in their fallback colour (--sgs-card-bg vs
-// transparent) — the OVERRIDE value was always the same --sgs-hover-bg.
-// With the fallback deleted the two rules are byte-identical but for their
-// selector, so they collapse into one rule covering every card style.
+// Background: card/overlay/flat/minimal all use the same --sgs-hover-bg override
+// value, so one rule covers every card style.
 if ( $hover_bg ) {
 	$responsive_css .= sgs_emit_state_colour_css( $post_grid_card_sel, array(), array( 'background-color:' . $hover_bg ) );
 }
@@ -581,8 +572,7 @@ if ( $responsive_css ) {
 // WS-4: emit via shared wrapper helper (kind='layout').
 // Own block classes + CSS vars + data-* ride through opts.
 //
-// ⚠ ATTR-NAME COLLISION (root-caused live 2026-07-28, the "squished single
-// post"): this block's `layout` attr is its OWN vocabulary
+// ⚠ ATTR-NAME COLLISION: this block's `layout` attr is its OWN vocabulary
 // (grid/list/masonry/carousel) — but the wrapper generically reads
 // $attributes['layout'] as a container-layout instruction and was activating
 // ITS grid engine on the root (3 columns via the same --sgs-columns vars),

@@ -40,19 +40,12 @@ import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../..
  *
  * The nav-menu seeded here is a SEPARATE block instance from the one in the
  * header — its own uid, its own scoped styles, its own inspector — so a client
- * can style the drawer's menu completely independently of the bar. That was
- * always true but entirely invisible: the seeded copy rendered with identical
- * defaults, giving no signal it was theirs to change (Bean 2026-07-28).
+ * can style the drawer's menu completely independently of the bar.
  *
  * Seeding drawer-appropriate values makes the capability discoverable AND
  * gives a sane vertical starting point (a tighter stacked gap). Colours stay
  * UNSET so the drawer's own background shows through until a client picks
- * one. NOTE: the item-divider seed that briefly lived here was removed the
- * same day it was added — the divider attributes were dropped from
- * sgs/nav-menu entirely (Bean ruling: border/divider work belongs at header
- * level), and WP silently DISCARDS attrs a block.json no longer declares
- * (D338), so leaving them here would have been dead weight that looked
- * meaningful.
+ * one.
  */
 const TEMPLATE = [
 	[ 'sgs/nav-menu', { gap: '4px' } ],

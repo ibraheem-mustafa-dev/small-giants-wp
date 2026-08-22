@@ -403,10 +403,8 @@ $schema = array(
 	),
 );
 
-// One shared encoder (FR-30-9). Previously JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-// with no JSON_HEX_TAG: unescaped slashes removed PHP's default `\/` guard, so a
-// `</script>` in any schema value could close this tag. PRETTY_PRINT is dropped: it
-// only added whitespace to machine-read output.
+// One shared encoder (FR-30-9), using JSON_HEX_TAG: without it, an unescaped
+// `</script>` in any schema value could close this tag prematurely.
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
 echo \SGS\Blocks\Sgs_Schema::script_tag( $schema );
 

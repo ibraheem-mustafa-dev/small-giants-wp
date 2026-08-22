@@ -8,14 +8,13 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import { PanelBody, Notice, SelectControl, BoxControl } from '@wordpress/components';
-// No-inline migration (2026-08-05, D-pending): sgs/site-footer no longer uses
-// <ContainerWrapperControls>'s ResponsiveSpacingPanel — its flat
-// paddingTopTablet/…/marginLeftMobile attrs are LEGACY and became dead
-// controls once paddingTablet/paddingMobile/marginTablet/marginMobile became
-// box OBJECT attrs read by class-sgs-container-wrapper.php (matches
-// sgs/container's + sgs/cta-section's own edit.js, which took the same
-// approach). Roll this block's own "Padding & margin" panel below using
-// ResponsiveBoxControl bound to the object attrs.
+// sgs/site-footer does not use <ContainerWrapperControls>'s
+// ResponsiveSpacingPanel — its flat paddingTopTablet/…/marginLeftMobile
+// attrs are LEGACY; paddingTablet/paddingMobile/marginTablet/marginMobile
+// are box OBJECT attrs read by class-sgs-container-wrapper.php (matches
+// sgs/container's + sgs/cta-section's own edit.js). Roll this block's own
+// "Padding & margin" panel below using ResponsiveBoxControl bound to the
+// object attrs.
 import {
 	WidthPanel,
 	BackgroundPanel,

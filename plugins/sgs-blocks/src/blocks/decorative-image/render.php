@@ -19,9 +19,6 @@
  * any point in its lifecycle; the scoped `<style>` below is the only place
  * the actual `transform`/`opacity` declarations exist.
  *
- * @since 2026-07-10  No-inline migration (scoped output + custom-property
- *                     runtime hooks for parallax/fade).
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var \WP_Block $block      Block instance.
@@ -47,7 +44,7 @@ $image_id            = $attributes['imageId'] ?? null;
 $image_url           = $attributes['imageUrl'] ?? '';
 $image_alt           = $attributes['imageAlt'] ?? '';
 
-// decorMedia (added 2026-05-05) is the unified image-or-video slot. For
+// decorMedia is the unified image-or-video slot. For
 // back-compat, when only the legacy imageUrl is set, synthesise a decorMedia
 // object so downstream rendering can use sgs_render_media() for video while
 // keeping the rich image pipeline (srcset via sgs_responsive_image) for images.

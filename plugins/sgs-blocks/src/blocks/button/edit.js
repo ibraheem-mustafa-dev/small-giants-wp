@@ -216,8 +216,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const hasIcon = !! icon;
 
 	// LINK contract popover (Spec 35 §2 / D609 row-opens-popover shape) — ONE
-	// popover (`LinkPopoverContent`, `../../components/LinkPopoverControl.js`,
-	// the shared standard promoted from this block's own pilot 2026-08-13),
+	// popover (`LinkPopoverContent`, `../../components/LinkPopoverControl.js`),
 	// its anchor swapped between the toolbar link button and the sidebar's
 	// compact link row so both triggers open the SAME surface. Button needs
 	// its OWN dual-trigger orchestration (this state) rather than the

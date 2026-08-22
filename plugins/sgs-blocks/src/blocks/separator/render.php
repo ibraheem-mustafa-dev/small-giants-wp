@@ -28,8 +28,6 @@
  * (CSS renders `border-image` only across the sides that actually carry a
  * border-width, so a bottom-only border-image paints just the visible line).
  *
- * @since 2026-07-17  Initial build.
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — no InnerBlocks slot).
  * @var \WP_Block $block      Block instance.

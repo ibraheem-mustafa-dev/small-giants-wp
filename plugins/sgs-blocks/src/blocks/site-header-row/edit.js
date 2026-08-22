@@ -180,15 +180,11 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-// The gridTemplateColumns bridge that used to live here is GONE (Spec 35 pass
-// 3a, 2026-08-11): the attr IS the {desktop,tablet,mobile} object now, so
-// ResponsiveOverride reads and writes it directly and there is nothing to
-// bridge. Keeping a bridge would have re-created the D563 defect in reverse —
-// writing three flat attrs that no block.json declares any more.
+// gridTemplateColumns is the {desktop,tablet,mobile} object (Spec 35 pass 3a)
+// — ResponsiveOverride reads and writes it directly. ⛔ Do NOT add a bridge to
+// three flat attrs: block.json no longer declares them (D563).
 
-// The gridTemplateRows bridge that used to live here is GONE (Spec 35 pass
-// 3b, 2026-08-11) — same reasoning as gridTemplateColumns above: the attr IS
-// the {desktop,tablet,mobile} object now, nothing left to bridge.
+// gridTemplateRows — same shape, same reasoning as gridTemplateColumns above.
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -215,8 +211,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Local UI state — never persisted, never rendered on the front end.
 	const [ previewShrunk, setPreviewShrunk ] = useState( false );
 
-	// The editor preview previously ignored the row's padding entirely, so an
-	// operator could not see their own spacing OR what shrink would do to it.
 	// Mirror the desktop tier here (the tier the editor canvas represents), and
 	// halve top/bottom while previewing — the same 0.5 ratio render.php emits.
 	const previewPad =
@@ -294,9 +288,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				// hardcoded editor-only fallback.
 				alignItems: alignItems || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
-				// Matches block.json's gap default. This previously fell back to
-				// `clamp(0.5rem, 2vw, 1.5rem)` while block.json said `16px`, so
-				// the editor preview and the front end disagreed by up to 8px.
+				// Matches block.json's gap default.
 				gap: ( gap && gap.desktop ) || '16px',
 				justifyContent: justifyContent || 'flex-start',
 		  };

@@ -20,10 +20,6 @@
  * tiers = paddingTablet/paddingMobile/marginTablet/marginMobile object attrs
  * (scoped @media 1023/767); border-width = SGS custom object attr.
  *
- * @since 2026-05-26  v0.4.0 - single-element refactor (headingRole + content).
- * @since 2026-06-01  v0.5.0 - variantStyle replaced by WP block-styles (is-style-*).
- * @since 2026-07-09  v0.7.0 - 100% no-inline + 100% box-group migration.
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused - dynamic block).
  * @var \WP_Block $block      Block instance.

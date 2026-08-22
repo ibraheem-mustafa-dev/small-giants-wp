@@ -30,9 +30,6 @@
  * `selectors.typography` — WP's own `get_block_wrapper_attributes()` would
  * otherwise (incorrectly) inline them onto the outer wrapper.
  *
- * @since 2026-05-16  P-PHASE8-2 render.php audit
- * @since 2026-07-10  no-inline migration (contract 2026-07-09)
- *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
  * @var \WP_Block $block      Block instance.
@@ -56,8 +53,8 @@ $label         = isset( $attributes['label'] ) ? (string) $attributes['label'] :
 $duration      = isset( $attributes['duration'] ) ? absint( $attributes['duration'] ) : 2000;
 $separator     = ! empty( $attributes['separator'] );
 $number_colour = $attributes['numberColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+// D636 — sibling-attribute shape, mirrors sgs/container's shipped
+// backgroundOverlayColour/overlayGradient.
 $number_colour_gradient = $attributes['numberColourGradient'] ?? '';
 $label_colour           = $attributes['labelColour'] ?? '';
 $icon                   = $attributes['icon'] ?? '';
@@ -103,7 +100,7 @@ $scoped_css = array();
 // ---------------------------------------------------------------------------
 // Number / label custom colour (SGS scalar attrs) — scoped, NOT inline.
 // ---------------------------------------------------------------------------
-// D636 Task 1b — sibling gradient attribute wins when set+valid.
+// D636 — sibling gradient attribute wins when set+valid.
 $number_colour_effective = sgs_resolve_text_colour_or_gradient( $number_colour, $number_colour_gradient );
 if ( '' !== $number_colour_effective ) {
 	$number_colour_decl = sgs_text_colour_decl( $number_colour_effective );

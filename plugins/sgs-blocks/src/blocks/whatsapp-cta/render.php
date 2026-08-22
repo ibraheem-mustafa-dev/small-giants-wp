@@ -132,7 +132,7 @@ $root_sel = '.' . $uid . '.wp-block-sgs-whatsapp-cta';
 
 $scoped_css = array();
 
-// --- Button colour/background (scoped — previously an inline style attr). ---
+// --- Button colour/background (scoped). ---
 $btn_decls = array();
 if ( $label_colour ) {
 	$btn_decls[] = 'color:' . $label_colour;

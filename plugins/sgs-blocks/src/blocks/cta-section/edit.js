@@ -241,13 +241,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			<SgsColourPanel
 				rows={ [
 					{
-						/* Root TEXT colour. `textColour` and `textColourHover` already EXISTED and were
-						   already rendered, but had NO editor control anywhere on this block — a client
-						   could never reach either. This row exposes them and adds the gradient siblings.
+						/* Root TEXT colour (`textColour`/`textColourHover` + gradient siblings).
 						   Per D713 a section-class block's root text colour is the INHERITABLE cascade
 						   default for whatever the client nests inside; a child's own control overrides
-						   it for one instance. `supports.color.text` was switched OFF in the same change
-						   so WordPress's native colour UI does not compete with this row (rule 31). */
+						   it for one instance. `supports.color.text` is OFF so WordPress's native
+						   colour UI does not compete with this row (rule 31). */
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
 						gradientCapable: true,

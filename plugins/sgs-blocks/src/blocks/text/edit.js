@@ -163,9 +163,8 @@ function buildEditorStyle( attributes ) {
 	const letterSpacingVal = resolveDesktop( letterSpacing );
 
 	// colourVar wraps slugs in var(--wp--preset--color--X); raw hex passes
-	// through as-is from ColorPalette. The sibling gradient attribute
-	// (D636 Task 1b, corrected 2026-08-16) switches to the
-	// background-clip:text preview shape when set.
+	// through as-is from ColorPalette. The sibling gradient attribute (D636)
+	// switches to the background-clip:text preview shape when set.
 	Object.assign(
 		previewStyle,
 		resolveTextColourPreviewStyle( textColour, textColourGradient, ( v ) =>
@@ -274,13 +273,13 @@ function buildDropCapStyle( attributes ) {
 	// The drop-cap ::first-letter pseudo-element cannot receive an inline React
 	// style, so this custom property is consumed by a `color:var(...)`
 	// declaration in a companion stylesheet — a gradient string is not a valid
-	// `color` value there. D636 Task 1b (sibling-attribute shape, corrected
-	// 2026-08-16): the FRONTEND render (render.php + sgs_text_colour_decl())
-	// renders a gradient drop-cap correctly via background-clip:text when the
-	// sibling firstLetterColourGradient wins; the editor CANVAS simply shows
-	// no colour override when the gradient sibling is set (falls back to
-	// inherited colour) rather than risk an invalid CSS custom-property
-	// consumer — a solid colour still previews exactly as before.
+	// `color` value there. D636: the FRONTEND render (render.php +
+	// sgs_text_colour_decl()) renders a gradient drop-cap correctly via
+	// background-clip:text when the sibling firstLetterColourGradient wins;
+	// the editor CANVAS simply shows no colour override when the gradient
+	// sibling is set (falls back to inherited colour) rather than risk an
+	// invalid CSS custom-property consumer — a solid colour still previews
+	// exactly as before.
 	if ( firstLetterColour && ! firstLetterColourGradient ) {
 		dropCapStyle[ '--sgs-ed-first-letter-colour' ] = /^#|^rgb|^hsl/.test( firstLetterColour )
 			? firstLetterColour

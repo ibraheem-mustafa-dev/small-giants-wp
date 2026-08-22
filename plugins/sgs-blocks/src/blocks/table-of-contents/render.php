@@ -61,12 +61,10 @@ $smooth_scroll     = ! empty( $attributes['smoothScroll'] );
 $scroll_offset     = (int) ( $attributes['scrollOffset'] ?? 0 );
 $scroll_spy        = ! empty( $attributes['scrollSpy'] );
 $list_style        = $attributes['listStyle'] ?? 'numbered';
-// NOTE (2026-07-10, no-inline migration): this attr was renamed style -> tocStyle.
-// The old name "style" collided with WP core's reserved `attributes.style`
-// object (used by the color/spacing/border/typography supports below) — a
-// string value here ("card"/"minimal"/"flush") vs. an object there caused
-// each to clobber the other. This is very likely the root cause of the
-// block's prior "broken" status. Renamed across block.json/render.php/edit.js.
+// Must NOT be named "style" — that name collides with WP core's reserved
+// `attributes.style` object (used by the color/spacing/border/typography
+// supports below); a string value here ("card"/"minimal"/"flush") vs. an
+// object there would clobber one another.
 $toc_style         = $attributes['tocStyle'] ?? 'card';
 // Fallbacks match block.json defaults so the scoped colour rules always emit
 // (matches the pre-migration behaviour where inline styles were always emitted).

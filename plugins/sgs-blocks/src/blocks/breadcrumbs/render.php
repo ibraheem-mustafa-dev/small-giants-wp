@@ -112,10 +112,9 @@ $root_sel = '.' . $uid;
 
 $scoped_css = array();
 
-// --- SGS link/separator/current colour custom properties — previously an
-// inline `style="--sgs-breadcrumbs-*:…"` attribute; now a scoped declaration
-// on the root selector. style.css already consumes these same custom-property
-// names via var(…, fallback), so no change needed there. ---
+// --- SGS link/separator/current colour custom properties — a scoped
+// declaration on the root selector. style.css consumes these same
+// custom-property names via var(…, fallback). ---
 $colour_var_decls   = array();
 $colour_var_decls[] = '--sgs-breadcrumbs-link-colour:' . sgs_colour_value( $link_colour );
 $colour_var_decls[] = '--sgs-breadcrumbs-separator-colour:' . sgs_colour_value( $separator_colour );

@@ -611,16 +611,13 @@ ob_start();
 
 	<?php
 	// ── 8d. Add-to-cart form (mirrors product-card L948-963 proxy form pattern).
-	// HIDDEN WHEN OUT OF STOCK (2026-08-06). Previously the button bound only
-	// `context.pending`, so an out-of-stock variation still rendered an ENABLED
-	// Add to Cart beside the "Out of stock" notice and the notify-me form — a
-	// customer could click buy on something unbuyable. `data-wp-bind--disabled`
-	// evaluates a single path and the Interactivity API has no `||`, so gating
-	// the button on both stock and pending would need new store state; hiding
-	// the form is the same read of existing context, uses the `!` negation
-	// already used in form/render.php:356,369,377, mirrors the notify-me
-	// wrapper 15 lines above, and leaves the notify-me form as the offered
-	// action instead of a dead control.
+	// HIDDEN WHEN OUT OF STOCK: `data-wp-bind--disabled` evaluates a single path
+	// and the Interactivity API has no `||`, so gating the button on both stock
+	// and pending would need new store state; hiding the form is the same read
+	// of existing context, uses the `!` negation already used in
+	// form/render.php:356,369,377, mirrors the notify-me wrapper 15 lines above,
+	// and leaves the notify-me form as the offered action instead of a dead
+	// control.
 	?>
 	<form
 		class="buybox__cart-form"
