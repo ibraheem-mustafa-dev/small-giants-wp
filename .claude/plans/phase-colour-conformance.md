@@ -3,7 +3,7 @@ doc_type: plan
 plan_id: colour-conformance-2026-08-22
 phase_name: Colour control conformance
 project: small-giants-wp
-spec_id: 39
+governing_spec: 35-BLOCK-INSPECTOR-UX-STANDARD.md (Part O — colour controls)
 date: 2026-08-22
 docscore_grade: pending
 status: NOT-READY — Wave 1 rework required (see Pre-emptive decisions)
@@ -30,7 +30,8 @@ judgement. Waves 2-3 are mechanical and delegated.
 - [ ] The two shared-component rows (`GridItemDefaultsPanel`, `ShadowControl`) are conformant —
       they reach 20 and 29 blocks respectively.
 - [ ] Rule 31's ratchet is lowered to the new measured floor and still passes `--check`.
-- [ ] `npm run build` green; canary deployed; one migrated block live-verified in the editor.
+- [ ] `npm run build` green; canary deployed; **one row per mechanism** (fill, text, border,
+      overlay, shadow) live-verified in the editor — not one row overall.
 
 ## Measured starting state (2026-08-22, re-measure before trusting)
 
@@ -109,6 +110,17 @@ project has drifted.
     Action:      Add `text:render.php` to rule 31's `needs` and build the mechanism resolver: for
                  each colour attribute, find which PHP helper consumes it. Do NOT change any
                  assertion yet — this step only makes the mechanism VISIBLE and logs it.
+                 ⛔ A PER-BLOCK scan is NOT sufficient and will silently under-resolve. MEASURED by `scripts/census-colour-paint-route.py` (committed; re-run it): only 25 call a colour helper directly; 18 route through
+                 `SGS_Container_Wrapper::render()` (the helper call lives in a shared PHP file the
+                 per-block scan never reads); 40 have no recognisable colour paint call at all.
+                 So this step MUST also resolve calls made from
+                 `includes/class-sgs-container-wrapper.php` when a block routes through it —
+                 mirroring what `reachedComponents()` already does for shared JSX — and MUST triage
+                 the 40 "neither" blocks rather than silently reporting them as clean.
+                 RESOLUTION ALGORITHM, stated so two implementers converge: follow at most ONE
+                 intermediate variable hop from the `$attributes[...]` read to the helper call
+                 (e.g. `$attr -> $var -> helper($var)`); anything longer, or a computed key, is
+                 UNRESOLVED. Never guess a mechanism.
     Files:       plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js
     Inputs:      Step 1's recipes block; sibling rules 21/28/30/33/34 already declare text:render.php
     Outcome:     A `--json` run emits a resolved mechanism per row; count of UNRESOLVED rows is
@@ -188,6 +200,34 @@ means "grep a substring you invent yourself", and two agents will draw the bound
       Fail:        NEGATIVE CONTROL, must be OBSERVED both ways: inject a wrongly-wired row -> gate RED; restore -> GREEN
       Integration: `npm run build` exits 0 with the ratchet re-baselined
 
+## Step 3b — Fix the rows Step 3 newly reveals as MISWIRED
+
+    Model:       sonnet
+    Action:      Step 3 teaches the detector to SEE a row wired to the wrong paint mechanism. This
+                 step REPAIRS them. Enumerate every newly-flagged miswired row, then for each,
+                 rewire the row to the mechanism its render.php actually uses.
+    Files:       Enumerated from Step 3's run — REPORT the list before editing. Unknown until then.
+    Inputs:      Step 3's finding delta, grouped by the `kind` field
+    Outcome:     Zero rows remain flagged as mechanism-mismatched
+    Exec:        SEQUENTIAL
+    Deps:        Step 3
+    Marker:      (none)
+    Time:        ⛔ NOT ESTIMATED — size it from Step 3's actual output. Enumerated, never guessed.
+    Tooling:     Bash, node
+    On-Fail:     Revert per row; each is independent
+    Prompt:      See `prompts/step-3b-fix-miswired.md`
+    Test:
+      Happy:       A text row that was painting through the background mechanism now routes to
+                   sgs_text_colour_decl and renders visibly
+      Edge:        A row whose mechanism is UNRESOLVED is NOT a miswired row — leave it, report it
+      Fail:        NEGATIVE CONTROL: re-wire one row back to the wrong mechanism -> the rule must go
+                   RED. Observe it, both directions.
+      Integration: build green
+
+⛔ **Why this step exists.** The plan originally taught the detector to find miswired rows and then
+assigned nobody to fix them. If Step 3 finds five, that work had no owner and no budget. A finding
+with no repair step is a backlog entry pretending to be a fix.
+
 ## Step 4 — Remove post-grid's shadow exemption
 
     Model:       haiku
@@ -215,8 +255,10 @@ means "grep a substring you invent yourself", and two agents will draw the bound
     Model:   inline
     Exec:    SEQUENTIAL
     Deps:    Steps 3-4
-    Check:   node scripts/inspector-scan/run.js --check --json  -> classify findings by kind; then
-             set rules.json openBacklog to the measured total and re-run --check
+    Check:   node scripts/inspector-scan/run.js --check --json > reports/qa-gate-b-worklist.json
+             then group by the `kind` FIELD added in Step 2a (NOT by grepping the free-text
+             `detail` string — that is an invented substring boundary and two agents will draw it
+             differently); then set rules.json openBacklog to the measured total and re-run --check
     Pass:    exit 0; shadow rows contribute 0 missing-gradient; ratchet equals the measured total
     Fail:    Re-measure by ENUMERATION, never by subtracting totals across tree states
     Marker:  QA
@@ -302,13 +344,27 @@ means "grep a substring you invent yourself", and two agents will draw the bound
     Files:       Each agent: only its own blocks' edit.js + block.json. NO shared components (Step 5
                  owns those). NO render.php unless the recipe requires a new paint call.
     Inputs:      Step 1 recipes; the enumerated per-block worklist from QA Gate B
-    Outcome:     Each agent's blocks reach 0 rule-31 findings, or report per-row why not
+    Outcome:     Each agent's blocks reach 0 rule-31 findings.
+                 ⛔ "AT ITS RECIPE" MEANS EXACTLY THIS: 0 rule-31 findings for that row. Nothing
+                 else. A recipe also records `rowShape` and `livesAs`, but NO rule asserts those —
+                 they are migration GUIDANCE, not gates. Do not spend time trying to make them
+                 checkable.
+                 ⛔ WHEN "WHY NOT" IS ACCEPTABLE: only for a `missing-gradient` finding, and only as
+                 a new `supports.sgs.colourExemptions` entry carrying a real, BLOCK-SPECIFIC,
+                 non-boilerplate reason. Every OTHER finding kind has no exemption mechanism in the
+                 schema at all — a "why not" there is an UNFIXED DEFECT and must be escalated to the
+                 coordinator, never closed as a report.
     Exec:        PARALLEL with each other
     Deps:        Step 5
     Marker:      (none)
     Time:        40 min (wall clock, all four)
     Tooling:     Bash, node, Agent
     On-Fail:     Revert that agent's blocks only; the others are independent
+    Cold-Entry:  This plan + `golden-controls.json` recipes + `reports/qa-gate-b-worklist.json`
+                 (QA Gate B WRITES that file; each agent filters it to its own block list — do not
+                 hand-paste a worklist into the prompt, it is not reproducible)
+                 + Step 5a's touched-blocks report: any shadow row listed there is PRE-CLEARED —
+                 VERIFY ONLY, do not re-touch it, or two agents will "fix" the same row differently.
     Prompt:      See `prompts/step-6-block-migration.md` (parameterised by block list)
     Test:
       Happy:       Named blocks drop to 0 findings
@@ -323,8 +379,14 @@ means "grep a substring you invent yourself", and two agents will draw the bound
     Exec:    SEQUENTIAL
     Deps:    Steps 6a-6d
     Check:   npm run build (exit 0) THEN build-deploy.py --target sandybrown --blocks-only THEN a
-             Playwright editor login: pick a palette colour on a migrated row, save, RELOAD, assert
-             the stored attribute is the SLUG and a hover repaints on the frontend
+             Playwright editor login sampling ONE ROW PER MECHANISM — fill, text, border, overlay,
+             shadow (5 rows, NOT 1) — with at least one from a Step-6 agent's own block and one
+             from a Step-5a shared row, so the per-block and shared-component paths are each proven
+             live. For each: pick a palette colour, save, RELOAD, assert the stored attribute is the
+             SLUG, and confirm a hover repaints under a real pointer.
+             ⛔ One sample proves one mechanism round-trips and says nothing about the other four.
+             The dominant risk here is a sibling attribute left undeclared, which WP discards
+             silently — a single spot-check cannot see it across independently-edited block sets.
     Pass:    Build exit 0; stored value is a slug not a hex; hover repaints under a real pointer
     Fail:    A value lost on reload means an undeclared sibling attribute — find it, do not baseline
     Marker:  QA
@@ -391,11 +453,11 @@ across all 83 blocks:
 
 | render.php pattern | Blocks |
 |---|---|
-| Calls a colour helper DIRECTLY | **26** |
+| Calls a colour helper DIRECTLY | **25** |
 | Routes via `SGS_Container_Wrapper::render()` | **17** — the helper call lives in a shared file the per-block scan never reads |
 | Neither | **40** — no recognisable colour paint call at all |
 
-⭐ **All three reference blocks (`container`, `heading`, `button`) are in the easy 26.** The plan
+⭐ **All three reference blocks (`container`, `heading`, `button`) are in the resolvable 25.** The plan
 generalised from a sample drawn entirely from the resolvable end.
 
 **Pre-answer:** Step 2 MUST gain a PHP shared-owner resolver — when a block routes through

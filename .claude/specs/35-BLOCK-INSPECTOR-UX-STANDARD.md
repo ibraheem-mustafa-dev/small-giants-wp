@@ -1187,6 +1187,51 @@ those two Tier 0 columns are corrected.
 
 ---
 
+## PART O — AMENDMENTS 2026-08-22 (colour controls: D738 / D739 / D740)
+
+Four amendments to the colour-control contract, all shipped and live-verified. The machine-readable
+contract is `plugins/sgs-blocks/scripts/consistency/golden-controls.json` `controls.colour`; this
+section records what changed and why, so the two do not drift.
+
+1. **A colour row's HOVER state is a TAB inside one popover, never a second row (D738).**
+   `DesignTokenPicker` renders a tab strip whenever `states.length > 1`, with a per-state
+   Solid/Gradient toggle inside each tab. `GradientOverlayControl` is a thin adapter over that and
+   takes an optional `solidHover`/`gradientHover` pair in `attrNames`.
+   ⛔ **Build a `states` array as LITERAL entries, never a computed `.map()` over a spec list.**
+   `inspector-scan` rule 31 resolves the state count STATICALLY and cannot evaluate a runtime
+   predicate. A first fix used `.filter().map()`: it rendered both states correctly and the rule
+   reported "carries 1 state". The code improved while the detector went blind.
+
+2. **The overlay's responsive tier axis lives on OPACITY, not colour (D739).** Per-device overlay
+   need is scrim WEIGHT, not hue. `backgroundOverlayColour{Tablet,Mobile}` were the framework's ONLY
+   responsive colour attributes and are DELETED; `backgroundOverlayOpacity{Tablet,Mobile}` replace
+   them. Only the opacity declaration is re-emitted per tier — restating colour/gradient/blend inside
+   a `@media` block would make the tier rule a second owner that silently outranks a later desktop
+   edit.
+
+3. **Overlay is a SIBLING control, not an `SgsColourPanel` row (Bean 2026-08-22).** Its opacity and
+   blend-mode extras stay on the sibling control. `SgsColourPanel`'s row contract is UNCHANGED — it
+   has no field for either, and growing it would be a Rule 7 change affecting 64 mounting blocks.
+   A sibling control is still fully enforced: rule 31 reaches shared components through
+   `reachedComponents()` over `src/components/`, independent of panel rows.
+
+4. **Every colour picker that can store a palette token MUST pass `linked` (D740).** Without it
+   `makeChangeHandler()` stores the raw CSS colour on every pick and never a slug, silently
+   unlinking the client's brand token. `ShadowControl` had this defect across 15 blocks.
+   ⚠ **Before adding `linked` anywhere, verify the CONSUMER resolves slugs** — a bare slug reaching
+   CSS is invalid and the browser drops it silently (D684). `ShadowControl` was safe because
+   `sgs_shadow_value_composed()` passes through `sgs_colour_value()`.
+   ⚠ `enableAlpha` is a SEPARATE decision from `linked`. Turn it off only where a dedicated opacity
+   attribute carries transparency instead (the overlay, D717/D739). **Shadows KEEP alpha** — a
+   translucent shadow is the normal case and there is no shadow-opacity attribute, so removing it
+   would delete a capability. Consequence, stated: lowering alpha still stores a raw colour.
+
+⛔ **Shadow rows have NO gradient recipe** — `box-shadow` takes a colour and a gradient there is
+invalid CSS. That exemption belongs in the DETECTOR, stated once, not as a per-block
+`colourExemptions` entry: the reason is a universal CSS fact, and N copies of one sentence is the
+boilerplate the exemption contract's own rule calls a finding. Open work, tracked in
+`.claude/plans/phase-colour-conformance.md`.
+
 ## PART O — THE CONTROL-TYPE CONTRACT *(folded in from **PART O** (this spec), 2026-08-17, Bean-approved)*
 
 > **Why this is here.** This content was `status: AUTHORITATIVE (2026-08-08)` but lived as a 143 KB

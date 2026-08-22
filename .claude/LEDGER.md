@@ -204,11 +204,12 @@ pre-answered decisions from a Hidden Decisions pass and names the rework Wave 1 
 Governing brief: `.claude/plans/2026-08-22-colour-control-bundles-BRIEF.md` (revision 2 — revision
 1's premise was falsified by a council; the brief explains why, and that is the useful part).
 
-⛔ **The blocker, measured across all 83 blocks:** a per-block `render.php` scan can resolve the
-paint mechanism for only **26**. **17** route through `SGS_Container_Wrapper` (the helper call lives
-in a shared file), and **40** have no recognisable colour paint call at all. All three reference
-blocks sit in the easy 26 — the first draft generalised from a sample drawn entirely from the
-resolvable end. **Step 2 needs a PHP shared-owner resolver before Wave 3 can be scoped.**
+⛔ **The blocker, measured by a COMMITTED script across all 83 blocks:** **25** call a colour helper directly; **18** route through `SGS_Container_Wrapper` (the helper call lives in a shared file); **40** have no recognisable colour paint call. **58 of 83 are invisible to a per-block scan.** Derived by `plugins/sgs-blocks/scripts/census-colour-paint-route.py` — re-run it, do not cite this line.
+All three reference blocks sit in the resolvable 25 — the first draft generalised from a sample
+drawn entirely from the easy end. **Step 2 needs a PHP shared-owner resolver before Wave 3 can be
+scoped.** ⚠ The first figure here was 26/17/40 from an uncommitted shell loop; an independent QC
+agent could not reproduce it, and the script found the loop had matched a helper name inside a
+COMMENT. The script strips comments and states its tie-break.
 
 ### Shipped 2026-08-22 (D738, D739, D740)
 

@@ -1,7 +1,7 @@
 ---
 doc_type: brief
 project: small-giants-wp
-spec_id: 39
+governing_spec: 35-BLOCK-INSPECTOR-UX-STANDARD.md (Part O — colour controls)
 status: AWAITING-BEAN
 date: 2026-08-22
 revision: 2 (rewritten after /qc-council — revision 1's premise was wrong)

@@ -23,6 +23,35 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-CENSUS-IS-ONLY-AS-WIDE-AS-ITS-CORPUS** — NEW 2026-08-22 (D740). D717 measured that the
+  overlay row was "the ONLY colour row missing `linked`", against ~40 rows that had it, and shipped
+  that claim into a decision entry. It was true of the corpus examined — `SgsColourPanel` ROWS — and
+  false of the framework: `ShadowControl` is a standalone shared component, was never in the
+  population, and had the identical defect across **15 blocks**. The claim never stated which corpus
+  it had used, so nobody could see the gap. **When you write "the only X", name the SET you
+  searched, in the same sentence.** A superlative without its corpus is unfalsifiable and reads as
+  framework-wide when it is not. Sibling of
+  STOP-A-ROSTER-IS-NOT-A-DEFINITION-CHECK-EACH-MEMBER.
+
+- **STOP-A-COMPUTED-CONTROL-SHAPE-BLINDS-A-STATIC-DETECTOR** — NEW 2026-08-22 (D738). A fix built a
+  control's `states` array with `STATE_SPECS.filter(...).map(...)`. It RENDERED both states
+  correctly — and `inspector-scan` rule 31, which resolves state counts STATICALLY, reported
+  "carries 1 state" and the total ROSE. **The code improved while the detector went blind, which is
+  strictly worse than the honest finding it replaced.** Rewritten as literal array entries. Before
+  refactoring anything a static rule reads, ask what the rule can still SEE. A gate that silently
+  stops measuring reads exactly like a gate that passes.
+
+- **STOP-A-WRONG-PATH-IN-A-PLAN-CAN-FORK-A-SHARED-COMPONENT** — NEW 2026-08-22. A phase plan sent an
+  agent to `src/components/GridItemDefaultsPanel.js`; the file lives at
+  `src/blocks/container/components/`. The consequence is NOT a file-not-found stall:
+  `resolveComponentFiles()` scans BOTH directories with **no de-duplication**, so an agent creating
+  the file at the wrong path silently FORKS a component reaching 20 blocks — one copy live, one
+  stale, with the name→file map keeping whichever it visited last. **Verify every file path in a
+  plan with `find` before dispatch.** Two independent reviewers caught this one; a dispatched agent
+  would not have.
+
+
+
 - **STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE** — NEW 2026-08-01. `node --check` parses a
   file and confirms it is well-formed JavaScript; it does **not** resolve identifiers. A fix
   on the accessibility path referenced a variable that was never declared in that scope,
