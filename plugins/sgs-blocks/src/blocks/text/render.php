@@ -490,8 +490,10 @@ if ( $drop_cap ) {
 $css_hover = '';
 // D636 — sibling gradient attribute wins when set+valid; the OR'd
 // gradient siblings here keep $has_hover true when only a gradient is set.
-$hover_colour_effective = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
-$has_hover               = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_hover );
+$hover_colour_effective    = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
+$first_letter_colour_hover = (string) ( $attributes['firstLetterColourHover'] ?? '' );
+$border_colour_hover       = (string) ( $attributes['borderColourHover'] ?? '' );
+$has_hover                 = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_hover || '' !== $first_letter_colour_hover || '' !== $border_colour_hover );
 if ( $has_hover ) {
 	$hover_decls = array();
 
@@ -512,18 +514,26 @@ if ( $has_hover ) {
 		$safe_hover_slug = sanitize_html_class( $box_shadow_hover );
 		$hover_decls[]   = 'box-shadow:var(--wp--preset--shadow--' . $safe_hover_slug . ')';
 	}
+	if ( '' !== $border_colour_hover ) {
+		$hover_decls[] = 'border-color:' . sgs_colour_value( $border_colour_hover );
+	}
 
-	if ( $hover_decls ) {
+	if ( $hover_decls || '' !== $first_letter_colour_hover ) {
 		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
 		$css_hover  = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
-if ( '' !== ( $attributes['firstLetterColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['firstLetterColourHover'] );
-}
-if ( '' !== ( $attributes['borderColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'border-color:' . sgs_colour_value( $attributes['borderColourHover'] );
-}
-		$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
-		$css_hover .= sgs_text_colour_gradient_fallback_rule( $scope . ':hover,' . $scope . ':focus-visible', $hover_colour_effective );
+		if ( $hover_decls ) {
+			$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
+			$css_hover .= sgs_text_colour_gradient_fallback_rule( $scope . ':hover,' . $scope . ':focus-visible', $hover_colour_effective );
+		}
+
+		// The drop cap's hover colour paints ::first-letter, matching where the RESTING
+		// drop cap is emitted ($scope . '::first-letter' above). Appending it to the root
+		// hover rule instead recolours the whole paragraph.
+		// Both selectors are written out in full: a pseudo-element appended to an imploded
+		// selector list attaches to the LAST selector only.
+		if ( '' !== $first_letter_colour_hover ) {
+			$css_hover .= $scope . ':hover::first-letter,' . $scope . ':focus-visible::first-letter{color:' . sgs_colour_value( $first_letter_colour_hover ) . ';}';
+		}
 
 		// Respect reduced-motion preference.
 		$css_hover .= '@media (prefers-reduced-motion:reduce){' . $scope . '{transition:none !important;transform:none !important;}}';
@@ -545,11 +555,10 @@ $responsive_css = trim( $css_base_decls . $css_base_spacing_radius . $css_base_a
 // selector (`.wp-block-sgs-text.{anchor}`, $scope above) matches; the id="…" is still
 // written below for operator anchors / linking.
 $wrapper_args = array( 'class' => 'wp-block-sgs-text ' . esc_attr( $anchor ) );
-// Pass anchor so get_block_wrapper_attributes() writes id="…" on the element —
-// this is the same id used to scope the responsive and hover <style> blocks.
-// The id MUST attach whenever scoped CSS exists (Pattern A: the base value now
-// lives in the #uid rule — an element without the id receives none of it), so
-// the generated hash uid attaches too, not only an operator-set anchor.
+// The anchor token doubles as the scoping token: it is added as a CLASS above so
+// $scope (`.wp-block-sgs-text.{anchor}`, D303) matches, and written as id="…" here
+// for operator anchors and in-page linking. The generated hash uid therefore
+// attaches too, not only an operator-set anchor.
 if ( $anchor ) {
 	$wrapper_args['id'] = esc_attr( $anchor );
 }
