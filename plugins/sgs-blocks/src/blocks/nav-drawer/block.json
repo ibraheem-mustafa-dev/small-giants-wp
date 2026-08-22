@@ -123,6 +123,18 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"drawerTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerTextColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"toggleCloseColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"toggleCloseColour": {
 			"type": "string",
 			"default": ""

@@ -164,9 +164,22 @@ $drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_html_class( $attri
 $drawer_bg_hex  = '' !== $drawer_bg_slug ? sgs_resolve_palette_hex( $drawer_bg_slug, '' ) : '';
 $drawer_fg_hex  = ( '' !== $drawer_bg_hex ) ? sgs_wcag_text_colour_for_bg( $drawer_bg_hex ) : '';
 
+// ── Drawer TEXT colour — the OPERATOR'S choice, which wins outright.
+// $drawer_fg_hex above is a FALLBACK, not a control: the WCAG pairing applies
+// only while the client has not chosen a text colour. Contrast guidance is
+// advisory (an editor notice), never an override — WordPress core's own
+// ContrastChecker warns and never enforces, and sgs/site-header follows the
+// same rule (D681-D684). Before this, the computed value was the SOLE author of
+// the drawer's text colour and no attribute existed to override it.
+$drawer_text_effective = sgs_resolve_text_colour_or_gradient(
+	$attributes['drawerTextColour'] ?? '',
+	$attributes['drawerTextColourGradient'] ?? ''
+);
+
 // ── Close-icon colour (toggleCloseColour, slug). Empty = inherit the drawer's
 // computed foreground (style.css sets the × to color:inherit).
-$close_colour_slug = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
+$close_colour_slug       = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
+$close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? sanitize_html_class( $attributes['toggleCloseColourHover'] ) : '';
 
 // ── Submenu model — LIVE (FR-36-6). Published to the drawer's descendants via
 // block.json `providesContext` (`sgs/navDrawerSubmenuModel`, mapped from this
@@ -196,9 +209,31 @@ $css = '';
 if ( '' !== $drawer_bg_slug ) {
 	$decls = 'background-color:var(--wp--preset--color--' . $drawer_bg_slug . ');';
 	if ( '' !== $drawer_fg_hex ) {
+		// FALLBACK only — the WCAG pairing applies while the client has not
+		// chosen a text colour, and is overridden below when they have.
 		$decls .= 'color:' . esc_attr( $drawer_fg_hex ) . ';';
 	}
 	$css .= $root_sel . '{' . $decls . '}';
+}
+
+// ── Operator's text colour — painted on the BODY, never on the dialog root.
+//
+// ⛔ THE ROOT IS THE ONE PLACE THIS CANNOT GO. A text gradient is a
+// `background-image` plus `background-clip:text`, and background-clip clips the
+// element's WHOLE background painting area to the glyph shapes — background-COLOUR
+// included, not just the image. On the dialog root, which carries the drawer's own
+// background-color above, a gradient would clip the panel's fill to the letters and
+// the drawer would lose its background.
+//
+// `.sgs-nav-drawer__body` carries no background of its own, so both work at once:
+// the panel keeps its fill, the text keeps its gradient. This is a DOM-shape
+// constraint, not a CSS limit — the same reason sgs/button IS exempt (D288 makes
+// the <a> itself the block root, so it has no inner element to move the text to).
+if ( '' !== $drawer_text_effective ) {
+	$css .= $body_sel . '{' . sgs_text_colour_decl( $drawer_text_effective ) . '}';
+	// @supports fallback so a browser without background-clip:text still gets a
+	// readable flat colour rather than transparent glyphs.
+	$css .= sgs_text_colour_gradient_fallback_rule( $body_sel, $drawer_text_effective );
 }
 
 /*
@@ -258,6 +293,13 @@ if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['draw
 // Close-icon colour override (else inherits the computed foreground).
 if ( '' !== $close_colour_slug ) {
 	$css .= $close_sel . '{color:' . sgs_colour_value( $close_colour_slug ) . ';}';
+}
+
+// The close button IS an interactive target, so it carries a real hover state —
+// it is NOT a candidate for a states exemption. :focus-visible is paired with
+// :hover so keyboard users get the same affordance.
+if ( '' !== $close_colour_hover_slug ) {
+	$css .= $close_sel . ':hover,' . $close_sel . ':focus-visible{color:' . sgs_colour_value( $close_colour_hover_slug ) . ';}';
 }
 
 // ── Anchor geometry (desktop variants). Guard on "is either attribute

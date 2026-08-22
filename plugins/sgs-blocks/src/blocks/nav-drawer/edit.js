@@ -32,7 +32,7 @@ import {
 	Icon,
 } from '@wordpress/components';
 import { close } from '@wordpress/icons';
-import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel } from '../../components';
+import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
@@ -168,32 +168,33 @@ export default function Edit( { attributes, setAttributes } ) {
 			   single-state row. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'drawerBg',
 						label: __( 'Drawer background', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: drawerBg,
-								onChange: ( val ) => setAttributes( { drawerBg: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
+						attrs: { base: 'drawerBg' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'drawerTextColour',
+						label: __( 'Drawer text colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'drawerTextColour',
+							gradient: 'drawerTextColourGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'toggleCloseColour',
 						label: __( 'Close icon colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: toggleCloseColour,
-								onChange: ( val ) => setAttributes( { toggleCloseColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'toggleCloseColour',
+							hover: 'toggleCloseColourHover',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			{ /* ── Settings tab ─────────────────────────────────────────── */ }
