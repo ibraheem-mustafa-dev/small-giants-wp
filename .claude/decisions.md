@@ -1,5 +1,83 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D742 [ROUTINE] — Phase 2 of the shop-archive container remediation closed: P2-2/P2-4/P2-5/P2-7 shipped, deployed, live-verified, reseeded (2026-08-22)
+
+The four steps still open at the end of the fourth execution session
+(`.claude/plans/phase-shop-container-remediation.md`) are done. Full step-by-step
+evidence lives in that plan's own updated status table — this entry records the
+decisions and defects worth finding again without re-reading the whole plan.
+
+**P2-2 — `sgs/container`'s `layout` default `""` → `"flex"`.** Per R-1 (Bean's binding
+ruling, same file): matches CSS's own `row` default when `flexDirection` stays blank,
+keeping the cloning pipeline's draft-silent-on-direction → clone-silent-on-direction
+mapping honest. Composite-mirror review (R-31-9) closed for the three sibling blocks
+sharing the same gap: `sgs/form` got its own explicit `"stack"` default (it routes
+through the same generic `SGS_Container_Wrapper` mechanism and its fields are
+unambiguously vertical); `sgs/hero` and `sgs/feature-grid` were reviewed and left
+unchanged on evidence — neither actually consumes the generic layout class the way
+`sgs/container` does (hero's own split-media system is separate; feature-grid force-sets
+`$attributes['layout']='grid'` internally in its explicit-grid branch, and its real
+arrangement is driven by a separate `layoutMode` attribute).
+
+**P2-4 — editor canvas now mirrors what `render.php` actually paints.** Padding, margin,
+background/text colour+gradient, `bgParallax`, `gridAutoRows`, and the background overlay
+(colour/gradient/opacity/blend-mode) all now show correctly in the block editor, not just
+on the live page. The overlay mirror deliberately reuses `sgs_overlay_decls()`
+(`helpers-tokens.php:902`) — the same shared PHP primitive `class-sgs-container-wrapper.php`
+and `sgs/hero`'s own overlay both call server-side — as its specification, rather than
+hand-rolling a third divergent implementation (the exact trap D717/D718 already named and
+closed once for the PHP side). `check-editor-render-parity.js`'s `sgs/container` netNew
+count: 23 → 16; the remainder (the `bgSvg*` family, 7 attrs, and grid-item-scoped colour/
+gradient/shadow attrs) is named and deferred, not silently dropped — the grid-item family
+in particular has no existing per-child scoped-CSS mechanism in `edit.js` to hook into, and
+building one was judged out of scope for this pass.
+
+**P2-5 — `minColumnWidth`/`minColumnWidthUnit`, a client-settable grid-column floor.**
+Reuses the existing `sgs_intrinsic_columns_track()` mechanism (`helpers-container.php`)
+`sgs/site-footer-row` already uses, via a new optional `$basis` parameter that falls back
+to the prior hardcoded `16rem` when unset — `site-footer-row` is provably unaffected. **A
+real bug was caught by the build, not designed around in advance:** the new editor control
+was first added unconditionally to `LayoutPanel.js`, a component shared by ~30 blocks, so
+`sgs/cta-section`/`sgs/gallery`/`sgs/trust-bar` would each have shown a "Minimum column
+width" field that silently did nothing (none of their schemas declare the new attribute,
+so WordPress drops the write). `check-undeclared-attrs.py` caught this live during the
+build. Fixed with a new `enableIntrinsicColumns` opt-in prop on `LayoutPanel` (same shape
+as its existing `showLayout` prop) — only `sgs/container`'s own `edit.js` passes it.
+
+**P2-7 — `/sgs-update` reseed.** Full 9-stage run, preceded by `extract-signatures.py` per
+the project's reseed protocol (the classifier layer must feed `css_element`/`css_property`
+before Stage 1 runs, or a new attribute's manifest data never lands). `sgs/container: 93
+attributes loaded` confirms P2-5's new attributes are in `sgs-framework.db`. Both closing
+gates (`check-element-manifest-conformance.js`, `db-consistency/run.py`) came back clean,
+0 net-new. `extract-signatures.py`'s documented `columns`/`css_tier` non-determinism (see
+D-numbered entries from the colour-golden track the same week) hit again — 3 rows flipped
+`css_tier` between runs — and were reverted before committing, the same workaround as
+before; a separate, real `backgroundColour*` `css_element` reclassification in the same
+file was kept, since it's a different field on a different attribute, unrelated to that
+non-determinism.
+
+**Live verification method, worth repeating:** `getComputedStyle()` alone was not
+sufficient for the grid check — a probe block with zero children reports a degenerate
+`grid-template-columns:0px` regardless of whether the authored rule is correct (CSS
+`auto-fit`/`auto-fit` with nothing to size against has no real track to report). The
+actual proof was reading the real, lifted CSS file
+(`wp-content/uploads/sgs-css/sgs-*.css` — SGS block CSS is never inline) and confirming
+the authored `grid-template-columns:repeat(auto-fit,minmax(min(100%,max(300px,...`
+declaration contained the client-set value. A `querySelector('.wp-block-sgs-container')`
+first-match also returned the site header's own container, not the test instance, on the
+first attempt — the exact `queryselector-returns-first-match-not-test-instance` trap
+this project has hit before; scoping to `main` and then filtering by the block's own
+distinguishing class found the right element.
+
+**Cross-session note:** this track's build was blocked twice mid-session by state outside
+its own control — once by a real bug in `sgs/nav-drawer`'s undeclared attributes
+(colour-golden's own commit; they fixed the DETECTOR rather than the block, since it
+turned out to be a false positive from the gate reading JSX tags before stripping
+comments) and once by unrelated live uncommitted work sitting in the shared main checkout.
+Neither was touched directly — both waited for the owning session to resolve, then
+retried. The deploy that shipped this work (`sandybrown`) also carried unrelated
+concurrent commits from the colour-golden and nav-drawer tracks; all green together.
+
 ## D741 [INCIDENT] — FR-38-12 Flip closed: two real bugs, not one — sgs/container's missing interactivity declaration AND a MatchMedia#add() misuse (2026-08-22)
 
 D698/D699/D702/the 2026-08-21 report all left FR-38-12 "genuinely inconclusive" or

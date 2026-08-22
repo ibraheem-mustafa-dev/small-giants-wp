@@ -49,10 +49,13 @@ Prompt B is deleted — done. Nothing remains on this track.
 
 **If you are the shop-archive track**, read, in this order:
 
-1. `.claude/plans/phase-shop-container-remediation.md` — Phase 1 is COMPLETE. The live front
-   is the container capability gap below.
-2. `.claude/decisions.md` D725 + D726 — the width model, SETTLED. Read before any
-   container work; they close what the research below merely optioned.
+1. `.claude/plans/phase-shop-container-remediation.md` — **Phase 1 AND Phase 2 are BOTH
+   COMPLETE (2026-08-22, D742).** P2-2/P2-4/P2-5/P2-7 (the four steps still open at the end
+   of the fourth session) shipped, deployed to sandybrown, live-verified, and reseeded.
+   Phase 3 (the per-template pass, P3-1 through P3-9) is the only work left in this plan
+   and has not been started.
+2. `.claude/decisions.md` D725 + D726 (width model) and **D742** (P2-2/P2-4/P2-5/P2-7
+   close-out) — read before any further container work.
 3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — IN FULL if touching converter/walker.
 
 ## Task 1 — container width model: ✅ CLOSED 2026-08-21 (D725 / D726)
@@ -85,14 +88,17 @@ Sticky sidebar (their evidence says the accordion already solved it — RE-MEASU
 building anything) and the band-replacement model, which is Task 1 by another name. See their
 section below.
 
-## ▶ LIVE STATUS — 2026-08-21 (shop-archive track)
+## ▶ LIVE STATUS — 2026-08-22 (shop-archive track — Phase 2 CLOSED)
 
 **All pushed to `origin/main`. Build GREEN. Canary deployed and live-verified.**
 
-**PHASE 1 IS COMPLETE.** Wave 1 + Wave 2 + R-3 all shipped; QC Gate 2 closed by the
-colour-golden track against Bean's behavioural test (swatch picked in the editor, computed
-style confirmed on the frontend at rest AND under a real pointer hover, with a negative
-control). Per-step detail is single-sourced to the plan doc, not duplicated here.
+**PHASE 1 AND PHASE 2 ARE BOTH COMPLETE.** Wave 1 + Wave 2 + R-3 all shipped; QC Gate 2
+closed by the colour-golden track against Bean's behavioural test (swatch picked in the
+editor, computed style confirmed on the frontend at rest AND under a real pointer hover,
+with a negative control). Phase 2's four remaining steps (P2-2/P2-4/P2-5/P2-7) closed
+2026-08-22 — see D742 for the full write-up. QC Gate 3 and QC Gate 4 both closed live.
+Per-step detail is single-sourced to the plan doc, not duplicated here. **Phase 3 (the
+per-template pass) is the only work left in this plan and has not been started.**
 
 ### Shipped this session (2026-08-21)
 
@@ -128,9 +134,10 @@ control). Per-step detail is single-sourced to the plan doc, not duplicated here
   5,079 cached. Now versioned by `filemtime` (`d3e98700`). A server cache purge does NOT fix
   it. ⚠ Re-test anything theme-side you judged before that commit.
 
-### ⛔ THE LIVE FRONT — a container capability gap, now researched
+### ⛔ A container capability gap, still open — NOT the same thing as Phase 2 (which is closed)
 
-`sgs/container` injects `.sgs-container__inner` carrying `max-width` ON ITSELF. Core instead
+**Distinct from P2-2/P2-4/P2-5/P2-7 (D742, closed) — this is a separate, still-unresolved
+limitation, not the same work under a different name.** `sgs/container` injects `.sgs-container__inner` carrying `max-width` ON ITSELF. Core instead
 emits `.is-layout-constrained > :where(:not(.alignfull)) { max-width: … }` — capping CHILDREN,
 excluding `.alignfull` by name, at zero specificity. Ours therefore cannot express "full-bleed
 child of a constrained parent" at all; unconstraining `<main>` was a workaround, not the answer.
@@ -184,11 +191,11 @@ attribute WP discards. Their warning is met, not violated.
 | # | Decision |
 |---|---|
 | **D-1** | A background fills its container's own box and must NEVER be capped by content width. |
-| **D-2** | `layout` default → `flex`; `flexDirection` stays `""` → **`row`** (CSS default). |
+| **D-2** | `layout` default → `flex`; `flexDirection` stays `""` → **`row`** (CSS default). **SHIPPED 2026-08-22 (D742).** |
 | **D-4** | Orphan colour authorings get full `SgsColourPanel` standardisation — bg + text, normal + hover, gradient setup 1 for background / setup 2 for text. |
 | **G2** | Container root colour routes through `SGS_Container_Wrapper`. Rule 7 satisfied. |
 | **Colour** | White-on-pink is Bean's brand call. Per-client only; the framework default stays compliant. |
-| **Grid** | Column floor 250px, exposed as `minColumnWidth`, not hardcoded. |
+| **Grid** | Column floor exposed as `minColumnWidth`/`minColumnWidthUnit`, not hardcoded — **SHIPPED 2026-08-22 (D742)**. Framework default stays the prior `16rem` (≈256px) fallback when the client sets nothing. |
 | **Filters** | Mobile = slide-up sheet, one DOM / two presentations. Scrollbar STYLED, not hidden — a filter panel has no other affordance, unlike the carousels. |
 | **Canary** | Canary content is a test rig. A regressed test page gets deleted, not protected. |
 

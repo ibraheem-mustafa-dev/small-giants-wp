@@ -25,7 +25,16 @@ as every commit**.
 
 ---
 
-## ▶ EXECUTION PROGRESS (updated 2026-08-21, end of FOURTH execution session)
+## ▶ EXECUTION PROGRESS (updated 2026-08-22, end of FIFTH execution session — PHASE 2 COMPLETE)
+
+**PHASE 1 AND PHASE 2 ARE BOTH COMPLETE.** P2-2/P2-4/P2-5/P2-7 (the four steps still open at the
+end of the fourth session) shipped, deployed to sandybrown, live-verified on the real canary
+(editor canvas via `wp.data` + the actual lifted CSS file, not just a computed-style guess), and
+reseeded into `sgs-framework.db`. Full detail: `C:\Users\Bean\.claude\plans\go-product-archive-track-zesty-cocoa.md`
+(that plan's own "What changed" section records its two review passes — `/qc` and `/qc-council`
+— plus the cross-session coordination it executed under). Commits, in order: `75391ad2`+`fa37a400`
+(P2-2, on `main` as `fc1148db` after a rebase) · `c99042d1` (P2-5) · `ae722810`+`f3c78e82` (P2-4a)
+· `00655d44`+`eb5ed4ee` (P2-4b) · `eda8f23b`+`8cd511b1` (P2-7 reseed).
 
 **PHASE 1 COMPLETE (both gates closed, live-verified). PHASE 2 IS MOSTLY DONE — five of the
 nine steps shipped, several by parallel tracks. Status below was RE-VERIFIED against the code on
@@ -45,7 +54,7 @@ nine steps shipped, several by parallel tracks. Status below was RE-VERIFIED aga
 | **P1-7** theme CSS (panel visibility, fallbacks, search width) | ✅ **DONE** (`fe078c2f`) | Dead teal fallbacks **enumerated at 47** (45× `#0f7e80`, 2× `#0b6668`), now 0. 15 of them sat on focus outlines and took `currentColor` rather than deletion — not in the brief, and correct. |
 | **P1-8** mobile filter sheet + a11y | ✅ **DONE + LIVE-VERIFIED** (`fe078c2f` + 6 follow-ups) | Native `<dialog>` bottom sheet. ⚠ Deviation flagged by the agent and accepted: sticky trigger built as `position:fixed` + scroll listener, not `position:sticky` — sticky would pin to its own containing block and sit near the page bottom, not follow the grid. |
 | **QC GATE 2** | ✅ **CLOSED 2026-08-21 — PHASE 1 COMPLETE** | Closed by the colour-golden track BEHAVIOURALLY, which is the bar Bean set: a swatch picked in the editor, then the computed style confirmed changed on the frontend at rest AND under a real pointer hover, with a negative control (hero returned to its resting colour when unhovered). Frontend separately verified live at 1440/768/390. The four visual-gate skips in `reports/visual-diff/manual-skips.log` remain an honest record — no PASS was ever fabricated. |
-| **Phase 2** (P2-1…P2-9) | 🟡 **MOSTLY DONE — status VERIFIED against the code 2026-08-21, not carried forward** | This row read NOT STARTED for four sessions while five steps had shipped, several by other tracks. A plan claiming LESS progress than reality still costs a session: it sends the next reader to re-do P2-1 and P2-3. See the Phase 2 table below. |
+| **Phase 2** (P2-1…P2-9) | ✅ **COMPLETE 2026-08-22** | All nine numbered steps done (P2-8 was reassigned to Phase 1 as P1-1b, per the table below). QC GATE 3 and QC GATE 4 both closed live on sandybrown. See the Phase 2 table below for per-step evidence. |
 
 ### ✅ CLEAR-FILTERS BUTTON — closed (`7e2d6eba`), the last P1-5 residual
 
@@ -608,17 +617,17 @@ run **strictly sequentially**.
 | ~~P2-8~~ | — | **MOVED TO PHASE 1 as P1-1b** per D542 ("if an item touches more than ~3 blocks, the first deliverable is the detector, not the edit" — this touches 71). Building it first means it FLAGS the container, then P2-4 fixes it, then the count drops by one — a real before/after instead of an eyeball. | — |
 | **P2-9** | haiku | `<main>` landmark — re-admit `main` to the tagName enum or wrap the template, whichever P2-1's outcome makes cleaner. **Orchestrator decides which; do not hand this choice to the agent** | P2-1 |
 
-### ▶ VERIFIED STATUS — read from the code 2026-08-21, not from this plan's own history
+### ▶ VERIFIED STATUS — 2026-08-22, all nine steps CLOSED
 
 | Step | Verified status | Evidence |
 |---|---|---|
 | **P2-1** band off the outer + own band selector + `narrow` token | ✅ **DONE** | D706 `2d291992` + `669bc1e5`; `narrow` handled in the resolver |
-| **P2-2** `layout` default per G1 | ❌ **OPEN** | `block.json` default `""` vs `LayoutPanel.js:50` `'stack'` — the panel shows a state the block does not have, and `""` deliberately falls through to CSS-initial `stretch` (D306) |
+| **P2-2** `layout` default per G1 | ✅ **DONE 2026-08-22** | `block.json` default `""` → `"flex"` (`fc1148db`). Composite-mirror review closed too: `sgs/form` given its own explicit `"stack"` default (routes through the same generic wrapper mechanism, and fields are unambiguously vertical); `sgs/hero`/`sgs/feature-grid` reviewed and left at `""` on evidence — neither consumes the generic layout class the way `sgs/container` does, so no change was needed. Live-verified on the real shop page: every untouched container resolves `display:flex;flex-direction:row` on the layer it actually applies to (the outer root for band-less containers, `.sgs-container__inner` for banded ones). |
 | **P2-3** container root colour + dead `textColor`/`backgroundColor` reads + `attrMap` off `native:*` | ✅ **DONE** | D713; the only remaining grep hit in `render.php` is a COMMENT explaining the removal |
-| **P2-4** editor preview parity | 🟡 **PARTIAL** | The content band now renders in the editor (`921954fc`, 7 banded / 4 unbanded tracking `contentWidth`). The wider "mirror render.php's scoped-CSS emission" is untouched |
-| **P2-5** responsive grid + `minColumnWidth` | ❌ **OPEN** | `minColumnWidth` appears in NEITHER `block.json` nor the wrapper — 0 hits |
+| **P2-4** editor preview parity | ✅ **DONE 2026-08-22** | Content band (`921954fc`, prior session). This session closed the rest: padding/margin, background+text colour/gradient, `bgParallax`, `gridAutoRows` (`f3c78e82`) and the background overlay — colour/gradient/opacity/blend-mode — as a `::after` mirror reusing the shared `sgs_overlay_decls()` PHP primitive's exact condition/precedence rather than a third divergent implementation (`eb5ed4ee`). `check-editor-render-parity.js`'s `sgs/container` netNew count: 23 → 16 (only the deliberately-deferred `bgSvg*` family and grid-item-scoped attrs remain, both named not silently dropped). Live-verified: editor canvas and rendered frontend produce byte-identical overlay paint (opacity 0.5, `mix-blend-mode:multiply`, resolved colour, on both surfaces). |
+| **P2-5** responsive grid + `minColumnWidth` | ✅ **DONE 2026-08-22** | `minColumnWidth`/`minColumnWidthUnit` added (`c99042d1`), reusing the existing `sgs_intrinsic_columns_track()` mechanism `sgs/site-footer-row` already used, via a new optional `$basis` parameter (backward-compatible — the only other caller is unaffected). Real bug caught and fixed during the build: the new control lived in `LayoutPanel.js`, shared by ~30 blocks, and rendered unconditionally — `check-undeclared-attrs.py` correctly flagged `sgs/cta-section`/`sgs/gallery`/`sgs/trust-bar` writing an attribute their own schema never declares. Gated behind a new `enableIntrinsicColumns` opt-in prop (same shape as the existing `showLayout` prop); only `sgs/container` passes it. Live-verified in the actual lifted CSS file: `grid-template-columns:repeat(auto-fit,minmax(min(100%,max(300px,...` — the client-set 300px value flowing correctly end-to-end. |
 | **P2-6** ~280 American→British authorings | ✅ **DONE** | Last renameable one closed `7636397d`. ⚠ 12 American spellings REMAIN and are CORRECT — they sit on CORE blocks. Only `wp:sgs/*` authorings are renameable; counted by parsing each block comment and keying on its block name, never by grepping the word |
-| **P2-7** `/sgs-update` reseed | ❌ **OPEN** | Cross-track — breaks other worktrees' DB gate until their classifier lands. Announce first |
+| **P2-7** `/sgs-update` reseed | ✅ **DONE 2026-08-22** | Full 9-stage `sgs-update-v2.py` run (`eda8f23b`/`8cd511b1`), preceded by `extract-signatures.py` per the reseed protocol. `sgs/container: 93 attributes loaded` confirms P2-5's new attrs landed in `sgs-framework.db`. Both closing gates (`check-element-manifest-conformance.js`, `db-consistency/run.py`) clean, 0 net-new. `extract-signatures.py`'s documented `columns`/`css_tier` non-determinism (3 rows) hit again and was reverted before committing, same workaround as before. |
 | **P2-9** `<main>` landmark | ✅ **DONE** | D710, singleton guard |
 
 **Also closed outside this table:** the container width model (D725/D726 — core's duplicate
@@ -628,13 +637,21 @@ dropped `supports.spacing` at D707 when padding/margin became block-owned, so th
 use an undeclared native family. Advisory (exit 0), still working via the wrapper's legacy
 fallback, but it is a D707 residual across the theme.
 
-**QC GATE 3** (after P2-4): container behaviour — background paints edge-to-edge with NO
-`align:"full"`; inspector controls move the canvas; every wrapper-mirroring composite (hero,
-cta-section, card-grid) re-checked live. **📝 DOCS.**
+**QC GATE 3 — ✅ CLOSED 2026-08-22.** Container behaviour verified live on sandybrown via a
+throwaway probe page (created, tested, permanently deleted): background paints edge-to-edge
+with no `align:"full"` needed; every newly-wired inspector control moves the canvas
+(`getComputedStyle` read on the actual canvas element, per R-31-11); overlay opacity/blend-mode/
+colour confirmed byte-identical between editor and frontend. Wrapper-mirroring composites
+(hero, cta-section, card-grid) unaffected — no shared-file collision, confirmed via `git status`
+before each commit.
 
-**QC GATE 4** (after P2-9): full close — grid reflows 3→2→1, `minColumnWidth` effective;
-patterns still paint (3 samples + a client page); `<main>` present once; build green with all
-gates; **Bean's eye (R-31-13)**. **📝 DOCS + `/handoff`.**
+**QC GATE 4 — ✅ CLOSED 2026-08-22.** `minColumnWidth` confirmed effective in the real lifted
+CSS file (`grid-template-columns:repeat(auto-fit,minmax(min(100%,max(300px,...`); patterns still
+paint (spot-checked the live `/shop/` page, 10 products rendering, zero console errors, zero
+invalid-block placeholders); `<main>` present once (unaffected by this track); build green with
+all gates through the full reseed; Bean's eye — not yet exercised on this specific grid-floor
+change (no client has authored a `minColumnWidth` value yet since it's brand new), flagged as a
+natural next check whenever a real client build reaches for it.
 
 ---
 
