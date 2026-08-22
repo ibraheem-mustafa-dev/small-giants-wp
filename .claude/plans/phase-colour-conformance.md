@@ -68,6 +68,7 @@ project has drifted.
 | S-4 | The border reference block is **`sgs/button`** (verified conformant: 2 states, gradient per state, renders via `sgs_border_gradient_css` at `render.php:894`). NOT `sgs/heading`, whose border rows are themselves 2 of the findings. | Bean 2026-08-22 |
 | S-5 | Detector FIRST, migration second (D542 triad). Without mechanism-awareness we cannot prove the rollout worked. | brief |
 | S-6 | No agent runs git, deploys, or `npm run build`. The coordinator integrates and builds once per wave. | this session's incident |
+| S-7 | **The COORDINATOR's own integration commit is EXACT-PATH-SCOPED — never a glob, never `git add -A`, never `--amend`.** Enumerate the literal filenames. | `87d904a6` + STOP-PATH-SCOPED-COMMIT |
 
 ## Reference blocks (verified, not assumed)
 
@@ -401,6 +402,12 @@ with no repair step is a backlog entry pretending to be a fix.
     Model:       inline
     Action:      Lower rule 31's openBacklog to the new measured floor with a stated reason. Write
                  the D-entry. Update the LEDGER. Write the visual-diff evidence report.
+                 ⛔ COMMIT SCOPING (S-7): list every filename literally on the `git commit -- …`
+                 line. A GLOB over a shared directory is `git add -A` wearing a pathspec — that is
+                 exactly how `87d904a6` swept a co-active track's half-done edit and left `main`
+                 fatal for ~5 minutes. `--amend` is also banned here: it flushes the WHOLE index,
+                 ignoring the original pathspec (STOP-GIT-COMMIT-AMEND-IGNORES-THE-ORIGINAL-PATHSPEC).
+                 Re-check `git branch --show-current` IN THE SAME COMMAND as the commit.
     Files:       scripts/inspector-scan/rules.json, .claude/decisions.md, .claude/LEDGER.md,
                  reports/visual-diff/
     Inputs:      QA Gate C results
