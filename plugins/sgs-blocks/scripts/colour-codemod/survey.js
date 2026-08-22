@@ -14,13 +14,29 @@
  * file yet: a fixer written before its own census has no way to know what it
  * should be refusing.
  *
- * AUTOFIXABILITY IS GATED ON DATA, NOT ON AMBITION. Adding a hover state or a
- * gradient path is two mechanical edits (edit.js + block.json). The THIRD edit
- * — emitting the actual CSS rule — needs a SELECTOR, and a selector cannot be
- * guessed from an attribute name. Measured: derived_selector is populated for
- * only ~35% of colour attrs. A row whose selector is unknown is reported as
- * NEEDS-DATA and never auto-fixed — the same refuse-rather-than-guess rule
- * migrate-tier-object.py applies to its own UNCLEAR class.
+ * AUTOFIXABILITY IS GATED ON THE BLOCK'S OWN EMISSION CAPABILITY. Adding a hover
+ * state or a gradient path is two mechanical edits (edit.js + block.json). The
+ * THIRD edit — emitting the actual CSS rule — needs a real SELECTOR.
+ *
+ * ⛔ DO NOT USE block_attributes.derived_selector FOR THIS. Its name is a trap.
+ * An earlier version of this survey classified on it and reported 58%
+ * autofixable; that number was WRONG. Verified by grepping the tree: ZERO of its
+ * values exist as classes anywhere — `.sgs-button__letterSpacing`,
+ * `.sgs-card-grid__gap`, even the plausible-looking `.sgs-accordion__header` all
+ * return 0 files. It is a synthetic per-attribute identifier, not a CSS emit
+ * target.
+ *
+ * The clinching case: sgs/accordion.headerColour does not render in
+ * sgs/accordion AT ALL. block.json:279 passes it via providesContext
+ * ("sgs/accordionHeaderColour") to the CHILD block sgs/accordion-item, which
+ * owns the real class .sgs-accordion-item__header. A selector can live in a
+ * DIFFERENT BLOCK, so no per-attribute column could encode it.
+ *
+ * So capability is read from the block's OWN render.php: does it already call a
+ * colour helper (and therefore already have a scoped selector in hand), and does
+ * it already emit state-aware CSS? Anything else is refused with a named reason
+ * — the same refuse-rather-than-guess rule migrate-tier-object.py applies to
+ * its UNCLEAR class.
  *
  * Reuses core/golden.js + core/sources.js wholesale. collectIndirectRowSources
  * in particular cost a 33-row undercount to get right (product-card, nav-menu
@@ -189,9 +205,18 @@ function main() {
 		const slug = 'sgs/' + dir;
 		const editFile = path.join( BLOCKS_DIR, dir, 'edit.js' );
 		const renderFile = path.join( BLOCKS_DIR, dir, 'render.php' );
-		const wrapperRouted =
-			fs.existsSync( renderFile ) &&
-			/SGS_Container_Wrapper::render/.test( fs.readFileSync( renderFile, 'utf8' ) );
+		const php = fs.existsSync( renderFile ) ? fs.readFileSync( renderFile, 'utf8' ) : '';
+		const wrapperRouted = /SGS_Container_Wrapper::render/.test( php );
+		// Does this block already hold a scoped selector it emits colour CSS at?
+		// That, not a DB column, is what makes the render half mechanical.
+		const emitsColour = [
+			'sgs_text_colour_decl',
+			'sgs_background_paint_decl',
+			'sgs_border_gradient_css',
+			'sgs_emit_state_colour_css',
+			'sgs_colour_value',
+		].some( ( h ) => php.includes( h + '(' ) );
+		const emitsState = php.includes( 'sgs_emit_state_colour_css' ) || php.includes( ':hover' );
 
 		for ( const row of rowsInFile( cache, editFile ) ) {
 			const dbRow = row.attr && db[ slug ] ? db[ slug ][ row.attr ] : null;
@@ -217,13 +242,21 @@ function main() {
 			if ( ! needsHover && ! needsGradient ) {
 				verdict = 'CONFORMANT';
 			} else if ( ! row.attr ) {
-				verdict = 'NEEDS-DATA:unresolvable-attr';
+				verdict = 'REFUSED:unresolvable-attr';
 			} else if ( ! mechanism ) {
-				verdict = 'NEEDS-DATA:no-css_property';
-			} else if ( ! selector && ! wrapperRouted ) {
-				verdict = 'NEEDS-DATA:no-selector';
+				verdict = 'REFUSED:no-css_property';
+			} else if ( emitsState ) {
+				// Block already emits state-aware colour CSS at its own selector:
+				// a shared helper adds the hover variant at that SAME selector.
+				verdict = 'AUTOFIXABLE:helper-at-existing-selector';
+			} else if ( emitsColour ) {
+				// Selector exists but no state machinery yet — mechanical, but it
+				// wires in the state emitter rather than reusing one.
+				verdict = 'AUTOFIXABLE:wire-state-emitter';
+			} else if ( wrapperRouted ) {
+				verdict = 'AUTOFIXABLE:wrapper-emits';
 			} else {
-				verdict = 'AUTOFIXABLE';
+				verdict = 'REFUSED:block-emits-no-colour-css';
 			}
 
 			results.push( {
@@ -233,6 +266,8 @@ function main() {
 				mechanism,
 				selector,
 				wrapperRouted,
+				emitsColour,
+				emitsState,
 				needsHover,
 				needsGradient,
 				verdict,
@@ -257,7 +292,7 @@ function main() {
 		.sort( ( a, b ) => b[ 1 ] - a[ 1 ] )
 		.forEach( ( [ k, v ] ) => console.log( '  ' + String( v ).padStart( 4 ) + '  ' + k ) );
 
-	const fixable = counts.AUTOFIXABLE || 0;
+	const fixable = Object.entries( counts ).filter( ( [ k ] ) => k.startsWith( 'AUTOFIXABLE' ) ).reduce( ( a, [ , v ] ) => a + v, 0 );
 	const pct = nonConf.length ? Math.round( ( fixable / nonConf.length ) * 100 ) : 0;
 	console.log(
 		'\n  of ' + nonConf.length + ' non-conformant rows, ' + fixable +
@@ -268,7 +303,7 @@ function main() {
 	const byBlock = {};
 	for ( const r of nonConf ) {
 		byBlock[ r.block ] = byBlock[ r.block ] || { fix: 0, data: 0 };
-		if ( r.verdict === 'AUTOFIXABLE' ) byBlock[ r.block ].fix++;
+		if ( r.verdict.startsWith( 'AUTOFIXABLE' ) ) byBlock[ r.block ].fix++;
 		else byBlock[ r.block ].data++;
 	}
 	console.log( '  top blocks (autofixable / needs-data):' );
