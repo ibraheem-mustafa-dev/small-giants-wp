@@ -10,11 +10,11 @@
 
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
+<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 
 	<!-- wp:sgs/heading {"content":"Get in Touch","textAlign":"center","fontSize":{"desktop":"xx-large"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"60% 40%","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|60"}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"60% 40%","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|60"}} -->
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/text {"text":"Fill in the form below and we’ll get back to you within 24 hours.","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->

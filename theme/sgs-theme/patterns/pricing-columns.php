@@ -9,11 +9,11 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
+<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 
 	<!-- wp:sgs/heading {"content":"Simple, Transparent Pricing","textAlign":"center","fontSize":{"desktop":"xx-large"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"}} -->
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/container {"tagName":"div","style":{"border":{"radius":"12px"}},"backgroundColour":"surface","padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->

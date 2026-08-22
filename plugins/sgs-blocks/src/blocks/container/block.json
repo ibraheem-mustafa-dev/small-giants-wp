@@ -20,10 +20,6 @@
 		"interactivity": {
 			"clientNavigation": true
 		},
-		"align": [
-			"wide",
-			"full"
-		],
 		"anchor": true,
 		"html": false,
 		"color": false,

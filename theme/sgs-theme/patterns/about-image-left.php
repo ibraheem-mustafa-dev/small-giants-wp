@@ -9,9 +9,9 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
+<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"45% 55%","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|60"}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"45% 55%","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|60"}} -->
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/500x600/0A5B5D/FFFFFF?text=About+Image","imageAlt":"About us","style":{"border":{"radius":"16px"}}} /-->
 		<!-- /wp:sgs/container -->

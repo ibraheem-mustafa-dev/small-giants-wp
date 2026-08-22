@@ -9,13 +9,13 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
+<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
 
 	<!-- wp:sgs/heading {"content":"Meet Our Team","textAlign":"center","fontSize":{"desktop":"xx-large"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
 	<!-- wp:sgs/text {"text":"The talented people behind our success.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"}} -->
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/container {"tagName":"div","style":{"border":{"radius":"12px"}},"backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
