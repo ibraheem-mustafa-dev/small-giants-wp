@@ -157,6 +157,60 @@ That is a seeding task with an enumerable worklist, not a resolver to engineer �
 honestly measurable, which the scan's blind spots were not. Size it from the query, not from an
 estimate.
 
+## Step 2b — Seed the missing `css_property` values FROM THE CENSUS, not by hand
+
+    Model:       sonnet
+    Action:      Fill the empty `block_attributes.css_property` cells using the colour-golden
+                 census as the evidence source. It already scanned the real render surface and
+                 recorded, per finding: `property`, `element_guess`, `selector`, `state`, `file`,
+                 `line`. That is exactly the field the DB is missing, derived from the code rather
+                 than assigned by judgement.
+    Files:       `.claude/reports/2026-08-20-colour-golden-raw/colour-coverage.json` (READ),
+                 the DB via `sgs-db.py`, and a new seeding script under
+                 `plugins/sgs-blocks/scripts/`
+    Inputs:      Step 2's UNRESOLVED list
+    Outcome:     Every fillable gap carries a css_property traceable to a census file:line; every
+                 remaining gap is NAMED with why it could not be filled
+    Exec:        SEQUENTIAL
+    Deps:        Step 2
+    Marker:      (none)
+    Time:        30 min
+    Tooling:     Bash, python, sgs-db.py
+    On-Fail:     The DB is shared across tracks — never reseed without `/sgs-update` first
+    Prompt:      ⛔ NOT PRE-WRITTEN — its worklist is Step 2's UNRESOLVED output.
+    Test:
+      Happy:       A seeded attr resolves to the same mechanism the census observed at that file:line
+      Edge:        A census `property` string that is DESCRIPTIVE, not a CSS property -> normalise
+                   or refuse; never write prose into the column
+      Fail:        NEGATIVE CONTROL: seed a deliberately wrong property, confirm rule 31 resolves
+                   that row to the WRONG mechanism and flags it. Restore.
+      Integration: `python scripts/dbschema/check_schema_drift.py --check` still passes
+
+⭐ **Bean's steer: "the colour golden census should be able to provide that info." It can — MEASURED.**
+The census holds **189 records across 33 blocks**, each carrying a CSS `property` and an
+`element_guess`. Cross-referenced against the DB gaps:
+
+| | Count |
+|---|---|
+| Colour attrs with EMPTY `css_property` | **88** across 21 blocks |
+| ...of which sit in blocks the census ALREADY scanned | **49** in 10 blocks — fillable from evidence |
+| ...in blocks where the census found no colour paint | **39** — investigate; some may be legitimately empty |
+
+Highest-yield: `cta-section` 10 · `product-card` 9 · `container` 8 · `hero` 6 · `post-grid` 5 ·
+`product-search` 5.
+
+⛔ **RE-RUN BOTH QUERIES; DO NOT CITE THESE NUMBERS.** An earlier pass of this same question
+returned **119**, this one **88** — because the two queries define "a colour attribute"
+differently (`role='colour'` vs `role LIKE '%colo%r%'` vs an `attr_name` match). Neither is wrong;
+they answer different questions. **State the predicate with the number, every time,** or the next
+reader inherits a figure whose meaning they cannot recover. This is the same class as the census
+that had no committed method.
+
+⚠ **The census's `property` values are DESCRIPTIVE, not raw CSS**: `"box-shadow (colour component)"`,
+`"background (gradient stop)"`. They must be normalised to the DB's vocabulary before seeding.
+Writing the descriptive string into `css_property` would make every downstream mechanism lookup
+miss — a silent, self-inflicted version of the exact blind spot this step exists to close.
+
 ## Step 2a — Give every rule-31 finding a machine-readable `kind`
 
     Model:       inline (trivial + additive; delegating costs more than doing it)
