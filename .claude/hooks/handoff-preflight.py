@@ -295,12 +295,31 @@ def check_stop_carry_forward(
 
     if prev_text is None:
         try:
+            # encoding='utf-8' is LOAD-BEARING, not tidiness. `text=True` alone decodes with the
+            # Windows locale codec (cp1252), and this repo's docs are full of the characters that
+            # codec cannot represent. The UnicodeDecodeError is raised inside subprocess's READER
+            # THREAD, so `run()` returns returncode 0 with stdout=None and the except clause below
+            # never fires — the failure is invisible to normal error handling.
             prev_text = subprocess.run(
                 ["git", "show", "HEAD:.claude/STOP-CATALOGUE.md"],
-                cwd=_REPO, capture_output=True, text=True, timeout=15,
+                cwd=_REPO, capture_output=True, text=True,
+                encoding="utf-8", errors="replace", timeout=15,
             ).stdout
         except (OSError, subprocess.SubprocessError):
             prev_text = ""
+    if prev_text is None:
+        # ⛔ Do NOT silently coerce to "" here. An empty previous catalogue makes every STOP entry
+        # look NEW and none look DROPPED, so the D101 carry-forward check would pass trivially and
+        # for ever — a gate that cannot fail. Fail loudly instead; this branch means the read broke.
+        return Result(
+            "stop-carry-forward",
+            False,
+            "could not read the previous STOP-CATALOGUE from git (stdout was None — usually a "
+            "decode failure in subprocess's reader thread, which returns rc=0 and is invisible "
+            "to except). Refusing to compare against an empty baseline: that would make every "
+            "entry look NEW and none look DROPPED, so this check would pass trivially for ever.",
+            "Re-run; if it persists, check the git show call's encoding= argument.",
+        )
     prev_ids = _defined_stop_ids(prev_text) if prev_text.strip() else set()
 
     if floor_ids is None:

@@ -107,17 +107,37 @@ per-block one silently wins.
 
 ## The detector work — scoped honestly
 
-⛔ **Rule 31 has NO `render.php` access today.** It declares
-`needs: ['ast:edit.js', 'json:block.json']`
-(`scripts/inspector-scan/rules/31-golden-colour-control.js:424`). Sibling rules (21, 28, 30, 33,
-34) already declare `text:render.php`, so the plumbing exists — rule 31 just does not use it.
+**The mechanism is DECLARED, not inferred — read it from the DB** (Bean's steer, 2026-08-22).
+`block_attributes.css_property` already records which CSS property each attribute paints, and it
+maps cleanly onto the five members:
 
-Mechanism-awareness therefore needs a **cross-file, cross-language join** the rule has never done:
-resolve, per colour attribute, which PHP helper consumes it (PHP is not AST-parsed anywhere in this
-JS toolchain — it is text/regex), then join that back to the JS row from the existing edit.js walk.
+| `css_property` | Member | Attrs |
+|---|---|---|
+| `color`, `color-gradient` | text | 116 |
+| `background-color`, `background-image`, `background-color-gradient` | fill | 114 |
+| `border-color`, `border-color-gradient`, `outline-color` | border | 68 |
+| `box-shadow-color` | shadow (no gradient) | 18 |
+| `stroke` | SVG stroke | 13 |
 
-**That is a rewrite of the `row-missing-gradient` check, not a patch.** Rule 31 already documents 12
-blind spots on the simpler same-file check it does today.
+MEASURED: populated for **320 of 439** colour attributes (73%). The residue is **119 attributes with
+an empty `css_property`** — a seeding worklist with an enumerable size, not a resolver to engineer.
+
+⛔ **An earlier revision of this section prescribed a cross-language regex scan of `render.php`
+instead. It was wrong three ways, and all three are worth keeping** so nobody rebuilds it:
+1. **It could not have worked.** The shared wrapper contains ZERO calls to
+   `sgs_background_paint_decl` or `sgs_text_colour_decl` across its 3,243 lines, so every
+   wrapper-routed block's fill and text rows were unresolvable by construction.
+2. **It missed the dominant real pattern.** Most blocks with no recognisable helper call paint via
+   a bare `sgs_colour_value()` hand-embedded in a CSS string — `team-member/render.php:544`,
+   `label:138`, `separator:147`, `breadcrumbs:120-123`. That is real paint the vocabulary could not
+   see.
+3. **It was off-pattern.** R-31-1 requires DB-first, no hardcoded dicts. A hand-maintained regex
+   vocabulary of helper names living inside a lint rule is precisely the lookup that rule bans —
+   so the scan would have been a standards violation committed by the standards detector.
+
+⭐ **The lesson worth carrying: when a resolver looks hard to build, check whether the answer is
+already declared somewhere.** A council rater measured the scan and returned "not sound enough to
+build on"; the fix was not a better scan, it was noticing the DB already knew.
 
 It must fix BOTH directions — revision 1 described only the first:
 

@@ -6,7 +6,7 @@ project: small-giants-wp
 governing_spec: 35-BLOCK-INSPECTOR-UX-STANDARD.md (Part O — colour controls)
 date: 2026-08-22
 docscore_grade: pending
-status: NOT-READY — Wave 1 rework required (see Pre-emptive decisions)
+status: READY-TO-EXECUTE — Wave 1 reworked 2026-08-22 (Step 2 is now a DB lookup, not a render.php scan)
 ---
 
 # Phase — Colour control conformance
@@ -16,15 +16,17 @@ colour, a hover, and a gradient on any element that paints one — and the build
 control ships incomplete. This is the last big gap between "SGS has colour controls" and "SGS's
 colour controls are trustworthy".
 
-**Plan label:** `[PLAN: opus]` — Wave 1 is a cross-language detector rewrite with architectural
-judgement. Waves 2-3 are mechanical and delegated.
+**Plan label:** `[PLAN: sonnet]` — downgraded from opus 2026-08-22. Wave 1 WAS a cross-language
+detector rewrite; it is now a DB lookup against a column that already exists, which removed the
+architectural judgement that justified opus. Waves 2-3 were already mechanical and delegated.
 
 **Docscore:** pending (Stage 7)
 
 ## Phase success criteria (done when)
 
-- [ ] Rule 31 resolves each colour row's PAINT MECHANISM from `render.php` and asserts the row's
-      gradient path matches it — both directions (false-PASS and false-FAIL).
+- [ ] Rule 31 resolves each colour row's PAINT MECHANISM from `block_attributes.css_property`
+      (DB, declarative) and asserts the row's gradient path matches it — both directions
+      (false-PASS and false-FAIL).
 - [ ] Shadow rows no longer demand a gradient. `post-grid`'s per-block shadow exemption is removed
       as a second owner of that fact.
 - [ ] The two shared-component rows (`GridItemDefaultsPanel`, `ShadowControl`) are conformant —
@@ -547,13 +549,26 @@ across all 83 blocks:
 ⭐ **All three reference blocks (`container`, `heading`, `button`) are in the resolvable 25.** The plan
 generalised from a sample drawn entirely from the resolvable end.
 
-**Pre-answer:** Step 2 MUST gain a PHP shared-owner resolver — when a block routes through
-`SGS_Container_Wrapper::render()`, resolve the mechanism from
-`includes/class-sgs-container-wrapper.php`, mirroring what `reachedComponents()` already does for
-shared JSX. The 40 "neither" blocks must be triaged BEFORE Step 3: a colour row with no paint call
-at all is either a dead control or a paint path nobody has named, and both are findings in their
-own right. **Step 2's real Outcome is the UNRESOLVED census, and that census decides Wave 3's
-scope.**
+⛔ **PRE-ANSWER SUPERSEDED 2026-08-22 — the measurement above still stands, the prescription does
+not.** This originally said "Step 2 MUST gain a PHP shared-owner resolver", mirroring
+`reachedComponents()` for shared JSX. Bean steered to declarative routing instead, and it dissolves
+the blocker rather than engineering around it.
+
+**Step 2 now reads `block_attributes.css_property` — a DB column that already exists and already
+answers the question the scan was trying to ask.** MEASURED: populated for **320 of 439** colour
+attributes (73%), mapping cleanly onto the five mechanisms — including `stroke` (13), the "unnamed
+helper family" a tracer flagged on `sgs/business-info`.
+
+Three reasons the scan was the wrong shape, not merely an insufficient one:
+1. **It could not have worked.** The wrapper contains ZERO calls to `sgs_background_paint_decl` or
+   `sgs_text_colour_decl`, so wrapper-routed blocks could never resolve fill or text.
+2. **It missed the dominant pattern.** Most of the 40 "neither" blocks paint via a bare
+   `sgs_colour_value()` hand-embedded in a CSS string (`team-member:544`, `label:138`).
+3. **It was off-pattern.** R-31-1 requires DB-first, no hardcoded dicts. A hand-maintained regex
+   vocabulary of helper names inside a lint rule is exactly the lookup that rule bans.
+
+**The residue is DATA, not code: 119 colour attributes have an empty `css_property`.** That is a
+seeding worklist with an enumerable size, which the scan's blind spots never were.
 
 ### P-3 [BLOCKER, senior reviewer] Step 5's ShadowControl half is mis-sized by an order of magnitude
 
