@@ -590,10 +590,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						allowlist. */ }
 					<ShadowControl
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						value={ shadowHover }
-						onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
-						colour={ shadowHoverColour }
-						onColourChange={ ( val ) => setAttributes( { shadowHoverColour: val } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowHover',
+							colour: 'shadowHoverColour',
+						} }
 					/>
 				</PanelBody>
 

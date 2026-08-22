@@ -819,10 +819,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							>
 								<ShadowControl
 									label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
-									value={ boxShadow }
-									onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
-									colour={ boxShadowColour }
-									onColourChange={ ( val ) => setAttributes( { boxShadowColour: val ?? '' } ) }
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+									attrNames={ {
+										base: 'boxShadow',
+										colour: 'boxShadowColour',
+									} }
 								/>
 							</ToolsPanelItem>
 
@@ -982,10 +984,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					   (hover)" and "Background colour" (hover state) rows. */ }
 					<ShadowControl
 						label={ __( 'Box shadow on hover', 'sgs-blocks' ) }
-						value={ boxShadowHover }
-						onChange={ ( val ) => setAttributes( { boxShadowHover: val } ) }
-						colour={ boxShadowHoverColour }
-						onColourChange={ ( val ) => setAttributes( { boxShadowHoverColour: val ?? '' } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'boxShadowHover',
+							colour: 'boxShadowHoverColour',
+						} }
 					/>
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }

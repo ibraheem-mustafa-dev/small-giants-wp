@@ -812,14 +812,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ cardShadow }
-						onChange={ ( val ) =>
-							setAttributes( { cardShadow: val } )
-						}
-						colour={ cardShadowColour }
-						onColourChange={ ( val ) =>
-							setAttributes( { cardShadowColour: val } )
-						}
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'cardShadow',
+							colour: 'cardShadowColour',
+						} }
 					/>
 					{ /* shadowHover — declared + read by render.php (--sgs-hover-shadow)
 						but had NO editor control at all until this fix (Stage 0 orphan
@@ -827,14 +825,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						colour), matching cardShadow above. */ }
 					<ShadowControl
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						value={ shadowHover }
-						onChange={ ( val ) =>
-							setAttributes( { shadowHover: val } )
-						}
-						colour={ shadowHoverColour }
-						onColourChange={ ( val ) =>
-							setAttributes( { shadowHoverColour: val } )
-						}
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadowHover',
+							colour: 'shadowHoverColour',
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

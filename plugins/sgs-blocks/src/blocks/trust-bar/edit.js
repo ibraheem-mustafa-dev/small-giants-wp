@@ -789,12 +789,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						/>
 						<ShadowControl
 							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
-							value={ iconCircleShadow }
-							onChange={ ( val ) => setAttributes( { iconCircleShadow: val } ) }
-							colour={ iconCircleShadowColour }
-							onColourChange={ ( val ) => setAttributes( { iconCircleShadowColour: val } ) }
-							colourHover={ attributes.iconCircleShadowColourHover }
-							onColourHoverChange={ ( val ) => setAttributes( { iconCircleShadowColourHover: val } ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'iconCircleShadow',
+								colour: 'iconCircleShadowColour',
+								hoverColour: 'iconCircleShadowColourHover',
+							} }
 						/>
 						<DesignTokenPicker
 							label={ __( 'Icon colour', 'sgs-blocks' ) }
@@ -861,12 +862,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						/>
 						<ShadowControl
 							label={ __( 'Badge image shadow', 'sgs-blocks' ) }
-							value={ badgeImageShadow }
-							onChange={ ( val ) => setAttributes( { badgeImageShadow: val } ) }
-							colour={ badgeImageShadowColour }
-							onColourChange={ ( val ) => setAttributes( { badgeImageShadowColour: val } ) }
-							colourHover={ attributes.badgeImageShadowColourHover }
-							onColourHoverChange={ ( val ) => setAttributes( { badgeImageShadowColourHover: val } ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'badgeImageShadow',
+								colour: 'badgeImageShadowColour',
+								hoverColour: 'badgeImageShadowColourHover',
+							} }
 						/>
 					</PanelBody>
 				) }
