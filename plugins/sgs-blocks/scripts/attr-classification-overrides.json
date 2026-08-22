@@ -1248,6 +1248,15 @@
 			}
 		},
 		{
+			"slug": "sgs/nav-menu",
+			"attr": "navBg",
+			"fields": {
+				"css_property": "background-color",
+				"role": "color",
+				"css_element": "wrapper"
+			}
+		},
+		{
 			"slug": "sgs/tabs",
 			"attr": "tabIndicatorColour",
 			"fields": {

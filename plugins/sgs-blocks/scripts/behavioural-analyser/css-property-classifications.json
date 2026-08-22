@@ -3321,7 +3321,10 @@
       "slug": "sgs/quote",
       "attr": "borderColourHover",
       "fields": {
-        "css_property": "border-color"
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -3842,7 +3845,10 @@
       "slug": "sgs/text",
       "attr": "borderColourHover",
       "fields": {
-        "css_property": "border-color"
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -3893,7 +3899,10 @@
       "slug": "sgs/text",
       "attr": "firstLetterColourHover",
       "fields": {
-        "css_property": "color"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "first-letter",
+        "css_state": "hover"
       }
     },
     {
@@ -4853,6 +4862,25 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "gridItemBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "grid-item"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gridItemBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "grid-item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "gridItemBorder",
       "fields": {
         "css_property": "border-color,border-style,border-width",
@@ -4914,6 +4942,16 @@
         "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gridItemTextColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "GRID_AREA",
+        "css_element": "grid-item",
+        "css_state": "hover"
       }
     },
     {
@@ -5156,6 +5194,25 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "gridItemBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "grid-item"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gridItemBackgroundHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "grid-item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "gridItemBorder",
       "fields": {
         "css_property": "border-color,border-style,border-width",
@@ -5217,6 +5274,16 @@
         "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gridItemTextColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "GRID_AREA",
+        "css_element": "grid-item",
+        "css_state": "hover"
       }
     },
     {
@@ -6950,6 +7017,14 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "number"
       }
     },

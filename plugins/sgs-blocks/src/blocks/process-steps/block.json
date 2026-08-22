@@ -133,7 +133,8 @@
 					"prefix": "number",
 					"attrMap": {
 						"css:color": "numberColour",
-						"css:background-color": "numberBackground"
+						"css:background-color": "numberBackground",
+						"css:background-image": "numberBackgroundGradient"
 					},
 					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`)."
 				},

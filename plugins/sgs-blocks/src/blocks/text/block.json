@@ -91,7 +91,8 @@
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:background-color": "backgroundColourHover",
 								"css:box-shadow": "boxShadowHover",
-								"css:color-gradient": "textColourHoverGradient"
+								"css:color-gradient": "textColourHoverGradient",
+								"css:border-color": "borderColourHover"
 							}
 						}
 					},
@@ -107,6 +108,13 @@
 						"css:font-size": "firstLetterFontSize",
 						"css:font-weight": "firstLetterFontWeight",
 						"css:color": "firstLetterColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "firstLetterColourHover"
+							}
+						}
 					},
 					"_note": "Opt-in via the `dropCap` boolean (render.php:463-480) — emits a scoped `::first-letter` pseudo-element rule, a genuinely distinct visual element from the body text. line-height/letter-spacing/font-style/text-transform/text-decoration/text-align/font-family have no first-letter-specific attribute — honest gaps, the drop-cap render hardcodes float:left/line-height:0.8/margins rather than exposing them as controls."
 				}

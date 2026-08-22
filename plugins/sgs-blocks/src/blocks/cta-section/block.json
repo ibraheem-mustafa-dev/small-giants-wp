@@ -173,12 +173,15 @@
 						"css:border-color": "gridItemBorder",
 						"css:border-color-gradient": "gridItemBorderGradient",
 						"css:box-shadow": "gridItemShadow",
-						"css:color": "gridItemTextColour"
+						"css:color": "gridItemTextColour",
+						"css:background-image": "gridItemBackgroundGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:border-color-gradient": "gridItemBorderGradientHover"
+								"css:border-color-gradient": "gridItemBorderGradientHover",
+								"css:background-image": "gridItemBackgroundHoverGradient",
+								"css:color-gradient": "gridItemTextColourHoverGradient"
 							}
 						}
 					}
