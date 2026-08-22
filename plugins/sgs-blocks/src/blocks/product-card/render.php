@@ -187,6 +187,29 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
 
+// Card ROOT padding (FR-31-22). cardPadding is a {top,right,bottom,left}
+// box-object attr (mirrors ctaPadding/tagPadding), shorthanded via the shared
+// sgs_box_object_shorthand() helper (helpers-box.php, auto-loaded via
+// render-helpers.php) into ONE scoped <style> rule — never an inline
+// `style="padding:…"` declaration (Spec 32). Targets BOTH the bound-mode body
+// class (.product-card-body) and the typed-mode body class
+// (.sgs-product-card__body) — the same attr governs card padding in either
+// render branch. An entirely-empty/un-set cardPadding ({}) → sgs_box_object_
+// shorthand() returns null → NO rule is emitted at all, so style.css's own
+// :where(.product-card) .product-card-body/.sgs-product-card__body{padding:20px}
+// default renders.
+//
+// ⚠ RESTORED 2026-08-22. The R2c root-box migration deleted this block while
+// rewriting the colour/border emit around it, leaving the cardPadding CONTROL
+// live in edit.js with nothing rendering it — a client setting that silently
+// did nothing. Caught by check-dead-controls.js, which was missing from that
+// task's verification list; the migration's own gate run reported green.
+$sgs_card_padding_obj       = is_array( $attributes['cardPadding'] ?? null ) ? $attributes['cardPadding'] : array();
+$sgs_card_padding_shorthand = sgs_box_object_shorthand( $sgs_card_padding_obj );
+if ( null !== $sgs_card_padding_shorthand ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{padding:' . $sgs_card_padding_shorthand . ';}';
+}
+
 // ── Explicit media-position (Spec 35 capability-routing doctrine, mechanism
 // (c)) — replaces the guessed-root render_block injector (image-controls.php),
 // which can never find the right element among this block's several <img>
@@ -211,47 +234,115 @@ $sgs_card_typo_css .= sgs_media_position_css(
 	'.' . $sgs_card_uid . ' .sgs-product-card__image, .' . $sgs_card_uid . ' .product-card-img, .' . $sgs_card_uid . ' .product-card__media .product-card-img'
 );
 
-// ── Native styling supports (color + border) → scoped, NOT inline ────────
-// block.json declares supports.color + supports.__experimentalBorder with
-// __experimentalSkipSerialization, so get_block_wrapper_attributes() (called
-// inside SGS_Container_Wrapper::render() below) no longer auto-inlines them.
-// Read the resolved CUSTOM values from $attributes['style'] and emit them into
-// the card's OWN scoped <style> (mirrors sgs/hero render.php). Base spacing
-// (margin) is a SEPARATE mechanism the shared wrapper already handles scoped
-// internally (it reads $attributes['style']['spacing'] directly) — NOT
-// duplicated here, or it would double-emit. Preset (palette-slug) colours are
-// class-based, re-added below.
+// ── Block-private colour/border (R2c, B-3/B-8) → scoped, NOT inline ──────
+// block.json's native color/border supports are now radius-only + gradients
+// disabled (colour.background/text were already false) — the card's root
+// box has ONE owner: these block-private attrs, emitted here via the shared
+// five-variant colour helpers (helpers-colour-variants.php). Border RADIUS
+// alone remains native — a corner-shape control, not a colour/paint
+// decision — and is still read from the skip-serialised style.border.radius
+// object further below. Base spacing (margin) is a SEPARATE mechanism the
+// shared wrapper already handles scoped internally (it reads
+// $attributes['style']['spacing'] directly) — NOT duplicated here.
 
+$sgs_pc_root_sel = '.' . $sgs_card_uid . '.wp-block-sgs-product-card';
+
+// --- Text colour (flat-or-gradient, base + hover) ---
+$sgs_pc_text_decls = sgs_text_decls(
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
+if ( $sgs_pc_text_decls['normal'] || $sgs_pc_text_decls['hover'] ) {
+	$sgs_card_typo_css .= sgs_emit_state_colour_css( $sgs_pc_root_sel, $sgs_pc_text_decls['normal'], $sgs_pc_text_decls['hover'] );
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany every
+// sgs_text_decls() call: that façade emits a bare `color:` declaration even
+// when the resolved value is a gradient string, which is invalid CSS the
+// browser silently drops without this rule.
+$sgs_pc_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_pc_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
+if ( '' !== $sgs_pc_text_hover_resolved && $sgs_pc_text_hover_resolved !== $sgs_pc_text_normal_resolved ) {
+	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel . ':hover,' . $sgs_pc_root_sel . ':focus-visible', $sgs_pc_text_hover_resolved );
+}
+
+// --- Background (flat-or-gradient, base + hover) — painted on a `::after`
+// layer, never the root itself, so a text gradient on the SAME element
+// (background-clip:text, above) cannot clip or overwrite it (mirrors
+// sgs/heading + sgs/text's background/text pseudo-element split). ---
+$sgs_pc_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+$sgs_card_typo_css .= sgs_block_background_layer_css(
+	$sgs_pc_root_sel,
+	$sgs_pc_bg_decls['normal'][0] ?? '',
+	$sgs_pc_bg_decls['hover'][0] ?? ''
+);
+
+// --- Border (colour + gradient, no hover — block.json declares no
+// borderColourHover on this block). Real border-width/style are separate
+// BOX-MODEL declarations (not paint) — emitted first so the masked
+// `::before` ring (when a colour/gradient is set) visually wins by source
+// order, matching sgs/quote + sgs/heading. ---
+$sgs_pc_border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$sgs_pc_border_width_top    = sgs_css_length_value( $sgs_pc_border_width_obj['top'] ?? '' );
+$sgs_pc_border_width_right  = sgs_css_length_value( $sgs_pc_border_width_obj['right'] ?? '' );
+$sgs_pc_border_width_bottom = sgs_css_length_value( $sgs_pc_border_width_obj['bottom'] ?? '' );
+$sgs_pc_border_width_left   = sgs_css_length_value( $sgs_pc_border_width_obj['left'] ?? '' );
+$sgs_pc_has_border_width    = ( '' !== $sgs_pc_border_width_top || '' !== $sgs_pc_border_width_right || '' !== $sgs_pc_border_width_bottom || '' !== $sgs_pc_border_width_left );
+
+$sgs_pc_border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$sgs_pc_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$sgs_pc_border_style          = in_array( $sgs_pc_border_style_raw, $sgs_pc_allowed_border_styles, true ) ? $sgs_pc_border_style_raw : 'none';
+
+if ( 'none' !== $sgs_pc_border_style ) {
+	$sgs_pc_border_box_decls = array( 'border-style:' . $sgs_pc_border_style );
+	if ( $sgs_pc_has_border_width ) {
+		$sgs_pc_bwt                = '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '0';
+		$sgs_pc_bwr                = '' !== $sgs_pc_border_width_right ? $sgs_pc_border_width_right : '0';
+		$sgs_pc_bwb                = '' !== $sgs_pc_border_width_bottom ? $sgs_pc_border_width_bottom : '0';
+		$sgs_pc_bwl                = '' !== $sgs_pc_border_width_left ? $sgs_pc_border_width_left : '0';
+		$sgs_pc_border_box_decls[] = "border-width:{$sgs_pc_bwt} {$sgs_pc_bwr} {$sgs_pc_bwb} {$sgs_pc_bwl}";
+	}
+	$sgs_card_typo_css .= $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border_box_decls ) . ';}';
+
+	$sgs_card_typo_css .= sgs_border_states_css(
+		$sgs_pc_root_sel,
+		$attributes,
+		array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+			'width'    => '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '1px',
+		)
+	);
+}
+
+// --- Native border-radius (unchanged mechanism) — still resolved from the
+// skip-serialised style.border.radius object and emitted scoped via the
+// stable core style engine. ---
 $sgs_pc_style_engine_args = array();
-
-$sgs_pc_color_args = array();
-if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-	$sgs_pc_color_args['text'] = (string) $attributes['style']['color']['text'];
-}
-if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-	$sgs_pc_color_args['background'] = (string) $attributes['style']['color']['background'];
-}
-if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-	$sgs_pc_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-}
-if ( ! empty( $sgs_pc_color_args ) ) {
-	$sgs_pc_style_engine_args['color'] = $sgs_pc_color_args;
-}
-
-$sgs_pc_border_args = array();
-if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-	$sgs_pc_border_args['color'] = (string) $attributes['style']['border']['color'];
-}
-if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-	$sgs_pc_border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
-}
-if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$sgs_pc_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
-}
+$sgs_pc_radius_args        = array();
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
-		$sgs_pc_border_args['radius'] = sgs_css_length_value( $sgs_pc_radius_raw );
+		$sgs_pc_radius_args['radius'] = sgs_css_length_value( $sgs_pc_radius_raw );
 	} elseif ( is_array( $sgs_pc_radius_raw ) ) {
 		$sgs_pc_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
@@ -260,41 +351,22 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 			}
 		}
 		if ( ! empty( $sgs_pc_radius_clean ) ) {
-			$sgs_pc_border_args['radius'] = $sgs_pc_radius_clean;
+			$sgs_pc_radius_args['radius'] = $sgs_pc_radius_clean;
 		}
 	}
 }
-if ( ! empty( $sgs_pc_border_args ) ) {
-	$sgs_pc_style_engine_args['border'] = $sgs_pc_border_args;
+if ( ! empty( $sgs_pc_radius_args ) ) {
+	$sgs_pc_style_engine_args['border'] = $sgs_pc_radius_args;
 }
-
 if ( ! empty( $sgs_pc_style_engine_args ) ) {
 	$sgs_pc_scoped = wp_style_engine_get_styles(
 		$sgs_pc_style_engine_args,
-		array( 'selector' => '.' . $sgs_card_uid . '.wp-block-sgs-product-card' )
+		array( 'selector' => $sgs_pc_root_sel )
 	);
 	if ( ! empty( $sgs_pc_scoped['css'] ) ) {
 		$sgs_card_typo_css .= $sgs_pc_scoped['css'];
 	}
 }
-
-// Card ROOT padding (FR-31-22). cardPadding is a {top,right,bottom,left}
-// box-object attr (mirrors ctaPadding/tagPadding),
-// shorthanded via the shared sgs_box_object_shorthand() helper (helpers-box.php,
-// auto-loaded via render-helpers.php) into ONE scoped <style> rule — never an
-// inline `style="padding:…"` declaration (Spec 32). Targets BOTH the bound-mode
-// body class (.product-card-body) and the typed-mode body class
-// (.sgs-product-card__body) — the same attr governs card padding in either
-// render branch. An entirely-empty/un-set cardPadding ({}) → sgs_box_object_
-// shorthand() returns null → NO rule is emitted at all, so style.css's own
-// :where(.product-card) .product-card-body/.sgs-product-card__body{padding:20px}
-// default renders.
-$sgs_card_padding_obj      = is_array( $attributes['cardPadding'] ?? null ) ? $attributes['cardPadding'] : array();
-$sgs_card_padding_shorthand = sgs_box_object_shorthand( $sgs_card_padding_obj );
-if ( null !== $sgs_card_padding_shorthand ) {
-	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{padding:' . $sgs_card_padding_shorthand . ';}';
-}
-
 // Skip-serialised color/border supports also stop WP auto-adding the standard
 // has-*-color / has-*-background-color / has-*-border-color classes onto the
 // wrapper — re-add them from the preset (palette-slug) attrs (mirrors sgs/hero

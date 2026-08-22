@@ -34,7 +34,7 @@ import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
 import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
-import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
+import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle } from '../../utils';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -659,6 +659,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaPadding,
 		ctaWidthType,
 		cardPadding,
+		// Card root colour/border (R2c, B-3/B-8) — block-private, replaces the
+		// native style.color/__experimentalBorder path.
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
+		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
+		borderColour,
+		borderColourGradient,
+		borderWidth,
+		borderStyle,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -714,33 +728,72 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? cta2Style
 		: 'secondary';
 
-	// Typed-mode editor parity (no-inline migration): color/spacing/border supports
-	// are __experimentalSkipSerialization, so useBlockProps() no longer applies the
-	// WP-native colour/border to the editor wrapper. Bound mode uses ServerSideRender
-	// (already faithful to render.php's scoped <style> + re-added has-* classes), but
-	// the typed NATIVE preview must re-apply them here so the editor mirrors the
-	// frontend. Editor inline style is allowed for live preview (only the SAVED /
-	// dynamic-rendered frontend must be inline-free — this block is render.php-driven).
-	// Mirrors render.php's scoped emission + preset has-* class re-add exactly.
+	// Typed-mode editor parity (R2c, B-3/B-8): card root colour/border are now
+	// block-private attrs (not the native style.color/__experimentalBorder
+	// path), so useBlockProps() does not apply them to the editor wrapper.
+	// Bound mode uses ServerSideRender (already faithful to render.php's
+	// scoped <style>); the typed preview mirrors render.php's block-private
+	// colour/border emission here. Editor inline style is allowed for live
+	// preview (only the SAVED / dynamic-rendered frontend must be
+	// inline-free — this block is render.php-driven). Border-radius alone
+	// stays native (style.border.radius) — a corner-shape control, not a
+	// colour/paint decision.
+	const resolveCardColourPreview = ( value ) => {
+		if ( ! value ) {
+			return undefined;
+		}
+		const v = String( value ).trim();
+		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
+	};
+	const cardBoxShorthand = ( box, keys ) => {
+		if ( ! box || 'object' !== typeof box ) return undefined;
+		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+	};
 	const nativeStyle = attributes.style || {};
 	const typedPreviewStyle = {};
 	const typedPreviewClasses = [];
 	if ( ! isBound ) {
-		const nc = nativeStyle.color || {};
-		if ( nc.text ) typedPreviewStyle.color = nc.text;
-		if ( nc.background ) typedPreviewStyle.background = nc.background;
-		if ( nc.gradient ) typedPreviewStyle.background = nc.gradient;
-		const nb = nativeStyle.border || {};
-		if ( nb.color ) typedPreviewStyle.borderColor = nb.color;
-		if ( nb.style ) typedPreviewStyle.borderStyle = nb.style;
-		if ( nb.width ) typedPreviewStyle.borderWidth = nb.width;
-		if ( typeof nb.radius === 'string' && nb.radius ) {
-			typedPreviewStyle.borderRadius = nb.radius;
-		} else if ( nb.radius && typeof nb.radius === 'object' ) {
-			if ( nb.radius.topLeft ) typedPreviewStyle.borderTopLeftRadius = nb.radius.topLeft;
-			if ( nb.radius.topRight ) typedPreviewStyle.borderTopRightRadius = nb.radius.topRight;
-			if ( nb.radius.bottomLeft ) typedPreviewStyle.borderBottomLeftRadius = nb.radius.bottomLeft;
-			if ( nb.radius.bottomRight ) typedPreviewStyle.borderBottomRightRadius = nb.radius.bottomRight;
+		Object.assign(
+			typedPreviewStyle,
+			resolveTextColourPreviewStyle( textColour, textColourGradient, resolveCardColourPreview )
+		);
+		if (
+			backgroundColourGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient )
+		) {
+			typedPreviewStyle.backgroundImage = backgroundColourGradient;
+		} else if ( backgroundColour ) {
+			typedPreviewStyle.backgroundColor = resolveCardColourPreview( backgroundColour );
+		}
+		if ( borderStyle && 'none' !== borderStyle ) {
+			typedPreviewStyle.borderStyle = borderStyle;
+			const borderWidthPreview = cardBoxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+			if ( borderWidthPreview ) {
+				typedPreviewStyle.borderWidth = borderWidthPreview;
+			}
+			if (
+				borderColourGradient &&
+				/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
+			) {
+				// Canvas-only approximation of the frontend's masked ::before
+				// gradient ring — a flat border-image shorthand, not a full
+				// mask reproduction (not worth it for a preview).
+				typedPreviewStyle.borderImage = `${ borderColourGradient } 1`;
+			} else if ( borderColour ) {
+				typedPreviewStyle.borderColor = resolveCardColourPreview( borderColour );
+			}
+		}
+		if ( typeof nativeStyle?.border?.radius === 'string' && nativeStyle.border.radius ) {
+			typedPreviewStyle.borderRadius = nativeStyle.border.radius;
+		} else {
+			const radiusPreview = cardBoxShorthand(
+				nativeStyle?.border?.radius,
+				[ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			);
+			if ( radiusPreview ) {
+				typedPreviewStyle.borderRadius = radiusPreview;
+			}
 		}
 		// Preset (palette-slug) colours are class-based — mirror render.php's re-add.
 		if ( attributes.textColor ) {
@@ -930,16 +983,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// grouping (background/text/border, each Normal+Selected) since this
 	// block's pill controls forward 1:1 onto that same block.
 	const colourRows = [];
-	// Card background/text colour — the BLOCK-LEVEL native WP colour controls
-	// (`supports.color.background`/`text` is false, so WP does not render
-	// its own duplicate panel), wired straight to
-	// `style.color.background`/`text`. Placed FIRST (whole-card controls,
-	// before the per-element rows below). render.php already reads these
-	// manually and unconditionally — lines ~239-243, wp_style_engine_get_styles(),
-	// scoped to the card's own `.{uid}` root selector — regardless of typed
-	// vs bound mode (confirmed: the read happens before the mode branch
-	// split), so this pair applies in BOTH modes, unlike the isBuiltIn-gated
-	// rows below.
+	// Card root background/text/border colour — R2c (B-3/B-8): block-private
+	// attrs, replacing the native style.color/__experimentalBorder path so
+	// the root box has ONE owner. Placed FIRST (whole-card controls, before
+	// the per-element rows below). render.php reads these unconditionally
+	// (block-private colour/border section, before the mode branch split),
+	// so this trio applies in BOTH typed and bound modes, unlike the
+	// isBuiltIn-gated rows below.
 	colourRows.push(
 		{
 			key: 'cardText',
@@ -948,15 +998,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
-					value: nativeStyle?.color?.text,
-					onChange: ( val ) =>
-						setAttributes( {
-							style: {
-								...nativeStyle,
-								color: { ...nativeStyle?.color, text: val || undefined },
-							},
-						} ),
+					value: textColour,
+					onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 					linked: true,
+					gradientValue: textColourGradient,
+					onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: textColourHover,
+					onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: textColourHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 				},
 			],
 		},
@@ -967,15 +1022,41 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
-					value: nativeStyle?.color?.background,
-					onChange: ( val ) =>
-						setAttributes( {
-							style: {
-								...nativeStyle,
-								color: { ...nativeStyle?.color, background: val || undefined },
-							},
-						} ),
+					value: backgroundColour,
+					onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 					linked: true,
+					gradientValue: backgroundColourGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { backgroundColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: backgroundColourHover,
+					onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: backgroundColourHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+				},
+			],
+		},
+		{
+			key: 'cardBorder',
+			label: __( 'Card border colour', 'sgs-blocks' ),
+			// No hover pair declared for borderColour (block.json has no
+			// borderColourHover attr on this block) — single-state row.
+			borderStyle,
+			onBorderStyleChange: ( val ) => setAttributes( { borderStyle: val } ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: borderColour,
+					onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+					linked: true,
+					gradientValue: borderColourGradient,
+					onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ),
 				},
 			],
 		}
@@ -1286,6 +1367,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</>
 					) }
+				</PanelBody>
+
+				{ /* ── Card border panel — R2c (B-3/B-8): borderWidth is an SGS
+				     custom object attr (base only, no tiers); border colour +
+				     style live on the "Card border colour" row in the SgsColourPanel
+				     above (borderStyle/onBorderStyleChange are wired to the SAME
+				     attribute here, one source of truth); border-radius stays
+				     WP-native (style.border.radius) — the block declares
+				     __experimentalBorder.__experimentalSkipSerialization so it
+				     serialises scoped, not inline (mirrors sgs/heading + sgs/quote). ── */ }
+				<PanelBody title={ __( 'Card border', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						values={ { base: borderWidth ?? {} } }
+						showResponsive={ false }
+						onChange={ ( _tier, next ) => setAttributes( { borderWidth: next } ) }
+					/>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ { base: attributes.style?.border?.radius ?? {} } }
+						showResponsive={ false }
+						onChange={ ( _tier, next ) =>
+							setAttributes( {
+								style: { ...attributes.style, border: { ...attributes.style?.border, radius: next } },
+							} )
+						}
+					/>
 				</PanelBody>
 
 				{ /* ── Price panel (typed built-in only) — content fields; typography +

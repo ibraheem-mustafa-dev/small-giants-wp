@@ -38,6 +38,9 @@
 				],
 				"tagPadding": [
 					"tagPadding"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"variantAttr": "variantStyle",
@@ -57,16 +60,29 @@
 					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:color": "native:color.text",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:max-width": "cardMaxWidth"
 					},
-					"_note": "Content-KIND composite (D294, box+width only) — wraps sgs/container via SGS_Container_Wrapper. spacing.padding is FALSE in block.json supports (padding is custom-var driven, not native), so css:max-width resolves via attrMap not native fallback. `css:padding` was RE-KEYED off this element 2026-07-24 (FR-31-22 consistency fix) — the image (`.sgs-product-card__media-wrap`) is full-bleed OUTSIDE the body, so card padding never belonged on the root; it now lives on the `body` element below, matching where render.php actually paints it."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "R2c (B-3/B-8, 2026-08-22): root box colour/border moved OFF WordPress's native style path onto block-private attrs (backgroundColour/textColour/borderColour + Gradient/Hover siblings, borderWidth, borderStyle) so the box has a SINGLE owner instead of the native Styles-tab gradient panel and the SGS panel both writing into the same style.color object. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a colour/paint decision — stays on the native path). Content-KIND composite (D294, box+width only) — wraps sgs/container via SGS_Container_Wrapper. spacing.padding is FALSE in block.json supports (padding is custom-var driven, not native), so css:max-width resolves via attrMap not native fallback. `css:padding` was RE-KEYED off this element 2026-07-24 (FR-31-22 consistency fix) — the image (`.sgs-product-card__media-wrap`) is full-bleed OUTSIDE the body, so card padding never belonged on the root; it now lives on the `body` element below, matching where render.php actually paints it."
 				},
 				"body": {
 					"label": "Card body",
@@ -183,7 +199,7 @@
 		"interactivity": true,
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
@@ -194,9 +210,6 @@
 		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": true,
-			"style": true,
-			"color": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -384,6 +397,77 @@
 			"type": "object",
 			"default": {},
 			"description": "Box padding for the card's content BODY { top, right, bottom, left } — the product image is full-bleed and sits outside the padded body. Migrated 2026-07-24 (FR-31-22) from the single-value innerPadding scalar to the universal box-object standard — mirrors ctaPadding/tagPadding. Rendered scoped (never inline) via sgs_box_object_shorthand() on the card's own uid selector, targeting .product-card-body/.sgs-product-card__body. Empty = theme default (20px, style.css)."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Card root background colour override. R2c (B-3/B-8): block-private, replaces the native style.color.background path so the root box has a single owner."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root background. Non-empty wins over backgroundColour."
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Card root background colour on hover/focus-within."
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root background on hover/focus-within. Non-empty wins over backgroundColourHover."
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Card root inherited text colour override. R2c (B-3/B-8): block-private, replaces the native style.color.text path."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root text via background-clip:text. Non-empty wins over textColour."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Card root inherited text colour on hover/focus-within."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root text on hover/focus-within. Non-empty wins over textColourHover."
+		},
+		"borderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Card root border colour. R2c (B-3/B-8): block-private, replaces the native __experimentalBorder.color path (no hover pair — the root border has none)."
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card root border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Card root border width { top, right, bottom, left }. R2c (B-3/B-8): block-private, replaces the native __experimentalBorder.width path."
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "none",
+			"description": "Card root border style. R2c (B-3/B-8): block-private, replaces the native __experimentalBorder.style path."
 		},
 		"maxWidth": {
 			"type": "object",
