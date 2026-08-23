@@ -165,6 +165,17 @@ if not _COMMIT_BLOB:
 _STALE_WIRING = re.compile(r"not wired|not yet wired|not a build gate|advisory only", re.I)
 
 
+def _header_text(path: Path, lines: int = 60) -> str:
+    """The file's first N lines — the region a header/docstring occupies. Read in
+    full so a wiring claim is caught wherever in the header it sits, not only if
+    it lands inside the truncated one-line purpose."""
+    try:
+        with path.open(encoding="utf-8", errors="replace") as fh:
+            return "".join(next(fh, "") for _ in range(lines))
+    except OSError:
+        return ""
+
+
 def _clip(text: str, limit: int) -> str:
     """Truncate on a WORD boundary. Cutting mid-word produced 68 rows ending in
     fragments like "that regressi…", which reads as corruption, not abbreviation."""
@@ -298,7 +309,13 @@ def build() -> str:
             if not wired_marks and f.name in _SCRIPTS_BLOB:
                 wired_marks.append("npm")
             wired = "+".join(wired_marks) if wired_marks else "—"
-            if wired_marks and _STALE_WIRING.search(purpose):
+            # Search the WHOLE header, not the truncated purpose. The first
+            # version searched `purpose` only, so it could catch a contradiction
+            # solely when the phrase happened to land in the first ~150 chars.
+            # It missed inspector-scan/run.js, whose header says "NOT wired into
+            # prebuild yet" four lines down while the file is in BOTH chains —
+            # exactly the case the check exists for.
+            if wired_marks and _STALE_WIRING.search(_header_text(f)):
                 purpose += " ⚠ **header disputes this — it IS wired**"
             sub = f.relative_to(rp).as_posix()
             out.append(f"| `{sub}` | {wired} | {purpose} |")

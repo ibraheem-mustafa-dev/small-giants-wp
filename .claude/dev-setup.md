@@ -705,7 +705,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 20 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 569 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 570 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 2 | working-area helpers |
 | `.claude/hooks/` | 9 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -800,7 +800,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 496 scripts
+#### `plugins/sgs-blocks/scripts/` — 497 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -808,7 +808,7 @@ for the verb you happen to have in mind.
 | `audit-block-file-consistency.py` | build | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 | `audit-block-uniformity.py` | build+commit | SGS Block Uniformity Audit |
 | `audit-declared-vs-seeded-roles.py` | build | Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate. |
-| `audit-feature-parity.py` | build | Spec 35 UNIT A — feature-parity audit. |
+| `audit-feature-parity.py` | build | Spec 35 UNIT A — feature-parity audit. ⚠ **header disputes this — it IS wired** |
 | `audit-inline-styling.js` | build | READ-ONLY DETECTION INSTRUMENT (not a build gate) — classifies HOW every SGS block emits its styling, so a future "no-inline-styling" migration can… ⚠ **header disputes this — it IS wired** |
 | `audit-post-content-blocks.py` | npm | Audit stored post_content for SGS blocks that can no longer render their content. |
 | `audit-scoped-selector-live.js` | npm | "scoped selector whose class the element never carries" bug class (the multi-button regression, D303 / P-SCOPED-SELECTOR-MATCH-AUDIT-AND-GATE). |
@@ -841,7 +841,7 @@ for the verb you happen to have in mind.
 | `check-dead-api-calls.py` | build | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
 | `check-dead-controls.js` | build | STRUCTURAL GUARD (HC2, 2026-06-08) — stops the "dead control" class of bug from regressing. A dead control is an editor control a client can change… |
 | `check-dead-pattern-attrs.py` | build | Find block attributes in theme patterns/parts that WordPress silently DISCARDS |
-| `check-device-toggle.js` | npm | (src/blocks/extensions/responsive-device-toggle.js). |
+| `check-device-toggle.js` | npm | (src/blocks/extensions/responsive-device-toggle.js). ⚠ **header disputes this — it IS wired** |
 | `check-duplicate-controls.js` | build | STRUCTURAL GUARD (WARN-ONLY) — finds the "duplicate control" class of bug: the SAME setting exposed to the client through TWO different editor… |
 | `check-editor-canvas-css.py` | commit | visual-diff-gate helper (branch 6). |
 | `check-editor-only.py` | commit | visual-diff-gate helper (branch 5). |
@@ -1006,6 +1006,7 @@ for the verb you happen to have in mind.
 | `gap-detection/detect.py` | — | Spec 19 Stage 10 — Gap Detection |
 | `generate-attr-role-map.py` | — | Spec 35 orphan-triage support. Dumps `block_attributes.role` for every |
 | `generate-block-reference.py` | — | SGS Blocks Reference Generator |
+| `generate-db-catalogue.py` | — | DERIVE the DB column catalogue in .claude/dev-setup.md. |
 | `generate-extension-attributes.js` | build | Single source of truth for the cross-block `sgs*` editor-extension attributes. |
 | `generate-fx-effects-php.py` | — | writes includes/generated-fx-effects.php from fx_effects. |
 | `generate-fx-qualifying-blocks.py` | — | derives the block -> qualifying-fx-effects |
@@ -1047,7 +1048,7 @@ for the verb you happen to have in mind.
 | `inspector-scan/rules/31-golden-colour-control.js` | — | GROUND-TRUTH: spec=plugins/sgs-blocks/scripts/consistency/golden-controls.json (written 2026-08-19, read live before writing this rule)… |
 | `inspector-scan/rules/33-ineffective-typography-selector.js` | — | GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md Part F.1 source=file evidence=live-read 2026-08-18. |
 | `inspector-scan/rules/34-declared-attr-unrendered.js` | — | GROUND-TRUTH: spec=.claude/plans/phase-shop-container-remediation.md "R-3 BATCH ENFORCEMENT-SCRIPT FIX — the register", subsection R3-e ("block.json… |
-| `inspector-scan/run.js` | build+commit | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| `inspector-scan/run.js` | build+commit | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
 | `ledger/__init__.py` | — | ledger — F2 draft-derived CSS Accounting Ledger (input parser). |
 | `ledger/content_gap_check.py` | — | ledger.content_gap_check — F5 ContentGap visibility gate (the content-dropping channel). |
 | `ledger/coverage_check.py` | build | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
@@ -1057,7 +1058,7 @@ for the verb you happen to have in mind.
 | `lints/__init__.py` | — |  |
 | `lints/bem-lint.py` | commit | BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 31). |
 | `lints/draft-vocab-lint.py` | — | Draft VOCABULARY lint — names vs the live framework DB (sibling of bem-lint.py). |
-| `lints/lint-spec-drift.py` | npm | Spec-drift lint — do the specs describe things that actually EXIST? |
+| `lints/lint-spec-drift.py` | npm | Spec-drift lint — do the specs describe things that actually EXIST? ⚠ **header disputes this — it IS wired** |
 | `lints/lint-theme-css-hardcodes.py` | — | Theme-CSS hardcode lint — arbitrary typography/colour literals in THEME CSS. |
 | `lints/token-lint.py` | commit | Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 31, FR38). |
 | `make-visual-diff-reports.py` | commit | Emit visual-diff reports, each citing ITS OWN measurement. |
@@ -1262,7 +1263,7 @@ for the verb you happen to have in mind.
 | `surveys/survey-background-colour-support.py` | build | Track A completion audit — native colour/gradient background support. |
 | `surveys/survey-box-controls.py` | npm | "--survey" census of the BOX (4-side) and BORDER |
 | `surveys/survey-colour-controls.py` | npm | Phase 0.0 "--survey" census of the COLOUR property |
-| `surveys/survey-colour-coverage.py` | npm | census of which PAINTED colours across sgs/ blocks |
+| `surveys/survey-colour-coverage.py` | npm | census of which PAINTED colours across sgs/ blocks ⚠ **header disputes this — it IS wired** |
 | `surveys/survey-control-gaps.py` | npm | the SHOULD-BE census: a control weaker than its value. |
 | `surveys/survey-control-mounts.py` | npm | Re-measure every control-population figure Spec 35 Part O asserts. |
 | `surveys/survey-control-parity.py` | build | do SGS inspector controls look like NATIVE WordPress? |
