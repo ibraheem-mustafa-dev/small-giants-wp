@@ -1,6 +1,21 @@
 <!-- <main> is an 800px prose band, so post-content needs no width cap of its own. -->
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
+<!-- BYLINE SEPARATORS ARE CSS, NOT CONTENT (2026-08-23). They used to be three
+     hardcoded sgs/text "·" blocks between the fields. Measured live: post-author
+     renders NO ELEMENT AT ALL on these posts, so two separators ended up adjacent
+     and the byline read "July 31, 2026 · · Uncategorized". A separator authored as
+     content assumes its neighbour renders; when the neighbour is conditional, the
+     separator is orphaned and nothing detects it.
+     `.sgs-byline > * + *::before` puts the separator on the FOLLOWING sibling, so a
+     field that renders nothing takes its separator with it. Self-healing by
+     construction. ⛔ Do not reintroduce separator blocks as content. -->
+
+<!-- HEADING LEVEL (S6-7). core/comments-title was set to level 2 to close the h1->h3
+     skip — measured live, that was INERT: WordPress omits comments-title entirely when a
+     post has no approved comments, and the reply form's own "Leave a Reply" is a
+     hardcoded <h3> in core's comment_form(). So the outline still read H1 > H3.
+     This heading always renders, which is what actually closes the skip. -->
 <!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"800px"}} -->
 
 	<!-- wp:sgs/breadcrumbs /-->
@@ -9,15 +24,6 @@
 
 		<!-- wp:post-title {"level":1} /-->
 
-		<!-- BYLINE SEPARATORS ARE CSS, NOT CONTENT (2026-08-23). They used to be three
-		     hardcoded sgs/text "·" blocks between the fields. Measured live: post-author
-		     renders NO ELEMENT AT ALL on these posts, so two separators ended up adjacent
-		     and the byline read "July 31, 2026 · · Uncategorized". A separator authored as
-		     content assumes its neighbour renders; when the neighbour is conditional, the
-		     separator is orphaned and nothing detects it.
-		     `.sgs-byline > * + *::before` puts the separator on the FOLLOWING sibling, so a
-		     field that renders nothing takes its separator with it. Self-healing by
-		     construction. ⛔ Do not reintroduce separator blocks as content. -->
 		<!-- wp:sgs/container {"tagName":"div","className":"sgs-byline","layout":"flex","flexWrap":"wrap","fontSize":"small","textColour":"text-muted"} -->
 			<!-- wp:post-date /-->
 			<!-- wp:post-author {"showAvatar":false,"showBio":false,"byline":"By"} /-->
@@ -44,11 +50,6 @@
 	<div style="height:var(--wp--preset--spacing--50)" aria-hidden="true" class="wp-block-spacer"></div>
 	<!-- /wp:spacer -->
 
-	<!-- HEADING LEVEL (S6-7). core/comments-title was set to level 2 to close the h1->h3
-	     skip — measured live, that was INERT: WordPress omits comments-title entirely when a
-	     post has no approved comments, and the reply form's own "Leave a Reply" is a
-	     hardcoded <h3> in core's comment_form(). So the outline still read H1 > H3.
-	     This heading always renders, which is what actually closes the skip. -->
 	<!-- wp:sgs/heading {"content":"Comments","level":"h2","fontSize":{"desktop":"x-large"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
 	<!-- wp:comments -->
