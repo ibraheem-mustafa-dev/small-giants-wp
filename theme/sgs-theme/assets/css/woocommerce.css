@@ -1312,67 +1312,64 @@ body.woocommerce-cart .with-empty-cart-icon,
 	width: 100%;
 }
 
-/* ── 10a/10b. Grid gutters + column fit — ONE gap number, derived (S1-3/S1-5) ──
+/* ── 10a/10b. Grid gutters + INTRINSIC column count (S1-3/S1-5) ──
  *
- * ⛔ READ THIS BEFORE CHANGING EITHER NUMBER. The gutter and the card width are
- * the SAME decision and must be written as one, or the grid silently loses a
- * column.
+ * The column count is NOT set here, and must not be. Cards declare a minimum
+ * readable width and the row fits as many as it can — so stacking is automatic,
+ * driven by the CONTAINER, not by a viewport breakpoint or a column class.
  *
- * What happened on 2026-08-23: 10a set column-gap to 24px (up from WC's 20px)
- * to get the asymmetric row:column ratio every benchmarked reference uses. It
- * did NOT set a card width, so the cards kept the width WooCommerce had already
- * computed from ITS OWN narrower gap assumption. Measured live afterwards:
- * 3 x 305px + 2 x 24px = 963px in a 955px row — over by 8px, so the third card
- * wrapped. A `columns-3` grid rendered 2-up with ~320px of dead space to the
- * right, and nothing errored. Widening a gutter without re-deriving the width
- * is a silent column loss.
+ * ⛔ Why forcing a count is wrong, measured 2026-08-23. A first pass forced 2-up
+ * below 768px, on the reasoning that 7 of 8 benchmarked reference archives are
+ * 2-up on mobile. That read the observation and missed the actual rule: those
+ * references land their cards at **167-195px**, and 2-up is merely what that
+ * produces on their layouts. On ours — which has a narrower content band and a
+ * card carrying image + title + description + price ladder + CTA — forcing 2-up
+ * gave a **138px card with a 65px text column**: the product title wrapped to
+ * SIX lines, the description to NINE, and one card stood 792px tall in an 844px
+ * viewport. It also barely saved any scrolling. "2-up" was never the requirement;
+ * a readable card width was, and the column count follows from it.
  *
- * The fix is to make both read one custom property, so they cannot drift:
- * `--sgs-shop-col-gap` sets the gap AND is subtracted from the width, (N-1)
- * times for N columns. Change the gap in one place and the fit follows.
+ * `flex: 1 1 var(--sgs-shop-card-min)` means: want at least the minimum, grow to
+ * share whatever is left, wrap when you no longer fit. At a 293px mobile band
+ * that yields 1-up; at the 955px band beside the filter rail, 3-up; on a
+ * full-width archive, 4-up — which is the benchmark's own desktop default,
+ * reached without a single breakpoint.
  *
- * The `columns-N` class is WC's own, set from the block's `displayLayout.columns`
- * attribute, so this covers 2/3/4 without hardcoding the shop's current choice.
+ * The gutter and the fit are ONE decision (see the regression note below), so
+ * both read `--sgs-shop-col-gap`. Change either variable and the layout
+ * re-derives itself.
+ *
+ * ⚠ Earlier regression worth keeping in view: 10a once set a 24px gap while
+ * leaving the cards at the width WooCommerce had computed from ITS narrower gap.
+ * 3 x 305 + 2 x 24 = 963px in a 955px row — over by 8px, so the third card
+ * wrapped and a columns-3 grid silently rendered 2-up with ~320px of dead space.
+ * Nothing errored. Intrinsic sizing removes that failure mode entirely: there is
+ * no hardcoded width left to fall out of step with the gap.
  */
 .sgs-shop-layout .wc-block-product-template {
 	--sgs-shop-col-gap: 24px;
+	--sgs-shop-card-min: 240px;
 
 	column-gap: var(--sgs-shop-col-gap);
 	row-gap: 40px;
 }
 
-.sgs-shop-layout .wc-block-product-template.columns-2 > li {
-	flex: 0 0 calc((100% - var(--sgs-shop-col-gap)) / 2);
-	max-width: calc((100% - var(--sgs-shop-col-gap)) / 2);
-}
-
-.sgs-shop-layout .wc-block-product-template.columns-3 > li {
-	flex: 0 0 calc((100% - (var(--sgs-shop-col-gap) * 2)) / 3);
-	max-width: calc((100% - (var(--sgs-shop-col-gap) * 2)) / 3);
-}
-
+.sgs-shop-layout .wc-block-product-template > li,
+.sgs-shop-layout .wc-block-product-template.columns-2 > li,
+.sgs-shop-layout .wc-block-product-template.columns-3 > li,
 .sgs-shop-layout .wc-block-product-template.columns-4 > li {
-	flex: 0 0 calc((100% - (var(--sgs-shop-col-gap) * 3)) / 4);
-	max-width: calc((100% - (var(--sgs-shop-col-gap) * 3)) / 4);
+	flex: 1 1 var(--sgs-shop-card-min);
+	max-width: 100%;
 }
 
-/* Mobile: 2-up regardless of the column count WC resolved to, and a tighter
- * gutter. Overriding the SAME variable means the 2-up width re-derives itself —
- * the mobile calc cannot fall out of step with the mobile gap. Measured before
- * this rule: 1 card per row at 293px, page 3,279px tall for five products, where
- * 7 of 8 benchmarked references are 2-up on mobile. */
+/* Mobile keeps a tighter gutter; the column count still resolves itself from the
+ * minimum card width above, so a phone gets one full-width readable card rather
+ * than two squashed ones. No column count is stated here either. */
 @media ( max-width: 767px ) {
 	.sgs-shop-layout .wc-block-product-template {
 		--sgs-shop-col-gap: 16px;
 
 		row-gap: 24px;
-	}
-
-	.sgs-shop-layout .wc-block-product-template > li,
-	.sgs-shop-layout .wc-block-product-template.columns-3 > li,
-	.sgs-shop-layout .wc-block-product-template.columns-4 > li {
-		flex: 0 0 calc((100% - var(--sgs-shop-col-gap)) / 2);
-		max-width: calc((100% - var(--sgs-shop-col-gap)) / 2);
 	}
 }
 
