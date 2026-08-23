@@ -177,14 +177,24 @@ first — so there is an obvious starting point.
 - **The width model:** OUTER (`maxWidth`, default `{}` = no cap) paints full-bleed; INNER
   (`contentWidth`: normal 1200 / wide 1400 / full / custom) holds the content. `<main>` is
   structure and passes width through. A banded `<main>` is a legitimate opt-in (D725).
-- **All nine `<main>` containers now `layout:"stack"`** — before 2026-08-23 they laid page
-  sections out in a ROW.
+- **A `<main>` is NOT a flex container** — it emits no display and stacks by normal block
+  flow, so its sections are full-width. (This landed twice on 2026-08-23: first as
+  `layout:"stack"` on all nine templates, then corrected to suppressing the outer flex in
+  the wrapper, because forcing flex-column still made `<main>` a flex container it had no
+  reason to be. The templates no longer state a layout; `404.html` states nothing at all
+  and is the living canary for the behaviour.) Before that fix, every page laid its
+  top-level sections out in a ROW.
 - **Canary content:** 9 posts, 135 pages, 5 products, 1 category, **0 approved comments**.
   `single.html`'s comment thread cannot be seen without seeding one — seed a couple if you
   want to judge that design honestly.
 - **`front-page.html` renders ~104 chars and ZERO `<h1>`.** The template is correct; the
   site is set to show latest posts while the template holds `post-content`. That is a
   SETTINGS finding.
+- **`sgs-container--flex` is a semantic MARKER, not a styling hook.** Real flex containers
+  get `display` from a per-instance `.{uid}` rule under Spec 32's no-inline contract; no
+  rule anywhere keys `display` off that class. Do not read the class and conclude an
+  element is flex — measure it.
+
 - **Known open correctness items (NOT yours, do not fix):** `main` missing from the editor
   tag dropdown; h1→h3 heading skip on `archive.html:21` and `search.html:16`; redundant
   nested `contentWidth` in five files.

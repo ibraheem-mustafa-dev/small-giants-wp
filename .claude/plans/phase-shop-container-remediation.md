@@ -717,8 +717,12 @@ genuinely unmapped in `block-replacements.json` — gap candidates, never violat
 | `d6dd7817` | `/sgs-update` reseed — the stale `block_supports` align row pruned |
 | `4b9d3abe` | extract-signatures `css_tier` determinism + Stage 2 SSL unblocked |
 | `75ddd7fb` | `single-product.html` `<main>` width stated explicitly (was double-capping) |
-| `c6e6d61a` | All nine `<main>` set `layout:"stack"` — they were laying sections out in a ROW |
-| `6d4a1637` | `<main>` column fallback in the wrapper + align tests repaired + 4 product-card overrides |
+| `c6e6d61a` | ~~All nine `<main>` set `layout:"stack"`~~ — **SUPERSEDED same day by `eceafdc2`** |
+| `6d4a1637` | ~~`<main>` column fallback~~ **SUPERSEDED by `eceafdc2`** · align tests repaired · 4 product-card overrides |
+| `e7f16ceb` | `404.html` made the living canary for the `<main>` flow behaviour |
+| `eceafdc2` | ⭐ **`<main>` is not a flex container** — suppress the outer flex, let block flow stack; explicit `layout:"stack"` removed from the eight |
+| `a85a87d2` | Don't tag a flow-mode `<main>` with the `--flex` marker class |
+| `3247d281` | Cold prompt for the design benchmark (the second axis, never run) |
 
 **The align finding is the headline.** The whole mechanism was measured inert: stripping
 `.alignfull` from a real element in a real `.wp-block-post-content` context changed
@@ -728,6 +732,16 @@ sibling was byte-identical. Core's breakout rule resolves
 `:root`. No SGS-BEM draft can express alignwide/alignfull — there is no such CSS property
 — so emitting it failed the R-1 honest-mapping test. Full-bleed comes from `maxWidth`
 defaulting to `{}`. Canary DB held **0** align authorings, so nothing stored depended on it.
+
+### The SECOND axis — design — has a prompt, not a result
+
+Phase 3 has two axes: **is it CORRECT** (the 7-point checklist — Wave A closed it statically,
+Wave C owes the live half) and **is it WELL DESIGNED** (never run). The design axis is
+written up as a cold prompt at `.claude/prompts/2026-08-23-phase3-design-benchmark.md`
+(`3247d281`) rather than started at the end of a long session. It carries Bean's constraint
+verbatim: match top industry standard WITHOUT designing defaults into templates that are
+supposed to be empty. Seven surfaces get a full benchmark; `page.html` and `front-page.html`
+stay shells and their findings route to the pattern/content layer.
 
 ### STILL OPEN — the work Wave C owes
 
@@ -740,9 +754,18 @@ defaulting to `{}`. Canary DB held **0** align authorings, so nothing stored dep
    `level:3` under an unset `query-title` (h1). `index.html` omits the level and is
    correct. Two one-line changes, not yet done.
 4. **U-4 — redundant nested `contentWidth`** in five files. Cosmetic.
-5. **The `<main>` column fallback (`6d4a1637`) is NOT live-verified.** All nine templates
-   state `layout:"stack"` explicitly, so the fallback never executes in the theme. Treat
-   as unproven until something exercises it.
+5. ~~The `<main>` column fallback is NOT live-verified.~~ **RESOLVED 2026-08-23, and the
+   fix was the wrong shape — Bean caught it.** Measuring it showed `<main>` on `404.html`
+   was already `display:block` and stacking fine with zero flex, because that template has
+   a content band and `$grid_on_inner` routes the flex onto the `__inner`. `single-product`
+   had `contentWidth:"full"` → no band → no inner → the flex landed on `<main>` as a ROW.
+   So whether the page's main region became a flex container was decided purely by whether
+   it happened to carry a band. Forcing `column` papered over that; the right answer is
+   that a `<main>` is not a flex container at all — normal block flow already stacks.
+   Now suppressed at the outer box (`eceafdc2`), explicit `layout:"stack"` removed from the
+   eight templates so one owner remains, and `404.html` keeps no key at all as the living
+   canary. **Verified live:** the product page's three sections went 634/1328/1328px in a
+   row → 1732px each, stacked, backgrounds spanning.
 
 ### Content constraints found on the canary — read before planning Wave C
 
