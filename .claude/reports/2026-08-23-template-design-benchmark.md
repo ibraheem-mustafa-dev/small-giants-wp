@@ -921,7 +921,7 @@ uncommitted plugin files could not ride along) and measured on the live canary.
 | X-4 dead `.has-shadow-sm` | 0 CSS rules, never rendered | renders |
 | X-5 / S3-1 card surface | card = page colour | card `#FFF9F0` vs page `#FBF3DC` |
 | S1-1 shop filter rail | `display:flex`, both children 1247px, stacked | **`display:grid`, `260px 955px`**, rail beside grid |
-| S1-3 mobile grid | 1-up, page 3,279px | **2-up**, exact fit, page 3,025px |
+| S1-3 mobile grid | 1-up, page 3,279px | **intrinsic** — see the correction below |
 | S1-4 card heights | 68px spread | **0px spread within every row** |
 | S1-5 gutters | 20/20 equal | **24 column / 40 row** |
 | S3-2 excerpt | unclamped, 99px height spread | clamped to 3 lines |
@@ -983,9 +983,56 @@ row, **zero dead space**.
 - **X-2 jQuery gate is committed but NOT deployed** — it lives in `plugins/`,
   which the theme-only deploy does not carry. The ~48 KB saving remains a
   prediction until it ships.
-- **Mobile product cards are 138px wide**, below the reference band of 167–195px.
-  A judgement call for Bean's eye, not a defect.
+- ~~Mobile product cards are 138px wide~~ — **corrected, see below.**
 - **The PDP trust copy renders its operator placeholders literally** on the live
   canary ("Delivery: replace with this client's delivery terms"). Deliberate —
   the alternative was shipping "Free delivery" as a framework default, which is
   a commercial claim that would be false for most clients.
+
+## ⚠ SECOND correction, same class as X-1: I matched an observation, not the rule
+
+Bean: *"On mobile stacking should be automatic. Why are the product cards squashed
+to 2 on one row?"*
+
+I had forced 2-up below 768px because **7 of 8 benchmarked reference archives are
+2-up on mobile**. That is the observation. **The rule is that those references land
+their cards at 167–195px wide** — 2-up is merely what that width produces on their
+layouts. Ours has a narrower content band and a card carrying image + title +
+description + price ladder + CTA, so forcing 2-up produced:
+
+| Measured at 390px, forced 2-up | |
+|---|---|
+| Card width | **138px** (band is 167–195px) |
+| Text column | **65px** |
+| Product title | **6 lines** |
+| Description | **9 lines** |
+| Card height | **792px** in an 844px viewport |
+
+**My own verification passed this.** I measured the FIT — 2-up achieved, exact fit,
+zero dead space, 254px less scroll — and never measured whether the card was
+legible. An incomplete measurement set reported success on a layout Bean could see
+was broken at a glance. The scroll saving was also marginal, bought at the cost of a
+six-line product title.
+
+**Fix: no column count anywhere.** Cards declare a minimum readable width
+(`flex: 1 1 var(--sgs-shop-card-min)`, 240px) and the row fits as many as it can.
+Stacking is automatic and driven by the CONTAINER, not a viewport breakpoint or
+WooCommerce's `columns-N` class.
+
+Verified live at three widths:
+
+| Viewport | Per row | Card | Text column | Title lines |
+|---|---|---|---|---|
+| 390 | **1** | 293px | 219px | 2 |
+| 768 | **2** | 310px | 236px | 2 |
+| 1440 | **3** | 302px | 229px | 2 |
+
+Card width holds a 293–310px band across every viewport with zero dead space at
+desktop and no horizontal overflow anywhere. Only the gutter sits in a media query.
+
+**Two lessons, both already proven twice in this session:**
+1. **A benchmark figure is a consequence, not a rule.** Find the constraint that
+   produced it (readable card width) before copying the number (2-up).
+2. **Measuring fit is not measuring design.** "Exact fit, zero dead space" was true
+   and irrelevant. When a layout figure looks good, measure what the content inside
+   it is doing.
