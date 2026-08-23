@@ -146,9 +146,30 @@ wrapper-class-keying misclassifying exactly this. Anything else is
 D294 is load-bearing and the design never cited it. A section/layout-KIND composite routes
 colour through `SGS_Container_Wrapper`, which legitimately still reads it; a content-KIND
 composite renders block-private. "Delete the old paint" means different things.
-**RULING:** `grant.js` reads `block_composition.container_kind` and branches. On a
-wrapper-routed block it removes only the block's OWN duplicate emit, never the wrapper's
-path. `container_kind` unset gives `refuse:unknown-container-kind`.
+**RULING — CORRECTED BY /qc-council, 2026-08-23. The first version was FALSIFIED against
+a measured baseline before anything was built.**
+
+The original ruling said: read `block_composition.container_kind`, and refuse when unset.
+Measured: `container_kind` is **NULL for 175 of 211 rows**, and **27 of the 58 target
+blocks** — so that ruling would have refused **47% of the programme** on day one.
+
+Worse, the obvious repair ("NULL means block-private") is also wrong. Measured on the 58:
+
+| | calls `SGS_Container_Wrapper` | does not |
+|---|---|---|
+| `container_kind` populated | 30 | **1** |
+| `container_kind` NULL | **13** | 14 |
+
+The DB column disagrees with the code in **14 of 58** cases. So neither the column nor its
+absence is a safe signal.
+
+**CORRECTED RULING — identical in shape to the element-resolution ruling above, which is
+the point: one priority order, applied everywhere.**
+1. **`render.php` is ground truth** — does the block actually call `SGS_Container_Wrapper`?
+2. **`container_kind` CONFIRMS only.** It never overrides the code.
+3. They disagree → `refuse:container-kind-disagrees-with-render`, naming both.
+
+⚠ The single `populated + no wrapper` block is a real data defect. Name it in the residual.
 
 ### Gap found by the plan-quality grade: the 15 `unresolvable-attr` rows are homeless
 They appear in the survey's verdict table and then in neither the unit list nor the
@@ -338,6 +359,35 @@ One batch = one path-scoped commit, so one batch = one `git revert`. State in ea
 commit which blocks it covers, so a later revert does not have to be reconstructed by
 reading diffs. **Do not batch across a deploy boundary** — a batch whose blocks were
 deployed together can be reverted and redeployed together.
+
+## /qc-council finding — the "impossible" carve-out is a MISSING FOURTH LAYER
+
+Bean's goal is **the full set via deterministic multi-shaped enforcement**, which put the
+34 `paints-via-colour-valued-custom-property` rows back on the table. Measured, they are
+not impossible — the design's three-layer model (`block.json` / `edit.js` / `render.php`)
+simply never included **`style.css`, where the consumer lives**.
+
+A gradient CAN live in a custom property. It fails only when the CONSUMER puts it in a
+colour-only slot. Measured across every block — 103 colour-var consumption sites:
+
+| Consumption slot | Sites | Gradient-capable | Deterministic transform |
+|---|---|---|---|
+| `background` / `background-image` | 25 | **already yes** | none needed |
+| `background-color` | 30 | no | rewrite to `background:` ⚠ shorthand resets siblings — set them explicitly |
+| `color` | 38 | no | `sgs_text_colour_gradient_fallback_rule()` — **already built** |
+| `border-color` (+ `-bottom`/`-right`) | 9 | no | `sgs_border_gradient_css()` masked ring — **already built** |
+| `stroke` | 1 | no | `sgs_svg_stroke_gradient()` — **already built** |
+
+**Every transform already exists as a shared helper.** This is the multi-shaped enforcement
+in its literal form: the SHAPE is the CSS slot, and each shape has exactly one transform.
+
+⚠ **The one with real risk is `background-color:` → `background:`.** The shorthand RESETS
+`background-image`, `-position`, `-repeat`, `-size` and `-clip`. A block relying on any of
+those alongside the colour will change appearance silently. Any such rewrite must set the
+siblings explicitly, and it is a computed-style check, not a code review.
+
+**Scope decision is Bean's** — see the LEDGER. Adding the fourth layer brings the 34 rows
+(16 blocks) in and is the difference between "a floor" and "the full set".
 
 ## Standing constraints
 
