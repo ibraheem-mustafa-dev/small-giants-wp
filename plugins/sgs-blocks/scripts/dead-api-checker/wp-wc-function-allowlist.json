@@ -14,7 +14,7 @@
     "add_action", "add_filter", "do_action", "do_action_ref_array",
     "apply_filters", "apply_filters_ref_array", "remove_action",
     "remove_filter", "has_action", "has_filter", "did_action",
-    "add_shortcode", "remove_shortcode", "do_shortcode", "shortcode_atts",
+    "add_shortcode", "remove_shortcode", "do_shortcode", "shortcode_atts", "has_shortcode",
     "register_activation_hook", "register_deactivation_hook",
     "register_uninstall_hook", "load_plugin_textdomain", "load_theme_textdomain",
     "get_the_ID", "get_the_title", "the_title", "get_the_content", "the_content",
