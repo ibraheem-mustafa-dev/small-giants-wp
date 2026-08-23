@@ -128,6 +128,32 @@ between the two more obvious.
 
 ---
 
+## ⚠ BEAN FIXED THE PRODUCT CARD HIMSELF — do not undo it
+
+Bean, in the same message: *"I have also just fixed the product card issue that we were
+just dealing with."*
+
+**This is the first thing the next session must establish, before touching anything.**
+
+At the time of writing, `git status` shows **no uncommitted changes** to
+`product-card/` or `woocommerce.css` in this working tree — so his fix is not here. It
+was made somewhere this repo cannot see: the live site, the Site Editor, another
+worktree, or a different machine.
+
+**Required first actions:**
+
+1. **Ask Bean where he fixed it** — live CSS, Site Editor, another checkout, or code.
+2. **Do not re-apply, revert or "improve" my full-bleed change (`422daba1`) until his
+   fix is located and understood.** Mine removed `padding` from `.product-card` and
+   added `overflow: hidden`. If his does the same thing differently, one of them has to
+   go — and it should be mine.
+3. If his fix is live-only, capture it into the repo so it is not lost on the next
+   deploy. **A theme deploy overwrites the live theme**, so an un-captured live edit
+   disappears silently.
+
+**This is a real risk, not a formality.** The next deploy from this repo will overwrite
+whatever is on the canary.
+
 # Part 2 — The issue register
 
 Every item Bean raised, with what is known and what still needs establishing.
@@ -169,7 +195,12 @@ that explanation — reload and confirm before attributing anything to infrastru
 
 Bean: *"all of the pages that list products in an archive page should have it set up
 where they are using the product-collection block which makes each product item be
-shown as my sgs/product-card."*
+shown as my sgs/product-card and none of them look anything like that nice professional
+looking custom design — they look like a generic photo, product name, price and button
+stack."*
+
+**"A generic photo, product name, price and button stack" is the symptom to look for**
+when auditing — it is exactly what `single-product.html:37-39` renders today.
 
 **Task 5 must find every product listing across every template and check which pattern
 each uses.** Bean says this has happened "for several other bits across all of these

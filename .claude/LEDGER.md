@@ -23,6 +23,47 @@ The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section
 pre-answered decisions. It is marked **NOT-READY on purpose**: Wave 1's resolver premise was
 measured and found blind to most of the tree. The ledger section is status; the plan is the work.
 
+## ▶ ⛔ TEMPLATE REMEDIATION — OPEN, THE LIVE FRONT (2026-08-23)
+
+**Read `.claude/plans/2026-08-24-template-by-template-remediation.md` before touching any
+template.** Bean reviewed the Site Editor after the Phase 3 design implementation and
+found widespread breakage. **He found ALL of it by eye. No gate, no build and none of my
+own live measurements caught any of it.**
+
+**FIRST ACTION — ask Bean where he fixed the product card.** He fixed it himself
+("I have also just fixed the product card issue that we were just dealing with") and it
+is NOT in this working tree. A theme deploy from here will overwrite it. Do not re-apply,
+revert or improve `422daba1` (my full-bleed change) until his fix is located.
+
+**SECOND — 5 raw HTML comments inside `sgs/container` delimiters** (`404.html` lines
+14/24/45, `single.html` lines 12/47) are the proven cause of "Block contains unexpected
+or invalid content" on those two templates. Mine. Move them above the outermost
+delimiter. ~15 min, unblocks the editor.
+
+**Errors reported on EIGHT templates:** Order Confirmation · Page: 404 · Page: Coming
+soon · Product Archive · Products by Attribute · Search Results · Single Posts · Single
+Product. Strings seen: "Template part has been deleted or is unavailable" · "Error
+loading block: [object Object]" · "Block contains unexpected or invalid content."
+
+**Also open:** product listings render generic photo/name/price/button stacks instead of
+`sgs/card-grid` → `sgs/product-card` (`single-product.html:37-39` is the worst case);
+`catalog-sorting` and `query-pagination` completely unstyled against the site's global
+styles; archives inconsistent with each other (search bar bottom on Search Results, top
+on Product Archive; yellow/black button one side, pink+magnifier the other); infinite
+scroll gone from the archives; `index.html` a near-duplicate of `archive.html` down to
+the description; suspected template bloat.
+
+⛔ **GOVERNING RULE, set by Bean:** agents may NOT assess a template by reading code,
+querying the DB, calling REST or inspecting hooks. **They log in with `/playwright`, open
+the template, LOOK at it and interact with it.** Code reads may explain what was seen;
+they may never be the evidence something is fine.
+
+⚠ **`sgs/card-grid`'s Content Source panel literally offers "Product collection (no
+WooCommerce needed)"** (`cpt-collection`) alongside "WooCommerce products"
+(`wc-product`). Both render `sgs/product-card`. I told Bean "product collection doesn't
+exist" after reading enum slugs and never opening `edit.js`. **Read the inspector labels
+before saying a feature does not exist.**
+
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
 Shipped, deployed, canary-verified (D731/D732/D733/Phase 4): one shared corner-shorthand
@@ -309,22 +350,6 @@ no-inline prose → one pointer per block · `R-22-14`→`R-31-14` ×14 · scrol
 **⛔ Detail, owed follow-ups, and the 11-gate-backed-vs-37-UNENFORCED split:
 `.claude/reports/2026-08-21-unenforced-prohibition-register.md`. Read before continuing.**
 
-## ▶ CLEANUP TRACK — comment-narrative trim: CLOSED 2026-08-22
-
-Swept to `.claude/memory/session-2026-08-22-cleanup-track.md` (verbatim). Track is
-closed; its plan and prompt were deleted at `fc8c9fb1`. Nothing pending.
-
-## ▶ TIER W (MOTION) TRACK — CLOSED 2026-08-21
-
-**Nothing pending. Do not re-open this to "continue" it.** Shipped, merged, deployed,
-live-verified: Spec 38's fourth tier (WebGL, D479) now exists, with FR-38-29 surface treatments
-on 15 image-bearing blocks at 5,674 bytes gzip. D714-D716.
-
-Full section — what shipped and the four things deliberately NOT done — moved VERBATIM to
-`memory/session-2026-08-21-tier-w-closed.md` on 2026-08-21 to bring this file back under its
-byte cap. That archive's own FR-38-12 Flip finding is now STALE — see below, D741 supersedes
-it. For motion work the open register is `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
-
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
 Drawer covered the fold in every template editor; several blocks errored. Three
@@ -344,14 +369,3 @@ unrelated causes, all closed. Detail in D743.
 under the ~12 concurrent block-renderer calls a template load fires, producing phantom
 "Error loading block" banners that vanish on reload. Infrastructure — don't chase it.
 
-## ▶ FR-38-12 FLIP — CLOSED 2026-08-22 (D741)
-
-**Nothing pending.** Five prior sessions (D698, D699, D702, the 2026-08-21 report, the
-2026-08-21 Tier W close above) left it genuinely inconclusive or dormant. Two real bugs, both
-found and fixed same session: (1) `sgs/container` — the shop archive's own Product Collection
-toolbar wrapper — tripped WooCommerce's client-nav kill-switch, same shape D702 already fixed
-for `sgs/text` (`c01ed84a`); (2) `fx-flip.js`'s `settle()` called `MatchMedia#add(fn)` with a
-bare function where the API requires `(conditions, func)`, so `Flip.from()` was registered but
-never invoked — every upstream check looked healthy while GSAP never ticked (`da580d8e`). Live
-on sandybrown, `animate_product_filtering` ON, Bean watched it animate. Full writeup:
-`decisions.md` D741. Spec 38 §3.3 FR-38-12 updated to SHIPPED. Design-gate plan archived.
