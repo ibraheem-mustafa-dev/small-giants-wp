@@ -249,8 +249,7 @@
 			"default": ""
 		},
 		"scaleHover": {
-			"type": "number",
-			"default": null
+			"type": "number"
 		},
 		"textColourHover": {
 			"type": "string",

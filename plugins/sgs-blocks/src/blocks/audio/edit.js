@@ -212,7 +212,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<TextControl
 							label={ __( 'Audio URL', 'sgs-blocks' ) }
 							value={ audioUrl || '' }
-							onChange={ ( value ) => setAttributes( { audioUrl: value, audioSource: 'external', audioId: null } ) }
+							onChange={ ( value ) => setAttributes( { audioUrl: value, audioSource: 'external', audioId: undefined } ) }
 							placeholder="https://example.com/audio.mp3"
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize

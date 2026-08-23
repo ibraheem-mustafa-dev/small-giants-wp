@@ -265,7 +265,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						isDestructive
 						onClick={ () =>
 							setAttributes( {
-								imageId: null,
+								imageId: undefined,
 								imageUrl: '',
 								imageAlt: '',
 							} )
@@ -1163,7 +1163,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												isDestructive
 												onClick={ () =>
 													setAttributes( {
-														thumbnailId: null,
+														thumbnailId: undefined,
 														thumbnail: '',
 													} )
 												}

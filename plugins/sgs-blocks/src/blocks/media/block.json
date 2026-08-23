@@ -135,8 +135,7 @@
 			]
 		},
 		"videoId": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"videoMimeType": {
 			"type": "string",
@@ -147,8 +146,7 @@
 			"default": ""
 		},
 		"thumbnailId": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"_comment_videoArtDirection": "Video-source art-direction tiers (2026-08-07, Bean-decided). Completes the VIDEO half: the image half already ships imageId/imageUrl tiers, and the playback-behaviour tiers (videoAutoplay* etc.) already exist. Unlike images, tiers here CANNOT be sibling elements toggled by CSS — three <video>s each begin fetching and three embeds each load a player — so the source is swapped by view.js, reusing sgs/hero's established data-src-desktop/tablet/mobile contract with the same upward fallback. The server still renders the DESKTOP source as real markup, so a no-JS visitor gets a working video. Bean chose to include YouTube/Vimeo (2026-08-07) with the trade-off stated: crossing a breakpoint mid-watch rebuilds the iframe and loses playback position. Each tier's embed URL is built from THAT tier's own playback flags, so a mobile tier that wants muted autoplay gets it.",
 		"videoUrlTablet": {
@@ -157,8 +155,7 @@
 			"role": "content"
 		},
 		"videoIdTablet": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"videoUrlMobile": {
 			"type": "string",
@@ -166,24 +163,21 @@
 			"role": "content"
 		},
 		"videoIdMobile": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"thumbnailTablet": {
 			"type": "string",
 			"default": ""
 		},
 		"thumbnailIdTablet": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"thumbnailMobile": {
 			"type": "string",
 			"default": ""
 		},
 		"thumbnailIdMobile": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"videoAutoplay": {
 			"type": "boolean",
@@ -259,8 +253,7 @@
 			"default": null
 		},
 		"imageId": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"imageUrl": {
 			"type": "string",
@@ -268,8 +261,7 @@
 			"role": "content"
 		},
 		"imageIdTablet": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"imageUrlTablet": {
 			"type": "string",
@@ -277,8 +269,7 @@
 			"role": "content"
 		},
 		"imageIdMobile": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"imageUrlMobile": {
 			"type": "string",
@@ -296,12 +287,10 @@
 			"_comment": "Spec 35 T3.4 / Part C 'A11y/SEO as controls' + E6 — WCAG 2.1 AA 1.1.1 (Non-text Content): a purely decorative image must be hidden from assistive tech (empty alt + aria-hidden) rather than forcing the operator to leave alt blank and hope. Narrow v1 scope: sgs/media + sgs/decorative-image only."
 		},
 		"imageWidth": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"imageHeight": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"maxWidth": {
 			"type": "object",
@@ -396,8 +385,7 @@
 			"default": ""
 		},
 		"captionFontSize": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"captionFontSizeUnit": {
 			"type": "string",

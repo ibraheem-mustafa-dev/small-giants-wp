@@ -106,8 +106,7 @@
 			]
 		},
 		"audioId": {
-			"type": "integer",
-			"default": null
+			"type": "integer"
 		},
 		"audioMimeType": {
 			"type": "string",

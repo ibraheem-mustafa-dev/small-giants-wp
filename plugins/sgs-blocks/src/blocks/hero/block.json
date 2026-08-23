@@ -495,16 +495,13 @@
 			"default": "center center"
 		},
 		"imageWidth": {
-			"type": "number",
-			"default": null
+			"type": "number"
 		},
 		"imageWidthTablet": {
-			"type": "number",
-			"default": null
+			"type": "number"
 		},
 		"imageWidthMobile": {
-			"type": "number",
-			"default": null
+			"type": "number"
 		},
 		"imageWidthUnit": {
 			"type": "string",
