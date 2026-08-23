@@ -30,10 +30,16 @@ template.** Bean reviewed the Site Editor after the Phase 3 design implementatio
 found widespread breakage. **He found ALL of it by eye. No gate, no build and none of my
 own live measurements caught any of it.**
 
-**FIRST ACTION — ask Bean where he fixed the product card.** He fixed it himself
-("I have also just fixed the product card issue that we were just dealing with") and it
-is NOT in this working tree. A theme deploy from here will overwrite it. Do not re-apply,
-revert or improve `422daba1` (my full-bleed change) until his fix is located.
+**✅ THE "ASK BEAN WHERE HE FIXED THE PRODUCT CARD" BLOCKER IS DISPROVEN (2026-08-23).**
+This used to say his fix was missing from the tree and a deploy would overwrite it. Bean
+challenged the premise — *"If it's clean, why are you assuming the block has been fixed
+anyway?"* — and he was right. **Measured:** live canary vs repo, the two files `422daba1`
+touched are byte-identical (`assets/css/woocommerce.css` `f21c35ad…`, `style.css`
+`fd73e91c…`), both at theme 1.5.63. And a theme deploy replaces FILES, never the database,
+so a Site Editor change could not be wiped by one either. There is no un-captured fix and
+no deploy risk. ⭐ The original claim was **inferred from one sentence of Bean's** and
+written up as "a real risk, not a formality" — a prove-the-cause miss in the record
+itself, the same shape as D753.
 
 **✅ DONE — the 5 raw HTML comments inside `sgs/container` delimiters** (`404.html`,
 `single.html`) were the proven cause of "Block contains unexpected or invalid content" on
@@ -88,28 +94,11 @@ before saying a feature does not exist.**
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
-Shipped, deployed, canary-verified (D731/D732/D733/Phase 4): one shared corner-shorthand
-helper + **109 vacuous `function_exists` guards** removed + **204 length call sites** migrated
-from the crude to the hardened sanitiser. Standards + rationale are single-sourced — do not
-restate them here: **Spec 32 §6.1 (a1)/(a2)** (shared shorthand builders; the sanitiser
-contract) and **Spec 35 Part K** (the gate + two method rules). Enforcement:
-`npm run check:vacuous-guards`, wired into `prebuild`.
-
-**Phase 4 (the programme's only behaviour change) shipped 2026-08-22, commits `a2f6d5df` +
-`bbf13cc2`.** `sgs_css_length_sanitise()` → `sgs_css_length_value()` across 56 files (204 call
-sites), via new codemod `scripts/migrate-length-sanitiser.py` (survey/fix/check/self-test,
-mutation-tested negative control). Two sites deliberately excluded (named in the script):
-testimonial `quoteLineHeight` (unitless-legal) and google-reviews `gr_pct` (bare number +
-caller-appended `%`). 5 stranded `function_exists('sgs_css_length_sanitise')` guards
-retargeted to the new function name. Live-proven on a dedicated probe page
-(`gate-length-sanitiser-probe`, since deleted): before-deploy CSS showed
-`border-top-left-radius:calc20px1vw` (corrupted); after-deploy showed
-`border-top-left-radius:calc(20px + 1vw)` (correct). Zero PHP fatals, zero new debug.log
-entries, payload-verify + motion-QA both green on deploy. Visual-diff gate scoped-bypassed for
-44 markup-touching-but-behaviour-identical blocks (logged, `bbf13cc2`) — real risk was
-edge-case-only (negative/calc/multi-value/bare-integer inputs absent from live content), the
-one edge case that IS live (`gr_pct`) was excluded from the migration, not shipped untested.
-Prompt B is deleted — done. Nothing remains on this track.
+Shipped, deployed, canary-verified. **Nothing remains on this track; Prompt B is deleted.**
+Detail is single-sourced — do not restate it here: **D731/D732/D733 + Phase 4** in
+`decisions.md` (commits `a2f6d5df`, `bbf13cc2`), **Spec 32 §6.1 (a1)/(a2)** (shared
+shorthand builders; sanitiser contract) and **Spec 35 Part K** (the gate + two method
+rules). Enforcement: `npm run check:vacuous-guards`, wired into `prebuild`.
 
 **If you are the shop-archive track**, read, in this order:
 
@@ -195,9 +184,12 @@ corrected 7.0 → 7.1.
 
 ### ▶ NEXT for this track, in order
 
-1. **The design benchmark** — prompt ready at
-   `.claude/prompts/2026-08-23-phase3-design-benchmark.md`. This is the axis Bean actually
-   asked for and it has NOT run.
+1. **The design benchmark — ✅ IT DID RUN (2026-08-23). This line said otherwise and was
+   wrong.** Output: `.claude/reports/2026-08-23-template-design-benchmark.md`, ten surfaces
+   graded; most of the ranked list was implemented, deployed and live-verified. Its prompt
+   carried its own `⛔ EXECUTED` banner the whole time. Bean deleted the prompt on that
+   basis and was right to; the deletion is committed. **Read the register's four
+   corrections before trusting any of its findings** — Bean caught all four by eye.
 2. **Wave C** — checks 5 and 7 live per surface (375/768/1440 + canvas-moves).
 3. **Three small correctness items:** `main` missing from `edit.js` `TAG_NAME_OPTIONS`
    (declared in the enum, so a client cannot select or recover it); h1→h3 heading skip on

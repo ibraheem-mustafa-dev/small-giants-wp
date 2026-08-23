@@ -1,3 +1,31 @@
+> # ⛔ SUPERSEDED 2026-08-23 — DO NOT RUN THIS AGAIN
+>
+> **Wave A carried out the 7-point checklist across all ten surfaces on 2026-08-23:**
+> 10 parallel agents, one per surface, **zero FAILs**. Register:
+> `.claude/reports/2026-08-22-phase3-template-audit-register.md`.
+>
+> **This prompt was pasted into a fresh session on 2026-08-23 and nearly re-ran finished
+> work.** That is why this banner exists. It also directs the reader to assess templates
+> from code, gates and static checks — **a method Bean has since banned.**
+>
+> **What replaced it:** Bean reviewed the templates in the Site Editor and found
+> widespread breakage that no gate, no build and none of my own live measurements had
+> caught. That work is
+> **`.claude/plans/2026-08-24-template-by-template-remediation.md`**, and its governing
+> rule is that agents must log in with `/playwright` and LOOK at a template rather than
+> assess it from code, the DB, REST or hooks.
+>
+> **Residual still owed** (fold into the remediation track per template, do NOT run as a
+> separate pass): Wave C — checks 5 and 7 measured live per surface — plus three small
+> correctness items (`main` missing from `edit.js` `TAG_NAME_OPTIONS`; the h1→h3 heading
+> skip on `archive.html:21` and `search.html:16`; redundant nested `contentWidth` in five
+> files).
+>
+> Kept for provenance only: it records what was asked for and the constraints it was
+> asked under.
+
+---
+
 # Next-session prompt — Phase 3, shop-archive container remediation (per-template pass)
 
 Invoke `/autopilot` before doing anything else.

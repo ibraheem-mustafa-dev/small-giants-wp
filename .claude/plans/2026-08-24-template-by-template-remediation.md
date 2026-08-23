@@ -140,19 +140,31 @@ At the time of writing, `git status` shows **no uncommitted changes** to
 was made somewhere this repo cannot see: the live site, the Site Editor, another
 worktree, or a different machine.
 
-**Required first actions:**
+## ✅ RESOLVED 2026-08-23 — THE RISK ABOVE WAS DISPROVEN, AND WAS NEVER PROVEN
 
-1. **Ask Bean where he fixed it** — live CSS, Site Editor, another checkout, or code.
-2. **Do not re-apply, revert or "improve" my full-bleed change (`422daba1`) until his
-   fix is located and understood.** Mine removed `padding` from `.product-card` and
-   added `overflow: hidden`. If his does the same thing differently, one of them has to
-   go — and it should be mine.
-3. If his fix is live-only, capture it into the repo so it is not lost on the next
-   deploy. **A theme deploy overwrites the live theme**, so an un-captured live edit
-   disappears silently.
+**Bean challenged the premise directly:** *"If it's clean, why are you assuming the block
+has been fixed anyway?"* He was right to.
 
-**This is a real risk, not a formality.** The next deploy from this repo will overwrite
-whatever is on the canary.
+**Measured, live canary vs this repo — the two files `422daba1` touched:**
+
+| File | Live | Repo | |
+|---|---|---|---|
+| `theme/sgs-theme/assets/css/woocommerce.css` | `f21c35adbd902732b54e8038b93166b3` | same | identical |
+| `theme/sgs-theme/style.css` | `fd73e91c5f76a6ec5737cfe98c5cd047` | same | identical |
+| Theme version | 1.5.63 | 1.5.63 | identical |
+
+**There is no un-captured fix, and no deploy-overwrite risk** — doubly so: the files match
+byte-for-byte, AND a theme deploy replaces *files*, never the database, so a Site Editor
+change could not have been wiped by one in the first place.
+
+⭐ **Kept rather than deleted, because the failure is instructive.** The section above was
+written from a single sentence of Bean's, inferred into a specific mechanism ("it is NOT
+in this working tree", "a theme deploy will overwrite it"), and then labelled **"a real
+risk, not a formality"** — language that reads as measurement. Nothing was measured. It
+took two `md5sum` calls to settle. This is the same shape as D753 (rogue-agent `git stash`
+behaviour inferred from seeing a command, with a structural fix specced for an unproven
+cause) and it is exactly what `~/.claude/rules/prove-the-cause-before-fix.md` exists to
+stop. **A blocker asserted without a measurement is not a blocker.**
 
 # Part 2 — The issue register
 
