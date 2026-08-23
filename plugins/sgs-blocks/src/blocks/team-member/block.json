@@ -71,19 +71,25 @@
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:background-color": "native:color.background",
-						"css:color": "native:color.text",
+						"css:background-color": "backgroundColour",
+						"css:color": "textColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:text-align": "native:typography.textAlign",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing",
 						"css:box-shadow": "cardShadow",
-						"css:box-shadow-color": "cardShadowColour"
+						"css:box-shadow-color": "cardShadowColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color-gradient": "textColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:box-shadow": "shadowHover"
+								"css:box-shadow": "shadowHover",
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
 							}
 						}
 					},

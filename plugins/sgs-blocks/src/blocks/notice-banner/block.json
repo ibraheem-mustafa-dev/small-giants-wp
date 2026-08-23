@@ -70,8 +70,8 @@
 					"clusters": [ "text", "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:line-height": "native:typography.lineHeight",
 						"css:font-style": "native:typography.fontStyle",
@@ -82,9 +82,21 @@
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "maxWidth"
+						"css:max-width": "maxWidth",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color-gradient": "textColourGradient"
 					},
-					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer)."
+					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				},
 				"icon": {
 					"label": "Icon",

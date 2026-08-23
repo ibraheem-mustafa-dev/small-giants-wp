@@ -70,7 +70,7 @@
 					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
+						"css:background-color": "backgroundColour",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-radius": "native:__experimentalBorder.radius",
@@ -78,9 +78,18 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:gap": "gap",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-color-gradient": "backgroundColourGradient"
 					},
-					"_note": "The root <ul> (render.php step 6). `gap` is the per-item spacing preset slug emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist)."
+					"_note": "The root <ul> (render.php step 6). `gap` is the per-item spacing preset slug emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient"
+							}
+						}
+					}
 				},
 				"item-icon": {
 					"label": "Item icon",
@@ -108,9 +117,18 @@
 						"css:color": "textColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:line-height": "native:typography.lineHeight",
-						"css:text-align": "native:typography.textAlign"
+						"css:text-align": "native:typography.textAlign",
+						"css:color-gradient": "textColourGradient"
 					},
-					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. `prefix` set to the explicit opt-out `\"\"` (2026-08-15, was unset/implicit `item`): every member this element resolves already has an explicit attrMap entry above, and the implicit `item` prefix was ALSO matching the item-ROW's own itemFontWeight/itemFontStyle by accident via the default convention — silently misattributing a control that actually paints `.sgs-icon-list__item` (the row) to `item-text` (the span), contradicting this note's own long-standing claim that font-weight/font-style are honest gaps here. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item TEXT specifically — honest gaps, now genuinely honest."
+					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. `prefix` set to the explicit opt-out `\"\"` (2026-08-15, was unset/implicit `item`): every member this element resolves already has an explicit attrMap entry above, and the implicit `item` prefix was ALSO matching the item-ROW's own itemFontWeight/itemFontStyle by accident via the default convention — silently misattributing a control that actually paints `.sgs-icon-list__item` (the row) to `item-text` (the span), contradicting this note's own long-standing claim that font-weight/font-style are honest gaps here. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item TEXT specifically — honest gaps, now genuinely honest.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				},
 				"heading": {
 					"label": "Heading",
