@@ -157,6 +157,16 @@
 						}
 					},
 					"_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default)."
+				},
+				"sublink": {
+					"label": "Submenu link",
+					"order": 8,
+					"clusters": [ "text" ],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "submenuColour"
+					},
+					"_note": "The submenu LINK — <a class=\"sgs-nav-menu__sublink\"> (render.php:410), painted at render.php:1354 `.sgs-nav-menu__sublink{color:var(--sgs-nm-submenu-colour);}`. Declared explicitly because the emission classifier cannot reach it: render.php:1220 feeds submenuColour into --sgs-nm-submenu-colour, but that variable is CONSUMED in a PHP-BUILT CSS string (:1354), not in style.css — and the classifier's consumer scan reads style.css only. Its sibling submenuBg resolves automatically precisely because ITS consumer does sit in style.css (:303). Same attribute shape, opposite outcome, and the difference is which FILE the consumer lives in. prefix \"\" is the documented explicit opt-out from orphan-scanning: the sublink shares no name prefix with submenuColour, and a \"submenu\" prefix would wrongly try to claim submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding, which belong to the submenu PANEL rather than to this anchor."
 				}
 			},
 			"boxFamilies": {

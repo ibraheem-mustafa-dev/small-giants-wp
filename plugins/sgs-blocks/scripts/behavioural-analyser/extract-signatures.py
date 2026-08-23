@@ -1640,6 +1640,40 @@ def _attr_to_raw_props_php(
     ):
         attr_props[m.group(1)].add(m.group(2))
 
+    # ---- shape A-INVERSE: '--sgs-foo' => ... $attributes['attrName'] ...
+    # Shape A above is DIRECTIONAL: it only matches an array whose KEY is the
+    # attribute name. Several blocks write the map the other way round, keying on
+    # the custom property and putting the attribute in the VALUE:
+    #   sgs/product-search/render.php:108-114
+    #     '--sgs-ps-input-border' => $attributes['inputBorderColour'] ?? '',
+    #   sgs/nav-menu/render.php:1217-1222   (value is a multi-line ternary)
+    #     '--sgs-nm-submenu-bg' => '' !== (string) ( $attributes['submenuBg'] ?? '' )
+    #         ? sgs_colour_value( (string) $attributes['submenuBg'] ) : '',
+    # Neither is reachable by shape A (the key is not an attr name) nor by shapes
+    # B/C (no `'--sgs-foo:' . $x` concatenation, no `$v = $attributes[...]`
+    # assignment — the attribute is referenced inline inside an array VALUE).
+    # Result: 7 colour attributes across those two blocks carried css_property
+    # NULL, so survey.js reported REFUSED:no-css_property and rule 31's mechanism
+    # axis was blind to them.
+    #
+    # CONSERVATIVE BY CONSTRUCTION. This function's history is a list of
+    # over-pairing bugs (audio accent/spectrum, trustpilot-reviews column tiers,
+    # media borderRadiusMobile), so ambiguity REFUSES rather than guesses: the
+    # value span runs to the next '--sgs-*' key or the array's close, and a span
+    # naming MORE THAN ONE distinct attribute is skipped entirely. A span naming
+    # the same attribute repeatedly (nav-menu's ternary tests `submenuBg` and then
+    # re-reads it) collapses to one name and pairs normally.
+    _inv_keys = list(re.finditer(r"['\"](" + CUSTOM_PROP_RE + r")['\"]\s*=>", php_src))
+    for _i, _m in enumerate(_inv_keys):
+        _end = _inv_keys[_i + 1].start() if _i + 1 < len(_inv_keys) else len(php_src)
+        _value = php_src[_m.end() : _end]
+        _close = re.search(r"\n\s*\)\s*;", _value)
+        if _close:
+            _value = _value[: _close.start()]
+        _names = set(re.findall(r"\$attributes\[\s*['\"](\w+)['\"]\s*\]", _value))
+        if len(_names) == 1:
+            attr_props[_names.pop()].add(_m.group(1))
+
     # ---- shapes B + C: POSITIONAL, statement-aware scan (rewritten 2026-07-21 —
     # the original per-PHYSICAL-LINE cross-product was WRONG whenever a single line
     # declares more than one custom property for more than one attribute, e.g.

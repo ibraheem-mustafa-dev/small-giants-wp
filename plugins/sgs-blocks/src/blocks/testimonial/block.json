@@ -176,6 +176,17 @@
 						"css:font-size": "ratingSize",
 						"css:color": "ratingColour"
 					}
+				},
+				"summary": {
+					"label": "Summary phrase",
+					"order": 10,
+					"clusters": [ "text" ],
+					"prefix": "summary",
+					"attrMap": {
+						"css:color": "summaryColour",
+						"css:font-size": "summaryFontSize"
+					},
+					"_note": "The summary phrase — <p class=\"sgs-testimonial__summary\"> (render.php:699), styled at render.php:276-283 (color <- summaryColour, font-size <- summaryFontSize). A SEPARATE element from quote-text, which is the <blockquote class=\"sgs-testimonial__quote\"> (render.php:704, styled :288-309): two different DOM nodes, so one entry cannot cover both, and quote-text's prefix \"quote\" can never reach a summary* attribute. Before this element existed summaryColour had no manifest home, so css_property stayed NULL and survey.js/rule 31/the cloning pipeline were all blind to it."
 				}
 			},
 			"variantAttr": "variant",

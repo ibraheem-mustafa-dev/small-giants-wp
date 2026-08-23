@@ -48,6 +48,16 @@
 						"css:margin": "native:spacing.margin"
 					},
 					"_note": "No color, typography or __experimentalBorder support is declared on this block at all. clusters is deliberately scoped to layout (native spacing only) to avoid a zero-resolution declaration (ROLLOUT REQUIREMENT 1)."
+								},
+				"input": {
+					"label": "Search input",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"prefix": "",
+					"attrMap": {
+						"css:border-color": "inputBorderColour"
+					},
+					"_note": "The search <input class=\"sgs-product-search__input\" role=\"combobox\"> (render.php:326-341). Declared because F6 check #8 (reseed-survival) correctly REFUSED a css_property with no css_element: inputBorderColour resolved to border-color but had css_element=NULL and derived_selector=NULL, so it fell to the ROOT routing domain and would misroute on a clone. A property resolved without an element is not a win — it is a mis-route waiting to happen. ⚠ KNOWN MODELLING LIMIT: --sgs-ps-input-border has TWO consumers — this input's border (style.css:37) AND the listbox border (style.css:87). One attribute paints two nodes; the manifest models attribute->element ownership one-to-one, so it is declared on the input (the primary, named node) and the listbox border rides the same variable. Splitting them would need a second attribute, which is a client-facing control decision, not a mapping one."
 				}
 			}
 		}
