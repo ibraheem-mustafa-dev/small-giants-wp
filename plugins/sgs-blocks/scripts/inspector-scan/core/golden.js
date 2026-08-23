@@ -786,6 +786,7 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	'border-color-gradient': 'border',
 	'outline-color': 'border',
 	'box-shadow-color': 'shadow',
+	fill: 'fill',
 	stroke: 'stroke',
 };
 
