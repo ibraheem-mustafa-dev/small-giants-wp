@@ -140,10 +140,37 @@ function sgs_page_needs_wc_frontend(): bool {
 	$queried = get_queried_object();
 	$post    = $queried instanceof \WP_Post ? $queried : null;
 
-	// Cannot inspect the request (archives, 404s with no object, FSE part contexts):
-	// err toward KEEPING the scripts rather than stripping something that needed them.
+	/*
+	 * No inspectable post. MEASURED 2026-08-23: this branch used to `return true`
+	 * ("err toward keeping the scripts"), which was too blunt and silently defeated the
+	 * whole point of the gate.
+	 *
+	 * `get_queried_object()` returns null on a 404 and on a search, and a WP_Term on a
+	 * taxonomy archive — so all three took that early exit and kept the full jQuery +
+	 * WooCommerce stack. Live proof: after deploy, jQuery was GONE on a single post and
+	 * on a page, and still PRESENT on the 404, the front page, the blog archive and the
+	 * search results. The 404 was the very page used as the headline example of the
+	 * saving, and the original comment on this branch literally named "404s with no
+	 * object" as a keep-case. The fix could never have applied where it was advertised.
+	 *
+	 * These view types are safe to strip on, and it is worth being explicit about WHY
+	 * rather than flipping the return:
+	 *   - `is_woocommerce()` / cart / checkout / account have ALREADY returned true
+	 *     above, so any genuine shop surface — including product taxonomy archives — is
+	 *     long since handled and never reaches here.
+	 *   - What remains has no `post_content` of its own that could embed a WooCommerce
+	 *     block. A 404 has no post at all; a search or archive renders excerpts from the
+	 *     loop, not a single post's full content.
+	 *   - `sgs_jquery_still_needed()` below is the real safety net: jQuery survives if
+	 *     ANY other enqueued script declares it as a dependency.
+	 *
+	 * Anything NOT in this list keeps the stack, so an unforeseen view type still fails
+	 * safe.
+	 */
 	if ( ! $post ) {
-		return true;
+		$strippable = is_404() || is_search() || is_archive() || is_home() || is_front_page();
+
+		return ! $strippable;
 	}
 
 	// A non-shop page that embeds WooCommerce blocks or the classic shortcodes still
