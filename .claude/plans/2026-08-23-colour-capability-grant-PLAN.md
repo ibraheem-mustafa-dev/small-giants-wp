@@ -373,7 +373,7 @@ colour-only slot. Measured across every block — 103 colour-var consumption sit
 | Consumption slot | Sites | Gradient-capable | Deterministic transform |
 |---|---|---|---|
 | `background` / `background-image` | 25 | **already yes** | none needed |
-| `background-color` | 30 | no | rewrite to `background:` ⚠ shorthand resets siblings — set them explicitly |
+| `background-color` | 30 | no | **adopt `BackgroundPanel` — see below.** (The earlier answer, rewriting to the `background:` shorthand, is SUPERSEDED and should not be built) |
 | `color` | 38 | no | `sgs_text_colour_gradient_fallback_rule()` — **already built** |
 | `border-color` (+ `-bottom`/`-right`) | 9 | no | `sgs_border_gradient_css()` masked ring — **already built** |
 | `stroke` | 1 | no | `sgs_svg_stroke_gradient()` — **already built** |
@@ -381,10 +381,50 @@ colour-only slot. Measured across every block — 103 colour-var consumption sit
 **Every transform already exists as a shared helper.** This is the multi-shaped enforcement
 in its literal form: the SHAPE is the CSS slot, and each shape has exactly one transform.
 
-⚠ **The one with real risk is `background-color:` → `background:`.** The shorthand RESETS
-`background-image`, `-position`, `-repeat`, `-size` and `-clip`. A block relying on any of
-those alongside the colour will change appearance silently. Any such rewrite must set the
-siblings explicitly, and it is a computed-style check, not a code review.
+### ⭐ BEAN'S ANSWER TO THE RISKY SHAPE (2026-08-23) — adopt `BackgroundPanel`
+
+The `background-color:` → `background:` rewrite was the ONLY one of the four shapes with no
+existing helper and a real silent-breakage mode: the shorthand RESETS `background-image`,
+`-position`, `-repeat`, `-size` and `-clip`, so any block leaning on those alongside its
+colour changes appearance with no error. **Bean's proposal removes that transform entirely.**
+
+`src/blocks/container/components/BackgroundPanel.js` (617 lines, its own docblock calls it a
+"shared wrapper panel", re-exported to ~30 call sites) already owns the whole background
+stack — and the container wrapper renders it as **`background-image:` on a `::before`
+layer**. `background-image` is gradient-capable BY CONSTRUCTION, because a gradient *is* a
+background image. So there is nothing to rewrite and no shorthand to reset.
+
+**It also ADDS capability rather than merely enabling a gradient** — verified present in the
+panel: background video, SVG, overlay colour, overlay opacity, blend modes, parallax. Nine
+rows that today have a flat colour and nothing else would gain all of it. That is D744
+running forwards instead of defensively.
+
+**Measured scope of the swap — the 34 custom-property rows by what they actually paint:**
+
+| Paints | Rows | Route |
+|---|---|---|
+| **Background** | **9** | **`BackgroundPanel`** (Bean's route) |
+| Text | 21 | `sgs_text_colour_gradient_fallback_rule()` — exists |
+| Border / divider | 2 | `sgs_border_gradient_css()` — exists |
+| Icon / shape | 2 | `sgs_svg_stroke_gradient()` — exists |
+
+**Constraint, measured — the 9 background rows split:**
+- **5 adopt directly** (`before-after.labelBackgroundColour`, `gallery.captionBgColour`,
+  `icon.backgroundColour`, `option-picker.pillBgColour`, `post-grid.cardBgColour`) — these
+  blocks already call `SGS_Container_Wrapper`.
+- **4 need the wrapper first** (`brand-strip.tileBackgroundColour`, `cart.panelBg`,
+  `social-icons.iconBackground` + `…Hover`) — these blocks do not call it, so they need the
+  wrapper or a standalone layered emitter before the panel can render for them.
+
+⚠ **Do NOT read "adopt BackgroundPanel" as "mount the panel and done".** The panel is the
+CONTROL; the `::before` layer is the RENDER. A block gaining the control without the
+wrapper's layer gets a dead control — the defect this whole programme exists to remove.
+Adoption means both halves, verified by computed style on the live page.
+
+⚠ **The 21 text rows are the biggest single group and are NOT covered by this.** They keep
+the `background-clip:text` route, which brings its own constraint: a text gradient clips the
+element's whole background area, so any element taking one cannot also paint its own
+background on the same node — the `::after` split from D751 applies again.
 
 **Scope decision is Bean's** — see the LEDGER. Adding the fourth layer brings the 34 rows
 (16 blocks) in and is the difference between "a floor" and "the full set".
