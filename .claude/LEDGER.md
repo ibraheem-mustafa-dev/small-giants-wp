@@ -40,6 +40,17 @@ revert or improve `422daba1` (my full-bleed change) until his fix is located.
 or invalid content" on those two templates. Mine. Move them above the outermost
 delimiter. ~15 min, unblocks the editor.
 
+**✅ 404 + Single Posts are FIXED and verified in the Site Editor** (d35ee932, theme
+1.5.63) — 0 errors, 0 console errors on both.
+
+**⭐ Product Archive: 13 × "Error loading block: [object Object]", SURVIVES A RELOAD**
+so it is not the intermittent 500s. Failing blocks read off `data-type`:
+`woocommerce/product-template` ×1 and **`sgs/product-card` ×12** — the card fails to
+load in the EDITOR inside the product-template while rendering fine on the front end.
+That is very likely the root of "product archive looks super broken". START HERE. The
+8 console errors hold the real message ("[object Object]" is the error boundary
+stringifying it badly).
+
 **Errors reported on EIGHT templates:** Order Confirmation · Page: 404 · Page: Coming
 soon · Product Archive · Products by Attribute · Search Results · Single Posts · Single
 Product. Strings seen: "Template part has been deleted or is unavailable" · "Error
@@ -324,31 +335,6 @@ coordinator's own, not an agent's.
 which does not exist**; the header silently fell back to the framework-default pattern.
 Bean ruled: use the default. Option is now **0**. **A pointer to a deleted post fails
 SILENTLY** — worth a gate asserting those pointers resolve.
-
-## ▶ DOC-DEBT / MOTION-REGISTER TRACK — 2026-08-21 (a THIRD track; all pushed)
-
-**All on `origin/main`. Build GREEN. Canary deployed + live-verified.**
-
-**⛔ Two live defects — read first:**
-1. **`sgs/hero`'s overlay gradient was silently replaced by the flat colour** (`fc261fd3`).
-   `$overlay_gradient` never existed — one reference, zero assignments, ever — so the null fell
-   through to `background-color` and the overlay still painted, which is why it survived.
-   Live-proven fixed with a negative control:
-   `reports/visual-diff/hero-overlay-gradient-2026-08-21.md`. ⚠ Cause: an asymmetric pair,
-   `backgroundOverlayColour` vs `overlayGradient`.
-2. **I broke `main` for ~5 min** (`87d904a6`): a `'src/blocks/*/render.php'` GLOB satisfied the
-   path-scoped-commit hook and swept the co-active track's half-done edit. **A glob over a
-   shared directory is `git add -A` wearing a pathspec.** Enumerate exact filenames.
-
-**⛔ THREE comments asserted the OPPOSITE of their own code** (nav-menu ×2, responsive-logo) —
-this codebase's doc debt is confident wrongness, not verbosity.
-
-**Shipped:** motion registers + Spec 38 swept · 121 sanitiser closures across 57 files onto 3
-shared helpers already existing at 3% adoption · ~370 lines of narrative cut from 78 files ·
-no-inline prose → one pointer per block · `R-22-14`→`R-31-14` ×14 · scroll-smoother → `tier='H'`.
-
-**⛔ Detail, owed follow-ups, and the 11-gate-backed-vs-37-UNENFORCED split:
-`.claude/reports/2026-08-21-unenforced-prohibition-register.md`. Read before continuing.**
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

@@ -185,6 +185,37 @@ that the canary intermittently returns 500s under the concurrent block-renderer 
 template load fires, producing phantom banners that vanish on reload. **Do not assume
 that explanation — reload and confirm before attributing anything to infrastructure.**
 
+### ⭐ A-FINDING (2026-08-23, measured in the Site Editor after Task 0)
+
+Logged in with Playwright and opened each template. Results:
+
+| Template | Editor state |
+|---|---|
+| Page: 404 | **CLEAN** — 0 errors, 0 console errors (Task 0 fixed it) |
+| Single Posts | **CLEAN** — 0 errors, 0 console errors (Task 0 fixed it) |
+| Product Archive | **13 × "Error loading block: [object Object]"**, 8 console errors |
+
+**Product Archive's errors SURVIVE A RELOAD**, so they are not the known intermittent
+500s. The failing blocks, read from `data-type` on each erroring node:
+
+- `woocommerce/product-template` — 1
+- **`sgs/product-card` — 12**
+
+**`sgs/product-card` fails to load in the EDITOR** inside `woocommerce/product-template`.
+It renders fine on the front end. This is very likely the root of Bean's *"Product
+archive's format looks super broken"* and *"none of them look anything like that nice
+professional looking custom design"* — **in the editor the cards do not render at all.**
+
+**Start Task 3 here.** It is a specific block failing in a specific parent, with a
+reproducible URL:
+`/wp-admin/site-editor.php?postType=wp_template&postId=sgs-theme//archive-product&canvas=edit`
+
+Read the 8 console errors first — "[object Object]" means the real error was stringified
+badly by the editor's error boundary, so the console holds the actual message.
+
+Not yet checked in the editor: Search Results, Single Product, and the three WooCommerce
+templates (Order Confirmation, Coming soon, Products by Attribute).
+
 ## B. Product listings not using the bespoke card
 
 | ID | Where | Current | Should be |
