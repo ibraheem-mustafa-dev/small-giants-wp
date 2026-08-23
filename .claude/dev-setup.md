@@ -1328,6 +1328,236 @@ for the verb you happen to have in mind.
 
 ---
 
+## DB catalogue — what every column records, and which ones lie
+
+This section is **GENERATED**. Do not hand-edit the table rows — they are overwritten.
+
+The framework DB is already-filtered data that distinguishes blocks and their
+attributes in meaningful ways. It is only useful if you know which columns carry a
+real vocabulary, which are fossils, and which are actively misleading. All three
+exist here.
+
+⚠ Three **0-byte `sgs-framework.db` stubs** sit on disk (repo root,
+`plugins/sgs-blocks/scripts/`, `~/.claude/`). Opening one returns zero rows, which is
+indistinguishable from a clean answer — this project's signature failure mode. The
+generator resolves the DB the way `sgs-db.py` does and fails closed on an implausible
+table count.
+
+<!-- DB-CATALOGUE:START -->
+
+### Why this section exists
+
+The DB is already-filtered data that distinguishes blocks and their attributes in
+meaningful ways — but only if you know which columns carry a usable vocabulary and
+which are fossils. Counts, vocabularies and NULL rates here are GENERATED and move
+on every reseed. What a column MEANS is hand-curated; a column with no curated
+meaning shows a blank cell rather than an invented sentence.
+
+**35 tables.** Priority tables are expanded column-by-column below.
+
+| Table | Rows | Expanded |
+|---|---|---|
+| `animation_tokens` | 8 | — |
+| `array_item_schema` | 62 | — |
+| `attribute_gap_candidates` | 3587 | — |
+| `block_attributes` | 3166 | yes |
+| `block_capabilities` | 486 | yes |
+| `block_changes` | 2735 | — |
+| `block_composition` | 211 | yes |
+| `block_selectors` | 75 | — |
+| `block_supports` | 1340 | yes |
+| `blocks` | 205 | yes |
+| `components` | 13 | — |
+| `deploy_steps` | 7 | — |
+| `design_tokens` | 261 | — |
+| `docs` | 1216 | — |
+| `excluded_properties` | 10 | — |
+| `fx_effects` | 16 | yes |
+| `gotchas` | 12 | — |
+| `hooks` | 5494 | — |
+| `html_tag_to_core_block` | 17 | — |
+| `indexed_files` | 112 | — |
+| `markup_examples` | 422 | — |
+| `modifier_suffixes` | 19 | — |
+| `pattern_coverage` | 108 | — |
+| `patterns` | 57 | — |
+| `pipeline_corrections` | 4 | — |
+| `plugins` | 3 | — |
+| `preset_implications` | 23 | yes |
+| `property_suffixes` | 154 | yes |
+| `roles` | 36 | yes |
+| `schema_metadata` | 4 | — |
+| `schema_migrations` | 29 | — |
+| `slots` | 108 | yes |
+| `style_variations` | 8 | — |
+| `theme_parts` | 28 | — |
+| `variant_slots` | 24 | yes |
+
+#### `blocks` — 205 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `slug` | TEXT | 0% |  |
+| `title` | TEXT | 0% |  |
+| `category` | TEXT | 0% | `theme` 51, `sgs-content` 45, `design` 25, `sgs-forms` 17, `text` 15, `widgets` 14, `sgs-interactive` 13, `media` 10, `sgs-layout` 8, `common` 5, `reusable` 1, `embed` 1 |
+| `type` | TEXT | 0% | `dynamic` 144, `static` 61 |
+| `status` | TEXT | 0% | Constant — every row is `built`. Filtered on as a gate predicate, so it filters nothing today. |
+| `grade` | TEXT | 100% | FOSSIL — 100% NULL but READ by generate-block-reference.py, which therefore prints nothing forever. |
+| `grade_score` | INTEGER | 100% | FOSSIL — 100% NULL, same reader as `grade`. |
+| `description` | TEXT | 0% |  |
+| `has_view_script` | INTEGER | 0% |  |
+| `has_render_php` | INTEGER | 0% |  |
+| `parent_block` | TEXT | 89% |  |
+| `created_at` | TEXT | 0% |  |
+| `updated_at` | TEXT | 0% |  |
+| `replaces` | TEXT | 89% |  |
+| `source` | TEXT | 0% | `native_wp` 122, `sgs` 83 |
+| `is_stale` | INTEGER | 0% | Constant 0 — no row has ever gone stale. Dormant, not load-bearing. |
+| `tier` | TEXT | 0% | `block` 201, `class-section` 4 — Recognition tier — how the walker identifies this thing in a draft. |
+| `variant_attr` | TEXT | 98% | Names the attribute that selects the block's variant (FR-31-20). Pairs with the variant_slots table. |
+
+#### `block_attributes` — 3166 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `id` | INTEGER | 0% |  |
+| `block_slug` | TEXT | 0% |  |
+| `attr_name` | TEXT | 0% |  |
+| `attr_type` | TEXT | 0% | `string` 1933, `object` 541, `boolean` 350, `number` 236, `array` 51, `integer` 28, `rich-text` 21, `string\|boolean` 6 |
+| `default_value` | TEXT | 16% |  |
+| `enum_values` | TEXT | 91% |  |
+| `description` | TEXT | 16% |  |
+| `is_responsive` | INTEGER | 0% |  |
+| `canonical_slot` | TEXT | 62% |  |
+| `role` | TEXT | 0% | `layout` 630, `color` 463, `core` 225, `colour-gradient` 198, `visual` 195, `typography` 187, `boolean-visibility` 177, `behaviour` 162, `text-content` 150, `select-from-enum` 140, `technical` 111, `motion` 84, `image-object` 82, `content` 70, +20 more — What KIND of thing the attribute is — the single best attribute classifier here. A gate (db-consistency/check_orphan_roles.py) fails the build if a value has no `roles` row, so it cannot rot quietly. |
+| `derived_selector` | TEXT | 65% | A NAMED TRAP. Reads like a CSS emit target; is a synthetic per-attribute identifier. colour-codemod/survey.js:21-27 measured 58% autofixable off it and the figure was wrong — ZERO of its values exist as classes in the tree. Never classify on it. |
+| `output_signature` | TEXT | 51% |  |
+| `equivalent_implementations` | TEXT | 32% | FOSSIL — holds stale synthetic Rosetta rows; no writer and no reader in current code. |
+| `signature_confidence` | REAL | 100% | FOSSIL — 100% NULL, no writer, no reader. Its only repo occurrence is the DDL line in dbschema/schema.sql. |
+| `inspector_control_type` | TEXT | 69% | `SelectControl` 236, `DesignTokenPicker` 177, `ToggleControl` 162, `TextControl` 158, `RangeControl` 83, `UnitControl` 56, `ShadowControl` 22, `ResponsiveBoxControl` 18, `ToggleGroupControl` 12, `MediaUpload` 12, `NumberControl` 7, `TextareaControl` 6, `IconPicker` 6, `SgsLinkControl` 4, +9 more — The editor control the client actually sees. Cross-tab against `attr_type` to find controls whose shape cannot hold their setting. |
+| `source` | TEXT | 0% | `sgs` 2659, `native_wp` 507 |
+| `emit_shape` | TEXT | 91% | `nested` 232, `child` 56 — How the converter emits it. Fails closed at converter/walk.py:581 when unseeded on a content-role attribute, so its NULLs are tracked gaps rather than silent ones. |
+| `alt_companion_attr` | TEXT | 100% |  |
+| `css_layer` | TEXT | 84% | `OUTER` 300, `GRID` 120, `GRID_AREA` 56, `CONTENT` 29 — Which layer of the 3-layer wrapper model (OUTER / CONTENT / GRID / GRID_AREA) the attribute belongs to. |
+| `css_property` | TEXT | 64% | `color` 147, `background-color` 121, `max-width` 41, `border-color` 40, `border-color-gradient` 34, `background-image` 34, `font-size` 30, `box-shadow` 30, `color-gradient` 28, `width` 26, `gap` 25, `font-weight` 24, `padding` 23, `grid-template-columns` 21, +80 more — The CSS longhand(s) this attribute writes. WARNING: a NULL means TWO different things — for a painting role it is a real gap; for `text-content`/`content`/`boolean-visibility` it is correct by design (100% NULL, they do not paint). Condition on `role` before reading a NULL as a defect. |
+| `box_family` | TEXT | 93% | `margin` 84, `padding` 81, `borderRadius` 22, `borderWidth` 9, `contentBandPadding` 7, `mediaPadding` 3, `imagePadding` 3, `imageBorderRadius` 3, `gridItemPadding` 3, `gridItemBorderRadius` 3, `tagPadding` 1, `submenuPadding` 1, `pillPadding` 1, `panelPadding` 1, +10 more — Merged box-object family. Narrow but authoritative — the DB-first replacement for name-regex box detection. No box_family means provably not a box attribute. |
+| `css_element` | TEXT | 67% | `wrapper` 514, `inner` 107, `item` 45, `title` 22, `grid-item` 22, `label` 19, `cta` 17, `icon` 14, `pill` 13, `split-image` 12, `media` 12, `content` 12, `body` 12, `tab` 10, +78 more — Which sub-element inside the block it paints. Must be paired with `css_layer` — matching on element alone mis-routes (converter/db/db_lookup.py:1340-1353). |
+| `css_state` | TEXT | 94% | `hover` 165, `current` 13, `scrolled` 3 — Pseudo-state the value applies to. Exact where present; the only state marker. |
+| `css_tier` | TEXT | 99% | `tablet` 12, `mobile` 11, `desktop` 7 — Responsive tier. Deliberately SPARSE — responsive siblings intentionally carry NULL and only anomalies keep a value. Do NOT treat these NULLs as gaps; 'fixing' them breaks db_lookup's base-row query. |
+
+#### `block_composition` — 211 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `block_slug` | TEXT | 0% |  |
+| `wraps_block` | TEXT | 82% | Which block this one wraps — only ever sgs/container. |
+| `composition_role` | TEXT | 0% | `content-block` 191, `leaf` 11, `section-root` 8, `wrapper-shell` 1 — The block's structural shape. See the container_kind warning — the two columns disagree. |
+| `accepts_allowed_blocks` | TEXT | 91% |  |
+| `created_at` | TEXT | 0% |  |
+| `container_kind` | TEXT | 83% | `layout` 17, `content` 13, `section` 6 — The D294 pattern selector (block-private vs SGS_Container_Wrapper). UNRELIABLE ALONE — disagrees with composition_role inside the DB, disagrees with render.php in 14 of 58 measured blocks, and sgs/container itself is NULL. Confirm against the code. |
+
+#### `block_capabilities` — 486 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `id` | INTEGER | 0% |  |
+| `block_slug` | TEXT | 0% |  |
+| `capability` | TEXT | 0% |  |
+| `kind` | TEXT | 0% | `discovery` 435, `functional` 51 — THE LOAD-BEARING SPLIT. `functional` = real converter behaviour; `discovery` = search keywords from the block title. Without it the table looks like hundreds of behavioural facts when only a few dozen are. |
+
+#### `block_supports` — 1340 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `id` | INTEGER | 0% |  |
+| `block_slug` | TEXT | 0% |  |
+| `support_name` | TEXT | 0% |  |
+| `support_value` | TEXT | 0% |  |
+| `source` | TEXT | 0% | `native_wp` 819, `sgs` 521 |
+| `is_stale` | INTEGER | 0% |  |
+
+#### `property_suffixes` — 154 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `suffix` | TEXT | 0% |  |
+| `role` | TEXT | 0% | `layout` 44, `visual` 24, `select-from-enum` 13, `color` 13, `typography` 10, `behaviour` 9, `text-content` 8, `position` 7, `motion` 5, `enum-class-probe` 5, `image-object` 4, `number-css-px` 3, `content` 3, `spacing-token` 2, +4 more |
+| `css_property` | TEXT | 29% | `color` 5, `background-color` 5, `max-width` 3, `padding-top` 2, `padding-right` 2, `padding-left` 2, `padding-bottom` 2, `gap` 2, `box-shadow` 2, `border-radius` 2, `border-color` 2, `align-items` 2, `z-index` 1, `width` 1, +76 more |
+| `is_token_matched` | INTEGER | 0% |  |
+| `token_source` | TEXT | 76% |  |
+| `notes` | TEXT | 31% |  |
+| `kind_override` | TEXT | 89% | `string` 15, `number_unitless` 1, `number_px_or_em` 1 — Parse-type escape hatch (D99). `number_unitless` doubles as a cheat-gate sentinel. |
+
+#### `slots` — 108 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `slot_name` | TEXT | 0% |  |
+| `scope` | TEXT | 0% | `element` 104, `section` 4 |
+| `aliases` | TEXT | 1% |  |
+| `standalone_block` | TEXT | 59% | The block a recognised BEM slot resolves to. Its NULLs are a KNOWN GAP, not a fossil — those slots exist as recognition vocabulary with no block to resolve to yet. |
+| `notes` | TEXT | 2% |  |
+| `created_at` | TEXT | 0% |  |
+| `standalone_block_default_attrs` | TEXT | 96% |  |
+
+#### `roles` — 36 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `role_name` | TEXT | 0% |  |
+| `classification` | TEXT | 0% | `styling-behaviour` 22, `content-bearing` 13, `unclassified` 1 — Collapses the role vocabulary into a content-vs-styling fork — the cheapest reliable predicate for 'does this carry text the client edits, or does it paint'. |
+| `description` | TEXT | 0% |  |
+| `created_at` | TEXT | 0% |  |
+
+#### `variant_slots` — 24 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `block_slug` | TEXT | 0% |  |
+| `variant_value` | TEXT | 0% |  |
+| `unique_slot` | TEXT | 0% | The slot ONLY this variant has — the discriminator, computed by set-difference against the block's other variants. |
+| `created_at` | TEXT | 0% |  |
+
+#### `preset_implications` — 23 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `block_slug` | TEXT | 0% |  |
+| `preset_attr` | TEXT | 0% |  |
+| `enum_value` | TEXT | 0% |  |
+| `implied_property` | TEXT | 0% |  |
+| `presence` | TEXT | 0% | `present` 14, `absent` 9 |
+| `is_neutral` | INTEGER | 0% | Marks preset values that genuinely imply nothing (`none`, `flat`), so the converter can tell 'no styling' from 'not set'. |
+| `created_at` | TEXT | 0% |  |
+
+#### `fx_effects` — 16 rows
+
+| Column | Type | NULL | Vocabulary / meaning |
+|---|---|---|---|
+| `effect` | TEXT | 0% |  |
+| `tier` | TEXT | 0% | `G` 11, `V` 3, `W` 1, `H` 1 — The Spec 38 four-tier motion doctrine: V vanilla / G GSAP / H helper / W WebGL substrate. |
+| `plugin_set` | TEXT | 0% |  |
+| `owns_scroll_transform` | INTEGER | 0% | Marks effects that claim the scroll transform — the mutual-exclusion axis for combining effects on one element. |
+| `reduced_motion` | TEXT | 0% |  |
+| `editor_story` | TEXT | 0% |  |
+| `created_at` | TEXT | 0% |  |
+| `scope` | TEXT | 0% | `block` 10, `element` 3, `site` 2, `paired` 1 |
+| `requires` | TEXT | 0% |  |
+| `pins` | INTEGER | 0% |  |
+| `triggers` | TEXT | 0% |  |
+| `creates_panel` | INTEGER | 0% |  |
+| `in_picker` | INTEGER | 0% |  |
+
+Regenerate with:
+
+```bash
+python plugins/sgs-blocks/scripts/generate-db-catalogue.py
+```
+
+<!-- DB-CATALOGUE:END -->
+
+---
+
 ## Known Gotchas
 
 | Gotcha | Detail |
