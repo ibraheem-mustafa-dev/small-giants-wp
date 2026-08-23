@@ -67,6 +67,11 @@ def first_purpose(path: Path) -> str:
             line = line.strip()
             if not line:
                 continue
+            # Banner/underline rules ("=======", "-------") are not a purpose.
+            # The JS path filtered these; the docstring path did not, so five
+            # scripts catalogued a row of equals signs as their description.
+            if set(line) <= set("-=_~ "):
+                continue
             cleaned = re.sub(
                 r"^" + re.escape(path.name) + r"\s*[—-]?\s*", "", line
             ).strip()
@@ -152,6 +157,25 @@ if not _COMMIT_BLOB:
     print("[tooling-catalogue] WARN: .githooks/sgs-gates.sh unreadable — commit-gate wiring will read as unwired", file=sys.stderr)
 
 
+# A header claiming one wiring state while the chains say another is the most
+# useful thing this catalogue can surface: a reader trusting the file's own words
+# would be wrong. audit-inline-styling.js calls itself "not a build gate" and is
+# prebuild step 36. Docstrings are copied faithfully, so without this the stale
+# claim propagates carrying the catalogue's authority.
+_STALE_WIRING = re.compile(r"not wired|not yet wired|not a build gate|advisory only", re.I)
+
+
+def _clip(text: str, limit: int) -> str:
+    """Truncate on a WORD boundary. Cutting mid-word produced 68 rows ending in
+    fragments like "that regressi…", which reads as corruption, not abbreviation."""
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    if " " in cut:
+        cut = cut[: cut.rindex(" ")]
+    return cut.rstrip(" ,;:-") + "…"
+
+
 def prebuild_steps() -> list[str]:
     pkg = json.loads(PKG.read_text(encoding="utf-8"))
     chain = pkg.get("scripts", {}).get("prebuild", "")
@@ -215,8 +239,7 @@ def build() -> str:
         seen.add(rel)
         i += 1
         purpose = first_purpose(path).replace("|", chr(92) + "|")
-        if len(purpose) > 155:
-            purpose = purpose[:152].rstrip() + "…"
+        purpose = _clip(purpose, 155)
         out.append(f"| {i} | `{path.name}` | {purpose} |")
     out.append("")
     out.append(f"**{i} gating scripts.** Regenerate this whole section with:")
@@ -266,16 +289,17 @@ def build() -> str:
         out.append("|---|---|---|")
         for f in entries:
             purpose = first_purpose(f).replace("|", chr(92) + "|")
-            if len(purpose) > 130:
-                purpose = purpose[:127].rstrip() + "…"
-            marks = []
+            purpose = _clip(purpose, 150)
+            wired_marks = []
             if f.name in _PREBUILD_BLOB:
-                marks.append("build")
+                wired_marks.append("build")
             if f.name in _COMMIT_BLOB:
-                marks.append("commit")
-            if not marks and f.name in _SCRIPTS_BLOB:
-                marks.append("npm")
-            wired = "+".join(marks) if marks else "—"
+                wired_marks.append("commit")
+            if not wired_marks and f.name in _SCRIPTS_BLOB:
+                wired_marks.append("npm")
+            wired = "+".join(wired_marks) if wired_marks else "—"
+            if wired_marks and _STALE_WIRING.search(purpose):
+                purpose += " ⚠ **header disputes this — it IS wired**"
             sub = f.relative_to(rp).as_posix()
             out.append(f"| `{sub}` | {wired} | {purpose} |")
         out.append("")
