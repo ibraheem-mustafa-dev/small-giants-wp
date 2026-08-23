@@ -69,7 +69,11 @@ with a control: a live card-grid `wc-product` page returns 6 cards both with and
 `?min_price=0&max_price=1`; the shop archive returns 5 → **0**. card-grid builds its own
 `WP_Query` and has no `supports.interactivity`, so converting the shop archive would leave
 the filter UI rendering, clickable, and inert. **Bean's call: design the
-inherit-the-page-query capability FIRST. Design gate open, nothing built.** The PDP related
+inherit-the-page-query capability FIRST. Design gate open, nothing built.**
+⭐ **Cold prompt ready: `.claude/prompts/2026-08-24-card-grid-query-inherit-design.md`** —
+start there. **Product Archive CANNOT be closed until this lands** (Bean, 2026-08-24): the
+checklist's done-when includes the listing using the bespoke card, so finishing the
+remaining audit items would be a partial, not a close. The PDP related
 rail (`single-product.html:34-40`) has no filter dependency and stays risk-free whenever
 wanted.
 
