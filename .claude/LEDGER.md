@@ -35,10 +35,11 @@ own live measurements caught any of it.**
 is NOT in this working tree. A theme deploy from here will overwrite it. Do not re-apply,
 revert or improve `422daba1` (my full-bleed change) until his fix is located.
 
-**SECOND — 5 raw HTML comments inside `sgs/container` delimiters** (`404.html` lines
-14/24/45, `single.html` lines 12/47) are the proven cause of "Block contains unexpected
-or invalid content" on those two templates. Mine. Move them above the outermost
-delimiter. ~15 min, unblocks the editor.
+**✅ DONE — the 5 raw HTML comments inside `sgs/container` delimiters** (`404.html`,
+`single.html`) were the proven cause of "Block contains unexpected or invalid content" on
+those two templates. Mine. Moved above the outermost delimiter (`d35ee932`), deployed, and
+**verified by opening both templates in the Site Editor: 0 error banners, 0 console
+errors.** Block-sequence md5 identical to before, so only comments moved.
 
 **✅ 404 + Single Posts are FIXED and verified in the Site Editor** (d35ee932, theme
 1.5.63) — 0 errors, 0 console errors on both.
@@ -63,6 +64,16 @@ styles; archives inconsistent with each other (search bar bottom on Search Resul
 on Product Archive; yellow/black button one side, pink+magnifier the other); infinite
 scroll gone from the archives; `index.html` a near-duplicate of `archive.html` down to
 the description; suspected template bloat.
+
+**✅ X-2 SHIPPED AND MEASURED (2026-08-23).** The WooCommerce/jQuery dequeue gate is live.
+Measured gzipped JS per surface, before → after: 404 **89.7 → 27.3 KB**, front page
+89.7 → 27.3, single post 91.1 → 28.7, page 135.2 → 45.4, archive 89.7 → 27.3, search
+89.7 → 27.3. **Six of eight surfaces are now inside the 50 KB budget; all were over it.**
+Shop (132.4) and product (92.9) correctly KEEP the stack — real WooCommerce surfaces —
+and still dropped ~42 KB each. ⚠ It shipped BROKEN first: an over-broad `! $post` early
+return meant it only fired on singular views, so the 404 — the page used as the headline
+example — was excluded by my own fail-safe. Fixed at `c0b73a7d`. **The lesson: I checked
+the CODE was live, not that the SCRIPTS were gone.**
 
 ⛔ **GOVERNING RULE, set by Bean:** agents may NOT assess a template by reading code,
 querying the DB, calling REST or inspecting hooks. **They log in with `/playwright`, open
@@ -144,9 +155,8 @@ section below.
 ## ▶ LIVE STATUS — 2026-08-23 (shop-archive track — PHASE 3 WAVE A CLOSED)
 
 **All pushed. Build GREEN (677 converter tests). Canary deployed + live-verified.**
-⚠ One commit (`a85a87d2`, cosmetic marker class) is pushed but NOT yet deployed — the
-deploy gate correctly refused while the colour-golden track had `icon-list` dirty. It
-ships on the next clean deploy; nothing depends on it.
+✅ `a85a87d2` (the cosmetic `--flex` marker-class fix, a plugin file) SHIPPED on the
+2026-08-23 blocks deploy. Nothing outstanding.
 
 **Phase 3 has TWO axes.** Correctness (the 7-point checklist) and design. Wave A closed
 the STATIC half of correctness across all 10 surfaces; the design axis has never run.

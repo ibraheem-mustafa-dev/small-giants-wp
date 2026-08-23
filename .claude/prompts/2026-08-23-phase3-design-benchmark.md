@@ -1,3 +1,32 @@
+> # ⛔ EXECUTED 2026-08-23 — DO NOT RUN THIS AGAIN
+>
+> This prompt has been carried out in full. Running it a second time would re-derive a
+> register that already exists and re-benchmark templates that have since changed.
+>
+> **Output:** `.claude/reports/2026-08-23-template-design-benchmark.md` — ten surfaces
+> graded, every finding labelled with its owning layer, one ranked cross-surface list.
+> Most of the ranked list was then implemented, deployed and live-verified.
+>
+> **⚠ Read the register's corrections before trusting any of its findings.** Four were
+> wrong or aimed at the wrong layer, and Bean caught all four by eye:
+> heading contrast (a client palette value, not a framework fault), the article measure
+> and line-height (the client snapshot overrides a framework that was already correct),
+> paragraph spacing (**false** — measured on a one-paragraph post), and "2-up on mobile"
+> (copied the benchmark's observation instead of the 167–195px readable-card rule behind
+> it). A fifth, "give the card a surface", silently killed the product image's full bleed.
+>
+> **What happens next is NOT this prompt.** Bean reviewed the templates in the Site Editor
+> afterwards and found widespread breakage that no gate and none of my own measurements
+> had caught. That work is:
+> **`.claude/plans/2026-08-24-template-by-template-remediation.md`** — template by
+> template, and its governing rule is that agents must log in with `/playwright` and LOOK
+> at a template rather than assess it from code, the DB, REST or hooks.
+>
+> Kept for provenance only: it records what was asked for and the constraints it was
+> asked under.
+
+---
+
 # Phase 3 — design benchmark: make each template the best version of ITSELF
 
 Invoke `/autopilot` before doing anything else.

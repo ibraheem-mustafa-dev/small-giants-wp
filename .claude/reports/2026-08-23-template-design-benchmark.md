@@ -835,7 +835,7 @@ The order to work in.
 | # | Finding | Surface(s) | Layer | Effort | Impact |
 |---|---|---|---|---|---|
 | 1 | ~~**X-1** Heading colour~~ **DONE** — headings now default to `text`, not `primary` | **all** | `SETTINGS` | S | Med |
-| 2 | **X-2** Widen the existing asset-optimiser gate — drops ~48 KB gz of jQuery/WC JS | **all non-commerce** | `BLOCK CAPABILITY` | S–M | High |
+| 2 | ✅ **X-2 DONE** — asset-optimiser gate widened; measured **62–90 KB gz** off per surface, not the ~48 KB predicted | **all non-commerce** | `BLOCK CAPABILITY` | S–M | High |
 | 3 | **S9-1** Homepage shows a fixture post — Settings → Reading | front-page | `SETTINGS` | S | High |
 | — | ~~**S6-1** Article paragraphs have zero spacing~~ **WITHDRAWN — the finding was false** | single | — | — | — |
 | 5 | **S2-1** PDP price is the same size as body copy | single-product | `TEMPLATE` | S | High |
@@ -980,9 +980,18 @@ row, **zero dead space**.
   and `/shop/` were removed because the first **returned HTTP 404** and the
   second does not exist on a client without WooCommerce. Closing this properly
   needs the suggested-searches block candidate.
-- **X-2 jQuery gate is committed but NOT deployed** — it lives in `plugins/`,
-  which the theme-only deploy does not carry. The ~48 KB saving remains a
-  prediction until it ships.
+- ~~X-2 jQuery gate is committed but NOT deployed~~ **✅ SHIPPED AND MEASURED
+  2026-08-23.** Gzipped JS per surface, before → after: **404 89.7 → 27.3 KB**, front
+  89.7 → 27.3, single post 91.1 → 28.7, page 135.2 → 45.4, archive 89.7 → 27.3, search
+  89.7 → 27.3. Six of eight surfaces now inside the 50 KB budget; all eight were over it.
+  Shop and product correctly keep the stack and still dropped ~42 KB each.
+  **Actual saving 62–90 KB, against a predicted ~48 KB.**
+  ⚠ It shipped BROKEN first and the failure is worth keeping: an over-broad `! $post`
+  early return meant the gate only fired on singular views, so the **404 — the page this
+  register used as its headline example — was excluded by my own fail-safe**, whose
+  comment literally named "404s with no object" as a keep-case. Caught only by measuring
+  the live pages; I had verified the code was deployed, not that the scripts were gone.
+  Fixed at `c0b73a7d`.
 - ~~Mobile product cards are 138px wide~~ — **corrected, see below.**
 - **The PDP trust copy renders its operator placeholders literally** on the live
   canary ("Delivery: replace with this client's delivery terms"). Deliberate —

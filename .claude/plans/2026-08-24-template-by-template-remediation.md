@@ -338,13 +338,12 @@ required AND its current content is duplicated effort.
 One template per work unit. A unit is not finished until it has been opened, looked at,
 and interacted with in a browser.
 
-## Task 0 — Unblock the editor (do first, ~15 min)
+## Task 0 — Unblock the editor ✅ DONE 2026-08-23
 
-Move the five raw comments in `404.html` and `single.html` outside their block
-delimiters. Deploy. Open both templates in the Site Editor and confirm the validation
-error is gone.
-
-**Done when:** both templates open clean in the editor, verified visually.
+Moved the five raw comments in `404.html` and `single.html` outside their block
+delimiters (`d35ee932`), deployed, and **verified by opening both templates in the Site
+Editor while logged in: 0 error banners, 0 console errors on each.** Block-sequence md5
+identical to before the change, so only comments moved — no block was altered.
 
 ## Task 1 — Establish the real state of every template
 
