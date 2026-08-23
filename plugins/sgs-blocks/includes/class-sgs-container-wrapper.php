@@ -1438,7 +1438,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 			}
 
-			if ( '' !== $layout ) {
+			// The layout marker class. It is a SEMANTIC marker, not the styling hook —
+			// the real properties (display/wrap/direction) are emitted as a per-instance
+			// `.{uid}` rule under Spec 32's no-inline contract, never keyed on this class.
+			// Verified live: a flex container's display comes from
+			// `.sgs-container-50841e95 { display:flex; flex-wrap:nowrap }`, and NO rule
+			// anywhere keys `display` off `.sgs-container--flex`.
+			//
+			// Suppressed for a flow-mode <main> (2026-08-23): that element deliberately
+			// emits no display and stacks by block flow, so tagging it `--flex` would put
+			// a marker on the page that misdescribes its own element. Harmless to
+			// rendering — nothing consumes it — which is exactly why it is worth removing
+			// rather than leaving: an emitted-but-meaningless class is the shape that let
+			// `align` sit inert for months before it was measured.
+			if ( '' !== $layout && ! $suppress_outer_flex_for_main ) {
 				$classes[] = 'sgs-container--' . esc_attr( $layout );
 			}
 
