@@ -284,11 +284,17 @@ $border_colour         = $attributes['borderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
-// WP `color`/`typography` support values (skip-serialised → NOT auto-inlined).
-$style_color_text  = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg    = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
-$preset_text_slug  = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug    = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// WP `typography` support values (skip-serialised → NOT auto-inlined).
+//
+// The `color` reads that used to sit here are GONE. supports.color.background
+// and .text were `true`, so CORE rendered its own colour panel in the Styles
+// tab competing with this block's SgsColourPanel — rule 31's native-colour-ui
+// finding. The flag flip is PAIRED with block-private backgroundColour* and
+// textColour* attributes exposed through fillRow()/textRow(), so capability
+// MOVES rather than disappearing (D744). With both sub-flags false nothing can
+// write style.color.* or the textColor/backgroundColor preset slugs any more,
+// so those branches were unreachable — deleted rather than left as dead code
+// that reads like a live feature (the sgs/quote precedent, 2eebbe55).
 $style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
 $style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
 
@@ -347,8 +353,42 @@ $sgs_icon_list_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $ui
 if ( '' !== $sgs_icon_list_stroke_grad['css'] ) {
 	$scoped_css[] = "{$icon_sel} svg{" . $sgs_icon_list_stroke_grad['css'] . ';}';
 }
-if ( $text_colour ) {
-	$scoped_css[] = "{$text_sel}{color:" . sgs_colour_value( $text_colour ) . ';}';
+// Text colour (flat-or-gradient, resting + hover) — scoped to the item text
+// element, never the root <ul>, matching the block's declared css:color slot.
+$sgs_ilist_text_decls = sgs_text_decls(
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
+if ( $sgs_ilist_text_decls['normal'] || $sgs_ilist_text_decls['hover'] ) {
+	$scoped_css[] = sgs_emit_state_colour_css( $text_sel, $sgs_ilist_text_decls['normal'], $sgs_ilist_text_decls['hover'] );
+}
+// Gradient companion rule — a no-op for a flat colour, but MANDATORY beside
+// every sgs_text_decls() call: that façade emits a bare `color:` declaration
+// even when the resolved value is a gradient string, which is invalid CSS the
+// browser drops silently without the background-clip:text rule below.
+$sgs_ilist_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_ilist_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+
+$sgs_ilist_text_grad_css = sgs_text_colour_gradient_fallback_rule( $text_sel, $sgs_ilist_text_normal_resolved );
+if ( '' !== $sgs_ilist_text_grad_css ) {
+	$scoped_css[] = $sgs_ilist_text_grad_css;
+}
+if ( '' !== $sgs_ilist_text_hover_resolved && $sgs_ilist_text_hover_resolved !== $sgs_ilist_text_normal_resolved ) {
+	$sgs_ilist_text_grad_hover_css = sgs_text_colour_gradient_fallback_rule( $text_sel . ':hover,' . $text_sel . ':focus-visible', $sgs_ilist_text_hover_resolved );
+	if ( '' !== $sgs_ilist_text_grad_hover_css ) {
+		$scoped_css[] = $sgs_ilist_text_grad_hover_css;
+	}
 }
 
 // --- WP typography support (fontSize/lineHeight) — scoped onto the text
@@ -378,25 +418,24 @@ if ( '' !== $text_align ) {
 	$scoped_css[] = "{$text_sel}{text-align:{$text_align};}";
 }
 
-// --- WP colour support (text/background, skip-serialised) — scoped onto the
-// root. Preset SLUGS get the standard has-* classes re-added manually below;
-// custom hex/rgb values are emitted here via the style engine. ---
-
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( ! empty( $color_args ) ) {
-	$color_scoped_styles = wp_style_engine_get_styles(
-		array( 'color' => $color_args ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $color_scoped_styles['css'] ) ) {
-		$scoped_css[] = $color_scoped_styles['css'];
-	}
+// --- Background fill (flat-or-gradient, resting + hover) — scoped onto the
+// root. Owned by the shared fill emitter, NOT by the style engine and NOT by
+// supports.color: this block's background is block-private (see the note at
+// the colour reads above). Safe on the root here because the text gradient
+// above clips to $text_sel, a DIFFERENT element, so background-clip:text can
+// never eat this paint. ---
+$sgs_ilist_fill_css = sgs_fill_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+if ( '' !== $sgs_ilist_fill_css ) {
+	$scoped_css[] = $sgs_ilist_fill_css;
 }
 
 // --- Base spacing (padding/margin) + border-radius — WP-native style.*
@@ -516,12 +555,6 @@ if ( $dividers ) {
 }
 
 $wrapper_only_classes = $uid;
-if ( '' !== $preset_text_slug ) {
-	$wrapper_only_classes .= ' has-text-color has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$wrapper_only_classes .= ' has-background has-' . $preset_bg_slug . '-background-color';
-}
 
 // Post-D345 contract (Spec 32 FR-32-1/FR-32-4 as amended; enforced live by
 // scripts/no-inline/check-no-inline.py): even a custom-property VALUE never

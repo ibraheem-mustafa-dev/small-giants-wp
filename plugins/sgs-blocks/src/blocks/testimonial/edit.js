@@ -29,6 +29,8 @@ import {
 	ResponsiveControl,
 	ShadowControl,
 	SgsColourPanel,
+	fillRow,
+	textRow,
 } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -328,68 +330,51 @@ export default function Edit( { attributes, setAttributes, context } ) {
 			   already scoped it inside the old Typography panel. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.background,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: {
-												...style?.color,
-												background: val ?? '',
-											},
-										},
-									} ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) =>
-									setAttributes( {
-										backgroundColourHover: val ?? '',
-									} ),
-								linked: true,
-							},
-						],
-					},
-					{
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.text,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: {
-												...style?.color,
-												text: val ?? '',
-											},
-										},
-									} ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) =>
-									setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					/* Link colour. supports.color.link was `true`, so CORE rendered its
+					   own link-colour control — but this block never READ
+					   style.elements.link.color.text, so that control wrote an attribute
+					   nothing painted. It was a DEAD control, not a working feature, and
+					   the flip therefore removes nothing. A link genuinely can appear
+					   here: `quote` and `summary` are RichText fields output through
+					   wp_kses_post(), which permits <a>. So the capability is added
+					   properly rather than dropped. Same `text` paint mechanism as the
+					   row above (css_property `color`), hence textRow, not fillRow. */
+					textRow( {
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'linkColour',
+							hover: 'linkColourHover',
+							gradient: 'linkColourGradient',
+							hoverGradient: 'linkColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'border',
 						label: __( 'Border colour (hover)', 'sgs-blocks' ),

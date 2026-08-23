@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl, Icon } from '@wordpress/components';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow } from '../../components';
 
 /**
  * Editor view for sgs/buybox.
@@ -28,12 +28,41 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 	} = attributes;
 
+	const colourRows = [
+		fillRow( {
+			key: 'background',
+			label: __( 'Background colour', 'sgs-blocks' ),
+			attrs: {
+				base: 'backgroundColour',
+				hover: 'backgroundColourHover',
+				gradient: 'backgroundColourGradient',
+				hoverGradient: 'backgroundColourHoverGradient',
+			},
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'text',
+			label: __( 'Text colour', 'sgs-blocks' ),
+			attrs: {
+				base: 'textColour',
+				hover: 'textColourHover',
+				gradient: 'textColourGradient',
+				hoverGradient: 'textColourHoverGradient',
+			},
+			attributes,
+			setAttributes,
+		} ),
+	];
+
 	const blockProps = useBlockProps( {
 		className: 'sgs-buybox sgs-buybox--editor-placeholder',
 	} );
 
 	return (
 		<>
+			<SgsColourPanel rows={ colourRows } />
+
 			<InspectorControls>
 				<PanelBody title={ __( 'Buybox labels', 'sgs-blocks' ) }>
 					<TextControl

@@ -42,9 +42,12 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32 / per-block migration contract): a CSS-length sanitiser
-// for box/side values (mirrors sgs/label + sgs/heading). Only margin has a
-// scoped no-inline treatment on this block — no other styling supports are
-// enabled (color is declared-but-disabled; padding is off).
+// for box/side values (mirrors sgs/label + sgs/heading). Margin has a scoped
+// no-inline treatment on this block; padding is off. Colour (background +
+// text, flat-or-gradient, resting + hover) is owned by the block-private
+// backgroundColour*/textColour* attrs below, emitted via the shared
+// five-variant colour helpers — supports.color's sub-flags are all false so
+// nothing native competes with the SGS colour panel.
 // ---------------------------------------------------------------------------
 
 /* ── 1. Resolve product ──────────────────────────────────────────────────── */
@@ -391,9 +394,9 @@ $add_to_cart_label     = '' !== sanitize_text_field( $add_to_cart_label_raw )
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32): uid is a CLASS (mirrors sgs/label/sgs/heading/
-// sgs/container). Only the WP-native `spacing.margin` support (base + the two
-// SGS custom object-attr tiers) is scoped here — color is declared-but-
-// disabled on this block and padding is off, so nothing else to route.
+// sgs/container). The WP-native `spacing.margin` support (base + the two SGS
+// custom object-attr tiers) is scoped here, plus the block-private colour
+// attrs below — padding is off, so nothing else to route.
 // ---------------------------------------------------------------------------
 
 $uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
@@ -414,17 +417,12 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 }
 
 $style_group       = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-$style_color_args  = ! empty( $style_group['color'] ) && is_array( $style_group['color'] ) ? $style_group['color'] : array();
 $style_border_args = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
 
 $base_style_engine_args = array();
 
 if ( ! empty( $base_margin_obj ) ) {
 	$base_style_engine_args['spacing'] = array( 'margin' => $base_margin_obj );
-}
-
-if ( ! empty( $style_color_args ) ) {
-	$base_style_engine_args['color'] = $style_color_args;
 }
 
 if ( ! empty( $style_border_args ) ) {
@@ -439,6 +437,70 @@ if ( ! empty( $base_style_engine_args ) ) {
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
+
+// --- Block-private colour (background + text, flat-or-gradient, resting +
+// hover) — supports.color's sub-flags are all false, so nothing native can
+// write $attributes['style']['color'] any more; these block-private attrs
+// (exposed through SgsColourPanel/fillRow/textRow in edit.js) are the SOLE
+// owner. Text colour applies to the same root element as the background
+// paint, so the background is painted on a `::after` layer rather than the
+// root itself — a text gradient (`background-clip:text`) on the root would
+// otherwise clip or overwrite the background paint (mirrors sgs/product-card's
+// text/background pseudo-element split). ---
+$sgs_bb_text_decls = sgs_text_decls(
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
+if ( $sgs_bb_text_decls['normal'] || $sgs_bb_text_decls['hover'] ) {
+	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, $sgs_bb_text_decls['normal'], $sgs_bb_text_decls['hover'] );
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany every
+// sgs_text_decls() call: that façade emits a bare `color:` declaration even
+// when the resolved value is a gradient string, which is invalid CSS the
+// browser silently drops without this rule.
+$sgs_bb_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_bb_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+
+$sgs_bb_text_gradient_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_bb_text_normal_resolved );
+if ( '' !== $sgs_bb_text_gradient_rule ) {
+	$scoped_css[] = $sgs_bb_text_gradient_rule;
+}
+if ( '' !== $sgs_bb_text_hover_resolved && $sgs_bb_text_hover_resolved !== $sgs_bb_text_normal_resolved ) {
+	$sgs_bb_text_hover_gradient_rule = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $sgs_bb_text_hover_resolved );
+	if ( '' !== $sgs_bb_text_hover_gradient_rule ) {
+		$scoped_css[] = $sgs_bb_text_hover_gradient_rule;
+	}
+}
+
+$sgs_bb_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+
+$sgs_bb_bg_layer_css = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_bb_bg_decls['normal'][0] ?? '',
+	$sgs_bb_bg_decls['hover'][0] ?? ''
+);
+if ( '' !== $sgs_bb_bg_layer_css ) {
+	$scoped_css[] = $sgs_bb_bg_layer_css;
 }
 
 // --- Responsive margin tiers — SGS custom object attrs, hand-built shorthand,

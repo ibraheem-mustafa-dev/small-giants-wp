@@ -21,9 +21,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
+			"background": false,
 			"gradients": false,
-			"text": true,
+			"text": false,
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
@@ -193,7 +193,35 @@
 			"type": "boolean",
 			"default": false
 		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

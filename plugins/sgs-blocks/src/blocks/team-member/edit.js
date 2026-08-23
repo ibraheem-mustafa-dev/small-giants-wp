@@ -39,9 +39,9 @@ import {
 	ToggleControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, fillRow, textRow } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreviewComposed } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
 const CARD_STYLES = [
@@ -168,7 +168,16 @@ function boxShorthand( box, keys ) {
 // Editor preview style builder — desktop styles only; responsive tiers +
 // nameColour/roleColour scoped rules render via PHP.
 function buildWrapperStyle( attributes ) {
-	const { style, textColor, backgroundColor, maxWidth, cardShadow, cardShadowColour } = attributes;
+	const {
+		style,
+		maxWidth,
+		cardShadow,
+		cardShadowColour,
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		textColourGradient,
+	} = attributes;
 	const wrapperStyle = {};
 
 	// Resting-state card shadow (FR-35-5 Task 4c) — render.php emits this as a
@@ -180,16 +189,29 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle[ '--sgs-card-shadow' ] = resolveShadowPreviewComposed( cardShadow, cardShadowColour );
 	}
 
-	const textPreview = style?.color?.text || ( textColor ? colourVar( textColor ) : '' );
-	if ( textPreview ) {
-		wrapperStyle.color = textPreview;
-	}
-	const bgPreview = style?.color?.background || ( backgroundColor ? colourVar( backgroundColor ) : '' );
-	if ( bgPreview ) {
-		wrapperStyle.backgroundColor = bgPreview;
-	}
-	if ( style?.color?.gradient ) {
-		wrapperStyle.backgroundImage = style.color.gradient;
+	// Text + background colour preview (block-private, flat-or-gradient) —
+	// replaces the removed native style.color.text/background/gradient read.
+	// block.json's supports.color sub-flags are now all false, so WordPress no
+	// longer writes textColor/backgroundColor/style.color.gradient at all;
+	// the block-private backgroundColour*/textColour* attrs (set via
+	// SgsColourPanel's fillRow/textRow) are the single source now. Mirrors
+	// sgs/product-card's editor-preview resolver (resting state only — a
+	// static preview style object cannot represent a `:hover` pseudo-state).
+	const resolveTeamMemberColourPreview = ( value ) => {
+		if ( ! value ) {
+			return undefined;
+		}
+		const v = String( value ).trim();
+		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : colourVar( v );
+	};
+	Object.assign(
+		wrapperStyle,
+		resolveTextColourPreviewStyle( textColour, textColourGradient, resolveTeamMemberColourPreview )
+	);
+	if ( backgroundColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient ) ) {
+		wrapperStyle.backgroundImage = backgroundColourGradient;
+	} else if ( backgroundColour ) {
+		wrapperStyle.backgroundColor = resolveTeamMemberColourPreview( backgroundColour );
 	}
 
 	if ( style?.typography?.fontSize ) {
@@ -323,6 +345,30 @@ export default function Edit( { attributes, setAttributes } ) {
 			   nameColour and roleColour are plain single-state colours. */ }
 			<SgsColourPanel
 				rows={ [
+					fillRow( {
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'nameColour',
 						label: __( 'Name colour', 'sgs-blocks' ),

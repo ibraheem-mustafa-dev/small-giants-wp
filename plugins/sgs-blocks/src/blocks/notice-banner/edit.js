@@ -15,6 +15,8 @@ import {
 	IconPreview,
 	ResponsiveBoxControl,
 	SgsColourPanel,
+	fillRow,
+	textRow,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -178,55 +180,40 @@ export default function Edit( { attributes, setAttributes } ) {
 			   sits at the top of the inspector (Styles tab). Replaces the
 			   inline "Icon colour" DesignTokenPicker that used to sit inside
 			   the "Icon" ToolsPanelItem below. "Text colour" + "Background
-			   colour" are the BLOCK-LEVEL native WP colour controls (was
-			   `supports.color.text`/`background`, now false so WP no longer
-			   renders its own duplicate panel) — wired straight to
-			   `style.color.text`/`background`, which render.php already
-			   reads manually (lines ~172-174, wp_style_engine_get_styles(),
-			   scoped to the root `.sgs-notice-banner` selector) — a real
-			   working control, not dead plumbing. Single-state (no hover
-			   pair exists for either in render.php). iconColour stays
-			   single-state too — no hover counterpart. */ }
+			   colour" are now BLOCK-PRIVATE attributes (native
+			   `supports.color` is fully false — WP no longer renders its own
+			   colour panel or writes to core's `style.color.*` storage)
+			   built via the shared five-variant colour helpers (`fillRow`/
+			   `textRow`) — render.php reads the same attrs through the
+			   matching PHP-side emitters (`sgs_fill_decls`/`sgs_text_decls`).
+			   Both rows support a base + hover state and a gradient sibling.
+			   iconColour stays single-state — no hover counterpart. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.text,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: { ...style?.color, text: val || undefined },
-										},
-									} ),
-								linked: true,
-							},
-						],
-					},
-					{
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.background,
-								onChange: ( val ) =>
-									setAttributes( {
-										style: {
-											...style,
-											color: { ...style?.color, background: val || undefined },
-										},
-									} ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'iconColour',
 						label: __( 'Icon colour', 'sgs-blocks' ),

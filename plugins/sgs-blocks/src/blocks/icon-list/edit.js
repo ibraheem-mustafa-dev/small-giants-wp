@@ -16,6 +16,8 @@ import {
   ResponsiveBorderRadiusControl,
   TypographyControls,
   SgsColourPanel,
+  fillRow,
+  textRow,
 } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
@@ -343,6 +345,18 @@ export default function Edit({ attributes, setAttributes }) {
          links to the theme palette (D619). */}
       <SgsColourPanel
         rows={[
+          fillRow({
+            key: "background",
+            label: __("Background colour", "sgs-blocks"),
+            attrs: {
+              base: "backgroundColour",
+              hover: "backgroundColourHover",
+              gradient: "backgroundColourGradient",
+              hoverGradient: "backgroundColourHoverGradient",
+            },
+            attributes,
+            setAttributes,
+          }),
           showIconColourRow && {
             key: "icon",
             label: __("Icon colour", "sgs-blocks"),
@@ -359,19 +373,18 @@ export default function Edit({ attributes, setAttributes }) {
               },
             ],
           },
-          {
+          textRow({
             key: "text",
             label: __("Text colour", "sgs-blocks"),
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: textColour,
-                onChange: (val) => setAttributes({ textColour: val ?? "" }),
-                linked: true,
-              },
-            ],
-          },
+            attrs: {
+              base: "textColour",
+              hover: "textColourHover",
+              gradient: "textColourGradient",
+              hoverGradient: "textColourHoverGradient",
+            },
+            attributes,
+            setAttributes,
+          }),
           showBorderColourRow && {
             key: "border",
             label: __("Border colour", "sgs-blocks"),

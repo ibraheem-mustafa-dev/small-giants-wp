@@ -167,6 +167,30 @@
 				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
 			],
 			"reason": "RULED 2026-08-21 (Bean), and this settles the pattern across EVERY parent that mounts sgs/text — not per block, which is what HANDOVER-3 asked for. A section-class block can be the parent of ANY non-section block that has no forced parent (you cannot parent sgs/tab, because tab must nest under sgs/tabs — you get tabs instead). So a parent-level textColour is NOT a second control for the same thing: it is the root-scoped INHERITABLE cascade default for whatever the client nests inside, and the child's own control overrides that default for one instance. Two different jobs, correctly two controls. KEEP BOTH. This is the HC2 carve-out with a principled boundary rather than two examples. The UX objection HANDOVER-3 recorded is still real and is answered by LABELLING, not by deleting either control. sgs/container specifically REPLACED a dead binding here: its wrapper manifest mapped css:color to `native:color.text` while supports.color is false on this block, so there was no reachable text control at all and the conformance gate already reported text/css:color as a GAP."
+		},
+		{
+			"check": "parent-child-duplicate",
+			"block": "sgs/info-box",
+			"attr": "textColour",
+			"severity": "scoped",
+			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+			"sources": [
+				"sgs/info-box edit.js: parent-level control for \"textColour\"",
+				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+			],
+			"reason": "Same case as sgs/accordion-item's entry, and covered by the SAME Bean ruling of 2026-08-21, which states in terms that it settles the pattern across EVERY parent mounting sgs/text rather than per block: the parent-level attr is the root-scoped INHERITABLE cascade default for whatever the client nests, and the child's own control overrides it for one instance. Two jobs, correctly two controls. KEEP BOTH. ⚠ THIS FINDING IS PRE-EXISTING, NEWLY VISIBLE — not introduced on 2026-08-23. The duplication already existed via WordPress's own supports.color.text panel at the parent; the native-colour-ui migration only moved that value from core's style.color.text storage into a block-private `textColour` attribute, which is the name this detector matches on. Nothing became more duplicated; it became detectable. Verified against the pre-change tree before accepting."
+		},
+		{
+			"check": "parent-child-duplicate",
+			"block": "sgs/notice-banner",
+			"attr": "textColour",
+			"severity": "scoped",
+			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+			"sources": [
+				"sgs/notice-banner edit.js: parent-level control for \"textColour\"",
+				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+			],
+			"reason": "Same case as sgs/accordion-item's entry, and covered by the SAME Bean ruling of 2026-08-21, which states in terms that it settles the pattern across EVERY parent mounting sgs/text rather than per block: the parent-level attr is the root-scoped INHERITABLE cascade default for whatever the client nests, and the child's own control overrides it for one instance. Two jobs, correctly two controls. KEEP BOTH. ⚠ THIS FINDING IS PRE-EXISTING, NEWLY VISIBLE — not introduced on 2026-08-23. The duplication already existed via WordPress's own supports.color.text panel at the parent; the native-colour-ui migration only moved that value from core's style.color.text storage into a block-private `textColour` attribute, which is the name this detector matches on. Nothing became more duplicated; it became detectable. Verified against the pre-change tree before accepting."
 		}
 	]
 }

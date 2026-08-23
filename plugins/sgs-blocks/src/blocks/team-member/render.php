@@ -160,13 +160,15 @@ if ( isset( $style_border['radius'] ) ) {
 	}
 }
 
-// WP `color`/`typography` support values (skip-serialised → NOT auto-inlined).
-$style_color_text     = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
-$style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
-$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-
+// Native style.color.text/background/gradient reads + the textColor/backgroundColor
+// preset-slug reads are REMOVED here (2026-08-23) — block.json's `supports.color`
+// sub-flags (background/text/gradients) are now all FALSE, so WordPress no longer
+// registers those attributes or renders its own competing colour panel in the Styles
+// tab. Background + text colour (flat-or-gradient, base + hover) are now owned
+// entirely by the block-private backgroundColour*/textColour* attrs, emitted via the
+// shared colour-variant helpers at step 12 below (same proven pattern as
+// sgs/product-card + sgs/accordion-item + sgs/quote, commit `2eebbe55`). Capability
+// MOVES rather than disappearing — the client also gains hover states it never had.
 $style_font_size = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
 
 // Native text-align support — WP core does NOT reliably apply the
@@ -469,19 +471,9 @@ if ( ! empty( $border_args ) ) {
 	$base_style_engine_args['border'] = $border_args;
 }
 
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( '' !== $style_color_gradient ) {
-	$color_args['gradient'] = $style_color_gradient;
-}
-if ( ! empty( $color_args ) ) {
-	$base_style_engine_args['color'] = $color_args;
-}
+// $color_args (native style.color.text/background/gradient) is REMOVED here — see
+// the step-4 comment above. Background/text colour are now emitted separately at
+// step 12b below via the shared colour-variant helpers.
 
 $typography_args = array();
 if ( '' !== $style_font_size ) {
@@ -498,6 +490,67 @@ if ( ! empty( $base_style_engine_args ) ) {
 	);
 	if ( ! empty( $base_scoped_styles['css'] ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
+	}
+}
+
+// --- 12b. Background + text colour (block-private, replaces the native
+// style.color.background/text/gradient support removed at step 4) — same
+// proven pattern as sgs/product-card + sgs/accordion-item + sgs/quote
+// (commit `2eebbe55`). Both land on the SAME root element (the card IS the
+// root, contract §B3), so the background paints on a `::after` layer via
+// sgs_block_background_layer_css() rather than the root itself — otherwise
+// a text gradient's `background-clip:text` on the root would clip or
+// overwrite the background paint (both use `background-image`). ---
+$sgs_tm_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+$sgs_tm_bg_css   = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_tm_bg_decls['normal'][0] ?? '',
+	$sgs_tm_bg_decls['hover'][0] ?? ''
+);
+if ( '' !== $sgs_tm_bg_css ) {
+	$scoped_css[] = $sgs_tm_bg_css;
+}
+
+$sgs_tm_text_decls = sgs_text_decls(
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
+if ( $sgs_tm_text_decls['normal'] || $sgs_tm_text_decls['hover'] ) {
+	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, $sgs_tm_text_decls['normal'], $sgs_tm_text_decls['hover'] );
+}
+// Gradient companion rule — MUST accompany every sgs_text_decls() call:
+// that façade emits a bare `color:` declaration even when the resolved
+// value is a gradient string, which is invalid CSS the browser silently
+// drops without this rule (`check-text-gradient-companion.js`).
+$sgs_tm_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_tm_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+$sgs_tm_text_fallback_css    = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_tm_text_normal_resolved );
+if ( '' !== $sgs_tm_text_fallback_css ) {
+	$scoped_css[] = $sgs_tm_text_fallback_css;
+}
+if ( '' !== $sgs_tm_text_hover_resolved && $sgs_tm_text_hover_resolved !== $sgs_tm_text_normal_resolved ) {
+	$sgs_tm_text_hover_fallback_css = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $sgs_tm_text_hover_resolved );
+	if ( '' !== $sgs_tm_text_hover_fallback_css ) {
+		$scoped_css[] = $sgs_tm_text_hover_fallback_css;
 	}
 }
 
@@ -577,19 +630,18 @@ $sgs_inner_html = sprintf(
 // wrapper — the root <div> carries get_block_wrapper_attributes(), the
 // block class `wp-block-sgs-team-member` (added automatically), the scoped
 // uid CLASS, the card/hover feature classes, the anchor `id`, and the
-// preset colour / text-align classes re-added manually (the color/
+// preset border / text-align classes re-added manually (the border/
 // typography supports are skip-serialised so WP no longer auto-adds them).
+// The preset text-colour/background-colour classes (`has-text-color` /
+// `has-{slug}-color` / `has-background` / `has-{slug}-background-color`)
+// are REMOVED — `supports.color.text`/`.background` are now FALSE, so
+// WordPress no longer registers `textColor`/`backgroundColor` and this
+// branch became unreachable (same fix shape as the sgs/quote precedent,
+// commit `2eebbe55`). Background/text colour render via the scoped
+// `.{uid}` rule built at step 12b instead.
 // ---------------------------------------------------------------------------
 $root_classes = $sgs_classes;
 
-if ( '' !== $preset_text_slug ) {
-	$root_classes[] = 'has-text-color';
-	$root_classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$root_classes[] = 'has-background';
-	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
-}
 if ( '' !== $preset_border_slug ) {
 	$root_classes[] = 'has-border-color';
 	$root_classes[] = 'has-' . $preset_border_slug . '-border-color';

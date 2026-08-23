@@ -160,12 +160,12 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 // consumes this shape directly (mirrors core's own border support output).
 $style_border = isset( $style_obj['border'] ) && is_array( $style_obj['border'] ) ? $style_obj['border'] : array();
 
-// Colour support values.
-$style_color_text     = isset( $style_obj['color']['text'] ) ? (string) $style_obj['color']['text'] : '';
-$style_color_bg       = isset( $style_obj['color']['background'] ) ? (string) $style_obj['color']['background'] : '';
-$style_color_gradient = isset( $style_obj['color']['gradient'] ) ? (string) $style_obj['color']['gradient'] : '';
-$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// Colour support values — BLOCK-PRIVATE (D744): native `supports.color` is
+// fully false, so core no longer writes `style.color.*`/`textColor`/
+// `backgroundColor`. Text + background are now `textColour*`/
+// `backgroundColour*` attributes, resolved below via the shared five-variant
+// colour helpers (helpers-colour-variants.php / helpers-tokens.php).
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 
 // Typography support values.
 $style_font_size   = isset( $style_obj['typography']['fontSize'] ) ? (string) $style_obj['typography']['fontSize'] : '';
@@ -211,6 +211,61 @@ if ( '' !== $sgs_notice_banner_stroke_grad['defs'] ) {
 	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon svg{' . $sgs_notice_banner_stroke_grad['css'] . ';}';
 }
 
+// --- Text colour (flat-or-gradient, base + hover) — D744: replaces core's
+// `style.color.text` storage. Painted on the ROOT selector so it inherits
+// into the InnerBlocks child (sgs/text) and matches the prior style-engine
+// 'color' behaviour. ---
+$sgs_nb_text_decls = sgs_text_decls(
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
+if ( $sgs_nb_text_decls['normal'] || $sgs_nb_text_decls['hover'] ) {
+	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, $sgs_nb_text_decls['normal'], $sgs_nb_text_decls['hover'] );
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany every
+// sgs_text_decls() call: that façade emits a bare `color:` declaration even
+// when the resolved value is a gradient string, which is invalid CSS the
+// browser silently drops without this rule.
+$sgs_nb_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_nb_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+
+$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_nb_text_normal_resolved );
+if ( '' !== $sgs_nb_text_hover_resolved && $sgs_nb_text_hover_resolved !== $sgs_nb_text_normal_resolved ) {
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $sgs_nb_text_hover_resolved );
+}
+
+// --- Background (flat-or-gradient, base + hover) — painted on a `::after`
+// layer, never the root itself, so a text gradient on the SAME root
+// (background-clip:text, above) cannot clip or overwrite it (mirrors
+// sgs/product-card + sgs/heading + sgs/text's background/text pseudo-element
+// split — text + background land on the SAME element here). ---
+$sgs_nb_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+
+$scoped_css[] = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_nb_bg_decls['normal'][0] ?? '',
+	$sgs_nb_bg_decls['hover'][0] ?? ''
+);
+
 // --- Width (base only, kept-scalar). ---
 if ( $max_width ) {
 	$mw_safe = sgs_css_length_value( $max_width );
@@ -237,20 +292,6 @@ if ( ! empty( $base_spacing ) ) {
 
 if ( ! empty( $style_border ) ) {
 	$base_style_engine_args['border'] = $style_border;
-}
-
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( '' !== $style_color_gradient ) {
-	$color_args['gradient'] = $style_color_gradient;
-}
-if ( ! empty( $color_args ) ) {
-	$base_style_engine_args['color'] = $color_args;
 }
 
 $typography_args = array();
@@ -315,10 +356,6 @@ $sgs_wrapper_classes = array( 'sgs-notice-banner', 'sgs-notice-banner--' . sanit
 if ( '' !== $preset_text_slug ) {
 	$sgs_wrapper_classes[] = 'has-text-color';
 	$sgs_wrapper_classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$sgs_wrapper_classes[] = 'has-background';
-	$sgs_wrapper_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 }
 if ( '' !== $text_align ) {
 	$sgs_wrapper_classes[] = 'has-text-align-' . $text_align;

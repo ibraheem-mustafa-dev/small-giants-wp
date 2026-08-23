@@ -11,7 +11,8 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, fillRow, textRow } from '../../components';
+import { colourVar } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
 /**
@@ -27,10 +28,16 @@ import { UnitControl } from '../../components/primitives';
  *   - Spacing (padding / margin — base via WP-native Dimensions panel,
  *     tablet/mobile via the paddingTablet/paddingMobile/marginTablet/
  *     marginMobile object attrs)
- *   - Border / Colour / Typography / Shadow are native WP supports — their
- *     editor UI is rendered automatically by the Styles inspector tab and
- *     needs no custom control here (`__experimentalSkipSerialization` only
- *     affects the RENDERED/SAVED output, not editor-UI availability).
+ *   - Border / Typography / Shadow are native WP supports — their editor UI
+ *     is rendered automatically by the Styles inspector tab and needs no
+ *     custom control here (`__experimentalSkipSerialization` only affects
+ *     the RENDERED/SAVED output, not editor-UI availability). Border's
+ *     RESTING solid colour stays native; only its gradient sibling + the
+ *     hover state are custom.
+ *   - Colour (background / text / link) is D744 block-private — moved off
+ *     the competing native Styles-tab panel (supports.color.* all false)
+ *     onto SgsColourPanel rows below (fillRow/textRow + a helper-built link
+ *     row), so the client sees ONE colour control per property.
  *
  * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-10):
  * render.php now scopes ALL of color/typography/spacing/border/shadow into
@@ -77,15 +84,31 @@ function boxShorthand( box ) {
  * @returns {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes ) {
-	const { style, width, maxWidth } = attributes;
+	const { style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour } = attributes;
 	const preview = {};
 
-	const bg = style?.color?.background;
-	if ( bg ) preview.backgroundColor = bg;
-	const text = style?.color?.text;
-	if ( text ) preview.color = text;
-	const gradient = style?.color?.gradient;
-	if ( gradient ) preview.backgroundImage = gradient;
+	// Background/text colour moved OFF native style.color.* to block-private
+	// attrs mounted in SgsColourPanel (D744) — supports.color.background/
+	// text/gradients are now false, so WP no longer writes style.color here.
+	// Resolve the same way sgs/quote's editor preview does: a `#`/`rgb`/`hsl`
+	// value passes through raw, anything else is a design-token slug wrapped
+	// via colourVar(). A text GRADIENT is deliberately NOT previewed here —
+	// it needs `background-clip:text` on the text layer while a background
+	// gradient/colour needs its own `::after` layer (render.php owns that
+	// interaction authoritatively); the canvas approximation stays
+	// flat-colour-only for text.
+	if ( backgroundColourGradient ) {
+		preview.backgroundImage = backgroundColourGradient;
+	} else if ( backgroundColour ) {
+		preview.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
+			? backgroundColour
+			: colourVar( backgroundColour );
+	}
+	if ( textColour ) {
+		preview.color = /^#|^rgb|^hsl/.test( textColour )
+			? textColour
+			: colourVar( textColour );
+	}
 
 	const border = style?.border;
 	if ( border ) {
@@ -246,8 +269,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		backgroundColourHover,
-		textColourHover,
 		borderColourHover,
 		borderColourHoverGradient,
 		borderColourGradient,
@@ -365,45 +386,56 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
-			{ /* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
-			   This block's NORMAL-state background/text/border colours are
-			   WP-native `style.color.*`/`__experimentalBorder.color` (own native
-			   UI, left untouched — genuinely consumed by render.php, no SGS
-			   custom attr exists to replace them). Only the HOVER states are
-			   custom SGS attrs with no native equivalent, so they render here as
-			   single-state rows (no "Normal" tab — there is no sibling base
-			   attr for these three). Every state links to the theme palette
-			   (D619). */ }
+			{ /* D609/D618/D744 — ONE grouped, SGS-OWNED colour panel, rendered
+			   FIRST. Background/text/link colour used to be WP-native
+			   (`style.color.*`/Elements API); D744 moved them off the native
+			   Styles-tab panel (supports.color.* all false) onto block-private
+			   attrs so the client sees ONE colour control per property, not two
+			   competing ones. Background/text now render as full rows (both
+			   Normal + Hover states, via the shared fillRow/textRow helpers) —
+			   Border stays native for its RESTING solid colour (only the
+			   gradient sibling + the hover state are custom, unchanged by
+			   D744). Link colour has no shared row helper, so it is hand-built
+			   below matching sgs/table-of-contents' linkColour/hover pairing.
+			   Every state links to the theme palette (D619). */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
-						label: __( 'Background colour (hover)', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-								gradientValue: attributes.backgroundColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
+						label: __( 'Background colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'text',
-						label: __( 'Text colour (hover)', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						label: __( 'Text colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'linkColour',
+							hover: 'linkColourHover',
+							gradient: 'linkColourGradient',
+							hoverGradient: 'linkColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'border',
 						label: __( 'Border colour (hover)', 'sgs-blocks' ),

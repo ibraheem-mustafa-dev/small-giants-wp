@@ -23,7 +23,7 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"link": true,
+			"link": false,
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
@@ -357,6 +357,46 @@
 			"default": 16
 		},
 		"ratingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

@@ -26,7 +26,7 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -141,6 +141,38 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"displayMode": {
 			"type": "string",

@@ -20,9 +20,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -187,6 +187,38 @@
 			"items": {
 				"type": "object"
 			}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"nameColour": {
 			"type": "string",

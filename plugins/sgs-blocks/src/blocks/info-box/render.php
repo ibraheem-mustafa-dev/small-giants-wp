@@ -38,10 +38,18 @@
  * R-31-14: NO legacy fallback hack.
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
- *   cardStyle, effectHover, iconPosition, backgroundColourHover, textColourHover,
+ *   cardStyle, effectHover, iconPosition, backgroundColour, backgroundColourGradient,
+ *   backgroundColourHover, backgroundColourHoverGradient, textColour, textColourGradient,
+ *   textColourHover, textColourHoverGradient, linkColour, linkColourHover,
  *   borderColourHover, scaleHover, shadowHover, grayscaleHover,
  *   transitionDuration, transitionEasing,
  *   sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, staggerDelay.
+ *
+ * D744 — background/text/link colour were migrated OFF native supports.color
+ * (background/text/link/gradients, all false in block.json now) onto these
+ * block-private attrs, emitted via the shared colour-variant helpers
+ * (includes/helpers-colour-variants.php) so the client sees ONE colour
+ * control per property instead of a competing native + custom pair.
  *
  * @since 2026-05-05  FR-22-6 migration — InnerBlocks content model.
  * @since 2026-07-10  100% no-inline + box-group migration (D297).
@@ -65,24 +73,28 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 // 2. Extract LAYOUT/STYLING scalar attributes with defaults.
 // ---------------------------------------------------------------------------
-$sgs_card_style          = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
-$sgs_hover_effect        = isset( $attributes['effectHover'] ) ? $attributes['effectHover'] : 'lift';
-$sgs_icon_position       = isset( $attributes['iconPosition'] ) ? $attributes['iconPosition'] : 'top';
-$sgs_hover_bg            = isset( $attributes['backgroundColourHover'] ) ? $attributes['backgroundColourHover'] : '';
-$sgs_hover_bg_gradient = sgs_css_gradient_value( $attributes['backgroundColourHoverGradient'] ?? '' );
-$sgs_hover_text          = isset( $attributes['textColourHover'] ) ? $attributes['textColourHover'] : '';
-$sgs_hover_border        = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
+$sgs_card_style    = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
+$sgs_hover_effect  = isset( $attributes['effectHover'] ) ? $attributes['effectHover'] : 'lift';
+$sgs_icon_position = isset( $attributes['iconPosition'] ) ? $attributes['iconPosition'] : 'top';
+$sgs_hover_border  = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
 // D636 border-colour gradient — sibling attribute, wins over $sgs_hover_border when set.
 $sgs_hover_border_gradient = sgs_css_gradient_value( isset( $attributes['borderColourHoverGradient'] ) ? $attributes['borderColourHoverGradient'] : '' );
 // RESTING border-colour gradient — sibling to the native __experimentalBorder.color
 // flat colour (style.border.color, read into $style_border_args below). Wins over
 // the native flat colour when set — same "gradient sibling wins over flat" contract
 // as the hover pair above and as sgs/quote's borderColour/borderColourGradient pair.
-$sgs_border_gradient = sgs_css_gradient_value( isset( $attributes['borderColourGradient'] ) ? $attributes['borderColourGradient'] : '' );
+$sgs_border_gradient     = sgs_css_gradient_value( isset( $attributes['borderColourGradient'] ) ? $attributes['borderColourGradient'] : '' );
 $sgs_hover_scale         = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
 $sgs_hover_shadow        = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
 $sgs_hover_shadow_colour = isset( $attributes['shadowHoverColour'] ) ? $attributes['shadowHoverColour'] : '';
 $sgs_hover_gray          = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
+
+// D744 — background/text/link colour, block-private replacements for the
+// retired native supports.color.background/text/link/gradients. Read raw
+// here; resolution (slug -> var(), gradient validation, flat-vs-gradient
+// win) happens where each is emitted below via the shared colour-variant
+// helpers (includes/helpers-colour-variants.php) + sgs_text_decls().
+$sgs_text_colour = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
 
 // Width — SGS custom scalars (kept-scalar single-value families, contract §C).
 // Base only — this block never declared maxWidthTablet/widthTablet.
@@ -129,24 +141,19 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 // ---------------------------------------------------------------------------
 
 $style_group           = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-$style_color_args      = ! empty( $style_group['color'] ) && is_array( $style_group['color'] ) ? $style_group['color'] : array();
 $style_border_args     = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
 $style_typography_args = ! empty( $style_group['typography'] ) && is_array( $style_group['typography'] ) ? $style_group['typography'] : array();
 $style_shadow          = isset( $style_group['shadow'] ) ? (string) $style_group['shadow'] : '';
 
-// Link colour (Elements API — supports.color.link:true stores it here, NOT
-// under style.color). Resolved via a second scoped style-engine call below
-// (reuses the engine's own preset-var resolution, matches WP core's own
-// link-colour serialisation mechanism).
-$style_link_colour = isset( $style_group['elements']['link']['color']['text'] )
-	? (string) $style_group['elements']['link']['color']['text']
-	: '';
-
-// Preset colour/gradient/font-size slugs — skip-serialisation drops WP's
-// automatic has-* classes, so re-add them manually (mirrors sgs/container).
-$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-$preset_gradient_slug = isset( $attributes['gradient'] ) ? sanitize_html_class( $attributes['gradient'] ) : '';
+// D744: native color support (background/text/link/gradients) is retired —
+// $style_group['color'] and $style_group['elements']['link'] are no longer
+// read. WP does not add textColor/backgroundColor/gradient to this block's
+// attribute schema once supports.color.background/text/gradients are false
+// (they are conditionally-registered attrs, not always-present ones), so
+// there is no preset-slug has-*-color class to re-add either — the whole
+// native colour surface this section used to bridge is gone by construction,
+// not by a runtime check. $preset_fontsize_slug (typography.fontSize, a
+// SEPARATE support left untouched) is still needed below.
 $preset_fontsize_slug = isset( $attributes['fontSize'] ) ? sanitize_html_class( $attributes['fontSize'] ) : '';
 
 // ---------------------------------------------------------------------------
@@ -156,21 +163,20 @@ $preset_fontsize_slug = isset( $attributes['fontSize'] ) ? sanitize_html_class( 
 $sgs_wrapper_styles = array();
 $sgs_wrapper_styles = array_merge( $sgs_wrapper_styles, sgs_transition_vars( $attributes ) );
 
-// Hover colours emit as a scoped `.{uid}.sgs-info-box:hover{…}` rule (assembled
-// in §9 below), NOT as inline `--sgs-hover-*` VALUES. An inline `--var` (a) leaves
-// a `style` attribute on the root and (b) breaks the former
-// `[style*="--sgs-hover-*"]` presence-selector gate the moment the value moves
-// scoped (Spec 32 FR-32-4 as amended 2026-07-18 / D345; footprint GOTCHA F). A
-// per-instance `:hover` rule (specificity 0,3,0) beats the variant base (0,2,0)
-// and applies ONLY when the operator set a hover colour — variant-safe, so no
-// resting-value fallback is needed for the per-variant background.
+// Hover BORDER colour emits as a scoped `.{uid}.sgs-info-box:hover{…}` rule
+// (assembled in §9 below), NOT as an inline `--sgs-hover-*` VALUE. An inline
+// `--var` (a) leaves a `style` attribute on the root and (b) breaks the
+// former `[style*="--sgs-hover-*"]` presence-selector gate the moment the
+// value moves scoped (Spec 32 FR-32-4 as amended 2026-07-18 / D345;
+// footprint GOTCHA F). A per-instance `:hover` rule (specificity 0,3,0)
+// beats the variant base (0,2,0) and applies ONLY when the operator set a
+// hover colour — variant-safe, so no resting-value fallback is needed.
+// D744: background/text hover colours moved OUT of this array — they are
+// now emitted by sgs_block_background_layer_css()/sgs_emit_state_colour_css()
+// above (background on its own `::after` layer; text alongside its base
+// state), so building them here too would duplicate the same declarations
+// on the same selector.
 $sgs_hover_decls = array();
-if ( $sgs_hover_bg ) {
-	$sgs_hover_decls[] = sgs_background_paint_decl( $sgs_hover_bg, $sgs_hover_bg_gradient );
-}
-if ( $sgs_hover_text ) {
-	$sgs_hover_decls[] = 'color:' . sgs_colour_value( $sgs_hover_text );
-}
 if ( $sgs_hover_border ) {
 	$sgs_hover_decls[] = 'border-color:' . sgs_colour_value( $sgs_hover_border );
 }
@@ -211,18 +217,10 @@ if ( $sgs_hover_gray ) {
 	$sgs_classes[] = 'sgs-has-grayscale';
 }
 
-if ( '' !== $preset_text_slug ) {
-	$sgs_classes[] = 'has-text-color';
-	$sgs_classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$sgs_classes[] = 'has-background';
-	$sgs_classes[] = 'has-' . $preset_bg_slug . '-background-color';
-}
-if ( '' !== $preset_gradient_slug ) {
-	$sgs_classes[] = 'has-background';
-	$sgs_classes[] = 'has-' . $preset_gradient_slug . '-gradient-background';
-}
+// D744: has-text-color / has-background / has-*-gradient-background are
+// retired with native color support — WP no longer registers textColor/
+// backgroundColor/gradient on this block's schema, so there is no preset
+// slug left to re-add a class for.
 if ( '' !== $preset_fontsize_slug ) {
 	$sgs_classes[] = 'has-' . $preset_fontsize_slug . '-font-size';
 }
@@ -251,10 +249,9 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
-if ( ! empty( $style_color_args ) ) {
-	$base_style_engine_args['color'] = $style_color_args;
-}
-
+// D744: no 'color' key here — background/text colour are block-private
+// (emitted separately below via the shared colour-variant helpers), not
+// passed wholesale to the style engine any more.
 if ( ! empty( $style_border_args ) ) {
 	$base_style_engine_args['border'] = $style_border_args;
 }
@@ -276,6 +273,58 @@ if ( ! empty( $base_style_engine_args ) ) {
 		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
+
+// --- D744: Text colour (flat-or-gradient, base + hover) — block-private
+// replacement for the retired native supports.color.text/gradients. Both
+// states land on the SAME root selector as the background paint below, so
+// this uses sgs_text_decls()/sgs_emit_state_colour_css() (declarations only)
+// rather than a variant that owns its own rule — mirrors sgs/product-card's
+// identical text-and-background-on-one-element case. ---
+$sgs_info_text_decls = sgs_text_decls(
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
+if ( $sgs_info_text_decls['normal'] || $sgs_info_text_decls['hover'] ) {
+	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, $sgs_info_text_decls['normal'], $sgs_info_text_decls['hover'] );
+}
+// Gradient companion rule — MUST accompany sgs_text_decls(): that façade
+// emits a bare `color:` declaration even when the resolved value is a
+// gradient string, which is invalid CSS the browser silently drops without
+// this rule (background-clip:text fallback for browsers that don't support
+// it, plus the actual background-clip:text painting itself).
+$sgs_info_text_normal_resolved = sgs_resolve_text_colour_or_gradient( $sgs_text_colour, (string) ( $attributes['textColourGradient'] ?? '' ) );
+$sgs_info_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '',
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+$scoped_css[]                  = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_info_text_normal_resolved );
+if ( '' !== $sgs_info_text_hover_resolved && $sgs_info_text_hover_resolved !== $sgs_info_text_normal_resolved ) {
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover,' . $root_sel . ':focus-visible', $sgs_info_text_hover_resolved );
+}
+
+// --- D744: Background colour (flat-or-gradient, base + hover) — painted on
+// a `::after` layer, never the root itself, so the text colour/gradient
+// above (background-clip:text on the SAME $root_sel) cannot clip or
+// overwrite it (both use background-image). Mirrors sgs/product-card. ---
+$sgs_info_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+$scoped_css[]      = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_info_bg_decls['normal'][0] ?? '',
+	$sgs_info_bg_decls['hover'][0] ?? ''
+);
 
 /*
  * text-align is the ONE declared typography support the wholesale passthrough
@@ -302,16 +351,51 @@ if ( in_array( $info_box_text_align, array( 'left', 'center', 'right' ), true ) 
 	$scoped_css[] = $root_sel . '{text-align:' . esc_attr( $info_box_text_align ) . '}';
 }
 
-// Link colour (Elements API) — scoped to descendant links, reuses the
-// engine's own 'color' compiler (resolves preset var refs identically).
-if ( '' !== $style_link_colour ) {
-	$link_sel    = $root_sel . ' a:where(:not(.wp-element-button))';
-	$link_styles = wp_style_engine_get_styles(
-		array( 'color' => array( 'text' => $style_link_colour ) ),
-		array( 'selector' => $link_sel )
+// D744: Link colour — block-private replacement for the retired native
+// Elements API (supports.color.link). Same descendant-link selector the
+// native mechanism used (excludes `.wp-element-button` so a CTA rendered as
+// a link-styled button keeps its own button colours), same base+hover shape
+// as every other colour row on this block.
+$sgs_link_sel        = $root_sel . ' a:where(:not(.wp-element-button))';
+$sgs_info_link_decls = sgs_text_decls(
+	$attributes,
+	array(
+		'base'           => 'linkColour',
+		'hover'          => 'linkColourHover',
+		'gradient'       => 'linkColourGradient',
+		'hover_gradient' => 'linkColourHoverGradient',
+	)
+);
+if ( $sgs_info_link_decls['normal'] || $sgs_info_link_decls['hover'] ) {
+	$scoped_css[] = sgs_emit_state_colour_css( $sgs_link_sel, $sgs_info_link_decls['normal'], $sgs_info_link_decls['hover'] );
+}
+
+// Companion rule — MANDATORY now that the link map carries gradient keys, and
+// a harmless no-op for a flat colour. sgs_text_decls() emits a bare `color:`
+// declaration even when the resolved value is a gradient string, which is
+// invalid CSS the browser drops silently. Enforced by
+// scripts/check-text-gradient-companion.js. $sgs_link_sel is a SINGLE selector
+// (the :where() is one compound, not a list), so appending :hover to it is safe.
+$sgs_info_link_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['linkColour'] ?? '' ),
+	(string) ( $attributes['linkColourGradient'] ?? '' )
+);
+$sgs_info_link_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['linkColourHover'] ?? '' ),
+	(string) ( $attributes['linkColourHoverGradient'] ?? '' )
+);
+
+$sgs_info_link_grad_css = sgs_text_colour_gradient_fallback_rule( $sgs_link_sel, $sgs_info_link_normal_resolved );
+if ( '' !== $sgs_info_link_grad_css ) {
+	$scoped_css[] = $sgs_info_link_grad_css;
+}
+if ( '' !== $sgs_info_link_hover_resolved && $sgs_info_link_hover_resolved !== $sgs_info_link_normal_resolved ) {
+	$sgs_info_link_grad_hover_css = sgs_text_colour_gradient_fallback_rule(
+		$sgs_link_sel . ':hover,' . $sgs_link_sel . ':focus-visible',
+		$sgs_info_link_hover_resolved
 	);
-	if ( ! empty( $link_styles['css'] ) ) {
-		$scoped_css[] = $link_styles['css'];
+	if ( '' !== $sgs_info_link_grad_hover_css ) {
+		$scoped_css[] = $sgs_info_link_grad_hover_css;
 	}
 }
 

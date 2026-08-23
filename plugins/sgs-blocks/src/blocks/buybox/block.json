@@ -22,9 +22,9 @@
 		"align": false,
 		"interactivity": true,
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
@@ -144,6 +144,38 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Scrolling or dragging the thumbnail strip past the last image continues into the first, and back again — never a dead end. Independent of drag-to-scroll; combinable or standalone. Spec 38 §11 loop FR."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

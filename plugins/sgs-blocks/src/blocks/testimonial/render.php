@@ -123,9 +123,10 @@ $rating_colour         = sgs_colour_value( $attributes['ratingColour'] ?? '' );
 $rating_size           = isset( $attributes['ratingSize'] ) && (int) $attributes['ratingSize'] > 0 ? absint( $attributes['ratingSize'] ) : 16;
 
 // ── Hover / animation (shell-level) ─────────────────────────────────────────
-$hover_background_colour = $attributes['backgroundColourHover'] ?? '';
-$hover_text_colour       = $attributes['textColourHover'] ?? '';
-$hover_border_colour     = $attributes['borderColourHover'] ?? '';
+// backgroundColourHover / textColourHover are NOT read here: the shared fill
+// and text emitters (section 1a) own both states for those two properties.
+// Reading them again would give one element two owners.
+$hover_border_colour = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient rollout — non-empty wins over the flat
 // $hover_border_colour above, painted via the shared masked ::before ring
 // mechanism, scoped to :hover/:focus-within (this block has no resting-state
@@ -154,6 +155,95 @@ $root_sel = '.' . $uid . '.wp-block-sgs-testimonial';
 // ---------------------------------------------------------------------------
 
 $scoped_css = array();
+
+// ---------------------------------------------------------------------------
+// 1a. Root colour — background, text and link, each flat-or-gradient across
+// resting + hover, via the shared five-variant colour helpers. This replaces
+// the WP style-engine colour path: supports.color's sub-flags are all false
+// (the `link` one was rule 31's native-colour-ui finding), so core renders no
+// competing panel and writes no colour storage. Capability MOVED here rather
+// than being removed — D744.
+//
+// ⛔ BACKGROUND IS PAINTED ON AN ::after LAYER, NOT THE ROOT. Text and
+// background share this one element, and a text gradient paints via
+// background-clip:text, which clips the element's WHOLE background painting
+// area to the glyph shapes — a background painted on the root would be eaten
+// by it. sgs/product-card resolves the same collision the same way.
+$sgs_tm_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+
+$sgs_tm_bg_css = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_tm_bg_decls['normal'][0] ?? '',
+	$sgs_tm_bg_decls['hover'][0] ?? ''
+);
+if ( '' !== $sgs_tm_bg_css ) {
+	$scoped_css[] = $sgs_tm_bg_css;
+}
+
+// Text + link. Both resolve to the `text` mechanism (css_property `color`) —
+// link is the same property on a DIFFERENT element, the block's descendant
+// anchors, which is why it needs its own control rather than inheriting the
+// text row. A link genuinely can appear here: `quote` and `summary` are
+// RichText fields output through wp_kses_post(), which permits <a>.
+$sgs_tm_link_sel = $root_sel . ' a';
+foreach ( array(
+	array( $root_sel, 'textColour', 'textColourHover', 'textColourGradient', 'textColourHoverGradient' ),
+	array( $sgs_tm_link_sel, 'linkColour', 'linkColourHover', 'linkColourGradient', 'linkColourHoverGradient' ),
+) as $sgs_tm_text_row ) {
+	list( $sgs_tm_sel, $sgs_tm_base, $sgs_tm_hover, $sgs_tm_grad, $sgs_tm_hover_grad ) = $sgs_tm_text_row;
+
+	$sgs_tm_decls = sgs_text_decls(
+		$attributes,
+		array(
+			'base'           => $sgs_tm_base,
+			'hover'          => $sgs_tm_hover,
+			'gradient'       => $sgs_tm_grad,
+			'hover_gradient' => $sgs_tm_hover_grad,
+		)
+	);
+	if ( $sgs_tm_decls['normal'] || $sgs_tm_decls['hover'] ) {
+		$scoped_css[] = sgs_emit_state_colour_css( $sgs_tm_sel, $sgs_tm_decls['normal'], $sgs_tm_decls['hover'] );
+	}
+
+	// Companion rule — MANDATORY beside every sgs_text_decls() call, and a
+	// harmless no-op for a flat colour. That facade emits a bare `color:`
+	// declaration even when the resolved value is a gradient string, which is
+	// invalid CSS the browser drops silently. Enforced by
+	// scripts/check-text-gradient-companion.js.
+	$sgs_tm_normal_resolved = sgs_resolve_text_colour_or_gradient(
+		(string) ( $attributes[ $sgs_tm_base ] ?? '' ),
+		(string) ( $attributes[ $sgs_tm_grad ] ?? '' )
+	);
+	$sgs_tm_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+		(string) ( $attributes[ $sgs_tm_hover ] ?? '' ),
+		(string) ( $attributes[ $sgs_tm_hover_grad ] ?? '' )
+	);
+
+	$sgs_tm_grad_css = sgs_text_colour_gradient_fallback_rule( $sgs_tm_sel, $sgs_tm_normal_resolved );
+	if ( '' !== $sgs_tm_grad_css ) {
+		$scoped_css[] = $sgs_tm_grad_css;
+	}
+	if ( '' !== $sgs_tm_hover_resolved && $sgs_tm_hover_resolved !== $sgs_tm_normal_resolved ) {
+		// One selector per call, never a comma-joined list: the emitter builds
+		// "{sel}:hover,{sel}:focus-visible", so a list would attach :hover to
+		// only its last member.
+		$sgs_tm_grad_hover_css = sgs_text_colour_gradient_fallback_rule(
+			$sgs_tm_sel . ':hover,' . $sgs_tm_sel . ':focus-visible',
+			$sgs_tm_hover_resolved
+		);
+		if ( '' !== $sgs_tm_grad_hover_css ) {
+			$scoped_css[] = $sgs_tm_grad_hover_css;
+		}
+	}
+}
 
 /**
  * Build one scoped CSS rule from a prop => value map. Empty values are
@@ -271,19 +361,12 @@ if ( isset( $style_arr['border'] ) && is_array( $style_arr['border'] ) && ! empt
 	$base_style_engine_args['border'] = $style_arr['border'];
 }
 
-$color_args = array();
-if ( isset( $style_arr['color']['text'] ) && '' !== $style_arr['color']['text'] ) {
-	$color_args['text'] = (string) $style_arr['color']['text'];
-}
-if ( isset( $style_arr['color']['background'] ) && '' !== $style_arr['color']['background'] ) {
-	$color_args['background'] = (string) $style_arr['color']['background'];
-}
-if ( isset( $style_arr['color']['gradient'] ) && '' !== $style_arr['color']['gradient'] ) {
-	$color_args['gradient'] = (string) $style_arr['color']['gradient'];
-}
-if ( ! empty( $color_args ) ) {
-	$base_style_engine_args['color'] = $color_args;
-}
+// Colour is NOT routed through the style engine any more. supports.color's
+// sub-flags are all false (the `link` one was rule 31's native-colour-ui
+// finding), so nothing can write style.color.* or style.elements.link — the
+// block owns background, text and link privately, emitted below through the
+// shared five-variant colour helpers. The reads that stood here would have
+// been permanently empty: dead code that still reads like a live feature.
 
 if ( isset( $style_arr['typography'] ) && is_array( $style_arr['typography'] ) && ! empty( $style_arr['typography'] ) ) {
 	$base_style_engine_args['typography'] = $style_arr['typography'];
@@ -369,19 +452,11 @@ if ( $stagger_delay ) {
 	$classes[] = 'sgs-has-stagger';
 }
 
-// Preset colour slugs — the `color` support is skip-serialised, so re-add the
-// standard has-* classes manually (matches sgs/quote — they set the colour
-// from the theme palette and are consumed by theme.json / editor CSS).
-$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-if ( '' !== $preset_text_slug ) {
-	$classes[] = 'has-text-color';
-	$classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$classes[] = 'has-background';
-	$classes[] = 'has-' . $preset_bg_slug . '-background-color';
-}
+// The preset has-* colour classes that stood here are GONE. They were re-added
+// from $attributes['textColor']/['backgroundColor'], which WordPress only
+// registers while supports.color.text/.background are true. Both are false now,
+// so nothing could ever populate them again — unreachable code that still read
+// like a live feature (the sgs/quote precedent, 2eebbe55).
 
 // ── Wrapper hover colours + transition/scale/shadow/stagger — SCOPED, never
 // inline (Spec 32 FR-32-4 as amended 2026-07-18 / D345; matches sgs/info-box).
@@ -392,13 +467,11 @@ if ( '' !== $preset_bg_slug ) {
 // timing, hover scale/shadow, stagger delay) stays `--sgs-x:value` custom
 // properties, but as a SCOPED base rule on $root_sel — not an inline `style`
 // attribute on the root.
+// Hover BACKGROUND and TEXT are deliberately absent from this array: the
+// shared fill/text emitters below own both states for those two properties.
+// Emitting them here as well would give one element two owners, and the
+// loser is indistinguishable from a rule that was never written.
 $hover_decls = array();
-if ( $hover_background_colour ) {
-	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
-}
-if ( $hover_text_colour ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
-}
 if ( $hover_border_colour ) {
 	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
