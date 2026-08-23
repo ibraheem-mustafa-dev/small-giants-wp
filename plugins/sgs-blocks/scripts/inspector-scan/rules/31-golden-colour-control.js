@@ -1081,7 +1081,9 @@ module.exports = {
 							checkRow( {
 								rowKey: d.rowKey || `row-line-${ line }`,
 								statesArray: null,
-								gradientCapable: false,
+								// NOT hardcoded false: textRow emits gradientCapable:true,
+								// which is the ONLY shape a text mechanism accepts.
+								gradientCapable: d.gradientCapable === true,
 								line: d.line || line,
 								statesCountOverride: d.statesCount,
 								hasGradientOverride: d.hasGradient,
@@ -1180,11 +1182,18 @@ module.exports = {
 			// component mount, in a file outside any block's own edit.js, is
 			// found.
 			'FixtureSharedRowPanel',
+			// Negative control for the describeRow() gradientCapable fix: ONLY
+			// textRow emits gradientCapable, so a fillRow on a text-mechanism
+			// attribute must still be caught. Pairs with the mustNotFlag entry
+			// 'textrow-helper-gradient' below — identical fixtures, one helper
+			// name apart, proving the fix matches without over-matching.
+			'fillrow-helper-on-text-attr',
 		],
 		mustNotFlag: [
 			'two-state-with-gradient',
 			'three-state-required-by-element',
 			'gradient-capable-text-row',
+			'textrow-helper-gradient',
 			'exempted-gradient-row',
 			'native-color-all-false',
 			'no-colour-controls',

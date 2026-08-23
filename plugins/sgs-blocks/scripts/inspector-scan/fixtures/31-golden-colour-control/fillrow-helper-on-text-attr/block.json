@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/fillrow-helper-on-text-attr",
+	"title": "NEGATIVE CONTROL: fillRow() on a TEXT-mechanism attribute — a per-state background gradient cannot clip text, so this MUST still flag mechanism-mismatch",
+	"category": "sgs",
+	"attributes": {
+		"textColour": { "type": "string", "default": "" },
+		"textColourHover": { "type": "string", "default": "" },
+		"textColourGradient": { "type": "string", "default": "" },
+		"textColourHoverGradient": { "type": "string", "default": "" }
+	}
+}

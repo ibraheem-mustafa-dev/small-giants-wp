@@ -634,6 +634,16 @@ function describeRow( node ) {
 			statesArray: null, // generated inside the helper — never a literal here
 			statesCount: base ? 1 + ( hover ? 1 : 0 ) : 0,
 			hasGradient: !! ( gradient || hoverGradient ),
+			// WHICH gradient SHAPE the helper emits, not merely whether it emits one.
+			// textRow alone returns `gradientCapable: true` (its own line 78, set ONLY
+			// when a gradient attr was supplied); fillRow and borderRow deliberately
+			// never do — borderRow's docblock states it outright. Rule 31's
+			// gradientPathMatchesMechanism() accepts ONLY gradientCapable for a text
+			// mechanism, so collapsing the two shapes here reports every gradient-
+			// bearing textRow as a mechanism-mismatch. That false positive was live
+			// and invisible: the sole adopter (sgs/nav-drawer) has an unresolved
+			// css_property, so the mechanism check never ran on it.
+			gradientCapable: helper.helper === 'textRow' && !! ( gradient || hoverGradient ),
 			attrName: base || null,
 			gradientAttrName: gradient || hoverGradient || null,
 			viaHelper: helper.helper,

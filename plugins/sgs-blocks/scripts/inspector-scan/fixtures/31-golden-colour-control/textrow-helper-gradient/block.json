@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/textrow-helper-gradient",
+	"title": "Fixture: a text-mechanism row built with the textRow() HELPER, which returns gradientCapable:true internally (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"textColour": { "type": "string", "default": "" },
+		"textColourHover": { "type": "string", "default": "" },
+		"textColourGradient": { "type": "string", "default": "" },
+		"textColourHoverGradient": { "type": "string", "default": "" }
+	}
+}

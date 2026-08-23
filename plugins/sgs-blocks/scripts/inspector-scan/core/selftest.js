@@ -107,6 +107,28 @@ function runRuleAgainstFixture( mod, fixtureAbsPath ) {
 
 		const cache = new SourceCache();
 		const ctx = buildTestCtx( cache, tmpBase );
+
+		// Same reasoning as themeDir/extensionsDir/_surfaces.json above: rule 31's
+		// mechanism axis resolves each colour attribute through the DB's
+		// block_attributes.css_property map, keyed by REAL block slug. A fixture
+		// slug is never in that map, so every fixture row resolved as UNRESOLVED
+		// and the mechanism branch could not be exercised at all — a gate that
+		// cannot fail reads green forever. A fixture directory may therefore seed
+		// the map by placing `_css-property-map.json` at its root; absent = the
+		// real DB lookup, unchanged for every other rule and fixture.
+		const cssPropMapFile = path.join( tmpBase, '_css-property-map.json' );
+		if ( fs.existsSync( cssPropMapFile ) ) {
+			try {
+				ctx.__colourCssPropertyMap = JSON.parse( fs.readFileSync( cssPropMapFile, 'utf8' ) );
+			} catch ( e ) {
+				return {
+					pass: false,
+					reason: `fixture root has a malformed _css-property-map.json: ${ e.message }`,
+					findings: [],
+				};
+			}
+		}
+
 		let findings = [];
 
 		if ( mod.scope === 'per-block' ) {
