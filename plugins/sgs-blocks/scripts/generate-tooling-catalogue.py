@@ -87,6 +87,14 @@ def first_purpose(path: Path) -> str:
     stripped = []
     for line in text.splitlines()[:60]:
         s = line.strip()
+        # PHP headers open with `<?php` and often `<?php /**` on ONE line, so the
+        # opener has to be stripped before the comment marker, not after.
+        if s.startswith("<?php"):
+            s = s[5:].strip()
+        if s.startswith("/**"):
+            s = s[3:].strip()
+        if s.startswith("#") and not s.startswith("#!"):
+            s = s.lstrip("#").strip()
         if s.startswith("//"):
             s = s[2:].strip()
         else:
@@ -124,6 +132,24 @@ def first_purpose(path: Path) -> str:
 _PKG = json.loads(PKG.read_text(encoding="utf-8"))
 _PREBUILD_BLOB = _PKG.get("scripts", {}).get("prebuild", "")
 _SCRIPTS_BLOB = " && ".join(_PKG.get("scripts", {}).values())
+
+# Runnable suffixes. .php and .sh were EXCLUDED from the table while being
+# COUNTED in the directory row above — so the count said one thing and the
+# table another, which is worse than either alone. 21 PHP tools under
+# plugins/sgs-blocks/scripts were invisible, including golden-master-harness.php
+# and product-search-leak-check.php (whose own header calls itself "the REAL
+# gate", with the JS grep only a tripwire).
+_RUNNABLE = (".py", ".js", ".mjs", ".php", ".sh")
+
+# THERE ARE TWO GATE CHAINS, not one. package.json `prebuild` runs at build
+# time; .githooks/sgs-gates.sh runs at COMMIT time — that is the chain holding
+# the visual-diff gate, check-markup-neutral.py and check-editor-only.py.
+# Reading only `prebuild` reported 9 actively-enforced commit gates as unwired,
+# i.e. told a reader they were free to forget the gate that had just blocked them.
+_GATES_SH = REPO / ".githooks" / "sgs-gates.sh"
+_COMMIT_BLOB = _GATES_SH.read_text(encoding="utf-8", errors="replace") if _GATES_SH.exists() else ""
+if not _COMMIT_BLOB:
+    print("[tooling-catalogue] WARN: .githooks/sgs-gates.sh unreadable — commit-gate wiring will read as unwired", file=sys.stderr)
 
 
 def prebuild_steps() -> list[str]:
@@ -229,7 +255,7 @@ def build() -> str:
             continue
         entries = []
         for f in sorted(rp.rglob("*")):
-            if not f.is_file() or f.suffix not in (".py", ".js", ".mjs"):
+            if not f.is_file() or f.suffix not in _RUNNABLE:
                 continue
             if any(x in f.parts for x in ("node_modules", "fixtures", "__pycache__", "tests")):
                 continue
@@ -242,7 +268,14 @@ def build() -> str:
             purpose = first_purpose(f).replace("|", chr(92) + "|")
             if len(purpose) > 130:
                 purpose = purpose[:127].rstrip() + "…"
-            wired = "gate" if f.name in _PREBUILD_BLOB else ("npm" if f.name in _SCRIPTS_BLOB else "—")
+            marks = []
+            if f.name in _PREBUILD_BLOB:
+                marks.append("build")
+            if f.name in _COMMIT_BLOB:
+                marks.append("commit")
+            if not marks and f.name in _SCRIPTS_BLOB:
+                marks.append("npm")
+            wired = "+".join(marks) if marks else "—"
             sub = f.relative_to(rp).as_posix()
             out.append(f"| `{sub}` | {wired} | {purpose} |")
         out.append("")
