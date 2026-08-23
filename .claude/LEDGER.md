@@ -160,55 +160,73 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN TRACK — 2026-08-23 (16/16 proven · ratchet AT the floor)
+## ▶ COLOUR-GOLDEN TRACK — 2026-08-23 (native-colour-ui CLOSED 6→0 · ratchet 292)
 
-**All pushed. Build GREEN. Canary deployed + verified.** Detail lives in **D744-D750** and
-`reports/visual-diff/native-colour-ui-2026-08-22.md` — do NOT duplicate it here.
+**All pushed (`5c9c1db2`, `a5bb6220`, `6e5a563e`). Build GREEN. Canary deployed +
+live-verified.** Evidence: `reports/visual-diff/native-colour-ui-close-2026-08-23.md`.
 
-**MEASURED (re-run TWICE, require agreement — never quote):** rule 31 = **309**
-(below-min-states 167 / missing-gradient 136 / native-colour-ui 6). Ratchet **309**, zero slack.
+**MEASURED (twice, agreeing, `status === "FLAGGED"` only):** rule 31 = **292**
+(below-min-states 162 / missing-gradient 130 / **native-colour-ui 0**). Ratchet **292**,
+zero slack, proven to bite by reading node's exit code (291 → exit 1, 292 → exit 0).
 
-⛔ **Measure rule 31 twice.** The scanner reads a tree being written: it returned 315/312, then
-311, purely because other sessions had files in flight. Cost time three separate times today.
+⛔ **Measure rule 31 twice and require agreement** — the scanner reads a tree other
+sessions are writing. Still true; cost time three times on 2026-08-22.
 
-**SHIPPED:** 2 new prebuild gates (`check-undefined-refs`, `check-text-gradient-companion`) ·
-16 blocks off the competing native colour panel, each flag flip PAIRED with a block-private
-gradient via `fillRow()`/`sgs_fill_states_css()` (gives `helpers-colour-variants.php` its FIRST
-callers) · **5 dead client controls fixed** (accordion-item bg; textColour on tab /
-testimonial-slider / trustpilot-reviews; cardPadding restored) · ratchet 355→309 · D744-D750.
+**SHIPPED — Bean's item 1 is DONE.** The last six blocks left the competing native
+colour panel (icon-list, buybox, info-box, notice-banner, team-member, testimonial),
+each flip PAIRED with a block-private replacement via the shared helpers
+(`fillRow`/`textRow`, `sgs_fill_states_css`/`sgs_fill_decls`/`sgs_text_decls`). All six
+live-verified on the canary with a negative control each. 309 → 292 (−17), verified by a
+key-set diff NORMALISED on block+kind+rowKey: 17 genuinely closed, **zero genuinely new**.
 
-**⛔ TWO FALSIFICATIONS — do not re-plan on them (D744):** the `adopt.js` sweep cannot lower
-rule 31 or add capability (its own self-test asserts the invariant; rule 31 never reads PHP;
-the findings need attributes adopt.js never writes). And the "22 uniform flips" never existed —
-1 of 22 was safe bare; for the rest core's panel was the client's ONLY gradient control.
+**⛔ A DETECTOR BUG FIXED EN ROUTE (`5c9c1db2`).** `describeRow()` collapsed both gradient
+SHAPES into one boolean and rule 31 hardcoded `gradientCapable: false` for EVERY helper
+row — so every gradient-bearing `textRow` on a resolved text attribute was falsely
+flagged `mechanism-mismatch`. Invisible until now because its only adopter
+(`sgs/nav-drawer`) has no `css_property` in the DB. Two fixtures pin it BOTH ways,
+mutation-proven. `core/selftest.js` gained a `_css-property-map.json` seam because the
+mechanism branch was previously **unreachable in self-test** — a gate that cannot fail
+reads green forever.
 
-**⚠ METHOD (D750):** six probe artefacts were reported as defects before measurement killed
-them; ONE reached a commit and was retracted. **Parse block-attribute JSON, never string-splice
-it** — splicing at the first `}` lands inside `"padding":{}`, WP drops every attribute to
-defaults, and it looks exactly like a render bug. Two agent briefs omitted gates and both
-agents shipped a silent defect while honestly reporting green: **the coordinator re-runs the
-FULL gate set; per-agent green is not evidence.**
+**⚠ OWED, and it is the FIRST thing next session should decide.** The new attributes are
+NOT in `block_attributes.css_property`, so rule 31's mechanism axis is blind to them and
+falls back to the binary gradient check (which they pass legitimately — not a false
+green, but a blind spot). **`/sgs-update` must seed them.** Deliberately NOT run: it
+writes the SHARED DB, worktrees do not isolate it, and a reseed has broken both tracks'
+builds before. Run it on the main checkout, alone, announced.
 
-**NEXT SESSION — Bean's order (2026-08-23):**
-1. **The last 6 `native-colour-ui`** — `notice-banner` (no `backgroundColour` at all),
-   `icon-list` (background), `buybox`/`info-box`/`team-member` (bg+text+gradient). Each needs a
-   control ADDED before its flag can flip. Finishes the uniform class.
-2. **Structural block on `git stash` for subagents.** THREE ran it on this shared worktree
-   today despite explicit prohibition, once mid-write by another agent. Prose does not hold
-   this — it needs a hook.
-3. **The line-keyed baseline.** `08-raw-url-link`'s key embeds a LINE NUMBER; re-anchored SIX
-   times for code that never changed. Re-key on block + control identity, not position.
-4. **THEN PLAN the two behemoths** — below-min-states 167 + missing-gradient 136 (303 findings,
-   100+ sites). ⛔ Do NOT start hand-fixing. Design a DETERMINISTIC MECHANICAL batch method
-   first (survey→fix→check triad, D542) so execution is dumb and predictable. ⚠ `adopt.js`
-   CANNOT do it — it rewrites `edit.js` only, never `block.json`, and these need NEW
-   ATTRIBUTES. The tool must own all three layers: block.json attr + edit.js row + render emit.
+**NEXT SESSION — Bean's remaining order (items 2-4 of 4):**
+2. **Structural block on `git stash` for subagents.** Three ran it on this shared worktree
+   on 2026-08-22 despite explicit prohibition. Prose does not hold this — it needs a
+   PreToolUse hook with a `--self-test` and a negative control. ⚠ This session's four
+   agents were told not to and did not, but that is four for four on prose, not proof.
+3. **The line-keyed baseline.** `08-raw-url-link`'s key embeds a LINE NUMBER, re-anchored
+   SIX times for code that never changed. This session hit the same tax again: untouched
+   `icon-list` rows read as net-new purely because edits above them shifted position.
+   Re-key on block + control identity, not position.
+4. **THEN PLAN the two behemoths** — below-min-states 162 + missing-gradient 130 (292
+   findings, 100+ sites). ⛔ Do NOT hand-fix. Design a DETERMINISTIC MECHANICAL batch
+   method first (survey→fix→check triad, D542). ⚠ `adopt.js` CANNOT do it — it rewrites
+   `edit.js` only, never `block.json`, and these need NEW ATTRIBUTES. **Open design
+   question for Bean before building:** hover is a DESIGN decision, not a mechanical one —
+   does the codemod propose-and-defer per block, or apply a default? That choice is the
+   difference between one session and several.
 
-**⚠ CANARY HEADER — settled (D749).** `sgs_active_header_cpt_id` pointed at post **1570, which
-does not exist**; the header silently fell back to the framework-default pattern, orphaning CPT
-1655. Bean ruled: use the default. Option is now **0** — a clean fallback, not a dangling
-deleted id. Verified: HTTP 200, 3 rows, 11 nav links, 0 console errors. **A pointer to a
-deleted post fails SILENTLY** — worth a gate asserting those pointers resolve.
+**⚠ METHOD (carried forward, earned again today).** Three probe artefacts read as code
+defects this session and all three were the INSTRUMENT: measuring the root when the block
+paints text on a descendant; a block that renders nothing without content; and `0 bytes
+of CSS for BOTH sentinel and control`, which is the tell of a broken probe, not a finding
+(SGS block CSS is LIFTED to `uploads/sgs-css/<hash>.css`, so grepping rendered HTML for
+`<style>` proves nothing). **Separate "my probe is wrong" from "the code is wrong" before
+reporting either.** And the coordinator re-runs the FULL gate set: two of four agents
+reported each other's mid-write state as "pre-existing", and two phpcs drifts were the
+coordinator's own, not an agent's.
+
+**⚠ CANARY HEADER — settled (D749).** `sgs_active_header_cpt_id` pointed at post **1570,
+which does not exist**; the header silently fell back to the framework-default pattern.
+Bean ruled: use the default. Option is now **0**. **A pointer to a deleted post fails
+SILENTLY** — worth a gate asserting those pointers resolve.
+
 ## ▶ DOC-DEBT / MOTION-REGISTER TRACK — 2026-08-21 (a THIRD track; all pushed)
 
 **All on `origin/main`. Build GREEN. Canary deployed + live-verified.**

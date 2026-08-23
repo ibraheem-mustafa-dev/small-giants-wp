@@ -1,5 +1,64 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D751 — native-colour-ui CLOSED (6→0): the last six blocks, and a detector bug they exposed
+**2026-08-23** · [ROUTINE] · commits `5c9c1db2`, `a5bb6220`, `6e5a563e`
+
+**Decision.** The remaining six blocks (icon-list, buybox, info-box, notice-banner,
+team-member, testimonial) leave WordPress's competing native colour panel. Rule 31's
+`native-colour-ui` kind is now **0** across the tree. Ratchet 309 → **292**.
+
+**Bean's ruling that shaped it (2026-08-23).** Asked whether to do the minimum that closes
+the finding or migrate storage wholesale, Bean chose **full uniform** — and removed the
+blocker in the same breath: *"DO NOT MIGRATE STUFF ON THE CANARY BECAUSE THEY EXIST ON
+SCRATCH PAGES. Delete the stale pages and move on."* Canary content is a test rig, so no
+back-compat path, deprecation, or fallback read of the old `style.color.*` was built.
+
+**Three cases were not a simple flip.** buybox declared ZERO colour attributes and painted
+entirely from core's storage via the style engine (its own comment claimed colour was
+"declared-but-disabled" while all three flags were true — corrected). notice-banner and
+testimonial had SGS *UI* writing into core's *storage*. And `supports.color.link` — only
+info-box and testimonial carry it, and there is no `linkRow` helper. On testimonial it was
+provably a DEAD control: `link:true`, but the block renders no anchor, never read
+`style.elements.link`, and skip-serialization means WP paints nothing either. Both now have
+a real `linkColour`/Hover(+gradient) pair. **Link colour is the same `text` paint mechanism
+as a text row (css_property `color`) on a DIFFERENT element — the block's descendant
+anchors.** It matters because quote/summary are RichText output through `wp_kses_post()`.
+There is no third "clicked" state: `:visited` and `:active` have zero instances tree-wide,
+and the shared emitter pairs `:focus-visible` with `:hover` for WCAG visible-focus.
+
+**⛔ A DETECTOR BUG FOUND BY THE MIGRATION AND FIXED, NOT BASELINED.** It did not lower the
+count — it prevented a false +1. `describeRow()` (core/golden.js) collapsed both gradient
+SHAPES into one `hasGradient` boolean, and rule 31's call site passed a hardcoded
+`gradientCapable: false` for EVERY helper row. `textRow()` sets gradientCapable itself and
+`gradientPathMatchesMechanism()` accepts ONLY that shape for a text mechanism, so every
+gradient-bearing `textRow` on a resolved text attribute reported `mechanism-mismatch`. Live
+and invisible because the sole adopter, `sgs/nav-drawer`, has no `css_property` in the DB.
+Exactly the coupling `textRow.js`'s own docblock warns about. Two fixtures pin it in both
+directions, mutation-proven with each break confirmed landed by assert. Self-test could not
+reach the mechanism branch AT ALL before — a fixture slug is never in the real DB map — so
+`core/selftest.js` gained a `_css-property-map.json` seam.
+
+**Method notes worth keeping.**
+- **The delta must be normalised on block+kind+rowKey, not the raw key.** The raw key embeds
+  a LINE NUMBER, so untouched rows read as net-new when edits above them shift position. A
+  naive diff claimed several; the normalised one found 17 closed, **zero** new — and caught
+  the ONE genuine regression (info-box's link row shipped without a gradient), fixed pre-commit.
+- **Three probe artefacts read as code defects and all three were the instrument:** measuring
+  the root when the block paints text on a descendant; a block that renders nothing without
+  content; and `0 bytes of CSS for BOTH sentinel and control` — the tell of a broken probe,
+  since SGS block CSS is LIFTED to `uploads/sgs-css/<hash>.css`.
+- **Per-agent green is not evidence.** Two of four agents reported each other's mid-write
+  state as "pre-existing" findings; two phpcs alignment drifts were the coordinator's own.
+- `check-duplicate-controls` findings on info-box/notice-banner were BASELINED under Bean's
+  existing 2026-08-21 ruling (parent attr = inheritable default, child overrides; keep both).
+  They are **pre-existing and newly visible** — the duplication already existed via core's
+  panel; the migration only moved the value into an attribute the detector matches on.
+
+**⚠ OWED.** The new attributes are not in `block_attributes.css_property`, so the mechanism
+axis is blind to them and falls back to the binary gradient check (which they pass).
+`/sgs-update` must seed them — deliberately not run, because it writes the SHARED DB and a
+reseed has broken both tracks' builds before.
+
 ## D750 [INCIDENT] — colour-golden session's own method failures: six false probe findings, one reaching a commit (2026-08-23)
 
 Six probe artefacts were reported as defects before measurement disproved them; one reached a
