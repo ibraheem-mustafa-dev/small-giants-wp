@@ -1400,8 +1400,29 @@ body.woocommerce-cart .with-empty-cart-icon,
 .post-type-archive-product .sgs-shop-layout .product-card {
 	background: var(--wp--preset--color--surface-alt, #f5f7f7);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	padding: var(--wp--preset--spacing--30, 1rem);
+
+	/* Clip the media to the card's rounded corners. Required for the full-bleed
+	   image below — without it the image's square corners poke past the radius. */
+	overflow: hidden;
 }
+
+/*
+ * ⛔ NO PADDING ON THE CARD ITSELF. The product image is FULL BLEED: it spans
+ * the card edge to edge at the top, and the card's own radius + overflow:hidden
+ * clip it. That is the treatment every benchmarked reference archive uses (END.,
+ * Gymshark, Uniqlo, IKEA, Rapha) and it is what `sgs/product-card` is built for.
+ *
+ * The first version of this rule (2026-08-23) added `padding: 1rem` here as part
+ * of giving the card a surface. Measured live afterwards: the image sat inset
+ * 16.9px on every side — a framed thumbnail, not a bleed. Bean caught it by eye.
+ *
+ * The padding was also pure duplication: `.product-card-body` already carries its
+ * own 20px, which is the correct place for it — text needs the inset, the image
+ * does not. Removing the card-level padding restores the bleed AND removes the
+ * double inset in one go; nothing needed adding anywhere.
+ *
+ * If a card ever needs breathing room, put it on `.product-card-body`, never here.
+ */
 
 /* product-card-body grows to absorb remaining space */
 .sgs-shop-layout .product-card .product-card-body {
