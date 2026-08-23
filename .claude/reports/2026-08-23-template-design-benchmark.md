@@ -903,3 +903,89 @@ Per the Rosetta Stone rule, every gap with no SGS equivalent is recorded rather 
 - **Products are fixtures** ("R4 apply target", "SGS Single-Variant Fixture"), two of five
   with placeholder images. Card *content* quality is not the template's fault and has not
   been graded as such; card *structure* has.
+
+---
+
+# ✅ IMPLEMENTATION + LIVE VERIFICATION (2026-08-23, after the register)
+
+Deployed theme-only from an isolated worktree (so the colour-golden track's
+uncommitted plugin files could not ride along) and measured on the live canary.
+**Everything below is a measured value, not a claim from a diff.**
+
+## Verified fixed
+
+| Finding | Before | After |
+|---|---|---|
+| X-1 heading colour | 2.25:1 | **11.86:1**, all headings, every surface |
+| X-3 display type | scale stopped at 50px | `display` token, 404 numerals at **120px** |
+| X-4 dead `.has-shadow-sm` | 0 CSS rules, never rendered | renders |
+| X-5 / S3-1 card surface | card = page colour | card `#FFF9F0` vs page `#FBF3DC` |
+| S1-1 shop filter rail | `display:flex`, both children 1247px, stacked | **`display:grid`, `260px 955px`**, rail beside grid |
+| S1-3 mobile grid | 1-up, page 3,279px | **2-up**, exact fit, page 3,025px |
+| S1-4 card heights | 68px spread | **0px spread within every row** |
+| S1-5 gutters | 20/20 equal | **24 column / 40 row** |
+| S3-2 excerpt | unclamped, 99px height spread | clamped to 3 lines |
+| S3-4 card title | 20px | 24px (`x-large`) |
+| S3-5 duplicate link | 2 links per card | 1 |
+| S3-6 tap target | 24px | **49px** |
+| S3-7 / S4-2 result count | absent | "9 results" / "4 results" |
+| S3-8 date | sentence case | uppercase tracked label |
+| S6-5 prev/next | "←Previous Post" | "←Motion Fixture Post 7" |
+| S6-9 reading time | absent | "1–2 minutes" |
+| S7-2 404 semantics | h1 = "404" | h1 = "Page not found" |
+| S7-3 404 presence | 494px in 852px viewport, 1 SVG | **672px, numerals as artwork** |
+| S7-4 status code | absent | "Status code: 404" |
+
+## Three fixes were INERT — the markup was right and the page did not change
+
+Only measuring found these. Each had shipped looking correct.
+
+1. **S6-6** — setting `showTitle` was assumed to suppress an absent next-post
+   link. Measured: the element is genuinely `:empty` and **still occupied 26px**.
+   Fixed with `:empty` (exact; no `:has()`, so safe on the Safari 15 floor).
+2. **S6-7** — `comments-title` was set to level 2 to close the h1→h3 skip.
+   Measured: WordPress **omits that block entirely** with zero approved comments,
+   and "Leave a Reply" is a hardcoded `h3` in core's `comment_form()`. The fix
+   could never have worked here. Replaced with a heading that always renders.
+   Outline is now **H1 → H2 → H3**.
+3. **Byline separators** — three literal `·` blocks. `core/post-author` renders
+   **no element at all** on these posts, so two separators became adjacent:
+   "July 31, 2026 · · Uncategorized". Moved onto the following sibling via
+   `::before`, so a field that renders nothing takes its separator with it.
+
+## One regression I introduced, caught by verifying
+
+**Widening the shop gutter silently cost the grid a column.** Setting
+`column-gap: 24px` without re-deriving the card width left the cards at the
+width WooCommerce had computed from *its own* narrower gap. Measured:
+`3 × 305 + 2 × 24 = 963px` in a 955px row — over by 8px, so the third card
+wrapped. A `columns-3` grid rendered **2-up with ~320px of dead space**, and
+nothing errored. Now both read one custom property (`--sgs-shop-col-gap`) so
+they cannot drift: measured after, `302.5 × 3 + 24 × 2 = 955.5` in a 955.5px
+row, **zero dead space**.
+
+**The gutter and the card width are one decision.** Never change one alone.
+
+## Still open, and why
+
+- **Block-capability gaps** (need plugin work, refused rather than faked):
+  buybox price typography (hardcoded in its `style.css`, no attribute) — the
+  PDP title:price ratio improved 3.13 → **2.25** by lowering the title, but the
+  price is still 16px body-size; buybox column ratio (**558px**, vs the
+  reference field's uniform 385–410px); `sgs/star-rating` has no live-data
+  binding; product-card image `loading="eager"` hardcoded at `render.php:1018`.
+- **S1-2 shop filters render no options** — untouched, still needs its own
+  root-cause pass.
+- **Search empty state has 1 recovery route**, not the benchmark's 3–5. `/blog/`
+  and `/shop/` were removed because the first **returned HTTP 404** and the
+  second does not exist on a client without WooCommerce. Closing this properly
+  needs the suggested-searches block candidate.
+- **X-2 jQuery gate is committed but NOT deployed** — it lives in `plugins/`,
+  which the theme-only deploy does not carry. The ~48 KB saving remains a
+  prediction until it ships.
+- **Mobile product cards are 138px wide**, below the reference band of 167–195px.
+  A judgement call for Bean's eye, not a defect.
+- **The PDP trust copy renders its operator placeholders literally** on the live
+  canary ("Delivery: replace with this client's delivery terms"). Deliberate —
+  the alternative was shipping "Free delivery" as a framework default, which is
+  a commercial claim that would be false for most clients.
