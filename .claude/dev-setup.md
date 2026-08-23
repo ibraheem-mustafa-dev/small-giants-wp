@@ -27,6 +27,7 @@ Split from `.claude/architecture.md` on 2026-05-24 as part of Phase 10 D'-1. Con
 - [Extensions architecture](#extensions-architecture)
 - [Deployment process](#deployment-process)
 - [Environment and tools](#environment-and-tools)
+- [Tooling catalogue — every gate, audit and codemod](#tooling-catalogue--every-gate-audit-and-codemod)
 
 ---
 
@@ -676,6 +677,116 @@ python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py
 
 - **It writes the one physical `sgs-framework.db`.** uimax holds neither `block_attributes` nor `slots`; the `.claude` and `.agents` DB paths are the *same file* via an NTFS junction (not two copies) — so a single write reaches every path.
 - **It is the deterministic mechanism for content-area `canonical_slot` tagging (D194, 2026-06-09).** `assign-canonical.py` runs automatically as `/sgs-update` Stage 1; once the `content` element-slot row + the `Width`/`Padding`→`layout` `property_suffixes` rows exist, it tags the content-area attrs (`contentWidth`/`contentPadding*`/`contentMaxWidth*`) `content`/`layout` deterministically — no manual seed step. The throwaway `seed-canonical-slots.py` was **deleted as redundant** (the DB values it wrote persist; `/sgs-update` maintains + extends them).
+
+---
+
+## Tooling catalogue — every gate, audit and codemod
+
+This section is **GENERATED**. Do not hand-edit it — edits are overwritten.
+
+It exists because "I could not find a tool for that" has repeatedly meant "I looked
+in one of the script directories". There is more than one, and the big one holds
+hundreds of files. Before building any new checker, codemod or audit, read this
+section and grep every directory listed in it.
+
+Derived from the `prebuild` chain in `plugins/sgs-blocks/package.json` (the real gate
+list, in real execution order) plus each script's own header. Both sources are the
+truth rather than a copy of it, which is why this can be regenerated instead of
+maintained. `--check` fails if it is stale.
+
+<!-- TOOLING-CATALOGUE:START -->
+
+### Where the tooling lives — **plural, and that matters**
+
+Searching one directory and concluding a tool does not exist is a live
+failure mode here — it is how something gets rebuilt that already existed.
+Check every row before building anything new.
+
+| Directory | Runnable files | Holds |
+|---|---|---|
+| `scripts/` | 20 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 569 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `.claude/scripts/` | 2 | working-area helpers |
+| `.claude/hooks/` | 9 | session + commit hooks (handoff preflight, doc gates) |
+| `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
+
+Worktrees under `.claude/worktrees/` mirror this tree — never cite them as a source.
+
+### The prebuild gate chain — what actually blocks a build
+
+Derived from `package.json`'s `prebuild`, in execution order. This chain is
+what `npm run build` runs first, and what every `/handoff` and deploy relies on.
+Each entry's purpose is quoted from the script's own header.
+
+| # | Script | Purpose (from its own header) |
+|---|---|---|
+| 1 | `run-consistency-gates.py` | Single orchestrator for the SGS blocks consistency-gate suite. Runs a fixed |
+| 2 | `build-roster.py` | Spec 35 UNIT A0 — enumerate the block roster + per-block surface flags from the DB. |
+| 3 | `generate-icons.js` | Generates includes/lucide-icons.php from lucide-static SVG files. |
+| 4 | `generate-extension-attributes.js` | Single source of truth for the cross-block `sgs*` editor-extension attributes. |
+| 5 | `run-motion-fx-generators.js` | motion-fx generator chain (seed-motion-fx-registry.py, |
+| 6 | `check-fx-list-drift.py` | the three-list (plus field-type triad) fx drift gate. |
+| 7 | `check-dead-controls.js` | STRUCTURAL GUARD (HC2, 2026-06-08) — stops the "dead control" class of bug |
+| 8 | `check-dead-pattern-attrs.py` | Find block attributes in theme patterns/parts that WordPress silently DISCARDS |
+| 9 | `check-shared-panel-schema.js` | STRUCTURAL GUARD — closes the gap in the "dead control" family that |
+| 10 | `check-empty-inspector-containers.js` | STRUCTURAL GUARD — an inspector container rendered with NO children. |
+| 11 | `check-wrapper-capability-preconditions.js` | STRUCTURAL GUARD for the shared-wrapper capability declarations in each |
+| 12 | `survey-background-colour-support.py` | Track A completion audit — native colour/gradient background support. |
+| 13 | `check-image-controls-support.py` | Standing defence for the `imageControls` "declared-but-unverified capability" |
+| 14 | `survey-control-parity.py` | do SGS inspector controls look like NATIVE WordPress? |
+| 15 | `check-hardcoded-render-defaults.js` | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of |
+| 16 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 17 | `check-control-ux.js` | STRUCTURAL GUARD (Step 7a, 2026-06-11) — prevents the two editor anti-patterns |
+| 18 | `survey-experimental-imports.js` | ONE DETECTOR, THREE MODES (D542, Bean-locked): |
+| 19 | `check-product-search-guards.js` | STATIC PRE-FLIGHT GUARD for the product-search REST endpoint. |
+| 20 | `check_schema_drift.py` | Detect drift between the committed ``schema.sql`` and the live database's DDL. |
+| 21 | `check_value_identity.py` | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
+| 22 | `capture_seed_data.py` | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
+| 23 | `run.py` | F6 DB-as-code consistency suite shared runner. |
+| 24 | `lint-responsive-controls.py` | FR-36-24 structural gate (R-31-9 for responsive controls). |
+| 25 | `check-tier-storage-shape.py` | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
+| 26 | `check-inert-controls.py` | Find block attributes that are OVERWRITTEN in render.php before being used. |
+| 27 | `check-undeclared-attrs.py` | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
+| 28 | `check-undefined-refs.js` | THE GAP THIS CLOSES. On 2026-08-22 three blocks shipped broken editors: |
+| 29 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 30 | `run.py` | F5 cheat-detection gate runner. |
+| 31 | `run.py` | F5 excluded-literal tripwire gate for the SGS cloning pipeline. |
+| 32 | `coverage_check.py` | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
+| 33 | `check-atomic-slug-literals.py` | STRUCTURAL GUARD (FR-22-3, 2026-06-13) — prevents new per-block `if slug ==` |
+| 34 | `declare_input.py` | ledger.declare_input — F2 draft-derived CSS Accounting Ledger (input parser). |
+| 35 | `audit-inline-styling.js` | READ-ONLY DETECTION INSTRUMENT (not a build gate) — classifies HOW every |
+| 36 | `check-id-scoped-emits.js` | STRUCTURAL GUARD — ID-scoped CSS selector emissions. |
+| 37 | `check-text-gradient-companion.js` | THE TRAP THIS GATE CATCHES. `sgs_text_decls()` (`includes/helpers-colour- |
+| 38 | `check-preset-token-naming.py` | STRUCTURAL GATE — Spec 32 FR-32-9 (Naming Convention) self-verifier. |
+| 39 | `check-palette-slug-refs.py` | every referenced colour slug must actually exist. |
+| 40 | `check-box-family-guard.py` | STRUCTURAL GUARD — box-object interface contract (2026-07-09 plan §6). |
+| 41 | `check-jsonld-flags.py` | guard the ONE json_encode flag combination that is unsafe. |
+| 42 | `remove-vacuous-style-engine-guard.py` | Delete the vacuous `function_exists( 'wp_style_engine_get_styles' )` guard. |
+| 43 | `check-no-core-blocks.py` | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
+| 44 | `check-no-inline.py` | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
+| 45 | `check-stranded-guards.py` | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
+| 46 | `check-shared-css-state-rules.js` | STRUCTURAL GUARD — stops the "state-only shared-CSS size literal" class of |
+| 47 | `run.js` |  |
+| 48 | `check-element-manifest-conformance.js` | Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable. |
+| 49 | `audit-feature-parity.py` | Spec 35 UNIT A — feature-parity audit. |
+| 50 | `audit-declared-vs-seeded-roles.py` | Audit: which `sgs/%` attributes LACK A MECHANISM that reaches them — the D497 gate. |
+| 51 | `check-universal-fit.js` | WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension |
+| 52 | `check-duplicate-controls.js` | STRUCTURAL GUARD (WARN-ONLY) — finds the "duplicate control" class of bug: |
+| 53 | `check-simple-surface-cap.js` | FR-37-27 (Spec 37, .claude/specs/37-HEADER-FOOTER-BUILDER.md) — the SIMPLE |
+| 54 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 55 | `audit-block-uniformity.py` | SGS Block Uniformity Audit |
+| 56 | `check-editor-render-parity.js` | NEW STRUCTURAL GUARD (2026-08-13) — closes a class of bug no existing gate |
+| 57 | `check-ksort-before-hash.py` | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
+| 58 | `check-tier-object-cast.py` | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
+| 59 | `check-single-instance-invariants.py` | Single-instance invariant register — four named prohibitions, one shared mechanism. |
+
+**59 gating scripts.** Regenerate this whole section with:
+
+```bash
+python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
+```
+
+<!-- TOOLING-CATALOGUE:END -->
 
 ---
 
