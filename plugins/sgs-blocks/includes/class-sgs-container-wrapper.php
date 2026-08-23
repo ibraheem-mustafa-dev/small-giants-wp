@@ -925,9 +925,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// it now DEFAULTS to "flex" and WP does not serialise a value equal to its
 			// default — an authored "flex" and an absent key are indistinguishable here,
 			// the same absent-vs-default trap this session already hit twice.
-			if ( 'main' === $html_tag && '' === $flex_direction ) {
-				$flex_direction = 'column';
-			}
+			// ⛔ REVISED 2026-08-23, same day, on Bean's challenge — and his framing was
+			// the correct one. The first version forced flexDirection:'column' here. That
+			// works, but it answers the wrong question: it makes <main> a flex container
+			// in order to stop it being a flex ROW, when a page's main region has no
+			// business being a flex container at all. Normal block flow already stacks;
+			// that is what block layout DOES.
+			//
+			// MEASURED, which is what settled it: <main> on 404.html computes
+			// display:block and stacks correctly with zero flex involved, because that
+			// template's <main> has a content band — and $grid_on_inner (above) routes
+			// the flex declarations onto the __inner element, leaving the outer alone.
+			// single-product.html's <main> said contentWidth:"full", so it had NO band, no
+			// __inner to route to, and the flex landed on <main> itself as a ROW. So
+			// whether the page's main region became a flex container was decided purely
+			// by whether it happened to carry a content band. That is the actual defect.
+			//
+			// The fix is therefore to SUPPRESS the outer flex for a <main>, not to
+			// re-point it: children fall back to block flow, stack, and fill the width,
+			// with no flex-wrap semantics dragged along (column + wrap can wrap into
+			// COLUMNS if a height is ever constrained — a latent trap the previous shape
+			// carried). An explicit direction still wins, so the control never lies.
+			$suppress_outer_flex_for_main = ( 'main' === $html_tag && '' === $flex_direction );
 			if ( ! in_array( $flex_wrap, $allowed_flex_wrap, true ) ) {
 				$flex_wrap = '';
 			}
@@ -1248,7 +1267,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( 'stretch' !== $align_content ) {
 						$gd[] = 'align-content:' . esc_attr( $align_content );
 					}
-				} elseif ( 'flex' === $layout ) {
+					// NOTE: a <main> with no explicit flexDirection falls through this whole
+					// chain and emits NO display, so block flow stacks its sections. See
+					// the note at $suppress_outer_flex_for_main above.
+				} elseif ( 'flex' === $layout && ! $suppress_outer_flex_for_main ) {
 					$gd[] = 'display:flex';
 					$gd[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : 'wrap' );
 					// D288: blank alignItems → browser default (see grid branch above).
