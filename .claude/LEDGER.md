@@ -188,12 +188,20 @@ mutation-proven. `core/selftest.js` gained a `_css-property-map.json` seam becau
 mechanism branch was previously **unreachable in self-test** — a gate that cannot fail
 reads green forever.
 
-**⚠ OWED, and it is the FIRST thing next session should decide.** The new attributes are
-NOT in `block_attributes.css_property`, so rule 31's mechanism axis is blind to them and
-falls back to the binary gradient check (which they pass legitimately — not a false
-green, but a blind spot). **`/sgs-update` must seed them.** Deliberately NOT run: it
-writes the SHARED DB, worktrees do not isolate it, and a reseed has broken both tracks'
-builds before. Run it on the main checkout, alone, announced.
+**✅ OWED ITEM CLOSED 2026-08-23 (`4e73f28f`).** `/sgs-update` ran (exit 0) and seeded the
+50 new attributes — but `css_property` came back NULL for almost all of them, found by
+diffing the exported map before/after rather than by reading the run summary. **Seeding
+the row is not seeding the mapping:** `css_property` derives from
+`supports.sgs.elements.<el>.attrMap`, not from the attribute name. Five of six blocks
+still pointed at `native:color.background` — the mechanism D751 retired — which the
+CLONING PIPELINE reads, so the manifest was naming a dead target as the colour owner.
+Repointed via two shapes copied from info-box's working manifest (`attrMap` +
+`states.hover.attrMap`). Measured **0 → 48 of 56 resolved**; rule 31 held at 292 across
+two agreeing runs, so no mechanism mismatches were introduced.
+⚠ **RESIDUAL: the 8 `linkColour*` attrs stay null.** Resolving them needs a new `link`
+ELEMENT in the manifest (descendant anchors, `a:where(:not(.wp-element-button))`), not
+another mapping — and adding an element changes the member census
+`check-element-manifest-conformance` reads. Design change, deliberately not slipped in.
 
 **NEXT SESSION — Bean's remaining order (items 2-4 of 4):**
 2. **Structural block on `git stash` for subagents.** Three ran it on this shared worktree
@@ -204,13 +212,29 @@ builds before. Run it on the main checkout, alone, announced.
    SIX times for code that never changed. This session hit the same tax again: untouched
    `icon-list` rows read as net-new purely because edits above them shifted position.
    Re-key on block + control identity, not position.
-4. **THEN PLAN the two behemoths** — below-min-states 162 + missing-gradient 130 (292
-   findings, 100+ sites). ⛔ Do NOT hand-fix. Design a DETERMINISTIC MECHANICAL batch
-   method first (survey→fix→check triad, D542). ⚠ `adopt.js` CANNOT do it — it rewrites
-   `edit.js` only, never `block.json`, and these need NEW ATTRIBUTES. **Open design
-   question for Bean before building:** hover is a DESIGN decision, not a mechanical one —
-   does the codemod propose-and-defer per block, or apply a default? That choice is the
-   difference between one session and several.
+4. **The two behemoths — Bean RULED 2026-08-23 (D752): APPLY HOVER + GRADIENT
+   EVERYWHERE.** No propose-and-defer, no per-block approval gate. His reasoning: hover
+   on ordinary elements gives them life when done well, and the control existing does not
+   force its use. ⛔ The "hover is a design decision" caveat was raised and OVERRULED —
+   do not re-open it. Consequence to hold, not act on: the ratchet drops far in one pass,
+   so a later hover REMOVAL will read as a regression; it is design refinement, cite D752.
+   **Measured shape:** 292 findings / 58 blocks / 181 distinct (block,row) pairs — 108
+   need BOTH, 52 hover only, 21 gradient only. 132 distinct row keys, long tail (top 22
+   cover only 108 of 292), so the tool must be driven by the scanner's findings, never a
+   curated name list. Build it as the survey→fix→check triad (D542) owning ALL THREE
+   layers — `block.json` attr + `edit.js` row + `render.php` emit. ⛔ `adopt.js` CANNOT do
+   it (rewrites `edit.js` only). Bars: exact TOTAL-count assertion (only a total catches
+   OVER-matching), corpus-size assertion, fails CLOSED, **PARSE the attribute JSON never
+   splice it** (D750), conservation check, `prove-selftest-can-fail.py` RED with the break
+   confirmed landed. Sweep in `breadcrumbs` + `table-of-contents`, whose `linkColour` has
+   no hover sibling.
+
+**LINK COLOUR — asked and answered 2026-08-23, NOT part of the backlog.** Site-wide link
+colour already lives in `theme.json` `styles.elements.link`: `primary` normal,
+`primary-dark` `:hover`, `primary-dark` + underline `:focus`. Every link in every block,
+client-editable at Site Editor → Styles → Elements → Links, per-client via
+`sites/<client>/theme-snapshot.json`. Block-private `linkColour` overrides exist on 4
+blocks; after D751 ZERO blocks expose core's competing per-block link panel.
 
 **⚠ METHOD (carried forward, earned again today).** Three probe artefacts read as code
 defects this session and all three were the INSTRUMENT: measuring the root when the block

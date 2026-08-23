@@ -1,5 +1,54 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D752 — hover EVERYWHERE: Bean's ruling on the 292-finding colour backlog
+**2026-08-23** · [ROUTINE] · ruling only, no code yet
+
+**Decision (Bean, verbatim intent).** The batch codemod **applies hover and gradient
+everywhere the rule wants them** — no propose-and-defer, no per-block approval gate.
+Reasoning given: *"It is nice to give the option to allow for hover interactivity even
+for normal elements as it gives them a bit of life if done well."*
+
+**The caveat was raised and overruled, deliberately — do NOT re-litigate it.** The
+concern put to Bean was that a hover colour on body text or a static panel can read as
+broken, and that a machine cannot tell those apart from a card or a button. Bean's
+position is that hover on ordinary elements is a feature when done well, and that the
+CONTROL existing does not force anyone to use it. He is the designer; this is his call.
+
+**Consequence to hold in mind, not to act on:** the ratchet drops a long way in one
+pass, so a later hover REMOVAL will look like a regression against it. When that
+happens it is a design refinement, not a defect — cite this decision.
+
+**Measured shape of the work (2026-08-23, `status === "FLAGGED"` only).** 292 findings
+over **58 blocks** in **181 distinct (block, row) pairs**: 108 need BOTH hover and
+gradient, 52 need hover only, 21 need gradient only. 132 distinct row keys with a long
+tail — the top 22 names cover only 108 of 292, so no name-keyed shortcut works and the
+tool must be driven by the scanner's own findings, not a curated list.
+
+**The gradient half carries no design risk and can be reasoned about separately even
+though it now ships together:** a gradient attribute defaults to `""` and the emitters
+paint nothing until a value is set, so adding the control changes zero pixels. The
+hover half is the half that alters what a visitor sees.
+
+**Tool bars (unchanged from the plan, each earned by a real failure):** survey → fix →
+check triad in one script (D542); exact TOTAL-count assertion in the self-test (per-
+fixture assertions catch under-matching, only a total catches OVER-matching); corpus-size
+assertion; fails CLOSED on an unreadable file; **PARSE the attribute JSON, never
+string-splice it** (D750); conservation check enumerated finding-by-finding; and
+`prove-selftest-can-fail.py` must turn it RED with the break confirmed landed.
+⛔ `adopt.js` cannot do this — it rewrites `edit.js` only, never `block.json`, and these
+need NEW ATTRIBUTES. The tool must own all three layers.
+
+**Link colour — answered the same day, and it is NOT part of this backlog.** Site-wide
+link colour already exists in `theme.json` `styles.elements.link`: `primary` normal,
+`primary-dark` on `:hover`, `primary-dark` + underline on `:focus`. It applies to every
+link in every block and the client edits it in Site Editor → Styles → Elements → Links,
+with per-client variation via `sites/<client>/theme-snapshot.json`. Four blocks carry a
+block-private `linkColour` override (breadcrumbs, table-of-contents, info-box,
+testimonial) and, after D751, ZERO blocks expose core's competing per-block link panel.
+⚠ `breadcrumbs` and `table-of-contents` declare `linkColour` with NO hover sibling, so
+they are inconsistent with the two migrated at D751 and trip the two-state floor. Sweep
+them in with this codemod.
+
 ## D751 — native-colour-ui CLOSED (6→0): the last six blocks, and a detector bug they exposed
 **2026-08-23** · [ROUTINE] · commits `5c9c1db2`, `a5bb6220`, `6e5a563e`
 
