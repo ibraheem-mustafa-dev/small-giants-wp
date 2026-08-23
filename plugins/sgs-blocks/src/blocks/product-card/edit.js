@@ -1960,7 +1960,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										bottomLeft: '10px',
 										bottomRight: '10px',
 									},
-									ctaFontSize: null,
+									ctaFontSize: undefined,
 									ctaPadding: {},
 									ctaColourBackground: '',
 									ctaColourText: '',
@@ -2071,7 +2071,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									ctaFontSize !== undefined
 								}
 								onDeselect={ () =>
-									setAttributes( { ctaFontSize: null } )
+									setAttributes( { ctaFontSize: undefined } )
 								}
 							>
 								<NumberControl

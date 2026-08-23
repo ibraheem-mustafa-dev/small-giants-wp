@@ -367,8 +367,7 @@
 			"default": "600"
 		},
 		"ctaFontSize": {
-			"type": "number",
-			"default": null
+			"type": "number"
 		},
 		"ctaPadding": {
 			"type": "object",
