@@ -59,7 +59,10 @@
 					"order": 2,
 					"clusters": [ "text" ],
 					"prefix": "star",
-					"_note": "SVG glyph fill (render.php:227/244, sgs_colour_value($attributes['starColour'])) — default convention star+Colour=starColour resolves css:color. emptyColour is a real but separate scalar (the unfilled-star fill) with no member of its own — an honest orphan mirroring sgs/icon-list's iconSize pattern. No font-size/weight/line-height surface — an SVG star has no typography."
+					"_note": "SVG glyph fill (render.php:227/244, sgs_colour_value($attributes['starColour'])) — starColour is mapped EXPLICITLY to css:fill above. The prefix convention would resolve it to css:color, which is FALSE — this block never emits a CSS `color` declaration for the star; render.php:227/244 writes fill=\"...\" as an SVG presentation attribute (see this file's header, render.php:7-8). The convention is a guess, and /sgs-update deliberately refuses to seed css_property from it (extract-signatures.py:2502), so before this mapping the DB held NULL and every DB-reading consumer (survey.js, rule 31, the cloning pipeline) was blind to it. emptyColour is a real but separate scalar (the unfilled-star fill) with no member of its own — an honest orphan mirroring sgs/icon-list's iconSize pattern. No font-size/weight/line-height surface — an SVG star has no typography.",
+					"attrMap": {
+						"css:fill": "starColour"
+					}
 				}
 			}
 		}

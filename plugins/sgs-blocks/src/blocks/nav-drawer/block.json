@@ -54,6 +54,8 @@
 					"order": 2,
 					"clusters": [ "layout" ],
 					"attrMap": {
+						"css:color-gradient": "drawerTextColourGradient",
+						"css:color": "drawerTextColour",
 						"css:gap": "drawerGap",
 						"css:padding": "drawerPadding",
 						"css:align-items": "drawerAlign"

@@ -54,6 +54,7 @@
 						"layout"
 					],
 					"attrMap": {
+						"css:background-image": "accentBackgroundImage",
 						"css:width": "asideWidth"
 					},
 					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key)."
