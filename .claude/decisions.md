@@ -1,5 +1,57 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D754 — the colour backlog is a CAPABILITY problem, not a codemod problem
+**2026-08-23** · [ROUTINE] · design + plan, no code yet
+
+**Decision.** Close rule 31's remaining colour backlog with a new `grant.js` capability pass
+placed AHEAD of the existing `scripts/colour-codemod/` triad, owning `render.php` and working
+per BLOCK. Design: `.claude/plans/2026-08-23-colour-capability-grant-design.md`. Plan:
+`.claude/plans/2026-08-23-colour-capability-grant-PLAN.md`.
+
+**The premise Bean started from was right about the symptom and wrong about the cause, and
+running the existing survey is what showed it.** He asked for a shape-aware batch tool
+because 300+ hand fixes will never work. True. But only **32 of 187 non-conformant rows
+(17%) are autofixable**, and the refusals are CAPABILITY refusals: 79 have no
+gradient-capable paint path, 34 paint via a colour-valued custom property, 27 have no
+`css_property`, 15 have an unresolvable attr. You cannot add a gradient control to a row
+whose rendering cannot paint a gradient — the control would exist, the client would pick a
+gradient, and nothing would happen. That is D751's dead-control defect, mass-produced.
+Shape recognition is the EASY half: 90% of findings are a single shape.
+
+**⛔ A disciplined triad ALREADY EXISTS** (`survey.js` census with named refusals, `fix.js`
+Tier-A writer, `adopt.js` literal→helper). This is an extension. Do not rebuild it.
+
+**Why a separate pass rather than widening `fix.js` — blast radius.** The render rewrite is
+the only part that changes what a visitor sees, so it gets its own pass, its own
+verification and its own revert; everything downstream stays additive. It also makes
+`survey.js` the honest arbiter — a successful grant turns refusals into AUTOFIXABLE without
+anyone editing the survey, so the result cannot be faked.
+
+**Why the grant's unit is the BLOCK, not the row.** Whether background must move to an
+`::after` layer depends on whether text and background share an element, because a text
+gradient clips the element's whole background to the glyph shapes. Proven the hard way at
+D751: five of six blocks needed the layer, `icon-list` did not.
+
+**What review changed — an Opus risk pre-mortem plus two cold reviewers, each finding
+re-verified against source before acceptance:**
+- **The states-floor landmine.** `requiredStatesFor()` matches by ELEMENT, not attribute, so
+  writing `states.hover` onto an element that already declares a different state raises the
+  required-states floor for every attribute on it — failing the build in blocks nobody
+  touched. Four elements measured. D751's manifest change was safe by luck.
+- **Rule 31 cannot see `render.php`**, so it is the wrong instrument for verifying the grant.
+- **U3 is a feasibility risk, not only an estimation risk** — six blocks done by hand with
+  human judgement at every ambiguous point is not evidence the transformation can be
+  automated. Gate 2 gains a reproduce-a-known-good spike.
+- Element resolution, the "shared element" test, and "delete the superseded paint" each
+  named a RESULT with no PROCEDURE; three competent executors would have diverged on all
+  three. Now explicit rulings, including a `container_kind` branch per D294.
+- One unit deleted for contradicting the design's own out-of-scope clause; one added because
+  no codemod script has a `--block` filter and batching is impossible without one.
+
+**Recorded because it generalises:** the cheap act that changed this design was *running the
+existing tool before designing its replacement*. The 17%-autofixable figure was one command
+away the whole time, and every subsequent decision turned on it.
+
 ## D753 — the "agents ran git stash against orders" record was FALSE; item cancelled
 **2026-08-23** · [INCIDENT] · correction to the record, no code
 

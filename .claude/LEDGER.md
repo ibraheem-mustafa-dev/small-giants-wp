@@ -225,22 +225,42 @@ INFERRED from seeing the command, and a structural fix was specced for an unprov
    SIX times for code that never changed. This session hit the same tax again: untouched
    `icon-list` rows read as net-new purely because edits above them shifted position.
    Re-key on block + control identity, not position.
-2. **The two behemoths — Bean RULED 2026-08-23 (D752): APPLY HOVER + GRADIENT
-   EVERYWHERE.** No propose-and-defer, no per-block approval gate. His reasoning: hover
-   on ordinary elements gives them life when done well, and the control existing does not
-   force its use. ⛔ The "hover is a design decision" caveat was raised and OVERRULED —
-   do not re-open it. Consequence to hold, not act on: the ratchet drops far in one pass,
-   so a later hover REMOVAL will read as a regression; it is design refinement, cite D752.
-   **Measured shape:** 292 findings / 58 blocks / 181 distinct (block,row) pairs — 108
-   need BOTH, 52 hover only, 21 gradient only. 132 distinct row keys, long tail (top 22
-   cover only 108 of 292), so the tool must be driven by the scanner's findings, never a
-   curated name list. Build it as the survey→fix→check triad (D542) owning ALL THREE
-   layers — `block.json` attr + `edit.js` row + `render.php` emit. ⛔ `adopt.js` CANNOT do
-   it (rewrites `edit.js` only). Bars: exact TOTAL-count assertion (only a total catches
-   OVER-matching), corpus-size assertion, fails CLOSED, **PARSE the attribute JSON never
-   splice it** (D750), conservation check, `prove-selftest-can-fail.py` RED with the break
-   confirmed landed. Sweep in `breadcrumbs` + `table-of-contents`, whose `linkColour` has
-   no hover sibling.
+2. **The two behemoths — DESIGNED, PLANNED, REVIEWED 2026-08-23. Next session BUILDS.**
+   ⭐ **Front: `.claude/plans/2026-08-23-colour-capability-grant-PLAN.md`** (design:
+   `…-design.md`; rulings D752 + D754). The plan owns the detail — read it, don't work
+   from this summary.
+
+   **Mandate (D752): APPLY HOVER + GRADIENT EVERYWHERE.** Counter-argument overruled; do
+   not re-open. ⚠ The ratchet drops far in one pass, so a later hover REMOVAL reads as a
+   regression — that is refinement, cite D752.
+
+   ⛔ **THE PREMISE CHANGED.** Running the EXISTING survey showed only **32 of 187
+   non-conformant rows (17%) are autofixable** — the rest are CAPABILITY refusals (79 no
+   gradient-capable paint path, 34 custom-property, 27 no-`css_property`, 15
+   unresolvable). Shape recognition is the EASY half (90% one shape). **A disciplined
+   triad already exists at `scripts/colour-codemod/` — this is an EXTENSION. Do not
+   rebuild it.**
+
+   **Approach B:** new `grant.js` capability pass AHEAD of the triad, owning `render.php`,
+   per BLOCK not per row. `grant → survey → fix → adopt → check`. Step 1 is TRIAGE — the
+   79 verdict is a regex fallthrough, not proof.
+
+   **Three review findings you must not meet cold:**
+   - ⛔ **States-floor landmine** — `requiredStatesFor()` matches by ELEMENT, so adding
+     `states.hover` to an element already declaring another state raises the floor for
+     every attr on it (`site-header.wrapper` = 18). Zero ratchet slack → build fails in
+     untouched blocks. `4e73f28f` was safe by luck.
+   - ⛔ **Rule 31 cannot see `render.php`** — wrong instrument for the grant; a botched
+     render would read as success.
+   - ⛔ **U3 is a FEASIBILITY risk, not just estimation** — six blocks done BY HAND is not
+     evidence it automates. Gate 2 spike: reproduce a known-good block or re-scope.
+
+   **First action, ≤5 min:** U2 on ONE block whose element declares no prior state.
+
+3. **The line-keyed baseline** — `08-raw-url-link`'s key embeds a LINE NUMBER, re-anchored
+   SIX times for unchanged code. ⚠ Measured: **0 line-derived rowKeys today** (latent, not
+   live) — but the delta key `block+kind+rowKey` **collides on 3 pairs**, which matters
+   more and is the one to fix.
 
 **LINK COLOUR — asked and answered 2026-08-23, NOT part of the backlog.** Site-wide link
 colour already lives in `theme.json` `styles.elements.link`: `primary` normal,
