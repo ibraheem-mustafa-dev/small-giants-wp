@@ -1,6 +1,15 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:sgs/container {"tagName":"main","layout":"stack","anchor":"main","contentWidth":{"desktop":"600px"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"}} -->
+<!-- LIVING CANARY for the <main> column fallback (2026-08-23). This template
+     deliberately does NOT state layout:"stack" — the other eight do. The shared
+     wrapper resolves a blank flexDirection on a <main> to `column`, and with every
+     template stating it explicitly that code path would never execute anywhere,
+     which is how a mechanism rots without anyone noticing. This page depends on no
+     posts, products or client content, so it is the cheapest possible place to keep
+     the fallback honest: request any nonsense URL and check <main> computes
+     flex-direction:column. If it ever reads `row`, the fallback has broken.
+     ⛔ Do NOT "tidy" this by adding layout:"stack" to match its siblings. -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"600px"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"}} -->
 
 	<!-- wp:sgs/heading {"content":"404","textAlign":"center","level":"h1","fontSize":{"desktop":"hero"}} /-->
 
