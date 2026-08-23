@@ -77,16 +77,47 @@ def first_purpose(path: Path) -> str:
                 continue
             return cleaned
         return ""
-    # js/mjs block comment
-    for line in text.splitlines()[:40]:
-        s = line.strip().lstrip("*").strip()
+    # js/mjs header. TWO shapes, and missing the second left 21 rows BLANK:
+    # a /** JSDoc */ block, and a bare `//` comment header. The whole
+    # inspector-scan/rules/ family uses `//`, and the first version of this
+    # generator SKIPPED every `//` line as noise — so the 23 files carrying the
+    # richest blind-spot documentation in the repo catalogued as empty cells.
+    # An empty cell in a discovery catalogue is worse than no row: it says
+    # "looked, found nothing" about a file that documents itself thoroughly.
+    stripped = []
+    for line in text.splitlines()[:60]:
+        s = line.strip()
+        if s.startswith("//"):
+            s = s[2:].strip()
+        else:
+            s = s.lstrip("*").strip()
+        stripped.append(s)
+    for s in stripped:
         if not s or s in ("/**", "/*", "*/"):
             continue
-        if s.startswith(("#!", "//", "import", "const", "'use", '"use')):
+        if s.startswith(("#!", "import ", "const ", "'use", '"use', "require(")):
             continue
         if s == path.name or s.startswith(path.name):
             continue
-        return s
+        # separator rules and banner lines carry no meaning
+        if set(s) <= set("-=_~ "):
+            continue
+        # A header line wraps at ~90 chars, so the first LOGICAL sentence spans
+        # several comment lines. Returning only the first physical line cuts it
+        # mid-clause ("...schema this rule enforces" lost). Join continuations
+        # until the sentence ends, then let the caller truncate.
+        parts = [s]
+        for nxt in stripped[stripped.index(s) + 1:]:
+            if not nxt or set(nxt) <= set("-=_~ "):
+                break
+            if nxt.startswith(("(", "-", "*", "1.", "2.", "3.")):
+                break
+            if parts[-1].endswith("."):
+                break
+            parts.append(nxt)
+            if len(" ".join(parts)) > 200:
+                break
+        return " ".join(parts).strip()
     return ""
 
 
