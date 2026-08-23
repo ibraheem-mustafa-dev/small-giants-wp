@@ -85,13 +85,10 @@ soon · Product Archive · Products by Attribute · Search Results · Single Pos
 Product. Strings seen: "Template part has been deleted or is unavailable" · "Error
 loading block: [object Object]" · "Block contains unexpected or invalid content."
 
-**Also open:** product listings render generic photo/name/price/button stacks instead of
-`sgs/card-grid` → `sgs/product-card` (`single-product.html:37-39` is the worst case);
-`catalog-sorting` and `query-pagination` completely unstyled against the site's global
-styles; archives inconsistent with each other (search bar bottom on Search Results, top
-on Product Archive; yellow/black button one side, pink+magnifier the other); infinite
-scroll gone from the archives; `index.html` a near-duplicate of `archive.html` down to
-the description; suspected template bloat.
+**Also open — the full register is Part 2 of the remediation plan; do not restate it here:**
+generic product stacks (B1-B3), unstyled `catalog-sorting`/`query-pagination` (C1/C2),
+archives inconsistent with each other (D1-D4), pagination vs the old infinite scroll (F),
+and template bloat/duplication (G1-G3).
 
 **✅ X-2 SHIPPED AND MEASURED (2026-08-23).** WooCommerce/jQuery dequeue gate is live.
 **Six of eight surfaces are now inside the 50 KB JS budget; all eight were over it.** Shop
