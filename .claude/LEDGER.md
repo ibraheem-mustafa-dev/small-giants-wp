@@ -203,16 +203,29 @@ ELEMENT in the manifest (descendant anchors, `a:where(:not(.wp-element-button))`
 another mapping — and adding an element changes the member census
 `check-element-manifest-conformance` reads. Design change, deliberately not slipped in.
 
-**NEXT SESSION — Bean's remaining order (items 2-4 of 4):**
-2. **Structural block on `git stash` for subagents.** Three ran it on this shared worktree
-   on 2026-08-22 despite explicit prohibition. Prose does not hold this — it needs a
-   PreToolUse hook with a `--self-test` and a negative control. ⚠ This session's four
-   agents were told not to and did not, but that is four for four on prose, not proof.
-3. **The line-keyed baseline.** `08-raw-url-link`'s key embeds a LINE NUMBER, re-anchored
+**⛔ ITEM 2 IS CANCELLED — AND ITS PREMISE WAS FALSE (Bean, 2026-08-23).** The record
+said *"three agents ran `git stash` despite explicit prohibition, once mid-write by
+another agent"*, and item 2 proposed a PreToolUse hook to block it. **Bean had INSTRUCTED
+them to empty the stash**, because it held old entries and was causing confusion. So the
+action was authorised, and a hook enforcing against it would have blocked Bean's own
+instruction. Do not rebuild this.
+⚠ **The distinction the original note blurred, worth keeping:** emptying the stash
+(`git stash drop`/`clear`) discards entries ALREADY stashed and never touches the working
+tree. `git stash [push]` is the dangerous one — it removes uncommitted work from the tree,
+and on a shared worktree that is everyone's work, not just the caller's. The danger the
+record described belongs to the second command; the instruction Bean gave was the first.
+The prohibition in agent briefs should therefore name `git stash push` (and
+`checkout --`/`restore`), not the word "stash". The stash is currently empty, consistent
+with Bean's account.
+⭐ This is a *prove-the-cause* miss in the record itself: rogue-agent behaviour was
+INFERRED from seeing the command, and a structural fix was specced for an unproven cause.
+
+**NEXT SESSION — Bean's remaining order:**
+1. **The line-keyed baseline.** `08-raw-url-link`'s key embeds a LINE NUMBER, re-anchored
    SIX times for code that never changed. This session hit the same tax again: untouched
    `icon-list` rows read as net-new purely because edits above them shifted position.
    Re-key on block + control identity, not position.
-4. **The two behemoths — Bean RULED 2026-08-23 (D752): APPLY HOVER + GRADIENT
+2. **The two behemoths — Bean RULED 2026-08-23 (D752): APPLY HOVER + GRADIENT
    EVERYWHERE.** No propose-and-defer, no per-block approval gate. His reasoning: hover
    on ordinary elements gives them life when done well, and the control existing does not
    force its use. ⛔ The "hover is a design decision" caveat was raised and OVERRULED —

@@ -1,5 +1,45 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D753 — the "agents ran git stash against orders" record was FALSE; item cancelled
+**2026-08-23** · [INCIDENT] · correction to the record, no code
+
+**Bean, 2026-08-23:** *"no to task 2 - I told them to empty the stash because it was old
+and it can make things confusing."*
+
+**What the record said.** The colour-golden handoff and `LEDGER.md` both asserted: *"THREE
+agents ran `git stash` on the shared worktree today, each despite an explicit prohibition,
+once while another agent was mid-write. Every time it recovered; every time it was a
+coin-flip on another session's uncommitted work."* On that basis, a PreToolUse hook
+blocking `git stash` for subagents was specced as a priority item.
+
+**What actually happened.** Bean instructed them to empty the stash. The action was
+AUTHORISED. The hook would have enforced against his own instruction, and would have kept
+firing until someone worked out why.
+
+**The distinction the record blurred, and the reason it read as alarming.** Emptying the
+stash (`git stash drop` / `git stash clear`) discards entries ALREADY stashed and never
+touches the working tree — it cannot endanger anyone's work. `git stash [push]` is the
+dangerous one: it removes uncommitted changes from the tree, and on a shared worktree
+those are everyone's changes, not just the caller's. The danger described belongs to the
+second command; the instruction given was the first. **Agent briefs should prohibit
+`git stash push` specifically** (alongside `git checkout --` and `git restore`), not the
+bare token "stash", or they will keep colliding with legitimate housekeeping.
+
+**Why this is worth a decision entry rather than a quiet deletion.** It is a
+prove-the-cause failure inside the record itself, and the same shape as
+`~/.claude/rules/prove-the-cause-before-fix.md` exists to stop: the command was observed,
+rogue behaviour was INFERRED as its cause, the inference was written down as established
+fact ("despite an explicit prohibition"), and a structural fix was then specced against an
+unproven cause. Every later reader inherits it as settled history. The cheap disproving
+check — ask Bean what he asked for — was never run, and it took one sentence from him to
+collapse the whole item. **A false entry in a handoff is worse than no entry: it is
+carried forward verbatim by the D101 carry-forward rule, which preserves defences without
+re-testing their premises.**
+
+**Action taken.** Item cancelled in `LEDGER.md` and in the colour-golden plan, each with
+the correction stated inline rather than the claim silently removed, so a future reader
+meets the correction instead of re-deriving the original inference.
+
 ## D752 — hover EVERYWHERE: Bean's ruling on the 292-finding colour backlog
 **2026-08-23** · [ROUTINE] · ruling only, no code yet
 
