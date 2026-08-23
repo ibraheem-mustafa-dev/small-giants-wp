@@ -389,3 +389,46 @@ a.sgs-u-tap-44 {
 	padding-block: 10px;
 	margin-block: -10px;
 }
+
+/*
+ * BYLINE SEPARATORS — put the separator on the FOLLOWING sibling, never in content.
+ * Measured live 2026-08-23: single.html authored three literal "·" text blocks between
+ * date / author / category / reading-time. `core/post-author` renders NO ELEMENT AT ALL
+ * on these posts, so two separators became adjacent and the byline read
+ * "July 31, 2026 · · Uncategorized". A separator authored as content silently assumes its
+ * neighbour renders; when the neighbour is conditional, the separator is orphaned and no
+ * gate detects it, because nothing is technically broken.
+ * Attaching it to `* + *` means a field that renders nothing takes its separator with it.
+ */
+.sgs-byline > * + *::before {
+	content: "·";
+	margin-inline: 0.5em;
+	color: currentColor;
+	opacity: 0.6;
+}
+
+/*
+ * POST NAVIGATION — hide a prev/next link that has no target.
+ * Measured live 2026-08-23: on the newest post, core/post-navigation-link renders an
+ * element that is genuinely `:empty` (zero child nodes, empty innerHTML) but still
+ * occupies 26px. Setting `showTitle` did NOT suppress it — that was assumed and measured
+ * false. `:empty` is exact here and needs no `:has()`, so it is safe on Safari 15.
+ */
+.wp-block-post-navigation-link:empty {
+	display: none;
+}
+
+/*
+ * EQUAL-HEIGHT CARDS IN A QUERY GRID.
+ * Measured live 2026-08-23: after clamping excerpts the height spread across a 9-card
+ * archive fell from 99px to 51px, the remainder caused by titles wrapping to a second
+ * line. The grid item (the <li>) stretches, but the authored <article> inside it did not
+ * fill that cell, so card backgrounds ended at different heights in the same row.
+ */
+.wp-block-post-template.is-layout-grid > li {
+	display: flex;
+}
+
+.wp-block-post-template.is-layout-grid > li > * {
+	width: 100%;
+}
