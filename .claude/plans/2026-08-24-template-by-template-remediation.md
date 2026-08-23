@@ -206,6 +206,45 @@ It renders fine on the front end. This is very likely the root of Bean's *"Produ
 archive's format looks super broken"* and *"none of them look anything like that nice
 professional looking custom design"* — **in the editor the cards do not render at all.**
 
+### Root cause — Bean's hypothesis, confirmed from the console 2026-08-23
+
+Bean: *"Its probably dynamically loading the products on the live page which doesn't
+happen in the editor... the block has a mode which pulls woocommerce product data and
+other where you can hand type the content... And I think how it is seen in the editor is
+also dependent on how the parent block — card grid loads it."*
+
+**All three correct.** Every failing request is the same shape:
+
+```
+/wp-json/wp/v2/block-renderer/sgs/product-card?context=edit
+   &attributes[sourceMode]=wc-product
+   &attributes[productId]=0            ← no product to bind to
+```
+
+| Bean's point | Confirmed by |
+|---|---|
+| loads dynamically live, not in the editor | `productId=0` on every request — no product loop exists in the editor |
+| the block has a bound mode and a hand-typed mode | `sourceMode` enum = `typed \| wc-product \| sgs-cpt`; it is stuck in `wc-product` with nothing to fetch |
+| **it depends on how the parent loads it** | `product-card` declares `usesContext: ["postId"]`. Inside `woocommerce/product-template` the editor supplies no real post. Inside `sgs/card-grid` this cannot happen — card-grid's `render.php` builds the card server-side with attributes already resolved (lines 514/555/570) |
+
+**That third point is the whole argument for Task 5.** The card is being asked to
+self-resolve inside WooCommerce's machinery, which only works when a real query is
+running. Under `sgs/card-grid` the parent does the resolving, so there is no editor
+failure mode to fix.
+
+**TWO distinct failures, do not conflate them:**
+
+- **3 × HTTP 400** — REST rejecting the request itself. This is the known class where a
+  non-string attribute serialises to `""` for `ServerSideRender` and REST refuses it.
+- **3 × HTTP 500** — PHP erroring server-side, almost certainly loading product `0`.
+- (Also 2 × 500 on `sgs/business-info` from the header/footer — **unrelated and
+  pre-existing**, not part of this.)
+
+**Decide the intent before fixing:** should a bound card with no product render an editor
+placeholder (the usual answer), or should the template not be putting it there at all
+(Task 5)? Fixing the 400/500 without answering that just makes a wrong arrangement
+render quietly.
+
 **Start Task 3 here.** It is a specific block failing in a specific parent, with a
 reproducible URL:
 `/wp-admin/site-editor.php?postType=wp_template&postId=sgs-theme//archive-product&canvas=edit`
