@@ -120,7 +120,10 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "name"
+					"prefix": "name",
+					"attrMap": {
+						"css:color": "nameColour"
+					}
 				},
 				"reviewer-role": {
 					"label": "Reviewer role",
@@ -128,7 +131,10 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "role"
+					"prefix": "role",
+					"attrMap": {
+						"css:color": "roleColour"
+					}
 				},
 				"org-name": {
 					"label": "Organisation name",
@@ -136,7 +142,10 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "org"
+					"prefix": "org",
+					"attrMap": {
+						"css:color": "orgColour"
+					}
 				},
 				"avatar-image": {
 					"label": "Avatar image",
@@ -164,7 +173,8 @@
 					],
 					"prefix": "rating",
 					"attrMap": {
-						"css:font-size": "ratingSize"
+						"css:font-size": "ratingSize",
+						"css:color": "ratingColour"
 					}
 				}
 			},
