@@ -211,6 +211,37 @@ hazard is latent rather than live.
 
 ---
 
+## MEASURED 2026-08-23 — U1 triage answered by an EXISTING tool, not by hand
+
+⛔ **Do not re-derive these by reading render.php.** `census-colour-paint-route.py`
+already answers "how does each block route its colour paint", with a committed,
+arguable method in its own docstring. It existed before this plan was written and
+was not cited by it. Joining its `--json` output to `survey.js --json` triages the
+refused rows in one pass:
+
+| Block paint route | Refused rows | Reading |
+|---|---|---|
+| `direct` | **46** | Block DOES call a paint helper, yet the survey found no gradient-capable path for this attribute — the §4 nested-call regex blindness, with a population attached |
+| `wrapper` | **27** | Routes via `SGS_Container_Wrapper`; a per-block render.php scan structurally cannot see it |
+| `neither` | **28** | No paint helper, no wrapper call — the genuine-absence candidates |
+
+**73 of 101 have a NAMED structural reason the detector missed them. At most 28
+need investigation for genuine absence** — against a plan that budgeted hand-reading
+79. The census's own docstring predicted half of it: it states that WRAPPER+NEITHER
+is "the population a PER-BLOCK resolver cannot see".
+
+⚠ **CANDIDATE LIST, NOT A VERDICT LIST.** This joins a per-BLOCK signal to per-ROW
+refusals. A block calling a paint helper somewhere does not prove THIS attribute has
+a gradient-capable path. `direct` means "worth opening", never "already fine".
+
+⚠ The 79 in this plan is stale — the population is 101 after U2 dropped rows through
+the verdict cascade. Re-derive before use; do not quote either number as fixed.
+
+Concentration of the 46: nav-menu 10, pricing-table 6, process-steps 5,
+testimonial 5, mega-panel 4, card-grid 3, tabs 3.
+
+---
+
 ## Work units
 
 | Unit | Produces | Depends on | PERT | Critical path |
