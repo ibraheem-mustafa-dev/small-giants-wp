@@ -31,10 +31,30 @@ widening the existing triad, so no colour control ships without a working paint 
 Quoted here as of 2026-08-23: 292 findings / 58 blocks / 181 pairs; survey = 32 autofixable,
 79 no-paint-path, 34 custom-property, 27 no-css_property, 15 unresolvable-attr, 77 conformant.
 
-⛔ **SAY THIS OUT LOUD SO NOBODY READS THE RESIDUAL AS FAILURE: 292 IS A FLOOR, NOT A
-TOTAL.** Rule 31 reads per-block `edit.js` only and cannot see shared panels. This
-programme will not take the ratchet to zero and is not trying to. Shared-panel rows, the
-34 custom-property rows and the `linkColour` element work are all explicitly out of scope.
+⛔ **292 IS STILL A FLOOR — BUT THE REASON GIVEN IN THE FIRST DRAFT WAS WRONG.**
+
+The first draft said "rule 31 reads per-block `edit.js` only and cannot see shared panels".
+**That is stale.** Verified 2026-08-23: rule 31 ALREADY carries the shared reach walk —
+`resolveComponentFiles` / `reachedComponents` / `getSharedOwnerScan`, with `emitSharedRow`
+wired at three call sites, reaching **136 components**. The claim came from
+`survey-golden-conformance.js`'s docblock, which predates the 2026-08-20 widening that added
+it. **Shared panels are IN scope and already covered — that carve-out is deleted.**
+
+Today's zero shared findings is not blindness: the shared panels were genuinely fixed
+(`GradientOverlayControl` at D738, `ShadowControl` + `GridItemDefaultsPanel` at Steps
+5a/5b). Confirmed by checking the resolver still returns 136 entries rather than trusting
+the zero — `zeroIsAClaim`.
+
+**What genuinely keeps 292 a floor, measured:**
+1. **Extension-owned rows** — see U11 below. `fx.js` alone mounts **5 standalone
+   `<DesignTokenPicker>` elements, none with a `states=` prop**, invisible to the scanner
+   and inherited by the **15 blocks** that declare the `fx` extension. U11 closes this.
+2. **The `linkColour` element work** — needs a new `link` ELEMENT in the manifest, not
+   another mapping. Still out of scope.
+
+The 34 custom-property rows are **no longer out of scope** — every one of the four
+consumption shapes has a deterministic transform, and none needs a fourth layer (see the
+`/qc-council` section below).
 
 ---
 
@@ -204,6 +224,7 @@ hazard is latent rather than live.
 | **U4** GRANT-RUN | Batched execution, deploy + live-verify per batch | U1,U2,U3,U8,U10 | ~180 min | **yes** |
 | **U5** FIX-WIDEN | `fix.js` gains the gradient dimension | U6, U4 | 37 min | no |
 | **U7** SHAPE-REGISTRY | Dispatch table incl. legacy `DesignTokenPicker` | U6, U8 | 38 min | no |
+| **U11** EXTENSION-ATTRIBUTION | Rule 31 attributes extension-owned rows via `supports.sgs.enabledExtensions` (a reach MAP, not a reach WALK) | — | ~35 min | no |
 
 ⛔ **U3 IS A FEASIBILITY RISK, NOT ONLY AN ESTIMATION RISK — and the plan's own
 de-risking mechanism does not address it.** Gate 2 collapses U3's *estimate* by timing
@@ -263,6 +284,40 @@ makes it happen. Add a cheap guard: `fix.js` refuses to run if the survey output
 than the newest `render.php` mtime.
 
 ---
+
+## U11 — extension attribution, and why "just add the folder" does not work
+
+**Bean asked (2026-08-23): can't rule 31 pick up the shared helper / extension folders the
+way the other scanners do?** For shared components it already does — see the corrected floor
+framing above. For EXTENSIONS it cannot, and the reason is the attach mechanism, not a
+missing wire.
+
+Extensions hook in via `addFilter( 'blocks.registerBlockType', … )` — higher-order
+components. **There is no literal JSX mount anywhere for a reach WALK to follow.** Pointing
+`resolveComponentFiles` at the folder finds fx.js's exported CONSTANTS (`FX_OPTION_LABELS`,
+`FX_EASE_OPTIONS`, …) and no mountable component, which is exactly what it returns today.
+
+**The fix is a reach MAP, not a reach walk.** `block.json` already declares
+`supports.sgs.enabledExtensions`, so the extension's rows are attributed to every block that
+opts in — a declarative lookup against data that already exists, instead of following mounts
+that are never written.
+
+**Measured population:**
+
+| | |
+|---|---|
+| Standalone `<DesignTokenPicker>` mounts in `fx.js` | **5** |
+| How many carry a `states=` prop | **0** — all single-state, all would flag |
+| Blocks declaring the `fx` extension | **15** |
+| `hover-effects.js` colour rows | 0 |
+
+⚠ **THIS WILL RAISE THE COUNT WHEN FIRST WIRED, AND THAT IS THE DETECTOR GETTING HONEST —
+NOT A REGRESSION.** Exactly as the 2026-08-20 shared-owner widening moved 409 → 420. Say so
+in the ratchet reason BEFORE running it, or the next reader will misread the rise. The
+ratchet has zero slack, so plan the raise deliberately rather than discovering it mid-build.
+
+⭐ **High leverage, same argument the shared-owner widening made:** five rows, one edit in
+`fx.js`, landing for 15 blocks.
 
 ## Instruments — per unit, because one number cannot cover them all
 

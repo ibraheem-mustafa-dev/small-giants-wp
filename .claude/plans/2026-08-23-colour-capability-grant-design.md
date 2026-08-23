@@ -204,13 +204,29 @@ New, earned on 2026-08-23:
 
 ## Explicitly out of scope
 
-- The 34 `paints-via-colour-valued-custom-property` rows — converting these needs the
-  custom property's CONSUMER changed too. A separate decision, not a grant.
-- **Shared-panel rows.** Rule 31 reads per-block `edit.js` only, so 292 is a **floor**,
-  not a total; `survey-golden-conformance.js` already states this. The shared panels are
-  one edit for many blocks and deserve their own pass.
+⛔ **TWO OF THESE THREE WERE WRONG. Corrected 2026-08-23 — see the PLAN, which supersedes
+this list. Left here with the corrections inline rather than deleted, so a reader who
+arrives at the design first meets the correction instead of the original claim.**
+
+- ~~The 34 `paints-via-colour-valued-custom-property` rows~~ — **NO LONGER OUT OF SCOPE.**
+  Each of the four consumption shapes has a deterministic transform and every transform
+  already exists as a shared helper. Background rows use
+  `sgs_block_background_layer_css()` on `::after`, which needs NO wrapper. No fourth layer
+  is required.
+- ~~**Shared-panel rows.** Rule 31 reads per-block `edit.js` only~~ — **FALSE, AND IT WAS
+  ALREADY FALSE WHEN WRITTEN.** Rule 31 carries the shared reach walk
+  (`resolveComponentFiles` / `getSharedOwnerScan` / `emitSharedRow`, reaching 136
+  components) since the 2026-08-20 widening. This claim was copied from
+  `survey-golden-conformance.js`'s docblock, which predates that change — a doc going stale
+  against what it governs, the D753 pattern. **Shared panels are IN scope and covered.**
 - The 8 `linkColour*` attributes, which need a new `link` ELEMENT in the manifest rather
-  than another mapping.
+  than another mapping. **This one stands.**
+
+**What actually keeps 292 a floor:** extension-owned rows. Extensions attach via
+`addFilter()` — higher-order components with no literal JSX mount — so a reach WALK cannot
+see them by construction. `fx.js` alone has 5 single-state `<DesignTokenPicker>` mounts
+inherited by 15 blocks. Closing it needs a reach MAP keyed on
+`supports.sgs.enabledExtensions`. That is U11 in the plan.
 
 ## Also sweep in
 
