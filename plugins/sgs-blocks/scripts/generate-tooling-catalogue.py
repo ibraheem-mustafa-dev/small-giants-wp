@@ -27,6 +27,7 @@ import ast
 import json
 import re
 import sys
+import warnings
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
@@ -54,7 +55,12 @@ def first_purpose(path: Path) -> str:
     # in the catalogue for 4 of 59 rows. ast.get_docstring cannot make that error.
     if path.suffix == ".py":
         try:
-            doc = ast.get_docstring(ast.parse(text)) or ""
+            # Silence warnings raised by the file being READ (several catalogued
+            # scripts have their own invalid-escape warnings). They are not this
+            # generator's, and surfacing them here just makes a clean run look dirty.
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                doc = ast.get_docstring(ast.parse(text)) or ""
         except SyntaxError:
             doc = ""
         for line in doc.splitlines():
@@ -82,6 +88,11 @@ def first_purpose(path: Path) -> str:
             continue
         return s
     return ""
+
+
+_PKG = json.loads(PKG.read_text(encoding="utf-8"))
+_PREBUILD_BLOB = _PKG.get("scripts", {}).get("prebuild", "")
+_SCRIPTS_BLOB = " && ".join(_PKG.get("scripts", {}).values())
 
 
 def prebuild_steps() -> list[str]:
@@ -157,6 +168,54 @@ def build() -> str:
     out.append("python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py")
     out.append("```")
     out.append("")
+    # ---- THE LIBRARY: every runnable script, wired or not.
+    # The gate chain above is the part that CANNOT be forgotten — it runs whether
+    # anyone remembers it or not. That makes it the least useful thing to
+    # catalogue. The reason this section exists is the opposite case: a script
+    # built for one task, committed, and then forgotten when the task closed, so
+    # the next session hand-does the work or rebuilds the tool from scratch with
+    # a fresh round of brainstorming, QC and testing. That has happened enough
+    # times that the gate chain above is largely scar tissue from it.
+    # THIS is the library to grep before building anything.
+    out.append("")
+    out.append("### The full library — grep this BEFORE building or hand-doing anything")
+    out.append("")
+    out.append("Every runnable script, with the purpose its own author wrote. Most are NOT")
+    out.append("wired into any chain, which is exactly why they get forgotten and rebuilt.")
+    out.append("Before writing a new checker, codemod, census, probe or audit — or before")
+    out.append("doing that work by hand — search this list. Adapting one of these is nearly")
+    out.append("always cheaper than a fresh build plus its brainstorm, QC and tests.")
+    out.append("")
+    out.append("⚠ The naming is not consistent — the same idea appears as `census-*`,")
+    out.append("`survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep")
+    out.append("for the SUBJECT (colour, gradient, token, element, inline, parity), never")
+    out.append("for the verb you happen to have in mind.")
+    out.append("")
+    roots = [("plugins/sgs-blocks/scripts", "plugins/sgs-blocks"), ("scripts", ".")]
+    for rel_root, _base in roots:
+        rp = REPO / rel_root
+        if not rp.exists():
+            continue
+        entries = []
+        for f in sorted(rp.rglob("*")):
+            if not f.is_file() or f.suffix not in (".py", ".js", ".mjs"):
+                continue
+            if any(x in f.parts for x in ("node_modules", "fixtures", "__pycache__", "tests")):
+                continue
+            entries.append(f)
+        out.append(f"#### `{rel_root}/` — {len(entries)} scripts")
+        out.append("")
+        out.append("| Script | Wired | Purpose (its own words) |")
+        out.append("|---|---|---|")
+        for f in entries:
+            purpose = first_purpose(f).replace("|", chr(92) + "|")
+            if len(purpose) > 130:
+                purpose = purpose[:127].rstrip() + "…"
+            wired = "gate" if f.name in _PREBUILD_BLOB else ("npm" if f.name in _SCRIPTS_BLOB else "—")
+            sub = f.relative_to(rp).as_posix()
+            out.append(f"| `{sub}` | {wired} | {purpose} |")
+        out.append("")
+
     out.append(END)
     return "\n".join(out)
 
