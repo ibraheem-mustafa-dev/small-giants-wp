@@ -83,17 +83,31 @@ with a known fix and it is blocking the editor.
 Bean: *"product collection was a variant or custom setup of one of our collection
 blocks like card grid or post collection."*
 
-**He is right, and it is a bigger gap than I first wrote.** `sgs/card-grid` declares:
+**He is right, and "product collection" is a literal name in the product — I got this
+wrong once already in this document and it is corrected here.**
 
-- `source` — enum `manual | query | wc-product | cpt-collection`
-- `productSource` — `collection` (smart preset + filters) or `handpick`
-- `productIds`, and responsive `columns` (3 / 2 / 1)
+`sgs/card-grid` has a **Content Source** panel with four modes. These are the labels an
+operator sees in the inspector (`card-grid/edit.js:504-507`):
 
-and its `render.php` **renders each result as an `sgs/product-card`**
-(`card-grid/render.php:514, 555, 570`; the file's own docblock at line 8 says so).
-That is the bespoke product collection. There is no block literally named
-`sgs/product-collection` — the capability lives in `sgs/card-grid` in `wc-product`
-mode.
+| Inspector label | Stored value | What it does |
+|---|---|---|
+| Manual (custom items) | `manual` | hand-authored cards |
+| Query (from posts) | `query` | WP_Query over posts/pages |
+| WooCommerce products | `wc-product` | WC products via `Card_Grid_Products`, each rendered as `sgs/product-card` in `wc-product` mode |
+| **Product collection (no WooCommerce needed)** | `cpt-collection` | queries the `sgs_product` CPT with seven meta-driven selection rules, each rendered through `sgs/product-card` in `sgs-cpt` mode |
+
+Plus `productSource` (`collection` = smart preset, or `handpick`) and `productCollection`
+(`best-selling | price-high | price-low | top-rated | latest`).
+
+**Both product modes render `sgs/product-card`.** On a WooCommerce site like this canary,
+`wc-product` is the matching mode; `cpt-collection` is the WooCommerce-independent path.
+
+⛔ **My earlier line here — "there is no block literally named `sgs/product-collection`"
+— was worse than useless.** It was true only about the block *slug*, and it read as
+dismissing Bean's term when **"Product collection" is the literal label of a source mode
+in the UI he works in every day.** I had read the enum values (`wc-product`,
+`cpt-collection`) and never opened `edit.js` to see what those values are CALLED. The
+operator-facing name is the real name.
 
 **What the templates actually use instead:**
 
@@ -332,6 +346,11 @@ designed blocks. Decide which after seeing them (Task 1).
    at.
 6. **A gate passing is not evidence the design is right.** Every gate passed while
    these templates were broken.
+7. **When Bean names something, resolve it against the INSPECTOR LABELS before saying
+   it does not exist.** He works in the block editor, so the label in the UI is the
+   real name of the thing. Reading `block.json` enum values gives you `cpt-collection`;
+   reading `edit.js` gives you "Product collection (no WooCommerce needed)", which is
+   what he actually said. **Never write "X does not exist" from a slug-level read.**
 
 ## The pattern behind this whole track
 
@@ -342,7 +361,13 @@ Three times last session Bean caught by eye something my measurements had passed
 | Graded the framework on one client's brand colour | The value is per-client; the fault was binding headings to `primary` |
 | Copied "2-up on mobile" from reference sites | The rule was a 167–195px readable card; 2-up was its consequence |
 | Added padding as part of "give the card a surface" | The body already padded itself; the card must not, or the image stops bleeding |
+| Said "product collection" does not exist, from the enum slugs | It is the literal inspector label of `cpt-collection`; I never opened `edit.js` |
 
-Each time I measured the thing I had changed rather than the thing the change was meant
-to achieve. That is why Part 4 rule 1 exists, and it is why this track is structured
-around looking rather than reading.
+The first three share one shape: I measured the thing I had changed rather than the thing
+the change was meant to achieve. The fourth is the same failure one layer up — **I read
+the machine-facing layer (enum values, computed styles, block slugs) and skipped the
+human-facing layer (inspector labels, rendered appearance, what the operator sees).**
+
+That is exactly why Bean's Playwright rule is right, and why rule 7 extends it from
+templates to block capabilities: **open the thing a person uses, not the file that
+defines it.**
