@@ -393,6 +393,61 @@ symptoms:
 - "Error loading block: [object Object]" — needs its own diagnosis
 - anything else Task 1 surfaces
 
+## ✅ Task 3 (Product Archive) — DONE 2026-08-24 (D755)
+
+Editor: **0 of 6 cards rendering → 6 of 6**, 0 error banners, 0 console errors, survives a
+reload. Front end byte-identical (5 cards, CTA 15px/600, same heights).
+
+**The cause was not what this plan predicted.** The hypothesis above — `productId=0` inside
+`woocommerce/product-template` — is WRONG and is left in place above only as a record.
+`productId=0` returns **200** with a proper "No product selected" placeholder; `render.php`
+always handled it. The real cause, read off the server:
+
+```
+{"code":"rest_invalid_param","params":{"attributes":"[ctaFontSize] is not of type number."}}
+```
+
+`ctaFontSize` was `{"type":"number","default":null}`. A null default puts the attribute IN
+the attribute object, so `ServerSideRender` sends `attributes[ctaFontSize]=` and REST rejects
+`""` for a number. Whole class fixed (18 attrs, 5 blocks, + 3 editor writes that cleared back
+to `null`). Full detail: **D755**.
+
+⭐ **The cards now read "No product selected" and that is CORRECT.** `product-template` gives
+the card no post in the editor, and `ServerSideRender` cannot forward block context in any
+case. The arrangement question is Task 5, below.
+
+## ⛔ Task 5 — BLOCKED on a card-grid capability (D756, Bean's call 2026-08-24)
+
+**Measured with a control, same URL params:**
+
+| Page | no filter | `?min_price=0&max_price=1` |
+|---|---|---|
+| live `sgs/card-grid` `wc-product` page | 6 cards | **6 — filter ignored** |
+| shop archive (`product-collection`) | 5 cards | **0 — filter respected** |
+
+Filtering here is URL-driven and server-resolved. `product-collection` is `"inherit": true`
+so it inherits the main query; `card-grid` builds its own `WP_Query` (`render.php:349`) and
+declares no `supports.interactivity`, no `usesContext`, no `providesContext`.
+
+**Converting the shop archive today would leave the filter UI rendering, clickable and
+inert** — the worst failure mode, because it looks fine.
+
+**Bean's decision: design the "inherit the page query" capability FIRST**, ahead of both the
+shop conversion and the risk-free PDP-rail win, because it would let card-grid own ANY
+archive rather than just the shop. **Design gate open per project rule 7 — nothing built
+until Bean approves a design.**
+
+Still unblocked whenever wanted: the PDP related rail (`single-product.html:34-40`) has no
+filter dependency.
+
+## ⚠ Step 1 is NOT finished for Product Archive
+
+The audit was cut short once the cause was proven. Still owed on this template: front end at
+390 / 768 / 1440, and interacting with sort, pagination, search and the filter drawer. The
+filter controls sit inside a collapsed drawer — a probe that queried them found 19 controls
+with `offsetParent === null` and clicked nothing, so **do not read any earlier "filters do
+nothing" note as a finding**; it was a broken probe.
+
 ## Task 4 — Harmonise the archives
 
 Decide once what an archive header is — search position, button style, title treatment,

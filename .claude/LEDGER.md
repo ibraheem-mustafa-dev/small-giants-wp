@@ -50,13 +50,31 @@ errors.** Block-sequence md5 identical to before, so only comments moved.
 **✅ 404 + Single Posts are FIXED and verified in the Site Editor** (d35ee932, theme
 1.5.63) — 0 errors, 0 console errors on both.
 
-**⭐ Product Archive: 13 × "Error loading block: [object Object]", SURVIVES A RELOAD**
-so it is not the intermittent 500s. Failing blocks read off `data-type`:
-`woocommerce/product-template` ×1 and **`sgs/product-card` ×12** — the card fails to
-load in the EDITOR inside the product-template while rendering fine on the front end.
-That is very likely the root of "product archive looks super broken". START HERE. The
-8 console errors hold the real message ("[object Object]" is the error boundary
-stringifying it badly).
+**✅ PRODUCT ARCHIVE'S EDITOR ERRORS ARE FIXED AND VERIFIED (2026-08-24, D755).**
+0 of 6 `sgs/product-card` rendered in the editor; now 6 of 6, with 0 error banners and 0
+console errors. Cause was NOT `productId=0` (that returns 200 with a proper placeholder —
+the old hypothesis was wrong): `ctaFontSize` was `{"type":"number","default":null}`, which
+`ServerSideRender` serialises as `attributes[ctaFontSize]=` and REST rejects for a number.
+Whole class fixed — 18 attrs across product-card/audio/hero/media/quote + 3 editor writes
+that cleared back to `null`. Detector 0 repo-wide. Front end byte-identical throughout.
+Reports: `reports/visual-diff/product-card-2026-08-23.md` + `…/audio-hero-media-quote-…md`.
+
+⭐ **The cards now show "No product selected" — that is CORRECT, not a leftover bug.**
+`woocommerce/product-template` supplies no post to the card in the editor and
+`ServerSideRender` cannot forward block context. Whether the template should use that
+arrangement is D756, below.
+
+⛔ **D756 — DO NOT convert any filtered product listing to `sgs/card-grid` yet.** Measured
+with a control: a live card-grid `wc-product` page returns 6 cards both with and without
+`?min_price=0&max_price=1`; the shop archive returns 5 → **0**. card-grid builds its own
+`WP_Query` and has no `supports.interactivity`, so converting the shop archive would leave
+the filter UI rendering, clickable, and inert. **Bean's call: design the
+inherit-the-page-query capability FIRST. Design gate open, nothing built.** The PDP related
+rail (`single-product.html:34-40`) has no filter dependency and stays risk-free whenever
+wanted.
+
+⚠ **Editor ≠ front end, and only opening the editor finds it.** 5 of 5 cards rendered on the
+live site the entire time 0 of 6 rendered in the editor. Every gate was green throughout.
 
 **Errors reported on EIGHT templates:** Order Confirmation · Page: 404 · Page: Coming
 soon · Product Archive · Products by Attribute · Search Results · Single Posts · Single
@@ -71,15 +89,13 @@ on Product Archive; yellow/black button one side, pink+magnifier the other); inf
 scroll gone from the archives; `index.html` a near-duplicate of `archive.html` down to
 the description; suspected template bloat.
 
-**✅ X-2 SHIPPED AND MEASURED (2026-08-23).** The WooCommerce/jQuery dequeue gate is live.
-Measured gzipped JS per surface, before → after: 404 **89.7 → 27.3 KB**, front page
-89.7 → 27.3, single post 91.1 → 28.7, page 135.2 → 45.4, archive 89.7 → 27.3, search
-89.7 → 27.3. **Six of eight surfaces are now inside the 50 KB budget; all were over it.**
-Shop (132.4) and product (92.9) correctly KEEP the stack — real WooCommerce surfaces —
-and still dropped ~42 KB each. ⚠ It shipped BROKEN first: an over-broad `! $post` early
-return meant it only fired on singular views, so the 404 — the page used as the headline
-example — was excluded by my own fail-safe. Fixed at `c0b73a7d`. **The lesson: I checked
-the CODE was live, not that the SCRIPTS were gone.**
+**✅ X-2 SHIPPED AND MEASURED (2026-08-23).** WooCommerce/jQuery dequeue gate is live.
+**Six of eight surfaces are now inside the 50 KB JS budget; all eight were over it.** Shop
+and product correctly KEEP the stack and still dropped ~42 KB each. Per-surface figures in
+`decisions.md`. ⚠ It shipped BROKEN first — an over-broad `! $post` early return meant it
+only fired on singular views, so the 404 (the headline example) was excluded by my own
+fail-safe. Fixed at `c0b73a7d`. **The lesson: I checked the CODE was live, not that the
+SCRIPTS were gone.**
 
 ⛔ **GOVERNING RULE, set by Bean:** agents may NOT assess a template by reading code,
 querying the DB, calling REST or inspecting hooks. **They log in with `/playwright`, open
@@ -340,18 +356,12 @@ SILENTLY** — worth a gate asserting those pointers resolve.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
-Drawer covered the fold in every template editor; several blocks errored. Three
-unrelated causes, all closed. Detail in D743.
-
-- **Drawer shell was exactly `100dvh`** (771px in a 771px canvas): `style.css`'s
-  real-`<dialog>` sizing lands on the editor preview shell and `editor.css` never opposed
-  it. Now a 46px strip, expanded by a **"Preview drawer open"** toggle (component state,
-  never serialised). Capture: `reports/visual-diff/nav-drawer-2026-08-22.md`.
-- **Six validation errors** — comments inside `sgs/container` / `sgs/tab` inner content;
-  both have `render.php` AND a non-null `save()`: *dynamic ≠ unvalidated*. Also dropped the
-  `woocommerce/single-product` wrapper (no `providesContext`). **0 bad / 20 surfaces**.
-- **`check-undeclared-attrs.py`** — 17 findings, all false, all nav-drawer: it read JSX
-  tags before stripping comments. Fixed on `main` (`1693918f`); it broke every build.
+Drawer covered the fold in every template editor; several blocks errored. Three unrelated
+causes, all closed — **full detail in D743, do not restate here**: the drawer shell was
+exactly `100dvh` (now a 46px strip + a preview toggle); six validation errors from comments
+inside `sgs/container`/`sgs/tab` inner content (**dynamic ≠ unvalidated**), 0 bad / 20
+surfaces; and `check-undeclared-attrs.py` read JSX tags before stripping comments — 17 false
+findings, fixed on `main` (`1693918f`), it had broken every build.
 
 ⚠ **Not ours:** the canary intermittently 500s (`Error establishing a database connection`)
 under the ~12 concurrent block-renderer calls a template load fires, producing phantom

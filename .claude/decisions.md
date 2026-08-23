@@ -1,5 +1,82 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D756 — sgs/card-grid cannot own an archive until it can inherit the page query
+**2026-08-24** · [ROUTINE] · design gate OPEN — nothing built
+
+**Finding, measured with a control.** Converting the shop archive from
+`woocommerce/product-collection` to `sgs/card-grid` (`source: wc-product`) would SILENTLY
+BREAK WooCommerce filtering. Same URL params, opposite behaviour:
+
+| Page | no filter | `?min_price=0&max_price=1` |
+|---|---|---|
+| a live `sgs/card-grid` `wc-product` page | 6 cards | **6 — filter ignored** |
+| the shop archive (`product-collection`) | 5 cards | **0 — filter respected** |
+
+Filtering on this site is URL-driven and resolved server-side; `product-collection` is
+`"inherit": true` so it picks up WooCommerce's main-query modifications. `card-grid` builds
+its OWN `WP_Query` from block attributes (`render.php:349`) and declares no
+`supports.interactivity`, no `usesContext`, no `providesContext` — so it can neither inherit
+the query nor re-render in place.
+
+**Why this is a capability, not a flag.** A CONTENT block asks "what should I show?" and
+answers from its own settings. An ARCHIVE block asks "what did the page already decide to
+show?" and renders that. Those are different relationships to the page. `card-grid` is the
+first kind today.
+
+**Decision (Bean, 2026-08-24): design the inherit-the-page-query capability FIRST**, rather
+than converting the shop archive or taking the risk-free PDP-rail win first. Rationale: it
+unlocks card-grid owning ANY archive, not just the shop. **Design-gate per project rule 7 —
+no build until Bean approves the design.**
+
+⛔ **Do NOT convert any filtered product listing before that capability exists.** The failure
+mode is the worst kind: the filter UI still renders, the client clicks it, and nothing
+happens.
+
+**Not blocked by this:** the PDP related rail (`single-product.html:34-40`) has no filter
+dependency and is still the risk-free conversion whenever it is wanted.
+
+## D755 — a `default: null` on a number attr is strictly worse than no default
+**2026-08-24** · [INCIDENT] · shipped: `816e9daf`, `99c82194`
+
+**Cause, from the server rather than from reading code.** Every `sgs/product-card` on the
+Product Archive failed to render IN THE EDITOR — 6 × HTTP 400:
+
+```
+{"code":"rest_invalid_param","params":{"attributes":"[ctaFontSize] is not of type number."}}
+```
+
+`ctaFontSize` was `{"type":"number","default":null}`. A null default puts the attribute IN
+the block's attribute object, so `ServerSideRender` serialises it as `attributes[x]=` — an
+empty string — and REST rejects `""` for a number. **Declaring NO default is strictly safer:
+WordPress then omits the attribute entirely and it never reaches validation.** Proven:
+`titleLineHeight`/`descLineHeight` (no default) appear in ZERO of the six captured request
+URLs; `ctaFontSize` appears in all six.
+
+**The second half, which is the part that would have recurred.** `resetAll` and the
+`ToolsPanelItem` `onDeselect` cleared the attribute back to `null`. Fixing only `block.json`
+would have re-broken it the first time a client pressed Reset. Both now clear to `undefined`.
+
+**Scope.** Fixed the whole class on Bean's call: 18 attributes across `product-card`, `audio`,
+`hero`, `media`, `quote`, plus 3 more null-writes. Detector returns 0 repo-wide. Front-end
+no-op is a LANGUAGE guarantee — PHP's `isset()` is false for a null value, so null-valued and
+absent keys are indistinguishable to all 7 reader lines (each opened and checked).
+
+**Three things I got wrong and corrected by measuring:**
+1. **NOT `productId=0`** — that renders 200 with a proper "No product selected" placeholder.
+   The remediation plan's hypothesis aimed at productId and was wrong.
+2. **NOT a dead control** — `render.php` contains no literal `font-size`, which looked like
+   proof the setting did nothing. A positive control disproved it: `ctaFontSize=20` emits
+   `font-size:20px`, `=44` emits `44px`.
+3. **The md5 verification instrument failed** — `build-deploy.py` stamps a per-deploy asset
+   cache-buster (`ver=<epoch>`), so any deploy moves the hash; and I kept before-hashes
+   without before-bodies, so I could not diff them. A hash says THAT something differs, never
+   WHAT. Wrong instrument for a version-bumping pipeline.
+
+⚠ **Editor ≠ front end.** The front end was never affected — `render.php` receives real
+attributes from saved content, not a query string. 5 of 5 cards rendered live throughout,
+while 0 of 6 rendered in the editor. A block can be totally broken in the editor and perfect
+on the site; only opening the editor finds it.
+
 ## D754 — the colour backlog is a CAPABILITY problem, not a codemod problem
 **2026-08-23** · [ROUTINE] · design + plan, no code yet
 
