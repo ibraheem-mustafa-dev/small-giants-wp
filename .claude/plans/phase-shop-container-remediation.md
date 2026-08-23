@@ -733,15 +733,65 @@ sibling was byte-identical. Core's breakout rule resolves
 — so emitting it failed the R-1 honest-mapping test. Full-bleed comes from `maxWidth`
 defaulting to `{}`. Canary DB held **0** align authorings, so nothing stored depended on it.
 
-### The SECOND axis — design — has a prompt, not a result
+### The SECOND axis — design — RAN 2026-08-23. Register: `reports/2026-08-23-template-design-benchmark.md`
 
 Phase 3 has two axes: **is it CORRECT** (the 7-point checklist — Wave A closed it statically,
-Wave C owes the live half) and **is it WELL DESIGNED** (never run). The design axis is
-written up as a cold prompt at `.claude/prompts/2026-08-23-phase3-design-benchmark.md`
-(`3247d281`) rather than started at the end of a long session. It carries Bean's constraint
-verbatim: match top industry standard WITHOUT designing defaults into templates that are
-supposed to be empty. Seven surfaces get a full benchmark; `page.html` and `front-page.html`
-stay shells and their findings route to the pattern/content layer.
+Wave C owes the live half) and **is it WELL DESIGNED**. The design axis has now RUN, from the
+cold prompt at `.claude/prompts/2026-08-23-phase3-design-benchmark.md` (`3247d281`).
+
+**Output: `.claude/reports/2026-08-23-template-design-benchmark.md`. Register only — zero
+template edits, as the prompt required.** All ten surfaces graded against named, live-verified
+references (END./Gymshark/Uniqlo/IKEA/Rapha, Nike/B&O, Cloudflare Blog/A List Apart/NN/g,
+GOV.UK/Slack/Kualo/Vercel) plus Baymard and NN/g research. Every finding carries its owning
+layer — `TEMPLATE` / `PATTERN` / `BLOCK CAPABILITY` / `CONTENT` / `SETTINGS`. `page.html` and
+`front-page.html` were held as shells and their findings routed to the pattern/settings layer,
+per Bean's constraint.
+
+**Grades:** `single-product` B · `search` C+ · `404` C+ · `single` C · `index` C (source-only) ·
+`archive` C− · `archive-product` D+ · `page` + `front-page` correct as shells.
+
+**Five cross-surface findings account for most of the distance to top-tier:**
+
+1. **X-1 — every heading on the site fails WCAG AA**, measured 2.25:1 against a 3:1 floor
+   (brand pink `#E68A95` on cream `#FBF3DC`), on all four heading levels on every surface.
+   Body text and buttons pass. `SETTINGS` (client palette). This caps every grade above.
+2. **X-2 — the 404 ships 89.7 KB gz of JS across 22 files, including jQuery (30.2 KB gz)**,
+   against the framework's own "no jQuery" rule and a <50 KB budget. Cause proven, not
+   inferred: WooCommerce enqueues its jQuery frontend bundle sitewide; no SGS frontend code
+   declares jQuery. **The dequeue mechanism already exists** —
+   `configurator-asset-optimiser.php` removes exactly this stack, is already defensive and
+   filterable, and is merely gated to bound-configurator pages. Widening that one predicate
+   drops the non-commerce surfaces from ~90 KB to ~42 KB. Highest impact-per-effort in the
+   register. CSS is inside budget everywhere (13.7–15.8 KB gz).
+3. **X-3 — the type scale has no step above `hero` (50px)**, so no page can carry display
+   typography. One `theme.json` token unlocks the 404 and any future hero pattern.
+4. **X-4 — `.has-shadow-sm` is authored in `archive.html` and matches 0 CSS rules anywhere.**
+   Dead hook; the card elevation has never rendered.
+5. **X-5 — the post card's `surface` background is the identical colour to the page.** With
+   X-4 that leaves the card with no fill, border or elevation difference at all.
+
+**Two structural defects found on `archive-product.html`, the surface Wave A confirmed as the
+correctness reference:**
+
+- **S1-1 — the desktop filter rail does not exist.** `woocommerce.css` declares
+  `.sgs-shop-layout{display:grid;grid-template-columns:260px 1fr}`; the element computes
+  `display:flex`, because `sgs/container`'s per-instance Spec-32 rule matches at equal
+  specificity and later source order. Both children measure 1247px at the same x — the filters
+  are a full-width panel stacked above the grid.
+- **S1-2 — the filters render no selectable options.** Four independent lines: groups render
+  109px/61px while holding 63/23 chips; `textContent` 1,448/473 chars with `innerText` empty;
+  the screenshot shows blank space under Flavour/Size/Rating; the "Rating" heading has no
+  filter block in the DOM at all. **Root cause deliberately NOT diagnosed** — needs its own
+  `/systematic-debugging` pass.
+
+**Also recorded honestly rather than glossed:** `index.html` graded from source only (genuinely
+unreachable); `single.html`'s comment thread unassessed (0 approved comments); one archive-card
+finding (S3-9) logged as **suspected-unverified** because the probe that would have settled it
+produced a 0×0 box and proved nothing — its reproduction step is written down.
+
+**8 block candidates raised** (elevation control on `sgs/container`, suggested-searches block,
+rating on `sgs/product-card`, total-cost in `sgs/buybox`, search-term highlighting, reading
+time, result count, and a contrast gate over `theme-snapshot.json`).
 
 ### STILL OPEN — the work Wave C owes
 
