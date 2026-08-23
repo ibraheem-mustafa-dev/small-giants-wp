@@ -1036,3 +1036,45 @@ desktop and no horizontal overflow anywhere. Only the gutter sits in a media que
 2. **Measuring fit is not measuring design.** "Exact fit, zero dead space" was true
    and irrelevant. When a layout figure looks good, measure what the content inside
    it is doing.
+
+## ⚠ THIRD correction: "give the card a surface" quietly killed the full-bleed image
+
+Bean, by eye: *"Why do the product cards not have the image fill the top? it's
+supposed to be full bleed."*
+
+The S1-4 card-surface rule set background + radius + **`padding: 1rem`** on
+`.product-card`. Measured: the image sat inset **16.9px on every side** — a framed
+thumbnail, not a bleed. Full bleed is what every benchmarked reference uses (END.,
+Gymshark, Uniqlo, IKEA, Rapha) and what `sgs/product-card` is built for.
+
+The padding was **also pure duplication**: measuring the card's real children showed
+`.product-card-body` already carries its own 20px, which is the correct place for it
+— the text needs the inset, the image does not. So the fix was to REMOVE, not add:
+card padding to 0 (image bleeds), body keeps its 20px, plus `overflow: hidden` so the
+card's 8px radius clips the now-bleeding image.
+
+Verified: card padding `0px`, image spans the full card width, body still inset 20px.
+The residual 0.9px is the card's own hairline border, outside the padding box.
+
+**The trap, worth stating plainly:** "give an element a surface" reads as *background
++ radius + padding*, and the padding is the one that silently changes an image
+treatment. Before adding padding to a card, check whether an inner body already
+carries it — and whether anything in the card is meant to bleed.
+
+---
+
+# Pattern across all three corrections in this session
+
+Bean caught every one by eye; none was caught by a gate or by my own measurements.
+
+| # | What I did | The actual rule |
+|---|---|---|
+| X-1 | Graded the framework down for one client's brand colour | The value is per-client; the framework fault was binding headings to `primary` |
+| S1-3 | Copied "2-up on mobile" from the references | The rule was a 167–195px card; 2-up was its consequence |
+| S1-4 | Added padding as part of "a card surface" | The body already padded itself; the card must not, or the image stops bleeding |
+
+**The common shape: I implemented the SURFACE FORM of a benchmark rather than the
+constraint that produced it.** Each was measurable and each of my verification passes
+reported success, because I measured the thing I had changed rather than the thing
+the change was supposed to achieve. A fit measurement is not a legibility measurement;
+a "card has a surface" check is not an "image still bleeds" check.
