@@ -127,7 +127,10 @@
 						"text"
 					],
 					"prefix": "title",
-					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs."
+					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs.",
+					"attrMap": {
+						"css:color": "titleColour"
+					}
 				},
 				"excerpt": {
 					"label": "Post excerpt",
@@ -136,7 +139,10 @@
 						"text"
 					],
 					"prefix": "excerpt",
-					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member."
+					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member.",
+					"attrMap": {
+						"css:color": "excerptColour"
+					}
 				},
 				"meta": {
 					"label": "Meta (date/author)",
@@ -145,7 +151,10 @@
 						"text"
 					],
 					"prefix": "meta",
-					"_note": "css:color resolves via the default convention (metaColour)."
+					"_note": "css:color resolves via the default convention (metaColour).",
+					"attrMap": {
+						"css:color": "metaColour"
+					}
 				},
 				"category-badge": {
 					"label": "Category badge",
@@ -156,6 +165,7 @@
 					],
 					"prefix": "categoryBadge",
 					"attrMap": {
+						"css:color": "categoryBadgeColour",
 						"css:background-color": "categoryBadgeBgColour"
 					},
 					"_note": "css:color resolves via the default convention (categoryBadgeColour)."
@@ -167,7 +177,10 @@
 						"text"
 					],
 					"prefix": "readMore",
-					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style."
+					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style.",
+					"attrMap": {
+						"css:color": "readMoreColour"
+					}
 				},
 				"inner": {
 					"label": "Scroll track",
