@@ -234,6 +234,15 @@
             "min": "32px",
             "max": "50px"
           }
+        },
+        {
+          "slug": "display",
+          "size": "120px",
+          "name": "Display",
+          "fluid": {
+            "min": "56px",
+            "max": "120px"
+          }
         }
       ],
       "defaultFontSizes": false
@@ -475,7 +484,7 @@
           "lineHeight": "1.2"
         },
         "color": {
-          "text": "var:preset|color|primary"
+          "text": "var:preset|color|text"
         }
       },
       "h1": {

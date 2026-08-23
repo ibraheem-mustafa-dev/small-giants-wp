@@ -448,7 +448,33 @@ h2.wc-block-mini-cart__title {
 
 /* ── 8a. Shop layout grid ── */
 
-.sgs-shop-layout {
+/* Specificity note (2026-08-23) — the compound selector is REQUIRED, not decorative.
+ * This element is an sgs/container, and every sgs/container instance emits its own
+ * per-instance rule `.sgs-container-<uid> { display:flex }` (its flow-mode default,
+ * since this instance carries no `layout` key) via the shared wrapper's scoped
+ * `<style>` block. That rule is a SINGLE class, (0,1,0) — the exact same specificity
+ * tier as a plain `.sgs-shop-layout` selector — but it is emitted LATER in source
+ * order (inline, per-instance, always after this stylesheet), so on a tie it wins
+ * the cascade. Measured live: the element computed `display:flex` with
+ * `grid-template-columns` sitting inert (that property does nothing on a flex
+ * container), so the filters aside rendered as a full-width block stacked ABOVE the
+ * product grid instead of a 260px rail beside it.
+ *
+ * `.wp-block-sgs-container.sgs-shop-layout` is TWO classes, (0,2,0) — it beats the
+ * per-instance flex rule outright, on specificity, regardless of source order. This
+ * mirrors the SAME two-class compound the container block's own generated CSS uses
+ * for its supports/state selectors (see plugins/sgs-blocks/src/blocks/container/
+ * render.php:102,192 — `.` + uid + `.wp-block-sgs-container`), so this is the
+ * established pattern for beating a container's own scoped rule, not a one-off.
+ * `.wp-block-sgs-container` is WP's own block-wrapper class, always present
+ * alongside the custom `className` — no template change needed to rely on it.
+ *
+ * !important was rejected: it wins the same fight while hiding which rule it is
+ * fighting, and the next per-instance property WC/SGS scopes onto this element
+ * would have to out-!important it too. Do NOT collapse this back to a bare
+ * `.sgs-shop-layout` in a tidy-up — that silently reintroduces the bug with no
+ * error, because the per-instance rule still ties it on specificity. */
+.wp-block-sgs-container.sgs-shop-layout {
 	display: grid;
 	grid-template-columns: 260px 1fr;
 	gap: var(--wp--preset--spacing--50, 2rem);
@@ -460,7 +486,7 @@ h2.wc-block-mini-cart__title {
 
 @media ( max-width: 781px ) {
 	/* Mobile: single column; aside sits above grid (no-JS fallback) */
-	.sgs-shop-layout {
+	.wp-block-sgs-container.sgs-shop-layout {
 		display: block;
 	}
 
@@ -1284,6 +1310,81 @@ body.woocommerce-cart .with-empty-cart-icon,
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+}
+
+/* ── 10a. Grid gutters — asymmetric row/column gap (S1-5, 2026-08-23) ──
+ * Measured live at 1440px: 20px gap, equal in both axes — reads as the
+ * un-styled stock default. Seven of eight benchmarked reference archives
+ * (END., Gymshark, Uniqlo, SSENSE, Mejuri, Glossier, Rapha) run a row gap
+ * 1.5-2x the column gap. `.wc-block-product-template` is WC's own flex
+ * container (`is-flex-container`, wraps); flexbox `column-gap`/`row-gap`
+ * are supported the same as on grid, so this needs no layout-mode change.
+ * Desktop pair here; the mobile pair is set together with the 2-up
+ * flex-basis in 10b, so the two numbers can never drift out of sync. */
+.sgs-shop-layout .wc-block-product-template {
+	column-gap: 24px;
+	row-gap: 40px;
+}
+
+/* ── 10b. Mobile 2-up grid (S1-3, 2026-08-23) ──
+ * Measured live at 390px: ONE card per row, 293px wide, page height 3,279px
+ * for five products — double the scroll depth of a 2-up field norm (7 of 8
+ * benchmarked references are 2-up on mobile). Force two cards per row below
+ * the project's 768px mobile/tablet boundary regardless of whatever column
+ * count WC's own responsive rule resolves to. `flex-basis` accounts for the
+ * mobile column-gap set in the same rule (16px halved = 8px) so two cards
+ * plus the gap between them sum to exactly 100% of the row.
+ *
+ * Specificity: `.sgs-shop-layout .wc-block-product-template > li` is three
+ * simple selectors on an element (0,2,1) — WC's own responsive collapse rule
+ * is class-only on `.is-flex-container.columns-N > li` at (0,2,0), so this
+ * wins outright regardless of source order. UNVERIFIED without a browser —
+ * this dispatch has no Playwright access; confirm live at 390-767px before
+ * treating S1-3 as closed. If WC sets the gap via an INLINE `style` attribute
+ * on the `<ul>` rather than its own stylesheet, that inline declaration would
+ * still beat the column-gap/row-gap rule below (inline always outranks an
+ * external stylesheet) and the flex-basis calc would need re-deriving from
+ * the real gap — check computed `column-gap` on the live element first. */
+@media ( max-width: 767px ) {
+	.sgs-shop-layout .wc-block-product-template {
+		column-gap: 16px;
+		row-gap: 24px;
+	}
+
+	.sgs-shop-layout .wc-block-product-template > li {
+		flex: 0 0 calc(50% - 8px);
+		max-width: calc(50% - 8px);
+	}
+}
+
+/* ── 10c. Product card surface (S1-4, 2026-08-23) ──
+ * Measured live at 1440px: background rgba(0,0,0,0), border 0px, radius 0px,
+ * box-shadow none, padding 0px — the card renders as bare content floating on
+ * the page background. Every benchmarked reference reserves a card surface.
+ *
+ * `sgs/product-card` DOES delegate through `SGS_Container_Wrapper` (see the
+ * block's own render.php docblock, "WS-4 composite-mirror") despite being a
+ * content-KIND composite — so it carries the SAME per-instance-scoped-`<style>`
+ * source-order risk as 8b/the shop-layout grid fix above: a per-instance rule
+ * from the wrapper is injected inline, always AFTER this stylesheet, so a tie
+ * on specificity goes to the wrapper. The block's own base rule in
+ * plugins/sgs-blocks/src/blocks/product-card/style.css (`.product-card{
+ * background:var(--sgs-product-card-bg,#fff);border-radius:16px;...}`) is a
+ * SINGLE class, (0,1,0) — exactly the tier that loses a source-order tie.
+ * `.sgs-shop-layout .product-card` (the selector 10 above already uses, and
+ * already relies on the SAME assumption for height/display) is (0,2,0) —
+ * still only ONE tier higher, and could still tie a two-class per-instance
+ * rule. Scoped one tier higher again, to (0,3,0), via the existing
+ * `.post-type-archive-product` body-class scope this file already uses at
+ * §"Shop archive: equal-height SGS product cards" above — decisive against
+ * any (0,1,0) or (0,2,0) contender without needing !important.
+ *
+ * Deliberately NO box-shadow: the theme now ships has-shadow-sm/md/lg
+ * utilities, and a bespoke shadow here would diverge from that system. */
+.post-type-archive-product .sgs-shop-layout .product-card {
+	background: var(--wp--preset--color--surface-alt, #f5f7f7);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	padding: var(--wp--preset--spacing--30, 1rem);
 }
 
 /* product-card-body grows to absorb remaining space */

@@ -63,7 +63,7 @@ Kualo, Vercel (404). Backed by NN/g's no-results SERP guidance and Bringhurst on
 These are not per-page. Each one is a single fix that lands on every surface at once, and
 between them they account for most of the distance to top-tier.
 
-## X-1 — Every heading on the site fails WCAG AA contrast · Layer: `SETTINGS` · Effort S · Impact **High**
+## X-1 — CORRECTED · Headings inherit `primary`, so any mid-luminance brand colour becomes unreadable · Layer: `SETTINGS` (framework default) · Effort S · Impact Med
 
 Measured on the 404 and on a post, and it is the same everywhere:
 
@@ -76,21 +76,32 @@ Measured on the 404 and on a post, and it is the same everywhere:
 | Body copy (16px) | `#6B5C50` | `#FBF3DC` | 5.79:1 | 4.5:1 | pass |
 | Buttons / links | — | — | 5.28–8.77:1 | 4.5:1 | pass |
 
-The brand pink is a **mid-luminance accent**, and a mid-luminance accent fails against both
-a light and a dark ground — it works as a *ground* (as it does on the "Back to Homepage"
-button, where dark text on pink measures 5.28:1) but not as an indicator or as type.
+> ### ⚠ Originally overstated. Bean pushed back and was right.
+>
+> The first version said "every heading on the site fails WCAG AA" and used it to cap every
+> grade below. **That was the wrong layer.** `#E68A95` is Mama's Munches' brand colour, set
+> in that client's `theme-snapshot.json`; it differs per client and is changed the moment it
+> does not fit. Grading the *framework* down for one client's colour choice is exactly the
+> attribution error the layer field exists to prevent. Grades below are no longer capped.
 
-WCAG 2.1 AA is a floor for this framework, not a nicety. Until this is fixed, no surface on
-the site can be called top-tier — every grade below is capped by it. Only the body text and
-the buttons currently pass.
+**What is genuinely framework-level, and sat underneath it.** `theme.json` bound
+`styles.elements.heading.color.text` to **`primary`** — so on every client, headings took the
+brand colour chosen for buttons and accents. The framework's own `primary` is teal `#1F7A7A`
+and passes comfortably; Mama's pink is mid-luminance and measures 2.25:1. **Most brand
+colours are mid-luminance**, so this reproduced on the next client automatically and
+silently: nobody chose for headings to be unreadable, they chose a brand colour.
 
-**Fix:** darken the heading token in the client palette until it clears 3:1 (and 4.5:1 for
-any heading under 24px), keeping the pink as a background/accent colour. This lives in the
-client's `theme-snapshot.json`, not in the framework.
+The same pink works fine as a *ground* — dark text on it measures 5.28:1 on the "Back to
+Homepage" button. Mid-luminance accents are grounds, not type.
 
-**Framework gap this exposes:** nothing gates a client palette for contrast. A client can
-pick any colour and ship a site that fails AA silently. That is a **block candidate /
-tooling candidate** in its own right — a contrast gate over `theme-snapshot.json`.
+**FIXED 2026-08-23 (Bean-chosen).** `styles.elements.heading.color.text` now resolves to
+`var:preset|color|text`: headings inherit the body text colour, high-contrast by definition,
+and a client wanting coloured headings sets it deliberately. Framework default is visually
+near-identical (teal → near-black); Mama's goes 2.25:1 → 11.9:1.
+
+**Still open, as a tooling candidate:** the default is now safe, but nothing *gates* a client
+palette. A client who deliberately picks a heading colour still gets no warning. A contrast
+gate over `theme-snapshot.json` would close that.
 
 ## X-2 — The simplest page on the site ships 89.7 KB of gzipped JavaScript, including jQuery · Layer: `BLOCK CAPABILITY` · Effort S–M · Impact **High**
 
@@ -602,18 +613,24 @@ Butterick, The Marginalian, Every.
 
 ### Findings
 
-**S6-1 · Paragraphs have zero spacing between them · `TEMPLATE` / `SETTINGS` · Effort S · Impact High**
+**S6-1 · ~~Paragraphs have zero spacing between them~~ — WITHDRAWN, the finding was false**
 
-Measured: `margin-bottom: 0px` on body paragraphs, with only the 25.6px line-height
-separating them.
+**This was the headline typographic finding and it was wrong, so here is exactly how.** I
+measured `margin-bottom: 0px` on the article's body paragraph and reported that prose runs
+together — "the most damaging single typographic defect in the register".
 
-The benchmark is that paragraph spacing should be roughly 1.5× the font size — A List Apart
-uses 27px under 18px text — and that you pick space *or* first-line indent, never both and
-never neither. With neither, prose runs together as one block and the reader loses their
-place. This is the most damaging single typographic defect in the register, and it is one
-property.
+Re-checked against the live DOM: **the fixture post contains exactly ONE paragraph.** It is
+therefore the first child, and core's rule
+`:root :where(.is-layout-flow) > :first-child { margin-block-start: 0 }` makes that zero
+correct and deliberate. Its sibling
+`:root :where(.is-layout-flow) > * { margin-block-start: var(--wp--preset--spacing--40) }`
+gives every *subsequent* paragraph 24px; `--wp--style--block-gap` resolves to `1.5rem` live,
+and `.wp-block-post-content` carries `is-layout-flow` correctly.
 
-**S6-2 · The measure is 79 characters — over the band · `TEMPLATE` · Effort S · Impact High**
+**There is no defect.** I measured a property on content incapable of exhibiting it — one
+paragraph cannot show inter-paragraph spacing — and reported the absence as a fault.
+
+**S6-2 · The measure is 79 characters — over the band · `SETTINGS` (client snapshot, NOT the framework) · Effort S · Impact Med**
 
 Measured with a live `1ch` probe: **79.3 characters** per line at 16px Inter in the 800px band.
 
@@ -625,7 +642,7 @@ readability outright and pulls the measure to ~70ch in the same band), or set th
 `ch` rather than px — `max-width: 66ch` is self-correcting across every font size the client
 might pick, which is the more framework-appropriate fix.
 
-**S6-3 · Line-height is at the bottom of the band for a 16px sans · `SETTINGS` · Effort S · Impact Med**
+**S6-3 · Line-height at the bottom of the band · `SETTINGS` (client snapshot, NOT the framework) · Effort S · Impact Low**
 
 Measured 25.6px / 16px = **1.60**. The band is 1.6–1.75, and the benchmark's own guidance is
 that a serif at 18px tolerates the low end while a **sans at 16px wants the high end** —
@@ -805,20 +822,28 @@ Follows from S9-1 and resolves with it.
 
 # ⭐ RANKED — highest impact per effort first
 
-The order to work in. Items 1–5 are the ones that change how the whole site reads.
+The order to work in.
+
+> **Corrections applied 2026-08-23 after Bean's review.** Three rows below changed layer or
+> were withdrawn entirely, all for the same reason: they were **client configuration wearing
+> framework clothing**. X-1's contrast number is one client's brand colour; S6-2/S6-3 are that
+> client's snapshot hardcoding `16px`/`1.6` over the framework's own correct `18px`/`1.7`; and
+> S6-1 was simply false — measured on a one-paragraph post, which cannot exhibit
+> inter-paragraph spacing. The framework was already right in all three cases. Read the
+> individual findings for the detail.
 
 | # | Finding | Surface(s) | Layer | Effort | Impact |
 |---|---|---|---|---|---|
-| 1 | **X-1** Heading colour fails AA at 2.25:1 | **all** | `SETTINGS` | S | High |
+| 1 | ~~**X-1** Heading colour~~ **DONE** — headings now default to `text`, not `primary` | **all** | `SETTINGS` | S | Med |
 | 2 | **X-2** Widen the existing asset-optimiser gate — drops ~48 KB gz of jQuery/WC JS | **all non-commerce** | `BLOCK CAPABILITY` | S–M | High |
 | 3 | **S9-1** Homepage shows a fixture post — Settings → Reading | front-page | `SETTINGS` | S | High |
-| 4 | **S6-1** Article paragraphs have zero spacing | single | `TEMPLATE` | S | High |
+| — | ~~**S6-1** Article paragraphs have zero spacing~~ **WITHDRAWN — the finding was false** | single | — | — | — |
 | 5 | **S2-1** PDP price is the same size as body copy | single-product | `TEMPLATE` | S | High |
 | 6 | **S1-2** Shop filters render no selectable options | archive-product | needs root-cause | M | High |
 | 7 | **S1-1** Desktop filter rail never applies (flex beats grid) | archive-product | `TEMPLATE` | M | High |
 | 8 | **S3-2** Card excerpts unclamped → ragged grid | archive | `TEMPLATE` | S | High |
 | 9 | **S3-3** No aspect-ratio box reserved for featured images | archive | `TEMPLATE` | S | High |
-| 10 | **S6-2** Article measure is 79ch — set the band in `ch` | single | `TEMPLATE` | S | High |
+| 10 | **S6-2** Article measure is 79ch — the CLIENT snapshot hardcodes 16px over the framework's 18px | single | `SETTINGS` | S | Med |
 | 11 | **S3-4** Card titles 20px, hierarchy nearly flat | archive | `TEMPLATE` | S | High |
 | 12 | **S4-1** Search empty state offers one route out | search | `TEMPLATE` | S | High |
 | 13 | **X-3** Add a `display` type step above `hero` | all | `SETTINGS` | S | Med |
@@ -836,7 +861,7 @@ The order to work in. Items 1–5 are the ones that change how the whole site re
 | 25 | **S1-7** No rating on product cards (`sgs/star-rating` exists) | archive-product | `BLOCK CAPABILITY` | M | Med |
 | 26 | **S5-1** `index.html` is a bare list, not a designed index | index | `TEMPLATE` | S | Med |
 | 27 | **S1-6** Grid images load eagerly | archive-product | `TEMPLATE` | S | Med |
-| 28 | **S6-3** Line-height 1.60 at the bottom of the band | single | `SETTINGS` | S | Med |
+| 28 | **S6-3** Line-height 1.60 — same client-snapshot override as S6-2, resolves with it | single | `SETTINGS` | S | Low |
 | 29 | **S2-5** No total cost near the CTA (Baymard: 67% fail) | single-product | `BLOCK CAPABILITY` | M | Med |
 | 30 | **S4-5** No matched-term highlighting; fixed-length excerpt | search | `BLOCK CAPABILITY` | M | Med |
 
