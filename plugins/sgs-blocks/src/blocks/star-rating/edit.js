@@ -104,6 +104,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: buildWrapperStyle( attributes ),
 	} );
 
+	// Style-variation gating — MIRRORS render.php:46-48 exactly (same split, same
+	// in_array semantics, same official-wins-over-flat precedence). On
+	// `is-style-trustpilot-official` render.php emits Trustpilot's own <img> badge
+	// and NO inline <svg> stars at all (render.php:195-200), so both colour rows
+	// paint nothing. Showing a control that cannot affect the output is the
+	// dead-control defect (D751) — the client picks a colour and nothing happens.
+	const sgsStyleClasses = String( attributes.className || '' )
+		.split( /\s+/ )
+		.filter( Boolean );
+	const isTpOfficial = sgsStyleClasses.includes( 'is-style-trustpilot-official' );
+
 	const stars = [];
 	for ( let i = 1; i <= maxRating; i++ ) {
 		const filled = i <= Math.floor( rating );
@@ -131,6 +142,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   color property), but they're still plain token-or-hex colour
 			   values resolved via sgs_colour_value(), so they belong here
 			   like any other single colour. */ }
+			{ ! isTpOfficial && (
 			<SgsColourPanel
 				rows={ [
 					{
@@ -161,6 +173,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					},
 				] }
 			/>
+			) }
 			<InspectorControls>
 				<PanelBody title={ __( 'Rating', 'sgs-blocks' ) }>
 					<RangeControl

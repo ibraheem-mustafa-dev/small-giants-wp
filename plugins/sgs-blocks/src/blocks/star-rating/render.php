@@ -22,7 +22,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $rating              = (float) ( $attributes['rating'] ?? 5 );
 $max_rating          = (int) ( $attributes['maxRating'] ?? 5 );
 $star_size           = (int) ( $attributes['starSize'] ?? 24 );
-$star_colour         = sgs_colour_value( $attributes['starColour'] ?? 'accent' );
+$star_colour_slug    = (string) ( $attributes['starColour'] ?? 'accent' );
+$star_colour         = sgs_colour_value( $star_colour_slug );
 $empty_colour        = sgs_colour_value( $attributes['emptyColour'] ?? 'border-subtle' );
 $label               = $attributes['label'] ?? '';
 $show_numeric        = $attributes['showNumeric'] ?? false;
@@ -46,8 +47,23 @@ $display_mode          = in_array( $attributes['displayMode'] ?? 'stars-only', $
 $style_classes  = preg_split( '/\s+/', (string) ( $attributes['className'] ?? '' ), -1, PREG_SPLIT_NO_EMPTY );
 $is_tp_official = in_array( 'is-style-trustpilot-official', $style_classes, true );
 $is_tp_flat     = in_array( 'is-style-trustpilot', $style_classes, true ) && ! $is_tp_official;
-if ( $is_tp_flat ) {
-	$star_colour = '#00B67A'; // Official Trustpilot brand green — the flat-preset fill.
+if ( $is_tp_flat && 'accent' === $star_colour_slug ) {
+	// Trustpilot brand green is the flat preset's DEFAULT, not an override. Before
+	// this guard the assignment was unconditional and silently discarded the client's
+	// choice: the control existed, they picked a colour, and nothing happened — the
+	// dead-control defect (D751). A hardcoded value that overrides a faithfully-set
+	// attribute is a cheat to gate, not a constant to preserve (CLAUDE.md 2026-06-16).
+	//
+	// Gated on the DECLARED DEFAULT, not on isset(): WP_Block_Type::
+	// prepare_attributes_for_render() populates every missing attribute from its
+	// block.json default BEFORE render_callback runs, so isset() is ALWAYS true here
+	// and an isset() guard would silently disable the preset entirely. Verified
+	// against the WordPress reference, not assumed.
+	//
+	// KNOWN LIMIT, stated rather than hidden: a client who explicitly re-picks
+	// 'accent' on this style still gets green. WordPress does not record whether a
+	// value was chosen or defaulted, so the two are indistinguishable by construction.
+	$star_colour = '#00B67A';
 }
 
 // ---------------------------------------------------------------------------
