@@ -373,7 +373,7 @@ colour-only slot. Measured across every block — 103 colour-var consumption sit
 | Consumption slot | Sites | Gradient-capable | Deterministic transform |
 |---|---|---|---|
 | `background` / `background-image` | 25 | **already yes** | none needed |
-| `background-color` | 30 | no | **adopt `BackgroundPanel` — see below.** (The earlier answer, rewriting to the `background:` shorthand, is SUPERSEDED and should not be built) |
+| `background-color` | 30 | no | **`sgs_block_background_layer_css()` on `::after` — no wrapper needed.** `BackgroundPanel` is the optional upgrade for media/parallax. ⛔ Rewriting to the `background:` shorthand is SUPERSEDED — do not build it |
 | `color` | 38 | no | `sgs_text_colour_gradient_fallback_rule()` — **already built** |
 | `border-color` (+ `-bottom`/`-right`) | 9 | no | `sgs_border_gradient_css()` masked ring — **already built** |
 | `stroke` | 1 | no | `sgs_svg_stroke_gradient()` — **already built** |
@@ -408,13 +408,39 @@ running forwards instead of defensively.
 | Border / divider | 2 | `sgs_border_gradient_css()` — exists |
 | Icon / shape | 2 | `sgs_svg_stroke_gradient()` — exists |
 
-**Constraint, measured — the 9 background rows split:**
-- **5 adopt directly** (`before-after.labelBackgroundColour`, `gallery.captionBgColour`,
-  `icon.backgroundColour`, `option-picker.pillBgColour`, `post-grid.cardBgColour`) — these
-  blocks already call `SGS_Container_Wrapper`.
-- **4 need the wrapper first** (`brand-strip.tileBackgroundColour`, `cart.panelBg`,
-  `social-icons.iconBackground` + `…Hover`) — these blocks do not call it, so they need the
-  wrapper or a standalone layered emitter before the panel can render for them.
+### ⛔ CORRECTION (Bean, 2026-08-23) — background COLOUR and background MEDIA are TWO
+### SEPARATE CONCERNS, and the colour one needs NO wrapper
+
+An earlier version of this section said four of the nine background rows "need the wrapper
+first". **That was wrong.** Bean's correction: a block needing a background COLOUR gets it
+from the fill helper, separately from the media stack — and that helper is standalone.
+
+**Verified:** `sgs_block_background_layer_css()` is called today by `buybox`, `label` and
+`text`, none of which call `SGS_Container_Wrapper`. It needs no wrapper, on any block.
+
+**The two concerns, and why they compose rather than compete — verified in code:**
+
+| Concern | Control | Emitter | Layer | Needs the wrapper? |
+|---|---|---|---|---|
+| Background **COLOUR** (flat / gradient / hover) | `fillRow` in `SgsColourPanel` | `sgs_fill_decls()` + `sgs_block_background_layer_css()` | **`::after`** | **No** |
+| Background **MEDIA** (image / video / SVG / overlay / blend / parallax) | `BackgroundPanel` | container wrapper | **`::before`** | Yes |
+
+They use DIFFERENT pseudo-elements, so one block can carry both — `sgs/info-box` does today.
+The fill helper's own docblock states the reason at `helpers-tokens.php:849`: *"Two
+pseudo-elements cannot share one selector"*, which is why the split exists at all.
+
+**What this changes for the 34 rows:**
+- **All 9 background rows take the fill helper. Zero wrapper work.** The gradient problem is
+  solved for every one of them by the route already proven on six blocks at D751.
+- **`BackgroundPanel` is an OPTIONAL CAPABILITY UPGRADE, not a prerequisite** — the route you
+  take when a block should also offer image, video, SVG, overlay or parallax. Bean's framing:
+  the parallax controls are there *if you choose to make it a gradient* and want it to move.
+  Decoupled from this programme; a separate, additive decision per block.
+
+⚠ **The real collision risk survives and is unchanged:** the fill layer claims `::after`, and
+**11 blocks' `style.css` already declare an `::after`**. That is what
+`refuse:root-pseudo-element-occupied` is for. It is a fill-layer problem, not a wrapper
+problem.
 
 ⚠ **Do NOT read "adopt BackgroundPanel" as "mount the panel and done".** The panel is the
 CONTROL; the `::before` layer is the RENDER. A block gaining the control without the
