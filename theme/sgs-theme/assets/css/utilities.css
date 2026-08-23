@@ -371,3 +371,21 @@ body.admin-bar html {
 	letter-spacing: 0.06em;
 	font-variant-numeric: tabular-nums;
 }
+
+/*
+ * TAP TARGET — grow a short text link's hit area to 44px without moving it.
+ * Measured 2026-08-23: archive card title links were 24px tall and the "Read more"
+ * link 26px, against the framework's own 44px standard (which deliberately beats
+ * WCAG 2.2's 24px floor). A one-line card title is the common case, so the link
+ * simply is not tall enough to hit reliably on a phone.
+ * Padding on the ANCHOR (not the heading) grows the hit area while leaving the
+ * text where it sits; the negative block margin cancels the visual displacement so
+ * card rhythm is unchanged. `display:inline-block` is what lets vertical padding
+ * apply to an inline element at all.
+ */
+.sgs-u-tap-44 a,
+a.sgs-u-tap-44 {
+	display: inline-block;
+	padding-block: 10px;
+	margin-block: -10px;
+}
