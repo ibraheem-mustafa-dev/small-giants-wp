@@ -1476,52 +1476,73 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 	.sgs-shop-layout .product-card {
 		flex-direction: row;
-		align-items: stretch;
+		align-items: flex-start;
+
+		/* Containing block for the stretched title link below. */
+		position: relative;
 	}
 
-	/* Image column. Proportionally close to IKEA's 174-in-360 (48%); ours is
-	   132-in-327 (40%), leaving more room for the title, which is longer on
-	   food products than on furniture. `height: auto` releases the vertical
-	   card's fixed 220px media box so the image matches the strip height.
+	/* ── Card-as-link ────────────────────────────────────────────────────
+	 * 6 of 6 measured reference rows (IKEA, eBay, Tesco, Sainsbury's,
+	 * Waitrose, Deliveroo) carry NO navigational "view product" button. eBay
+	 * and IKEA make the whole row the target. Ours spent 53px — 21% of the
+	 * card — duplicating the one destination the card already has.
+	 *
+	 * This needs NO markup change: the title is already an anchor, so its
+	 * ::after is stretched over the card. That keeps the accessible name as
+	 * the product title (not "View product"), keeps one link per card in a
+	 * screen reader's link list, and keeps middle-click / open-in-new-tab /
+	 * context menu working — none of which an onclick handler would.
+	 *
+	 * ⚠ Accepted costs, both real: text inside the card can no longer be
+	 * selected, and ANY other interactive control added here in future must
+	 * be raised with `position:relative; z-index:1` or the overlay will eat
+	 * it. Nothing else is interactive in this mode today — the CTA and the
+	 * thumb strip are both hidden below. */
+	.sgs-shop-layout .product-card .product-card__title-link::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
 
-	   The wrap is made a flex container so the image can STRETCH to the strip
-	   height as a flex item. ⛔ Do NOT go back to `height: 100%` on the image:
-	   its parent computes to `height: auto`, so the percentage has nothing to
-	   resolve against, silently falls back to the image's content height, and
-	   the image then sits at whatever `min-height` happens to say. Measured
-	   live 2026-08-24: every image pinned at exactly 132px inside wraps of
-	   288 / 220 / 203 / 201px, leaving visible dead space under each one. */
+	/* The stretched anchor is invisible, so the focus ring has to be drawn on
+	   the card instead or keyboard users get no visible focus at all (WCAG
+	   2.4.7). `:focus-visible` inside keeps it off mouse clicks. */
+	.sgs-shop-layout .product-card:has( .product-card__title-link:focus-visible ) {
+		outline: 2px solid var( --wp--preset--color--primary-text, #3a2e26 );
+		outline-offset: 2px;
+	}
+
+	/* ── Square media, top-aligned ───────────────────────────────────────
+	 * 6 of 6 reference rows use a FIXED, SQUARE image. Ours stretched to the
+	 * card height, so the crop box was 132 x 203-247 — a 0.53-0.65 portrait
+	 * slice of landscape food photography, AND a different crop on every card
+	 * because the height came from the text beside it.
+	 *
+	 * `aspect-ratio: 1` + `align-self: flex-start` also deletes the whole
+	 * stretch chain this file used to need (align-self:stretch, height:auto,
+	 * min-height:0 on three elements, and a flex container on the img link).
+	 * That chain contained a (0,3,0) specificity TIE against the block's own
+	 * `.product-card--live .product-card__media .product-card-img{height:100%}`
+	 * which was decided by stylesheet load order — the same class of latent
+	 * bug as the 91px incident. Removing the chain removes the tie. */
 	.sgs-shop-layout .product-card .product-card__media,
 	.sgs-shop-layout .product-card .sgs-product-card__media-wrap {
-		display: flex;
 		flex: 0 0 132px;
+		align-self: flex-start;
+		aspect-ratio: 1;
 		height: auto;
-		align-self: stretch;
 	}
 
-	/* ⛔ The image is NOT a direct child of the media box. Bound cards nest it
-	   inside `<a class="product-card__img-link">` (render.php ~1010), which is
-	   `display:block` — so making only the media box a flex container stretches
-	   the LINK to the strip height and leaves the image at its intrinsic size
-	   inside it. Measured live 2026-08-24: link 244.6px, image 132px, and the
-	   dead space sits inside the link where it is easy to blame on the image.
-	   The link has to become a flex container as well as a flex item. Typed
-	   cards put the image straight into `.sgs-product-card__media-wrap` and are
-	   already handled by the rule above. */
 	.sgs-shop-layout .product-card .product-card__img-link {
-		display: flex;
-		flex: 1 1 auto;
-		min-height: 0;
+		display: block;
+		height: 100%;
 	}
 
-	/* `height: auto` is required for the stretch to apply — a flex item only
-	   stretches on the cross axis when its cross size is auto. Do not "fix"
-	   this to height:100%; see the note above the media box. */
 	.sgs-shop-layout .product-card .product-card-img {
-		flex: 1 1 auto;
 		width: 100%;
-		height: auto;
-		min-height: 0;
+		height: 100%;
 		object-fit: cover;
 	}
 
@@ -1536,18 +1557,71 @@ body.woocommerce-cart .with-empty-cart-icon,
 		overflow: hidden;
 	}
 
-	/* `min-width: 0` is required: without it a long unbroken product title
-	   sets the body's min-content width and shoves the image column out. */
+	/* ── Body ────────────────────────────────────────────────────────────
+	 * `min-width: 0` is required: without it a long unbroken product title
+	 * sets the body's min-content width and shoves the image column out.
+	 *
+	 * Padding is SPLIT by axis. 20px on all four sides is a vertical-card
+	 * habit: in a ~200px strip it spends 40px of the height, and it steals
+	 * width from a column with none to spare. Every measured reference row
+	 * uses 16px or less (Deliveroo 16, Tesco 16, Waitrose 16, IKEA 16/14,
+	 * Sainsbury's 16/8). Horizontal padding stays the larger of the two — it
+	 * is what keeps the text off the card edge.
+	 *
+	 * Text is TOP-aligned. 6 of 6 reference rows top-align; none centre it and
+	 * none use space-between to pin the price to the bottom. */
 	.sgs-shop-layout .product-card .product-card-body {
 		flex: 1 1 auto;
 		min-width: 0;
+		padding: 14px 16px;
+		justify-content: flex-start;
+	}
+
+	/* Title. Every measured reference row sits at 14-16px (IKEA/eBay/
+	   Sainsbury's 14, Tesco/Waitrose/Deliveroo 16). Ours was 20px — above the
+	   entire observed range — which is what pushed most names onto a second
+	   line in a 153px measure. 17px keeps Fraunces feeling deliberate while
+	   fitting ~18 characters per line instead of ~14. */
+	.sgs-shop-layout .product-card .sgs-product-card__title,
+	.sgs-shop-layout .product-card .product-card__title-link {
+		font-size: 17px;
+		line-height: 1.3;
+	}
+
+	/* Price was 28px — larger and heavier than the title, making the price the
+	   visual subject of a row whose subject should be the product. Median
+	   across the six reference rows is ~19px. Kept in Fraunces 700 so it still
+	   reads as a value rather than as data. */
+	.sgs-shop-layout .product-card .price {
+		font-size: 20px;
+	}
+
+	/* The CTA is dropped here — the whole card is the link (see above). 0 of 6
+	   reference rows carry a navigational button; where a button exists at all
+	   it is transactional ("Add"), a genuinely different action that would earn
+	   its own control rather than inheriting this one. */
+	.sgs-shop-layout .product-card .product-card__add-to-cart {
+		display: none;
+	}
+
+	/* An empty flex child still consumes its gap. This live region is correct
+	   a11y practice and must NOT be deleted from the DOM — it has to exist
+	   before text is injected or the announcement is missed — but while empty
+	   it cost 8px on every card. Measured: body 244.6 -> 236.6px.
+	   ⚠ It is also why positional selectors (:last-child, :nth-last-child)
+	   against .product-card-body are off by one. Section 9 already hit this. */
+	.sgs-shop-layout .product-card .product-card__cart-status:empty {
+		display: none;
 	}
 
 	/* The thumbnail strip is a horizontal row designed to sit UNDER a
 	   full-width image. Inside a 132px column it wraps to several lines and
-	   drags the strip taller than the image it belongs to. Hidden here — the
-	   thumbnails remain on the product page itself, which is where a shopper
-	   choosing between variants actually is. */
+	   drags the strip taller than the image it belongs to.
+	   ⚠ These are GALLERY buttons ("Image 1", "Image 2" — render.php ~1042),
+	   NOT variant pickers: hiding them costs a shopper the second photo on the
+	   listing, not the ability to choose a size or flavour. That is what IKEA,
+	   Amazon and Waitrose all do on a mobile list. `display:none` correctly
+	   removes them from the tab order and the accessibility tree. */
 	.sgs-shop-layout .product-card .product-card__thumbs {
 		display: none;
 	}
