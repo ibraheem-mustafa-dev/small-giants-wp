@@ -152,6 +152,7 @@ import argparse
 import io
 import json
 import re
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -165,6 +166,17 @@ REPO = Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 INCLUDES_DIR = REPO / 'plugins' / 'sgs-blocks' / 'includes'
 TIERS = ('Tablet', 'Mobile')
+
+# The framework DB. A DERIVED COPY of block.json, repopulated by /sgs-update — never the
+# source of truth (migrate-core-blocks/driver.py:78 says so explicitly). That is exactly why
+# declared_siblings() below reads it AND crosschecks it against disk instead of trusting it.
+SGS_DB = Path.home() / '.claude' / 'skills' / 'sgs-wp-engine' / 'sgs-framework.db'
+NEWLINE = chr(10)  # keeps the parity message readable without escapes in f-strings
+
+# The immutable commit whose class-sgs-container-wrapper.php still carries the pre-fix
+# minHeight shape (RAW + two DELETED_SIBLING_READ). Used by self_test() as a historical
+# fixture. NEVER replace this with a moving ref — see the note in self_test().
+_PRE_FIX_WRAPPER_SHA = 'e7f28b0fd'
 
 
 def classify(attrs: dict, prop: str):
@@ -214,18 +226,14 @@ def shared_include_files():
     return sorted(INCLUDES_DIR.rglob('*.php'))
 
 
-def union_declared_siblings(prop: str) -> set:
-    """Which `<prop>Tablet` / `<prop>Mobile` suffixes are STILL declared by ANY block.json
-    right now — derived live from every block's attributes, the same way `classify()`
-    derives its own sibling list, so the two can never quietly disagree.
+def _disk_declared_siblings(prop: str) -> set:
+    """The DISK half. Which `<prop>Tablet` / `<prop>Mobile` suffixes are declared by ANY
+    block.json on disk right now — derived the same way `classify()` derives its own sibling
+    list, so the two can never quietly disagree.
 
-    A shared include has no single "owning" block, so a literal read of `<prop>Tablet` in
-    e.g. class-sgs-container-wrapper.php is legitimate as long as AT LEAST ONE block.json
-    still declares that sibling (some other block may still be flat for this prop, mid
-    property-by-property migration). Only once EVERY block has migrated does the read
-    become provably dead — which is exactly the state `minHeight` was in when the wrapper
-    kept reading `minHeightTablet`/`minHeightMobile` and got `''` back from an attribute
-    that no longer existed anywhere."""
+    This used to BE the answer (as `declared_siblings`). It is now the GUARD: the answer
+    comes from the DB (R-31-1, DB-first), and this walk is what proves the DB has not gone
+    stale against the tree. See `declared_siblings()`."""
     declared = set()
     for bj in sorted(BLOCKS_DIR.glob('*/block.json')):
         try:
@@ -237,6 +245,158 @@ def union_declared_siblings(prop: str) -> set:
             if (prop + t) in attrs:
                 declared.add(t)
     return declared
+
+
+def _db_declared_siblings(prop: str) -> set:
+    """The DB half. Same question, asked of `block_attributes` in one SELECT.
+
+    ⛔ `source='sgs'` IS LOAD-BEARING, and its absence is the trap this function exists to
+    document. `block_attributes` also holds 507 `native_wp` rows for CORE blocks, which have
+    no directory under `src/blocks/` at all — so an unfiltered SELECT returns a set that is
+    WIDER than disk, not narrower. Measured 2026-08-24: `isStackedOnMobile` on `core/columns`
+    and `core/media-text` are the only two such rows in the tier-sibling space, and both would
+    have leaked in. Every documented caveat about this table warns of OMISSIONS; this is the
+    opposite failure and nothing warned about it.
+
+    Raises rather than falling back to disk on a missing/unreadable DB: a silent fallback
+    would make the DB read decorative and the DB-first claim untrue."""
+    if not SGS_DB.exists():
+        raise RuntimeError(
+            f'framework DB not found at {SGS_DB} — cannot answer DB-first. '
+            'Run /sgs-update to build it. (Refusing to fall back to the disk walk: a silent '
+            'fallback makes the DB read decorative and the R-31-1 claim false.)')
+    names = [prop + t for t in TIERS]
+    placeholders = ','.join('?' * len(names))
+    try:
+        con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    except sqlite3.Error as exc:
+        raise RuntimeError(f'framework DB at {SGS_DB} could not be opened read-only: {exc}')
+    try:
+        rows = con.execute(
+            'SELECT DISTINCT attr_name FROM block_attributes '
+            "WHERE source = 'sgs' AND block_slug NOT LIKE 'core/%' "
+            f'AND attr_name IN ({placeholders})', names).fetchall()
+    except sqlite3.Error as exc:
+        raise RuntimeError(f'framework DB query failed: {exc}')
+    finally:
+        con.close()
+    found = {r[0] for r in rows}
+    return {t for t in TIERS if (prop + t) in found}
+
+
+class TierSiblingParityError(RuntimeError):
+    """The DB and the tree disagree about which tier siblings are declared."""
+
+
+def declared_siblings(prop: str) -> set:
+    """Which `<prop>Tablet` / `<prop>Mobile` suffixes are STILL declared by ANY block.
+
+    Answered from `block_attributes` (R-31-1, DB-first) and CROSSCHECKED against the tree,
+    failing closed on disagreement.
+
+    ⛔ Why not DB-only. `sgs-framework.db` is a DERIVED COPY repopulated by /sgs-update, and
+    `classify()` still reads block.json directly. A DB-only answer here could therefore
+    disagree with `classify()` silently — and `--fix --apply` WRITES block.json, so the DB
+    goes stale the moment the fixer runs and stays stale until the next reseed. That is the
+    exact D575 shape: the wrapper kept reading `minHeightTablet`/`minHeightMobile` after every
+    block had migrated, got `''` back, and shipped `min-height:Array` to 73 live declarations.
+
+    A shared include has no single "owning" block, so a literal read of `<prop>Tablet` in e.g.
+    class-sgs-container-wrapper.php is legitimate as long as AT LEAST ONE block still declares
+    that sibling (some other block may still be flat, mid property-by-property migration).
+    Only once EVERY block has migrated does the read become provably dead."""
+    db = _db_declared_siblings(prop)
+    disk = _disk_declared_siblings(prop)
+    if db != disk:
+        raise TierSiblingParityError(
+            NEWLINE.join([
+                f'tier-sibling parity FAILED for "{prop}":',
+                f'  DB   ({SGS_DB.name}) says: {sorted(db) or "none"}',
+                f'  disk (src/blocks/*/block.json) says: {sorted(disk) or "none"}',
+                'The framework DB is a derived copy — this almost always means '
+                '/sgs-update has not been run since a block.json changed. Reseed, then '
+                're-run. Refusing to guess which side is right: a wrong answer here marks '
+                'a LIVE dead-sibling read as legitimate (D575).',
+            ]))
+    return db
+
+
+def _disk_tier_pairs() -> set:
+    """Every (block_slug, attr_name) on disk whose attr ends in a tier suffix."""
+    pairs = set()
+    for bj in sorted(BLOCKS_DIR.glob('*/block.json')):
+        try:
+            data = json.loads(bj.read_text(encoding='utf-8'))
+        except json.JSONDecodeError:
+            continue
+        slug = data.get('name', bj.parent.name)
+        for attr in data.get('attributes', {}):
+            if attr.endswith(TIERS):
+                pairs.add((slug, attr))
+    return pairs
+
+
+def _db_tier_pairs() -> set:
+    """The same set, from block_attributes. `source='sgs'` filter as per _db_declared_siblings."""
+    if not SGS_DB.exists():
+        raise RuntimeError(f'framework DB not found at {SGS_DB} — run /sgs-update.')
+    con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    try:
+        rows = con.execute(
+            'SELECT block_slug, attr_name FROM block_attributes '
+            "WHERE source = 'sgs' AND block_slug NOT LIKE 'core/%'").fetchall()
+    finally:
+        con.close()
+    return {(s, a) for s, a in rows if a.endswith(TIERS)}
+
+
+def all_tier_properties() -> list:
+    """Every base property with at least one declared tier sibling, DB-first and crosschecked.
+
+    This is the property roster `--all-properties` iterates. It is derived from the same two
+    sources as declared_siblings() so the two can never disagree about what exists."""
+    check_db_parity(quiet=True)
+    bases = set()
+    for _slug, attr in _db_tier_pairs():
+        for t in TIERS:
+            if attr.endswith(t):
+                bases.add(attr[:-len(t)])
+                break
+    return sorted(b for b in bases if b)
+
+
+def check_db_parity(quiet: bool = False) -> int:
+    """Gate: the framework DB and the tree must agree about every declared tier sibling.
+
+    ⛔ Compares (block_slug, attr_name) PAIRS, not suffix sets. A suffix-level comparison
+    passes whenever both sides are non-empty — so the DB could claim `gapTablet` on five
+    blocks while disk has four and the check would still go green. The pair level is the
+    level at which a stale row actually misleads.
+
+    Exit 0 = agree. Exit 1 = disagree, with both sides named. This gate is GREEN from the day
+    it is registered, which is NOT the shape THE-MIGRATION-METHOD.md Step 8 describes (it
+    assumes a gate that is red until the migration lands). This one guards a derived copy
+    against its source; there is nothing for it to be red about until /sgs-update lags."""
+    try:
+        db = _db_tier_pairs()
+    except RuntimeError as exc:
+        print(f'FAIL  {exc}')
+        return 1
+    disk = _disk_tier_pairs()
+    only_db = sorted(db - disk)
+    only_disk = sorted(disk - db)
+    if not only_db and not only_disk:
+        if not quiet:
+            print(f'OK  tier-sibling parity: {len(db)} (block, attr) pairs, DB and tree agree.')
+        return 0
+    print('FAIL  tier-sibling parity: the framework DB and the tree disagree.')
+    print(f'      DB pairs: {len(db)}   disk pairs: {len(disk)}')
+    for slug, attr in only_db:
+        print(f'      in DB, NOT on disk : {slug:32} {attr}   (stale row — reseed?)')
+    for slug, attr in only_disk:
+        print(f'      on disk, NOT in DB : {slug:32} {attr}   (unseeded — run /sgs-update)')
+    print('      A stale row here marks a LIVE dead-sibling read as legitimate (D575).')
+    return 1
 
 
 def _has_working_object_path(src: str, prop: str) -> bool:
@@ -561,7 +721,7 @@ def survey_shared_includes(prop: str):
     wrapper had, and `render_state()`'s literal-key regex is blind to the computed-key
     alias shape, so it would otherwise miss exactly the helpers-typography.php-style bug
     if it ever showed up directly inside a block's own render.php."""
-    declared = union_declared_siblings(prop)
+    declared = declared_siblings(prop)
     # Computed ONCE per prop (same efficiency pattern as `declared`) and passed to every
     # `file_hazard_state` call below, rather than each call recomputing its own scan of
     # every block.json.
@@ -1144,7 +1304,7 @@ def self_test() -> int:
               'fire RAW_CAST (comment-stripped before scanning, same as render_state)',
               state8 == 'DELEGATED' and not hazards8)
 
-        # --- shared_include_files() + union_declared_siblings() sanity, against the REAL
+        # --- shared_include_files() + declared_siblings() sanity, against the REAL
         # repo tree (not a fixture) — these two feed survey_shared_includes() directly ---
         real_includes = shared_include_files()
         check('shared_include_files(): the real class-sgs-container-wrapper.php is in scope '
@@ -1152,8 +1312,8 @@ def self_test() -> int:
               any(p.name == 'class-sgs-container-wrapper.php' for p in real_includes))
         check('shared_include_files(): the real helpers-typography.php is in scope',
               any(p.name == 'helpers-typography.php' for p in real_includes))
-        real_declared = union_declared_siblings('minHeight')
-        check('union_declared_siblings(\'minHeight\') against the REAL repo returns a plain '
+        real_declared = declared_siblings('minHeight')
+        check('declared_siblings(\'minHeight\') against the REAL repo returns a plain '
               'set (empty or populated, but never a truthy non-set) — proves it queries '
               'live block.json data rather than returning a hardcoded stub',
               isinstance(real_declared, set))
@@ -1209,13 +1369,23 @@ def self_test() -> int:
               any(h['line'] == 8 for h in hazards_ml))
 
         # --- end-to-end proof against REAL git history: the wrapper's actual pre-fix
-        # commit content (captured via `git show HEAD:...`, not reverting the live fix)
+        # commit content (captured via `git show <sha>:...`, not reverting the live fix)
+        #
+        # ⛔ PIN THE SHA, NEVER `HEAD`. This block used to read `HEAD:` and asserted the
+        # result was the PRE-FIX shape. That was true only while HEAD *was* the pre-fix
+        # commit. Once the wrapper fix landed, `HEAD:` started returning the FIXED file,
+        # which correctly classifies NORMALISED — so both assertions below inverted and
+        # --self-test went red on main. It stayed red unnoticed because this script is not
+        # in gates.json, so nothing ever ran it. A fixture asserting HISTORICAL content
+        # must name an immutable object; a moving ref is not a fixture.
+        # e7f28b0fd verified 2026-08-24: state=RAW, kinds=2x DELETED_SIBLING_READ.
         # must classify RAW with both minHeightTablet and minHeightMobile findings, and
         # the CURRENT (already-fixed) working-tree file must classify clean for minHeight.
         import subprocess
         try:
             pre_fix_src = subprocess.run(
-                ['git', 'show', 'HEAD:plugins/sgs-blocks/includes/class-sgs-container-wrapper.php'],
+                ['git', 'show', f'{_PRE_FIX_WRAPPER_SHA}:plugins/sgs-blocks/includes/'
+                 'class-sgs-container-wrapper.php'],
                 cwd=REPO, capture_output=True, text=True, check=True, encoding='utf-8',
             ).stdout
         except Exception as exc:  # pragma: no cover — environment without git history
@@ -1288,7 +1458,7 @@ def self_test() -> int:
         # --- end-to-end: --check itself must now PASS for all three coordinator-cited
         # properties, using the REAL repo tree (not a fixture) ---
         for real_prop in ('gap', 'contentWidth', 'gridTemplateColumns'):
-            declared_real = union_declared_siblings(real_prop)
+            declared_real = declared_siblings(real_prop)
             all_findings = survey_shared_includes(real_prop)
             live_only = [
                 f for f in all_findings
@@ -1351,7 +1521,7 @@ def self_test() -> int:
         check('_block_slug_for_path resolves nav-menu/render.php to its real block.json '
               'name ("sgs/nav-menu")', nav_menu_slug == 'sgs/nav-menu')
         nav_state, nav_hazards = file_hazard_state(
-            nav_menu_rp, 'gap', declared_siblings=union_declared_siblings('gap'))
+            nav_menu_rp, 'gap', declared_siblings=declared_siblings('gap'))
         check('coordinator-fix #2: the REAL nav-menu/render.php no longer classifies RAW '
               'for "gap" (its own schema declares gap as a plain string — the '
               '(string) cast at line 1501 is correct code, not a hazard)',
@@ -1404,6 +1574,96 @@ def self_test() -> int:
               'other live hazard was masked by the scope gate)',
               len(gap_live) == 0)
 
+    # ================================================================================
+    # declared_siblings() — DB-first + disk crosscheck. Fixtures per
+    # THE-MIGRATION-METHOD.md Step 6 (positive / negative control / edge / idempotence /
+    # corpus control), plus a fixture for the source='sgs' trap.
+    # ================================================================================
+
+    # --- CORPUS CONTROL. Runs FIRST and everything below depends on it.
+    # ⛔ This gate has a unique vacuity mode: check_db_parity() compares two sets, so if BOTH
+    # collapse to empty it reports "agree" and exits 0 — a detector that has stopped detecting,
+    # indistinguishable from a clean tree. Neither side may be empty, and both must be within
+    # a band derived from a SECOND, dumber enumeration (count block.json files on disk) rather
+    # than from a number this author chose.
+    _db_pairs = _db_tier_pairs()
+    _disk_pairs = _disk_tier_pairs()
+    _n_blockjson = len(list(BLOCKS_DIR.glob('*/block.json')))
+    check('corpus control: the DISK tier-pair enumeration is non-empty '
+          f'(got {len(_disk_pairs)}) — an empty one would make parity vacuously green',
+          len(_disk_pairs) > 0)
+    check('corpus control: the DB tier-pair enumeration is non-empty '
+          f'(got {len(_db_pairs)}) — ditto',
+          len(_db_pairs) > 0)
+    check('corpus control: the block.json corpus itself did not collapse '
+          f'(found {_n_blockjson} block.json files, expected > 50) — the marker-file/ROOT '
+          'failure that silently scanned 4 files instead of 380',
+          _n_blockjson > 50)
+
+    # --- POSITIVE. A property known to declare both tiers.
+    check('positive: declared_siblings("margin") returns both tiers from the DB, '
+          'crosschecked against the tree',
+          declared_siblings('margin') == {'Tablet', 'Mobile'})
+
+    # --- NEGATIVE CONTROL. A property that exists nowhere returns empty — and the assertion
+    # can distinguish that from the positive case above, so it is not vacuous.
+    check('negative control: a property declared nowhere returns the EMPTY set',
+          declared_siblings('sgsPropertyThatDoesNotExistAnywhere') == set())
+    check('negative control is not vacuous: the positive case above returns a NON-empty set, '
+          'so "empty" is a real signal rather than what this function always returns',
+          declared_siblings('margin') != set())
+
+    # --- IDEMPOTENCE / determinism. Two calls agree; a set built from an unordered DB read
+    # plus a glob walk is exactly the shape that has produced non-determinism here before
+    # (extract-signatures.py's css_tier was randomised by set iteration + hash salting).
+    check('idempotence: declared_siblings("padding") returns the same set on two calls',
+          declared_siblings('padding') == declared_siblings('padding'))
+
+    # --- THE source='sgs' TRAP. block_attributes also holds native_wp rows for CORE blocks,
+    # which have no directory under src/blocks/ at all — so an UNFILTERED query returns a set
+    # WIDER than disk. Every documented caveat about this table warns of omissions; this is the
+    # opposite failure. This fixture fails the moment someone drops the filter.
+    _con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    try:
+        _unfiltered = {(s, a) for s, a in
+                       _con.execute('SELECT block_slug, attr_name FROM block_attributes')
+                       if a.endswith(TIERS)}
+    finally:
+        _con.close()
+    check("source='sgs' is load-bearing: an UNFILTERED block_attributes query returns MORE "
+          f'tier pairs ({len(_unfiltered)}) than the filtered one ({len(_db_pairs)}), so '
+          'dropping the filter would silently widen the answer past what exists on disk',
+          len(_unfiltered) > len(_db_pairs))
+    check("source='sgs': every pair the filter removes is a core/ block with no src/blocks/ "
+          'directory — i.e. the filter removes exactly the rows that cannot exist on disk',
+          all(s.startswith('core/') and not (BLOCKS_DIR / s.split('/', 1)[1]).exists()
+              for s, _a in (_unfiltered - _db_pairs)))
+
+    # --- DIVERGENCE. The whole point of the crosscheck: when the derived DB disagrees with the
+    # tree, this must RAISE, not quietly return one side. Injected by swapping the DB half for
+    # a stub, so nothing on disk or in the DB is touched.
+    _orig_db_fn = globals()['_db_declared_siblings']
+    globals()['_db_declared_siblings'] = lambda prop: {'Tablet'}
+    try:
+        declared_siblings('margin')
+        _raised = False
+    except TierSiblingParityError:
+        _raised = True
+    finally:
+        globals()['_db_declared_siblings'] = _orig_db_fn
+    check('divergence: when the DB and the tree disagree, declared_siblings RAISES '
+          'TierSiblingParityError rather than returning either side — a silent pick would '
+          'mark a LIVE dead-sibling read as legitimate (D575)',
+          _raised)
+    check('divergence fixture restored the real DB function (the stub did not leak into the '
+          'rest of the suite)',
+          globals()['_db_declared_siblings'] is _orig_db_fn
+          and declared_siblings('margin') == {'Tablet', 'Mobile'})
+
+    # --- THE GATE ITSELF. check_db_parity must return 0 on the real repo right now.
+    check('gate: check_db_parity() returns 0 against the real repo (DB and tree agree)',
+          check_db_parity(quiet=True) == 0)
+
     if failures:
         print(f'\n{len(failures)} FAILURE(S): {failures}')
         return 1
@@ -1419,11 +1679,16 @@ def main() -> int:
     ap.add_argument('--fix', action='store_true', help='propose; writes nothing without --apply')
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--check', action='store_true', help='exit 1 if any FLAT/BLENDED remain')
+    ap.add_argument('--check-db-parity', action='store_true',
+                     help='gate: exit 1 if the framework DB and the tree disagree about any '
+                          'declared tier sibling; no --property needed')
     ap.add_argument('--self-test', action='store_true',
                      help='run the built-in regression fixture and exit; no --property needed')
     args = ap.parse_args()
     if args.self_test:
         return self_test()
+    if args.check_db_parity:
+        return check_db_parity()
     if not args.property:
         ap.error('--property is required unless --self-test is given')
     prop = args.property

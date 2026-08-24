@@ -5,6 +5,7 @@
 	"description": "Custom Gutenberg block library for Small Giants Studio",
 	"scripts": {
 		"prebuild": "python scripts/consistency/build-roster.py && npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/run-motion-fx-generators.js && python scripts/run-gates.py --tier fast",
+		"check:tier-db-parity": "python scripts/migrate-tier-object.py --check-db-parity",
 		"gate:fast": "python scripts/run-gates.py --tier fast",
 		"gate:full": "python scripts/run-gates.py --tier full",
 		"gate:all": "python scripts/run-gates.py --tier all",

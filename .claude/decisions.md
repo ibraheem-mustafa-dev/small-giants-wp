@@ -1,3 +1,50 @@
+## D775 — the framework DB answers, the tree verifies: declared_siblings() is DB-first WITH a crosscheck [ROUTINE]
+
+**2026-08-25.** `migrate-tier-object.py` read the DB nowhere — it re-walked
+`src/blocks/*/block.json` (verbatim, at four separate sites). `union_declared_siblings()` is now
+`declared_siblings()`: answered by one `SELECT` against `block_attributes`, then **crosschecked
+against the tree, raising `TierSiblingParityError` on disagreement**.
+
+**Bean chose crosscheck over DB-only, and the reason is load-bearing.** `sgs-framework.db` is a
+DERIVED COPY repopulated by `/sgs-update` (`migrate-core-blocks/driver.py:78` says so), and
+`classify()` still reads `block.json` directly. A DB-only answer could therefore disagree with
+`classify()` silently — and `--fix --apply` WRITES `block.json`, so the DB goes stale the moment
+the fixer runs and stays stale until the next reseed. That is the D575 shape exactly: the wrapper
+kept reading `minHeightTablet`/`minHeightMobile` after every block had migrated and shipped
+`min-height:Array` to 73 live declarations.
+
+⛔ **`source='sgs'` IS LOAD-BEARING, and its absence is a trap nothing had documented.**
+`block_attributes` also holds **507 `native_wp` rows for `core/*` blocks**, which have no
+directory under `src/blocks/` at all. Unfiltered, the tier-sibling query returns **306** pairs
+against disk's **304** — `isStackedOnMobile` on `core/columns` and `core/media-text`. So the DB
+answer can be **WIDER** than the tree. Every documented caveat about this table warns of
+OMISSIONS; this is the opposite direction, and a falsely-wide answer marks a DEAD sibling read as
+live. Two fixtures now fail the moment the filter is dropped.
+
+**New gate `migrate-tier-object-db-parity`** (`--check-db-parity`, `gates.json` order 65, tier
+`fast`, 0.12s). It compares `(block_slug, attr_name)` **PAIRS, not suffix sets** — a suffix
+comparison passes whenever both sides are non-empty, so the DB could claim a sibling on five
+blocks while disk had four and still go green. Proven to fail: an injected attr took it to exit 1
+naming the pair; restore returned exit 0.
+
+⛔ **NOT the obvious gate.** `migrate-tier-object.py --check` exits 1 while any FLAT/BLENDED
+family remains, and 27 properties are still flat — registering *that* would have failed every
+build on `main` for all five tracks.
+
+⭐ **Found by running it: `--self-test` was ALREADY RED on `main`**, 2 failures, verified
+pre-existing against the untouched HEAD file. A fixture asserting the wrapper's historical
+pre-fix content read `git show HEAD:` — true only while HEAD *was* that commit. Once the fix
+landed, `HEAD:` returned the FIXED file and both assertions inverted. **A moving ref is not a
+fixture**; pinned to `e7f28b0fd`. It stayed red unnoticed because the script is absent from
+`gates.json`, so nothing ever ran it.
+
+Behaviour proven unchanged: `--survey` output byte-identical across `margin`/`padding`/`gap`/
+`borderRadius` versus the pre-change baseline recovered by `git show`. 57/57 gates green.
+
+**This was also the first application of `.claude/THE-MIGRATION-METHOD.md` — its 11 steps had
+been reviewed 15 times and never allowed to write a file.** Verdicts and the four places the
+method is wrong or silent: `.claude/reports/2026-08-26-migration-method-application-log.md`.
+
 ## D772 — the archive header: one shared part, and the two things that CANNOT go in it [ROUTINE]
 
 **2026-08-24.** Bean's ruling: all four archives get one header. Measured live at 1440,

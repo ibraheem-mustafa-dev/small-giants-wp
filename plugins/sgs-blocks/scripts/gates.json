@@ -587,5 +587,14 @@
     "added_commit": null,
     "budget_ms": 95,
     "order": 64
+  },
+  {
+    "id": "migrate-tier-object-db-parity",
+    "cmd": "python scripts/migrate-tier-object.py --check-db-parity",
+    "tier": "fast",
+    "added_D": "D775",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 65
   }
 ]
