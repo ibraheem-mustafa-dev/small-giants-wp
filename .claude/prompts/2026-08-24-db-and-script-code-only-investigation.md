@@ -118,32 +118,116 @@ before/after diff enumerated; Gate A still 39/39.
 
 ---
 
-## Task 3 — Finish the DB column tracing (the remaining tables)
+## Task 3 — Finish the DB column tracing (SIX tables, not 24)
 
-**Done already, in `.claude/dev-setup.md`:** `block_attributes` (11 classification
+**Scope was cut from 24 to 6 on 2026-08-24 after checking each table for real readers.**
+Sixteen were cut as irrelevant or fossil; two more on Bean's call. Do not re-expand it.
+
+**Already traced** (in `.claude/dev-setup.md`): `block_attributes` (11 classification
 columns), `blocks`, `block_composition`, `block_capabilities`, `block_supports`, and the
 eight vocabulary tables.
 
-**Still untraced — 24 tables**, including `attribute_gap_candidates` (3,587 rows),
-`array_item_schema`, `design_tokens`, `patterns`, `markup_examples`, `hooks`, `docs`,
-`block_selectors`, `theme_parts`, `components`, `style_variations`, `pattern_coverage`.
+**Trace these six:**
 
-For each column report: **every writer** (file:line, and which wins on conflict); the
-**derivation followed to its origin**, classified NAME-DERIVED / STRUCTURAL / DECLARED /
-PARSED / HAND-OVERRIDE, quoting the computing code; whether **the name matches the data**;
-**weaknesses and stronger alternatives**; and **NULL semantics** proven from code
-(not-applicable vs not-yet-derived vs derivation-failed).
+| Table | Rows | Why it earns the work |
+|---|---|---|
+| `fx_effects` | 16 | 5 readers, self-healing reseed, the four-tier motion doctrine |
+| `array_item_schema` | 62 | 3 readers. ⚠ Its `role` is a SEPARATE 3-value vocabulary — never join it to `block_attributes.role` |
+| `design_tokens` | 261 | 3 readers incl. `converter/resolvers/outer_box.py` |
+| `block_selectors` | 75 | Block Selectors API map |
+| `animation_tokens` | 8 | Feeds the motion registry |
+| `schema_metadata` | 4 | Already known drifted — says WP 7.0, the canary runs 7.1 |
 
-Fold the findings into `generate-db-catalogue.py`'s `COLUMN_MEANING` map — never into the
-markdown, which is overwritten.
+**CUT — do not trace:**
 
-**Orchestration:** three `sonnet` subagents via `/dispatching-parallel-agents`, disjoint
-table groups, each writing to its own scratchpad file. Read-only; never run
-`sgs-update-v2.py` (it writes the shared DB).
-**Acceptance:** every column of the 24 tables classified with cited code; fossils named.
+- `patterns` (Bean, 2026-08-24).
+- `attribute_gap_candidates` — a WRITE-MOSTLY ledger. Its "9 readers" resolved to 3 writers,
+  5 test fixtures and ONE production read (`gap-detection/detect.py:111`). CLAUDE.md rule 4a
+  already calls it debug-only and NOT a fidelity signal.
+- Fossils with no writer and no reader: `block_changes` (2,735 rows, last written
+  2026-07-15), `pipeline_corrections` (4 rows, 2026-04-13). Worth a RETIREMENT decision
+  someday; not tracing work.
+- Not this work: `hooks`, `docs`, `markup_examples`, `pattern_coverage`, `indexed_files`,
+  `deploy_steps`, `gotchas`, `schema_migrations`, `theme_parts`, `plugins`, `style_variations`.
+
+Per column: **every writer** (file:line, which wins on conflict); the **derivation followed
+to its origin**, classified NAME-DERIVED / STRUCTURAL / DECLARED / PARSED / HAND-OVERRIDE,
+quoting the computing code; whether **the name matches the data**; **weaknesses and stronger
+alternatives**; and **NULL semantics** proven from code.
+
+Fold findings into `generate-db-catalogue.py`'s `COLUMN_MEANING` map — never the markdown,
+which is overwritten.
+
+**Orchestration:** two `sonnet` subagents via `/dispatching-parallel-agents`, disjoint
+tables. Read-only; never run `sgs-update-v2.py` (it writes the shared DB).
 
 ---
 
+## Task 3b — REBUILD `components` as the unification adoption ledger
+
+**The idea (Bean, 2026-08-24).** `components` today holds 13 rows of editor-side JS with
+placeholder descriptions and `props` all NULL — a file listing wearing the name. Rebuild it
+as the registry of **every shared helper and injector built for unification**, WITH ADOPTION
+COUNTS. Adoption is what makes it an audit rather than a list.
+
+**Measured surface — the table is missing 64 of 77:**
+
+| Family | On disk | In the table today |
+|---|---|---|
+| Editor components (`src/components/`) | 31 | 10 |
+| Shared utils (`src/utils/`) | 7 | 3 |
+| PHP render helpers (`includes/helpers-*.php`) | **22** | **0** |
+| `render_block` injectors (`includes/`) | **16** | **0** |
+| The shared wrapper (`class-sgs-container-wrapper.php`) | 1 | 0 |
+
+**Schema — ONE table, differentiated by family and functionality** (Bean's call: injectors
+and helpers belong together, distinguished by columns, not split across tables):
+
+```
+family        editor-component | util | render-helper | injector | wrapper
+functionality what it unifies, one line (e.g. "background colour rows", "box shorthand",
+              "device visibility via render_block")
+file_path     repo-relative
+adopters      COUNT of blocks that actually use it
+adopter_list  the block slugs, so a zero or a legacy count is actionable
+```
+
+⚠ **Injectors are a different RISK class and the `family` column must make that legible.**
+A `render_block` filter mutates EVERY block's output whether the block opted in or not; a
+helper is called deliberately. D405 records four injectors whose inline writes were being
+SILENTLY STRIPPED — the gate passed while the features were dead.
+
+**Why adoption counts earn their cost — measured 2026-08-24, the colour surface alone:**
+
+| File | Blocks |
+|---|---|
+| `SgsColourPanel.js` | 65 |
+| `DesignTokenPicker.js` (the LEGACY single-value API) | 26 |
+| `colour-variants/fillRow.js` | 22 |
+| `colour-variants/textRow.js` | 7 |
+| **`colour-variants/borderRow.js`** | **0 — built, never adopted** |
+| `GradientCapableColourControl.js` / `GradientOverlayControl.js` | 2 each |
+
+`borderRow` is the built-and-forgotten cycle caught in the act. 26 blocks on the legacy
+picker while three purpose-built row helpers sit at 22 / 7 / 0 is the migration backlog,
+visible nowhere else. Precedent for the cost of not knowing: `helpers-box.php` carried
+byte-identical shared closures from 2026-07-12 with only 4 adopters until a codemod migrated
+121 definitions across 57 files; the hardened length sanitiser needed 204 call sites across
+56 files.
+
+⚠ **Adoption must resolve ONE HOP, not just grep `edit.js`.** A block reaching a component
+through a shared panel is a real adopter. `inspector-scan` already does this resolution
+(`resolveComponentFiles` / `getSharedOwnerScan`, 136 components) — REUSE it, do not write a
+second resolver that will disagree with the first. The numbers above are direct-grep only
+and will undercount.
+
+**Orchestration:** inline for the schema + wiring decision; one `sonnet` subagent for the
+adoption scan. Writer goes in `sgs-update-v2.py` Stage 1 so it refreshes automatically —
+a registry that needs a manual run is the problem it exists to solve.
+**Acceptance:** all ~77 surfaces registered with family, functionality and adopter count;
+zero-adoption rows listed explicitly; the writer runs inside `/sgs-update`.
+
+---
 ## Task 4 — Script inputs and outputs, traced not quoted
 
 The tooling catalogue holds each script's own one-line purpose. It does **not** hold what
