@@ -309,10 +309,9 @@ files or call sites → the first deliverable is the DETECTOR, not the edit. Poi
 into both CLAUDE.md files, dev-setup, Specs 31/32/35 and four active plans so a cold session
 meets it before it starts editing.
 
-**Why, measured 2026-08-24:** `migrate-length-sanitiser.py` did 204 call sites in ONE day;
-`migrate-render-closures.py` 100 closures in ONE day; `remove-vacuous-style-engine-guard.py`
-109 guards in ONE day. The block-by-block colour rollout took **33 blocks over 13 days and
-25 correction commits** (D609/D618/D621/D622/D632/D633/D634). Same repo, same week, same
+**Why, measured 2026-08-24:** `migrate-length-sanitiser.py` did a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here;
+`migrate-render-closures.py` a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here; `remove-vacuous-style-engine-guard.py`
+a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here. The block-by-block colour rollout took a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here (D609/D618/D621/D622/D632/D633/D634). Same repo, same week, same
 rules. Only the method differed.
 
 ⛔ **NEVER QUOTE A D-DATE AS AN ELAPSED COST.** A previous session concluded the
@@ -349,7 +348,7 @@ scripts runs · 1 duplicate deleted.
 ### ▶ OPEN
 
 0. ⛔ **TASK 0 FIRST — harden the foundation (Bean's ruling).**
-   `.claude/THE-MIGRATION-METHOD.md` is `PROVISIONAL`: reviewed six ways, **used zero
+   `.claude/THE-MIGRATION-METHOD.md` is `PROVISIONAL`: reviewed twelve ways, **used zero
    times**. Three layers, in order: **(1)** council it with FRESH personas until every one
    grades A− (max 3 rounds, then record the unresolved objection — do not grind);
    **(2)** PROVE the A-grade method by running Task 5 strictly through Steps 1-11, where the

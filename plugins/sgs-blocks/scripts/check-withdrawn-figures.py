@@ -59,6 +59,11 @@ EXCLUDE = {
     ".claude/THE-MIGRATION-METHOD.md",   # the canonical table itself
 }
 
+_THESIS = (" What separated them was not the census — the slow rollout had one on day 2 —\n"
+           "but whether the TARGET SHAPE was settled first. See THE-MIGRATION-METHOD.md Step 3.")
+
+_INLINE = "a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here"
+
 REPLACEMENT = ("Measured: a census-driven pass moves the corrections out of the tree and "
                "into the detector, where one commit fixes hundreds of sites. Figures + "
                "derivation live in ONE place — do not copy them here.")
@@ -73,6 +78,20 @@ SHAPES = [
     (re.compile(r"(?:Measured: three codemod\s*\n?migrations did [^\n]*\n?"
                 r"|the block-by-block colour rollout\s*\n?)?"
                 r"took 33 blocks over 13 days and 25 correction commits\.", re.M), "B"),
+    # C + D were MISSED by the first census and survived in .claude/LEDGER.md --
+    # the repo's single living status doc -- while this gate reported clean.
+    # A and B are anchored on SENTENCES. C and D are anchored on the FIGURE,
+    # which is the thing that actually must not recur: prose gets reworded,
+    # the number is what misleads.
+    (re.compile(r"\*\*33 blocks over 13 days and\s*\n?\s*25 correction commits\*\*", re.M), "C"),
+    (re.compile(r"\b\d+ (?:call sites|closures|guards) in ONE day", re.M), "D"),
+    # E: the OVERTURNED THESIS, not a figure. The 33-block colour wave WAS
+    # census-driven on day 2 (f6f3c0331) and still cost a fortnight -- so
+    # "the census was the only difference" is the claim the method now
+    # rebuts. It survived in CLAUDE.md and plugins/sgs-blocks/CLAUDE.md,
+    # both AUTO-LOADED, where a cold agent meets it before the method doc.
+    (re.compile(r"\s*(?:Same repo, same week, same rules\.\s*)?"
+                r"The only difference was building the census before the edit\.", re.M), "E"),
 ]
 
 
@@ -110,7 +129,8 @@ def transform(text: str, relpath: str) -> tuple[str, list[tuple[str, str]]]:
         return text, records
     for rx, tag in SHAPES:
         if rx.search(text):
-            text = rx.sub(REPLACEMENT, text)
+            sub = REPLACEMENT if tag in ("A", "B") else (_THESIS if tag == "E" else _INLINE)
+            text = rx.sub(sub, text)
             records.append((tag, "rewritten"))
     return text, records
 
