@@ -2604,6 +2604,27 @@ select.orderby:focus-visible {
 	overscroll-behavior-x: contain;
 	scroll-snap-type: x mandatory;
 
+	/* ⛔ `width: 0` + `min-width: 100%` is LOAD-BEARING. Without it the rail
+	 * does not scroll — it GROWS, and drags every ancestor with it.
+	 *
+	 * Measured live 2026-08-24 at a 375px viewport: with `flex-wrap: nowrap`
+	 * the row's max-content width is 4 x 140 + 3 x 12 = 596px, and each
+	 * ancestor up to the 327px `.sgs-container__inner` sized itself to that
+	 * 596px instead of constraining it. `overflow-x: auto` did NOT stop the
+	 * propagation on its own, and neither did `min-width: 0` on the chain,
+	 * `width: 100%` on the rail, nor `overflow: hidden` on it — all four were
+	 * tested live and all four were no-ops.
+	 *
+	 * `width: 0` removes the row's max-content contribution entirely, so the
+	 * ancestors collapse back to 327px; `min-width: 100%` then refills it to
+	 * whatever the (now correct) parent is. One rule, on this element only —
+	 * no ancestor styling and no :has(), both of which were also tested and
+	 * work but reach outside the rail to do it.
+	 *
+	 * Verified after: row 327px, scrollWidth 596px, scrolls = true. */
+	width: 0;
+	min-width: 100%;
+
 	/* Trims the browser's default scrollbar gutter on desktop without hiding
 	   the scrollbar from anyone who relies on it as an affordance. */
 	padding-bottom: 4px;
