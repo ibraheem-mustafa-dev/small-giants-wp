@@ -569,5 +569,14 @@
     "added_commit": "a2f6d5df9",
     "budget_ms": 87,
     "order": 62
+  },
+  {
+    "id": "run-gates-selftest",
+    "cmd": "python scripts/run-gates.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 180,
+    "order": 63
   }
 ]

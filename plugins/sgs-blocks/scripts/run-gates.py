@@ -102,6 +102,19 @@ def load_gates() -> list[dict]:
     if dupes:
         sys.exit(f"[run-gates] FATAL: duplicate gate ids in roster: {dupes}")
 
+    # ⛔ A `--check` in tier `generator` runs on NO tier: select() excludes
+    # generators from fast, full and all. It would print in gate:list and pass
+    # --assert-wired (which only inspects `full`), so it looks wired and gates
+    # nothing. Changing one word in Step 8's template produced that. Refuse it.
+    laundered = [g["id"] for g in gates
+                 if g.get("tier") == "generator" and "--check" in g.get("cmd", "")]
+    if laundered:
+        sys.exit(
+            "[run-gates] FATAL: generator-tier record(s) carrying `--check`: "
+            f"{laundered}. A generator produces inputs; it never gates. Move it "
+            "to `fast` or `full`, or drop the --check."
+        )
+
     untiered = [g["id"] for g in gates if g.get("tier") not in _TIERS]
     if untiered:
         # A gate with no tier runs on no build. Fail closed rather than skip:
@@ -276,8 +289,24 @@ def do_assert_wired() -> int:
 
     pkg = json.loads((_PLUGIN_DIR / "package.json").read_text(encoding="utf-8"))["scripts"]
     has_alias = "gate:full" in pkg
+
+    # Generators run from the `prebuild` STRING, not from this roster. A
+    # generator record whose cmd is absent from that string is unreachable —
+    # the same laundering as an unrun `full`, one tier over.
+    prebuild = pkg.get("prebuild", "")
+    orphan_gen = [g["id"] for g in gates
+                  if g["tier"] == "generator" and g["cmd"] not in prebuild]
+    print(f"  generator records reachable from prebuild : "
+          f"{'yes' if not orphan_gen else 'NO — ' + str(orphan_gen)}")
     print(f"  package.json defines gate:full : {'yes' if has_alias else 'NO'}")
 
+    if orphan_gen:
+        print()
+        print(f"  FAIL — generator record(s) not in the prebuild chain: {orphan_gen}")
+        print("         They run on no build. That is the same laundering as an")
+        print("         unrun `full` tier, one tier over.")
+        print(_RULE)
+        return 1
     if full and not (calls and step and has_alias):
         print()
         print("  FAIL — gates are parked in tier `full` but nothing runs that tier.")
@@ -317,10 +346,28 @@ def do_self_test() -> int:
         print(f"  FAIL roster: {exc}")
         return 1
 
-    check("roster is the full chain (61 commands)", len(gates) == 61, f"got {len(gates)}")
+    # ⛔ This used to assert `len(gates) == 61`. gates.json reached 63 and the
+    # assertion went RED — and because gate:selftest sits in no tier, nobody ran
+    # it, so a self-test failed silently for the life of two commits. A hardcoded
+    # count in a test rots exactly like a hardcoded count in prose. Derive.
     runnable = [g for g in gates if g["tier"] != "generator"]
     check("generators are recorded but excluded from `all`",
           len(select(gates, "all", None)) == len(runnable) < len(gates))
+
+    missing = [g["id"] for g in gates
+               if g["tier"] != "generator"
+               and (m := re.search(r"scripts/[\w\-/\.]+\.(?:py|js)", g["cmd"]))
+               and not (_PLUGIN_DIR / m.group(0)).exists()]
+    check("every gated script exists on disk", not missing, str(missing))
+
+    pkg_scripts = json.loads((_PLUGIN_DIR / "package.json").read_text(encoding="utf-8"))["scripts"]
+    orphan_gen = [g["id"] for g in gates
+                  if g["tier"] == "generator" and g["cmd"] not in pkg_scripts.get("prebuild", "")]
+    check("every generator is reachable from prebuild", not orphan_gen, str(orphan_gen))
+
+    laundered = [g["id"] for g in gates
+                 if g["tier"] == "generator" and "--check" in g["cmd"]]
+    check("no --check gate is parked in tier generator", not laundered, str(laundered))
     check("every gate has a cmd", all(g.get("cmd") for g in gates))
     check("ids are unique", len({g["id"] for g in gates}) == len(gates))
 
