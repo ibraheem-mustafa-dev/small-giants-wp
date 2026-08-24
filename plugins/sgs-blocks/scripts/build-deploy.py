@@ -132,6 +132,34 @@ DEPLOY_SKIP_BASENAMES = {
 }
 RUNTIME_SUFFIXES = (".php", ".js", ".css", ".html", ".json")
 
+
+def deploy_roots_for_scope(theme_only: bool, blocks_only: bool) -> tuple[str, ...]:
+    """The deploy roots THIS INVOCATION will actually ship.
+
+    ``DEPLOY_ROOTS`` names everything the script CAN deploy; a given run may
+    deploy less. ``--blocks-only`` never writes a theme file, so a dirty theme
+    template is not "about to execute on a live site" for that run — and that is
+    precisely the contract ``deployed_dirty_files()`` promises when it fires.
+
+    WHY THIS IS A NARROWING, NOT A WEAKENING. Before this, a ``--blocks-only``
+    deploy aborted on another track's uncommitted theme templates: files that run
+    could not have shipped. That is the SAME over-broadness the docstring below
+    already blames for D336 — a guard that fires on files a run cannot touch
+    trains the operator to reach for ``--allow-dirty``, and that reflex is what
+    put two client sites down for ~2.5h. It blocked three separate deploys in one
+    session (2026-08-24) on files none of them could write.
+
+    Returns a strictly SMALLER set than ``DEPLOY_ROOTS``, never a larger one, and
+    returns ``DEPLOY_ROOTS`` unchanged for a full deploy — so the default path is
+    byte-identical to the pre-change behaviour. ``self_test()`` cases 5-7 prove
+    both directions, including that an in-scope dirty file STILL blocks.
+    """
+    if blocks_only:
+        return ("plugins/sgs-blocks/",)
+    if theme_only:
+        return ("theme/sgs-theme/",)
+    return DEPLOY_ROOTS
+
 ROLLBACK_HINT = (
     "roll back: ssh in and swap the .bak copy back, then reset OPcache:\n"
     "    mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.broken && \\\n"
@@ -205,7 +233,10 @@ def scp_base_cmd(use_alias: bool, local: str, remote_path: str) -> list[str]:
             local, f"{SSH_USER_HOST}:{remote_path}"]
 
 
-def deployed_dirty_files(repo_root: Path = REPO_ROOT) -> list[str]:
+def deployed_dirty_files(
+    repo_root: Path = REPO_ROOT,
+    roots: tuple[str, ...] = DEPLOY_ROOTS,
+) -> list[str]:
     """Tracked, uncommitted files that BOTH ship in the tarball AND run at runtime.
 
     Deliberately narrower than a repo-wide ``git status``. A repo-wide check is
@@ -218,6 +249,10 @@ def deployed_dirty_files(repo_root: Path = REPO_ROOT) -> list[str]:
 
     ``repo_root`` is overridable (default: the real repo) so this can be exercised
     against an isolated temp repo in ``self_test()`` without touching real git state.
+
+    ``roots`` is the set of deploy roots THIS RUN will ship — see
+    ``deploy_roots_for_scope()``. It defaults to every root, so a caller that does
+    not pass it gets the pre-existing behaviour unchanged.
     """
     result = subprocess.run(
         ["git", "status", "--porcelain", "--untracked-files=no"],
@@ -229,7 +264,7 @@ def deployed_dirty_files(repo_root: Path = REPO_ROOT) -> list[str]:
         if "->" in path:  # rename entries read "old -> new"
             path = path.split("->")[-1].strip()
         path = path.strip('"')
-        if not path.startswith(DEPLOY_ROOTS):
+        if not path.startswith(roots):
             continue
         if path.startswith(DEPLOY_SKIP_PREFIXES):
             continue
@@ -319,6 +354,11 @@ def self_test() -> int:
         unrelated_file = payload_dir / "unrelated-inflight.php"
         payload_file.write_text("<?php // v1\n", encoding="utf-8")
         unrelated_file.write_text("<?php // v1\n", encoding="utf-8")
+        # A THEME file, for the scope cases (5-7): another track's template.
+        theme_dir = repo / "theme" / "sgs-theme" / "templates"
+        theme_dir.mkdir(parents=True)
+        theme_file = theme_dir / "archive.html"
+        theme_file.write_text("<!-- v1 -->", encoding="utf-8")
         git("add", "-A")
         git("commit", "-q", "-m", "initial")
 
@@ -326,12 +366,18 @@ def self_test() -> int:
         payload_file.write_text("<?php // v2 -- this wave's declared payload\n", encoding="utf-8")
         unrelated_file.write_text("<?php // v2 -- someone else's unfinished edit\n", encoding="utf-8")
 
+        theme_file.write_text("<!-- v2 another track -->", encoding="utf-8")
+
         # 0. Confirm the plant actually landed. `sed`/write-with-no-effect exits 0
         # on a no-op; check the diff itself, not the write command's return code.
         diffstat = subprocess.run(
             ["git", "diff", "--stat"], cwd=repo, check=False, capture_output=True, text=True,
         ).stdout
-        if "payload-target.php" not in diffstat or "unrelated-inflight.php" not in diffstat:
+        if (
+            "payload-target.php" not in diffstat
+            or "unrelated-inflight.php" not in diffstat
+            or "archive.html" not in diffstat
+        ):
             print("[SELF-TEST FAIL] negative control did not land — git diff --stat:")
             print(diffstat)
             return 1
@@ -373,6 +419,37 @@ def self_test() -> int:
                 f"uncovered={uncovered_none} dirty={dirty}"
             )
 
+        # 5. SCOPE: a --blocks-only run must NOT be blocked by a dirty THEME
+        #    file — that run cannot write one, so it is not a risk it creates.
+        blocks_scope = deploy_roots_for_scope(theme_only=False, blocks_only=True)
+        dirty_blocks_only = deployed_dirty_files(repo_root=repo, roots=blocks_scope)
+        rel_theme = "theme/sgs-theme/templates/archive.html"
+        if rel_theme in dirty_blocks_only:
+            failures.append(
+                "SCOPE FAILED: a dirty THEME file still blocked a --blocks-only "
+                f"deploy, which cannot ship it: {dirty_blocks_only}"
+            )
+
+        # 6. NEGATIVE CONTROL for case 5 — scoping must NARROW, not DISABLE. An
+        #    in-scope dirty file MUST still block, or the guard has been switched
+        #    off and would read green forever (D336 intact).
+        if rel_unrelated not in dirty_blocks_only:
+            failures.append(
+                "SCOPE NEGATIVE CONTROL FAILED: an in-scope dirty file was NOT "
+                "detected under --blocks-only -- the scoping disabled the guard "
+                f"rather than narrowing it: {dirty_blocks_only}"
+            )
+
+        # 7. The narrowing is CONDITIONAL: a FULL deploy still sees the theme
+        #    file. Without this, case 5 would also pass if the theme root had
+        #    simply been dropped from DEPLOY_ROOTS outright.
+        dirty_full = deployed_dirty_files(repo_root=repo, roots=DEPLOY_ROOTS)
+        if rel_theme not in dirty_full:
+            failures.append(
+                "SCOPE FAILED: a FULL deploy did not see the dirty theme file -- "
+                f"the theme root is being dropped unconditionally: {dirty_full}"
+            )
+
     if failures:
         print("[SELF-TEST FAIL]")
         for f in failures:
@@ -385,6 +462,9 @@ def self_test() -> int:
     print("  2. POSITIVE CONTROL: declared --payload file is covered (deadlock-breaker works)")
     print("  3. NEGATIVE CONTROL (known failure probe): undeclared dirty file stays blocked (D336 intact)")
     print("  4. BACKWARD COMPAT: no --payload => identical to pre-existing all-blocking behaviour")
+    print("  5. SCOPE: a dirty THEME file does not block --blocks-only (it cannot ship it)")
+    print("  6. SCOPE NEGATIVE CONTROL: an in-scope dirty file STILL blocks --blocks-only")
+    print("  7. SCOPE is CONDITIONAL: a full deploy still sees the dirty theme file")
     return 0
 
 
@@ -1202,7 +1282,13 @@ def main() -> int:
 
     # Git cleanliness guard — scoped to files that ship AND execute on the site.
     if not args.allow_dirty and not args.dry_run:
-        dirty = deployed_dirty_files()
+        # Scope the guard to what THIS run ships: a --blocks-only deploy cannot
+        # write a theme file, so another track's dirty template is not a risk
+        # this invocation can create. Narrowing keeps the guard credible — a
+        # guard that cries wolf gets --allow-dirty'd, and that reflex is D336.
+        dirty = deployed_dirty_files(
+            roots=deploy_roots_for_scope(args.theme_only, args.blocks_only)
+        )
         if dirty:
             covered, uncovered = split_dirty_by_payload(dirty, args.payload)
             if covered:
