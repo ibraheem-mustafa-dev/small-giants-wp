@@ -90,7 +90,16 @@ ms given · `gate:full` proven to execute by a pasted `build-deploy.py` log line
 consolidated report demonstrated with two gates broken simultaneously · `budget_ms`
 populated from the measured run, never estimated.
 
-⚠ **`prebuild` is the most shared file in the repo and five tracks are on `main`.** Land
+⚠ **`prebuild` is the most contested file in the repo — MEASURED: `package.json` was 
+touched by 14 commits in the last 7 days, and five tracks are on `main`.** Re-diff it 
+against `origin/main` at the MOMENT you write `gates.json`, not at session start; if it 
+moved, re-derive rather than merging by hand.
+
+⛔ **BAIL-OUT:** if the rewrite hits a merge conflict, or a gate breaks on a cwd-relative 
+assumption, STOP and hand back. Do not debug a shared-file conflict solo mid-session.
+
+⚠ Also repoint `build-deploy.py`'s existing gate step at `gate:full` in the same commit, 
+or the deploy net silently keeps running the pre-split chain. Land
 this in one commit or not at all, and update `THE-MIGRATION-METHOD.md` Step 8 in the SAME
 commit — it currently tells agents to wire gates into `package.json`, which this task
 replaces.
@@ -127,11 +136,18 @@ than restoring it. Say so plainly in the handoff.**
 
 ---
 
-## TASK 3 — Make "done" computable (~1 day)
+## TASK 3 — Make "done" computable (~1–2 hours) — DO THIS FIRST
 
 There is no burn-down anywhere. 61 gates measure whether you have REGRESSED; none measures
 how CLOSE you are to finished. A system with regression detection and no completion metric
 cannot terminate — which is why the programme feels endless.
+
+⚠ **Re-ordered and re-estimated.** The original said "~1 day" and put it third. It is 
+three COUNT queries against a populated DB wrapped in a print — the highest estimate of 
+the four on the task with the least ambiguity, which is exactly the padding 
+`~/.claude/rules/time-estimates.md` exists to stop. It also touches ZERO shared files, so 
+it banks the completion metric the whole programme lacks before anyone touches the 
+contested one.
 
 Build `scripts/programme-progress.py`: print conformance as `N / M attributes (X%)`,
 properties remaining, and the count of non-conforming (block, attr) pairs.
@@ -159,6 +175,22 @@ handling, the reason must be named (e.g. review-surface size) and capped: ONE pa
 reviewed per-property from that single census — never a discovery walk.
 
 Rule 4 (NO SKIPPING) is satisfied by the classifier's existing skipped-with-reason output.
+
+---
+
+## TASK 5 — Make ONE migration script read the DB (~2 hours)
+
+Council finding #3 had no task and was silently absent. It is a direct R-31-1 violation
+(DB-first, no re-derivation): **every `migrate-*.py` reads ZERO rows from the 3,166-row
+`block_attributes` table** — they re-glob `block.json` instead. And `find_target_files()`
+is **byte-identical** across `migrate-theme-attr-rename.py` and `migrate-theme-tier-scalars.py`.
+
+Do the smallest honest version: give `migrate-tier-object.py` (already open for Task 4) a
+`declared_siblings(prop)` backed by a `SELECT`, and delete its disk walk. One script, one
+query, proven against the existing `--survey` output for the same property.
+
+⛔ Do NOT extract a shared library for all five scripts in this session. That is the
+detector-first rule applied to itself: survey the duplication first, then decide.
 
 ---
 
