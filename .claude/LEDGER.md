@@ -287,21 +287,16 @@ wrong in BOTH directions (7 missing, 5 stale-and-unclearable). Now 38 rows, sect
 content 13, matching the roster exactly. **Still open: the never-clears writer — the drift recurs
 the moment any block stops qualifying.**
 
-⛔ **TWO CLAIMS IN THE OLD PROMPT WERE WRONG.** (a) The "`sgs/modal` anomaly" is a NON-ISSUE —
-modal sits in both roster and DB consistently; the stale ones were brand-strip / mega-panel /
-nav-drawer, stale by ABSENCE. `containerMirror:false` is a real flag read at `:742` and **four**
-blocks carry it. (b) `wraps_block` is a **hardcoded literal in the SQL**, false for 14 of 38 rows;
-its only reader asks "which value is most common?" about a constant.
+⛔ **TWO PROMPT CLAIMS WERE WRONG.** (a) The "`sgs/modal` anomaly" is a NON-ISSUE — modal is
+consistent; the stale rows were brand-strip / mega-panel / nav-drawer, stale by ABSENCE.
+(b) `wraps_block` is a **hardcoded literal in the SQL**, false for 14 of 38 rows.
 
-⚠ **Regression evidence for D762 is WEAK and labelled as such.** A before/after emit hash across
-all 39 fixtures showed zero change — but a negative control (forcing `sgs/hero` section→content)
-ALSO showed zero, so the instrument is **insensitive to this input**, not proof of no impact.
-`container_kind`'s two readers need a NULL-ness flip or competing candidate slugs; the fixture
-corpus exercises neither.
+⚠ **D762's regression evidence is WEAK, and labelled so.** A before/after emit hash across all
+39 fixtures showed zero change — but a negative control (`sgs/hero` section→content) ALSO showed
+zero, so the instrument is **insensitive to this input**, not proof of no impact.
 
-✅ **SIX DB TABLES TRACED** (`fx_effects`, `array_item_schema`, `design_tokens`, `block_selectors`,
-`animation_tokens`, `schema_metadata`) — folded into `generate-db-catalogue.py`'s `COLUMN_MEANING`,
-never the markdown. `--check` proven able to fail (exit 1 stale → 0 fresh).
+✅ **SIX DB TABLES TRACED** — folded into `generate-db-catalogue.py`'s `COLUMN_MEANING`, never
+the markdown. `--check` proven able to fail (exit 1 stale → 0 fresh).
 
 ⭐ **TWO REAL BUGS FOUND, ONE FIXED:**
 - **`design_tokens` shadow typing — FIXED** (`e101c279` + DB correction). Two writers disagreed;
@@ -328,24 +323,36 @@ block.json directly and never consults it; its one reader is a docs generator.
 30-day retention** — already overdue, 141 KB, no counterpart. Copied to `reports/` (`fccb6ae4`,
 md5 verified). It holds the ONLY per-stage FILES(R)/FILES(W) data.
 
-### ▶ STILL OPEN on this track
+### ▶ ALL FIVE TASKS CLOSED — what remains is NOT this track's
 
-1. **Task 3b — rebuild `components` as an adoption ledger.** NOT STARTED. Table holds 13 rows vs
-   ~77 real surfaces (31 editor components, 7 utils, **22** helpers, **18** injectors, 1 wrapper).
-   ⚠ **The prompt's adoption figures do NOT reproduce** — direct grep gave DesignTokenPicker 40
-   (prompt said 26), fillRow 38 (22), textRow 9 (7); only **borderRow 0** matched. Treat every
-   number as unverified until the one-hop resolver produces it. Bean ruled: **extract
-   `getSharedOwnerScan` from `rules/31-golden-colour-control.js:357` into `core/components.js`**.
-2. **Task 4 — script inputs/outputs.** NOT STARTED. Source doc now safe at
-   `reports/2026-08-24-cloning-pipeline-flow-pre-split-PROMOTED.md`. Six script headers lie about
-   their own wiring (e.g. `inspector-scan/run.js:8` says "NOT wired into prebuild yet"; it is in
-   both gate chains).
-3. **Task 5 — three missing READMEs.** NOT STARTED. ⚠ **Sizes are BIGGER than the prompt says:**
-   `inspector-scan/` **333** files (not 192), `orchestrator/` **59** (not 45), `cheat-gate/` **29**
-   (not 14). Write inline, never via a subagent.
-4. **The never-clears `container_kind` writer** (D762) and the **`wp_version_indexed` default**.
-5. ⚠ **Same fossil class still live:** the **F5 baseline carries 7 keys pointing at
-   `orchestrator/converter_v2/convert.py`** — the same deleted directory that killed Gate A.
+✅ **3b — `components` rebuilt as the adoption ledger (D763).** 83 surfaces, 15 with ZERO
+adopters, refreshed automatically by `/sgs-update` Stage 1. `getSharedOwnerScan` extracted to
+`inspector-scan/core/` so there is ONE resolver with two callers.
+✅ **4 — script inputs/outputs.** 71 scripts across both gate chains documented from code.
+⭐ **Only 3 of the "6 false headers" were genuinely false** — the other 3 were the generator's
+own false positives. The detector needed the correction, not the scripts.
+✅ **5 — three READMEs written** for `inspector-scan/` (**333** files), `orchestrator/` (**59**)
+and `cheat-gate/` (**29**). Every count is larger than the prompt claimed.
+
+⛔ **DO NOT trust an adoption zero without checking the mechanism.** The one-hop resolver only
+sees `<ComponentName` JSX and never recurses into subdirectories, so it reports
+fillRow/textRow/borderRow as 0-0-0 when they are **22 / 7 / 0**. Conversely `SgsLinkControl`,
+`StateToggleControl`, `SgsLengthControl` and `DeviceTabs` ARE real zeros — checked at every
+depth, and `DeviceTabs`' own comments record its consumers being removed 2026-08-19.
+
+### ▶ OPEN, and each belongs to someone
+
+1. **Spec 39's converter rework** — the pacing item. It unblocks cloning (97 flat-tier
+   violations today) AND un-quarantines Gate A's 37 goldens. Not this track's to start:
+   D554-C deliberately sequenced it after the standard.
+2. **The never-clears `container_kind` writer** (D762). Until it recomputes rather than only
+   setting, the drift recurs the moment a block stops qualifying.
+3. **`WP_VERSION_DEFAULT = "7.0"`** at `sgs-update-v2.py:97` — every full run re-asserts the
+   wrong version. `stage_8_drift_gate` catches it, runs, and only `print()`s; nothing calls it.
+4. **Orphaned `shadow-sm`/`md`/`lg` slugs** — absent from theme.json. Deletion is Bean's call.
+5. **7 F5 baseline keys** still pointing at `orchestrator/converter_v2/convert.py` — the same
+   deleted directory that killed Gate A. Same fossil class, different gate.
+6. **15 zero-adoption surfaces** now visible in `components` — a migration backlog, not a bug.
 
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)

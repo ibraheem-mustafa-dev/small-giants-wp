@@ -1,5 +1,59 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D763 — `components` rebuilt as the unification adoption ledger; four roster defects found by checking members, not counts
+**2026-08-24** · [ROUTINE] · shipped `1b7c1c85` + `03f7e7f3` + `9236f3e5`
+
+The table held 13 rows of editor JS with placeholder descriptions and `props` all NULL — a file
+listing wearing the name. **Zero in-repo readers, zero in-repo writers**; its rows came from an
+out-of-repo `populate-db.py`, which is exactly why every description said nothing.
+
+Rebuilt as the registry of every shared surface built for unification, WITH ADOPTION COUNTS:
+**83 surfaces** — 37 editor components, 22 render helpers, 17 injectors, 6 utils, 1 wrapper.
+**15 have ZERO adopters.** Writer runs as a Stage 1 tail step so it refreshes with `/sgs-update`;
+a registry someone must remember to run is the problem it exists to solve. FULL REPLACE, the
+opposite of D762's container_kind writer, which could only ever SET and drifted one way forever.
+
+**Detection is by MECHANISM, never by name.** `getSharedOwnerScan` was extracted from
+`rules/31-golden-colour-control.js` into `inspector-scan/core/components.js` (Bean's call: one
+resolver, two callers) — proven behaviour-preserving by a byte-identical `run.js --json`
+(md5 `e9630f84…`) AND by calling it directly (83 blocks, 136 components, 30 owner files),
+because that run produced ZERO shared-owner findings so the md5 alone proved nothing.
+
+**⚠ INJECTORS ARE A DIFFERENT RISK CLASS and `family` makes it legible.** A `render_block`
+filter mutates every block whether it opted in or not, so their `adopter_list` is the literal
+`*`, never a roster. D405: four injectors' inline writes were silently stripped while the gate
+stayed green.
+
+**FOUR DEFECTS, all found by checking roster MEMBERS rather than the count:**
+(a) a subdirectory with an `index.js` is ONE component — enumerating guts produced TWO rows
+named `constants`, which would have collided on `name TEXT PRIMARY KEY` and silently lost a
+surface (scanner now fails closed on a duplicate); (b) `blocks/extensions/*.js` is a real
+consumption surface that went unscanned; (c) comment mentions are not adoption — all 8 files
+"referencing" `SgsLinkControl` do so in prose; (d) one hop is not enough, hence a transitive
+closure.
+
+**⛔ THE ONE-HOP RESOLVER IS STRUCTURALLY BLIND TO TWO SHAPES.** `reachedComponents` credits a
+block only for `<ComponentName` JSX, and `resolveComponentFiles` does a FLAT `readdirSync` that
+never recurses. Both miss `colour-variants/fillRow.js`. It reports fillRow/textRow/borderRow as
+**0-0-0**; measured by the mechanism they actually use they are **22 / 7 / 0**. A zero from one
+mechanism is not evidence of non-adoption.
+
+⭐ **I twice suspected the scanner was wrong and twice it was right** — `SgsLinkControl`,
+`StateToggleControl`, `SgsLengthControl` and `DeviceTabs` are all mounted NOWHERE at any depth,
+and one of `DeviceTabs`' own comments records its consumers being deliberately removed on
+2026-08-19. A raw grep was the broken instrument both times.
+
+**Also: an 8th false header.** `cheat-gate/run.py` said "7 Checks implemented" while loading,
+ordering and running EIGHT. Corrected. READMEs written for `inspector-scan/` (333 files),
+`orchestrator/` (59) and `cheat-gate/` (29) — every count larger than the session prompt's.
+
+⚠ `cheat-gate` has NO unregistered-check guard, unlike `inspector-scan` (`rules.json` + a
+mandatory `selfTest`). All 8 modules are wired today — a LATENT hazard with zero live
+instances, not a defect. An earlier subagent reported it as live and was wrong.
+
+---
+
+
 ## D761 — Gate A watched a deleted directory for 7 weeks; repointed, and its stale goldens quarantined
 **2026-08-24** · [INCIDENT] · shipped `2d5cb4e3` + `6eb2814b`
 
