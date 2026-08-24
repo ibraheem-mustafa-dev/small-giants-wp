@@ -1481,6 +1481,24 @@ body.woocommerce-cart .with-empty-cart-icon,
 		align-self: stretch;
 	}
 
+	/* ⛔ The image is NOT a direct child of the media box. Bound cards nest it
+	   inside `<a class="product-card__img-link">` (render.php ~1010), which is
+	   `display:block` — so making only the media box a flex container stretches
+	   the LINK to the strip height and leaves the image at its intrinsic size
+	   inside it. Measured live 2026-08-24: link 244.6px, image 132px, and the
+	   dead space sits inside the link where it is easy to blame on the image.
+	   The link has to become a flex container as well as a flex item. Typed
+	   cards put the image straight into `.sgs-product-card__media-wrap` and are
+	   already handled by the rule above. */
+	.sgs-shop-layout .product-card .product-card__img-link {
+		display: flex;
+		flex: 1 1 auto;
+		min-height: 0;
+	}
+
+	/* `height: auto` is required for the stretch to apply — a flex item only
+	   stretches on the cross axis when its cross size is auto. Do not "fix"
+	   this to height:100%; see the note above the media box. */
 	.sgs-shop-layout .product-card .product-card-img {
 		flex: 1 1 auto;
 		width: 100%;
