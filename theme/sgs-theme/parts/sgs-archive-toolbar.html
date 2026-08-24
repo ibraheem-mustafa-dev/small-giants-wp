@@ -1,5 +1,10 @@
-<!-- wp:woocommerce/breadcrumbs /-->
-
-<!-- wp:query-title {"type":"archive","level":1,"showPrefix":false,"textColor":"text","style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}}}} /-->
-
-<!-- wp:sgs/product-search {"placeholder":"Search products…","buttonLabel":"Search"} /-->
+<!-- Shared archive header part: breadcrumb only.
+     Title cannot live here — core/query-title's "type" attribute is page-type-gated
+     (WP core render.php: type="archive" returns empty unless is_archive() is true;
+     type="search" returns empty unless is_search() is true), so one shared part
+     cannot carry a title block that renders correctly on both the archive templates
+     (type="archive") and search.html (type="search"). Each template places its own
+     correctly-typed query-title/query-total immediately after this part instead,
+     keeping the breadcrumb → title → count → search → sort block choice and order
+     consistent across all four archive templates (Spec 31-adjacent toolbar standard). -->
+<!-- wp:sgs/breadcrumbs /-->
