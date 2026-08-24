@@ -587,8 +587,7 @@
 			"default": "wrap",
 			"enum": [
 				"wrap",
-				"nowrap",
-				"wrap-reverse"
+				"nowrap"
 			]
 		},
 		"templateMode": {
