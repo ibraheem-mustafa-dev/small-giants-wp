@@ -551,5 +551,14 @@
     "added_commit": "914c2ad4",
     "budget_ms": 79,
     "order": 60
+  },
+  {
+    "id": "check-withdrawn-figures",
+    "cmd": "python scripts/check-withdrawn-figures.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 61
   }
 ]
