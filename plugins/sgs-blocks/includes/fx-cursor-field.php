@@ -59,7 +59,19 @@ if ( ! \defined( 'ABSPATH' ) ) {
  *
  * @var string[]
  */
-const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern' );
+const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern', 'brick-reveal' );
+
+/**
+ * Pointer-pool SHAPES. The empty default is a circle, declared in the
+ * stylesheet, so an instance saved before shapes existed is unchanged. Values
+ * here must match the `[data-sgs-cursor-field-shape="…"]` rules in
+ * `assets/css/fx-cursor-field.css` — a slug allowlisted with no rule silently
+ * renders a circle, which is the "configured and invisible" shape this file's
+ * type allowlist already guards against.
+ *
+ * @var string[]
+ */
+const SGS_FX_CURSOR_FIELD_SHAPES = array( 'wide', 'tall' );
 
 /**
  * Default field type when an instance names none.
@@ -184,6 +196,25 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	// floods the viewport, so both ends are clamped to a range that still
 	// renders as a field. An unset attribute reads as 0 and simply emits
 	// nothing, letting the stylesheet default stand.
+	// SHAPE is passed through as a marked attribute rather than a declaration:
+	// the stylesheet owns the geometry, so the render layer never hardcodes a
+	// gradient. An unrecognised slug is dropped and the circle default stands.
+	$shape = (string) $processor->get_attribute( 'data-sgs-fx-field-shape' );
+	if ( \in_array( $shape, SGS_FX_CURSOR_FIELD_SHAPES, true ) ) {
+		$processor->set_attribute( 'data-sgs-cursor-field-shape', $shape );
+	}
+
+	// TRAIL is read by the emitter module, not by CSS — it eases the published
+	// pointer position so the pool lags slightly behind the cursor. Bounded to
+	// 0-100 and dropped when absent, so JS falls back to its own default.
+	$trail = $processor->get_attribute( 'data-sgs-fx-field-trail' );
+	if ( null !== $trail && '' !== $trail ) {
+		$processor->set_attribute(
+			'data-sgs-cursor-field-trail',
+			(string) \max( 0, \min( 100, (int) $trail ) )
+		);
+	}
+
 	if ( $radius > 0 ) {
 		$declarations[] = \sprintf(
 			'--sgs-cursor-field-radius:%dpx',

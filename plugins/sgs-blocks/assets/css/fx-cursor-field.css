@@ -96,6 +96,12 @@
 	--sgs-cursor-field-colour: var(--wp--preset--color--accent, #f59e0b);
 	--sgs-cursor-field-radius: 260px;
 
+	/* The SHAPE of every pointer-centred gradient, as the leading half of a
+	   `radial-gradient()`. One property so no field type hardcodes a circle and
+	   a shape change reaches all four looks at once. Overridden per instance by
+	   the `[data-sgs-cursor-field-shape]` rules below. */
+	--sgs-cursor-field-geometry: var(--sgs-cursor-field-radius) circle;
+
 	/* Fallbacks used before the first pointer move and whenever JS is absent:
 	   roughly the centre of the viewport, so the field rests somewhere
 	   sensible rather than at the top-left corner. */
@@ -112,13 +118,32 @@
 }
 
 /* ==========================================================================
+ * FIELD SHAPE. A pool is not always a circle — a wide ellipse reads as a
+ * horizontal wash across a band, a tall one as a column of light. The default
+ * (no attribute) stays a circle, so every instance saved before this existed
+ * renders exactly as it did.
+ * ========================================================================== */
+
+[data-sgs-cursor-field-shape="wide"] {
+	--sgs-cursor-field-geometry:
+		calc(var(--sgs-cursor-field-radius) * 1.6)
+		calc(var(--sgs-cursor-field-radius) * 0.62) ellipse;
+}
+
+[data-sgs-cursor-field-shape="tall"] {
+	--sgs-cursor-field-geometry:
+		calc(var(--sgs-cursor-field-radius) * 0.62)
+		calc(var(--sgs-cursor-field-radius) * 1.6) ellipse;
+}
+
+/* ==========================================================================
  * FIELD TYPE: glow (FR-38-25 as signed — the baseline).
  * A soft radial pool of light following the pointer.
  * ========================================================================== */
 
 [data-sgs-cursor-field="glow"] {
 	--sgs-cursor-field-layer: radial-gradient(
-		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-x) var(--sgs-cursor-y),
 		var(--sgs-cursor-field-colour),
 		transparent 70%
 	);
@@ -142,7 +167,7 @@
 		transparent 1.5px
 	);
 	--sgs-cursor-field-mask: radial-gradient(
-		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
+		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
 		#000 0%,
 		transparent 70%
 	);
@@ -230,7 +255,7 @@
 		calc(var(--sgs-cursor-x) * -0.5) calc(var(--sgs-cursor-y) * -0.5);
 
 	--sgs-cursor-field-mask: radial-gradient(
-		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
+		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
 		#000 0%,
 		transparent 70%
 	);
@@ -295,6 +320,60 @@
 }
 
 /* ==========================================================================
+ * FIELD TYPE: brick-reveal.
+ *
+ * `spotlight-mask`'s sibling: the same torch mechanism, a different thing
+ * revealed. Bean's case is a construction client — brickwork tiling in under
+ * the pointer over a flat brand colour, rather than a dot screen.
+ *
+ * STACKED BOND, not running bond, and that is a real limitation stated rather
+ * than hidden: a running-bond offset needs the vertical mortar to change per
+ * course, which a linear gradient cannot express (a 90deg gradient has no
+ * vertical variation, so its strokes always run the full tile height). Two
+ * gradients give courses and verticals; offsetting alternate courses would
+ * need a 2D tile. If the stacked look reads as tile rather than brick, that is
+ * the thing to change.
+ *
+ * Masked, so I8 binds it: local coordinate pair + emitter-only.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="brick-reveal"] {
+	/* RUNNING BOND, via an SVG mask rather than gradients.
+	   The first attempt drew mortar with two repeating-linear-gradients and
+	   produced a GRID, not brickwork — a 90deg gradient has no vertical
+	   variation, so its strokes run the full tile height and every course
+	   lines up. Looked like graph paper. An SVG tile can offset alternate
+	   courses trivially, which gradients cannot.
+	   The SVG carries no colour: it is a MASK, so the client's own colour is
+	   painted underneath as a flat layer and the mask cuts the mortar out of
+	   it. That is what keeps the palette token live — a data-URI cannot read a
+	   CSS custom property, so colouring the SVG directly would have frozen it.
+	   Two mask layers are INTERSECTED: the brick tile, and the pointer pool.
+	   Both -webkit- and standard properties are set; where compositing is
+	   unsupported the pointer mask still applies and the surface reads as a
+	   plain wash rather than breaking. */
+	--sgs-cursor-field-brick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='68'%3E%3Cg fill='%23000'%3E%3Crect x='0' y='0' width='84' height='3'/%3E%3Crect x='0' y='34' width='84' height='3'/%3E%3Crect x='0' y='0' width='3' height='34'/%3E%3Crect x='42' y='34' width='3' height='34'/%3E%3C/g%3E%3C/svg%3E");
+
+	--sgs-cursor-field-layer: linear-gradient(
+		var(--sgs-cursor-field-colour),
+		var(--sgs-cursor-field-colour)
+	);
+
+	--sgs-cursor-field-mask: var(--sgs-cursor-field-brick),
+		radial-gradient(
+			var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
+			#000 0%,
+			transparent 70%
+		);
+
+	--sgs-cursor-field-mask-size: 84px 68px, 100% 100%;
+	--sgs-cursor-field-mask-composite: intersect;
+	--sgs-cursor-field-mask-composite-webkit: source-in;
+	--sgs-cursor-field-participant-layer: none;
+}
+
+
+/* ==========================================================================
  * The paint. Neither rule names a field type.
  * ========================================================================== */
 
@@ -309,10 +388,16 @@
 	background-attachment: fixed;
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);
-	mask-image: var(--sgs-cursor-field-mask, none);
-	mask-size: 100% 100%;
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
-	-webkit-mask-size: 100% 100%;
+	-webkit-mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	-webkit-mask-composite: var(--sgs-cursor-field-mask-composite-webkit, source-over);
+	mask-image: var(--sgs-cursor-field-mask, none);
+	mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	/* LAST deliberately: in Blink the -webkit- form maps onto the same internal
+	   property but takes a different keyword vocabulary, so declaring it after
+	   the standard one silently reset this to `add` and the brick tile stopped
+	   intersecting. Measured, not guessed. */
+	mask-composite: var(--sgs-cursor-field-mask-composite, add);
 }
 
 /* The emitter's own children must sit above the field, or the field paints
@@ -334,10 +419,16 @@
 	background-attachment: fixed;
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);
-	mask-image: var(--sgs-cursor-field-mask, none);
-	mask-size: 100% 100%;
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
-	-webkit-mask-size: 100% 100%;
+	-webkit-mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	-webkit-mask-composite: var(--sgs-cursor-field-mask-composite-webkit, source-over);
+	mask-image: var(--sgs-cursor-field-mask, none);
+	mask-size: var(--sgs-cursor-field-mask-size, 100% 100%);
+	/* LAST deliberately: in Blink the -webkit- form maps onto the same internal
+	   property but takes a different keyword vocabulary, so declaring it after
+	   the standard one silently reset this to `add` and the brick tile stopped
+	   intersecting. Measured, not guessed. */
+	mask-composite: var(--sgs-cursor-field-mask-composite, add);
 }
 
 /* ==========================================================================

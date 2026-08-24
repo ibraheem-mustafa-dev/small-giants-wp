@@ -824,8 +824,12 @@ _CASES = (
         # first --self-test run of this gate).
         "I6", "add a field type the picker and the CSS have never heard of",
         "cursor_field_php",
-        "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern' );",
-        "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern', 'selftest-ghost' );",
+        # REGEX-anchored (not literal): this list legitimately GROWS every time a
+        # field type ships, and a literal anchor silently stops landing when it
+        # does — which happened twice, on hue-shift/parallax-pattern and again on
+        # brick-reveal. Same reasoning as I4/I5 above.
+        pattern=r"const SGS_FX_CURSOR_FIELD_TYPES = array\( ([^)]*) \);",
+        replacement=r"const SGS_FX_CURSOR_FIELD_TYPES = array( \g<1>, 'selftest-ghost' );",
     ),
     _Case(
         # I7 leg 1: delete 'halftone' from the PHP allowlist. TREATMENT_PRESETS and the

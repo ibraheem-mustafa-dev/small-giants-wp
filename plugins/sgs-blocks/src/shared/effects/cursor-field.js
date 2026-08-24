@@ -385,6 +385,94 @@ export function initCursorField( el, opts = {} ) {
 		return unmark;
 	}
 
+	/**
+	 * Write one pointer position to both published pairs.
+	 *
+	 * The VIEWPORT pair needs no measurement — it IS the client position, and
+	 * `background-attachment: fixed` resolves the layer against the viewport, so
+	 * every participant paints the same field in the same screen place with no
+	 * per-element maths. That remains the mechanism.
+	 *
+	 * The LOCAL pair costs one rect read per frame — the same cost element space
+	 * has always paid, and one read for the EMITTER, never one per participant.
+	 * Masked types need it because a mask resolves against this element's box.
+	 *
+	 * @param {number} vx Viewport x.
+	 * @param {number} vy Viewport y.
+	 * @return {void}
+	 */
+	const publishViewport = ( vx, vy ) => {
+		el.style.setProperty( varX, `${ Math.round( vx ) }px` );
+		el.style.setProperty( varY, `${ Math.round( vy ) }px` );
+		const localRect = el.getBoundingClientRect();
+		el.style.setProperty(
+			VAR_LOCAL_X,
+			`${ Math.round( vx - localRect.left ) }px`
+		);
+		el.style.setProperty(
+			VAR_LOCAL_Y,
+			`${ Math.round( vy - localRect.top ) }px`
+		);
+	};
+
+	/*
+	 * TRAIL — the standard lerp follower: each frame, move the published
+	 * position a FRACTION of the remaining distance toward the pointer, so it
+	 * eases in and never quite overshoots. `current += (target - current) * f`.
+	 *
+	 * The client-facing control is 0-100 "how far it lags", which is the
+	 * inverse of the maths: a SMALLER factor means more lag. 0 maps to 1
+	 * (publish directly, the pre-existing behaviour, byte-identical), and 100
+	 * maps to 0.06 (very heavy). The published range therefore spans the
+	 * 0.1-0.2 "visibly heavy drag" and 0.3-0.5 "snappier but still eased" bands
+	 * that recur across implementations of this pattern.
+	 *
+	 * Reduced motion needs no branch here: `init` returns before any listener
+	 * is attached under `reduce`, so the loop can never start and the field
+	 * simply rests.
+	 */
+	const trailAttr = el.getAttribute( 'data-sgs-cursor-field-trail' );
+	const trailAmount = clamp( parseInt( trailAttr, 10 ) || 0, 0, 100 );
+	const trailFactor = 0 === trailAmount ? 1 : 1 - ( trailAmount / 100 ) * 0.94;
+
+	let targetX = null;
+	let targetY = null;
+	let currentX = null;
+	let currentY = null;
+	let trailFrame = null;
+
+	const stopTrail = () => {
+		if ( null !== trailFrame ) {
+			cancelAnimationFrame( trailFrame );
+			trailFrame = null;
+		}
+	};
+
+	const tick = () => {
+		currentX += ( targetX - currentX ) * trailFactor;
+		currentY += ( targetY - currentY ) * trailFactor;
+		publishViewport( currentX, currentY );
+		// Half a pixel is below what any of this can paint, so settling there
+		// ends the loop rather than running forever on rounding noise.
+		if (
+			0.5 < Math.abs( targetX - currentX ) ||
+			0.5 < Math.abs( targetY - currentY )
+		) {
+			trailFrame = requestAnimationFrame( tick );
+			return;
+		}
+		currentX = targetX;
+		currentY = targetY;
+		publishViewport( currentX, currentY );
+		trailFrame = null;
+	};
+
+	const startTrail = () => {
+		if ( null === trailFrame ) {
+			trailFrame = requestAnimationFrame( tick );
+		}
+	};
+
 	const handleMove = rafThrottle( ( clientX, clientY ) => {
 		if ( elementSpace ) {
 			const rect = el.getBoundingClientRect();
@@ -410,26 +498,20 @@ export function initCursorField( el, opts = {} ) {
 			return;
 		}
 
-		// The viewport pair needs no measurement — it IS the client position,
-		// and `background-attachment: fixed` resolves the layer against the
-		// viewport, so every participant paints the same field in the same
-		// screen place with no per-element maths. That remains the mechanism.
-		el.style.setProperty( varX, `${ Math.round( clientX ) }px` );
-		el.style.setProperty( varY, `${ Math.round( clientY ) }px` );
-
-		// The LOCAL pair costs one rect read per throttled frame — the same
-		// cost element space has always paid (see the branch above), and one
-		// read for the emitter, never one per participant. Masked types need
-		// it because a mask resolves against this element's own box.
-		const localRect = el.getBoundingClientRect();
-		el.style.setProperty(
-			VAR_LOCAL_X,
-			`${ Math.round( clientX - localRect.left ) }px`
-		);
-		el.style.setProperty(
-			VAR_LOCAL_Y,
-			`${ Math.round( clientY - localRect.top ) }px`
-		);
+		// TRAIL 0 (the default) publishes the pointer position directly, exactly
+		// as this module always has. Anything above 0 hands the position to the
+		// easing loop instead, so the pool lags behind the cursor.
+		if ( 1 <= trailFactor ) {
+			publishViewport( clientX, clientY );
+			return;
+		}
+		targetX = clientX;
+		targetY = clientY;
+		if ( null === currentX ) {
+			currentX = clientX;
+			currentY = clientY;
+		}
+		startTrail();
 	} );
 
 	/**
@@ -453,6 +535,9 @@ export function initCursorField( el, opts = {} ) {
 	// the pointer genuinely leaves the emitter.
 	const onLeave = () => {
 		handleMove.cancel();
+		stopTrail();
+		currentX = null;
+		currentY = null;
 		rest();
 	};
 
@@ -461,6 +546,7 @@ export function initCursorField( el, opts = {} ) {
 
 	return () => {
 		handleMove.cancel();
+		stopTrail();
 		el.removeEventListener( 'mousemove', onMove );
 		el.removeEventListener( 'mouseleave', onLeave );
 		unmark();

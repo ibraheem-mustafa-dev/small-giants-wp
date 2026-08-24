@@ -361,6 +361,21 @@ const FX_FIELD_TYPE_OPTIONS = [
 		label: __( 'Drift — a pattern that moves with depth', 'sgs-blocks' ),
 		value: 'parallax-pattern',
 	},
+	{
+		label: __( 'Brickwork — reveals brick tiling beneath', 'sgs-blocks' ),
+		value: 'brick-reveal',
+	},
+];
+
+/**
+ * Pool shapes. Empty is the stylesheet's circle; each other value must have a
+ * matching `[data-sgs-cursor-field-shape="…"]` rule in fx-cursor-field.css and
+ * an entry in SGS_FX_CURSOR_FIELD_SHAPES, or it renders a circle silently.
+ */
+const FX_FIELD_SHAPE_OPTIONS = [
+	{ label: __( 'Circle', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Wide ellipse', 'sgs-blocks' ), value: 'wide' },
+	{ label: __( 'Tall ellipse', 'sgs-blocks' ), value: 'tall' },
 ];
 
 const FX_TRIGGER_LABELS = {
@@ -943,12 +958,28 @@ function addFxAttributes( settings, name ) {
 			fxFieldType: { type: 'string', default: '' },
 			fxFieldColour: { type: 'string', default: '' },
 			/*
+			 * Pool SHAPE. Empty = the stylesheet's circle, so an instance saved
+			 * before shapes existed is unchanged. The geometry itself lives in
+			 * CSS (`[data-sgs-cursor-field-shape]`), never here — the render
+			 * layer only passes a validated slug through.
+			 */
+			fxFieldShape: { type: 'string', default: '' },
+			/*
 			 * Undefined-when-untouched, same reasoning as the numeric params
 			 * above: there is no meaningful "0px radius" a client would choose
 			 * (it paints nothing), so unset must be distinguishable from set
 			 * and the render layer treats 0 as unset.
 			 */
 			fxFieldRadius: { type: 'number' },
+			/*
+			 * TRAIL — how far the pool lags behind the pointer, 0-100.
+			 * Read by the emitter module, not by CSS: it eases the published
+			 * position toward the cursor each frame instead of snapping to it.
+			 * Undefined when untouched so the module's own default stands, and
+			 * NO `default: null` — a null on a number attr 400s every
+			 * ServerSideRender preview (D755).
+			 */
+			fxFieldTrail: { type: 'number' },
 			fxEase: { type: 'string', default: '' },
 			fxSplit: { type: 'string', default: '' },
 			fxMask: { type: 'string', default: '' },
@@ -1166,6 +1197,8 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// Cursor-field radius in px. The render layer clamps it to a range that
 		// still renders as a field rather than trusting the stored number.
 		'data-sgs-fx-field-radius': attributes.fxFieldRadius,
+		'data-sgs-fx-field-trail': attributes.fxFieldTrail,
+		'data-sgs-fx-field-shape': attributes.fxFieldShape,
 		// Surface-treatment intensity, 0-1. The render layer clamps it and
 		// drops a 0 back to unset — see the attribute declaration above.
 		'data-sgs-fx-treatment-intensity': attributes.fxTreatmentIntensity,
@@ -2440,6 +2473,67 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										step={ 10 }
 										help={ __(
 											'How wide the effect spreads around the cursor.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxFieldShape
+									}
+									label={ __( 'Field shape', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxFieldShape: '' } )
+									}
+								>
+									<SelectControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __(
+											'Field shape',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxFieldShape }
+										options={ FX_FIELD_SHAPE_OPTIONS }
+										onChange={ ( value ) =>
+											setParam( {
+												fxFieldShape: value,
+											} )
+										}
+										help={ __(
+											'A circle, or an ellipse stretched across or down the block.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !== attributes.fxFieldTrail
+									}
+									label={ __( 'Trail', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( {
+											fxFieldTrail: undefined,
+										} )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Trail', 'sgs-blocks' ) }
+										value={ attributes.fxFieldTrail }
+										onChange={ ( value ) =>
+											setParam( {
+												fxFieldTrail: value,
+											} )
+										}
+										min={ 0 }
+										max={ 100 }
+										step={ 5 }
+										help={ __(
+											'How far the effect lags behind the cursor. 0 follows exactly; higher feels heavier, as though the light has weight.',
 											'sgs-blocks'
 										) }
 									/>

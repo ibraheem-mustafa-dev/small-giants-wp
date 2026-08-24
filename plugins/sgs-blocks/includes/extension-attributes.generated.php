@@ -16,6 +16,8 @@ return array(
 	'fxEnd' => array( 'type' => 'string' ),
 	'fxFieldColour' => array( 'type' => 'string' ),
 	'fxFieldRadius' => array( 'type' => 'number' ),
+	'fxFieldShape' => array( 'type' => 'string' ),
+	'fxFieldTrail' => array( 'type' => 'number' ),
 	'fxFieldType' => array( 'type' => 'string' ),
 	'fxHold' => array( 'type' => 'string' ),
 	'fxMask' => array( 'type' => 'string' ),
