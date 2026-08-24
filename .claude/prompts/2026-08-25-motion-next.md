@@ -41,6 +41,10 @@ re-researches them. Each decision carries a recommendation; Bean picks from the 
 
 - **Lerp/momentum** — the universal pattern is `current += (target - current) * factor`.
   **0.1-0.2 reads as heavy drag, 0.3-0.5 as snappier but still eased.** Already shipped as TRAIL.
+  ⚠ The DIRECTION is well sourced (lower factor = more lag, stated consistently across
+  implementations); the exact bands were flagged by the researcher as **inferred from the pattern
+  described, not independently cited to a numeric source.** Treat them as a starting point, not a
+  standard. Our shipped trail 90 measures 0.155, which sits inside the heavy band either way.
 - **Custom cursor replacement** — the accessibility camp is **unanimously against** it as
   commonly built: Eric Bailey (*"Don't use custom CSS mouse cursors"*), dbushell, Funka
   Foundation. It overrides OS cursor size and contrast settings that users deliberately chose,
