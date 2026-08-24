@@ -904,6 +904,69 @@ def survey(prop: str):
     return out
 
 
+def survey_all_properties(json_out: bool = False) -> int:
+    """Census EVERY property with a declared tier sibling, in one pass.
+
+    WHY: 34 of 40 tier properties touch only 1-2 blocks each. Under property-by-property a
+    one-block property carries the same ceremony as a 41-block one. This answers "what is
+    actually left, and how big is each" in a single command, so the batching decision is made
+    from a census rather than from recall.
+
+    ⛔ It reports THREE populations and they are NOT interchangeable. Conflating them is how
+    three different totals for "how many properties" got into circulation:
+      declared   - has a <prop>Tablet/<prop>Mobile attr somewhere (the all_tier_properties roster)
+      migratable - at least one block is FLAT or BLENDED for it (what a migration would touch)
+      done       - declared, but every block is already OBJECT/ASSET (nothing to migrate)
+    """
+    rows = []
+    for prop in all_tier_properties():
+        survey_rows = survey(prop)
+        targets = [r for r in survey_rows if r["kind"] in ("FLAT", "BLENDED")]
+        rows.append({
+            "property": prop,
+            "blocks_declaring": len(survey_rows),
+            "migratable_blocks": len(targets),
+            "kinds": {k: sum(1 for r in survey_rows if r["kind"] == k)
+                      for k in ("FLAT", "BLENDED", "OBJECT", "ASSET")},
+            "render_followup": sum(1 for r in survey_rows
+                                   if r["render_state"] in ("RAW", "UNCLEAR")),
+            "edit_followup": sum(1 for r in survey_rows
+                                 if r["edit_state"] in ("LEGACY", "UNCLEAR")),
+        })
+    migratable = [r for r in rows if r["migratable_blocks"] > 0]
+    done = [r for r in rows if r["migratable_blocks"] == 0]
+
+    if json_out:
+        print(json.dumps({"declared": len(rows), "migratable": len(migratable),
+                          "done": len(done), "properties": rows}, indent=2))
+        return 0
+
+    print("")
+    print(f"DECLARED tier properties: {len(rows)}   "
+          f"(MIGRATABLE {len(migratable)} - already done {len(done)})")
+    print("")
+    header = "property"
+    print(f'  {header:34} {"declaring":>9} {"migratable":>10}   kinds')
+    for r in sorted(rows, key=lambda x: (-x["migratable_blocks"], -x["blocks_declaring"],
+                                         x["property"])):
+        kinds = " ".join(f"{k}={v}" for k, v in r["kinds"].items() if v)
+        flag = "" if r["migratable_blocks"] else "   (done)"
+        print(f'  {r["property"]:34} {r["blocks_declaring"]:>9} '
+              f'{r["migratable_blocks"]:>10}   {kinds}{flag}')
+
+    band_1_2 = [r for r in migratable if r["migratable_blocks"] <= 2]
+    band_3up = sorted([r for r in migratable if r["migratable_blocks"] > 2],
+                      key=lambda x: -x["migratable_blocks"])
+    big = ", ".join(f'{r["property"]}({r["migratable_blocks"]})' for r in band_3up)
+    print("")
+    print(f"BATCHING SHAPE (of the {len(migratable)} MIGRATABLE properties):")
+    print(f"  1-2 blocks : {len(band_1_2)}")
+    print(f"  3+  blocks : {len(band_3up)}   {big}")
+    total_touches = sum(r["migratable_blocks"] for r in migratable)
+    print(f"  total block-touches remaining: "
+          f"{total_touches}")
+    return 0
+
 def build_object_default(rows) -> dict:
     """Preserve the authored default as the DESKTOP tier — dropping it would silently
     change every un-set instance's rendering, which is precisely the quiet loss this
@@ -1679,9 +1742,14 @@ def main() -> int:
     ap.add_argument('--fix', action='store_true', help='propose; writes nothing without --apply')
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--check', action='store_true', help='exit 1 if any FLAT/BLENDED remain')
+    ap.add_argument('--all-properties', action='store_true',
+                     help='iterate every property with a declared tier sibling instead of one '
+                          '--property; census only (combine with --survey)')
     ap.add_argument('--check-db-parity', action='store_true',
                      help='gate: exit 1 if the framework DB and the tree disagree about any '
                           'declared tier sibling; no --property needed')
+    ap.add_argument('--json', action='store_true',
+                     help='with --all-properties: emit the census as JSON for a durable artefact')
     ap.add_argument('--self-test', action='store_true',
                      help='run the built-in regression fixture and exit; no --property needed')
     args = ap.parse_args()
@@ -1689,8 +1757,11 @@ def main() -> int:
         return self_test()
     if args.check_db_parity:
         return check_db_parity()
+    if args.all_properties:
+        return survey_all_properties(json_out=args.json)
     if not args.property:
-        ap.error('--property is required unless --self-test is given')
+        ap.error('--property is required unless --self-test, --check-db-parity or '
+                 '--all-properties is given')
     prop = args.property
     rows = survey(prop)
     shared_findings = survey_shared_includes(prop)
