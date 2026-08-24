@@ -1,74 +1,49 @@
 ---
 doc_type: guide
-title: The migration method — detector first, always
+title: The migration method — settle the shape, then build the detector
 date: 2026-08-24
 status: PROVISIONAL-UNTIL-EXERCISED
-closes_when: "one real migration has been run start-to-finish through Steps 1-9 with every
+closes_when: "one real migration has been run start-to-finish through Steps 1-11 with every
   ambiguity, error and silence recorded — then re-councilled on that evidence"
 applies_to: any change touching more than 3 blocks, attributes, files or call sites
+grading: .claude/rubrics/migration-method-grading.md
 ---
 
 # The migration method
 
 **Read this before editing the 4th file in any repeating change.**
 
-⚠ **STATUS: PROVISIONAL. The detector-first RULE is settled and non-negotiable. The
-9-step process and the skeleton are NOT yet proven — this document has been reviewed six
-ways and USED ZERO TIMES.** Six adversarial personas graded it D+ / D / C− / C+ / B− and
-twelve defects were fixed; a seventh reading is not what hardens it. It closes when one
-real migration has been run through it end to end with the failures recorded.
+## Do this now
 
-**If you are that session: follow it literally, and log every point where you had to
-guess, open another file, or do something it does not describe. Those notes are the
-deliverable, not a side effect.**
+```bash
+ls plugins/sgs-blocks/scripts/*migrate*        # is your migration already written?
+python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py --check
+```
 
-## Why this exists
+1. **Flat `*Tablet`/`*Mobile` attrs → one object?** The tool exists. Run
+   `python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <name> --survey`,
+   then read Step 2's ⛔ box for the three things `--survey` will not tell you. Stop here.
+2. **Does your change alter anything a client SEES?** Go to **Step 3 first** — settle the
+   shape on one instance before you census anything. This is the step that decides whether
+   the change costs a day or a fortnight.
+3. **Otherwise** — a rename, a call-site swap, a helper adoption — start at Step 1.
 
-⛔ **THE ELAPSED FIGURES THIS DOCUMENT ORIGINALLY QUOTED WERE UNSOUND. They are
-withdrawn.** They said three migrations took "1 day" each — a figure read off a COMMIT
-DATE, which is the exact inference this method forbids. Worse, the comparison was
-rigged without meaning to be: `sgs_css_length_value`, the function
-`migrate-length-sanitiser.py` migrates *to*, was authored 2026-08-02 — **19 days before**
-the migration that "took one day" on 2026-08-21. The fast number excluded its
-prerequisite work; the slow number included all of its. Numerator and denominator were
-not the same measurement.
+**STATUS.** The **rule below is locked and mandatory**, whatever this document's maturity.
+The 11 steps are `PROVISIONAL`: reviewed twelve ways, **used zero times**. Follow them
+anyway, and **log every point where you had to guess, open a file this doc does not name,
+or do something it does not describe.** Those notes are the deliverable that closes it.
 
-**What git actually supports, and it is enough:**
-
-| Work | Scope | Correction commits |
-|---|---|---|
-| `migrate-length-sanitiser.py` | 204 call sites, 56 files | **1 landing commit, 0 corrections** |
-| `migrate-render-closures.py` | 100 closures, 49 blocks | **1 landing commit, 0 corrections** |
-| Colour panel rollout | 33 blocks | **23 correction commits of 71**, across 10 working days (2026-08-14 → 08-24) |
-
-The claim that survives is not about days. It is about **corrections**: a census-driven
-pass lands once; a discovery walk lands twenty-five times. That is the whole argument and
-it needs no defending.
-
-⚠ **A THIRD unsupported figure was caught by review and corrected here.** This table 
-originally said "13 days, 25 corrections" and cited seven D-numbers as the evidence. 
-Those D-numbers span 2026-08-14 → 08-16 — **three days**. The figures above are now 
-DERIVED by enumeration: `git log --grep="SgsColourPanel\|colour-panel" ` returns 71 
-commits across 10 distinct days, 23 of which are fixes. Re-run it; do not trust this 
-sentence.
-
-⚠ **Never quote a commit date or a D-number as an elapsed cost.** Both record when work
-LANDED, not the sessions spent building the scanner and getting it wrong first. This
-document made that error and is the reason the rule is stated here.
-
-The two fast migrations built a detector first. The slow one edited block by block and
-discovered the rule while editing. Nothing about the tooling differed — only the method.
-
-⚠ **The slow track is not a clean counter-example, and the real lesson is better than the
-tidy one.** `colour-codemod/` contains `survey.js`, `adopt.js` and `fix.js`, and its first
-commits read *"the census that decides whether this is one script or fifteen agents"*.
-It DID adopt this method — on day 11. The detector was available the whole time and was
-reached for last.
+---
 
 ## The rule
 
-> **If a change touches more than 3 blocks, files or call sites, the first deliverable
-> is the detector — not the edit.**
+> **If a change touches more than 3 blocks, files or call sites, the first deliverable is
+> the detector — not the edit.**
+>
+> **And if the change is client-visible, the first deliverable before THAT is the settled
+> target shape** (Step 3).
+
+Bean-locked at **D542**, and applied independently at `decisions.md:1381` and `:2002`.
 
 You have finished the detector when it can answer, without you reading any file:
 
@@ -76,206 +51,261 @@ You have finished the detector when it can answer, without you reading any file:
 2. Where is each one?
 3. Which are genuine targets, and which are exempt and why?
 
-Until it answers all three, do not edit anything.
+⛔ **A counting script is not a detector.** It is not done until it carries
+`--survey / --fix / --check / --self-test` and is registered in `gates.json` (Steps 4-8).
 
-## How to tell which path you are on
+⛔ **A census cannot answer a fourth question — "what should the new shape BE?"** That is
+Step 3, it needs a rendered page and Bean's eye, and skipping it is what actually costs a
+fortnight. See "Why this exists".
 
-Watch your own commit messages. They tell you before the cost lands.
+### What it costs, and what you are buying
 
-- **Fast path:** one commit naming a count — *"204 call sites migrated"*, *"100 closures
-  across 49 blocks"*.
-- **Slow path:** commits naming instances — *"mount SgsColourPanel on accordion, audio,
-  before-after, brand-strip"*.
+At 4 instances the detector costs more than the edit. Measured floor: **131 lines**
+(`migrate-overlay-tier-axis.py`); typical **242-362**. You are not buying the edit — you are
+buying the `--check` gate that stops instance 5 arriving next month. **If the change
+genuinely cannot regress, the threshold does not apply.**
+
+### How to tell which path you are on
+
+- **Fast path:** one commit naming a count — *"204 call sites migrated"*.
+- **Slow path:** commits naming instances — *"mount X on accordion, audio, before-after"*.
 
 The moment you write a commit that lists blocks individually, you skipped the detector.
 
+⚠ **Unless this migration is a declared Spec 31 PHASE — then R-31-5 governs and you split
+it** into the phase's agreed commit boundaries. "One commit" describes a standalone codemod,
+not a phase deliverable.
+
 ---
 
-# The process, start to end
+## ⛔ When to STOP and hand back to Bean
+
+Hand back — do not improvise, do not try one more thing — the moment any of these is true.
+Say which one, and what state the tree is in.
+
+1. **`--survey` reports `unrecognised > 0`** and you cannot classify the site from the file
+   alone. The classifier is incomplete; guessing is how a migration corrupts.
+2. **`git status` shows uncommitted work in your target paths that you did not write.**
+   Another track is live in your blast radius. Five tracks share `main`.
+3. **`--apply` exited non-zero, or was interrupted.** Report `git diff --stat` verbatim. Do
+   not re-run and do not `git checkout` until Bean has seen it.
+4. **`--check` will not return to 0** after Step 10's restore.
+5. **The deploy aborts naming files you did not touch.**
+6. **You are about to add a per-file special case to `transform()`.** By Step 5's test that
+   means you miscounted your cases — re-census, do not patch.
+7. **You need a flag whose help text says "NOT recommended"** — `--allow-dirty`,
+   `--skip-verify`, `--skip-gate-full`. Those exist for Bean's judgement, not yours.
+8. **The change touches a shared wrapper, the walker, or `converter/`.** Rule 7 requires a
+   design gate and Bean's approval BEFORE building. This document does not override it.
+
+---
+
+# The process
 
 ## Step 1 — Check the tool already exists
 
-Grep the SUBJECT, never the verb. The same idea ships in this repo as `census-*`,
-`survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
+Grep the SUBJECT, never the verb. The same idea ships here as `census-*`, `survey-*`,
+`audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
 ```bash
+ls plugins/sgs-blocks/scripts/*migrate*
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py --check
 grep -n "<subject>" .claude/dev-setup.md
 ```
 
-Rebuilding a tool that exists is this repo's recorded failure mode. Five script
-directories exist; searching one and concluding nothing exists is how it happens.
+Rebuilding a tool that exists is this repo's recorded failure mode. Run
+`find plugins/sgs-blocks/scripts -maxdepth 1 -type d` — there are dozens. Searching one and
+concluding nothing exists is how it happens.
 
-## Step 2 — Ask the database before you walk the disk
+## Step 2 — Ask the database, but only for what it holds
 
-`block_attributes` answers "which blocks declare X" in one query. ⚠ **Do not cache its row count here or anywhere** — `CLAUDE.md` forbids it and a cached snapshot already drifted 6-of-9. Query it every time.
+`block_attributes` answers **"which blocks declare attribute X"** in one query.
 
 ```bash
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
   "SELECT block_slug, attr_name FROM block_attributes WHERE attr_name LIKE '%Tablet'"
 ```
 
-⚠ **Every current `migrate-*.py` re-globs `block.json` instead. Do not copy that.** It is
-the reason each migration re-derives knowledge the DB already holds.
+⛔ **The DB-first rule scopes to ATTRIBUTE migrations ONLY.** `block_attributes` has columns
+for `block_slug` and `attr_name` and **no column for a file or a call site** — verified
+against the schema. For a call-site, closure, helper or import migration it has nothing to
+offer: **walk the disk.**
 
-## Step 3 — Copy the skeleton
+⛔ **`includes/*.php` and the other shared trees are IN SCOPE whichever you use.**
+`block_attributes` is foreign-keyed to `blocks(slug)`, so a DB-derived list is block-scoped
+and silently omits every shared include. **That omission is D574** — the `minHeight` survey
+returned zero findings while the shared wrapper shipped `min-height:Array` to 73 live
+declarations.
 
-⛔ **STOP. If your change is "flat `*Tablet`/`*Mobile` attrs → one object", THE TOOL
-ALREADY EXISTS.** `plugins/sgs-blocks/scripts/migrate-tier-object.py` implements exactly
-this, with the full `--property / --survey / --fix / --apply / --check / --self-test`
-contract. Run `--property <name> --survey` and stop reading this step. The criticism of its
-`self_test` further down is guidance for writing a NEW script — **it is not a reason to
-avoid this one.** Rebuilding it is the failure this document exists to prevent.
+⚠ **A DB/disk count mismatch is a FINDING, not noise.** Reconcile it before applying: it is
+usually a stale row or an unseeded block, and it means one of your two sources is lying.
 
-Model file, verified and complete: **`plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`**
-(318 lines). Second model: **`migrate-render-closures.py`** (248 lines). They share one
-shape.
+⛔ **If you came here from `migrate-tier-object.py`, three things `--survey` will not tell
+you:** (a) `UNCLEAR` render/edit states must be read BY HAND — the script says so itself;
+(b) `--fix --apply` writes `block.json` and `edit.js` **only, never `render.php`**; (c)
+`--check` does **not** gate on `render_state: RAW`, so a green gate does not mean the render
+side is done. That exact gap is D574.
 
-### The skeleton — copy the SHAPE, with one exception marked ⛔ below
+## Step 3 — Settle the SHAPE first, on ONE instance, with Bean
 
-⚠ **If a line number below does not land on the named construct, the model has moved.**
-Re-derive with `grep -n '^def \|^SELF_TEST\|^EXCLUDE' 
-plugins/sgs-blocks/scripts/migrate-length-sanitiser.py` and trust that, not this table. 
-The symbol names are stable; the numbers are a convenience and will rot.
+**Only for changes with a surface a client sees. Skip for renames and call-site swaps.**
 
-| Part | Where in the model | What it does |
+Build **one** instance. Deploy it. Get Bean's eye on it (R-31-13). Write the settled shape
+down as the transform's target **before you census anything**.
+
+A shape decided against a rendered page costs one block. The same decision discovered on
+block 9 costs nine. **This is also the Rule 7 design gate** — for a shared wrapper, the
+walker or `converter/`, Bean's approval here is mandatory, not advisory.
+
+**This step exists because the evidence demanded it.** The colour rollout DID census on
+day 2 and still cost a fortnight — see "Why this exists". The census answered *how many*.
+Nothing answered *what shape*, and four of its five corrections were settled only by Bean
+looking at a rendered thing.
+
+## Step 4 — Choose the recogniser, then copy the skeleton
+
+**Pick the tool before you copy anything:**
+
+- **Single-token, single-line target** (a function rename, a constant swap) → the line
+  classifier in `migrate-length-sanitiser.py`. Right tool; its refusal rules are the point.
+- **Multi-line shape** (a JSX mount, an object literal, a closure body — anything with
+  `{...}`) → **an AST, not a regex.** The working in-repo model is
+  `plugins/sgs-blocks/scripts/colour-codemod/adopt.js` — `@babel/parser` (already
+  installed), and the same CLI contract at `:992-996`. It is itself **unwired** (absent
+  from `gates.json`) — copy its shape, not its wiring.
+
+⛔ **A line classifier applied to a multi-line shape is the commonest way a codemod
+corrupts 5% of its targets silently.**
+
+### The skeleton — `migrate-length-sanitiser.py` ALONE
+
+⚠ **`migrate-render-closures.py` is a worked EXAMPLE, not a second skeleton.** Verified: it
+has no `classify()`, no `EXCLUDE`, no `rel()`, no `unrecognised` category and two fixtures —
+so it fails this document's own mandatory rules below. Read it for `defs_in()` and the
+aligned-assignment hazard only.
+
+⚠ **If a line number does not land on the named construct, the model has moved.** Re-derive
+with `grep -n '^def \|^SELF_TEST\|^EXCLUDE' plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`.
+
+| Part | Where | What it does |
 |---|---|---|
-| `ROOT` | `:53` | Repo-root path constant |
-| ⛔ `targets()` | `:77` | **DO NOT COPY — this is the disk walk Step 2 tells you to replace.** Query `block_attributes` instead. It is listed here so you recognise it, not so you reuse it. |
+| `ROOT` | `:53` | Repo-root path constant — **anchored off `__file__`, and that is load-bearing** (see hazards) |
+| `targets()` | `:77` | The target list. **Copy this for a call-site migration** — the DB cannot produce one (Step 2) |
 | `rel(path)` | `:83` | Repo-relative path for reporting |
-| `scan(apply_changes, dry, quiet)` | `:136` | The driver. Walks targets, classifies, tallies, optionally writes |
-| `self_test()` | `:190` | Runs the fixtures, returns a list of failures |
+| `scan(...)` | `:136` | The driver: walks targets, classifies, tallies, optionally writes |
+| `self_test()` | `:190` | Runs the fixtures, returns failures |
 | `main()` | `:266` | The CLI contract below |
 
 ### The CLI contract — copy verbatim
 
 ```
---survey      census only, no writes
---fix         dry run, prints the diff
---fix --apply writes
---check       gate: exit 1 if any migratable site remains
---self-test   exit 1 if any assertion fails
+--survey        census only, no writes          (must be branched explicitly in main())
+--survey --json a durable census artefact
+--fix           dry run, prints a UNIFIED DIFF
+--fix --apply   writes
+--check         gate: exit 1 if any migratable site remains
+--self-test     exit 1 if any assertion fails
 ```
 
-`--check` must exit **1** on remaining work and **0** when clean. That single property is
-what turns a finished migration into a permanent regression guard.
+`--check` must exit **1** on remaining work and **0** when clean. That single property turns
+a finished migration into a permanent regression guard.
 
-### The parts you write — these are the whole job
+⛔ **`--check` must read the UNFILTERED target list.** Any `--only`/`--skip` filter must be
+excluded from the `--check` path, or `--check --skip foo` exits 0 with `foo` unmigrated.
+⛔ **`--check` must assert the ABSENCE of the old shape, not the presence of the new one.**
+⚠ `--survey` is declared but never read in the model (`:268`) — it works only because the
+no-flag default is a census. Branch it explicitly; that is a defect, not the pattern.
+⚠ Neither model prints a diff. **Write `preview()` yourself** —
+`difflib.unified_diff(...)`. Bean is QC-only; the diff is the only artefact he can inspect,
+and a per-file count is not one.
 
-| Part | Model line | What it depends on |
-|---|---|---|
-| Target constants (`OLD`, `NEW`, `PAT`) | `:54-56` | The specific rename or transform |
-| `EXCLUDE` | `:68` | A `set` of `(relpath, identifier)` tuples, **each with a comment giving the reason** |
-| `classify(line, relpath)` | `:87` | Returns a category string per hit. Categories must cover every case: `call`, `definition`, `excluded`, `comment`, `bare-mention`, `unrecognised` |
-| `transform(text, relpath)` | `:111` | The rewrite. Must be a pure function of the text |
-| `SELF_TEST_*` fixtures | `:166-187` | String constants: one per category, plus at least one that must NOT change |
+### The parts you write
 
-**`unrecognised` is mandatory and must be non-fatal.** It is how the tool tells you it met
-something you did not anticipate, instead of silently skipping it.
-
-## Step 3b — The transform is SHAPE-TO-SHAPE, not find-and-replace
-
-**This is the step that decides whether a migration is mechanical or takes a fortnight.**
-
-A reviewer of this document argued that some changes are "not mechanically transformable"
-— that the colour rollout went block-by-block because its 33 cases needed human judgement.
-**That is wrong, and the decision log disproves it.** Bean's correction, and it is the
-governing one:
-
-> The inability to do the mechanical fix is a limitation of the auditing script. It should
-> recognise the SHAPE that needs replacing, keep the parts that must survive — the
-> attribute name, the prefix, the element key — and re-insert them into the new shape.
-
-Look at what the colour rollout's corrections actually were:
-
-| | |
+| Part | Depends on |
 |---|---|
-| D609 | ONE colour control everywhere, states inside it, never optional |
-| D618 | Must NOT mount into native's `group="color"` — own PanelBody instead |
-| D621 | The panel belongs in the STYLES tab |
-| D622 | Placement follows the existing D533/D537 resolver |
-| D632 | Colour split from `ShadowControl` **across 11 blocks** |
+| `OLD`, `NEW`, `PAT` | the specific rename or transform |
+| `EXCLUDE` | a `set` of `(relpath, identifier)` tuples, **each with a written reason** |
+| `classify(line, relpath)` | returns one of **five**: `call`, `definition`, `excluded`, `comment`, `unrecognised` |
+| `transform(text, relpath)` | the rewrite (Step 5). A pure function of the text, **and idempotent** |
+| `preview(old, new, relpath)` | the unified diff — not in the model, write it |
+| **Atomic write** | `path + '.tmp'` then `os.replace()`. **Never `open(path,'w')`** — see hazards |
+| `SELF_TEST_*` fixtures | Step 6 |
 
-**Not one is a per-block judgement call.** Every one is a single decision about the TARGET
-SHAPE that then applies identically to all 33 blocks. They surfaced one at a time only
-because the work was done one block at a time — each block taught the next what the shape
-should have been. Had the shape been settled once, from the census, all 33 were mechanical.
+⚠ **Seven categories, not six, and two do not come from `classify()`:**
+- **`bare-mention`** — the name appears but `PAT` does NOT match. `classify()` is never
+  reached for these; `transform()` assigns it. Trying to return it from `classify()` writes
+  an unreachable branch whose tally is always zero.
+- **`comment-retained`** — a comment naming the OLD symbol *in a file that keeps a
+  legitimate old-form site*. Renaming it would make the comment lie. Needs a per-file pass;
+  per-line classification cannot see it.
 
-### What this means for `transform()`
+**`unrecognised` is mandatory and must be non-fatal** — it is how the tool tells you it met
+something you did not anticipate instead of silently skipping it.
 
-`transform()` is **not** string replacement. It is three things:
+## Step 5 — The transform is SHAPE-TO-SHAPE, not find-and-replace
+
+`transform()` is three things:
 
 1. **RECOGNISE** the old shape structurally — by its parse, its mount, its call signature.
    Not by a string, which cannot tell a call from a comment.
-2. **EXTRACT the holes** — the parts that must survive unchanged: attribute names,
-   prefixes, element keys, selector fragments, any per-instance value.
+2. **EXTRACT the holes** — what must survive unchanged: attribute names, prefixes, element
+   keys, per-instance values.
 3. **EMIT the new shape** with those holes re-inserted.
 
 A migration feels judgement-heavy exactly when step 1 is done by grep. A grep sees text, so
-every variation looks like a new decision. A recogniser sees a shape with holes in it, and
-the variations collapse into one case.
+every variation looks like a new decision. A recogniser sees a shape with holes, and the
+variations collapse into one case.
 
-### The test
+> **The test: if two instances differ only in their hole values, they are ONE case, not two.**
 
-> **If two instances differ only in their hole values, they are ONE case, not two.**
+Count your cases that way before concluding a change needs human judgement.
 
-Count your cases that way before concluding a change needs human judgement. The colour
-rollout had one case and 33 instances. It was treated as 33 cases.
+**This test cuts both ways.** D632's survey found **six different shadow-control shapes**
+across the framework — under this test that is six cases, not one. Applying the test
+honestly is the point; using it to wish variation away is not.
 
-⚠ **Where a genuine judgement call remains, the detector still ships.** Its census becomes
-the dispatch manifest — one batched pass over a classified list, never a discovery walk.
+## Step 6 — Write the fixtures before the transform
 
----
-
-## Step 4 — Write the fixtures before the transform
-
-Four fixtures minimum, all present in the model at `:166-187`:
+Five minimum:
 
 1. **Positive** — a real instance the tool must change.
-2. **Definition** — the thing being migrated *to*, which must be left alone.
+2. **Definition** — the thing being migrated *to*, left alone.
 3. **Edge** — the legitimate exception (`SELF_TEST_UNITLESS` at `:181`).
-4. **Negative control** — a file with no instances, which must come back byte-identical
-   (`SELF_TEST_INERT` at `:187`).
+4. **Negative control** — a file with no instances, byte-identical afterwards
+   (`SELF_TEST_INERT` at `:187`). Without it you cannot tell a detector that found nothing
+   from one that stopped working. **This repo has shipped both.**
+5. **Idempotence** — `transform(transform(x)) == transform(x)`. One line. Catches the class
+   of bug that only appears the day you have to re-run, which is the day something went
+   wrong.
 
-Without the negative control you cannot tell a detector that found nothing from a detector
-that stopped working. This repo has shipped both.
+⚠ Assert every `EXCLUDE` path still exists on disk. A stale exclusion is indistinguishable
+from no exclusion.
 
-## Step 5 — Survey, and read the whole census
+## Step 7 — Survey, and read the whole census
 
 ```bash
 python plugins/sgs-blocks/scripts/<your-script>.py --survey
+python plugins/sgs-blocks/scripts/<your-script>.py --survey --json > reports/migrations/<name>-census.json
 ```
 
-Read every category, not just the total. An `unrecognised` count above zero means your
-classifier is incomplete — fix it before proceeding. A census that cannot distinguish done
-from not-done is not a census.
+Read every category, not just the total. **Commit the JSON census in the landing commit** —
+it is what makes the migration reviewable. A count printed to a terminal you closed is not
+evidence.
 
-## Step 6 — Dry run, then apply
+⚠ **Split your refusals.** `unrecognised` in the model is a mixed bucket: some are "no rule
+matched" (stop, extend the classifier) and some are deliberate, working refusals — odd quote
+parity, `->`/`::` prefixes. Report those as **`refused`, with the rule that fired**, and
+proceed. `adopt.js` already does this — every refusal carries a named reason and every named
+reason has a fixture reproducing it.
 
-```bash
-python plugins/sgs-blocks/scripts/<your-script>.py --fix          # diff only
-python plugins/sgs-blocks/scripts/<your-script>.py --fix --apply  # writes
-```
+## Step 8 — Wire the gate BEFORE you write
 
-## Step 7 — Prove the gate can fail
+⛔ **Register the gate and commit it BEFORE `--apply`.** It will fail red until the
+migration lands, and **that is the point**: a red gate is the only signal that tells the
+*next* session a migration is half-applied. Wired afterwards, an interrupted apply is
+undetectable — and with a non-coder owner who cannot read the diff, that state is permanent.
 
-```bash
-python plugins/sgs-blocks/scripts/<your-script>.py --self-test    # must exit 0
-python plugins/sgs-blocks/scripts/<your-script>.py --check        # must exit 0 now
-```
-
-Then break one instance on purpose and run `--check` again. It must exit 1. A gate you have
-never seen fail is not a gate.
-
-## Step 8 — Wire it, in the same commit
-
-⚠ **The gate chain moved out of `package.json` on 2026-08-24.** It was 61 `&&`-joined
-commands in one 3,353-character string that could not be diffed, blamed per gate, or
-reordered. The roster is now **`plugins/sgs-blocks/scripts/gates.json`** — one record per
-gate — run by `scripts/run-gates.py`, which executes EVERY gate and reports ALL failures
-instead of stopping at the first.
-
-Add your gate as a record:
+Add a record to `plugins/sgs-blocks/scripts/gates.json` — **all seven fields**:
 
 ```json
 {
@@ -283,91 +313,201 @@ Add your gate as a record:
   "cmd": "python scripts/<your-script>.py --check",
   "tier": "fast",
   "added_D": "D<n>",
-  "budget_ms": null
+  "added_commit": "<sha of the landing commit>",
+  "budget_ms": null,
+  "order": 61
 }
 ```
 
-Then add the standalone alias to `package.json` so it is runnable by hand:
+Then the standalone alias in `package.json`, so it is runnable by hand:
 
 ```
 "check:<name>": "python scripts/<your-script>.py --check"
 ```
 
-**Pick the tier by MEASURING, never by guessing.** Run
-`python scripts/run-gates.py --time` and read your gate's real cost:
+(`gates.json` = what runs automatically; the alias = so you can run it yourself.)
 
-- `fast` — the default. Runs on every build via `prebuild`.
-- `full` — only if it is genuinely heavyweight. Runs pre-deploy via
-  `build-deploy.py`'s `step_gate_full()`. As of the split, `full` holds exactly four
-  gates that were **76.1% of the chain's measured time**.
-
-⛔ **`full` is not "weaker" and it is not a parking space.** A gate parked in a tier that
-nothing runs is enforcement laundering. `python scripts/run-gates.py --assert-wired`
-fails closed if the deploy-side call ever disappears — run it if you touch the tiering.
+**Tiers.** `generator` runs in `prebuild` and is not a gate. `fast` runs on every build.
+`full` runs pre-deploy via `build-deploy.py`'s `step_gate_full()`. **Pick by measuring** —
+`python scripts/run-gates.py --time`. Only `python` and `node` are launchable.
 
 ⛔ **A migration is not finished until its `--check` runs automatically.** This repo holds
 **27** scripts that were built, work, and were never wired — including a mandatory go-live
-gate nobody runs. One gate sat unwired for three weeks while three separate documents
-stated it was enforced. **Check `gates.json` AND `package.json` before believing any gate
-runs** — and prefer `npm run gate:list`, which prints the roster with each gate's tier and
-measured cost.
+gate nobody runs. One gate sat unwired for three weeks while three documents said it was
+enforced. **Run `npm run gate:list`** — grepping `package.json` returns a false positive,
+because every gate kept a standalone alias there when the chain moved to `gates.json`.
 
----
-
-# What to copy, and what not to
-
-## Copy from the models
-
-- The skeleton table above, verbatim.
-- The CLI contract, verbatim.
-- The fixture pattern, including the negative control.
-- `EXCLUDE` as a set of tuples with a written reason per entry.
-
-## Do NOT copy from the models
-
-- **Their disk-walking.** Both re-glob `block.json`. Query `block_attributes` instead.
-- **`migrate-tier-object.py`'s 457-line hand-rolled `self_test`** (`:957-1413`, 29% of the
-  file). Use the fixture pattern from `migrate-length-sanitiser.py:190` instead.
-- **`migrate-theme-attr-rename.py` and `migrate-theme-tier-scalars.py`'s duplicated
-  helpers.** Their `find_target_files()` at `:83-89` is byte-identical in both files. If
-  you need those helpers, extract them once.
-
-## Known hazards, each earned
-
-- **Aligned assignment breaks literal find-and-replace.** Several files use
-  `$sgs_css_keyword  = static function` with two spaces. A literal replace skips them
-  silently — which is why one closure count read 45 before it read 52.
-- **`} else {` is brace-neutral.** Depth-counting sails past it to the wrong closing brace.
-  Detect the close structurally, and refuse rather than guess.
-- **Never run `phpcbf`** to fix alignment. It reformats whole files and turns a scoped
-  change into an unreviewable diff. Realign by hand, or leave a blank line.
-- **WordPress silently discards an undeclared attribute** on the editor surface. A
-  transform that writes an attr the block.json does not declare produces no error and no
-  effect.
-
----
-
-## Step 9 — Deploy and LOOK at it. The gate is not the proof.
+## Step 9 — Snapshot, dry run, then apply
 
 ```bash
+git status --porcelain -- <the paths your survey listed>   # must be empty
+git rev-parse HEAD                                          # record it
+python plugins/sgs-blocks/scripts/<your-script>.py --fix    # diff only
+python plugins/sgs-blocks/scripts/<your-script>.py --fix --apply
+git diff --stat
+```
+
+⛔ **`--survey` must report `unrecognised: 0` BEFORE you apply, and nothing enforces it.**
+The model writes every file inside its scan loop (`:158-160`) and only then prints
+`REFUSING to guess` and returns 1 (`:310`). **A non-zero exit from `--apply` does NOT mean
+the tree is untouched.** Confirm the zero with your own eyes first.
+
+⛔ **If `git status` shows work in your paths you did not write, STOP** (hand-back #2). Both
+the apply and its rollback would destroy it.
+
+⛔ **`git checkout -- <paths>` is NOT a safe undo here.** It reverts to HEAD — discarding any
+concurrent uncommitted work, and un-migrating your own change if it is not yet committed.
+Your undo is `git checkout <recorded-sha> -- <your paths>`, scoped. **Never a bare
+`git checkout .`** — it takes four other tracks with it.
+
+⚠ **Read `git diff --stat`.** Every file should show a small, roughly symmetric +/- count,
+and the file count should equal your census. **A file whose deletions equal its whole length
+was truncated** — see hazards.
+
+⚠ **If the survey counts moved between your dry run and your apply, another track moved your
+targets.** Re-survey; do not apply.
+
+## Step 10 — Prove the gate can fail
+
+```bash
+python plugins/sgs-blocks/scripts/<your-script>.py --self-test   # must exit 0
+python plugins/sgs-blocks/scripts/<your-script>.py --check       # must exit 0 now
+```
+
+Then break one instance on purpose and run `--check` again. It must exit 1. **A gate you
+have never seen fail is not a gate.**
+
+⛔ **Restore by re-running `--fix --apply`, not by `git checkout`** (Step 9). **Then run
+`--check` once more and require exit 0.** Do not commit until you have seen that second
+zero — a deliberate break left in the tree is indistinguishable from a missed instance.
+
+⚠ **After rebasing or merging `main`, re-run `--survey` AND `--check`.** A concurrent track
+can add an instance of the shape you just eliminated, and your gate will then fail on their
+commit.
+
+## Step 11 — Deploy and LOOK. The gate is not the proof.
+
+```bash
+git status --porcelain                       # nothing of yours outstanding
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 ```
 
-Then open a real page rendering an affected block and check the changed property's
-computed value.
+Then open a real page rendering an affected block and check the changed property's computed
+value — **at least one instance per `classify()` category**, not one page.
 
 ⛔ **A green `--check` proves no instance was MISSED. It proves nothing about whether the
-transform was RIGHT.** Following Steps 1-8 and closing the task on a green gate is a
-violation of `CLAUDE.md` Rule 5 (VERIFY ON THE REAL HOMEPAGE) produced BY compliance with
-this document. This method does not replace Rule 5 or R-31-13 (Bean's eye is
-co-authoritative). Neither is optional.
+transform was RIGHT.** Closing on a green gate is a violation of `CLAUDE.md` Rule 5 produced
+BY compliance with this document. This method does not replace Rule 5 or R-31-13.
+
+⛔ **If the deploy aborts with `deployed-files-dirty`, do NOT reach for `--allow-dirty`** —
+that flag was D336's trigger, a ~2.5-hour two-client-site outage, and the abort message
+offers it without that context. Commit your paths, or declare `--payload <path>`. **If the
+uncovered list names files you did not write, stop and hand back.**
 
 ---
 
-# The one-line test
+# Known hazards, each earned
 
-Before editing the 4th file, answer this:
+- **Never `open(path,'w')` — write atomically.** All three models truncate on open
+  (`migrate-length-sanitiser.py:159`, `migrate-render-closures.py:242`,
+  `migrate-tier-object.py:825`/`:921`). This is the one place you must improve on them:
+  **a truncated file passes `--check` GREEN**, because the scan skips files not containing
+  the old symbol and an empty file does not contain it.
+- **Scope the glob off `__file__`, never the repo root.** Measured today: a repo-root
+  `**/render.php` sweep hits **194 files inside `.claude/worktrees/`** and **28 gate
+  fixtures**, against **83** real ones. The worktree copies are another live track's — and
+  a codemod that eats its own fixtures leaves a green suite that proves nothing. Always
+  exclude `.claude/worktrees/`, `node_modules/`, `build/`, `vendor/`, `scripts/**/fixtures/`.
+- **Read AND write with `newline=''`, never `errors='ignore'`.** Without `newline=''` on the
+  read, Python translates CRLF to `\n`; writing back rewrites every line ending and your
+  3-line change becomes an unreviewable whole-file diff. The tell: changed-line count equals
+  file length. `migrate-length-sanitiser.py:141/159` is correct;
+  `migrate-render-closures.py:110/235/242` is the bug.
+- **Aligned assignment breaks literal find-and-replace.** `$sgs_css_keyword  = static
+  function` with two spaces. A literal replace skips it silently — which is why one closure
+  count read 45 before it read 52.
+- **`} else {` is brace-neutral.** Depth-counting sails past it to the wrong closing brace.
+  Detect the close structurally, and refuse rather than guess.
+- **A per-line quote check cannot see a multi-line string.** A PHP heredoc/nowdoc body or a
+  JS template literal spanning lines classifies as `call` and gets silently rewritten. Strip
+  those bodies before classifying, or refuse any file containing one.
+- **Never run `phpcbf`** to fix alignment. It reformats whole files and turns a scoped change
+  into an unreviewable diff. Realign by hand, or leave a blank line.
+- **WordPress silently discards an undeclared attribute** on the editor surface. A transform
+  writing an attr the block.json does not declare produces no error and no effect.
+- **A census that OVER-promises costs a whole task; one that under-counts costs a
+  re-measure.** Bias every classifier conservative. (`daf9e6935` — a census promised 75%
+  and the fixer could deliver 14%.)
 
-> **Can something other than me list every instance and its reason?**
+---
 
-If no, stop and build the detector. That is the entire method.
+# Why this exists
+
+*(Read this if you are deciding whether to trust the method. Skip it if you are mid-task.)*
+
+## Why this document distrusts its own numbers
+
+**Four figures in this document have been wrong, all the same shape: asserted from memory or
+read off a date, never derived.**
+
+| # | The claim | What it actually was |
+|---|---|---|
+| 1 | six D-numbers dated 2026-08-11 => "the migration took one day" | a D-number records when work LANDS |
+| 2 | "1 day each" for three migrations | a COMMIT DATE — the inference this doc bans |
+| 3 | "13 days, 25 corrections" from seven D-numbers | those D-numbers span **three** days |
+| 4 | "71 commits, 23 fixes" — offered as the *corrected*, re-derived figure | re-run today: **67** and **21**. The fix was itself unverified |
+
+**The rule they produce: never a commit date, never a D-number, never a body-matching grep.
+Derive by enumeration, and re-run the command rather than trusting the sentence.**
+
+**Figure 4 is the instructive one.** It was written *as* the correction to figure 3, with
+the instruction "re-run it; do not trust this sentence" attached. Re-running it disproves it.
+The grep matches commit BODIES — only **8 of 67** name the panel in their subject — so it
+sweeps in the shadow extension, the gradient rollout, the 255-row codemod, and commits about
+this document. **"Correction" is also undefined**: subjects starting `fix` give 21,
+containing `fix` give 22. A metric whose value depends on an undefined term cannot survive a
+hostile read.
+
+## What the evidence actually supports
+
+| Work | What the change WAS | Target shape existed | Corrections |
+|---|---|---|---|
+| `migrate-length-sanitiser.py` | identifier rename, 204 sites, zero behaviour change | **19 days** (`5db768726`, 2026-08-02) | 1 landing, 0 |
+| `migrate-render-closures.py` | closure -> shared helper, bodies byte-identical | **40 days** (`cef1fca99`, 2026-07-12) | 1 landing + 1 prerequisite |
+| Colour panel rollout | a NEW component, its mount, its tab and its placement rule — **all undecided at start** | did not exist | many |
+
+⛔ **Both fast migrations renamed onto a target that had been in production for weeks. Zero
+corrections is what that predicts. The census is not what made them cheap — a settled target
+shape is.** That is why Step 3 exists.
+
+## The claim that does NOT survive, and the better one that does
+
+❌ *"A census-driven pass lands once."* Falsified by this repo's own most recent census:
+`5770ecb40` -> `74060ffd8` (*"derived_selector is not a selector — re-ground the census"*) ->
+`daf9e6935` (*"the census promised 75% and the fixer could deliver 14%"*). One census, three
+commits, an error of 5x.
+
+✅ **A census relocates the corrections from the TREE into the DETECTOR.** Those three
+commits corrected a *script*. Each cost one commit and then fixed 255 rows. The same
+corrections made block-by-block cost one commit **per block**. That is the whole argument,
+and the evidence supports it.
+
+## The slow track was never a counter-example
+
+**The 33-block colour wave was census-driven on DAY 2.** `f6f3c0331` (2026-08-15) built
+its worklist *"from the DB's `role='color'` census this session"*, landed 33 blocks in one
+commit, and caught two errors in the hand-derived list it replaced. That is Step 2 of this
+document, executed correctly, on day 2.
+
+**What cost the fortnight was that the target shape was still being decided while the
+rollout ran.** D609 was amended the same day after Bean rejected a build on sight; D618 was
+caught by Bean looking at a live editor page; D621 overturned D618.
+
+Every one of those is a **global shape decision, not a per-block judgement** — Bean's
+correction on that point was right and the decision log confirms it. But *not-per-block* does
+not mean *census-derivable*. **A census answers how many, where, and which are exempt. It
+cannot answer what shape is right.** Four of the five were settled only by Bean looking at
+something rendered.
+
+That gap is what Step 3 closes, and it is the difference between this method and the version
+that was reviewed twelve times and still would not have prevented the fortnight.

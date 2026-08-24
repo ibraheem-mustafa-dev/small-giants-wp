@@ -236,7 +236,7 @@ Rule 4 (NO SKIPPING) is satisfied by the classifier's existing skipped-with-reas
 
 ## TASK 5 — Make ONE migration script read the DB (~2 hours)
 
-⚠ **This is also TASK 0's Layer 2 test case.** Run it strictly through Steps 1–9 and log where the method fails you. Do not do it twice.
+⚠ **This is also TASK 0's Layer 2 test case.** Run it strictly through Steps 1-11 and log where the method fails you. Do not do it twice.
 
 Council finding #3 had no task and was silently absent. It is a direct R-31-1 violation
 (DB-first, no re-derivation): **every `migrate-*.py` reads ZERO rows from the 3,166-row

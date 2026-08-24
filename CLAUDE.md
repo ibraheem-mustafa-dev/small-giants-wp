@@ -20,9 +20,7 @@ Full rationale: `.claude/reports/2026-06-06-doc-council-findings.md`.
 ---
 
 ⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
-`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** Measured: three codemod
-migrations did 204 / 100 / 109 sites in ONE DAY each; the block-by-block colour rollout
-took 33 blocks over 13 days and 25 correction commits. Same repo, same week, same rules.
+`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here. Same repo, same week, same rules.
 The only difference was building the census before the edit.
 
 ## What this is

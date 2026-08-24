@@ -352,7 +352,7 @@ scripts runs · 1 duplicate deleted.
    `.claude/THE-MIGRATION-METHOD.md` is `PROVISIONAL`: reviewed six ways, **used zero
    times**. Three layers, in order: **(1)** council it with FRESH personas until every one
    grades A− (max 3 rounds, then record the unresolved objection — do not grind);
-   **(2)** PROVE the A-grade method by running Task 5 strictly through Steps 1–9, where the
+   **(2)** PROVE the A-grade method by running Task 5 strictly through Steps 1-11, where the
    deliverable is the log of where the method FAILED, not the migration; **(3)** council
    that RUN, then set `status:` from the evidence.
    ⚠ Two findings will recur — pre-empt them: nothing ENFORCES the method (two personas

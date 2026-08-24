@@ -25,8 +25,7 @@ binding_rules: R-31-1, R-31-2, R-31-3, R-31-4, R-31-5, R-31-6, R-31-7, R-31-8, R
 # Spec 31 — Universal Container/Grid Content + CSS Transfer Architecture
 
 ⛔ **More than 3 blocks/files/call sites? The first deliverable is the
-DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Block-by-block cost 13 days
-and 25 corrections for 33 blocks; the detector-first path did 204 sites in one day.
+DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
 
 > ## ⛔ SCOPE CONTRACT / DEFINITION OF DONE — read BEFORE scoping ANY work on this spec (STOP-29, D248)
 >

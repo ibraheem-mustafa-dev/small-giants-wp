@@ -9,8 +9,7 @@ supersedes: nothing (new track, opened by Bean's regression report 2026-08-23)
 # Template-by-template remediation
 
 ⛔ **More than 3 blocks/files/call sites? The first deliverable is the
-DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Block-by-block cost 13 days
-and 25 corrections for 33 blocks; the detector-first path did 204 sites in one day.
+DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
 
 ## Why this exists
 
