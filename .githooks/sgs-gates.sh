@@ -369,7 +369,7 @@ fi
 # Runs wp-blocks health + wp-docs hook validate + wp-hook-graph validate.
 # Always exits 0 (--soft) so it NEVER blocks a commit. Output is informational.
 STAGED_PIPELINE=$(git diff --cached --name-only --diff-filter=ACM | grep -E \
-    'plugins/sgs-blocks/scripts/(orchestrator|converter_v2|sgs-clone-orchestrator|wp-pre-merge-gate)|plugins/sgs-blocks/src/blocks/' || true)
+    'plugins/sgs-blocks/scripts/(orchestrator|sgs-clone-orchestrator|wp-pre-merge-gate)|plugins/sgs-blocks/src/blocks/' || true)
 if [ -n "$STAGED_PIPELINE" ]; then
     echo "SGS: Running wp-* pre-merge gate (advisory)..."
     python "$REPO_ROOT/plugins/sgs-blocks/scripts/wp-pre-merge-gate.py" --soft 2>&1 \
@@ -378,12 +378,20 @@ fi
 
 
 # ─── Gate A — converter golden-fixture conformance (D178) ────────────────────
-# Runs whenever staged files touch converter_v2/ to catch "good docs + undelivered
+# Runs whenever staged files touch converter/ to catch "good docs + undelivered
 # code" regressions. Non-zero exit blocks the commit with a clear message.
 # Re-baseline: REGEN=1 git commit ... OR run tests with --regen-golden and
 # commit the new goldens with a cited reason.
+#
+# TRIGGER REPOINTED 2026-08-24: this watched
+# `plugins/sgs-blocks/scripts/orchestrator/converter_v2/`, a directory DELETED at
+# D276 (2026-07-05, c8690345). The gate therefore could not fire for seven weeks
+# while its harness stayed alive and its goldens went stale. It now watches the
+# live modular engine at `plugins/sgs-blocks/scripts/converter/`. The dead
+# `converter_v2` alternative was dropped from the 5.3.5 regex above at the same
+# time; `orchestrator` there is still live and was left alone.
 STAGED_CONVERTER=$(git diff --cached --name-only --diff-filter=ACM | grep -E \
-    'plugins/sgs-blocks/scripts/orchestrator/converter_v2/' || true)
+    'plugins/sgs-blocks/scripts/converter/' || true)
 if [ -n "$STAGED_CONVERTER" ]; then
     echo "SGS Gate A: running converter golden-fixture conformance harness..."
     # Portability fix (D564): this line hardcoded /c/Python313/python.exe. On any
