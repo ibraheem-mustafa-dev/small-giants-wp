@@ -1440,6 +1440,46 @@ def _run_css_property_classifier_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (css-property classifier seed): WARN {exc}")
 
 
+def _run_component_adoption_seed(conn) -> None:
+    """Run seed-component-adoption.py as a Stage 1 tail step (2026-08-24, D763).
+
+    Rebuilds `components` as the unification ADOPTION LEDGER — every shared
+    editor component, util, PHP render helper, render_block injector and the
+    shared wrapper, each with the COUNT of blocks that actually reach it.
+
+    Wired here rather than left as a manual command deliberately. The table it
+    replaces had ZERO in-repo readers and ZERO in-repo writers: its 13 rows came
+    from an out-of-repo populate-db.py, which is exactly why every description
+    was a placeholder. A registry that needs someone to remember to run it is the
+    problem it exists to solve.
+
+    Idempotent (full replace). Subprocess, like the Stage 6/7/10 calls, so it
+    cannot import-side-effect this module. WARN-not-fail: a scanner problem must
+    not take down an entire /sgs-update run, and no downstream consumer would be
+    corrupted by a stale adoption row.
+    """
+    script = Path(__file__).resolve().parent / "seed-component-adoption.py"
+    if not script.exists():
+        print("Stage 1 tail (component adoption): WARN script missing — ledger NOT refreshed")
+        return
+    try:
+        result = subprocess.run(
+            [sys.executable, str(script), "--apply"],
+            capture_output=True, text=True, timeout=300,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").strip().splitlines() if ln.strip()]
+            print(f"Stage 1 tail (component adoption): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (component adoption): WARN exit={result.returncode}; "
+                f"{(result.stderr or '').strip()[:300]}"
+            )
+    except Exception as exc:
+        print(f"Stage 1 tail (component adoption): WARN {exc}")
+
+
 def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
     """Run seed-motion-fx-registry.py as a Stage 1 tail step (D432, 2026-08-01).
 
@@ -2856,6 +2896,12 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     above so the fx:* namespace is already correct before this step's
         #     own tables (fx_effects/animation_tokens) are reconciled. ---
         _run_motion_fx_registry_seed(conn)
+
+        # --- Stage 1 tail: rebuild the `components` unification adoption ledger
+        #     (D763, 2026-08-24). Runs last because it shells out to the Node
+        #     scanner, which reads block.json/edit.js/render.php off DISK rather
+        #     than through this connection — nothing above it needs its output. ---
+        _run_component_adoption_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
