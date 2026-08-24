@@ -262,56 +262,91 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN TRACK — 2026-08-24 (U2 CLOSED · two generated catalogues built)
+## ▶ COLOUR-GOLDEN TRACK — 2026-08-24 (Gate A ALIVE · container_kind refreshed · 6 tables traced)
 
-**Front:** `.claude/prompts/2026-08-24-db-and-script-code-only-investigation.md` — read that,
-not this section. Plan: `.claude/plans/2026-08-23-colour-capability-grant-PLAN.md`.
+**Plan:** `.claude/plans/2026-08-23-colour-capability-grant-PLAN.md`. Decisions **D761 + D762**.
+Commits `2d5cb4e3` · `6eb2814b` · `fccb6ae4` · `e101c279` · `9eb408c1`.
 
-**U2 CLOSED.** `no-css_property` **27 → 4**; survey total held at 264 throughout. The 4 left
-are `sgs/option-picker`'s, forwarded from product-card via `render_block()` — mapping them
-here would make a second writer for one painted node. Breakdown in the plan.
+✅ **GATE A IS ALIVE AND GREEN.** Trigger repointed off the directory deleted at D276 and
+**PROVEN FIRING** (staged a `converter/` change, watched it run and print `COMMIT BLOCKED`).
+The 37 stale goldens are `xfail(strict=True)` via `tests/fixtures/conformance/quarantine.json`;
+**no golden content was changed — nothing is blessed.** Now **13 passed, 37 xfailed**.
 
-**U1 triaged without hand-reading.** `census-colour-paint-route.py` already existed and the
-plan never cited it. Joined to `survey.js --json` it splits the 101 refused rows
-**46 direct / 27 wrapper / 28 neither** — 73 have a NAMED structural reason the detector
-missed them; at most 28 need genuine-absence work, against a plan that budgeted 79 by hand.
-Candidate list, not verdict list (per-BLOCK signal joined to per-ROW refusals).
+⛔ **THE RE-SEED IS UNAVAILABLE BY DESIGN — do not re-attempt it.** The seeder demands a LANDED
+proof; D554-C rules the converter stays flat with its output gated, so a clone touching an
+object-migrated property hard-halts before deploy. **Measured: the Mama's homepage clone produced
+97 flat-tier violations and did not deploy.** Bean rejected a shim at D554-C. **Un-quarantining is
+a Spec 39 deliverable**, not something this track can force.
 
-**⛔ GATE A IS DISCONNECTED, NOT VESTIGIAL — do not delete it.** Trigger watches
-`orchestrator/converter_v2/`, deleted 2026-07-05; the harness is alive and fails 37/39.
-ROOT-CAUSED: **stale goldens, not a regression.** Goldens seeded 2026-07-25; the
-section-root capability gate (FR-31-16) changed the emit contract 2026-08-04 while the gate
-was blind. `recognise()` returns `sgs/quote` correctly; `recognise_section()` demotes it
-deliberately. **Bean ruled D1 = A: repoint AND re-seed, gated on a LANDED proof.**
+⚠ **"37/39" HAS A WRONG DENOMINATOR** — it is 37 fail / 13 pass of **50** tests (39 goldens +
+11 others). Only `mamas-munches-homepage__header` and `__footer` pass. Correct it wherever seen.
 
-**`container_kind` — Bean ruled D2 = A+B:** fix the one real anomaly (`sgs/modal` is
-`section` but calls no wrapper) AND wire it into the automatic refresh (it writes only under
-`--apply`, which `/sgs-update` never passes). ⚠ **An earlier "14 of 58 disagree" figure was
-WRONG** — it tested *content-kind must not call the wrapper*; D294 says content-kind **MAY**
-render block-private. A permission read as an obligation. Genuine anomalies: 1.
+✅ **`container_kind` REFRESHED (D762).** Root cause: the writer only ever SETS, never clears — a
+one-way ratchet, so **NULL means "never written", not "not container-bearing"**. 12 blocks were
+wrong in BOTH directions (7 missing, 5 stale-and-unclearable). Now 38 rows, section 8 / layout 17 /
+content 13, matching the roster exactly. **Still open: the never-clears writer — the drift recurs
+the moment any block stops qualifying.**
 
-### Two GENERATED catalogues now exist — read before building anything
+⛔ **TWO CLAIMS IN THE OLD PROMPT WERE WRONG.** (a) The "`sgs/modal` anomaly" is a NON-ISSUE —
+modal sits in both roster and DB consistently; the stale ones were brand-strip / mega-panel /
+nav-drawer, stale by ABSENCE. `containerMirror:false` is a real flag read at `:742` and **four**
+blocks carry it. (b) `wraps_block` is a **hardcoded literal in the SQL**, false for 14 of 38 rows;
+its only reader asks "which value is most common?" about a constant.
 
-`.claude/dev-setup.md` carries both, each with a `--check` proven able to fail:
-`generate-tooling-catalogue.py` (524 scripts, 5 directories, BOTH gate chains) and
-`generate-db-catalogue.py` (35 tables, vocabularies, NULL rates). Built because "I could not
-find a tool" repeatedly meant "I searched one of the five script directories". This is the
-FIFTH catalogue attempt — the four hand-maintained predecessors rotted, and the 797-line
-stale `TOOLING-REFERENCE.md` at the repo root was deleted this session.
+⚠ **Regression evidence for D762 is WEAK and labelled as such.** A before/after emit hash across
+all 39 fixtures showed zero change — but a negative control (forcing `sgs/hero` section→content)
+ALSO showed zero, so the instrument is **insensitive to this input**, not proof of no impact.
+`container_kind`'s two readers need a NULL-ness flip or competing candidate slugs; the fixture
+corpus exercises neither.
 
-**The most useful check** cross-checks each script header against both gate chains:
-**6 scripts claim they are not wired while they are.**
+✅ **SIX DB TABLES TRACED** (`fx_effects`, `array_item_schema`, `design_tokens`, `block_selectors`,
+`animation_tokens`, `schema_metadata`) — folded into `generate-db-catalogue.py`'s `COLUMN_MEANING`,
+never the markdown. `--check` proven able to fail (exit 1 stale → 0 fresh).
 
-**The DB finding that rescopes the colour work:** a NULL `css_property` means two different
-things by role — `text-content`/`content`/`boolean-visibility` are 100% NULL BY DESIGN (they
-do not paint), `color` is 25% and `colour-gradient` 46%. The colour-family gap is exactly
-**209 attributes**, not a slice of 2,030 NULLs.
+⭐ **TWO REAL BUGS FOUND, ONE FIXED:**
+- **`design_tokens` shadow typing — FIXED** (`e101c279` + DB correction). Two writers disagreed;
+  `enrich-db.py` wrote `token_type='size'` on the strength of a comment claiming the CHECK
+  constraint had no `shadow` member — it always had. All 7 `shadow-%` rows now `shadow`;
+  `test_outer_box_background_shadow.py` 6 failed → **24 passed**. `shadow-sm/md/lg` are dead slugs
+  absent from theme.json (**deletion is Bean's call, not done**); `shadow-glow` is live, was mistyped.
+- **`wp_version_indexed` is stale BY CONSTRUCTION — NOT FIXED.** `--wp-version` defaults to
+  `WP_VERSION_DEFAULT = "7.0"`, a literal at `sgs-update-v2.py:97` never bumped after the canary
+  moved to 7.1. **Every full run re-asserts the wrong value.** `stage_8_drift_gate` would catch it,
+  does run, and only `print()`s — its own TODO to wire it into a deploy hook is unactioned and
+  **nothing outside `sgs-update-v2.py` calls it**.
 
-**Traps recorded so nobody re-walks them:** `derived_selector` is a FORMULA
-(`.sgs-{slug}__{slot}`), never an observed selector — a survey measured 58% autofixable off
-it and was wrong. `blocks.status` is a string literal inside the SQL. `css_tier` was silently
-nondeterministic until 2026-08-22 (set iteration + hash salting) and flipped three blocks
-across three sessions, each reverted by hand without the cause being found.
+**FOSSILS NAMED** (written, read by nothing operational; each confirmed by negative grep):
+`fx_effects.reduced_motion`/`editor_story`/`tier`/`created_at` · `design_tokens.css_var`/`description`
+· `animation_tokens` (the live `animation.js` hardcodes its own 17-entry vocabulary) ·
+`schema_metadata.last_full_refresh_ts`. **`block_selectors` is a PASSIVE MIRROR** — WordPress reads
+block.json directly and never consults it; its one reader is a docs generator.
+
+⛔ **`array_item_schema.role` is a SEPARATE 3-value vocabulary** (icon-slug/text-content/url-href).
+**Never join it to `block_attributes.role`** (34 values) despite the shared name.
+
+✅ **Rescued:** `scratch/cloning-pipeline-flow-pre-split-backup.md` was **40 days old against a
+30-day retention** — already overdue, 141 KB, no counterpart. Copied to `reports/` (`fccb6ae4`,
+md5 verified). It holds the ONLY per-stage FILES(R)/FILES(W) data.
+
+### ▶ STILL OPEN on this track
+
+1. **Task 3b — rebuild `components` as an adoption ledger.** NOT STARTED. Table holds 13 rows vs
+   ~77 real surfaces (31 editor components, 7 utils, **22** helpers, **18** injectors, 1 wrapper).
+   ⚠ **The prompt's adoption figures do NOT reproduce** — direct grep gave DesignTokenPicker 40
+   (prompt said 26), fillRow 38 (22), textRow 9 (7); only **borderRow 0** matched. Treat every
+   number as unverified until the one-hop resolver produces it. Bean ruled: **extract
+   `getSharedOwnerScan` from `rules/31-golden-colour-control.js:357` into `core/components.js`**.
+2. **Task 4 — script inputs/outputs.** NOT STARTED. Source doc now safe at
+   `reports/2026-08-24-cloning-pipeline-flow-pre-split-PROMOTED.md`. Six script headers lie about
+   their own wiring (e.g. `inspector-scan/run.js:8` says "NOT wired into prebuild yet"; it is in
+   both gate chains).
+3. **Task 5 — three missing READMEs.** NOT STARTED. ⚠ **Sizes are BIGGER than the prompt says:**
+   `inspector-scan/` **333** files (not 192), `orchestrator/` **59** (not 45), `cheat-gate/` **29**
+   (not 14). Write inline, never via a subagent.
+4. **The never-clears `container_kind` writer** (D762) and the **`wp_version_indexed` default**.
+5. ⚠ **Same fossil class still live:** the **F5 baseline carries 7 keys pointing at
+   `orchestrator/converter_v2/convert.py`** — the same deleted directory that killed Gate A.
+
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
