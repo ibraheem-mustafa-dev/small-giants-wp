@@ -416,7 +416,28 @@ to `null`). Full detail: **D755**.
 the card no post in the editor, and `ServerSideRender` cannot forward block context in any
 case. The arrangement question is Task 5, below.
 
-## ⛔ Task 5 — BLOCKED on a card-grid capability (D756, Bean's call 2026-08-24)
+## ✅ Task 5 — DONE 2026-08-24 (D757). The capability it waited on is DROPPED (D756).
+
+**All four product listings now render `sgs/product-card`.** The census was wider than this
+plan recorded — 3 of 4 were generic, and two of those are WooCommerce's OWN plugin templates
+(`taxonomy-product_attribute`, `product-search-results`), which is why a grep of our repo
+found only the PDP rail. Fixed by putting the card inside the existing
+`woocommerce/product-template` on each; WooCommerce keeps query, filters, sorting, pagination
+and relatedness. The two plugin templates got theme overrides.
+
+**The `sgs/card-grid` query-inherit capability is DROPPED, not parked** — Bean's call, D756.
+Nobody in the ecosystem replaces the WooCommerce loop, the WooCommerce-free path already
+exists (`cpt-collection`), and inherit mode would not have fixed the editor preview either.
+Do not re-propose it without meeting D756's measurement first.
+
+⚠ Still open, named not dropped: at 375px the shop archive is 1-up @327px but the related
+rail is 2-up @155px, under the readable-card floor — a design call for Bean.
+`taxonomy-product_attribute` is NOT live-verified (attribute archives disabled site-wide).
+The single-child-shrunk container shape was not swept repo-wide.
+
+### Original blocking analysis, kept because the measurement is still the reason
+
+
 
 **Measured with a control, same URL params:**
 
@@ -457,7 +478,14 @@ Archive and Index.
 **This is a design decision for Bean before it is an implementation task.** Bring him
 options, do not pick unilaterally.
 
-## Task 5 — Wire the templates to the bespoke product collection
+## ~~Task 5 — Wire the templates to the bespoke product collection~~ ⛔ SUPERSEDED
+
+> **STALE — do NOT act on the section below.** It predates D756 and still instructs
+> converting EVERY listing, including the shop archive, to `sgs/card-grid`. That was
+> measured and would silently break WooCommerce filtering. The live version of this task is
+> **"⛔ Task 5 — BLOCKED on a card-grid capability"** further up this file. Kept only so the
+> original reasoning is legible; a QC rater flagged on 2026-08-24 that a session reading
+> top-to-bottom could act on it by mistake.
 
 **The target is `sgs/card-grid` with `source: "wc-product"`**, which renders each
 result as an `sgs/product-card`. Not `woocommerce/product-collection`.
