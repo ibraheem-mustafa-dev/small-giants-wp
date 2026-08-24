@@ -71,9 +71,16 @@
 }
 
 /* The block's own children must sit above the canvas. `> *` rather than a
-   descendant selector, so nested structures are not each given their own
-   layer. */
-[data-sgs-fx="wave-gradient"] > * {
+   descendant selector, so nested structures are not each given their own layer.
+   ⛔ THE CANVAS AND THE TOGGLE MUST BE EXCLUDED. `> *` matches them too, and at
+   equal specificity (0,1,0 both ways) the later rule wins — so this rule was
+   overriding the canvas's own `position: absolute` and dropping it into normal
+   flow. Measured live before this exclusion existed: the canvas rendered at
+   x=24 y=466 instead of filling the block, AND the section grew to 5266px,
+   because an in-flow `height: 100%` child feeds its own height back into the
+   parent that sizes it. One selector, three symptoms. */
+[data-sgs-fx="wave-gradient"]
+	> *:not( .sgs-wave-gradient__canvas ):not( .sgs-wave-gradient__toggle ) {
 	position: relative;
 	z-index: 1;
 }
