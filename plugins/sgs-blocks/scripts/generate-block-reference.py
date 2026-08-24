@@ -58,7 +58,10 @@ def truncate(value, length: int = 40) -> str:
 def fetch_blocks(conn):
     cur = conn.cursor()
     cur.execute(
-        "SELECT slug, title, category, description, has_render_php, grade, grade_score "
+        # grade / grade_score DROPPED 2026-08-24 — 100% NULL with no writer
+        # anywhere, so the `if grade:` branch below could never fire. See
+        # migrations/2026-08-24-drop-fossil-columns.py.
+        "SELECT slug, title, category, description, has_render_php "
         "FROM blocks ORDER BY category, slug"
     )
     return cur.fetchall()
@@ -95,7 +98,7 @@ def fetch_selectors(conn, slug):
 
 
 def render_block(conn, block_row):
-    slug, title, category, description, has_render_php, grade, grade_score = block_row
+    slug, title, category, description, has_render_php = block_row
     out = []
     title_str = title if title else slug
     out.append("### `" + slug + "`")
@@ -104,8 +107,6 @@ def render_block(conn, block_row):
 
     block_type = "Dynamic" if has_render_php else "Static"
     type_line = "**Type:** " + block_type
-    if grade:
-        type_line += " — **Grade:** " + str(grade)
     out.append(type_line)
     out.append("")
 

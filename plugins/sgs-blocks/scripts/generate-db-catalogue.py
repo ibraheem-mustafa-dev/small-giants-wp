@@ -60,6 +60,10 @@ VOCAB_COLUMNS = {
     "inspector_control_type", "emit_shape", "scope", "presence", "kind_override",
 }
 
+# RETIRED 2026-08-24 (migrations/2026-08-24-drop-fossil-columns.py): the entries for
+# block_attributes.signature_confidence, blocks.grade and blocks.grade_score were
+# removed with the columns. equivalent_implementations is NOT retired — it has a
+# live writer at uimax-tools/enrich-db.py:306; dormant is not dead.
 COLUMN_MEANING = {
     ("block_attributes", "role"): "What KIND of thing the attribute is — the single best attribute classifier here. A gate (db-consistency/check_orphan_roles.py) fails the build if a value has no `roles` row, so it cannot rot quietly.",
     ("block_attributes", "css_property"): "The CSS longhand(s) this attribute writes. WARNING: a NULL means TWO different things — for a painting role it is a real gap; for `text-content`/`content`/`boolean-visibility` it is correct by design (100% NULL, they do not paint). Condition on `role` before reading a NULL as a defect.",
@@ -70,15 +74,12 @@ COLUMN_MEANING = {
     ("block_attributes", "box_family"): "Merged box-object family. Narrow but authoritative — the DB-first replacement for name-regex box detection. No box_family means provably not a box attribute.",
     ("block_attributes", "inspector_control_type"): "The editor control the client actually sees. Cross-tab against `attr_type` to find controls whose shape cannot hold their setting.",
     ("block_attributes", "emit_shape"): "How the converter emits it. Fails closed at converter/walk.py:581 when unseeded on a content-role attribute, so its NULLs are tracked gaps rather than silent ones.",
-    ("block_attributes", "signature_confidence"): "FOSSIL — 100% NULL, no writer, no reader. Its only repo occurrence is the DDL line in dbschema/schema.sql.",
-    ("block_attributes", "equivalent_implementations"): "FOSSIL — holds stale synthetic Rosetta rows; no writer and no reader in current code.",
+        ("block_attributes", "equivalent_implementations"): "FOSSIL — holds stale synthetic Rosetta rows; no writer and no reader in current code.",
     ("block_attributes", "derived_selector"): "A NAMED TRAP. Reads like a CSS emit target; is a synthetic per-attribute identifier. colour-codemod/survey.js:21-27 measured 58% autofixable off it and the figure was wrong — ZERO of its values exist as classes in the tree. Never classify on it.",
     ("roles", "classification"): "Collapses the role vocabulary into a content-vs-styling fork — the cheapest reliable predicate for 'does this carry text the client edits, or does it paint'.",
     ("blocks", "status"): "Constant — every row is `built`. Filtered on as a gate predicate, so it filters nothing today.",
     ("blocks", "is_stale"): "Constant 0 — no row has ever gone stale. Dormant, not load-bearing.",
-    ("blocks", "grade"): "FOSSIL — 100% NULL but READ by generate-block-reference.py, which therefore prints nothing forever.",
-    ("blocks", "grade_score"): "FOSSIL — 100% NULL, same reader as `grade`.",
-    ("blocks", "variant_attr"): "Names the attribute that selects the block's variant (FR-31-20). Pairs with the variant_slots table.",
+            ("blocks", "variant_attr"): "Names the attribute that selects the block's variant (FR-31-20). Pairs with the variant_slots table.",
     ("blocks", "tier"): "Recognition tier — how the walker identifies this thing in a draft.",
     ("block_capabilities", "kind"): "THE LOAD-BEARING SPLIT. `functional` = real converter behaviour; `discovery` = search keywords from the block title. Without it the table looks like hundreds of behavioural facts when only a few dozen are.",
     ("block_composition", "container_kind"): "The D294 pattern selector (block-private vs SGS_Container_Wrapper). UNRELIABLE ALONE — disagrees with composition_role inside the DB, disagrees with render.php in 14 of 58 measured blocks, and sgs/container itself is NULL. Confirm against the code.",

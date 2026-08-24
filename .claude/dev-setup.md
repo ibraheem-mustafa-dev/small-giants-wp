@@ -1360,7 +1360,7 @@ meaning shows a blank cell rather than an invented sentence.
 |---|---|---|
 | `animation_tokens` | 8 | — |
 | `array_item_schema` | 62 | — |
-| `attribute_gap_candidates` | 3588 | — |
+| `attribute_gap_candidates` | 3587 | — |
 | `block_attributes` | 3166 | yes |
 | `block_capabilities` | 486 | yes |
 | `block_changes` | 2735 | — |
@@ -1403,8 +1403,6 @@ meaning shows a blank cell rather than an invented sentence.
 | `category` | TEXT | 0% | `theme` 51, `sgs-content` 45, `design` 25, `sgs-forms` 17, `text` 15, `widgets` 14, `sgs-interactive` 13, `media` 10, `sgs-layout` 8, `common` 5, `reusable` 1, `embed` 1 |
 | `type` | TEXT | 0% | `dynamic` 144, `static` 61 |
 | `status` | TEXT | 0% | Constant — every row is `built`. Filtered on as a gate predicate, so it filters nothing today. |
-| `grade` | TEXT | 100% | FOSSIL — 100% NULL but READ by generate-block-reference.py, which therefore prints nothing forever. |
-| `grade_score` | INTEGER | 100% | FOSSIL — 100% NULL, same reader as `grade`. |
 | `description` | TEXT | 0% |  |
 | `has_view_script` | INTEGER | 0% |  |
 | `has_render_php` | INTEGER | 0% |  |
@@ -1434,7 +1432,6 @@ meaning shows a blank cell rather than an invented sentence.
 | `derived_selector` | TEXT | 65% | A NAMED TRAP. Reads like a CSS emit target; is a synthetic per-attribute identifier. colour-codemod/survey.js:21-27 measured 58% autofixable off it and the figure was wrong — ZERO of its values exist as classes in the tree. Never classify on it. |
 | `output_signature` | TEXT | 51% |  |
 | `equivalent_implementations` | TEXT | 32% | FOSSIL — holds stale synthetic Rosetta rows; no writer and no reader in current code. |
-| `signature_confidence` | REAL | 100% | FOSSIL — 100% NULL, no writer, no reader. Its only repo occurrence is the DDL line in dbschema/schema.sql. |
 | `inspector_control_type` | TEXT | 69% | `SelectControl` 236, `DesignTokenPicker` 177, `ToggleControl` 162, `TextControl` 158, `RangeControl` 83, `UnitControl` 56, `ShadowControl` 22, `ResponsiveBoxControl` 18, `ToggleGroupControl` 12, `MediaUpload` 12, `NumberControl` 7, `TextareaControl` 6, `IconPicker` 6, `SgsLinkControl` 4, +9 more — The editor control the client actually sees. Cross-tab against `attr_type` to find controls whose shape cannot hold their setting. |
 | `source` | TEXT | 0% | `sgs` 2659, `native_wp` 507 |
 | `emit_shape` | TEXT | 91% | `nested` 232, `child` 56 — How the converter emits it. Fails closed at converter/walk.py:581 when unseeded on a content-role attribute, so its NULLs are tracked gaps rather than silent ones. |

@@ -1,7 +1,7 @@
 {
   "generated_at": "2026-08-02",
   "source_dir": "plugins/sgs-blocks/scripts/migrations",
-  "file_count_found": 2,
+  "file_count_found": 3,
   "counts": {
     "DB-MIGRATION": 29,
     "NOT-A-DB-MIGRATION": 1,
@@ -186,6 +186,12 @@
       "filename": "2026-08-01-rating-speed-suffix-role.py",
       "classification": "DB-MIGRATION",
       "evidence": "sqlite3.connect(db_path) at line 139, cur.execute() at lines 145-157 for UPDATE and SELECT from property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-08-24-drop-fossil-columns.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then ALTER TABLE ... DROP COLUMN for block_attributes.signature_confidence, blocks.grade, blocks.grade_score. Refuses any column holding a non-NULL value, re-checked at run time.",
       "also_writes_files": false
     }
   ],

@@ -1,5 +1,5 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-08
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-24
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
@@ -50,7 +50,7 @@ CREATE TABLE block_attributes (
         default_value TEXT,
         enum_values TEXT,
         description TEXT,
-        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, signature_confidence REAL, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT,
+        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT,
         FOREIGN KEY (block_slug) REFERENCES blocks(slug),
         UNIQUE(block_slug, attr_name)
     );
@@ -114,8 +114,6 @@ CREATE TABLE blocks (
         category TEXT NOT NULL,
         type TEXT NOT NULL CHECK(type IN ('static', 'dynamic')),
         status TEXT NOT NULL DEFAULT 'built',
-        grade TEXT CHECK(grade IN ('S', 'A', 'B', 'C', 'D', NULL)),
-        grade_score INTEGER,
         description TEXT,
         has_view_script INTEGER DEFAULT 0,
         has_render_php INTEGER DEFAULT 0,
