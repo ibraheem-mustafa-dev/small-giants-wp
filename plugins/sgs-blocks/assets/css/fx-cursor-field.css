@@ -200,6 +200,25 @@
 	   SEAM through the middle of the pool. `repeating-linear-gradient` repeats
 	   the stop list along the gradient line itself, so it is seamless by
 	   construction and needs no `background-size` at all. */
+	/* ⚠ THIRD TILING CORRECTION, 2026-08-24 — Bean caught this one by eye, as a
+	   hard CROSS quartering the pool. `repeating-linear-gradient` repeats the
+	   stop list along its own axis INSIDE one tile; it does not stop the TILE
+	   repeating. With `background-size: auto` a gradient's tile is the
+	   positioning area — the VIEWPORT here, because the layer is
+	   `background-attachment: fixed` — so offsetting it by up to half a
+	   viewport wrapped the tile and put its mismatched edges on screen in both
+	   axes. "Seamless by construction" was wrong for the third time.
+
+	   The size below is not merely "big": it is PROVABLY larger than any
+	   offset can expose. Travel is `cursor * -0.5` and the cursor cannot
+	   exceed the viewport, so the offset is at most half the largest viewport
+	   dimension; a tile of 400vmax is four times that dimension, so the tile
+	   always covers the viewport and its edge can never enter view at any
+	   window size. The colour stops stay in PIXELS, so the hue still cycles
+	   every 720px inside that tile — the variation does not depend on the tile
+	   being small. */
+	--sgs-cursor-field-pattern-size: 400vmax 400vmax;
+
 	--sgs-cursor-field-layer: repeating-linear-gradient(
 		115deg,
 		var(--sgs-cursor-field-hue-a) 0,
