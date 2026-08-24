@@ -305,7 +305,7 @@ Spec 31 derives the entire routing table from the DB (R-31-1). Columns in active
 | `attribute_gap_candidates.(proposed_action)` | the LIVE completeness ledger / prioritised backlog / anti-cheat evidence (2,373 rows; the `add attr: css=…` rows name every dropped property) |
 | `html_tag_to_core_block` | atomic-tag-swap shape fallback only (R-31-2: tag is shape, not recognition) |
 
-Columns with no CSS-lift utility (documented so a reviewer knows they were considered, not missed): `components.*` (editor JS), `block_changes.*` (audit log), `blocks.(grade/source/has_render_php)`. `block_styles.*` (named presets) and `variations.*` (editor preset bundles) are RETIRED and DROPPED (`variations` at D469, `block_styles` at D472; archived reversibly to `scripts/data/retired/*.json.gz`) — each had no reader at all. Do not cite either as a live table.
+Columns with no CSS-lift utility (documented so a reviewer knows they were considered, not missed): `components.*` (editor JS), `blocks.(source/has_render_php)`. ⚠ `block_changes` and `pipeline_corrections` are RETIRED and DROPPED (D759, 2026-08-24) along with the columns `blocks.grade`, `blocks.grade_score` and `block_attributes.signature_confidence` — all had zero writers. Do not cite any of them as live. `block_attributes.equivalent_implementations` was assessed in the same sweep and KEPT: it has a live writer (`uimax-tools/enrich-db.py:306`), so it is dormant, not dead. `block_styles.*` (named presets) and `variations.*` (editor preset bundles) are RETIRED and DROPPED (`variations` at D469, `block_styles` at D472; archived reversibly to `scripts/data/retired/*.json.gz`) — each had no reader at all. Do not cite either as a live table.
 
 ---
 

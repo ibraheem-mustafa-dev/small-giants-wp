@@ -298,7 +298,7 @@ ledger/content_coverage_check.py + its test         (pulled from the gate list a
 fingerprint-builder/audit-attr-vocabulary.py        (v1; v2's docstring supersedes it)
 rename-hover-attrs.py, fix-spec15-refs.py           (self-declared one-shots, 0 refs)
 tools/recogniser-v2/extract.py                      (repo root; "permanently retired")
-block_attributes.signature_confidence               (0 rows, no writer in git history, no reader)
+block_attributes.signature_confidence               ✅ DROPPED D759 2026-08-24 (0 rows, no writer, no reader)
 ```
 
 **WIRE-OR-DELETE (a safety gate that never runs — do not silently drop):**

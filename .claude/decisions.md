@@ -1,5 +1,97 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D758 — the shop grid swap is REVERTED, and here is what NOT to re-debug
+**2026-08-24** · [INCIDENT] · shipped `a197d35e`, regression `44383de1`, revert `be1b58d1`
+
+**Four fixes shipped and verified; one reverted; one unverifiable.** Bean found all five by
+eye on the live site. No gate caught any of them.
+
+| Fix | Baseline | After | State |
+|---|---|---|---|
+| PDP cards uniform width | 305/249/302/302 | **305 ×4** | ✅ verified |
+| Card fills its cell height | 577px cell / 477px card | **gaps 0** | ✅ verified |
+| Rating filter removed (dead — no product has a rating) | present | 0 | ✅ verified |
+| Filter headings → body font | Fraunces serif 16px | Inter | ✅ verified |
+| `solid` option-picker preset contrast floor | border 2.38:1 | deployed | ⚠ **NOT verified** |
+| Shop last-row stretch | 3×313 then 2×482 | **REVERTED** | ❌ |
+
+**Fixes 1 and 2 share one cause worth remembering:** the block's base `.product-card` set
+`max-width` + `margin-inline` but no `width`/`height`. `width/height:100%` lived ONLY in the
+theme's `.sgs-shop-layout` rule, so any card outside the shop got no sizing at all. Moved
+into the block's own base — the card carries its own look.
+
+**⛔ The revert, and the ruled-out list. Do NOT redo this debugging.**
+`repeat(auto-fill, minmax(var(--sgs-shop-card-min), 1fr))` produced exactly the intended
+result — 3 tracks of 313px, `lastRowWider: false`, the 482px stretch gone. **Both headline
+numbers were green.** Every card then rendered at **91px inside its 313px track**.
+
+Ruled out, each measured:
+- **NOT stale CSS.** Served file, the SSH copy on disk, and the browser's parsed CSSOM all
+  contained the fix; the parsed rule read `{width:100%, max-width:100%, min-width:0px}`.
+- **NOT a competing rule.** 56 stylesheets scanned, 0 blocked, 0 selector errors — no other
+  rule matching that `li` sets `width`, `flex` or `flex-basis`.
+- **NOT a selector miss.** `li.matches()` true for all three selector forms.
+- **NOT the grid's default stretch.** `justify-self: stretch` measured 91px.
+
+**The unresolved contradiction, which is where to start next time:** an INLINE `width:100%`
+gave 313px, while the IDENTICAL declaration from the stylesheet gave 91px. That should not
+be possible. Until it is explained, do not re-attempt the grid swap — the flex version
+(`flex: 1 1 var(--sgs-shop-card-min)`) is the known-good state and is restored.
+
+⭐ **Method note, a recurrence not a new lesson.** The green `gridTemplateColumns` and
+`lastRowWider:false` were the metrics I designed the fix around, and both passed while the
+result was broken. Same shape as the D755-session miss: *measuring the thing I changed rather
+than the thing the change was meant to achieve.* The catch came from one unplanned check —
+item width inside the track.
+
+⚠ **`solid` preset is deployed but has NO live surface to verify on.** Product cards on the
+shop and the PDP rail set `showPickers:false`, and the standalone buybox picker uses
+`outlined`, not `solid`. The 12.55:1 measured post-deploy is the pre-existing OUTLINED
+behaviour, not evidence the fix works — I measured the wrong picker for the third time that
+session. Needs a product-card instance with pickers enabled before it can be called done.
+
+**Still open on the shop:** the last-row stretch Bean reported (unfixed, by choice); and at
+375px the shop is 1-up @327px while the PDP rail is 2-up @155px, under the 167–195px
+readable-card floor — a design call for Bean, not a correctness bug.
+
+## D759 — fossil sweep: 3 columns + 2 tables dropped from the knowledge base
+**2026-08-24** · [ROUTINE] · shipped `6c1ea8c2`, `426d10ce`
+
+| Dropped | Rows | Evidence |
+|---|---|---|
+| `block_attributes.signature_confidence` | 0 of 3,166 set | zero references anywhere outside the DDL |
+| `blocks.grade` | 0 of 205 set | no writer exists |
+| `blocks.grade_score` | 0 of 205 set | no writer exists |
+| TABLE `block_changes` | 2,735 | last written 2026-07-15; no SQL reference |
+| TABLE `pipeline_corrections` | 4 | last written 2026-04-13; no SQL reference |
+
+35 → 33 tables. Each proven dead by resolving every match to its OWNER, not by counting
+greps — the distinction that mattered three times this session.
+
+**The reader was fixed BEFORE the drop, in the same commit.**
+`generate-block-reference.py` SELECTed `grade`/`grade_score` then ran `if grade:` — a branch
+that could never fire, executed silently on every run. Dropping first would have thrown
+`OperationalError`.
+
+**⛔ `block_attributes.equivalent_implementations` was NOT dropped, and must not be.** An
+audit reported it a fossil (no writer, no reader). It has a live writer at
+`uimax-tools/enrich-db.py:306` (`UPDATE block_attributes SET equivalent_implementations=?`)
+plus reads at `:298`/`:779`. That script is wired into no chain, so the column is DORMANT,
+not dead — the distinction that decides whether dropping is safe. `patterns` also has its
+own same-named column, so a bare grep conflates two tables.
+
+**Method, because the knowledge base cannot be rebuilt** (`dbschema/migrate.py` header):
+pre-drop backup; the column migration RE-CHECKS emptiness at run time and REFUSES any
+column holding a non-NULL value (a column that gained data since the audit is not the column
+audited); tables went through `retire_table.py` — verified backup → reversible gzip archive →
+round-trip VERIFIED (2,735 and 4 rows replay exactly) → DROP, archives committed to
+`scripts/data/retired/`. Registered as `DB-MIGRATION` in `migration-manifest.json` (31
+entries) so `migrate.py` replays it rather than it becoming another hand-run one-off.
+
+**Verified:** `check_schema_drift.py` flagged exactly the 3 columns then exactly the 2
+tables; `schema.sql` regenerated from live DDL via `--regenerate`; gate PASSES. Full
+`npm run prebuild` exit 0 after each step. DB catalogue regenerated.
+
 ## D757 — three of four product listings were generic; all four now use the bespoke card
 **2026-08-24** · [ROUTINE] · shipped `0c419b85`, `e60424d6`, `d308e5a7`
 
@@ -3732,33 +3824,6 @@ mechanism. All confirmed via computed style / DOM inspection, not screenshot com
 **Not done:** the remaining ~17 blocks of border-colour candidates (framework-wide sweep); typography
 framework-wide initiative (Task 2, separate from this rollout, per D626's sequencing) remains unscoped.
 
-## D644 — Icon/SVG gradient: added `css:stroke` to the element-manifest vocabulary [ROUTINE]
-
-**2026-08-16.** Gradient rollout Task 1b's Builder 4 (icon/SVG) was blocked on a genuine gap: Spec
-35's element-manifest vocabulary had exactly one gradient-capable member, `css:background-image`,
-which background/text/border can all honestly claim (all three paint via `background-image`) but
-icons cannot — SGS icons (Lucide) are stroke-based, and the vocabulary had `css:fill` (closed SVG
-geometry, e.g. a shape divider's path) but no member for stroked line geometry.
-
-**Decision: add `css:stroke` as a new member**, mirroring `css:fill`'s existing shape exactly (same
-`DesignTokenPicker` optimal control, same `divergence_severity: low`) — added to
-`plugins/sgs-blocks/scripts/consistency/setting-registry.json` (the design registry / documentation
-layer, 61→62 css-property rows). The alternative (a bespoke non-manifest opt-out path for icon
-gradients) was rejected — it would make icons a permanent special case rather than a one-member gap
-fill, and the manifest already has the identical precedent in `css:fill`.
-
-**Scoped deliberately: registry only, not `cluster-member-sets.json` yet.** Adding a member to a
-cluster's `members` array (the file `check-element-manifest-conformance.js`'s prebuild gate actually
-reads) creates GAP findings for every element in that cluster lacking a matching attribute — advisory
-only, per this project's own rule that `check-element-manifest-conformance.js` "does NOT gate
-`total_gap`... coverage, not defects" (D643), so this is low-risk, but the exact `suffixes` array
-needs real attribute names that don't exist yet. Wiring `css:stroke` into the "fill" cluster (mirroring
-`css:fill`'s `appliesToLayers: ["OUTER"]` shape) is Builder 4's own task, once it has chosen its real
-attribute names.
-
-**Verification.** `setting-registry.json` re-validated as parseable JSON after the edit;
-`git diff --stat` confirmed a 25-line targeted insertion, not a reformat of the 93-row file.
-
 ## D643 — Gradient rollout Phase 0: 9 pre-D636 leftovers cleared, incl. a cloning pipeline that could not clone a gradient at all [INCIDENT]
 
 **2026-08-16.** Groundwork before the D636 universal gradient rollout. The intent was a short
@@ -4435,127 +4500,6 @@ scalar shape D580 retired. The DB revert was verified clean against the live sha
 minted a **D638** for different decisions — step 6 close-out on `main`, the colour-gap council on
 the branch. One must be renumbered at merge.
 
-## D638 — Wrapper decomposition step 6 (background pilot) CLOSED: build + live verification + multi-rater review [ROUTINE]
-
-**2026-08-16.** Phase D (verification/close-out) of `~/.claude/plans/go-read-the-track-encapsulated-hare.md`,
-run in the isolated worktree `C:\Users\Bean\Projects\swp-wrapper-integrate` (branch
-`integrate/wrapper-step6`) after Phase A (shared mechanism, merged to `main` ahead of this
-session per plan §1.4 sequencing — `f1b467f5`/`2113eeb6`), Phase B (3 parallel per-block
-worktrees, sequentially merged), and Phase C (D637, step 7 gate design) all landed.
-
-**What shipped (verified against source, not summary):** `background` is a real opt-in
-extension via the existing `enabledExtensions` mechanism (D579/PR#25 shape, no new
-mechanism) on all 7 direct-panel blocks — `container`, `cta-section`, `trust-bar`, `hero`,
-`site-header`, `site-footer`, and **`physics-canvas`** (genuinely new capability; it had
-none before). Every block's `render.php` calls
-`SGS_Container_Wrapper::resolve_kind($block, 'section')` instead of a hardcoded `'section'`
-literal — confirmed via grep across all 7 files, zero remaining unconditional literals.
-
-**The real bug found and fixed mid-build (worth recording precisely, per this project's
-own reason `decisions.md` exists):** an earlier version of `resolve_kind()` narrowed a
-block's `$kind` from `'section'` to `'content'` whenever the block's declared
-`enabledExtensions` didn't include `'shapeDividers'`/`'gridItems'` — on the false
-assumption that `$kind` tracks which optional panels a block has. That's wrong: all 7
-direct-panel blocks are structurally `'section'`-kind regardless of which optional panels
-they enable, and `$is_section` in `SGS_Container_Wrapper::render()` also gates min-height
-and content-band padding — capabilities that have nothing to do with shapeDividers/
-gridItems. Narrowing `site-header`/`site-footer` (width+background only) to `'content'`
-would have silently killed their min-height and band padding; for `physics-canvas`
-specifically the consequence is more severe than cosmetic — its `minHeight` IS the throw
-arena's rendered box height that `view.js` reads as the Draggable bounds and Physics2D
-floor/wall geometry, so the same narrowing would have collapsed the interactive arena's
-collision geometry. Found independently by two build agents (Phase B agents 2 and 3, both
-building against the same shared file before either had merged), fixed at the source
-(`resolve_kind()` now returns `$fallback` unconditionally — a safe no-op passthrough, not
-a per-block workaround) rather than worked around per-block. Commit `2113eeb6`.
-
-**Live verification (sandybrown canary, Playwright, both editor and frontend, both
-default/unset and value-set states):**
-- `sgs/container` — Background panel renders in the block's **Settings** tab (not Styles
-  — a real, minor discrepancy against D626's own placement table, noted below, not fixed
-  here as it's a pre-existing placement question outside step 6's scope of gating
-  visibility). Set a background image via the real media library picker (not a stub);
-  frontend confirms it paints via a `::before` pseudo-element
-  (`background-image:url(...)`, `position:absolute`, `z-index:-1`) per the block's Spec 32
-  no-inline-style contract — zero inline `style` attribute on the rendered `<section>`.
-  Default/unset state independently confirmed clean (no `has-bg-image` class, `none`) on
-  5 other live container instances on the same page (header-icons row, 2× footer link
-  columns, footer brand) with no cross-instance leakage.
-- `sgs/hero` — Background panel renders in the **Styles** tab under a "Container / Entire
-  Block" group (matches D626's table). Set + confirmed painting the same way.
-- `sgs/physics-canvas` — (a) Background panel now appears in Settings where it did not
-  exist before (confirmed via a before/after heading-list read of the inspector); (b) set
-  an image, frontend confirms it paints via the same `::before` mechanism; (c) confirmed
-  via computed style — not simulated drag — that the background layer cannot intercept
-  pointer events on any throwable content: `::before` is `position:absolute`,
-  `z-index:-1`, `pointer-events:none`, while the content layer (`.sgs-container__inner`)
-  is `position:relative`, `z-index:1`. This is architectural proof the layering is safe
-  regardless of what's inside; a live drag-and-drop simulation was not additionally run
-  (scope call, not a gap — the z-index/pointer-events proof is the load-bearing fact a
-  drag test would also be reducible to). Console showed one pre-existing, unrelated error
-  (`@sgs/gsap-draggable` module-resolution failure) traced to `render.php`'s existing
-  `trim($content) !== ''` gate on the motion-registry enqueue — this instance had no
-  decorative children, so the gate correctly skipped registering the import-map entry
-  while `view.js`'s own `viewScriptModule` still unconditionally imports it; not a
-  regression from this diff (verified: this code path is untouched by any step 6 commit).
-- `sgs/site-footer` (the resolve_kind bug-fix regression guard) — built a positive
-  control: a fresh site-footer instance with `minHeight:{desktop:'400px'}` and
-  `contentBandPadding:{desktop:{top/right/bottom/left:'80px'}}` set explicitly via
-  `wp.data`. Frontend confirms `min-height:400px` and inner `padding:80px` land exactly as
-  set — proving the fix holds (the pre-fix narrowing would have silently dropped both). A
-  second, real theme footer instance on the same page correctly shows the unset default
-  (`0px`), confirming no cross-instance leakage. Site-header shares the identical PHP
-  mechanism (`class-sgs-container-wrapper.php`'s `resolve_kind()`/`$is_section` gate) so
-  this same proof covers it; a separate header-specific instance was not additionally
-  built.
-- Scratch verification page (id 2453) created, exercised, then deleted (force-delete via
-  REST) — nothing left on the canary from this verification pass.
-
-**Multi-rater review (Bean's standing instruction, §2.2) — two parallel lenses dispatched
-against `git diff origin/main...HEAD`, both returned:**
-1. **Mechanism-fidelity + regression-safety lens** — verified `resolve_kind()`'s full
-   function body genuinely returns `$fallback` unconditionally on every path (no residual
-   narrowing), and confirmed the same-commit rule was followed per block. **One real
-   finding, doc-only:** `class-sgs-container-wrapper.php`'s `resolve_kind()` docblock
-   still said (from when Phase A wrote it) "NOT wired into any render.php by this
-   commit... every one of the 7 blocks still passes the literal `'section'` string,
-   unchanged" — true when written, false once Phase B landed. Zero runtime risk
-   (`resolve_kind()` is inert either way), but a real doc-accuracy bug. Fixed in this same
-   close-out, commit `dd750633`.
-2. **DB-first + composite-mirror + universality lens** — PASS on all three checks: no new
-   hardcoded lookup dicts introduced (the mechanism is `enabledExtensions` — an existing,
-   sanctioned block.json array, not a new dict-shaped mechanism); the `background`
-   attribute set (`backgroundImage`/`backgroundImageTablet`/`Mobile`,
-   `backgroundOverlayColour`, position/repeat/size/attachment, `bgKenBurns`/`bgParallax`,
-   `overlayGradient*`, `bgSvg*`×7, `bgVideo*`) is byte-identical in shape across all 7
-   blocks — no block invented a divergent name for the same concept; physics-canvas's
-   `resolve_kind()` migration is already complete in this diff, no stale non-migration
-   found (this check's premise was already resolved by the time the lens ran).
-
-**Residual, disclosed not buried (per Bean's standing instruction on honest gaps):**
-Phase C's own review (D637) got only 1 of 2 dispatched lenses back — the second hung
-~28 minutes with zero output and was treated as a hung dispatch, not a pass. That gap is
-on the STEP 7 GATE DESIGN (gridItems/layout precondition, gridAreas flag, ScaleAxisControl
-shape) — a design surface this session (Phase D) did not touch or re-review. It remains
-open against step 7's build, not against anything shipped in step 6. Also disclosed, not
-fixed here (out of step 6's scope): `sgs/container`'s Background panel sits in Settings
-while `sgs/hero`'s sits in Styles — a real placement inconsistency against D626's own
-table, worth a design-gate question before step 7, not a step-6 defect.
-
-**Build/tree:** `npm run build` exit 0 both before and after the docblock fix (motion
-bundle budget gate PASSED, no baseline drift). `git status` clean of any unintended
-mutation both times — one harmless CRLF-only diff on
-`scripts/consistency/roster.json` (0-line content diff, git line-ending normalisation
-artefact) was reverted via `git checkout --` rather than committed, twice.
-
-**Merge:** fast-forwarded `integrate/wrapper-step6` onto `main` (23 commits, no divergent
-`main`-side commits since this branch forked — verified via `git fetch origin main` +
-`git log --oneline origin/main..HEAD`/`HEAD..origin/main` before merging) and pushed.
-
-**Wrapper decomposition: step 6 of 7 CLOSED.** Step 7 (remaining capabilities, shape
-dividers last) is next, gated on the step 7 design (D637) getting its missing second
-review lens before build starts.
-
 ## D637 — Step 7 gate design locked: gridItems/layout precondition, gridAreas flag completion, ScaleAxisControl [ROUTINE]
 
 **2026-08-16.** Phase C of `go-read-the-track-encapsulated-hare.md` — designing (not building) the
@@ -4982,97 +4926,6 @@ state tabs and the full swatch palette; a real click sets the real attribute
 (`cardShadowColour: "primary"`), not just a control that opens. **Full re-verification across the
 other 10 blocks is still pending the next canary deploy** — this merge has not yet been redeployed.
 
-## D631 — Shared-worktree staging trap: `commit -m -- <pathspec>` re-stages the working tree, not the index [INCIDENT]
-
-**2026-08-15.** `git commit -m "..." -- <pathspec>` re-stages the CURRENT WORKING TREE version of the
-pathspec'd files, silently discarding any prior selective `git add -p` staging for those exact paths.
-Caused two of a concurrent session's uncommitted attribute declarations (trust-bar's
-`iconCircleShadowColour`/`badgeImageShadowColour`) to land inside commit `0c287cf6` — an unrelated
-commit — despite a deliberate `git add -p` having excluded them minutes earlier. No functional damage
-(inert schema declarations until that session commits its matching `edit.js`/`render.php`; build stayed
-green) and Bean ruled to leave it in place.
-
-**Rule:** on a shared checkout, verify what a commit ACTUALLY contains via `git show --stat HEAD` /
-`git show HEAD -- <file>` AFTER committing — never assume a careful partial staging survived into the
-final commit.
-
-## D630 — Trust-bar/hero `css_element` drift orphans closed — both initial fix-shapes were wrong [ROUTINE]
-
-**2026-08-15.** `sgs/hero.splitImageMobileObjectPosition` and `sgs/trust-bar.labelColour` each carried a
-DB `css_element` value not declared in the block's `supports.sgs.elements` — the last 2 orphans from the
-drift sweep. My first diagnosis was wrong on both, caught by a second-opinion code-reviewer agent BEFORE
-dispatch: (i) hero — `split-media` is not a stale FR-31-generalisation leftover, it's a current class
-`sgs_tier_media_render()` carries alongside `split-image` on the same node; the proposed selector rename
-would have reproduced the identical orphan while weakening specificity (0,3,0) → (0,2,0); (ii) trust-bar
-— "one attribute targets two selectors" conflated the unrelated colour emit (`render.php:281`, one
-selector) with the typography emit (`render.php:476`, two selectors, different attribute); the proposed
-3-way attribute split would have duplicated `textColour` on the icon-circle variant while leaving the
-orphan in place.
-
-Corrected fixes, both manifest-only: declare `split-media` on hero; declare a new `badge-label` element
-on trust-bar (not merged into the existing `label` element — attempted, produced a genuine
-routing-determinism build failure, since `textColour` already legitimately owns `css:color` on `label`
-for the icon-circle variant). Orphans 2 → 0, build exit 0. Commit `0c287cf6`.
-
-**Worth stating:** the review was dispatched specifically because the fixes were about to be delegated;
-it overturned both. A fix-shape that sounds coherent is not a verified one.
-
-## D629 — Colour-panel wave 2: 33 blocks migrated onto `SgsColourPanel` off a live DB census [ROUTINE]
-
-**2026-08-15.** Migrated the remaining Track-A colour-bearing blocks. Worklist built from a live DB
-`role='color'` census, not the prior session's cached plan-doc list, which had drifted: `social-icons`
-correctly dropped (native colour supports, no custom colour attrs); `cart` was missing entirely with 5
-genuine colour attrs. Dispatched as 16 parallel agents (6 batches of straightforward blocks, one agent
-per repeater/composite given shape-verification risk, `nav-menu` alone), briefed to verify the DB list
-against real `render.php`/`edit.js` rather than copy it blind.
-
-Real divergences caught: `mega-panel`'s `accent` (DB claimed a 4-property hover state the block's CSS
-doesn't have a selector for), `option-picker`'s pill colours (DB labelled the second state `hover`;
-`style.css` shows it's `selected`, and the DB-labelled state is actually resting), `nav-menu`'s
-`itemColourHover`/`itemBgHover` (manifest comment described a defect `render.php` shows was already
-fixed 2026-07-31). Also closed a real pre-existing gap: `product-card`'s three `ctaColour*Hover` attrs
-existed in block.json + render.php with zero inspector control.
-
-`notice-banner`, `quote`, `testimonial-slider`, `testimonial`, `option-picker`, `process-steps`,
-`product-card` keep `supports.color` sub-flags `true` — load-bearing for a root-level `style.color.*`
-mechanism this migration doesn't replace, diverging deliberately from the ~26 blocks where disabling was
-correct. One dispatch-induced bug: `sgs/testimonial/edit.js` shipped a missing `</ToolsPanelItem>`,
-breaking the shared build for every concurrent agent until found and fixed directly. Every colour state
-sets `linked: true` (D619). Verified: build exit 0, cheat-gate 0 new, element-manifest GATE PASS at the
-pre-wave baseline. Commit `f6f3c033`.
-
-## D628 — D621 was ruled but never actually coded; fixed before wave 2, not after [ROUTINE]
-
-**2026-08-15.** D621 (prior session) ruled the Colour panel belongs in the Styles tab. The LEDGER's
-shipped-commit summary claimed it landed in `f78662cd`, but that commit's real content was D622's
-placement resolver — `SgsColourPanel.js` still rendered a bare `<InspectorControls>` (default = Settings
-group) with no `group` prop, confirmed by direct file read and live editor verification showing the panel
-under Settings. One-line fix (`group="styles"`), verified live on the sandybrown canary: panel now
-renders first under Styles, no duplicate in Settings. Fixed before wave 2 (D629) dispatched so all 33
-migrated blocks landed correctly positioned rather than needing a second pass. Commit `a5b74bd1`.
-
-**Transferable lesson:** a ruling recorded in `decisions.md` and summarised as shipped in a status doc is
-not evidence the code changed — verify the actual code before building on the claim.
-
-## D627 — WP core colour-picker forked into `sgs-owned` `colour-picker/`, TS→JS, emotion→SCSS [ROUTINE]
-
-**2026-08-15.** D609/D618 follow-up. Forked WP core's `ColorPalette`/`ColorPicker`/
-`CircularOptionPicker` (~29 files) from `WordPress/gutenberg` at pinned SHA
-`28c0dedc4eaf001a24237a1fbba4b0887698b000` (WP 7.0.4) into
-`plugins/sgs-blocks/src/components/colour-picker/`, converted TS→plain JS,
-`@emotion/styled`→SCSS. New MIT deps: `react-colorful`, `colord`, `clsx`; `framer-motion` confirmed
-unused by these three families, not added. Reason: Bean's instruction to take core's picker internals as
-SGS-owned code, starting verbatim, so they can be customised later.
-
-**Real bug found + fixed mid-fork:** importing the forked per-component CSS from a component shared
-across 36 blocks' `edit.js` let webpack's per-entry CSS extraction attribute the compiled CSS to an
-arbitrary block's FRONTEND `style.css` bundle — caught by the Spec-31 F5 anti-cheat gate flagging a new
-`!important` finding on `sgs/accordion`, a block the commit never touched. Fix: two of the four forked
-stylesheets duplicate core's own `.components-*` classnames (already shipped globally via
-`wp-components`) and were deleted rather than double-shipped; the other two carry genuinely new SGS
-classnames and are compiled once from `src/blocks/extensions/index.js` (the entry already global in the
-editor), enqueued editor-only via a new `sgs-colour-picker-editor` handle. Commit `aaa91c3e`.
-
 ## D626 — Wrapper-capability grouping + tab placement locked: 6 extensions, shapeDividers decoupled, typography added [ROUTINE]
 
 **2026-08-15.** Step 3 of the shared-wrapper decomposition's 7-step order (`go-track-1b-playful-hamster.md`
@@ -5233,32 +5086,6 @@ default and silently drop whatever the client had set).
 carried forward** — re-run the census (`node scripts/surveys/survey-wrapper-capability.js`) for a
 current number; this project's docs have drifted on cached counts before.
 
-## D623 — Visual-diff gate: scoped bypass + intent-capture report type, replacing the `--no-verify` escape [ROUTINE]
-
-**2026-08-15.** The visual-diff commit gate's own blocked-message used to sanction
-`git commit --no-verify` as the documented escape when none of its five auto-skip detectors
-applied. That's a bad trade — `--no-verify` is a native git flag with no scope, so it discards
-gitleaks, block-uniformity, the F5 gates, the wp-* pre-merge gate, and Gate A along with the one
-check it was aimed at. Two additions in `.githooks/sgs-gates.sh` remove the need for it:
-
-1. **`SGS_VISUAL_GATE_SKIP=<block> SGS_VISUAL_GATE_REASON="..."`** — a scoped, reasoned bypass of
-   ONLY the visual-diff check for the named block(s); every other gate in the chain still runs.
-   `SKIP` without `REASON` fails closed. Every use is appended to
-   `reports/visual-diff/manual-skips.log` (tracked in git) for a permanent audit trail.
-2. **`intent_capture_passed: true`** — a third accepted report type alongside
-   `first_paint_capture_passed`/`editor_capture_passed`. For changes where "before" isn't
-   meaningful (dead-code removal, a one-off corrective fix, an isolated new capability), the
-   report states an explicit assertion and checks ONE live capture against it — no fixture page,
-   no two-pass rebuild via `make-visual-diff-reports.py`. Always available (author judgement, not
-   a file-scope heuristic), unlike `editor_capture_passed`.
-
-Both are additive — no change to `make-visual-diff-reports.py`, `visual-report-sha.py`, or the
-five existing auto-skip detectors. Verified end-to-end against the real hook (not a simulation):
-valid skip/valid intent report accepted, missing reason / stale sha / no report all still block.
-Corrected two now-stale STOP-CATALOGUE entries that cited the old `--no-verify` sanction
-(STOP-A-A-NEW-ATTRIBUTE.../STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC) rather than deleting them,
-per D101. Full design: `.githooks/README.md`.
-
 ## D622 — Colour placement follows the EXISTING D533/D537 resolver; conformance gate promoted [ROUTINE]
 
 **2026-08-15.** Two councils (4 seats on colour placement, 4 branches on ruleset determinism/work/UX/
@@ -5322,16 +5149,6 @@ build to Styles from here.
 ✅ **CLOSED same day by D622** — the placement question this entry left open (grouped panel vs the
 element's own panel) is settled: colour follows the existing D533/D537 resolver. This entry's own
 ruling (Styles tab) stands unchanged.
-
-## D620 — decisions.md sweep + compress (921KB → 427KB); redundancy-archiving ruled unsafe; auto-sweep Stop hook built [ROUTINE]
-
-**2026-08-14.** decisions.md was 4x its documented fallback cap with no sweep since 2026-08-08. Two-phase cleanup: (1) citation-based sweep — 75 entries with zero citations in any live doc moved verbatim to `memory/decisions-archive.md`, scripted at `scripts/sweep-decisions.py` (re-runnable, expands `D<N1>-D<N2>` range citations, excludes uncommitted/just-added entries); (2) compression — remaining 195 entries rewritten from 4-9KB full narratives to 3-8 line rulings, keeping every fact/commit/D-cross-ref, cutting only investigation narrative. Net: 921KB → 427KB, two entries removed later as further zero-citation candidates surfaced.
-
-**Ruling (via `/adversarial-council`, 6 personas, tested against real entries not just discussed): further archiving on "redundant with citing spec" grounds is NOT safe to automate.** 4/6 personas independently found it targets the WRONG entries — single-citation entries usually hold irreplaceable forensic detail (the why, a rejected alternative, the bug that prompted it) a spec deliberately doesn't restate; 65 entries are cited by a spec that explicitly says "full detail lives in decisions.md, do not duplicate here." Even perfect execution wouldn't reach the 262,144-byte fallback cap anyway (computed ceiling ~347KB) — that number is a fallback for the no-baseline case, not a real constraint (`handoff-preflight.py`'s gate is growth-keyed and passes regardless; the file isn't loaded into any session's context).
-
-**Built: `.claude/hooks/decisions-sweep-auto.py`**, a Stop hook (registered alongside `ledger-rotate.py`) that auto-runs the safe citation-sweep + auto-rebaselines whenever the growth budget trips — no human/agent action needed going forward. Two real bugs caught by testing against the real repo before trusting the design, not by reasoning in the abstract: (1) a single-most-recent-commit grace window was too narrow for this project's commit volume — D619 (same-day) aged out of it and got swept on the next real run, caught via `git diff` before moving on, reverted; (2) the first fix (a window-diff scan) broke against this project's OWN same-day whole-file-rewrite commits (Myers-diff pairing shuffled near large changed regions, made D349 — one of the oldest entries — look "recently added"); replaced with a per-candidate git pickaxe search (only run against the already citation-filtered handful, not all entries), immune to rewrite noise.
-
-**Also fixed:** the sweep script's citation scope was missing `architecture.md`/`dev-setup.md` and didn't exclude `.claude/worktrees/`; the archive mixed two incompatible heading formats (`## D<N>` / `**D<N>`) with no index, so 82% of it was invisible to any single-format parser — added `scripts/build-archive-index.py` (idempotent, now auto-run by every real sweep). D101 was flagged as "missing an entry body" during review — investigated, not a bug: never logged as a discrete decisions.md entry, the rule is stated in full inline in `.claude/CLAUDE.md`'s own table.
 
 ## D619 — Colour attributes store the bare theme-palette slug; `linked` goes on everywhere [ROUTINE]
 
