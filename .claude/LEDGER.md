@@ -31,6 +31,10 @@ token, element, parity), never the verb — the same idea is spelled `census-*`,
 
 ## ▶ ⛔ TEMPLATE REMEDIATION — OPEN, THE LIVE FRONT (2026-08-23)
 
+⭐ **START HERE: `.claude/prompts/2026-08-24-template-remediation.md`** — the live
+next-session prompt for this track (rewritten 2026-08-24). It leads with the one open
+question worth the time and carries the ruled-out lists so they are not re-walked.
+
 **Read `.claude/plans/2026-08-24-template-by-template-remediation.md` before touching any
 template.** Bean reviewed the Site Editor after the Phase 3 design implementation and
 found widespread breakage. **He found ALL of it by eye. No gate, no build and none of my

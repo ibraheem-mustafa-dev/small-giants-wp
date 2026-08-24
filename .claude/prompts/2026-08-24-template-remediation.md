@@ -2,9 +2,10 @@
 
 Invoke `/autopilot` before anything else.
 
-> ⚠ **The filename is stale.** This file used to be the Phase 3 per-template-pass prompt.
-> That work is CLOSED (Wave A, 2026-08-23) and this file was rewritten on 2026-08-24 to be
-> the live prompt for the **template remediation** track. Trust the content, not the name.
+> Renamed from `2026-08-22-phase3-per-template-pass.md` on 2026-08-24. That prompt's work is
+> CLOSED (Wave A, 2026-08-23) and its content is gone — this file is the live prompt for the
+> **template remediation** track. The old name outlived its content and a stale prompt name is
+> exactly what nearly made a session re-run finished work; hence the rename.
 
 ---
 
