@@ -404,6 +404,39 @@ def step_build(dry_run: bool) -> int:
     return 0
 
 
+def step_gate_full(dry_run: bool) -> int:
+    """PRE-DEPLOY heavyweight gate tier (`npm run gate:full`).
+
+    ⛔ WHY THIS EXISTS AND WHY IT IS NOT OPTIONAL. `prebuild` used to be 61
+    `&&`-joined commands taking 153.4s measured, and it is FAIL-FAST — a change
+    tripping five gates showed ONE failure per build. The chain was split into
+    two measured tiers (`scripts/gates.json`): `fast` (52 gates, 33.4s) runs on
+    every build; `full` is the four gates that were 76.1% of the total time —
+    pytest 47.3s, check-dead-api-calls 31.2s, audit-block-file-consistency
+    16.7s, inspector-scan 11.3s.
+
+    Moving a gate to a later tier is only legitimate if something actually runs
+    that tier. WITHOUT THIS STEP the split would be enforcement laundering: four
+    gates would sit in a roster, run on no build, and the repo would read green
+    while nothing checked them. That is this project's recorded failure mode —
+    a mandatory gate sat unwired for three weeks while three documents said it
+    was enforced. `run-gates.py --assert-wired` exists to prove this call is
+    still here, and fails closed if it is deleted.
+
+    It runs PRE-tar so a failure costs nothing: nothing has been uploaded yet.
+    All four are static source checks, so they need no live canary — unlike
+    `step_motion_qa()`, which is post-deploy precisely because it does.
+
+    ⚠ Opting out with `--skip-gate-full` re-creates the hole. Do not make it
+    reflex.
+    """
+    if dry_run:
+        log("[gate:full] SKIPPED (--dry-run)")
+        return 0
+    log("[gate:full] running the pre-deploy heavyweight gate tier")
+    return run([resolve_exe("npm"), "run", "gate:full"], dry_run=False, cwd=PLUGIN_DIR)
+
+
 def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
     log("[2/5] Packaging tarball")
     cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
@@ -1096,6 +1129,9 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument("--target", choices=sorted(TARGETS.keys()), default="sandybrown",
                    help="Deploy target (default: sandybrown — the canary).")
+    p.add_argument("--skip-gate-full", action="store_true",
+                   help="Skip the pre-deploy heavyweight gate tier (gate:full). "
+                        "This DISABLES four real gates for this deploy.")
     p.add_argument("--skip-build", action="store_true",
                    help="Skip npm run build; reuse existing build/.")
     scope = p.add_mutually_exclusive_group()
@@ -1228,6 +1264,18 @@ def main() -> int:
                 return 1
         else:
             log("[1/5] npm run build: SKIPPED (--theme-only)")
+
+    # Pre-deploy heavyweight gate tier. Runs before tar so an abort costs
+    # nothing. See step_gate_full()'s docstring for why omitting it would
+    # silently disable four gates.
+    if args.skip_gate_full:
+        log("[gate:full] SKIPPED (--skip-gate-full) — four gates did NOT run")
+    else:
+        rc = step_gate_full(args.dry_run)
+        if rc != 0:
+            print(f"[ABORTED] reason: gate-full-failed (exit {rc}). Nothing was "
+                  "uploaded.", flush=True)
+            return 1
 
     # [2/5] Tar
     # Pre-deploy ownership gate: would this deploy clobber work that is live and

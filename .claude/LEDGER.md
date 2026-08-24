@@ -332,7 +332,7 @@ Engineer **D** · Cynic **D** · Economist **F**.
    306 flat tier attrs remain; `css_tier` is **3,136 NULL of 3,166**.
 3. **Every `migrate-*.py` reads ZERO rows from the 3,166-row DB** — they re-glob
    block.json. `find_target_files()` is **byte-identical** across two theme codemods.
-4. **28 built-and-never-wired tools**, incl. RA-1 (`go-live-checklist.md:81`), which is
+4. **27 built-and-never-wired tools**, incl. RA-1 (`go-live-checklist.md:81`), which is
    MANDATORY and run by nobody.
 5. **Revenue lane is empty.** 11 of 1,740 commits touched `sites/` in 30 days and NONE
    were client build work; `build-deploy.py` has ONE target and it is the canary.
@@ -359,7 +359,7 @@ scripts runs · 1 duplicate deleted.
    converged), and ten pointer banners restate figures that will drift.
 
 1. **Collapse the serial build loop** (Task 1) — the 4× win, one afternoon.
-2. **Wire or delete the 28 orphans** (Task 2) — RA-1 first. Decide by RUNNING, not reading:
+2. **Wire or delete the 27 orphans** (Task 2) — RA-1 first. Decide by RUNNING, not reading:
    a triage got 13 of 52 wrong by trusting docstrings.
 3. **Build the burn-down** (Task 3) so the programme can report "done".
 4. **`--all-properties` + batching policy** (Task 4) — 35 of 41 properties touch 1–2 blocks.

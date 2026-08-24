@@ -1,0 +1,555 @@
+[
+  {
+    "id": "consistency-run-consistency-gates",
+    "cmd": "python scripts/consistency/run-consistency-gates.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "9468fd94",
+    "budget_ms": 1141,
+    "order": 0
+  },
+  {
+    "id": "consistency-build-roster",
+    "cmd": "python scripts/consistency/build-roster.py",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": "d54e41db",
+    "budget_ms": null,
+    "order": 1
+  },
+  {
+    "id": "clean-build",
+    "cmd": "npm run clean:build",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 2
+  },
+  {
+    "id": "generate-icons",
+    "cmd": "node scripts/generate-icons.js",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": "666e1ee4",
+    "budget_ms": null,
+    "order": 3
+  },
+  {
+    "id": "generate-extension-attributes",
+    "cmd": "node scripts/generate-extension-attributes.js",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": "8694aebc",
+    "budget_ms": null,
+    "order": 4
+  },
+  {
+    "id": "run-motion-fx-generators",
+    "cmd": "node scripts/run-motion-fx-generators.js",
+    "tier": "generator",
+    "added_D": "D427",
+    "added_commit": "6c8d78ca",
+    "budget_ms": null,
+    "order": 5
+  },
+  {
+    "id": "check-fx-list-drift",
+    "cmd": "python scripts/check-fx-list-drift.py --check",
+    "tier": "fast",
+    "added_D": "D465",
+    "added_commit": "4f07a72a",
+    "budget_ms": 104,
+    "order": 6
+  },
+  {
+    "id": "check-dead-controls",
+    "cmd": "node scripts/check-dead-controls.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "6922e541",
+    "budget_ms": 1413,
+    "order": 7
+  },
+  {
+    "id": "check-dead-pattern-attrs",
+    "cmd": "python scripts/check-dead-pattern-attrs.py --check",
+    "tier": "fast",
+    "added_D": "D338",
+    "added_commit": "2d413758",
+    "budget_ms": 139,
+    "order": 8
+  },
+  {
+    "id": "check-shared-panel-schema",
+    "cmd": "node scripts/check-shared-panel-schema.js --check",
+    "tier": "fast",
+    "added_D": "D587",
+    "added_commit": "14df1ffb",
+    "budget_ms": 132,
+    "order": 9
+  },
+  {
+    "id": "check-empty-inspector-containers",
+    "cmd": "node scripts/check-empty-inspector-containers.js --check",
+    "tier": "fast",
+    "added_D": "D639",
+    "added_commit": "4cec3b6c",
+    "budget_ms": 334,
+    "order": 10
+  },
+  {
+    "id": "check-wrapper-capability-preconditions",
+    "cmd": "node scripts/check-wrapper-capability-preconditions.js --check",
+    "tier": "fast",
+    "added_D": "D639",
+    "added_commit": "8c3bfbae",
+    "budget_ms": 90,
+    "order": 11
+  },
+  {
+    "id": "surveys-survey-background-colour-support",
+    "cmd": "python scripts/surveys/survey-background-colour-support.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "517b2e9b",
+    "budget_ms": 101,
+    "order": 12
+  },
+  {
+    "id": "surveys-check-image-controls-support",
+    "cmd": "python scripts/surveys/check-image-controls-support.py --check",
+    "tier": "fast",
+    "added_D": "D585",
+    "added_commit": "ceec53b3",
+    "budget_ms": 121,
+    "order": 13
+  },
+  {
+    "id": "surveys-survey-control-parity",
+    "cmd": "python scripts/surveys/survey-control-parity.py --check",
+    "tier": "fast",
+    "added_D": "D493",
+    "added_commit": "21b40503",
+    "budget_ms": 2882,
+    "order": 14
+  },
+  {
+    "id": "check-hardcoded-render-defaults",
+    "cmd": "node scripts/check-hardcoded-render-defaults.js --check",
+    "tier": "fast",
+    "added_D": "D193",
+    "added_commit": "8bbe7143",
+    "budget_ms": 230,
+    "order": 15
+  },
+  {
+    "id": "check-dead-api-calls",
+    "cmd": "python scripts/check-dead-api-calls.py --check",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": "d1e36104",
+    "budget_ms": 31207,
+    "order": 16,
+    "tier_reason": "31.2s / 22.3% \u2014 the D641 incident gate (hallucinated PHP fn fatals in production). Pre-deploy is where it matters: nothing ships past it."
+  },
+  {
+    "id": "check-control-ux",
+    "cmd": "node scripts/check-control-ux.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "61d95f41",
+    "budget_ms": 157,
+    "order": 17
+  },
+  {
+    "id": "surveys-survey-experimental-imports",
+    "cmd": "node scripts/surveys/survey-experimental-imports.js --check",
+    "tier": "fast",
+    "added_D": "D562",
+    "added_commit": "5d84324b",
+    "budget_ms": 171,
+    "order": 18
+  },
+  {
+    "id": "check-product-search-guards",
+    "cmd": "node scripts/check-product-search-guards.js",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "027f6c67",
+    "budget_ms": 55,
+    "order": 19
+  },
+  {
+    "id": "dbschema-check_schema_drift",
+    "cmd": "python scripts/dbschema/check_schema_drift.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "a8fb47d5",
+    "budget_ms": 290,
+    "order": 20
+  },
+  {
+    "id": "dbschema-check_value_identity",
+    "cmd": "python scripts/dbschema/check_value_identity.py --check",
+    "tier": "fast",
+    "added_D": "D345",
+    "added_commit": "85212a9d",
+    "budget_ms": 81,
+    "order": 21
+  },
+  {
+    "id": "dbschema-capture_seed_data",
+    "cmd": "python scripts/dbschema/capture_seed_data.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "a8fb47d5",
+    "budget_ms": 91,
+    "order": 22
+  },
+  {
+    "id": "db-consistency-run",
+    "cmd": "python scripts/db-consistency/run.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "1293c24f",
+    "budget_ms": 534,
+    "order": 23
+  },
+  {
+    "id": "lint-responsive-controls",
+    "cmd": "python scripts/lint-responsive-controls.py --check",
+    "tier": "fast",
+    "added_D": "D478",
+    "added_commit": "8a9adaf3",
+    "budget_ms": 109,
+    "order": 24
+  },
+  {
+    "id": "check-tier-storage-shape",
+    "cmd": "python scripts/check-tier-storage-shape.py --check",
+    "tier": "fast",
+    "added_D": "D563",
+    "added_commit": "7b272d81",
+    "budget_ms": 89,
+    "order": 25
+  },
+  {
+    "id": "check-inert-controls",
+    "cmd": "python scripts/check-inert-controls.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "fab7e97e",
+    "budget_ms": 538,
+    "order": 26
+  },
+  {
+    "id": "check-undeclared-attrs",
+    "cmd": "python scripts/check-undeclared-attrs.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "fab7e97e",
+    "budget_ms": 512,
+    "order": 27
+  },
+  {
+    "id": "check-undefined-refs",
+    "cmd": "node scripts/check-undefined-refs.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "0ac0c830",
+    "budget_ms": 1765,
+    "order": 28
+  },
+  {
+    "id": "check-render-undefined-vars",
+    "cmd": "python scripts/check-render-undefined-vars.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "da170be8",
+    "budget_ms": 2234,
+    "order": 29
+  },
+  {
+    "id": "cheat-gate-run",
+    "cmd": "python scripts/cheat-gate/run.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "e7679b09",
+    "budget_ms": 1955,
+    "order": 30
+  },
+  {
+    "id": "excluded-gate-run",
+    "cmd": "python scripts/excluded-gate/run.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "e7679b09",
+    "budget_ms": 260,
+    "order": 31
+  },
+  {
+    "id": "ledger-coverage_check",
+    "cmd": "python scripts/ledger/coverage_check.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "e7679b09",
+    "budget_ms": 1962,
+    "order": 32
+  },
+  {
+    "id": "check-atomic-slug-literals",
+    "cmd": "python scripts/check-atomic-slug-literals.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "524c7aa5",
+    "budget_ms": 60,
+    "order": 33
+  },
+  {
+    "id": "ledger-declare_input",
+    "cmd": "python scripts/ledger/declare_input.py --check",
+    "tier": "fast",
+    "added_D": "D228",
+    "added_commit": "f8a746c7",
+    "budget_ms": 189,
+    "order": 34
+  },
+  {
+    "id": "audit-inline-styling",
+    "cmd": "node scripts/audit-inline-styling.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "c5be4ab1",
+    "budget_ms": 563,
+    "order": 35
+  },
+  {
+    "id": "check-id-scoped-emits",
+    "cmd": "node scripts/check-id-scoped-emits.js --check",
+    "tier": "fast",
+    "added_D": "D303",
+    "added_commit": "f52c6b53",
+    "budget_ms": 112,
+    "order": 36
+  },
+  {
+    "id": "check-text-gradient-companion",
+    "cmd": "node scripts/check-text-gradient-companion.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "973870bc",
+    "budget_ms": 308,
+    "order": 37
+  },
+  {
+    "id": "check-preset-token-naming",
+    "cmd": "python scripts/check-preset-token-naming.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "0def190f",
+    "budget_ms": 94,
+    "order": 38
+  },
+  {
+    "id": "check-palette-slug-refs",
+    "cmd": "python scripts/check-palette-slug-refs.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "0def190f",
+    "budget_ms": 200,
+    "order": 39
+  },
+  {
+    "id": "check-box-family-guard",
+    "cmd": "python scripts/check-box-family-guard.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "c5be4ab1",
+    "budget_ms": 540,
+    "order": 40
+  },
+  {
+    "id": "check-jsonld-flags",
+    "cmd": "python scripts/check-jsonld-flags.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "a42cc0f8",
+    "budget_ms": 2684,
+    "order": 41
+  },
+  {
+    "id": "remove-vacuous-style-engine-guard",
+    "cmd": "python scripts/remove-vacuous-style-engine-guard.py --check",
+    "tier": "fast",
+    "added_D": "D338",
+    "added_commit": "b6e11174",
+    "budget_ms": 190,
+    "order": 42
+  },
+  {
+    "id": "check-no-core-blocks",
+    "cmd": "python scripts/check-no-core-blocks.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "bf71f5aa",
+    "budget_ms": 94,
+    "order": 43
+  },
+  {
+    "id": "no-inline-check-no-inline",
+    "cmd": "python scripts/no-inline/check-no-inline.py --live-default",
+    "tier": "fast",
+    "added_D": "D345",
+    "added_commit": "da9d6ddb",
+    "budget_ms": 1830,
+    "order": 44
+  },
+  {
+    "id": "no-inline-check-stranded-guards",
+    "cmd": "python scripts/no-inline/check-stranded-guards.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "c7a4ee5c",
+    "budget_ms": 232,
+    "order": 45
+  },
+  {
+    "id": "pytest-oracle-converter",
+    "cmd": "python -m pytest scripts/oracle/tests/ scripts/converter/tests/ -q --deselect scripts/converter/tests/test_content_gap_collector.py::TestConvertSectionContentGaps::test_sgs_tabs_fixture_surfaces_the_proven_gaps",
+    "tier": "full",
+    "added_D": "D263",
+    "added_commit": "60a920b6",
+    "budget_ms": 47319,
+    "order": 46,
+    "tier_reason": "47.3s / 33.8% \u2014 converter+oracle unit tests. Not deployed code; a converter regression cannot reach the canary, so pre-deploy is the honest home."
+  },
+  {
+    "id": "check-shared-css-state-rules",
+    "cmd": "node scripts/check-shared-css-state-rules.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "36461b85",
+    "budget_ms": 66,
+    "order": 47
+  },
+  {
+    "id": "inspector-scan-run",
+    "cmd": "node scripts/inspector-scan/run.js --check",
+    "tier": "full",
+    "added_D": "D99",
+    "added_commit": "7af5f95f",
+    "budget_ms": 11306,
+    "order": 48,
+    "tier_reason": "11.3s / 8.1% \u2014 whole-repo static inspector-rule scan."
+  },
+  {
+    "id": "check-element-manifest-conformance",
+    "cmd": "node scripts/check-element-manifest-conformance.js --check",
+    "tier": "fast",
+    "added_D": "D545",
+    "added_commit": "c196ed33",
+    "budget_ms": 158,
+    "order": 49
+  },
+  {
+    "id": "audit-feature-parity",
+    "cmd": "python scripts/audit-feature-parity.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "98ff88df",
+    "budget_ms": 97,
+    "order": 50
+  },
+  {
+    "id": "audit-declared-vs-seeded-roles",
+    "cmd": "python scripts/audit-declared-vs-seeded-roles.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "ceada1d4",
+    "budget_ms": 3435,
+    "order": 51
+  },
+  {
+    "id": "check-universal-fit",
+    "cmd": "node scripts/check-universal-fit.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 143,
+    "order": 52
+  },
+  {
+    "id": "check-duplicate-controls",
+    "cmd": "node scripts/check-duplicate-controls.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 1064,
+    "order": 53
+  },
+  {
+    "id": "check-simple-surface-cap",
+    "cmd": "node scripts/check-simple-surface-cap.js",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 348,
+    "order": 54
+  },
+  {
+    "id": "audit-block-file-consistency",
+    "cmd": "python scripts/audit-block-file-consistency.py --check",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 16657,
+    "order": 55,
+    "tier_reason": "16.7s / 11.9% \u2014 whole-repo static block-file structure audit."
+  },
+  {
+    "id": "audit-block-uniformity",
+    "cmd": "python scripts/audit-block-uniformity.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 93,
+    "order": 56
+  },
+  {
+    "id": "check-editor-render-parity",
+    "cmd": "node scripts/check-editor-render-parity.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "b47bc24b",
+    "budget_ms": 2601,
+    "order": 57
+  },
+  {
+    "id": "check-ksort-before-hash",
+    "cmd": "python scripts/check-ksort-before-hash.py --check",
+    "tier": "fast",
+    "added_D": "D736",
+    "added_commit": "914c2ad4",
+    "budget_ms": 131,
+    "order": 58
+  },
+  {
+    "id": "check-tier-object-cast",
+    "cmd": "python scripts/check-tier-object-cast.py --check",
+    "tier": "fast",
+    "added_D": "D736",
+    "added_commit": "914c2ad4",
+    "budget_ms": 648,
+    "order": 59
+  },
+  {
+    "id": "check-single-instance-invariants",
+    "cmd": "python scripts/check-single-instance-invariants.py --check",
+    "tier": "fast",
+    "added_D": "D736",
+    "added_commit": "914c2ad4",
+    "budget_ms": 79,
+    "order": 60
+  }
+]

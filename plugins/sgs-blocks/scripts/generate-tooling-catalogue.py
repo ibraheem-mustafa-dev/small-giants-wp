@@ -135,7 +135,23 @@ def first_purpose(path: Path) -> str:
 
 
 _PKG = json.loads(PKG.read_text(encoding="utf-8"))
-_PREBUILD_BLOB = _PKG.get("scripts", {}).get("prebuild", "")
+# ⛔ The gate chain no longer lives in the `prebuild` STRING (2026-08-24). It was
+# split into `scripts/gates.json` + `run-gates.py`, so reading `prebuild` alone
+# now sees SIX commands where it used to see 61 — and every reachability check
+# built on it would report 55 live gates as unwired. The roster is spliced in
+# here so "is this script in the prebuild chain?" keeps answering correctly.
+_GATES_JSON = Path(__file__).resolve().parent / "gates.json"
+
+
+def _roster_cmds() -> list[str]:
+    if not _GATES_JSON.exists():
+        raise SystemExit(f"FAIL-CLOSED: gate roster missing: {_GATES_JSON}")
+    return [g["cmd"] for g in json.loads(_GATES_JSON.read_text(encoding="utf-8"))]
+
+
+_PREBUILD_BLOB = " && ".join(
+    [_PKG.get("scripts", {}).get("prebuild", "")] + _roster_cmds()
+)
 _SCRIPTS_BLOB = " && ".join(_PKG.get("scripts", {}).values())
 
 # Runnable suffixes. .php and .sh were EXCLUDED from the table while being
@@ -430,11 +446,37 @@ def build_io_section() -> list[str]:
 
 
 def prebuild_steps() -> list[str]:
+    """Every command a build runs, in execution order.
+
+    ⛔ `prebuild` is no longer the whole chain. Since 2026-08-24 it is five
+    generators plus `run-gates.py --tier fast`; the 56 gates live in
+    `scripts/gates.json`. Returning the raw `prebuild` split would document
+    SIX commands and silently drop 55 gates from this catalogue — which is
+    exactly what happened on the split commit before this function was fixed.
+    The runner invocation is expanded back into its roster here, tier-tagged,
+    so the catalogue keeps naming every gate that can block a build or a
+    deploy.
+    """
     pkg = json.loads(PKG.read_text(encoding="utf-8"))
     chain = pkg.get("scripts", {}).get("prebuild", "")
     if not chain:
         raise SystemExit("FAIL-CLOSED: no prebuild chain in package.json")
-    return [s.strip() for s in chain.split("&&") if s.strip()]
+
+    roster = json.loads(_GATES_JSON.read_text(encoding="utf-8"))
+    fast = [f"{g['cmd']}  # tier:fast" for g in roster if g["tier"] == "fast"]
+    full = [f"{g['cmd']}  # tier:full (pre-deploy, build-deploy.py step_gate_full)"
+            for g in roster if g["tier"] == "full"]
+
+    steps: list[str] = []
+    for raw in chain.split("&&"):
+        step = raw.strip()
+        if not step:
+            continue
+        if "run-gates.py" in step:
+            steps.extend(fast + full)
+        else:
+            steps.append(step)
+    return steps
 
 
 def resolve(step: str) -> Path | None:
@@ -509,7 +551,20 @@ def build() -> str:
     out.append("")
     out.append("### The prebuild gate chain — what actually blocks a build")
     out.append("")
-    out.append("Derived from `package.json`'s `prebuild`, in execution order. This chain is")
+    _full_ids = [g["id"] for g in json.loads(_GATES_JSON.read_text(encoding="utf-8"))
+                 if g["tier"] == "full"]
+    out.append(
+        "Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in "
+        "execution order. ⛔ **These are TWO tiers, not one chain.** The five "
+        "generators and the `fast` tier run on every build. The `full` tier — "
+        + ", ".join(f"`{i}`" for i in _full_ids) +
+        " — was measured at 76.1% of the old chain's time and now runs "
+        "PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate "
+        "that blocked before still blocks; only the timing changed. Run "
+        "`npm run gate:list` for each gate's tier and measured cost, and "
+        "`npm run gate:wired` to prove the `full` tier is still reachable. "
+        "This chain is"
+    )
     out.append("what `npm run build` runs first, and what every `/handoff` and deploy relies on.")
     out.append("Each entry's purpose is quoted from the script's own header.")
     out.append("")

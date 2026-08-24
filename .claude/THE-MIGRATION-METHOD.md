@@ -269,18 +269,48 @@ never seen fail is not a gate.
 
 ## Step 8 — Wire it, in the same commit
 
-Add to `plugins/sgs-blocks/package.json`:
+⚠ **The gate chain moved out of `package.json` on 2026-08-24.** It was 61 `&&`-joined
+commands in one 3,353-character string that could not be diffed, blamed per gate, or
+reordered. The roster is now **`plugins/sgs-blocks/scripts/gates.json`** — one record per
+gate — run by `scripts/run-gates.py`, which executes EVERY gate and reports ALL failures
+instead of stopping at the first.
+
+Add your gate as a record:
+
+```json
+{
+  "id": "<your-script>",
+  "cmd": "python scripts/<your-script>.py --check",
+  "tier": "fast",
+  "added_D": "D<n>",
+  "budget_ms": null
+}
+```
+
+Then add the standalone alias to `package.json` so it is runnable by hand:
 
 ```
 "check:<name>": "python scripts/<your-script>.py --check"
 ```
 
-and into the `prebuild` chain if it must gate every build.
+**Pick the tier by MEASURING, never by guessing.** Run
+`python scripts/run-gates.py --time` and read your gate's real cost:
+
+- `fast` — the default. Runs on every build via `prebuild`.
+- `full` — only if it is genuinely heavyweight. Runs pre-deploy via
+  `build-deploy.py`'s `step_gate_full()`. As of the split, `full` holds exactly four
+  gates that were **76.1% of the chain's measured time**.
+
+⛔ **`full` is not "weaker" and it is not a parking space.** A gate parked in a tier that
+nothing runs is enforcement laundering. `python scripts/run-gates.py --assert-wired`
+fails closed if the deploy-side call ever disappears — run it if you touch the tiering.
 
 ⛔ **A migration is not finished until its `--check` runs automatically.** This repo holds
-28 scripts that were built, work, and were never wired — including a mandatory go-live
+**27** scripts that were built, work, and were never wired — including a mandatory go-live
 gate nobody runs. One gate sat unwired for three weeks while three separate documents
-stated it was enforced. **Grep `package.json` before believing any gate runs.**
+stated it was enforced. **Check `gates.json` AND `package.json` before believing any gate
+runs** — and prefer `npm run gate:list`, which prints the roster with each gate's tier and
+measured cost.
 
 ---
 
