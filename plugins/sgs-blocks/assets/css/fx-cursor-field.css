@@ -18,9 +18,15 @@
  * reads those properties and never names a type. So a new type is ONE rule
  * here, plus the slug in `SGS_FX_CURSOR_FIELD_TYPES`
  * (`includes/fx-cursor-field.php`) and in `FX_FIELD_TYPE_OPTIONS`
- * (`src/blocks/extensions/fx.js`). No new selector, no new JS.
+ * (`src/blocks/extensions/fx.js`). No new selector.
  * `scripts/check-fx-list-drift.py` invariant I6 fails the build if those three
  * lists disagree, so a half-added type cannot ship.
+ *
+ * ⚠ "NO NEW JS" IS TRUE ONLY FOR AN UNMASKED TYPE (corrected 2026-08-24, D767).
+ * A type that MASKS needs the element-relative coordinate pair the emitter now
+ * publishes — that was JS, and it already exists, so no FURTHER JS is needed
+ * for another masked type. But the unqualified claim was wrong, and it was
+ * wrong in the same file that told you `spotlight-mask` proved the seam.
  *
  * ⚠ This docblock previously directed the reader to "a descriptor row in
  * `cursor-fields/index.js`". No such module has ever existed — corrected
@@ -56,6 +62,20 @@
  * rather than the element. Combined with viewport-pixel coordinates from the
  * emitter, every participant paints the same field in the same screen place
  * with zero per-element geometry maths. This is the whole mechanism.
+ *
+ * ⚠ AND IT COVERS THE LAYER ONLY — NOT THE MASK (D767, 2026-08-24). A
+ * `mask-image` has no attachment concept (`mask-attachment` is in CSS Masking
+ * L1 and no engine implements it), so a mask gradient's `at X Y` resolves
+ * against each element's OWN box. Every participant would therefore cut its
+ * reveal at a different screen point — measured 155px from the emitter's.
+ * MASKED TYPES ARE THEREFORE EMITTER-ONLY: they declare
+ * `--sgs-cursor-field-participant-layer: none` and read
+ * `--sgs-cursor-local-x/y` instead. Invariant I8 fails the build if a masked
+ * type forgets either. `glow` and `parallax-pattern` are unmasked and the
+ * paragraph above holds for them in full.
+ *
+ * This sentence read as universal until 2026-08-24, while `spotlight-mask`
+ * had been lighting the wrong spot for 23 days.
  *
  * ── FAIL-OPEN + REDUCED MOTION ────────────────────────────────────────────
  *

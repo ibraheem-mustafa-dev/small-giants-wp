@@ -377,6 +377,41 @@ def parse_css_field_types(src: Sources) -> list[str]:
     return types
 
 
+RULE_BODY_RE = r'''\[data-sgs-cursor-field=["']([a-z0-9-]+)["']\]\s*\{(.*?)\n\}'''
+
+
+def parse_css_masked_type_facts(src: Sources) -> dict:
+    """fx-cursor-field.css - per field type, the three facts invariant I8 needs.
+
+    WHY THIS EXISTS (D767, 2026-08-24). A `mask-image` gradient resolves `at X Y`
+    against the ELEMENT's own box, while `background-attachment: fixed` resolves the
+    LAYER against the VIEWPORT. Feeding a mask the viewport pair lights a spot offset
+    by the element's distance from the viewport top - measured +256px, i.e. below the
+    section that owned it. `spotlight-mask` shipped that way on 2026-08-01 and nobody
+    noticed for 23 days, because every check was a file:line citation and none was an
+    observation.
+    """
+    path = src.cursor_field_css
+    text = _read(path)
+    facts = {}
+    for m in re.finditer(RULE_BODY_RE, text, re.S):
+        type_name, body = m.group(1), m.group(2)
+        mask_m = re.search(r"--sgs-cursor-field-mask:\s*(.*?);", body, re.S)
+        mask_value = mask_m.group(1) if mask_m else ""
+        facts[type_name] = {
+            "declares_mask": bool(mask_m) and "none" not in mask_value,
+            "mask_uses_local_pair": (
+                "--sgs-cursor-local-x" in mask_value
+                and "--sgs-cursor-local-y" in mask_value
+            ),
+            "opts_out_of_participants": bool(
+                re.search(r"--sgs-cursor-field-participant-layer:\s*none\s*;", body)
+            ),
+        }
+    _floor(list(facts), 1, path, "the [data-sgs-cursor-field=...] rule bodies")
+    return facts
+
+
 def parse_treatment_allowlist(src: Sources) -> list[str]:
     """fx-surface-treatment.php `SGS_FX_TREATMENTS` — the server-side allowlist a
     `fxTreatment` value must appear in before the render layer will emit it."""
@@ -436,7 +471,7 @@ def parse_treatment_frag_files(src: Sources) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# The seven invariants.
+# The eight invariants.
 # ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
@@ -457,7 +492,7 @@ def _dupes(items: list[str]) -> list[str]:
 
 
 def evaluate(src: Sources) -> list[Violation]:
-    """Run all seven invariants. Raises VacuousParse if any input cannot be read."""
+    """Run all eight invariants. Raises VacuousParse if any input cannot be read."""
     shipped = parse_shipped_effects(src)
     labels = parse_option_labels(src)
     picker = parse_picker_effects(src)
@@ -599,6 +634,8 @@ def evaluate(src: Sources) -> list[Violation]:
     # server-side (SGS_FX_TREATMENTS), offered client-side (TREATMENT_PRESETS), and
     # actually shader-backed on disk (*.frag.js) — three independent facts, and any
     # one missing means a broken or invisible treatment that still looks configured.
+    masked_type_facts = parse_css_masked_type_facts(src)
+
     treatment_triad = (
         (f"SGS_FX_TREATMENTS ({src.surface_treatment_php.name})", set(treatment_allowlist)),
         (f"TREATMENT_PRESETS ({src.surface_treatment_presets_js.name})", set(treatment_presets)),
@@ -620,6 +657,38 @@ def evaluate(src: Sources) -> list[Violation]:
                 "src/shared/effects/surface-treatments/presets.js, and a matching "
                 f"{treatment_id}.frag.js in the same directory), or remove it from all "
                 "three consistently.",
+            ))
+
+    # ---- I8: a masked field type reads the LOCAL pair and skips participants --
+    for type_name in sorted(masked_type_facts):
+        f = masked_type_facts[type_name]
+        if not f["declares_mask"]:
+            continue
+        if not f["mask_uses_local_pair"]:
+            violations.append(Violation(
+                "I8",
+                "cursor-field type `" + type_name + "` sets `--sgs-cursor-field-mask` "
+                "but its mask does NOT read `--sgs-cursor-local-x/y`. A mask resolves "
+                "`at X Y` against the ELEMENT's own box, not the viewport, so the "
+                "viewport pair lights a spot offset by that element's distance from the "
+                "viewport top (measured +256px when this last shipped - the pool fell "
+                "below the section that owned it).",
+                "In that rule, change the mask's `at var(--sgs-cursor-x) "
+                "var(--sgs-cursor-y)` to `at var(--sgs-cursor-local-x) "
+                "var(--sgs-cursor-local-y)`. The emitter publishes that pair alongside "
+                "the viewport one (cursor-field.js).",
+            ))
+        if not f["opts_out_of_participants"]:
+            violations.append(Violation(
+                "I8",
+                "cursor-field type `" + type_name + "` sets a mask but does not declare "
+                "`--sgs-cursor-field-participant-layer: none`. Each participant resolves "
+                "the mask against its OWN box, cutting its reveal at a different screen "
+                "point from the emitter - measured 155px apart. Masked types are "
+                "EMITTER-ONLY (D767 option A, Bean-ruled).",
+                "Add `--sgs-cursor-field-participant-layer: none;` to that rule. Unmasked "
+                "types (`glow`, `parallax-pattern`) must NOT set it - they keep full "
+                "participant coverage.",
             ))
 
     return violations
@@ -666,7 +735,7 @@ def _print_report(src: Sources, violations: list[Violation]) -> None:
 # proven for the fields its self-test actually perturbs, and 'I added the comparison' is
 # not evidence the comparison runs."
 #
-# So: assert clean, then break EACH of the seven invariants in turn against a temp copy
+# So: assert clean, then break EACH of the eight invariants in turn against a temp copy
 # (I7's three independent legs each get their own break), assert each is caught by its
 # OWN invariant id, restore, re-assert clean. Then a final case — blank a source file —
 # proving the vacuity guard fires rather than reading green.
@@ -777,6 +846,23 @@ _CASES = (
         "surface_treatment_presets_js",
         "\t\tid: 'duotone',\n",
         "",
+    ),
+    _Case(
+        # I8: reintroduce the D767 bug - a masked type reading the VIEWPORT pair.
+        # ADDS a mask rather than editing one: both masked types carry byte-identical
+        # mask blocks today, so a literal anchor on the mask text would match twice and
+        # the break would not land. The parser reads the FIRST mask declaration in the
+        # rule body, so an injected one ahead of the real one is what gets classified.
+        # The 22px pattern-size anchor is unique to spotlight-mask.
+        "I8", "give a masked type a viewport-pair mask (the D767 bug, reintroduced)",
+        "cursor_field_css",
+        "	--sgs-cursor-field-pattern-size: 22px;",
+        "	--sgs-cursor-field-pattern-size: 22px;\n"
+        "	--sgs-cursor-field-mask: radial-gradient(\n"
+        "		200px circle at var(--sgs-cursor-x) var(--sgs-cursor-y),\n"
+        "		#000 0%,\n"
+        "		transparent 70%\n"
+        "	);",
     ),
 )
 
@@ -917,9 +1003,9 @@ def _self_test() -> int:
         print(f"[fx-list-drift --self-test] FAIL — unproven: {', '.join(failures)}. Those "
               "invariants read green forever. Fix the check.")
         return 1
-    print("[fx-list-drift --self-test] PASS — all 10 cases: baseline clean, each of the seven "
-          "invariants provably fails on its own break (I7 across all three of its legs), "
-          "the vacuity guard fires, and the restore returns to clean.")
+    print(f"[fx-list-drift --self-test] PASS — all {len(_CASES) + 1} cases: baseline clean, "
+          "each of the eight invariants provably fails on its own break (I7 across all "
+          "three of its legs), the vacuity guard fires, and the restore returns to clean.")
     return 0
 
 
@@ -957,7 +1043,7 @@ def main() -> int:
             print(f"\n[fx-list-drift] {len(violations)} finding(s) — report mode, exit 0. "
                   "Run with --check to gate.")
         else:
-            print("\n[fx-list-drift] All seven invariants hold.")
+            print("\n[fx-list-drift] All eight invariants hold.")
         return 0
 
     if violations:
@@ -965,7 +1051,7 @@ def main() -> int:
               "violation(s) above. Each one is an effect or attribute that would ship "
               "looking healthy while doing nothing.")
         return 1
-    print("\n[fx-list-drift] GATE PASSED — all seven invariants hold.")
+    print("\n[fx-list-drift] GATE PASSED — all eight invariants hold.")
     return 0
 
 
