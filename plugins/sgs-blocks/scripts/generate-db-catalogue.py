@@ -49,6 +49,11 @@ PRIORITY = [
     "blocks", "block_attributes", "block_composition", "block_capabilities",
     "block_supports", "property_suffixes", "slots", "roles", "variant_slots",
     "preset_implications", "fx_effects",
+    # The five other tables traced on 2026-08-24. Without them their COLUMN_MEANING
+    # entries render NOWHERE - the catalogue would hold the findings and show none
+    # of them, which is the exact written-never-read defect this catalogue exposes.
+    "array_item_schema", "design_tokens", "block_selectors", "animation_tokens",
+    "schema_metadata",
 ]
 
 # Columns worth expanding into a value vocabulary — the ones usable as MARKERS
@@ -107,8 +112,44 @@ COLUMN_MEANING = {
     ("block_selectors", "selector"): "A PASSIVE MIRROR of each block.json own selectors key. WordPress reads block.json directly at register_block_type and never consults this table, so editing a row changes nothing at runtime. Its single reader is generate-block-reference.py:90-93, a docs generator. Two writers exist with undocumented last-one-wins semantics (sgs-update-v2.py:1171 and an out-of-repo populate-db.py), self-flagged in the code at :1165-1170.",
     ("animation_tokens", "name"): "FOSSIL relative to the shipped runtime. The live animation system (src/blocks/extensions/animation.js:21-38) hardcodes its own 17-entry vocabulary and shares only part of this table 8; zero of these token names appear as @keyframes in any CSS under src/ or the theme. Only the sgs-db.py lookup CLI reads it.",
     ("animation_tokens", "used_by"): "Name overstates it — means blocks whose sgsAnimation attribute DEFAULTS to this value (seed-motion-fx-registry.py:1170-1188). An operator who picks the animation by hand is invisible here.",
+    ("fx_effects", "effect"): "Primary key and the effect's public identity — the value that appears in `data-sgs-fx`. Closed vocabulary chosen by hand to match Spec 38 §11.2; every consumer keys off it (generate-fx-effects-php.py:88, generate-fx-qualifying-blocks.py:779).",
+    ("fx_effects", "plugin_set"): "JSON array of GSAP plugin names the effect needs. LIVE — generate-fx-effects-php.py:165-169 emits it into generated-fx-effects.php, and class-sgs-motion-registry.php uses it to decide which vendor module to enqueue. This is what keeps a page that uses no GSAP effect shipping zero GSAP bytes.",
+    ("fx_effects", "pins"): "Whether the effect pins its element during scroll. Drives the editor's fxEnd control wording (generate-fx-effects-php.py:167,232). Hand-set but empirically grounded — each row's seeder comment cites the source file checked, e.g. 'VERIFIED: fx-pin-scrub.js sets pin:true'.",
+    ("fx_effects", "creates_panel"): "Whether the effect may create a standalone FX panel (FR-38-25). Read at generate-fx-qualifying-blocks.py:854. Both readers guard on PRAGMA table_info before selecting it and fall back to 1 — so the risk case is the column being ABSENT on a pre-migration DB, not NULL.",
+    ("fx_effects", "editor_story"): "FOSSIL as of 2026-08-24 — no operational reader. generate-fx-effects-php.py:26 states outright that editor/JS-facing concerns are not carried here; only the reseed self-test touches it.",
+    ("fx_effects", "created_at"): "FOSSIL — SQL DEFAULT (datetime('now')), never written by application code and read by nothing.",
+    ("array_item_schema", "block_slug"): "Part of the composite PK. Scoped DELETE-then-INSERT per block (sgs-update-v2.py:1049) means one /sgs-update run fully replaces that block's rows — no cross-run conflict is possible by construction.",
+    ("array_item_schema", "array_attr"): "Which array-typed attribute on the block these field rows describe. DECLARED — the attribute name straight from block.json.",
+    ("array_item_schema", "field_key"): "One key of the array's item shape, copied verbatim from block.json `items.properties` (sgs-update-v2.py:1055-1057). This is the declarative replacement for the retired hand-authored arrayItemSchema mechanism (D248).",
+    ("design_tokens", "slug"): "Primary key. DECLARED from theme.json for framework tokens; for shadows and font sizes it is the source slug PLUS a hand-added type prefix (enrich-db.py:531,555,578). That prefix is load-bearing — outer_box.py:166 matches on `slug LIKE 'shadow-%'`, so the naming convention IS part of the read contract.",
+    ("design_tokens", "default_value"): "The token's literal CSS value, copied verbatim from theme.json. One of only two columns any runtime consumer actually reads (outer_box.py:166-171).",
+    ("design_tokens", "description"): "FOSSIL — written as `preset.name` with the slug as fallback, read by nothing anywhere in the tree.",
+    ("block_selectors", "id"): "Surrogate PK only. Rows are addressed by (block_slug, element) in practice; nothing reads this.",
+    ("block_selectors", "block_slug"): "Which block the selector mapping belongs to. Note this table is pruned separately from the generic orphan sweep (sgs-update-v2.py:1238-1249) — the standard prune_orphans stage does NOT cover it.",
+    ("block_selectors", "element"): "The WordPress Selectors-API element path this row maps (root / typography / border / color.text and so on). Nested block.json keys are flattened to `element.sub` at write time (sgs-update-v2.py:1172-1189).",
+    ("animation_tokens", "id"): "Surrogate PK. Rows are addressed by `name` (UNIQUE); nothing reads this column.",
+    ("animation_tokens", "keyframes"): "CSS @keyframes body for the token. FOSSIL — no @keyframes matching any token name exists in any CSS file under src/ or the theme (negative grep, zero hits), so nothing renders this.",
+    ("animation_tokens", "duration"): "Intended animation duration. FOSSIL — same as keyframes; the live extension drives timing via its own CSS transitions.",
+    ("animation_tokens", "easing"): "Intended easing curve. FOSSIL — no operational reader.",
+    ("animation_tokens", "description"): "Human-readable note. FOSSIL — read only by the sgs-db.py `animations` lookup CLI, which is an operator convenience, not build or runtime code.",
+    ("animation_tokens", "category"): "Grouping label. FOSSIL — no operational reader.",
+    ("animation_tokens", "created_at"): "Seed timestamp. FOSSIL — no reader.",
+    ("schema_metadata", "key"): "This table is KEY-VALUE shaped, so the meaning lives per ROW, not per column — see the 'Row keys' table below. Four keys exist. Written by INSERT OR REPLACE (upsert_metadata), so a key is never NULL once its stage has run.",
+    ("schema_metadata", "value"): "The value for `key`, always stored as TEXT regardless of the value's real type. Read the per-key notes below before trusting any of these — one of the four is stale by construction.",
+}
+
+
+# Per-ROW meanings for KEY-VALUE shaped tables. These were originally written into
+# COLUMN_MEANING keyed on a row key rather than a column name, so the renderer -
+# which looks up (table, column) from PRAGMA table_info - never matched them and
+# they rendered NOWHERE. Verified 2026-08-24: zero occurrences in the generated
+# dev-setup.md, including the wp_version root cause. Written, never read - the same
+# defect class this catalogue exists to expose. They now render as their own table.
+ROW_KEY_MEANING = {
     ("schema_metadata", "wp_version_indexed"): "STALE BY CONSTRUCTION, not by neglect. Stage 2 writes whatever --wp-version holds, and that flag defaults to WP_VERSION_DEFAULT = 7.0, a hardcoded literal at sgs-update-v2.py:97 never bumped after the canary moved to 7.1 on 2026-08-20. Every full run therefore RE-ASSERTS the wrong value. The one mechanism that would catch it (stage_8_drift_gate) does run, does compare against the live site, and only prints — its own TODO to wire it into a deploy hook is unactioned, and grep confirms nothing outside sgs-update-v2.py calls it. Verified 2026-08-24.",
     ("schema_metadata", "last_full_refresh_ts"): "Write-only audit timestamp — no reader anywhere. Useful to a human asking when this last ran. Written None in dry-run mode (sgs-update-v2.py:3885), so NULL distinguishes dry-run-only from never-ran.",
+    ("schema_metadata", "last_variation_sync_ts"): "Write-only audit timestamp for the variation sync (sgs-update-v2.py:4353). No reader anywhere.",
+    ("schema_metadata", "indexed_blocks_count"): "Count of blocks scanned at the last Stage 1 run. STRUCTURAL (a live COUNT), no reader found. UNVERIFIED: the exact writer line was located by grep context and not read in full - flagged rather than asserted.",
 }
 
 
@@ -201,6 +242,17 @@ def build(con) -> str:
             cell = cell.replace("|", "\\|")
             out.append("| `%s` | %s | %s | %s |" % (name, ctype or "?", pct, cell))
         out.append("")
+        # KEY-VALUE tables carry their meaning per ROW, not per column. Emit those
+        # too, or the notes are unreachable — they were, until 2026-08-24.
+        row_keys = sorted(k for (tbl, k) in ROW_KEY_MEANING if tbl == t)
+        if row_keys:
+            out.append("Row keys (this table is key-value shaped):")
+            out.append("")
+            out.append("| Key | Meaning |")
+            out.append("|---|---|")
+            for k in row_keys:
+                out.append("| `%s` | %s |" % (k, ROW_KEY_MEANING[(t, k)].replace(chr(124), chr(92) + chr(124))))
+            out.append("")
     out.append("Regenerate with:")
     out.append("")
     out.append("```bash")
