@@ -705,7 +705,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 20 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 572 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 573 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 2 | working-area helpers |
 | `.claude/hooks/` | 9 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1221,7 +1221,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 499 scripts
+#### `plugins/sgs-blocks/scripts/` — 500 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1667,6 +1667,7 @@ for the verb you happen to have in mind.
 | `scan-component-adoption.js` | — | WHY THIS EXISTS |
 | `seed-48-sku-fixture-v2.php` | — | SGS 48-SKU Fixture — v2 ADDITIVE presentation-meta seeder (Spec 27 Phase 2). |
 | `seed-48-sku-fixture.php` | — | SGS 48-SKU WooCommerce Fixture — Developer Script |
+| `seed-component-adoption.py` | — | write the unification ADOPTION LEDGER to `components`. |
 | `seed-composition-roles.py` | — | idempotent corrections to block_composition.composition_role. |
 | `seed-mamas-products.php` | — | Seed script — Mama's Munches reference products (Spec 24 Phase A). |
 | `seed-motion-fx-registry.py` | — | idempotent editorial seeder for the Spec 38 motion system. |
