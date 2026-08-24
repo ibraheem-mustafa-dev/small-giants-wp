@@ -1,5 +1,67 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D765 — three vestigial editor components deleted; the orphan shadow slugs were WRONG, not merely dead
+**2026-08-24** · [ROUTINE] · Bean-ruled
+
+**Deleted from `src/components/`:** `SgsLinkControl.js`, `StateToggleControl.js`, `DeviceTabs.js`.
+All three: **0 real mounts anywhere in `src/`, at any depth**, confirmed by two independent methods
+before deletion. No file imported them — only the barrel re-export in `components/index.js`, now
+removed. Plugin builds clean; every postbuild gate green.
+
+Each was superseded, and each said so in its own docblock:
+- `SgsLinkControl` → `LinkPopoverControl` (11 adopters), whose header states it "supersedes
+  `SgsLinkControl`'s INLINE mount as the canonical shape".
+- `StateToggleControl` → `DesignTokenPicker`'s `states` prop; Normal/Hover lives INSIDE the colour
+  popover. Its own docblock already read "currently dead code". **This closes Spec 35 Part O §6's
+  open decision (D673)** — the spec asked "wire it, or delete it and make the `states`-prop route
+  canonical"; Bean chose delete, and the spec now records that rather than still reading as open.
+- `DeviceTabs` → the single global tier toggle docked at the bottom of the inspector (Spec 35
+  Phase 1.3). Per-control device tabs no longer exist.
+
+⛔ **THE DETECTOR NAMES STAY — deleting them would blind three live rules.** `25-no-own-device-switcher`
+and `27-superseded-link-control` exist to CATCH these names in a block's `edit.js` and match by
+literal string, not by resolving the component file, so the files' removal does not affect them;
+removing the names would. `golden-controls.json` keeps `DeviceTabs` as a `bannedLookalike` for the
+same reason. **Rule 24 was different and WAS repointed**: it maps raw `URLInput`/`LinkControl` to a
+CANONICAL wrapper, so it now names `LinkPopoverControl` — a canonical mapping must name a component
+that exists, or the rule tells a developer to adopt a deleted file. Self-tests pass, including the
+harness meta-check that deliberately breaks a rule to prove the suite is not vacuous.
+
+⭐ **I ARGUED AGAINST TWO OF THESE DELETIONS AND WAS WRONG BOTH TIMES.** I claimed all three were in
+`golden-controls.json` as canonical standards. A structured search found ONE entry — `DeviceTabs`,
+as a BANNED lookalike. My check had been `name in json.dumps(doc)`, a substring match that hit prose.
+And I cited a CLAUDE.md line calling `StateToggleControl` canonical that Spec 35 line 736 had already
+contradicted. Both objections came from unread data.
+
+**The orphan shadow slugs were not merely dead — they were WRONG.** `shadow-sm`/`md`/`lg` were absent
+from `theme.json` but carried byte-identical CSS values to the live `subtle`/`raised`/`floating`
+presets. While both existed the resolver picked the ORPHAN, so the converter emitted `shadow="md"` —
+a slug that resolves to NOTHING in the current theme. Deleting them made it emit `"raised"`, which is
+real. 5 tests failed on the change because they encoded the broken behaviour; updated to the live
+slugs, 24 pass. 4 shadow rows remain, matching theme.json exactly.
+
+**`WP_VERSION_DEFAULT` bumped "7.0" → "7.1"**, verified against the live canary over SSH rather than
+read from a doc. A stale value there is RE-ASSERTED as correct on every full run, not merely stale
+once. `stage_8_drift_gate` detects the mismatch, runs, and only `print()`s — still unwired.
+
+**7 dead `excluded-gate` baseline signatures cleared.** All pointed at `orchestrator/converter_v2/`,
+deleted at D276, with zero live entries beside them. The re-baseline hook correctly demanded a human
+sign-off token first.
+
+**EIGHT FALSE ZEROS FIXED in the adoption scanner (15 → 7 → 4 after deletion).** Every one was a
+consumption path the detector could not see: an indexed directory matched by FOLDER name when
+nothing writes `<colour-picker`; block-LOCAL component dirs never walked; block `index.js` absent
+from the corpus (`icons` is imported there by 35 blocks); PHP helpers credited only from block
+`render.php` when the `render_block` INJECTORS are real consumers; utils not closure targets; and a
+module exporting CONSTANTS being referenced rather than mounted or called.
+
+⚠ **A schema-drift gate caught what I missed.** D763 added four columns to the live DB via
+`ensure_schema()` and never regenerated `schema.sql` — the canonical contract went stale against its
+own database, and the build blocked until it was regenerated. The gate found it; I did not.
+
+---
+
+
 ## D764 — the mobile shop card was rebuilt, not folded; and the design council found a live bug
 **2026-08-24** · [INCIDENT] · shipped `ab87a73e`, `12b5492c`, `c8198dba`, `c91f3fac`, theme 1.5.73
 

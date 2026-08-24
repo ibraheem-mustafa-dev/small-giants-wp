@@ -1,7 +1,6 @@
 export { default as ResponsiveControl } from './ResponsiveControl';
 export { default as ResponsiveOverride } from './ResponsiveOverride';
 export { default as ResponsiveTriStateControl } from './ResponsiveTriStateControl';
-export { default as DeviceTabs } from './DeviceTabs';
 export {
 	default as ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
@@ -38,7 +37,6 @@ export {
 	isGradientValue,
 } from './GradientCapableColourControl';
 export { default as FocalPositionField } from './FocalPositionField';
-export { default as SgsLinkControl } from './SgsLinkControl';
 export {
 	default as LinkPopoverField,
 	LinkPopoverContent,
@@ -51,7 +49,6 @@ export { default as SgsMultiSelectField } from './SgsMultiSelectField';
 export { default as ScaleAxisControl } from './ScaleAxisControl';
 export { default as ShadowControl } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';
-export { default as StateToggleControl } from './StateToggleControl';
 export { default as AnimationControl } from './AnimationControl';
 export { IconPicker, IconPreview } from './IconPicker';
 export { default as RowQuickInsertAppender } from './RowQuickInsertAppender';

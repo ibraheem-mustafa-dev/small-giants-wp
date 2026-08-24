@@ -116,7 +116,7 @@ CREATE TABLE components (
         file_path TEXT NOT NULL,
         description TEXT,
         props TEXT
-    );
+    , family TEXT, functionality TEXT, adopters INTEGER, adopter_list TEXT);
 
 -- table: deploy_steps
 CREATE TABLE deploy_steps (

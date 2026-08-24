@@ -11,7 +11,7 @@ GROUND-TRUTH: spec=31 §3.A source=db
   2026-08-24 from a mistyped 'size' via .claude/reports/2026-08-24-design-tokens-shadow-fix.sql
   — the design_tokens CHECK constraint declares 'shadow' as its own token_type):
 
-NOTE (2026-08-24, D764): these assertions used to expect the slugs sm / md / lg.
+NOTE (2026-08-24, D765): these assertions used to expect the slugs sm / md / lg.
 Those design_tokens rows were ORPHANS — absent from theme/sgs-theme/theme.json,
 left over from an older naming scheme — and they shared byte-identical CSS values
 with the live subtle / raised / floating presets. While both existed the resolver

@@ -133,8 +133,12 @@ const CANONICAL_FOR = new Map( [
 	[ 'ColorGradientControl', 'DesignTokenPicker' ],
 	[ 'GradientPicker', 'DesignTokenPicker' ],
 	[ 'PanelColorGradientSettings', 'DesignTokenPicker' ],
-	[ 'URLInput', 'SgsLinkControl' ],
-	[ 'LinkControl', 'SgsLinkControl' ],
+	// Repointed 2026-08-24: SgsLinkControl.js was DELETED as vestigial (0 mounts;
+	// LinkPopoverControl supersedes it and its own docblock says so). A canonical
+	// mapping must name a component that EXISTS, or this rule tells a developer
+	// to adopt a deleted file.
+	[ 'URLInput', 'LinkPopoverControl' ],
+	[ 'LinkControl', 'LinkPopoverControl' ],
 ] );
 
 function jsxName( openingElement ) {
@@ -152,7 +156,7 @@ module.exports = {
 	checklistItem: null,
 	title:
 		'A raw component the control-type contract BANS (Spec 35 §1/§2) must not appear in a ' +
-		'block\'s own edit.js — the canonical wrapper (DesignTokenPicker / SgsLinkControl) exists ' +
+		'block\'s own edit.js — the canonical wrapper (DesignTokenPicker / LinkPopoverControl) exists ' +
 		'precisely so callers never reach for the lookalike underneath it',
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],

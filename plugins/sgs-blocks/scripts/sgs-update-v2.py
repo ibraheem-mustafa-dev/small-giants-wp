@@ -39,7 +39,8 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                so a version-bump is visible before any operator-gated --apply.
  11. motion_fx_artefact_regen — regenerate the Spec 38 motion-fx shipped artefacts
                                (generated-fx-effects.php + generated-fx-effect-meta.json +
-                               generated-fx-qualifying-blocks.php + .json) from fx_effects
+                               generated-fx-qualifying-blocks.json — the .php mirror of the
+                               last one was DELETED as dead code at 1ac16ec9) from fx_effects
                                (DB, finalised by Stage 1's tail step) + block.json/edit.js/
                                style.css (files). Runs last so it always reads the DB
                                state this SAME invocation produced. See D432 follow-up,
@@ -97,7 +98,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 # BUMP THIS ON EVERY WP UPGRADE. Stage 2 writes schema_metadata.wp_version_indexed
 # from --wp-version, which DEFAULTS to this constant, so a stale value here is
 # silently RE-ASSERTED as correct on every full /sgs-update run - it does not
-# merely go stale once. Measured 2026-08-24 (D764): this said "7.0" while the
+# merely go stale once. Measured 2026-08-24 (D765): this said "7.0" while the
 # canary had been on 7.1 since 2026-08-20 (`wp core version` = 7.1, verified
 # over SSH, not read from a doc). stage_8_drift_gate DOES detect the mismatch
 # and only print()s it; its own TODO to wire that into a deploy hook is still
@@ -5608,12 +5609,14 @@ def stage_11_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
     `block_attributes.css_property` column, but explicitly deferred this half:
     the DB-authoring-source -> shipped-PHP/JSON regeneration step
     (`generated-fx-effects.php`, `generated-fx-effect-meta.json`,
-    `generated-fx-qualifying-blocks.php`, `generated-fx-qualifying-blocks.json`)
+    `generated-fx-qualifying-blocks.php`, `generated-fx-qualifying-blocks.json`
+    at the time — the `.php` mirror was later DELETED as dead code at 1ac16ec9,
+    so only the JSON twin is generated now)
     had NO automated writer at all. `npm run build`'s
     `run-motion-fx-generators.js` only ever invoked both generators with
     `--check` (verify, never write) — so a DB change or a block.json/edit.js/
-    style.css change could silently drift the four committed artefacts until a
-    developer remembered to run the generators by hand.
+    style.css change could silently drift the (then four, now three) committed
+    artefacts until a developer remembered to run the generators by hand.
 
     This stage is that missing writer. It runs the two generator scripts with
     NO `--check` flag (their write mode), exactly mirroring Stage 6/7's
