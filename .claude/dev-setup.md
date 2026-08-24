@@ -1360,7 +1360,7 @@ meaning shows a blank cell rather than an invented sentence.
 |---|---|---|
 | `animation_tokens` | 8 | — |
 | `array_item_schema` | 62 | — |
-| `attribute_gap_candidates` | 3587 | — |
+| `attribute_gap_candidates` | 3588 | — |
 | `block_attributes` | 3166 | yes |
 | `block_capabilities` | 486 | yes |
 | `block_changes` | 2735 | — |
