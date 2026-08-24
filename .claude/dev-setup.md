@@ -1354,7 +1354,7 @@ which are fossils. Counts, vocabularies and NULL rates here are GENERATED and mo
 on every reseed. What a column MEANS is hand-curated; a column with no curated
 meaning shows a blank cell rather than an invented sentence.
 
-**35 tables.** Priority tables are expanded column-by-column below.
+**33 tables.** Priority tables are expanded column-by-column below.
 
 | Table | Rows | Expanded |
 |---|---|---|
@@ -1363,7 +1363,6 @@ meaning shows a blank cell rather than an invented sentence.
 | `attribute_gap_candidates` | 3587 | — |
 | `block_attributes` | 3166 | yes |
 | `block_capabilities` | 486 | yes |
-| `block_changes` | 2735 | — |
 | `block_composition` | 211 | yes |
 | `block_selectors` | 75 | — |
 | `block_supports` | 1340 | yes |
@@ -1382,7 +1381,6 @@ meaning shows a blank cell rather than an invented sentence.
 | `modifier_suffixes` | 19 | — |
 | `pattern_coverage` | 108 | — |
 | `patterns` | 57 | — |
-| `pipeline_corrections` | 4 | — |
 | `plugins` | 3 | — |
 | `preset_implications` | 23 | yes |
 | `property_suffixes` | 154 | yes |

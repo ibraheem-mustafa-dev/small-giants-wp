@@ -64,19 +64,6 @@ CREATE TABLE block_capabilities (
         UNIQUE(block_slug, capability)
     );
 
--- table: block_changes
-CREATE TABLE block_changes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        block_slug TEXT NOT NULL,
-        change_type TEXT NOT NULL CHECK(change_type IN (
-            'created', 'modified', 'attribute_added',
-            'attribute_removed', 'grade_changed'
-        )),
-        description TEXT NOT NULL,
-        changed_date TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (block_slug) REFERENCES blocks(slug)
-    );
-
 -- table: block_composition
 CREATE TABLE block_composition (
   block_slug TEXT PRIMARY KEY,
@@ -257,18 +244,6 @@ CREATE TABLE patterns (
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     , content_shape   TEXT, mood            TEXT, style           TEXT, fingerprint     TEXT, source          TEXT, block_composition TEXT, parent_pattern_id INTEGER, perceptual_hash TEXT);
 
--- table: pipeline_corrections
-CREATE TABLE pipeline_corrections (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            pipeline TEXT NOT NULL,
-            stage TEXT,
-            source_url TEXT,
-            technique TEXT,
-            outcome TEXT,
-            correction TEXT NOT NULL,
-            created_at TEXT DEFAULT (datetime('now'))
-        );
-
 -- table: plugins
 CREATE TABLE plugins (
         slug TEXT PRIMARY KEY,
@@ -373,12 +348,6 @@ CREATE INDEX idx_block_attrs_slug ON block_attributes(block_slug);
 
 -- index: idx_block_caps_slug
 CREATE INDEX idx_block_caps_slug ON block_capabilities(block_slug);
-
--- index: idx_block_changes_date
-CREATE INDEX idx_block_changes_date ON block_changes(changed_date);
-
--- index: idx_block_changes_slug
-CREATE INDEX idx_block_changes_slug ON block_changes(block_slug);
 
 -- index: idx_block_supports_slug
 CREATE INDEX idx_block_supports_slug ON block_supports(block_slug);
