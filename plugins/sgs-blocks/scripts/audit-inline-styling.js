@@ -1,9 +1,13 @@
 /**
  * audit-inline-styling.js
  *
- * READ-ONLY DETECTION INSTRUMENT (not a build gate) — classifies HOW every
- * SGS block emits its styling, so a future "no-inline-styling" migration can
- * be planned from real data instead of guesswork.
+ * WIRED INTO `prebuild` AS A REAL GATE — `node scripts/audit-inline-styling.js --check`
+ * runs on every `npm run build` and sets `process.exitCode = 1` on any violation (see
+ * `plugins/sgs-blocks/package.json`'s `prebuild` chain + `npm run check:inline-styling`).
+ * This comment used to call it "not a build gate"; corrected 2026-08-24 once the Spec 32
+ * rollout made its `--check` mode load-bearing. It still classifies HOW every SGS block
+ * emits its styling, so a "no-inline-styling" migration could be planned from real data
+ * instead of guesswork — that purpose and the gate are not mutually exclusive.
  *
  * For each block under src/blocks/<block>/ this script classifies styling
  * emission into 5 buckets:

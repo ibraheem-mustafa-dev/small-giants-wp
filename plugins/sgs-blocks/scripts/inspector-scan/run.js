@@ -5,9 +5,10 @@
 // source=spec evidence=this is the entry point described in §4.1/§4.6/§4.9 —
 // CLI contract `default report | --check | --json`, mode table read from
 // rules.json (never prose/code), and a generic --self-test harness that a
-// rule cannot skip. NOT wired into prebuild yet (deliberately, per task scope
-// — that is a later, separate wave once the 6 currently-gating rules have
-// been migrated with a proven equivalence gate).
+// rule cannot skip. WIRED INTO BOTH gate chains — `node scripts/inspector-scan/run.js
+// --check` runs in package.json's `prebuild` chain AND in `.githooks/sgs-gates.sh`'s
+// commit-time chain. Corrected 2026-08-24: this comment said "NOT wired into prebuild
+// yet" after both wirings had already landed.
 
 const fs = require( 'fs' );
 const path = require( 'path' );

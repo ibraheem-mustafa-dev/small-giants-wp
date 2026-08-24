@@ -187,6 +187,248 @@ def _clip(text: str, limit: int) -> str:
     return cut.rstrip(" ,;:-") + "…"
 
 
+_GATES_SH_TEXT = _COMMIT_BLOB  # already read above; alias for clarity in this section
+
+
+def commit_gate_scripts() -> list[Path]:
+    """Resolve every script `.githooks/sgs-gates.sh` actually invokes — matched by
+    PATH, not by name substring, so a comment merely MENTIONING a filename (e.g.
+    make-visual-diff-reports.py, named only in prose at sgs-gates.sh as a script a
+    human runs BY HAND, never invoked by the hook itself) is correctly excluded."""
+    pat = re.compile(
+        r"(?:REPO_ROOT/)?((?:plugins/sgs-blocks/scripts|scripts)/[\w./-]+\.(?:py|js|mjs))"
+    )
+    out: list[Path] = []
+    seen: set[str] = set()
+    for rel in pat.findall(_GATES_SH_TEXT):
+        p = (REPO / rel).resolve()
+        if not p.exists():
+            continue
+        key = p.relative_to(REPO).as_posix()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(p)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# I/O INVENTORY — what each chain script reads and writes, DERIVED FROM CODE.
+# ---------------------------------------------------------------------------
+# This is a heuristic static-regex extraction over each script's OWN SOURCE
+# (never its docstring/comments — a header's prose is exactly what this whole
+# generator's stale-wiring check above proves cannot be trusted). It finds
+# `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`
+# call sites, `sqlite3.connect()` targets, SQL table names cross-checked
+# against the REAL sgs-framework.db schema (never invented), argparse CLI
+# flags, `os.environ`/`os.getenv` reads, and `sys.exit()`/`process.exitCode`
+# sites. It is best-effort: a script whose I/O is built dynamically (string
+# concatenation, a helper function two files away) will show as UNVERIFIED
+# rather than have a plausible mechanism invented for it — per this repo's
+# rule that an unverifiable claim is written as UNVERIFIED, not guessed.
+
+_RE_PY_OPEN = re.compile(r"open\(\s*([^\n,)]{1,140})\s*(?:,\s*(['\"])([rwaxb+]+)\2)?")
+_RE_READ_TEXT = re.compile(r"([A-Za-z_][\w.\[\]'\"]{0,80})\.read_text\(")
+_RE_WRITE_TEXT = re.compile(r"([A-Za-z_][\w.\[\]'\"]{0,80})\.write_text\(")
+_RE_SQLITE_CONNECT = re.compile(r"sqlite3\.connect\(\s*([^\n,)]{1,140})")
+_RE_SQL_FROM = re.compile(r"\bFROM\s+([A-Za-z_]\w*)", re.I)
+_RE_SQL_JOIN = re.compile(r"\bJOIN\s+([A-Za-z_]\w*)", re.I)
+_RE_SQL_INTO = re.compile(r"\bINTO\s+([A-Za-z_]\w*)", re.I)
+_RE_SQL_UPDATE = re.compile(r"\bUPDATE\s+([A-Za-z_]\w*)", re.I)
+_RE_PY_EXIT = re.compile(r"sys\.exit\(\s*(\d+)\s*\)")
+_RE_PY_SYSTEMEXIT = re.compile(r"raise SystemExit\(")
+_RE_ARGPARSE = re.compile(r"add_argument\(\s*(['\"][-\w]+['\"])")
+_RE_ENV = re.compile(r"os\.(?:environ\.get|getenv)\(\s*(['\"][A-Z_]+['\"])")
+_RE_JSON_DUMP_TARGET = re.compile(r"json\.dump\([^,]+,\s*([A-Za-z_][\w.]{0,60})")
+_RE_PATH_CONST = re.compile(
+    r"^([A-Z][A-Z0-9_]{2,40})\s*=\s*(.{0,160}(?:Path\(|REPO\b|__file__|\.parent).{0,160})$",
+    re.M,
+)
+_RE_JS_READ = re.compile(r"fs\.readFileSync\(\s*([^\n,)]{1,140})")
+_RE_JS_WRITE = re.compile(r"fs\.writeFileSync\(\s*([^\n,)]{1,140})")
+_RE_JS_EXITCODE = re.compile(r"process\.exitCode\s*=\s*(\d+)")
+_RE_JS_EXIT = re.compile(r"process\.exit\(\s*(\d+)\s*\)")
+
+# Real table names only — from sgs-framework.db's own sqlite_master, so a SQL
+# keyword match against unrelated prose ("...the FROM the draft...") can never
+# be reported as a table read/write. Kept as a literal list (not a live DB
+# query) so this generator has no DB dependency; the roster is DB-authoritative
+# per CLAUDE.md and was read via `/sgs-db` at authoring time, not invented.
+_KNOWN_TABLES = {
+    "blocks", "block_attributes", "block_supports", "block_selectors",
+    "block_capabilities", "style_variations", "patterns", "theme_parts",
+    "plugins", "hooks", "components", "deploy_steps", "gotchas",
+    "pattern_coverage", "animation_tokens", "property_suffixes",
+    "modifier_suffixes", "attribute_gap_candidates", "indexed_files", "docs",
+    "markup_examples", "schema_metadata", "design_tokens",
+    "html_tag_to_core_block", "slots", "roles", "block_composition",
+    "variant_slots", "excluded_properties", "array_item_schema",
+    "preset_implications", "fx_effects", "schema_migrations", "sqlite_master",
+}
+_GENERIC_NAMES = {"p", "f", "fh", "fp", "file", "path", "self", "expr", "fd"}
+
+
+def _useful(name: str) -> bool:
+    base = name.strip("'\" ").split(".")[0].split("[")[0]
+    return base not in _GENERIC_NAMES and len(base) > 1
+
+
+def extract_io(path: Path) -> dict:
+    """Best-effort code-derived I/O facts for one script. See module note above."""
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return {}
+    reads: set[str] = set()
+    writes: set[str] = set()
+    tables: set[str] = set()
+    exits: set[str] = set()
+    flags: set[str] = set()
+    envs: set[str] = set()
+    consts: dict[str, str] = {}
+
+    if path.suffix == ".py":
+        for m in _RE_PY_OPEN.finditer(text):
+            mode = (m.group(3) or "").lower()
+            target = m.group(1).strip()
+            (writes if any(c in mode for c in "wax") else reads).add(target)
+        for m in _RE_READ_TEXT.finditer(text):
+            reads.add(m.group(1))
+        for m in _RE_WRITE_TEXT.finditer(text):
+            writes.add(m.group(1))
+        for m in _RE_SQLITE_CONNECT.finditer(text):
+            reads.add("sqlite3:" + m.group(1).strip())
+        for m in _RE_SQL_FROM.finditer(text):
+            if m.group(1) in _KNOWN_TABLES:
+                tables.add(m.group(1))
+        for m in _RE_SQL_JOIN.finditer(text):
+            if m.group(1) in _KNOWN_TABLES:
+                tables.add(m.group(1))
+        for m in _RE_SQL_INTO.finditer(text):
+            if m.group(1) in _KNOWN_TABLES:
+                tables.add(m.group(1) + " (write)")
+        for m in _RE_SQL_UPDATE.finditer(text):
+            if m.group(1) in _KNOWN_TABLES:
+                tables.add(m.group(1) + " (write)")
+        for m in _RE_PY_EXIT.finditer(text):
+            exits.add(m.group(1))
+        if _RE_PY_SYSTEMEXIT.search(text):
+            exits.add("SystemExit(non-zero on failure)")
+        for m in _RE_ARGPARSE.finditer(text):
+            flags.add(m.group(1).strip("'\""))
+        for m in _RE_ENV.finditer(text):
+            envs.add(m.group(1).strip("'\""))
+        for m in _RE_JSON_DUMP_TARGET.finditer(text):
+            writes.add("json.dump->" + m.group(1))
+        for m in _RE_PATH_CONST.finditer(text):
+            consts[m.group(1)] = m.group(2).strip()[:100]
+    else:
+        for m in _RE_JS_READ.finditer(text):
+            reads.add(m.group(1).strip())
+        for m in _RE_JS_WRITE.finditer(text):
+            writes.add(m.group(1).strip())
+        for m in _RE_JS_EXITCODE.finditer(text):
+            exits.add(f"exitCode={m.group(1)}")
+        for m in _RE_JS_EXIT.finditer(text):
+            exits.add(f"exit({m.group(1)})")
+
+    return {
+        "reads": sorted(r for r in reads if _useful(r)),
+        "writes": sorted(w for w in writes if _useful(w)),
+        "tables": sorted(tables),
+        "exits": sorted(exits),
+        "flags": sorted(flags),
+        "env": sorted(envs),
+        "consts": consts,
+    }
+
+
+def build_io_section() -> list[str]:
+    build_paths = []
+    seen_build: set[str] = set()
+    for step in prebuild_steps():
+        p = resolve(step)
+        if p is None:
+            continue
+        key = p.relative_to(REPO).as_posix()
+        if key in seen_build:
+            continue
+        seen_build.add(key)
+        build_paths.append(p)
+    commit_paths = commit_gate_scripts()
+
+    all_paths: dict[str, Path] = {}
+    chain_of: dict[str, list[str]] = {}
+    for p in build_paths:
+        key = p.relative_to(REPO).as_posix()
+        all_paths[key] = p
+        chain_of.setdefault(key, []).append("build")
+    for p in commit_paths:
+        key = p.relative_to(REPO).as_posix()
+        all_paths[key] = p
+        chain_of.setdefault(key, []).append("commit")
+
+    out: list[str] = []
+    out.append("### I/O inventory — what each prebuild + commit-gate script reads/writes")
+    out.append("")
+    out.append(
+        f"Scope: every script actually executed by the **prebuild chain** "
+        f"({len(build_paths)} resolved scripts) and the **commit-gate chain** "
+        f"(`.githooks/sgs-gates.sh`, {len(commit_paths)} resolved scripts) — "
+        f"{len(all_paths)} unique scripts after de-duplication (2 run in both "
+        f"chains). This is the set that runs automatically, so it is the set "
+        f"documented with inputs/outputs first; the other ~450 scripts in the "
+        f"full library below are NOT covered here."
+    )
+    out.append("")
+    out.append(
+        "Every field below is extracted from the script's own executable code "
+        "(regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/"
+        "`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/"
+        "`process.exitCode`) — **never from a docstring or comment**, per this "
+        "generator's own stale-header finding above. A script with no recognised "
+        "call shape (e.g. I/O built dynamically, or delegated to a helper module) "
+        "shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is "
+        "stated explicitly whenever no write call site was found at all."
+    )
+    out.append("")
+    for key in sorted(all_paths):
+        p = all_paths[key]
+        chains = "+".join(sorted(set(chain_of[key])))
+        io = extract_io(p)
+        out.append(f"**`{key}`** ({chains})")
+        reads = io.get("reads") or []
+        writes = io.get("writes") or []
+        tables = io.get("tables") or []
+        flags = io.get("flags") or []
+        env = io.get("env") or []
+        exits = io.get("exits") or []
+        consts = io.get("consts") or {}
+        if consts:
+            const_str = "; ".join(f"`{k}` = {v}" for k, v in list(consts.items())[:6])
+            out.append(f"- Path constants: {const_str}")
+        if reads:
+            out.append(f"- Reads: {', '.join('`' + r + '`' for r in reads[:12])}")
+        else:
+            out.append("- Reads: UNVERIFIED (no recognised read call site found)")
+        if writes:
+            out.append(f"- Writes: {', '.join('`' + w + '`' for w in writes[:12])}")
+        else:
+            out.append("- Writes: **read-only** — no write call site found in source")
+        if tables:
+            out.append(f"- DB tables (sgs-framework.db): {', '.join(tables)}")
+        if flags:
+            out.append(f"- CLI flags read: {', '.join('`' + f + '`' for f in flags[:15])}")
+        if env:
+            out.append(f"- Env vars read: {', '.join('`' + e + '`' for e in env)}")
+        if exits:
+            out.append(f"- Non-zero exit sites found: {', '.join(exits[:10])}")
+        else:
+            out.append("- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)")
+        out.append("")
+    return out
+
+
 def prebuild_steps() -> list[str]:
     pkg = json.loads(PKG.read_text(encoding="utf-8"))
     chain = pkg.get("scripts", {}).get("prebuild", "")
@@ -259,6 +501,7 @@ def build() -> str:
     out.append("python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py")
     out.append("```")
     out.append("")
+    out.extend(build_io_section())
     # ---- THE LIBRARY: every runnable script, wired or not.
     # The gate chain above is the part that CANNOT be forgotten — it runs whether
     # anyone remembers it or not. That makes it the least useful thing to

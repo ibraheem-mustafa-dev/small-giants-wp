@@ -23,8 +23,10 @@ MODES
     python audit-feature-parity.py --self-test    # proves the gate can fail. Never touches the
                                                    # real DB, roster, or exceptions file.
 
-⚠ NOT YET WIRED INTO `prebuild` (package.json:7) — deliberately, this session. Wiring is the
-   one deferred step; see plugins/sgs-blocks/CLAUDE.md / the session report for why.
+✅ WIRED INTO `prebuild` — `python scripts/audit-feature-parity.py --check` runs on every
+   `npm run build` (see `plugins/sgs-blocks/package.json`'s `prebuild` chain). This line
+   previously said "NOT YET WIRED" after the wiring step landed; corrected 2026-08-24 —
+   verify against `package.json` before trusting a wiring claim in a header again.
 """
 import json
 import sqlite3
