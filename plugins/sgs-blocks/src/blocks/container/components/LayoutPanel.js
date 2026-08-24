@@ -166,7 +166,17 @@ export function LayoutPanel( {
 				) }
 			</ResponsiveOverride>
 
-			{ ( layout === 'flex' || layout === 'grid' ) && (
+			{ /*
+				  Vertical alignment (`align-items`) and Justify content (`justify-content`)
+				  are BOTH honoured by the shared PHP wrapper for flex AND stack — Stack fixes
+				  the axis (always column) but still reads `verticalAlign`/`justifyContent`
+				  (class-sgs-container-wrapper.php, Stack branch, ~line 1341). Flex direction
+				  and Flex wrap are flex-only: Stack's wrapper never reads `flexDirection`
+				  (the axis is fixed, not derived from it) and coerces `flex-wrap` to `nowrap`
+				  outright, so offering either control under Stack would be a dead control
+				  (`check-dead-controls.js`).
+			*/ }
+			{ ( layout === 'flex' || layout === 'stack' || layout === 'grid' ) && (
 				<SelectControl
 					label={ __( 'Vertical alignment', 'sgs-blocks' ) }
 					value={ alignItems }
@@ -203,23 +213,26 @@ export function LayoutPanel( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
-						label={ __( 'Justify content', 'sgs-blocks' ) }
-						value={ attributes.justifyContent || '' }
-						options={ [
-							{ label: __( '— default —', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
-							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-							{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
-							{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
-							{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
-							{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
-						] }
-						onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 				</>
+			) }
+
+			{ ( layout === 'flex' || layout === 'stack' ) && (
+				<SelectControl
+					label={ __( 'Justify content', 'sgs-blocks' ) }
+					value={ attributes.justifyContent || '' }
+					options={ [
+						{ label: __( '— default —', 'sgs-blocks' ), value: '' },
+						{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+						{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+						{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+						{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
+						{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
+						{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
+					] }
+					onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 			) }
 
 			{ layout === 'grid' && (
