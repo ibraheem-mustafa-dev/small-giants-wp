@@ -1,5 +1,72 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D760 — the 91px "impossible contradiction" was a WooCommerce percentage; grid re-landed
+**2026-08-24** · [INCIDENT] · shipped `1e7e2755`, theme 1.5.67
+
+**D758's unresolved contradiction is resolved, and it was never a contradiction.** It recorded
+that an INLINE `width:100%` on the grid item measured 313px while "the identical declaration
+from the stylesheet" measured 91px. The declarations were identical in TEXT and never in
+CASCADE WEIGHT — inline is (1,0,0,0) and wins; our stylesheet rule was (0,3,1) and lost.
+
+**The rule that was winning**, shipped by WooCommerce in an INLINE `<style>`, inside a
+`@media (min-width: 600px)` block, doubling a class to buy specificity — (0,4,1):
+
+```css
+.wc-block-product-template.is-flex-container.is-flex-container.columns-3 > li
+  { width: calc(33.3333% - 0.83333em); }
+```
+
+Under FLEX it never applied: our `flex: 1 1 <min>` set a definite flex-basis, and flex-basis
+beats `width` on a flex item. Under GRID flex-basis means nothing, so that `width` took over —
+and its PERCENTAGE resolved against the **grid area** (the track), not the row:
+
+```
+313.328 × 0.333333 − 0.83333 × 16px = 91.1093px      actual measured: 91.1094px
+```
+
+Exact to four decimal places. There is nothing else to explain.
+
+**⛔ Why D758's own "NOT a competing rule" finding was wrong, and it matters beyond this bug.**
+That check scanned 56 stylesheets and reported no rule matching the `li` setting `width`. It
+missed this one on two counts, and either alone is enough: the rule lives in an **inline** sheet
+(no `href`), and it is nested inside a **`CSSMediaRule`** — a flat walk of `sheet.cssRules`
+never descends into a media block. **A cascade audit that does not recurse into conditional
+rules and does not read inline `<style>` elements is not a cascade audit.** It returns a
+confident, clean, wrong answer — the most expensive kind. It cost a revert and a session.
+
+⭐ Two of D758's four "ruled out" items were therefore ruled out against an instrument that
+could not have seen the culprit. "NOT a competing rule" and "NOT a selector miss" both rested
+on it. **The other two (stale CSS, grid default stretch) stand.**
+
+**THE FIX: win on specificity, never on source order.** Ours is now (0,5,1) via a tripled
+`.is-flex-container`. ⛔ **Two classes is NOT enough** — (0,4,1) TIES WooCommerce, and a tie is
+decided by source order, where their inline `<style>` beats our linked file.
+
+**Negative control, both injected BEFORE WooCommerce's rule so neither could win on order:**
+
+| Selector | Specificity | Result |
+|---|---|---|
+| `…is-flex-container.is-flex-container > li` | (0,4,1) | **91.1px — still broken** |
+| `…is-flex-container.is-flex-container.is-flex-container > li` | (0,5,1) | **313.3px — fixed** |
+
+That control is the reason this shipped correct. The tie version passed every functional check
+when appended last, and would have shipped a fix whose correctness depended on load order.
+
+**Measured live, 5 products, before → after:**
+
+| Viewport | Row | Before | After |
+|---|---|---|---|
+| 1440px | 988px | 3 × 313.3 then **2 × 482.0** | **5 × 313.3**, no stretch |
+| 768px | 705px | 4 × 340.5 then **1 × 705.0** | **5 × 340.5**, no stretch |
+| 375px | 327px | 5 × 327.0 | 5 × 327.0, unchanged |
+
+Cards track their items at every width; no horizontal overflow at 375. Verified on the live
+canary with 0 probe styles injected, against the served stylesheet, after an `ssh` grep
+confirmed the file on disk.
+
+⚠ **Below 600px WooCommerce's rule does not apply at all** (`matchMedia` false), which is why
+375px was identical before and after — not evidence the fix is inert there.
+
 ## D758 — the shop grid swap is REVERTED, and here is what NOT to re-debug
 **2026-08-24** · [INCIDENT] · shipped `a197d35e`, regression `44383de1`, revert `be1b58d1`
 
