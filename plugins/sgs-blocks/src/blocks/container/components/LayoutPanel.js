@@ -178,7 +178,7 @@ export function LayoutPanel( {
 			*/ }
 			{ ( layout === 'flex' || layout === 'stack' || layout === 'grid' ) && (
 				<SelectControl
-					label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+					label={ __( 'Align items', 'sgs-blocks' ) }
 					value={ alignItems }
 					options={ ALIGN_OPTIONS }
 					onChange={ ( val ) => setAttributes( { alignItems: val } ) }

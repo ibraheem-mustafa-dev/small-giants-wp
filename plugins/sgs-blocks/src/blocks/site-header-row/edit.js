@@ -478,7 +478,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					initialOpen={ false }
 				>
 					<SelectControl
-						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+						label={ __( 'Align items', 'sgs-blocks' ) }
 						value={ alignItems || 'center' }
 						options={ VERTICAL_ALIGN_OPTIONS }
 						onChange={ ( val ) =>
