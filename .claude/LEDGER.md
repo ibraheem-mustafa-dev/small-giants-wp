@@ -249,7 +249,7 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-25 (T0/T1/T3 CLOSED; orphans are the front)
+## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-25 (T0/T1/T3/T4 + orphans CLOSED)
 
 ⭐ **START HERE: `.claude/prompts/2026-08-26-let-the-method-apply.md`** — but note TASK A and
 TASK C in it are now SHIPPED. Only **TASK B (the 27 orphans)** remains.
@@ -296,22 +296,42 @@ carry `marginTablet` but only 5 declare a base `margin`, because the other 39 ge
 WP-native `supports.spacing`, which `block_attributes` cannot see. **The carve-out stays
 withdrawn — there is no slow path to exempt anything from.**
 
+**T2 — 6 of 27 orphans WIRED (D776), every remaining verdict recorded.**
+Register: `reports/2026-08-24-script-revival-register.md`. Gates 66-71, tier `fast`, **~0.55s**.
+Wired: personal-data lint · render-closures · theme-native-spacing · shadow-mounts ·
+font-source-audit · overlay-siblings. **7 of 27 now wired** (1 already was).
+
+⛔ **`fanout-overlay-sibling-attrs.py` was RED against a contract D739 DELETED** — it wanted
+the colour/gradient tier siblings back. The evidence agent recommended `--fix --apply`, which
+would have **reintroduced 32 attributes another track deliberately removed**. Retargeted to the
+opacity axis (Bean's ruling) + made shape-aware. **A red gate on an obsolete contract is worse
+than no gate — its red reads as a backlog.** SUPERSEDED/retarget is a FOURTH verdict state the
+register's three did not have.
+
+⚠ **Three docs gave three counts of how many were wired** — register 0, LEDGER/prompt 2,
+enumerated **1**. Only the enumerated one was right.
+
+🚫 **`button_group.py` — Bean's ruling: NOT wanted.** The draft should author the wrapper for
+multi-button if it needs one; `recognition.py`'s draft-authored path is the mechanism.
+
 ### ▶ OPEN — priority order
 
-1. **Wire or delete the 27 orphans** — THE FRONT. Register:
-   `reports/2026-08-24-script-revival-register.md`. ⛔ Decide by RUNNING, never by docstring (a
-   triage got **13 of 52** wrong from headers). ⚠ **The register says `status: OPEN — nothing has
-   been wired` and "⛔ NOTHING HERE HAS BEEN WIRED" — which CONTRADICTS the "2 of 27 done" this
-   ledger and the prompt both carried. Verified by reading the file. Settle which is true before
-   wiring anything.** ⚠ RA-1 (`scripts/wc-pages-responsive-audit.js`) is at repo ROOT and needs
-   `--base <live domain>`, so it CANNOT be a prebuild gate — post-deploy vs the canary is its home.
-2. **The whole-file-diff gate** (above) — closes the method's last D-grade dimension. Small.
-3. **Spec 39's converter rework** — the pacing item for cloning.
-4. ⚠ **Bean's call: the revenue lane.** Council graded runway **F** — 11 of 1,740 commits touched
-   `sites/` in 30 days and none were client build work. Real and urgent; not started unprompted.
-5. ⏸ **Option A, deferred by design:** interrupt at the 4th file EDIT rather than the commit.
-   Decide once the commit gate has caught something real.
-
+1. **The whole-file-diff gate** — closes the method's LAST D-grade dimension (recoverability).
+   Make `changed-lines ≈ file-length` fail automatically instead of relying on a human
+   remembering `git diff --stat`. Small, and the panel named it as the single highest-value fix.
+2. **5 reporters need a fail condition before wiring** — they exit 0 regardless while finding
+   229 role refinements / 4,310 comment blocks / 393 fidelity gaps / 4 DB orphans. Wiring them
+   as-is enforces nothing.
+3. **2 gates are red against something REAL** — `attribution_ground_truth.py` (39 attributor
+   mismatches, all `rt-pseudo-before`) and `qc-correctness-regression.py` (`reports/baselines/`
+   never seeded). Fix the divergence / seed the baseline, then wire. Do NOT wire red.
+4. **Promote `probe-text-equivalence.js`** out of `migrate-core-blocks/` — it is generic (two
+   arbitrary URLs) and is the only working implementation of CLAUDE.md rule 4a. Its FOLDER is
+   why it was dismissed.
+5. **Spec 39's converter rework** — the pacing item for cloning.
+6. ⚠ **Bean's call: the revenue lane.** Council graded runway **F** — 11 of 1,740 commits
+   touched `sites/` in 30 days, none client build work. Real and urgent; not started unprompted.
+7. ⏸ **Option A, deferred by design:** interrupt at the 4th file EDIT rather than the commit.
 ### ▶ Anchored grades — round 3 (as EXERCISED, not as written)
 
 working-change **B** (was D) · recoverability **D** (held) · governance **B** (floor, untested) ·
