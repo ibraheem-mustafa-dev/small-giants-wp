@@ -305,20 +305,18 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 evidence: `reports/2026-08-24-migration-method-evidence.md` · grading:
 `rubrics/migration-method-grading.md`.
 
-⛔ **`.claude/THE-MIGRATION-METHOD.md` IS BINDING.** >3 blocks/files/call sites → detector
-first. **NEW: if CLIENT-VISIBLE, settle the SHAPE before censusing (Step 3).** The colour
-rollout WAS census-driven on day 2 (`f6f3c0331`) and still cost a fortnight — a census
-answers how many/where/exempt, never what shape is right.
+⛔ **`.claude/THE-MIGRATION-METHOD.md` IS BINDING** and now ENFORCED (see below). >3
+files → detector first. **NEW: if CLIENT-VISIBLE, settle the SHAPE first (Step 3)** — the
+colour rollout WAS census-driven on day 2 (`f6f3c0331`) and still cost a fortnight.
 
 ### ✅ CLOSED
 
-**T1 — the serial build loop. `prebuild` 153.4s → 31.0s**, both ends measured. 61
-`&&`-joined commands → 5 generators + `run-gates.py` (runs every gate, reports ALL
-failures). Roster: `scripts/gates.json`. 57 of 61 still per-build; the 4 heavyweights
-(76.1% of the time) run pre-deploy via `build-deploy.py`'s new `step_gate_full()`.
-⛔ There was NO gate step to repoint — npm fires `prebuild` as a lifecycle hook, so
-splitting it alone would have silently dropped all four from the deploy.
-`npm run gate:wired` fails closed if that call disappears.
+**T1 — `prebuild` 153.4s → 31.0s**, both ends measured. 61 `&&`-joined commands → 5
+generators + `run-gates.py` (runs every gate, reports ALL failures). Roster:
+`scripts/gates.json`. 57 of 61 still per-build; the 4 heavyweights (76.1%) run pre-deploy
+via `build-deploy.py`'s new `step_gate_full()`. ⛔ There was NO gate step to repoint — npm
+fires `prebuild` as a lifecycle hook, so splitting it alone would have silently dropped all
+four from the deploy. `npm run gate:wired` fails closed if that call disappears.
 
 **T3 — the burn-down. `scripts/programme-progress.py`: 109 attrs / 37 families / 27
 properties** remain flat. ⛔ **No percentage, deliberately** — a finished migration deletes
@@ -326,43 +324,43 @@ its sibling rows, so the schema no longer holds the original total.
 
 ### ⚠ T0 — exercised, NOT closed
 
-4 rounds, 15 personas, **0 WRONG in round 4**. Rewritten around the shape-gate,
-then cut **670 → 582**. Gates built, all with negative controls, all proven to fail:
+4 rounds, 15 personas, **0 WRONG in round 4**. Rewritten around the shape-gate, cut
+**670 → 582**. Gates built, all with negative controls, all proven to fail:
 `crosscheck()`/`BARE_OK`/`WIDTH_OK` in `migrate-length-sanitiser.py` ·
-`check-withdrawn-figures.py` · `check-doc-citations.py` · tier-integrity in `run-gates.py`.
+`check-withdrawn-figures.py` · `check-doc-citations.py` · `run-gates.py` tier-integrity.
 
 ⛔ **THE COUNCIL WAS STRUCTURALLY ADDITIVE** — 9 personas, 9 MUST-FIX lists, zero asked to
-subtract; the doc grew every round (222→343→513→605→670). Round 4's **Cutter** and
-**Saboteur** found what nine reviewers missed. **Any future doc council needs a
-subtraction lens.**
+subtract; the doc grew every round (222→670). Round 4's **Cutter** and **Saboteur** found
+what nine reviewers missed. **Any future doc council needs a subtraction lens.**
+
+✅ **THE RULE IS NOW ENFORCED** (`hooks/detector-first-commit-gate.py`, PreToolUse/Bash).
+A commit making substantially the same change to 4+ code files with no detector is DENIED,
+bypass `[repeat-ok:<reason>]`. It reads the one thing an agent does not author — the diff.
+Proven end-to-end: 3/4/5 files → ALLOW/DENY/DENY, detector staged → ALLOW.
 
 ### ▶ OPEN — priority order
 
-1. ⛔ **BEAN'S CALL, NOT STARTED — the enforcement hook.** The Saboteur's core finding:
-   **every predicate the gate reads is authored by the agent it constrains** (`targets()`,
-   `classify()`, `EXCLUDE`, `BARE_OK`, the fixture band, the census JSON). It rated a full
-   evasion at **under an hour**, producing artefacts no check here can tell from
-   compliance. Its fix is a PostToolUse hook counting file edits — **that fires in every
-   session on this machine, so Rule 7 design gate with Bean BEFORE building.** Still-open
-   evasions: split commits under the trigger; self-classify client-visible as mechanical;
-   `classify()` falling through to `excluded`; nothing proves Step 11's "look".
-2. **Wire or delete the orphans** (TASK 2) — 2 of 27 done. Register:
-   `reports/2026-08-24-script-revival-register.md`. ⛔ Decide by RUNNING (a triage got 13
-   of 52 wrong from docstrings). **RA-1 is at repo ROOT `scripts/wc-pages-responsive-audit.js`,
-   needs `--base <live client domain>`, so it CANNOT be a prebuild gate — post-deploy vs
-   the canary is its honest home.**
-3. **Layer 2 proper** (TASK 5): APPLY a migration through Steps 1-11. Rounds 3-4 were
-   READ-ONLY. The doc's `closes_when` names this.
-4. **`--all-properties` + batching** (TASK 4) — 35 of 41 properties touch 1-2 blocks.
-5. **Spec 39's converter rework** — the pacing item for cloning.
-6. ⚠ **Bean's call:** the revenue lane. Council graded runway **F**.
+1. **Wire or delete the orphans** (TASK 2) — **Bean: next session.** 2 of 27 done.
+   Register: `reports/2026-08-24-script-revival-register.md`. ⛔ Decide by RUNNING (a
+   triage got 13 of 52 wrong from docstrings). **RA-1 is at repo ROOT
+   `scripts/wc-pages-responsive-audit.js`, needs `--base <live client domain>`, so it
+   CANNOT be a prebuild gate — post-deploy vs the canary is its honest home.**
+2. **USE the method for real.** Read and criticised 15 times; never once allowed to write
+   a file — four agents followed it READ-ONLY. The two worst defects all session (a green
+   gate over a fatal; a census silently collapsing to 4 files) were found by DOING. Run
+   TASK 5 through Steps 1-11 and let it apply. The doc's `closes_when` names this.
+3. **`--all-properties` + batching** (TASK 4) — 35 of 41 properties touch 1-2 blocks.
+4. **Spec 39's converter rework** — the pacing item for cloning.
+5. ⚠ **Bean's call:** the revenue lane. Council graded runway **F**.
+6. ⏸ **Option A, deferred by design:** interrupt at the 4th file EDIT, before the work is
+   done. Better trigger, harder judgement. Decide once the commit gate has caught
+   something real.
 
 ### ▶ Anchored grades
 
 Round 4: client-visible **B** (was C) · mechanical **C** (was D) · Saboteur **C** · Cutter
-**C**. **Overall C — capped by STRUCTURE, not correctness**, which is now A-territory. A−
-needs (a) the doc to become a card not a document and (b) enforcement outside the agent's
-authorship (item 1). **Neither comes from another review round.**
+**C**. **Overall C — capped by STRUCTURE, not correctness** (now A-territory). A− needs the
+doc to become a card, not a document. Enforcement is now half-closed (the commit gate).
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
