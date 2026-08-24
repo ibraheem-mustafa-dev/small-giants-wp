@@ -1,3 +1,74 @@
+## D768 — a census answers HOW MANY, never WHAT SHAPE; the shape-gate goes first [ROUTINE]
+
+**2026-08-24.** Bean's ruling, on evidence that overturned the method's own thesis.
+ claimed the 33-block colour rollout was slow because it
+had no census. It had one:  (2026-08-15, **day 2** of the window) built its
+worklist "from the DB's  census this session", landed 33 blocks in ONE commit,
+and caught two errors in the hand-derived list it replaced. It still cost a fortnight.
+
+What cost the fortnight was that the TARGET SHAPE was still being decided while it ran —
+D609 amended same-day after Bean rejected a build on sight, D618 caught by Bean on a live
+editor page, D621 overturning D618. Three of the five needed his eye on something rendered;
+a census cannot produce that.
+
+**New Step 3: for any CLIENT-VISIBLE change, build ONE instance, deploy it, get Bean's eye
+(R-31-13), and write the settled shape down BEFORE censusing.** Mechanical changes (renames,
+call-site swaps, helper adoption) skip it — both genuinely fast migrations were those, onto
+targets that had existed for 19 and 40 days. This also closes the Rule 7 design-gate
+conflict: the shape gate IS the design gate.
+
+## D769 — the gate chain becomes a two-tier roster; 153.4s to 31.0s [ROUTINE]
+
+**2026-08-24.**  was 61 -joined commands, 3,353 chars, FAIL-FAST — one defect
+per build. Measured end-to-end for the first time at **153.4s** (the ~128s figure in
+circulation was a single unrecorded spot-timing, 17% low).
+
+Roster moved to ;  runs every gate in a
+tier and reports ALL failures. Tiers picked BY MEASUREMENT: the four heavyweights were 76.1%
+of the total. 57 of 61 commands still run per build; those four run pre-deploy.
+
+⛔ ** had no gate step to repoint** — it calls  and npm fires
+ as a lifecycle hook, so splitting  alone would have silently dropped all
+four from the deploy path.  is new;  fails closed if
+that call disappears.
+
+## D770 — : the whole-corpus stage  structurally cannot be [INCIDENT]
+
+**2026-08-24.** A cold agent following the method shipped a green  over a tree with
+a live . Two causes, one mechanism:
+
+ computed , so  — a
+reference WITHOUT a trailing  — sat outside the pass/fail condition. This repo has real
+ones: / register  as a bare string, fired via . And  is a pure function of ONE file, so no cross-file precondition could ever reach a
+gate built on its output.
+
+ runs after the scan, sees every file at once, and  gates on it. Its
+users:  (every surviving bare mention pinned by per-file count with a reason) and
+, which reconciles  against  — a
+second, deliberately dumb, wide walk sharing no code with it. **Two lists derived two ways
+is the only check here the author cannot satisfy by choosing a number.** It found a real gap
+on its first run.
+
+## D771 — council grades need an anchored scale, and a subtraction lens [ROUTINE]
+
+**2026-08-24.** Bean: if round 1's findings were all fixed and the grades did not move, the
+grading is not measuring the document. Investigated; he was right, and the mechanism was
+worse than expected.
+
+Round 1's grades were never data — five personas, THREE recorded grades, and the
+ line had two attributable to nobody. The grade was also **anti-correlated
+with severity**: the persona that found an impossible instruction and a crash-inducing
+template gave C+; the one that verified 30 claims exact gave C.
+
+ makes each tier a checkable OUTCOME, with a
+floor (no confirmed finding above B-class ⇒ cannot grade below B), a ceiling (any confirmed
+F-class ⇒ cannot grade above D), and mandatory  counts.
+
+⛔ **And the roster itself was structurally additive.** Nine personas across three rounds,
+nine MUST-FIX lists, ZERO asked to subtract — the document grew every round, 222 → 670. A
+**Cutter** (subtraction only) and a **Saboteur** (evasion) each found what nine reviewers
+had missed. **Any future council on a document must carry a subtraction lens.**
+
 # small-giants-wp — Architectural Decisions Log
 
 ## D767 [INCIDENT] — the masked cursor-field looks lit the wrong spot for 23 days, and I buried the finding in a commit body (2026-08-24)

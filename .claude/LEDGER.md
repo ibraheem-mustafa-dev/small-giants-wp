@@ -299,73 +299,70 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-24
+## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-24 (T1 + T3 CLOSED; T0 exercised)
 
-⭐ **NEXT SESSION: `.claude/prompts/2026-08-25-detector-first-and-the-serial-loop.md`.**
-Full narrative: `memory/session-2026-08-24-colour-golden-tooling.md`.
+⭐ **Narrative: `memory/session-2026-08-24-detector-first-and-the-serial-loop.md`** ·
+evidence: `reports/2026-08-24-migration-method-evidence.md` · grading:
+`rubrics/migration-method-grading.md`.
 
-⛔ **THE METHOD IS NOW BINDING: `.claude/THE-MIGRATION-METHOD.md`.** More than 3 blocks,
-files or call sites → the first deliverable is the DETECTOR, not the edit. Pointer inserted
-into both CLAUDE.md files, dev-setup, Specs 31/32/35 and four active plans so a cold session
-meets it before it starts editing.
+⛔ **`.claude/THE-MIGRATION-METHOD.md` IS BINDING.** >3 blocks/files/call sites → detector
+first. **NEW: if CLIENT-VISIBLE, settle the SHAPE before censusing (Step 3).** The colour
+rollout WAS census-driven on day 2 (`f6f3c0331`) and still cost a fortnight — a census
+answers how many/where/exempt, never what shape is right.
 
-**Why, measured 2026-08-24:** `migrate-length-sanitiser.py` did a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here;
-`migrate-render-closures.py` a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here; `remove-vacuous-style-engine-guard.py`
-a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here. The block-by-block colour rollout took a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here (D609/D618/D621/D622/D632/D633/D634). Same repo, same week, same
-rules. Only the method differed.
+### ✅ CLOSED
 
-⛔ **NEVER QUOTE A D-DATE AS AN ELAPSED COST.** A previous session concluded the
-flat-to-object migration "took one day" because all six D-numbers are dated 2026-08-11.
-A D-number records when work LANDS, not the sessions spent building the scanner. Bean
-corrected it; the real span was ~2 weeks.
+**T1 — the serial build loop. `prebuild` 153.4s → 31.0s**, both ends measured. 61
+`&&`-joined commands → 5 generators + `run-gates.py` (runs every gate, reports ALL
+failures). Roster: `scripts/gates.json`. 57 of 61 still per-build; the 4 heavyweights
+(76.1% of the time) run pre-deploy via `build-deploy.py`'s new `step_gate_full()`.
+⛔ There was NO gate step to repoint — npm fires `prebuild` as a lifecycle hook, so
+splitting it alone would have silently dropped all four from the deploy.
+`npm run gate:wired` fails closed if that call disappears.
 
-### ▶ Council findings — 6 personas, every claim verified against code
+**T3 — the burn-down. `scripts/programme-progress.py`: 109 attrs / 37 families / 27
+properties** remain flat. ⛔ **No percentage, deliberately** — a finished migration deletes
+its sibling rows, so the schema no longer holds the original total.
 
-Grades: Ship-PM **D** · Spec-Lawyer **D** · Stateless-Agent Realist **D** · Leverage
-Engineer **D** · Cynic **D** · Economist **F**.
+### ⚠ T0 — exercised, NOT closed
 
-1. **The serial loop is the cost.** `prebuild` = 61 `&&` commands, 3,353 chars, ~128s,
-   FAIL-FAST. Two gates timed at 28.9s + 16.3s. One property × one build × one gate
-   failure at a time. Fix = consolidated runner + two tiers → **128s → ~32s**.
-2. **No completion metric exists.** 61 gates measure regression; none measures progress.
-   306 flat tier attrs remain; `css_tier` is **3,136 NULL of 3,166**.
-3. **Every `migrate-*.py` reads ZERO rows from the 3,166-row DB** — they re-glob
-   block.json. `find_target_files()` is **byte-identical** across two theme codemods.
-4. **27 built-and-never-wired tools**, incl. RA-1 (`go-live-checklist.md:81`), which is
-   MANDATORY and run by nobody.
-5. **Revenue lane is empty.** 11 of 1,740 commits touched `sites/` in 30 days and NONE
-   were client build work; `build-deploy.py` has ONE target and it is the canary.
+4 rounds, 15 personas, **0 WRONG in round 4**. Rewritten around the shape-gate,
+then cut **670 → 582**. Gates built, all with negative controls, all proven to fail:
+`crosscheck()`/`BARE_OK`/`WIDTH_OK` in `migrate-length-sanitiser.py` ·
+`check-withdrawn-figures.py` · `check-doc-citations.py` · tier-integrity in `run-gates.py`.
 
-### ▶ Shipped this session
+⛔ **THE COUNCIL WAS STRUCTURALLY ADDITIVE** — 9 personas, 9 MUST-FIX lists, zero asked to
+subtract; the doc grew every round (222→343→513→605→670). Round 4's **Cutter** and
+**Saboteur** found what nine reviewers missed. **Any future doc council needs a
+subtraction lens.**
 
-Gate A alive + quarantined green (13 passed / 37 strict-xfail) · `container_kind` refreshed
-· 6 DB tables fully catalogued · `components` rebuilt as an adoption ledger · 3 vestigial
-components deleted · **`audit-script-reachability.py`** (504 scripts, NINE false-positive
-classes closed, self-test 4/4 with negative control) · **`audit-script-cull-candidates.py`**
-(0 broken, 1 real duplicate of 604 files) · the tooling catalogue now shows HOW each of 519
-scripts runs · 1 duplicate deleted.
+### ▶ OPEN — priority order
 
-### ▶ OPEN
+1. ⛔ **BEAN'S CALL, NOT STARTED — the enforcement hook.** The Saboteur's core finding:
+   **every predicate the gate reads is authored by the agent it constrains** (`targets()`,
+   `classify()`, `EXCLUDE`, `BARE_OK`, the fixture band, the census JSON). It rated a full
+   evasion at **under an hour**, producing artefacts no check here can tell from
+   compliance. Its fix is a PostToolUse hook counting file edits — **that fires in every
+   session on this machine, so Rule 7 design gate with Bean BEFORE building.** Still-open
+   evasions: split commits under the trigger; self-classify client-visible as mechanical;
+   `classify()` falling through to `excluded`; nothing proves Step 11's "look".
+2. **Wire or delete the orphans** (TASK 2) — 2 of 27 done. Register:
+   `reports/2026-08-24-script-revival-register.md`. ⛔ Decide by RUNNING (a triage got 13
+   of 52 wrong from docstrings). **RA-1 is at repo ROOT `scripts/wc-pages-responsive-audit.js`,
+   needs `--base <live client domain>`, so it CANNOT be a prebuild gate — post-deploy vs
+   the canary is its honest home.**
+3. **Layer 2 proper** (TASK 5): APPLY a migration through Steps 1-11. Rounds 3-4 were
+   READ-ONLY. The doc's `closes_when` names this.
+4. **`--all-properties` + batching** (TASK 4) — 35 of 41 properties touch 1-2 blocks.
+5. **Spec 39's converter rework** — the pacing item for cloning.
+6. ⚠ **Bean's call:** the revenue lane. Council graded runway **F**.
 
-0. ⛔ **TASK 0 FIRST — harden the foundation (Bean's ruling).**
-   `.claude/THE-MIGRATION-METHOD.md` is `PROVISIONAL`: reviewed twelve ways, **used zero
-   times**. Three layers, in order: **(1)** council it with FRESH personas until every one
-   grades A− (max 3 rounds, then record the unresolved objection — do not grind);
-   **(2)** PROVE the A-grade method by running Task 5 strictly through Steps 1-11, where the
-   deliverable is the log of where the method FAILED, not the migration; **(3)** council
-   that RUN, then set `status:` from the evidence.
-   ⚠ Two findings will recur — pre-empt them: nothing ENFORCES the method (two personas
-   converged), and ten pointer banners restate figures that will drift.
+### ▶ Anchored grades
 
-1. **Collapse the serial build loop** (Task 1) — the 4× win, one afternoon.
-2. **Wire or delete the 27 orphans** (Task 2) — RA-1 first. Decide by RUNNING, not reading:
-   a triage got 13 of 52 wrong by trusting docstrings.
-3. **Build the burn-down** (Task 3) so the programme can report "done".
-4. **`--all-properties` + batching policy** (Task 4) — 35 of 41 properties touch 1–2 blocks.
-5. **Spec 39's converter rework** — still the pacing item for cloning; un-quarantines Gate A.
-6. **The never-clears `container_kind` writer** — it only ever SETS.
-7. ⚠ **Bean's call, not started:** the revenue lane (a real client in `TARGETS`, run RA-1).
-
+Round 4: client-visible **B** (was C) · mechanical **C** (was D) · Saboteur **C** · Cutter
+**C**. **Overall C — capped by STRUCTURE, not correctness**, which is now A-territory. A−
+needs (a) the doc to become a card not a document and (b) enforcement outside the agent's
+authorship (item 1). **Neither comes from another review round.**
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
