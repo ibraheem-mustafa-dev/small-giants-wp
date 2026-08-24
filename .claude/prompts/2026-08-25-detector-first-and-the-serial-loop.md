@@ -14,7 +14,7 @@ Invoke `/autopilot` first.
 ## Read before anything else
 
 1. **`.claude/THE-MIGRATION-METHOD.md`** — the binding method. Read it in full.
-2. `.claude/reports/2026-08-24-script-revival-register.md` — 28 built-and-never-wired tools.
+2. `.claude/reports/2026-08-24-script-revival-register.md` — 27 built-and-never-wired tools.
 3. `.claude/LEDGER.md` — the colour-golden section.
 
 ## Why this session exists
@@ -106,9 +106,9 @@ replaces.
 
 ---
 
-## TASK 2 — Wire or delete the 28 orphans (~2 hours)
+## TASK 2 — Wire or delete the 27 orphans (~2 hours)
 
-`.claude/reports/2026-08-24-script-revival-register.md` lists 28 scripts that were built,
+`.claude/reports/2026-08-24-script-revival-register.md` lists 27 scripts that were built,
 work, and are wired to nothing. **Start with `scripts/wc-pages-responsive-audit.js` — it is
 named as MANDATORY gate RA-1 in `.claude/specs/go-live-checklist.md:81` and nobody runs
 it.**
@@ -119,7 +119,7 @@ these got **13 verdicts wrong (25%)** by trusting headers. One docstring asserts
 Another advertises a `--self-test` mode that does not exist in the file.
 
 ⛔ **DELETION IS NOT THE CHEAP EXIT. Read this before touching anything.**
-A council found that "wire or delete, no third state" makes `git rm` on all 28 the
+A council found that "wire or delete, no third state" makes `git rm` on all 27 the
 cheapest fully-compliant path — **including RA-1, the mandatory go-live gate**. A session
 meant to restore enforcement would have destroyed it. So the two states are deliberately
 ASYMMETRIC:
@@ -131,7 +131,7 @@ ASYMMETRIC:
 - A third state EXISTS: `documented-as-manual-with-a-reason`, for anything needing a live
   canary or a human judgement.
 
-**Floor: if fewer than 20 of the 28 end up wired, the session laundered enforcement rather
+**Floor: if fewer than 20 of the 27 end up wired, the session laundered enforcement rather
 than restoring it. Say so plainly in the handoff.**
 
 ---

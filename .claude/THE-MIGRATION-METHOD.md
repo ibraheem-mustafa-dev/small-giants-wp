@@ -27,11 +27,18 @@ not the same measurement.
 |---|---|---|
 | `migrate-length-sanitiser.py` | 204 call sites, 56 files | **1 landing commit, 0 corrections** |
 | `migrate-render-closures.py` | 100 closures, 49 blocks | **1 landing commit, 0 corrections** |
-| Colour panel rollout | 33 blocks | **25 correction commits** (D609, D618, D621, D622, D632, D633, D634) |
+| Colour panel rollout | 33 blocks | **23 correction commits of 71**, across 10 working days (2026-08-14 → 08-24) |
 
 The claim that survives is not about days. It is about **corrections**: a census-driven
 pass lands once; a discovery walk lands twenty-five times. That is the whole argument and
 it needs no defending.
+
+⚠ **A THIRD unsupported figure was caught by review and corrected here.** This table 
+originally said "13 days, 25 corrections" and cited seven D-numbers as the evidence. 
+Those D-numbers span 2026-08-14 → 08-16 — **three days**. The figures above are now 
+DERIVED by enumeration: `git log --grep="SgsColourPanel\|colour-panel" ` returns 71 
+commits across 10 distinct days, 23 of which are fixes. Re-run it; do not trust this 
+sentence.
 
 ⚠ **Never quote a commit date or a D-number as an elapsed cost.** Both record when work
 LANDED, not the sessions spent building the scanner and getting it wrong first. This
@@ -113,6 +120,11 @@ Model file, verified and complete: **`plugins/sgs-blocks/scripts/migrate-length-
 shape.
 
 ### The skeleton — copy the SHAPE, with one exception marked ⛔ below
+
+⚠ **If a line number below does not land on the named construct, the model has moved.**
+Re-derive with `grep -n '^def \|^SELF_TEST\|^EXCLUDE' 
+plugins/sgs-blocks/scripts/migrate-length-sanitiser.py` and trust that, not this table. 
+The symbol names are stable; the numbers are a convenience and will rot.
 
 | Part | Where in the model | What it does |
 |---|---|---|

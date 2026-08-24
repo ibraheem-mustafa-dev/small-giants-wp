@@ -8,7 +8,7 @@ source: audit-script-reachability.py + 3 triage agents + 3 QC agents, every verd
 
 # Script revival register
 
-**28 scripts that were built, work, and nobody hooked up.** Bean's framing, which set the
+**27 scripts that were built, work, and nobody hooked up.** Bean's framing, which set the
 whole exercise: *"a lot of the time they had a great use but we forgot to wire them in and
 now they look dead but they may not be vestigial so it'd be worth reviving them."*
 
