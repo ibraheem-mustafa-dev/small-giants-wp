@@ -1,3 +1,107 @@
+## D772 — the archive header: one shared part, and the two things that CANNOT go in it [ROUTINE]
+
+**2026-08-24.** Bean's ruling: all four archives get one header. Measured live at 1440,
+they had three breadcrumb states (woocommerce / sgs / none), three count mechanisms
+(woocommerce product-results-count / core query-total / none) and three search states —
+and a shared part (`parts/sgs-archive-toolbar.html`) already existed that only ONE of the
+four used. That was the structural root, not the individual diffs.
+
+⛔ **The TITLE cannot live in the shared part.** Verified against WP core on the server
+(`wp-includes/blocks/query-title.php:23-29`): `('archive' === $type && !is_archive()) ||
+('search' === $type && !is_search())` returns ''. One `query-title` instance in a shared
+part renders EMPTY on whichever template its type does not match — a part typed
+"archive" would have silently blanked search.html's title. Found by the implementing
+agent, confirmed against core source rather than taken on trust.
+
+⛔ **The COUNT cannot either.** `core/query-total` only resolves inside a Query Loop, and
+the shop's count is a different block entirely (`woocommerce/product-results-count`,
+needs the product-collection context). Both stay per-template, inside their own query.
+
+So the part owns the BREADCRUMB; each template composes its correctly-typed title/count
+immediately after it. Order is identical everywhere; the blocks are not all identical and
+cannot be. The two search blocks also stay distinct — `sgs/product-search` is
+product-scoped by design and there is no general-purpose SGS search block, so their LOOK
+is what gets harmonised, not the block choice.
+
+Also fixed in passing, both confirmed live first: the duplicate search box on a no-results
+search (two boxes, y=216 and y=570 — the second is what Bean reported as "the search bar
+is at the bottom"), and the h1→h3 heading skip on search.html + archive.html.
+
+⚠ Consequence, flagged not hidden: the shop breadcrumb now reads "Home / Archives: Shop"
+where WooCommerce's said "Home / Shop". WordPress's own `Archives:` prefix. Bean's call.
+
+## D773 [INCIDENT] — a latent flex-row default becomes visible when the child count changes
+
+**2026-08-24.** D772's commit put the breadcrumb into the SAME ROW as the title and search.
+Measured live at 1440 before the fix:
+
+    /shop/   breadcrumb left=73 w=155 | h1 left=227 w=108 | search left=336
+    /?s=...  breadcrumb left=73 w=171 | h1 left=243 w=605 | search left=848
+
+The shop's h1 "Shop" was crushed to 108px. Every gate stayed green; the markup read
+correctly. Caught only by opening the page.
+
+⭐ **The default did not change — the CHILD COUNT did.** `sgs/container` defaults to
+`layout:"flex"` = a CSS row. That container previously held exactly ONE child (the toolbar
+part, which stacked internally via block flow), so the row default was invisible. Adding a
+second and third child made the latent default visible. This is the general shape behind
+the "accidental columns" question and behind D757's single-child-shrunk container: a
+one-child flex row is indistinguishable from a stack until someone adds a sibling.
+
+Fixed with `layout:"stack"` — the layout type that shipped earlier the same day. Restored
+the exact original geometry (breadcrumb 200 → title 238 → search 306) AND the approved order.
+
+⛔ **MY OWN CHECK WAS ALSO WRONG, and this is the reusable lesson.** The probe asserted
+`STACKED: true` by comparing TOP offsets (200 < 216) and returned true while the LEFT
+offsets (73 / 227 / 336) proved a row — vertical centring inside one flex row gives
+differing tops. **Compare LEFT when you mean "is this a row".** Same family as measuring
+the wrong element: the number was real, the axis was wrong. It only surfaced because the
+probe printed raw values beside its verdict rather than the boolean alone.
+
+## D774 — the `layout` allowlist is REFUTED as specified; and item 1 is verified [ROUTINE]
+
+**2026-08-24.** Two closures from the same session.
+
+⛔ **Do NOT add `enum`/allowlist `['', 'flex', 'stack', 'grid']` to `layout`.** A cross-block
+audit of all 83 `block.json` found NINETEEN blocks sharing the attribute name, several
+passing legitimate values straight through the shared wrapper: `masonry`/`carousel`
+(sgs/gallery), `list`/`masonry`/`carousel` (sgs/post-grid), `full`/`split`
+(sgs/testimonial-slider — and `full` is its DEFAULT, so the allowlist would have broken
+every testimonial slider in its out-of-the-box state). The proposal was design-gated
+BEFORE building, which is the only reason this was caught. A JSON enum is also project-
+banned doctrine (Spec 36:820, "No JSON `enum` — validate in PHP").
+
+⚠ Independent live bug found by that audit: `sgs/site-footer-row` mounts
+`ContainerWrapperControls` without `showLayout={false}`, so a duplicate Layout panel writes
+`stack` into an enum declaring only `flex|grid` — WP coerces it back to `grid`, silent data
+loss. `post-grid` and `testimonial-slider` were fixed for this on 2026-08-12;
+`site-footer-row` was missed. Not yet fixed.
+
+✅ **Item 1 (solid option-picker contrast) is VERIFIED.** No live template renders a
+solid-preset picker (`showPickers:false` on all four), so a fixture was built: canary page
+2736, `sgs/card-grid` `source:"cpt-collection"` `contentType:"product"` — NOT
+`wc-product`, because `showPickers` is only forwarded in the cpt-collection branch.
+Measured on `.sgs-option-picker--solid .sgs-option-picker__pill`:
+  resting border rgb(58,46,38) = the `text` token = **13.14:1** vs the white card
+  selected border/fill rgb(230,138,149) = `primary` = 2.49:1, by design (a solid fill)
+Had the fix not landed the resting border would read ~2.49:1. Page 2736 is now labelled
+`[GATE - DO NOT DELETE]` — it is the only surface on the site that renders this preset.
+
+⚠ Three wrong measurements preceded the right one, all self-caught: `__option` (the
+wrapper, correctly `border:0`) instead of `__pill`; a `slice(0,110)` in my own probe that
+truncated the class list just before `--solid`; and a transparent fill parsed as black
+giving a confident 21:1.
+
+⚠ **Item 4's "accidental columns" count is NOT zero.** `survey-flex-row-shape.py` reports
+36, all NO-OP — but it skips any container with an explicit `flexWrap` (line 109), and the
+same commit that fixed its regex authored `flexWrap:"wrap"` on 80 containers, removing them
+from the population without making them any less of a flex row. Re-running the same
+classifier with that one filter removed: **125 file-authored flex rows, 83 non-NO-OP**.
+The survey answers "is the flexWrap default flip safe?" (yes, for theme files) — NOT "how
+many accidental columns are there?". The retired 52/5/59 split cannot be reproduced from
+any artefact on disk.
+
+
 ## D768 — a census answers HOW MANY, never WHAT SHAPE; the shape-gate goes first [ROUTINE]
 
 **2026-08-24.** Bean's ruling, on evidence that overturned the method's own thesis.
