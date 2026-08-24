@@ -282,6 +282,10 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 
 ## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-24 (T1 + T3 CLOSED; T0 exercised)
 
+⭐ **START HERE: `.claude/prompts/2026-08-26-let-the-method-apply.md`** — the executable
+front for this track. It supersedes the 2026-08-25 six-task version, whose TASK 1 and
+TASK 3 have SHIPPED; a cold agent reading that one would redo closed work.
+
 ⭐ **Narrative: `memory/session-2026-08-24-detector-first-and-the-serial-loop.md`** ·
 evidence: `reports/2026-08-24-migration-method-evidence.md` · grading:
 `rubrics/migration-method-grading.md`.
