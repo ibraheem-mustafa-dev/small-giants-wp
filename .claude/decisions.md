@@ -1,5 +1,90 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D764 — the mobile shop card was rebuilt, not folded; and the design council found a live bug
+**2026-08-24** · [INCIDENT] · shipped `ab87a73e`, `12b5492c`, `c8198dba`, `c91f3fac`, theme 1.5.73
+
+**Bean's critique, and it was correct:** the first horizontal card "just folded" — the image
+stayed put, the body swung from underneath to beside it, and the content stack was left
+byte-identical to the vertical card. Measured: title 20px / description / price 28px / a 53px
+full-width CTA, in a 193px column. Nothing had been reconsidered for the format.
+
+He asked for a design council. Three seats ran in parallel: live measurement, visual design,
+adversarial.
+
+### ⛔ The adversarial seat found a bug I had shipped 40 minutes earlier
+
+The 1-up container-query threshold was derived as `2 × 240 + 24 = 504 → fire at ≤503px`, using
+the BASE `--sgs-shop-col-gap`. **The same file drops that variable to 16px below a 767px
+viewport, 90 lines further down** — so the real 2-up threshold there is 496px. That opened a
+window where the grid had already gone 2-up while the query still turned cards horizontal.
+
+**Reproduced live at a 563px viewport** (large phone landscape, small tablet, split screen, the
+editor's tablet preview): row 500px, gap 16px → **two 242px columns, cards still horizontal** →
+body 108px, **usable text 68px**, title 5 lines, cards 365px tall. That is the same failure the
+10a/10b comment documents as the reason never to force a column count ("a 138px card with a
+65px text column").
+
+⭐ **My own guard, three lines above the threshold, said "if either variable changes, recompute
+it" — and the override that changes it was already in the file when I wrote that.** Writing the
+warning is not the same as checking it. Threshold now derives from the SMALLEST gap any media
+query sets (495px); no dead band, because the 24px regime only exists above 767px where the row
+is ≥705px and the query never matches.
+
+### What the council converged on — 3/3 seats, 6/6 sites measured live at 375px
+
+Sites: IKEA, eBay, Tesco, Sainsbury's, Waitrose, Deliveroo.
+
+| Was | Evidence | Now |
+|---|---|---|
+| "View product" button, 53px, 21% of card | **0 of 6** carry a navigational CTA; where one exists it is transactional, and 2 of 6 reduce it to a 40–44px icon | dropped; card is the link |
+| Title 20px | **14–16px on all six** — ours exceeded the entire observed range | 17px / 1.3 |
+| Image stretched to card height | **6 of 6 fixed and square** | `aspect-ratio: 1`, top-aligned |
+| Padding 20px all round | every site ≤16px | 14px / 16px |
+| Price 28px | median ~19px; ours outsized the title | 20px |
+
+**Card-as-link needed no markup change** — the title is already an anchor, so its `::after` is
+stretched over the card. Accessible name stays the product title, one link per card, middle-click
+and open-in-new-tab still work. Focus ring drawn on the card via `:has(:focus-visible)` because
+the stretched anchor is invisible.
+
+**The square image also deleted a latent bug.** The old stretch chain carried a (0,3,0)
+specificity TIE against the block's own `.product-card--live .product-card__media
+.product-card-img{height:100%}`, decided by stylesheet load order — the same class of failure as
+D760's 91px incident. Removing the chain removed the tie.
+
+**Result at 375px:** heights 247/222/205/203/222 → **162/134/134/134/134**; page 2,700 → 1,953px.
+
+### Two corrections worth keeping
+
+- **A seat can be confidently wrong about your own code.** The design seat's lead objection was
+  that the image column is "a percentage that chases the card width". Measured: `flexBasis:
+  132px`, `isPercentage: false`. It had read a parenthetical in my brief as the implementation.
+  **My brief caused the error** — describing a fixed value as "132px (40%)" was the mistake.
+- **A seat also corrected ME.** I reported the per-card gap total by counting only VISIBLE
+  children; a zero-height flex child still consumes its gap. The empty `.product-card__cart-status`
+  live region was costing 8px on every card (measured 244.6 → 236.6). It is now hidden while
+  empty and **must not be deleted** — a live region has to exist before text is injected.
+
+### Also proven, and right by accident until now
+
+`aspect-ratio` only governs while the box is free to take that size. The 220px no-image
+placeholder overrode it, leaving one card at 222px beside neighbours at 134px. The card next to
+it clipped correctly **only because the block's CSS happens to put `overflow:hidden` on
+`.product-card__media` and not on `.sgs-product-card__media-wrap`** — right on one of the two
+markup paths, by luck. Both now carry it.
+
+### Open, by Bean's decision
+
+- **Description → an optional length-limited "listing line"**, custom or fed from the product
+  description. NOT BUILT. The description is deliberately left in place until it exists, because
+  on a food shop it carries allergen information.
+- **Uniform height is NOT a goal** (Bean). The adversarial seat's argument: at 1-up there is no
+  card beside another, so variance is invisible while scrolling — and the measurements agree,
+  4 of 6 reference sites have non-uniform rows. UX-improving changes were made anyway.
+- **PDP related rail:** peek-scroll with a client-controlled card width. NOT STARTED.
+- The horizontal treatment is scoped to `.sgs-shop-layout .wc-block-product-template` — a
+  WooCommerce-only carve-out. Other 1-up product grids do not get it (R-31-9 debt, named).
+
 ## D763 — `components` rebuilt as the unification adoption ledger; four roster defects found by checking members, not counts
 **2026-08-24** · [ROUTINE] · shipped `1b7c1c85` + `03f7e7f3` + `9236f3e5`
 
