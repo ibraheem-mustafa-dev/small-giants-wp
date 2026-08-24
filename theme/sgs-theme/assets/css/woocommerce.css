@@ -1346,51 +1346,20 @@ body.woocommerce-cart .with-empty-cart-icon,
  * Nothing errored. Intrinsic sizing removes that failure mode entirely: there is
  * no hardcoded width left to fall out of step with the gap.
  */
-/* ⛔ auto-FILL, never auto-FIT. Measured on the canary 2026-08-24, 1440px viewport,
- * 988px grid, 5 products: the old `flex: 1 1 <min>` on each item let a SHORT final row
- * share out the leftover space — row 1 rendered 3 cards at 313px and the final row
- * rendered 2 at 482px, 169px wider. Bean: "the width increase should only be when
- * someone sets all to 2 cards per row."
- *
- * `repeat(auto-fill, minmax(<min>, 1fr))` keeps the EMPTY trailing tracks, so a final
- * row of 2 sits at the same column width as a full row and simply leaves a gap.
- * `auto-fit` would COLLAPSE those empty tracks and reproduce the exact bug — the two
- * keywords differ only here, and only on the last row, which is why it is easy to ship
- * the wrong one and not notice.
- *
- * The intrinsic column count is preserved, which was the point of the original flex
- * version (see the note above): the count still derives from --sgs-shop-card-min, so
- * nothing hardcodes a column number and mobile still resolves to one full-width card. */
 .sgs-shop-layout .wc-block-product-template {
 	--sgs-shop-col-gap: 24px;
 	--sgs-shop-card-min: 240px;
 
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(var(--sgs-shop-card-min), 1fr));
 	column-gap: var(--sgs-shop-col-gap);
 	row-gap: 40px;
 }
 
-/* The grid track now sets the width, so the item must not size itself. `min-width: 0`
- * is the standard grid-item override — without it `min-width:auto` lets a wide child
- * (a long unbroken product title) push its track past 1fr and desync the columns. */
 .sgs-shop-layout .wc-block-product-template > li,
 .sgs-shop-layout .wc-block-product-template.columns-2 > li,
 .sgs-shop-layout .wc-block-product-template.columns-3 > li,
 .sgs-shop-layout .wc-block-product-template.columns-4 > li {
-	/* ⛔ `width: 100%` is load-bearing — do NOT reduce this to relying on the grid's
-	 * default stretch. Tested live on the canary 2026-08-24 in a 313px track:
-	 *   as shipped without it ......... 91px
-	 *   + justify-self: stretch ....... 91px  (stretch does NOT win here)
-	 *   + min-width: auto ............. 91px
-	 *   + width: 100% ................ 313px  ✓
-	 * WooCommerce still puts `is-flex-container columns-3` on the template and its own
-	 * item CSS defeats the grid item's default stretch. The old `flex: 1 1 <min>` used to
-	 * supply the width; removing it for the grid left the item with no sizing at all and
-	 * it collapsed to min-content. */
-	width: 100%;
+	flex: 1 1 var(--sgs-shop-card-min);
 	max-width: 100%;
-	min-width: 0;
 }
 
 /* Mobile keeps a tighter gutter; the column count still resolves itself from the
