@@ -1346,20 +1346,77 @@ body.woocommerce-cart .with-empty-cart-icon,
  * Nothing errored. Intrinsic sizing removes that failure mode entirely: there is
  * no hardcoded width left to fall out of step with the gap.
  */
+/* ⛔ auto-FILL, never auto-FIT. `auto-fit` COLLAPSES the empty trailing tracks and
+ * reproduces the exact last-row-stretch bug this replaced: a final row of 2 would
+ * share out the leftover space and render 482px cards beside a full row's 313px.
+ * The two keywords differ only here, and only on the last row.
+ *
+ * Measured on the canary 2026-08-24, 5 products, before → after:
+ *   1440px (988px row):  3 x 313.3 then 2 x 482.0  →  5 x 313.3, no stretch
+ *    768px (705px row):  4 x 340.5 then 1 x 705.0  →  5 x 340.5, no stretch
+ *    375px (327px row):  5 x 327.0 (already 1-up)  →  5 x 327.0, unchanged
+ *
+ * The intrinsic column count is preserved — it still derives from
+ * --sgs-shop-card-min, so no column number is hardcoded and mobile still resolves
+ * to one full-width readable card with no breakpoint involved. */
 .sgs-shop-layout .wc-block-product-template {
 	--sgs-shop-col-gap: 24px;
 	--sgs-shop-card-min: 240px;
 
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--sgs-shop-card-min), 1fr));
 	column-gap: var(--sgs-shop-col-gap);
 	row-gap: 40px;
 }
 
-.sgs-shop-layout .wc-block-product-template > li,
-.sgs-shop-layout .wc-block-product-template.columns-2 > li,
-.sgs-shop-layout .wc-block-product-template.columns-3 > li,
-.sgs-shop-layout .wc-block-product-template.columns-4 > li {
-	flex: 1 1 var(--sgs-shop-card-min);
+/*
+ * ⛔ THE TRIPLED `.is-flex-container` IS LOAD-BEARING. Do not "tidy" it to one or
+ * two — the item collapses to 91px and the whole grid silently breaks.
+ *
+ * WooCommerce ships this rule in an INLINE <style>, inside a @media block:
+ *
+ *   @media (min-width: 600px) {
+ *     .wc-block-product-template.is-flex-container.is-flex-container.columns-3 > li
+ *       { width: calc(33.3333% - 0.83333em); }
+ *   }
+ *
+ * It doubles `.is-flex-container` deliberately to buy specificity — (0,4,1).
+ *
+ * Under FLEX that rule was harmless: our `flex: 1 1 <min>` set a definite
+ * flex-basis, and flex-basis beats `width` on a flex item, so WooCommerce's
+ * declaration never applied. Under GRID, flex-basis means nothing, WooCommerce's
+ * `width` takes over — and its PERCENTAGE resolves against the GRID AREA (the
+ * 313.328px track) instead of the row. Measured 2026-08-24, exact to 4dp:
+ *
+ *   313.328 x 0.333333 - 0.83333 x 16px = 91.1093px   (actual: 91.1094px)
+ *
+ * That is the whole of the "91px cards in a correct 313px track" incident, and it
+ * is also why an INLINE width:100% read 313px while the same declaration from our
+ * stylesheet read 91px — inline is (1,0,0,0) and wins; our rule was (0,3,1) and lost.
+ * The declarations were identical in TEXT, never in CASCADE WEIGHT.
+ *
+ * ⛔ Two classes is NOT enough. `.sgs-shop-layout .wc-block-product-template
+ * .is-flex-container.is-flex-container > li` is (0,4,1) — a TIE with WooCommerce,
+ * decided by source order, and their rule is an inline <style> while ours is a
+ * linked file. Proven by negative control on the canary: the tie selector loaded
+ * BEFORE WooCommerce's leaves the item at 91px; the tripled selector loaded before
+ * it still gives 313px. Three classes = (0,5,1) and wins on specificity alone,
+ * which is the only thing we control.
+ *
+ * `min-width: 0` is the standard grid-item override: without it `min-width: auto`
+ * lets a long unbroken product title push its track past 1fr and desync the columns. */
+.sgs-shop-layout .wc-block-product-template.is-flex-container.is-flex-container.is-flex-container > li {
+	width: 100%;
 	max-width: 100%;
+	min-width: 0;
+}
+
+/* Surfaces where WooCommerce did NOT add `.is-flex-container` (it only does so for
+ * its own flex layout mode) never hit the rule above, so they only need the
+ * grid-item guards. Kept separate so the specificity note stays honest. */
+.sgs-shop-layout .wc-block-product-template > li {
+	max-width: 100%;
+	min-width: 0;
 }
 
 /* Mobile keeps a tighter gutter; the column count still resolves itself from the
