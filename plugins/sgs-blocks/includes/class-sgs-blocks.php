@@ -100,6 +100,7 @@ final class SGS_Blocks {
 		// and emits a uid-scoped <style> for the per-instance colour/radius
 		// (Spec 32 forbids the inline declarations those would otherwise be).
 		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
+		require_once SGS_BLOCKS_PATH . 'includes/fx-wave-gradient.php';
 
 		// Surface treatment (Tier W / WebGL, Spec 38 s1.2b, D479). Same p11
 		// slot as the three siblings above: marks the emitter with its

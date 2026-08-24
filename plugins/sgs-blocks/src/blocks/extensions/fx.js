@@ -161,6 +161,14 @@ const SHIPPED_EFFECTS = [
 	// built everywhere else and omitted here: an effect fully wired in every
 	// other layer is still DEAD CODE until its name appears in this array.
 	'magnet',
+	// `wave-gradient` ADDED 2026-08-25 (FR-38-31). Tier W's SECOND entry.
+	// Every leg verified rather than assumed: the runtime modules exist
+	// (`shared/effects/fx-wave-gradient.js` + `webgl/wave-gradient.js`), the
+	// registry enqueues both the module AND its stylesheet (which is the
+	// FALLBACK CONTRACT here, not decoration), `includes/fx-wave-gradient.php`
+	// resolves palette slugs into the custom properties both the CSS fallback
+	// and the shader read, and the panel below carries six real controls.
+	'wave-gradient',
 ];
 
 const FX_OPTION_LABELS = {
@@ -175,6 +183,7 @@ const FX_OPTION_LABELS = {
 	'cursor-field': __( 'Cursor follow', 'sgs-blocks' ),
 	'surface-treatment': __( 'Surface treatment', 'sgs-blocks' ),
 	magnet: __( 'Magnetic pull', 'sgs-blocks' ),
+	'wave-gradient': __( 'Flowing gradient', 'sgs-blocks' ),
 };
 
 /**
@@ -1006,6 +1015,12 @@ function addFxAttributes( settings, name ) {
 			 * NO `default: null` — a null on a number attr 400s every
 			 * ServerSideRender preview (D755).
 			 */
+			fxWaveBase: { type: 'string', default: '' },
+			fxWave1: { type: 'string', default: '' },
+			fxWave2: { type: 'string', default: '' },
+			fxWave3: { type: 'string', default: '' },
+			fxWaveSpeed: { type: 'number' },
+			fxWaveAmplitude: { type: 'number' },
 			fxMagnetAxis: { type: 'string', default: '' },
 			fxMagnetRadius: { type: 'number' },
 			fxMagnetStrength: { type: 'number' },
@@ -1237,6 +1252,12 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// Cursor-field radius in px. The render layer clamps it to a range that
 		// still renders as a field rather than trusting the stored number.
 		'data-sgs-fx-field-radius': attributes.fxFieldRadius,
+		'data-sgs-fx-wave-base': attributes.fxWaveBase,
+		'data-sgs-fx-wave-1': attributes.fxWave1,
+		'data-sgs-fx-wave-2': attributes.fxWave2,
+		'data-sgs-fx-wave-3': attributes.fxWave3,
+		'data-sgs-fx-wave-speed': attributes.fxWaveSpeed,
+		'data-sgs-fx-wave-amplitude': attributes.fxWaveAmplitude,
 		'data-sgs-fx-magnet-axis': attributes.fxMagnetAxis,
 		'data-sgs-fx-magnet-radius': attributes.fxMagnetRadius,
 		'data-sgs-fx-magnet-strength': attributes.fxMagnetStrength,
@@ -2432,6 +2453,153 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						  * would add a setting to ~51 blocks that almost nobody
 						  * would ever open.
 						  */ }
+						{ 'wave-gradient' === fx && (
+							<>
+								<ToolsPanelItem
+										hasValue={ () => !! attributes.fxWaveBase }
+										label={ __( 'Base colour', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxWaveBase: '' } )
+										}
+										isShownByDefault
+									>
+										<DesignTokenPicker
+											label={ __( 'Base colour', 'sgs-blocks' ) }
+											value={ attributes.fxWaveBase }
+											onChange={ ( value ) =>
+												setParam( { fxWaveBase: value } )
+											}
+											help={ __(
+												'The colour underneath everything. The other three blend on top of it.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () => !! attributes.fxWave1 }
+										label={ __( 'Wave colour 1', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxWave1: '' } )
+										}
+										isShownByDefault
+									>
+										<DesignTokenPicker
+											label={ __( 'Wave colour 1', 'sgs-blocks' ) }
+											value={ attributes.fxWave1 }
+											onChange={ ( value ) =>
+												setParam( { fxWave1: value } )
+											}
+											help={ __(
+												'One of three colours that flow across the base. Each moves independently.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () => !! attributes.fxWave2 }
+										label={ __( 'Wave colour 2', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxWave2: '' } )
+										}
+									>
+										<DesignTokenPicker
+											label={ __( 'Wave colour 2', 'sgs-blocks' ) }
+											value={ attributes.fxWave2 }
+											onChange={ ( value ) =>
+												setParam( { fxWave2: value } )
+											}
+											help={ __(
+												'The second flowing colour.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () => !! attributes.fxWave3 }
+										label={ __( 'Wave colour 3', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxWave3: '' } )
+										}
+									>
+										<DesignTokenPicker
+											label={ __( 'Wave colour 3', 'sgs-blocks' ) }
+											value={ attributes.fxWave3 }
+											onChange={ ( value ) =>
+												setParam( { fxWave3: value } )
+											}
+											help={ __(
+												'The third flowing colour.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxWaveSpeed
+										}
+										label={ __( 'Speed', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxWaveSpeed: undefined } )
+										}
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Speed', 'sgs-blocks' ) }
+											value={ attributes.fxWaveSpeed }
+											onChange={ ( value ) =>
+												setParam( { fxWaveSpeed: value } )
+											}
+											min={ 5 }
+											max={ 150 }
+											step={ 5 }
+											help={ __(
+												'How quickly the colours move. Slower reads as more expensive.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxWaveAmplitude
+										}
+										label={ __( 'Wave depth', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxWaveAmplitude: undefined } )
+										}
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Wave depth', 'sgs-blocks' ) }
+											value={ attributes.fxWaveAmplitude }
+											onChange={ ( value ) =>
+												setParam( { fxWaveAmplitude: value } )
+											}
+											min={ 0 }
+											max={ 100 }
+											step={ 5 }
+											help={ __(
+												'How much the surface ripples. Zero is a still gradient that still shifts colour.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'This animates on the live site only — the editor canvas shows the still fallback in your chosen colours. Visitors get a Pause control, and it stops on its own when off-screen or under reduced-motion settings.',
+										'sgs-blocks'
+									) }
+								</Notice>
+							</>
+						) }
+
 						{ 'magnet' === fx && (
 							<>
 								<ToolsPanelItem

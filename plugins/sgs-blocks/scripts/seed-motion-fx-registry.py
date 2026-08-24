@@ -691,6 +691,49 @@ FX_EFFECTS: list[dict] = [
         # generalises that module (two axes + a proximity radius) rather than
         # writing a second one. `initMagnet`'s no-options behaviour is unchanged
         # and byte-identical, so nav-menu is untouched.
+        "effect": "wave-gradient",
+        # ⛔ TIER W'S SECOND ENTRY, and it WIDENS the tier rather than extending
+        # it. Recorded here because the D-number must not read as "one more
+        # shader". Tier W's founding premise is that a `null` return IS the
+        # fallback — the untouched <img> is already the finished state, so there
+        # is no second path to keep in sync. That holds ONLY because there is a
+        # source image. This effect is GENERATIVE: there is no untouched
+        # anything, so a real CSS fallback ships alongside it and must be kept
+        # in sync forever. That is the exact cost Tier W was designed to avoid.
+        #
+        # Bean's ruling 2026-08-25, after two researchers BOTH recommended not
+        # building it: "just model the stripe setup exactly", with client
+        # colours. He also chose autonomous over cursor-driven, which is what
+        # stripe.com does and which fixes the mobile problem — a cursor effect
+        # renders nothing at all on a phone, and phones are most client traffic.
+        "in_picker": 1,
+        # Autonomous: starts on its own and runs while visible. NOT 'hover' —
+        # that would misdescribe it in the one column that records what starts
+        # the motion, and this effect's whole SC 2.2.2 exposure comes from
+        # starting without being asked.
+        "pins": 0,
+        "triggers": "load",
+        "tier": "W",
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # SIMPLIFY, not suppress: under `reduce` the module draws exactly ONE
+        # frame and stops, so the visitor still gets the gradient. Blanking a
+        # section the client styled would be the degrade-to-LESS-content
+        # failure; a still gradient is a legitimate finished state.
+        "reduced_motion": "simplify",
+        # The editor canvas never boots frontend script modules, so it shows the
+        # CSS fallback — which is the honest preview: it is exactly what a
+        # no-WebGL visitor sees, in the client's own colours.
+        "editor_story": "end-state",
+        "scope": "block",
+        # 'surface' — a paintable background, the same token cursor-field uses.
+        # Not 'image': this generates its own pixels rather than treating one.
+        "requires": "surface",
+        # Offered where a panel exists; never creates one. Same containment
+        # measurement D459 forced for cursor-field.
+        "creates_panel": 0,
+    },
+    {
         "effect": "magnet",
         # in_picker=1 with creates_panel=0, the same pair cursor-field carries
         # and for the same reason: offered wherever an fx panel already exists,

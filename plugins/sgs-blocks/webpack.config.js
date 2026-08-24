@@ -207,6 +207,23 @@ if ( moduleConfig ) {
 			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
 			 * `magnet` — so this must stay `fx-magnet.js`.
 			 */
+			/*
+			 * Wave gradient (Spec 38 FR-38-31) — Tier W, SECOND entry. Unlike
+			 * every Tier V entry around it this one DOES carry a WebGL
+			 * dependency, but still no GSAP, so a page using it and no Tier G
+			 * effect ships zero GSAP bytes.
+			 *
+			 * FILENAME is load-bearing: the PHP registry derives its module ID
+			 * as '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `wave-gradient` — so this must stay `fx-wave-gradient.js`.
+			 */
+			'shared/effects/fx-wave-gradient': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-wave-gradient.js'
+			),
 			'shared/effects/fx-magnet': path.resolve(
 				process.cwd(),
 				'src',

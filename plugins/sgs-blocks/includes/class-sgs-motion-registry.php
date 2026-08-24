@@ -273,6 +273,15 @@ class SGS_Motion_Registry {
 		 * magnetic buttons are ~20-30 lines of vanilla, "write it, don't
 		 * dependency it".
 		 */
+		/*
+		 * Wave gradient (Spec 38 FR-38-31, Tier W second entry). No GSAP —
+		 * Tier W is a rendering substrate, not a GSAP plugin.
+		 */
+		'@sgs/fx-wave-gradient'    => array(
+			'path' => 'build/shared/effects/fx-wave-gradient.js',
+			'deps' => array(),
+		),
+
 		'@sgs/fx-magnet'           => array(
 			'path' => 'build/shared/effects/fx-magnet.js',
 			'deps' => array(),
@@ -373,6 +382,17 @@ class SGS_Motion_Registry {
 		 * months (D452).
 		 */
 		'magnet'           => 'assets/css/fx-magnet.css',
+
+		/*
+		 * The wave gradient's stylesheet is its FALLBACK CONTRACT, not
+		 * decoration. Tier W's usual "the untouched <img> is the fallback"
+		 * guarantee cannot apply to a generative effect — there is no
+		 * untouched anything — so this stylesheet paints the static gradient
+		 * from the same custom properties the shader reads. Without this
+		 * enqueue a no-WebGL visitor gets a blank box, which is precisely the
+		 * failure Tier W's invariant existed to make impossible.
+		 */
+		'wave-gradient'    => 'assets/css/fx-wave-gradient.css',
 
 		/*
 		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). The

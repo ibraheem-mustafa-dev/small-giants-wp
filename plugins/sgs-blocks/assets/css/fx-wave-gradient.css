@@ -1,0 +1,139 @@
+/**
+ * SGS motion — wave gradient (Spec 38 FR-38-31). Tier W, second entry.
+ *
+ * ⛔ THIS FILE IS THE FALLBACK CONTRACT, NOT DECORATION.
+ *
+ * Tier W's founding promise is that a `null` return IS the fallback — the
+ * untouched `<img>` is already the finished state, so there is no second path
+ * to keep in sync. That promise holds ONLY because there is a source image.
+ * This effect is GENERATIVE: there is no untouched anything. So the fallback
+ * has to be built, and this is it.
+ *
+ * The static gradient below is painted from the SAME four custom properties the
+ * shader reads. No WebGL2, a shader that will not compile, JS that never runs,
+ * a blocked module, or a lost context that never restores — every one of those
+ * leaves a real multi-stop gradient in the CLIENT'S OWN COLOURS, not a blank
+ * box. The canvas covers it only after `data-sgs-wave-active` is set, which the
+ * boot module sets only after a draw has actually succeeded.
+ */
+
+[data-sgs-fx="wave-gradient"] {
+	position: relative;
+	isolation: isolate;
+
+	/* The four colours. The render layer overrides these per instance; these
+	   defaults exist so the block is never unstyled if it somehow renders
+	   without them. */
+	--sgs-wave-base: #1b2a4a;
+	--sgs-wave-1: #3f7fd1;
+	--sgs-wave-2: #7b4bd8;
+	--sgs-wave-3: #d95f8a;
+
+	/* THE FALLBACK. Three overlapping radials over a flat base — deliberately
+	   the same layer COUNT and roughly the same composition the shader
+	   produces, so the moment the canvas appears is not a jarring recolour. */
+	background-color: var( --sgs-wave-base );
+	background-image:
+		radial-gradient(
+			60% 80% at 20% 25%,
+			var( --sgs-wave-1 ) 0%,
+			transparent 70%
+		),
+		radial-gradient(
+			55% 75% at 80% 30%,
+			var( --sgs-wave-2 ) 0%,
+			transparent 68%
+		),
+		radial-gradient(
+			70% 85% at 50% 85%,
+			var( --sgs-wave-3 ) 0%,
+			transparent 72%
+		);
+}
+
+/* The canvas sits behind the block's own content, never over it. */
+.sgs-wave-gradient__canvas {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	/* Hidden until a first draw succeeds. Revealing it before that would
+	   flash a blank canvas over a perfectly good CSS gradient. */
+	opacity: 0;
+	transition: opacity 400ms ease-out;
+	pointer-events: none;
+}
+
+[data-sgs-wave-active="1"] .sgs-wave-gradient__canvas {
+	opacity: 1;
+}
+
+/* The block's own children must sit above the canvas. `> *` rather than a
+   descendant selector, so nested structures are not each given their own
+   layer. */
+[data-sgs-fx="wave-gradient"] > * {
+	position: relative;
+	z-index: 1;
+}
+
+/*
+ * THE PAUSE CONTROL — SC 2.2.2.
+ *
+ * This effect animates automatically, indefinitely, behind other content, so a
+ * mechanism to pause it is REQUIRED, not a nicety. It is `hidden` in the markup
+ * and unhidden by JS: if the script never runs there is nothing animating, so
+ * offering a pause button would be a control that does nothing.
+ *
+ * Sized and contrasted to be genuinely usable rather than technically present —
+ * 44px target (WCAG 2.5.5), visible focus ring, and a label that changes with
+ * state so a screen-reader user knows what it will do.
+ */
+.sgs-wave-gradient__toggle {
+	position: absolute;
+	right: 12px;
+	bottom: 12px;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0 12px;
+	border: 1px solid rgb( 255 255 255 / 45%);
+	border-radius: 999px;
+	background: rgb( 0 0 0 / 45%);
+	color: #fff;
+	font-size: 13px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.sgs-wave-gradient__toggle:hover {
+	background: rgb( 0 0 0 / 65%);
+}
+
+.sgs-wave-gradient__toggle:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	/*
+	 * The boot module draws ONE frame and stops under `reduce`, so the visitor
+	 * still gets the gradient — a still image is a legitimate finished state
+	 * (§10 SIMPLIFY, never suppress). Nothing is animating, so the pause
+	 * control has nothing to pause and is hidden.
+	 *
+	 * The canvas fade is also removed: a 400ms opacity transition is itself
+	 * motion, and it is the one piece of motion that would otherwise survive.
+	 */
+	.sgs-wave-gradient__canvas {
+		transition: none;
+	}
+
+	.sgs-wave-gradient__toggle {
+		display: none;
+	}
+}

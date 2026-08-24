@@ -39,7 +39,8 @@
 		"morph",
 		"motion-path",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"wave-gradient"
 	],
 	"sgs/counter": [
 		"magnet",
@@ -58,7 +59,8 @@
 		"motion-path",
 		"pin-scrub",
 		"scrub",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/decorative-image": [
 		"magnet",
@@ -100,7 +102,8 @@
 		"motion-path",
 		"pin-scrub",
 		"scrub",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/icon": [
 		"draw",
@@ -124,7 +127,8 @@
 		"motion-path",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"wave-gradient"
 	],
 	"sgs/label": [
 		"magnet",
@@ -140,7 +144,8 @@
 		"magnet",
 		"morph",
 		"motion-path",
-		"scrub"
+		"scrub",
+		"wave-gradient"
 	],
 	"sgs/physics-canvas": [
 		"cursor-field",
@@ -150,7 +155,8 @@
 		"morph",
 		"motion-path",
 		"pin-scrub",
-		"scrub"
+		"scrub",
+		"wave-gradient"
 	],
 	"sgs/post-grid": [
 		"carousel-loop",
@@ -184,7 +190,8 @@
 		"motion-path",
 		"scramble",
 		"scrub",
-		"split-reveal"
+		"split-reveal",
+		"wave-gradient"
 	],
 	"sgs/quote": [
 		"magnet",
@@ -225,7 +232,8 @@
 		"scramble",
 		"scrub",
 		"split-reveal",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/text": [
 		"magnet",
@@ -257,7 +265,8 @@
 		"scramble",
 		"scrub",
 		"split-reveal",
-		"surface-treatment"
+		"surface-treatment",
+		"wave-gradient"
 	],
 	"sgs/trustpilot-reviews": [
 		"carousel-loop",
