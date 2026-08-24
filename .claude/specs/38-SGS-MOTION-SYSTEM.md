@@ -421,6 +421,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   | `spotlight-mask` | the same gradient as a `mask-image`, revealing a pattern beneath rather than adding light | SHIPPED — deliberately paints by a DIFFERENT CSS property, so the extensibility seam is demonstrated rather than asserted |
   | `hue-shift` | a multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask, so the hue arriving at a given point changes as the pointer moves | **SHIPPED 2026-08-24 (FR-38-28 look 2).** The client's colour stays dominant (their token at 65%, mixed toward two opposite hues via `color-mix(in oklch, …)`); the derived hues default to the base colour so a browser without `color-mix()` still paints a valid single-hue gradient that shifts position |
   | `parallax-pattern` | a repeating dot pattern travelling at 8% of pointer distance, deliberately UNMASKED | **SHIPPED 2026-08-24 (FR-38-28 look 3).** The difference from `spotlight-mask` is load-bearing: there a static pattern sits under a moving hole and only the REVEAL moves; here the pattern itself moves. Masking it would collapse it back into a slightly different torch |
+  | `brick-reveal` | a running-bond brick tile as an SVG **mask**, intersected with the pointer pool; the colour is painted underneath as a flat layer | **SHIPPED 2026-08-24.** Torch's sibling — same reveal, brickwork instead of a dot screen. Built twice: gradients produced a stacked GRID, because a 90deg gradient has no vertical variation, so an SVG tile owns the offset instead. The SVG carries NO colour deliberately — a data-URI cannot read a custom property, so colouring it would freeze the palette token |
   | `floating-objects` | individual `transform: translate()` per marked object, reading the SAME viewport-space `--sgs-cursor-x`/`--sgs-cursor-y` custom properties the emitter already publishes | **TIER V ARGUED (2026-08-02), STILL NOT BUILT.** See below — the tier question is answered but the opt-in surface is a separate, design-gated decision this residual work deliberately did not make. |
 
  **`floating-objects` — resolved to Tier V, but deliberately still not built (2026-08-02).**
@@ -639,6 +640,26 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   a CSS rule plus two list registrations ONLY while it paints by a background property. A type that
   masks needs the local coordinate pair, which is JS — already published now, so no FURTHER JS is
   needed for another masked type, but the original claim was too broad and is corrected here.
+
+ **THREE FOLLOW-ONS SHIPPED 2026-08-24, after Bean saw the four looks live.** They are recorded
+  here because each changes the shared mechanism, not just one look:
+
+  - **`brick-reveal`** — the fifth field type (see the table above).
+  - **TRAIL (`fxFieldTrail`, 0-100)** — the standard lerp follower: each frame the published
+    position moves a fraction of the remaining distance toward the pointer. The control is the
+    INVERSE of the maths (higher = more lag); 0 maps to a factor of 1.0 and publishes directly,
+    so it is byte-identical to the behaviour before trail existed. Measured live: trail 90 walks
+    60-241-394-524-633-726-804-871, a factor of 0.155 — inside the 0.1-0.2 band that recurs
+    across implementations of this pattern. Reduced motion needs no branch: `init` returns before
+    any listener is attached, so the loop can never start.
+  - **SHAPE (`fxFieldShape`)** — circle / wide ellipse / tall ellipse, via a single
+    `--sgs-cursor-field-geometry` property that replaced four hardcoded circles. Empty is the
+    circle default, so nothing authored changes.
+
+ ⚠ **THE EDITOR SURFACE OF THIS FR HAS NEVER BEEN OPENED.** Every verification is frontend. §9's
+  cursor-field row is flagged *"reasoned, not observed"* and that flag is correct — nobody has
+  confirmed the picker lists all five looks or that the canvas renders sanely. The client chooses
+  these in the editor, so this is the gap that matters most before the FR is called closed.
 
  **Still open, and NOT part of FR-38-28:** the `floating-objects` field type (FR-38-25 residual 2).
   It moves discrete ELEMENTS rather than painting a shared background layer, needs new per-element

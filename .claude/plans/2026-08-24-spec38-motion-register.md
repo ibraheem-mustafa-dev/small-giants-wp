@@ -7,6 +7,62 @@ last_updated: 2026-08-24
 
 # Spec 38 motion + effects — verified status register
 
+---
+
+## SESSION CLOSE — 2026-08-24. What this session closed, and what it opened.
+
+Seven commits, all motion: `68a18639` `eb9ab0f9` `f71466ad` `a73970416` `c6a7370b3`
+`9d6a4f1ed` `7c213a361`. Decisions **D766** and **D767**. Canary: **page 2721**
+(`/gate-do-not-delete-cursor-field-five-looks-three-controls/`), which supersedes 2716 and
+2717 — both deleted.
+
+### CLOSED
+
+| Item | Evidence |
+|---|---|
+| **FR-38-28 — all four signed looks** | `hue-shift` + `parallax-pattern` built; glow + spotlight-mask already shipped. Live on 2721 |
+| **Aurora's three defects** | Invisible band (21% of a hue cycle per sweep → 76%); tile seam; then the CROSS Bean caught by eye. Seam detector + negative control: broken state steps 45, fixed steps 6 |
+| **D767 — masked looks lit the wrong spot** | `spotlight-mask` shipped 2026-08-01 with the defect and was never observed. Offset +256 → **0** |
+| **Dead "Field size" control on Drift** | Found by the council in code shipped hours earlier. Given a meaning rather than hidden — radius now drives dot spacing |
+| **Step 20 — spec ↔ code reconciliation** | All five items. (e) was already closed by a deletion the register never recorded |
+| **FR-38-20 + FR-38-21** | §9 gained three rows, §10 the `physics-canvas` row it recorded as OWED. Both now meet their own done-criteria |
+| **Eleven stale doc claims** | Nine in the spec/LEDGER/parking/docblocks, plus two in the CSS header that this session's own bug disproved |
+| **New capability beyond the gate** | Brickwork reveal (running bond, SVG mask), pointer trail (lerp), field shape (circle/wide/tall) |
+| **Gate coverage** | New invariant **I8**; I6's self-test anchor made regex-based after breaking twice; the self-test case count now derived rather than hardcoded |
+| **The missing-accent-token question** | Ruled NOT a gap by Bean. "Untested" is only a risk when the untested case can occur |
+
+### OPENED — carried into the next session
+
+1. **Bean's eye on the five looks.** Everything verified is mechanism. R-31-13 says numbers alone
+   do not close a fidelity question, and this session was wrong twice about how something would
+   look until it was rendered.
+2. **The EDITOR surface has never been opened.** Only the frontend has been verified. §9's rows
+   are honestly flagged *"reasoned, not observed"* and that flag is CORRECT. The client picks
+   these looks in the editor; nobody has confirmed the picker lists all five, or that the canvas
+   renders sanely. This is the `verify-both-surfaces` gap that has bitten this project before
+   (0 of 6 product cards rendered in the editor while 5 of 5 rendered live).
+3. **The research shortlist needs a decision.** Three agents surveyed award-tier cursor work.
+   Findings are in the next-session prompt; nothing has been acted on.
+4. **`floating-objects`** — the fifth field type. Unchanged: needs new JS and its own design gate
+   deciding which children become objects.
+5. **Canary 2721 is not gate-wired.** The four load-bearing fixtures remain 2103 / 2109 / 2113 /
+   2603. 2721 is a judgement rig, and no probe depends on it.
+
+### Method failures worth carrying, all self-inflicted
+
+- **A commit body is not a living doc.** D767's bug was found and recorded ONLY in a commit
+  message, while D766 congratulated itself for repairing nine stale claims elsewhere. Caught by
+  the council's spec-lawyer seat, not by me.
+- **An absence verdict is only as wide as its search.** Twice: FR-38-28 reported "never built"
+  after searching for the FR number and the file Route B would have used; the hover suite
+  reported "zero editor reach" after checking one of two mechanisms.
+- **Three wrong "seamless by construction" claims in one session.** Each was reasoning about
+  tiling; each was refuted by rendering it.
+- **One CSS edit applied without an assert matched nothing and did nothing.** Every other edit
+  that session asserted. The computed style caught it; the script did not.
+
+---
+
 **Re-verified 2026-08-24 by capability, not by name.** Every verdict below is from code read
 this session. Where something is partial, it is stated as a fraction with its denominator.
 

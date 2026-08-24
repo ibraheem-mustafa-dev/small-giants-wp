@@ -13,9 +13,8 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ⚠ **FIVE TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
 The shop-archive / R-3 track owns the sections immediately below. The **colour-golden**
-track owns `## ▶ COLOUR-GOLDEN TRACK`. **Tier W / motion**: section swept to
-`memory/session-2026-08-21-tier-w-closed.md` (2026-08-21) — NOT closed; open work is at
-`plans/2026-08-24-spec38-motion-register.md`.
+track owns `## ▶ COLOUR-GOLDEN TRACK`. The **motion** track owns
+`## ▶ MOTION TRACK` below.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
@@ -150,6 +149,43 @@ WooCommerce needed)"** (`cpt-collection`) alongside "WooCommerce products"
 (`wc-product`). Both render `sgs/product-card`. I told Bean "product collection doesn't
 exist" after reading enum slugs and never opening `edit.js`. **Read the inspector labels
 before saying a feature does not exist.**
+
+## ▶ MOTION TRACK — 2026-08-24 (FR-38-28 complete; the editor is the open gap)
+
+⭐ **START HERE: `.claude/prompts/2026-08-25-motion-next.md`** — the executable front. It opens
+with the research decision, then the editor verification.
+
+**Status:** `.claude/plans/2026-08-24-spec38-motion-register.md` (session-close audit at the top).
+Decisions **D766** + **D767**. Canary **page 2721** — five looks, three controls, one page.
+2716 and 2717 are deleted; do not go looking for them.
+
+✅ **FR-38-28 IS COMPLETE.** All four looks Bean signed on 2026-08-07 ship, plus three follow-ons
+he asked for on sight: `brick-reveal`, TRAIL (lerp) and SHAPE. Spec 38's field-type table and
+FR-38-28 section carry the detail — do not restate it here.
+
+✅ **A 23-DAY-OLD BUG IS FIXED (D767).** `spotlight-mask` lit a spot offset by the element's
+distance from the viewport top — a mask resolves against the element box, the layer against the
+viewport. Offset +256 → 0. **Masked types are now EMITTER-ONLY** (Bean's option A). New gate
+invariant **I8** fails the build if a masked type reads the wrong pair or forgets the opt-out.
+⛔ `mask-attachment` is in CSS Masking L1 and **no engine implements it** — there is no CSS-only
+fix. Do not re-propose one.
+
+### ▶ NEXT, in order
+
+1. **Decide what to act on from the cursor-effects research** — three agents surveyed award-tier
+   work. The prompt carries the shortlist and the questions.
+2. **⚠ OPEN THE EDITOR.** Every verification on this feature is FRONTEND. §9's row is honestly
+   flagged *"reasoned, not observed"*. The client picks these looks in the editor and nobody has
+   looked. This project has shipped 0-of-6 blocks rendering in the editor while 5-of-5 rendered
+   live — that is the failure shape this gap invites.
+3. **Bean's eye on the five looks** (R-31-13). Mechanism is verified; aesthetics are not.
+4. **`floating-objects`** — the fifth field type, needs new JS and its own design gate.
+
+⛔ **Method, carried from this session's own failures:** a commit body is not a living doc (D767's
+bug sat in one while D766 congratulated itself for fixing nine stale claims elsewhere); an absence
+verdict is only as wide as its search (wrong twice); and three "seamless by construction" tiling
+claims were each refuted by rendering them. **Render it before claiming it.**
+
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
