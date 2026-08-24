@@ -136,6 +136,34 @@ _MODULE_REFS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# DYNAMIC DISPATCH BY CONSTRUCTED MODULE PATH — false-positive class #6.
+# ---------------------------------------------------------------------------
+# migrate-core-blocks/driver.py:303 does:
+#     module_name = 'pairings.' + slug.replace('-', '_') + '_pairing'
+#     importlib.import_module(module_name)
+# The module name NEVER EXISTS AS A LITERAL anywhere, so no amount of string
+# matching can find it — this class is invisible to the extraction above by
+# construction, not by oversight. A triage agent reported all of these as
+# unwired; they are fully reachable, both by hand and automatically.
+#
+# Detected structurally instead: find a literal package prefix handed to
+# import_module() via concatenation, then credit EVERY module in that package
+# directory. Coarse on purpose — it credits a whole directory, which risks
+# hiding an unused sibling, but the alternative is presenting live, working
+# tools as deletion candidates.
+_DYNAMIC_PKG = re.compile(r"""import_module\(\s*['"]([\w]+)[.]""")
+_DYNAMIC_PKG_VAR = re.compile(r"""['"]([\w]+)[.]['"]\s*\+""")
+
+
+def dynamic_packages(text: str) -> set:
+    """Package prefixes whose modules are loaded by a constructed name."""
+    out = set(_DYNAMIC_PKG.findall(text))
+    if "import_module(" in text:
+        out |= set(_DYNAMIC_PKG_VAR.findall(text))
+    return out
+
+
 def references(text: str) -> set:
     """Everything this file could be naming: filenames, and module stems."""
     out = set(_FILE_TOKEN.findall(text))
@@ -196,6 +224,13 @@ def audit() -> dict:
             txt = read(f)
             if not txt:
                 continue
+            # Credit whole packages loaded by a CONSTRUCTED module name.
+            for pkg in dynamic_packages(txt):
+                pkg_dir = f.parent / pkg
+                if pkg_dir.is_dir():
+                    for mod in pkg_dir.glob("*.py"):
+                        if mod.name != "__init__.py" and mod in bucket:
+                            bucket[mod].add(label + "(dynamic)")
             refs = references(txt)
             for r in refs:
                 for target in by_name.get(r, []) + by_stem.get(r, []):

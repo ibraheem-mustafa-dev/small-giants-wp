@@ -8,8 +8,8 @@
   },
   "counts": {
     "UNREFERENCED": 1,
-    "DOC-ONLY": 81,
-    "WIRED": 368
+    "DOC-ONLY": 70,
+    "WIRED": 379
   },
   "scripts": [
     {
@@ -129,61 +129,6 @@
     },
     {
       "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/migrate-details-to-accordion.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/buttons_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/column_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/columns_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/heading_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/image_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/paragraph_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/post_template_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/row_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/site_logo_pairing.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/stack_pairing.py",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -2257,42 +2202,125 @@
       "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/button_pairing.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/buttons_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/column_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/columns_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "script-call(dynamic)"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/group_pairing.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/heading_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/image_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/latest_posts_pairing.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/paragraph_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/post_template_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/query_pairing.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/row_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/site_logo_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/stack_pairing.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call(dynamic)"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/typography_common.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "script-call(dynamic)"
       ]
     },
     {
