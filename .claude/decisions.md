@@ -1,5 +1,96 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D761 — Gate A watched a deleted directory for 7 weeks; repointed, and its stale goldens quarantined
+**2026-08-24** · [INCIDENT] · shipped `2d5cb4e3` + `6eb2814b`
+
+**Gate A could not fire between 2026-07-05 and today.** Its trigger watched
+`plugins/sgs-blocks/scripts/orchestrator/converter_v2/`, deleted at D276 (`c8690345`). The
+harness stayed alive the whole time, so the gate looked present while being structurally
+incapable of running. Repointed to `plugins/sgs-blocks/scripts/converter/`; the dead
+`converter_v2` alternative also dropped from the 5.3.5 pre-merge regex (`orchestrator` in that
+same alternation is a live directory and was left alone).
+
+**PROVEN FIRING, not assumed** — staged a change under `converter/`, ran the gate, watched it
+execute the harness, take pytest's own status and print `COMMIT BLOCKED`. Probe reverted.
+
+**The "37/39" figure in the LEDGER and the session prompt has a wrong denominator.** Measured:
+**37 failed, 13 passed of 50 tests** — 39 golden files (37 fail, 2 pass) plus 11 other tests in
+the same file. Only `mamas-munches-homepage__header` and `__footer` (both chrome-skipped) pass.
+
+**The goldens are STALE, not regressed** — seeded 2026-07-25, then FR-31-16 changed the emit
+contract 2026-08-04 while this gate was blind. **Re-seeding is unavailable BY DESIGN:** the
+seeder's provenance gate demands a LANDED deploy proof, and D554-C rules the converter stays
+flat with its output gated, so any clone touching an object-migrated property hard-halts before
+deploy. Measured today: the Mama's homepage clone produced **97 flat-tier violations** and did
+not deploy. That is D554-C working, not a fault — Bean explicitly rejected a shim there.
+
+**Bean's ruling: quarantine, not leave-red.** A gate red on every converter commit gets bypassed,
+and a routinely-bypassed gate is how a gate stops existing. The 37 are `xfail(strict=True)` via
+`tests/fixtures/conformance/quarantine.json`, which carries its own reason, unquarantine
+condition and decision refs. **No golden content was changed — nothing is blessed.** strict is
+load-bearing: an unexpected PASS fails the suite, because that means the contract moved again.
+Manifest fails closed (missing file, or an id not on disk, raises).
+
+⚠ **The first proof that the quarantine could fail was itself vacuous** — injecting
+`sgs-accordion` changed nothing because it was already among the 37, so the append was a
+duplicate. Re-run with a genuinely passing golden, the suite went to `1 failed`. **A negative
+control has its own failure mode; confirm it landed.**
+
+Result **13 passed, 37 xfailed**. Un-quarantining is a named Spec 39 deliverable.
+
+⚠ Same fossil class still live elsewhere: the **F5 baseline carries 7 keys pointing at
+`orchestrator/converter_v2/convert.py`**, the same deleted directory. Not fixed here.
+
+---
+
+## D762 — container_kind drifted in BOTH directions because its writer can only ever set, never clear
+**2026-08-24** · [INCIDENT] · DB-only change; no file diff
+
+`container_kind` classifies a block section/layout/content and is read by the converter
+(`l2_qualify.py:122` presence check; `recognise_helpers.py:49-53` priority tie-break). It is
+written only under `--apply`, which `/sgs-update` never passes (Stage 10,
+`sgs-update-v2.py:5477`, runs `--write-block-json` report-only).
+
+**Root cause, proven from the writer:** the only write is
+`UPDATE block_composition SET wraps_block='sgs/container', container_kind=? WHERE block_slug=?`
+(`sync-container-wrapping-blocks.py:1337`). There is **no statement anywhere that sets the column
+back to NULL.** A block that stops qualifying keeps its old classification permanently — a
+one-way ratchet, not ordinary drift. **NULL therefore means "never written", not "not
+container-bearing".**
+
+**Enumerated, not estimated — 12 blocks wrong, in two directions:**
+- **7 in roster, NULL in DB** (`get_container_kind()` returned None): brand-strip, mega-aside,
+  mega-group, mega-panel, nav-drawer, nav-menu, physics-canvas.
+- **5 in DB, not in roster** (stale, unclearable): adaptive-nav, content-collection, mobile-nav,
+  product-card, team-member. The script's own validation line names `-product-card` as
+  deliberately excluded, independently corroborating these are wrong.
+
+Bean ruled write all 12. Applied `--apply` (38 rows) plus an explicit clear of the 5.
+Distribution now **section 8 / layout 17 / content 13 = 38**, matching the roster exactly.
+DB backed up first. Gate A still 13 passed / 37 xfailed — no new break.
+
+⛔ **Two claims in the session prompt and its plan were WRONG and are corrected here.**
+(a) The "sgs/modal anomaly" is a non-issue: modal is in both roster and DB, consistently. Its
+`containerMirror:false` is a real flag read at `:742`, and **four** blocks declare it. My plan
+claimed modal held a stale row and the other three were correctly NULL — backwards. The three
+were the stale ones, stale by ABSENCE.
+(b) `wraps_block` is a **hardcoded string literal inside the SQL**, asserted for all 38 roster
+members. **14 of the 38 make no real wrapper call**, so the column is false for 37% of its rows.
+Its only reader asks "what is the most common `wraps_block`?" — a self-fulfilling question about
+a constant. Same shape as the recorded `blocks.status` and `derived_selector` traps.
+
+⚠ **Honest limit on the regression evidence.** A before/after hash of the converter's actual emit
+across all 39 fixtures showed ZERO change — but a negative control (forcing `sgs/hero`
+section→content) ALSO showed zero, so the instrument is **insensitive to this input**, not proof
+of no impact. Reason established: `container_kind`'s two read paths need either a NULL-ness flip
+that changes qualification or several competing candidate slugs, and the 39-fixture corpus
+exercises neither. Recorded as a weak assurance, deliberately not as "proven no regression".
+
+**Still open (not fixed here):** the never-clears writer. Until it recomputes the column rather
+than only setting it, this drift recurs the moment any block stops qualifying.
+
+---
+
 ## D760 — the 91px "impossible contradiction" was a WooCommerce percentage; grid re-landed
 **2026-08-24** · [INCIDENT] · shipped `1e7e2755`, theme 1.5.67
 

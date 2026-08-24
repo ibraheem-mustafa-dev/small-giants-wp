@@ -1360,7 +1360,7 @@ meaning shows a blank cell rather than an invented sentence.
 |---|---|---|
 | `animation_tokens` | 8 | — |
 | `array_item_schema` | 62 | — |
-| `attribute_gap_candidates` | 3587 | — |
+| `attribute_gap_candidates` | 3607 | — |
 | `block_attributes` | 3166 | yes |
 | `block_capabilities` | 486 | yes |
 | `block_composition` | 211 | yes |
@@ -1446,11 +1446,11 @@ meaning shows a blank cell rather than an invented sentence.
 | Column | Type | NULL | Vocabulary / meaning |
 |---|---|---|---|
 | `block_slug` | TEXT | 0% |  |
-| `wraps_block` | TEXT | 82% | Which block this one wraps — only ever sgs/container. |
+| `wraps_block` | TEXT | 82% | NOT A MEASUREMENT. The value sgs/container is a hardcoded string literal inside the writer SQL (sync-container-wrapping-blocks.py:1337), asserted for every roster member regardless of truth — 14 of the 38 make no real SGS_Container_Wrapper call, so the column is false for ~37% of its rows. Its only reader (db_lookup.py:1659) asks which wraps_block value is most common: a self-fulfilling question about a constant. Same trap shape as blocks.status and derived_selector. Verified 2026-08-24 (D762). |
 | `composition_role` | TEXT | 0% | `content-block` 191, `leaf` 11, `section-root` 8, `wrapper-shell` 1 — The block's structural shape. See the container_kind warning — the two columns disagree. |
 | `accepts_allowed_blocks` | TEXT | 91% |  |
 | `created_at` | TEXT | 0% |  |
-| `container_kind` | TEXT | 83% | `layout` 17, `content` 13, `section` 6 — The D294 pattern selector (block-private vs SGS_Container_Wrapper). UNRELIABLE ALONE — disagrees with composition_role inside the DB, disagrees with render.php in 14 of 58 measured blocks, and sgs/container itself is NULL. Confirm against the code. |
+| `container_kind` | TEXT | 82% | `layout` 17, `content` 13, `section` 8 — The D294 pattern selector, and a converter recognition input (l2_qualify.py:122 tests PRESENCE; recognise_helpers.py:49-53 uses the VALUE as a priority tie-break). NULL means never-written, NOT not-container-bearing — the writer (sync-container-wrapping-blocks.py:1337) only ever SETS and has no statement clearing back to NULL, so a block that stops qualifying keeps its old value permanently. Refreshed 2026-08-24 (D762): 7 missing values added, 5 unclearable stale ones cleared; 38 rows now match the roster exactly. An earlier version of this cell claimed it disagrees with render.php in 14 of 58 blocks — that used the predicate content-kind-must-not-call-the-wrapper, but D294 says content-kind MAY render block-private. A permission read as an obligation; the figure was wrong. |
 
 #### `block_capabilities` — 486 rows
 
@@ -1534,15 +1534,15 @@ meaning shows a blank cell rather than an invented sentence.
 | `tier` | TEXT | 0% | `G` 11, `V` 3, `W` 1, `H` 1 — The Spec 38 four-tier motion doctrine: V vanilla / G GSAP / H helper / W WebGL substrate. |
 | `plugin_set` | TEXT | 0% |  |
 | `owns_scroll_transform` | INTEGER | 0% | Marks effects that claim the scroll transform — the mutual-exclusion axis for combining effects on one element. |
-| `reduced_motion` | TEXT | 0% |  |
+| `reduced_motion` | TEXT | 0% | FOSSIL as of 2026-08-24 — no operational reader; generate-fx-effects-php.py:26 states outright that it is not carried. Same for editor_story, tier and created_at: only a reseed self-test touches them. |
 | `editor_story` | TEXT | 0% |  |
 | `created_at` | TEXT | 0% |  |
-| `scope` | TEXT | 0% | `block` 10, `element` 3, `site` 2, `paired` 1 |
-| `requires` | TEXT | 0% |  |
+| `scope` | TEXT | 0% | `block` 10, `element` 3, `site` 2, `paired` 1 — Gates which effects are considered at all — generate-fx-qualifying-blocks.py:780 filters scope IN (block, element). A live reader, not a label. |
+| `requires` | TEXT | 0% | What an effect needs from a block (text/svg/svg-subtree/section/item-set/track/surface/image/none). LIVE — generate-fx-qualifying-blocks.py:750-780 matches it against each block's provision. The value none is real, meaning any block qualifies — NOT a null-substitute. The svg vs svg-subtree split (2026-07-31) exists because under-specifying here once offered MorphSVG on blocks carrying only a background SVG. |
 | `pins` | INTEGER | 0% |  |
-| `triggers` | TEXT | 0% |  |
+| `triggers` | TEXT | 0% | Comma-joined string split at read time (generate-fx-effects-php.py:174), not a join table — one stray comma silently changes behaviour. |
 | `creates_panel` | INTEGER | 0% |  |
-| `in_picker` | INTEGER | 0% |  |
+| `in_picker` | INTEGER | 0% | Whether the effect appears in the generic FX picker. Two-way gated against fx.js SHIPPED_EFFECTS by check-fx-list-drift.py:486-503, so it cannot rot quietly. |
 
 Regenerate with:
 
