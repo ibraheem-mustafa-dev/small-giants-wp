@@ -3,9 +3,9 @@ doc_type: guide
 title: The migration method — settle the shape, then build the detector
 date: 2026-08-24
 status: PROVISIONAL-BUT-EXERCISED
-closes_when: "the two recorded objections are FIXED not merely documented — `--check` gating
-  on bare-mention, and a cross-file precondition check — AND one real migration has been
-  APPLIED through Steps 1-11. Rounds 2-3 exercised it read-only only."
+closes_when: "one real migration has been APPLIED through Steps 1-11 and re-graded. The two
+  round-3 objections (bare-mention outside the gate; no cross-file stage) are CLOSED in the
+  model by crosscheck(). Rounds 2-3 exercised the method read-only only."
 applies_to: any change touching more than 3 blocks, attributes, files or call sites
 grading: .claude/rubrics/migration-method-grading.md
 ---
@@ -36,13 +36,16 @@ fifteen personas, and two cold agents who FOLLOWED it end to end on real tasks. 
 fixes are in. Follow it, and **log every point where you had to guess, open a file this
 doc does not name, or do something it does not describe** — that log is what closes it.
 
-⛔ **THE OBJECTION THAT WAS NOT RESOLVED, recorded per the stopping rule.** No persona
-reached A−; the anchored grades were C / D / C, and all three converged on one thing:
-**`--check` cannot see everything that matters.** The model's gate excludes
-`bare-mention` (Step 4), and `transform()` is per-file so it cannot see a cross-file
-precondition (Step 5). Both are now DOCUMENTED with their exact call sites. **Neither is
-FIXED in the model.** Until they are, a green `--check` is a claim about the sites your
-classifier recognised — not about the tree. Step 11 is not optional.
+⛔ **THE OBJECTION ROUND 3 RAISED — now CLOSED in the model, not just written down.**
+All three personas converged on one thing: **`--check` could not see everything that
+mattered.** `bare-mention` sat outside the pass/fail condition, and `transform()` is a
+pure function of ONE file so no cross-file precondition could ever reach a gate. Both
+are fixed by **`crosscheck()`** (Step 4) — a whole-corpus stage that runs after the scan
+and that `--check` gates on. Proven to fail three ways: an unjustified bare mention, a
+changed count in a justified file, and a stale allowlist entry.
+
+⚠ **Step 11 is still not optional.** `crosscheck()` widens what the gate can see; it does
+not make a green gate proof that the transform was RIGHT.
 
 ---
 
@@ -241,14 +244,16 @@ with `grep -n '^def \|^SELF_TEST\|^EXCLUDE' plugins/sgs-blocks/scripts/migrate-l
 `--check` must exit **1** on remaining work and **0** when clean. That single property turns
 a finished migration into a permanent regression guard.
 
-⛔ **`--check` must FAIL on `bare-mention`, or say plainly that it does not.** The model's
-`--check` computes `remaining = tally['call'] + tally['comment']` (`:283`) — **`bare-mention`
-is outside the pass/fail condition.** That is not academic: `class-sgs-container-wrapper.php`
-`:3144` and `:3151` register `'transform' => 'sgs_colour_value'` as a bare STRING, fired
-through `call_user_func()` at `helpers-responsive.php:105` and `:415`. A rename that migrates
-every `(`-shaped call site and misses those two prints **PASS** over a live
-`Call to undefined function` fatal. The model reports `bare-mention=8` today. **Either gate
-on it, or resolve every one by hand before you believe a green `--check`.**
+⛔ **`--check` must gate on `bare-mention` via `crosscheck()`.** A bare mention is the name
+WITHOUT a trailing `(`, so `PAT` never matches and `classify()` is never reached — the
+transform cannot see it. That is not academic: `class-sgs-container-wrapper.php:3144` and
+`:3151` register `'transform' => 'sgs_colour_value'` as a bare STRING, fired through
+`call_user_func()` at `helpers-responsive.php:105` and `:415`, and `helpers-box.php:30` is a
+`function_exists()` polyfill guard where the name IS the identity. **A pure rename must
+follow all three.** The model now pins every surviving bare mention in a `BARE_OK` table
+with a per-file COUNT and a written reason; `crosscheck()` fails on an unjustified one, a
+changed count, or a stale entry. `--survey` LISTS them — it used to only tally, which made
+"resolve them by hand" an instruction you could not follow.
 
 ⛔ **`--check` must read the UNFILTERED target list.** Any `--only`/`--skip` filter must be
 excluded from the `--check` path, or `--check --skip foo` exits 0 with `foo` unmigrated.
@@ -269,6 +274,7 @@ and a per-file count is not one.
 | `EXCLUDE` | a `set` of `(relpath, identifier)` tuples, **each with a written reason** |
 | `classify(line, relpath)` | returns one of **five**: `call`, `definition`, `excluded`, `comment`, `unrecognised` |
 | `transform(text, relpath)` | the rewrite (Step 5). A pure function of the text, **and idempotent** |
+| **`crosscheck(state)`** | **the whole-corpus stage `transform()` cannot be.** Runs after the scan, sees every file at once, returns a list of failures. `--check` gates on it. This is where a cross-file precondition, a count that must hold across the set, or a justified-exception allowlist lives |
 | `preview(old, new, relpath)` | the unified diff — not in the model, write it |
 | **Atomic write** | `path + '.tmp'` then `os.replace()`. **Never `open(path,'w')`** — see hazards |
 | `SELF_TEST_*` fixtures | Step 6 |
@@ -307,7 +313,11 @@ one-instance-per-category rule will not partition on it either. Worked example: 
 control to 17 `edit.js` files looks like ONE case, but only **11** of their `render.php`
 call the shared helper, and the two that render the property do it in two incompatible
 shapes (`text/render.php:59` object-typed vs `heading/render.php:116` scalar). That is
-three cases, and the green gate cannot tell you.
+three cases, and `transform()` cannot tell you.
+
+**Put the check in `crosscheck()`** (Step 4) — it sees the whole target set at once, and
+`--check` gates on what it returns. That is the only place in the skeleton where a
+cross-file precondition can be enforced.
 
 Count your cases that way before concluding a change needs human judgement.
 

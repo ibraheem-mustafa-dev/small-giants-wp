@@ -80,6 +80,66 @@ def targets():
     return out
 
 
+# Every file allowed to retain a bare mention of OLD, with the count pinned and
+# a reason given. A "bare mention" is the name WITHOUT a trailing "(" -- so PAT
+# never matches it, classify() is never reached, and transform() leaves it alone.
+#
+# ⛔ THIS IS NOT COSMETIC. A pure rename must follow a bare mention when it is a
+# `function_exists()` guard or a `call_user_func()` dispatch string, because the
+# name is load-bearing there. --check gates on this table via crosscheck(); an
+# unlisted bare mention, or a changed count, fails the build.
+BARE_OK = {
+    # Comments and docblocks that NAME the old function while describing what a
+    # file does. The old function still exists (this migration added a new one
+    # alongside it), so these are accurate as written.
+    'src/blocks/label/render.php':        (1, 'comment: explains why no local closure is needed'),
+    'src/blocks/mega-aside/render.php':   (3, 'docblock + 2 pre-sanitised/phpcs comments'),
+    'src/blocks/mega-panel/render.php':   (2, 'pre-sanitised comment + phpcs:disable justification'),
+    'includes/render-helpers.php':        (1, 'docblock listing which helper file provides what'),
+
+    # ⛔ THE LOAD-BEARING ONE. A `function_exists()` polyfill guard. The string is
+    # the function's IDENTITY, not prose: rename the function without this line
+    # and the guard tests a name that no longer exists -- the polyfill then always
+    # defines, or never does. It is correct today only because this migration kept
+    # the old definition. A PURE RENAME MUST REWRITE THIS LINE.
+    'includes/helpers-box.php':           (1, 'function_exists() polyfill guard -- IDENTITY, follow it on any rename'),
+}
+
+
+def crosscheck(bare_by_file):
+    """Whole-corpus checks that transform() structurally cannot make.
+
+    ⛔ transform(text, relpath) is a pure function of ONE file. Anything that
+    depends on the OTHER files -- a precondition, a count, a shape that must be
+    consistent across the set -- is invisible to it, and therefore invisible to
+    any gate built only on its output. This is that gate.
+
+    Returns a list of human-readable failures; empty means clean.
+    """
+    fails = []
+    for relpath, n in sorted(bare_by_file.items()):
+        if relpath not in BARE_OK:
+            fails.append(
+                f"UNJUSTIFIED bare mention x{n} in {relpath} -- the name appears "
+                f"without a trailing '(' so the transform never saw it. If it is a "
+                f"function_exists() guard or a call_user_func() dispatch string it "
+                f"is LOAD-BEARING. Read it, then add it to BARE_OK with a reason."
+            )
+        elif BARE_OK[relpath][0] != n:
+            fails.append(
+                f"bare-mention COUNT CHANGED in {relpath}: BARE_OK pins "
+                f"{BARE_OK[relpath][0]}, found {n}. A new one appeared, or one was "
+                f"removed. Re-read them and update the pin."
+            )
+    for relpath, (n, _) in sorted(BARE_OK.items()):
+        if relpath not in bare_by_file:
+            fails.append(
+                f"STALE BARE_OK entry {relpath} (pins {n}, found 0). A stale "
+                f"allowlist entry is indistinguishable from no entry -- remove it."
+            )
+    return fails
+
+
 def rel(path):
     return os.path.relpath(path, ROOT).replace('\\', '/')
 
@@ -133,7 +193,7 @@ def transform(text, relpath):
     return '\n'.join(lines), records
 
 
-def scan(apply_changes=False, dry=False, quiet=False):
+def scan(apply_changes=False, dry=False, quiet=False, collect_bare=None):
     tally = {'call': 0, 'comment': 0, 'comment-retained': 0, 'definition': 0,
              'excluded': 0, 'unrecognised': 0, 'bare-mention': 0}
     changed_files = []
@@ -146,10 +206,21 @@ def scan(apply_changes=False, dry=False, quiet=False):
         new, records = transform(text, r)
         for ln, kind, snippet in records:
             tally[kind] += 1
+            # Collect BEFORE the quiet gate. --check runs quiet, and crosscheck()
+            # needs this map; placed after `continue` it saw an EMPTY corpus and
+            # reported every allowlist entry stale — a gate failing for the wrong
+            # reason, which is its own kind of vacuous.
+            if kind == 'bare-mention' and collect_bare is not None:
+                collect_bare[r] = collect_bare.get(r, 0) + 1
             if quiet:
                 continue
             if kind == 'unrecognised':
                 print('  SKIP: unrecognised  %s:%d  %s' % (r, ln, snippet[:100]))
+            elif kind == 'bare-mention' and not quiet:
+                # LIST them, do not just tally. "Resolve by hand" is not an
+                # instruction you can follow against a number.
+                print('  BARE: %-46s %s:%d  %s' % (
+                    'justified' if r in BARE_OK else 'UNJUSTIFIED', r, ln, snippet.strip()[:70]))
             elif kind in ('definition', 'excluded', 'comment-retained'):
                 print('  SKIP: %-10s  %s:%d  %s' % (kind, r, ln, snippet[:88]))
         if new != text:
@@ -279,7 +350,9 @@ def main():
         return 1 if fails else 0
 
     if a.check:
-        tally, _ = scan(quiet=True)
+        bare = {}
+        tally, _ = scan(quiet=True, collect_bare=bare)
+        cross = crosscheck(bare)
         remaining = tally['call'] + tally['comment']
         if remaining:
             print('FAIL: %d migratable site(s) still on %s()' % (remaining, OLD))
@@ -290,6 +363,11 @@ def main():
               % (tally['definition'], tally['excluded'],
                  tally['comment-retained'], tally['bare-mention'],
                  tally['unrecognised']))
+        if cross:
+            print('\nCROSSCHECK FAILED -- %d whole-corpus finding(s):' % len(cross))
+            for f in cross:
+                print('  - %s' % f)
+            return 1
         return 1 if tally['unrecognised'] else 0
 
     apply_changes = bool(a.fix and a.apply)
