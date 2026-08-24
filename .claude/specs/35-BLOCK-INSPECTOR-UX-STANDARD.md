@@ -1,5 +1,11 @@
 # Spec 35 — SGS Block Inspector UX, Control-Completeness & Capability Standard
 
+⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
+`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** Measured: three codemod
+migrations did 204 / 100 / 109 sites in ONE DAY each; the block-by-block colour rollout
+took 33 blocks over 13 days and 25 correction commits. Same repo, same week, same rules.
+The only difference was building the census before the edit.
+
 ```
 doc_type: spec
 spec_id: 35

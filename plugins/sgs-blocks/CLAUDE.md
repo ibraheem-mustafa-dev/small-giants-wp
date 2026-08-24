@@ -1,5 +1,11 @@
 # SGS Blocks — Claude Code Instructions
 
+⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
+`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** Measured: three codemod
+migrations did 204 / 100 / 109 sites in ONE DAY each; the block-by-block colour rollout
+took 33 blocks over 13 days and 25 correction commits. Same repo, same week, same rules.
+The only difference was building the census before the edit.
+
 ## What This Is
 
 A custom Gutenberg block library (WordPress plugin) that replaces Spectra Pro. Produces clean semantic markup that reads design tokens from the SGS Theme. See build status below for what's built vs. planned.

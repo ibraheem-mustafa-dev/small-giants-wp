@@ -263,48 +263,64 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN TRACK — 2026-08-24 (CLOSED bar Spec 39)
+## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-24
 
-**Full narrative:** `memory/session-2026-08-24-colour-golden-tooling.md` — read it before
-reopening anything here. Plan: `plans/2026-08-23-colour-capability-grant-PLAN.md`.
-Decisions **D761 · D762 · D763 · D765**. Commits `2d5cb4e3` `6eb2814b` `fccb6ae4` `e101c279`
-`9eb408c1` `199531de` `9236f3e5` `79cea017` `bd8e9277` `5bbc0078`.
+⭐ **NEXT SESSION: `.claude/prompts/2026-08-25-detector-first-and-the-serial-loop.md`.**
+Full narrative: `memory/session-2026-08-24-colour-golden-tooling.md`.
 
-✅ **Gate A ALIVE and GREEN.** Trigger repointed off the directory deleted at D276 and PROVEN
-FIRING. The 37 stale goldens are `xfail(strict=True)` via
-`tests/fixtures/conformance/quarantine.json` — **no golden content changed, nothing blessed.**
-Now 13 passed / 37 xfailed.
+⛔ **THE METHOD IS NOW BINDING: `.claude/THE-MIGRATION-METHOD.md`.** More than 3 blocks,
+files or call sites → the first deliverable is the DETECTOR, not the edit. Pointer inserted
+into both CLAUDE.md files, dev-setup, Specs 31/32/35 and four active plans so a cold session
+meets it before it starts editing.
 
-⛔ **THE RE-SEED IS UNAVAILABLE BY DESIGN — do not re-attempt.** D554-C keeps the converter flat
-and gates its output, so a clone touching an object-migrated property hard-halts before deploy.
-Measured: the Mama's homepage clone gave **97 flat-tier violations and did not deploy**. Bean
-rejected a shim. Un-quarantining is a **Spec 39** deliverable, not this track's to force.
+**Why, measured 2026-08-24:** `migrate-length-sanitiser.py` did 204 call sites in ONE day;
+`migrate-render-closures.py` 100 closures in ONE day; `remove-vacuous-style-engine-guard.py`
+109 guards in ONE day. The block-by-block colour rollout took **33 blocks over 13 days and
+25 correction commits** (D609/D618/D621/D622/D632/D633/D634). Same repo, same week, same
+rules. Only the method differed.
 
-⚠ **"37/39" HAS A WRONG DENOMINATOR** — it is 37 fail / 13 pass of **50** tests (39 goldens +
-11 others). Only `mamas-munches-homepage__header` and `__footer` pass. Correct it wherever seen.
+⛔ **NEVER QUOTE A D-DATE AS AN ELAPSED COST.** A previous session concluded the
+flat-to-object migration "took one day" because all six D-numbers are dated 2026-08-11.
+A D-number records when work LANDS, not the sessions spent building the scanner. Bean
+corrected it; the real span was ~2 weeks.
 
-✅ Shipped: `container_kind` refreshed (D762) · 6 DB tables traced into
-`generate-db-catalogue.py`'s `COLUMN_MEANING` · `components` rebuilt as an adoption ledger, 91
-surfaces / 4 zeros (D763) · 3 vestigial components deleted, −466 lines (D765) · WP version
-7.0→7.1 · orphan `shadow-sm/md/lg` deleted (**wrong, not merely dead** — the resolver preferred
-them, so the converter emitted a slug resolving to nothing) · 7 dead F5 baseline keys cleared ·
-script I/O inventory + 6 false headers · READMEs for the three script dirs.
+### ▶ Council findings — 6 personas, every claim verified against code
 
-⛔ **Two prompt claims were WRONG:** the "`sgs/modal` anomaly" is a non-issue (the stale rows were
-brand-strip / mega-panel / nav-drawer, stale by ABSENCE); and `wraps_block` is a hardcoded literal
-in the SQL, false for 14 of 38 rows.
+Grades: Ship-PM **D** · Spec-Lawyer **D** · Stateless-Agent Realist **D** · Leverage
+Engineer **D** · Cynic **D** · Economist **F**.
 
-⚠ **D762's regression evidence is WEAK and labelled so** — a before/after emit hash showed zero
-change, but a negative control ALSO showed zero, so the instrument is insensitive to that input.
+1. **The serial loop is the cost.** `prebuild` = 61 `&&` commands, 3,353 chars, ~128s,
+   FAIL-FAST. Two gates timed at 28.9s + 16.3s. One property × one build × one gate
+   failure at a time. Fix = consolidated runner + two tiers → **128s → ~32s**.
+2. **No completion metric exists.** 61 gates measure regression; none measures progress.
+   306 flat tier attrs remain; `css_tier` is **3,136 NULL of 3,166**.
+3. **Every `migrate-*.py` reads ZERO rows from the 3,166-row DB** — they re-glob
+   block.json. `find_target_files()` is **byte-identical** across two theme codemods.
+4. **28 built-and-never-wired tools**, incl. RA-1 (`go-live-checklist.md:81`), which is
+   MANDATORY and run by nobody.
+5. **Revenue lane is empty.** 11 of 1,740 commits touched `sites/` in 30 days and NONE
+   were client build work; `build-deploy.py` has ONE target and it is the canary.
+
+### ▶ Shipped this session
+
+Gate A alive + quarantined green (13 passed / 37 strict-xfail) · `container_kind` refreshed
+· 6 DB tables fully catalogued · `components` rebuilt as an adoption ledger · 3 vestigial
+components deleted · **`audit-script-reachability.py`** (504 scripts, NINE false-positive
+classes closed, self-test 4/4 with negative control) · **`audit-script-cull-candidates.py`**
+(0 broken, 1 real duplicate of 604 files) · the tooling catalogue now shows HOW each of 519
+scripts runs · 1 duplicate deleted.
 
 ### ▶ OPEN
 
-1. **Spec 39's converter rework** — the pacing item. Unblocks cloning AND un-quarantines Gate A's
-   37 goldens. D554-C deliberately sequenced it after the standard.
-2. **The never-clears `container_kind` writer** (D762) — it only ever SETS. Drift recurs the
-   moment a block stops qualifying.
-3. **`stage_8_drift_gate` is unwired** — detects a WP-version mismatch, runs every full
-   `/sgs-update`, and only `print()`s. Bumping the default fixed today's value, not the mechanism.
+1. **Collapse the serial build loop** (Task 1) — the 4× win, one afternoon.
+2. **Wire or delete the 28 orphans** (Task 2) — RA-1 first. Decide by RUNNING, not reading:
+   a triage got 13 of 52 wrong by trusting docstrings.
+3. **Build the burn-down** (Task 3) so the programme can report "done".
+4. **`--all-properties` + batching policy** (Task 4) — 35 of 41 properties touch 1–2 blocks.
+5. **Spec 39's converter rework** — still the pacing item for cloning; un-quarantines Gate A.
+6. **The never-clears `container_kind` writer** — it only ever SETS.
+7. ⚠ **Bean's call, not started:** the revenue lane (a real client in `TARGETS`, run RA-1).
+
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 

@@ -8,6 +8,10 @@ supersedes: nothing (new track, opened by Bean's regression report 2026-08-23)
 
 # Template-by-template remediation
 
+⛔ **More than 3 blocks/files/call sites? The first deliverable is the
+DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Block-by-block cost 13 days
+and 25 corrections for 33 blocks; the detector-first path did 204 sites in one day.
+
 ## Why this exists
 
 Bean reviewed the templates in the Site Editor after the Phase 3 design-benchmark

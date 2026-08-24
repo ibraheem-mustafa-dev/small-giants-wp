@@ -19,6 +19,12 @@ Full rationale: `.claude/reports/2026-06-06-doc-council-findings.md`.
 
 ---
 
+⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
+`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** Measured: three codemod
+migrations did 204 / 100 / 109 sites in ONE DAY each; the block-by-block colour rollout
+took 33 blocks over 13 days and 25 correction commits. Same repo, same week, same rules.
+The only difference was building the census before the edit.
+
 ## What this is
 
 A custom WordPress block framework built by Claude Code: theme + blocks plugin (with forms) + booking plugin + client-notes plugin. Competes with Kadence / Spectra / GenerateBlocks. Used to deliver 5 priority client builds with Bean as QC only.

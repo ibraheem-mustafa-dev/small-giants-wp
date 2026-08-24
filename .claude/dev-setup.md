@@ -9,6 +9,10 @@ split_date: 2026-05-24
 
 # SGS WordPress Framework — Dev Setup
 
+⛔ **More than 3 blocks/files/call sites? The first deliverable is the
+DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Block-by-block cost 13 days
+and 25 corrections for 33 blocks; the detector-first path did 204 sites in one day.
+
 ## Origin
 
 Split from `.claude/architecture.md` on 2026-05-24 as part of Phase 10 D'-1. Contains all build / deploy / SSH / local environment content from the original file. Architecture and system design content stays in `.claude/architecture.md`.
@@ -705,7 +709,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 20 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 574 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 575 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 2 | working-area helpers |
 | `.claude/hooks/` | 9 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1223,7 +1227,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 501 scripts
+#### `plugins/sgs-blocks/scripts/` — 502 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1235,6 +1239,7 @@ for the verb you happen to have in mind.
 | `audit-inline-styling.js` | npm+script-call | WIRED INTO `prebuild` AS A REAL GATE — `node scripts/audit-inline-styling.js --check` runs on every `npm run build` and sets `process.exitCode = 1`… ⚠ **header disputes this — it IS wired** |
 | `audit-post-content-blocks.py` | npm+script-call | Audit stored post_content for SGS blocks that can no longer render their content. |
 | `audit-scoped-selector-live.js` | npm+script-call | "scoped selector whose class the element never carries" bug class (the multi-button regression, D303 / P-SCOPED-SELECTOR-MATCH-AUDIT-AND-GATE). |
+| `audit-script-cull-candidates.py` | — | measured signals for a script-library cull. |
 | `audit-script-reachability.py` | script-call | which scripts in this library actually RUN, and how. |
 | `audit-shrink-to-fit.js` | script-call | WHY LIVE (not static) |
 | `behavioural-analyser/assign-canonical.py` | manifest+script-call+test-import | Backfills `canonical_slot`, `role`, and `derived_selector` for every row in |
@@ -1315,13 +1320,13 @@ for the verb you happen to have in mind.
 | `consistency/report-colour-alpha.py` | script-call | REPORT-ONLY (never non-zero exit) — surfaces colour controls that lack an |
 | `consistency/run-consistency-gates.py` | npm+script-call | Single orchestrator for the SGS blocks consistency-gate suite. Runs a fixed |
 | `content-role-detect/classify_detector1.py` | script-call | Detector 1 (step 2 of 2) — classify raw escaping-call facts extracted by |
-| `content-role-detect/detector1_render_escaping.php` | — | Detector 1 — render.php output-escaping walk (structural, token-based). |
+| `content-role-detect/detector1_render_escaping.php` | script-call | Detector 1 — render.php output-escaping walk (structural, token-based). |
 | `content-role-detect/detector2_editjs_controls.py` | script-call | Detector 2 — edit.js control-binding walk (structural, JSX-tag-aware). |
 | `content-role-detect/detector3_i18n_default.py` | script-call | Detector 3 — i18n-wrapped default walk (structural, statement-scoped). |
 | `content-role-detect/detector4_referenced_not_output.py` | script-call | Detector 4 — "referenced in code, but never escaped to output and never CSS". |
 | `content-role-detect/detector5_image_alt_companion.py` | script-call | Detector 5 -- derive the image<->alt COMPANION relationship from render.php. |
 | `content-role-detect/detector6_native_support_and_style_emission.py` | script-call | Detector 6 -- "WP-core native support" + "value painted inside a <style> element". |
-| `content-role-detect/detector7_css_paint_flow.php` | — | Detector 7 — CSS PAINT FLOW (forward variable tracking to a paint site). |
+| `content-role-detect/detector7_css_paint_flow.php` | script-call | Detector 7 — CSS PAINT FLOW (forward variable tracking to a paint site). |
 | `content-role-detect/detector8_undeclared_enum.php` | — | Detector 8 — UNDECLARED ENUM (a schema gap, not a role gap). |
 | `content-role-detect/fingerprint_content_roles.py` | script-call | Deterministic content-role fingerprint (Track A / Spec 35, Step 2). |
 | `converter/__init__.py` | manifest+script-call | SGS clean modular converter (Spec 31 §12.4 / §12.6 step 2 — vertical slice). |
@@ -1414,7 +1419,7 @@ for the verb you happen to have in mind.
 | `dbschema/sandbox.py` | script-call | Run DB-touching scripts against a throwaway database, never the live one. |
 | `dbschema/seed_history.py` | manifest+script-call | Record the last N seeding runs' row counts and REPORT what moved unexpectedly. |
 | `dbschema/wp_reference_archive.py` | script-call | Preserve the ORPHANED WordPress reference corpus (`hooks` + `docs`). |
-| `dead-api-checker/tokenize-calls.php` | — | Tokenize-calls.php |
+| `dead-api-checker/tokenize-calls.php` | script-call | Tokenize-calls.php |
 | `diff-gap-sanitiser.php` | — | Differential test: sgs_container_gap_value() old allowlist vs the new sgs_css_length_value()-delegating implementation. |
 | `drift-validator/validate.py` | manifest+script-call+skill | Spec 19 Stage 9 — Drift Validator |
 | `e2e-authoring-acceptance.php` | — | SGS QA-AUTHORING Gate — FR-27 Cluster C End-to-End Authoring Acceptance Test |
@@ -1438,7 +1443,7 @@ for the verb you happen to have in mind.
 | `generate-markup-examples.py` | script-call | Generate markup examples for all 69 SGS blocks with block.json files. |
 | `generate-tooling-catalogue.py` | script-call | DERIVE the tooling catalogue in .claude/dev-setup.md. |
 | `golden-master-acceptance.php` | — | SGS Golden-Master Acceptance Test — Spec 27 FR-27-R2 Empirical Acceptance Gate |
-| `golden-master-harness.php` | — | SGS Golden-Master Harness — Spec 27 FR-27-R2 Acceptance Gate |
+| `golden-master-harness.php` | script-call | SGS Golden-Master Harness — Spec 27 FR-27-R2 Acceptance Gate |
 | `image-sequence-prep.py` | — | turns a video into frames the sgs/image-sequence block can use. |
 | `inspector-scan/core/baseline.js` | manifest+script-call+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.7 source=spec evidence=hybrid baseline shape (keyed… |
 | `inspector-scan/core/components.js` | manifest+script-call+skill | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.5 source=file evidence=live-read… |
@@ -1490,7 +1495,6 @@ for the verb you happen to have in mind.
 | `migrate-core-blocks/block_parser.py` | script-call | Span-preserving WordPress block-comment parser. |
 | `migrate-core-blocks/build_register.py` | script-call | Track C register builder — read-only survey of replaceable core blocks. |
 | `migrate-core-blocks/capture-page.js` | — | Generic Track C first-paint capture: screenshots a URL at 375/768/1440 into reports/visual-diff/ and flags horizontal overflow. |
-| `migrate-core-blocks/capture-preset-gap.js` | — | Track C preset-gap first-paint capture — screenshots the probe page at 375/768/1440 into reports/visual-diff/ + flags horizontal overflow. |
 | `migrate-core-blocks/contract.py` | manifest+script-call | Shared contract between the migration driver and pairing modules. |
 | `migrate-core-blocks/driver.py` | script-call | Track C migration driver — swaps core blocks for their SGS replacements. |
 | `migrate-core-blocks/lint-page.py` | script-call | Lint (and optionally fix) banned core blocks in a PAGE's block markup. |
@@ -1541,32 +1545,32 @@ for the verb you happen to have in mind.
 | `migrations/2026-08-13-role-remediation-part2-overrides.py` | — | One-shot script: apply this session's confirmed one-off role classifications. |
 | `migrations/2026-08-24-drop-fossil-columns.py` | manifest+script-call | retire three provably dead columns. |
 | `motion-qa/probe-carousel-loop.mjs` | — | Live probe — looping carousels (Spec 38, Bean's independent-control ruling). |
-| `motion-qa/probe-cursor-field.mjs` | — | Live probe — cursor-reactive field (Spec 38 §3.3, FR-38-25). |
+| `motion-qa/probe-cursor-field.mjs` | script-call | Live probe — cursor-reactive field (Spec 38 §3.3, FR-38-25). |
 | `motion-qa/probe-editor-css-warnings.mjs` | — | Failing-test probe for the editor iframe CSS-loading warnings. |
 | `motion-qa/probe-first-paint.mjs` | — | gate's `first_paint_capture_passed` field is supposed to attest. |
-| `motion-qa/probe-good-by-default.mjs` | — | Gap-register claim 7 — is "good by default" true for pin-scrub / scrub / scramble / split-reveal? (2026-08-21, D729) |
+| `motion-qa/probe-good-by-default.mjs` | npm+script-call | Gap-register claim 7 — is "good by default" true for pin-scrub / scrub / scramble / split-reveal? (2026-08-21, D729) |
 | `motion-qa/probe-horizontal-panel-focus.mjs` | — | Horizontal-panel keyboard-focus probe — Spec 38 FR-38-8 follow-up |
 | `motion-qa/probe-horizontal-panel.js` | script-call | Horizontal-panel travel probe — Spec 38 FR-38-8. |
-| `motion-qa/probe-morph-geometry.mjs` | — | D452 close-out (2026-08-21) — does `fx-morph` actually morph on the live canary? |
-| `motion-qa/probe-motion-path-repeat.mjs` | — | D451 close-out (2026-08-21) — does motion-path re-animate on a SECOND downward pass? |
-| `motion-qa/probe-reduced-motion.mjs` | — | Horizontal panel — reduced-motion arm probe. Spec 38 FR-38-8 / §10. |
-| `motion-qa/probe-step13-pin-focus.mjs` | — | Step 13 (Motion Wave D register) — pin + horizontal-panel keyboard story. |
-| `motion-qa/probe-step14-scrub-focus.mjs` | — | Job 1/2 (2026-08-01, D453 follow-up register) — fx-scrub.js + fx-split-reveal.js keyboard-hold fix, verified IN SITU against the REAL deployed… |
+| `motion-qa/probe-morph-geometry.mjs` | npm+script-call | D452 close-out (2026-08-21) — does `fx-morph` actually morph on the live canary? |
+| `motion-qa/probe-motion-path-repeat.mjs` | npm+script-call | D451 close-out (2026-08-21) — does motion-path re-animate on a SECOND downward pass? |
+| `motion-qa/probe-reduced-motion.mjs` | script-call | Horizontal panel — reduced-motion arm probe. Spec 38 FR-38-8 / §10. |
+| `motion-qa/probe-step13-pin-focus.mjs` | script-call | Step 13 (Motion Wave D register) — pin + horizontal-panel keyboard story. |
+| `motion-qa/probe-step14-scrub-focus.mjs` | script-call | Job 1/2 (2026-08-01, D453 follow-up register) — fx-scrub.js + fx-split-reveal.js keyboard-hold fix, verified IN SITU against the REAL deployed… |
 | `motion-qa/probe-stepn-image-sequence-pin.mjs` | — | Step N (Motion Wave D register) — image-sequence PIN-ON path, first live observation. |
 | `motion-qa/probe-tier-w-surface.mjs` | — | Live probe — Tier W surface-treatment effect (Spec 38 §1.2b, D479). |
 | `motion-qa/probe-wave-c-editor.mjs` | — | Spec 38 Wave C — EDITOR-surface probe (D388). |
-| `motion-qa/probe-wave-c.mjs` | — | Spec 38 Wave C — live browser probe for every shipped Wave C effect. |
-| `motion-qa/run-live-probes.mjs` | — | Live motion-QA runner — the standing post-deploy motion check. |
-| `nav-qa/axe-run.mjs` | — | blocks (Spec 36 §8 / FR-36-16: "axe = 0 on the OPEN drawer AND an OPEN desktop mega"). |
+| `motion-qa/probe-wave-c.mjs` | script-call | Spec 38 Wave C — live browser probe for every shipped Wave C effect. |
+| `motion-qa/run-live-probes.mjs` | npm+script-call | Live motion-QA runner — the standing post-deploy motion check. |
+| `nav-qa/axe-run.mjs` | script-call | blocks (Spec 36 §8 / FR-36-16: "axe = 0 on the OPEN drawer AND an OPEN desktop mega"). |
 | `nav-qa/build-poc-fixtures.py` | manifest | create the nav-drawer variant POC fixtures on the canary. |
 | `nav-qa/crawl-assert.mjs` | — | bar+dropdown+mega link AND mega content must be present in the PRE-JS HTML (what a crawler / no-JS user gets), never injected client-side. |
-| `nav-qa/elementfrompoint-sweep.mjs` | — | occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7 (D101). |
-| `nav-qa/lib/openness-guard.mjs` | — | for every nav-qa script that measures or captures an interactive surface. |
+| `nav-qa/elementfrompoint-sweep.mjs` | manifest+script-call | occlusion sweep, carried verbatim from Spec 34 FR-S9-5 / FR-34-7 (D101). |
+| `nav-qa/lib/openness-guard.mjs` | script-call | for every nav-qa script that measures or captures an interactive surface. |
 | `nav-qa/logical-props-lint.py` | manifest | RTL-readiness WARN-only lint for the SGS nav blocks |
 | `nav-qa/palette-contrast-sweep.mjs` | — | drafts (mega-menu panels and any other self-contained SGS-BEM draft). |
-| `nav-qa/shoot-drawer-pairs.mjs` | — | WHY |
+| `nav-qa/shoot-drawer-pairs.mjs` | script-call | WHY |
 | `nav-qa/submenu-harness.php` | — | Stubbed harness for SGS_Nav_Menu_Bar_Renderer — walker AND render_items. |
-| `nav-qa/sweep-drawer-variants.mjs` | — | WHY THIS SHAPE |
+| `nav-qa/sweep-drawer-variants.mjs` | script-call | WHY THIS SHAPE |
 | `no-inline/check-no-inline.py` | npm+script-call | Anti-regression GATE for the framework-wide inline-zero win (Spec 32 FR-32-1 / |
 | `no-inline/check-stranded-guards.py` | npm | Anti-regression GATE for STRANDED inline-style guards (Spec 32). |
 | `no-inline/detect.py` | manifest+script-call+skill | No-inline detector — the worklist generator for the framework-wide inline-zero |
@@ -1638,7 +1642,7 @@ for the verb you happen to have in mind.
 | `placement-reach.py` | manifest+npm+script-call | how far does THE PLACEMENT RULE actually reach? |
 | `playwright-fetch.js` | script-call | Usage: node playwright-fetch.js <url> Writes the fully-rendered HTML to stdout. Used by sgs-update-v2.py Stage 2 Source 4 as a fallback when urllib… |
 | `preflight-acceptance.php` | — | SGS Preflight Acceptance Test — FR-27-PREFLIGHT / SEC-5 Empirical Gate |
-| `product-search-leak-check.php` | — | SGS Product Search — Behavioural Leak Test (FR-30-5 Named Enforcement Runner). |
+| `product-search-leak-check.php` | script-call | SGS Product Search — Behavioural Leak Test (FR-30-5 Named Enforcement Runner). |
 | `prove-selftest-can-fail.py` | script-call | Prove a detector's --self-test is LOAD-BEARING, not decorative. |
 | `push-theme-snapshot.py` | script-call | Deploy a per-client theme.json snapshot to a WP site. |
 | `qa/capture-native-colour-ui.js` | — | Visual verification for the native-colour-ui migration (16 blocks). |
@@ -1669,7 +1673,7 @@ for the verb you happen to have in mind.
 | `run-motion-fx-generators.js` | npm+script-call | motion-fx generator chain (seed-motion-fx-registry.py, generate-fx-effects-php.py, generate-fx-qualifying-blocks.py). |
 | `scan-component-adoption.js` | script-call | WHY THIS EXISTS |
 | `seed-48-sku-fixture-v2.php` | — | SGS 48-SKU Fixture — v2 ADDITIVE presentation-meta seeder (Spec 27 Phase 2). |
-| `seed-48-sku-fixture.php` | — | SGS 48-SKU WooCommerce Fixture — Developer Script |
+| `seed-48-sku-fixture.php` | script-call | SGS 48-SKU WooCommerce Fixture — Developer Script |
 | `seed-component-adoption.py` | script-call | write the unification ADOPTION LEDGER to `components`. |
 | `seed-composition-roles.py` | script-call | idempotent corrections to block_composition.composition_role. |
 | `seed-mamas-products.php` | — | Seed script — Mama's Munches reference products (Spec 24 Phase A). |
@@ -1677,13 +1681,14 @@ for the verb you happen to have in mind.
 | `sgs-clone-orchestrator.py` | hook+script-call+settings+skill+test-import | sgs-clone orchestrator (Phase 7 rewire). |
 | `sgs-update-v2.py` | manifest+script-call+skill+test-import | 13-stage holistic refresh of the SGS framework knowledge base. |
 | `shared_utils.py` | script-call | Shared, zero-dependency utilities for the SGS clone scripts. |
+| `survey-flex-row-shape.py` | — | Classify every authored sgs/container flex ROW by what it is actually doing. |
 | `surveys/audit-css-element-drift.py` | — | Audit `block_attributes.css_element` against each block's own element manifest. |
 | `surveys/census-tier-siblings.sh` | — | Re-runnable census of per-device tier-sibling attribute instances |
 | `surveys/check-control-parity-live.js` | — | property, against a native control on the same page. |
 | `surveys/check-image-controls-support.py` | npm | Standing defence for the `imageControls` "declared-but-unverified capability" |
 | `surveys/compare-reach-depth.py` | script-call | Does resolution DEPTH change the answer? Measure, do not assume. |
 | `surveys/extract-native-contracts.py` | manifest | Extract the REQUIRED props (and the __next* opt-ins) from Gutenberg's own |
-| `surveys/fetch-native-control-contracts.sh` | — | Fetch the CANONICAL prop contract for each WordPress core control primitive straight from the Gutenberg source, so a golden describes the real… |
+| `surveys/fetch-native-control-contracts.sh` | script-call | Fetch the CANONICAL prop contract for each WordPress core control primitive straight from the Gutenberg source, so a golden describes the real… |
 | `surveys/lib/control-detection.js` | script-call | Answers ONE question per (block, attribute): **can a client set this?** |
 | `surveys/lib/php-kind-consumption.js` | script-call | BRANCH-AWARE CONSUMPTION ANALYSER for the shared container wrapper. |
 | `surveys/lib/wrapper-capability-selftest.js` | script-call | Self-test for the wrapper-capability census. |
@@ -1748,7 +1753,7 @@ for the verb you happen to have in mind.
 | `render-mobile-override-audit.js` | — | Render.php inline-vs-media audit. |
 | `sgs-block-grep.py` | — | SGS block-name search utility — fixes the block-name-search-blindspot failure mode. |
 | `verify-restored-page.js` | — | The Track B definition-of-done requires the restore to be proven on the REAL page via computed DOM (R-31-11), not on assertion output or the emitted… |
-| `wc-pages-responsive-audit.js` | — | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
+| `wc-pages-responsive-audit.js` | script-call | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
 | `wp-migrate-oldshape-blocks.js` | manifest+script-call | block migrations (Track B, 2026-07-15), through the BLOCK EDITOR ONLY. |
 | `wp-update-block-attrs.js` | script-call+skill | Reusable Playwright helper that updates a block's attributes on a live WordPress post by going through the editor — using wp.blocks.createBlock(name… |
 
@@ -1787,7 +1792,7 @@ meaning shows a blank cell rather than an invented sentence.
 |---|---|---|
 | `animation_tokens` | 8 | yes |
 | `array_item_schema` | 62 | yes |
-| `attribute_gap_candidates` | 3592 | — |
+| `attribute_gap_candidates` | 3591 | — |
 | `block_attributes` | 3166 | yes |
 | `block_capabilities` | 486 | yes |
 | `block_composition` | 211 | yes |

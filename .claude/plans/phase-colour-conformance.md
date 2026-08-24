@@ -11,6 +11,10 @@ status: IN PROGRESS — detector + 5 helpers built and MERGED TO MAIN (2026-08-2
 
 # Phase — Colour control conformance
 
+⛔ **More than 3 blocks/files/call sites? The first deliverable is the
+DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Block-by-block cost 13 days
+and 25 corrections for 33 blocks; the detector-first path did 204 sites in one day.
+
 **USP:** Every colour control in the framework becomes complete and provably so. A client can set a
 colour, a hover, and a gradient on any element that paints one — and the build fails if a new
 control ships incomplete. This is the last big gap between "SGS has colour controls" and "SGS's

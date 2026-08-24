@@ -10,6 +10,10 @@ governing: D542 (triad), D744 (capability moves), D750 (parse attr JSON), D751 (
 
 # Colour capability-grant — implementation plan
 
+⛔ **More than 3 blocks/files/call sites? The first deliverable is the
+DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Block-by-block cost 13 days
+and 25 corrections for 33 blocks; the detector-first path did 204 sites in one day.
+
 ## BEAN'S MANDATE (D752) — the north star, not the machinery
 
 > **APPLY HOVER + GRADIENT EVERYWHERE**, across all 58 blocks. His reasoning: hover on
