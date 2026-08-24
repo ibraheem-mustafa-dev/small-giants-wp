@@ -63,7 +63,7 @@ import sys
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 # The server-side mirror of every JS-registered extension attr, regenerated on
-# each build by scripts/generate-extension-attributes.js.
+# each build by plugins/sgs-blocks/scripts/generate-extension-attributes.js.
 GENERATED_EXT_ATTRS = (
     REPO / 'plugins' / 'sgs-blocks' / 'includes' / 'extension-attributes.generated.php'
 )
@@ -370,7 +370,11 @@ def main():
         if high:
             print('NEW HIGH findings mean stored content will silently fail to render or be')
             print('deleted on the next editor save. Migrate the stored shape via the block')
-            print('editor (scripts/wp-migrate-oldshape-blocks.js — dry-run by default) BEFORE')
+            # REPO-ROOT scripts/, not plugins/sgs-blocks/scripts/ — this file lives in
+            # the latter, and a bare `scripts/` here has already been read as the
+            # wrong one and reported as a missing file. Two dirs share the name.
+            print('editor (REPO-ROOT scripts/wp-migrate-oldshape-blocks.js — dry-run by')
+            print('default) BEFORE')
             print('deploying, or baseline WITH a register reference if genuinely accepted.')
     return 1 if (check and high) else 0
 

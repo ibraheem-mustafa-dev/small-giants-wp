@@ -103,7 +103,7 @@ const FX_ATTR_MAP = array(
 	'fxFieldRadius'        => 'data-sgs-fx-field-radius',
 	'fxFieldShape'         => 'data-sgs-fx-field-shape',
 	'fxFieldBlend'         => 'data-sgs-fx-field-blend',
-	'fxFieldDrag'          => 'data-sgs-fx-field-drag',
+	'fxFieldTrail'         => 'data-sgs-fx-field-trail',
 	'fxShapeAssetFrom'     => 'data-sgs-fx-shape-asset-from',
 	'fxShapeAssetTo'       => 'data-sgs-fx-shape-asset-to',
 
@@ -390,7 +390,7 @@ function sgs_fx_effect_param_scope(): array {
 		 * the second of the three to have been missed on this effect. None is
 		 * cross-checked by a gate.
 		 */
-		'cursor-field'      => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius', 'fxFieldShape', 'fxFieldDrag', 'fxFieldBlend' ),
+		'cursor-field'      => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius', 'fxFieldShape', 'fxFieldTrail', 'fxFieldBlend' ),
 
 		/*
 		 * Surface treatment (Tier W, Spec 38 §1.2b, D479). THIS ROW IS

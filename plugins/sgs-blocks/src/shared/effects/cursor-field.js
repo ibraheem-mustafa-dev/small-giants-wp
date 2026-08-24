@@ -431,26 +431,26 @@ export function initCursorField( el, opts = {} ) {
 	 * is attached under `reduce`, so the loop can never start and the field
 	 * simply rests.
 	 */
-	const dragAttr = el.getAttribute( 'data-sgs-cursor-field-drag' );
-	const dragAmount = clamp( parseInt( dragAttr, 10 ) || 0, 0, 100 );
-	const dragFactor = 0 === dragAmount ? 1 : 1 - ( dragAmount / 100 ) * 0.94;
+	const trailAttr = el.getAttribute( 'data-sgs-cursor-field-trail' );
+	const trailAmount = clamp( parseInt( trailAttr, 10 ) || 0, 0, 100 );
+	const trailFactor = 0 === trailAmount ? 1 : 1 - ( trailAmount / 100 ) * 0.94;
 
 	let targetX = null;
 	let targetY = null;
 	let currentX = null;
 	let currentY = null;
-	let dragFrame = null;
+	let trailFrame = null;
 
-	const stopDrag = () => {
-		if ( null !== dragFrame ) {
-			cancelAnimationFrame( dragFrame );
-			dragFrame = null;
+	const stopTrail = () => {
+		if ( null !== trailFrame ) {
+			cancelAnimationFrame( trailFrame );
+			trailFrame = null;
 		}
 	};
 
 	const tick = () => {
-		currentX += ( targetX - currentX ) * dragFactor;
-		currentY += ( targetY - currentY ) * dragFactor;
+		currentX += ( targetX - currentX ) * trailFactor;
+		currentY += ( targetY - currentY ) * trailFactor;
 		publishViewport( currentX, currentY );
 		// Half a pixel is below what any of this can paint, so settling there
 		// ends the loop rather than running forever on rounding noise.
@@ -458,18 +458,18 @@ export function initCursorField( el, opts = {} ) {
 			0.5 < Math.abs( targetX - currentX ) ||
 			0.5 < Math.abs( targetY - currentY )
 		) {
-			dragFrame = requestAnimationFrame( tick );
+			trailFrame = requestAnimationFrame( tick );
 			return;
 		}
 		currentX = targetX;
 		currentY = targetY;
 		publishViewport( currentX, currentY );
-		dragFrame = null;
+		trailFrame = null;
 	};
 
-	const startDrag = () => {
-		if ( null === dragFrame ) {
-			dragFrame = requestAnimationFrame( tick );
+	const startTrail = () => {
+		if ( null === trailFrame ) {
+			trailFrame = requestAnimationFrame( tick );
 		}
 	};
 
@@ -501,7 +501,7 @@ export function initCursorField( el, opts = {} ) {
 		// DRAG 0 (the default) publishes the pointer position directly, exactly
 		// as this module always has. Anything above 0 hands the position to the
 		// easing loop instead, so the pool lags behind the cursor.
-		if ( 1 <= dragFactor ) {
+		if ( 1 <= trailFactor ) {
 			publishViewport( clientX, clientY );
 			return;
 		}
@@ -511,7 +511,7 @@ export function initCursorField( el, opts = {} ) {
 			currentX = clientX;
 			currentY = clientY;
 		}
-		startDrag();
+		startTrail();
 	} );
 
 	/**
@@ -535,7 +535,7 @@ export function initCursorField( el, opts = {} ) {
 	// the pointer genuinely leaves the emitter.
 	const onLeave = () => {
 		handleMove.cancel();
-		stopDrag();
+		stopTrail();
 		currentX = null;
 		currentY = null;
 		rest();
@@ -546,7 +546,7 @@ export function initCursorField( el, opts = {} ) {
 
 	return () => {
 		handleMove.cancel();
-		stopDrag();
+		stopTrail();
 		el.removeEventListener( 'mousemove', onMove );
 		el.removeEventListener( 'mouseleave', onLeave );
 		unmark();

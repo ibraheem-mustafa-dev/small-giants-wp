@@ -211,11 +211,11 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	// NO fading tail. It was named for an effect it does not have, which is the
 	// same defect class as D767's dead "Field size" control. A real trail is
 	// the particle engine's job.
-	$drag = $processor->get_attribute( 'data-sgs-fx-field-drag' );
-	if ( null !== $drag && '' !== $drag ) {
+	$trail = $processor->get_attribute( 'data-sgs-fx-field-trail' );
+	if ( null !== $trail && '' !== $trail ) {
 		$processor->set_attribute(
-			'data-sgs-cursor-field-drag',
-			(string) \max( 0, \min( 100, (int) $drag ) )
+			'data-sgs-cursor-field-trail',
+			(string) \max( 0, \min( 100, (int) $trail ) )
 		);
 	}
 

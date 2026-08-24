@@ -980,7 +980,16 @@ function addFxAttributes( settings, name ) {
 			 * ServerSideRender preview (D755).
 			 */
 			fxFieldBlend: { type: 'number' },
-			fxFieldDrag: { type: 'number' },
+			/* Stored as `fxFieldTrail`, shown to the client as "Drag weight".
+			   The names differ DELIBERATELY. This is a lerp follower and has no
+			   fading tail, so "Trail" was the wrong client-facing word and was
+			   changed 2026-08-24. The stored ATTRIBUTE keeps its name because
+			   canary 2721 already authors it on 5+ containers, and WP DELETES an
+			   undeclared attr on the next editor save (D338) — renaming it needs a
+			   block-editor content migration, which is not worth its risk for an
+			   internal identifier no client ever sees. The deploy's oldshape audit
+			   caught this; the rename was reverted rather than forced. */
+			fxFieldTrail: { type: 'number' },
 			fxEase: { type: 'string', default: '' },
 			fxSplit: { type: 'string', default: '' },
 			fxMask: { type: 'string', default: '' },
@@ -1199,7 +1208,7 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// still renders as a field rather than trusting the stored number.
 		'data-sgs-fx-field-radius': attributes.fxFieldRadius,
 		'data-sgs-fx-field-blend': attributes.fxFieldBlend,
-		'data-sgs-fx-field-drag': attributes.fxFieldDrag,
+		'data-sgs-fx-field-trail': attributes.fxFieldTrail,
 		'data-sgs-fx-field-shape': attributes.fxFieldShape,
 		// Surface-treatment intensity, 0-1. The render layer clamps it and
 		// drops a 0 back to unset — see the attribute declaration above.
@@ -2552,12 +2561,12 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 
 								<ToolsPanelItem
 									hasValue={ () =>
-										undefined !== attributes.fxFieldDrag
+										undefined !== attributes.fxFieldTrail
 									}
 									label={ __( 'Drag weight', 'sgs-blocks' ) }
 									onDeselect={ () =>
 										setParam( {
-											fxFieldDrag: undefined,
+											fxFieldTrail: undefined,
 										} )
 									}
 								>
@@ -2565,10 +2574,10 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 										label={ __( 'Drag weight', 'sgs-blocks' ) }
-										value={ attributes.fxFieldDrag }
+										value={ attributes.fxFieldTrail }
 										onChange={ ( value ) =>
 											setParam( {
-												fxFieldDrag: value,
+												fxFieldTrail: value,
 											} )
 										}
 										min={ 0 }
