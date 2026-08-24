@@ -87,6 +87,25 @@ const VAR_Y = '--sgs-cursor-y';
 const VAR_ELEMENT_X = '--mx';
 const VAR_ELEMENT_Y = '--my';
 
+/**
+ * Element-relative pixels, published ALONGSIDE the viewport pair in viewport
+ * mode. Deliberately NOT `--mx`/`--my`: those are the mega-menu's frozen
+ * contract, carry PERCENTAGES, and rest at a different spot (50%/30%).
+ * Reusing them here would silently redefine a published contract.
+ *
+ * WHY THIS PAIR EXISTS (2026-08-24, measured). `background-attachment: fixed`
+ * resolves the LAYER against the viewport, so viewport pixels are correct for
+ * it. A `mask-image` has no attachment equivalent — `mask-attachment` is in
+ * CSS Masking L1 but no engine implements it — so a mask gradient's `at X Y`
+ * resolves against the ELEMENT's own box. Feeding it viewport pixels put the
+ * reveal off by exactly the element's distance from the viewport top:
+ * measured, a pointer at viewport y=481 over an element whose top was 256 lit
+ * a spot at 737, below that element's own bottom edge. Masked field types read
+ * this pair instead.
+ */
+const VAR_LOCAL_X = '--sgs-cursor-local-x';
+const VAR_LOCAL_Y = '--sgs-cursor-local-y';
+
 /** Marks the element painting the base field. */
 const EMITTER_ATTR = 'data-sgs-cursor-field';
 
@@ -326,6 +345,10 @@ export function initCursorField( el, opts = {} ) {
 			varY,
 			`${ Math.round( rect.top + rect.height / 2 ) }px`
 		);
+		// The same resting point expressed in the element's own box, for
+		// masked types. Same rect, no extra measurement.
+		el.style.setProperty( VAR_LOCAL_X, `${ Math.round( rect.width / 2 ) }px` );
+		el.style.setProperty( VAR_LOCAL_Y, `${ Math.round( rect.height / 2 ) }px` );
 	};
 
 	// The resting position is applied unconditionally and FIRST, so the field
@@ -387,9 +410,26 @@ export function initCursorField( el, opts = {} ) {
 			return;
 		}
 
-		// Viewport space needs no measurement of anything at all.
+		// The viewport pair needs no measurement — it IS the client position,
+		// and `background-attachment: fixed` resolves the layer against the
+		// viewport, so every participant paints the same field in the same
+		// screen place with no per-element maths. That remains the mechanism.
 		el.style.setProperty( varX, `${ Math.round( clientX ) }px` );
 		el.style.setProperty( varY, `${ Math.round( clientY ) }px` );
+
+		// The LOCAL pair costs one rect read per throttled frame — the same
+		// cost element space has always paid (see the branch above), and one
+		// read for the emitter, never one per participant. Masked types need
+		// it because a mask resolves against this element's own box.
+		const localRect = el.getBoundingClientRect();
+		el.style.setProperty(
+			VAR_LOCAL_X,
+			`${ Math.round( clientX - localRect.left ) }px`
+		);
+		el.style.setProperty(
+			VAR_LOCAL_Y,
+			`${ Math.round( clientY - localRect.top ) }px`
+		);
 	} );
 
 	/**

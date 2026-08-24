@@ -1,5 +1,58 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D767 [INCIDENT] — the masked cursor-field looks lit the wrong spot for 23 days, and I buried the finding in a commit body (2026-08-24)
+
+**Bean-ruled option A, after a QC council.** A `mask-image` gradient's `at X Y` resolves against the
+ELEMENT's own box; `background-attachment: fixed` resolves the LAYER against the VIEWPORT. Both read
+the same custom properties, so the same value `481px` meant viewport 481 to the layer and viewport
+737 to the mask. **The lit pool sat below the section that owned it, off by exactly that element's
+distance from the viewport top** — so wrong for nearly every real placement, and drifting on scroll.
+
+⛔ **`mask-attachment` is in CSS Masking Level 1 and NO engine implements it.** There is no CSS-only
+fix; JS is required by construction. Do not re-propose one.
+
+**The fix (option A).** `cursor-field.js` now publishes `--sgs-cursor-local-x/y` (element-relative px)
+ALONGSIDE the viewport pair, and the two masked types read the local pair. Cost is ONE
+`getBoundingClientRect()` per throttled frame — exactly what element-space mode has always paid for
+the mega-menu. **Measured: offset +256 → 0.**
+
+**Masked types are now EMITTER-ONLY, and that is the deliberate half of Bean's ruling.** A participant
+resolves the mask against its OWN box, so it cut its reveal 155px away from the emitter's — measured.
+Option B (per-participant correctness) needed a rect read per participant per frame plus scroll and
+resize listeners, abandoning the module's own "zero per-element geometry maths" principle for half the
+roster. Bean chose A. `glow` and `parallax-pattern` are unmasked and keep full seamless coverage —
+verified live, all five emitters.
+
+⭐ **THE REAL FAILURE IS NOT THE BUG, IT IS WHERE I PUT IT.** I found this defect while fixing
+something else and recorded it in the body of commit `eb9ab0f9` and NOWHERE ELSE — not in D766
+(written the same session), not in Spec 38's own "Still open" list two paragraphs below where the bug
+lives, not in `parking.md`, and the register I had written 45 minutes earlier still read "✅ ALL FOUR
+LOOKS SHIPPED". D766 spent four paragraphs congratulating me for repairing nine stale claims in OTHER
+docs while my own live finding sat in the one place nobody reads. **A commit body is not a living
+doc.** Found by the council's spec-lawyer seat, not by me.
+
+⭐ **`spotlight-mask` shipped 2026-08-01 (`7d535b40`) and its own commit body said: "NOT yet
+live-verified — builds green and the bundle is measured, but no instance has been observed painting.
+Artefact presence is not behaviour."** Twenty-three days and several ✅ marks later, every one of
+those ticks cited a file:line and none cited an observation. This bug is exactly what that gap was
+hiding, and it was visible on first glance at a rendered page.
+
+**A SECOND DEFECT the council found in code I shipped hours earlier:** "Field size" was a DEAD CONTROL
+on `parallax-pattern` — the only type that never read `--sgs-cursor-field-radius`, while the slider
+renders whenever the effect is `cursor-field`. Fixed by giving it a MEANING rather than hiding it:
+radius now drives dot spacing at `/9`, keeping the default at 28.89px against the hand-picked 28px, so
+no authored instance changes. Hiding it would have added a fourth hand-maintained list with no gate.
+
+**Council corrections worth keeping.** One rater argued there was no real defect because mask and
+layer read the same variables — right about the variables, wrong about the reference boxes, settled by
+measurement. Another claimed `hue-shift` never set `pattern-size`; it did, and I removed it in the
+repeating-gradient rewrite. **And my own preferred option — drop the mask from `hue-shift` entirely —
+was refuted by a screenshot:** unmasked it becomes a full-bleed rainbow that destroys the ground and
+the text contrast. The mask is load-bearing.
+
+**Blast radius: zero.** `spotlight-mask` has 0 live authorings; only 2 `cursor-field` authorings exist,
+both test fixtures.
+
 ## D766 [ROUTINE] — the cursor field's last two signed looks ship, completing FR-38-28; and nine motion docs that were actively lying (2026-08-24)
 
 **FR-38-28 is COMPLETE.** Bean signed four cursor-field looks at a design gate on 2026-08-07 and

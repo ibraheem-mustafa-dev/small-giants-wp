@@ -625,6 +625,21 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   measurement. The coarse-pointer gate is belt-and-braces (CSS + JS) but has not been observed on a
   real device.
 
+ ⛔ **MASKED TYPES ARE EMITTER-ONLY (D767, 2026-08-24).** A `mask-image` resolves against the
+  ELEMENT's box while `background-attachment: fixed` resolves the layer against the VIEWPORT, so the
+  same published coordinates meant two different screen points. `spotlight-mask` shipped with this on
+  2026-08-01 and lit the wrong spot for 23 days. The emitter now publishes `--sgs-cursor-local-x/y`
+  (element-relative) alongside the viewport pair and masked types read it — measured offset +256 → 0.
+  Participants do NOT paint a masked type: each would resolve the mask against its own box and cut the
+  reveal elsewhere (measured 155px apart). `glow` and `parallax-pattern` are unmasked and keep full
+  participant coverage. ⚠ **`mask-attachment` exists in CSS Masking L1 but no engine implements it —
+  there is no CSS-only fix. Do not re-propose one.**
+
+ ⚠ **This amends the "no new JS" claim above, honestly rather than silently.** Adding a field type is
+  a CSS rule plus two list registrations ONLY while it paints by a background property. A type that
+  masks needs the local coordinate pair, which is JS — already published now, so no FURTHER JS is
+  needed for another masked type, but the original claim was too broad and is corrected here.
+
  **Still open, and NOT part of FR-38-28:** the `floating-objects` field type (FR-38-25 residual 2).
   It moves discrete ELEMENTS rather than painting a shared background layer, needs new per-element
   transform JS, and needs its own opt-in design gate for *which children become objects*.

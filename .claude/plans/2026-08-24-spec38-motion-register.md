@@ -161,7 +161,12 @@ in the same codebase already solve exactly this: `db_lookup.py:5716` and
 
 ---
 
-## Section 4 — The signed design gate: ✅ ALL FOUR LOOKS SHIPPED (2026-08-24)
+## Section 4 — The signed design gate: all four looks shipped; two needed a coordinate fix (2026-08-24)
+
+⚠ **This section read "✅ ALL FOUR LOOKS SHIPPED" unqualified for several hours after a defect in two
+of them had already been found.** Corrected per D767. `spotlight-mask` and `hue-shift` lit the wrong
+spot (mask resolves against the element box, layer against the viewport); fixed, measured +256 → 0,
+and masked types are now emitter-only.
 
 FR-38-28 shipped as FR-38-25's cursor field. Verified by enumerating **every consumer of
 `--sgs-cursor-x`/`--sgs-cursor-y` repo-wide** — exactly two files, two paint rules. That closed

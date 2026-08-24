@@ -82,6 +82,12 @@
 	--sgs-cursor-x: 50vw;
 	--sgs-cursor-y: 40vh;
 
+	/* The same idea in the element's OWN box, for masked types (see the
+	   coordinate-space note in the header). Percentages so the no-JS resting
+	   state is sensible at any block size. */
+	--sgs-cursor-local-x: 50%;
+	--sgs-cursor-local-y: 40%;
+
 	position: relative;
 }
 
@@ -116,10 +122,18 @@
 		transparent 1.5px
 	);
 	--sgs-cursor-field-mask: radial-gradient(
-		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
 		#000 0%,
 		transparent 70%
 	);
+
+	/* A mask resolves against each element's OWN box, so a participant would
+	   cut its reveal at a different screen point from the emitter — measured
+	   155px apart. Masked types are therefore EMITTER-ONLY (Bean's ruling,
+	   option A): an opaque child occludes them rather than showing a
+	   mis-registered second hole. `glow` and `parallax-pattern` are unmasked
+	   and keep full seamless coverage across participants. */
+	--sgs-cursor-field-participant-layer: none;
 }
 
 /* ==========================================================================
@@ -177,10 +191,18 @@
 		calc(var(--sgs-cursor-x) * -0.5) calc(var(--sgs-cursor-y) * -0.5);
 
 	--sgs-cursor-field-mask: radial-gradient(
-		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
 		#000 0%,
 		transparent 70%
 	);
+
+	/* A mask resolves against each element's OWN box, so a participant would
+	   cut its reveal at a different screen point from the emitter — measured
+	   155px apart. Masked types are therefore EMITTER-ONLY (Bean's ruling,
+	   option A): an opaque child occludes them rather than showing a
+	   mis-registered second hole. `glow` and `parallax-pattern` are unmasked
+	   and keep full seamless coverage across participants. */
+	--sgs-cursor-field-participant-layer: none;
 }
 
 @supports (color: color-mix(in oklch, red 50%, blue)) {
@@ -213,7 +235,16 @@
  * ========================================================================== */
 
 [data-sgs-cursor-field="parallax-pattern"] {
-	--sgs-cursor-field-pattern-size: 28px 28px;
+	/* ⚠ "Field size" was a DEAD CONTROL here until 2026-08-24 (found by a QC
+	   council). The inspector renders that slider whenever the effect is
+	   `cursor-field`, but this type is the only one that never read
+	   `--sgs-cursor-field-radius` — so a client could drag it and see nothing.
+	   Fixed by giving it a MEANING rather than hiding it: radius now sets the
+	   dot spacing. The /9 keeps the default identical to the hand-picked 28px
+	   this shipped with (260/9 = 28.9), so no authored instance changes. */
+	--sgs-cursor-field-pattern-size:
+		calc(var(--sgs-cursor-field-radius) / 9)
+		calc(var(--sgs-cursor-field-radius) / 9);
 
 	--sgs-cursor-field-position:
 		calc(var(--sgs-cursor-x) * -0.08) calc(var(--sgs-cursor-y) * -0.08);
@@ -257,7 +288,10 @@
    reads as continuous across an opaque child rather than being occluded by
    it — Bean's requirement that it "go over any surface seamlessly". */
 [data-sgs-cursor-participant] {
-	background-image: var(--sgs-cursor-field-layer);
+	background-image: var(
+		--sgs-cursor-field-participant-layer,
+		var(--sgs-cursor-field-layer)
+	);
 	background-attachment: fixed;
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);
