@@ -7,7 +7,9 @@ GROUND-TRUTH: spec=31 §3.A source=db
   attr_for_layer_property('sgs/container', 'OUTER', 'background-attachment') = 'backgroundAttachment'
   attr_for_layer_property('sgs/container', 'OUTER', 'box-shadow') = 'shadow'
     (role=color Shadow row wins over role=visual BoxShadow row by rowid ordering)
-  design_tokens shadow presets (token_type='size', slug LIKE 'shadow-%'):
+  design_tokens shadow presets (token_type='shadow', slug LIKE 'shadow-%'; corrected
+  2026-08-24 from a mistyped 'size' via .claude/reports/2026-08-24-design-tokens-shadow-fix.sql
+  — the design_tokens CHECK constraint declares 'shadow' as its own token_type):
     shadow-sm  default_value='0 1px 3px rgba(0,0,0,0.08)'   → slug 'sm'
     shadow-md  default_value='0 4px 12px rgba(0,0,0,0.1)'   → slug 'md'
     shadow-lg  default_value='0 8px 30px rgba(0,0,0,0.12)'  → slug 'lg'
@@ -175,7 +177,7 @@ def test_box_shadow_md_preset_writes_slug_md(conn):
     """'0 4px 12px rgba(0,0,0,0.1)' matches shadow-md preset → Write(attr='shadow', value='md').
 
     GROUND-TRUTH: design_tokens slug='shadow-md' default_value='0 4px 12px rgba(0,0,0,0.1)'
-    token_type='size'. Strip 'shadow-' prefix → slug 'md'.
+    token_type='shadow'. Strip 'shadow-' prefix → slug 'md'.
     """
     result = process_element(
         _ctx(conn),

@@ -80,9 +80,13 @@ GROUND-TRUTH: spec=31 source=db evidence=attr_for_layer_property('sgs/container'
 'background-size')='backgroundSize'; ('background-position')='backgroundPosition';
 ('background-repeat')='backgroundRepeat'; ('background-attachment')='backgroundAttachment';
 ('box-shadow')='shadow' (role=color wins over BoxShadow/role=visual via rowid ordering).
-Shadow presets sourced from design_tokens WHERE token_type='size' AND slug LIKE 'shadow-%':
-shadow-sm='0 1px 3px rgba(0,0,0,0.08)', shadow-md='0 4px 12px rgba(0,0,0,0.1)',
-shadow-lg='0 8px 30px rgba(0,0,0,0.12)', shadow-glow='0 0 20px rgba(248,122,31,0.3)'.
+Shadow presets sourced from design_tokens WHERE token_type='shadow' AND slug LIKE 'shadow-%'
+(the design_tokens CHECK constraint declares 'shadow' as its own token_type — a
+2026-08-24 audit found earlier framework rows mistyped as 'size' from before the
+constraint carried 'shadow'; corrected via .claude/reports/2026-08-24-design-tokens-shadow-fix.sql).
+Current live presets (from theme.json): shadow-subtle='0 1px 3px rgba(0,0,0,0.08)',
+shadow-raised='0 4px 12px rgba(0,0,0,0.1)', shadow-floating='0 8px 30px rgba(0,0,0,0.12)',
+shadow-glow='0 0 20px rgba(248,122,31,0.3)'.
 Wrapper renders box-shadow:var(--wp--preset--shadow--{slug}) where slug=suffix after 'shadow-'.
 """
 from __future__ import annotations
@@ -155,7 +159,10 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
     value exactly matches (after whitespace normalisation) a design_tokens shadow preset.
     Returns None if no preset matches — the caller must emit an honest gap.
 
-    Shadow presets live in design_tokens WHERE token_type='size' AND slug LIKE 'shadow-%'.
+    Shadow presets live in design_tokens WHERE token_type='shadow' AND slug LIKE 'shadow-%'
+    (the CHECK constraint on design_tokens.token_type declares 'shadow' as its own type;
+    see .claude/reports/2026-08-24-design-tokens-shadow-fix.sql for the 2026-08-24 correction
+    of framework rows that predated the constraint's 'shadow' member and were mistyped 'size').
     The default_value column holds the canonical CSS value (e.g. '0 4px 12px rgba(0,0,0,0.1)').
     The wrapper renders box-shadow:var(--wp--preset--shadow--{slug-after-shadow-prefix}).
 
@@ -164,7 +171,7 @@ def _shadow_token_snap(raw_value: str, conn: sqlite3.Connection) -> str | None:
     normalised = _normalise_shadow(raw_value)
     rows = conn.execute(
         "SELECT slug, default_value FROM design_tokens "
-        "WHERE slug LIKE ? AND token_type='size'",
+        "WHERE slug LIKE ? AND token_type='shadow'",
         (f"{_SHADOW_SLUG_PREFIX}%",),
     ).fetchall()
     for slug, default_value in rows:
@@ -314,7 +321,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"box-shadow value {decl.value!r} does not match any shadow preset in "
-                f"design_tokens (token_type='size', slug LIKE 'shadow-%'); the shadow "
+                f"design_tokens (token_type='shadow', slug LIKE 'shadow-%'); the shadow "
                 f"attr expects a preset slug, not a raw CSS value — add a matching "
                 f"preset to design_tokens or rework the draft to use a standard shadow",
             )

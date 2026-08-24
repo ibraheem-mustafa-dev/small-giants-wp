@@ -520,12 +520,19 @@ def target_27_design_tokens(conn: sqlite3.Connection, repo_path: Path | None, dr
     upserted = 0
     settings = theme_data.get("settings", {})
 
-    # token_type CHECK constraint: ('colour', 'font', 'spacing', 'size') — UK English, no shadow type
+    # token_type CHECK constraint: ('colour', 'font', 'spacing', 'size', 'shadow') — UK English.
+    # (Corrected 2026-08-24: this comment previously claimed "no shadow type" — the live
+    # CHECK constraint has carried 'shadow' since before this audit; verified via
+    # `SELECT sql FROM sqlite_master WHERE name='design_tokens'`.)
+    # token_type IS included in the UPDATE SET so a re-run can correct a previously
+    # mistyped row (e.g. a shadow row upserted before 'shadow' was used as its type) —
+    # a plain default_value/css_var/description-only SET can never fix that.
     def _upsert_token(c: sqlite3.Connection, slug: str, token_type: str, value: str, css_var: str, desc: str) -> None:
         c.execute(
             """INSERT INTO design_tokens (slug, token_type, default_value, css_var, description)
                VALUES (?, ?, ?, ?, ?)
                ON CONFLICT(slug) DO UPDATE SET
+                   token_type=excluded.token_type,
                    default_value=excluded.default_value,
                    css_var=excluded.css_var,
                    description=excluded.description""",
@@ -568,7 +575,8 @@ def target_27_design_tokens(conn: sqlite3.Connection, repo_path: Path | None, dr
             _upsert_token(conn, slug, "spacing", size_val, css_var, desc)
         upserted += 1
 
-    # Shadows — map to 'size' token type (closest valid type; no 'shadow' in constraint)
+    # Shadows — 'shadow' is its own token_type in the CHECK constraint (see comment above);
+    # matches the writer in sgs-update-v2.py's _extract_shadow_tokens (token_type='shadow').
     for sh in settings.get("shadow", {}).get("presets", []):
         slug = sh.get("slug", "")
         shadow = sh.get("shadow", "")
@@ -577,7 +585,7 @@ def target_27_design_tokens(conn: sqlite3.Connection, repo_path: Path | None, dr
         css_var = f"var(--wp--preset--shadow--{slug})"
         desc = sh.get("name", slug)
         if not dry_run:
-            _upsert_token(conn, f"shadow-{slug}", "size", shadow, css_var, desc)
+            _upsert_token(conn, f"shadow-{slug}", "shadow", shadow, css_var, desc)
         upserted += 1
 
     if not dry_run and upserted:
