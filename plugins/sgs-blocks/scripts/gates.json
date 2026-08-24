@@ -558,7 +558,7 @@
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
-    "budget_ms": null,
+    "budget_ms": 590,
     "order": 61
   }
 ]
