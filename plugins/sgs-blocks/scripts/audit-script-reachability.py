@@ -198,6 +198,39 @@ def channel_files() -> list[tuple[str, list[Path]]]:
     ]
 
 
+def executed_tests(tests: list) -> list:
+    """Only the test files pytest is ACTUALLY told to run.
+
+    ⚠ Scanning every test file over-credits. `coverage-matrix/tests/` and
+    several others exist but are NOT in package.json's pytest invocation, so a
+    module imported only from there runs on NO build. Crediting it would mark a
+    genuine revival candidate as WIRED — hiding exactly what this audit exists
+    to surface. Over-crediting is the expensive error here, not under-crediting.
+
+    Parsed from the prebuild chain rather than hardcoded, so adding a test
+    directory to package.json automatically widens this.
+    """
+    import json as _json
+    pkg = PLUGIN / "package.json"
+    if not pkg.exists():
+        return []
+    try:
+        blob = _json.loads(pkg.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    chain = " ".join(str(v) for v in blob.get("scripts", {}).values())
+    roots = [m for m in re.findall(r"(scripts/[\w/-]*tests/)", chain)]
+    if not roots:
+        return []
+    keep = []
+    for t in tests:
+        rel = t.as_posix()
+        if any(("plugins/sgs-blocks/" + r) in rel or rel.endswith(r.rstrip("/")) or r in rel
+               for r in roots):
+            keep.append(t)
+    return keep
+
+
 def audit() -> dict:
     scripts = discover()
     prod = [p for p in scripts if not is_test(p)]
@@ -241,6 +274,15 @@ def audit() -> dict:
     for label, files in channel_files():
         scan(files, exec_ch, label)
     scan(prod, exec_ch, "script-call")
+    # ⚠ TESTS ARE A REAL EXECUTION PATH — false-positive class #7.
+    # package.json prebuild runs `python -m pytest scripts/oracle/tests/
+    # scripts/converter/tests/`, so a module imported ONLY by a test file runs on
+    # every build. Tests are excluded from the CANDIDATE list (nothing names them,
+    # so their own absence of callers is meaningless) but they must still be
+    # SCANNED as a channel. Without this, coverage_report.py, draft_oracle.py,
+    # metamorphic.py and run_canary_proof.py all read as unwired while running on
+    # every single build.
+    scan(executed_tests(tests), exec_ch, "test-import")
     # ⚠ Scan EVERY markdown file in the repo, not just the ones beside the
     # scripts. Limiting this to SCRIPT_ROOTS + .claude missed
     # plugins/sgs-blocks/CLAUDE.md — which documents dozens of scripts — and

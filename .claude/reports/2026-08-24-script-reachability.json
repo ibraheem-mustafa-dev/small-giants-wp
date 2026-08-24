@@ -8,8 +8,8 @@
   },
   "counts": {
     "UNREFERENCED": 1,
-    "DOC-ONLY": 70,
-    "WIRED": 379
+    "DOC-ONLY": 66,
+    "WIRED": 383
   },
   "scripts": [
     {
@@ -58,17 +58,7 @@
       "wired_via": []
     },
     {
-      "script": "plugins/sgs-blocks/scripts/converter/coverage_report.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
       "script": "plugins/sgs-blocks/scripts/converter/services/button_group.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/converter/services/draft_oracle.py",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -258,16 +248,6 @@
       "wired_via": []
     },
     {
-      "script": "plugins/sgs-blocks/scripts/oracle/metamorphic.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/oracle/run_canary_proof.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
       "script": "plugins/sgs-blocks/scripts/qa/capture-native-colour-ui.js",
       "verdict": "DOC-ONLY",
       "wired_via": []
@@ -398,7 +378,8 @@
       "wired_via": [
         "manifest",
         "npm",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -437,7 +418,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -546,7 +528,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -558,7 +541,8 @@
         "manifest",
         "npm",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -908,7 +892,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1044,7 +1029,16 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/coverage_report.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1062,7 +1056,8 @@
         "hook",
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1070,7 +1065,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1078,7 +1074,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1107,7 +1104,8 @@
       "script": "plugins/sgs-blocks/scripts/converter/gates/check_raw_sqlite.py",
       "verdict": "WIRED",
       "wired_via": [
-        "hook"
+        "hook",
+        "test-import"
       ]
     },
     {
@@ -1115,7 +1113,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "hook",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1123,7 +1122,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "hook",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1132,7 +1132,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1140,7 +1141,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1148,7 +1150,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1164,7 +1167,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1172,7 +1176,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1180,7 +1185,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1188,14 +1194,16 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/converter/resolvers/preset_absence.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1203,7 +1211,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1217,7 +1226,8 @@
       "script": "plugins/sgs-blocks/scripts/converter/resolvers/styling_content.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1225,7 +1235,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1240,7 +1251,8 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/arrangement.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1248,7 +1260,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1262,14 +1275,16 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/border_side.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/converter/services/content_gap_collector.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1283,14 +1298,24 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/css_parse.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/converter/services/css_pass.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/converter/services/draft_oracle.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1299,7 +1324,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1307,14 +1333,16 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/converter/services/fold_helpers.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1329,7 +1357,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1337,7 +1366,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1351,7 +1381,8 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/layer_detect.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1365,7 +1396,8 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/pseudo_overlay.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1387,7 +1419,8 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/root_supports.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1402,14 +1435,16 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/state_value_lift.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/converter/services/styling_helpers.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1460,7 +1495,8 @@
       "script": "plugins/sgs-blocks/scripts/converter/services/variant_detect.py",
       "verdict": "WIRED",
       "wired_via": [
-        "manifest"
+        "manifest",
+        "test-import"
       ]
     },
     {
@@ -1469,7 +1505,8 @@
       "wired_via": [
         "hook",
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1500,7 +1537,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1515,7 +1553,8 @@
       "script": "plugins/sgs-blocks/scripts/db-consistency/check_composition.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1588,7 +1627,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1607,7 +1647,8 @@
         "manifest",
         "npm",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1631,7 +1672,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "npm",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -1707,7 +1749,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1719,7 +1762,8 @@
         "manifest",
         "npm",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -1796,7 +1840,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -2041,7 +2086,8 @@
         "manifest",
         "npm",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -2057,7 +2103,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "hook",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -2067,7 +2114,8 @@
         "commit-gate",
         "hook",
         "npm",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -2075,7 +2123,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "npm",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -2084,7 +2133,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -2418,7 +2468,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -2434,21 +2485,32 @@
       "script": "plugins/sgs-blocks/scripts/oracle/element_probe.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/oracle/golden_expectations.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
       "script": "plugins/sgs-blocks/scripts/oracle/guards.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/oracle/metamorphic.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -2457,7 +2519,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -2476,12 +2539,21 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/oracle/run_canary_proof.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "test-import"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/oracle/verdict.py",
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -2537,7 +2609,8 @@
       "script": "plugins/sgs-blocks/scripts/orchestrator/css_router.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -2890,7 +2963,8 @@
       "wired_via": [
         "hook",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -2899,7 +2973,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -3096,7 +3171,8 @@
       "wired_via": [
         "manifest",
         "script-call",
-        "skill"
+        "skill",
+        "test-import"
       ]
     },
     {
@@ -3166,7 +3242,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
@@ -3187,7 +3264,8 @@
       "script": "plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "test-import"
       ]
     },
     {
