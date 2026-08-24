@@ -65,14 +65,28 @@ TARGET_BLOCKS = [
 # Hover + responsive-tier siblings for BOTH overlay paint attrs (D6). Ordered
 # so a diff reads "colour hover/tablet/mobile, then gradient hover/tablet/
 # mobile" — grouped by base attr, not alphabetically.
-SIBLING_KEYS = [
-    'backgroundOverlayColourHover',
-    'backgroundOverlayColourTablet',
-    'backgroundOverlayColourMobile',
-    'overlayGradientHover',
-    'overlayGradientTablet',
-    'overlayGradientMobile',
-]
+# RETARGETED 2026-08-25 (D776) - the tier axis moved OFF colour and ONTO opacity at D739.
+# This list previously demanded backgroundOverlayColour{Tablet,Mobile} and
+# overlayGradient{Tablet,Mobile}. D739 DELETED all four, deliberately: a heavier scrim on a
+# small screen is an OPACITY change, not a different hue, and crossing tier x state gave one
+# property three axes living in two different places on screen. Measured 2026-08-25 across
+# all 8 target blocks: colour/gradient tiers 0/8, opacity tiers 8/8, hover 8/8, blend 8/8.
+#
+# STOP: --check was RED against an OBSOLETE contract, and --fix --apply would have
+# REINTRODUCED 32 attributes D739 removed. A gate asserting a superseded contract is worse
+# than no gate, because its red reads as a backlog.
+#
+# Each key carries its own SHAPE. Colour/gradient siblings are strings defaulting to empty;
+# the opacity tiers are NUMBERS with NO default - a number attr with a null default returns
+# 400 from every ServerSideRender preview, so declaring none is strictly safer.
+SIBLING_SHAPES = {
+    'backgroundOverlayColourHover': ('string', ''),
+    'overlayGradientHover': ('string', ''),
+    'backgroundOverlayOpacityTablet': ('number', None),
+    'backgroundOverlayOpacityMobile': ('number', None),
+}
+
+SIBLING_KEYS = list(SIBLING_SHAPES)
 
 BLEND_MODE_KEY = 'backgroundOverlayBlendMode'
 
@@ -110,9 +124,18 @@ _ANCHOR_RE = re.compile(
 
 
 def _sibling_block(key: str) -> str:
-    """One `\t\t"key": {...},\n` attribute definition, string type, default ''."""
-    return f'\t\t"{key}": {{\n\t\t\t"type": "string",\n\t\t\t"default": ""\n\t\t}},\n'
+    """One attribute definition, shaped per SIBLING_SHAPES.
 
+    A `default` is emitted ONLY when the shape declares one. The opacity tiers declare
+    none on purpose - emitting a null default on a number attr returns 400 from every
+    ServerSideRender preview for that block."""
+    attr_type, default = SIBLING_SHAPES[key]
+    if default is None:
+        return f'\t\t\"{key}\": {{\n\t\t\t\"type\": \"{attr_type}\"\n\t\t}},\n'
+    return (
+        f'\t\t\"{key}\": {{\n\t\t\t\"type\": \"{attr_type}\",\n'
+        f'\t\t\t\"default\": {json.dumps(default)}\n\t\t}},\n'
+    )
 
 def _blend_mode_block() -> str:
     enum_lines = ',\n'.join(f'\t\t\t\t"{v}"' for v in BLEND_MODE_VALUES)

@@ -2,7 +2,7 @@
 doc_type: report
 title: Script revival register — built, working, never wired
 date: 2026-08-24
-status: OPEN — nothing has been wired
+status: PARTIAL — 7 of 27 wired (2026-08-25, D776); every remaining verdict recorded below
 source: audit-script-reachability.py + 3 triage agents + 3 QC agents, every verdict verified
 ---
 
@@ -12,8 +12,14 @@ source: audit-script-reachability.py + 3 triage agents + 3 QC agents, every verd
 whole exercise: *"a lot of the time they had a great use but we forgot to wire them in and
 now they look dead but they may not be vestigial so it'd be worth reviving them."*
 
-⛔ **NOTHING HERE HAS BEEN WIRED.** Adding any of these to a build or commit chain changes
-what runs on every build and is a separate, deliberate decision each time.
+⛔ **THAT CLAIM WAS FALSE WHEN WRITTEN, AND IT IS THIS REGISTER'S OWN LESSON.** It read
+"NOTHING HERE HAS BEEN WIRED" while `migrate-length-sanitiser.py` had been a `gates.json`
+gate since **2026-08-21** — three days earlier. The LEDGER and the session prompt separately
+claimed "2 of 27 done". Enumerated against the live roster on 2026-08-25, it was **1**.
+Three sources, three different numbers, and only the enumerated one was right.
+
+**Now 7 of 27 are wired** (D776). Adding any remaining one changes what runs on every build
+and is still a separate, deliberate decision each time.
 
 **How this list was produced.** `audit-script-reachability.py` classified 503 scripts by
 execution channel; 3 agents triaged the unwired ones; 3 more QC'd every *non*-revival
@@ -94,3 +100,109 @@ its evidence frequently was not.
 
 The decisive question is not "is it called" but **"if you ran it today, would it do
 anything?"** A spent one-shot is inert. A live gate is not.
+
+---
+
+# Verdicts — 2026-08-25 (D776)
+
+Every script below was **RUN**, not read. Decided by Bean from that evidence.
+
+⛔ **Nothing here was deletable:** all 27 are referenced in `.claude/specs`, `.claude/plans` or
+`.claude/reports`, so the register's own rule (c) makes wiring or documenting the only
+permitted states.
+
+## ✅ WIRED — 6 new (`gates.json` orders 66-71, tier `fast`, ~0.55s total)
+
+| Script | What it guards | `--check` |
+|---|---|---|
+| `lint-patterns-for-personal-data.py` | client email/phone/location leaking into base patterns that every future client inherits — the ONLY automated guard | 0 |
+| `migrate-render-closures.py` | a new block re-adding a private copy of a shared sanitiser helper | 0 |
+| `migrate-theme-native-spacing.py` | spacing hand-authored back onto the legacy WP path on the 4 migrated blocks | 0 |
+| `colour-codemod/migrate-shadow-mounts.js` | 22 ShadowControl mounts staying on the one-map shape, cross-checked against each `block.json` | 0 |
+| `font-source-audit.js` | external CDN fonts that fail SILENTLY to a fallback on CSP-locked servers | 0 |
+| `fanout-overlay-sibling-attrs.py` | **RETARGETED first — see below** | 0 |
+
+⚠ Two are at the repo ROOT, so their gate cmd is `../../scripts/…`. `run-gates.py`'s self-test
+validator assumed every gated script lived inside the plugin and would have rejected them; its
+path regex now accepts `../`, with a negative control proving it still catches a genuinely
+missing script.
+
+⚠ `migrate-shadow-mounts.js` advertises a `--self-test` that **does not exist** — one occurrence
+in the file, on the docstring line. Its `--check` is real and green; the docstring is not.
+
+## ⛔ `fanout-overlay-sibling-attrs.py` — it was asserting a SUPERSEDED contract
+
+Its `--check` exited 1 demanding `backgroundOverlayColour{Tablet,Mobile}` +
+`overlayGradient{Tablet,Mobile}` across 8 blocks. **D739 deliberately DELETED all four** — the
+responsive axis moved OFF colour and ONTO opacity, because a heavier scrim on a small screen is
+an opacity change, not a different hue.
+
+Measured across all 8 target blocks: colour/gradient tiers **0/8**, opacity tiers **8/8**, hover
+**8/8**, blend mode **8/8**.
+
+⛔ **The evidence agent recommended running `--fix --apply` to make it green. That would have
+reintroduced 32 attributes another track deliberately removed**, and restored the
+tier × state × gradient tangle Bean spotted at D739. A red gate asserting an obsolete contract is
+worse than no gate, because its red reads as a backlog.
+
+Retargeted to the real contract (Bean's ruling) and made **shape-aware**: the opacity tiers are
+NUMBERS with NO default, where the generator previously hardcoded string/empty for every key. A
+number attr with a null default returns 400 from every ServerSideRender preview. Now green,
+self-test 12/12.
+
+**A fourth verdict state exists that the register's three did not cover: SUPERSEDED — retarget
+or retire.**
+
+## ⛔ NOT wired — red against something real (2)
+
+- `oracle/attribution_ground_truth.py` — exit **1**, 39 real mismatches, all `rt-pseudo-before`
+  fixture rows where the attributor assigns `.sgs-info-box*` cells to `section-1-container`.
+  A genuine divergence, not a stale contract. Fix the divergence before wiring.
+- `qc-correctness-regression.py` — exit **2**. `reports/baselines/` does not exist and has never
+  been seeded. Needs one bootstrap run against a rendered extract first.
+
+## ⚠ Reporters — wiring them would enforce NOTHING (5)
+
+Each finds real things today and each **exits 0 regardless**, so registering one as a gate is
+enforcement theatre in a different costume. Each needs a fail condition before it is a gate.
+
+| Script | Finding today |
+|---|---|
+| `behavioural-analyser/backfill-coarse-roles.py` | **229 refinements.** Its docstring's *"idempotent, zero refinements on re-run"* is FALSE, measured |
+| `extract-comment-narrative.py` | 4,310 candidates across 89 files; self-test 8/8 |
+| `oracle/decompose_unattributed.py` | only 29.6% of 582 declared CSS cells measurable; 393 gaps |
+| `census-colour-paint-route.py` | 28 DIRECT / 18 WRAPPER / 37 NEITHER of 83 — cited as the canonical regenerate command in an OPEN plan |
+| `surveys/audit-css-element-drift.py` | 4 genuine orphan `css_element` values; `main()` always returns 0 |
+
+## 📋 documented-as-manual-with-a-reason (10)
+
+All need a live site, a browser, or human judgement — **none can ever be a prebuild gate**.
+
+- `scripts/wc-pages-responsive-audit.js` (**RA-1**) — named by path in `go-live-checklist.md:81`.
+  Repo ROOT, needs `--base <live domain>`. Post-deploy against the canary is its honest home.
+- `surveys/check-control-parity-live.js` · `qa/check-colour-editor-roundtrip.js` — live editor.
+  ⚠ `playwright` sits in `node_modules` by accident of an MCP install and is **not** a declared
+  dependency. Wiring either means declaring it first.
+- `motion-qa/probe-horizontal-panel.js` — not a script at all: a browser-side ES module meant to
+  be pasted into a CDP `evaluate`. Absent from `run-live-probes.mjs` entirely. Needs a fixture
+  page AND runner wiring.
+- `probe-text-equivalence.js` — ⭐ **generic** (two arbitrary URLs) and a working implementation
+  of CLAUDE.md rule 4a. Nothing else does content-keyed computed-style comparison. Worth
+  promoting out of `migrate-core-blocks/` — the folder name is why it was dismissed.
+- `probe-columns-responsive.js` · `probe-heading-cascade.js` · `probe-overflow.js` — all generic,
+  all argv-driven, all dismissed for their folder rather than their code.
+- `qa/probe-row-gradient.js` — generic on task args; self-restoring with a byte-identical check.
+- `scripts/apply-block-attrs-batch.js` — fully argv-driven; the ONLY "Indus" reference in the
+  file is its own header comment. Writes to a live site — never run unattended.
+- `qa/probe-native-colour-ui-close.js` — genuinely hardcoded (zero argv, fixed 5-block CASES).
+  Kept as the named template at `2026-08-23-colour-capability-grant-design.md:202` (verified).
+
+## 🚫 `converter/services/button_group.py` — capability NOT wanted (Bean's ruling)
+
+Zero callers **proven by grep**. It would auto-wrap runs of loose `sgs/button` children in an
+`sgs/multi-button`; `recognition.py:96` only fires when the draft already authors a wrapper
+class, so the capability really is unduplicated.
+
+**Bean, 2026-08-25: the draft should author the wrapper / equivalent layer for multi-button if it
+needs one, so auto-grouping is not wanted.** `recognition.py`'s draft-authored path IS the
+intended mechanism. Not wired, not restored. Do not re-propose without overturning this ruling.

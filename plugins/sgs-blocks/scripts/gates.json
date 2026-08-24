@@ -596,5 +596,59 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 65
+  },
+  {
+    "id": "lint-patterns-personal-data",
+    "cmd": "python ../../scripts/lint-patterns-for-personal-data.py",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 66
+  },
+  {
+    "id": "font-source-audit",
+    "cmd": "node ../../scripts/font-source-audit.js",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 67
+  },
+  {
+    "id": "migrate-render-closures",
+    "cmd": "python scripts/migrate-render-closures.py --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 68
+  },
+  {
+    "id": "migrate-theme-native-spacing",
+    "cmd": "python scripts/migrate-theme-native-spacing.py --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 69
+  },
+  {
+    "id": "migrate-shadow-mounts",
+    "cmd": "node scripts/colour-codemod/migrate-shadow-mounts.js --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 70
+  },
+  {
+    "id": "fanout-overlay-sibling-attrs",
+    "cmd": "python scripts/fanout-overlay-sibling-attrs.py --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 71
   }
 ]

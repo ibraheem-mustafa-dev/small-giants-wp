@@ -1,3 +1,48 @@
+## D776 — six orphan gates wired, and one of them was guarding a contract we had deleted [ROUTINE]
+
+**2026-08-25.** Of 27 built-and-working scripts nobody had hooked up, six are now `gates.json`
+gates (orders 66-71, tier `fast`, **~0.55s total** on a 31s build). Every one was decided by
+RUNNING it — a previous triage of these got **13 of 52** wrong from docstrings.
+
+⛔ **`fanout-overlay-sibling-attrs.py` was RED against a SUPERSEDED contract, and the obvious
+fix would have undone another track's work.** It demanded `backgroundOverlayColour{Tablet,
+Mobile}` + `overlayGradient{Tablet,Mobile}` on 8 blocks. **D739 deleted all four on purpose**
+— the responsive axis moved off colour onto opacity, because a heavier scrim on a small screen
+is an opacity change, not a different hue. Measured across all 8: colour/gradient tiers 0/8,
+opacity tiers 8/8, hover 8/8, blend 8/8. The evidence agent recommended `--fix --apply` to make
+it green; that would have **reintroduced 32 deleted attributes** and restored the
+tier x state x gradient tangle Bean spotted. Retargeted to the real contract instead, and made
+the generator **shape-aware** — it hardcoded `string`/`""` for every key, but the opacity tiers
+are NUMBERS with NO default (a null default on a number attr 400s every SSR preview). Green,
+self-test 12/12.
+
+**A red gate asserting an obsolete contract is worse than no gate: its red reads as a backlog.**
+The register's three permitted states (wire / delete / document-as-manual) had no room for this
+— **SUPERSEDED, retarget or retire** is a fourth.
+
+⛔ **Three documents gave three different counts of how many were already wired.** The register
+said "NOTHING HERE HAS BEEN WIRED" (false when written — `migrate-length-sanitiser.py` had been
+a gate for three days); the LEDGER and the prompt both said "2 of 27". Enumerated against the
+live roster: **1**. Only the enumerated figure was right, again.
+
+⚠ **Two gates live at the repo ROOT**, so their cmd is `../../scripts/…`. `run-gates.py`'s
+self-test validator assumed every gated script sat inside the plugin and would have rejected
+them; its path regex now accepts `../`, with a negative control proving it still catches a
+genuinely missing script.
+
+⚠ **Five of the 27 are REPORTERS that exit 0 regardless of what they find** (229 role
+refinements, 4,310 comment blocks, 393 fidelity gaps, 4 DB orphans). Wiring one as a gate
+enforces nothing — that is enforcement theatre in a different costume. Each needs a fail
+condition first. Two more are red against something REAL (39 attributor mismatches; a baseline
+directory never seeded) and must be fixed before wiring, not wired red.
+
+**`converter/services/button_group.py` — Bean's ruling: the capability is NOT wanted.** Zero
+callers proven by grep; it would auto-wrap loose `sgs/button` runs into `sgs/multi-button`.
+Bean: the DRAFT should author the wrapper / equivalent layer if it needs one.
+`recognition.py`'s draft-authored-wrapper path is the intended mechanism. Not restored.
+
+Nothing was deletable — all 27 are referenced in specs/plans/reports. Full per-script evidence:
+`.claude/reports/2026-08-24-script-revival-register.md`. Build green, 63/63.
 ## D775 — the framework DB answers, the tree verifies: declared_siblings() is DB-first WITH a crosscheck [ROUTINE]
 
 **2026-08-25.** `migrate-tier-object.py` read the DB nowhere — it re-walked

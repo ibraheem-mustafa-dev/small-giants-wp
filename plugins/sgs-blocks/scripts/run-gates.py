@@ -356,8 +356,8 @@ def do_self_test() -> int:
 
     missing = [g["id"] for g in gates
                if g["tier"] != "generator"
-               and (m := re.search(r"scripts/[\w\-/\.]+\.(?:py|js)", g["cmd"]))
-               and not (_PLUGIN_DIR / m.group(0)).exists()]
+               and (m := re.search(r"(?:\.\./)*scripts/[\w\-/\.]+\.(?:py|js)", g["cmd"]))
+               and not (_PLUGIN_DIR / m.group(0)).resolve().exists()]
     check("every gated script exists on disk", not missing, str(missing))
 
     pkg_scripts = json.loads((_PLUGIN_DIR / "package.json").read_text(encoding="utf-8"))["scripts"]
