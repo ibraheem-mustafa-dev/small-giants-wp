@@ -1419,6 +1419,82 @@ body.woocommerce-cart .with-empty-cart-icon,
 	min-width: 0;
 }
 
+/* ── 10d. HORIZONTAL card when the grid resolves to ONE column ──────────────
+ *
+ * A single column of tall vertical cards makes a phone shop page enormously
+ * long and reads as a stack of unrelated boxes. IKEA's mobile shop reshapes
+ * each card into a horizontal strip — image left, text beside it — so a
+ * product occupies one tidy band instead of a full screen. Measured on their
+ * live mobile shop: a 360px row with a 174px image and the text alongside.
+ *
+ * ⛔ THIS MUST BE A CONTAINER QUERY, NOT A MEDIA QUERY, AND NOT A WIDTH RULE
+ * ON THE CARD. Two ways to get this wrong, both measured on our own canary:
+ *
+ *   1. The CARD's own width does not identify the 1-up case. It is 327px at
+ *      375px viewport (1-up) and 313px at 1440px (3-up) — 14px apart. Any
+ *      card-width rule that goes horizontal on a phone also goes horizontal
+ *      on desktop.
+ *   2. A device-tier media query does not match the 1-up case either. At a
+ *      768px viewport the row is 705px and the grid is already 2-up, so
+ *      `max-width: 767px` would flip cards horizontal while they are still
+ *      side by side. 1-up does not begin until the ROW is narrow.
+ *
+ * The row is the only thing that knows the column count, so the row is what
+ * we query. `auto-fill minmax(<min>, 1fr)` fits a second column as soon as
+ * the row can hold `2 x --sgs-shop-card-min + --sgs-shop-col-gap`, so 1-up is
+ * exactly "row narrower than that sum":
+ *
+ *     2 x 240px + 24px = 504px   ->   1-up at <= 503px
+ *
+ * ⚠ Container-query conditions cannot read custom properties, so 503px is
+ * written literally. It is DERIVED, not chosen — if --sgs-shop-card-min or
+ * --sgs-shop-col-gap above ever change, recompute it. The three numbers are
+ * kept adjacent in this file for exactly that reason. */
+.sgs-shop-layout .wc-block-product-template {
+	container: sgs-shop-grid / inline-size;
+}
+
+@container sgs-shop-grid (max-width: 503px) {
+
+	.sgs-shop-layout .product-card {
+		flex-direction: row;
+		align-items: stretch;
+	}
+
+	/* Image column. Proportionally close to IKEA's 174-in-360 (48%); ours is
+	   132-in-327 (40%), leaving more room for the title, which is longer on
+	   food products than on furniture. `height: auto` releases the vertical
+	   card's fixed 220px media box so the image matches the strip height. */
+	.sgs-shop-layout .product-card .product-card__media,
+	.sgs-shop-layout .product-card .sgs-product-card__media-wrap {
+		flex: 0 0 132px;
+		height: auto;
+		align-self: stretch;
+	}
+
+	.sgs-shop-layout .product-card .product-card-img {
+		height: 100%;
+		min-height: 132px;
+		object-fit: cover;
+	}
+
+	/* `min-width: 0` is required: without it a long unbroken product title
+	   sets the body's min-content width and shoves the image column out. */
+	.sgs-shop-layout .product-card .product-card-body {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	/* The thumbnail strip is a horizontal row designed to sit UNDER a
+	   full-width image. Inside a 132px column it wraps to several lines and
+	   drags the strip taller than the image it belongs to. Hidden here — the
+	   thumbnails remain on the product page itself, which is where a shopper
+	   choosing between variants actually is. */
+	.sgs-shop-layout .product-card .product-card__thumbs {
+		display: none;
+	}
+}
+
 /* Mobile keeps a tighter gutter; the column count still resolves itself from the
  * minimum card width above, so a phone gets one full-width readable card rather
  * than two squashed ones. No column count is stated here either. */
