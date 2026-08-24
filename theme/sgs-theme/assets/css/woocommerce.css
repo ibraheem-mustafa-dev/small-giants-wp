@@ -1464,18 +1464,40 @@ body.woocommerce-cart .with-empty-cart-icon,
 	/* Image column. Proportionally close to IKEA's 174-in-360 (48%); ours is
 	   132-in-327 (40%), leaving more room for the title, which is longer on
 	   food products than on furniture. `height: auto` releases the vertical
-	   card's fixed 220px media box so the image matches the strip height. */
+	   card's fixed 220px media box so the image matches the strip height.
+
+	   The wrap is made a flex container so the image can STRETCH to the strip
+	   height as a flex item. ⛔ Do NOT go back to `height: 100%` on the image:
+	   its parent computes to `height: auto`, so the percentage has nothing to
+	   resolve against, silently falls back to the image's content height, and
+	   the image then sits at whatever `min-height` happens to say. Measured
+	   live 2026-08-24: every image pinned at exactly 132px inside wraps of
+	   288 / 220 / 203 / 201px, leaving visible dead space under each one. */
 	.sgs-shop-layout .product-card .product-card__media,
 	.sgs-shop-layout .product-card .sgs-product-card__media-wrap {
+		display: flex;
 		flex: 0 0 132px;
 		height: auto;
 		align-self: stretch;
 	}
 
 	.sgs-shop-layout .product-card .product-card-img {
-		height: 100%;
-		min-height: 132px;
+		flex: 1 1 auto;
+		width: 100%;
+		height: auto;
+		min-height: 0;
 		object-fit: cover;
+	}
+
+	/* The description is what makes one strip tower over its neighbours — a
+	   card carrying one measured 290px against 203px for a card without. Two
+	   lines keeps the strips close to uniform, which is the whole point of the
+	   horizontal treatment; the full text is on the product page. */
+	.sgs-shop-layout .product-card .product-desc {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	/* `min-width: 0` is required: without it a long unbroken product title
