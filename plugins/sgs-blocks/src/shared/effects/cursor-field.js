@@ -351,10 +351,39 @@ export function initCursorField( el, opts = {} ) {
 		el.style.setProperty( VAR_LOCAL_Y, `${ Math.round( rect.height / 2 ) }px` );
 	};
 
+	/**
+	 * Show/hide without moving. `--sgs-cursor-field-opacity` DEFAULTS TO 1 in
+	 * the stylesheet, so a no-JS visitor, the editor canvas and reduced motion
+	 * all still see the static resting field (§1.6 fail-open, §9, §10). JS
+	 * turns it off only once JS is confirmed running — the `sgs-js` gate shape.
+	 */
+	const setVisible = ( on ) => {
+		if ( on ) {
+			// REMOVE rather than set 1 — the stylesheet's own default (0.9) is
+			// the resting appearance every field type already shipped with, and
+			// writing a literal here would have brightened all of them as a
+			// side effect of one look's change.
+			el.style.removeProperty( '--sgs-cursor-field-opacity' );
+			return;
+		}
+		el.style.setProperty( '--sgs-cursor-field-opacity', '0' );
+	};
+
 	// The resting position is applied unconditionally and FIRST, so the field
 	// is never absent — not before the first pointer move, not under reduced
 	// motion, not on touch, not with JS half-loaded.
 	rest();
+
+	// ⭐ BUT it is not SHOWN at rest once JS is live (2026-08-24, Bean's ruling:
+	// "this is a cursor effect so the effect should leave and arrive to the
+	// section with your cursor"). Parking a lit pool in the middle of every
+	// section announced the effect before the pointer was anywhere near it, and
+	// snapping back to that centre on exit read as a teleport rather than a
+	// departure. Reduced motion KEEPS the static resting field — there the pool
+	// is a finished state, not an animation (§10 SIMPLIFY, never suppress).
+	if ( ! elementSpace && ! prefersReducedMotion() ) {
+		setVisible( false );
+	}
 
 	const participants = elementSpace ? [] : markParticipants( el );
 
@@ -531,24 +560,52 @@ export function initCursorField( el, opts = {} ) {
 		handleMove( event.clientX, event.clientY );
 	};
 
+	/**
+	 * ARRIVE WITH THE POINTER. `mouseenter` carries the coordinates of the
+	 * crossing, so the field is placed AT the edge the pointer came through
+	 * before it is shown — it appears where the cursor is, rather than fading
+	 * up in the middle and sliding out to meet it.
+	 */
+	const onEnter = ( event ) => {
+		if ( isTouchInput() ) {
+			return;
+		}
+		// Seed the lerp at the entry point, or a non-zero drag weight would
+		// ease the pool in from wherever it was left, across the whole section.
+		currentX = event.clientX;
+		currentY = event.clientY;
+		handleMove( event.clientX, event.clientY );
+		setVisible( true );
+	};
+
 	// `mouseleave` does not fire when entering a child, so this only runs when
 	// the pointer genuinely leaves the emitter.
-	const onLeave = () => {
+	const onLeave = ( event ) => {
 		handleMove.cancel();
 		stopTrail();
 		currentX = null;
 		currentY = null;
-		rest();
+		// LEAVE WITH THE POINTER: publish the exit crossing, which is ON the
+		// boundary, then fade. `rest()` is deliberately NOT called — recentring
+		// is the teleport Bean reported. The stylesheet's own default still
+		// covers the no-JS and reduced-motion cases.
+		if ( event && 'number' === typeof event.clientX ) {
+			handleMove( event.clientX, event.clientY );
+		}
+		setVisible( false );
 	};
 
 	el.addEventListener( 'mousemove', onMove );
+	el.addEventListener( 'mouseenter', onEnter );
 	el.addEventListener( 'mouseleave', onLeave );
 
 	return () => {
 		handleMove.cancel();
 		stopTrail();
 		el.removeEventListener( 'mousemove', onMove );
+		el.removeEventListener( 'mouseenter', onEnter );
 		el.removeEventListener( 'mouseleave', onLeave );
+		el.style.removeProperty( '--sgs-cursor-field-opacity' );
 		unmark();
 	};
 }

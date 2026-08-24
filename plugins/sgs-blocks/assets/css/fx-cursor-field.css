@@ -245,86 +245,80 @@
  * ========================================================================== */
 
 [data-sgs-cursor-field="hue-shift"] {
-	/* 0 = every spot is the base colour (single hue); 100 = maximum departure
-	   from it. The render layer publishes this only when the client sets it. */
-	--sgs-cursor-field-blend: 60;
+	/* Hue SPREAD, 0-100 -> 0-120deg of rotation. 0 = one hue. */
+	--sgs-cursor-field-blend: 75;
+	/* UNITLESS. In relative colour syntax the `h` channel resolves to a plain
+	   NUMBER, not an angle, so `calc(h + 90deg)` is a type error — and one
+	   invalid custom property takes the WHOLE layer down (background-image
+	   computed to `none`, the section rendered empty). Measured live before
+	   this shipped; the docblock two rules above warns about exactly this. */
+	--sgs-cursor-field-spread: calc(var(--sgs-cursor-field-blend) * 1.2);
 
-	/* Base share of each mixed hue: 100% at blend 0, 30% at blend 100. Kept as
-	   one expression so the three mixes below cannot drift apart. */
-	--sgs-cursor-field-base-share: calc(
-		(100 - var(--sgs-cursor-field-blend) * 0.7) * 1%
-	);
-
+	/* HUES ARE ROTATED, NOT MIXED. Mixing every hue TOWARD the brand colour is
+	   what made the teal invisible: cyan mixed into yellow is muddy green, at
+	   any ratio. Rotating in OKLCH keeps the brand's lightness and chroma and
+	   moves only the hue, so the other two are real colours at the same
+	   intensity — and re-theming still drives all three.
+	   Each accepts a client OVERRIDE via `--sgs-cursor-field-colour-b/-c`,
+	   read as the var() fallback so the render layer's lower-specificity uid
+	   rule can win without an !important. */
 	--sgs-cursor-field-hue-a: var(--sgs-cursor-field-colour);
 	--sgs-cursor-field-hue-b: var(--sgs-cursor-field-colour);
 	--sgs-cursor-field-hue-c: var(--sgs-cursor-field-colour);
 
-	/* Spots are sized in vmax and positioned in VIEWPORT pixels, so they need
-	   no background-size and cannot expose a tile edge at any window size.
-	   The flat base layer sits LAST (bottom): it gives the mesh an opaque
-	   ground, so the spots' `transparent` stops never composite toward grey. */
+	/* THE BLUR IS THE EFFECT, not a polish pass. Every reference implementation
+	   blurs its blobs by 60-100px; without it these are coloured circles, which
+	   is exactly what the first two attempts rendered as and what was reported
+	   twice. `saturate()` is its required partner — blurring drags colour
+	   toward grey, and this is the same trick glassmorphism uses. */
+	--sgs-cursor-field-filter: blur(64px) saturate(1.45);
+
+	/* Overlaps combine like light rather than paint. Requires the dark ground
+	   the references call mandatory: aurora over a light surface has nothing to
+	   glow against. */
+	--sgs-cursor-field-blend-mode: screen;
+
+	/* THREE blobs — the references cap at 3-4 before overlaps muddy to brown.
+	   Anchored in the viewport and drifting only slightly with the pointer, so
+	   the WINDOW-equivalent (the whole surface) shows several hues at once
+	   rather than one colour riding along under the cursor. */
 	--sgs-cursor-field-layer:
 		radial-gradient(
-			60vmax circle at
-			calc(var(--sgs-cursor-x) * 0.85 - 12vmax)
-			calc(var(--sgs-cursor-y) * 0.85 - 8vmax),
+			34vmax circle at
+			calc(22% + var(--sgs-cursor-x) * 0.10)
+			calc(30% + var(--sgs-cursor-y) * 0.10),
 			var(--sgs-cursor-field-hue-a),
 			transparent 62%
 		),
 		radial-gradient(
-			52vmax circle at
-			calc(var(--sgs-cursor-x) * 1.15 + 16vmax)
-			calc(var(--sgs-cursor-y) * 1.1 + 4vmax),
+			30vmax circle at
+			calc(76% - var(--sgs-cursor-x) * 0.12)
+			calc(26% + var(--sgs-cursor-y) * 0.07),
 			var(--sgs-cursor-field-hue-b),
 			transparent 60%
 		),
 		radial-gradient(
-			46vmax circle at
-			calc(var(--sgs-cursor-x) * 0.6 + 2vmax)
-			calc(var(--sgs-cursor-y) * 1.25 + 18vmax),
+			38vmax circle at
+			calc(50% + var(--sgs-cursor-x) * 0.06)
+			calc(78% - var(--sgs-cursor-y) * 0.10),
 			var(--sgs-cursor-field-hue-c),
-			transparent 58%
-		),
-		linear-gradient(
-			var(--sgs-cursor-field-colour),
-			var(--sgs-cursor-field-colour)
+			transparent 64%
 		);
 
-	--sgs-cursor-field-mask: radial-gradient(
-		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
-		#000 0%,
-		transparent 70%
-	);
+	/* ⛔ NO MASK, and this reverses D767's note that "the mask is load-bearing".
+	   That note was right about what it measured — an unmasked FULL-STRENGTH
+	   rainbow does destroy the ground — but wrong to conclude the mask was the
+	   fix. The references are all unmasked; what makes them readable is blur,
+	   a dark base and a scrim behind text, not a hole. Masked, this was a
+	   torch with colours in it, which is what it was reported as. */
 
-	/* A mask resolves against each element's OWN box, so a participant would
-	   cut its reveal at a different screen point from the emitter — measured
-	   155px apart. Masked types are therefore EMITTER-ONLY (Bean's ruling,
-	   option A): an opaque child occludes them rather than showing a
-	   mis-registered second hole. `glow` and `parallax-pattern` are unmasked
-	   and keep full seamless coverage across participants. */
+	/* EMITTER-ONLY, for a different reason than the masked types. The blur and
+	   the screen blend live on the emitter's ::before, which participants do
+	   not have — a participant would paint the same gradient SHARP and
+	   unblended next to a 64px-blurred wash, which reads as a seam rather than
+	   as coverage. Not a limitation of the mask; a consequence of the filter. */
 	--sgs-cursor-field-participant-layer: none;
 }
-
-@supports (color: color-mix(in oklch, red 50%, blue)) {
-	[data-sgs-cursor-field="hue-shift"] {
-		--sgs-cursor-field-hue-a: color-mix(
-			in oklch,
-			var(--sgs-cursor-field-colour) var(--sgs-cursor-field-base-share),
-			#ff00e0
-		);
-		--sgs-cursor-field-hue-b: color-mix(
-			in oklch,
-			var(--sgs-cursor-field-colour) var(--sgs-cursor-field-base-share),
-			#00e5ff
-		);
-		--sgs-cursor-field-hue-c: color-mix(
-			in oklch,
-			var(--sgs-cursor-field-colour) var(--sgs-cursor-field-base-share),
-			#7cff5a
-		);
-	}
-}
-
 
 /* ==========================================================================
  * FIELD TYPE: parallax-pattern (FR-38-28 look 3, Bean-signed 2026-08-07).
@@ -425,8 +419,10 @@
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	opacity: 0.9;
 	background-image: var(--sgs-cursor-field-layer);
+	filter: var(--sgs-cursor-field-filter, none);
+	mix-blend-mode: var(--sgs-cursor-field-blend-mode, normal);
+	opacity: var(--sgs-cursor-field-opacity, 0.9);
 	background-attachment: var(--sgs-cursor-field-attachment, fixed);
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);
@@ -458,6 +454,10 @@
 		--sgs-cursor-field-participant-layer,
 		var(--sgs-cursor-field-layer)
 	);
+	/* ⛔ NO filter / mix-blend-mode / opacity here. Unlike the emitter, this
+	   rule styles the participant ELEMENT itself rather than a ::before, so
+	   any of the three would blur or fade that child's CONTENT — its text —
+	   not just the field it paints. A type needing those is emitter-only. */
 	background-attachment: var(--sgs-cursor-field-attachment, fixed);
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);
@@ -493,5 +493,28 @@
 		background-image: none;
 		mask-image: none;
 		-webkit-mask-image: none;
+	}
+}
+
+/* Rotate the two derived hues in OKLCH. Fail-open: without relative colour
+   syntax all three stay the brand colour, giving a valid single-hue wash that
+   still drifts — degraded, never an invalid custom property (which would take
+   the whole layer down). The client override wins as the var() fallback. */
+@supports (color: oklch(from red l c h)) {
+	[data-sgs-cursor-field="hue-shift"] {
+		--sgs-cursor-field-hue-b: var(
+			--sgs-cursor-field-colour-b,
+			oklch(
+				from var(--sgs-cursor-field-colour) l c
+				calc(h + var(--sgs-cursor-field-spread))
+			)
+		);
+		--sgs-cursor-field-hue-c: var(
+			--sgs-cursor-field-colour-c,
+			oklch(
+				from var(--sgs-cursor-field-colour) l c
+				calc(h - var(--sgs-cursor-field-spread))
+			)
+		);
 	}
 }
