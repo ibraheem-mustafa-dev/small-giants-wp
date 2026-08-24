@@ -147,19 +147,35 @@
 	--sgs-cursor-field-hue-a: var(--sgs-cursor-field-colour);
 	--sgs-cursor-field-hue-b: var(--sgs-cursor-field-colour);
 
-	/* Large enough that the band never tiles visibly within a viewport. */
-	--sgs-cursor-field-pattern-size: 200vmax 200vmax;
+	/* ⚠ TWO MEASURED CORRECTIONS, 2026-08-24, BOTH BEFORE THIS SHIPPED TO ANYONE.
+	   Recorded rather than quietly fixed, because each was a reasoned claim
+	   that live rendering refuted.
 
+	   (1) SIZE. First authored as a 200vmax (2618px) band on the reasoning that
+	   a huge gradient "never tiles visibly". Measured: a full-width pointer
+	   sweep traversed only ~21% of it, so the ~520px mask window showed
+	   essentially ONE hue and the look was indistinguishable from `glow` — the
+	   effect existed and did nothing. A 720px cycle puts ~72% of the band
+	   inside the window and moves ~76% of a cycle per sweep.
+
+	   (2) TILING. The band was a plain `linear-gradient` + `background-repeat`,
+	   justified as "seamless because the first and last stops are both hue-a".
+	   That is true along the gradient's OWN AXIS and false at the tile's edges:
+	   at 115deg the box's left and right edges are different colours, so
+	   `repeat` butted mismatched edges together and painted a HARD VERTICAL
+	   SEAM through the middle of the pool. `repeating-linear-gradient` repeats
+	   the stop list along the gradient line itself, so it is seamless by
+	   construction and needs no `background-size` at all. */
+	--sgs-cursor-field-layer: repeating-linear-gradient(
+		115deg,
+		var(--sgs-cursor-field-hue-a) 0,
+		var(--sgs-cursor-field-colour) 240px,
+		var(--sgs-cursor-field-hue-b) 480px,
+		var(--sgs-cursor-field-hue-a) 720px
+	);
 	--sgs-cursor-field-position:
 		calc(var(--sgs-cursor-x) * -0.5) calc(var(--sgs-cursor-y) * -0.5);
 
-	--sgs-cursor-field-layer: linear-gradient(
-		115deg,
-		var(--sgs-cursor-field-hue-a),
-		var(--sgs-cursor-field-colour) 35%,
-		var(--sgs-cursor-field-hue-b) 70%,
-		var(--sgs-cursor-field-hue-a)
-	);
 	--sgs-cursor-field-mask: radial-gradient(
 		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
 		#000 0%,
