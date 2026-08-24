@@ -2401,6 +2401,26 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						  */ }
 						{ 'cursor-field' === fx && (
 							<>
+								{ /*
+								 * MEASURED IN THE EDITOR 2026-08-24, not reasoned.
+								 * Spec 38 §9 claimed this canvas "shows the field but
+								 * not the tracking". It shows NOTHING: the canvas
+								 * iframe carries ZERO `data-sgs-cursor-field`
+								 * attributes and none of the fx stylesheets, because
+								 * the block renders through edit.js here rather than
+								 * render.php, so the render-layer stamp never runs.
+								 * Without this Notice a client picks "Aurora —
+								 * colours shift as you move", sees no change at all,
+								 * and has nothing telling them why. Same precedent as
+								 * the parallax and surface-treatment notices.
+								 */ }
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'Cursor effects preview on the live site only — the editor canvas cannot follow a pointer. Use View Page to see this look in motion.',
+										'sgs-blocks'
+									) }
+								</Notice>
+
 								<ToolsPanelItem
 									hasValue={ () =>
 										!! attributes.fxFieldType
