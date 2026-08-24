@@ -53,6 +53,14 @@ the text contrast. The mask is load-bearing.
 **Blast radius: zero.** `spotlight-mask` has 0 live authorings; only 2 `cursor-field` authorings exist,
 both test fixtures.
 
+⛔ **RULED NOT A GAP (Bean, 2026-08-24) — do not re-raise.** The council's rater D flagged that
+`hue-shift`'s derived-hue path is untested against a theme with NO `accent` palette token. Bean's
+ruling: that site does not exist. He designs and builds every site this framework ships on, a global
+preset that fundamental is never absent, and a client who wants a different colour changes it through
+the control. The `var(--wp--preset--color--accent, #f59e0b)` fallback stays as the default and still
+degrades safely in the hypothetical — it simply is not a case worth spending a test on. **The general
+rule this sets: "untested" is only a risk when the untested case can actually occur.**
+
 ## D766 [ROUTINE] — the cursor field's last two signed looks ship, completing FR-38-28; and nine motion docs that were actively lying (2026-08-24)
 
 **FR-38-28 is COMPLETE.** Bean signed four cursor-field looks at a design gate on 2026-08-07 and
