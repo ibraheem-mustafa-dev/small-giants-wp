@@ -1378,6 +1378,17 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-layout .wc-block-product-template.columns-2 > li,
 .sgs-shop-layout .wc-block-product-template.columns-3 > li,
 .sgs-shop-layout .wc-block-product-template.columns-4 > li {
+	/* ⛔ `width: 100%` is load-bearing — do NOT reduce this to relying on the grid's
+	 * default stretch. Tested live on the canary 2026-08-24 in a 313px track:
+	 *   as shipped without it ......... 91px
+	 *   + justify-self: stretch ....... 91px  (stretch does NOT win here)
+	 *   + min-width: auto ............. 91px
+	 *   + width: 100% ................ 313px  ✓
+	 * WooCommerce still puts `is-flex-container columns-3` on the template and its own
+	 * item CSS defeats the grid item's default stretch. The old `flex: 1 1 <min>` used to
+	 * supply the width; removing it for the grid left the item with no sizing at all and
+	 * it collapsed to min-content. */
+	width: 100%;
 	max-width: 100%;
 	min-width: 0;
 }
