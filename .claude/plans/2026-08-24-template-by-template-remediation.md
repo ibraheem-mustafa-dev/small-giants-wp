@@ -508,6 +508,31 @@ Work:
 **Verify by looking at each listing in a browser, not by confirming the block name in
 the markup.**
 
+## Task 7 — Style the orphan blocks: PARTIALLY DONE 2026-08-24 (D758)
+
+`catalog-sorting` and `query-pagination` (C1/C2) are still untouched. What DID land on the
+filter panel: the dead **rating filter is removed** (no product has a rating, so it was a
+control that could never filter anything), and the **filter group headings now use the body
+font** — they were Fraunces serif 16px beside Inter 14px controls, which is what read as
+"doesn't match the site fonts". A full sweep of the panel found no foreign font; both
+typefaces were always site fonts.
+
+## ⛔ Open items carried out of the 2026-08-24 wave — read D758 before touching any
+
+1. **Shop last-row stretch — STILL BROKEN, deliberately.** Row 1 = 3 cards at 313px, final
+   row = 2 at 482px. The `auto-fill` grid fix was REVERTED because it rendered every card at
+   91px inside a correct 313px track. **D758 carries the ruled-out list — stale CSS,
+   competing rules, selector miss and grid-stretch are all eliminated and measured.** Start
+   from the unresolved contradiction: inline `width:100%` gave 313px, the identical
+   stylesheet declaration gave 91px.
+2. **`solid` option-picker contrast fix — deployed, NOT verified.** No live surface renders a
+   solid-preset picker (`showPickers:false` on shop + rail; buybox uses `outlined`). Needs a
+   product-card instance with pickers on before it can be called done.
+3. **Mobile card width — a design call for Bean.** 375px: shop 1-up @327px, PDP rail 2-up
+   @155px, under the 167–195px readable-card floor. Screenshots sent 2026-08-24.
+4. **The single-child-shrunk container shape was never swept repo-wide** (D757). Other
+   templates may share it.
+
 ## Task 6 — Compare against previous versions
 
 Bean: *"the agent needs to look at previous versions of these templates because the

@@ -70,6 +70,26 @@ Reports: `reports/visual-diff/product-card-2026-08-23.md` + `…/audio-hero-medi
 `ServerSideRender` cannot forward block context. Whether the template should use that
 arrangement is D756, below.
 
+✅ **FIVE EYE-FOUND DEFECTS: 4 SHIPPED + VERIFIED, 1 REVERTED (2026-08-24, D758).**
+PDP cards uniform (305 ×4, was 305/249/302/302) · cards fill their cell (gaps 0, was 100px)
+· dead rating filter removed · filter headings on the body font (was Fraunces serif).
+
+⛔ **DO NOT re-attempt the shop grid swap without reading D758's ruled-out list.** auto-fill
+produced 3 correct 313px tracks and killed the last-row stretch — **both headline numbers
+green** — while every card rendered at **91px inside its track**. Stale CSS, competing rules,
+selector miss and grid-stretch are all RULED OUT and measured. The live contradiction to
+start from: an INLINE `width:100%` gave 313px, the IDENTICAL stylesheet declaration gave
+91px. Flex version restored and verified as the known-good state.
+
+⚠ **The `solid` option-picker contrast fix is DEPLOYED BUT UNVERIFIED** — no live surface
+renders a solid-preset picker (`showPickers:false` on shop + rail; the buybox uses
+`outlined`). The 12.55:1 measured after deploy is the pre-existing outlined behaviour, NOT
+evidence the fix works.
+
+⚠ **Open for Bean (design, not correctness):** at 375px the shop is 1-up @327px, the PDP rail
+2-up @155px — under the 167–195px readable-card floor. Screenshots were sent.
+⚠ **Still unfixed by choice:** the shop's last-row stretch (3×313 then 2×482).
+
 ✅ **ALL FOUR PRODUCT LISTINGS NOW USE THE BESPOKE CARD (2026-08-24, D757).** The census
 was wider than first found — 3 of 4 were generic, and two of them are WooCommerce's OWN
 plugin templates (`taxonomy-product_attribute`, `product-search-results`), which is why
