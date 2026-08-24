@@ -290,7 +290,7 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": ""
+			"default": "wrap"
 		},
 		"justifyContent": {
 			"type": "string",

@@ -278,9 +278,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
