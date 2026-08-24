@@ -1,169 +1,176 @@
-> # ⛔ SUPERSEDED 2026-08-23 — DO NOT RUN THIS AGAIN
->
-> **Wave A carried out the 7-point checklist across all ten surfaces on 2026-08-23:**
-> 10 parallel agents, one per surface, **zero FAILs**. Register:
-> `.claude/reports/2026-08-22-phase3-template-audit-register.md`.
->
-> **This prompt was pasted into a fresh session on 2026-08-23 and nearly re-ran finished
-> work.** That is why this banner exists. It also directs the reader to assess templates
-> from code, gates and static checks — **a method Bean has since banned.**
->
-> **What replaced it:** Bean reviewed the templates in the Site Editor and found
-> widespread breakage that no gate, no build and none of my own live measurements had
-> caught. That work is
-> **`.claude/plans/2026-08-24-template-by-template-remediation.md`**, and its governing
-> rule is that agents must log in with `/playwright` and LOOK at a template rather than
-> assess it from code, the DB, REST or hooks.
->
-> **Residual still owed** (fold into the remediation track per template, do NOT run as a
-> separate pass): Wave C — checks 5 and 7 measured live per surface — plus three small
-> correctness items (`main` missing from `edit.js` `TAG_NAME_OPTIONS`; the h1→h3 heading
-> skip on `archive.html:21` and `search.html:16`; redundant nested `contentWidth` in five
-> files).
->
-> Kept for provenance only: it records what was asked for and the constraints it was
-> asked under.
+# Next session — template remediation (shop + PDP)
+
+Invoke `/autopilot` before anything else.
+
+> ⚠ **The filename is stale.** This file used to be the Phase 3 per-template-pass prompt.
+> That work is CLOSED (Wave A, 2026-08-23) and this file was rewritten on 2026-08-24 to be
+> the live prompt for the **template remediation** track. Trust the content, not the name.
 
 ---
 
-# Next-session prompt — Phase 3, shop-archive container remediation (per-template pass)
+## The one rule that governs this whole track
 
-Invoke `/autopilot` before doing anything else.
+> **Do not assess a template by reading its code, querying the DB, calling REST, or
+> inspecting hooks. Log in with `/playwright`, open the thing, LOOK at it, interact with it.**
+
+Bean set this rule and it has earned itself repeatedly. On 2026-08-23 every gate was green
+while the Product Archive rendered zero product cards in the editor. On 2026-08-24 he found
+five more defects by eye that no gate caught. Code reads may EXPLAIN something you have
+already seen; they may never be the evidence that something is fine.
 
 ## Read first, in this order
 
-1. `.claude/LEDGER.md` — "If you are the shop-archive track" block. Phases 1 and 2 of this
-   plan are CLOSED (2026-08-22, D742) — do not re-open them. Phase 3 is the only work left.
-2. `.claude/decisions.md` **D742** (what Phase 2 shipped — context for what "done" looks like
-   on this track) and **D725/D726** (the width model checks 2-7 test against).
-3. `.claude/plans/phase-shop-container-remediation.md`, the **# PHASE 3** section in full
-   (currently starts around line 658) — this prompt summarises it, but the plan is the
-   source of truth if anything here has drifted.
-4. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — in full, per this project's standing
-   rule, before touching any container/walker/converter-adjacent code (templates route
-   through `sgs/container`, so this counts).
+1. `.claude/decisions.md` — **D758** (what was reverted and what NOT to re-debug), **D757**
+   (all four product listings), **D756** (the card-grid rebuild, DROPPED — do not re-propose),
+   **D755** (the null-default 400).
+2. `.claude/plans/2026-08-24-template-by-template-remediation.md` — the governing plan. Read
+   the "⛔ Open items carried out of the 2026-08-24 wave" section and Part 2's issue register.
+   ⚠ It contains a section marked **SUPERSEDED** further down; do not act on it.
+3. `.claude/LEDGER.md` — the template-remediation block at the top.
+4. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **IN FULL** if you touch the converter,
+   walker, or `sgs/container`. Standing project rule. Templates route through `sgs/container`,
+   so container changes count.
 
-## The task
+## Where the work stands
 
-Nine theme templates plus three template parts each need the same 7-point checklist applied
-**individually** — this is a live QA audit, not a code migration. `archive-product.html` (the
-template Phases 1-2 lived on) already passes; the other nine surfaces have not had this
-treatment. Check 1 (editor validity) is **already green across all ten surfaces** (D743,
-2026-08-22) — that one line item is done everywhere and does not need re-running unless a
-template's markup changes during this pass. **Checks 2-7 are owed on every surface, including
-`archive-product.html` itself**, which needs re-CONFIRMING as the reference standard, not
-re-fixing.
+**Shipped and verified (2026-08-24):** all four product listings use `sgs/product-card`;
+PDP cards uniform (305 ×4); cards fill their cell; dead rating filter removed; filter
+headings on the body font.
 
-### The 7-point checklist (apply to every surface, do not shortcut)
+**Open, in the order I would take them:**
 
-1. **Editor validity** — `wp.blocks.validateBlock()` over the tree in the Site Editor. Already
-   green everywhere (D743) — confirm it's still green if you touch the template, otherwise skip.
-2. **Width model** — one cap per page. `<main>` and structure say `contentWidth:"full"` and pass
-   width through; sections cap their own content. Zero `layout:{"type":"constrained"}` anywhere.
-3. **Spacing declarations** — `migrate-theme-native-spacing.py --check` clean; no authoring on a
-   native family the block no longer declares.
-4. **Core blocks** — `check-no-core-blocks.py` clean. Then list any core block with NO SGS
-   equivalent as a gap candidate, not a violation — do not delete or replace it.
-5. **Live measurement at 375/768/1440** — background paints edge-to-edge, content caps, no text
-   flush at an edge that shouldn't be, no double indent. Computed styles via Playwright, never
-   a screenshot read by eye.
-6. **Landmarks + a11y** — exactly one `<main>`; `nav`/`aside` labelled; heading order sane.
-7. **Client-editability** — every visible setting reachable in the editor, and the canvas
-   genuinely moves when it changes. This is the check that keeps failing quietly on this
-   codebase (the content band was styled for months before `edit.js` ever rendered it) — do not
-   skip it because the other six passed.
+### 1. The 91px contradiction — the shop's last-row stretch is still broken
 
-**Done-when, per surface:** all seven pass, measured live, with the evidence in that surface's
-own commit message. "The markup looks right" is not evidence.
+Highest value, and genuinely interesting. `repeat(auto-fill, minmax(var(--sgs-shop-card-min),
+1fr))` produced **exactly** the intended result — 3 tracks of 313px, last-row stretch gone —
+while rendering every card at **91px inside those 313px tracks**. Reverted to the known-good
+flex version.
 
-### The nine remaining surfaces, current state
+⛔ **D758 carries the ruled-out list. Do not re-walk it.** Stale CSS, competing rules,
+selector miss, and the grid's default stretch are ALL eliminated and measured.
 
-| # | Surface | Containers | What's owed |
-|---|---|---|---|
-| P3-1 | `archive-product.html` | 7 (+17 WC) | RE-CONFIRM only — this is the reference; expect a clean pass, not new fixes |
-| P3-2 | `single.html` | 7 | Checks 2-7 (check 1 already green) |
-| P3-3 | `single-product.html` | 6 (+5 WC) | Checks 2-7 (check 1 already green); PDP, buybox owns its own gallery column |
-| P3-4 | `archive.html` | 5 | Full checklist |
-| P3-5 | `search.html` | 5 | Full checklist |
-| P3-6 | `page.html` | 2 | Checks 1, 5, 6, 7 (width model already done 2026-08-21) |
-| P3-7 | `front-page.html` | 1 | Full checklist — ⚠ renders near-empty (~104 chars), so measure check 5 against real content or say plainly that it can't be demonstrated on this template alone |
-| P3-8 | `index.html` | 1 | Full checklist |
-| P3-9 | `404.html` | 1 | Full checklist |
-| P3-10 | Parts: `sgs-pdp-content`, `sgs-pdp-buybox`, `sgs-archive-toolbar` | 3/0/0 | Checks 2-7 (check 1 already green); `header`/`footer` parts are one-line pattern shims and need nothing |
+**Start here, at the contradiction I could not resolve:** an INLINE `width:100%` on the item
+measured **313px**; the **identical declaration from the stylesheet** measured **91px**. That
+should not be possible. Understand that before writing any CSS.
 
-## Orchestration — these are independent, dispatch them in parallel
+Current live state: `flex: 1 1 var(--sgs-shop-card-min)`, which gives row 1 = 3 cards at
+313px and the final row = 2 at 482px. Bean's ask: *"the width increase should only be when
+someone sets all to 2 cards per row."*
 
-Every surface above is a **different template file** with **no shared runtime state** between
-them — this is exactly the shape `/dispatching-parallel-agents` exists for, not a serial pass.
-Do not batch the checklist itself across templates (the plan is explicit: every defect Phases
-1-2 found was specific to the page it was on — a generic sweep would have found none of them),
-but running nine *independent* per-template agents concurrently is a different thing from
-batching the checklist, and is the efficient way to do this.
+### 2. Verify the `solid` option-picker contrast fix — it is deployed but UNVERIFIED
 
-1. **Dispatch via `/dispatching-parallel-agents`**, one agent per surface (P3-1 through P3-10 —
-   ten agents, or fewer if you fold the three P3-10 parts into one agent since they share zero
-   containers and are trivial). Each agent's cold prompt should be written with
-   `/subagent-prompt` and must embed: the 7-point checklist verbatim, this surface's specific
-   "what's owed" column from the table above, the standing constraints below, and the exact
-   verification commands (Playwright computed-style checks, the two `--check` scripts).
-2. **Pick each agent's model via `/delegate`**, don't hardcode. As a starting steer: P3-1
-   (confirm-only, no expected changes), P3-8/P3-9 (1 container, near-trivial) are
-   haiku-shaped; P3-2/P3-3/P3-10 (WC integration, PDP-specific gallery/buybox logic) and any
-   surface where checks 2-7 turn up a real defect are sonnet-shaped — let `/delegate` decide
-   per its own routing table rather than following this guess blindly.
-3. **If a surface's audit turns up two or more candidate fix-shapes** before you'd dispatch an
-   implementer for it, route those through `/qc-council` first — this project requires
-   empirical pre/post validation before treating a council-style proposal as an accepted spec.
-   For a single obvious fix on one surface, just make it; council is for when there's a real
-   choice between fix shapes.
-4. **`/qc-inline` or `/visual-qa`** for the live-verification half of checks 2 and 5
-   specifically (width model + breakpoint measurement) — these need a real deployed page and
-   Playwright, not a static read of the markup.
+The resting border was measured at **2.38:1** against its container, below the WCAG 3.0
+UI-boundary floor, because the preset used the client's pale-pink `primary`. The fix (neutral
+tokens with a floor) is deployed, but **no live surface renders a solid-preset picker** —
+`showPickers:false` on the shop and the PDP rail, and the standalone buybox picker uses
+`outlined`. The 12.55:1 measured post-deploy is the pre-existing OUTLINED behaviour, not
+evidence.
 
-## Standing constraints (from the plan — do not relax these)
+You need a product-card instance with pickers enabled. Then measure fill-vs-container AND
+border-vs-container — not text contrast, which was fine (12.55:1) throughout and is what
+made three of my probes miss this.
 
-- **One template per commit**, with that template's own measurements in the commit message.
-  They're independent; a regression must be attributable to exactly one commit.
-- **Deploy is theme-only** (`build-deploy.py --theme-only --target sandybrown`) — no block
-  rebuild needed for this phase, and theme-only deploys never collide with a parallel block
-  track running elsewhere.
-- **Do NOT batch the checklist across templates.** Running parallel AGENTS is fine (see above);
-  each agent must still run the full checklist against its OWN surface, not assume a result
-  from another template carries over.
-- **Verify branch before every commit, in the same command as the commit** (`main` for this
-  framework work — per-client work would go on a `feat/<client>-*` branch, but none of these
-  templates are client-specific).
-- **`git status` before any destructive git operation** — this is very likely a shared worktree
-  with other concurrent tracks (colour-golden, nav-drawer, etc. have all touched `main` this
-  week). Check for uncommitted work that isn't yours before touching anything, and never
-  `--allow-dirty`/`--skip-verify` on a deploy.
-- Per-agent: do not run `npm run build` or deploy from inside a dispatched agent — the
-  orchestrator (you, in the main thread) owns builds and deploys, sequenced after the parallel
-  agents report back, exactly like the pattern that shipped Phase 2's Workstreams 2 and 3
-  concurrently without a build race.
+### 3. A design call for Bean — do not decide this yourself
 
-## Skills / tools this session will need
+At 375px the shop archive is **1-up at 327px**; the PDP related rail is **2-up at 155px**,
+under the 167–195px readable-card floor from the design benchmark. Bean has the screenshots.
+Ask; do not pick.
 
-| Tool | When |
+### 4. Sweep the single-child-shrunk container shape (D757)
+
+`sgs/container` defaults to `layout:"flex"` with `flexDirection:""` → CSS row, and a single
+flex item in a row sizes to its content. Two of three PDP sections were shrinking their only
+child (the buybox band at 463px inside 1280px). Fixed on `single-product.html` only.
+**Never swept repo-wide.** Measure other templates before changing anything — the row default
+is DELIBERATE (`class-sgs-container-wrapper.php:905-945`, R-1 honesty for the converter) and
+only `<main>` suppresses it, so the lever is per-container authoring, not a default change.
+
+### 5. The rest of the register (plan Part 2)
+
+- **C1/C2** — `woocommerce/catalog-sorting` and `core/query-pagination` still unstyled
+  against the site's tokens.
+- **D1-D4** — archives inconsistent with each other: search bar bottom on Search Results, top
+  on Product Archive; different search blocks, different button styling. Bean: *"some archive
+  templates look like they were made while not knowing what the others of the same type
+  looked like."* **This is a design decision for Bean before it is an implementation task.**
+- **F** — pagination vs the infinite scroll that used to exist. Needs a `git log` answer
+  (when, which templates, what removed it) before a decision.
+- **G1/G3** — `index.html` near-duplicate of `archive.html`; which templates are genuinely
+  ours. (**G2 is ANSWERED:** "Products by Attribute" is WooCommerce's template for a surface
+  that is switched off — both product attributes have `attribute_public = 0`, so it has no
+  reachable URL on this site.)
+
+### 6. Templates never opened in the editor
+
+Search Results, Single Product, Order Confirmation, Coming soon, Products by Attribute. Bean
+reported errors on eight templates; only 404, Single Posts and Product Archive have been
+confirmed clean.
+
+## Skills — invoke at the point of use, not all up front
+
+| Skill | When |
 |---|---|
-| `/autopilot` | First, before anything else |
-| `/dispatching-parallel-agents` | Fan out the nine (or ten) per-template audits |
-| `/delegate` | Model routing per dispatched agent |
-| `/subagent-prompt` | Writing each agent's cold prompt with the checklist embedded |
-| `/qc-council` | Only if a surface's audit produces 2+ candidate fix-shapes to choose between |
-| `/qc-inline` or `/visual-qa` | Live breakpoint + width-model verification per surface |
-| Playwright MCP | `getComputedStyle`/`getBoundingClientRect` reads against the deployed canary — never a screenshot read by eye for checks 2/5 |
-| `python plugins/sgs-blocks/scripts/build-deploy.py --theme-only --target sandybrown` | Deploy, orchestrator-owned, after each template's agent reports back |
-| `python plugins/sgs-blocks/scripts/check-no-core-blocks.py` | Check 4 |
-| `python plugins/sgs-blocks/scripts/migrate-theme-native-spacing.py --check` | Check 3 |
-| `.claude/secrets/sandybrown.env` | Canary credentials — always available, gitignored |
+| `/autopilot` | First. Live routing for the session |
+| `/playwright` | The evidence tool for this whole track. Login creds below |
+| `/systematic-debugging` | **Item 1.** It is a root-cause hunt with a live contradiction — do not guess a fix |
+| `/delegate` | Before dispatching ANY subagent. Do not hardcode a model |
+| `/dispatching-parallel-agents` | Only for genuinely disjoint FILES. Two fixes in one file are not parallel |
+| `/subagent-prompt` | Writing each cold prompt |
+| `/qc-inline` | After each fix, against a baseline captured BEFORE the change |
+| `/qc-council` | Only if a defect yields 2+ competing fix shapes |
+| `/sgs-wp-engine` | SGS block/theme mechanics |
+| `/wp-block-development` | Core block-API questions (`usesContext`, query loops) |
+| `/sgs-db` · `/wp-blocks` | Before ANY "there is no X" claim about the data layer (R-31-8) |
+| `/visual-qa` · `/a11y-audit` | Design/contrast items (2 and 3) |
+| `/capture-lesson` | Only for a genuinely NEW failure shape — check MEMORY.md first, it has ~200 bytes of headroom and most candidates are recurrences |
 
-## Close-out
+## Tools
 
-When all ten surfaces pass (or a surface's genuine gap is named and parked, not silently
-dropped — e.g. `front-page.html`'s empty-content caveat on check 5), update
-`.claude/plans/phase-shop-container-remediation.md`'s Phase 3 table, add a decisions.md entry
-for the close, update `.claude/LEDGER.md`'s shop-archive section to mark Phase 3 CLOSED, and
-delete this prompt file — its job is done once Phase 3 is complete, and leaving it around risks
-a future session re-running it by mistake (the same convention the comment-narrative cleanup
-track followed when it closed).
+| Tool | For | Gotcha earned the hard way |
+|---|---|---|
+| Chrome DevTools MCP | Live measurement | **Prefer it.** The Playwright MCP profile is often locked by another session ("Browser is already in use") — chrome-devtools is a separate browser |
+| `emulate` viewport | 375 / 768 / 1440 | `resize_page` silently under-applies — it reported **500px** when asked for 375. Use `emulate` with `375x812x2,mobile,touch` and ALWAYS assert `window.innerWidth` |
+| `.claude/secrets/sandybrown.env` | Canary login | Gitignored, always available, no need to ask |
+| `build-deploy.py --target sandybrown` | The ONE deploy path | `--theme-only` when no `plugins/` change. Never `--allow-dirty`, never `--skip-verify`, never hand-rolled tar/scp (D336) |
+| `curl` a CSS file | Checking what shipped | **Add a cache-buster.** A plain curl reads a stale CDN edge copy — this cost real time on 2026-08-24. `ssh hd` + `grep` bypasses every cache and is the ground truth |
+| `ssh hd` + `wp eval` | Template ownership, palettes | Quote carefully — a nested-quoting slip returned identical results for four different blocks and looked like a finding |
+
+## Standing constraints
+
+- **Bump `theme/sgs-theme/style.css` Version on EVERY CSS change.** Theme CSS cache-busts off
+  it; a CSS deploy without a bump serves the stale edge copy and your probes then confirm a
+  rule the browser never loaded.
+- **One template (or one fix) per commit**, with its own measurements in the message.
+- **Shared worktree — other tracks commit to `main` constantly.** `git status` before
+  anything; path-scope every commit (`git commit -- <paths>`, a hook enforces it); never
+  `git add -A`, never `git stash push`, never `git checkout --`. `decisions.md` has
+  concurrent writers and D-number races happen — take the next free number and re-run
+  `handoff-preflight --check`.
+- **The visual-diff gate will block block-CSS commits.** Run the qualification checkers first
+  (`check-editor-only.py`, `check-markup-neutral.py` — note they read the STAGED set, so
+  `git add` first). The scoped bypass `SGS_VISUAL_GATE_SKIP=<block>
+  SGS_VISUAL_GATE_REASON="..."` is real, logged and auditable — retire it afterwards with a
+  report in `reports/visual-diff/`.
+- **`decisions.md` size failures are self-healing** — a Stop hook sweeps and rebaselines.
+  Do NOT spend session time on it.
+
+## Method — the four traps this track has actually hit
+
+1. **Measure the thing the fix was meant to ACHIEVE, not the thing you changed.** The grid
+   swap's two headline metrics were both green while every card was 91px. The catch came from
+   one unplanned check.
+2. **Separate "my probe is wrong" from "the code is wrong".** Three probes on 2026-08-24
+   returned confident numbers measuring the wrong element: the option picker twice, and a
+   background that resolved to black. A "no evidence" result is usually a broken probe.
+3. **Capture the BEFORE state as a body, not a hash.** `build-deploy` stamps a per-deploy
+   `ver=<epoch>`, so rendered-HTML md5 moves on every deploy regardless. A hash tells you THAT
+   something differs, never WHAT.
+4. **When Bean names something, resolve it against the INSPECTOR LABEL** before saying it does
+   not exist. Reading enum slugs produced a wrong statement to him once already.
+
+## Done-when
+
+A template is done when it opens in the Site Editor with zero errors, looks right to Bean at
+375 / 768 / 1440, and its controls actually work when clicked — with the evidence in that
+template's own commit message. "The markup looks right" is not evidence, and a green gate is
+not evidence.
