@@ -29,107 +29,59 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ ⛔ CONTAINER-LAYOUT + TEMPLATE REMEDIATION — OPEN, THE LIVE FRONT (2026-08-24)
+## ▶ ⛔ CONTAINER-LAYOUT + TEMPLATE REMEDIATION — 2026-08-25 (archives SHIPPED; item 8 open)
 
-⭐ **START HERE: `.claude/prompts/2026-08-25-container-layout-and-archive-design.md`** —
-renamed from `2026-08-24-template-remediation.md` (the track moved from template fixes to
-the container/layout system). Leads with the highest-value open item and carries every
-ruled-out list so nothing gets re-walked.
+⭐ **START HERE: `.claude/prompts/2026-08-25-container-layout-and-archive-design.md`.**
+⛔ **Read D772/D773/D774 before touching an archive template or `sgs/container`'s layout.**
 
-### ✅ Stack layout rebuild — COMPLETE 2026-08-24
-`.claude/plans/2026-08-24-stack-layout-rebuild.md`. `sgs/container`'s "Stack" layout option
-was a silent fall-through to block flow — `gap` did nothing, four inspector controls
-vanished, no container-query/`min-width:0` treatment. Three tasks shipped
-(`0d3f2353b`/`c76d0f120`/`be17c513b`): Stack now emits `flex`/`column` on `__inner`
-(row-gap measured 43-52px against authored values); the Layout panel shows Gap/Vertical
-alignment/Justify content for Stack, hides Flex direction/Flex wrap (dead under Stack); the
-editor canvas mirrors it. **QC-inline 7/7 pass** — flex/grid unaffected, nested stacks keep
-independent gaps, invalid `flexWrap` on a stack correctly coerced.
+**Governing rule, Bean's, unchanged:** do NOT assess a template by reading code, querying
+the DB or calling REST. Open it in a browser and LOOK. This session it earned itself twice
+— a client-visible breadcrumb bug that several code-reading passes missed, and a layout
+regression I shipped that every gate passed.
 
-⚠ **`layout` has no enum in `block.json`** — an invalid value (e.g. a typo) silently falls
-through to `display:block`, the ORIGINAL Stack bug by another route. Not fixed. Recommend
-adding the enum.
+### ✅ SHIPPED + LIVE-VERIFIED 2026-08-25
+- **All four archives share one header** (D772) — `parts/sgs-archive-toolbar.html` is now the
+  shared breadcrumb; each template composes its own correctly-typed title/count after it.
+  Verified live 1440: shop 73/200 → 238 → 306, search 73/216 → 238 → 298 → 420, all `sameLeft`.
+- **Breadcrumb tag leak fixed** (`419734b84`) — archives printed literal `<span>` text.
+  `literalTagInText` true → **false**. Report: `reports/visual-diff/breadcrumbs-2026-08-24.md`.
+- **Duplicate search box deleted** — a no-results search rendered two (y=216 + y=570). Now 1.
+- **h1→h3 heading skip fixed** on search.html + archive.html. Live: H1→H2.
+- **Item 1 (solid picker contrast) VERIFIED** — 13.14:1 resting border. Fixture = canary page
+  **2736 `[GATE - DO NOT DELETE]`**, the ONLY surface rendering this preset. Do not delete it.
+- **Item 5 CLOSED** — the PDP rail genuinely peek-scrolls (327→596, `didScroll` true, 4×140px).
+  It is NOT the 2-up 155px grid the old note described. Bean owed no decision.
+- **Item F answered** — infinite scroll lives in `sgs/post-grid` (still works) but was NEVER
+  wired into any archive template. Nothing was removed; restoring it is a choice, not a repair.
 
-⛔ **flexWrap default flip is BLOCKED on a content migration.** 94 stored `sgs/container`
-instances carry no `flexWrap`, 4 carry no attrs at all. Theme FILES are all authored now;
-the DB content is not. Several affected instances are `[GATE - DO NOT DELETE]` fixtures —
-do not touch them outside a migration script.
+### ▶ OPEN, in order
+1. **Item 8 — five templates never opened in the editor:** Search Results, Single Product,
+   Order Confirmation, Coming soon, Products by Attribute. ⛔ "No console errors" is NOT
+   "renders correctly" — assert `innerText.length` + a selector count and look at the canvas.
+2. **`sgs/site-footer-row` duplicate Layout panel** (D774) — mounts `ContainerWrapperControls`
+   without `showLayout={false}`, so picking "Stack" is silently coerced back to `grid`. Same
+   bug fixed for post-grid/testimonial-slider on 2026-08-12; this one was missed. Small fix.
+3. **Bean's call: the shop breadcrumb reads "Home / Archives: Shop"** (was "Home / Shop").
+   WP's own `Archives:` prefix, surfaced by the block swap. Strip it for consistency?
+4. **`layout` validation — design gate, do NOT build** (D774). The obvious allowlist is
+   REFUTED: it would break every testimonial-slider in its default state.
+5. **C1/C2** — `catalog-sorting` + `query-pagination` still unstyled.
 
-⚠ **~59 "accidental columns" (containers authored as flex ROW that are really stacks) — THE
-COUNT IS UNRELIABLE, RE-RUN BEFORE USING.** `survey-flex-row-shape.py` exists
-(`--survey/--verbose/--json/--self-test`, 9/9 self-test) — its regex is now FIXED, but the
-split below was produced BEFORE that fix, so
-that figure was wrong. `layout:"stack"` now EXISTS as the correct destination, but
-converting changes children from content-sized to full-width — a VISIBLE change needing
-Bean's eye, not a mechanical sweep.
+### ⚠ Two traps this track proved live
+- **A one-child flex row is indistinguishable from a stack until a sibling appears** (D773).
+  `sgs/container` defaults to `layout:"flex"` = a CSS ROW. Adding a second child makes the
+  latent default visible. This is the shape behind "accidental columns" AND D757.
+- **Item 4's count is 83, not 59 and not 0** (D774). `survey-flex-row-shape.py` skips
+  containers with an explicit `flexWrap` (line 109), so it answers "is the default flip
+  safe?" — not "how many accidental columns?". Re-run without that filter: 125 rows, 83
+  non-NO-OP. The 52/5/59 split cannot be reproduced from any artefact on disk.
 
-### ✅ 91px shop last-row contradiction — RESOLVED 2026-08-24 (D760)
-**Supersedes D758's "do not re-attempt" warning below — that instruction no longer applies.**
-Not a contradiction: an inline `width:100%` (specificity 1,0,0,0) always won; under GRID a
-WooCommerce inline `<style>` rule inside a `@media` block — invisible to a cascade audit
-that does not descend into conditional rules or read inline `<style>` elements — took over
-and resolved its percentage against the grid TRACK, giving 91px. Fixed by winning on
-specificity (0,5,1 — a tie is not enough, source order decides ties and WooCommerce's sheet
-loads after ours). Shipped `1e7e2755`, theme 1.5.67. Measured live: 5×313.3px at 1440px,
-5×340.5px at 768px, no stretch, no overflow at 375px.
-
-⛔ **D758's ORIGINAL ruled-out list stands for the record, but its conclusion was wrong on
-two of four counts** — "NOT a competing rule" and "NOT a selector miss" both rested on a
-cascade scan that could not see an inline `<style>` nested in `@media`. The other two (stale
-CSS, grid default stretch) still stand. Full detail: D758 + D760 in `decisions.md`.
-
-**Governing rule, set by Bean, unchanged:** agents may NOT assess a template by reading
-code, querying the DB, calling REST or inspecting hooks. **Log in with `/playwright`, open
-the template, LOOK at it, interact with it.** Code reads may explain what was seen; they
-may never be the evidence something is fine. Every gate on this track has passed while
-templates were visibly broken at least three separate times.
-
-⚠ **`solid` option-picker contrast fix — deployed, NOT verified.** No live surface renders
-a solid-preset picker (`showPickers:false` on shop + rail; the buybox uses `outlined`). The
-12.55:1 measured after deploy is the pre-existing outlined behaviour, not evidence the fix
-works. Needs a product-card instance with pickers enabled.
-
-⚠ **Open for Bean (design, not correctness):** at 375px the shop is 1-up @327px, the PDP
-rail 2-up @155px — under the 167-195px readable-card floor. Screenshots sent 2026-08-24.
-
-✅ **ALL FOUR PRODUCT LISTINGS NOW USE THE BESPOKE CARD (D757).** Two of the four generic
-ones were WooCommerce's OWN plugin templates (`taxonomy-product_attribute`,
-`product-search-results`) — a repo grep missed them. Fixed by putting `sgs/product-card`
-inside the existing `woocommerce/product-template`; WooCommerce keeps query, filters,
-sorting, pagination, relatedness.
-
-⛔ **D756 — the card-grid query-inherit rebuild is DROPPED, not parked (Bean's call).**
-Nobody in the ecosystem replaces the WooCommerce loop; the WooCommerce-free path already
-exists (`cpt-collection`); inherit mode would not have fixed the editor preview either. Do
-not re-propose without meeting D756's measurement first.
-
-⚠ **The single-child-shrunk container shape (D757) was NEVER swept repo-wide.** A single
-flex item in a ROW sizes to content — fixed on `single-product.html` only via
-`flexDirection:"column"`. The row default is deliberate; only `<main>` suppresses it.
-⚠ `taxonomy-product_attribute` is NOT live-verified — both product attributes have
-archives disabled (`attribute_public = 0`), no reachable URL. Answers register item G2.
-
-**Errors reported on EIGHT templates:** Order Confirmation · Page: 404 · Page: Coming
-soon · Product Archive · Products by Attribute · Search Results · Single Posts · Single
-Product. **Only 404, Single Posts and Product Archive are confirmed clean.** Search
-Results, Single Product, Order Confirmation, Coming soon, Products by Attribute have never
-been opened in the editor this track.
-
-**Also open — full register is Part 2 of `.claude/plans/2026-08-24-template-by-template-
-remediation.md`, do not restate it here:** generic product stacks swept (B1-B3 closed),
-unstyled `catalog-sorting`/`query-pagination` (C1/C2), archives inconsistent with each
-other (D1-D4 — a design decision for Bean, not an implementation task), pagination vs the
-old infinite scroll (F, needs a `git log` answer first), template bloat/duplication
-(G1/G3; G2 answered above).
-
-**X-2 shipped and measured (2026-08-23).** WooCommerce/jQuery dequeue gate is live. Six of
-eight surfaces are inside the 50KB JS budget; all eight were over it. Shop and product
-correctly KEEP the stack and still dropped ~42KB each. Figures in `decisions.md`.
-
-⚠ **`sgs/card-grid`'s Content Source panel literally offers "Product collection (no
-WooCommerce needed)"** (`cpt-collection`) alongside "WooCommerce products" (`wc-product`).
-Both render `sgs/product-card`. Read the INSPECTOR LABELS before saying a feature does not
-exist — reading enum slugs alone produced a wrong statement to Bean once already.
+⚠ **Cross-track:** canary page 2737 (`[GATE — DO NOT DELETE] Magnetic pull`, motion track)
+carries undeclared attrs (`content` on sgs/text, `text` on sgs/button). WP discards them and
+the next editor save DELETES them. It also blocks `oldshape-audit` on deploys. Not ours.
+⚠ **`--theme-only` deploys ship ZERO block schemas, yet `oldshape-audit` still evaluates
+them and aborts.** Its sibling guard `deploy_roots_for_scope()` was narrowed for exactly this
+reason; the audit should be too. Until then a theme-only deploy needs `--skip-oldshape-audit`.
 
 ## ▶ MOTION TRACK — 2026-08-24 (FR-38-28 complete; the editor is the open gap)
 
