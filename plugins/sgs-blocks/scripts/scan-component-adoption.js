@@ -116,6 +116,56 @@ function surfaceName( file ) {
 }
 
 /**
+ * Every identifier a file EXPORTS, plus its own surface name.
+ *
+ * ⚠ Matching on the surface NAME alone produces false zeros for any indexed
+ * directory, because nothing ever writes `<colour-picker`. Measured 2026-08-24:
+ * colour-picker exports ColorPalette (3 users), gradient-picker exports
+ * SgsGradientPicker (5) and primitives exports BorderRadiusControl (1) — all
+ * three read 0 adopters until this existed. Match on what a file offers, not on
+ * what it is called.
+ */
+/**
+ * Names a file exports that are CONSTANTS (SCREAMING_CASE). These are referenced
+ * by bare identifier — never `<Name` and never `Name(` — so mount-or-call
+ * matching reports a false zero for a pure data module. _shared.js exports
+ * LENGTH_UNITS and is imported by three sibling panels; it read 0 until this
+ * existed. Deliberately restricted to SCREAMING_CASE so bare-identifier matching
+ * never loosens detection for an actual component.
+ */
+function exportedConstants( file ) {
+	let src = '';
+	try {
+		src = stripJsComments( fs.readFileSync( file, 'utf8' ) );
+	} catch ( e ) {
+		return [];
+	}
+	const out = new Set();
+	for ( const m of src.matchAll( /export\s+const\s+([A-Z][A-Z0-9_]{2,})\s*=/g ) ) out.add( m[ 1 ] );
+	return [ ...out ];
+}
+
+function exportedNames( file ) {
+	const names = new Set( [ surfaceName( file ) ] );
+	let src = '';
+	try {
+		src = stripJsComments( fs.readFileSync( file, 'utf8' ) );
+	} catch ( e ) {
+		return [ ...names ];
+	}
+	for ( const m of src.matchAll( /export\s+(?:default\s+)?(?:async\s+)?(?:function|const|class)\s+([A-Za-z0-9_$]+)/g ) ) {
+		names.add( m[ 1 ] );
+	}
+	for ( const m of src.matchAll( /export\s*\{([^}]*)\}/g ) ) {
+		for ( const part of m[ 1 ].split( ',' ) ) {
+			const tok = part.trim().split( /\s+as\s+/ ).pop().trim();
+			if ( tok && tok !== 'default' && /^[A-Za-z0-9_$]+$/.test( tok ) ) names.add( tok );
+		}
+	}
+	return [ ...names ];
+}
+
+/**
  * One line of what a surface UNIFIES. Taken from the file's own leading
  * docblock — a DESCRIPTION, which is the one thing a docblock is authoritative
  * about. Every WIRING claim in this file is derived from code instead, because
@@ -174,7 +224,13 @@ for ( const [ file, slugs ] of ownerMountedBy ) {
 
 // Call-expression pass over every block edit.js, for the shapes the one-hop
 // resolver cannot see (function-style helpers, and anything in a subdirectory).
+// Block-LOCAL component directories are real shared surfaces too — they are
+// exactly what resolveComponentFiles indexes as `src/blocks/*/components`, and
+// ScaleAxisControl lives in container/components/ShapeDividersPanel.js's tree.
 const componentFiles = jsFilesRecursive( path.join( SRC, 'components' ) );
+for ( const b of blockDirs() ) {
+	componentFiles.push( ...jsFilesRecursive( path.join( BLOCKS, b, 'components' ) ) );
+}
 const editSources = new Map();
 for ( const name of blockDirs() ) {
 	const f = path.join( BLOCKS, name, 'edit.js' );
@@ -185,6 +241,12 @@ for ( const name of blockDirs() ) {
 // directly. AnimationControl read 0 adopters purely because this was not
 // scanned, while blocks/extensions/animation.js uses it. A zero from an
 // incomplete corpus is an artefact of where you looked.
+// A block's index.js is a real consumer — the `icons` util is imported there by
+// 35 blocks for registration and never appears in an edit.js.
+for ( const name of blockDirs() ) {
+	const idx = path.join( BLOCKS, name, 'index.js' );
+	if ( fs.existsSync( idx ) ) editSources.set( `index:${ name }`, fs.readFileSync( idx, 'utf8' ) );
+}
 const EXT_DIR = path.join( BLOCKS, 'extensions' );
 if ( fs.existsSync( EXT_DIR ) ) {
 	for ( const f of fs.readdirSync( EXT_DIR ).filter( ( x ) => x.endsWith( '.js' ) ) ) {
@@ -192,13 +254,17 @@ if ( fs.existsSync( EXT_DIR ) ) {
 	}
 }
 for ( const file of componentFiles ) {
-	const base = surfaceName( file );
-	// Called as a function OR mounted as JSX — either counts as reaching it.
-	const called = new RegExp( `(?:^|[^A-Za-z0-9_$])${ base }\\s*\\(`, 'm' );
-	const mounted = new RegExp( `<${ base }[\\s/>]`, 'm' );
+	// Match on every name the file OFFERS, not just what it is called.
+	const names = exportedNames( file );
+	const consts = exportedConstants( file );
+	const called = new RegExp( `(?:^|[^A-Za-z0-9_$])(?:${ names.join( '|' ) })\\s*\\(`, 'm' );
+	const mounted = new RegExp( `<(?:${ names.join( '|' ) })[\\s/>]`, 'm' );
+	const referenced = consts.length
+		? new RegExp( `(?:^|[^A-Za-z0-9_$])(?:${ consts.join( '|' ) })(?:[^A-Za-z0-9_$]|$)`, 'm' )
+		: null;
 	for ( const [ slug, src ] of editSources ) {
 		const code = stripJsComments( src );
-		if ( called.test( code ) || mounted.test( code ) ) {
+		if ( called.test( code ) || mounted.test( code ) || ( referenced && referenced.test( code ) ) ) {
 			if ( ! adopters.has( file ) ) adopters.set( file, new Set() );
 			adopters.get( file ).add( slug );
 		}
@@ -215,6 +281,11 @@ for ( const file of componentFiles ) {
 // Checked, not assumed: SgsLinkControl, StateToggleControl and SgsLengthControl
 // were tested the same way and are mounted NOWHERE — in any file, at any depth.
 // Their zeros are real and survive this pass.
+const utilFiles = jsFilesRecursive( path.join( SRC, 'utils' ) );
+// Utils are reached THROUGH components at least as often as directly, so they
+// must be closure targets — objectPosition and presetSettings both read 0
+// otherwise, while being genuinely consumed inside other components.
+const closureTargets = [ ...componentFiles, ...utilFiles ];
 const compSrc = new Map();
 for ( const f of componentFiles ) compSrc.set( f, stripJsComments( fs.readFileSync( f, 'utf8' ) ) );
 
@@ -224,12 +295,19 @@ for ( let pass = 0; pass < 12; pass++ ) {
 		const hostAdopters = adopters.get( host );
 		if ( ! hostAdopters || ! hostAdopters.size ) continue;
 		const src = compSrc.get( host ) || '';
-		for ( const inner of componentFiles ) {
+		for ( const inner of closureTargets ) {
 			if ( inner === host ) continue;
-			const nm = surfaceName( inner );
-			const mounted = new RegExp( `<${ nm }[\\s/>]` );
-			const called = new RegExp( `(?:^|[^A-Za-z0-9_$])${ nm }\\s*\\(` );
-			if ( ! mounted.test( src ) && ! called.test( src ) ) continue;
+			// Exported names, not the surface name — nothing writes `<colour-picker`,
+			// it writes `<ColorPalette`. Matching the folder name left three indexed
+			// directories and two component-consumed utils reading a false 0.
+			const nms = exportedNames( inner );
+			const cst = exportedConstants( inner );
+			const mounted = new RegExp( `<(?:${ nms.join( '|' ) })[\\s/>]` );
+			const called = new RegExp( `(?:^|[^A-Za-z0-9_$])(?:${ nms.join( '|' ) })\\s*\\(` );
+			const refd = cst.length
+				? new RegExp( `(?:^|[^A-Za-z0-9_$])(?:${ cst.join( '|' ) })(?:[^A-Za-z0-9_$]|$)` )
+				: null;
+			if ( ! mounted.test( src ) && ! called.test( src ) && ! ( refd && refd.test( src ) ) ) continue;
 			if ( ! adopters.has( inner ) ) adopters.set( inner, new Set() );
 			const target = adopters.get( inner );
 			for ( const slug of hostAdopters ) {
@@ -255,14 +333,15 @@ for ( const file of componentFiles ) {
 // ---------------------------------------------------------------------------
 // 2. Utils — named import from src/utils, then actually referenced.
 // ---------------------------------------------------------------------------
-for ( const file of jsFilesRecursive( path.join( SRC, 'utils' ) ) ) {
+for ( const file of utilFiles ) {
 	const base = surfaceName( file );
 	const exported = [ ...fs.readFileSync( file, 'utf8' )
 		.matchAll( /export\s+(?:const|function)\s+([A-Za-z0-9_$]+)/g ) ].map( ( m ) => m[ 1 ] );
 	const names = exported.length ? exported : [ base ];
-	const set = new Set();
+	const set = new Set( adopters.get( file ) || [] );   // closure results first
 	for ( const [ slug, src ] of editSources ) {
-		if ( names.some( ( n ) => new RegExp( `(?:^|[^A-Za-z0-9_$])${ n }\\s*[(,)]` ).test( src ) ) ) {
+		const code = stripJsComments( src );
+		if ( names.some( ( n ) => new RegExp( `(?:^|[^A-Za-z0-9_$])${ n }\\s*[(,)]` ).test( code ) ) ) {
 			set.add( slug );
 		}
 	}
@@ -294,6 +373,18 @@ for ( const name of blockDirs() ) {
 	}
 }
 
+// The render_block INJECTORS in includes/ are real consumers of a shared PHP
+// helper. helpers-scoped-instance-vars.php read 0 adopters while being used by
+// exactly D405's four injectors, because only block render.php was scanned.
+if ( fs.existsSync( INCLUDES ) ) {
+	for ( const f of fs.readdirSync( INCLUDES ).filter( ( x ) => x.endsWith( '.php' ) ) ) {
+		renderSources.set(
+			`includes:${ path.basename( f, '.php' ) }`,
+			stripPhpComments( fs.readFileSync( path.join( INCLUDES, f ), 'utf8' ) )
+		);
+	}
+}
+
 const helperFiles = fs.existsSync( INCLUDES )
 	? fs.readdirSync( INCLUDES ).filter( ( f ) => /^helpers-.*\.php$/.test( f ) )
 	: [];
@@ -304,7 +395,9 @@ for ( const hf of helperFiles ) {
 		.map( ( m ) => m[ 1 ] )
 		.filter( ( n ) => ! /^(__construct|__get|__set)$/.test( n ) );
 	const set = new Set();
+	const selfKey = `includes:${ path.basename( hf, '.php' ) }`;
 	for ( const [ slug, rsrc ] of renderSources ) {
+		if ( slug === selfKey ) continue;   // a helper defining a function is not adopting it
 		if ( fns.some( ( n ) => new RegExp( `(?:^|[^A-Za-z0-9_])${ n }\\s*\\(` ).test( rsrc ) ) ) {
 			set.add( slug );
 		}

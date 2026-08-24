@@ -1790,9 +1790,9 @@ meaning shows a blank cell rather than an invented sentence.
 | `block_selectors` | 75 | — |
 | `block_supports` | 1340 | yes |
 | `blocks` | 205 | yes |
-| `components` | 13 | — |
+| `components` | 94 | — |
 | `deploy_steps` | 7 | — |
-| `design_tokens` | 261 | — |
+| `design_tokens` | 258 | — |
 | `docs` | 1216 | — |
 | `excluded_properties` | 10 | — |
 | `fx_effects` | 16 | yes |

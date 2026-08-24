@@ -94,7 +94,15 @@ SGS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.d
 # Walk up: scripts/ → sgs-blocks/ → plugins/ → repo root
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
-WP_VERSION_DEFAULT = "7.0"
+# BUMP THIS ON EVERY WP UPGRADE. Stage 2 writes schema_metadata.wp_version_indexed
+# from --wp-version, which DEFAULTS to this constant, so a stale value here is
+# silently RE-ASSERTED as correct on every full /sgs-update run - it does not
+# merely go stale once. Measured 2026-08-24 (D764): this said "7.0" while the
+# canary had been on 7.1 since 2026-08-20 (`wp core version` = 7.1, verified
+# over SSH, not read from a doc). stage_8_drift_gate DOES detect the mismatch
+# and only print()s it; its own TODO to wire that into a deploy hook is still
+# unactioned, and grep confirms nothing outside this file calls it.
+WP_VERSION_DEFAULT = "7.1"
 
 # Files excluded from indexed_files scan
 EXCLUDED_DIRS = {"node_modules", "build", "vendor", ".git", "__pycache__"}
