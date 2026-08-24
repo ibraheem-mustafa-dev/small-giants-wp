@@ -16,11 +16,6 @@ grading: .claude/rubrics/migration-method-grading.md
 
 ## Do this now
 
-```bash
-ls plugins/sgs-blocks/scripts/*migrate*        # is your migration already written?
-python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py --check
-```
-
 1. **Flat `*Tablet`/`*Mobile` attrs → one object?** The tool exists. Run
    `python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <name> --survey`,
    then read Step 2's ⛔ box for the three things `--survey` will not tell you. Stop here.
@@ -30,22 +25,9 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py --check
    what decides whether the change costs a day or a fortnight.
 3. **Otherwise** — a rename, a call-site swap, a helper adoption — start at Step 1.
 
-**STATUS — read this once, then get on with it.** The **rule below is locked and
-mandatory**. The 11 steps are `PROVISIONAL-BUT-EXERCISED`: three adversarial rounds,
-fifteen personas, and two cold agents who FOLLOWED it end to end on real tasks. Their
-fixes are in. Follow it, and **log every point where you had to guess, open a file this
-doc does not name, or do something it does not describe** — that log is what closes it.
-
-⛔ **THE OBJECTION ROUND 3 RAISED — now CLOSED in the model, not just written down.**
-All three personas converged on one thing: **`--check` could not see everything that
-mattered.** `bare-mention` sat outside the pass/fail condition, and `transform()` is a
-pure function of ONE file so no cross-file precondition could ever reach a gate. Both
-are fixed by **`crosscheck()`** (Step 4) — a whole-corpus stage that runs after the scan
-and that `--check` gates on. Proven to fail three ways: an unjustified bare mention, a
-changed count in a justified file, and a stale allowlist entry.
-
-⚠ **Step 11 is still not optional.** `crosscheck()` widens what the gate can see; it does
-not make a green gate proof that the transform was RIGHT.
+**STATUS.** The rule below is locked. The 11 steps are `PROVISIONAL-BUT-EXERCISED` —
+follow them, and **log every point where you had to guess, open a file this doc does not
+name, or do something it does not describe.** That log is what closes them.
 
 ---
 
@@ -68,10 +50,6 @@ You have finished the detector when it can answer, without you reading any file:
 ⛔ **A counting script is not a detector.** It is not done until it carries
 `--survey / --fix / --check / --self-test` and is registered in `gates.json` (Steps 4-8).
 
-⛔ **A census cannot answer a fourth question — "what should the new shape BE?"** That is
-Step 3, it needs a rendered page and Bean's eye, and skipping it is what actually costs a
-fortnight. See "Why this exists".
-
 ### What it costs, and what you are buying
 
 At 4 instances the detector costs more than the edit. Measured floor: **131 lines**
@@ -79,18 +57,10 @@ At 4 instances the detector costs more than the edit. Measured floor: **131 line
 buying the `--check` gate that stops instance 5 arriving next month. **If the change
 genuinely cannot regress, the threshold does not apply.**
 
-### How to tell which path you are on
-
-- **Fast path:** one commit naming a count — *"204 call sites migrated"*.
-- **Slow path:** commits naming instances — *"mount X on accordion, audio, before-after"*.
-
-The moment you write a commit that lists blocks individually, you skipped the detector.
+### If this migration is a Spec 31 PHASE
 
 ⚠ **Unless this migration is a declared Spec 31 PHASE — then R-31-5 governs and you split
 it** into the phase's agreed commit boundaries. "One commit" describes a standalone codemod,
-not a phase deliverable.
-
----
 
 ## ⛔ When to STOP and hand back to Bean
 
@@ -205,10 +175,8 @@ A shape decided against a rendered page costs one block. The same decision disco
 block 9 costs nine. **This is also the Rule 7 design gate** — for a shared wrapper, the
 walker or `converter/`, Bean's approval here is mandatory, not advisory.
 
-**This step exists because the evidence demanded it.** The colour rollout DID census on
-day 2 and still cost a fortnight — see "Why this exists". The census answered *how many*.
-Nothing answered *what shape*, and three of its five corrections (D609, D618, D621) were
-settled only by Bean looking at a rendered thing.
+**Why:** the colour rollout DID census on day 2 and still cost a fortnight — the census
+answered *how many*, and nothing answered *what shape*.
 
 ## Step 4 — Choose the recogniser, then copy the skeleton
 
@@ -255,14 +223,14 @@ with `grep -n '^def \|^SELF_TEST\|^EXCLUDE' plugins/sgs-blocks/scripts/migrate-l
 
 | Part | Where | What it does |
 |---|---|---|
-| `ROOT` | `:53` | Repo-root path constant. **Anchoring is a THREE-WAY decision — read the box below before you copy it** |
-| `targets()` | `:77` | The target list. **Copy this for a call-site migration** — the DB cannot produce one (Step 2) |
-| `BARE_OK` | `:91` | Every surviving bare mention, pinned by per-file count, each with a written reason |
-| `crosscheck()` | `:109` | The whole-corpus stage. `--check` gates on what it returns |
-| `rel(path)` | `:143` | Repo-relative path for reporting |
-| `scan(...)` | `:196` | The driver: walks targets, classifies, tallies, optionally writes |
-| `self_test()` | `:261` | Runs the fixtures, returns failures |
-| `main()` | `:337` | The CLI contract below |
+| `ROOT` | `:62` | Repo-root path constant. **Anchoring is a THREE-WAY decision — read the box below before you copy it** |
+| `targets()` | `:86` | The target list. **Copy this for a call-site migration** — the DB cannot produce one (Step 2) |
+| `BARE_OK` | `:100` | Every surviving bare mention, pinned by per-file count, each with a written reason |
+| `crosscheck()` | `:185` | The whole-corpus stage. `--check` gates on what it returns |
+| `rel(path)` | `:219` | Repo-relative path for reporting |
+| `scan(...)` | `:272` | The driver: walks targets, classifies, tallies, optionally writes |
+| `self_test()` | `:337` | Runs the fixtures, returns failures |
+| `main()` | `:413` | The CLI contract below |
 
 ⚠ **These moved once already.** Adding `crosscheck()` shifted every symbol below it by
 ~55 lines and four of six citations here were wrong for two commits. Re-derive rather than
@@ -452,10 +420,8 @@ Then the standalone alias in `package.json`, so it is runnable by hand:
 
 (`gates.json` = what runs automatically; the alias = so you can run it yourself.)
 
-⚠ **`added_commit` is `null` at registration and that is correct** — you are committing the
-gate BEFORE the migration, so the landing sha does not exist yet. Fill it afterwards or
-leave it null; nothing reads it. `order` must be `max(existing) + 1`, derived not copied —
-`npm run gate:list` prints the current max.
+⚠ `added_commit` is `null` at registration — the landing sha does not exist yet.
+`order` = `max(existing) + 1`, derived from `npm run gate:list`, never copied.
 
 **Tiers.** `generator` runs in `prebuild` and is not a gate. `fast` runs on every build.
 `full` runs pre-deploy via `build-deploy.py`'s `step_gate_full()`. **Pick by measuring** —
@@ -464,11 +430,10 @@ leave it null; nothing reads it. `order` must be `max(existing) + 1`, derived no
 nothing runs is enforcement laundering, and that check fails closed if the deploy-side
 call ever disappears.
 
-⛔ **A migration is not finished until its `--check` runs automatically.** This repo holds
-**27** scripts that were built, work, and were never wired — including a mandatory go-live
-gate nobody runs. One gate sat unwired for three weeks while three documents said it was
-enforced. **Run `npm run gate:list`** — grepping `package.json` returns a false positive,
-because every gate kept a standalone alias there when the chain moved to `gates.json`.
+⛔ **A migration is not finished until its `--check` runs automatically.** **Run
+`npm run gate:list` to confirm it does** — grepping `package.json` returns a FALSE
+POSITIVE, because every gate kept a standalone alias there when the chain moved to
+`gates.json`.
 
 ## Step 9 — Snapshot, dry run, then apply
 
@@ -566,11 +531,6 @@ uncovered list names files you did not write, stop and hand back.**
   those bodies before classifying, or refuse any file containing one.
 - **Do not copy `migrate-tier-object.py`'s 457-line hand-rolled `self_test`** (`:957-1413`,
   29% of the file). Use the fixture pattern from `migrate-length-sanitiser.py:190`.
-- **`migrate-theme-attr-rename.py` and `migrate-theme-tier-scalars.py` duplicate
-  `find_target_files()` byte-for-byte at `:83-89`.** If you need those helpers, extract
-  them once rather than making it three.
-- **Never cache a count in prose.** `CLAUDE.md` forbids it and a cached snapshot has already
-  drifted 6-of-9. Every figure in this document is dated and derivable; keep it that way.
 - **Where a genuine judgement call remains, the detector still ships.** Its census becomes
   the dispatch manifest — one batched pass over a classified list, never a discovery walk.
 - **Never run `phpcbf`** to fix alignment. It reformats whole files and turns a scoped change
@@ -610,60 +570,12 @@ this document. **"Correction" is also undefined**: subjects starting `fix` give 
 containing `fix` give 22. A metric whose value depends on an undefined term cannot survive a
 hostile read.
 
-## What the evidence actually supports
+## The thesis, in one line
 
-| Work | What the change WAS | Target shape existed | Corrections |
-|---|---|---|---|
-| `migrate-length-sanitiser.py` | identifier rename, 204 sites, zero behaviour change | **19 days** (`5db768726`, 2026-08-02) | 1 landing, 0 |
-| `migrate-render-closures.py` | closure -> shared helper, bodies byte-identical | **40 days** (`cef1fca99`, 2026-07-12) | 1 landing + 1 prerequisite |
-| Colour panel rollout | a NEW component, its mount, its tab and its placement rule — **all undecided at start** | did not exist | many |
+**A census relocates the corrections from the TREE into the DETECTOR** — one commit
+fixes hundreds of sites instead of one commit per block. But a census answers *how
+many, where, and which are exempt*; it cannot answer *what shape is right*. That is
+Step 3.
 
-⛔ **Both fast migrations renamed onto a target that had been in production for weeks. Zero
-corrections is what that predicts. The census is not what made them cheap — a settled target
-shape is.** That is why Step 3 exists.
-
-## The claim that does NOT survive, and the better one that does
-
-❌ *"A census-driven pass lands once."* Falsified by this repo's own most recent census:
-`5770ecb40` -> `74060ffd8` (*"derived_selector is not a selector — re-ground the census"*) ->
-`daf9e6935` (*"the census promised 75% and the fixer could deliver 14%"*). One census, three
-commits, an error of 5x.
-
-✅ **A census relocates the corrections from the TREE into the DETECTOR.** Those three
-commits corrected a *script*, once each, over a census of 255 colour rows — and the
-third of them is why the honest number is **29**, not 255: `daf9e6935` records
-`AUTOFIXABLE 161 (75%) -> 29 (14%)`. The same corrections made block-by-block would
-have cost one commit **per block**.
-
-⚠ **That 255 was this document's FIFTH unsound figure, and it sat four lines below
-the sentence quoting "the fixer could deliver 14%".** Caught by a round-3 reviewer,
-not by me. The census size is not the delivery. That is the whole argument,
-and the evidence supports it.
-
-## The slow track was never a counter-example
-
-**The 33-block colour wave was census-driven on DAY 2.** `f6f3c0331` (2026-08-15) built
-its worklist *"from the DB's `role='color'` census this session"*, landed 33 blocks in one
-commit, and caught two errors in the hand-derived list it replaced. That is Step 2 of this
-document, executed correctly, on day 2.
-
-**What cost the fortnight was that the target shape was still being decided while the
-rollout ran.** The five corrections, and what settled each:
-
-| | The decision | How it was settled |
-|---|---|---|
-| D609 | ONE colour control everywhere, states inside it | amended the SAME DAY, after Bean rejected a build on sight |
-| D618 | must NOT mount into native's `group="color"` | Bean looking at a live editor page |
-| D621 | the panel belongs in the STYLES tab | overturned D618 |
-| D622 | placement follows the D533/D537 resolver | a census (`placement-reach.py`, 2,262 attrs) |
-| D632 | colour split from `ShadowControl`, 11 blocks | a survey — run AFTER the shape was decided |
-
-Every one of those is a **global shape decision, not a per-block judgement** — Bean's
-correction on that point was right and the decision log confirms it. But *not-per-block* does
-not mean *census-derivable*. **A census answers how many, where, and which are exempt. It
-cannot answer what shape is right.** Three of the five (D609, D618, D621) were settled only
-by Bean looking at something rendered — and the two a census DID settle came after the shape
-was already decided.
-
-That gap is what Step 3 closes, and it is the difference between this method and the version
-that was reviewed twelve times and still would not have prevented the fortnight.
+Full derivation, the falsified sub-claims, and the day-2 census evidence:
+[`reports/2026-08-24-migration-method-evidence.md`](reports/2026-08-24-migration-method-evidence.md).

@@ -578,5 +578,14 @@
     "added_commit": null,
     "budget_ms": 168,
     "order": 63
+  },
+  {
+    "id": "check-doc-citations",
+    "cmd": "python scripts/check-doc-citations.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 95,
+    "order": 64
   }
 ]
