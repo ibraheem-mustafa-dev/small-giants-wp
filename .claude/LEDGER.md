@@ -286,7 +286,8 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 evidence: `reports/2026-08-24-migration-method-evidence.md` · grading:
 `rubrics/migration-method-grading.md`.
 
-⛔ **`.claude/THE-MIGRATION-METHOD.md` IS BINDING** and now ENFORCED (see below). >3
+⛔ **`.claude/THE-MIGRATION-METHOD.md`: the RULE is binding and now ENFORCED (see below);
+the 11 STEPS are `PROVISIONAL-BUT-EXERCISED` per its own frontmatter — never APPLIED.** >3
 files → detector first. **NEW: if CLIENT-VISIBLE, settle the SHAPE first (Step 3)** — the
 colour rollout WAS census-driven on day 2 (`f6f3c0331`) and still cost a fortnight.
 

@@ -187,7 +187,7 @@ written.
 Then set `status:` accordingly and update `closes_when:` in the frontmatter.
 
 **Acceptance for TASK 0:** every persona at A− or the objection recorded · one real
-migration completed through all 9 steps · a failure log with at least the points where the
+migration completed through all 11 steps · a failure log with at least the points where the
 guide was silent · the method's `status:` updated from PROVISIONAL with the evidence cited.
 
 ---
