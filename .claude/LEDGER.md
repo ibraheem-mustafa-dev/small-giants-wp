@@ -18,10 +18,9 @@ track owns `## ▶ COLOUR-GOLDEN TRACK`. The **motion** track owns
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
-⭐ **If you are the colour-golden track, do NOT start from that section.** Read
-`.claude/prompts/2026-08-24-db-and-script-code-only-investigation.md` — it is the executable
-front and carries Bean's two rulings (D1 = A, D2 = A+B) plus the method gate. The ledger
-section is status; the prompt is the work.
+⭐ **If you are the colour-golden track:** read `.claude/prompts/2026-08-26-let-the-method-apply.md`
+— TASK A and TASK C in it are SHIPPED (D775); only TASK B, the 27 orphans, remains. (The older
+`2026-08-24-db-and-script-code-only-investigation.md` this line used to name has been DELETED.)
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -232,74 +231,75 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-24 (T1 + T3 CLOSED; T0 exercised)
+## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-25 (T0/T1/T3 CLOSED; orphans are the front)
 
-⭐ **START HERE: `.claude/prompts/2026-08-26-let-the-method-apply.md`** — the executable
-front for this track. It supersedes the 2026-08-25 six-task version, whose TASK 1 and
-TASK 3 have SHIPPED; a cold agent reading that one would redo closed work.
+⭐ **START HERE: `.claude/prompts/2026-08-26-let-the-method-apply.md`** — but note TASK A and
+TASK C in it are now SHIPPED. Only **TASK B (the 27 orphans)** remains.
 
-⭐ **Narrative: `memory/session-2026-08-24-detector-first-and-the-serial-loop.md`** ·
-evidence: `reports/2026-08-24-migration-method-evidence.md` · grading:
+⭐ Narrative: `memory/session-2026-08-24-detector-first-and-the-serial-loop.md` · method
+application log: `reports/2026-08-26-migration-method-application-log.md` · grading rubric:
 `rubrics/migration-method-grading.md`.
-
-⛔ **`.claude/THE-MIGRATION-METHOD.md`: the RULE is binding and now ENFORCED (see below);
-the 11 STEPS are `PROVISIONAL-BUT-EXERCISED` per its own frontmatter — never APPLIED.** >3
-files → detector first. **NEW: if CLIENT-VISIBLE, settle the SHAPE first (Step 3)** — the
-colour rollout WAS census-driven on day 2 (`f6f3c0331`) and still cost a fortnight.
 
 ### ✅ CLOSED
 
-**T1 — `prebuild` 153.4s → 31.0s**, both ends measured. 61 `&&`-joined commands → 5
-generators + `run-gates.py` (runs every gate, reports ALL failures). Roster:
-`scripts/gates.json`. 57 of 61 still per-build; the 4 heavyweights (76.1%) run pre-deploy
-via `build-deploy.py`'s new `step_gate_full()`. ⛔ There was NO gate step to repoint — npm
-fires `prebuild` as a lifecycle hook, so splitting it alone would have silently dropped all
-four from the deploy. `npm run gate:wired` fails closed if that call disappears.
+**T0 — THE METHOD HAS BEEN APPLIED (D775).** `.claude/THE-MIGRATION-METHOD.md` is now
+`status: APPLIED`, graded **B−** (was C) by a 3-persona panel on the APPLICATION EVIDENCE rather
+than another read-through: **9 CONFIRMED / 1 PEDANTIC / 0 WRONG**. Its 11 steps had been reviewed
+15 times and never once allowed to write a file. **FIVE steps were WRONG or SILENT as written
+(1, 2, 4, 8, 11)** — all corrected in place, each tagged (D775).
 
-**T3 — the burn-down. `scripts/programme-progress.py`: 109 attrs / 37 families / 27
-properties** remain flat. ⛔ **No percentage, deliberately** — a finished migration deletes
-its sibling rows, so the schema no longer holds the original total.
+⛔ **The Cutter's verdict overturns the old "capped by STRUCTURE" reading:** the problem is
+**CONTENT, not LENGTH**. Hunting for cuts across 581 lines found only **26** worth removing (4.5%);
+the STOP repeats and the codemod skeleton all survived scrutiny. Nine reviewers made it longer;
+the first real run proved parts of it wrong. Two different diseases — only the second is serious.
 
-### ⚠ T0 — exercised, NOT closed
+⚠ **Recoverability still grades D, and it is the ONE thing holding the overall grade.** The sole
+defence against a silent whole-file diff is a MANUAL `git diff --stat`. It fired this session (a
+JSON round-trip on tab-indented `package.json` turned a 1-line alias into a **241-line diff**), but
+a habit is not a gate. **Making `changed-lines ≈ file-length` fail automatically is the single
+change that would most raise the grade.** Not built — Bean's call.
 
-4 rounds, 15 personas, **0 WRONG in round 4**. Rewritten around the shape-gate, cut
-**670 → 582**. Gates built, all with negative controls, all proven to fail:
-`crosscheck()`/`BARE_OK`/`WIDTH_OK` in `migrate-length-sanitiser.py` ·
-`check-withdrawn-figures.py` · `check-doc-citations.py` · `run-gates.py` tier-integrity.
+✅ **THE RULE IS ENFORCED** (`hooks/detector-first-commit-gate.py`, PreToolUse/Bash). 4+ code
+files with substantially the same change and no detector → DENIED; bypass `[repeat-ok:<reason>]`.
 
-⛔ **THE COUNCIL WAS STRUCTURALLY ADDITIVE** — 9 personas, 9 MUST-FIX lists, zero asked to
-subtract; the doc grew every round (222→670). Round 4's **Cutter** and **Saboteur** found
-what nine reviewers missed. **Any future doc council needs a subtraction lens.**
+**T1 — `prebuild` 153.4s → 31.0s**, both ends measured. Roster: `scripts/gates.json` +
+`run-gates.py`. The 4 heavyweights run pre-deploy via `build-deploy.py`'s `step_gate_full()`;
+`npm run gate:wired` fails closed if that call disappears.
 
-✅ **THE RULE IS NOW ENFORCED** (`hooks/detector-first-commit-gate.py`, PreToolUse/Bash).
-A commit making substantially the same change to 4+ code files with no detector is DENIED,
-bypass `[repeat-ok:<reason>]`. It reads the one thing an agent does not author — the diff.
-Proven end-to-end: 3/4/5 files → ALLOW/DENY/DENY, detector staged → ALLOW.
+**T3 — the burn-down.** `scripts/programme-progress.py`. ⛔ No percentage, deliberately.
+
+**T4 — `--all-properties` SHIPPED (`a0d15a98f`), and it REFUTED the batching carve-out.**
+Census: `reports/migrations/tier-object-all-properties-census.json`. **40 declared, 24 MIGRATABLE,
+16 already done.** 23 of the 24 touch 1-2 blocks; exactly ONE touches more
+(`backgroundOverlayOpacity`, 8). **Total remaining: 34 block-touches, not 91.**
+⛔ **`margin`/`padding`/`borderRadius` — the three the carve-out exempted — are DONE, zero
+migratable.** Their "41/39/11" figures were DB attr-row counts, not migration scope: 41 blocks
+carry `marginTablet` but only 5 declare a base `margin`, because the other 39 get it from
+WP-native `supports.spacing`, which `block_attributes` cannot see. **The carve-out stays
+withdrawn — there is no slow path to exempt anything from.**
 
 ### ▶ OPEN — priority order
 
-1. **Wire or delete the orphans** (TASK 2) — **Bean: next session.** 2 of 27 done.
-   Register: `reports/2026-08-24-script-revival-register.md`. ⛔ Decide by RUNNING (a
-   triage got 13 of 52 wrong from docstrings). **RA-1 is at repo ROOT
-   `scripts/wc-pages-responsive-audit.js`, needs `--base <live client domain>`, so it
-   CANNOT be a prebuild gate — post-deploy vs the canary is its honest home.**
-2. **USE the method for real.** Read and criticised 15 times; never once allowed to write
-   a file — four agents followed it READ-ONLY. The two worst defects all session (a green
-   gate over a fatal; a census silently collapsing to 4 files) were found by DOING. Run
-   TASK 5 through Steps 1-11 and let it apply. The doc's `closes_when` names this.
-3. **`--all-properties` + batching** (TASK 4) — 35 of 41 properties touch 1-2 blocks.
-4. **Spec 39's converter rework** — the pacing item for cloning.
-5. ⚠ **Bean's call:** the revenue lane. Council graded runway **F**.
-6. ⏸ **Option A, deferred by design:** interrupt at the 4th file EDIT, before the work is
-   done. Better trigger, harder judgement. Decide once the commit gate has caught
-   something real.
+1. **Wire or delete the 27 orphans** — THE FRONT. Register:
+   `reports/2026-08-24-script-revival-register.md`. ⛔ Decide by RUNNING, never by docstring (a
+   triage got **13 of 52** wrong from headers). ⚠ **The register says `status: OPEN — nothing has
+   been wired` and "⛔ NOTHING HERE HAS BEEN WIRED" — which CONTRADICTS the "2 of 27 done" this
+   ledger and the prompt both carried. Verified by reading the file. Settle which is true before
+   wiring anything.** ⚠ RA-1 (`scripts/wc-pages-responsive-audit.js`) is at repo ROOT and needs
+   `--base <live domain>`, so it CANNOT be a prebuild gate — post-deploy vs the canary is its home.
+2. **The whole-file-diff gate** (above) — closes the method's last D-grade dimension. Small.
+3. **Spec 39's converter rework** — the pacing item for cloning.
+4. ⚠ **Bean's call: the revenue lane.** Council graded runway **F** — 11 of 1,740 commits touched
+   `sites/` in 30 days and none were client build work. Real and urgent; not started unprompted.
+5. ⏸ **Option A, deferred by design:** interrupt at the 4th file EDIT rather than the commit.
+   Decide once the commit gate has caught something real.
 
-### ▶ Anchored grades
+### ▶ Anchored grades — round 3 (as EXERCISED, not as written)
 
-Round 4: client-visible **B** (was C) · mechanical **C** (was D) · Saboteur **C** · Cutter
-**C**. **Overall C — capped by STRUCTURE, not correctness** (now A-territory). A− needs the
-doc to become a card, not a document. Enforcement is now half-closed (the commit gate).
-
+working-change **B** (was D) · recoverability **D** (held) · governance **B** (floor, untested) ·
+durability **B** (was B−) · first-attempt reach **B** (was C). **Overall B−, was C.**
+Recoverability anchors the ceiling; governance moved only because no CONFIRMED finding exercised
+it, which is a coverage gap in this exercise, not a fix.
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
 Drawer covered the fold in every template editor; several blocks errored. Three unrelated

@@ -2,10 +2,16 @@
 doc_type: guide
 title: The migration method — settle the shape, then build the detector
 date: 2026-08-24
-status: PROVISIONAL-BUT-EXERCISED
-closes_when: "one real migration has been APPLIED through Steps 1-11 and re-graded. The two
-  round-3 objections (bare-mention outside the gate; no cross-file stage) are CLOSED in the
-  model by crosscheck(). Rounds 2-3 exercised the method read-only only."
+status: APPLIED — graded B- as exercised (round 3, 9 CONFIRMED / 1 PEDANTIC / 0 WRONG)
+closes_when: "CLOSED 2026-08-25. Applied end-to-end through Steps 1-11 on a real change
+  (d8bd2cab3) and re-graded: C -> B-. FIVE steps were WRONG or SILENT as written (1, 2, 4, 8, 11)
+  and are corrected above, each tagged (D775). Evidence:
+  .claude/reports/2026-08-26-migration-method-application-log.md."
+graded_by: "3-persona panel on the application evidence — Cutter (delete-only), Cold applier
+  (first-attempt reach), Grader (anchored rubric). Cutter verdict: the problem is CONTENT, not
+  LENGTH — only 26 of 581 lines were cuttable. Recoverability holds at D: the sole defence against
+  a silent whole-file diff is a MANUAL git diff --stat, not a gate. Closing that is the single
+  change that would most raise the grade."
 applies_to: any change touching more than 3 blocks, attributes, files or call sites
 grading: .claude/rubrics/migration-method-grading.md
 ---
@@ -82,7 +88,10 @@ Say which one, and what state the tree is in.
 8. **Step 3 applies and Bean is not available.** A client-visible shape needs his eye
    (R-31-13) and you cannot proceed past Step 3 without it. Hand back with the census
    and the ONE instance built — that is the useful state to hand over, not nothing.
-9. **The change touches a shared wrapper, the walker, or `converter/`.** Rule 7 requires a
+9. **The change touches a shared wrapper, the walker, `converter/`, or ANY helper whose blast
+   radius spans many blocks.** The three named systems are examples, not the boundary — a shared
+   helper in `includes/` called by 40 blocks is inside this condition. If you are deciding whether
+   your change qualifies, it qualifies: ask Bean. Rule 7 requires a
    design gate and Bean's approval BEFORE building. This document does not override it.
 
 ---
@@ -105,6 +114,12 @@ do not rebuild it and do not abandon it.** `surveys/survey-typography-controls.p
 lines of working, DB-backed census with no `--survey` flag and no fixer; by this document's
 own ⛔ it is not a detector, but it is most of one. Adding the missing modes is hours;
 rebuilding is the failure this step exists to prevent.
+
+⚠ **A subject hit is not automatically a hit — confirm the CORPUS matches before deciding.**
+`surveys/census-tier-siblings.sh` is catalogued as a tier-sibling census and looks like an exact
+match for one; it censuses stored `post_content` on the live canary, not declared attributes in
+`block.json`. Same words, different corpus. Both directions cost: treat it as a hit and you extend
+the wrong tool; treat the subject as unsearched and you rebuild one that exists.
 
 Rebuilding a tool that exists is this repo's recorded failure mode. Run
 `find plugins/sgs-blocks/scripts -maxdepth 1 -type d` — there are dozens. Searching one and
@@ -129,6 +144,13 @@ offer: **walk the disk.**
 and silently omits every shared include. **That omission is D575** — the `minHeight` survey
 returned zero findings while the shared wrapper shipped `min-height:Array` to 73 live
 declarations.
+
+⛔ **The DB can also be WIDER than the tree, and this box used to warn only of omissions.**
+`block_attributes` holds rows for CORE blocks (`source='native_wp'`) which have **no directory
+under `src/blocks/` at all** — measured 2026-08-25: 507 such rows, and an unfiltered tier-sibling
+query returns **306** pairs against disk's **304**. **Filter `source='sgs'`.** Every other caveat
+here says the DB knows LESS than disk; this is the opposite direction, and a falsely-WIDE answer
+marks a DEAD read as live — the D575 shape. (D775.)
 
 ⛔ **`block_attributes` also cannot see WP-NATIVE `supports` controls** — and the client
 sees those identically to a declared attr. So a DB-derived list for a client-visible
@@ -189,6 +211,12 @@ answered *how many*, and nothing answered *what shape*.
   `plugins/sgs-blocks/scripts/colour-codemod/adopt.js` — `@babel/parser` (already
   installed), and the same CLI contract at `:992-996`. It is itself **unwired** (absent
   from `gates.json`) — copy its shape, not its wiring.
+
+- **Neither — a single-function body swap, or any change small in FILES but large in BLAST
+  RADIUS.** Steps 4-7 do not fit and you should not force them. **`crosscheck()` is the part that
+  transfers** (a whole-corpus precondition `transform()` cannot see); `classify()`, `EXCLUDE`,
+  `PAT`, `targets()`, `rel()` and `unrecognised` are all N/A. Record that, and go to Step 6 —
+  the fixtures still apply in full. (D775.)
 
 ⛔ **A line classifier applied to a multi-line shape is the commonest way a codemod
 corrupts 5% of its targets silently.**
@@ -398,6 +426,19 @@ migration lands, and **that is the point**: a red gate is the only signal that t
 *next* session a migration is half-applied. Wired afterwards, an interrupted apply is
 undetectable — and with a non-coder owner who cannot read the diff, that state is permanent.
 
+⛔ **RUN your `--check` and see what it returns TODAY before you register it.** Two cases the
+paragraph above does not cover:
+
+- **A `--check` that is already red for reasons beyond your migration.** `migrate-tier-object.py
+  --check` exits 1 while ANY property remains flat — registering it would have failed every build
+  on `main` for all five tracks. Register a NARROWER mode that gates only your change.
+- **A GUARD-shaped change is green from registration onward**, because it compares a derived copy
+  to its source and there is nothing to migrate. "Red until the migration lands" is a codemod
+  property, not a universal one. Do not conclude the gate is therefore wrong. (D775.)
+
+⚠ **When the gate IS the change**, it cannot be committed before the code that implements it.
+Register it before the COMMIT, and prove it fails before the commit. That satisfies the intent.
+
 Add a record to `plugins/sgs-blocks/scripts/gates.json` — **all seven fields**:
 
 ```json
@@ -490,6 +531,13 @@ git status --porcelain                       # nothing of yours outstanding
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 ```
 
+⚠ **If the change has no rendered surface, this step is N/A — say so and substitute.** Step 3
+carries exactly this off-ramp ("only for changes with a surface a client sees") and Step 11 never
+inherited it, so an agent that correctly skipped Step 3 had no permission to skip here. A
+developer-tooling change has no page and no `classify()` categories. **The substitute proof is
+provably-identical behaviour**: diff the tool's own output against a baseline recovered with
+`git show <recorded-sha>:` — stronger than a saved file, because it cannot drift. (D775.)
+
 Then open a real page rendering an affected block and check the changed property's computed
 value — **at least one instance per `classify()` category**, not one page.
 
@@ -521,6 +569,11 @@ uncovered list names files you did not write, stop and hand back.**
   3-line change becomes an unreviewable whole-file diff. The tell: changed-line count equals
   file length. `migrate-length-sanitiser.py:141/159` is correct;
   `migrate-render-closures.py:110/235/242` is the bug.
+- **A JSON round-trip silently reformats the whole file.** Same tell as the CRLF hazard above
+  (changed-line count ≈ file length), different cause: `json.load` then `json.dump(indent=2)` on
+  a TAB-indented file rewrites every line. `package.json` is tab-indented; a one-line alias
+  addition became a **241-line diff**. Insert into the TEXT, or match the file's existing indent.
+  Caught by Step 9's `git diff --stat` — which is a manual habit, not a gate.
 - **Aligned assignment breaks literal find-and-replace.** `$sgs_css_keyword  = static
   function` with two spaces. A literal replace skips it silently — which is why one closure
   count read 45 before it read 52.
@@ -535,8 +588,6 @@ uncovered list names files you did not write, stop and hand back.**
   the dispatch manifest — one batched pass over a classified list, never a discovery walk.
 - **Never run `phpcbf`** to fix alignment. It reformats whole files and turns a scoped change
   into an unreviewable diff. Realign by hand, or leave a blank line.
-- **WordPress silently discards an undeclared attribute** on the editor surface. A transform
-  writing an attr the block.json does not declare produces no error and no effect.
 - **A census that OVER-promises costs a whole task; one that under-counts costs a
   re-measure.** Bias every classifier conservative. (`daf9e6935` — a census promised 75%
   and the fixer could deliver 14%.)
@@ -549,26 +600,12 @@ uncovered list names files you did not write, stop and hand back.**
 
 ## Why this document distrusts its own numbers
 
-**Four figures in this document have been wrong, all the same shape: asserted from memory or
-read off a date, never derived.**
-
-| # | The claim | What it actually was |
-|---|---|---|
-| 1 | six D-numbers dated 2026-08-11 => "the migration took one day" | a D-number records when work LANDS |
-| 2 | "1 day each" for three migrations | a COMMIT DATE — the inference this doc bans |
-| 3 | "13 days, 25 corrections" from seven D-numbers | those D-numbers span **three** days |
-| 4 | "71 commits, 23 fixes" — offered as the *corrected*, re-derived figure | re-run today: **67** and **21**. The fix was itself unverified |
+Four figures in this document have been wrong, all the same shape: asserted from memory or read
+off a date, never derived. One was written *as the correction* to another and was itself disproved
+on re-run.
 
 **The rule they produce: never a commit date, never a D-number, never a body-matching grep.
 Derive by enumeration, and re-run the command rather than trusting the sentence.**
-
-**Figure 4 is the instructive one.** It was written *as* the correction to figure 3, with
-the instruction "re-run it; do not trust this sentence" attached. Re-running it disproves it.
-The grep matches commit BODIES — only **8 of 67** name the panel in their subject — so it
-sweeps in the shadow extension, the gradient rollout, the 255-row codemod, and commits about
-this document. **"Correction" is also undefined**: subjects starting `fix` give 21,
-containing `fix` give 22. A metric whose value depends on an undefined term cannot survive a
-hostile read.
 
 ## The thesis, in one line
 
