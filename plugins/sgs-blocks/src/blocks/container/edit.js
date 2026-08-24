@@ -429,6 +429,31 @@ export default function Edit({ attributes, setAttributes, name }) {
     if ( "" !== justifyContent ) {
       style.justifyContent = justifyContent;
     }
+  } else if ( layout === "stack" ) {
+    // Task 3 — mirror class-sgs-container-wrapper.php's stack branch (~:1341-1371)
+    // onto the canvas. Stack is display:flex with the column axis FORCED, never read
+    // from flexDirection — that is the whole point of the mode: an operator who set
+    // flexDirection:"row" on a previous layout and then picks Stack still gets a
+    // column, because Stack answers "which axis" outright rather than depending on a
+    // second control staying in sync with it. flexDirection is therefore deliberately
+    // never read in this branch, matching the PHP wrapper exactly.
+    style.display = "flex";
+    style.alignItems = alignItems;
+    // Because the axis is ALWAYS column under Stack (never conditional on the
+    // flexDirection attr, unlike the flex branch above), the column+wrap invariant
+    // from CSS Flexbox L1 9.4 always applies here: a wrapped column-axis container
+    // sizes each line from its items rather than being handed the parent's cross
+    // size, so a child ignores the parent's width. Coerced unconditionally, same
+    // reasoning as the PHP wrapper's stack branch.
+    const stackEffectiveFlexWrap =
+      flexWrap === "wrap" || flexWrap === "wrap-reverse" ? "nowrap" : flexWrap;
+    if ( "" !== stackEffectiveFlexWrap ) {
+      style.flexWrap = stackEffectiveFlexWrap;
+    }
+    style.flexDirection = "column";
+    if ( "" !== justifyContent ) {
+      style.justifyContent = justifyContent;
+    }
   }
 
   // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
@@ -473,7 +498,7 @@ export default function Edit({ attributes, setAttributes, name }) {
   // `.sgs-cols-*` classes: they addressed the wrapper after the grid had moved. The
   // canvas has to make the same move, or a grid container previews its columns on the
   // full-bleed outer while rendering them on the capped band.
-  const gridOnInner = ( layout === "grid" || layout === "flex" ) && hasBandProps;
+  const gridOnInner = ( layout === "grid" || layout === "flex" || layout === "stack" ) && hasBandProps;
   if ( gridOnInner ) {
     for ( const key of [ "display", "gridTemplateColumns", "gridAutoRows", "gap", "alignItems",
                          "justifyItems", "alignContent", "flexWrap", "flexDirection", "justifyContent" ] ) {
