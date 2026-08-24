@@ -1006,13 +1006,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'' !== $band_padding_left
 			);
 
-			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
+			// Task 1 (Stack layout): Stack is a flex mode (display:flex +
+			// forced flex-direction:column, see the layout branch below), so it
+			// routes through exactly the same grid-on-inner / gap / shrink-to-fit
+			// plumbing as 'flex' — joining every gate below that already reads
+			// 'grid' || 'flex' for that reason. It does NOT join the grid-ONLY
+			// gates further down (grid-item defaults, grid-template-rows,
+			// tier-column-count, grid-template responsive tiers) — those emit
+			// grid-specific properties that have no meaning on a flex container.
+			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) && $has_band_props && null === $opt_wrap_inner );
 			// Container queries (Spec 37 FR-37-16): force the two-layer structure so the
 			// flex/grid container (where gap applies) is the __inner — a DESCENDANT of
 			// the container-type outer — so @container queries can respond to the
 			// block's own width (an element cannot size-query itself). Paired with the
 			// $do_wrap force further down so the __inner element actually renders.
-			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			// Stack joins this for the same reason it joins $grid_on_inner above.
+			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 				$grid_on_inner = true;
 			}
 			$inner_grid_decls = array();
@@ -1325,6 +1334,37 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 					if ( '' !== $flex_direction ) {
 						$gd[] = 'flex-direction:' . esc_attr( $flex_direction );
+					}
+					if ( '' !== $justify_content ) {
+						$gd[] = 'justify-content:' . esc_attr( $justify_content );
+					}
+				} elseif ( 'stack' === $layout && ! $suppress_outer_flex_for_main ) {
+					// Task 1 (Stack layout). Stack is display:flex with the column
+					// axis FORCED, not read from flexDirection — that is the whole
+					// point of the mode: an operator who set flexDirection:"row" and
+					// then picked Stack still gets a column, because Stack answers
+					// "which axis" outright rather than depending on a second control
+					// staying in sync with it. $flex_direction is therefore
+					// deliberately never read in this branch (contrast the flex
+					// branch above, which reads it).
+					$gd[] = 'display:flex';
+					$gd[] = 'flex-direction:column';
+					// Column-axis wrap invariant: Stack IS a column axis, so it
+					// inherits the same coercion the flex branch applies for an
+					// explicit column direction (CSS Flexbox L1 9.4 — a multi-line
+					// (wrapped) container sizes each line from its items rather than
+					// being handed the parent's cross-size, so column+wrap makes a
+					// child ignore its parent's width). See the flex branch's long
+					// comment above for the measured regression this prevents.
+					if ( in_array( $flex_wrap, array( 'wrap', 'wrap-reverse' ), true ) ) {
+						$flex_wrap = 'nowrap';
+					}
+					if ( '' !== $flex_wrap ) {
+						$gd[] = 'flex-wrap:' . esc_attr( $flex_wrap );
+					}
+					// D288: blank alignItems → browser default (see grid branch above).
+					if ( '' !== $vertical_align ) {
+						$gd[] = 'align-items:' . esc_attr( $vertical_align );
 					}
 					if ( '' !== $justify_content ) {
 						$gd[] = 'justify-content:' . esc_attr( $justify_content );
@@ -2333,7 +2373,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// always targets the actual grid/flex element (the __inner band
 			// when $grid_on_inner, else the outer .$uid); direct children only
 			// (>*) so it never reaches into a nested grid it shouldn't touch.
-			if ( $uid && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			// Stack joins this (Task 1) — it is display:flex, so its children carry
+			// the exact same min-width:auto/min-height:auto shrink refusal as flex.
+			if ( $uid && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 				$responsive_css .= $grid_sel . '>*{min-width:0;min-height:0}';
 			}
 
@@ -2969,7 +3011,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$band_will_render = ( null !== $opt_wrap_inner )
 					? (bool) $opt_wrap_inner
 					: $has_band_props;
-				if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
+				// Stack joins this (Task 1) — same two-layer forcing reason as the
+				// $grid_on_inner container-queries gate above.
+				if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 					$band_will_render = true;
 				}
 				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {
@@ -3349,7 +3393,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Object model (Spec 37 FR-37-16): the __inner must render so the forced
 			// $grid_on_inner target (.uid>.sgs-container__inner) exists for the
 			// flex/grid + gap rules and the @container queries.
-			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			// Stack joins this (Task 1) — same two-layer forcing reason as the
+			// $grid_on_inner container-queries gate above.
+			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 				$do_wrap = true;
 			}
 
