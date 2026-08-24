@@ -560,5 +560,14 @@
     "added_commit": null,
     "budget_ms": 590,
     "order": 61
+  },
+  {
+    "id": "migrate-length-sanitiser",
+    "cmd": "python scripts/migrate-length-sanitiser.py --check",
+    "tier": "fast",
+    "added_D": "D734",
+    "added_commit": "a2f6d5df9",
+    "budget_ms": 87,
+    "order": 62
   }
 ]
