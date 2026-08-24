@@ -2,7 +2,7 @@
 doc_type: plan
 title: Colour capability-grant — implementation plan
 date: 2026-08-23
-status: READY — design approved (Bean); Opus risk pre-mortem + effort estimate + 2 cold reviewers run and folded in; ratchet at 292, native-colour-ui CLOSED
+status: U2 CLOSED 2026-08-24 (no_css_property 27 -> 4, the 4 are option-picker's by design). U1 triaged by census, not by hand. U3/U4 unstarted.
 design: .claude/plans/2026-08-23-colour-capability-grant-design.md
 slot: next session
 governing: D542 (triad), D744 (capability moves), D750 (parse attr JSON), D751 (native-colour-ui closed), D752 (THE MANDATE), D294 (wrapper vs block-private). [D753 records a prove-the-cause miss; context only, not load-bearing here]
@@ -208,6 +208,47 @@ The delta key `block+kind+rowKey` **collides**: 3 colliding pairs measured
 `sgs/trust-bar|missing-gradient|label-colour`). A fix and a regression in the same bucket
 cancel silently. Separately, **0 rowKeys are line-derived today**, so the line-number
 hazard is latent rather than live.
+
+---
+
+## ✅ U2 CLOSED — 2026-08-24
+
+`REFUSED:no-css_property` **27 → 4**. Survey total held at 264 at every step, so nothing
+leaked. Rule 31 held at 291-292 across agreeing double-runs throughout — **which is the
+point of §6, now proven: rule 31 is a JS-only scanner and cannot see a manifest or render
+change.** Verifying this class of work by rule-31 delta would have read as zero progress.
+
+**The 4 remaining are NOT this plan's to fix.** product-card's `pickerLabelColour` /
+`pickerPillBgColour` / `pickerPillTextColour` / `pickerPillBorderColour` are forwarded to
+`sgs/option-picker` via `render_block()` (render.php:1121-1145, :1542-1558). product-card
+emits no CSS for any of them; option-picker's own `pill` and `label` elements already own
+them, including a `selected` state. Mapping them here would create a second writer for one
+painted node.
+
+**What actually closed them — three causes under one verdict name.** `survey.js:318` fires
+`no-css_property` on `! mechanism`, i.e. "no resolvable MECHANISM", so it also catches rows
+whose `css_property` is populated and correct:
+
+| Cause | Fix | Rows |
+|---|---|---|
+| No manifest mapping | `css:` entry in the element `attrMap` | 17 |
+| Mechanism vocabulary gap | added `fill` to `MECHANISM_BY_CSS_PROPERTY` | 1 |
+| Role misclassified `image-object` | 2 entries in `attr-classification-overrides.json` | 2 |
+| Consumer in a PHP-built CSS string, not style.css | new `sublink` element | 1 |
+| No member available (2nd `css:fill` on one element) | new `star-empty` element | 1 |
+
+**A parser extension, not a new tool (`f10f52da`).** `extract-signatures.py` already
+followed custom-property wiring into style.css; its shape A was DIRECTIONAL, matching only
+`'attrName' => '--sgs-foo'`. product-search and nav-menu write the inverse. Adding the
+inverse shape resolved 6 attributes with no new file.
+
+⚠ **F6 check #8 caught a real defect the extension created.** `inputBorderColour` resolved
+to `border-color` with `css_element` NULL — it fell to the ROOT routing domain and would
+have MISROUTED ON A CLONE. A `css_property` resolved without an element is not a win.
+
+**Elements added:** testimonial `summary`, nav-menu `sublink`, product-search `input`,
+star-rating `star-empty`. Two use `prefix: ""` — findOrphans' documented opt-out — because
+neither shares a name prefix with its attribute.
 
 ---
 

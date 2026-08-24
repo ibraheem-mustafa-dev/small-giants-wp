@@ -19,9 +19,15 @@ The **consolidation** track is summarised in the next block and is CLOSED bar on
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
 ⭐ **If you are the colour-golden track, do NOT start from that section.** Read
-`.claude/plans/phase-colour-conformance.md` — it is the executable front and carries 10
-pre-answered decisions. It is marked **NOT-READY on purpose**: Wave 1's resolver premise was
-measured and found blind to most of the tree. The ledger section is status; the plan is the work.
+`.claude/prompts/2026-08-24-db-and-script-code-only-investigation.md` — it is the executable
+front and carries Bean's two rulings (D1 = A, D2 = A+B) plus the method gate. The ledger
+section is status; the prompt is the work.
+
+⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
+catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
+recorded failure mode is rebuilding one that already exists. Search the SUBJECT (colour,
+token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
+`audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
 ## ▶ ⛔ TEMPLATE REMEDIATION — OPEN, THE LIVE FRONT (2026-08-23)
 
@@ -232,129 +238,56 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN TRACK — 2026-08-23 (native-colour-ui CLOSED 6→0 · ratchet 292)
+## ▶ COLOUR-GOLDEN TRACK — 2026-08-24 (U2 CLOSED · two generated catalogues built)
 
-**All pushed (`5c9c1db2`, `a5bb6220`, `6e5a563e`). Build GREEN. Canary deployed +
-live-verified.** Evidence: `reports/visual-diff/native-colour-ui-close-2026-08-23.md`.
+**Front:** `.claude/prompts/2026-08-24-db-and-script-code-only-investigation.md` — read that,
+not this section. Plan: `.claude/plans/2026-08-23-colour-capability-grant-PLAN.md`.
 
-**MEASURED (twice, agreeing, `status === "FLAGGED"` only):** rule 31 = **292**
-(below-min-states 162 / missing-gradient 130 / **native-colour-ui 0**). Ratchet **292**,
-zero slack, proven to bite by reading node's exit code (291 → exit 1, 292 → exit 0).
+**U2 CLOSED.** `no-css_property` **27 → 4**; survey total held at 264 throughout. The 4 left
+are `sgs/option-picker`'s, forwarded from product-card via `render_block()` — mapping them
+here would make a second writer for one painted node. Breakdown in the plan.
 
-⛔ **Measure rule 31 twice and require agreement** — the scanner reads a tree other
-sessions are writing. Still true; cost time three times on 2026-08-22.
+**U1 triaged without hand-reading.** `census-colour-paint-route.py` already existed and the
+plan never cited it. Joined to `survey.js --json` it splits the 101 refused rows
+**46 direct / 27 wrapper / 28 neither** — 73 have a NAMED structural reason the detector
+missed them; at most 28 need genuine-absence work, against a plan that budgeted 79 by hand.
+Candidate list, not verdict list (per-BLOCK signal joined to per-ROW refusals).
 
-**SHIPPED — Bean's item 1 is DONE.** The last six blocks left the competing native
-colour panel (icon-list, buybox, info-box, notice-banner, team-member, testimonial),
-each flip PAIRED with a block-private replacement via the shared helpers
-(`fillRow`/`textRow`, `sgs_fill_states_css`/`sgs_fill_decls`/`sgs_text_decls`). All six
-live-verified on the canary with a negative control each. 309 → 292 (−17), verified by a
-key-set diff NORMALISED on block+kind+rowKey: 17 genuinely closed, **zero genuinely new**.
+**⛔ GATE A IS DISCONNECTED, NOT VESTIGIAL — do not delete it.** Trigger watches
+`orchestrator/converter_v2/`, deleted 2026-07-05; the harness is alive and fails 37/39.
+ROOT-CAUSED: **stale goldens, not a regression.** Goldens seeded 2026-07-25; the
+section-root capability gate (FR-31-16) changed the emit contract 2026-08-04 while the gate
+was blind. `recognise()` returns `sgs/quote` correctly; `recognise_section()` demotes it
+deliberately. **Bean ruled D1 = A: repoint AND re-seed, gated on a LANDED proof.**
 
-**⛔ A DETECTOR BUG FIXED EN ROUTE (`5c9c1db2`).** `describeRow()` collapsed both gradient
-SHAPES into one boolean and rule 31 hardcoded `gradientCapable: false` for EVERY helper
-row — so every gradient-bearing `textRow` on a resolved text attribute was falsely
-flagged `mechanism-mismatch`. Invisible until now because its only adopter
-(`sgs/nav-drawer`) has no `css_property` in the DB. Two fixtures pin it BOTH ways,
-mutation-proven. `core/selftest.js` gained a `_css-property-map.json` seam because the
-mechanism branch was previously **unreachable in self-test** — a gate that cannot fail
-reads green forever.
+**`container_kind` — Bean ruled D2 = A+B:** fix the one real anomaly (`sgs/modal` is
+`section` but calls no wrapper) AND wire it into the automatic refresh (it writes only under
+`--apply`, which `/sgs-update` never passes). ⚠ **An earlier "14 of 58 disagree" figure was
+WRONG** — it tested *content-kind must not call the wrapper*; D294 says content-kind **MAY**
+render block-private. A permission read as an obligation. Genuine anomalies: 1.
 
-**✅ OWED ITEM CLOSED 2026-08-23 (`4e73f28f`).** `/sgs-update` ran (exit 0) and seeded the
-50 new attributes — but `css_property` came back NULL for almost all of them, found by
-diffing the exported map before/after rather than by reading the run summary. **Seeding
-the row is not seeding the mapping:** `css_property` derives from
-`supports.sgs.elements.<el>.attrMap`, not from the attribute name. Five of six blocks
-still pointed at `native:color.background` — the mechanism D751 retired — which the
-CLONING PIPELINE reads, so the manifest was naming a dead target as the colour owner.
-Repointed via two shapes copied from info-box's working manifest (`attrMap` +
-`states.hover.attrMap`). Measured **0 → 48 of 56 resolved**; rule 31 held at 292 across
-two agreeing runs, so no mechanism mismatches were introduced.
-⚠ **RESIDUAL: the 8 `linkColour*` attrs stay null.** Resolving them needs a new `link`
-ELEMENT in the manifest (descendant anchors, `a:where(:not(.wp-element-button))`), not
-another mapping — and adding an element changes the member census
-`check-element-manifest-conformance` reads. Design change, deliberately not slipped in.
+### Two GENERATED catalogues now exist — read before building anything
 
-**⛔ ITEM 2 IS CANCELLED — AND ITS PREMISE WAS FALSE (Bean, 2026-08-23).** The record
-said *"three agents ran `git stash` despite explicit prohibition, once mid-write by
-another agent"*, and item 2 proposed a PreToolUse hook to block it. **Bean had INSTRUCTED
-them to empty the stash**, because it held old entries and was causing confusion. So the
-action was authorised, and a hook enforcing against it would have blocked Bean's own
-instruction. Do not rebuild this.
-⚠ **The distinction the original note blurred, worth keeping:** emptying the stash
-(`git stash drop`/`clear`) discards entries ALREADY stashed and never touches the working
-tree. `git stash [push]` is the dangerous one — it removes uncommitted work from the tree,
-and on a shared worktree that is everyone's work, not just the caller's. The danger the
-record described belongs to the second command; the instruction Bean gave was the first.
-The prohibition in agent briefs should therefore name `git stash push` (and
-`checkout --`/`restore`), not the word "stash". The stash is currently empty, consistent
-with Bean's account.
-⭐ This is a *prove-the-cause* miss in the record itself: rogue-agent behaviour was
-INFERRED from seeing the command, and a structural fix was specced for an unproven cause.
+`.claude/dev-setup.md` carries both, each with a `--check` proven able to fail:
+`generate-tooling-catalogue.py` (524 scripts, 5 directories, BOTH gate chains) and
+`generate-db-catalogue.py` (35 tables, vocabularies, NULL rates). Built because "I could not
+find a tool" repeatedly meant "I searched one of the five script directories". This is the
+FIFTH catalogue attempt — the four hand-maintained predecessors rotted, and the 797-line
+stale `TOOLING-REFERENCE.md` at the repo root was deleted this session.
 
-**NEXT SESSION — Bean's remaining order:**
-1. **The line-keyed baseline.** `08-raw-url-link`'s key embeds a LINE NUMBER, re-anchored
-   SIX times for code that never changed. This session hit the same tax again: untouched
-   `icon-list` rows read as net-new purely because edits above them shifted position.
-   Re-key on block + control identity, not position.
-2. **The two behemoths — DESIGNED, PLANNED, REVIEWED 2026-08-23. Next session BUILDS.**
-   ⭐ **Front: `.claude/plans/2026-08-23-colour-capability-grant-PLAN.md`** (design:
-   `…-design.md`; rulings D752 + D754). The plan owns the detail — read it, don't work
-   from this summary.
+**The most useful check** cross-checks each script header against both gate chains:
+**6 scripts claim they are not wired while they are.**
 
-   **Mandate (D752): APPLY HOVER + GRADIENT EVERYWHERE.** Counter-argument overruled; do
-   not re-open. ⚠ The ratchet drops far in one pass, so a later hover REMOVAL reads as a
-   regression — that is refinement, cite D752.
+**The DB finding that rescopes the colour work:** a NULL `css_property` means two different
+things by role — `text-content`/`content`/`boolean-visibility` are 100% NULL BY DESIGN (they
+do not paint), `color` is 25% and `colour-gradient` 46%. The colour-family gap is exactly
+**209 attributes**, not a slice of 2,030 NULLs.
 
-   ⛔ **THE PREMISE CHANGED.** Running the EXISTING survey showed only **32 of 187
-   non-conformant rows (17%) are autofixable** — the rest are CAPABILITY refusals (79 no
-   gradient-capable paint path, 34 custom-property, 27 no-`css_property`, 15
-   unresolvable). Shape recognition is the EASY half (90% one shape). **A disciplined
-   triad already exists at `scripts/colour-codemod/` — this is an EXTENSION. Do not
-   rebuild it.**
-
-   **Approach B:** new `grant.js` capability pass AHEAD of the triad, owning `render.php`,
-   per BLOCK not per row. `grant → survey → fix → adopt → check`. Step 1 is TRIAGE — the
-   79 verdict is a regex fallthrough, not proof.
-
-   **Three review findings you must not meet cold:**
-   - ⛔ **States-floor landmine** — `requiredStatesFor()` matches by ELEMENT, so adding
-     `states.hover` to an element already declaring another state raises the floor for
-     every attr on it (`site-header.wrapper` = 18). Zero ratchet slack → build fails in
-     untouched blocks. `4e73f28f` was safe by luck.
-   - ⛔ **Rule 31 cannot see `render.php`** — wrong instrument for the grant; a botched
-     render would read as success.
-   - ⛔ **U3 is a FEASIBILITY risk, not just estimation** — six blocks done BY HAND is not
-     evidence it automates. Gate 2 spike: reproduce a known-good block or re-scope.
-
-   **First action, ≤5 min:** U2 on ONE block whose element declares no prior state.
-
-3. **The line-keyed baseline** — `08-raw-url-link`'s key embeds a LINE NUMBER, re-anchored
-   SIX times for unchanged code. ⚠ Measured: **0 line-derived rowKeys today** (latent, not
-   live) — but the delta key `block+kind+rowKey` **collides on 3 pairs**, which matters
-   more and is the one to fix.
-
-**LINK COLOUR — asked and answered 2026-08-23, NOT part of the backlog.** Site-wide link
-colour already lives in `theme.json` `styles.elements.link`: `primary` normal,
-`primary-dark` `:hover`, `primary-dark` + underline `:focus`. Every link in every block,
-client-editable at Site Editor → Styles → Elements → Links, per-client via
-`sites/<client>/theme-snapshot.json`. Block-private `linkColour` overrides exist on 4
-blocks; after D751 ZERO blocks expose core's competing per-block link panel.
-
-**⚠ METHOD (carried forward, earned again today).** Three probe artefacts read as code
-defects this session and all three were the INSTRUMENT: measuring the root when the block
-paints text on a descendant; a block that renders nothing without content; and `0 bytes
-of CSS for BOTH sentinel and control`, which is the tell of a broken probe, not a finding
-(SGS block CSS is LIFTED to `uploads/sgs-css/<hash>.css`, so grepping rendered HTML for
-`<style>` proves nothing). **Separate "my probe is wrong" from "the code is wrong" before
-reporting either.** And the coordinator re-runs the FULL gate set: two of four agents
-reported each other's mid-write state as "pre-existing", and two phpcs drifts were the
-coordinator's own, not an agent's.
-
-**⚠ CANARY HEADER — settled (D749).** `sgs_active_header_cpt_id` pointed at post **1570,
-which does not exist**; the header silently fell back to the framework-default pattern.
-Bean ruled: use the default. Option is now **0**. **A pointer to a deleted post fails
-SILENTLY** — worth a gate asserting those pointers resolve.
+**Traps recorded so nobody re-walks them:** `derived_selector` is a FORMULA
+(`.sgs-{slug}__{slot}`), never an observed selector — a survey measured 58% autofixable off
+it and was wrong. `blocks.status` is a string literal inside the SQL. `css_tier` was silently
+nondeterministic until 2026-08-22 (set iteration + hash salting) and flipped three blocks
+across three sessions, each reverted by hand without the cause being found.
 
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
