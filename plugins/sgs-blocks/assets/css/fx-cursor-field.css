@@ -7,15 +7,35 @@
  *
  * ── HOW A FIELD TYPE IS ADDED ─────────────────────────────────────────────
  *
- * A field type sets ONE custom property on the emitter:
+ * A field type sets custom properties on the emitter and nothing else:
  *
- *   --sgs-cursor-field-layer   the image painted at the pointer position
- *   --sgs-cursor-field-mask    (optional) a mask applied to that image
+ *   --sgs-cursor-field-layer         the image painted at the pointer position
+ *   --sgs-cursor-field-mask          (optional) a mask applied to that image
+ *   --sgs-cursor-field-pattern-size  (optional) background-size for the layer
+ *   --sgs-cursor-field-position      (optional) background-position for the layer
  *
  * Everything downstream — the emitter's own overlay and every participant —
- * reads those two properties and never names a type. So a new type is a rule
- * setting those properties plus a descriptor row in `cursor-fields/index.js`;
- * no new selector, no new JS, nothing to wire.
+ * reads those properties and never names a type. So a new type is ONE rule
+ * here, plus the slug in `SGS_FX_CURSOR_FIELD_TYPES`
+ * (`includes/fx-cursor-field.php`) and in `FX_FIELD_TYPE_OPTIONS`
+ * (`src/blocks/extensions/fx.js`). No new selector, no new JS.
+ * `scripts/check-fx-list-drift.py` invariant I6 fails the build if those three
+ * lists disagree, so a half-added type cannot ship.
+ *
+ * ⚠ This docblock previously directed the reader to "a descriptor row in
+ * `cursor-fields/index.js`". No such module has ever existed — corrected
+ * 2026-08-24 after it sent a survey looking for a file that is not there.
+ *
+ * ── WHY `--sgs-cursor-field-position` EXISTS (2026-08-24) ──────────────────
+ *
+ * `glow` and `spotlight-mask` move the pointer-centred STOP inside the
+ * gradient, leaving the layer itself stationary. `hue-shift` and
+ * `parallax-pattern` instead move the LAYER under a stationary window, which is
+ * the only way a fixed-hue band or a repeating pattern can change what sits
+ * beneath a given point. Both are lengths multiplied by a plain number, so no
+ * unit division is involved and support is universal. The property defaults to
+ * `0% 0%`, so the two original types render byte-identically to before it
+ * existed.
  *
  * ── WHY EMITTER AND PARTICIPANT PAINT DIFFERENTLY ─────────────────────────
  *
@@ -103,6 +123,92 @@
 }
 
 /* ==========================================================================
+ * FIELD TYPE: hue-shift (FR-38-28 look 2, Bean-signed 2026-08-07).
+ *
+ * "A gradient that shifts hue with pointer position." The distinction from
+ * `glow` is load-bearing and was the whole design problem: `glow` moves a
+ * pointer-centred stop, so the colour under a given point never changes — only
+ * where the pool sits. Here the LAYER travels beneath a pointer-centred window,
+ * so the hue actually arriving at a given point changes continuously as the
+ * pointer moves. Travel is inverted and at half pointer speed, which reads as
+ * the surface having depth rather than the gradient being dragged.
+ *
+ * THE CLIENT'S COLOUR STAYS DOMINANT. The band is their chosen token at 65%
+ * mixed toward two opposite hues, so re-theming still re-colours the field and
+ * the result stays recognisably on-brand instead of becoming a rainbow.
+ *
+ * FAIL-OPEN: the two derived hues default to the base colour itself, so a
+ * browser without `color-mix()` paints a valid single-hue gradient that still
+ * shifts position. Degraded, never broken — and never an invalid custom
+ * property, which would take the whole layer down with it.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="hue-shift"] {
+	--sgs-cursor-field-hue-a: var(--sgs-cursor-field-colour);
+	--sgs-cursor-field-hue-b: var(--sgs-cursor-field-colour);
+
+	/* Large enough that the band never tiles visibly within a viewport. */
+	--sgs-cursor-field-pattern-size: 200vmax 200vmax;
+
+	--sgs-cursor-field-position:
+		calc(var(--sgs-cursor-x) * -0.5) calc(var(--sgs-cursor-y) * -0.5);
+
+	--sgs-cursor-field-layer: linear-gradient(
+		115deg,
+		var(--sgs-cursor-field-hue-a),
+		var(--sgs-cursor-field-colour) 35%,
+		var(--sgs-cursor-field-hue-b) 70%,
+		var(--sgs-cursor-field-hue-a)
+	);
+	--sgs-cursor-field-mask: radial-gradient(
+		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		#000 0%,
+		transparent 70%
+	);
+}
+
+@supports (color: color-mix(in oklch, red 50%, blue)) {
+	[data-sgs-cursor-field="hue-shift"] {
+		--sgs-cursor-field-hue-a: color-mix(
+			in oklch,
+			var(--sgs-cursor-field-colour) 65%,
+			#ff00e0
+		);
+		--sgs-cursor-field-hue-b: color-mix(
+			in oklch,
+			var(--sgs-cursor-field-colour) 65%,
+			#00e5ff
+		);
+	}
+}
+
+/* ==========================================================================
+ * FIELD TYPE: parallax-pattern (FR-38-28 look 3, Bean-signed 2026-08-07).
+ *
+ * "A subtle pattern that parallaxes." Deliberately NOT masked, which is the
+ * whole difference from `spotlight-mask`: there, a static pattern sits under a
+ * moving hole and only the REVEAL moves; here the pattern is visible across the
+ * surface and the PATTERN ITSELF moves. Masking this one would collapse it back
+ * into a slightly different torch.
+ *
+ * Travel is 8% of pointer distance — enough to read as depth, little enough
+ * that the pattern still belongs to the surface rather than being dragged
+ * around by the cursor. Negative so it lags rather than leads.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="parallax-pattern"] {
+	--sgs-cursor-field-pattern-size: 28px 28px;
+
+	--sgs-cursor-field-position:
+		calc(var(--sgs-cursor-x) * -0.08) calc(var(--sgs-cursor-y) * -0.08);
+
+	--sgs-cursor-field-layer: radial-gradient(
+		var(--sgs-cursor-field-colour) 1.5px,
+		transparent 1.5px
+	);
+}
+
+/* ==========================================================================
  * The paint. Neither rule names a field type.
  * ========================================================================== */
 
@@ -116,6 +222,7 @@
 	background-image: var(--sgs-cursor-field-layer);
 	background-attachment: fixed;
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
+	background-position: var(--sgs-cursor-field-position, 0% 0%);
 	mask-image: var(--sgs-cursor-field-mask, none);
 	mask-size: 100% 100%;
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
@@ -137,6 +244,7 @@
 	background-image: var(--sgs-cursor-field-layer);
 	background-attachment: fixed;
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
+	background-position: var(--sgs-cursor-field-position, 0% 0%);
 	mask-image: var(--sgs-cursor-field-mask, none);
 	mask-size: 100% 100%;
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);

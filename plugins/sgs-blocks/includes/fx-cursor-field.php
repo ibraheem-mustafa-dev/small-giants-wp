@@ -59,7 +59,7 @@ if ( ! \defined( 'ABSPATH' ) ) {
  *
  * @var string[]
  */
-const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask' );
+const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern' );
 
 /**
  * Default field type when an instance names none.

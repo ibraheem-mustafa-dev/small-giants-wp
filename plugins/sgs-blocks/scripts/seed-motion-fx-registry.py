@@ -566,9 +566,11 @@ FX_EFFECTS: list[dict] = [
         # ("New block `sgs/image-sequence` inspector") — there is nothing
         # further to qualify against; a future block declaring this fx would
         # get it unconditionally, the same way scrub is unconditional. The
-        # block does not exist yet (verified: no `sgs/image-sequence` under
-        # src/blocks), so its qualifying-blocks roster is honestly EMPTY today
-        # — the row exists for when the block ships, not to hide the gap.
+        # block SHIPPED after this comment was written (corrected 2026-08-24:
+        # `src/blocks/image-sequence/` exists, agency-only with `inserter:
+        # false`, and the `image-sequence` row is live in `fx_effects`). The
+        # roster stays narrow because the block is the only qualifier, not
+        # because nothing qualifies.
         "scope": "block",
         "requires": "none",
     },
@@ -1197,7 +1199,8 @@ def main() -> int:
         # Deliberately unversioned (13.9MB local dev knowledge base — see
         # .claude/dev-setup.md "sgs-framework.db" section). A contributor
         # without it builds off the already-committed generated artefacts
-        # (generated-fx-effects.php, generated-fx-qualifying-blocks.php/json,
+        # (generated-fx-effects.php, generated-fx-qualifying-blocks.json — the
+        # .php mirror was deleted as dead code at `1ac16ec9`,
         # generated-fx-effect-meta.json) instead — this seeder has nothing to
         # do in that case, so it skips cleanly rather than failing the build.
         print(

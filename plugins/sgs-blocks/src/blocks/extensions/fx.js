@@ -353,6 +353,14 @@ const FX_FIELD_TYPE_OPTIONS = [
 		label: __( 'Torch — reveals a pattern beneath', 'sgs-blocks' ),
 		value: 'spotlight-mask',
 	},
+	{
+		label: __( 'Aurora — colours shift as you move', 'sgs-blocks' ),
+		value: 'hue-shift',
+	},
+	{
+		label: __( 'Drift — a pattern that moves with depth', 'sgs-blocks' ),
+		value: 'parallax-pattern',
+	},
 ];
 
 const FX_TRIGGER_LABELS = {

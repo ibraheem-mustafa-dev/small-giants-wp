@@ -93,8 +93,15 @@ apply, never completely walled off from areas of potential.
  **Bean's four decisions (D479), do not re-litigate:**
    - **Byte allowance:** a NAMED **120KB JS allowance for Tier W pages only**. The 50KB/page rule is
      untouched everywhere else. A budget quietly breached is a budget abandoned, so this is explicit.
-   - **Library: OGL**, wrapped behind an SGS-side `init / setUniform / destroy` interface so the
-     library is REPLACEABLE. OGL is **Unlicense (public domain)** — verified, stronger than MIT — but
+   - **Library: OGL** — ⚠ **AMENDED BY D715 (2026-08-21): the interface shipped exactly as
+     specified but was implemented with RAW WebGL2 and NO dependency at all.** The tier is one
+     program, one fullscreen quad, one draw (~150 lines); OGL's ~34KB buys a scene graph and a
+     camera, both of which this tier is forbidden from growing. Measured: 4,325 bytes gzip for the
+     whole effect vs 34KB for the library alone. D715 amends a Bean decision and is **flagged for
+     ratification — reversible in one file** (`webgl/renderer.js`; Gate A greps that nothing outside
+     `webgl/` imports it). Reopen with OGL if a future effect needs multi-pass/framebuffers.
+     Original decision text, retained: wrapped behind an SGS-side `init / setUniform / destroy`
+     interface so the library is REPLACEABLE. OGL is **Unlicense (public domain)** — verified, stronger than MIT — but
      it is quiet upstream (last release 2025-01) and curtains.js's author has already moved to a
      WebGPU successor. Assume this dependency gets swapped; do not weld effects to it.
    - **Fallback:** a visitor without WebGL (~2-3%, plus low-power modes) gets **the Tier V version of
@@ -177,6 +184,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Smooth scrolling (**Lenis** — was ScrollSmoother, D422) | **H** — no CSS mechanism for smoothed/lagged scroll, and the Tier G option (ScrollSmoother) can only achieve it by transforming a wrapper around page content, which silently breaks the shipped Spec 37 sticky header (§4.2) | **SITE** | SGS → Motion settings page | Default OFF; disabled in editor + wp-admin; disabled under reduced-motion (live + reactive); touch left native; **no wrapper, no template change — §4.2 resolution SUPERSEDED, nothing to resolve** | OFF | Site setting only (never per-block) |
 | Page transitions | **V** — cross-document View Transitions API is CSS-first, no GSAP, no router | SITE + per-template | Theme settings + per-template override | Progressive enhancement; unsupported browsers = normal navigation (defined fallback §3.5); reduced-motion = suppress | OFF | Site-wide → per-template variants |
 | Surface treatment (grain / halftone / duotone) — FR-38-29 | **W** — CSS moves and recolours a whole element, it cannot rewrite the pixels INSIDE one; GSAP animates VALUES and does not rasterise, so it cannot reach this either (§1.2b tests i + ii). Bounded to the image a block already renders (test iii); degrades to that untouched image (test iv); admitted by D479 + the 2026-08-21 design gate (test v) | block (image-bearing) | fx panel — treatment picker (thumbnails) + duotone `DesignTokenPicker` colours; intensity behind "+" | Needs a raster `<img>` in the block's subtree — a block rendering its `<img>` as the block ROOT (e.g. `sgs/decorative-image`) is offered it but no-ops, see FR-38-29; no conflict with any Tier V/G effect (it repaints a texture, it does not own transform/opacity) | off | Image-bearing blocks → any block whose subtree contains a raster image |
+| Cursor-reactive field (FR-38-25) + its four looks (FR-38-28) | **V** — the shipped mega-menu spotlight already does pointer-follow in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate; GSAP adds nothing §1.3's ratchet would accept. Measured 982 bytes gzip, no GSAP dependency | block (emitter) + runtime-detected participants | fx panel — field type / colour (`DesignTokenPicker`) / size | `creates_panel = 0` (measured: letting it create panels put a new fx panel on 11 blocks that would also inherit `motion-path` + `scrub`); fine-pointer only; participants carry no control | off | Container-kind + background-image blocks → any block with a paintable background |
 | *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
 
 ## 3. The capability roster (nothing cut; curated defaults)
@@ -291,7 +299,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   is ON on the canary. Full root-cause writeup: `decisions.md` D741.
 - **FR-38-13 Draggable + Inertia — curated roster + opt-in mechanism.** Roster v1:
   `sgs/gallery` (drag-to-scroll carousel upgrade), `sgs/testimonial-slider` (same),
- **`sgs/before-after` (NET-NEW block — DB-verified absent, Wave C)**, `sgs/hero` decorative
+ **`sgs/before-after`** (was NET-NEW in Wave C; **BUILT and shipped** — verified 2026-08-24: full block with `block.json`/`edit.js`/`save.js`/`render.php`/`view.js`), `sgs/hero` decorative
   layers (draggable ornaments, desktop fine-pointer only). **Opt-in mechanism:** a block joins
   the roster by declaring `supports.sgs.fx.draggable` in its block.json — `/sgs-update` seeds it
   to `block_capabilities` (§6); the runtime + registry read the DB, never a hardcoded roster
@@ -411,6 +419,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   |---|---|---|
   | `glow` | `radial-gradient` — a soft pool of light at the pointer | SHIPPED (FR-38-25 as originally signed; the default, so instances saved before types existed are unchanged) |
   | `spotlight-mask` | the same gradient as a `mask-image`, revealing a pattern beneath rather than adding light | SHIPPED — deliberately paints by a DIFFERENT CSS property, so the extensibility seam is demonstrated rather than asserted |
+  | `hue-shift` | a multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask, so the hue arriving at a given point changes as the pointer moves | **SHIPPED 2026-08-24 (FR-38-28 look 2).** The client's colour stays dominant (their token at 65%, mixed toward two opposite hues via `color-mix(in oklch, …)`); the derived hues default to the base colour so a browser without `color-mix()` still paints a valid single-hue gradient that shifts position |
+  | `parallax-pattern` | a repeating dot pattern travelling at 8% of pointer distance, deliberately UNMASKED | **SHIPPED 2026-08-24 (FR-38-28 look 3).** The difference from `spotlight-mask` is load-bearing: there a static pattern sits under a moving hole and only the REVEAL moves; here the pattern itself moves. Masking it would collapse it back into a slightly different torch |
   | `floating-objects` | individual `transform: translate()` per marked object, reading the SAME viewport-space `--sgs-cursor-x`/`--sgs-cursor-y` custom properties the emitter already publishes | **TIER V ARGUED (2026-08-02), STILL NOT BUILT.** See below — the tier question is answered but the opt-in surface is a separate, design-gated decision this residual work deliberately did not make. |
 
  **`floating-objects` — resolved to Tier V, but deliberately still not built (2026-08-02).**
@@ -539,6 +549,85 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      mutation record. Bounded to the emitter's own subtree only — created and disconnected inside
      the same `init`/`cleanup` pair as everything else in this module, no page-wide observer.
      Verified present: `src/shared/effects/cursor-field.js`.
+
+- **FR-38-28 The four signed LOOKS of the cursor field — COMPLETE 2026-08-24.** Bean-signed at a
+  design gate on 2026-08-07 (`plans/2026-07-31-step7-cursor-follow-background-design-gate.md`).
+  This FR number was RESERVED at that gate and carried no spec text until now, which is how a
+  2026-08-24 audit briefly reported the whole capability as "signed, never built" — it had shipped
+  under FR-38-25's field-type system, and a search shaped around the FR number could not see it.
+
+ **What Bean signed:** Route B (a first-class background mode in `SGS_Container_Wrapper`,
+  inherited by every wrapper-bearing composite), **four client-selectable looks**, with effect
+  type, colours and intensity all client-configurable.
+
+ ⭐ **Bean OVERRULED the contrast risk, and that changed what the build optimises for.** The gate
+  recommended the narrower Route A specifically to contain contrast exposure. His ruling, verbatim:
+  *"The contrast thing is a complete non-issue… the effect doesn't need to have enough contrast
+  with text because the default is that the effect isn't on it and if it's hard to read, just move
+  the mouse. Also, people should be able to change the effect and its colours so they can decide on
+  what fits."* The argument holds on its own terms — the effect is DECORATIVE and TRANSIENT, the
+  resting state is the unaffected background, and the pointer is under the visitor's control.
+  **So contrast is a CONTROL, not a gate** — the operator must be able to change type, colour and
+  size, which is a build requirement rather than a nicety. All three controls ship.
+
+ **ROUTE B WAS NOT TAKEN, deliberately and with a measurement behind it.** The capability shipped
+  as an fx-panel effect with `fx_effects.creates_panel = 0`, not as a background mode in the shared
+  wrapper. Letting it create panels was measured and rejected: it put a brand-new fx panel on 11
+  blocks (`nav-menu`, `site-header`, `form`, `modal`…), each of which would then ALSO silently
+  inherit `motion-path` and `scrub` — the "13 panels where none makes sense" containment failure
+  D459 exists to prevent. Panel roster measured 28 before, 28 after. **The reach Route B promised is
+  delivered (9 emitter blocks incl. `sgs/container`, plus runtime-detected participants); the
+  containment Route A worried about is delivered too.** Do not re-propose the wrapper route without
+  meeting that measurement.
+
+ **The four looks, all shipped:**
+
+  | Signed as | Field type | Mechanism |
+  |---|---|---|
+  | Soft radial glow | `glow` | pointer-centred `radial-gradient` |
+  | Spotlight revealing a second background | `spotlight-mask` | static pattern under a pointer-centred `mask-image` |
+  | Gradient that shifts hue with pointer position | `hue-shift` | multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask |
+  | Subtle pattern that parallaxes | `parallax-pattern` | repeating dots travelling at 8% of pointer distance, deliberately UNMASKED |
+
+ **Why the last two needed a new shared property.** `glow` and `spotlight-mask` move the
+  pointer-centred STOP inside a gradient, leaving the layer stationary — so the colour arriving at
+  any given point never changes. A hue that genuinely shifts WITH position, and a pattern that
+  genuinely parallaxes, both require the LAYER to travel. `--sgs-cursor-field-position` (optional,
+  default `0% 0%`) was added to the two type-agnostic paint rules alongside the existing
+  `--sgs-cursor-field-pattern-size`, so **the two original types render byte-identically to before
+  it existed** and neither paint rule names a type. Both new values are a length multiplied by a
+  plain number — no unit division, so support is universal.
+
+ **`hue-shift` keeps the client's colour dominant** (their token at 65%, mixed toward two opposite
+  hues via `color-mix(in oklch, …)`), so re-theming still re-colours the field. The derived hues
+  DEFAULT to the base colour, so a browser without `color-mix()` paints a valid single-hue gradient
+  that still shifts position — degraded, never broken, and never an invalid custom property (which
+  would take the whole layer down with it).
+
+ **`parallax-pattern` is deliberately UNMASKED**, and that is the whole difference from
+  `spotlight-mask`: there a static pattern sits under a moving hole and only the REVEAL moves; here
+  the pattern itself moves. Masking it would collapse it into a slightly different torch.
+
+ **Reduced motion + coarse pointer are inherited, not re-implemented.** Both new types use the same
+  `::before`/participant selectors and the same `@media not all and (hover: hover) and (pointer:
+  fine)` gate, and under `reduce` the emitter publishes a resting position so a static field paints
+  (§10: SIMPLIFY, never suppress). No new code path, so nothing new can drift.
+
+ **Registration is gated.** A field type must join THREE lists — the CSS paint rule,
+  `SGS_FX_CURSOR_FIELD_TYPES` (`includes/fx-cursor-field.php`) and `FX_FIELD_TYPE_OPTIONS`
+  (`src/blocks/extensions/fx.js`). `check-fx-list-drift.py` invariant I6 fails the build if they
+  disagree. ⚠ **I6's own negative control is anchored on the literal allowlist line, so adding a
+  type BREAKS the self-test until that anchor is updated** — which happened on this build and was
+  caught by `--self-test` (`--check` alone reported green). Update the anchor in `_CASES` in the
+  same commit, or I6 reads green forever.
+
+ ⚠ **One honest limit carried from the gate:** touch degradation is a CODE READING, not a
+  measurement. The coarse-pointer gate is belt-and-braces (CSS + JS) but has not been observed on a
+  real device.
+
+ **Still open, and NOT part of FR-38-28:** the `floating-objects` field type (FR-38-25 residual 2).
+  It moves discrete ELEMENTS rather than painting a shared background layer, needs new per-element
+  transform JS, and needs its own opt-in design gate for *which children become objects*.
 
 - **FR-38-27 Physics canvas — a container-equivalent block whose children are throwable
   DECORATIVE bodies. Tier G.** Bean-signed 2026-08-01 (D447); **SCOPE RE-RULED by Bean 2026-08-02
@@ -1018,7 +1107,8 @@ ships later; the grammar is stable from day one so drafts authored today clone t
 ## 5. Functional requirements (with done-criteria)
 
 The ROSTER FRs are defined in §3, not here — FR-38-6 … FR-38-19, plus the later additions
-FR-38-25 (cursor field, §3.3), FR-38-26 (looping carousels, §3.3) and FR-38-27 (physics canvas,
+FR-38-25 (cursor field, §3.3), FR-38-26 (looping carousels, §3.3), FR-38-27 (physics canvas,
+§3.3), FR-38-28 (the cursor field's four signed looks, §3.3) and FR-38-29 (surface treatments,
 §3.3). Each carries its own done-criteria inline. **A new capability FR belongs in §3 + the §2
 taxonomy table, not in this list** — this section is infrastructure only:
 
@@ -1108,8 +1198,15 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
    > `cursor-field`, `carousel-loop`) — `scroll-smoother` appears in none of them, so deleting
    > the row cannot break a live consumer.
    >
-   > **SQL to run (Bean/DB-write owner only):**
-   > `DELETE FROM fx_effects WHERE effect = 'scroll-smoother';`
+   > ⛔ **DO NOT DELETE THIS ROW — RULED 2026-08-21 (D723).** This box previously printed
+   > `DELETE FROM fx_effects WHERE effect = 'scroll-smoother';`. That instruction was WRONG and is
+   > retracted. The row's `scope='site'` is a load-bearing NEGATIVE PROOF: it demonstrates by
+   > construction that a site-scoped effect is structurally excluded from every block panel, which
+   > is the row's own acceptance test. A row whose job is to be excluded looks exactly like a dead
+   > row to anything that only counts consumers.
+   >
+   > ✅ **Its two stale columns are already corrected** (verified in the live DB 2026-08-24):
+   > `tier='H'` and `plugin_set=[]`, matching D422's move to Lenis. Nothing is owed here.
 2. **`block_attributes`** — fx param attrs seeded with `css_property` under a new **`fx:*`**
    pseudo-namespace (sibling of `anim:*`; aligns with the approved-unbuilt FR-35-6 `anim:*`
    settings-cluster — recorded in **decisions.md D354**, not in Spec 35's own text — the `fx`
@@ -1264,6 +1361,9 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Physics/Custom easings | No standalone canvas story — a flavour; inherits its host effect's row |
 | Surface treatment (FR-38-29, Tier W) | **The untreated image**, plus a panel Notice: *"Surface treatments preview on the live site. Visitors without WebGL see the original image."* The render layer's editor-parity guard deliberately does not stamp during a ServerSideRender/REST render (there is no `wp_footer` and no module graph in that context to boot a canvas against), so the editor canvas shows exactly what a no-WebGL visitor sees — which is the honest preview, not a blank. ⚠ The client therefore picks a treatment they cannot see applied until they publish; the thumbnails in the picker exist to carry that choice. |
 | Smooth scrolling (Lenis) / page transitions | **Never active in editor or wp-admin** (FR-38-18/19 condition) — settings-surface help text states it |
+| Cursor-reactive field (FR-38-25) | **The static resting field.** The render layer writes `data-sgs-cursor-field` into SSR markup (the field IS the finished state, §1.6 fail-open), and the CSS fallbacks rest it at `50vw`/`40vh`; the boot module that makes it FOLLOW the pointer is a frontend script module, so the canvas shows the field but not the tracking. ⚠ *Reasoned from module registration + the SSR contract, not observed in the canvas (FR-38-20's honesty flag).* |
+| Carousel loop (FR-38-26) | **The un-looped track.** Cloning of leading/trailing items happens in the block's frontend `view.js`; the canvas shows the real items only, which is also exactly what a no-JS visitor sees. ⚠ *Reasoned, not observed.* |
+| Physics canvas (FR-38-27) | **Children static in their authored positions** — the same state reduced motion produces (§10). Draggable/Inertia/Physics2D are frontend-only. ⚠ *Reasoned, not observed.* |
 
 ## 10. Reduced-motion contract (per effect)
 
@@ -1289,6 +1389,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
 | Cursor-reactive field — `floating-objects` type (FR-38-25, once built) | **Simplify to a fixed resting transform, never suppress the object.** Differs from the `glow`/`spotlight-mask` SIMPLIFY case above: those rest as a static PAINT (a legitimate finished state); an autonomously-moving OBJECT has no equivalent "just stop tracking" answer, because the object is content an operator placed deliberately (`degrade-to-more-content-never-less`). Under `prefers-reduced-motion: reduce` the object renders at its AUTHORED static position (`transform: none`), identical to the fail-open no-JS state — the reduced-motion state and the no-JS state are the SAME state, needing no separate code path. |
 | Surface treatment (FR-38-29, Tier W) | **SIMPLIFY — settle immediately at the treated state, never suppress the treatment.** Under `reduce` the scroll-resolve driver is not created at all (no `IntersectionObserver`, no scroll listener, no per-frame work): `uResolve` is set to 0 once and the image renders at the treatment's full chosen strength. ⛔ **Note the direction — the reduced-motion state is the TREATED image, not the plain photograph.** Falling back to the untreated photo would strip content the client deliberately configured (`degrade-to-more-content-never-less`); the thing being removed under `reduce` is the *developing*, not the *treatment*. There is deliberately no `@media (prefers-reduced-motion: reduce)` rule in `fx-surface-treatment.css` — the gate is in JS, where the driver lives. ⚠ **AMENDED 2026-08-21, same day as the FR.** This row first read "NOTHING TO GATE — the effect draws once and never animates", which was true of the first build and became FALSE within hours when scroll-resolve was added on the owner's instruction. Recorded rather than quietly overwritten: a §10 row is a contract, and one that silently stops matching its effect is the drift this table exists to prevent. |
+| Physics canvas (FR-38-27) | **SIMPLIFY — disable the physics, never the content.** Under `reduce` no Draggable/Inertia/Physics2D is created and **the children still render, static, in their authored positions**. "Disables the surface outright" in D447 means *disables the motion*, not *removes the content*: hiding decorative children a client placed deliberately would be the `degrade-to-more-content-never-less` failure. ⚠ **This row was OWED from the block's build session** — §3.3 recorded it as deferred only to avoid a same-file collision with a concurrent track (STOP-29: mapped, not dropped). Added 2026-08-24, closing FR-38-20. ⚠ D447 recorded the ruling in one phrase that admits both readings and this picks the one consistent with the captured rule; **flagged for Bean's confirmation**, and it is the cheaper error to correct in either direction. |
 | Carousel loop (FR-38-26) | **Suppress-equivalent (measured 2026-08-02):** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. Confirmed identical under reduce on 4 of 5 rollout blocks. Two blocks' own arrow-click code hardcoded `'smooth'` regardless of the preference — a defect in those blocks, not the loop module — fixed same day (`5c45f879`, `ba28ab92`); the one remaining hardcoded case (google-reviews autoplay) is correctly gated by an early return. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
@@ -1447,6 +1548,10 @@ data-sgs-fx-disable-tablet="true" / data-sgs-fx-disable-mobile="true"
 > watched an element morph post-fix. So: the CONTROL SURFACE (what this amendment is about) is
 > genuinely built and reachable; the MORPH EFFECT ITSELF is fixed-on-paper only. Motion-path has
 > no equivalent caveat — it was never reported broken.
+>
+> ✅ **CAVEAT CLOSED 2026-08-20 (D697).** The morph fix was CONFIRMED LIVE — an element was
+> watched morphing post-fix, closing D452's outstanding item. D696 did the same for motion-path
+> (D451). The paragraph above is retained as the record of what was owed; it is no longer open.
 
 One effect per element in v1 (a draft needing two composes wrapper elements). Attr-per-property
 (NOT a JSON blob) because: the Spec 31 suffix grammar clones it (base attr + suffix — the same
@@ -1463,6 +1568,24 @@ Each `data-sgs-fx*` attr maps 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStar
 > honest seed status was already written up at §11.2's D427 amendment but had never been
 > reflected HERE, so §11.3's mapping list read as though neither attr existed. The status text
 > is not duplicated — read it at the D427 amendment; this is the pointer.
+>
+> ⛔ **CORRECTION 2026-08-24 — the D427 amendment's claim that `fxPath`, `fxPathAsset`,
+> `fxPathRotate`, `fxPathRest`, `fxPathRestVh`, `fxShape`, `fxShapeAssetFrom` and
+> `fxShapeAssetTo` are "all seeded in `scripts/seed-motion-fx-registry.py`" is FALSE against
+> the live DB.** Measured: `block_attributes` holds FIVE `fx*` rows in total — `fxStart`,
+> `fxEnd`, `fxScrub`, `fxPin` (all on `sgs/image-sequence`) and `fxDraggable` (on
+> `sgs/before-after`). None of the eight named above exists.
+>
+> **The cause is structural, not a missed run, and it matters for FR-38-22.** The seeder holds
+> the complete `FX_ATTR_CSS_PROPERTY` map, but the function applying it is a READ-ONLY
+> reconciler: it `SELECT`s existing rows, prints `[ok]`/`[MISMATCH]`, prints `[skip] … no
+> block_attributes row declares this attr yet` when there are none, and its own docstring says
+> *"this function no longer writes"*. Rows are created only by `/sgs-update` from `block.json`
+> declarations — and these attrs are registered through the `registerBlockType` filter in
+> `fx.js`, so they appear in NO `block.json`. The map has nothing to attach to and reports
+> `[skip]` forever. This is the extension-registered-attrs blind spot this spec names elsewhere,
+> arriving by a new route. **Consequence: FR-38-22's converter lift needs a WRITER for these
+> rows as well as a read path — the data half is not done either.**
 
 > **AMENDMENT 2026-07-30 (D417) — `data-sgs-fx-hold` / `fxHold` added to §11.2 and to the list
 > above.** Owner-reported against FR-38-6: a pinned section released the instant its last child

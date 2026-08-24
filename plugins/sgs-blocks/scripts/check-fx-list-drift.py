@@ -755,8 +755,8 @@ _CASES = (
         # first --self-test run of this gate).
         "I6", "add a field type the picker and the CSS have never heard of",
         "cursor_field_php",
-        "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask' );",
-        "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'selftest-ghost' );",
+        "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern' );",
+        "const SGS_FX_CURSOR_FIELD_TYPES = array( 'glow', 'spotlight-mask', 'hue-shift', 'parallax-pattern', 'selftest-ghost' );",
     ),
     _Case(
         # I7 leg 1: delete 'halftone' from the PHP allowlist. TREATMENT_PRESETS and the

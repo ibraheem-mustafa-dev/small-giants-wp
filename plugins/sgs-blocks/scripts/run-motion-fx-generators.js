@@ -18,11 +18,12 @@
  * error). Both were deleted from git as part of this fix — never resurrect
  * either path.
  *
- * The four generated artefacts these scripts produce
- * (includes/generated-fx-effects.php, includes/generated-fx-qualifying-blocks.php,
- * src/blocks/extensions/generated-fx-qualifying-blocks.json,
+ * The three generated artefacts these scripts produce
+ * (includes/generated-fx-effects.php, src/blocks/extensions/generated-fx-qualifying-blocks.json,
  * src/blocks/extensions/generated-fx-effect-meta.json) are already committed
- * build INPUTS. This wrapper's job:
+ * build INPUTS. (A fourth artefact, includes/generated-fx-qualifying-blocks.php, was a dead PHP
+ * mirror with zero callers and was DELETED at 1ac16ec9 — the generator no longer emits it; only
+ * the JSON twin above is live.) This wrapper's job:
  *
  *   1. DB absent  -> skip all three generators cleanly (exit 0). A
  *      contributor without the DB builds off the committed artefacts as-is.

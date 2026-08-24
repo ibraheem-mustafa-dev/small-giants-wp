@@ -1,5 +1,77 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D766 [ROUTINE] — the cursor field's last two signed looks ship, completing FR-38-28; and nine motion docs that were actively lying (2026-08-24)
+
+**FR-38-28 is COMPLETE.** Bean signed four cursor-field looks at a design gate on 2026-08-07 and
+two had shipped. `hue-shift` and `parallax-pattern` now ship, so all four exist and are
+client-selectable.
+
+⭐ **The audit that preceded this build reported FR-38-28 as "signed, never built" and was WRONG —
+recorded because the error shape recurred twice in one session.** The search was for the literal
+`FR-38-28` and for Route B's expected file (`class-sgs-container-wrapper.php`); both came back
+empty and absence was reported. The capability had shipped under **FR-38-25's** field-type system.
+The same shape then produced a second false finding — "hover suite: zero editor reach" — from
+checking ONE of two hover mechanisms. **An absence verdict is only as wide as its search: search
+for the CAPABILITY, never for the implementation you expect.** Re-running by capability (enumerate
+every consumer of `--sgs-cursor-x/y`; enumerate every mechanism producing a hover transform) gave
+trustworthy answers where name-shaped greps had not.
+
+**Mechanism.** `glow`/`spotlight-mask` move a pointer-centred STOP inside a gradient, so the colour
+arriving at a given point never changes. A hue that genuinely shifts WITH position and a pattern
+that genuinely parallaxes both need the LAYER to travel, so `--sgs-cursor-field-position`
+(optional, default `0% 0%`) joins `--sgs-cursor-field-pattern-size` in the two type-agnostic paint
+rules. **The two original types render byte-identically to before it existed**, and neither paint
+rule names a type. Both values are a length × a plain number — no unit division, universal support.
+`hue-shift` keeps the client's token dominant (65%, mixed via `color-mix(in oklch, …)`) and its
+derived hues DEFAULT to the base colour, so a browser without `color-mix()` degrades to a valid
+single-hue gradient rather than an invalid custom property that would take the whole layer down.
+`parallax-pattern` is deliberately UNMASKED — masking it would collapse it into a second torch.
+
+⚠ **The drift gate's own negative control broke, and only `--self-test` noticed.** I6's break is
+anchored on the literal `SGS_FX_CURSOR_FIELD_TYPES` line; adding two types made the anchor miss, so
+the break stopped landing. `--check` reported **green**; `--self-test` reported `I6: FAIL — the
+break did NOT land … This is a false negative control, not a passing gate`. Anchor updated in the
+same commit; all 10 cases pass again. **A gate that can no longer fail is worse than no gate, and
+only its self-test can tell you.** Route-B was NOT taken (fx panel with `creates_panel=0`, not a
+wrapper background mode) — that stands on D459's measurement: panels would have grown to 11 blocks
+that would also inherit `motion-path` + `scrub`.
+
+**Nine documentation corrections, each a live trap.** The LEDGER declared the motion track CLOSED
+while pointing at a section that no longer existed; §1.2b named **OGL** as the Tier W library when
+D715 shipped raw WebGL2 with no dependency (flagged for Bean's ratification, reversible in one
+file); §6 printed SQL to DELETE the `scroll-smoother` row that D723 ruled must STAY (its stale
+`tier`/`plugin_set` columns are already fixed — nothing owed); §11.2 still called morph
+"fixed-on-paper only" after D697 confirmed it live; `before-after` was still "NET-NEW"; three
+docblocks still named `generated-fx-qualifying-blocks.php`, deleted at `1ac16ec9`; and
+`parking.md` pointed at Wave-D Steps K and L, both pruned (`ea12f5e7` / `0cb69514`) — Step L's
+resolution is recorded as INFERRED, not proven.
+
+**FR-38-20 and FR-38-21 now meet their own done-criteria** — §9 gained `cursor-field`,
+`carousel-loop` and `physics-canvas` rows (each flagged *reasoned, not observed*, per FR-38-20's
+honesty pattern) and §10 gained the `physics-canvas` row that §3.3 had recorded as OWED. That row
+picks the `degrade-to-more-content-never-less` reading of D447's ambiguous phrasing and is
+**flagged for Bean's confirmation**.
+
+⛔ **§11.3's claim that eight `fx*` attrs are "all seeded" is FALSE, and the cause is structural.**
+`block_attributes` holds FIVE `fx*` rows total (`fxStart`/`fxEnd`/`fxScrub`/`fxPin` on
+`image-sequence`, `fxDraggable` on `before-after`). The seeder holds the complete
+`FX_ATTR_CSS_PROPERTY` map but applies it through a **read-only reconciler** whose own docstring
+says *"this function no longer writes"* — it prints `[skip] … no block_attributes row declares this
+attr yet` and moves on. Rows are created only by `/sgs-update` from `block.json`, and these attrs
+are registered via the `registerBlockType` filter in `fx.js`, so they appear in no `block.json`.
+The map has nothing to attach to and skips forever. **Consequence for FR-38-22: the cloning lift
+needs a WRITER for these rows as well as a converter read path — the data half is not done either.**
+
+**Verification.** Drift gate 7/7 invariants + 10/10 self-test cases; `npm run build` green with
+`motion-bundle-budget` and `check-shader-sources` passing; both new types present in the compiled
+`build/extensions/index.js`; CSS parses with all four paint rules and `background-position` in
+exactly the two paint rules; PHP lints clean; `fx.js` babel-parses as ESM+JSX (`node --check` is
+vacuous on ESM and the repo's eslint is broken by a `@typescript-eslint` load error — pre-existing);
+`handoff-preflight.py --check` 10/10 including `no-dangling-links`.
+⚠ **NOT live-verified in a browser** — no canary page carries a `hue-shift`/`parallax-pattern`
+instance yet, so the visual result is unproven and needs Bean's eye (R-31-13).
+
+
 ## D765 — three vestigial editor components deleted; the orphan shadow slugs were WRONG, not merely dead
 **2026-08-24** · [ROUTINE] · Bean-ruled
 
