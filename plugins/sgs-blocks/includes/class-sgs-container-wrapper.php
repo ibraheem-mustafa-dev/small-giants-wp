@@ -1273,48 +1273,52 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				} elseif ( 'flex' === $layout && ! $suppress_outer_flex_for_main ) {
 					$gd[] = 'display:flex';
 					/*
-					 * flex-wrap default is AXIS-DEPENDENT: wrap on a row, nowrap on a column.
+					 * OWNERSHIP: block.json owns the DEFAULT; this code owns only the
+					 * INVARIANT. There is deliberately no fallback value here.
 					 *
-					 * A COLUMN container's cross axis is its WIDTH, and per CSS Flexbox L1
-					 * 9.4 a MULTI-LINE container computes each line's cross size from its
-					 * items -- "find the largest outer hypothetical cross size" -- while a
-					 * SINGLE-LINE container with a definite cross size is HANDED the
-					 * container's own inner cross size. So `column` + `wrap` sizes the line
-					 * to the widest child's natural width and the container's own width is
-					 * never consulted: the child overflows its parent, silently.
+					 * Until 2026-08-24 this line read `'' !== $flex_wrap ? $flex_wrap :
+					 * 'wrap'` -- a default invented in PHP, invisible to the operator and
+					 * to the cloning pipeline. Three problems, all real:
+					 *   1. It broke faithful transfer. A draft with no flex-wrap means
+					 *      `nowrap` (CSS's initial value); the clone rendered `wrap`.
+					 *      Absence is a value that must transfer, same as a missing
+					 *      max-width meaning full-width.
+					 *   2. '' and 'wrap' rendered IDENTICALLY, so the inspector's default
+					 *      option was indistinguishable from an explicit choice.
+					 *   3. It was a third ownership model for one property, alongside the
+					 *      declared scalar defaults on site-header-row/site-footer-row
+					 *      (D455) and the responsive-object default on multi-button.
 					 *
-					 * Measured live 2026-08-24, PDP at a 375px viewport: one child rendered
-					 * 712px inside a 327px parent and the whole page scrolled sideways --
-					 * 34 overflowing elements including the breadcrumb, the h1 and the
-					 * buybox. Flipping this one default to nowrap took it to 0 offenders and
-					 * a 375px scrollWidth. `min-width:0` on the children was tested as a
-					 * companion fix and proved UNNECESSARY -- do not add it speculatively.
-					 * `align-items:stretch` does NOT help: it stretches items TO the line's
-					 * cross size, which is already the wrong number.
+					 * All 17 blocks that relied on the fallback now declare
+					 * `"flexWrap": { "default": "wrap" }` in their own block.json, and ''
+					 * is gone from those enums because it never rendered as blank. WP
+					 * applies a block.json default to any instance that does not store the
+					 * attribute, so every existing container renders identically and NO
+					 * content was migrated. Every one of the 17 has flexDirection default
+					 * '' (= row), so 'wrap' is behaviour-preserving for all of them.
 					 *
-					 * This is spec-correct behaviour in every engine, not a browser quirk --
-					 * the Chromium report for it was closed "working as intended".
+					 * THE INVARIANT BELOW IS NOT A DEFAULT. A column container's cross axis
+					 * is its WIDTH, and per CSS Flexbox L1 9.4 a MULTI-LINE container sizes
+					 * each line from its items -- "the largest outer hypothetical cross
+					 * size" -- while a SINGLE-LINE container with a definite cross size is
+					 * HANDED the container's own inner cross size. So column+wrap makes the
+					 * child ignore its parent's width entirely: measured live on the PDP at
+					 * 375px, a child rendered 712px inside a 327px parent and the page
+					 * scrolled sideways. That is true however the value arrived, so it is
+					 * coerced rather than defaulted -- an operator who explicitly picks
+					 * 'wrap' on a column axis is asking for a broken layout.
 					 *
-					 * DELIBERATE DIVERGENCE FROM CORE. WordPress core's `.is-layout-flex`
-					 * base rule sets `flex-wrap:wrap` unconditionally and its vertical
-					 * orientation branch does not exclude it, so a core Group set to
-					 * flex/vertical carries this same latent bug (verified against WP 7.1
-					 * wp-includes/block-supports/layout.php, and against wordpress-develop
-					 * trunk). We diverge on purpose: no mature CSS framework defaults a flex
-					 * container to wrap -- Tailwind's `flex` and Bootstrap's `.d-flex` both
-					 * set display only, leaving CSS's own `nowrap` initial value in force.
-					 *
-					 * ROW behaviour is deliberately UNCHANGED (still defaults to wrap): row
-					 * composites may rely on the implicit wrap and that blast radius has not
-					 * been measured. Removing the row default too is the purer fix and is
-					 * parked, not dropped.
-					 *
-					 * `column-reverse` counts as a column axis -- matched on prefix so a
-					 * reverse direction cannot slip through as a row.
+					 * A width/max-width on the CHILD also fixes it (measured: max-width:100%
+					 * -> 327px). Deliberately NOT added as well: two overlapping fixes are
+					 * unfalsifiable, so neither could ever be safely removed.
 					 */
-					$is_column_axis    = ( 0 === strpos( $flex_direction, 'column' ) );
-					$default_flex_wrap = $is_column_axis ? 'nowrap' : 'wrap';
-					$gd[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : $default_flex_wrap );
+					$is_column_axis = ( 0 === strpos( $flex_direction, 'column' ) );
+					if ( $is_column_axis && in_array( $flex_wrap, array( 'wrap', 'wrap-reverse' ), true ) ) {
+						$flex_wrap = 'nowrap';
+					}
+					if ( '' !== $flex_wrap ) {
+						$gd[] = 'flex-wrap:' . esc_attr( $flex_wrap );
+					}
 					// D288: blank alignItems → browser default (see grid branch above).
 					if ( '' !== $vertical_align ) {
 						$gd[] = 'align-items:' . esc_attr( $vertical_align );
