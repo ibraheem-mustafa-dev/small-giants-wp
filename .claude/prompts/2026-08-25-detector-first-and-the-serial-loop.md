@@ -25,20 +25,27 @@ against the code by the main thread before being written down.
 **The finding Bean supplied, which no persona found:** the variance is in the AGENT, not
 the infrastructure.
 
-| Work | Scope | Elapsed |
+| Work | Scope | Correction commits |
 |---|---|---|
-| `migrate-length-sanitiser.py` | 204 call sites, 56 files | **1 day** |
-| `migrate-render-closures.py` | 100 closures, 49 blocks | **1 day** |
-| `remove-vacuous-style-engine-guard.py` | 109 guards | **1 day** |
-| Colour panel rollout | 33 blocks | **13 days, 25 corrections** |
+| `migrate-length-sanitiser.py` | 204 call sites, 56 files | **1 landing commit, 0 corrections** |
+| `migrate-render-closures.py` | 100 closures, 49 blocks | **1 landing commit, 0 corrections** |
+| Colour panel rollout | 33 blocks | **25 corrections** (D609, D618, D621, D622, D632, D633, D634) |
 
-Same repo, same week, same rules. The fast three built a detector first. The slow one
-edited block by block and discovered the rule while editing.
+Same repo, same week, same rules. The difference is not days — it is that a census-driven
+pass lands ONCE and a discovery walk lands twenty-five times.
 
-⛔ **A previous session concluded "the migration finished in one day" because all six
-D-numbers were dated 2026-08-11. That was WRONG.** A D-number records the day work LANDS,
-not the days spent building the scanner and getting it wrong first. Bean corrected it.
-**Never quote a D-date as an elapsed cost.**
+⛔ **TWO ELAPSED-COST ERRORS WERE MADE WRITING THIS, BOTH THE SAME SHAPE. Read this before
+quoting any duration.**
+1. A session read six D-numbers dated 2026-08-11 and concluded the migration "took one
+   day". A D-number records when work LANDS.
+2. The correction then quoted "1 day" for three migrations — off a COMMIT DATE. Same
+   inference, same error, one paragraph after banning it. And the comparison was rigged
+   without meaning to be: `sgs_css_length_value`, the function the sanitiser migration
+   migrates TO, was authored **19 days earlier**. The fast number excluded its prerequisite
+   work; the slow number included all of its.
+
+**Never quote a commit date or a D-number as an elapsed cost. If you need a duration,
+state the measurement that produced it and apply it to BOTH sides.**
 
 ---
 
@@ -50,6 +57,15 @@ a change tripping five gates shows you ONE failure after two minutes, five times
 
 That is the actual mechanism behind "weeks": **one property at a time × one build at a
 time × one gate failure at a time.**
+
+**FIRST ACTION (under 5 minutes, zero dependencies) — extract the chain so it can be read:**
+
+```bash
+python -c "import json;print(json.load(open('plugins/sgs-blocks/package.json'))['scripts']['prebuild'])"
+```
+
+⚠ The ~128s figure came from ONE spot-timing of 55 gates and was never recorded. Re-time
+it properly and record the number before changing anything.
 
 **1a — Stop failing fast.** Replace the `&&` string with a runner that executes every
 gate, collects EVERY failure, and prints one consolidated report. One build → all defects
@@ -67,8 +83,17 @@ Expected: **128s → ~32s, a 4× cut, zero enforcement weakened.**
 ⚠ **Time the chain BEFORE and AFTER and record both figures.** Nobody had ever measured
 it; that absence is why the cost was invisible.
 
-**Acceptance:** both timings recorded · every gate still runs somewhere · one consolidated
-failure report demonstrated by deliberately breaking two gates at once.
+**Acceptance (numeric — the earlier wording was gameable by moving every slow gate to
+`gate:full` and calling it "runs somewhere"):** `gate:fast` ≤ 40s on a cold run ·
+`gate:fast` retains **≥ 55 of the 61** gates, with each moved gate named and its measured
+ms given · `gate:full` proven to execute by a pasted `build-deploy.py` log line ·
+consolidated report demonstrated with two gates broken simultaneously · `budget_ms`
+populated from the measured run, never estimated.
+
+⚠ **`prebuild` is the most shared file in the repo and five tracks are on `main`.** Land
+this in one commit or not at all, and update `THE-MIGRATION-METHOD.md` Step 8 in the SAME
+commit — it currently tells agents to wire gates into `package.json`, which this task
+replaces.
 
 ---
 
@@ -84,7 +109,21 @@ these got **13 verdicts wrong (25%)** by trusting headers. One docstring asserts
 "Idempotent — re-running finds zero refinements" while a live run reports **229 pending**.
 Another advertises a `--self-test` mode that does not exist in the file.
 
-Every one ends the session either wired into `package.json` or deleted. **No third state.**
+⛔ **DELETION IS NOT THE CHEAP EXIT. Read this before touching anything.**
+A council found that "wire or delete, no third state" makes `git rm` on all 28 the
+cheapest fully-compliant path — **including RA-1, the mandatory go-live gate**. A session
+meant to restore enforcement would have destroyed it. So the two states are deliberately
+ASYMMETRIC:
+
+- **Deleting requires all three:** (a) `grep -rn "<basename>" .claude/specs .claude/plans`
+  returns NOTHING; (b) a one-line reason recorded in the revival register in the same
+  commit; (c) if it IS named anywhere, wiring is the ONLY permitted state.
+- `wc-pages-responsive-audit.js` is **wire-only** — it is RA-1.
+- A third state EXISTS: `documented-as-manual-with-a-reason`, for anything needing a live
+  canary or a human judgement.
+
+**Floor: if fewer than 20 of the 28 end up wired, the session laundered enforcement rather
+than restoring it. Say so plainly in the handoff.**
 
 ---
 
@@ -110,8 +149,14 @@ properties remaining, and the count of non-conforming (block, attr) pairs.
 one-block property gets the same ceremony as a 41-block one.
 
 Add `--all-properties` to `migrate-tier-object.py` (`--property` is already a scalar at
-`:1417`). Keep property-by-property for `margin` (41 blocks), `padding` (39) and
-`borderRadius` (11); batch the 35-property tail into ONE pass.
+`:1417`). ⛔ **The original draft of this task said "keep property-by-property for `margin` (41),
+`padding` (39), `borderRadius` (11)" — that is 91 block-touches on the slow path, blessed
+in writing, in the session governed by a document forbidding it. No reason was given.**
+
+The carve-out is WITHDRAWN unless you can state a mechanical reason. Run all 41 properties
+through one `--all-properties --survey` census. If `margin`/`padding` need separate
+handling, the reason must be named (e.g. review-surface size) and capped: ONE pass,
+reviewed per-property from that single census — never a discovery walk.
 
 Rule 4 (NO SKIPPING) is satisfied by the classifier's existing skipped-with-reason output.
 

@@ -12,20 +12,39 @@ applies_to: any change touching more than 3 blocks, attributes, files or call si
 
 ## Why this exists
 
-Two migrations, same repo, same week:
+⛔ **THE ELAPSED FIGURES THIS DOCUMENT ORIGINALLY QUOTED WERE UNSOUND. They are
+withdrawn.** They said three migrations took "1 day" each — a figure read off a COMMIT
+DATE, which is the exact inference this method forbids. Worse, the comparison was
+rigged without meaning to be: `sgs_css_length_value`, the function
+`migrate-length-sanitiser.py` migrates *to*, was authored 2026-08-02 — **19 days before**
+the migration that "took one day" on 2026-08-21. The fast number excluded its
+prerequisite work; the slow number included all of its. Numerator and denominator were
+not the same measurement.
 
-| Work | Scope | Elapsed |
+**What git actually supports, and it is enough:**
+
+| Work | Scope | Correction commits |
 |---|---|---|
-| `migrate-length-sanitiser.py` | 204 call sites, 56 files | **1 day** |
-| `migrate-render-closures.py` | 100 closures, 49 blocks | **1 day** |
-| `remove-vacuous-style-engine-guard.py` | 109 guards | **1 day** |
-| Colour panel rollout | 33 blocks | **13 days, 25 correction commits** |
+| `migrate-length-sanitiser.py` | 204 call sites, 56 files | **1 landing commit, 0 corrections** |
+| `migrate-render-closures.py` | 100 closures, 49 blocks | **1 landing commit, 0 corrections** |
+| Colour panel rollout | 33 blocks | **25 correction commits** (D609, D618, D621, D622, D632, D633, D634) |
 
-The fast three each built a detector first. The slow one edited block by block and
-discovered the rule while editing, which cost seven correction decisions (D609, D618,
-D621, D622, D632, D633, D634).
+The claim that survives is not about days. It is about **corrections**: a census-driven
+pass lands once; a discovery walk lands twenty-five times. That is the whole argument and
+it needs no defending.
 
-Nothing about the tooling differed. Only the method did.
+⚠ **Never quote a commit date or a D-number as an elapsed cost.** Both record when work
+LANDED, not the sessions spent building the scanner and getting it wrong first. This
+document made that error and is the reason the rule is stated here.
+
+The two fast migrations built a detector first. The slow one edited block by block and
+discovered the rule while editing. Nothing about the tooling differed — only the method.
+
+⚠ **The slow track is not a clean counter-example, and the real lesson is better than the
+tidy one.** `colour-codemod/` contains `survey.js`, `adopt.js` and `fix.js`, and its first
+commits read *"the census that decides whether this is one script or fifteen agents"*.
+It DID adopt this method — on day 11. The detector was available the whole time and was
+reached for last.
 
 ## The rule
 
@@ -70,7 +89,7 @@ directories exist; searching one and concluding nothing exists is how it happens
 
 ## Step 2 — Ask the database before you walk the disk
 
-`block_attributes` holds 3,166 rows. It answers "which blocks declare X" in one query.
+`block_attributes` answers "which blocks declare X" in one query. ⚠ **Do not cache its row count here or anywhere** — `CLAUDE.md` forbids it and a cached snapshot already drifted 6-of-9. Query it every time.
 
 ```bash
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
@@ -82,16 +101,23 @@ the reason each migration re-derives knowledge the DB already holds.
 
 ## Step 3 — Copy the skeleton
 
+⛔ **STOP. If your change is "flat `*Tablet`/`*Mobile` attrs → one object", THE TOOL
+ALREADY EXISTS.** `plugins/sgs-blocks/scripts/migrate-tier-object.py` implements exactly
+this, with the full `--property / --survey / --fix / --apply / --check / --self-test`
+contract. Run `--property <name> --survey` and stop reading this step. The criticism of its
+`self_test` further down is guidance for writing a NEW script — **it is not a reason to
+avoid this one.** Rebuilding it is the failure this document exists to prevent.
+
 Model file, verified and complete: **`plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`**
 (318 lines). Second model: **`migrate-render-closures.py`** (248 lines). They share one
 shape.
 
-### The skeleton — copy verbatim, change nothing
+### The skeleton — copy the SHAPE, with one exception marked ⛔ below
 
 | Part | Where in the model | What it does |
 |---|---|---|
 | `ROOT` | `:53` | Repo-root path constant |
-| `targets()` | `:77` | Yields every file in the corpus |
+| ⛔ `targets()` | `:77` | **DO NOT COPY — this is the disk walk Step 2 tells you to replace.** Query `block_attributes` instead. It is listed here so you recognise it, not so you reuse it. |
 | `rel(path)` | `:83` | Repo-relative path for reporting |
 | `scan(apply_changes, dry, quiet)` | `:136` | The driver. Walks targets, classifies, tallies, optionally writes |
 | `self_test()` | `:190` | Runs the fixtures, returns a list of failures |
@@ -210,6 +236,23 @@ stated it was enforced. **Grep `package.json` before believing any gate runs.**
 - **WordPress silently discards an undeclared attribute** on the editor surface. A
   transform that writes an attr the block.json does not declare produces no error and no
   effect.
+
+---
+
+## Step 9 — Deploy and LOOK at it. The gate is not the proof.
+
+```bash
+python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
+```
+
+Then open a real page rendering an affected block and check the changed property's
+computed value.
+
+⛔ **A green `--check` proves no instance was MISSED. It proves nothing about whether the
+transform was RIGHT.** Following Steps 1-8 and closing the task on a green gate is a
+violation of `CLAUDE.md` Rule 5 (VERIFY ON THE REAL HOMEPAGE) produced BY compliance with
+this document. This method does not replace Rule 5 or R-31-13 (Bean's eye is
+co-authoritative). Neither is optional.
 
 ---
 
