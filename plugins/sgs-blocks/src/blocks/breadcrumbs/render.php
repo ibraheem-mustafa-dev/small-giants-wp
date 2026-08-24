@@ -287,7 +287,7 @@ if ( is_singular() ) {
 	}
 } elseif ( is_archive() ) {
 	$crumbs[] = array(
-		'label' => esc_html( get_the_archive_title() ),
+		'label' => esc_html( wp_strip_all_tags( get_the_archive_title() ) ),
 		'url'   => '',
 	);
 } elseif ( is_search() ) {
