@@ -64,18 +64,29 @@ Reports: `reports/visual-diff/product-card-2026-08-23.md` + `…/audio-hero-medi
 `ServerSideRender` cannot forward block context. Whether the template should use that
 arrangement is D756, below.
 
-⛔ **D756 — DO NOT convert any filtered product listing to `sgs/card-grid` yet.** Measured
-with a control: a live card-grid `wc-product` page returns 6 cards both with and without
-`?min_price=0&max_price=1`; the shop archive returns 5 → **0**. card-grid builds its own
-`WP_Query` and has no `supports.interactivity`, so converting the shop archive would leave
-the filter UI rendering, clickable, and inert. **Bean's call: design the
-inherit-the-page-query capability FIRST. Design gate open, nothing built.**
-⭐ **Cold prompt ready: `.claude/prompts/2026-08-24-card-grid-query-inherit-design.md`** —
-start there. **Product Archive CANNOT be closed until this lands** (Bean, 2026-08-24): the
-checklist's done-when includes the listing using the bespoke card, so finishing the
-remaining audit items would be a partial, not a close. The PDP related
-rail (`single-product.html:34-40`) has no filter dependency and stays risk-free whenever
-wanted.
+✅ **ALL FOUR PRODUCT LISTINGS NOW USE THE BESPOKE CARD (2026-08-24, D757).** The census
+was wider than first found — 3 of 4 were generic, and two of them are WooCommerce's OWN
+plugin templates (`taxonomy-product_attribute`, `product-search-results`), which is why
+grepping our repo missed them. Fixed by putting `sgs/product-card` inside the existing
+`woocommerce/product-template`; WooCommerce keeps query, filters, sorting, pagination and
+relatedness. Theme-overrides-plugin proven, not assumed.
+
+⛔ **D756 — the card-grid query-inherit rebuild is DROPPED, not parked (Bean's call).**
+Nobody in the ecosystem replaces the WooCommerce loop; the WooCommerce-free path already
+exists (`cpt-collection`); and inherit mode would not fix the editor preview either. Do not
+re-propose without meeting D756's measurement first.
+
+⭐ **Two PRE-EXISTING defects found by LOOKING, that no gate caught** — the related rail laid
+its heading BESIDE the grid, and two of three PDP sections shrank a single child inside a
+1280px column (**the main buybox band at 463px**). A single flex item in a ROW sizes to
+content. Fixed by authoring `flexDirection:"column"`; the row default is deliberate and only
+`<main>` suppresses it. ⚠ **NOT swept repo-wide — other templates may share the shape.**
+
+⚠ **OPEN for Bean (design, not correctness):** at 375px the shop archive is 1-up @327px but
+the related rail is 2-up @155px — under the 167–195px readable-card floor.
+⚠ **`taxonomy-product_attribute` is NOT live-verified** — both product attributes have
+archives disabled (`attribute_public = 0`), so it has no reachable URL. Defensive only. That
+also answers register item G2.
 
 ⚠ **Editor ≠ front end, and only opening the editor finds it.** 5 of 5 cards rendered on the
 live site the entire time 0 of 6 rendered in the editor. Every gate was green throughout.
@@ -130,27 +141,17 @@ rules). Enforcement: `npm run check:vacuous-guards`, wired into `prebuild`.
 
 ## Task 1 — container width model: ✅ CLOSED 2026-08-21 (D725 / D726)
 
-**Settled the OPPOSITE way to how this task was written, so read D725 before acting on any
-older note about it.** The task assumed we would adopt core's cap-the-children model. Bean
-ruled the other way: our `contentWidth` already caps content in the right place, so core's
-duplicate `layout:{"type":"constrained"}` was DELETED from the last three templates
-(`c984a676`). One cap per page, and it is ours.
+**Settled the OPPOSITE way to how the task was written — read D725 before acting on any older
+note about it.** Our `contentWidth` already caps content, so core's duplicate
+`layout:{"type":"constrained"}` was DELETED (`c984a676`). One cap per page, and it is ours.
+Measured 1440/768/390: stacked caps 3 → 0; `<main>` 1425px unbanded; 26 sections full-bleed
+outer + 1280px inner.
 
-⛔ **Three instructions that used to live here are now WRONG — do not act on them if you meet
-them in an older doc, a branch or a stale summary:**
-1. ~~"Prerequisite, non-negotiable: widen inspector-scan rule 23"~~ — that was only needed for
-   the migration we did not do. The regex is correct for the model we kept.
-2. ~~"Acceptance: a container with `contentWidth:normal` has a child with `align:full` spanning
-   edge-to-edge"~~ — wrong test. A full-bleed section is a SIBLING, not a child; nothing needs
-   to break out. `alignfull` is unnecessary here rather than broken.
-3. ~~"`<main>` is `contentWidth:full` — a workaround; restore a constrained `<main>`"~~ — that
-   is now CANONICAL. `<main>` is structure and passes width through. The
-   `sgs/collapsible-text` wrapper is likewise a legitimate opt-IN to a band, not debt.
-
-**Measured live 1440/768/390:** stacked caps 3 → 0; `<main>` 1425px unbanded; 26 sections
-full-bleed outer + 1280px inner; `single.html` 0 uncapped. **Accepted consequence (D725):** a
-block placed straight into a page is intentionally full-width — it keeps its own
-padding/margin/alignment. Do not "fix" it.
+⛔ **Three instructions that used to live here are now WRONG** — full text in D725. In short:
+the inspector-scan rule-23 widening is NOT needed; a full-bleed section is a SIBLING not a
+child, so nothing needs `alignfull`; and `<main>` at `contentWidth:full` is CANONICAL, not a
+workaround. **Accepted consequence:** a block placed straight into a page is intentionally
+full-width. Do not "fix" it.
 
 ## Task 2 — Two decisions the colour-golden track is waiting on
 

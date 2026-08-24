@@ -1,7 +1,84 @@
 # small-giants-wp — Architectural Decisions Log
 
-## D756 — sgs/card-grid cannot own an archive until it can inherit the page query
-**2026-08-24** · [ROUTINE] · design gate OPEN — nothing built
+## D757 — three of four product listings were generic; all four now use the bespoke card
+**2026-08-24** · [ROUTINE] · shipped `0c419b85`, `e60424d6`, `d308e5a7`
+
+**Census (live, via `get_block_templates` — theme AND plugin, which is why grepping the repo
+found only half):**
+
+| Template | Owner | Before | After |
+|---|---|---|---|
+| `archive-product` | theme | `sgs/product-card` | unchanged |
+| `single-product` (related rail) | theme | generic stack | `sgs/product-card` |
+| `taxonomy-product_attribute` | **plugin** | generic stack | theme override |
+| `product-search-results` | **plugin** | generic stack | theme override |
+
+**Shape, identical on all three:** put `sgs/product-card` inside the existing
+`woocommerce/product-template`. WooCommerce KEEPS query, filters, sorting, pagination and
+related-product logic — the collection block is untouched. `core/query-pagination*` and
+`product-results-count` read `queryId`/`query` from its context, so replacing it would break
+all of them (that is D756).
+
+**Theme-overrides-plugin is proven, not assumed:** WooCommerce ships its own
+`archive-product.html` and `single-product.html`, yet both resolve `source=theme` on the
+canary while the two we did not override resolved `source=plugin`.
+
+**Two defects found by LOOKING, that no gate caught:**
+1. **The related rail laid its heading BESIDE the grid.** Pre-existing. `sgs/container`'s
+   `layout` defaults to `"flex"` with `flexDirection` `""` → CSS row.
+2. **Two of three PDP sections shrank a single child inside a 1280px column** — the related
+   band to 380px and **the main buybox band to 463px**. Pre-existing, and the buybox one is
+   the product page's primary content. A single flex item in a ROW sizes to content;
+   `align-items:stretch` fills the CROSS axis, which in a row is height. Fixed by authoring
+   `flexDirection:"column"` on the section wrappers — the row default is deliberate
+   (`class-sgs-container-wrapper.php:905-945`, R-1 honesty for the converter) and only
+   `<main>` suppresses it, so authoring is the correct lever, not a default change.
+
+**Verified live, 1440/768/375, all three sections filling, zero horizontal overflow:**
+related rail 4-up @305px (1440), 4-up @162px (768), 2-up @155px (375); CTA tap targets 74px.
+Shop archive unchanged and its filter still works (`?min_price=0&max_price=1` → 0 cards).
+All three templates open in the Site Editor with 0 validation warnings and 0 errors.
+
+⚠ **Two things NOT done, named rather than dropped:**
+- `taxonomy-product_attribute` has **no reachable URL on this site** — both product
+  attributes have archives disabled (`attribute_public = 0`). The override is defensive and
+  is NOT live-verified. (This also answers register item G2: "Products by Attribute" is
+  WooCommerce's template for a surface that is switched off.)
+- **Mobile inconsistency, open for Bean:** at 375px the shop archive goes 1-up at 327px
+  while the related rail goes 2-up at 155px — under the 167–195px readable-card floor the
+  design benchmark established. A design call, not a correctness one.
+- The single-child-shrunk shape was **not swept repo-wide**; other templates may share it.
+
+## D756 — the card-grid query-inherit rebuild is DROPPED, not parked
+**2026-08-24** · [ROUTINE] · investigated, measured, closed — nothing built, nothing owed
+
+**Bean, 2026-08-24, after the research came back:** *"Seeing how nobody actually builds
+replacements for the Woocommerce Loop, is it even worth parking the rebuild? Being
+'independent' of Woocommerce isn't really that important to me."* Correct on both counts.
+DROPPED rather than parked, because a parking entry is a standing commitment here and
+"rebuild the product loop" would invite a future session to do it without re-deriving why
+it was a bad idea.
+
+**Why dropped, beyond the measurement below:**
+1. **No prior art anywhere.** A GitHub sweep found essentially nobody replacing
+   `woocommerce/product-collection` with a custom block. When nobody in a large ecosystem
+   builds a thing, the usual reason is the seam keeps moving — you would maintain a private
+   reimplementation of query inheritance, filter binding and pagination context against a
+   plugin that ships every few weeks, with no one hitting the breakages first.
+2. **The WooCommerce-free path already exists.** `sgs/card-grid`'s `cpt-collection` mode
+   ("Product collection (no WooCommerce needed)" in the inspector) already serves sites
+   without WooCommerce. The capability would only replace WooCommerce where it IS installed
+   — the exact thing Bean does not value.
+3. **It would not buy the editor preview.** There is no main query in the editor either, so
+   inherit mode previews nothing. The most tangible benefit evaporates on inspection.
+4. **Same visible result, far cheaper.** Putting `sgs/product-card` inside the existing
+   `woocommerce/product-template` delivers the bespoke card on every listing today — see
+   D757 — with WooCommerce still owning query, filters, sorting, pagination and relatedness.
+
+**Revisit only if** WooCommerce deprecates `product-collection`. Then with evidence, not a guess.
+
+⛔ Superseded framing kept below because the MEASUREMENT is still the reason, and a future
+session proposing this again should meet it first.
 
 **Finding, measured with a control.** Converting the shop archive from
 `woocommerce/product-collection` to `sgs/card-grid` (`source: wc-product`) would SILENTLY
