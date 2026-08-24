@@ -2564,3 +2564,132 @@ select.orderby:focus-visible {
 .sgs-shop-filters__group-heading {
 	font-family: var(--wp--preset--font-family--body, inherit);
 }
+
+/* ─── 11. PDP RELATED-PRODUCTS RAIL — PEEK-SCROLL ────────────────────────────
+ *
+ * The related rail was a WRAPPING GRID: at 375px it fitted two 155px cards per
+ * row and pushed the rest down the page. Six best-in-class PDPs were measured
+ * live at 375px (John Lewis, M&S, REI, Crate & Barrel, IKEA, plus Deliveroo's
+ * menu) and every one of them scrolls this rail horizontally — 5 of 5 with a
+ * deliberately PARTIAL next card as the swipe cue. None wrap.
+ *
+ * Measured rail card widths: John Lewis 140, Crate & Barrel 141, REI 139,
+ * M&S 131. Our 140px default sits on that mean. At a 327px rail that yields
+ * ~2.15 cards in view, so the third is half-showing — which is the affordance.
+ * NN/g: half images and incomplete words are what signal more content sideways;
+ * dots are "generally weak signifiers".
+ *
+ * ⚠ Card width is driven by --sgs-rail-card-width so it is ONE value to change.
+ * A client-facing control for it needs a block-level home and is NOT built yet —
+ * see D765. Do not hardcode 140px into the rules below.
+ *
+ * KEYBOARD: the rail is not given tabindex. Every card contains a real anchor,
+ * so Tab moves through them and the browser scrolls each into view — the
+ * scroll region is reachable by construction. Do NOT add tabindex="0" as well;
+ * that creates a focus stop that announces nothing.
+ *
+ * SPECIFICITY: WooCommerce sets the track at
+ * `.wc-block-product-template__responsive.columns-4` (0,2,0). The rules below
+ * are (0,3,0) — they win outright rather than on source order. That distinction
+ * is what D760 and D764 were both about; do not reduce these selectors.
+ */
+.sgs-product-rail .wc-block-product-template.wc-block-product-template__responsive {
+	--sgs-rail-card-width: 140px;
+	--sgs-rail-gap: 12px;
+
+	display: flex;
+	flex-wrap: nowrap;
+	gap: var(--sgs-rail-gap);
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x mandatory;
+
+	/* Trims the browser's default scrollbar gutter on desktop without hiding
+	   the scrollbar from anyone who relies on it as an affordance. */
+	padding-bottom: 4px;
+}
+
+.sgs-product-rail .wc-block-product-template.wc-block-product-template__responsive > li {
+	flex: 0 0 var(--sgs-rail-card-width);
+	max-width: none;
+	min-width: 0;
+	scroll-snap-align: start;
+}
+
+/* Square media, matching the shop treatment and 6/6 of the measured references. */
+.sgs-product-rail .product-card .product-card__media,
+.sgs-product-rail .product-card .sgs-product-card__media-wrap {
+	aspect-ratio: 1;
+	height: auto;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.sgs-product-rail .product-card .product-card__no-image,
+.sgs-product-rail .product-card .product-card__img-link {
+	width: 100%;
+	height: 100%;
+}
+
+.sgs-product-rail .product-card .product-card-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Same reasoning as the shop card: 0 of 6 measured rails carry a navigational
+   button, and a full-width one inside a 140px card is most of the card. The
+   whole card becomes the link via the title anchor's stretched ::after. */
+.sgs-product-rail .product-card {
+	position: relative;
+}
+
+.sgs-product-rail .product-card .product-card__title-link::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+.sgs-product-rail .product-card:has( .product-card__title-link:focus-visible ) {
+	outline: 2px solid var( --wp--preset--color--primary-text, #3a2e26 );
+	outline-offset: 2px;
+}
+
+.sgs-product-rail .product-card .product-card__add-to-cart,
+.sgs-product-rail .product-card .product-card__thumbs {
+	display: none;
+}
+
+.sgs-product-rail .product-card .product-card__cart-status:empty {
+	display: none;
+}
+
+/* Typography scaled to a 140px card. Measured reference rail titles are 14-16px
+   (John Lewis 14, M&S 14, REI 14, Deliveroo 16); the shop card's 17px is too
+   large once the card is 140px rather than 327px wide. */
+.sgs-product-rail .product-card .sgs-product-card__title,
+.sgs-product-rail .product-card .product-card__title-link {
+	font-size: 15px;
+	line-height: 1.3;
+}
+
+.sgs-product-rail .product-card .price {
+	font-size: 17px;
+}
+
+.sgs-product-rail .product-card .product-card-body {
+	padding: 12px;
+}
+
+/* The description has no room at 140px and is not present on any measured rail. */
+.sgs-product-rail .product-card .product-desc {
+	display: none;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+
+	.sgs-product-rail .wc-block-product-template.wc-block-product-template__responsive {
+		scroll-behavior: auto;
+	}
+}
