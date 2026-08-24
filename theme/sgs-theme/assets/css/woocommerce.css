@@ -1527,12 +1527,23 @@ body.woocommerce-cart .with-empty-cart-icon,
 	 * `.product-card--live .product-card__media .product-card-img{height:100%}`
 	 * which was decided by stylesheet load order — the same class of latent
 	 * bug as the 91px incident. Removing the chain removes the tie. */
+	/* ⛔ `overflow: hidden` and `min-height: 0` are LOAD-BEARING, not tidiness.
+	 * `aspect-ratio` only governs while the box is free to take that size — a
+	 * child taller than the square wins over it when the height is auto.
+	 * Measured live 2026-08-24: the no-image SVG placeholder is a fixed 220px,
+	 * so one card's media box rendered 132 x 220 and the card stood at 222px
+	 * beside neighbours at 134px. The card next to it clipped correctly ONLY
+	 * because the block's own CSS happens to put `overflow:hidden` on the
+	 * `.product-card__media` class and not on `.sgs-product-card__media-wrap`
+	 * — i.e. it was right by accident, on one of the two markup paths. */
 	.sgs-shop-layout .product-card .product-card__media,
 	.sgs-shop-layout .product-card .sgs-product-card__media-wrap {
 		flex: 0 0 132px;
 		align-self: flex-start;
 		aspect-ratio: 1;
 		height: auto;
+		min-height: 0;
+		overflow: hidden;
 	}
 
 	.sgs-shop-layout .product-card .product-card__img-link {
@@ -1544,6 +1555,14 @@ body.woocommerce-cart .with-empty-cart-icon,
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	/* The no-image placeholder is authored at a fixed 220px for the vertical
+	   card. Told to fill the square box instead of setting its own height, so
+	   a product without a photo occupies the same footprint as one with. */
+	.sgs-shop-layout .product-card .product-card__no-image {
+		width: 100%;
+		height: 100%;
 	}
 
 	/* The description is what makes one strip tower over its neighbours — a
