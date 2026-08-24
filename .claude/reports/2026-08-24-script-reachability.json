@@ -1,19 +1,224 @@
 {
   "_meta": {
     "generated_by": "audit-script-reachability.py",
-    "tests_excluded": 118,
+    "tests_excluded": 123,
     "tests_excluded_reason": "pytest discovers test_*.py by name convention; nothing references them, so absence of a caller carries no information about them",
     "candidate_note": "DOC-ONLY and UNREFERENCED are CANDIDATES FOR TRIAGE, not deletions. Unwired means SUPERSEDED (retire) or ORPHANED (revive) and only reading the code tells you which.",
     "ambiguity_note": "A module stem shared by two files credits both. Deliberate: over-crediting hides a revival candidate, under-crediting invites deleting a live tool."
   },
   "counts": {
-    "UNREFERENCED": 1,
-    "DOC-ONLY": 66,
-    "WIRED": 383
+    "UNREFERENCED": 42,
+    "DOC-ONLY": 64,
+    "WIRED": 397
   },
   "scripts": [
     {
-      "script": "plugins/sgs-blocks/scripts/audit-script-reachability.py",
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector1_render_escaping.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector7_css_paint_flow.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector8_undeclared_enum.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/dead-api-checker/tokenize-calls.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/diff-gap-sanitiser.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/e2e-authoring-acceptance.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/golden-master-acceptance.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/golden-master-harness.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-content-collection-to-card-grid.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-carousel-loop.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-cursor-field.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-editor-css-warnings.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-first-paint.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-good-by-default.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel-focus.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-morph-geometry.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-motion-path-repeat.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step13-pin-focus.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step14-scrub-focus.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-stepn-image-sequence-pin.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-tier-w-surface.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c-editor.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/run-live-probes.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/crawl-assert.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/elementfrompoint-sweep.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/lib/openness-guard.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/palette-contrast-sweep.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/shoot-drawer-pairs.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/submenu-harness.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/preflight-acceptance.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/product-search-leak-check.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/row-fit-sweep.mjs",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture-v2.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-mamas-products.php",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/census-tier-siblings.sh",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/fetch-native-control-contracts.sh",
+      "verdict": "UNREFERENCED",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/test-pack-pricing-cascade.php",
       "verdict": "UNREFERENCED",
       "wired_via": []
     },
@@ -94,11 +299,6 @@
     },
     {
       "script": "plugins/sgs-blocks/scripts/generate-db-catalogue.py",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/generate-tooling-catalogue.py",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -233,11 +433,6 @@
       "wired_via": []
     },
     {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel.js",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
       "script": "plugins/sgs-blocks/scripts/oracle/attribution_ground_truth.py",
       "verdict": "DOC-ONLY",
       "wired_via": []
@@ -348,6 +543,99 @@
       "wired_via": []
     },
     {
+      "script": ".claude/hooks/decisions-sweep-auto.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/drift-check-dispatcher.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/f5-commit-gate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "commit-gate",
+        "hook",
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/git-path-scope-guard.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/handoff-preflight.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": ".claude/hooks/ledger-rotate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/memory-cap-guard.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call",
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/hooks/no-header-footer-block.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "settings",
+        "skill"
+      ]
+    },
+    {
+      "script": ".claude/hooks/spec-drift-commit-gate.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "settings"
+      ]
+    },
+    {
+      "script": ".claude/scripts/build-archive-index.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": ".claude/scripts/sweep-decisions.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "hook",
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/audit-block-file-consistency.py",
       "verdict": "WIRED",
       "wired_via": [
@@ -403,6 +691,13 @@
       "verdict": "WIRED",
       "wired_via": [
         "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/audit-script-reachability.py",
+      "verdict": "WIRED",
+      "wired_via": [
         "script-call"
       ]
     },
@@ -541,6 +836,7 @@
         "manifest",
         "npm",
         "script-call",
+        "settings",
         "skill",
         "test-import"
       ]
@@ -591,7 +887,8 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest",
-        "npm"
+        "npm",
+        "script-call"
       ]
     },
     {
@@ -1105,6 +1402,7 @@
       "verdict": "WIRED",
       "wired_via": [
         "hook",
+        "script-call",
         "test-import"
       ]
     },
@@ -1647,6 +1945,7 @@
         "manifest",
         "npm",
         "script-call",
+        "settings",
         "skill",
         "test-import"
       ]
@@ -1762,6 +2061,7 @@
         "manifest",
         "npm",
         "script-call",
+        "settings",
         "skill",
         "test-import"
       ]
@@ -1830,6 +2130,13 @@
     },
     {
       "script": "plugins/sgs-blocks/scripts/generate-markup-examples.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/generate-tooling-catalogue.py",
       "verdict": "WIRED",
       "wired_via": [
         "script-call"
@@ -2411,6 +2718,13 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/nav-qa/build-poc-fixtures.py",
       "verdict": "WIRED",
       "wired_via": [
@@ -2428,7 +2742,8 @@
       "script": "plugins/sgs-blocks/scripts/no-inline-land-verify.js",
       "verdict": "WIRED",
       "wired_via": [
-        "script-call"
+        "script-call",
+        "settings"
       ]
     },
     {
@@ -2963,6 +3278,7 @@
       "wired_via": [
         "hook",
         "script-call",
+        "settings",
         "skill",
         "test-import"
       ]

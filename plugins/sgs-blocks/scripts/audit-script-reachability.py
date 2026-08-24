@@ -71,7 +71,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 PLUGIN = HERE.parent
 REPO = PLUGIN.parent.parent
-SCRIPT_ROOTS = [PLUGIN / "scripts", REPO / "scripts"]
+# ⚠ THIS SET MUST MATCH generate-tooling-catalogue.py's SCRIPT_DIR_GLOBS and
+# _RUNNABLE. The catalogue renders a "Wired" column from this audit; when the
+# audit covered a NARROWER set (2 roots, .py/.js only) the catalogue showed a
+# dash for 64 files the audit had never evaluated — conflating "no execution
+# path found" with "never looked at", which is precisely the misleading signal
+# this whole exercise exists to remove.
+SCRIPT_ROOTS = [PLUGIN / "scripts", REPO / "scripts", REPO / ".claude" / "scripts",
+                REPO / ".claude" / "hooks",
+                REPO / ".claude" / "skills" / "wp-sgs-deploy" / "scripts"]
+RUNNABLE_SUFFIXES = (".py", ".js", ".mjs", ".php", ".sh")
 SKIP_PARTS = {"__pycache__", "node_modules", "fixtures", ".pytest_cache", "build"}
 
 
@@ -86,7 +95,7 @@ def discover() -> list[Path]:
         if not root.exists():
             continue
         for p in root.rglob("*"):
-            if p.suffix not in (".py", ".js"):
+            if p.suffix not in RUNNABLE_SUFFIXES:
                 continue
             if SKIP_PARTS & set(p.parts):
                 continue
@@ -187,6 +196,12 @@ def channel_files() -> list[tuple[str, list[Path]]]:
     home = Path.home()
     return [
         ("npm", [REPO / "package.json", PLUGIN / "package.json"]),
+        # ⚠ Claude Code hooks are REGISTERED IN SETTINGS, not called by name from
+        # code. Without this channel, git-path-scope-guard.py and
+        # memory-cap-guard.py read as UNREFERENCED while firing on every
+        # matching tool call. Eighth false-positive class.
+        ("settings", [REPO / ".claude" / "settings.json",
+                      REPO / ".claude" / "settings.local.json"]),
         ("commit-gate", sorted((REPO / ".githooks").glob("*")) if (REPO / ".githooks").exists() else []),
         ("hook", sorted((REPO / ".claude" / "hooks").glob("*")) if (REPO / ".claude" / "hooks").exists() else []),
         ("skill", sorted(p for p in (home / ".claude" / "skills").rglob("*")

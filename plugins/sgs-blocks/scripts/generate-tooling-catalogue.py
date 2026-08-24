@@ -445,6 +445,41 @@ def resolve(step: str) -> Path | None:
     return p if p.exists() else None
 
 
+_REACH_CACHE = None
+
+
+def reachability() -> dict:
+    """script path -> execution channels, computed LIVE by the audit tool.
+
+    This column used to come from three substring checks against package.json
+    and .githooks. That under-reports badly: a script reached via a JSON
+    manifest, a .claude hook, a skill, another script, a pytest import or a
+    constructed importlib path all rendered as a dash. The catalogue was itself
+    manufacturing the "looks dead but isn't" impression this library suffers
+    from - inspector-scan's 16 rule modules, all 18 migrate-core-blocks pairing
+    transformers and four pytest-imported oracle modules were shown unwired
+    while running on every build.
+
+    Calls audit-script-reachability.py directly rather than reading its JSON
+    report, so this can never disagree with a stale artefact.
+    """
+    global _REACH_CACHE
+    if _REACH_CACHE is not None:
+        return _REACH_CACHE
+    try:
+        import importlib.util as _ilu
+        spec = _ilu.spec_from_file_location(
+            "_reach", str(Path(__file__).resolve().parent / "audit-script-reachability.py"))
+        mod = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _REACH_CACHE = {r["script"]: r["wired_via"] for r in mod.audit()["scripts"]}
+    except Exception as exc:  # noqa: BLE001 - never break the catalogue over this
+        print(f"[tooling-catalogue] WARN: reachability unavailable ({exc}); "
+              "falling back to substring marks", file=sys.stderr)
+        _REACH_CACHE = {}
+    return _REACH_CACHE
+
+
 def build() -> str:
     out: list[str] = [START, ""]
     out.append("### Where the tooling lives — **plural, and that matters**")
@@ -514,8 +549,10 @@ def build() -> str:
     out.append("")
     out.append("### The full library — grep this BEFORE building or hand-doing anything")
     out.append("")
-    out.append("Every runnable script, with the purpose its own author wrote. Most are NOT")
-    out.append("wired into any chain, which is exactly why they get forgotten and rebuilt.")
+    out.append("Every runnable script, with the purpose its own author wrote and HOW IT")
+    out.append("RUNS - npm / commit-gate / hook / skill / manifest / script-call /")
+    out.append("test-import / dynamic. A dash means NO execution path was found, which is")
+    out.append("a QUESTION (superseded, or built and forgotten?) and never a verdict.")
     out.append("Before writing a new checker, codemod, census, probe or audit — or before")
     out.append("doing that work by hand — search this list. Adapting one of these is nearly")
     out.append("always cheaper than a fresh build plus its brainstorm, QC and tests.")
@@ -551,7 +588,15 @@ def build() -> str:
                 wired_marks.append("commit")
             if not wired_marks and f.name in _SCRIPTS_BLOB:
                 wired_marks.append("npm")
-            wired = "+".join(wired_marks) if wired_marks else "—"
+            # Prefer the multi-channel reachability answer; fall back to the old
+            # substring marks only if the audit tool could not be loaded.
+            _reach = reachability()
+            _key = f.relative_to(REPO).as_posix()
+            if _key in _reach:
+                _via = _reach[_key]
+                wired = "+".join(_via) if _via else "—"
+            else:
+                wired = "+".join(wired_marks) if wired_marks else "—"
             # Search the WHOLE header, not the truncated purpose. The first
             # version searched `purpose` only, so it could catch a contradiction
             # solely when the phrase happened to land in the first ~150 chars.
