@@ -13,6 +13,11 @@
  *   --sgs-cursor-field-mask          (optional) a mask applied to that image
  *   --sgs-cursor-field-pattern-size  (optional) background-size for the layer
  *   --sgs-cursor-field-position      (optional) background-position for the layer
+ *   --sgs-cursor-field-attachment    (optional) background-attachment, default
+ *                                    `fixed`. Set `scroll` when the layer is
+ *                                    NOT cursor-positioned, or it drifts on
+ *                                    scroll and `auto` sizing resolves against
+ *                                    the viewport instead of the tile.
  *
  * Everything downstream — the emitter's own overlay and every participant —
  * reads those properties and never names a type. So a new type is ONE rule
@@ -160,7 +165,21 @@
  * ========================================================================== */
 
 [data-sgs-cursor-field="spotlight-mask"] {
-	--sgs-cursor-field-pattern-size: 22px;
+	/* BOTH axes. A single value leaves height `auto`, which resolves against
+	   the BACKGROUND POSITIONING AREA — and with `background-attachment: fixed`
+	   that area is the VIEWPORT, so each "dot" became a 22px-wide,
+	   viewport-tall ellipse and only one row could ever fit. Reported by eye
+	   2026-08-24 as "thin vertical rolling-pin shapes in one singular row";
+	   every static check passed it. */
+	--sgs-cursor-field-pattern-size: 22px 22px;
+
+	/* This layer carries no cursor coordinates — the pointer lives in the MASK,
+	   which reads the ELEMENT-relative pair (D767). So the layer has no reason
+	   to resolve against the viewport, and doing so made the dot screen drift
+	   vertically on scroll. `fixed` remains the default for every type whose
+	   layer IS cursor-positioned (glow), which is why this is a property and
+	   not an edit to the shared paint rule. */
+	--sgs-cursor-field-attachment: scroll;
 
 	--sgs-cursor-field-layer: radial-gradient(
 		var(--sgs-cursor-field-colour) 1.5px,
@@ -184,75 +203,92 @@
 /* ==========================================================================
  * FIELD TYPE: hue-shift (FR-38-28 look 2, Bean-signed 2026-08-07).
  *
- * "A gradient that shifts hue with pointer position." The distinction from
- * `glow` is load-bearing and was the whole design problem: `glow` moves a
- * pointer-centred stop, so the colour under a given point never changes — only
- * where the pool sits. Here the LAYER travels beneath a pointer-centred window,
- * so the hue actually arriving at a given point changes continuously as the
- * pointer moves. Travel is inverted and at half pointer speed, which reads as
- * the surface having depth rather than the gradient being dragged.
+ * ⭐ REBUILT AS A MESH GRADIENT 2026-08-24, on Bean's ruling, after he reviewed
+ * the live canary and reported: "a clear diagonal repeating pattern of each
+ * colour, the teal is very faint and the orange has a lot more coverage, and
+ * even has a part where it has a solid diagonal line."
  *
- * THE CLIENT'S COLOUR STAYS DOMINANT. The band is their chosen token at 65%
- * mixed toward two opposite hues, so re-theming still re-colours the field and
- * the result stays recognisably on-brand instead of becoming a rainbow.
+ * ALL THREE were the previous mechanism working AS WRITTEN — not bugs in it:
+ *   · `repeating-linear-gradient(115deg, …)` IS diagonal stripes. That is what
+ *     the function does; no amount of tuning removes the repeat.
+ *   · The "solid diagonal line" was the WRAP. Colour was continuous across it
+ *     (hue-a → hue-a) but its RATE was not, and the eye reads a discontinuous
+ *     derivative as an edge (a Mach band). A seam you cannot see in the colour
+ *     values is still a seam.
+ *   · The faint teal was structural: every stop was the base colour at 65%, so
+ *     nothing in the band was ever really teal and the base always dominated.
  *
- * FAIL-OPEN: the two derived hues default to the base colour itself, so a
- * browser without `color-mix()` paints a valid single-hue gradient that still
- * shifts position. Degraded, never broken — and never an invalid custom
- * property, which would take the whole layer down with it.
+ * THE MESH: three large radial "spots" in viewport space, each tracking the
+ * pointer with a DIFFERENT multiplier, over a flat base layer. There is no
+ * tile, no repeat and no background-size, so banding and seams cannot occur BY
+ * CONSTRUCTION rather than by an argument — three "seamless by construction"
+ * arguments were made about the previous build and a screenshot refuted all
+ * three. This is the documented mesh-gradient technique (Stripe/Apple), not an
+ * invention.
+ *
+ * WHY DIFFERENT MULTIPLIERS. Moving every spot by the same amount is a rigid
+ * translation: the mesh would slide but never change shape, so the colour
+ * RELATIONSHIPS would be fixed. At 0.85 / 1.15 / 0.6 the spots move relative to
+ * one another, so the hue arriving at a given point genuinely changes — which
+ * is the entire point of this look, and what `glow` cannot do.
+ *
+ * ⛔ THE 65%-BASE RULE IS GONE, replaced by a CLIENT CONTROL. It was ours, not
+ * the technique's — no reference dilutes its hues toward a brand colour — and
+ * it was the direct cause of "the teal is very faint". `--sgs-cursor-field-blend`
+ * (0 = single hue, 100 = fully distinct) now decides, defaulting to 60. This
+ * follows Bean's own FR-38-28 ruling that contrast is a CONTROL, not a gate.
+ *
+ * FAIL-OPEN is preserved: without `color-mix()` all three hues resolve to the
+ * base colour, giving a valid single-hue mesh that still moves and reshapes.
+ * Degraded, never broken, and never an invalid custom property — which would
+ * take the whole layer down with it.
  * ========================================================================== */
 
 [data-sgs-cursor-field="hue-shift"] {
+	/* 0 = every spot is the base colour (single hue); 100 = maximum departure
+	   from it. The render layer publishes this only when the client sets it. */
+	--sgs-cursor-field-blend: 60;
+
+	/* Base share of each mixed hue: 100% at blend 0, 30% at blend 100. Kept as
+	   one expression so the three mixes below cannot drift apart. */
+	--sgs-cursor-field-base-share: calc(
+		(100 - var(--sgs-cursor-field-blend) * 0.7) * 1%
+	);
+
 	--sgs-cursor-field-hue-a: var(--sgs-cursor-field-colour);
 	--sgs-cursor-field-hue-b: var(--sgs-cursor-field-colour);
+	--sgs-cursor-field-hue-c: var(--sgs-cursor-field-colour);
 
-	/* ⚠ TWO MEASURED CORRECTIONS, 2026-08-24, BOTH BEFORE THIS SHIPPED TO ANYONE.
-	   Recorded rather than quietly fixed, because each was a reasoned claim
-	   that live rendering refuted.
-
-	   (1) SIZE. First authored as a 200vmax (2618px) band on the reasoning that
-	   a huge gradient "never tiles visibly". Measured: a full-width pointer
-	   sweep traversed only ~21% of it, so the ~520px mask window showed
-	   essentially ONE hue and the look was indistinguishable from `glow` — the
-	   effect existed and did nothing. A 720px cycle puts ~72% of the band
-	   inside the window and moves ~76% of a cycle per sweep.
-
-	   (2) TILING. The band was a plain `linear-gradient` + `background-repeat`,
-	   justified as "seamless because the first and last stops are both hue-a".
-	   That is true along the gradient's OWN AXIS and false at the tile's edges:
-	   at 115deg the box's left and right edges are different colours, so
-	   `repeat` butted mismatched edges together and painted a HARD VERTICAL
-	   SEAM through the middle of the pool. `repeating-linear-gradient` repeats
-	   the stop list along the gradient line itself, so it is seamless by
-	   construction and needs no `background-size` at all. */
-	/* ⚠ THIRD TILING CORRECTION, 2026-08-24 — Bean caught this one by eye, as a
-	   hard CROSS quartering the pool. `repeating-linear-gradient` repeats the
-	   stop list along its own axis INSIDE one tile; it does not stop the TILE
-	   repeating. With `background-size: auto` a gradient's tile is the
-	   positioning area — the VIEWPORT here, because the layer is
-	   `background-attachment: fixed` — so offsetting it by up to half a
-	   viewport wrapped the tile and put its mismatched edges on screen in both
-	   axes. "Seamless by construction" was wrong for the third time.
-
-	   The size below is not merely "big": it is PROVABLY larger than any
-	   offset can expose. Travel is `cursor * -0.5` and the cursor cannot
-	   exceed the viewport, so the offset is at most half the largest viewport
-	   dimension; a tile of 400vmax is four times that dimension, so the tile
-	   always covers the viewport and its edge can never enter view at any
-	   window size. The colour stops stay in PIXELS, so the hue still cycles
-	   every 720px inside that tile — the variation does not depend on the tile
-	   being small. */
-	--sgs-cursor-field-pattern-size: 400vmax 400vmax;
-
-	--sgs-cursor-field-layer: repeating-linear-gradient(
-		115deg,
-		var(--sgs-cursor-field-hue-a) 0,
-		var(--sgs-cursor-field-colour) 240px,
-		var(--sgs-cursor-field-hue-b) 480px,
-		var(--sgs-cursor-field-hue-a) 720px
-	);
-	--sgs-cursor-field-position:
-		calc(var(--sgs-cursor-x) * -0.5) calc(var(--sgs-cursor-y) * -0.5);
+	/* Spots are sized in vmax and positioned in VIEWPORT pixels, so they need
+	   no background-size and cannot expose a tile edge at any window size.
+	   The flat base layer sits LAST (bottom): it gives the mesh an opaque
+	   ground, so the spots' `transparent` stops never composite toward grey. */
+	--sgs-cursor-field-layer:
+		radial-gradient(
+			60vmax circle at
+			calc(var(--sgs-cursor-x) * 0.85 - 12vmax)
+			calc(var(--sgs-cursor-y) * 0.85 - 8vmax),
+			var(--sgs-cursor-field-hue-a),
+			transparent 62%
+		),
+		radial-gradient(
+			52vmax circle at
+			calc(var(--sgs-cursor-x) * 1.15 + 16vmax)
+			calc(var(--sgs-cursor-y) * 1.1 + 4vmax),
+			var(--sgs-cursor-field-hue-b),
+			transparent 60%
+		),
+		radial-gradient(
+			46vmax circle at
+			calc(var(--sgs-cursor-x) * 0.6 + 2vmax)
+			calc(var(--sgs-cursor-y) * 1.25 + 18vmax),
+			var(--sgs-cursor-field-hue-c),
+			transparent 58%
+		),
+		linear-gradient(
+			var(--sgs-cursor-field-colour),
+			var(--sgs-cursor-field-colour)
+		);
 
 	--sgs-cursor-field-mask: radial-gradient(
 		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
@@ -273,16 +309,22 @@
 	[data-sgs-cursor-field="hue-shift"] {
 		--sgs-cursor-field-hue-a: color-mix(
 			in oklch,
-			var(--sgs-cursor-field-colour) 65%,
+			var(--sgs-cursor-field-colour) var(--sgs-cursor-field-base-share),
 			#ff00e0
 		);
 		--sgs-cursor-field-hue-b: color-mix(
 			in oklch,
-			var(--sgs-cursor-field-colour) 65%,
+			var(--sgs-cursor-field-colour) var(--sgs-cursor-field-base-share),
 			#00e5ff
+		);
+		--sgs-cursor-field-hue-c: color-mix(
+			in oklch,
+			var(--sgs-cursor-field-colour) var(--sgs-cursor-field-base-share),
+			#7cff5a
 		);
 	}
 }
+
 
 /* ==========================================================================
  * FIELD TYPE: parallax-pattern (FR-38-28 look 3, Bean-signed 2026-08-07).
@@ -385,7 +427,7 @@
 	pointer-events: none;
 	opacity: 0.9;
 	background-image: var(--sgs-cursor-field-layer);
-	background-attachment: fixed;
+	background-attachment: var(--sgs-cursor-field-attachment, fixed);
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
@@ -416,7 +458,7 @@
 		--sgs-cursor-field-participant-layer,
 		var(--sgs-cursor-field-layer)
 	);
-	background-attachment: fixed;
+	background-attachment: var(--sgs-cursor-field-attachment, fixed);
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);
 	-webkit-mask-image: var(--sgs-cursor-field-mask, none);

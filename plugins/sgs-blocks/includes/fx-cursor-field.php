@@ -204,14 +204,34 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 		$processor->set_attribute( 'data-sgs-cursor-field-shape', $shape );
 	}
 
-	// TRAIL is read by the emitter module, not by CSS — it eases the published
-	// pointer position so the pool lags slightly behind the cursor. Bounded to
+	// DRAG WEIGHT is read by the emitter module, not by CSS — it eases the
+	// published pointer position so the pool lags behind the cursor. Bounded to
 	// 0-100 and dropped when absent, so JS falls back to its own default.
-	$trail = $processor->get_attribute( 'data-sgs-fx-field-trail' );
-	if ( null !== $trail && '' !== $trail ) {
+	// ⚠ Renamed from "trail" 2026-08-24: this is a lerp follower and produces
+	// NO fading tail. It was named for an effect it does not have, which is the
+	// same defect class as D767's dead "Field size" control. A real trail is
+	// the particle engine's job.
+	$drag = $processor->get_attribute( 'data-sgs-fx-field-drag' );
+	if ( null !== $drag && '' !== $drag ) {
 		$processor->set_attribute(
-			'data-sgs-cursor-field-trail',
-			(string) \max( 0, \min( 100, (int) $trail ) )
+			'data-sgs-cursor-field-drag',
+			(string) \max( 0, \min( 100, (int) $drag ) )
+		);
+	}
+
+	// COLOUR BLEND (hue-shift only): how far the mesh's three hues depart from
+	// the client's own colour. Replaces the hardcoded 65% base share deleted
+	// 2026-08-24 — that was OUR rule, not the mesh technique's, and it was the
+	// direct cause of "the teal is very faint".
+	// ⚠ Read with an explicit null/'' test rather than an (int) cast, because
+	// 0 is a MEANINGFUL value here (single hue) — unlike $radius, where 0 means
+	// "unset, let the stylesheet default stand". Casting would make a client's
+	// deliberate 0 indistinguishable from never having touched the control.
+	$blend = $processor->get_attribute( 'data-sgs-fx-field-blend' );
+	if ( null !== $blend && '' !== $blend && \is_numeric( $blend ) ) {
+		$declarations[] = \sprintf(
+			'--sgs-cursor-field-blend:%d',
+			\max( 0, \min( 100, (int) $blend ) )
 		);
 	}
 

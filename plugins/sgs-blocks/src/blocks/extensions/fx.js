@@ -159,7 +159,7 @@ const FX_OPTION_LABELS = {
 	draw: __( 'Draw SVG lines', 'sgs-blocks' ),
 	'motion-path': __( 'Travel along a route', 'sgs-blocks' ),
 	morph: __( 'Morph between shapes', 'sgs-blocks' ),
-	'cursor-field': __( 'Cursor-follow background', 'sgs-blocks' ),
+	'cursor-field': __( 'Cursor follow', 'sgs-blocks' ),
 	'surface-treatment': __( 'Surface treatment', 'sgs-blocks' ),
 };
 
@@ -979,7 +979,8 @@ function addFxAttributes( settings, name ) {
 			 * NO `default: null` — a null on a number attr 400s every
 			 * ServerSideRender preview (D755).
 			 */
-			fxFieldTrail: { type: 'number' },
+			fxFieldBlend: { type: 'number' },
+			fxFieldDrag: { type: 'number' },
 			fxEase: { type: 'string', default: '' },
 			fxSplit: { type: 'string', default: '' },
 			fxMask: { type: 'string', default: '' },
@@ -1197,7 +1198,8 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// Cursor-field radius in px. The render layer clamps it to a range that
 		// still renders as a field rather than trusting the stored number.
 		'data-sgs-fx-field-radius': attributes.fxFieldRadius,
-		'data-sgs-fx-field-trail': attributes.fxFieldTrail,
+		'data-sgs-fx-field-blend': attributes.fxFieldBlend,
+		'data-sgs-fx-field-drag': attributes.fxFieldDrag,
 		'data-sgs-fx-field-shape': attributes.fxFieldShape,
 		// Surface-treatment intensity, 0-1. The render layer clamps it and
 		// drops a 0 back to unset — see the attribute declaration above.
@@ -2508,32 +2510,72 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									/>
 								</ToolsPanelItem>
 
+								{ 'hue-shift' === attributes.fxFieldType && (
+									<ToolsPanelItem
+										hasValue={ () =>
+											undefined !==
+											attributes.fxFieldBlend
+										}
+										label={ __(
+											'Colour blend',
+											'sgs-blocks'
+										) }
+										onDeselect={ () =>
+											setParam( {
+												fxFieldBlend: undefined,
+											} )
+										}
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __(
+												'Colour blend',
+												'sgs-blocks'
+											) }
+											value={ attributes.fxFieldBlend }
+											onChange={ ( value ) =>
+												setParam( {
+													fxFieldBlend: value,
+												} )
+											}
+											min={ 0 }
+											max={ 100 }
+											step={ 5 }
+											help={ __(
+												'How far the colours travel from your brand colour. 0 keeps a single hue; higher lets the other colours show through.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+								) }
+
 								<ToolsPanelItem
 									hasValue={ () =>
-										undefined !== attributes.fxFieldTrail
+										undefined !== attributes.fxFieldDrag
 									}
-									label={ __( 'Trail', 'sgs-blocks' ) }
+									label={ __( 'Drag weight', 'sgs-blocks' ) }
 									onDeselect={ () =>
 										setParam( {
-											fxFieldTrail: undefined,
+											fxFieldDrag: undefined,
 										} )
 									}
 								>
 									<RangeControl
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
-										label={ __( 'Trail', 'sgs-blocks' ) }
-										value={ attributes.fxFieldTrail }
+										label={ __( 'Drag weight', 'sgs-blocks' ) }
+										value={ attributes.fxFieldDrag }
 										onChange={ ( value ) =>
 											setParam( {
-												fxFieldTrail: value,
+												fxFieldDrag: value,
 											} )
 										}
 										min={ 0 }
 										max={ 100 }
 										step={ 5 }
 										help={ __(
-											'How far the effect lags behind the cursor. 0 follows exactly; higher feels heavier, as though the light has weight.',
+											'How heavily the effect lags behind the cursor. 0 follows exactly; higher feels weightier.',
 											'sgs-blocks'
 										) }
 									/>

@@ -471,7 +471,8 @@ def parse_treatment_frag_files(src: Sources) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# The eight invariants.
+# The invariants. THE COUNT IS DERIVED, never spelled out — the word
+# "eight" survived I8 being added and told every reader there were eight.
 # ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
@@ -492,7 +493,7 @@ def _dupes(items: list[str]) -> list[str]:
 
 
 def evaluate(src: Sources) -> list[Violation]:
-    """Run all eight invariants. Raises VacuousParse if any input cannot be read."""
+    """Run every invariant. Raises VacuousParse if any input cannot be read."""
     shipped = parse_shipped_effects(src)
     labels = parse_option_labels(src)
     picker = parse_picker_effects(src)
@@ -707,6 +708,12 @@ _INVARIANTS = {
     "I5": "param-scope rows name only real FX_ATTR_MAP keys and shipped effects",
     "I6": "the cursor-field type triad (picker / PHP allowlist / CSS paint rules) agrees",
     "I7": "the shader-treatment triad (PHP allowlist / JS presets / *.frag.js files) agrees",
+    # ADDED 2026-08-24. I8 has produced violations since D767 but was never
+    # listed here, so --check printed only I0-I7 and reported "all eight
+    # invariants hold" when there were nine. The check RAN; its PASS line
+    # simply never rendered, and a coverage audit reading this map would
+    # conclude I8 did not exist.
+    "I8": "masked cursor-field types read the LOCAL pointer pair and opt out of participants",
 }
 
 
@@ -735,7 +742,7 @@ def _print_report(src: Sources, violations: list[Violation]) -> None:
 # proven for the fields its self-test actually perturbs, and 'I added the comparison' is
 # not evidence the comparison runs."
 #
-# So: assert clean, then break EACH of the eight invariants in turn against a temp copy
+# So: assert clean, then break EACH invariant in turn against a temp copy
 # (I7's three independent legs each get their own break), assert each is caught by its
 # OWN invariant id, restore, re-assert clean. Then a final case — blank a source file —
 # proving the vacuity guard fires rather than reading green.
@@ -857,11 +864,18 @@ _CASES = (
         # mask blocks today, so a literal anchor on the mask text would match twice and
         # the break would not land. The parser reads the FIRST mask declaration in the
         # rule body, so an injected one ahead of the real one is what gets classified.
-        # The 22px pattern-size anchor is unique to spotlight-mask.
+        # The pattern-size anchor is unique to spotlight-mask.
+        # RE-ANCHORED 2026-08-24: the value became `22px 22px` when the torch
+        # tile was fixed (a single value left height `auto`, which resolves
+        # against the VIEWPORT under `background-attachment: fixed` — one
+        # viewport-tall row of ellipses instead of a dot screen). The old
+        # anchor stopped matching and --self-test correctly reported I8
+        # UNPROVEN. An anchor is part of the edit that moves it — the same
+        # trap I6 hit on 2026-08-24.
         "I8", "give a masked type a viewport-pair mask (the D767 bug, reintroduced)",
         "cursor_field_css",
-        "	--sgs-cursor-field-pattern-size: 22px;",
-        "	--sgs-cursor-field-pattern-size: 22px;\n"
+        "	--sgs-cursor-field-pattern-size: 22px 22px;",
+        "	--sgs-cursor-field-pattern-size: 22px 22px;\n"
         "	--sgs-cursor-field-mask: radial-gradient(\n"
         "		200px circle at var(--sgs-cursor-x) var(--sgs-cursor-y),\n"
         "		#000 0%,\n"
@@ -1008,7 +1022,7 @@ def _self_test() -> int:
               "invariants read green forever. Fix the check.")
         return 1
     print(f"[fx-list-drift --self-test] PASS — all {len(_CASES) + 1} cases: baseline clean, "
-          "each of the eight invariants provably fails on its own break (I7 across all "
+          "each invariant provably fails on its own break (I7 across all "
           "three of its legs), the vacuity guard fires, and the restore returns to clean.")
     return 0
 
@@ -1047,7 +1061,7 @@ def main() -> int:
             print(f"\n[fx-list-drift] {len(violations)} finding(s) — report mode, exit 0. "
                   "Run with --check to gate.")
         else:
-            print("\n[fx-list-drift] All eight invariants hold.")
+            print(f"\n[fx-list-drift] All {len(_INVARIANTS)} invariants hold.")
         return 0
 
     if violations:
@@ -1055,7 +1069,7 @@ def main() -> int:
               "violation(s) above. Each one is an effect or attribute that would ship "
               "looking healthy while doing nothing.")
         return 1
-    print("\n[fx-list-drift] GATE PASSED — all eight invariants hold.")
+    print(f"\n[fx-list-drift] GATE PASSED — all {len(_INVARIANTS)} invariants hold.")
     return 0
 
 
