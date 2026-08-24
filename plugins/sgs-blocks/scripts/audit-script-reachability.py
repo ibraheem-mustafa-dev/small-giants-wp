@@ -121,7 +121,12 @@ def discover() -> list[Path]:
 # literal backspace after ".js" and matched nothing — while printing IDENTICALLY
 # to a correct one, because a backspace is invisible. Only od -c showed it.
 # "-" last in the class needs no escape; "[.]" replaces an escaped dot.
-_FILE_TOKEN = re.compile(r"[A-Za-z0-9_.-]+[.](?:py|js)")
+# ⛔ THE SUFFIX LIST HERE MUST MATCH RUNNABLE_SUFFIXES. When discovery was widened
+# to .mjs/.php but this was not, those files could be FOUND yet never CREDITED —
+# `node scripts/motion-qa/run-live-probes.mjs` sits in package.json and the probe
+# still read as UNREFERENCED, because ".mjs" contains no ".js" the pattern can see.
+# A file the extractor cannot name is invisible no matter how many callers it has.
+_FILE_TOKEN = re.compile(r"[A-Za-z0-9_.-]+[.](?:py|mjs|js|php|sh)")
 
 # Module references, where the extension is ABSENT — the class that made the first
 # run report all 8 cheat-gate checks as unwired while run.py loads every one.

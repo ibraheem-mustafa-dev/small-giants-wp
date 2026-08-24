@@ -7,218 +7,13 @@
     "ambiguity_note": "A module stem shared by two files credits both. Deliberate: over-crediting hides a revival candidate, under-crediting invites deleting a live tool."
   },
   "counts": {
-    "UNREFERENCED": 42,
-    "DOC-ONLY": 64,
-    "WIRED": 397
+    "UNREFERENCED": 1,
+    "DOC-ONLY": 84,
+    "WIRED": 419
   },
   "scripts": [
     {
-      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector1_render_escaping.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector7_css_paint_flow.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector8_undeclared_enum.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/dead-api-checker/tokenize-calls.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/diff-gap-sanitiser.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/e2e-authoring-acceptance.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/golden-master-acceptance.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/golden-master-harness.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/migrate-content-collection-to-card-grid.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-carousel-loop.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-cursor-field.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-editor-css-warnings.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-first-paint.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-good-by-default.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel-focus.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-morph-geometry.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-motion-path-repeat.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step13-pin-focus.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step14-scrub-focus.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-stepn-image-sequence-pin.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-tier-w-surface.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c-editor.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/motion-qa/run-live-probes.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/crawl-assert.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/elementfrompoint-sweep.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/lib/openness-guard.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/palette-contrast-sweep.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/shoot-drawer-pairs.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/submenu-harness.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/preflight-acceptance.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/product-search-leak-check.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/row-fit-sweep.mjs",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture-v2.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/seed-mamas-products.php",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/surveys/census-tier-siblings.sh",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/surveys/fetch-native-control-contracts.sh",
-      "verdict": "UNREFERENCED",
-      "wired_via": []
-    },
-    {
-      "script": "plugins/sgs-blocks/scripts/test-pack-pricing-cascade.php",
+      "script": "plugins/sgs-blocks/scripts/audit-script-cull-candidates.py",
       "verdict": "UNREFERENCED",
       "wired_via": []
     },
@@ -263,6 +58,11 @@
       "wired_via": []
     },
     {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector8_undeclared_enum.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/converter/services/button_group.py",
       "verdict": "DOC-ONLY",
       "wired_via": []
@@ -274,6 +74,16 @@
     },
     {
       "script": "plugins/sgs-blocks/scripts/dbschema/retire_table.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/diff-gap-sanitiser.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/e2e-authoring-acceptance.php",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -303,7 +113,17 @@
       "wired_via": []
     },
     {
+      "script": "plugins/sgs-blocks/scripts/golden-master-acceptance.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/image-sequence-prep.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/migrate-content-collection-to-card-grid.php",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -433,12 +253,67 @@
       "wired_via": []
     },
     {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-carousel-loop.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-editor-css-warnings.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-first-paint.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel-focus.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-stepn-image-sequence-pin.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-tier-w-surface.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c-editor.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/crawl-assert.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/palette-contrast-sweep.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/submenu-harness.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/oracle/attribution_ground_truth.py",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
     {
       "script": "plugins/sgs-blocks/scripts/oracle/decompose_unattributed.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/preflight-acceptance.php",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -478,7 +353,27 @@
       "wired_via": []
     },
     {
+      "script": "plugins/sgs-blocks/scripts/row-fit-sweep.mjs",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture-v2.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/seed-mamas-products.php",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/surveys/audit-css-element-drift.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/census-tier-siblings.sh",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -489,6 +384,11 @@
     },
     {
       "script": "plugins/sgs-blocks/scripts/surveys/survey-extension-usage.py",
+      "verdict": "DOC-ONLY",
+      "wired_via": []
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/test-pack-pricing-cascade.php",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -534,11 +434,6 @@
     },
     {
       "script": "scripts/verify-restored-page.js",
-      "verdict": "DOC-ONLY",
-      "wired_via": []
-    },
-    {
-      "script": "scripts/wc-pages-responsive-audit.js",
       "verdict": "DOC-ONLY",
       "wired_via": []
     },
@@ -1271,6 +1166,13 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector1_render_escaping.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/content-role-detect/detector2_editjs_controls.py",
       "verdict": "WIRED",
       "wired_via": [
@@ -1300,6 +1202,13 @@
     },
     {
       "script": "plugins/sgs-blocks/scripts/content-role-detect/detector6_native_support_and_style_emission.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/content-role-detect/detector7_css_paint_flow.php",
       "verdict": "WIRED",
       "wired_via": [
         "script-call"
@@ -2019,6 +1928,13 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/dead-api-checker/tokenize-calls.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/drift-validator/validate.py",
       "verdict": "WIRED",
       "wired_via": [
@@ -2137,6 +2053,13 @@
     },
     {
       "script": "plugins/sgs-blocks/scripts/generate-tooling-catalogue.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/golden-master-harness.php",
       "verdict": "WIRED",
       "wired_via": [
         "script-call"
@@ -2718,7 +2641,81 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-cursor-field.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-good-by-default.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/motion-qa/probe-horizontal-panel.js",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-morph-geometry.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-motion-path-repeat.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step13-pin-focus.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-step14-scrub-focus.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/motion-qa/run-live-probes.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "npm",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs",
       "verdict": "WIRED",
       "wired_via": [
         "script-call"
@@ -2732,10 +2729,39 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/elementfrompoint-sweep.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "manifest",
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/lib/openness-guard.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/nav-qa/logical-props-lint.py",
       "verdict": "WIRED",
       "wired_via": [
         "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/shoot-drawer-pairs.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/nav-qa/sweep-drawer-variants.mjs",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
       ]
     },
     {
@@ -3138,6 +3164,13 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/product-search-leak-check.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/prove-selftest-can-fail.py",
       "verdict": "WIRED",
       "wired_via": [
@@ -3251,6 +3284,13 @@
       ]
     },
     {
+      "script": "plugins/sgs-blocks/scripts/seed-48-sku-fixture.php",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
       "script": "plugins/sgs-blocks/scripts/seed-component-adoption.py",
       "verdict": "WIRED",
       "wired_via": [
@@ -3319,6 +3359,13 @@
       "verdict": "WIRED",
       "wired_via": [
         "manifest"
+      ]
+    },
+    {
+      "script": "plugins/sgs-blocks/scripts/surveys/fetch-native-control-contracts.sh",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
       ]
     },
     {
@@ -3675,6 +3722,13 @@
     },
     {
       "script": "scripts/qc_anti_cheat_checks.py",
+      "verdict": "WIRED",
+      "wired_via": [
+        "script-call"
+      ]
+    },
+    {
+      "script": "scripts/wc-pages-responsive-audit.js",
       "verdict": "WIRED",
       "wired_via": [
         "script-call"
