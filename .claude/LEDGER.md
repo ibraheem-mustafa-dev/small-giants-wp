@@ -53,19 +53,37 @@ regression I shipped that every gate passed.
 - **Item F answered** — infinite scroll lives in `sgs/post-grid` (still works) but was NEVER
   wired into any archive template. Nothing was removed; restoring it is a choice, not a repair.
 
-### ▶ OPEN, in order
-1. **Item 8 — five templates never opened in the editor:** Search Results, Single Product,
-   Order Confirmation, Coming soon, Products by Attribute. ⛔ "No console errors" is NOT
-   "renders correctly" — assert `innerText.length` + a selector count and look at the canvas.
-2. **`sgs/site-footer-row` duplicate Layout panel** (D774) — mounts `ContainerWrapperControls`
-   without `showLayout={false}`, so picking "Stack" is silently coerced back to `grid`. Same
-   bug fixed for post-grid/testimonial-slider on 2026-08-12; this one was missed. Small fix.
-3. **Bean's call: the shop breadcrumb reads "Home / Archives: Shop"** (was "Home / Shop").
-   WP's own `Archives:` prefix, surfaced by the block swap. Strip it for consistency?
-4. **`layout` validation — design gate, do NOT build** (D774). The obvious allowlist is
-   REFUTED: it would break every testimonial-slider in its default state.
-5. **C1/C2** — `catalog-sorting` + `query-pagination` still unstyled.
+### ✅ ALSO CLOSED 2026-08-25 (second wave)
+- **Item 8 DONE — all five never-opened templates are CLEAN.** Opened in the Site Editor,
+  0 validation warnings and 0 error notices each: Search Results (60 blocks/733 chars),
+  Single Product (79/4362), Products by Attribute (62/1040), Order Confirmation (56/906),
+  Coming soon (44/581). **All eight templates Bean reported are now confirmed clean.**
+- **G3 answered:** 11 templates are ours (`src:"theme"`), 4 are WooCommerce's
+  (`src:"plugin"` — cart, checkout, order-confirmation, coming-soon).
+- **G2 answered by ATTEMPTING it, not by reading `attribute_public`:** four candidate URLs
+  tried; the only 200 was the homepage ignoring the query var (`body class="home blog"`).
+  Products by Attribute has no reachable front end — editor-only by construction.
+- **`sgs/site-footer-row` duplicate Layout control fixed** (`fdd7352e1`) and **verified in
+  the EDITOR**: with the block selected the sidebar shows only "ROW LAYOUT" (its own) —
+  the duplicate that silently coerced Stack->grid is gone. Class audit: all 30 blocks
+  mounting ContainerWrapperControls checked, **no other block carries this bug**.
+- **Breadcrumb prefix dropped** (`7939844f3`) — `Home / Archives: Shop` -> **`Home / Shop`**,
+  matching what woocommerce/breadcrumbs rendered before the swap. Canonical
+  `get_the_archive_title_prefix` filter, applied locally. Both visual-gate bypasses are
+  RETIRED with captures in `reports/visual-diff/breadcrumbs-2026-08-24.md`.
 
+### ▶ OPEN, in order
+1. **Bean's call: the `<h1>` on the blog archive still reads "Category: Uncategorized"**
+   while the shop's reads just "Shop". That is `core/query-title` — `archive-product.html`
+   sets `showPrefix:false`, `archive.html` does not. Arguably correct on a heading and
+   noise in a breadcrumb, so it was NOT changed unilaterally.
+2. **`layout` validation — DESIGN-GATED, do NOT build** (D774). The obvious allowlist is
+   REFUTED: `masonry`/`carousel`/`list`/`full`/`split` are legitimate values on gallery,
+   post-grid and testimonial-slider, and `full` is testimonial-slider's DEFAULT.
+   Recommendation put to Bean: a PHP allowlist scoped to the wrapper's own display
+   dispatch + suppress the meaningless `sgs-container--<invalid>` class. Awaiting his call.
+3. **C1/C2** — `woocommerce/catalog-sorting` + `core/query-pagination` still unstyled.
+4. **Item 4's 83 candidates** — needs Bean's eye per candidate, not a mechanical sweep.
 ### ⚠ Two traps this track proved live
 - **A one-child flex row is indistinguishable from a stack until a sibling appears** (D773).
   `sgs/container` defaults to `layout:"flex"` = a CSS ROW. Adding a second child makes the
