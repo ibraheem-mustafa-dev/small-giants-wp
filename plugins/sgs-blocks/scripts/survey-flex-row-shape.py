@@ -32,7 +32,17 @@ meant to achieve" failure this project keeps recording.
 import re, json, io, glob, os, sys
 from collections import Counter
 
-TOK = re.compile(r'<!--\s*(/?)wp:([a-z0-9-]+/[a-z0-9-]+)([^>]*?)(/?)-->', re.S)
+# ⛔ The namespace is OPTIONAL. Core blocks serialise WITHOUT one -- `wp:paragraph`,
+# `wp:list`, `wp:heading` -- while SGS blocks carry `wp:sgs/container`. The first version
+# of this regex required `namespace/name`, so every core-block child was INVISIBLE to the
+# child count. Containers mixing sgs/* with bare core blocks were undercounted and
+# misclassified NO-OP ("fewer than 2 children, wrap cannot apply"), which is exactly the
+# bucket that gets no `flexWrap` authored. Caught 2026-08-24 by a before/after computed
+# tally, not by this script: 3 elements changed on / and 6 on /shop/ after the default
+# flip, traced to framework-footer-default.php's "Quick Links" container -- sgs/heading +
+# wp:list, counted as 1 child. A detector that cannot see half the block vocabulary reports
+# a confident wrong answer.
+TOK = re.compile(r'<!--\s*(/?)wp:([a-z0-9-]+(?:/[a-z0-9-]+)?)([^>]*?)(/?)-->', re.S)
 DEC = json.JSONDecoder()
 
 
@@ -139,6 +149,9 @@ def main():
             (['sgs/card', 'sgs/card'], 'FLEX-ROW'),               # 2 is a pair, not a grid
             (['sgs/heading', 'sgs/button', 'sgs/text'], 'FLEX-ROW'),
             (['sgs/card', 'sgs/card', 'sgs/button'], 'FLEX-ROW'),  # heterogeneous
+            # Regression: bare core blocks are children too (2026-08-24 undercount bug).
+            (['sgs/heading', 'list'], 'FLEX-ROW'),
+            (['paragraph', 'paragraph', 'paragraph'], 'CARD-SHAPED'),
         ]
         bad = [(k, e, classify(k)) for k, e in cases if classify(k) != e]
         print(f"\nself-test: {len(cases) - len(bad)}/{len(cases)} pass")

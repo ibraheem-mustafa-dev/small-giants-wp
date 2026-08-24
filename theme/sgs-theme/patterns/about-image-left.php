@@ -15,7 +15,7 @@
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/500x600/0A5B5D/FFFFFF?text=About+Image","imageAlt":"About us","style":{"border":{"radius":"16px"}}} /-->
 		<!-- /wp:sgs/container -->
-		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
+		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}","flexWrap":"wrap"} -->
 			<!-- wp:sgs/text {"text":"About Us","textColour":"primary","fontSize":{"desktop":"small"},"fontWeight":"700","textTransform":"uppercase","letterSpacing":{"desktop":0.1},"letterSpacingUnit":"em"} /-->
 			<!-- wp:sgs/heading {"content":"We've Been Building Exceptional Experiences Since 2010","fontSize":{"desktop":"xx-large"}} /-->
 			<!-- wp:sgs/text {"text":"Our team of dedicated professionals brings together decades of experience to deliver outstanding results for every client. We believe in quality, transparency, and building lasting relationships.","textColour":"text-muted"} /-->

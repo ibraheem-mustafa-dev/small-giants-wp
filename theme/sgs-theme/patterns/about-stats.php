@@ -9,7 +9,7 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","contentWidth":{"desktop":"800px"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
+<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","contentWidth":{"desktop":"800px"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap"} -->
 
 	<!-- wp:sgs/text {"text":"Who We Are","textAlign":"center","textColour":"primary","fontSize":{"desktop":"small"},"fontWeight":"700","textTransform":"uppercase","letterSpacing":{"desktop":0.1},"letterSpacingUnit":"em"} /-->
 
@@ -22,11 +22,11 @@
 			<!-- wp:sgs/heading {"content":"500+","textAlign":"center","level":"h3","textColour":"primary","fontSize":{"desktop":"hero"}} /-->
 			<!-- wp:sgs/text {"text":"Projects Completed","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
 		<!-- /wp:sgs/container -->
-		<!-- wp:sgs/container {"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}} -->
+		<!-- wp:sgs/container {"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"},"flexWrap":"wrap"} -->
 			<!-- wp:sgs/heading {"content":"98%","textAlign":"center","level":"h3","textColour":"primary","fontSize":{"desktop":"hero"}} /-->
 			<!-- wp:sgs/text {"text":"Client Satisfaction","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
 		<!-- /wp:sgs/container -->
-		<!-- wp:sgs/container {"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}} -->
+		<!-- wp:sgs/container {"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"},"flexWrap":"wrap"} -->
 			<!-- wp:sgs/heading {"content":"15+","textAlign":"center","level":"h3","textColour":"primary","fontSize":{"desktop":"hero"}} /-->
 			<!-- wp:sgs/text {"text":"Years of Experience","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"small"}} /-->
 		<!-- /wp:sgs/container -->

@@ -37,7 +37,7 @@
 
 	<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","gridTemplateColumns":{"desktop":"2fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"48px","mobile":"32px"},"alignItems":"top"} -->
 
-		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"},"flexWrap":"wrap"} -->
 
 			<!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
@@ -47,7 +47,7 @@
 
 		<!-- /wp:sgs/container -->
 
-		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Quick Links"}} -->
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Quick Links"},"flexWrap":"wrap"} -->
 
 			<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
@@ -58,7 +58,7 @@
 
 		<!-- /wp:sgs/container -->
 
-		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"}} -->
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"},"flexWrap":"wrap"} -->
 
 			<!-- wp:sgs/heading {"content":"Contact","level":"h2","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
