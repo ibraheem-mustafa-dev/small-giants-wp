@@ -708,7 +708,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 20 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 577 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 578 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 2 | working-area helpers |
 | `.claude/hooks/` | 9 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -779,11 +779,14 @@ Each entry's purpose is quoted from the script's own header.
 | 54 | `check-ksort-before-hash.py` | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
 | 55 | `check-tier-object-cast.py` | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
 | 56 | `check-single-instance-invariants.py` | Single-instance invariant register — four named prohibitions, one shared mechanism. |
-| 57 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 58 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 59 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 57 | `check-withdrawn-figures.py` | a figure withdrawn in one file stays withdrawn everywhere. |
+| 58 | `migrate-length-sanitiser.py` | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
+| 59 | `run-gates.py` | the consolidated gate runner. |
+| 60 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 61 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 62 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
 
-**59 gating scripts.** Regenerate this whole section with:
+**62 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -791,7 +794,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (59 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 14 resolved scripts) — 71 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (62 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 14 resolved scripts) — 74 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -1036,6 +1039,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(0), exit(1)
 
+**`plugins/sgs-blocks/scripts/check-withdrawn-figures.py`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: `tmp`
+- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
+- Env vars read: `SGS_REPO`
+- Non-zero exit sites found: SystemExit(non-zero on failure)
+
 **`plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
@@ -1135,6 +1145,13 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--apply-to`, `--dry-run`, `--inline-styles`, `--json`, `--mode`, `--no-new-tokens`, `--self-test`, `--theme`, `--variation`, `path`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`** (build)
+- Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--apply`, `--check`, `--fix`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/no-inline/check-no-inline.py`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
@@ -1154,6 +1171,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - CLI flags read: `--apply`, `--check`, `--fix`, `--only`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/run-gates.py`** (build)
+- Reads: `_BUILD_DEPLOY`, `_GATES_JSON`
+- Writes: `_GATES_JSON`, `tmp`, `tmp2`
+- CLI flags read: `--assert-wired`, `--list`, `--no-write`, `--only`, `--self-test`, `--tier`, `--time`, `-v`
+- Non-zero exit sites found: 0, 1, SystemExit(non-zero on failure)
 
 **`plugins/sgs-blocks/scripts/run-motion-fx-generators.js`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1226,7 +1249,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 504 scripts
+#### `plugins/sgs-blocks/scripts/` — 505 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1304,6 +1327,7 @@ for the verb you happen to have in mind.
 | `check-undefined-refs.selftest.js` | script-call | Self-test for check-undefined-refs.js. |
 | `check-universal-fit.js` | manifest+script-call | WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension |
 | `check-unresolvable-token-refs.py` | — | advisory scan for var(--name) references |
+| `check-withdrawn-figures.py` | manifest | a figure withdrawn in one file stays withdrawn everywhere. |
 | `check-wrapper-capability-preconditions.js` | manifest+npm | STRUCTURAL GUARD for the shared-wrapper capability declarations in each block's `supports.sgs` — Spec 35 §F.2.1 + §F.2.2 (D637, step 7 of the… |
 | `colour-codemod/adopt.js` | — | `<SgsColourPanel rows={[...]}>`) into a call to the shared row helper it is semantically identical to: fillRow / textRow / borderRow |
 | `colour-codemod/fix.js` | manifest+script-call+skill+test-import | Scope: TIER A ONLY — rows survey.js verdicts as `AUTOFIXABLE:helper-at-existing-selector`, AND (this file's own further narrowing, documented in… |
@@ -1531,7 +1555,7 @@ for the verb you happen to have in mind.
 | `migrate-core-blocks/publish-pattern-pair.py` | — | Publish a BEFORE/AFTER canary page pair for a migrated pattern file. |
 | `migrate-core-blocks/upgrade-button-presets.py` | — | One-shot: upgrade already-emitted sgs/button instances to use PRESETS. |
 | `migrate-gallery-object-model.js` | — | onto the Spec 37 FR-37-16 {desktop,tablet,mobile} object model. |
-| `migrate-length-sanitiser.py` | — | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
+| `migrate-length-sanitiser.py` | manifest | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
 | `migrate-overlay-tier-axis.py` | — | Move the overlay's responsive tier axis OFF colour and ONTO opacity (D739). |
 | `migrate-render-closures.py` | — | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
 | `migrate-theme-attr-rename.py` | — | rename ONE attribute key, scoped to ONE block slug, |
@@ -1670,7 +1694,7 @@ for the verb you happen to have in mind.
 | `recogniser/test_per_section_convention_voter.py` | — | Self-test for per-section-convention-voter.py — covers vote_block_slug. |
 | `remove-vacuous-style-engine-guard.py` | manifest+npm | Delete the vacuous `function_exists( 'wp_style_engine_get_styles' )` guard. |
 | `row-fit-sweep.mjs` | — | row-fit-sweep — reusable Playwright width-sweep verification harness. |
-| `run-gates.py` | npm+script-call | the consolidated gate runner. |
+| `run-gates.py` | manifest+npm+script-call | the consolidated gate runner. |
 | `run-motion-fx-generators.js` | manifest+npm+script-call | motion-fx generator chain (seed-motion-fx-registry.py, generate-fx-effects-php.py, generate-fx-qualifying-blocks.py). |
 | `scan-component-adoption.js` | script-call | WHY THIS EXISTS |
 | `seed-48-sku-fixture-v2.php` | — | SGS 48-SKU Fixture — v2 ADDITIVE presentation-meta seeder (Spec 27 Phase 2). |

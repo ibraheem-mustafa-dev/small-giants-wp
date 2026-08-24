@@ -161,10 +161,14 @@ returned zero findings while the shared wrapper shipped `min-height:Array` to 73
 declarations.
 
 ⛔ **`block_attributes` also cannot see WP-NATIVE `supports` controls** — and the client
-sees those identically to a declared attr. Measured on `letterSpacing`: the DB returns 10
-rows across 5 blocks; the disk returns 17 `block.json` files, because 12 declare it via
-`supports.typography` instead. A DB-derived list for a client-visible change silently
-omits them.
+sees those identically to a declared attr. So a DB-derived list for a client-visible
+change silently omits every block that declares the capability through `supports`.
+
+**Reconcile both sides yourself; do not trust a number written here.** Three readers of
+this paragraph produced three different totals for `letterSpacing`, because a raw grep
+counts comment-only mentions as declarations — the same bare-mention trap this document
+names at Step 4, which it had not applied to its own worked example. **Parse each
+`block.json` and classify per file: declared attr / `supports` flag / mention only.**
 
 ⚠ **A DB/disk count mismatch is a FINDING, not noise.** Reconcile it before applying: it is
 usually a stale row or an unseeded block, and it means one of your two sources is lying.
@@ -181,6 +185,16 @@ side is done. That gap is recorded at `migrate-tier-object.py:1484`; the include
 
 Build **one** instance. Deploy it. Get Bean's eye on it (R-31-13). Write the settled shape
 down as the transform's target **before you census anything**.
+
+⛔ **If the target shape is ALREADY settled and recorded, Step 3 is satisfied — say so and
+move on.** A repo standard that Bean has already locked (e.g. `plugins/sgs-blocks/CLAUDE.md`'s
+`TypographyControls` + `sgs_typography_css_rule` rule, R-22-13) IS a settled shape; you do not
+need a fresh build-deploy-eye cycle per attribute to re-confirm what he has already ruled.
+**Cite the rule and the blocks already conforming to it, then continue.** Step 3 exists to stop
+you inventing a shape mid-rollout — not to re-litigate a decided one.
+⚠ If the standard exists but the blocks disagree about it in RENDER (as `text` and `heading`
+do for `letterSpacing`), the shape is NOT settled — that disagreement is the thing to take to
+Bean, and it is exactly what Step 5's cross-file test surfaces.
 
 ⚠ **Deploying ONE uncommitted instance trips the dirty gate.** `build-deploy.py`
 deliberately does not skip `src/`, so it aborts with `deployed-files-dirty` and offers
@@ -211,6 +225,24 @@ settled only by Bean looking at a rendered thing.
 ⛔ **A line classifier applied to a multi-line shape is the commonest way a codemod
 corrupts 5% of its targets silently.**
 
+### ⛔ Anchoring: ONE decision, and this document used to give three answers
+
+`ROOT` is where your corpus comes from, so getting it wrong silently empties or explodes
+your census. There is one rule with two cases:
+
+| Your script lives... | Anchor on | Why |
+|---|---|---|
+| **inside the repo** (the normal case) | `__file__`, walking up | Deterministic regardless of the caller's cwd |
+| **anywhere else** (a scratch dir, a temp harness) | a **repo-UNIQUE marker file** | Walking up from `__file__` never reaches the repo |
+
+⛔ **`CLAUDE.md` is NOT a repo-unique marker.** `plugins/sgs-blocks/` has its own. A gate
+anchored on it, invoked from that directory, silently scanned **4 files instead of 380** and
+printed a clean PASS. Use something that exists once — `.claude/THE-MIGRATION-METHOD.md`.
+
+⚠ Separately from the anchor: **scope the GLOB** so it never descends into
+`.claude/worktrees/`, `node_modules/`, `build/`, `vendor/` or `scripts/**/fixtures/` — and
+prune during the walk, not after. See hazards.
+
 ### The skeleton — `migrate-length-sanitiser.py` ALONE
 
 ⚠ **`migrate-render-closures.py` is a worked EXAMPLE, not a second skeleton.** Verified: it
@@ -223,12 +255,18 @@ with `grep -n '^def \|^SELF_TEST\|^EXCLUDE' plugins/sgs-blocks/scripts/migrate-l
 
 | Part | Where | What it does |
 |---|---|---|
-| `ROOT` | `:53` | Repo-root path constant — **anchored off `__file__`, and that is load-bearing** (see hazards) |
+| `ROOT` | `:53` | Repo-root path constant. **Anchoring is a THREE-WAY decision — read the box below before you copy it** |
 | `targets()` | `:77` | The target list. **Copy this for a call-site migration** — the DB cannot produce one (Step 2) |
-| `rel(path)` | `:83` | Repo-relative path for reporting |
-| `scan(...)` | `:136` | The driver: walks targets, classifies, tallies, optionally writes |
-| `self_test()` | `:190` | Runs the fixtures, returns failures |
-| `main()` | `:266` | The CLI contract below |
+| `BARE_OK` | `:91` | Every surviving bare mention, pinned by per-file count, each with a written reason |
+| `crosscheck()` | `:109` | The whole-corpus stage. `--check` gates on what it returns |
+| `rel(path)` | `:143` | Repo-relative path for reporting |
+| `scan(...)` | `:196` | The driver: walks targets, classifies, tallies, optionally writes |
+| `self_test()` | `:261` | Runs the fixtures, returns failures |
+| `main()` | `:337` | The CLI contract below |
+
+⚠ **These moved once already.** Adding `crosscheck()` shifted every symbol below it by
+~55 lines and four of six citations here were wrong for two commits. Re-derive rather than
+trust: `grep -n '^def \|^SELF_TEST\|^BARE_OK\|^ROOT' plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`
 
 ### The CLI contract — copy verbatim
 
@@ -488,7 +526,7 @@ uncovered list names files you did not write, stop and hand back.**
 # Known hazards, each earned
 
 - **Never `open(path,'w')` — write atomically.** All three models truncate on open
-  (`migrate-length-sanitiser.py:159`, `migrate-render-closures.py:242`,
+  (`migrate-length-sanitiser.py:230`, `migrate-render-closures.py:242`,
   `migrate-tier-object.py:825`/`:921`). This is the one place you must improve on them:
   **a truncated file passes `--check` GREEN**, because the scan skips files not containing
   the old symbol and an empty file does not contain it.
