@@ -522,12 +522,15 @@ typefaces were always site fonts.
 
 ## ⛔ Open items carried out of the 2026-08-24 wave — read D758 before touching any
 
-1. **Shop last-row stretch — STILL BROKEN, deliberately.** Row 1 = 3 cards at 313px, final
-   row = 2 at 482px. The `auto-fill` grid fix was REVERTED because it rendered every card at
-   91px inside a correct 313px track. **D758 carries the ruled-out list — stale CSS,
-   competing rules, selector miss and grid-stretch are all eliminated and measured.** Start
-   from the unresolved contradiction: inline `width:100%` gave 313px, the identical
-   stylesheet declaration gave 91px.
+1. **Shop last-row stretch — ✅ RESOLVED 2026-08-24 (D760), supersedes D758's warning below.**
+   Not a contradiction: an inline `width:100%` (specificity 1,0,0,0) always won; under GRID a
+   WooCommerce inline `<style>` rule inside a `@media` block — invisible to a cascade audit
+   that does not descend into conditional rules — took over and resolved its percentage
+   against the grid track, giving 91px. Fixed by winning on specificity (0,5,1; a tie is not
+   enough, source order decides ties and WooCommerce's sheet loads after ours). Shipped
+   `1e7e2755`, theme 1.5.67. Measured live: 5×313.3px at 1440px, 5×340.5px at 768px, no
+   stretch, no overflow at 375px. D758's original text is left below for the record of what
+   was ruled out, but its "do not re-attempt" instruction no longer applies.
 2. **`solid` option-picker contrast fix — deployed, NOT verified.** No live surface renders a
    solid-preset picker (`showPickers:false` on shop + rail; buybox uses `outlined`). Needs a
    product-card instance with pickers on before it can be called done.
