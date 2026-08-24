@@ -172,7 +172,16 @@ function textSharesElementWithBackground( elements, attrName ) {
 	}
 	return false;
 }
-const { resolveComponentFiles } = require( '../core/components' );
+// discoverBlockDirNames + getSharedOwnerScan were EXTRACTED to core/components.js
+// on 2026-08-24 so the components adoption-ledger writer can call the SAME
+// one-hop resolver rather than growing a second one that disagrees with this.
+// Behaviour is unchanged: proven by a byte-identical `node run.js --json` md5
+// across the move.
+const {
+	resolveComponentFiles,
+	discoverBlockDirNames,
+	getSharedOwnerScan,
+} = require( '../core/components' );
 
 const RAW_COLOUR_COMPONENT_NAMES = new Set( [
 	'ColorPalette',
@@ -232,13 +241,6 @@ const {
  * walk keyed on ctx.roster.entries would silently find zero blocks and never
  * exercise this axis in self-test at all.
  */
-function discoverBlockDirNames( ctx ) {
-	if ( ! fs.existsSync( ctx.blocksDir ) ) return [];
-	return fs.readdirSync( ctx.blocksDir ).filter( ( name ) => {
-		const full = path.join( ctx.blocksDir, name );
-		return fs.statSync( full ).isDirectory() && fs.existsSync( path.join( full, 'block.json' ) );
-	} );
-}
 
 /**
  * Resolve + record ONE per-block row's paint mechanism (Step 2,
@@ -338,48 +340,6 @@ function gradientPathMatchesMechanism( mechanisms, gradientCapable, statesHasGra
 	return gradientCapable === true || statesHasGradient === true;
 }
 
-/**
- * Every shared-component file reached by ANY on-disk block, mapped to the
- * set of block slugs that reach it. Memoised on `ctx` itself (not module
- * state) so a fresh ctx — one real run.js invocation, or one self-test
- * fixture run — gets a correctly-scoped, independent computation; ctx is the
- * SAME object across every per-block call within one run, so this only runs
- * once per run.
- *
- * `resolveComponentFiles` is passed `[ ctx.componentsDir ]` as an extra
- * search directory — a no-op duplicate against the real tree in a live run
- * (ctx.componentsDir === the real src/components already scanned by
- * default), but load-bearing for self-test: buildTestCtx points
- * ctx.componentsDir at the fixture's own isolated `_components/` copy, so a
- * fixture can declare its own shared panel without depending on any real,
- * actively-edited framework file.
- */
-function getSharedOwnerScan( ctx ) {
-	if ( ctx.__rule31SharedOwnerScan ) return ctx.__rule31SharedOwnerScan;
-
-	const compFiles = resolveComponentFiles( ctx.componentsDir ? [ ctx.componentsDir ] : [] );
-	const ownerMountedBy = new Map(); // ownerFile -> Set(blockSlug)
-	const parseFile = ( f ) => {
-		const p = ctx.cache.parse( f );
-		return p.ok ? p.ast : null;
-	};
-
-	for ( const name of discoverBlockDirNames( ctx ) ) {
-		const entryEditFile = path.join( ctx.blocksDir, name, 'edit.js' );
-		const parsed = ctx.cache.parse( entryEditFile );
-		if ( ! parsed.ok ) continue;
-		const reached = reachedComponents( parsed.ast, compFiles, parseFile );
-		for ( const ownerFile of reached.values() ) {
-			if ( ! ownerFile ) continue; // null = the block's own edit.js — already covered per-block
-			if ( ! ownerMountedBy.has( ownerFile ) ) ownerMountedBy.set( ownerFile, new Set() );
-			ownerMountedBy.get( ownerFile ).add( `sgs/${ name }` );
-		}
-	}
-
-	const result = { ownerMountedBy };
-	ctx.__rule31SharedOwnerScan = result;
-	return result;
-}
 
 /**
  * Scans ONE owner file for colour rows — SgsColourPanel `rows` (resolved via

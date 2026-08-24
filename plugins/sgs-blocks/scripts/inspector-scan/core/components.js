@@ -254,9 +254,79 @@ function resolveComponentFiles( extraDirs ) {
 	return map;
 }
 
+
+// ---------------------------------------------------------------------------
+// One-hop block -> shared-component ownership (extracted from rule 31, 2026-08-24)
+// ---------------------------------------------------------------------------
+//
+// A block that reaches a component THROUGH a shared panel is a real adopter of
+// that component. Counting only direct `edit.js` imports undercounts badly --
+// measured on the colour surface, three counting methods disagreed by ~50%.
+//
+// Lives here rather than in a rule so there is exactly ONE implementation with
+// two callers: inspector-scan rule 31, and the `components` adoption-ledger
+// writer in sgs-update-v2.py Stage 1. `reachedComponents` is imported from
+// ./golden; that direction is safe because golden.js requires only fs/path/babel
+// and never requires this module, so no cycle is created.
+
+const { reachedComponents } = require( './golden' );
+
+function discoverBlockDirNames( ctx ) {
+	if ( ! fs.existsSync( ctx.blocksDir ) ) return [];
+	return fs.readdirSync( ctx.blocksDir ).filter( ( name ) => {
+		const full = path.join( ctx.blocksDir, name );
+		return fs.statSync( full ).isDirectory() && fs.existsSync( path.join( full, 'block.json' ) );
+	} );
+}
+
+/**
+ * Every shared-component file reached by ANY on-disk block, mapped to the
+ * set of block slugs that reach it. Memoised on `ctx` itself (not module
+ * state) so a fresh ctx — one real run.js invocation, or one self-test
+ * fixture run — gets a correctly-scoped, independent computation; ctx is the
+ * SAME object across every per-block call within one run, so this only runs
+ * once per run.
+ *
+ * `resolveComponentFiles` is passed `[ ctx.componentsDir ]` as an extra
+ * search directory — a no-op duplicate against the real tree in a live run
+ * (ctx.componentsDir === the real src/components already scanned by
+ * default), but load-bearing for self-test: buildTestCtx points
+ * ctx.componentsDir at the fixture's own isolated `_components/` copy, so a
+ * fixture can declare its own shared panel without depending on any real,
+ * actively-edited framework file.
+ */
+function getSharedOwnerScan( ctx ) {
+	if ( ctx.__rule31SharedOwnerScan ) return ctx.__rule31SharedOwnerScan;
+
+	const compFiles = resolveComponentFiles( ctx.componentsDir ? [ ctx.componentsDir ] : [] );
+	const ownerMountedBy = new Map(); // ownerFile -> Set(blockSlug)
+	const parseFile = ( f ) => {
+		const p = ctx.cache.parse( f );
+		return p.ok ? p.ast : null;
+	};
+
+	for ( const name of discoverBlockDirNames( ctx ) ) {
+		const entryEditFile = path.join( ctx.blocksDir, name, 'edit.js' );
+		const parsed = ctx.cache.parse( entryEditFile );
+		if ( ! parsed.ok ) continue;
+		const reached = reachedComponents( parsed.ast, compFiles, parseFile );
+		for ( const ownerFile of reached.values() ) {
+			if ( ! ownerFile ) continue; // null = the block's own edit.js — already covered per-block
+			if ( ! ownerMountedBy.has( ownerFile ) ) ownerMountedBy.set( ownerFile, new Set() );
+			ownerMountedBy.get( ownerFile ).add( `sgs/${ name }` );
+		}
+	}
+
+	const result = { ownerMountedBy };
+	ctx.__rule31SharedOwnerScan = result;
+	return result;
+}
+
 module.exports = {
 	discover,
 	resolveComponentFiles,
+	discoverBlockDirNames,
+	getSharedOwnerScan,
 	COMPONENTS_INDEX,
 	COMPONENTS_DIR,
 	REAL_SRC,
