@@ -266,6 +266,19 @@ class SGS_Motion_Registry {
 		),
 
 		/*
+		 * Magnetic pull (Spec 38 FR-38-30). NO deps — one rAF-throttled
+		 * document listener writing two custom properties, no GSAP at all, so
+		 * a page using this and no Tier G effect ships zero GSAP bytes. The
+		 * 2026-08-02 ecosystem survey reached the same call independently:
+		 * magnetic buttons are ~20-30 lines of vanilla, "write it, don't
+		 * dependency it".
+		 */
+		'@sgs/fx-magnet'           => array(
+			'path' => 'build/shared/effects/fx-magnet.js',
+			'deps' => array(),
+		),
+
+		/*
 		 * Infinite-loop carousels (Spec 38 §11 loop FR, Bean's ruling that
 		 * looping must be an INDEPENDENT control, never tied to drag). NO
 		 * deps — pure DOM clone + scrollLeft management, no GSAP. Registered
@@ -350,6 +363,16 @@ class SGS_Motion_Registry {
 		 * months (D452).
 		 */
 		'cursor-field'     => 'assets/css/fx-cursor-field.css',
+
+		/*
+		 * Magnet needs one for the same reason cursor-field does: the JS
+		 * writes only `--magnet-x`/`--magnet-y` VALUES (Spec 32), so without
+		 * this stylesheet the module would faithfully track a pointer while
+		 * nothing on the page moved — the bug shape where every artefact looks
+		 * correct and the page does nothing, which is how morph sat broken for
+		 * months (D452).
+		 */
+		'magnet'           => 'assets/css/fx-magnet.css',
 
 		/*
 		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). The

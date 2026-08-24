@@ -2,12 +2,14 @@
 	"sgs/before-after": [
 		"carousel-loop",
 		"draggable",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
 		"surface-treatment"
 	],
 	"sgs/button": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -16,11 +18,13 @@
 	],
 	"sgs/buybox": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/collapsible-text": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -31,12 +35,14 @@
 		"cursor-field",
 		"draw",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scrub"
 	],
 	"sgs/counter": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -47,6 +53,7 @@
 		"cursor-field",
 		"draw",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
 		"pin-scrub",
@@ -54,6 +61,7 @@
 		"surface-treatment"
 	],
 	"sgs/decorative-image": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
@@ -61,6 +69,7 @@
 	],
 	"sgs/gallery": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
@@ -68,12 +77,14 @@
 	],
 	"sgs/google-reviews": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
 		"surface-treatment"
 	],
 	"sgs/heading": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -84,6 +95,7 @@
 		"cursor-field",
 		"draw",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
 		"pin-scrub",
@@ -92,12 +104,14 @@
 	],
 	"sgs/icon": [
 		"draw",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/image-sequence": [
 		"image-sequence",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
@@ -105,6 +119,7 @@
 	],
 	"sgs/info-box": [
 		"cursor-field",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -112,6 +127,7 @@
 		"split-reveal"
 	],
 	"sgs/label": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -121,6 +137,7 @@
 	"sgs/multi-button": [
 		"cursor-field",
 		"draw",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub"
@@ -129,6 +146,7 @@
 		"cursor-field",
 		"draw",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
 		"pin-scrub",
@@ -136,12 +154,14 @@
 	],
 	"sgs/post-grid": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
 		"surface-treatment"
 	],
 	"sgs/pricing-table": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -149,6 +169,7 @@
 		"split-reveal"
 	],
 	"sgs/product-card": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -158,6 +179,7 @@
 	],
 	"sgs/product-faq": [
 		"cursor-field",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -165,6 +187,7 @@
 		"split-reveal"
 	],
 	"sgs/quote": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -172,6 +195,7 @@
 		"split-reveal"
 	],
 	"sgs/responsive-logo": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
@@ -179,11 +203,13 @@
 	],
 	"sgs/separator": [
 		"draw",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/team-member": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -193,6 +219,7 @@
 	],
 	"sgs/testimonial": [
 		"cursor-field",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -201,6 +228,7 @@
 		"surface-treatment"
 	],
 	"sgs/text": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -210,6 +238,7 @@
 	"sgs/timeline": [
 		"carousel-loop",
 		"draggable",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -221,6 +250,7 @@
 		"cursor-field",
 		"draw",
 		"horizontal-panel",
+		"magnet",
 		"morph",
 		"motion-path",
 		"pin-scrub",
@@ -231,12 +261,14 @@
 	],
 	"sgs/trustpilot-reviews": [
 		"carousel-loop",
+		"magnet",
 		"morph",
 		"motion-path",
 		"scrub",
 		"surface-treatment"
 	],
 	"sgs/whatsapp-cta": [
+		"magnet",
 		"morph",
 		"motion-path",
 		"scramble",

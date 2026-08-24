@@ -57,6 +57,14 @@
 			"scroll"
 		]
 	},
+	"magnet": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"hover"
+		]
+	},
 	"morph": {
 		"in_picker": true,
 		"owns_scroll_transform": false,

@@ -197,6 +197,24 @@ if ( moduleConfig ) {
 				'fx-cursor-field.js'
 			),
 			/*
+			 * Magnetic pull (Spec 38 FR-38-30) — Tier V, same shape as
+			 * fx-cursor-field above: one rAF-throttled listener writing two
+			 * custom properties, no GSAP import, so a page using this and no
+			 * Tier G effect ships zero GSAP bytes.
+			 *
+			 * FILENAME is load-bearing exactly as it is for the entries above:
+			 * the PHP registry derives its module ID as
+			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `magnet` — so this must stay `fx-magnet.js`.
+			 */
+			'shared/effects/fx-magnet': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-magnet.js'
+			),
+			/*
 			 * Infinite-loop carousels (Spec 38 §11 loop FR) — Tier V, same
 			 * shape as fx-cursor-field above: pure DOM clone + scrollLeft
 			 * management, no GSAP import, so a page using this and no Tier G

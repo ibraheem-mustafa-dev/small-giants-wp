@@ -148,6 +148,19 @@ const SHIPPED_EFFECTS = [
 	// below carries a real preset picker plus duotone colours plus an
 	// intensity fine-tune.
 	'surface-treatment',
+	// `magnet` ADDED 2026-08-24 (FR-38-30). Meets this array's single
+	// condition on every leg, each verified rather than assumed: the runtime
+	// module exists (`shared/effects/fx-magnet.js`, driving the generalised
+	// `magnet.js` that has shipped since the mega-menu build), the registry
+	// enqueues it AND its stylesheet on the same conditional terms
+	// (`class-sgs-motion-registry.php` MODULES + EFFECT_STYLES), the generic
+	// `fx-attributes.php` injector stamps its three params from FX_ATTR_MAP,
+	// and the panel below carries three real controls (pull / range / axis).
+	//
+	// ⚠ Heeding this array's own warning, written when `cursor-field` was
+	// built everywhere else and omitted here: an effect fully wired in every
+	// other layer is still DEAD CODE until its name appears in this array.
+	'magnet',
 ];
 
 const FX_OPTION_LABELS = {
@@ -161,6 +174,7 @@ const FX_OPTION_LABELS = {
 	morph: __( 'Morph between shapes', 'sgs-blocks' ),
 	'cursor-field': __( 'Cursor follow', 'sgs-blocks' ),
 	'surface-treatment': __( 'Surface treatment', 'sgs-blocks' ),
+	magnet: __( 'Magnetic pull', 'sgs-blocks' ),
 };
 
 /**
@@ -372,6 +386,19 @@ const FX_FIELD_TYPE_OPTIONS = [
  * matching `[data-sgs-cursor-field-shape="…"]` rule in fx-cursor-field.css and
  * an entry in SGS_FX_CURSOR_FIELD_SHAPES, or it renders a circle silently.
  */
+/**
+ * Which way a magnet may pull. 'both' is the default because a magnetic BUTTON
+ * reads as following the cursor; the single-axis options exist for a magnet on
+ * something that must not drift out of a row or a column.
+ *
+ * @type {Array<{label: string, value: string}>}
+ */
+const FX_MAGNET_AXIS_OPTIONS = [
+	{ label: __( 'Follows the cursor', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Side to side only', 'sgs-blocks' ), value: 'x' },
+	{ label: __( 'Up and down only', 'sgs-blocks' ), value: 'y' },
+];
+
 const FX_FIELD_SHAPE_OPTIONS = [
 	{ label: __( 'Circle', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Wide ellipse', 'sgs-blocks' ), value: 'wide' },
@@ -979,6 +1006,9 @@ function addFxAttributes( settings, name ) {
 			 * NO `default: null` — a null on a number attr 400s every
 			 * ServerSideRender preview (D755).
 			 */
+			fxMagnetAxis: { type: 'string', default: '' },
+			fxMagnetRadius: { type: 'number' },
+			fxMagnetStrength: { type: 'number' },
 			fxFieldBlend: { type: 'number' },
 			/* Stored as `fxFieldTrail`, shown to the client as "Drag weight".
 			   The names differ DELIBERATELY. This is a lerp follower and has no
@@ -1207,6 +1237,9 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// Cursor-field radius in px. The render layer clamps it to a range that
 		// still renders as a field rather than trusting the stored number.
 		'data-sgs-fx-field-radius': attributes.fxFieldRadius,
+		'data-sgs-fx-magnet-axis': attributes.fxMagnetAxis,
+		'data-sgs-fx-magnet-radius': attributes.fxMagnetRadius,
+		'data-sgs-fx-magnet-strength': attributes.fxMagnetStrength,
 		'data-sgs-fx-field-blend': attributes.fxFieldBlend,
 		'data-sgs-fx-field-trail': attributes.fxFieldTrail,
 		'data-sgs-fx-field-shape': attributes.fxFieldShape,
@@ -2399,6 +2432,112 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						  * would add a setting to ~51 blocks that almost nobody
 						  * would ever open.
 						  */ }
+						{ 'magnet' === fx && (
+							<>
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !==
+										attributes.fxMagnetStrength
+									}
+									label={ __( 'Pull distance', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( {
+											fxMagnetStrength: undefined,
+										} )
+									}
+									isShownByDefault
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __(
+											'Pull distance (pixels)',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxMagnetStrength }
+										onChange={ ( value ) =>
+											setParam( {
+												fxMagnetStrength: value,
+											} )
+										}
+										min={ 2 }
+										max={ 80 }
+										step={ 2 }
+										help={ __(
+											'How far this can lean toward the cursor. Small values feel expensive; large ones feel playful.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !==
+										attributes.fxMagnetRadius
+									}
+									label={ __( 'Reach', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( {
+											fxMagnetRadius: undefined,
+										} )
+									}
+									isShownByDefault
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __(
+											'Reach (pixels)',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxMagnetRadius }
+										onChange={ ( value ) =>
+											setParam( {
+												fxMagnetRadius: value,
+											} )
+										}
+										min={ 20 }
+										max={ 400 }
+										step={ 10 }
+										help={ __(
+											'How close the cursor must get before this starts to lean. This is what makes it feel magnetic rather than just hovered.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () => !! attributes.fxMagnetAxis }
+									label={ __( 'Direction', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxMagnetAxis: '' } )
+									}
+								>
+									<SelectControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Direction', 'sgs-blocks' ) }
+										value={ attributes.fxMagnetAxis }
+										options={ FX_MAGNET_AXIS_OPTIONS }
+										onChange={ ( value ) =>
+											setParam( { fxMagnetAxis: value } )
+										}
+										help={ __(
+											'Restrict the lean to one axis if this sits in a row or column that must stay aligned.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'Magnetic pull previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it.',
+										'sgs-blocks'
+									) }
+								</Notice>
+							</>
+						) }
+
 						{ 'cursor-field' === fx && (
 							<>
 								{ /*

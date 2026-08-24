@@ -3,7 +3,8 @@
 		"Spec 38 (Motion System) FR-38-24 bundle-size budget baseline.",
 		"These are MEASURED (gzip, bytes) build actuals recorded via --update-baseline — NOT the Spec 38 section 4.4 table (which is an ESTIMATE, see script docstring).",
 		"Last updated: 2026-08-21.",
-		"2026-08-24: shared/effects/fx-cursor-field.js re-baselined 1331 -> 1673 gzip (+342 B, +25.7%). DELIBERATE, not drift: the field now arrives and leaves WITH the pointer instead of parking a lit pool in each section's centre and snapping back there on exit (Bean's ruling, 2026-08-24). That needed a mouseenter handler and a visibility toggle. Absolute cost is 342 bytes gzip against a 50KB/page budget. Re-baselined rather than trimmed because the growth buys the behaviour; the gate did its job by making the cost explicit."
+		"2026-08-24: shared/effects/fx-cursor-field.js re-baselined 1331 -> 1673 gzip (+342 B, +25.7%). DELIBERATE, not drift: the field now arrives and leaves WITH the pointer instead of parking a lit pool in each section's centre and snapping back there on exit (Bean's ruling, 2026-08-24). That needed a mouseenter handler and a visibility toggle. Absolute cost is 342 bytes gzip against a 50KB/page budget. Re-baselined rather than trimmed because the growth buys the behaviour; the gate did its job by making the cost explicit.",
+		"2026-08-24: shared/effects/fx-magnet.js baselined at 1054 gzip on first build (FR-38-30, magnetic pull). Tier V, zero dependencies — one rAF-throttled document listener writing two custom properties. For scale: the whole effect is ~2% of the 50KB/page JS budget, and a page using it and no Tier G effect still ships zero GSAP bytes."
 	],
 	"recorded_date": "2026-08-24",
 	"unit": "gzip-bytes",
@@ -38,6 +39,7 @@
 		"vendor-modules/gsap-physics2d.js": 907,
 		"vendor-modules/gsap-scrambletext.js": 3587,
 		"vendor-modules/gsap-scrolltrigger.js": 17368,
-		"vendor-modules/gsap-splittext.js": 3271
+		"vendor-modules/gsap-splittext.js": 3271,
+		"shared/effects/fx-magnet.js": 1054
 	}
 }

@@ -681,6 +681,58 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
+        # FR-38-30 (Spec 38 §3.3), Bean-approved 2026-08-24. An element
+        # leans toward the pointer while it is still OUTSIDE it — a proximity
+        # radius, which is the whole difference between a magnetic button and a
+        # hover state.
+        #
+        # NOT A NEW MECHANISM: `src/shared/effects/magnet.js` has shipped since
+        # the mega-menu build, driving `sgs/nav-menu`'s label nudge. This effect
+        # generalises that module (two axes + a proximity radius) rather than
+        # writing a second one. `initMagnet`'s no-options behaviour is unchanged
+        # and byte-identical, so nav-menu is untouched.
+        "effect": "magnet",
+        # in_picker=1 with creates_panel=0, the same pair cursor-field carries
+        # and for the same reason: offered wherever an fx panel already exists,
+        # never creating one.
+        "in_picker": 1,
+        # Pointer-driven, so 'hover' is the only coherent trigger — there is
+        # nothing for 'load' or 'scroll' to mean.
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V. The 2026-08-02 motion-ecosystem survey: magnetic buttons and
+        # cursor followers "are commonly ~20-30 lines of vanilla JS (mousemove
+        # + rAF + CSS transform) — write it, don't dependency it".
+        "tier": "V",
+        "plugin_set": [],
+        # It writes `transform` on ONE element from pointer position, never
+        # across a scroll range, so it does not own the scroll transform and
+        # does not exclude a Tier V entrance (§4.3).
+        "owns_scroll_transform": 0,
+        # SUPPRESS, and this differs from cursor-field's SIMPLIFY on purpose.
+        # A resting field is a legitimate finished PAINT; a displaced element is
+        # not a finished position — its finished position is where the layout
+        # put it. Under `reduce` the element simply sits still, which is also
+        # exactly the no-JS state, so there is no second code path.
+        "reduced_motion": "suppress",
+        # The editor shows the element at its authored position, which IS the
+        # resting state. Same code path as reduced motion.
+        "editor_story": "end-state",
+        "scope": "block",
+        # PERMISSIVE. Structurally, anything with a box can be nudged toward a
+        # pointer — there is no capability to require, which is exactly what
+        # `requires='none'` means here (the same value `scrub` and `motion-path`
+        # carry). Combined with creates_panel=0 it reaches every block that
+        # already hosts an fx panel, INCLUDING sgs/button, with zero widening of
+        # the panel roster. Measured before the row was written: sgs/button
+        # already offers morph / motion-path / scramble / scrub / split-reveal.
+        "requires": "none",
+        # Offered where a panel exists; never creates one. A magnet control on
+        # a form field or a star rating is precisely the "13 panels where none
+        # makes sense" containment failure D459 exists to prevent.
+        "creates_panel": 0,
+    },
+    {
         # Spec 38 §11 loop FR. Bean, verbatim: "looping should not be tied to
         # the drag effect — they should be independent controls", and "we're
         # not setting the default behaviour in all carousels, just making the
