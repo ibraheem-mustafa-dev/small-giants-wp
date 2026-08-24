@@ -50,6 +50,15 @@ import os
 import re
 import sys
 
+# Windows consoles default to cp1252; a census that prints any non-ASCII glyph
+# dies partway with UnicodeEncodeError, having already shown a partial list that
+# looks like the whole one. Guard it here so every copy of this skeleton inherits it.
+if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except (AttributeError, ValueError):
+        pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OLD = 'sgs_css_length_sanitise'
 NEW = 'sgs_css_length_value'
@@ -106,6 +115,73 @@ BARE_OK = {
 }
 
 
+# Files that legitimately sit OUTSIDE targets() while still containing the old
+# shape. Named with a reason, never silently pruned -- a silent prune is how a
+# corpus narrows without anyone deciding to narrow it.
+WIDTH_OK = {
+    # A standalone render-test harness. It names the function only in a docblock
+    # and a comment (:10, :68) describing the call chain it exercises; it is not
+    # part of the plugin's render path and is not deployed.
+    'scripts/tests/test-mega-aside-border-render.php':
+        'standalone render-test harness; comment-only mentions, not deployed',
+}
+
+
+def broad_enumeration():
+    """A SECOND, mechanical list of every file that could hold the old shape.
+
+    ⛔ WHY THIS EXISTS. Every gate in this script is keyed on `targets()` — and
+    `targets()` is written by the same agent the gate constrains. Narrow it to the
+    files you already edited and `--check`, `--self-test` and `crosscheck()` all go
+    green by construction, over a corpus of four. Step 6's corpus fixture does not
+    help: it bands `targets()` against a number the same agent chose.
+
+    This function is deliberately DUMB and WIDE: walk the whole tree, prune only
+    the directories that are never source, and return everything containing OLD.
+    It shares no code with `targets()` on purpose. Two lists derived two ways is
+    the only check here that cannot be self-satisfied.
+    """
+    prune = {'.git', 'node_modules', 'build', 'vendor', 'worktrees', '.claude'}
+    found = set()
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames if d not in prune and 'fixture' not in d.lower()]
+        for fn in filenames:
+            if not fn.endswith('.php'):
+                continue
+            p = os.path.join(dirpath, fn)
+            try:
+                with io.open(p, encoding='utf-8', newline='', errors='strict') as f:
+                    if OLD in f.read():
+                        found.add(os.path.relpath(p, ROOT).replace('\\', '/'))
+            except (UnicodeDecodeError, OSError):
+                continue
+    return found
+
+
+def check_corpus_width():
+    """Reconcile the narrow list against the broad one. Fail closed on a gap."""
+    narrow = {rel(p) for p in targets()}
+    broad = broad_enumeration()
+    missing = sorted(broad - narrow - set(WIDTH_OK))
+    stale = sorted(set(WIDTH_OK) - broad)
+    out = []
+    for f in stale:
+        out.append(
+            "STALE WIDTH_OK entry %s -- it no longer contains the old shape. A "
+            "stale allowlist entry is indistinguishable from no entry; remove it." % f)
+    if not missing:
+        return out
+    return out + [
+        "CORPUS TOO NARROW: %d file(s) contain the old shape but are NOT in "
+        "targets() -- %s%s. Widen targets(), or name each one in EXCLUDE with a "
+        "reason, or in WIDTH_OK if it is outside the migration entirely. A gate "
+        "over a list you wrote yourself proves nothing about the "
+        "files you left out." % (
+            len(missing), ", ".join(missing[:5]),
+            "" if len(missing) <= 5 else " (+%d more)" % (len(missing) - 5))
+    ]
+
+
 def crosscheck(bare_by_file):
     """Whole-corpus checks that transform() structurally cannot make.
 
@@ -116,7 +192,7 @@ def crosscheck(bare_by_file):
 
     Returns a list of human-readable failures; empty means clean.
     """
-    fails = []
+    fails = check_corpus_width()
     for relpath, n in sorted(bare_by_file.items()):
         if relpath not in BARE_OK:
             fails.append(

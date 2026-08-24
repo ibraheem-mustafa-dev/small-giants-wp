@@ -284,11 +284,17 @@ a finished migration into a permanent regression guard.
 
 ⛔ **`--check` must gate on `bare-mention` via `crosscheck()`.** A bare mention is the name
 WITHOUT a trailing `(`, so `PAT` never matches and `classify()` is never reached — the
-transform cannot see it. That is not academic: `class-sgs-container-wrapper.php:3144` and
-`:3151` register `'transform' => 'sgs_colour_value'` as a bare STRING, fired through
-`call_user_func()` at `helpers-responsive.php:105` and `:415`, and `helpers-box.php:30` is a
-`function_exists()` polyfill guard where the name IS the identity. **A pure rename must
-follow all three.** The model now pins every surviving bare mention in a `BARE_OK` table
+transform cannot see it. That is not academic — two live shapes, both verified:
+
+| Shape | Where | Why the name is load-bearing |
+|---|---|---|
+| dispatch string | `class-sgs-container-wrapper.php:3188`, `:3195` — `'transform' => 'sgs_colour_value'` | fired via `call_user_func()` at `helpers-responsive.php:105` / `:415` |
+| `function_exists()` guard | e.g. `helpers-box.php:30` (for `sgs_css_length_sanitise`) | the string IS the identity; rename the function without it and the polyfill always defines, or never does |
+
+⚠ **Those two rows are DIFFERENT FUNCTIONS.** An earlier draft of this table listed all
+three sites as if they belonged to one rename — there is no `function_exists` guard for
+`sgs_colour_value` anywhere in the repo. **Grep for your OWN symbol in both shapes; do not
+inherit an example's site list.** The model pins every surviving bare mention in `BARE_OK`
 with a per-file COUNT and a written reason; `crosscheck()` fails on an unjustified one, a
 changed count, or a stale entry. `--survey` LISTS them — it used to only tally, which made
 "resolve them by hand" an instruction you could not follow.
@@ -315,6 +321,7 @@ and a per-file count is not one.
 | **`crosscheck(state)`** | **the whole-corpus stage `transform()` cannot be.** Runs after the scan, sees every file at once, returns a list of failures. `--check` gates on it. This is where a cross-file precondition, a count that must hold across the set, or a justified-exception allowlist lives |
 | `preview(old, new, relpath)` | the unified diff — not in the model, write it |
 | **Atomic write** | `path + '.tmp'` then `os.replace()`. **Never `open(path,'w')`** — see hazards |
+| **stdout guard** | `sys.stdout.reconfigure(encoding='utf-8')` at import. A Windows console is cp1252, so a census printing one non-ASCII glyph dies partway — having already shown a partial list that looks complete |
 | `SELF_TEST_*` fixtures | Step 6 |
 
 ⚠ **Seven categories, not six, and two do not come from `classify()`:**
@@ -379,8 +386,17 @@ Five minimum:
 5. **Idempotence** — `transform(transform(x)) == transform(x)`. One line. Catches the class
    of bug that only appears the day you have to re-run, which is the day something went
    wrong.
-6. **Corpus control** — assert `len(targets())` is in the expected band, and run it on
-   `--check` too, not only `--self-test`. Fixtures test `transform()`; nothing tests that
+6. **Corpus control — reconcile, do not band.** ⛔ **A band is self-satisfying**: it checks
+   `len(targets())` against a number the same agent chose, so narrowing the glob to the
+   files you already edited passes every gate by construction. **Derive a SECOND, dumb,
+   wide enumeration** — walk the whole tree, prune only never-source directories, keep
+   everything containing the old shape — and fail closed on anything in the wide list and
+   not the narrow one, unless named in `WIDTH_OK` with a reason. Two lists derived two ways
+   is the only check here that the author cannot satisfy by choosing a number. The model
+   implements it as `broad_enumeration()` + `check_corpus_width()`, wired into
+   `crosscheck()`; on its first real run it found a file the hand-written glob had missed.
+   Also assert `len(targets())` is sane, and run all of it on `--check`, not only
+   `--self-test`. Fixtures test `transform()`; nothing tests that
    your target list is still populated. **Earned twice in one hour:** a codemod written for
    this document passed 5/5 transform fixtures while its census found ZERO (its `ROOT`
    resolved outside the repo), then — moved in-tree — silently scanned **4 files instead of
