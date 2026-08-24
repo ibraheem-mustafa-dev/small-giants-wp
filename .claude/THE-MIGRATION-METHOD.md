@@ -161,6 +161,60 @@ what turns a finished migration into a permanent regression guard.
 **`unrecognised` is mandatory and must be non-fatal.** It is how the tool tells you it met
 something you did not anticipate, instead of silently skipping it.
 
+## Step 3b — The transform is SHAPE-TO-SHAPE, not find-and-replace
+
+**This is the step that decides whether a migration is mechanical or takes a fortnight.**
+
+A reviewer of this document argued that some changes are "not mechanically transformable"
+— that the colour rollout went block-by-block because its 33 cases needed human judgement.
+**That is wrong, and the decision log disproves it.** Bean's correction, and it is the
+governing one:
+
+> The inability to do the mechanical fix is a limitation of the auditing script. It should
+> recognise the SHAPE that needs replacing, keep the parts that must survive — the
+> attribute name, the prefix, the element key — and re-insert them into the new shape.
+
+Look at what the colour rollout's corrections actually were:
+
+| | |
+|---|---|
+| D609 | ONE colour control everywhere, states inside it, never optional |
+| D618 | Must NOT mount into native's `group="color"` — own PanelBody instead |
+| D621 | The panel belongs in the STYLES tab |
+| D622 | Placement follows the existing D533/D537 resolver |
+| D632 | Colour split from `ShadowControl` **across 11 blocks** |
+
+**Not one is a per-block judgement call.** Every one is a single decision about the TARGET
+SHAPE that then applies identically to all 33 blocks. They surfaced one at a time only
+because the work was done one block at a time — each block taught the next what the shape
+should have been. Had the shape been settled once, from the census, all 33 were mechanical.
+
+### What this means for `transform()`
+
+`transform()` is **not** string replacement. It is three things:
+
+1. **RECOGNISE** the old shape structurally — by its parse, its mount, its call signature.
+   Not by a string, which cannot tell a call from a comment.
+2. **EXTRACT the holes** — the parts that must survive unchanged: attribute names,
+   prefixes, element keys, selector fragments, any per-instance value.
+3. **EMIT the new shape** with those holes re-inserted.
+
+A migration feels judgement-heavy exactly when step 1 is done by grep. A grep sees text, so
+every variation looks like a new decision. A recogniser sees a shape with holes in it, and
+the variations collapse into one case.
+
+### The test
+
+> **If two instances differ only in their hole values, they are ONE case, not two.**
+
+Count your cases that way before concluding a change needs human judgement. The colour
+rollout had one case and 33 instances. It was treated as 33 cases.
+
+⚠ **Where a genuine judgement call remains, the detector still ships.** Its census becomes
+the dispatch manifest — one batched pass over a classified list, never a discovery walk.
+
+---
+
 ## Step 4 — Write the fixtures before the transform
 
 Four fixtures minimum, all present in the model at `:166-187`:
