@@ -377,10 +377,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
+				{ /* showLayout={false}: this block owns its own 'Row layout' control
+				   below. Rendering LayoutPanel's selector too is silent DATA LOSS —
+				   it offers Stack, but this block.json's layout enum is [flex, grid],
+				   so WordPress coerces the write back to the default and the operator
+				   sees a control that does nothing. Same fix as post-grid and
+				   testimonial-slider (2026-08-12); this block was missed. */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
+					showLayout={ false }
 				/>
 				<PanelBody title={ __( 'Footer row', 'sgs-blocks' ) }>
 					{ rowSlot && (
