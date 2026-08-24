@@ -2,9 +2,10 @@
 doc_type: guide
 title: The migration method — settle the shape, then build the detector
 date: 2026-08-24
-status: PROVISIONAL-UNTIL-EXERCISED
-closes_when: "one real migration has been run start-to-finish through Steps 1-11 with every
-  ambiguity, error and silence recorded — then re-councilled on that evidence"
+status: PROVISIONAL-BUT-EXERCISED
+closes_when: "the two recorded objections are FIXED not merely documented — `--check` gating
+  on bare-mention, and a cross-file precondition check — AND one real migration has been
+  APPLIED through Steps 1-11. Rounds 2-3 exercised it read-only only."
 applies_to: any change touching more than 3 blocks, attributes, files or call sites
 grading: .claude/rubrics/migration-method-grading.md
 ---
@@ -29,10 +30,19 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py --check
    what decides whether the change costs a day or a fortnight.
 3. **Otherwise** — a rename, a call-site swap, a helper adoption — start at Step 1.
 
-**STATUS.** The **rule below is locked and mandatory**, whatever this document's maturity.
-The 11 steps are `PROVISIONAL`: reviewed twelve ways, **used zero times**. Follow them
-anyway, and **log every point where you had to guess, open a file this doc does not name,
-or do something it does not describe.** Those notes are the deliverable that closes it.
+**STATUS — read this once, then get on with it.** The **rule below is locked and
+mandatory**. The 11 steps are `PROVISIONAL-BUT-EXERCISED`: three adversarial rounds,
+fifteen personas, and two cold agents who FOLLOWED it end to end on real tasks. Their
+fixes are in. Follow it, and **log every point where you had to guess, open a file this
+doc does not name, or do something it does not describe** — that log is what closes it.
+
+⛔ **THE OBJECTION THAT WAS NOT RESOLVED, recorded per the stopping rule.** No persona
+reached A−; the anchored grades were C / D / C, and all three converged on one thing:
+**`--check` cannot see everything that matters.** The model's gate excludes
+`bare-mention` (Step 4), and `transform()` is per-file so it cannot see a cross-file
+precondition (Step 5). Both are now DOCUMENTED with their exact call sites. **Neither is
+FIXED in the model.** Until they are, a green `--check` is a claim about the sites your
+classifier recognised — not about the tree. Step 11 is not optional.
 
 ---
 
