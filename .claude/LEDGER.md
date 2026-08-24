@@ -348,6 +348,16 @@ scripts runs · 1 duplicate deleted.
 
 ### ▶ OPEN
 
+0. ⛔ **TASK 0 FIRST — harden the foundation (Bean's ruling).**
+   `.claude/THE-MIGRATION-METHOD.md` is `PROVISIONAL`: reviewed six ways, **used zero
+   times**. Three layers, in order: **(1)** council it with FRESH personas until every one
+   grades A− (max 3 rounds, then record the unresolved objection — do not grind);
+   **(2)** PROVE the A-grade method by running Task 5 strictly through Steps 1–9, where the
+   deliverable is the log of where the method FAILED, not the migration; **(3)** council
+   that RUN, then set `status:` from the evidence.
+   ⚠ Two findings will recur — pre-empt them: nothing ENFORCES the method (two personas
+   converged), and ten pointer banners restate figures that will drift.
+
 1. **Collapse the serial build loop** (Task 1) — the 4× win, one afternoon.
 2. **Wire or delete the 28 orphans** (Task 2) — RA-1 first. Decide by RUNNING, not reading:
    a triage got 13 of 52 wrong by trusting docstrings.

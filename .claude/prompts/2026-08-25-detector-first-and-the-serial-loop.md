@@ -13,7 +13,7 @@ Invoke `/autopilot` first.
 
 ## Read before anything else
 
-1. **`.claude/THE-MIGRATION-METHOD.md`** — the binding method. Read it in full.
+1. **`.claude/THE-MIGRATION-METHOD.md`** — the method. ⚠ `PROVISIONAL`, not binding: reviewed six ways, used zero times. TASK 0 hardens it. Read it in full.
 2. `.claude/reports/2026-08-24-script-revival-register.md` — 27 built-and-never-wired tools.
 3. `.claude/LEDGER.md` — the colour-golden section.
 
@@ -136,6 +136,62 @@ than restoring it. Say so plainly in the handoff.**
 
 ---
 
+## TASK 0 — HARDEN THE FOUNDATION. Three layers, in order. Bean's design.
+
+⛔ **DO THIS BEFORE ANY OTHER TASK.** `.claude/THE-MIGRATION-METHOD.md` is the foundation
+everything else rests on. It is currently `PROVISIONAL`: reviewed six ways, **used zero
+times**. Bean's ruling is that it gets perfected, then proven, then re-judged on the
+evidence — not polished once and trusted.
+
+### Layer 1 — Council it to an A grade
+
+Run `/adversarial-council` on `THE-MIGRATION-METHOD.md`. Fix what it finds. **Re-council.
+Repeat until every persona grades it A− or better.**
+
+- Use FRESH personas each round — a persona that already reviewed it will defend its own
+  earlier findings. Round 1's six were: Cold Agent, Saboteur, Spec-Lawyer, Cynic, Ship-PM,
+  Leverage Engineer. Their reports are the baseline; do not re-derive what they found.
+- **Every persona must be given the end-goal verbatim:** *a cold agent with no memory reads
+  this at session start and takes the fast path on its first attempt, without Bean
+  intervening.*
+- **Fact-check every claim the panel makes before acting on it.** Bean overturned one of
+  round 1's findings (M-a, "not mechanically transformable") by checking the decision log,
+  and it was wrong — see Step 3b. A council finding is a hypothesis, not a verdict.
+
+⛔ **STOPPING RULE — this is a hardening loop, not a stall trap.** Maximum **3 rounds**. If
+a persona still will not go above B after 3, STOP and record what it objects to and why the
+objection was not resolved. Do not grind. A document that cannot reach A on one axis with
+the reason written down is more useful than a fourth round.
+
+⚠ **Two findings are already known and will recur — pre-empt them or the panel will just
+re-derive them.** (1) Nothing ENFORCES the method; two personas converged on this. (2) The
+ten pointer banners restate measured figures that will drift; collapse them to one
+canonical table and make the rest bare pointers.
+
+### Layer 2 — PROVE the A-grade method on a real migration
+
+Take **TASK 5** (make one migration script read the DB) and run it **strictly through Steps
+1–9**, in order, without shortcuts.
+
+**The deliverable is not the migration. It is the log of where the method failed you.**
+Record every point you had to guess, open a file the guide did not name, or do something it
+does not describe. Timestamp them. A step you sailed through is as informative as one that
+broke.
+
+### Layer 3 — Council the RUN, not the document
+
+Convene a final panel on the **evidence from Layer 2** — the failure log, the actual
+commands, what the census returned. This panel judges the method as exercised, not as
+written.
+
+Then set `status:` accordingly and update `closes_when:` in the frontmatter.
+
+**Acceptance for TASK 0:** every persona at A− or the objection recorded · one real
+migration completed through all 9 steps · a failure log with at least the points where the
+guide was silent · the method's `status:` updated from PROVISIONAL with the evidence cited.
+
+---
+
 ## TASK 3 — Make "done" computable (~1–2 hours) — DO THIS FIRST
 
 There is no burn-down anywhere. 61 gates measure whether you have REGRESSED; none measures
@@ -179,6 +235,8 @@ Rule 4 (NO SKIPPING) is satisfied by the classifier's existing skipped-with-reas
 ---
 
 ## TASK 5 — Make ONE migration script read the DB (~2 hours)
+
+⚠ **This is also TASK 0's Layer 2 test case.** Run it strictly through Steps 1–9 and log where the method fails you. Do not do it twice.
 
 Council finding #3 had no task and was silently absent. It is a direct R-31-1 violation
 (DB-first, no re-derivation): **every `migrate-*.py` reads ZERO rows from the 3,166-row

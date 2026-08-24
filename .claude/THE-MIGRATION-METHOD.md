@@ -2,13 +2,25 @@
 doc_type: guide
 title: The migration method — detector first, always
 date: 2026-08-24
-status: BINDING
+status: PROVISIONAL-UNTIL-EXERCISED
+closes_when: "one real migration has been run start-to-finish through Steps 1-9 with every
+  ambiguity, error and silence recorded — then re-councilled on that evidence"
 applies_to: any change touching more than 3 blocks, attributes, files or call sites
 ---
 
 # The migration method
 
 **Read this before editing the 4th file in any repeating change.**
+
+⚠ **STATUS: PROVISIONAL. The detector-first RULE is settled and non-negotiable. The
+9-step process and the skeleton are NOT yet proven — this document has been reviewed six
+ways and USED ZERO TIMES.** Six adversarial personas graded it D+ / D / C− / C+ / B− and
+twelve defects were fixed; a seventh reading is not what hardens it. It closes when one
+real migration has been run through it end to end with the failures recorded.
+
+**If you are that session: follow it literally, and log every point where you had to
+guess, open another file, or do something it does not describe. Those notes are the
+deliverable, not a side effect.**
 
 ## Why this exists
 
