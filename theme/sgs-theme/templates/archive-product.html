@@ -25,7 +25,7 @@
      an sgs/container and it is worse, because that block's save() emits the EMPTY
      string. Both report "unexpected or invalid content". Relocating a comment from a
      WC block into its sgs/container parent does NOT fix it — it moves the failure.
-     Filter groups render in order: active chips / price / flavour / size / rating.
+     Filter groups render in order: active chips / price / flavour / size.
      Each WC filter block also carries the wrapper <div> its own save() emits; omitting
      that is the second half of the same validation failure.
      Results count + sort sit INSIDE product-collection deliberately:
@@ -109,14 +109,6 @@
 						<!-- wp:woocommerce/product-filter-chips --><div class="wp-block-woocommerce-product-filter-chips wc-block-product-filter-chips"></div><!-- /wp:woocommerce/product-filter-chips -->
 					</div>
 					<!-- /wp:woocommerce/product-filter-attribute -->
-
-					<!-- wp:sgs/heading {"content":"Rating","level":"h3","className":"sgs-shop-filters__group-heading"} /-->
-
-					<!-- wp:woocommerce/product-filter-rating {"heading":"Rating","headingLevel":3} -->
-					<div class="wp-block-woocommerce-product-filter-rating">
-						<!-- wp:woocommerce/product-filter-checkbox-list --><div class="wp-block-woocommerce-product-filter-checkbox-list wc-block-product-filter-checkbox-list"></div><!-- /wp:woocommerce/product-filter-checkbox-list -->
-					</div>
-					<!-- /wp:woocommerce/product-filter-rating -->
 
 				</div>
 				<!-- /wp:woocommerce/product-filters -->

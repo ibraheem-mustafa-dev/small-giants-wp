@@ -1346,20 +1346,40 @@ body.woocommerce-cart .with-empty-cart-icon,
  * Nothing errored. Intrinsic sizing removes that failure mode entirely: there is
  * no hardcoded width left to fall out of step with the gap.
  */
+/* ⛔ auto-FILL, never auto-FIT. Measured on the canary 2026-08-24, 1440px viewport,
+ * 988px grid, 5 products: the old `flex: 1 1 <min>` on each item let a SHORT final row
+ * share out the leftover space — row 1 rendered 3 cards at 313px and the final row
+ * rendered 2 at 482px, 169px wider. Bean: "the width increase should only be when
+ * someone sets all to 2 cards per row."
+ *
+ * `repeat(auto-fill, minmax(<min>, 1fr))` keeps the EMPTY trailing tracks, so a final
+ * row of 2 sits at the same column width as a full row and simply leaves a gap.
+ * `auto-fit` would COLLAPSE those empty tracks and reproduce the exact bug — the two
+ * keywords differ only here, and only on the last row, which is why it is easy to ship
+ * the wrong one and not notice.
+ *
+ * The intrinsic column count is preserved, which was the point of the original flex
+ * version (see the note above): the count still derives from --sgs-shop-card-min, so
+ * nothing hardcodes a column number and mobile still resolves to one full-width card. */
 .sgs-shop-layout .wc-block-product-template {
 	--sgs-shop-col-gap: 24px;
 	--sgs-shop-card-min: 240px;
 
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--sgs-shop-card-min), 1fr));
 	column-gap: var(--sgs-shop-col-gap);
 	row-gap: 40px;
 }
 
+/* The grid track now sets the width, so the item must not size itself. `min-width: 0`
+ * is the standard grid-item override — without it `min-width:auto` lets a wide child
+ * (a long unbroken product title) push its track past 1fr and desync the columns. */
 .sgs-shop-layout .wc-block-product-template > li,
 .sgs-shop-layout .wc-block-product-template.columns-2 > li,
 .sgs-shop-layout .wc-block-product-template.columns-3 > li,
 .sgs-shop-layout .wc-block-product-template.columns-4 > li {
-	flex: 1 1 var(--sgs-shop-card-min);
 	max-width: 100%;
+	min-width: 0;
 }
 
 /* Mobile keeps a tighter gutter; the column count still resolves itself from the
@@ -2263,4 +2283,20 @@ select.orderby:focus-visible {
 /* The gap the chips row never had beneath it. */
 .sgs-shop-filters .wp-block-woocommerce-product-filter-removable-chips {
 	margin-bottom: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+/* ── Filter panel headings use the BODY font (2026-08-24) ──
+ * Bean: "Filters text still doesn't match website global set fonts."
+ * Swept every text element in the filter region: nothing foreign — it is all Inter or
+ * Fraunces, both site fonts. The mismatch is that the four filter GROUP headings render
+ * in Fraunces serif 16px while every control beside them is Inter 14px. A serif heading
+ * in a panel of sans-serif controls reads as a different typeface even though both are
+ * "the site's fonts".
+ *
+ * These are UI labels for a control group, not editorial headings, so they take the body
+ * font. Scoped to the class the template already authors on them
+ * (`sgs/heading ... className:"sgs-shop-filters__group-heading"`), so no other heading
+ * anywhere is affected and the block keeps its own inspector controls. */
+.sgs-shop-filters__group-heading {
+	font-family: var(--wp--preset--font-family--body, inherit);
 }

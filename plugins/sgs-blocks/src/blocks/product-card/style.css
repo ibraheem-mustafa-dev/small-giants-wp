@@ -37,6 +37,10 @@
 	border: 1px solid var( --wp--preset--color--border, #D4DBE5 );
 	display: flex;
 	flex-direction: column;
+	/* Card fills its grid/flex cell; previously this lived only in the theme's
+	 * .sgs-shop-layout rule, so cards outside the shop had ragged widths and gaps. */
+	width: 100%;
+	height: 100%;
 	max-width: var(--sgs-product-card-max-width, 380px);
 	margin-inline: auto;
 	/*
