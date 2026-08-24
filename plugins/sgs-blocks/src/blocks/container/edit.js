@@ -49,7 +49,14 @@ import {
  */
 function gapCssValue( gap, tier = 'desktop' ) {
 	const raw =
-		gap && typeof gap === 'object' ? resolveResponsiveTier( gap, tier ) : gap;
+		// resolveResponsiveTier returns { value, inherited } -- NOT a bare string.
+		// Without `?.value` this hands React an OBJECT: it survives the `! raw`
+		// guard (objects are truthy), String() turns it into "[object Object]"
+		// so the numeric-unit branch misses, and React then silently drops the
+		// non-string style value. Net effect: the canvas showed NO gap at all
+		// while the published page was correct. Line ~321 (minHeight) already
+		// does `?.value` -- this was the odd one out.
+		gap && typeof gap === 'object' ? resolveResponsiveTier( gap, tier )?.value : gap;
 
 	if ( ! raw ) {
 		return undefined;
@@ -277,6 +284,9 @@ export default function Edit({ attributes, setAttributes, name }) {
     textColourHoverGradient,
     bgParallax = false,
     gridAutoRows = "",
+    flexDirection = "",
+    flexWrap = "wrap",
+    justifyContent = "",
     backgroundOverlayColour,
     overlayGradient,
     backgroundOverlayOpacity,
@@ -397,8 +407,28 @@ export default function Edit({ attributes, setAttributes, name }) {
     }
   } else if (layout === "flex") {
     style.display = "flex";
-    style.flexWrap = "wrap";
     style.alignItems = alignItems;
+    // Mirrors class-sgs-container-wrapper.php's flex branch exactly (~:1315-1331),
+    // INCLUDING the column+wrap invariant: per CSS Flexbox L1 9.4 a column-axis
+    // container with wrap sizes each line from its items rather than being handed
+    // the parent's own cross size, so a child ignores the parent's width. That is
+    // true however the value arrived, so it is coerced here too — an operator who
+    // picks 'wrap' on a column axis sees the SAME safe behaviour on canvas that
+    // they get on the published page, not a canvas that looks fine and then breaks.
+    const isColumnAxis = flexDirection.indexOf( "column" ) === 0;
+    const effectiveFlexWrap =
+      isColumnAxis && ( flexWrap === "wrap" || flexWrap === "wrap-reverse" )
+        ? "nowrap"
+        : flexWrap;
+    if ( "" !== effectiveFlexWrap ) {
+      style.flexWrap = effectiveFlexWrap;
+    }
+    if ( "" !== flexDirection ) {
+      style.flexDirection = flexDirection;
+    }
+    if ( "" !== justifyContent ) {
+      style.justifyContent = justifyContent;
+    }
   }
 
   // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
@@ -446,7 +476,7 @@ export default function Edit({ attributes, setAttributes, name }) {
   const gridOnInner = ( layout === "grid" || layout === "flex" ) && hasBandProps;
   if ( gridOnInner ) {
     for ( const key of [ "display", "gridTemplateColumns", "gridAutoRows", "gap", "alignItems",
-                         "justifyItems", "alignContent", "flexWrap" ] ) {
+                         "justifyItems", "alignContent", "flexWrap", "flexDirection", "justifyContent" ] ) {
       if ( style[ key ] !== undefined ) {
         bandStyle[ key ] = style[ key ];
         delete style[ key ];

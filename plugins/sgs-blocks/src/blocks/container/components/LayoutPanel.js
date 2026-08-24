@@ -17,8 +17,8 @@ import { UnitControl } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 
 const LAYOUT_OPTIONS = [
-	{ label: __( 'Stack', 'sgs-blocks' ), value: 'stack' },
 	{ label: __( 'Flex', 'sgs-blocks' ), value: 'flex' },
+	{ label: __( 'Stack', 'sgs-blocks' ), value: 'stack' },
 	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
 ];
 
@@ -183,8 +183,7 @@ export function LayoutPanel( {
 						label={ __( 'Flex direction', 'sgs-blocks' ) }
 						value={ attributes.flexDirection || '' }
 						options={ [
-							{ label: __( '— default (row) —', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Row', 'sgs-blocks' ), value: 'row' },
+							{ label: __( 'Row', 'sgs-blocks' ), value: '' },
 							{ label: __( 'Row reverse', 'sgs-blocks' ), value: 'row-reverse' },
 							{ label: __( 'Column', 'sgs-blocks' ), value: 'column' },
 							{ label: __( 'Column reverse', 'sgs-blocks' ), value: 'column-reverse' },
@@ -195,12 +194,10 @@ export function LayoutPanel( {
 					/>
 					<SelectControl
 						label={ __( 'Flex wrap', 'sgs-blocks' ) }
-						value={ attributes.flexWrap || '' }
+						value={ attributes.flexWrap || 'wrap' }
 						options={ [
-							{ label: __( '— default (wrap) —', 'sgs-blocks' ), value: '' },
 							{ label: __( 'Wrap', 'sgs-blocks' ), value: 'wrap' },
 							{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
-							{ label: __( 'Wrap reverse', 'sgs-blocks' ), value: 'wrap-reverse' },
 						] }
 						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
 						__nextHasNoMarginBottom
