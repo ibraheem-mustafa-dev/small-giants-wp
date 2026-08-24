@@ -120,10 +120,10 @@ class BreadcrumbsRenderTest extends TestCase {
 	}
 
 	/**
-	 * Test: render.php source code includes wp_strip_all_tags() call.
+	 * Test: render.php source code includes wp_strip_all_tags() call and prefix filter.
 	 *
-	 * Verifies that the fix (wp_strip_all_tags before esc_html) is actually
-	 * present in the render.php source code for the archive title on line 290.
+	 * Verifies that the fix (wp_strip_all_tags before esc_html, and prefix filter)
+	 * is actually present in the render.php source code for the archive title.
 	 *
 	 * This is a negative control: if this test fails, it proves the fix is missing.
 	 *
@@ -139,12 +139,19 @@ class BreadcrumbsRenderTest extends TestCase {
 
 		$source = file_get_contents( $render_file );
 
-		// The fix requires wp_strip_all_tags() to be called on get_the_archive_title().
-		// Pattern: 'label' => esc_html( wp_strip_all_tags( get_the_archive_title()
+		// The fix requires two components in the archive block:
+		// 1. The get_the_archive_title_prefix filter suppression.
+		// 2. wp_strip_all_tags() to be called on the archive title to remove markup.
 		$this->assertStringContainsString(
-			"wp_strip_all_tags( get_the_archive_title()",
+			"get_the_archive_title_prefix",
 			$source,
-			'render.php must call wp_strip_all_tags( get_the_archive_title() ) to strip markup before escaping. ' .
+			'render.php must apply the get_the_archive_title_prefix filter to suppress the WordPress-generated prefix.'
+		);
+
+		$this->assertStringContainsString(
+			"wp_strip_all_tags(",
+			$source,
+			'render.php must call wp_strip_all_tags() to strip markup before escaping. ' .
 			'Without this, archive titles with markup display visible tag characters to users.'
 		);
 
@@ -173,4 +180,35 @@ class BreadcrumbsRenderTest extends TestCase {
 			);
 		}
 	}
+
+	/**
+	 * Test: archive title does not include WordPress's built-in prefix.
+	 *
+	 * WordPress's get_the_archive_title() includes a prefix like "Category: ",
+	 * "Archives: ", "Tag: ", or "Search: " that is redundant in a breadcrumb trail.
+	 * The breadcrumb label should contain only the term/archive name, not the prefix.
+	 *
+	 * This test verifies the logic of suppressing the prefix. It simulates how the
+	 * filter 'get_the_archive_title_prefix' removes the prefix from the title.
+	 *
+	 * @return void
+	 */
+	/**
+	 * NOTE ON COVERAGE, deliberately honest:
+	 *
+	 * A behavioural test of the prefix suppression is NOT possible in this suite.
+	 * It would need a booted WordPress so that `get_the_archive_title()` and the
+	 * `get_the_archive_title_prefix` filter actually exist; this suite has neither.
+	 *
+	 * An earlier version of this file contained a test that LOOKED behavioural — it
+	 * built a fixture string that already had no prefix, then asserted the string
+	 * had no prefix. It passed with the fix reverted, so it guarded nothing while
+	 * reading as proof. It was removed rather than kept, because a test that cannot
+	 * fail is worse than no test: it converts "untested" into "tested and green".
+	 *
+	 * The real guard is test_render_php_has_wp_strip_all_tags_for_archive_title()
+	 * above — a STRUCTURAL assertion on the source. It is weaker than a behavioural
+	 * test and is labelled as such, but it was verified to FAIL when the fix is
+	 * removed from render.php, which is the only property that matters here.
+	 */
 }
