@@ -1444,17 +1444,35 @@ body.woocommerce-cart .with-empty-cart-icon,
  * the row can hold `2 x --sgs-shop-card-min + --sgs-shop-col-gap`, so 1-up is
  * exactly "row narrower than that sum":
  *
- *     2 x 240px + 24px = 504px   ->   1-up at <= 503px
+ *     2 x 240px + 16px = 496px   ->   1-up at <= 495px
  *
- * ⚠ Container-query conditions cannot read custom properties, so 503px is
- * written literally. It is DERIVED, not chosen — if --sgs-shop-card-min or
- * --sgs-shop-col-gap above ever change, recompute it. The three numbers are
- * kept adjacent in this file for exactly that reason. */
+ * ⛔ THE GAP IN THAT SUM IS THE **SMALLEST** GAP, NOT THE BASE ONE. This rule
+ * shipped broken for ~40 minutes on 2026-08-24 because it used the base 24px
+ * gap and gave 503px, while `--sgs-shop-col-gap` drops to 16px below 767px
+ * (see the @media block further down THIS FILE). That opened a window where
+ * the grid had already gone 2-up while the container query was still turning
+ * cards horizontal. Measured live at a 563px viewport:
+ *
+ *     row 500px, gap 16px -> TWO 242px columns, cards still horizontal
+ *     -> body 108px, usable text 68px, title 5 lines, cards 365px tall
+ *
+ * That is the same failure the 10a/10b comment above documents as the reason
+ * not to force a column count ("a 138px card with a 65px text column"). The
+ * guard three lines up — "if either variable changes, recompute" — was written
+ * and then broken in the same edit, by an override 90 lines below it.
+ *
+ * ⚠ Container-query conditions cannot read custom properties, so 495px is
+ * written literally. It is DERIVED, not chosen. If EITHER variable changes,
+ * recompute against the smallest gap any media query sets.
+ *
+ * There is no dead band. The 24px gap only applies above a 767px viewport,
+ * where the row is already >= 705px and this query cannot match anyway — so
+ * the 16px regime is the only one in which the threshold is ever consulted. */
 .sgs-shop-layout .wc-block-product-template {
 	container: sgs-shop-grid / inline-size;
 }
 
-@container sgs-shop-grid (max-width: 503px) {
+@container sgs-shop-grid (max-width: 495px) {
 
 	.sgs-shop-layout .product-card {
 		flex-direction: row;
