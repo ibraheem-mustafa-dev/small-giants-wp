@@ -379,6 +379,30 @@ def do_self_test() -> int:
         except OSError:
             pass
 
+    # 7. A record missing the optional `order` key must not crash --list.
+    #    load_gates() tolerates it; do_list() must too, or the two disagree.
+    import io as _io
+    import contextlib as _ctx
+    original2 = _GATES_JSON
+    tmp2 = Path(tempfile.mkdtemp()) / "gates.json"
+    tmp2.write_text(json.dumps([{"id": "no-order", "cmd": "python -c pass",
+                                 "tier": "fast"}]), encoding="utf-8")
+    _GATES_JSON = tmp2
+    try:
+        buf2 = _io.StringIO()
+        with _ctx.redirect_stdout(buf2):
+            rc2 = do_list()
+        check("a record with no `order` does not crash --list", rc2 == 0)
+    except Exception as exc:
+        check("a record with no `order` does not crash --list", False, repr(exc))
+    finally:
+        _GATES_JSON = original2
+        try:
+            os.unlink(tmp2)
+            os.rmdir(tmp2.parent)
+        except OSError:
+            pass
+
     print()
     print(_RULE)
     if failures:
@@ -397,7 +421,14 @@ def do_list() -> int:
     print(_THIN)
     for g in gates:
         ms = f"{g['budget_ms']}ms" if g.get("budget_ms") else "-"
-        print(f"{g['order']:>3}  {g['tier'] or '-':<5} {g['id']:<42} {g.get('added_D') or '-':<7} {ms:>8}")
+        # .get(), not bracket: load_gates() already tolerates a missing `order`
+        # (it sorts with g.get("order", 0)), so bracket access here made the two
+        # disagree — a roster record written from the documented template, which
+        # omitted `order`, crashed `npm run gate:list` with KeyError while the
+        # runner itself ran it fine. Caught by an adversarial review, 2026-08-24.
+        order = g.get("order")
+        print(f"{'-' if order is None else order:>3}  {g['tier'] or '-':<5} "
+              f"{g['id']:<42} {g.get('added_D') or '-':<7} {ms:>8}")
     for tier in ("fast", "full"):
         sub = [g for g in gates if g["tier"] == tier]
         budget = sum(g.get("budget_ms") or 0 for g in sub)
