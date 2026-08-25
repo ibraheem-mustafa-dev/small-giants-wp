@@ -108,11 +108,12 @@ apply, never completely walled off from areas of potential.
      the same block** — never a blank canvas, never a hidden section.
    - **Scope: a CLOSED LIST of effects**, exactly as Tier H is a closed list of libraries. "We have
      WebGL now" is precisely how a byte budget dies.
-     **CURRENT MEMBERSHIP — one entry: `surface-treatment` (FR-38-29, BUILT 2026-08-21).**
+     **CURRENT MEMBERSHIP — TWO ENTRIES: `surface-treatment` (FR-38-29, BUILT 2026-08-21) and
+     `flowing-gradient` (FR-38-31, BUILT 2026-08-25).**
      D479 originally named the fluid cursor field as the first entry; **Bean re-ordered the list at a
      design gate on 2026-08-21** after a 6-seat adversarial council, and the substrate shipped
      pointed at surface treatments instead. Re-ordering a closed list is not widening it — the list
-     is still closed and still one item long. The reasons, each verified in source before the swap:
+     was still closed and still one item long. The reasons, each verified in source before the swap:
      (i) a genuine fluid simulation is MULTI-PASS (advection → divergence → Jacobi pressure →
      gradient subtract, over ping-pong framebuffers) and the single-pass Tier W interface
      structurally cannot express it; (ii) `fx-cursor-field.css:150-167` removes the cursor field
@@ -125,6 +126,21 @@ apply, never completely walled off from areas of potential.
      **The fluid field remains admissible later**, but it must first answer the multi-pass interface
      question — and at that point OGL's pass/FBO machinery is exactly what it sells, so D479
      decision 2 reopens with it (see `src/shared/effects/webgl/README.md`).
+
+     ⛔ **THE SECOND ENTRY WIDENS THE TIER'S FOUNDING INVARIANT — RECORD THIS PLAINLY, DO NOT
+     SOFTEN IT (FR-38-31, 2026-08-25).** Tier W's founding premise (§1.2b Cloning note, and the
+     original D479 fallback decision above) is that a `null`/failed-init return IS the fallback —
+     the untouched `<img>` is already the finished state, so there is no second rendering path to
+     keep in sync. That premise holds ONLY because a Tier W effect wraps an existing source image,
+     which `surface-treatment` does. **`flowing-gradient` is GENERATIVE — there is no untouched
+     anything for a failed WebGL init to fall back to** — so it ships a real, hand-authored CSS
+     fallback (`assets/css/fx-wave-gradient.css`) that must be kept in sync with the shader FOREVER.
+     That ongoing maintenance burden is the exact cost the `null`-return fallback contract was
+     designed to avoid. Admitting this effect is therefore not "another item on the same shape of
+     list" — it is a second, materially different cost profile inside the same closed list. **Tier
+     W is still a CLOSED list of effects; it now has two entries, one of each fallback shape.** A
+     third generative entry should re-examine whether "closed list, D-numbered admission" is still
+     sufficient containment for a shape that structurally cannot use the cheap fallback contract.
  **Three house contracts Tier W carries ON TOP of §1.6** (which binds it identically otherwise):
  **context-loss recovery** (the single most-reported WebGL complaint across every major library's
    issue tracker — iOS Safari discards the GPU context under memory pressure; never leave a dead
@@ -185,6 +201,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Page transitions | **V** — cross-document View Transitions API is CSS-first, no GSAP, no router | SITE + per-template | Theme settings + per-template override | Progressive enhancement; unsupported browsers = normal navigation (defined fallback §3.5); reduced-motion = suppress | OFF | Site-wide → per-template variants |
 | Surface treatment (grain / halftone / duotone) — FR-38-29 | **W** — CSS moves and recolours a whole element, it cannot rewrite the pixels INSIDE one; GSAP animates VALUES and does not rasterise, so it cannot reach this either (§1.2b tests i + ii). Bounded to the image a block already renders (test iii); degrades to that untouched image (test iv); admitted by D479 + the 2026-08-21 design gate (test v) | block (image-bearing) | fx panel — treatment picker (thumbnails) + duotone `DesignTokenPicker` colours; intensity behind "+" | Needs a raster `<img>` in the block's subtree — a block rendering its `<img>` as the block ROOT (e.g. `sgs/decorative-image`) is offered it but no-ops, see FR-38-29; no conflict with any Tier V/G effect (it repaints a texture, it does not own transform/opacity) | off | Image-bearing blocks → any block whose subtree contains a raster image |
 | Cursor-reactive field (FR-38-25) + its four looks (FR-38-28) | **V** — the shipped mega-menu spotlight already does pointer-follow in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate; GSAP adds nothing §1.3's ratchet would accept. Measured 982 bytes gzip, no GSAP dependency | block (emitter) + runtime-detected participants | fx panel — field type / colour (`DesignTokenPicker`) / size | `creates_panel = 0` (measured: letting it create panels put a new fx panel on 11 blocks that would also inherit `motion-path` + `scrub`); fine-pointer only; participants carry no control | off | Container-kind + background-image blocks → any block with a paintable background |
+| Magnetic pull (FR-38-30) | **V** — the shipped mega-menu `magnet.js` already does proximity-based pull in vanilla; the 2026-08-02 motion-ecosystem survey independently concluded a magnetic button is "~20-30 lines of vanilla JS — write it, don't dependency it"; GSAP adds nothing §1.3's ratchet would accept | block | fx panel — Pull distance + Reach (shown by default), Direction (behind "+") | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only via `hover`; measured 1054 bytes gzip; distance measured to the element's BOX, not its centre | off | Any of the 32 fx-panel blocks (incl. `sgs/button`, `sgs/multi-button`, `sgs/icon`) → any block with the fx panel exposed |
+| Flowing gradient (FR-38-31, SECOND Tier W entry) | **W** — a mesh gradient needs per-vertex colour interpolated across a subdivided, noise-displaced plane, which CSS cannot generate and GSAP cannot rasterise (§1.2b tests i + ii); GENERATIVE rather than image-wrapping, which widens Tier W's founding fallback premise (see §1.2b) | block (surface) | fx panel-equivalent surface control — 4 client colours (`DesignTokenPicker`) + a mandatory keyboard-reachable Pause control (SC 2.2.2, autonomous motion) | `requires='surface'`; AUTONOMOUS (`triggers='load'`), not cursor-driven — engages SC 2.2.2 so ships a real Pause control, `hidden` until JS confirms it is running; DPR capped at 1.5; IntersectionObserver + `visibilitychange` + context-loss give-up; real CSS fallback required (ships alongside, kept in sync forever — the tier-widening cost) | off | Section/hero surfaces → any block declaring the `surface` capability |
 | *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
 
 ## 3. The capability roster (nothing cut; curated defaults)
@@ -419,7 +437,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   |---|---|---|
   | `glow` | `radial-gradient` — a soft pool of light at the pointer | SHIPPED (FR-38-25 as originally signed; the default, so instances saved before types existed are unchanged) |
   | `spotlight-mask` | the same gradient as a `mask-image`, revealing a pattern beneath rather than adding light | SHIPPED — deliberately paints by a DIFFERENT CSS property, so the extensibility seam is demonstrated rather than asserted |
-  | `hue-shift` | a multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask, so the hue arriving at a given point changes as the pointer moves | **SHIPPED 2026-08-24 (FR-38-28 look 2).** The client's colour stays dominant (their token at 65%, mixed toward two opposite hues via `color-mix(in oklch, …)`); the derived hues default to the base colour so a browser without `color-mix()` still paints a valid single-hue gradient that shifts position |
+  | `hue-shift` (Aurora) | a multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask, so the hue arriving at a given point changes as the pointer moves | **SHIPPED 2026-08-24 (FR-38-28 look 2); REBUILT 2026-08-24/25.** Original build mixed toward two opposite hues via `color-mix(in oklch, …)`, base at 65% — **rejected and rebuilt** because mixing cyan into yellow produces muddy green at any ratio, which is why *"the teal was very faint"*. Hues are now ROTATED in OKLCH (`oklch(from … calc(h ± spread))`) instead of mixed. See §3.3 body below for the full correction, including a trap that cost a render. |
   | `parallax-pattern` | a repeating dot pattern travelling at 8% of pointer distance, deliberately UNMASKED | **SHIPPED 2026-08-24 (FR-38-28 look 3).** The difference from `spotlight-mask` is load-bearing: there a static pattern sits under a moving hole and only the REVEAL moves; here the pattern itself moves. Masking it would collapse it back into a slightly different torch |
   | `brick-reveal` | a running-bond brick tile as an SVG **mask**, intersected with the pointer pool; the colour is painted underneath as a flat layer | **SHIPPED 2026-08-24.** Torch's sibling — same reveal, brickwork instead of a dot screen. Built twice: gradients produced a stacked GRID, because a 90deg gradient has no vertical variation, so an SVG tile owns the offset instead. The SVG carries NO colour deliberately — a data-URI cannot read a custom property, so colouring it would freeze the palette token |
   | `floating-objects` | individual `transform: translate()` per marked object, reading the SAME viewport-space `--sgs-cursor-x`/`--sgs-cursor-y` custom properties the emitter already publishes | **TIER V ARGUED (2026-08-02), STILL NOT BUILT.** See below — the tier question is answered but the opt-in surface is a separate, design-gated decision this residual work deliberately did not make. |
@@ -533,8 +551,19 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   1. **THE MULTI-LIST DRIFT** — GATED 2026-08-02 by `check-fx-list-drift.py` (wired into
      `prebuild`). An fx effect must join THREE hand-maintained lists (`SHIPPED_EFFECTS`,
      `FX_ATTR_MAP`, `sgs_fx_effect_param_scope()`), plus a fourth triad governing field types; the
-     gate cross-checks all of them (6 invariants + I6), `--self-test`-proven by deleting
-     `cursor-field` from each list in turn and confirming the build fails. **Two hand-maintained
+     gate cross-checks all of them, `--self-test`-proven by deleting
+     `cursor-field` from each list in turn and confirming the build fails.
+
+     ⛔ **CORRECTED 2026-08-24/25 — the gate now has NINE invariants, and the count is DERIVED,
+     never spelled out again in this doc.** I8 (the masked-type attachment check, D767) EXISTED
+     and was producing real violations since D767 landed, but was never added to `_INVARIANTS` —
+     the list the gate's own `--check` output enumerates from. Because `--check` iterates that
+     list to build its own summary line, it printed I0-I7 and confidently reported "all eight" as
+     complete, while I8 ran and could fail silently outside anything the summary counted. **A gate
+     that reports a wrong total confidently is worse than no gate** — the same failure shape this
+     project's own `decisions.md` D-ceiling grep hit (see `.claude/CLAUDE.md`'s D5557 story). Fixed
+     by wiring I8 into `_INVARIANTS`; do not cache "eight", "nine", or any other number in prose
+     here again — read `_INVARIANTS`'s length at the time of asking. **Two hand-maintained
      lists diverging silently is a failure this codebase has met before (`TRANSITION_STYLES`,
      `class-sgs-motion-registry.php`) — this is now four,** which is why the gate reads no
      database and cross-checks committed source only.
@@ -587,7 +616,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   |---|---|---|
   | Soft radial glow | `glow` | pointer-centred `radial-gradient` |
   | Spotlight revealing a second background | `spotlight-mask` | static pattern under a pointer-centred `mask-image` |
-  | Gradient that shifts hue with pointer position | `hue-shift` | multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask |
+  | Gradient that shifts hue with pointer position | `hue-shift` (Aurora) | multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask; hues ROTATED in OKLCH (`oklch(from … calc(h ± spread))`), not mixed — see the correction below, the original mix-toward-base build was retired |
   | Subtle pattern that parallaxes | `parallax-pattern` | repeating dots travelling at 8% of pointer distance, deliberately UNMASKED |
 
  **Why the last two needed a new shared property.** `glow` and `spotlight-mask` move the
@@ -599,10 +628,30 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   it existed** and neither paint rule names a type. Both new values are a length multiplied by a
   plain number — no unit division, so support is universal.
 
- **`hue-shift` keeps the client's colour dominant** (their token at 65%, mixed toward two opposite
-  hues via `color-mix(in oklch, …)`), so re-theming still re-colours the field. The derived hues
-  DEFAULT to the base colour, so a browser without `color-mix()` paints a valid single-hue gradient
-  that still shifts position — degraded, never broken, and never an invalid custom property (which
+ ⛔ **`hue-shift` (Aurora) WAS REBUILT 2026-08-24/25 — the mixing approach below is RETIRED, not
+  a live description.** Originally *"`hue-shift` keeps the client's colour dominant (their token
+  at 65%, mixed toward two opposite hues via `color-mix(in oklch, …)`), so re-theming still
+  re-colours the field"* — the 65%-base rule. **That rule is DELETED.** Mixing cyan into yellow
+  is muddy green at any mix ratio, which is the mechanism behind Bean's observation that *"the
+  teal was very faint"* — a mix-based approach cannot produce a visibly saturated second hue next
+  to a saturated first one; it only ever produces intermediate, desaturated tones.
+
+ **Rebuilt mechanism: hues are ROTATED in OKLCH, not mixed toward the base.** `oklch(from <base>
+  calc(h ± spread) c l)` rotates the HUE ANGLE of the client's own colour rather than blending two
+  colours together, so both derived hues stay as saturated as the source. The fixed 65%-base rule
+  is replaced by a client-facing **"Colour blend" control**, giving the operator the spread rather
+  than a hardcoded ratio.
+
+ ⚠ **TRAP THAT COST A RENDER, recorded so it is not repeated:** in CSS relative colour syntax,
+  `h` inside an `oklch(from …)` expression resolves to a PLAIN NUMBER, not a `<angle>`. Writing
+  `calc(h + 90deg)` mixes a number with an angle unit and is a **type error** — not a clamped or
+  rounded value, an INVALID `calc()`. One invalid custom property computed the whole
+  `background-image` to `none`, and the section rendered completely EMPTY rather than failing
+  loudly. The fix is `calc(h + 90)` (no unit) or an explicit `calc(h * 1deg + 90deg)` cast — the
+  correction discipline `feedback_a_dead_css_selector_fails_silently_when_the_markup_moves` and
+  its siblings exist for exactly this shape of failure. The derived hues DEFAULT to the base
+  colour, so a browser without relative colour syntax paints a valid single-hue gradient that
+  still shifts position — degraded, never broken, and never an invalid custom property (which
   would take the whole layer down with it).
 
  **`parallax-pattern` is deliberately UNMASKED**, and that is the whole difference from
@@ -636,6 +685,20 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   participant coverage. ⚠ **`mask-attachment` exists in CSS Masking L1 but no engine implements it —
   there is no CSS-only fix. Do not re-propose one.**
 
+ **Masked types now use `--sgs-cursor-field-attachment: scroll`, not `fixed` — a consequence of
+  D767, not a separate bug.** Once masked types resolve against the element's own box via
+  `--sgs-cursor-local-x/y` rather than the viewport pair, `background-attachment: fixed` buys them
+  nothing — there is no cross-box alignment left to protect, because emitter-only masked types
+  never spanned multiple boxes to begin with. `scroll` is the correct attachment for a
+  single-box-relative layer.
+
+ ⛔ **`--sgs-cursor-field-pattern-size` MUST set BOTH axes (`22px 22px`), never a single value.**
+  A single value (e.g. `22px`) leaves the background `background-size` height as `auto`, and
+  `auto` under `background-attachment: fixed` resolves against the VIEWPORT rather than the
+  element — the same failure SHAPE D767 fixed for position, arriving via a different CSS
+  property. Both dimensions must be stated explicitly on every field type that sets this
+  property, or the same viewport-vs-element mismatch reappears through the back door.
+
  ⚠ **This amends the "no new JS" claim above, honestly rather than silently.** Adding a field type is
   a CSS rule plus two list registrations ONLY while it paints by a background property. A type that
   masks needs the local coordinate pair, which is JS — already published now, so no FURTHER JS is
@@ -645,21 +708,38 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   here because each changes the shared mechanism, not just one look:
 
   - **`brick-reveal`** — the fifth field type (see the table above).
-  - **TRAIL (`fxFieldTrail`, 0-100)** — the standard lerp follower: each frame the published
-    position moves a fraction of the remaining distance toward the pointer. The control is the
-    INVERSE of the maths (higher = more lag); 0 maps to a factor of 1.0 and publishes directly,
-    so it is byte-identical to the behaviour before trail existed. Measured live: trail 90 walks
-    60-241-394-524-633-726-804-871, a factor of 0.155 — inside the 0.1-0.2 band that recurs
-    across implementations of this pattern. Reduced motion needs no branch: `init` returns before
-    any listener is attached, so the loop can never start.
+  - **TRAIL (`fxFieldTrail`, 0-100) — CLIENT-FACING LABEL "Drag weight"; the stored attribute
+    NAME diverges from the label, deliberately.** It is the standard lerp follower: each frame the
+    published position moves a fraction of the remaining distance toward the pointer, with NO
+    fading tail — so "Trail" was the wrong word for what it does, and the control now reads
+    **"Drag weight"** in the panel. ⚠ **The rename was ATTEMPTED at the attribute level too, was
+    BLOCKED by the deploy's oldshape audit, and was REVERTED — record the reason, not just the
+    outcome.** Six blocks on canary 2721 already author `fxFieldTrail` with real values (`0, 60,
+    90, 50, 50, 55`), and WP deletes an undeclared attribute the next time an editor saves that
+    block (D338) — renaming the stored attr name would have silently zeroed all six live
+    instances on their next save. The stored attribute therefore stays `fxFieldTrail`; only the
+    inspector-facing LABEL changed. The control is the INVERSE of the maths (higher = more lag);
+    0 maps to a factor of 1.0 and publishes directly, so it is byte-identical to the behaviour
+    before trail existed. Measured live: trail 90 walks 60-241-394-524-633-726-804-871, a factor
+    of 0.155 — inside the 0.1-0.2 band that recurs across implementations of this pattern.
+    Reduced motion needs no branch: `init` returns before any listener is attached, so the loop
+    can never start. **Note the REAL fading trail this control's old name implied is not this
+    effect at all** — it is the unbuilt particle engine's Sparks preset; do not conflate the two
+    when a client asks for "a trail".
   - **SHAPE (`fxFieldShape`)** — circle / wide ellipse / tall ellipse, via a single
     `--sgs-cursor-field-geometry` property that replaced four hardcoded circles. Empty is the
     circle default, so nothing authored changes.
 
- ⚠ **THE EDITOR SURFACE OF THIS FR HAS NEVER BEEN OPENED.** Every verification is frontend. §9's
-  cursor-field row is flagged *"reasoned, not observed"* and that flag is correct — nobody has
-  confirmed the picker lists all five looks or that the canvas renders sanely. The client chooses
-  these in the editor, so this is the gap that matters most before the FR is called closed.
+ ✅ **THE EDITOR SURFACE WAS OPENED 2026-08-24 — this flag is now CLOSED, kept here as the
+  record of what was owed rather than deleted.** Every verification up to this point had been
+  frontend-only, and §9's cursor-field row was correctly flagged *"reasoned, not observed"* while
+  that stood. Opening the editor found: **all five looks present in the picker** (`glow`,
+  `spotlight-mask`, `hue-shift`, `parallax-pattern`, `brick-reveal`); **every control reachable**
+  (field type, colour, size, Pull/Drag-weight, Shape — nothing hidden behind a broken toggle);
+  **36 blocks, 0 attribute-validation invalidations**; **0 console errors**. §9's cursor-field row
+  is updated separately to reflect the actual editor-canvas behaviour found during this same pass
+  (the canvas shows nothing, because `sgs/container` renders via `edit.js` not `render.php` — a
+  DIFFERENT finding from "does the picker/controls work", which is what this paragraph closes).
 
  **Still open, and NOT part of FR-38-28:** the `floating-objects` field type (FR-38-25 residual 2).
   It moves discrete ELEMENTS rather than painting a shared background layer, needs new per-element
@@ -852,6 +932,136 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   with real blast radius, not a patch. `sgs/media` is separately not offered at all (it hosts
   no fx panel and `creates_panel=0` correctly will not create one — the documented escape
   hatch is `supports.sgs.fx.motionSurface: true` on that block).
+
+- **FR-38-30 Magnetic pull — Tier V, ONE core, TWO consumers. BUILT + LIVE-VERIFIED 2026-08-24.**
+  Canary page 2737 (`/gate-do-not-delete-magnetic-pull-fr-38-30/`). An element leans toward the
+  pointer while the pointer is still OUTSIDE it — a proximity radius is the whole difference
+  between a magnetic button and a hover state.
+
+ **Not a new mechanism — a generalisation of a shipped one.** `src/shared/effects/magnet.js`
+  has shipped since the mega-menu build, driving `sgs/nav-menu`'s label nudge (±8px, X-axis, only
+  while the pointer is over the label itself). This FR generalises that file rather than replacing
+  it: the new `createMagnet( el, opts )` core is byte-identical in its no-options behaviour, so
+  `nav-menu` is untouched by this build.
+
+ **Why a shared document listener, not a per-element one.** `createMagnet()` attaches NO listeners
+  of its own, because an element-scoped `mousemove` structurally cannot see a pointer that is
+  outside the element — which is exactly the moment a magnet must engage. `fx-magnet.js` owns ONE
+  document-level listener and drives every magnet instance on the page from it.
+
+ **Distance is measured to the element's BOX, not its centre.** A 300px-wide button's far edge is
+  150px from its own centre before the pointer is anywhere near it — measuring from the centre
+  would silently shrink the effective reach on large elements. Pull falls off linearly to zero at
+  the radius edge.
+
+ **Tier V, not G** — the 2026-08-02 motion-ecosystem survey independently concluded magnetic
+  buttons are *"~20-30 lines of vanilla JS — write it, don't dependency it"*; GSAP adds nothing
+  §1.3's ratchet would accept.
+
+ **DB row:** `fx_effects` tier `V`, scope `block`, `requires='none'` (PERMISSIVE — offered
+  wherever a panel already exists, never creates one), `creates_panel=0`, `in_picker=1`,
+  `triggers='hover'`, `reduced_motion='suppress'`, `owns_scroll_transform=0`. Panel roster
+  MEASURED **32 blocks before, 32 after** — offered on all 32 fx-panel blocks, including
+  `sgs/button`, `sgs/multi-button`, `sgs/icon`.
+
+ **Controls:** Pull distance + Reach (`RangeControl`, `isShownByDefault`), Direction
+  (`SelectControl`, behind "+"). Editor Notice: previews live-site only (the parallax-Notice
+  precedent — a pointer-tracking effect cannot preview in a static canvas, §9).
+
+ **Reduced motion: SUPPRESS — deliberately differing from cursor-field's SIMPLIFY.** A resting
+  cursor-field is a legitimate finished PAINT (nothing moves, nothing is missing); a magnet's
+  displaced element has no equivalent resting paint — its finished position IS wherever the layout
+  put it, i.e. undisplaced. Under `reduce` no listener attaches at all, which is also the no-JS
+  state, so there is exactly one code path rather than two that could drift apart.
+
+ **Grammar:** `data-sgs-fx="magnet"` + `data-sgs-fx-magnet-axis` / `-radius` / `-strength` (§11.2).
+  Block attrs: `fxMagnetAxis` / `fxMagnetRadius` / `fxMagnetStrength` (§11.3).
+
+ **Size + live verification:** 1054 bytes gzip. LIVE-VERIFIED on canary page 2737: measurable pull
+  at 240px outside the button, peaking at ~80px displacement, zero displacement beyond the 260px
+  reach. Axis lock proven with a genuine negative control: a locked instance held `y=0.00` while an
+  unlocked neighbour moved `y=-19.25` under identical pointer input.
+
+- **FR-38-31 Flowing gradient — the SECOND Tier W entry. BUILT + LIVE, look REJECTED
+  2026-08-25.** stripe.com's mesh-gradient technique: a subdivided plane whose VERTICES are
+  displaced by simplex noise, with colour computed PER VERTEX and interpolated across each
+  triangle by the rasteriser.
+
+  Files: `src/shared/effects/webgl/wave-gradient.js` (renderer + shaders),
+  `src/shared/effects/fx-wave-gradient.js` (lifecycle), `assets/css/fx-wave-gradient.css`
+  (the FALLBACK CONTRACT — see the widening note below), `includes/fx-wave-gradient.php`
+  (colours + the Pause control).
+
+ **Built as a SIBLING of `webgl/renderer.js`, not an extension of it — and that duplication is a
+  named cost, not an oversight.** The existing renderer draws one fullscreen TRIANGLE (3 vertices,
+  fixed vertex shader), and `surface-treatment`'s shipped surface is built on that fixed shape. A
+  mesh gradient needs a genuinely SUBDIVIDED plane with per-vertex displacement, which the
+  triangle shape cannot express. Consequence, stated plainly: the three Tier W house contracts
+  (context-loss recovery, explicit GPU disposal, power/thermal awareness — §1.2b) are now
+  IMPLEMENTED TWICE, once per renderer, and any future fix to one of them must be applied to both.
+
+ ⛔ **THIS WIDENS TIER W RATHER THAN EXTENDING IT — see the §1.2b amendment above for the full
+  argument.** In summary: Tier W's `null`-return-is-the-fallback premise holds only because
+  `surface-treatment` wraps an existing source image. `flowing-gradient` is GENERATIVE — there is
+  no untouched anything for a failed init to fall back to — so it ships a real, hand-authored CSS
+  fallback that must be kept in sync with the shader forever, which is the exact ongoing cost
+  Tier W's `null`-return contract exists to avoid. Tier W is still a CLOSED list; it now has two
+  entries, of two different fallback shapes.
+
+ **AUTONOMOUS, not cursor-driven — Bean's ruling, and it changes what SC applies.** stripe.com's
+  hero animates on its own; Bean's reasoning for following that shape rather than a cursor-driven
+  one: it fixes the mobile problem — a cursor effect renders nothing on a phone, which is most
+  client traffic. Autonomous, load-triggered motion engages **SC 2.2.2** (Pause, Stop, Hide), so
+  the effect ships a real, keyboard-reachable Pause control (44px touch target, visible focus,
+  `aria-pressed`), emitted `hidden` by SSR and unhidden by JS only once the effect is confirmed
+  running — so it is never a dead control sitting in the tab order for a visitor whose init failed.
+  **`prefers-reduced-motion` does NOT discharge 2.2.2 on its own** — record that plainly, it is a
+  common conflation and this FR does not make it.
+
+ **Three further stops, for POWER rather than compliance:** `IntersectionObserver` (an off-screen
+  gradient runs nothing), `visibilitychange` (a hidden tab runs nothing), and a give-up on
+  context-loss (never leave a dead black rectangle — the same house contract §1.2b already names).
+  **DPR capped at 1.5** — the effect is fillrate-bound, and an uncapped 3× phone display would do
+  9× the pixel work of a 1× display for the same visual result.
+
+ **Reduced motion: SIMPLIFY.** The renderer draws exactly ONE frame and stops, so the section is
+  never blanked and the gradient still reads as a finished, intentional visual — it simply does
+  not move.
+
+ **Four client colours** (a base plus three wave layers) via `DesignTokenPicker`, resolved through
+  `sgs_colour_value()` so a palette slug becomes the `var()` form before reaching the shader — a
+  raw slug fed to the WP style engine emits `background-color:primary` verbatim, which the browser
+  drops (D684); the same resolution discipline `surface-treatment` already uses for its duotone
+  colours.
+
+ **DB row:** `fx_effects` tier `W`, scope `block`, `requires='surface'`, `creates_panel=0`,
+  `in_picker=1`, `triggers='load'`, `reduced_motion='simplify'`.
+
+ **Size:** 3648 bytes gzip = 3% of D479's NAMED 120KB Tier W page allowance.
+
+ **Licence provenance — recorded because most shader lineage in this space is NOT clean.**
+  Technique modelled on `sa3dany/wave-gradient` (MIT), whose shader header states it is "based on
+  the original vertex shader used by stripe for their gradient"; noise is Ashima/Gustavson simplex
+  noise (MIT). ⛔ **nimitz's Shadertoy "Auroras" is CC BY-NC-SA (NON-COMMERCIAL) and is NOT used**
+  — recorded explicitly because most aurora/flow-field shaders found in the wild descend from it,
+  and this is the check that keeps this codebase off that lineage.
+
+ ⚠ **HONEST STATUS — BUILT AND LIVE, BUT ITS LOOK IS REJECTED (Bean, 2026-08-25).** Verbatim:
+  *"it also looks like B-movie 3D VFX from like the early 2000s."* Investigation established why,
+  and it is NOT a tuning problem — record the mechanism, not just the verdict:
+  - (a) the `minigl` mesh technique every public tutorial documents is stripe.com's OLD hero
+    (~2020-21). Their CURRENT hero is a different implementation
+    (`hero-wave-animation__canvas`, WebGL2, with a `wave-fallback-desktop.png` fallback) —
+    a BOUNDED RIBBON on a LIGHT ground with text beside it on clean white, plus fine striations,
+    not a full-bleed dark mesh.
+  - (b) their colour comes from a hand-painted 480×480 `palette.png` TEXTURE the shader samples,
+    not from interpolating a handful of CSS-style stops. Sampled values run nearly all above
+    `0xf0` — peach/coral/pink/cream/lilac, ADJACENT warm hues. This build used a near-black navy
+    base with widely-spaced saturated hues. **Four colour stops cannot structurally reproduce the
+    variation of an artist-painted reference image** — this is a ceiling of the approach, not a
+    parameter to retune.
+  - (c) a scratch/POC exact replication is the next session's work; prompt at
+    `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
 
 ### 3.4 SVG
 
@@ -1400,6 +1610,8 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Cursor-reactive field (FR-38-25) | **NOTHING — and this row was WRONG until it was opened (2026-08-24).** It previously read *"the static resting field… the canvas shows the field but not the tracking"*, flagged *"reasoned, not observed"*. **OBSERVED:** the editor canvas iframe carries **zero** `data-sgs-cursor-field` attributes and **none** of the fx stylesheets. `sgs/container` renders through `edit.js` in the editor, not `render.php`, so the render-layer stamp never runs — there is no SSR markup in the canvas to carry the resting field. The reasoning was sound about the FRONTEND and simply did not apply here. A client therefore picks a look from the dropdown and sees no change at all, which is why an **info Notice now ships in the fx panel** naming the limit and pointing at View Page (parallax + surface-treatment precedent). ⚠ The honesty flag did its job: it marked the row as unverified and the row turned out to be false. |
 | Carousel loop (FR-38-26) | **The un-looped track.** Cloning of leading/trailing items happens in the block's frontend `view.js`; the canvas shows the real items only, which is also exactly what a no-JS visitor sees. ⚠ *Reasoned, not observed.* |
 | Physics canvas (FR-38-27) | **Children static in their authored positions** — the same state reduced motion produces (§10). Draggable/Inertia/Physics2D are frontend-only. ⚠ *Reasoned, not observed.* |
+| Magnetic pull (FR-38-30) | **Static — no displacement.** The element renders undisplaced, exactly the no-JS/reduce state; a document-level listener drives the effect, and the editor canvas is an iframe the mega-menu's own `magnet.js` precedent already never runs pointer tracking inside. Notice: "Magnetic pull previews on the live site." ⚠ *Reasoned by mechanism, not observed in-editor.* |
+| Flowing gradient (FR-38-31, Tier W) | **The CSS fallback layer**, exactly what a no-WebGL visitor sees on the frontend — the render layer's editor-parity guard does not boot a canvas WebGL context in a ServerSideRender/REST render (same reasoning as the surface-treatment row above), so the canvas shows the honest degraded state rather than a blank. A panel Notice names this: *"The flowing gradient previews on the live site. Visitors without WebGL, and the editor canvas, see the static fallback."* |
 
 ## 10. Reduced-motion contract (per effect)
 
@@ -1427,6 +1639,8 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Surface treatment (FR-38-29, Tier W) | **SIMPLIFY — settle immediately at the treated state, never suppress the treatment.** Under `reduce` the scroll-resolve driver is not created at all (no `IntersectionObserver`, no scroll listener, no per-frame work): `uResolve` is set to 0 once and the image renders at the treatment's full chosen strength. ⛔ **Note the direction — the reduced-motion state is the TREATED image, not the plain photograph.** Falling back to the untreated photo would strip content the client deliberately configured (`degrade-to-more-content-never-less`); the thing being removed under `reduce` is the *developing*, not the *treatment*. There is deliberately no `@media (prefers-reduced-motion: reduce)` rule in `fx-surface-treatment.css` — the gate is in JS, where the driver lives. ⚠ **AMENDED 2026-08-21, same day as the FR.** This row first read "NOTHING TO GATE — the effect draws once and never animates", which was true of the first build and became FALSE within hours when scroll-resolve was added on the owner's instruction. Recorded rather than quietly overwritten: a §10 row is a contract, and one that silently stops matching its effect is the drift this table exists to prevent. |
 | Physics canvas (FR-38-27) | **SIMPLIFY — disable the physics, never the content.** Under `reduce` no Draggable/Inertia/Physics2D is created and **the children still render, static, in their authored positions**. "Disables the surface outright" in D447 means *disables the motion*, not *removes the content*: hiding decorative children a client placed deliberately would be the `degrade-to-more-content-never-less` failure. ⚠ **This row was OWED from the block's build session** — §3.3 recorded it as deferred only to avoid a same-file collision with a concurrent track (STOP-29: mapped, not dropped). Added 2026-08-24, closing FR-38-20. ⚠ D447 recorded the ruling in one phrase that admits both readings and this picks the one consistent with the captured rule; **flagged for Bean's confirmation**, and it is the cheaper error to correct in either direction. |
 | Carousel loop (FR-38-26) | **Suppress-equivalent (measured 2026-08-02):** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. Confirmed identical under reduce on 4 of 5 rollout blocks. Two blocks' own arrow-click code hardcoded `'smooth'` regardless of the preference — a defect in those blocks, not the loop module — fixed same day (`5c45f879`, `ba28ab92`); the one remaining hardcoded case (google-reviews autoplay) is correctly gated by an early return. |
+| Magnetic pull (FR-38-30) | **SUPPRESS — no listener attaches at all.** Under `reduce`, `fx-magnet.js` never attaches its document-level listener, so the element simply never displaces — this is also the exact no-JS state, so there is one code path, not two that could drift apart. Deliberately differs from cursor-field's SIMPLIFY (§3.3 FR-38-30 body has the full reasoning): a resting cursor-field is a legitimate finished PAINT, but a magnet's "resting" position is just the undisplaced layout position, which is what suppression already produces — there is no separate "simplified but still present" state to build. |
+| Flowing gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
 
@@ -1446,7 +1660,7 @@ custom property `--sgs-scroll-progress` (set by `assets/js/scroll-progress.js` �
 ```
 data-sgs-fx="<effect>"            e.g. pin-scrub | scrub | horizontal-panel | split-reveal |
                                        scramble | flip | draggable | draw | morph | motion-path |
-                                       image-sequence
+                                       image-sequence | magnet (FR-38-30, added 2026-08-24)
 data-sgs-fx-trigger="<value>"     load | scroll | hover (per-effect enum)
 data-sgs-fx-start / -end          scroll range (viewport-relative, e.g. "top 80%")
 data-sgs-fx-hold="<value>"        none | short | standard | long — PINNING effects only:
@@ -1477,6 +1691,14 @@ data-sgs-fx-morph-target="<selector>"       resolved TARGET element (render-laye
 data-sgs-fx-motion-path-target="<selector>" resolved TARGET element (render-layer output)
 data-sgs-fx-pin="true"            IMAGE-SEQUENCE only — holds the block in place for the
                                    whole scrub instead of letting it scroll normally
+data-sgs-fx-magnet-axis="<x|y|both>"     MAGNET only (FR-38-30) — which axis the pull moves
+                                          along; block attr `fxMagnetAxis`
+data-sgs-fx-magnet-radius="<px>"         MAGNET only — the proximity radius the pull engages
+                                          within, measured to the element's BOX not its
+                                          centre; block attr `fxMagnetRadius`
+data-sgs-fx-magnet-strength="<0-100>"    MAGNET only — peak displacement at the radius edge,
+                                          falling off linearly to zero; block attr
+                                          `fxMagnetStrength`
 data-sgs-fx-disable-tablet="true" / data-sgs-fx-disable-mobile="true"
                                    ANY fx effect — per-breakpoint kill switch (D446 Task 15,
                                    2026-08-01), named with the existing device-tier suffix
@@ -1488,6 +1710,15 @@ data-sgs-fx-disable-tablet="true" / data-sgs-fx-disable-mobile="true"
                                    `block_attributes` rows already existed but this grammar
                                    table never listed them.
 ```
+
+> **`flowing-gradient` (FR-38-31) is deliberately ABSENT from the `data-sgs-fx="<effect>"` enum
+> above.** This is consistent with §1.2b's Tier W cloning statement, not an oversight: a Tier W
+> effect is "permanently unclonable" from computed CSS and is DECLARED via a BEM signal resolved
+> to a block attribute rather than authored through the `data-sgs-fx*` draft grammar — the same
+> status `surface-treatment` (FR-38-29) already has, and it is likewise absent from this enum.
+> ⚠ **The exact BEM signal / block attribute name for `flowing-gradient` is UNVERIFIED against
+> source at the time of this edit** — record it here once confirmed rather than guessing a name
+> now.
 
 > **`fxPreset` is deliberately NOT part of this grammar.** It is a real, seeded `block_attributes`
 > row (`fx:preset`) and a real client-facing control (the §7 intensity-preset layer) — but a
@@ -1597,8 +1828,20 @@ cheap prefix scan; pattern authors can hand-write it.
 ### 11.3 Converter mapping (defined now, lifted later)
 
 Each `data-sgs-fx*` attr maps 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStart`, `fxEnd`,
-`fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin`, `fxShape`, `fxPath` — seeded in
-`block_attributes` under `fx:*`, §6.2). `fxPin` is IMAGE-SEQUENCE-only (D435, 2026-08-01).
+`fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin`, `fxShape`, `fxPath`,
+`fxMagnetAxis`, `fxMagnetRadius`, `fxMagnetStrength` — seeded in `block_attributes` under `fx:*`,
+§6.2). `fxPin` is IMAGE-SEQUENCE-only (D435, 2026-08-01). `fxMagnetAxis`/`fxMagnetRadius`/
+`fxMagnetStrength` are MAGNET-only (FR-38-30, 2026-08-24).
+
+> ⚠ **Apply the same D724/D741-shape check to the three `fxMagnet*` rows before relying on
+> them as "done".** §11.3's own live correction two paragraphs below found `fxShape`/`fxPath`
+> DECLARED in this list while genuinely absent from `block_attributes` (the seeder is a
+> read-only reconciler; rows are written only from `block.json`, and extension-registered attrs
+> appear in no `block.json`). `fxMagnetAxis`/`fxMagnetRadius`/`fxMagnetStrength` are registered
+> the same way magnet's grammar is documented in §11.2 — via `registerBlockType`, not a per-block
+> `block.json` declaration — so they are exposed to exactly the same blind spot until someone
+> re-runs the same `block_attributes` query this correction ran for `fxShape`/`fxPath` and
+> confirms the rows exist.
 
 > **`fxShape` / `fxPath` added to this list 2026-08-21** (wave-D register Step 20 item b). Their
 > honest seed status was already written up at §11.2's D427 amendment but had never been

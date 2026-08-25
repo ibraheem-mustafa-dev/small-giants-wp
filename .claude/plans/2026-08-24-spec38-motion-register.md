@@ -2,14 +2,85 @@
 doc_type: register
 project: small-giants-wp
 spec_ref: 38
-last_updated: 2026-08-24
+last_updated: 2026-08-25
 ---
 
 # Spec 38 motion + effects — verified status register
 
 ---
 
-## SESSION CLOSE — 2026-08-24. What this session closed, and what it opened.
+## SESSION CLOSE — 2026-08-24/25. What this session closed, and what it opened.
+
+Nine commits on `main`, following directly on from the 2026-08-24 close below (that close is
+**retained per D101, not deleted — see its own section immediately after this one, now marked
+superseded**). Canary: still page **2721**.
+
+### CLOSED
+
+| Item | Evidence |
+|---|---|
+| **TORCH — one-axis background-size bug** | `--sgs-cursor-field-pattern-size: 22px` was a single value, so height defaulted to `auto`, which under `background-attachment: fixed` resolves against the **viewport**, not the element — giving 22px-wide, viewport-tall ellipses in one row. Fixed to `22px 22px`. Masked field types (`spotlight-mask`, `hue-shift`) now use `--sgs-cursor-field-attachment: scroll` — D767 made them emitter-only, so `fixed` bought them nothing and was the same root cause as the scroll drift |
+| **AURORA — rebuilt** | Hues now ROTATE in OKLCH rather than mix toward the base colour. Mixing cyan into yellow at any ratio produces muddy green, not teal — that is why the teal band was invisible before. The old "65%-base" rule is **DELETED**; replaced by a client-facing "Colour blend" inspector control |
+| **"Trail" renamed "Drag weight"** | It is a lerp follower with **no fading tail** — the name was promising an effect the mechanism does not produce. ⚠ The real fading trail Bean asked for lives in the particle engine's Sparks preset, which is still gated (see OPENED #3) |
+| **Field parks-at-centre bug** | `rest()` ran at init AND on mouseleave, so every section without recent pointer movement painted a lit pool at its own geometric centre. Proven: `localX = 866px` measured on a 1732px-wide section — exactly 50%. Now the field arrives and departs WITH the pointer, no rest-state teleport |
+| **⭐ THE EDITOR WAS OPENED FOR THE FIRST TIME** | This register's own previously-open item #2 (below). §9's cursor-field row in Spec 38 claimed the block editor canvas shows "the static resting field". **Measured false**, not merely unverified: the canvas iframe carries zero `data-sgs-cursor-field` attributes and none of the fx stylesheets, because `sgs/container` renders via `edit.js` in the canvas, not `render.php`. An info Notice now ships in its place. Everything else measured healthy: 36 blocks, 0 schema-invalid, 0 console errors, all five looks present in the picker, every control reachable behind the ToolsPanel "+", "Colour blend" correctly gated to hue-shift only |
+| **FR-38-30 — Magnetic pull** | Shipped, Tier V, 1054 bytes gzip. A generalisation of `magnet.js`, which has shipped since the mega-menu — not new infrastructure. Panel roster measured 32 blocks before, 32 after (net-zero surface growth). Live-verified on page 2737 with a negative control |
+| **FR-38-31 — Flowing gradient** | Shipped, **Tier W second entry** (WebGL substrate now has 2 admitted uses), 3648 bytes gzip. Built on stripe.com's `minigl` mesh technique; 4 client colours; a real SC 2.2.2 pause control. ⚠ Mechanism ships; the LOOK is rejected — see OPENED #1 |
+| **Deploy gate scoped to `--blocks-only`/`--theme-only`** | `deployed_dirty_files()` previously ignored the scope flag and aborted blocks-only deploys on another track's dirty theme files — blocked 3 real deploys this session. 3 new self-test cases, each watched failing on a planted defect before the fix landed |
+| **Drift-gate I8 registered** | I8 had produced real violations since D767 but was never added to `_INVARIANTS`, so `--check` printed only I0–I7 and reported "all eight invariants hold" when there were nine live invariants. The printed count is now DERIVED from the map, not hand-maintained |
+
+### OPENED — carried into the next session
+
+1. ⭐ **The flowing gradient's LOOK is rejected.** Bean: "it also looks like B-movie 3D VFX from
+   like the early 2000s." Root cause established — **not a tuning problem**:
+   (a) the `minigl` mesh technique every tutorial documents is stripe.com's OLD hero (~2020-21).
+   Their CURRENT hero is `hero-wave-animation__canvas` (WebGL2, `wave-fallback-desktop.png`
+   fallback) — a bounded ribbon on a light ground, text beside it on clean white, fine
+   striations.
+   (b) their colour comes from a hand-painted 480×480 `palette.png` texture the shader samples,
+   not from interpolating stops. Sampled values are nearly all above `0xf0` (peach/coral/
+   pink/cream/lilac — adjacent warm hues). Ours was near-black navy plus widely-spaced saturated
+   hues. Four colour stops cannot structurally reproduce an artist-painted image's variation.
+   (c) next-session plan: a scratch/POC exact replication. Prompt:
+   `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
+2. **Bean's eye on the five cursor-field looks** — mechanism now verified end-to-end (frontend
+   AND editor); the aesthetics of each look are not yet Bean-reviewed.
+3. **The particle engine (Sparks / Gravity dots / Ripple)** still needs its own design gate — cap,
+   stop-on-idle, flash ceiling. ⚠ Record clearly: the real fading trail Bean originally asked for
+   is the Sparks preset in this engine. The renamed "Drag weight" control is momentum, and is
+   NOT it.
+4. **`floating-objects`** — unchanged from the prior close, still needs its opt-in design gate.
+5. **Generative cover images** — Bean approved pursuing this direction (bake brand colours into
+   cached cover artwork, using the same capability the flowing gradient's rejection exposed a
+   need for — an artist-authored palette texture rather than four interpolated stops). Not
+   started.
+
+### Method failures worth carrying, all self-inflicted
+
+- **An estimate is not an enumeration.** A commit claimed "only 2 authorings, both test
+  fixtures" — quoted from D767 without re-measuring. The deploy's own oldshape audit blocked the
+  "Trail"→"Drag weight" rename; the editor then showed **six** blocks storing the old attribute
+  name (values 0, 60, 90, 50, 50, 55). WP silently deletes an undeclared attribute on the next
+  editor save (D338) — the rename as first written would have destroyed real client settings.
+- **A gate can hide its own invariant.** I8 ran and could fail the build, but was missing from
+  the label map, so the report read "all eight" when there were nine — a coverage audit that
+  trusted that map would have concluded I8 did not exist.
+- **An anchor is part of the edit that moves it.** The torch fix moved the literal pixel values
+  I8's negative control anchored on; `--self-test` correctly reported I8 UNPROVEN while `--check`
+  stayed green throughout.
+- **CSS can fight itself, twice in the same feature.** The flowing gradient's own child-lift rule
+  clobbered its own canvas first; after fixing that, the real winner turned out to be
+  `sgs/container`'s child-lift exclusion list, which the effect's own stylesheet could not see.
+  Found by asking the browser which rule matched, not by reasoning about specificity. The canvas
+  is now the FIFTH member of that exclusion list — five separate features have now learned this
+  independently.
+- **Verify the reference, not just the implementation.** Three Aurora attempts were built against
+  a technique documented everywhere as "the Stripe gradient" without ever opening stripe.com to
+  check it was still there. It is not — see OPENED #1.
+
+---
+
+## SESSION CLOSE — 2026-08-24 (retained per D101 — superseded by the 2026-08-24/25 close above, not deleted). What this session closed, and what it opened.
 
 Seven commits, all motion: `68a18639` `eb9ab0f9` `f71466ad` `a73970416` `c6a7370b3`
 `9d6a4f1ed` `7c213a361`. Decisions **D766** and **D767**. Canary: **page 2721**
@@ -103,15 +174,16 @@ capabilities never started.
 | **Tier G engine + 12 effect modules** | `src/shared/effects/gsap/` — pin-scrub, scrub, horizontal-panel, split-reveal, scramble, flip, draggable, draw, morph, motion-path, image-sequence, provider |
 | **Tier H — Lenis smooth scrolling (FR-38-18)** | Built + live-verified D424. Editor exclusion is deliberate and doubly enforced (`smooth-scroll.js:37` server-side, `:164-175` runtime iframe gate) |
 | **Tier V — page transitions (FR-38-19)** | Built + live-verified D424; CSS-first, zero frontend JS |
-| **Tier W — substrate + surface treatments (FR-38-29)** | D714–D716. `webgl/` = 4 files, zero dependency (raw WebGL2), 3 shaders, 15 image-bearing blocks offered |
+| **Tier W — substrate + surface treatments (FR-38-29)** | D714–D716. `webgl/` = 4 files, zero dependency (raw WebGL2), 3 shaders, 15 image-bearing blocks offered. **Second Tier W entry shipped 2026-08-25: FR-38-31 flowing gradient** (3648 bytes gzip, autonomous, SC 2.2.2 pause control) — mechanism ships; the look itself is Bean-rejected, see the 2026-08-24/25 session close, OPENED #1 |
 | **FR-38-12 Flip** | Closed D741 after two real bugs; live-verified on the shop archive |
 | **Morph + motion-path live** | D697 / D696 (2026-08-20) confirmed both fixes live |
 | **Carousel looping (FR-38-26)** | 5 blocks, each probe-verified, dots key to real card count |
-| **Cursor field (FR-38-25)** | 9 blocks; 3 controls (type/colour/size) all verified reachable end-to-end |
+| **Cursor field (FR-38-25)** | 9 blocks; 3 controls (type/colour/size) all verified reachable end-to-end. **Editor surface now also verified (2026-08-25)**: 36 blocks, 0 schema-invalid, 0 console errors, all five looks present in the picker, all controls reachable behind the ToolsPanel "+". Three real defects (torch one-axis background-size, aurora invisible-teal, field-parks-at-rest-centre) were found by Bean's eye and fixed the same session — all three had passed every existing gate |
+| **FR-38-30 — Magnetic pull** | Shipped 2026-08-25, Tier V, 1054 bytes gzip. A generalisation of the existing `magnet.js` (shipped since the mega-menu), not new infrastructure. Panel roster measured 32 blocks before and after |
 | **Animated counters** | `counter/view.js:1-90` — rAF ease-out-cubic, IntersectionObserver-gated, reduced-motion aware; `edit.js:161-176` exposes duration + separator. **Client-controllable.** The gap register listed this as missing; it is not |
 | **Audio-reactive visualisers** | `audio/view.js:85-105` real `AnalyserNode` graph; 6 styles, 4 reactive; client-configurable via "Player style" (`edit.js:122-228`) |
 | **`sgs/before-after`, `sgs/image-sequence` + its asset tooling, `sgs/physics-canvas`** | All built (spec still calls before-after "NET-NEW") |
-| **Gate chain** | `check-fx-list-drift.py` (prebuild), `check-motion-bundle-budget.py` + `check-shader-sources.py` (postbuild). The drift gate's I6 invariant is `--self-test`-proven able to fail |
+| **Gate chain** | `check-fx-list-drift.py` (prebuild), `check-motion-bundle-budget.py` + `check-shader-sources.py` (postbuild). The drift gate's I6 invariant is `--self-test`-proven able to fail. **I8 was live-but-unregistered until 2026-08-25** — it could fail `--check` but was missing from the printed invariant label map, so a passing report read "all eight invariants hold" against nine actually running. Now registered; the printed count is derived from the map, not hand-maintained. Deploy gate (`build-deploy.py`'s `deployed_dirty_files()`) now honours `--blocks-only`/`--theme-only` scoping — it previously aborted a scoped deploy over another track's dirty files outside that scope |
 | **Step 20 (spec↔code reconciliation)** | **All 5 items now closed.** (e) resolved by deletion in `1ac16ec9`; (c) ruled at D723 |
 
 ---
@@ -232,8 +304,8 @@ set is what makes the absence verdicts below trustworthy.
 |---|---|
 | Soft radial glow | ✅ `fx-cursor-field.css:73-79` |
 | Spotlight revealing a pattern | ✅ `:91-103` |
-| **Gradient that shifts hue with pointer** | ✅ **BUILT 2026-08-24** — `hue-shift`; multi-hue band at half pointer speed under a pointer-centred mask, client colour dominant at 65% via `color-mix(in oklch, …)` |
-| **Pattern that parallaxes** | ✅ **BUILT 2026-08-24** — `parallax-pattern`; repeating dots at 8% of pointer distance, deliberately unmasked |
+| **Gradient that shifts hue with pointer** | ✅ **BUILT 2026-08-24, REBUILT 2026-08-25** — `hue-shift`; hues now ROTATE in OKLCH under a pointer-centred mask rather than mixing toward the base colour (mixing cyan into yellow at any ratio is muddy green, not teal — that is why the original build's teal band was invisible). The fixed "65%-base" rule is DELETED, replaced by a client-facing "Colour blend" inspector control. Attachment is `scroll` not `fixed` (D767 made masked types emitter-only, so `fixed` bought nothing) |
+| **Pattern that parallaxes** | ✅ **BUILT 2026-08-24** — `parallax-pattern`; repeating dots at 8% of pointer distance, deliberately unmasked. Also fixed 2026-08-25: `--sgs-cursor-field-pattern-size` now sets both axes (`22px 22px`, was one value defaulting `auto`-height, which under `background-attachment:fixed` resolved against the viewport, not the element) |
 | *Floating objects* (a third, from FR-38-25) | ❌ zero opt-in marker, zero transform code |
 
 **Cost, verified against the code — the spec's "a CSS rule plus a descriptor" understates it by
@@ -255,7 +327,7 @@ two files.** A new look must join three lists or the drift gate fails the build:
 | Category | Status | Note |
 |---|---|---|
 | **Image transitions** (displacement melt, curtain wipe) | ABSENT | `before-after` is a clip-path comparison slider, not a transition |
-| **Generative backgrounds** (noise/flow fields) | ABSENT | Tier W is **single-pass, no loop by explicit design** (`webgl/README.md`). An architectural boundary, not an oversight — extending it is a new Tier W phase with its own gate |
+| **Generative backgrounds** (noise/flow fields) | ABSENT, but adjacent capability now shipped | Tier W was **single-pass, no loop by explicit design** (`webgl/README.md`) as of the 2026-08-24 close. FR-38-31's flowing gradient (2026-08-25, Section 1) is autonomous/continuously animating with a pause control, which is at minimum adjacent to this boundary. ✅ **RESOLVED 2026-08-25 by reading the shipped source, after the register flagged it unverified.** FR-38-31 does NOT go through `webgl/renderer.js` at all — it is a SIBLING module (`webgl/wave-gradient.js`) with its own context, program and draw call, so `webgl/README.md`'s single-pass/no-rAF contract does not govern it and is not violated by it. Its own draw IS single-pass (one program, one indexed draw), but it owns a continuous rAF loop in `fx-wave-gradient.js`, which `renderer.js` forbids for itself. **The boundary was side-stepped, not extended** — and the real cost is recorded at D779: the three Tier W house contracts now exist in two files and must be fixed in both. The fluid-cursor-field's multi-pass blocker below is untouched by this, because that one needs ping-pong framebuffers rather than merely a loop. The look itself is Bean-rejected regardless (see 2026-08-24/25 close, OPENED #1), and the fluid-cursor-field note below still holds independently of this |
 | **Lottie** | ABSENT | Zero dependency, zero code. Would need a Tier H admission test + D-number |
 | **3D / product configurators** | ABSENT | No three.js / model-viewer / OGL; no glb/gltf/usdz handling. ⭐ Commercially the strongest gap |
 | **Scrollytelling** | PARTIAL | `pin-scrub` + `horizontal-panel` give the pin-and-choreograph primitive. Missing: a step index, per-step active state, and a block pairing a step list with a pinned visual |
@@ -313,7 +385,13 @@ mismatch.
 
 ## What I did not check
 
-- Nothing here is a live-DOM claim; I opened no browser.
+- **Update 2026-08-25:** this line was true through the 2026-08-24 close only. The following
+  session DID open a browser — both frontend (page 2721) and, for the first time, the block
+  editor canvas — and found three real defects there, plus one row in Spec 38 §9 that was
+  measured wrong, not merely unverified. Everything captured in the 2026-08-24/25 session close
+  at the top of this file is a live-DOM claim. The line below is retained as an accurate
+  description of the 2026-08-24 close it originally described.
+- Nothing in the **2026-08-24** close (below) is a live-DOM claim; that session opened no browser.
 - I did not assess whether `IMAGE-SEQUENCE-PREP-README.md` meets the "a client can produce usable
   frames" bar — existence confirmed, quality not.
 - Carried from the registers without re-verification: the WCAG findings on marquee /
@@ -321,13 +399,21 @@ mismatch.
 - One agent flagged UNCLEAR on whether `animation_tokens` (8 rows) or `preset_implications`
   (23 rows) encode anything relevant to the Section 5 categories.
 
-## Ranked, if you want a next step
+## Ranked, if you want a next step (re-ranked 2026-08-25)
 
-1. **Hover rollout (2.1)** — highest client impact, lowest risk. One `enabledExtensions` opt-in
-   makes a built panel appear; separately, 10 blocks currently animate uncontrollably.
-2. **Documentation sweep (Section 6)** — nine items, no build, no deploy, no DB write. Removes
-   the traps before anyone acts on them.
-3. **The hue-shift look (Section 4)** — genuinely a CSS rule plus two list entries, on a proven
-   mechanism. The cheapest *visible* new capability on the register.
-4. **Step 12, the cloning lift (Section 3)** — the largest real build, and now known to be
-   larger than the register says because the DB half has no writer either.
+1. **The stripe-hero replication POC** — Bean has already rejected FR-38-31's shipped look and a
+   root cause is established (wrong reference technique, no artist-painted palette texture).
+   Prompt already written: `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`. Highest
+   priority because it is open, scoped, and blocking the only shipped-but-rejected item.
+2. **Hover rollout (2.1)** — highest client impact, lowest risk, unchanged from the 2026-08-24
+   close. One `enabledExtensions` opt-in makes a built panel appear; separately, 10 blocks
+   currently animate uncontrollably.
+3. **Particle-engine design gate (2026-08-24/25 OPENED #3)** — cap, stop-on-idle, flash ceiling.
+   This is where the REAL fading trail Bean asked for lives (Sparks preset); "Drag weight" is not
+   it and should not be presented as satisfying that ask.
+4. **Documentation sweep (Section 6)** — nine items as of 2026-08-24, no build, no deploy, no DB
+   write. Removes the traps before anyone acts on them. ⚠ Not re-audited this session — treat the
+   nine-item count as of 2026-08-24 only.
+5. **Step 12, the cloning lift (Section 3)** — the largest real build, and now known to be
+   larger than the register says because the DB half has no writer either. Unchanged this
+   session.

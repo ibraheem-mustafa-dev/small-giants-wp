@@ -1,3 +1,110 @@
+## D781 [INCIDENT] — the "Stripe gradient" everyone documents is Stripe's OLD hero, and we built it (2026-08-25)
+
+**Three Aurora attempts and one full Tier W build were made against a reference nobody had
+looked at.** `minigl` + the noise-displaced mesh is stripe.com's hero from ~2020-21. Every
+tutorial, port and CodePen describes it, which is exactly why it reads as current. It is not.
+
+Bean's verdict on the result: *"it also looks like B-movie 3D VFX from like the early 2000s."*
+Fair, and the cause is not tuning.
+
+**What stripe.com actually runs**, read from the live site: `.hero-wave-animation__canvas`
+(WebGL2) with a `wave-fallback-desktop.png` fallback — a BOUNDED RIBBON offset to the right on
+a LIGHT ground, headline on clean white beside it, with fine striations through the ribbon.
+
+⭐ **Their colour is PAINTED, not computed.** The shader samples a hand-painted 480x480
+`palette.png` as a texture. Sampled values are almost all above `0xf0` — peach, coral,
+magenta, cream, one bruise of periwinkle; adjacent warm hues at very high lightness. Ours
+interpolated four hex codes over a near-black navy base with widely-spaced saturated hues.
+**Four colour stops cannot produce an artist-painted image's variation, at any setting.**
+
+**The rule this sets: VERIFY THE REFERENCE, NOT JUST THE IMPLEMENTATION.** The technique was
+implemented faithfully and the research was accurate about that technique. Nobody checked the
+thing being copied still looked like what we thought. One screenshot at the start would have
+saved the whole build.
+
+**Next:** a scratch/POC exact replication (Bean's framing — a study rig, never deployed) at
+`.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`. FR-38-31 stays exactly as shipped
+until we know what replaces it.
+
+## D780 [ROUTINE] — the deploy's dirty-tree guard now scopes to what the run actually ships (2026-08-25)
+
+`deployed_dirty_files()` matched against all of `DEPLOY_ROOTS` regardless of `--blocks-only` /
+`--theme-only`, so a blocks-only deploy aborted on another track's uncommitted THEME templates
+— files that run could never have written. It blocked three deploys in one session.
+
+**This is the guard's own named failure mode, not a nitpick.** Its docstring already blames a
+repo-wide check for being "always true here … so the guard was bypassed with `--allow-dirty` on
+every run and therefore protected nothing — that is how an unfinished edit reached two live
+client sites on 2026-07-14". A guard that fires on files a run cannot touch trains the operator
+into that same reflex.
+
+`deploy_roots_for_scope()` returns a strictly SMALLER set for a scoped deploy and
+`DEPLOY_ROOTS` unchanged for a full one, so the default path is byte-identical.
+
+**Three self-test cases, each WATCHED FAILING on a planted defect** before being trusted:
+a dirty theme file must not block `--blocks-only` (5); an in-scope dirty file must STILL block,
+proving the change narrowed rather than disabled the guard (6); and a full deploy must still see
+the theme file, so (5) cannot be satisfied by dropping the root outright (7).
+
+⚠ **The deploy that followed does NOT prove this.** The other track had committed by then, so
+that run would have passed either way. The self-test is the proof. Recorded because "it worked
+afterwards" is the reasoning this repo keeps having to correct.
+
+## D779 [INCIDENT] — Tier W gains a second entry, and it WIDENS the tier rather than extending it (2026-08-25)
+
+**FR-38-31 flowing gradient.** Bean's ruling, made against both researchers' recommendation and
+with their evidence in front of him: *"just model the stripe setup exactly! And make it so we
+can customise the colours."* He also chose AUTONOMOUS over cursor-driven, which fixes the mobile
+problem — a cursor effect renders nothing at all on a phone, and phones are most client traffic.
+
+⛔ **The cost, stated so it cannot read as "one more shader".** Tier W's founding premise is that
+a `null` return IS the fallback: the untouched `<img>` is already the finished state, so there is
+no second path to keep in sync. **That holds only because there is a source image.** This effect
+is GENERATIVE — there is no untouched anything — so a real CSS fallback ships alongside it and
+must be kept in sync forever, which is precisely the cost Tier W was designed to avoid. The list
+is still CLOSED; it now has two entries.
+
+Built as a SIBLING of `webgl/renderer.js`, not an extension: that renderer draws one fullscreen
+TRIANGLE and the shipped surface-treatment depends on that shape. Consequence recorded in the
+file — the three Tier W house contracts are now implemented twice and must be fixed twice.
+
+Autonomous motion behind hero text engages **SC 2.2.2**, and `prefers-reduced-motion` does not
+discharge it, so a real keyboard-reachable Pause control ships — emitted `hidden` and unhidden by
+JS, so it is never a control that pauses nothing. Off-screen, tab-hidden and context-loss stops
+exist for POWER, not compliance. DPR capped at 1.5.
+
+3648 bytes gzip, 3% of D479's named 120KB Tier W allowance. **Licence provenance checked:**
+technique from `sa3dany/wave-gradient` (MIT, itself stating it is based on stripe's vertex
+shader); noise is Ashima/Gustavson (MIT). ⛔ nimitz's Shadertoy "Auroras" is CC BY-NC-SA —
+NON-COMMERCIAL — and is NOT used. Most aurora shaders in the wild descend from it.
+
+⚠ **BUILT AND LIVE, LOOK REJECTED.** See D781.
+
+## D778 [ROUTINE] — magnetic pull was a generalisation, not a build (2026-08-25)
+
+**FR-38-30.** Bean's D1 from the cursor-effects research. The plan called it a build; the census
+found `src/shared/effects/magnet.js` had shipped since the mega-menu, driving `sgs/nav-menu`'s
+label nudge — reduced-motion gated, touch gated, rAF-throttled, with a frozen export contract.
+
+The generalisation adds two axes and a **proximity radius**, which is the whole difference
+between a magnetic button and a hover state: it must engage while the pointer is still OUTSIDE
+the element. That forced the shape of the change — an element-scoped `mousemove` cannot see a
+pointer outside its own box, so a new `createMagnet()` core attaches no listeners and
+`fx-magnet.js` drives every magnet from ONE shared document listener. `initMagnet()`'s
+no-options behaviour is byte-identical, so nav-menu is untouched.
+
+Distance is measured to the element's BOX, not its centre — a 300px button's far end is 150px
+from its own centre before the pointer is anywhere near it.
+
+⭐ **Panel roster MEASURED 32 before, 32 after.** `requires='none'` + `creates_panel=0` makes it
+permissive: offered wherever an fx panel already exists, never creating one. It reaches
+`sgs/button`, `sgs/multi-button`, `sgs/icon` and every other fx-panel block universally
+(R-31-9), rather than as a hand-listed roster.
+
+1054 bytes gzip, Tier V, zero GSAP. Live-verified: measurable pull 240px outside the button,
+peak ~80px out, zero beyond its reach; the axis lock proven with a negative control — the locked
+button held `y=0.00` while its unlocked neighbour moved `y=-19.25` under identical input.
+
 ## D777 — the tier migrator could not see a `<prop>Desktop` base: 34 families, not 37 [ROUTINE]
 
 **2026-08-25.** `migrate-tier-object.py`'s `classify()` required a BARE base attribute, so any

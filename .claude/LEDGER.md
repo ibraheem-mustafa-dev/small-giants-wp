@@ -104,7 +104,7 @@ reason; the audit should be too. Until then a theme-only deploy needs `--skip-ol
 ⭐ **START HERE: `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`** — scratch POC of
 stripe.com's actual hero technique before touching FR-38-31 again.
 
-**Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, not decision-logged yet.
+**Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, logged as **D778-D781**.
 Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).
 
 ✅ Bean's eye-review of 2721 found 3 gate-passed defects: TORCH's mask had no height (fixed);
