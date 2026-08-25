@@ -451,18 +451,43 @@ function loadBlockOwnSrc( blockDir ) {
 	// this mainly picks up the framework-wide + extensions surfaces). Tracked
 	// by resolved PATH, not a text substring match, so a file is never read
 	// (and its content never duplicated) twice.
-	const tagNames = new Set();
-	JSX_TAG_RE.lastIndex = 0;
-	let m;
-	while ( ( m = JSX_TAG_RE.exec( src ) ) !== null ) {
-		tagNames.add( m[ 1 ] );
-	}
-	for ( const name of tagNames ) {
-		const file = COMPONENT_FILE_MAP.get( name );
-		if ( file && ! readPaths.has( path.resolve( file ) ) ) {
-			readPaths.add( path.resolve( file ) );
-			src += '\n' + readIfExists( file );
+	// TRANSITIVE resolution (2026-08-25). This loop previously ran ONCE over the
+	// tags in the block's own source, appended each resolved file, and stopped —
+	// so a component reached through ANOTHER component was invisible.
+	// Measured: `GradientOverlayControl` drives attrs through a computed-key
+	// setAttributes and is mounted only by `BackgroundPanel` / `ShapeDividersPanel`
+	// / `hero`. SEVEN blocks mount BackgroundPanel without mounting
+	// GradientOverlayControl themselves — cta-section, multi-button, nav-drawer,
+	// physics-canvas, site-footer, site-header, trust-bar — so for all seven its
+	// source was never folded in and any attr it controls read as DEAD.
+	// Now iterated to a FIXED POINT. Each file is read at most once (tracked by
+	// resolved PATH), the component graph is finite, and the counter is a
+	// backstop against a pathological cycle rather than an expected limit.
+	const seenTags = new Set();
+	let frontier = src;
+	for ( let depth = 0; depth < 20; depth++ ) {
+		const newTags = [];
+		JSX_TAG_RE.lastIndex = 0;
+		let m;
+		while ( ( m = JSX_TAG_RE.exec( frontier ) ) !== null ) {
+			if ( ! seenTags.has( m[ 1 ] ) ) {
+				seenTags.add( m[ 1 ] );
+				newTags.push( m[ 1 ] );
+			}
 		}
+		let added = '';
+		for ( const name of newTags ) {
+			const file = COMPONENT_FILE_MAP.get( name );
+			if ( file && ! readPaths.has( path.resolve( file ) ) ) {
+				readPaths.add( path.resolve( file ) );
+				added += '\n' + readIfExists( file );
+			}
+		}
+		if ( ! added ) {
+			break;
+		}
+		src += added;
+		frontier = added;
 	}
 	OWN_SRC_PARTS.set(
 		blockDir,
@@ -1076,9 +1101,40 @@ function main() {
 	}
 
 	if ( isUpdateBaseline ) {
-		fs.writeFileSync( BASELINE_FILE, JSON.stringify( { accepted: findings }, null, 2 ) + '\n' );
+		// MERGE, never overwrite (2026-08-25). This previously wrote O\nY the
+		// current run's freshly-computed findings, so any hand-authored `reason`
+		// in the baseline was DESTROYED on the next run - including a human
+		// ruling dated 2026-08-21 that is still live in this file. The docblock
+		// tells the reader to "add it with a reason"; this command used to
+		// delete exactly that.
+		const existingBaseline = loadBaseline();
+		const existingMap = new Map(
+			existingBaseline.map( ( f ) => [ findingKey( f ), f ] )
+		);
+		const dropped = new Set( existingMap.keys() );
+		const merged = [];
+		for ( const finding of findings ) {
+			const key = findingKey( finding );
+			dropped.delete( key );
+			const prior = existingMap.get( key );
+			// Keep the human-authored entry wholesale when one exists.
+			merged.push( prior ? { ...prior } : finding );
+		}
+		// Stable order, so re-baselining on another machine cannot produce
+		// diff churn unrelated to any real change.
+		merged.sort( ( a, b ) => findingKey( a ).localeCompare( findingKey( b ) ) );
+		fs.writeFileSync( BASELINE_FILE, JSON.stringify( { accepted: merged }, null, 2 ) + '\n' );
+		if ( dropped.size ) {
+			// A vanishing acceptance must be visible, not silent.
+			process.stderr.write(
+				`[check-duplicate-controls] dropped ${ dropped.size } baseline entry(ies) no longer found:\n`
+			);
+			for ( const key of [ ...dropped ].sort() ) {
+				process.stderr.write( `    ${ key }\n` );
+			}
+		}
 		process.stdout.write(
-			`[check-duplicate-controls] Baseline updated — ${ findings.length } finding(s) accepted.\n`
+			`[check-duplicate-controls] Baseline merged — ${ merged.length } entry(ies); ${ existingBaseline.length } previously baselined; ${ dropped.size } dropped.\n`
 		);
 		process.exit( 0 );
 	}
