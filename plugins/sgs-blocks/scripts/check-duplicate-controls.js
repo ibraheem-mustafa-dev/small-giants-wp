@@ -84,6 +84,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const os = require( 'os' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const { resolveComponentFiles } = require( './inspector-scan/core/components' );
@@ -126,26 +127,23 @@ const UNIVERSAL_HOVER_BY_CATEGORY = {
 	effect: [ 'sgsHoverScale', 'sgsHoverShadow', 'sgsHoverImageZoom' ], // "Hover effect" preset vs the "Hover Effects" panel — naming collision, not 1:1.
 };
 
-// ---------------------------------------------------------------------------
-// DRIFT GUARD (2026-08-25) — the table above is HAND-MAINTAINED against a
-// second hand-authored system, and it HAD drifted: three categories named
-// attrs that do not exist. Two hand-maintained lists diverging silently is a
-// failure this codebase has met repeatedly, so the table is now validated
-// against its source of truth on every run. A category naming an unregistered
-// attr is dropped (yielding no finding, so the gate never advises deleting a
-// control in favour of nothing) and reported loudly.
-// ---------------------------------------------------------------------------
-function readRegisteredUniversalHoverAttrs() {
-	// Comment-STRIPPED: reading raw source means a comment such as
-	// `// sgsHoverBgColour: RETIRED, do not re-add` re-registers the phantom
-	// as if it were a live key, silently un-guarding this guard. That is a
-	// completely natural way to phrase a retirement note, so it is not a
-	// hypothetical.
-	const src = stripComments(
-		readIfExists(
-			path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects.js' )
-		)
-	);
+/**
+ * Pure extraction step, split out of readRegisteredUniversalHoverAttrs() so
+ * the self-test can exercise it in-memory against a synthetic source string
+ * instead of the real hover-effects.js file. Behaviour is byte-identical to
+ * the inline version this replaced.
+ *
+ * Comment-STRIPPED: reading raw source means a comment such as
+ * `// sgsHoverBgColour: RETIRED, do not re-add` re-registers the phantom
+ * as if it were a live key, silently un-guarding this guard. That is a
+ * completely natural way to phrase a retirement note, so it is not a
+ * hypothetical.
+ *
+ * @param {string} rawSrc Raw (not yet comment-stripped) source text.
+ * @return {Set<string>} Registered `sgsHover*` / `sgsStagger*` key names.
+ */
+function extractRegisteredHoverAttrsFromSrc( rawSrc ) {
+	const src = stripComments( rawSrc );
 	const found = new Set();
 	if ( ! src ) {
 		return found;
@@ -158,18 +156,43 @@ function readRegisteredUniversalHoverAttrs() {
 	return found;
 }
 
+function readRegisteredUniversalHoverAttrs() {
+	return extractRegisteredHoverAttrsFromSrc(
+		readIfExists(
+			path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects.js' )
+		)
+	);
+}
+
+/**
+ * Pure per-category drift computation, split out of the top-level guard body
+ * so the self-test can exercise it in-memory against a synthetic category
+ * list + registered set. Behaviour is byte-identical to the inline version
+ * this replaced: a category naming an unregistered attr has that attr
+ * dropped from its list and reported in `phantom`.
+ *
+ * @param {string[]}    list       Attr names a category currently claims.
+ * @param {Set<string>} registered The real, currently-registered attr names.
+ * @return {{phantom: string[], filtered: string[]}} Dropped names + survivors.
+ */
+function computeCategoryDrift( list, registered ) {
+	const phantom = list.filter( ( a ) => ! registered.has( a ) );
+	const filtered = list.filter( ( a ) => registered.has( a ) );
+	return { phantom, filtered };
+}
+
 const REGISTERED_UNIVERSAL_HOVER = readRegisteredUniversalHoverAttrs();
 const UNIVERSAL_MAP_DRIFT = [];
 if ( REGISTERED_UNIVERSAL_HOVER.size > 0 ) {
 	for ( const category of Object.keys( UNIVERSAL_HOVER_BY_CATEGORY ) ) {
-		const list = UNIVERSAL_HOVER_BY_CATEGORY[ category ];
-		const phantom = list.filter( ( a ) => ! REGISTERED_UNIVERSAL_HOVER.has( a ) );
+		const { phantom, filtered } = computeCategoryDrift(
+			UNIVERSAL_HOVER_BY_CATEGORY[ category ],
+			REGISTERED_UNIVERSAL_HOVER
+		);
 		if ( phantom.length ) {
 			UNIVERSAL_MAP_DRIFT.push( `${ category } -> ${ phantom.join( ', ' ) }` );
 		}
-		UNIVERSAL_HOVER_BY_CATEGORY[ category ] = list.filter( ( a ) =>
-			REGISTERED_UNIVERSAL_HOVER.has( a )
-		);
+		UNIVERSAL_HOVER_BY_CATEGORY[ category ] = filtered;
 	}
 }
 
@@ -1532,8 +1555,235 @@ function runSelfTest() {
 			`loadBlockOwnSrc() now includes that shared file's source\n`
 	);
 	allOk = allOk && widenedTest;
+	let totalCases = cases.length + 1; // + the widened-test above.
 
-	process.stdout.write( `\n[check-duplicate-controls] self-test ${ allOk ? 'PASSED' : 'FAILED' }.\n` );
+	// -------------------------------------------------------------------
+	// classifyHoverAttr() — colour-first ordering (2026-08-25 fix).
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- classifyHoverAttr() --\n' );
+	const hoverClassifyCases = [
+		{
+			name: 'shadowHoverColour classifies as a COLOUR category, not shadow (colour-first ordering)',
+			attr: 'shadowHoverColour',
+			// isColour && !background/!border -> falls into the catch-all "every
+			// other colour-bearing hover attr" branch, category 'textColour'.
+			expectCategory: 'textColour',
+		},
+		{ name: 'scaleHover classifies as scale', attr: 'scaleHover', expectCategory: 'scale' },
+		{ name: 'imageZoomHover classifies as imageZoom', attr: 'imageZoomHover', expectCategory: 'imageZoom' },
+		{ name: 'grayscaleHover classifies as grayscale', attr: 'grayscaleHover', expectCategory: 'grayscale' },
+		{
+			name: 'pauseOnHover classifies to nothing (behavioural toggle, no panel equivalent)',
+			attr: 'pauseOnHover',
+			expectCategory: null,
+		},
+	];
+	for ( const c of hoverClassifyCases ) {
+		totalCases++;
+		const got = classifyHoverAttr( c.attr );
+		const gotCategory = got ? got.category : null;
+		const ok = gotCategory === c.expectCategory;
+		allOk = allOk && ok;
+		process.stdout.write(
+			`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
+				`         got=${ JSON.stringify( gotCategory ) } (expected ${ JSON.stringify( c.expectCategory ) })\n`
+		);
+	}
+
+	// -------------------------------------------------------------------
+	// Drift guard — extractRegisteredHoverAttrsFromSrc() + computeCategoryDrift().
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- drift guard --\n' );
+
+	totalCases++;
+	const driftPhantomSrc = `
+const hoverAttributes = {
+	sgsHoverScale: {},
+	sgsHoverShadow: {},
+};
+`;
+	const { phantom: driftPhantom, filtered: driftFiltered } = computeCategoryDrift(
+		[ 'sgsHoverScale', 'sgsHoverPhantomGhost' ],
+		extractRegisteredHoverAttrsFromSrc( driftPhantomSrc )
+	);
+	const driftOk =
+		JSON.stringify( driftPhantom ) === JSON.stringify( [ 'sgsHoverPhantomGhost' ] ) &&
+		JSON.stringify( driftFiltered ) === JSON.stringify( [ 'sgsHoverScale' ] );
+	allOk = allOk && driftOk;
+	process.stdout.write(
+		`  [${ driftOk ? 'OK' : 'FAIL' }] a category naming an unregistered attr drops it and reports it; a real attr survives\n` +
+			`         phantom=${ JSON.stringify( driftPhantom ) } filtered=${ JSON.stringify( driftFiltered ) }\n`
+	);
+
+	totalCases++;
+	const driftCommentSrc = `
+// sgsHoverPhantomGhost: RETIRED, do not re-add
+const hoverAttributes = {
+	sgsHoverScale: {},
+};
+`;
+	const registeredFromComment = extractRegisteredHoverAttrsFromSrc( driftCommentSrc );
+	const commentOk =
+		registeredFromComment.has( 'sgsHoverScale' ) && ! registeredFromComment.has( 'sgsHoverPhantomGhost' );
+	allOk = allOk && commentOk;
+	process.stdout.write(
+		`  [${ commentOk ? 'OK' : 'FAIL' }] a phantom name appearing only in a COMMENT does not get registered\n` +
+			`         registered=[${ [ ...registeredFromComment ].join( ', ' ) }]\n`
+	);
+
+	// -------------------------------------------------------------------
+	// collectIndirectControlledAttrs() — the two dispatcher idioms + the
+	// unrelated-lookup-table false positive it must reject.
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- collectIndirectControlledAttrs() --\n' );
+
+	const indirectCases = [
+		{
+			name: 'attrNames={ { valueHover: "shadowHover" } } JSX-prop object map -> controlled',
+			src: `
+export default function Edit( { attributes, setAttributes } ) {
+	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
+	return (
+		<ShadowControl attrNames={ { valueHover: 'shadowHover' } } />
+	);
+}
+`,
+			declaredAttrs: [ 'shadowHover' ],
+			expectAttrs: [ 'shadowHover' ],
+		},
+		{
+			name: 'onChange={ set( "effectHover" ) } curried setter in a JSX prop -> controlled',
+			src: `
+export default function Edit( { attributes, setAttributes } ) {
+	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
+	return (
+		<ColorPicker onChange={ set( 'effectHover' ) } />
+	);
+}
+`,
+			declaredAttrs: [ 'effectHover' ],
+			expectAttrs: [ 'effectHover' ],
+		},
+		{
+			name: 'unrelated lookup table (not a JSX prop) must NOT be marked controlled',
+			src: `
+export default function Edit( { attributes, setAttributes } ) {
+	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
+	const ICON_LOOKUP = { home: 'ctaIconSlug' };
+	return <div />;
+}
+`,
+			declaredAttrs: [ 'ctaIconSlug' ],
+			expectAttrs: [],
+		},
+		{
+			name: 'no computed-key setAttributes in the file at all -> returns nothing even with an attrNames map',
+			src: `
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<ShadowControl attrNames={ { valueHover: 'shadowHover' } } />
+	);
+}
+`,
+			declaredAttrs: [ 'shadowHover' ],
+			expectAttrs: [],
+		},
+	];
+	for ( const c of indirectCases ) {
+		totalCases++;
+		const got = collectIndirectControlledAttrs( [ c.src ], new Set( c.declaredAttrs ) );
+		const gotAttrs = [ ...got ].sort();
+		const expectAttrs = [ ...c.expectAttrs ].sort();
+		const ok = JSON.stringify( gotAttrs ) === JSON.stringify( expectAttrs );
+		allOk = allOk && ok;
+		process.stdout.write(
+			`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
+				`         found=[${ gotAttrs.join( ', ' ) }] (expected [${ expectAttrs.join( ', ' ) }])\n`
+		);
+	}
+
+	// -------------------------------------------------------------------
+	// checkHoverDuplication() — the four severities (controlled / shadow /
+	// scoped / scoped-shadow). Needs real files on disk for loadBlockOwnSrc()
+	// to read, so this is the one group that is NOT in-memory-only: it writes
+	// isolated fixture files under a fresh os.tmpdir() dir and removes them
+	// afterwards.
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- checkHoverDuplication() severities (filesystem fixtures, cleaned up) --\n' );
+
+	const severityCases = [
+		{
+			name: 'own control, unscoped attr -> severity "controlled"',
+			attrName: 'scaleHover',
+			editJs:
+				"import { RangeControl } from '@wordpress/components';\n" +
+				'export default function Edit( { attributes, setAttributes } ) {\n' +
+				"\treturn <RangeControl value={ attributes.scaleHover } onChange={ ( v ) => setAttributes( { scaleHover: v } ) } />;\n" +
+				'}\n',
+			expectSeverity: 'controlled',
+		},
+		{
+			name: 'no control, unscoped attr -> severity "shadow"',
+			attrName: 'grayscaleHover',
+			editJs: 'export default function Edit() {\n\treturn null;\n}\n',
+			expectSeverity: 'shadow',
+		},
+		{
+			name: 'own control, sub-element-scoped attr ("cta") -> severity "scoped"',
+			attrName: 'ctaScaleHover',
+			editJs:
+				"import { RangeControl } from '@wordpress/components';\n" +
+				'export default function Edit( { attributes, setAttributes } ) {\n' +
+				"\treturn <RangeControl value={ attributes.ctaScaleHover } onChange={ ( v ) => setAttributes( { ctaScaleHover: v } ) } />;\n" +
+				'}\n',
+			expectSeverity: 'scoped',
+		},
+		{
+			name: 'no control, sub-element-scoped attr ("icon") -> severity "scoped-shadow"',
+			attrName: 'iconGrayscaleHover',
+			editJs: 'export default function Edit() {\n\treturn null;\n}\n',
+			expectSeverity: 'scoped-shadow',
+		},
+	];
+
+	const tmpRoot = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-hover-selftest-' ) );
+	try {
+		for ( const c of severityCases ) {
+			totalCases++;
+			const blockDir = fs.mkdtempSync( path.join( tmpRoot, 'block-' ) );
+			fs.writeFileSync( path.join( blockDir, 'edit.js' ), c.editJs );
+			const meta = {
+				attributes: { [ c.attrName ]: { type: 'number' } },
+				supports: { sgs: { enabledExtensions: [ 'hover' ] } },
+			};
+			let findings;
+			let error = null;
+			try {
+				findings = checkHoverDuplication( 'sgs/self-test-hover', blockDir, meta );
+			} catch ( e ) {
+				error = e;
+			}
+			if ( error ) {
+				allOk = false;
+				process.stdout.write( `  [ERROR] ${ c.name }: ${ error.message }\n` );
+				continue;
+			}
+			const finding = findings.find( ( f ) => f.attr === c.attrName );
+			const gotSeverity = finding ? finding.severity : null;
+			const ok = gotSeverity === c.expectSeverity;
+			allOk = allOk && ok;
+			process.stdout.write(
+				`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
+					`         got=${ JSON.stringify( gotSeverity ) } (expected ${ JSON.stringify( c.expectSeverity ) })\n`
+			);
+		}
+	} finally {
+		fs.rmSync( tmpRoot, { recursive: true, force: true } );
+	}
+
+	process.stdout.write(
+		`\n[check-duplicate-controls] self-test ${ allOk ? 'PASSED' : 'FAILED' } (${ totalCases } cases).\n`
+	);
 	process.exit( allOk ? 0 : 1 );
 }
 
