@@ -73,17 +73,32 @@ regression I shipped that every gate passed.
   RETIRED with captures in `reports/visual-diff/breadcrumbs-2026-08-24.md`.
 
 ### ▶ OPEN, in order
-1. **Bean's call: the `<h1>` on the blog archive still reads "Category: Uncategorized"**
-   while the shop's reads just "Shop". That is `core/query-title` — `archive-product.html`
-   sets `showPrefix:false`, `archive.html` does not. Arguably correct on a heading and
-   noise in a breadcrumb, so it was NOT changed unilaterally.
-2. **`layout` validation — DESIGN-GATED, do NOT build** (D774). The obvious allowlist is
-   REFUTED: `masonry`/`carousel`/`list`/`full`/`split` are legitimate values on gallery,
-   post-grid and testimonial-slider, and `full` is testimonial-slider's DEFAULT.
-   Recommendation put to Bean: a PHP allowlist scoped to the wrapper's own display
-   dispatch + suppress the meaningless `sgs-container--<invalid>` class. Awaiting his call.
+1. ⛔ **BLOCKED, needs a build not a toggle — the blog listing has NO `<h1>` and ~104 chars.**
+   `show_on_front=posts` so the site ROOT is the blog listing, but `front-page.html` is a
+   static-page shell (`main > post-content`, no query loop). Bean ruled: static homepage +
+   a real `/blog/`. **`theme/sgs-theme/templates/home.html` is BUILT and committed
+   (`4ad56b00d`) but INERT** — front-page.html wins the hierarchy until Reading changes.
+   ⛔ The flip needs a page assigned as `page_on_front`; the canary has 135 published pages
+   and NONE is a homepage. Building one is a design task. Also: other tracks BASELINE `/`
+   (the flexWrap work recorded `/ baseline {row|nowrap 39, row|wrap 6, …}`), so flipping it
+   mid-session would silently move their measurements.
+2. **`layout` enum on `sgs/container` — RECOMMENDED, awaiting Bean's go** (supersedes D774's
+   blanket 'do not add an enum'). ⭐ **D774 CONFLATED TWO PROPOSALS.** A *shared PHP
+   allowlist in the wrapper* WOULD break gallery/post-grid/testimonial-slider — it sees
+   every calling block's attrs. A **`block.json` enum on `sgs/container` alone does NOT**:
+   WP validates per block type, and 5 of the 19 blocks sharing the attr name already carry
+   their own differing enums (gallery `grid|masonry|carousel`, testimonial-slider
+   `full|split`, …). Safe-narrowing test PASSES — stored canary content is 652 absent /
+   28 flex / 9 grid / 9 stack / **0 out-of-enum**; theme files 18 flex / 21 grid / 0 invalid.
+   Enum kills the garbage `sgs-container--<invalid>` class (WP coerces before PHP sees it).
+   Caveat: still silent — a typo becomes `flex`, not an error.
 3. **C1/C2** — `woocommerce/catalog-sorting` + `core/query-pagination` still unstyled.
 4. **Item 4's 83 candidates** — needs Bean's eye per candidate, not a mechanical sweep.
+
+### ✅ ALSO CLOSED 2026-08-25 (third wave)
+- **Term-archive `<h1>` prefix dropped** (`bc3b8452d`, live-verified): `/category/…/` h1 was
+  "Category: Uncategorized", now **"Uncategorized"** — matching the shop's "Shop".
+  `showPrefix:false` on `core/query-title`, the mechanism archive-product.html already used.
 ### ⚠ Two traps this track proved live
 - **A one-child flex row is indistinguishable from a stack until a sibling appears** (D773).
   `sgs/container` defaults to `layout:"flex"` = a CSS ROW. Adding a second child makes the
