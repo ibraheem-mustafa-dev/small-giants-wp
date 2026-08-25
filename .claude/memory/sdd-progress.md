@@ -166,3 +166,41 @@ QC-INLINE: 10/10 scenarios pass, confidence 100. Light render byte-identical to 
   throughout all six tasks. Two initial "failures" were BOTH instrument faults, not rig defects:
   a console filter matching message text when the favicon appears only in the URL, and a
   determinism assertion demanding bit-exactness of a GPU render (real variance: 1/255, mean 0.000).
+
+---
+
+## ⚠ UNVERSIONED EDIT — recorded here because nothing else records it (2026-08-25)
+
+This ledger moved from `.superpowers/sdd/progress.md` to its current path,
+`.claude/memory/sdd-progress.md`, so that the SDD recovery map survives a fresh clone or
+`git clean -fdx` — the exact situations it exists for. It was previously git-ignored.
+
+**The corresponding SKILL EDIT IS NOT UNDER VERSION CONTROL.** It is recorded here, in a tracked
+file, because there is nowhere else it can be recorded.
+
+**What was edited:** `subagent-driven-development` SKILL.md, two changes —
+1. the ledger path in the "Durable Progress" section:
+   `.superpowers/sdd/progress.md` → `.claude/memory/sdd-progress.md`
+2. the note claiming `git clean -fdx` destroys the ledger (now false — it is tracked), replaced
+   with the reasoning for the split: **the ledger is recovery state and is tracked; per-task
+   briefs, reports and review packages stay in `.superpowers/sdd/` and stay git-ignored, because
+   those are ephemeral handoff files.** The three scripts (`task-brief`, `review-package`,
+   `sdd-workspace`) were deliberately NOT changed for that reason.
+
+**Where the file actually lives:** `~/.agents/skills/subagent-driven-development/SKILL.md`.
+`~/.claude/skills/subagent-driven-development` is a Windows **junction** into it — git refuses to
+traverse it (`fatal: pathspec ... is beyond a symbolic link`).
+
+⛔ **Why it cannot be committed, verified 2026-08-25:**
+- `~/.agents` is **not a git repository at all**.
+- `~/.claude` **is** its own repo (148 tracked files) but has **no remotes** — nothing to push to.
+- The skills tree is therefore invisible to both.
+
+⛔ **THE WIDER RISK, measured:** **132 of 151** entries under `~/.claude/skills/` are junctions
+into `~/.agents` — **164 skills, 739 MB, entirely unversioned.** Every skill edit ever made has no
+history, no diff, no rollback and no backup, while `~/.claude` *looks* version-controlled. A
+hand-rolled `SKILL.md.bak-2026-07-17-preGraft` sitting beside the live file is the symptom.
+
+Bean was shown this and chose to leave it as-is for now (option 3 of 3: `git init` in `~/.agents`,
+add a remote to `~/.claude`, or record and move on). **If the skills tree is ever lost, the two
+edits above are described precisely enough here to be reapplied by hand.**
