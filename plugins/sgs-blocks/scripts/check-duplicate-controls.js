@@ -104,9 +104,13 @@ const BASELINE_FILE = path.join( __dirname, 'duplicate-controls-baseline.json' )
 // a fixed cross-reference between two hand-authored control systems, same
 // justification class as check-dead-controls.js's PREFIXED_HELPER_SUFFIXES.
 const UNIVERSAL_HOVER_BY_CATEGORY = {
-	bgColour: [ 'sgsHoverBgColour' ],
-	textColour: [ 'sgsHoverTextColour' ],
-	borderColour: [ 'sgsHoverBorderColour' ],
+	// ⛔ bgColour / textColour / borderColour DELETED 2026-08-25. They named
+	// `sgsHoverBgColour`, `sgsHoverTextColour` and `sgsHoverBorderColour` —
+	// hover-effects.js registers NONE of them and exposes no colour control at
+	// all. 36 of 64 findings therefore named a KEEPER that does not exist, i.e.
+	// advised deleting a working block control in favour of nothing. A private
+	// *ColourHover attr has no universal counterpart; it is not a duplicate.
+	// The guard below stops this drifting again.
 	scale: [ 'sgsHoverScale', 'sgsHoverScalePreset' ],
 	shadow: [ 'sgsHoverShadow' ],
 	imageZoom: [ 'sgsHoverImageZoom' ],
@@ -115,6 +119,46 @@ const UNIVERSAL_HOVER_BY_CATEGORY = {
 	easing: [ 'sgsHoverEasing' ],
 	effect: [ 'sgsHoverScale', 'sgsHoverShadow', 'sgsHoverImageZoom' ], // "Hover effect" preset vs the "Hover Effects" panel — naming collision, not 1:1.
 };
+
+// ---------------------------------------------------------------------------
+// DRIFT GUARD (2026-08-25) — the table above is HAND-MAINTAINED against a
+// second hand-authored system, and it HAD drifted: three categories named
+// attrs that do not exist. Two hand-maintained lists diverging silently is a
+// failure this codebase has met repeatedly, so the table is now validated
+// against its source of truth on every run. A category naming an unregistered
+// attr is dropped (yielding no finding, so the gate never advises deleting a
+// control in favour of nothing) and reported loudly.
+// ---------------------------------------------------------------------------
+function readRegisteredUniversalHoverAttrs() {
+	const src = readIfExists(
+		path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects.js' )
+	);
+	const found = new Set();
+	if ( ! src ) {
+		return found;
+	}
+	const re = /(sgsHover[A-Za-z0-9]*|sgsStagger[A-Za-z0-9]*)\s*:/g;
+	let m;
+	while ( ( m = re.exec( src ) ) !== null ) {
+		found.add( m[ 1 ] );
+	}
+	return found;
+}
+
+const REGISTERED_UNIVERSAL_HOVER = readRegisteredUniversalHoverAttrs();
+const UNIVERSAL_MAP_DRIFT = [];
+if ( REGISTERED_UNIVERSAL_HOVER.size > 0 ) {
+	for ( const category of Object.keys( UNIVERSAL_HOVER_BY_CATEGORY ) ) {
+		const list = UNIVERSAL_HOVER_BY_CATEGORY[ category ];
+		const phantom = list.filter( ( a ) => ! REGISTERED_UNIVERSAL_HOVER.has( a ) );
+		if ( phantom.length ) {
+			UNIVERSAL_MAP_DRIFT.push( `${ category } -> ${ phantom.join( ', ' ) }` );
+		}
+		UNIVERSAL_HOVER_BY_CATEGORY[ category ] = list.filter( ( a ) =>
+			REGISTERED_UNIVERSAL_HOVER.has( a )
+		);
+	}
+}
 
 // Sub-element prefix words that mean a private *Hover attr targets a named
 // CHILD part of the block (a CTA button, a tab, an icon...) rather than the
@@ -148,12 +192,30 @@ function classifyHoverAttr( attrName ) {
 	const has = ( w ) => words.includes( w );
 
 	let category = null;
-	if ( ( has( 'background' ) || has( 'bg' ) ) && has( 'colour' ) ) {
+	// COLOUR FIRST (2026-08-25). The universal panel exposes NO colour control
+	// at all — verified against hover-effects.js, which registers only scale /
+	// shadow / imageZoom / grayscale / borderAccent / tilt / duration / easing
+	// / stagger. So ANY private hover attr naming a colour has no universal
+	// counterpart and can never be a duplicate.
+	//
+	// This ordering is load-bearing, not cosmetic. `shadowHoverColour` was
+	// previously caught by the `has('shadow')` branch BELOW and reported as a
+	// duplicate of `sgsHoverShadow` — but that attr is a shadow ELEVATION
+	// PRESET string, while `shadowHoverColour` is the shadow's COLOUR. Two
+	// different properties sharing one category word. Deleting the private one
+	// on that advice would have silently removed the only way to colour a
+	// hover shadow (which ShadowControl drives, per the full-symmetry ruling
+	// of 2026-08-22).
+	const isColour = has( 'colour' ) || has( 'color' );
+	if ( isColour && ( has( 'background' ) || has( 'bg' ) ) ) {
 		category = 'bgColour';
-	} else if ( has( 'text' ) && has( 'colour' ) ) {
-		category = 'textColour';
-	} else if ( has( 'border' ) && has( 'colour' ) && ! has( 'accent' ) ) {
+	} else if ( isColour && has( 'border' ) && ! has( 'accent' ) ) {
 		category = 'borderColour';
+	} else if ( isColour ) {
+		// Every other colour-bearing hover attr, including `shadowHoverColour`
+		// and bare `linkHoverColour`. All colour categories are empty after the
+		// drift guard, so this yields no finding — which is the correct answer.
+		category = 'textColour';
 	} else if ( has( 'scale' ) ) {
 		category = 'scale';
 	} else if ( has( 'shadow' ) ) {
@@ -168,11 +230,6 @@ function classifyHoverAttr( attrName ) {
 		category = 'easing';
 	} else if ( has( 'effect' ) ) {
 		category = 'effect';
-	} else if ( has( 'colour' ) || has( 'color' ) ) {
-		// A bare "<something>Hover" colour with no bg/text/border qualifier
-		// (e.g. linkHoverColour). Fall back to textColour — it is the closest
-		// universal analogue (colour of the interactive text/element on hover).
-		category = 'textColour';
 	}
 
 	if ( ! category ) {
@@ -227,6 +284,44 @@ function collectControlledAttrs( src ) {
 		controlled.add( m[ 1 ] );
 	}
 	return controlled;
+}
+
+/**
+ * Collect attrs controlled INDIRECTLY, through a dispatcher table.
+ *
+ * WHY (2026-08-25). `collectControlledAttrs` matches a LITERAL key in
+ * `setAttributes( { attrName: ... } )`. The shared `ShadowControl` (mounted by
+ * 15 blocks) instead takes an `attrNames` MAP from its caller and writes
+ * `setAttributes( { [ attrNames.valueHover ]: v } )` — a COMPUTED key. The
+ * attribute name appears in the block only as a VALUE inside that map, so the
+ * literal-key detector reported five genuinely-controlled attrs as dead
+ * (`shadowHover` on card-grid / info-box / team-member, `effectHover` and
+ * `imageZoomHover` on gallery). Acting on that would have ADDED a duplicate
+ * while claiming to remove one. Same blind spot inspector-scan rule 21 hit:
+ * "could not see a control reached through a dispatcher table".
+ *
+ * Deliberately CONSERVATIVE, so it cannot mask a genuinely dead control:
+ * it returns nothing unless the folded source actually contains a computed-key
+ * `setAttributes`, and it only accepts strings that are declared attributes of
+ * THIS block.
+ *
+ * @param {string}      src           Folded block source (own + shared components).
+ * @param {Set<string>} declaredAttrs This block's declared attribute names.
+ * @return {Set<string>} Attribute names controlled via a dispatcher table.
+ */
+function collectIndirectControlledAttrs( src, declaredAttrs ) {
+	const out = new Set();
+	if ( ! src || ! /setAttributes\(\s*\{\s*\[/.test( src ) ) {
+		return out;
+	}
+	const valueRe = /[A-Za-z_$][\w$]*\s*:\s*['"]([A-Za-z_$][\w$]*)['"]/g;
+	let m;
+	while ( ( m = valueRe.exec( src ) ) !== null ) {
+		if ( declaredAttrs.has( m[ 1 ] ) ) {
+			out.add( m[ 1 ] );
+		}
+	}
+	return out;
 }
 
 /**
@@ -318,6 +413,14 @@ function checkHoverDuplication( blockSlug, blockDir, meta ) {
 	const attrs = meta.attributes || {};
 	const ownSrc = loadBlockOwnSrc( blockDir );
 	const controlled = collectControlledAttrs( ownSrc );
+	// Fold in controls reached through a dispatcher table (e.g. ShadowControl's
+	// `attrNames` map) — see collectIndirectControlledAttrs above.
+	for ( const a of collectIndirectControlledAttrs(
+		ownSrc,
+		new Set( Object.keys( attrs ) )
+	) ) {
+		controlled.add( a );
+	}
 
 	for ( const attrName of Object.keys( attrs ) ) {
 		if ( /^sgs[A-Z]/.test( attrName ) ) {
