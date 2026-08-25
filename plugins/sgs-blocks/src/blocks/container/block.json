@@ -195,6 +195,12 @@
 	"attributes": {
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": "flex"
 		},
 		"tagName": {
