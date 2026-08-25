@@ -1,3 +1,33 @@
+## D777 — the tier migrator could not see a `<prop>Desktop` base: 34 families, not 37 [ROUTINE]
+
+**2026-08-25.** `migrate-tier-object.py`'s `classify()` required a BARE base attribute, so any
+family declaring its desktop tier as `<prop>Desktop` returned ABSENT and was invisible to the
+migrator. Three real families: `sgs/brand-strip.columns`, `sgs/hero.textAlign`,
+`sgs/whatsapp-cta.showOn`.
+
+Found by reconciling two instruments rather than trusting either: DB-derived 37 flat families vs
+disk-derived 34, **disk-minus-DB = 0**. `programme-progress.py` already handled both naming forms
+(`base_bare` / `base_desktop`); the migrator did not. Fixed by mirroring that logic in a new
+`_base_attr_spec()` helper, used by `classify()` and by `survey()`'s default/type reporting.
+
+⛔ **Why it mattered: `--check` would have reported CLEAN with three families still flat.** A green
+gate over remaining work — the third instance of that shape found in one day, after the pre-existing
+self-test red (D775) and the superseded overlay contract (D776).
+
+**Blast radius proven, not asserted.** `--property <p> --survey` byte-identical for margin, padding,
+gap and borderRadius; exactly the three target families changed. 34 → 37 block-touches, 24 → 27
+migratable properties. Parity gate unaffected (304 pairs). Self-test ALL PASS with 8 new fixtures:
+positive (Desktop-named base classifies FLAT), negative control (no base under EITHER name still
+ABSENT, proven non-vacuous), regression (a bare-base family unchanged, and confirmed it has no
+`gapDesktop` so the bare branch fired), plus all three real families read live from disk.
+
+⚠ **Known residual, flagged rather than silently widened.** `reads_attr_directly`, `edit_refs`,
+`render_state` and `edit_state` still text-scan for the BARE name, but these blocks genuinely read
+the suffixed key — verified: `brand-strip/render.php:57` reads `$attributes['columnsDesktop']` and
+never `$attributes['columns']`. So `--survey`'s render/edit state columns UNDER-REPORT for these
+three. It does not affect `--check` (which gates on `kind` alone). Widening those four regexes is
+the follow-up. `apply_block_json` (`--fix --apply`) likewise still assumes a bare name — **do not
+run `--fix` on these three families until that is addressed.**
 ## D776 — six orphan gates wired, and one of them was guarding a contract we had deleted [ROUTINE]
 
 **2026-08-25.** Of 27 built-and-working scripts nobody had hooked up, six are now `gates.json`
@@ -3929,201 +3959,6 @@ from 5. A check that cannot fail, inside the tooling built to stop exactly that.
 later sweep. **Rule: a verdict function needs the same can-this-fail proof as a gate.** Roster
 corrected to NOT-DONE; the underlying gap is fixed (all 9 palettes now carry the full roster).
 
-## D655 — Spec-verification programme adopted; control-type contract folded into Spec 35; wrapper split per panel [INCIDENT]
-
-**2026-08-17 (later session).** A completion audit of Spec 35 / Spec 32 / the Track 1b plan produced
-claims that were largely unverified, and one materially wrong. **The defining error: I judged whether
-a shared component had been decomposed by its file's LINE COUNT (1,728 → 1,887), never opened the
-file, and wrote that conclusion into two governing docs.** It HAD been split — six independently-
-mountable panels were in its export list, and blocks were already mounting them individually. Bean
-caught it; retracted from both docs. Captured as `STOP-A-FILES-METADATA-NEVER-DECIDES-WHAT-IS-INSIDE-IT`.
-
-**Ruling 1 — the control-type contract is FOLDED into Spec 35 as PART O (Bean-approved).** It was
-`status: AUTHORITATIVE`, 143 KB, `doc_type: reference`, living in `plans/` while Spec 35 deferred to
-it at 9 line sites. Binding clauses moved (placement rule, element manifest, scoping axes, all 14
-control-type contracts, carried obligations, both cross-cutting sections) with section numbering
-preserved, so "contract §14 BORDER" resolves as "Part O §14". Historical material (council verdict,
-absorption map, defect register, enforcement plan) did NOT move — it records how the contract was
-reached, not rules to follow. 16 references repointed, incl. two JSON code files and 13 code comments.
-
-**Ruling 2 — superseded items are DELETED by default, per case (Bean, overriding my recommendation).**
-*If something is superseded, the replacement should be written up too, so there is usually no reason
-to keep a record — it is an easy way to confuse and misinform agents relying on grepping for terms or
-doing surface-level checks, and it creates more work when at most it redirects to the replacement.*
-KEEP only with a named justification. Two guards: confirm the replacement is genuinely written up
-BEFORE deleting, and never delete the underlying need along with the dead mechanism. Applied
-immediately — both `plans/` tombstones deleted (they formed a redirect chain).
-
-**Ruling 3 — decision logs are OUT of any mandatory reading gate (Bean).** They bias investigation
-(read "X was closed" and you hunt for confirmation instead of testing it), can be overturned by a
-later decision that never updates the earlier entry, and can simply be wrong — they are written by
-session agents at the end of long sessions. Consult one only while investigating a specific point,
-and only to learn WHY. A decision log is tier 4 of the verification ladder, like any other doc.
-
-**Ruling 4 — `ContainerWrapperControls.js` split into one file per panel (Bean).** 1,887 → 268 lines
-plus 6 panel files + `_shared.js`. Dependency-driven: 21 of 23 constants belong to exactly one panel;
-`LENGTH_UNITS` was the only shared one; `_GRID_BORDER_STYLE_WORDS` was dead and dropped. The aggregate
-re-exports all six, so the ~30 importing blocks are untouched. Verified: webpack exit 0, four gates
-exit 0, dead-controls findings byte-identical pre/post (stash-compared). Known interaction recorded:
-`inspector-scan` rule 21 resolves control corpora per export, so its advisory count moves — and that
-rule is independently unhealthy on `main` (its `--self-test` FAILS at HEAD, proven by stashing the
-split; recorded `openBacklog` 129 vs live 65).
-
-**Deliverable:** `.claude/plans/2026-08-17-spec-verification-programme.md` — 6 sessions, one doc each,
-under one rule: **no verdict without a command and its raw output, and no doc edit from a number not
-personally re-derived.** Enforced by an evidence class per point (`LIVE`/`RAN-TOOL`/`READ-CODE`/
-`AGENT`), a hard bar on `AGENT`-classed claims reaching any doc, a ban on metadata deciding verdicts,
-and live browser verification inside every session. `/qc` on the plan found 3 executability defects
-(a broken data contract, a canary-down deadlock, 5 bare filenames) — all fixed before it shipped.
-
-## D654 — remaining 2 loose ends closed: E12 gate scoping (R2) + counter.numberColour classifier registration [ROUTINE]
-
-**2026-08-17 (same day, later).** Closes the two items D653 left open. Both were investigated and
-built as background agents, each independently re-verified (build + self-test/gate output re-run
-directly, not trusted from the agent's report) before merging to `main`.
-
-**R2 — E12 gate now covers 11 of 11 heading-level blocks, not 1.** Two-part fix to
-`check-hardcoded-render-defaults.js`'s E12 guard, exactly the prerequisite D649/D653 both named:
-(1) the entry guard now admits the `p`/`div`/`span` escape-hatch tag values alongside real
-theme.json element keys (previously any enum containing `p` disqualified the whole block) —
-deliberately NOT the `.some()` shape tried and reverted earlier, which admitted enums that collide
-with element-key names by string coincidence; (2) a new `resolveAttrElement()` element-scopes the
-comparison loop via `supports.sgs.elements[].attrMap`, so a candidate attribute is only flagged
-against the heading-level enum when both resolve to the SAME element — refusing rather than
-guessing when either side can't be resolved. `attrMap` filled for `headingLevel` on 8 blocks
-(`card-grid`, `form-review`, `pricing-table`, `process-steps`, `product-card`, `team-member`,
-`timeline`, `trustpilot-reviews`); `sgs/heading`/`sgs/icon-list`/`sgs/product-faq` already resolved
-correctly. **Re-verified independently, not just trusted:** ran the gate's own `--self-test`
-directly — 5/5 pass, including both documented false-positive negative controls
-(`icon-list.iconColour` vs `headingLevel`, `product-card.ctaFontWeight` vs `headingLevel`) and a
-synthetic same-element positive control still firing. 4 genuine new findings the wider coverage
-surfaced (`titleColour`/`nameColour` on 4 blocks) were investigated, confirmed to be colour token
-slugs resolved via `sgs_colour_value()` at render time (never painted literally), and baselined as a
-separate pre-existing gap — not blindly suppressed. Also fixed a latent bug the wider coverage
-exposed: several `block.json` `attributes` objects carry bare-string pseudo-comment keys (e.g.
-`card-grid`'s `_comment_items_media`) that crashed the `'default' in attrDef` check with a
-`TypeError` once more blocks reached that code path.
-
-⚠ **Hit and resolved mid-build:** the agent's fix was blocked from committing by ~60 "rogue seed"
-findings in an unrelated pre-existing gate — but this was the SAME drift the counter-classifier fix
-(below) had already resolved on `main` minutes earlier; the agent's worktree had simply branched
-before that merge landed. Fixed by merging current `main` into the worktree before committing, not
-by re-doing any investigation.
-
-**Counter classifier — `sgs/counter.numberColour` and a second, previously-unknown instance
-(`sgs/testimonial.quoteColour`) now survive a reseed.** Root cause (proven by reading the code, not
-guessed): both attributes route through `sgs_resolve_text_colour_or_gradient()`
-(`helpers-tokens.php`, added under D636) — a helper that builds the CSS declaration internally and
-returns it as an opaque string, so the literal property name never appears in `render.php`'s own
-source text where the classifier's tracer looks. Fixed generally (not a special case for `counter`
-alone) by adding a new classifier shape (`_attrs_from_text_colour_resolver_calls` in
-`extract-signatures.py`) that resolves any call site of that specific helper function to
-`css_property='color'` on its flat argument. **Generality confirmed by an isolated before/after
-diff:** exactly 2 additions, 0 removals — `sgs/counter.numberColour` (the reported gap) and
-`sgs/testimonial.quoteColour` (a second real instance the fix caught for free, proving it targets
-the actual cause rather than being tailored to one attribute). Verified: the finding is GONE from
-`db-consistency`'s gate output (not baselined-and-hidden), full converter suite unchanged
-(676/1/11), F6 conformance gate clean.
-
-**Deployed same session.** `2fe4f7ff` to sandybrown, `payload-verify PASS: all 83`. R2's block.json
-attrMap additions are metadata (build-time gate + converter routing signal), not new client-facing
-controls — no visible behaviour change expected, deployed for consistency with `main`.
-
-## D653 — 3 of 4 typography-initiative residuals closed: text-align emission, empty-state heading tag, tag-identity role reclassification [ROUTINE]
-
-**2026-08-17.** Closes R1, R3, R4 from `reports/2026-08-17-typography-residuals-followup-prompt.md`
-(that doc is now superseded — see its own note). Dispatched in parallel (isolated worktrees), each
-verified independently before merge; R3 additionally passed a direct `/qc` compliance check (source
-re-read, not the investigating agent's report trusted at face value) before being applied, since it
-touches the shared `sgs-framework.db`. R2 stays open — see `LEDGER.md`.
-
-**R1 — `text-align` now emits (`2205dfa9`, merged `fe5e1078`).** `sgs_typography_css_rule()`
-(`helpers-typography.php`) now emits 8 properties, not 7 — `text-align` added as a flat scalar
-(no responsive tiers, matching `font-weight`/`font-style`/`text-transform`/`text-decoration`'s
-pattern), allowlist-validated (`left|center|right|justify`), attr shape `{prefix}TextAlign`.
-`check-dead-controls.js`'s `PREFIXED_HELPER_SUFFIXES.sgs_typography_css_rule` gained the matching
-`'TextAlign'` entry in the same commit — without it, any future `{prefix}TextAlign` attribute would
-false-flag as dead and fail the build. `brand-strip`'s existing hand-rolled `nameTextAlign` (its own
-`--sgs-name-text-align` custom-property mechanism) deliberately left untouched — refactoring it onto
-the new shared capability is separate follow-up work, not done here. Build + `check:dead-controls`
-both verified green.
-
-**R4 — gallery/post-grid empty-state placeholder demoted `<h3>`→`<p>` (`2a6000be`, merged `22deee71`).**
-Preceded by a `/research-check` (default tier, 2 agents) into empty-state heading semantics, then a
-direct code trace (not assumption) confirming this codebase's empty-state block is ONLY ever
-server-rendered on initial page load — `class-post-grid-rest.php`'s AJAX filter path returns an empty
-string on zero results with no empty-state markup at all, so `role="status"` was already confirmed
-inert before the fix, and the "make the level configurable" alternative (what mature component
-libraries like Adobe React Spectrum do) doesn't apply to fixed non-reused framework boilerplate with
-no content underneath it — the orphan-heading concern the research surfaced. CSS was already
-class-keyed (not tag-keyed) in both blocks' `style.css`, so no selector changes were needed.
-
-**R3 — `sgs/icon-list`/`sgs/product-card`/`sgs/product-faq` `headingLevel` reclassified
-`role='tag-identity'` (`66527712`).** Closes the residual left open by `e4a23783` (D649's converter
-tag-identity fix, correct but inert for these three blocks because their DB role was
-`'technical'`/`'enum-mode'`, not `'tag-identity'`). Dispatched as **investigation-only** first
-(no writes) given the D643 precedent (a prior role-reclassification attempt broke
-`check-element-manifest-conformance.js`'s F6 gate with 51 false violations by setting
-`css_property` without a companion `attrMap` declaration, fully reverted). The investigation found
-`role='tag-identity'` is deliberately never auto-derived by any classifier tier — it's reserved for
-the hand-authored `attr-classification-overrides.json` override channel, the exact mechanism that
-already correctly classifies `sgs/heading.level`/`sgs/media.mediaType`. Before applying, independently
-re-verified (not trusted from the investigating agent's report): the override schema match, that
-`check-element-manifest-conformance.js`'s `STYLE_ROLES` set (lines 105-115) genuinely excludes
-`tag-identity` by design, that the converter's consumer SQL (`db_lookup.py:1176-1178`) only reads
-`role` and never `css_property` (the field D643 actually broke on), and that no other script in the
-codebase reads the old `enum-mode`/`technical` classification for these three blocks. Applied 3
-entries to `attr-classification-overrides.json`, ran `/sgs-update --stage 1` (enum values refreshed
-from current block.json in the same pass — they were stale numeric `[2,3,4]`/`NULL` shapes). Post-fix:
-role-map regenerated (`role-map-stale 0`), F6 gate clean (unchanged baseline), full converter suite
-676 passed/11 xfailed (unchanged), and the 19 tag-identity-specific tests — previously blocked by this
-exact misclassification, not merely untested — pass for real.
-
-**One new, unrelated finding surfaced and baselined, not fixed here:** the R3 reseed's
-`db-consistency` gate flagged `sgs/counter.numberColour` as a "rogue" `css_property` seed — a real,
-correctly-valued colour attribute (`D636`'s `numberColourGradient` sibling proves it's genuine) that
-was never registered in either the classifier layer or the override layer, so it would silently vanish
-on a future reseed that doesn't happen to preserve it. Pre-existing, unconnected to `sgs/counter`, and
-this session never touched that block — fixing it would be scope creep on an unreviewed judgement call
-(does it belong in the classifier or the override layer?). Baselined via the gate's own
-`--update-baseline` with a recorded reason rather than silently fixed or silently ignored. **New
-residual — needs its own small decision, not urgent.**
-
-## D652 — mega-group/mega-aside templateLock 'all'->'insert' (content-loss bug) + baseline text correction [ROUTINE]
-
-**2026-08-17.** Closes both follow-up items from the 2026-08-17 orchestration plan.
-
-**`sgs/mega-group` + `sgs/mega-aside` — FIXED (`43fcd42d`), live-verified via a real editor
-round-trip.** `templateLock:'all'` was confirmed as the real cause of Track 2's canary (post 2164)
-losing a text node on 2026-08-07 — not an unexplained one-off. Confirmed against WordPress core
-source directly (not guesswork): `useInnerBlockTemplateSync`'s effect re-runs
-`synchronizeBlocksWithTemplate` on EVERY editor mount whenever `templateLock` is `'all'`/
-`'contentOnly'`, and that function matches stored children to `TEMPLATE` entries BY POSITION —
-any child that doesn't line up gets replaced from the template (dropping its content) and any
-stored child beyond the template's length is removed outright. `templateLock:'insert'` still
-blocks a client from adding/removing/reordering the fixed structure (mega-group: heading+icon-list;
-mega-aside: media+label+heading+text+button) — the original design intent — but the sync only
-re-runs for `'all'`/`'contentOnly'` (or when innerBlocks is empty), so `'insert'` never triggers the
-destructive resync and existing content survives every load. Comprehensive fix: `mega-aside` has
-the identical pattern (same fixed-children shape) and was fixed in the same commit; `mega-panel`'s
-own doc comment referencing both blocks' lock value was updated to match.
-
-**Verified on a real page, not asserted.** Built + deployed to sandybrown (`43fcd42d`, payload
-checksums 83/83). Created a probe page (id 2489) via REST with a mega-panel > mega-group containing
-a heading with distinctive text (`PROBE-D652-TEXT`) + icon-list with its default 3 items. Opened in
-the block editor, confirmed content present on first mount, saved, reloaded the editor on a fresh
-navigation (not just a re-render), confirmed content still present, saved again. Content survived
-every load. Probe page force-deleted after, 404 confirmed.
-
-**`element-manifest-baseline.json` reason text — CORRECTED (`43fcd42d`).** The `hero`/`info-box`
-`css:border-color-gradient (hover)` entries claimed neither block has "a resting border-colour
-attribute at all" — false. Both declare a real, working resting border colour via native
-`__experimentalBorder.color` (verified directly: `hero/block.json:119`, `info-box/block.json:82`).
-The actual gap is narrower: WordPress core has never supported a resting-state border GRADIENT
-(only a resting-state flat colour), so no resting counterpart can exist for that specific attrMap
-member — a WP-core ceiling, not a missing SGS control. Gated count unchanged (12/12, 4/4);
-`check-element-manifest-conformance.js --check` GATE PASS confirmed, build green.
-
 ## D651 — trust-bar overlay fix + full templateMode sweep, 19 blocks [ROUTINE]
 
 **2026-08-17.** Closes the two remaining items from D650's investigation: `sgs/trust-bar`'s twin of
@@ -4213,61 +4048,6 @@ are genuinely clean of it (both directions checked, not just "the source diff lo
 ⚠ **The 3 corrective-pass commits are built + gate-verified but were NOT in the deploy above** —
 they landed after it. Re-deploy before treating the canary as carrying the complete sweep.
 
-## D650 — Four residual-list items cleared: 2 real fixes, 1 non-issue, 1 disputed reasoning [ROUTINE]
-
-**2026-08-17.** Bean asked for the "carried, not this session's" residual items to be worked through:
-`cta-section` overlay controls, the `element-manifest-baseline.json` review, `testimonial`/
-`image-sequence` image controls, and `physics-canvas`'s `ALLOWED_BLOCKS`. Dispatched 4 parallel
-agents. Outcome: 2 real bugs fixed, 1 item turned out to already be done, 1 review found the gate's
-outcome was fine but its written justification was wrong.
-
-**`sgs/cta-section` overlay colour/gradient controls — FIXED (`12ade09f`).** Root cause confirmed:
-`render.php` passed `'no_overlay' => true` to the shared wrapper, which gates the ENTIRE overlay
-branch — the only place `backgroundOverlayColour`/`overlayGradient` are read and painted. The editor
-control (`BackgroundPanel`) was live and saving correctly; it just never rendered anything. No
-genuine conflict found — cta-section's OWN `.sgs-cta-section__overlay` span handles a narrower,
-unrelated feature (image-darkening opacity), and `container/style.css` already excludes both overlay
-spans from the same reset rule, proving the framework already anticipated them coexisting. Removed
-`no_overlay: true`. **`sgs/trust-bar` has the identical bug** (found in passing, not fixed — flagged
-as its own residual, same fix shape expected).
-
-**`element-manifest-baseline.json`'s two new `borderColourHover`-gradient entries — REVIEWED,
-DISPUTED reasoning only.** The accepted gate count is correct: neither `hero` nor `info-box` has a
-resting-state GRADIENT border, because WordPress core has never supported one at rest. But the
-written justification claims "no resting border-colour attribute at all" — false. Both blocks have a
-real, working resting border colour via native `__experimentalBorder.color`, already correctly
-wired in the manifest. No build-gate risk from the wrong text, but a future reader could be misled
-by the false premise into skipping a genuine gap elsewhere. Text-only correction proposed, not
-applied — edits to that file are treated as needing sign-off.
-
-**`sgs/testimonial` + `sgs/image-sequence` image controls — FIXED (`718cefeb`).** Investigated all
-three of testimonial's image slots before designing anything: avatar (fixed circular crop) and org
-logo (fixed contain-fit, a brand mark must never crop) are legitimate component-owned constants —
-same status as `sgs/label`'s fixed 12px font-size per the framework's own DEFAULT-vs-HARDCODE test —
-not client-overridable. Only work-media (case-study photo/video) genuinely varies and needed a real
-control; the block's existing blanket `imageControls:true` only reaches `<figure>`-wrapped markup, so
-it worked for work-media by accident and was silently unreachable for the `<div>`-wrapped avatar/logo
-regardless. Added `imageControlsExplicit:true` scoped to work-media only, matching the existing
-team-member/gallery/testimonial-slider precedent. `image-sequence`'s `imageControls:true` was
-DECLARED but the canvas JS (`fx-image-sequence.js`'s `drawCover()`) always centre-crops every frame
-with zero configurability — wiring a picker an operator could set but the canvas can never honour
-would be worse than the dead control it replaces, so the declaration was removed instead.
-
-**`sgs/physics-canvas`'s `ALLOWED_BLOCKS` — turned out to already be done, six days before the LEDGER
-note that called it open.** Shipped 2026-08-03 (commit `50c9122b`, D447) with Bean's own explicit
-ruling on record: a QC council found the roster isn't fully accessibility-safe in every
-configuration (`allowedBlocks` filters by block NAME not capability — `sgs/media`/`sgs/icon` still
-carry `linkUrl`, `sgs/media` a focusable native video), and Bean ruled that's an accepted, deliberate
-ceiling for what the block itself documents as a "niche artistic canvas... deliberately NOT built for
-accessibility". The dispatched agent correctly declined to re-litigate an explicit, on-the-record
-ruling rather than guess at a "better" list. Stale LEDGER line struck.
-
-**Verification.** Full build green after all 3 code-touching agents merged (their own individual
-builds + this session's final consolidated build). `check-element-manifest-conformance.js` and
-`check-dead-controls.js` both clean. Deployed to sandybrown and live-verified — see the deploy log for
-the two real fixes' before/after confirmation, same discipline as every other fix this session
-(computed style / rendered output, not just a green gate).
-
 ## D649 — Typography initiative SCOPED: 8 properties, native strip gated on a content migration, font-family cut [ROUTINE]
 
 **2026-08-17.** D626 queued typography as the next framework-wide initiative after colour's Track
@@ -4328,70 +4108,6 @@ survived intact and the true Population B is **17**, worse than the 16 it claime
 
 **Also owed:** root `CLAUDE.md`'s "44px touch targets" claim is wrong for sidebar controls (40px;
 harmless — 2.1 AA has no target criterion). Add a `CREDITS.md` for the colour/gradient forks.
-
-## D648 — `gridItemBorder` gradient + hover, the last parked piece of D636/D646 [ROUTINE]
-
-**2026-08-17.** Closes the one piece D646 explicitly parked: a gradient option for
-`sgs/container`/`sgs/cta-section`/`sgs/hero`'s `gridItemBorder`, plus a genuinely new hover
-capability for it (grid items had no hover state of any kind before this).
-
-**Why it needed its own design pass, not a batch dispatch:** `gridItemBorder` is a single raw CSS
-shorthand STRING (e.g. `"2px solid #ccc"`), not a colour value — every other gradient sibling this
-rollout added swaps in for a plain colour attribute. Investigated the real editor control
-(`ContainerWrapperControls.js`'s `GridItemDefaultsPanel`) before designing anything: it already has a
-proper `_gridBorderParts()`/`_gridBorderJoin()` token-classification helper (order-independent,
-splits on a fixed style-word list + a width regex, whatever's left is colour) backing a real
-width/style/colour builder UI — not the raw shorthand `TextControl` the DB's flat `css_property`
-listing made it look like. This made the actual build straightforward once found: add
-`gridItemBorderGradient` (resting) + `gridItemBorderGradientHover` (hover) as siblings, paint via the
-existing `sgs_border_gradient_css()` masked `::before` mechanism, get the mask's width from a new
-`sgs_grid_border_parts()` PHP function that mirrors the JS splitter exactly (PHP and JS must agree on
-token classification, since one writes the shorthand and the other reads it back).
-
-**Scope grew by one block mid-build, caught before it became a bug, not after:** the plan (confirmed
-with Bean) named `container`/`cta-section`/`hero`. Checking which blocks actually MOUNT
-`GridItemDefaultsPanel` (not just which declare `gridItemBorder`) surfaced `sgs/trust-bar` too — it
-mounts the same shared panel but has no `grid-item` element/attrMap block in its own block.json at
-all (a separate, pre-existing gap, left alone). Added the attribute declarations there regardless
-(without them, WP would have silently discarded the client's gradient input the moment they used the
-now-shared control on that block — the D338 class, self-inflicted if skipped).
-
-**Hover has no resting solid-colour counterpart, deliberately.** Grid items have never had a hover
-border colour, only the (now-gradient-only) hover this session adds. `SgsColourStateControl`'s
-existing Solid/Gradient toggle already clears the stored gradient when switched to Solid — so the
-hover row's Solid branch was bound to an inert `value:''`/`onChange:()=>{}` pair (switching to Solid
-means "no hover override", the correct default state) rather than inventing a new solid hover
-attribute nobody asked for.
-
-**A real collision with a second, unrelated concurrent session — handled, not a repeat of D645's
-class of bug.** A parallel session was live-editing `container`/`cta-section`/`hero`'s `edit.js` and
-`render.php` (an unrelated nav/aside landmark-label accessibility fix, D647) in the SAME working
-tree while this was being built. `git status` showed those files as modified partway through this
-session's own work — none of it this session's changes. Verified every unexpected diff by hand before
-touching anything, then committed with an explicit file pathspec covering only the 10 files this
-session actually touched, leaving the other session's in-progress edits completely undisturbed. The
-other session committed and deployed its own work first; this session then deployed on top of the
-combined `main` once the tree was clean.
-
-**Deployed and live-verified (deployed tree state `079e75eb` → sandybrown; the `gridItemBorder` code
-itself is commit `b0182f1c` — `079e75eb` was merely the HEAD at deploy time, a docs commit, and
-citing it alone read as though it carried the work).** A throwaway REST-created page (id 2483,
-force-deleted after) set a grid container with `gridItemBorder`/`gridItemBorderGradient`/
-`gridItemBorderGradientHover` all set. The DOM query for the actual painted `::before` came back
-empty — the hand-typed nested block markup didn't render its children as real `sgs/container`
-instances (a test-page-authoring artefact: WP's dynamic-block save/parse contract is unforgiving of
-hand-typed InnerBlocks markup, not something new this session). Rather than accept a false negative,
-extended the check to the SOURCE of truth instead — this framework lifts block CSS into a physical
-file (`wp-content/uploads/sgs-css/`), not inline `<style>` tags, so the generated stylesheet was
-fetched and read directly. It confirmed byte-correct: `.{uid}.sgs-container--grid > .sgs-container`
-scoped exactly right, mask width `3px` correctly parsed off `"3px solid #000000"`, resting gradient
-`linear-gradient(90deg,#ff0000,#00ff00)`, and hover gradient `linear-gradient(90deg,#0000ff,#ff00ff)`
-present under the `:hover,:focus-within` selector pair — all generated by the same
-`sgs_border_gradient_css()` function already live-proven three times earlier this session.
-
-**Closes the D636 gradient rollout in full — no parked pieces remain.** Next front: Task B
-(typography), already independently scoped by a separate session the same day; see that plan for
-detail rather than duplicating it here.
 
 ## D647 — Landmark-tag a11y fix: drop `main`, gate `nav`/`aside` behind a label control [ROUTINE]
 
@@ -4533,73 +4249,6 @@ was never independently reviewed this session. Worth a look, not urgent.
 
 **Not done:** `gridItemBorder` (parked, needs a design call on gradient-vs-shorthand-string, not a
 build dispatch); typography framework-wide initiative (unscoped, next front per D626's sequencing).
-
-## D645 — Gradient rollout (D636) complete: all 5 mechanisms merged, deployed, live-verified [ROUTINE]
-
-**2026-08-17.** Closes the universal gradient rollout Bean ruled at D636. Five builders (background,
-text, border, shape-divider, icon/SVG) ran in parallel worktrees; this entry records the merge and
-verification, not the individual mechanisms (each already has its own commit trail).
-
-**Storage shape, settled and consistent across all 5:** a sibling `{attr}Gradient` string attribute
-alongside the existing flat-colour attribute — never a shared slot, never a mode-toggle on one
-attribute. Matches the pre-existing `sgs/container.backgroundOverlayColour`/`overlayGradient`
-precedent. Gradient wins when set and valid via `sgs_css_gradient_value()`.
-
-**Two genuine cross-builder architecture collisions found and fixed during merge, not before —
-this is the real lesson of this session, not a footnote:**
-
-1. **`css:background-image` claimed by two builders for two different purposes.** Background
-   gradients (box fill) and text gradients (`background-clip:text`) both genuinely paint through the
-   literal CSS property `background-image` on the same elements (`heading`, `text`) — but the
-   element-manifest only allows one attribute per CSS-property key per element/state. The raw git
-   merge silently dropped one side's `attrMap` entry with no error. Fixed by adding a new manifest
-   member, `css:color-gradient`, sibling to `css:color` the way `css:background-image` is sibling to
-   `css:background-color`. Same pattern repeated for border: added `css:border-color-gradient`
-   (border-color can never legally hold a CSS gradient value at all — the real mechanism is a masked
-   `::before`).
-2. **Two builders independently built the identical UI mechanism.** Background and border builders
-   each built their own per-state Solid/Gradient toggle into the shared `DesignTokenPicker.js`
-   component during the same parallel dispatch wave — same logic, different variable names
-   (`localGradientModes` vs `gradientModeOverride`). The merge kept both as dead-adjacent code with
-   duplicate `useState`/`ToggleGroupControl` imports, which broke the webpack build outright
-   (`Identifier 'useState' has already been declared`). Consolidated to one implementation.
-
-**Both were caught by actually running the build and the element-manifest gate after each merge, not
-by trusting a clean `git merge` exit code.** A silent JSON key overwrite and a duplicate-declaration
-parse error are both the kind of failure that reads as "the merge succeeded" right up until the build
-is run.
-
-**Also caught mid-session: my own tooling error.** Wrote a Python JSON re-serialisation with
-`indent='\t'` that reformatted `heading/block.json`'s entire file (2-space → tabs) for a 2-line content
-change — a 649-line spurious diff. Caught before it reached `main`, fixed in its own commit, corrected
-to preserve each file's own existing indent convention going forward.
-
-**Border builder restart.** The first border attempt (`worktree-agent-a9c2e85587c89e149`) ran for
-several hours with no check-in — far outside the 22–43 min range every other builder took for
-equivalent scope — and was cancelled. Its real partial progress (2 blocks: social-icons, mega-panel)
-was committed as an explicit `[UNVERIFIED]` checkpoint before cancellation so it wasn't lost, then a
-restart agent finished the remaining scope with an explicit instruction to stop and report rather than
-run silently past ~20 minutes on any single blocker. ~17 blocks of border-colour gradient candidates
-remain unbuilt (framework-wide, not the 4 blocks this session covered) — tracked as residual scope,
-not started.
-
-**Deployed and live-verified, all 5 mechanisms, same session (`6aaafbdf` → sandybrown):** a throwaway
-page (id 2477, REST-created, force-deleted after) set a real gradient on one instance of each
-mechanism. All confirmed via computed style / DOM inspection, not screenshot comparison:
-- Background: `backgroundColourGradient` → computed `background-image` = the exact gradient string.
-- Text: `textColourGradient` → `background-image` set, `background-clip:text`, `color:transparent`.
-- Shape divider: real `<linearGradient>` def, path `fill="url(#...)"` resolving correctly.
-- Border: masked `::before`, computed `background-image` on the pseudo-element = the gradient.
-- Icon/SVG: real `<linearGradient>` def injected, SVG's own computed `stroke` = `url(#...)`.
-  ⚠ **First measurement attempt on this one was WRONG** — queried `getComputedStyle()` on the
-  wrapping `<span class="sgs-icon__svg">` instead of the `<svg>` element itself, got `stroke:none`
-  (correct for a span, meaningless as a test), and would have reported a false regression. Caught by
-  extending the measurement (checked the actual DOM parent chain, then re-queried the right element)
-  before concluding anything — the same "extend the measurement set before trusting a negative
-  result" discipline this project's other incidents this session already demonstrated.
-
-**Not done:** the remaining ~17 blocks of border-colour candidates (framework-wide sweep); typography
-framework-wide initiative (Task 2, separate from this rollout, per D626's sequencing) remains unscoped.
 
 ## D643 — Gradient rollout Phase 0: 9 pre-D636 leftovers cleared, incl. a cloning pipeline that could not clone a gradient at all [INCIDENT]
 

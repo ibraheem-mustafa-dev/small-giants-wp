@@ -179,10 +179,38 @@ NEWLINE = chr(10)  # keeps the parity message readable without escapes in f-stri
 _PRE_FIX_WRAPPER_SHA = 'e7f28b0fd'
 
 
+def _base_attr_spec(attrs: dict, prop: str):
+    """The base attribute's OWN declaration dict, or `None` if it isn't declared at all.
+
+    ⛔ **The base declaration is not always the bare `prop` key.** Three families
+    (`sgs/brand-strip.columns`, `sgs/hero.textAlign`, `sgs/whatsapp-cta.showOn`) declare
+    their desktop-tier attribute as `<prop>Desktop` instead of bare `<prop>` — the same
+    two-name ambiguity `programme-progress.py`'s `classify_families()` already had to
+    handle for the DB-derived view (see that function's `base_bare`/`base_desktop`/
+    `base_name` — this mirrors that logic exactly, disk-side). A bare-only lookup
+    (`attrs.get(prop)`) sees no dict at either of these three, classifies ABSENT, and the
+    census silently drops them — verified 2026-08-25: DB-derived flat families = 37,
+    disk-derived (pre-fix) = 34, a 3-family gap entirely explained by this ambiguity.
+    Prefer the bare name when BOTH exist (there is no known case of that today, but bare
+    is the eventual/canonical target shape post-migration, so it wins ties). Shared by
+    `classify()` (the FLAT/BLENDED/OBJECT/ASSET/ABSENT gate) and `survey()`'s own
+    `default`/`base_type` report fields, so the two can never quietly disagree about
+    which key IS the base."""
+    base_bare = attrs.get(prop)
+    if isinstance(base_bare, dict):
+        return base_bare
+    base_desktop = attrs.get(prop + 'Desktop')
+    if isinstance(base_desktop, dict):
+        return base_desktop
+    return None
+
+
 def classify(attrs: dict, prop: str):
-    """Return (kind, sibling_names). kind in FLAT|BLENDED|OBJECT|ASSET|ABSENT."""
-    spec = attrs.get(prop)
-    if not isinstance(spec, dict):
+    """Return (kind, sibling_names). kind in FLAT|BLENDED|OBJECT|ASSET|ABSENT.
+
+    See `_base_attr_spec()` for why the base lookup isn't a plain `attrs.get(prop)`."""
+    spec = _base_attr_spec(attrs, prop)
+    if spec is None:
         return 'ABSENT', []
     base_type = spec.get('type')
     sibs = [prop + t for t in TIERS if isinstance(attrs.get(prop + t), dict)]
@@ -889,13 +917,14 @@ def survey(prop: str):
         if kind in ('ABSENT',):
             continue
         d = bj.parent
+        base_spec = _base_attr_spec(attrs, prop) or {}
         out.append({
             'slug': data.get('name', d.name),
             'dir': d,
             'kind': kind,
             'siblings': sibs,
-            'default': attrs.get(prop, {}).get('default'),
-            'base_type': attrs.get(prop, {}).get('type'),
+            'default': base_spec.get('default'),
+            'base_type': base_spec.get('type'),
             'render_reads': reads_attr_directly(d, prop),
             'edit_refs': edit_refs(d, prop),
             'render_state': render_state(d, prop),
@@ -1726,6 +1755,84 @@ def self_test() -> int:
     # --- THE GATE ITSELF. check_db_parity must return 0 on the real repo right now.
     check('gate: check_db_parity() returns 0 against the real repo (DB and tree agree)',
           check_db_parity(quiet=True) == 0)
+
+    # ================================================================================
+    # classify() — the `<prop>Desktop` base-name fix (2026-08-25). Three real families
+    # (sgs/brand-strip.columns, sgs/hero.textAlign, sgs/whatsapp-cta.showOn) declare their
+    # desktop tier as `<prop>Desktop` rather than bare `<prop>`; classify() must still see
+    # them as FLAT, or --all-properties/--check silently drop them (measured pre-fix: 34
+    # disk-derived migratable block-touches vs 37 DB-derived — exactly this 3-family gap).
+    # ================================================================================
+
+    # --- positive: a synthetic Desktop-named base + both tier siblings classifies FLAT,
+    # not ABSENT. Mirrors the real sgs/brand-strip.columns shape (columnsDesktop/
+    # columnsTablet/columnsMobile, all plain-scalar), synthetic so the fixture doesn't
+    # depend on any one block.json's exact declaration surviving future edits.
+    _desktop_attrs = {
+        'widgetProp': {'type': 'string'},          # unrelated attr, must not confuse classify()
+        'widgetPropDesktop': {'type': 'number', 'default': 3},
+        'widgetPropTablet': {'type': 'number', 'default': 2},
+        'widgetPropMobile': {'type': 'number', 'default': 1},
+    }
+    _kind_desktop, _sibs_desktop = classify(_desktop_attrs, 'widgetProp')
+    check('positive: a <prop>Desktop base + Tablet/Mobile siblings classifies FLAT '
+          f'(got {_kind_desktop!r}), not ABSENT — the exact shape of the 3 real families '
+          'this fix restores to the census',
+          _kind_desktop == 'FLAT')
+    check('positive: FLAT sibling list still names the Tablet/Mobile attrs correctly',
+          set(_sibs_desktop) == {'widgetPropTablet', 'widgetPropMobile'})
+
+    # --- negative control: tier siblings present, but NO base under EITHER name (bare or
+    # Desktop) — must still classify ABSENT. Proven non-vacuous by first checking that the
+    # SAME attrs dict WITH a Desktop base added (above) does NOT classify ABSENT — so this
+    # isn't a fixture that would report ABSENT no matter what classify() does.
+    _no_base_attrs = {
+        'widgetPropTablet': {'type': 'number', 'default': 2},
+        'widgetPropMobile': {'type': 'number', 'default': 1},
+    }
+    _kind_no_base, _sibs_no_base = classify(_no_base_attrs, 'widgetProp')
+    check('negative control: siblings with NO base declared under either "widgetProp" or '
+          f'"widgetPropDesktop" classifies ABSENT (got {_kind_no_base!r})',
+          _kind_no_base == 'ABSENT' and _sibs_no_base == [])
+    check('negative control is not vacuous: the SAME sibling attrs, with a Desktop base '
+          'added, classify FLAT (not ABSENT) — so ABSENT above is a real signal, not '
+          "classify()'s answer regardless of input",
+          _kind_desktop == 'FLAT' and _kind_no_base == 'ABSENT')
+
+    # --- regression: a normal bare-base family classifies exactly as before this fix.
+    # Sourced from a real family (`sgs/container.gap` — bare "gap" base + both tier
+    # siblings, all plain-scalar pre-migration shape) rather than another synthetic one,
+    # so the regression check is grounded in the real repo, not just this fixture's own
+    # internal consistency.
+    _bare_bj = BLOCKS_DIR / 'container' / 'block.json'
+    _bare_data = json.loads(_bare_bj.read_text(encoding='utf-8'))
+    _bare_attrs = _bare_data.get('attributes', {})
+    check('regression: sgs/container.gap has a bare "gap" base declared (fixture premise '
+          'still holds against the real repo)',
+          isinstance(_bare_attrs.get('gap'), dict))
+    _kind_bare, _sibs_bare = classify(_bare_attrs, 'gap')
+    check(f'regression: a normal bare-base family (sgs/container.gap) still classifies '
+          f'{_kind_bare!r} exactly as it did before this fix (OBJECT/ASSET/BLENDED — '
+          'gap is already migrated on this block, not FLAT)',
+          _kind_bare in ('OBJECT', 'ASSET', 'BLENDED'))
+    check('regression: the bare-base fixture does NOT also match on "gapDesktop" (proves '
+          'the bare-name branch is taken, not a Desktop fallback masking it)',
+          'gapDesktop' not in _bare_attrs)
+
+    # --- end-to-end: --all-properties now sees all three real Desktop-based families as
+    # non-ABSENT for their own block, matching the doc-block's verified figures.
+    _real_cases = [
+        ('brand-strip', 'columns'),
+        ('hero', 'textAlign'),
+        ('whatsapp-cta', 'showOn'),
+    ]
+    for _slug, _prop in _real_cases:
+        _bj = BLOCKS_DIR / _slug / 'block.json'
+        _data = json.loads(_bj.read_text(encoding='utf-8'))
+        _attrs = _data.get('attributes', {})
+        check(f'end-to-end: sgs/{_slug}.{_prop} (declared as "{_prop}Desktop" on disk) no '
+              f'longer classifies ABSENT',
+              classify(_attrs, _prop)[0] != 'ABSENT')
 
     if failures:
         print(f'\n{len(failures)} FAILURE(S): {failures}')
