@@ -112,9 +112,12 @@
  *                                                     # null — so a
  *                                                     # `renderConsumed: false` row can be told apart
  *                                                     # from an attribute the blocking gate actually
- *                                                     # flags as dead (a by-design editor-only attr like
- *                                                     # `templateMode` has renderConsumed=false but
- *                                                     # exempt=true — it is not a real finding). Exists
+ *                                                     # flags as dead (a by-design editor-only attr —
+ *                                                     # `templateMode` was the historical example until
+ *                                                     # it was removed as vestigial, see
+ *                                                     # `.superpowers/sdd/task-3-report.md` — would have
+ *                                                     # renderConsumed=false but exempt=true, not a real
+ *                                                     # finding). Exists
  *                                                     # so a second instrument (inspector-scan rule 34)
  *                                                     # can consume this script's verdicts instead of
  *                                                     # re-deriving them with a narrower corpus — see
@@ -256,9 +259,14 @@ const SYSTEM_ATTR_PREFIXES = [ 'sgs' ];
 // Attribute names that are ALWAYS editor-only by design (drive allowedBlocks,
 // templates, or other editor-side behaviour) and legitimately have no render
 // consumption. Keep this list tiny and justified (Spec 22 BY-DESIGN).
-const EDITOR_ONLY_ATTRS = new Set( [
-	'templateMode', // container: drives allowedBlocks in the editor (Spec 22 BY-DESIGN).
-] );
+//
+// Intentionally EMPTY (2026-08-27): the only member, `templateMode`, was
+// removed outright as vestigial (six blocks declared it; the stored value
+// was always its "free" default, so it never restricted anything in
+// practice — see `.superpowers/sdd/task-3-report.md`). The mechanism stays
+// for the next genuinely editor-only attribute — do not delete this set, and
+// do not repopulate it with a stale name once an attribute is gone.
+const EDITOR_ONLY_ATTRS = new Set( [] );
 
 // Extension attributes that are BY-DESIGN editor-only — never emitted as a
 // data-attribute / consumed server-side, with the design decision documented
@@ -1408,8 +1416,10 @@ function findingKey( f ) {
 // EDITOR_ONLY_ATTRS / KEY_NOISE — see that function's own comment), PLUS a
 // fourth, dump-only exemption this function alone applies (Important 4,
 // 2026-08-27): 'core-supports'. Without them, `renderConsumed: false`
-// conflates a genuinely dead control with a by-design editor-only attr (e.g.
-// `templateMode`), a registered extension attr, or a WP-native
+// conflates a genuinely dead control with a by-design editor-only attr (the
+// mechanism currently has no live example — `templateMode` was it until
+// removed as vestigial, see `.superpowers/sdd/task-3-report.md`), a
+// registered extension attr, or a WP-native
 // `supports`-backed attribute (e.g. `anchor`, `lock`) that WordPress core
 // itself renders — none of the four are a finding. `exemptReason` is one of
 // 'system-attr' / 'editor-only' / 'key-noise' / 'core-supports' / null (not
@@ -2076,9 +2086,16 @@ function runCheck4SelfTest( log ) {
 			liveAttr: { type: 'string', default: '' }, // consumed in this fixture's own render.php
 			deadAttr: { type: 'string', default: '' }, // PLANTED DEFECT — consumed nowhere
 			wrapperAttr: { type: 'string', default: '' }, // consumed only via shared/wrapper corpus — mirrors sgs/google-reviews' gap/gapTablet/gapMobile shape
-			templateMode: { type: 'string', default: '' }, // documented EDITOR_ONLY_ATTRS exemption
+			// Synthetic, not a real attribute — proves the EDITOR_ONLY_ATTRS
+			// exemption mechanism itself works, independent of whether any
+			// real attribute currently uses it (the set is legitimately
+			// empty since `templateMode` was removed as vestigial — see
+			// `.superpowers/sdd/task-3-report.md`). Added to EDITOR_ONLY_ATTRS
+			// below for the duration of this test only, then removed.
+			fixtureEditorOnlyAttr: { type: 'string', default: '' },
 		},
 	};
+	EDITOR_ONLY_ATTRS.add( 'fixtureEditorOnlyAttr' );
 	fs.writeFileSync( path.join( tmpDir, 'block.json' ), JSON.stringify( blockJson, null, 2 ), 'utf8' );
 	fs.writeFileSync(
 		path.join( tmpDir, 'render.php' ),
@@ -2134,12 +2151,13 @@ function runCheck4SelfTest( log ) {
 		pass = false;
 	}
 
-	if ( ! findingAttrs.has( 'templateMode' ) ) {
-		log( 'PASS — Test D: documented editor-only attr ("templateMode") was NOT flagged.' );
+	if ( ! findingAttrs.has( 'fixtureEditorOnlyAttr' ) ) {
+		log( 'PASS — Test D: EDITOR_ONLY_ATTRS-exempted attr ("fixtureEditorOnlyAttr") was NOT flagged.' );
 	} else {
-		log( 'FAIL — Test D: documented editor-only attr ("templateMode") was flagged — allowlist broken.' );
+		log( 'FAIL — Test D: EDITOR_ONLY_ATTRS-exempted attr ("fixtureEditorOnlyAttr") was flagged — allowlist broken.' );
 		pass = false;
 	}
+	EDITOR_ONLY_ATTRS.delete( 'fixtureEditorOnlyAttr' ); // cleanup — do not leak into other self-tests
 
 	// Test E — baseline suppression: a baselined finding key must move from
 	// netNew to accepted.
@@ -2532,7 +2550,7 @@ function runDumpJsonSelfTest( log ) {
 			'deadControlledAttr',
 			'fullyDeadAttr',
 			'sgsAnimation',
-			'templateMode',
+			'fixtureEditorOnlyAttr',
 			'id',
 			'anchor',
 		] ),
@@ -2558,12 +2576,19 @@ function runDumpJsonSelfTest( log ) {
 		[ 'sgs/fixture-dump', new Set( [ 'ctxAttr' ] ) ],
 	] );
 
+	// 'fixtureEditorOnlyAttr' proves the 'editor-only' exemptReason path — a
+	// synthetic name, not a real attribute, because EDITOR_ONLY_ATTRS is
+	// legitimately empty (its only member, `templateMode`, was removed as
+	// vestigial — see `.superpowers/sdd/task-3-report.md`). Added for the
+	// duration of this test only, then removed.
+	EDITOR_ONLY_ATTRS.add( 'fixtureEditorOnlyAttr' );
 	const rows = dumpAttributeRows(
 		[ syntheticBlock ],
 		new Set(), // wrapperControlled — irrelevant, syntheticBlock.usesWrapper is false
 		syntheticSharedCorpus,
 		syntheticContextConsumedByBlock
 	);
+	EDITOR_ONLY_ATTRS.delete( 'fixtureEditorOnlyAttr' ); // cleanup — do not leak into other self-tests
 	const byAttr = {};
 	rows.forEach( ( r ) => {
 		byAttr[ r.attr ] = r;
@@ -2580,7 +2605,7 @@ function runDumpJsonSelfTest( log ) {
 		[ 'deadControlledAttr', true, false, 'none', false, null ],
 		[ 'fullyDeadAttr', false, false, 'none', false, null ],
 		[ 'sgsAnimation', false, false, 'none', true, 'system-attr' ],
-		[ 'templateMode', false, false, 'none', true, 'editor-only' ],
+		[ 'fixtureEditorOnlyAttr', false, false, 'none', true, 'editor-only' ],
 		[ 'id', false, false, 'none', true, 'key-noise' ],
 		[ 'anchor', false, false, 'none', true, 'core-supports' ],
 	];

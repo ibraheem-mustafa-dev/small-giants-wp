@@ -83,12 +83,6 @@ const TAG_NAME_OPTIONS = [
   { label: __( "Figure", "sgs-blocks" ), value: "figure" },
 ];
 
-const TEMPLATE_MODE_OPTIONS = [
-  { label: __("Free (no restrictions)", "sgs-blocks"), value: "free" },
-  { label: __("Grid section", "sgs-blocks"), value: "grid-section" },
-  { label: __("Card grid", "sgs-blocks"), value: "card-grid" },
-];
-
 /**
  * Editor mirror of `$sgs_resolve_content_width` in class-sgs-container-wrapper.php.
  *
@@ -273,7 +267,6 @@ export default function Edit({ attributes, setAttributes, name }) {
     alignItems,
     justifyItems = "stretch",
     alignContent = "stretch",
-    templateMode = "free",
     backgroundColour,
     backgroundColourGradient,
     backgroundColourHover,
@@ -522,26 +515,6 @@ export default function Edit({ attributes, setAttributes, name }) {
     .filter(Boolean)
     .join(" ");
 
-  // QB-3: allowedBlocks per templateMode — only restrict when operator explicitly
-  // opts into a structured mode. "free" (default) imposes no restrictions.
-  const TEMPLATE_MODE_ALLOWED = {
-    "grid-section": [
-      "sgs/container",
-      "sgs/heading",
-      "sgs/text",
-      "sgs/button",
-      "sgs/media",
-    ],
-    "card-grid": [
-      "sgs/info-box",
-      "sgs/card-grid",
-      "sgs/container",
-    ],
-  };
-  const allowedBlocks = templateMode !== "free"
-    ? TEMPLATE_MODE_ALLOWED[templateMode] ?? undefined
-    : undefined;
-
   // Gate the editor's ::before media layer on a class so the pseudo-element
   // exists ONLY on containers that actually have a background image — every
   // other container in the canvas is untouched (mirrors the frontend, where the
@@ -568,7 +541,6 @@ export default function Edit({ attributes, setAttributes, name }) {
     hasBandProps ? { className: "sgs-container__inner", style: bandStyle } : blockProps,
     {
       orientation: layout === "stack" ? "vertical" : undefined,
-      allowedBlocks,
     }
   );
 
@@ -845,25 +817,6 @@ export default function Edit({ attributes, setAttributes, name }) {
 
         {/* Grid item defaults — only shown when layout is grid. */}
         <GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
-
-        {/* QB-3: Template mode — allowed children restriction. Container-specific. */}
-        <PanelBody
-          title={ __( "Template mode", "sgs-blocks" ) }
-          initialOpen={ false }
-        >
-          <SelectControl
-            label={ __( "Allowed children", "sgs-blocks" ) }
-            value={ templateMode }
-            options={ TEMPLATE_MODE_OPTIONS }
-            onChange={ ( val ) => setAttributes( { templateMode: val } ) }
-            help={ __(
-              "Grid section and Card grid restrict which block types can be inserted directly inside this container. Free (default) imposes no restrictions.",
-              "sgs-blocks"
-            ) }
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
-          />
-        </PanelBody>
 
         {/* Wrapper border — R2c pattern (mirrors sgs/product-card's "Card
           border" panel): borderWidth is a block-private base-only box object;

@@ -23,12 +23,6 @@ const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
 ];
 
-const TEMPLATE_MODE_OPTIONS = [
-	{ label: __( 'Free (form fields only)', 'sgs-blocks' ), value: 'free' },
-	{ label: __( 'Grid section (fields + heading/text)', 'sgs-blocks' ), value: 'grid-section' },
-	{ label: __( 'Card grid (fields only)', 'sgs-blocks' ), value: 'card-grid' },
-];
-
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		formId,
@@ -46,7 +40,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		formFocusRingWidth,
 		formFocusRingOpacity,
 		formFocusRingOffset,
-		templateMode = 'free',
 	} = attributes;
 
 	// Auto-generate formId from clientId on first insert.
@@ -97,20 +90,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'sgs/form-review',
 	];
 
-	// Template mode — allowed children restriction. Mirrors sgs/container's
-	// TEMPLATE_MODE_ALLOWED pattern, but scoped to this block: "grid-section"
-	// adds heading/text so a step can carry a section title or instructional
-	// copy; "card-grid" has no form-shaped analogue (a form's steps are never
-	// cards), so it stays equal to the base roster rather than a fabricated
-	// list of blocks that would never belong here.
-	const TEMPLATE_MODE_ALLOWED = {
-		'grid-section': [ ...FORM_BASE_ALLOWED, 'sgs/heading', 'sgs/text' ],
-		'card-grid': FORM_BASE_ALLOWED,
-	};
-	const allowedBlocks =
-		'free' !== templateMode
-			? TEMPLATE_MODE_ALLOWED[ templateMode ] ?? FORM_BASE_ALLOWED
-			: FORM_BASE_ALLOWED;
+	const allowedBlocks = FORM_BASE_ALLOWED;
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-form__inner' },
@@ -400,27 +380,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								} );
 							}
 						} }
-					/>
-				</PanelBody>
-
-				{ /* Template mode — allowed children restriction. Form-specific:
-				   "free" keeps the block's own field roster (never truly
-				   unrestricted — see FORM_BASE_ALLOWED comment above). */ }
-				<PanelBody
-					title={ __( 'Template mode', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Allowed children', 'sgs-blocks' ) }
-						value={ templateMode }
-						options={ TEMPLATE_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { templateMode: val } ) }
-						help={ __(
-							'Grid section adds heading and text alongside the usual form fields, for a section title or instructional copy. Card grid and Free both keep this form to its usual fields.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

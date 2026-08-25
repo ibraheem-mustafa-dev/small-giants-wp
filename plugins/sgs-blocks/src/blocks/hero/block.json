@@ -892,15 +892,6 @@
 			"type": "boolean",
 			"default": false
 		},
-		"templateMode": {
-			"type": "string",
-			"default": "free",
-			"enum": [
-				"free",
-				"grid-section",
-				"card-grid"
-			]
-		},
 		"alignItems": {
 			"type": "string",
 			"default": ""

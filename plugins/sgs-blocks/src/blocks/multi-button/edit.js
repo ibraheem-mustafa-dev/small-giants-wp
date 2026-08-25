@@ -36,12 +36,6 @@ const TEMPLATE = [
 	[ 'sgs/button', { inheritStyle: 'secondary', label: 'Secondary Action' } ],
 ];
 
-const TEMPLATE_MODE_OPTIONS = [
-	{ label: __( 'Free (buttons only)', 'sgs-blocks' ), value: 'free' },
-	{ label: __( 'Grid section (buttons only)', 'sgs-blocks' ), value: 'grid-section' },
-	{ label: __( 'Card grid (buttons only)', 'sgs-blocks' ), value: 'card-grid' },
-];
-
 const DIRECTION_OPTIONS = [
 	{ label: __( 'Row (horizontal)', 'sgs-blocks' ), value: 'row' },
 	{ label: __( 'Column (vertical)', 'sgs-blocks' ), value: 'column' },
@@ -104,7 +98,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		childBtnBorderRadius,
 		childBtnFontSize,
 		childBtnFontWeight,
-		templateMode = 'free',
 	} = attributes;
 
 	// Only the DESKTOP tier is read here (the editorStyle preview below). The
@@ -143,22 +136,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		alignItems: align,
 	};
 
-	// Template mode — allowed children restriction. A button group's children
-	// are always sgs/button (that IS the block's purpose), so unlike
-	// sgs/container's "free" this is never relaxed to unrestricted — a stray
-	// non-button block dropped here would break the flex row this block
-	// renders. Neither "grid-section" nor "card-grid" has a button-group
-	// analogue, so both presets stay equal to the button-only roster; the
-	// control is wired for consistency with the other SGS blocks but has no
-	// functional effect of its own here.
-	const TEMPLATE_MODE_ALLOWED = {
-		'grid-section': [ 'sgs/button' ],
-		'card-grid': [ 'sgs/button' ],
-	};
-	const allowedBlocks =
-		'free' !== templateMode
-			? TEMPLATE_MODE_ALLOWED[ templateMode ] ?? [ 'sgs/button' ]
-			: [ 'sgs/button' ];
+	// A button group's children are always sgs/button (that IS the block's
+	// purpose) — a stray non-button block dropped here would break the flex
+	// row this block renders, so this roster is never relaxed.
+	const allowedBlocks = [ 'sgs/button' ];
 
 	const blockProps = useBlockProps( { style: editorStyle } );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -477,27 +458,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ childBtnFontWeight || '' }
 						options={ SGS_FONT_WEIGHT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { childBtnFontWeight: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				{ /* Template mode — allowed children restriction. Always
-				   button-only for this block; see the comment above
-				   allowedBlocks for why. */ }
-				<PanelBody
-					title={ __( 'Template mode', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Allowed children', 'sgs-blocks' ) }
-						value={ templateMode }
-						options={ TEMPLATE_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { templateMode: val } ) }
-						help={ __(
-							'This group only ever holds buttons, so every option here restricts children to Button.',
-							'sgs-blocks'
-						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

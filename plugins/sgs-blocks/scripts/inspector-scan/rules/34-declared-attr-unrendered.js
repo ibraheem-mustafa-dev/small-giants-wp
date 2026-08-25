@@ -61,6 +61,20 @@
 //                  on both findings (both have `controlPresent:false`);
 //                  `dead-control` and `editor-only` are reachable branches
 //                  with zero live instances, not dead code with none possible.
+//                  ⚠ As of 2026-08-27 the `editor-only` branch is currently
+//                  UNREACHABLE for a stronger reason than "zero live
+//                  instances": `check-dead-controls.js`'s `EDITOR_ONLY_ATTRS`
+//                  set is now EMPTY. `templateMode` — the only attribute that
+//                  ever produced `exemptReason:'editor-only'` — was removed
+//                  from every block that declared it as vestigial (see
+//                  `.superpowers/sdd/task-3-report.md`); the stored value was
+//                  always its "free" default, so it never restricted anything
+//                  in practice. This is a FACT ABOUT THE TREE, not a defect in
+//                  this rule or in `classifyKind()` — the branch, the
+//                  `exempt-editor-only` fixture, and `KNOWN_EXEMPT_REASONS`'
+//                  `'editor-only'` member are all KEPT so the mechanism is
+//                  ready the moment a genuinely editor-only attribute is
+//                  declared again.
 
 const fs = require( 'fs' );
 const path = require( 'path' );

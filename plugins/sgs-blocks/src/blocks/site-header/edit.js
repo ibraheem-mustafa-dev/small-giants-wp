@@ -225,10 +225,12 @@ const CONTRAST_SAFE_LABELS = CONTRAST_SAFE_OPTIONS.reduce(
 	{}
 );
 
-// `templateMode` (grid-section/card-grid presets) was removed from block.json —
-// this block already restricts children to exactly `sgs/site-header-row` below,
-// a more specific structural rule that a generic preset would only conflict
-// with. See sgs/site-header-row for the block that actually wires templateMode.
+// `templateMode` (grid-section/card-grid presets) was never added here —
+// this block already restricts children to exactly `sgs/site-header-row`
+// below, a more specific structural rule that a generic preset would only
+// conflict with. `templateMode` itself was later removed from every block
+// that had declared it (including `sgs/site-header-row`) as vestigial —
+// see `.superpowers/sdd/task-3-report.md`.
 const ALLOWED_BLOCKS = [ 'sgs/site-header-row' ];
 
 /**
