@@ -119,6 +119,44 @@ occur** rather than being resolved by a precedence rule the client must learn.
   flatten it. `hero/render.php:163-165` records that an earlier duplicate-height emit was already
   removed once — height now comes solely from that object. Do not reintroduce a second source.
 
+**CLONING IMPACT — asked by Bean, investigated 2026-08-27. It is a SOLVED PATTERN, not a risk.**
+
+The converter already derives discriminator attrs from CSS signature. The exact precedent is
+`converter/services/arrangement.py:60` `layout_attrs()`, and its docstring records why it exists:
+
+> *"`gridTemplateColumns` alone is INERT without it — the nested-grid stacking bug (ingredients /
+> products / gift / social-proof all stacked because the grid value emitted but the container stayed
+> `display:block`)."*
+
+**That is the identical failure shape**: emit `aspectRatio` without setting the mode and the ratio is
+inert — value present, nothing painted. The framework has been bitten by this once and built the
+generic fix.
+
+Supporting evidence, all measured:
+- **`layout` carries `css_property: NULL` on every block that declares it.** A discriminator with no
+  CSS property is the established DB shape, not a new concept.
+- `layout_attrs()` is already **tier-aware** (a grid appearing only at a breakpoint still makes the
+  container a grid) and **universal** (R-31-9), and the caller **DB-gates emission** on the block
+  actually declaring the attr — so a block without `sizingMode` never receives a dead one.
+
+**The adaptation:** one `sizing_attrs()` beside `layout_attrs()`, same shape:
+`aspect-ratio` present → `{sizingMode:'aspect-ratio', aspectRatio:<v>}` · definite `height` present →
+`{sizingMode:'fixed-height', imageHeight:<v>}` · neither → `{sizingMode:'auto'}` · **both → height
+wins**.
+
+⭐ **Why "both → height wins" makes the clone faithful BY CONSTRUCTION:** the draft rendered in a
+real browser, which already applied that precedence. Mirroring CSS is therefore the only rule that
+reproduces what the draft actually looked like — any other rule would diverge from the source.
+
+⚠ **One honest caveat, PRE-EXISTING and not added by this.** `hero.imageHeight` is already a
+migrated tier object (`{"type":"object","default":{}}`), so it sits inside the set
+`orchestrator/check_flat_tier_regression.py` (D554-C) blocks from cloning until Spec 39 lands.
+`aspectRatio` is a flat string and is unaffected. The mode picker neither adds to that blockage nor
+removes it.
+
+⛔ This touches `converter/` — **Rule 7 design gate applies. Bean's approval before building**, which
+is what PHASE 0 is for.
+
 **Put the mode picker to Bean for a yes, then build. It is the last thing blocking C19.**
 
 ## Design gate C — the visual column-shape picker is APPROVED but UNBUILT
