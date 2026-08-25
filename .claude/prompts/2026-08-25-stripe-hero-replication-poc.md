@@ -1,193 +1,173 @@
-# Session prompt — replicate stripe.com's hero animation EXACTLY, as a scratch POC
+# Session prompt — Stripe hero POC: what remains
 
-**Invoke `/autopilot` before anything else.**
+Invoke `/autopilot` before anything else.
+
+> **Rewritten 2026-08-25 after the POC session.** Tasks A, B and C from the original prompt are
+> CLOSED — the rig is built, verified and QC'd, and the anatomy report answers six of its seven
+> questions. Everything below is what is still open, plus what the work newly opened. The original
+> task list is gone deliberately: re-running it would repeat a fortnight of finished work.
 
 ---
 
-## 0. What this session is, and what it is not
+## 0. What is already done — do NOT redo any of this
 
-⭐ **THIS IS A SCRATCH / PROOF-OF-CONCEPT BUILD. Bean's explicit framing.** The goal is to
-get stripe.com's actual hero animation running locally, exactly, so we can SEE the real
-thing working and understand precisely what makes it look expensive. It is a study rig.
+The rig lives at `.claude/scratch/stripe-hero-poc/` (gitignored). The deliverable is
+`.claude/reports/2026-08-25-stripe-hero-anatomy.md`.
 
-**Where it lives:** `.claude/scratch/stripe-hero-poc/` — a standalone folder with an
-`index.html` you open directly. **Not** in `plugins/`, **not** in `theme/`, not registered as
-a block, not enqueued by anything, not deployed to the canary.
+- **All 6 GLSL modules recovered** from Stripe's bundle, count-verified against the module-wrapper
+  count. three.js pinned to **r179** by hash-matching its shader preamble.
+- **The rig renders Stripe's hero at 0.66% mean pixel difference**, bias/noise ratio 0.15, 95.2%
+  of pixels within 8/255, against a live capture frozen at the same `u_time`.
+- **All 26 mechanisms implemented, 0 gaps.** QC-inline 10/10.
+- **Q1–Q5 and Q7 answered.** Q7's headline: **no artist-painted palette is needed** — four
+  hue-ADJACENT stops render as premium; the constraint is hue adjacency, not colour count.
+- **D783** records the bounded three.js scratch exception (deleted at Gate E).
+- `wave-gradient.js`'s false "this is the stripe.com technique" lineage claim is removed.
 
-⛔ **Nothing from this POC ships to a client site as-is.** Stripe's shader source and their
-`palette.png` are Stripe's assets. In a local study rig that is reverse-engineering, which is
-ordinary engineering practice. In a deployed client deliverable it would be commercial use of
-their IP, and the liability would sit with Small Giants Studio. Those are different acts, and
-this session only does the first. When the POC works, the FOLLOW-ON session reimplements the
-technique with our own assets — that is a separate piece of work and is not in scope here.
-
-**Done when:** a local page renders stripe's hero animation, visually indistinguishable from
-theirs, and there is a written breakdown of exactly which parts produce the "expensive" look.
+⛔ **Do not delete `wave-gradient.js`.** Asked and answered: 12 files reference it, it is a live
+registered fx effect with 6 client-facing attributes, and it is one of two entries in Spec 38's
+CLOSED Tier W list. The LOOK was rejected, not the mechanism. It is the base for the rework.
 
 ---
 
 ## 1. Mandatory reading, in this order
 
-1. `.claude/plans/2026-08-24-spec38-motion-register.md` — session-close audit at the top.
-2. `.claude/specs/38-SGS-MOTION-SYSTEM.md` **§1.2b (Tier W) and §3.3 FR-38-31 only.** You do
-   NOT need the whole spec this session — the POC is outside the plugin and touches no spec
-   surface. Read those two sections so you know what FR-38-31 already built and why its look
-   was rejected.
-3. `plugins/sgs-blocks/src/shared/effects/webgl/wave-gradient.js` — what we built. Read it so
-   you can say precisely how stripe's differs, rather than guessing.
+1. `.claude/reports/2026-08-25-stripe-hero-anatomy.md` — **read the retraction and the two
+   correction sections, not just the top.** The document argues with its own earlier conclusions
+   twice, and the later sections win.
+2. `.claude/scratch/stripe-hero-poc/shaders/MANIFEST.md` — which shader is which, and why the
+   extraction count is the gate rather than the regex.
+3. `.claude/specs/38-SGS-MOTION-SYSTEM.md` §1.2b (Tier W) + §3.3 FR-38-31.
 
-**Pre-conditions, in the same command as any commit:**
-`git branch --show-current` (expect `main`) and
-`grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`.
-⚠ The D-ceiling moves constantly — four tracks share this worktree. Re-check immediately
-before writing any D reference.
-
-⛔ **The worktree is SHARED.** Commit by exact path, never `git add -A`. Expect `build/` to
-vanish under you. A red gate is not necessarily yours — prove it before acting on it.
+**Before any commit:** `git branch --show-current` (expect `main`) and re-derive the D-ceiling
+with `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+(it was **D784** at the close of the POC session, and it moves constantly — four tracks share
+this worktree). Commit by exact path; never `git add -A`.
 
 ---
 
-## 2. What we already know — do not re-derive this
+## 2. Two things the POC session proved wrong — do not re-inherit them
 
-Established 2026-08-25 by reading their live site, not by reading tutorials about it.
+**⛔ FR-38-31 does NOT band. The "add a dither" recommendation is WITHDRAWN.** Measured on the
+shipped effect with its own default colours: mean run-length **1.19**, 1,034 distinct colours per
+scanline. There is nothing for a dither to fix, and `mediump`→`highp` rests on the same dead
+premise. Both were reasoned, never observed, and both were wrong.
 
-**The technique every tutorial documents is the WRONG ONE.** `minigl` + the noise-displaced
-mesh is stripe.com's hero from roughly 2020-21. Every port, CodePen and blog post describes
-that. **It is not what they run now.** We built it faithfully and Bean's verdict was
-*"it also looks like B-movie 3D VFX from like the early 2000s"*, which was fair.
+**⛔ The palette does not need an artist.** Four hue-adjacent stops (307 unique colours, against
+Stripe's 82,831) render as premium through the right machinery. Four *complementary* stops produce
+a grey band because interpolating complements in RGB passes through grey — the same failure as the
+rejected Aurora teal band.
 
-**What they actually run today:**
-
-| Fact | Value |
-|---|---|
-| Canvas | `.hero-wave-animation__canvas`, context **WebGL2** |
-| Parent | `.hero-wave-animation__contents.hero-wave-animation--drawn` |
-| Size / position | ~1393 x 916 CSS px, offset to the RIGHT (`x ≈ 419`), not full-bleed |
-| Fallback | `wave-fallback-desktop.png` — a static image, same fail-open pattern we use |
-| Palette | `palette.png`, **480 x 480**, sampled as a TEXTURE |
-
-**The palette is the finding.** It is a hand-painted airbrushed artwork — soft blobs of
-peach, coral, magenta, cream and one bruise of periwinkle. Sampled values are almost all
-above `0xf0`: `#fee4c4`, `#f6eae5`, `#fdafdc`, `#fca5e8`, `#feb169`. Adjacent warm hues, very
-high lightness.
-
-**Their shader samples an image. Ours interpolates four hex codes.** That is why theirs looks
-designed and ours looks generated, and no tuning closes it.
-
-**Three design decisions compound it:**
-1. **Light ground.** Theirs is bright colour on white. Ours was a near-black navy base.
-2. **A bounded shape, not a field.** Theirs is a swooping ribbon with real edges occupying
-   part of the layout. Ours is a full-bleed wash with no form.
-3. **Text never touches it.** Their headline sits on clean white beside the artwork. Ours put
-   text on the gradient, which is also why the contrast was poor.
-
-The fine striations — thin combed lines through the ribbon — also carry a lot of the quality,
-and we have not yet established how they are produced. **That is one of this session's
-questions, not an assumption.**
-
-**Assets, for reference:**
-- Palette: `https://images.stripeassets.com/fzn2n1nzq965/5DrmXrFYpKk43Kj0I1MXQr/287b3c2a13ae8d4d7d0bf8305037de4e/palette.png?fm=png&q=95`
-- A local copy already exists at `c:/tmp/sgs/palette.png`.
+**What is actually wrong with FR-38-31**, from looking at its render: a dark, saturated,
+**repetitive full-bleed field of undulating ridges with specular-looking highlights** on near-black
+navy. It reads as rendered 3D geometry. The defect is **form and ground**.
 
 ---
 
-## 3. The work
+## 3. Still open — carried from the POC
 
-### Task A — Recover their implementation
+### 3.1 ⭐ Q6 has no performance number at all
+Never measured. Do not let any figure be quoted for it. Structurally it is 33,153 vertices, two
+passes, 6 texture samples per pixel in the blur. `chrome-devtools` MCP has
+`performance_start_trace` / `performance_stop_trace`; the rig is at
+`.claude/scratch/stripe-hero-poc/index.html` and takes `?static&t=<abs>` for a deterministic frame.
+This matters because the whole Tier W budget argument is unquantified without it.
 
-`stripe.com/gb` serves **75 script files**; none has an obvious `hero`/`wave` name, so the
-animation is inside a bundle. Find it.
+### 3.2 The fidelity number is n=1 on every axis
+One frame, one viewport (1440×900), one DPR (1), one browser (Chromium), one GPU, one theme.
+0.66% is a single sample. Cheapest meaningful extension: **render at DPR 2** — the grain is a fixed
+±4/255 in screen space and the glow uses screen-space derivatives, so both are resolution-dependent
+and the match may not hold.
 
-Approaches, cheapest first:
-1. In Playwright, hook `WebGLRenderingContext.prototype.shaderSource` and
-   `WebGL2RenderingContext.prototype.shaderSource` **before** the page runs, and log every
-   shader source string. This gives you the vertex and fragment shaders verbatim without
-   reading a single line of minified bundle. **Do this first — it is by far the highest
-   yield.**
-2. Hook `texImage2D` to confirm the palette is uploaded as a texture, and capture its
-   parameters (wrap mode, filtering, whether mipmaps are generated). Those parameters matter
-   as much as the image.
-3. Log the uniform names via `getUniformLocation` / `uniform*` calls to learn what drives it
-   (time, resolution, pointer, scroll, seed).
-4. Only then, if needed, pull the bundle and search for the shader strings to recover the
-   surrounding JS (geometry, draw loop, resize handling).
+### 3.3 The colour fix was never validated on a held-out frame
+`cs-sweep.mjs` selected the configuration by comparing against one live capture, and Gate B then
+scored that same variant against that same capture. Circular. Capture a second live frame at a
+different `u_time` and re-measure without changing anything.
 
-⚠ **Record what you could NOT recover.** A partial recovery honestly stated is worth more
-than a confident guess. If the striations turn out to come from something you cannot see,
-say so.
+### 3.4 The 5% ceiling is self-set and underived
+It appears once, in a pass/fail table, with no derivation and no precedent anywhere in this
+project. Either justify it or state plainly that it is a local convention for this study.
 
-### Task B — Build the POC
+### 3.5 Per-tier presets for medium/small are unrecovered
+They arrive as page data from outside the analysed chunk. A sibling chunk suggests
+`{wide: gj, medium: P1, small: y7}` but the recovery labels it SUSPECTED for this page. The rig
+uses the wide preset for all three tiers and says so in a comment. Do not invent values.
 
-`.claude/scratch/stripe-hero-poc/index.html` — a single self-contained page:
-- their shaders,
-- their palette texture (local copy),
-- their geometry and draw loop,
-- their layout context: **white page, ribbon offset right, sample headline text on the left**
-  — because the surrounding design is part of why it reads as premium, and a ribbon floating
-  on grey proves nothing.
-
-**Verify by looking, not by reasoning.** Screenshot it beside a live screenshot of
-stripe.com/gb at the same viewport. They should be near-indistinguishable. If they are not,
-you have not finished — find the difference and name it.
-
-### Task C — The breakdown (this is the actual deliverable)
-
-Write `.claude/reports/2026-08-25-stripe-hero-anatomy.md` answering:
-1. What geometry? Plane, quad, ribbon mesh, something else? How many vertices?
-2. How is the ribbon SHAPE produced — geometry, or an alpha mask in the fragment shader?
-3. How is the palette sampled? What are the texture coordinates a function of?
-4. **What produces the fine striations?** Named specifically.
-5. What is animated, and how fast? Which uniforms change per frame?
-6. What is the actual per-frame cost — how many pixels, what does the profiler say?
-7. ⭐ **Which of these could we reproduce with OUR OWN assets, and which genuinely need an
-   artist?** This is the question the follow-on session depends on. Be honest: if the answer
-   is "the palette has to be painted", say that plainly.
+### 3.6 Never built: the raw-WebGL2 port
+Its value dropped once the palette swap answered Q7 directly on the three.js rig — but it is the
+only thing that would prove the mechanisms reproduce **without three.js**, which is the constraint
+the follow-on actually operates under. Decide whether it is still worth it before building it.
 
 ---
 
-## 4. Method — earned the hard way this week
+## 4. Newly opened by this work
 
-- **Verify the reference, not just the implementation.** Three Aurora attempts were built
-  against a technique documented everywhere as "the Stripe gradient" without anyone opening
-  stripe.com to check it was still there. It was not. Screenshot the real thing first.
-- **Render it before claiming it.** Every visual claim this week that was reasoned rather
-  than rendered turned out wrong — three "seamless by construction" tiling claims, and a
-  mesh whose scale was wrong by 4x.
-- **An estimate is not an enumeration.** Count things by listing them.
-- **Ask the browser, do not reason about specificity.** A CSS bug this week was diagnosed in
-  one step by enumerating which rules actually matched; two rounds of reasoning had blamed
-  the wrong file.
-- **A green gate proves nothing until you have seen it fail.**
+### 4.1 ⭐ The FR-38-31 rework, now precisely scoped
+The POC replaced a vague "make it look better" with five named, ranked differences. In order of
+value:
 
----
+| # | Change | Nature |
+|---|---|---|
+| 1 | **Form** — a bounded shape that dissolves by depth, not a full-bleed repetitive wash | geometry + one `mix()` |
+| 2 | **Ground** — bright colour on white, not saturated colour on near-black navy | attribute default |
+| 3 | **Hue adjacency rule** — stops must not span complements, or the blend passes through grey | design rule, no code |
+| 4 | **A fine detail field** — striations. Ours has none; theirs carries much of the quality | ~15 lines GLSL |
+| 5 | **Colour source** — a sampled texture rather than four interpolated stops | structural, biggest |
 
-## 5. Guardrails
+⚠ Items 1–4 are changes to `wave-gradient.js` and its host attributes. Item 5 is a genuine
+architecture decision. **Do not start at 5.**
 
-⛔ Do NOT add anything to `plugins/` or `theme/` this session. The POC is standalone.
-⛔ Do NOT deploy. Nothing here goes near the canary.
-⛔ Do NOT modify FR-38-31. The shipped flowing gradient stays exactly as it is until we know
-what we are replacing it with.
-⛔ Do NOT commit Stripe's assets into `plugins/` or `theme/`. Inside `.claude/scratch/` they
-are study material; anywhere else they are a shipped dependency. If in doubt, leave them
-untracked and note the download URL in the report.
+### 4.2 A second pass needs an architecture decision, not an implementation
+Stripe's grain and angular blur live in a **full-screen second pass over a framebuffer**. Spec 38
+§1.2b names multi-pass/framebuffers as exactly the trigger to re-open D479 decision 2 (the OGL
+question). Treat it as a design gate, not a 10-line add-on.
 
----
+### 4.3 `wave-gradient.js` may be registered but unused
+No evidence was found that the effect is authored on any live page. Confirm before treating it as
+load-bearing — it changes how freely the rework can move.
 
-## 6. Tooling
-
-| Use | For |
-|---|---|
-| `/playwright` | shader interception, live capture, side-by-side comparison |
-| `/delegate` | route any dispatch before spawning |
-| `/gh-research` | if the bundle proves impenetrable, someone may have documented it |
-| `/qc-inline` | before writing the anatomy report, check its claims against what you actually observed |
+### 4.4 Gate E has not run — Stripe's assets are still on disk
+`.claude/scratch/stripe-hero-poc/` holds Stripe's shaders, three palettes and vendored three.js.
+D783 says they are deleted at Gate E. **Either run Gate E or record a dated deletion deadline.**
+The tree is exempt from the `scratch/` → `reports/` promotion rule and must stay so.
 
 ---
 
-## 7. Definition of done
+## 5. Method — the failures this session actually paid for
 
-1. The POC renders, and a side-by-side screenshot against stripe.com is near-indistinguishable.
-2. `2026-08-25-stripe-hero-anatomy.md` answers all seven questions in Task C, with ⚠ on
-   anything unrecovered.
-3. Question 7 has a clear answer, because the follow-on session is scoped from it.
-4. Nothing outside `.claude/scratch/` and `.claude/reports/` changed.
+- **A declaration is not a behaviour.** Five dead declarations were found in Stripe's bundle
+  (`tangent`, `v_tangent`, `u_lutTexture`, `u_blueNoiseTexture`, `u_mousePosition`). Four claims
+  built from a `uniform` census were wrong. Grep for where a thing is READ, never where it is declared.
+- **An inventory needs an independent count.** Two extractions reported "complete" while missing
+  the entire post-processing pass — one matched only double-quoted exports, the next used one
+  character class excluding both quote styles and found 1 of 6. Only counting the wrappers caught either.
+- **Two overlapping fixes are unfalsifiable.** A colour-space "fix" was masking a missing blend
+  operation; both-wrong scored better than either-one-right. Only the full 2×2 exposed it.
+- **Measure the rendered output, never the drawing buffer.** A canvas probe reported "nothing
+  rendered" for a rig that was rendering perfectly — without `preserveDrawingBuffer` the buffer is
+  cleared after compositing.
+- **Right look, wrong means is worse than a visible gap.** A fallback hidden with `display: none`
+  looked correct; Stripe uses an opacity cross-fade. Check the mechanism, not just the picture.
+- **Don't read an artefact while its producer is still running.** A file was judged incomplete at
+  16:58; it finished at 17:00.
+- ⛔ **Git Bash heredocs on this machine strip backslashes.** Four scripts were corrupted this way.
+  Write scripts to a file and run them; never paste a regex through a heredoc.
+
+---
+
+## 6. Guardrails
+
+⛔ Nothing in `.claude/scratch/` ever promotes to `reports/` — it holds Stripe's copyrighted
+material. `reports/` is tracked forever.
+⛔ Do not reproduce Stripe's GLSL or imagery in any tracked document. Describe it.
+⛔ Do not deploy anything from this work to the canary.
+⛔ Do not delete `wave-gradient.js` (see §0).
+⛔ Spec 38 is not writable from a POC session — draft a proposal into `reports/` instead.
+
+---
+
+## 7. Suggested first action (<5 min)
+
+Run the performance trace (§3.1). It is the only completely unanswered question, it needs no
+decisions, the rig is already deterministic, and it is the number the whole Tier W budget argument
+is missing.

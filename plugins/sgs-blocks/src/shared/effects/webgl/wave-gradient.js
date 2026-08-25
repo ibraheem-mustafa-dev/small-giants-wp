@@ -3,8 +3,23 @@
  *
  * A flowing mesh gradient: a subdivided plane whose VERTICES are displaced by
  * simplex noise, with each colour layer blended per-vertex and interpolated
- * across the mesh by the rasteriser. This is the stripe.com landing-page
- * technique, modelled deliberately rather than approximated.
+ * across the mesh by the rasteriser.
+ *
+ * ⛔ THIS IS NOT STRIPE'S CURRENT TECHNIQUE. Corrected 2026-08-25 — an earlier
+ * version of this docblock said "this is the stripe.com landing-page technique",
+ * which is false and was actively misleading.
+ *
+ * The noise-displaced-plane technique is stripe.com's hero from roughly 2020-21.
+ * Every tutorial and port describing "the Stripe gradient" documents that
+ * retired version. Their CURRENT hero was recovered from their shipped bundle
+ * and is a materially different thing: one vertex shader over a CPU-folded
+ * 33,153-vertex plane, colour SAMPLED FROM A PAINTED TEXTURE rather than
+ * interpolated between stops, a fine striation field, and a second full-screen
+ * pass applying angular blur plus grain.
+ *
+ * That difference is the whole reason this effect's look was rejected — so do
+ * not read this file as a faithful model of what stripe.com does today.
+ * Anatomy of the real one: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`.
  *
  * ── WHY THIS IS A SIBLING OF `renderer.js`, NOT AN EXTENSION OF IT ────────
  *
@@ -42,6 +57,9 @@
  * The vertex technique (noise-displaced plane + per-vertex layer blending) is
  * modelled on `sa3dany/wave-gradient` (MIT), whose own shader header states it
  * is "based on the original vertex shader used by stripe for their gradient".
+ * ⚠ Read that quote as dated, not current: "the original vertex shader" is the
+ * ~2020-21 one. It is accurate as licence provenance for OUR lineage (which is
+ * what this block is for) and must stay; it is not a claim about stripe.com now.
  * The simplex noise below is Ashima Arts / Stefan Gustavson (MIT).
  * ⛔ nimitz's Shadertoy "Auroras" is CC BY-NC-SA — NON-COMMERCIAL. It is NOT
  * used here and must not be copied into client work.

@@ -25,7 +25,7 @@ superseded**). Canary: still page **2721**.
 | **Field parks-at-centre bug** | `rest()` ran at init AND on mouseleave, so every section without recent pointer movement painted a lit pool at its own geometric centre. Proven: `localX = 866px` measured on a 1732px-wide section — exactly 50%. Now the field arrives and departs WITH the pointer, no rest-state teleport |
 | **⭐ THE EDITOR WAS OPENED FOR THE FIRST TIME** | This register's own previously-open item #2 (below). §9's cursor-field row in Spec 38 claimed the block editor canvas shows "the static resting field". **Measured false**, not merely unverified: the canvas iframe carries zero `data-sgs-cursor-field` attributes and none of the fx stylesheets, because `sgs/container` renders via `edit.js` in the canvas, not `render.php`. An info Notice now ships in its place. Everything else measured healthy: 36 blocks, 0 schema-invalid, 0 console errors, all five looks present in the picker, every control reachable behind the ToolsPanel "+", "Colour blend" correctly gated to hue-shift only |
 | **FR-38-30 — Magnetic pull** | Shipped, Tier V, 1054 bytes gzip. A generalisation of `magnet.js`, which has shipped since the mega-menu — not new infrastructure. Panel roster measured 32 blocks before, 32 after (net-zero surface growth). Live-verified on page 2737 with a negative control |
-| **FR-38-31 — Flowing gradient** | Shipped, **Tier W second entry** (WebGL substrate now has 2 admitted uses), 3648 bytes gzip. Built on stripe.com's `minigl` mesh technique; 4 client colours; a real SC 2.2.2 pause control. ⚠ Mechanism ships; the LOOK is rejected — see OPENED #1 |
+| **FR-38-31 — Flowing gradient** | Shipped, **Tier W second entry** (WebGL substrate now has 2 admitted uses), 3648 bytes gzip. Built on the `minigl` mesh technique — ⚠ that is stripe.com's **~2020-21** hero, NOT their current one (established 2026-08-25); 4 client colours; a real SC 2.2.2 pause control. ⚠ Mechanism ships; the LOOK is rejected — see OPENED #1 |
 | **Deploy gate scoped to `--blocks-only`/`--theme-only`** | `deployed_dirty_files()` previously ignored the scope flag and aborted blocks-only deploys on another track's dirty theme files — blocked 3 real deploys this session. 3 new self-test cases, each watched failing on a planted defect before the fix landed |
 | **Drift-gate I8 registered** | I8 had produced real violations since D767 but was never added to `_INVARIANTS`, so `--check` printed only I0–I7 and reported "all eight invariants hold" when there were nine live invariants. The printed count is now DERIVED from the map, not hand-maintained |
 
@@ -40,8 +40,19 @@ superseded**). Canary: still page **2721**.
    (b) their colour comes from a hand-painted 480×480 `palette.png` texture the shader samples,
    not from interpolating stops. Sampled values are nearly all above `0xf0` (peach/coral/
    pink/cream/lilac — adjacent warm hues). Ours was near-black navy plus widely-spaced saturated
-   hues. Four colour stops cannot structurally reproduce an artist-painted image's variation.
-   (c) next-session plan: a scratch/POC exact replication. Prompt:
+   hues.
+   ⛔ **RETRACTED 2026-08-25.** This clause ended: *"Four colour stops cannot structurally
+   reproduce an artist-painted image's variation."* **Measured false** by the POC — four
+   HUE-ADJACENT stops (307 unique colours vs Stripe's 82,831) render as premium through the right
+   machinery. What fails is *complementary* stops, because interpolating them in RGB passes
+   through grey. **The constraint is hue adjacency, not colour count, and no artist is required.**
+   (c) ✅ **DONE 2026-08-25.** The rig reproduces the live hero at **0.66%** mean pixel difference,
+   all 26 mechanisms implemented, QC 10/10. What makes theirs look expensive, ranked: **form**
+   (bounded shape dissolving by depth, not a full-bleed repetitive wash), **ground** (bright on
+   white, not saturated on near-black navy), **hue adjacency**, **a fine detail field**.
+   ⚠ Also measured: FR-38-31 **does not band** (mean scanline run 1.19), so the "add a dither"
+   and `mediump`→`highp` recommendations are WITHDRAWN — they fixed a defect that does not exist.
+   Report: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`. Residual open work:
    `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
 2. **Bean's eye on the five cursor-field looks** — mechanism now verified end-to-end (frontend
    AND editor); the aesthetics of each look are not yet Bean-reviewed.
@@ -51,9 +62,14 @@ superseded**). Canary: still page **2721**.
    NOT it.
 4. **`floating-objects`** — unchanged from the prior close, still needs its opt-in design gate.
 5. **Generative cover images** — Bean approved pursuing this direction (bake brand colours into
-   cached cover artwork, using the same capability the flowing gradient's rejection exposed a
-   need for — an artist-authored palette texture rather than four interpolated stops). Not
-   started.
+   cached cover artwork). Not started.
+   ⛔ **RESCOPED 2026-08-25 — the original justification was refuted.** This item read "using the
+   same capability the flowing gradient's rejection exposed a need for — an artist-authored
+   palette texture rather than four interpolated stops". The POC measured that premise false: a
+   palette-texture capability is **not** what the gradient's rejection exposed a need for. Four
+   hue-adjacent stops suffice. Scope this from **form, ground and hue adjacency**, not from
+   building a texture-palette pipeline — that would be an expensive answer to a question that
+   turned out not to be the question.
 
 ### Method failures worth carrying, all self-inflicted
 
@@ -401,10 +417,16 @@ mismatch.
 
 ## Ranked, if you want a next step (re-ranked 2026-08-25)
 
-1. **The stripe-hero replication POC** — Bean has already rejected FR-38-31's shipped look and a
-   root cause is established (wrong reference technique, no artist-painted palette texture).
-   Prompt already written: `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`. Highest
-   priority because it is open, scoped, and blocking the only shipped-but-rejected item.
+1. ✅ **The stripe-hero replication POC — DONE 2026-08-25.** Rig reproduces the live hero at
+   **0.66%** mean pixel difference, all 26 mechanisms implemented, QC 10/10. Report:
+   `.claude/reports/2026-08-25-stripe-hero-anatomy.md`.
+   ⛔ The root cause recorded here — *"no artist-painted palette texture"* — was **measured
+   false**. Four hue-adjacent stops suffice; the constraint is hue adjacency, not colour count.
+   **The real next step is the FR-38-31 rework**, now precisely scoped to five ranked changes:
+   form → ground → hue adjacency → detail field → colour source. Do NOT start at colour source;
+   the first three are attribute and composition changes. Residual open items (Q6 has no
+   performance number, n=1 fidelity, Gate E unrun):
+   `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
 2. **Hover rollout (2.1)** — highest client impact, lowest risk, unchanged from the 2026-08-24
    close. One `enabledExtensions` opt-in makes a built panel appear; separately, 10 blocks
    currently animate uncontrollably.

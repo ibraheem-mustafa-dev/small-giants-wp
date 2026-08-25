@@ -984,9 +984,14 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   unlocked neighbour moved `y=-19.25` under identical pointer input.
 
 - **FR-38-31 Flowing gradient — the SECOND Tier W entry. BUILT + LIVE, look REJECTED
-  2026-08-25.** stripe.com's mesh-gradient technique: a subdivided plane whose VERTICES are
-  displaced by simplex noise, with colour computed PER VERTEX and interpolated across each
-  triangle by the rasteriser.
+  2026-08-25.** A subdivided plane whose VERTICES are displaced by simplex noise, with colour
+  computed PER VERTEX and interpolated across each triangle by the rasteriser.
+  ⚠ **This is NOT stripe.com's current technique** — an earlier version of this line called it
+  "stripe.com's mesh-gradient technique", which contradicted clause (a) below 60 lines later. It
+  is their **~2020-21** hero, the one every public tutorial documents. Their current hero was
+  recovered from their shipped bundle and is materially different: one vertex shader over a
+  CPU-folded 33,153-vertex plane, colour SAMPLED FROM A TEXTURE rather than interpolated, a fine
+  striation field, and a second full-screen pass applying angular blur plus grain.
 
   Files: `src/shared/effects/webgl/wave-gradient.js` (renderer + shaders),
   `src/shared/effects/fx-wave-gradient.js` (lifecycle), `assets/css/fx-wave-gradient.css`
@@ -1058,10 +1063,28 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   - (b) their colour comes from a hand-painted 480×480 `palette.png` TEXTURE the shader samples,
     not from interpolating a handful of CSS-style stops. Sampled values run nearly all above
     `0xf0` — peach/coral/pink/cream/lilac, ADJACENT warm hues. This build used a near-black navy
-    base with widely-spaced saturated hues. **Four colour stops cannot structurally reproduce the
-    variation of an artist-painted reference image** — this is a ceiling of the approach, not a
-    parameter to retune.
-  - (c) a scratch/POC exact replication is the next session's work; prompt at
+    base with widely-spaced saturated hues.
+
+    ⛔ **AN EARLIER VERSION OF THIS CLAUSE WAS WRONG AND IS RETRACTED.** It read: *"Four colour
+    stops cannot structurally reproduce the variation of an artist-painted reference image — this
+    is a ceiling of the approach, not a parameter to retune."* **Measured false** by the
+    replication POC (2026-08-25): rendering four HUE-ADJACENT stops through Stripe's own machinery
+    produced a premium result from a palette carrying **307** unique colours, against Stripe's
+    **82,831**. What actually fails is *complementary* stops — interpolating blue→orange in RGB
+    passes through grey and produces the muddy band, the same failure as the rejected Aurora teal
+    band. **The constraint is hue ADJACENCY, not colour count, and no artist-painted palette is
+    required.** This matters because the retracted sentence was the stated justification for
+    building a palette-texture capability. Evidence:
+    `.claude/reports/2026-08-25-stripe-hero-anatomy.md` §Q7.
+  - (c) ✅ **The scratch/POC exact replication is DONE (2026-08-25).** The rig reproduces the live
+    hero at **0.66%** mean pixel difference against a live capture frozen at the same `u_time`,
+    with all 26 recovered mechanisms implemented. What actually makes theirs look expensive, in
+    priority order: **form** (a bounded shape dissolving by depth, not a full-bleed repetitive
+    wash), **ground** (bright colour on white, not saturated colour on near-black navy), **hue
+    adjacency**, and **a fine detail field** (striations — ours has none). ⚠ Two recommendations
+    from the first pass are WITHDRAWN: FR-38-31 was measured and **does not band** (mean scanline
+    run-length 1.19), so "add a dither" and `mediump`→`highp` both rest on a defect that does not
+    exist. Report: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`. Remaining open work:
     `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
 
 - **FR-38-32 Particle trail — Tier V, ONE engine, THREE presets. BUILT 2026-08-25 (D784).**

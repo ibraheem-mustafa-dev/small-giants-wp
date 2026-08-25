@@ -88,8 +88,15 @@ attrs — WP discards them, the next editor save deletes them, and it blocks `ol
 
 ## ▶ MOTION TRACK — 2026-08-25 (FR-38-30 + FR-38-31 shipped; the gradient's LOOK is the open gap)
 
-⭐ **START HERE: `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`** — scratch POC of
-stripe.com's actual hero technique before touching FR-38-31 again.
+✅ **Stripe-hero POC DONE (2026-08-25)** — 0.66% vs live, 26/26 mechanisms, QC 10/10
+⭐ **START HERE: the FR-38-31 rework** — **form → ground → hue adjacency → detail field → colour
+source**. Start at form; the first three are attribute/composition, not shader work.
+⛔ **Two beliefs measured FALSE:** four HUE-ADJACENT stops DO suffice (no artist needed;
+complementary stops make the mud), and FR-38-31 does **not** band (mean run 1.19) so the dither
+and `mediump`→`highp` fixes are withdrawn.
+Detail + opens (no Q6 perf number, fidelity n=1, Gate E unrun):
+`.claude/reports/2026-08-25-stripe-hero-anatomy.md` ·
+`.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
 
 **Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, logged as **D778-D781**.
 Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).
@@ -103,17 +110,19 @@ WRONG, not unverified (canvas iframe carries zero fx attrs; `sgs/container` uses
 Info Notice now ships; otherwise healthy (36 blocks, 0 invalid, 0 console errors).
 ✅ **FR-38-30 Magnetic pull** shipped — generalised mega-menu's `magnet.js` to 2 axes + proximity
 radius. Reaches every fx-panel block, live-verified on 2737.
-✅ **FR-38-31 Flowing gradient** shipped (Tier W's 2nd entry, autonomous per Bean, fixes mobile
-where cursor-fx shows nothing) — simplex-displaced mesh, 4 colour stops, 3648B gzip, pause control.
-Its own clobbered canvas was really `sgs/container`'s child-lift list missing the canvas.
+✅ **FR-38-31 Flowing gradient** shipped (Tier W's 2nd entry, autonomous, fixes mobile where
+cursor-fx shows nothing) — simplex-displaced mesh, 4 stops, 3648B gzip, pause control. Its
+clobbered canvas was `sgs/container`'s child-lift list missing the canvas.
 ✅ Deploy gate scoped — blocks-only/theme-only no longer aborts on another track's dirty theme
 files; 3 new self-tests, each watched failing first.
 
-⭐ **OPEN ITEM THAT MATTERS MOST:** Bean rejected the gradient's LOOK ("B-movie 3D VFX"). Cause:
-the `minigl` mesh everyone documents is stripe's OLD (2020-21) hero — their CURRENT one samples a
-hand-painted `palette.png` texture; 4 interpolated colour stops can't reproduce that variation.
+⭐ **The gradient's rejected LOOK is diagnosed** — see the top of this track. Its cause stated
+here ("4 interpolated stops can't reproduce that variation") was measured FALSE on 2026-08-25.
 
 ### ▶ NEXT, in order
+
+⭐ **START HERE: `.claude/prompts/2026-08-26-hover-decision-and-gate-residue.md`** — carries
+Tasks A-E below with exact file:line and done-when for each.
 
 1. ✅ **CHILD-LIFT — CLOSED 2026-08-25.** All SIX rules de-specified to `:where()` at
    (0,0,0); 47 exclusions across 7 selectors deleted. Deployed + live-verified: of 141
@@ -126,16 +135,21 @@ hand-painted `palette.png` texture; 4 interpolated colour stops can't reproduce 
    the ToolsPanel menu with Reset all; Notice + 8KB-budget notice both ship; 0 invalid blocks,
    0 console errors. The `verify-both-surfaces` gap for FR-38-32 is now closed.
    ⚠ Still unobserved: live cap-binding and loop-stop (the first probe for those was unreliable).
-3. **Run the stripe-hero replication POC** — prompt already written; FR-38-31's look stays
-   rejected until it runs.
-4. **Hover: decide the 8 conflicted blocks.** 3 of 11 shipped (google-reviews / pricing-table /
-   whatsapp-cta). The other 8 produce **33 genuine duplicate-control findings** + 24 dead-attr
-   ones; `check-duplicate-controls` has already computed a KEEPER for every finding, so the work
-   is specified — it needs Bean's call, not more analysis. ⚠ D338 hazard on any attr REMOVAL.
+3. ✅ **Stripe-hero POC — DONE 2026-08-25** (0.66%, 26/26 mechanisms, QC 10/10). Superseded by
+   **the FR-38-31 rework**: form → ground → hue adjacency → detail field → colour source.
+4. ⛔ **Hover: decide the 8 conflicted blocks — RE-MEASURE FIRST.** 3 of 11 shipped
+   (google-reviews / pricing-table / whatsapp-cta). ⚠ **The "33 duplicates + 24 dead" figure
+   previously recorded here is STALE and must not be acted on.** The gate that produced it was
+   wrong in BOTH directions and was fixed on 2026-08-25 (D785) — of its 64 findings only 10 were
+   real. A later hand-audit put it nearer 13 and 10, and that predates the final rewrite too.
+   Re-run `check-duplicate-controls.js --json` per block, then put the real numbers to Bean.
+   ⚠ D338 hazard on any attr REMOVAL.
 5. **Gate the three ungated registration points** (motion-registry module map, its CSS map, the
    webpack entry) — see D784. Five features have now hit the child-lift trap independently.
 6. **`floating-objects`** + **generative cover images** — both approved-in-principle, unbuilt.
-   Covers should FOLLOW the stripe POC (same palette-texture capability, D781).
+   ⛔ Covers were scoped as needing "the same palette-texture capability (D781)". **That premise
+   was measured false 2026-08-25** — no texture-palette pipeline is required. Scope covers from
+   form, ground and hue adjacency instead.
 
 ⛔ **Carried:** the real fading trail is `particles`/Sparks. "Drag weight" is momentum and is NOT
 it — never report it as satisfying that ask.
