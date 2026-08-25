@@ -2,7 +2,7 @@
 doc_type: guide
 title: The migration method — settle the shape, then build the detector
 date: 2026-08-24
-status: APPLIED — graded B- as exercised (round 3, 9 CONFIRMED / 1 PEDANTIC / 0 WRONG)
+status: APPLIED — graded B- (round 3). ⚠ The Step 4/5/7b/8/11 burn-down edits (D778) are UNGRADED and UNREVIEWED — round 4 pending
 closes_when: "CLOSED 2026-08-25. Applied end-to-end through Steps 1-11 on a real change
   (d8bd2cab3) and re-graded: C -> B-. FIVE steps were WRONG or SILENT as written (1, 2, 4, 8, 11)
   and are corrected above, each tagged (D775). Evidence:
@@ -13,6 +13,9 @@ graded_by: "3-persona panel on the application evidence — Cutter (delete-only)
   a silent whole-file diff is a MANUAL git diff --stat, not a gate. Closing that is the single
   change that would most raise the grade."
 applies_to: any change touching more than 3 blocks, attributes, files or call sites
+covers: TWO shapes — (a) build a detector for a new repeating change; (b) burn down an
+  EXISTING detector's findings backlog (Step 7b + Step 8's ratchet). Shape (b) was added
+  2026-08-25 after the doc was found to actively cause harm on it.
 grading: .claude/rubrics/migration-method-grading.md
 ---
 
@@ -202,6 +205,12 @@ answered *how many*, and nothing answered *what shape*.
 
 ## Step 4 — Choose the recogniser, then copy the skeleton
 
+⛔ **FIRST: does a detector for this subject ALREADY EXIST and report findings?** If Step 1 found
+one that already carries `--check`/`--self-test` and is registered (e.g. `inspector-scan`, 22 rules
+across every block), then **Steps 4 and 5 are N/A — say so and go to Step 7b.** You are not
+building a recogniser; you are burning down the backlog of one that works. Forcing Steps 4-5 here
+produces a second detector competing with the first. (D778.)
+
 **Pick the tool before you copy anything:**
 
 - **Single-token, single-line target** (a function rename, a constant swap) → the line
@@ -333,6 +342,12 @@ something you did not anticipate instead of silently skipping it.
 
 ## Step 5 — The transform is SHAPE-TO-SHAPE, not find-and-replace
 
+⛔ **N/A when the detector already exists** (Step 4's box). More than that, this step MISLEADS at
+scale: *"count your cases before concluding a change needs human judgement"* is right for a codemod
+and wrong for a findings backlog. `21-render-without-control`'s findings each need an inspector
+control DESIGNED for that block — 222 design decisions, not one case with 222 hole-values. No
+`transform()` can write them. Go to Step 7b. (D778.)
+
 `transform()` is three things:
 
 1. **RECOGNISE** the old shape structurally — by its parse, its mount, its call signature.
@@ -419,6 +434,49 @@ parity, `->`/`::` prefixes. Report those as **`refused`, with the rule that fire
 proceed. `adopt.js` already does this — every refusal carries a named reason and every named
 reason has a fixture reproducing it.
 
+## Step 7b — TRIAGE the findings before you gate them
+
+**Only when the detector already existed and reports a large backlog. Skip for a fresh codemod,
+where every finding is one you defined.**
+
+⛔ **A finding is not a defect until you have said which of three things it is.** Skipping this is
+how a backlog becomes permanent: nobody can act on a number they do not trust, so the rule stays
+advisory forever and the count grows.
+
+| Verdict | What it means | What you do |
+|---|---|---|
+| **REAL** | the defect is genuine | it enters the worklist and the ceiling |
+| **DETECTOR BUG** | the rule is wrong, not the tree | ⛔ **fix the rule.** *"A false positive is a detector bug, never baseline fodder."* |
+| **ARTEFACT** | true statically, not a real defect — a limit of static analysis | record the limit ON the rule, with the evidence that proves consumption |
+
+⛔ **The ARTEFACT class is real and large, so do not skip it.** `34-declared-attr-unrendered`
+reports a block's attr as unrendered whenever the render corpus reaches a shared include that reads
+`$attributes[ $sgs_attr ]` — a computed key no static pass can resolve. Every composite routing
+through `SGS_Container_Wrapper` lands here. Those attrs ARE consumed, cross-verified by
+`check-dead-controls.js` reporting zero net-new dead controls across the same change.
+
+⛔ **A false ABSENCE reads exactly like a clean result.** When a count comes in BELOW your
+independent prediction, instrument the detector — do not accept the good news. Rule 31's first run
+returned 173/164 against a predicted ~186/~193; the whole gap was three blocks scoring ZERO rows
+because they built their rows array via `.push()`, a separate const, and a spread-of-conditional
+rather than an inline literal. The resolver was extended, not the prediction lowered.
+
+**Declare the expected population BEFORE the first run, by a method independent of the rule's own
+code** (`zeroIsAClaim`). A rule that reports 0 having never been able to report anything else is
+indistinguishable from a clean tree.
+
+⚠ **Diff findings on a CONTENT key, never the raw one.** A raw finding key usually embeds a line
+number, so an unrelated edit above a row reports it as net-new. Normalise on
+`block + kind + rowKey`. Rule 31 was measured this way: 17 genuinely closed, ZERO genuinely new,
+where the naive diff claimed several untouched rows had appeared.
+
+⭐ **The worked example is `plugins/sgs-blocks/scripts/inspector-scan/rules.json`.** Its
+`advisoryReason` fields carry ~12,000 words of exactly this discipline — more than this document —
+and every movement is recorded with its composition **enumerated, not inferred**. Read rule 31's
+before running your own backlog. (D778.)
+
+---
+
 ## Step 8 — Wire the gate BEFORE you write
 
 ⛔ **Register the gate and commit it BEFORE `--apply`.** It will fail red until the
@@ -438,6 +496,39 @@ paragraph above does not cover:
 
 ⚠ **When the gate IS the change**, it cannot be committed before the code that implements it.
 Register it before the COMMIT, and prove it fails before the commit. That satisfies the intent.
+
+### ⛔ THERE ARE THREE GATE SHAPES, AND THIS STEP USED TO DESCRIBE ONLY ONE
+
+Picking the wrong one is not cosmetic: **demanding a binary `--check` on a backlog that cannot
+reach 0 leaves "make the rule advisory" as the only compliant move.** That is how 15 of
+`inspector-scan`'s rules became permanently unable to fail while carrying 945 findings. This
+document caused that. (D778.)
+
+| Shape | `--check` behaviour | Use when |
+|---|---|---|
+| **Binary** | 1 while any site remains, 0 when clean | a codemod you will finish in one pass |
+| **Guard** | 0 from registration; 1 only on divergence | it compares a derived copy to its source (D775) |
+| **Ratcheted ceiling** | 1 when findings EXCEED the recorded ceiling | a real backlog too large to clear at once |
+
+**The ratchet, as practised in `inspector-scan/rules.json`:**
+
+- The ceiling is **monotonic downward**. Every lowering records its composition **enumerated, not
+  inferred**. *"The ratchet still binds from 415 downward; do not raise it again without the same
+  kind of stated reason."*
+- ⛔ **Raising it is permitted ONLY as a stated staleness correction, never to absorb new debt** —
+  and say which it is, in writing, on the rule.
+- ⛔ **A ceiling above the live count is SLACK, and slack means a brand-new violation lands green.**
+  Measured twice on rule 31: 33 findings of slack, and earlier 5. **Re-measure and lower after every
+  drop**, or the standard is not in practice enforcing.
+- ⛔ **Never promote a rule to gating on the run that introduces it.** Advisory on introduction is
+  deliberate — a rule's first live number is a measurement, not yet a trusted one.
+- **Advisory is a STARTING state with an exit condition, never a resting one.** A rule with no
+  ceiling and no promotion criterion is a measurement nobody will ever act on. If it must stay
+  advisory permanently, write the reason on the rule.
+
+⚠ **Count only what the gate counts.** `inspector-scan`'s `--json` serialises BASELINED findings
+alongside FLAGGED ones while the exit code filters to FLAGGED — a raw array length over-counts by
+exactly the baselined entries. Check which population your ceiling is measured against.
 
 Add a record to `plugins/sgs-blocks/scripts/gates.json` — **all seven fields**:
 
@@ -537,6 +628,10 @@ inherited it, so an agent that correctly skipped Step 3 had no permission to ski
 developer-tooling change has no page and no `classify()` categories. **The substitute proof is
 provably-identical behaviour**: diff the tool's own output against a baseline recovered with
 `git show <recorded-sha>:` — stronger than a saved file, because it cannot drift. (D775.)
+
+⚠ **"One instance per `classify()` category" does not scale to a findings backlog.** With 22 rules
+across 81 blocks there are no `classify()` categories to enumerate. Sample by **finding KIND** and
+by **the mechanism that fixes it**, not by block — one live check per kind you touched. (D778.)
 
 Then open a real page rendering an affected block and check the changed property's computed
 value — **at least one instance per `classify()` category**, not one page.
