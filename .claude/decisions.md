@@ -1,3 +1,58 @@
+## D792 [INCIDENT] — the hero's editor canvas never painted backgroundColour, and colourVar() silently drops every custom colour across 39 blocks
+
+**2026-08-28.** Bean: the hero background is "stuck as the primary dark shade of pink in the
+editor canvas and it doesn't change no matter what colours or gradients I pick".
+
+**Reproduced live, not inferred** (canary page 2337, both heroes `variant:split`): setting
+`backgroundColour` to `#00FF00` via the editor store left the canvas at
+`rgb(197,106,122)` — `has-background` absent, `style` attribute null. The attribute was inert.
+
+**Cause — ONE, not three.** Nothing in `edit.js` consumed the attribute. The fallbacks in
+`hero/style.css:58` and `hero/editor.css:17` are `:where()`-de-specified to (0,0,0), so they
+were NOT winning a cascade fight; they painted because nothing competed. That makes painting
+the value sufficient on its own. Emitting `has-background` as well, or guarding `editor.css`
+as well, would each be a second overlapping fix for an already-fixed cause — unfalsifiable,
+per `prove-the-cause-before-fix.md`. Both were deliberately NOT done.
+(`editor.css:17` targets `--standard` and did not even apply to the split heroes tested.)
+
+Fix `14d3801bb`: `resolveBackgroundPaintPreviewStyle()` in `src/utils/tokens.js`, mirroring
+`sgs_background_paint_value()`, spread into hero's `wrapperStyle` before the background-image
+branch so a media image still wins (render.php:914-933's documented precedence).
+
+### ⛔ The wider bug found while proving it — UNFIXED, needs a Rule 7 design gate
+
+`colourVar()` wraps its argument in `var(--wp--preset--color--{slug})` **unconditionally**. For
+a custom hex that yields `var(--wp--preset--color--#00FF00)` — invalid CSS, so the browser drops
+the declaration entirely. Measured on `sgs/heading` in the same session, attribute read back at
+the same instant as the DOM to rule out a stale render:
+
+| `textColour` | inline style emitted | computed |
+|---|---|---|
+| `primary` (slug) | `color: var(--wp--preset--color--primary)` | `rgb(230,138,149)` ✓ |
+| `#00FF00` (hex) | *(no `color` property at all)* | inherited — **silently dropped** |
+
+The server has always handled this: `sgs_colour_value()` passes raw CSS colours and `var()`
+through untouched. **The render is right; the editor preview is wrong** — so any custom
+(non-preset) colour a client picks is invisible in the canvas while rendering correctly live.
+
+**Blast radius: 120 call sites across 39 blocks** pass `colourVar` as their preview resolver.
+The correct fix is one function — `colourValue()` (shipped in `14d3801bb`, used only by the new
+background helper so far) — but switching 120 call sites is high-blast-radius, so `colourVar`
+itself is UNCHANGED pending Bean's approval.
+
+`colourValue()` decides slug-vs-literal with `CSS.supports('color', v)` rather than porting the
+server's 148-entry named-colour list: the browser is the CSS spec, so it cannot drift from it,
+and duplicating a resolver is what put two of this repo's instruments 317 findings apart.
+Verified in-browser across 10 cases (slug, hyphenated slug, 6- and 3-digit hex, `rgb()`,
+`oklch()`, named, `var()`, gradient-wins, empty) — all correct.
+
+⚠ **This is exactly CHECK A's remit and CHECK A does not report it** — a second proven false
+negative in the same gate, alongside the `backgroundColour` one that opened this session.
+
+⚠ **NOT live-verified.** The canary deploy aborted correctly (`deployed-files-dirty`) on the
+motion track's four uncommitted fx/mega-panel CSS files, modified minutes earlier. Not forced:
+`--allow-dirty` would have pushed another track's unfinished work live (D336).
+
 ## D791 [ROUTINE] — the post-process pass costs 70% of the frame; multi-pass Tier W is a design gate, not an increment
 
 **2026-08-25.** Q6 measured (`.claude/scratch/stripe-hero-poc/perf/measure-frame-cost.mjs` →
