@@ -37,7 +37,7 @@
 	},
 	{
 		"block": "sgs/exempt-system-attr",
-		"attr": "sgsFoo",
+		"attr": "sgsAnimation",
 		"renderConsumed": false,
 		"controlPresent": false,
 		"renderVia": "none",
@@ -61,5 +61,14 @@
 		"renderVia": "none",
 		"exempt": true,
 		"exemptReason": "key-noise"
+	},
+	{
+		"block": "sgs/exempt-core-supports",
+		"attr": "anchor",
+		"renderConsumed": false,
+		"controlPresent": false,
+		"renderVia": "none",
+		"exempt": true,
+		"exemptReason": "core-supports"
 	}
 ]

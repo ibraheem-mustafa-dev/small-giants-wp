@@ -104,8 +104,12 @@
  *                                                     # limitation. exempt/exemptReason surface the SAME
  *                                                     # gate exemptions checkFullyDeadAttrs() applies
  *                                                     # before resolving (isSystemAttr / EDITOR_ONLY_ATTRS
- *                                                     # / KEY_NOISE) — reason one of 'system-attr' /
- *                                                     # 'editor-only' / 'key-noise' / null — so a
+ *                                                     # / KEY_NOISE), plus a fourth dump-only exemption
+ *                                                     # (Important 4, 2026-08-27) for a WP-native
+ *                                                     # `supports`-backed attribute (e.g. `anchor`) that
+ *                                                     # core itself renders — reason one of 'system-attr' /
+ *                                                     # 'editor-only' / 'key-noise' / 'core-supports' /
+ *                                                     # null — so a
  *                                                     # `renderConsumed: false` row can be told apart
  *                                                     # from an attribute the blocking gate actually
  *                                                     # flags as dead (a by-design editor-only attr like
@@ -546,6 +550,14 @@ function readBlock( dir ) {
 		ownCorpus,
 		providesContext,
 		usesContext,
+		// GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md Important 4 (2026-08-27)
+		// source=file evidence=live-read block.json for sgs/button, sgs/heading,
+		// sgs/nav-drawer — all three declare an `anchor` attribute AND a top-level
+		// `supports.anchor: true`. DUMP-ONLY: this field is additive on the block
+		// descriptor and is read by NOTHING in CHECK 1-5 (checkBlock,
+		// checkFullyDeadAttrs, etc.) — only dumpAttributeRows() below reads it, so
+		// adding it cannot change --check/--json output.
+		supports: meta.supports || {},
 	};
 }
 
@@ -1393,12 +1405,50 @@ function findingKey( f ) {
 //
 // `exempt` / `exemptReason` surface the SAME three exemptions
 // checkFullyDeadAttrs() applies BEFORE resolving consumption (isSystemAttr() /
-// EDITOR_ONLY_ATTRS / KEY_NOISE — see that function's own comment). Without
-// them, `renderConsumed: false` conflates a genuinely dead control with a
-// by-design editor-only attr (e.g. `templateMode`) or a registered extension
-// attr — both correctly absent from render by design, and both reported by
-// the blocking gate as "not a finding". `exemptReason` is one of
-// 'system-attr' / 'editor-only' / 'key-noise' / null (not exempt).
+// EDITOR_ONLY_ATTRS / KEY_NOISE — see that function's own comment), PLUS a
+// fourth, dump-only exemption this function alone applies (Important 4,
+// 2026-08-27): 'core-supports'. Without them, `renderConsumed: false`
+// conflates a genuinely dead control with a by-design editor-only attr (e.g.
+// `templateMode`), a registered extension attr, or a WP-native
+// `supports`-backed attribute (e.g. `anchor`, `lock`) that WordPress core
+// itself renders — none of the four are a finding. `exemptReason` is one of
+// 'system-attr' / 'editor-only' / 'key-noise' / 'core-supports' / null (not
+// exempt).
+//
+// 'core-supports' — CONSUMPTION RESOLUTION BELONGS TO THE PRODUCER (design
+// decision, Important 4). A block.json attribute IS consumed when its own
+// name is also a top-level `supports` key set to a non-`false` value (e.g.
+// `{ "attributes": { "anchor": {...} }, "supports": { "anchor": true } }`) —
+// WordPress core renders that attribute itself (the anchor/lock/align
+// mechanism), so the block's OWN render.php never needs to reference it
+// literally. Before this exemption existed, an attribute like
+// `sgs/button::anchor` escaped CHECK 4 / rule 34 only by COINCIDENCE — the
+// literal string "anchor" happens to appear somewhere in the shared-includes
+// corpus for unrelated reasons. Acting on a false "dead" verdict for a
+// `supports`-backed attribute would delete a WORKING WordPress core feature.
+// isCoreSupportsAttr() below is the ONLY thing that reads `block.supports`
+// (added to readBlock()'s return purely for this) — DUMP-ONLY, never
+// consulted by CHECK 1-5, so it cannot change --check/--json output.
+
+/**
+ * DUMP-ONLY (Important 4). True when `attr` is itself a top-level `supports`
+ * key whose value is not `false` — WordPress core's own supports-driven
+ * attribute mechanism (anchor/align/lock/…), not this block's own render
+ * corpus. Reads only the block's OWN `supports` object (readBlock()'s
+ * `meta.supports`); no cross-block dict, no hardcoded name list beyond the
+ * literal-name-match itself.
+ *
+ * @param {string} attr The attribute name.
+ * @param {Object} supports The block's own `block.json` `supports` object.
+ * @return {boolean}
+ */
+function isCoreSupportsAttr( attr, supports ) {
+	return (
+		!! supports &&
+		Object.prototype.hasOwnProperty.call( supports, attr ) &&
+		supports[ attr ] !== false
+	);
+}
 
 /**
  * @param {Array<Object>} blocks Parsed block descriptors (readBlock() output).
@@ -1434,6 +1484,8 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 				exemptReason = 'editor-only';
 			} else if ( KEY_NOISE.has( attr ) ) {
 				exemptReason = 'key-noise';
+			} else if ( isCoreSupportsAttr( attr, block.supports ) ) {
+				exemptReason = 'core-supports';
 			}
 
 			let renderVia = 'none';
@@ -2482,6 +2534,7 @@ function runDumpJsonSelfTest( log ) {
 			'sgsAnimation',
 			'templateMode',
 			'id',
+			'anchor',
 		] ),
 		dynamic: true,
 		usesWrapper: false,
@@ -2494,6 +2547,11 @@ function runDumpJsonSelfTest( log ) {
 			"$tierKey = $respVar . 'Tablet';\n",
 		providesContext: {},
 		usesContext: [],
+		// Important 4 (2026-08-27): `anchor` is a top-level `supports` key set to
+		// `true` and is NEVER referenced anywhere in ownCorpus/editJsSrc above —
+		// proves the new exemption fires from `block.supports` alone, not from
+		// any literal-name coincidence.
+		supports: { anchor: true },
 	};
 	const syntheticSharedCorpus = "echo $attributes['sharedAttr'] ?? '';\n";
 	const syntheticContextConsumedByBlock = new Map( [
@@ -2524,6 +2582,7 @@ function runDumpJsonSelfTest( log ) {
 		[ 'sgsAnimation', false, false, 'none', true, 'system-attr' ],
 		[ 'templateMode', false, false, 'none', true, 'editor-only' ],
 		[ 'id', false, false, 'none', true, 'key-noise' ],
+		[ 'anchor', false, false, 'none', true, 'core-supports' ],
 	];
 	for ( const [ attr, expControl, expConsumed, expVia, expExempt, expExemptReason ] of expected ) {
 		const row = byAttr[ attr ];
@@ -2618,6 +2677,23 @@ function runDumpJsonSelfTest( log ) {
 		);
 	} else {
 		log( `FAIL — Test J (live, exempt): got ${ JSON.stringify( cardGridAnimRow ) }` );
+		pass = false;
+	}
+
+	// Live check — Important 4 (2026-08-27): sgs/button declares `anchor` AND a
+	// top-level `supports.anchor: true`. Before this fix it escaped CHECK 4/
+	// rule 34 only because the literal string "anchor" happens to appear
+	// somewhere in the shared corpus by coincidence; this proves the NEW
+	// exemption fires deliberately, from `block.supports`, not from that
+	// coincidence.
+	const buttonAnchorRow = liveRows.find( ( r ) => 'sgs/button' === r.block && 'anchor' === r.attr );
+	if ( buttonAnchorRow && true === buttonAnchorRow.exempt && 'core-supports' === buttonAnchorRow.exemptReason ) {
+		log(
+			'PASS — Test J (live, exempt): sgs/button.anchor -> exempt=true, ' +
+				"exemptReason='core-supports'."
+		);
+	} else {
+		log( `FAIL — Test J (live, exempt): got ${ JSON.stringify( buttonAnchorRow ) }` );
 		pass = false;
 	}
 

@@ -89,7 +89,58 @@ const CHECK_DEAD_CONTROLS_SCRIPT = path.resolve(
 // snapshot file — a committed dump would go stale the moment render.php/
 // edit.js/block.json changed underneath it, silently re-creating the exact
 // 317-finding drift this task exists to end. The dump is process-memory-only.
+//
+// Task 3 (2026-08-27, review findings) — TWO module-level slots, not one.
+// `cachedDumpRows` holds a SUCCESSFUL parse; `cachedDumpError` holds a FAILED
+// one. Both are cached (not just the success case) so a broken producer only
+// pays the `execFileSync` cost ONCE per scan instead of once per block (a
+// reviewer measured 83 re-spawned `MODULE_NOT_FOUND` child processes before
+// this fix — Minor 5).
 let cachedDumpRows = null;
+let cachedDumpError = null;
+
+// The exemptReason vocabulary this rule trusts. check-dead-controls.js's
+// `--dump-json` docblock is the source of truth for what values it emits;
+// this Set is the CONSUMER-side guard that a value outside it — a silent
+// rename, a retired reason, a typo — throws loudly instead of being read as
+// `null` (not-exempt) or ignored. 'core-supports' added Task 4 (2026-08-27,
+// IMPORTANT 4): a WP-native `supports`-backed attribute (anchor/lock/align)
+// is consumed by WordPress core itself, not by this block's own render code.
+const KNOWN_EXEMPT_REASONS = new Set( [ 'system-attr', 'editor-only', 'key-noise', 'core-supports' ] );
+
+/**
+ * Minor 7 (2026-08-27, review findings) — a shape guard on the dump contract.
+ * A renamed `block` field format goes SILENT (Critical 1's exact mechanism:
+ * every row.find() lookup below just stops matching, and a block reporting
+ * zero matches is indistinguishable from a genuinely clean block); a renamed
+ * `exemptReason` value silently retires that reason from the vocabulary this
+ * rule's `classifyKind()` branches on. Throwing here — inside `loadDumpRows`,
+ * the ONE function both the fixture seam and the real CLI invocation pass
+ * through — covers fixture rows AND live rows with the same guard.
+ */
+function assertDumpRowShape( row ) {
+	if ( typeof row.renderConsumed !== 'boolean' ) {
+		throw new Error(
+			`dead-controls dump row has a non-boolean "renderConsumed": ${ JSON.stringify( row ) }`
+		);
+	}
+	if ( typeof row.exempt !== 'boolean' ) {
+		throw new Error( `dead-controls dump row has a non-boolean "exempt": ${ JSON.stringify( row ) }` );
+	}
+	if ( typeof row.block !== 'string' || ! row.block.includes( '/' ) ) {
+		throw new Error(
+			`dead-controls dump row has a malformed "block" field (expected "namespace/slug"): ${ JSON.stringify(
+				row
+			) }`
+		);
+	}
+	if ( row.exemptReason !== null && ! KNOWN_EXEMPT_REASONS.has( row.exemptReason ) ) {
+		throw new Error(
+			`dead-controls dump row has an exemptReason "${ row.exemptReason }" outside the vocabulary this ` +
+				`rule knows (${ [ ...KNOWN_EXEMPT_REASONS ].join( ', ' ) }): ${ JSON.stringify( row ) }`
+		);
+	}
+}
 
 function runDumpJson() {
 	const out = execFileSync( process.execPath, [ CHECK_DEAD_CONTROLS_SCRIPT, '--dump-json' ], {
@@ -115,13 +166,39 @@ function runDumpJson() {
  * check-dead-controls.js to add one, so a fixture's synthetic block can never
  * appear as a real dump row — the seam is the only way to test this rule's
  * classification logic against a controlled input.
+ *
+ * Task 3 (2026-08-27, review findings, Critical 1) — THROWS, never swallows.
+ * A malformed/absent producer (a bad `CHECK_DEAD_CONTROLS_SCRIPT` path, a
+ * thrown parse error, or a zero-length dump) is a FLOOR failure: a reviewer
+ * proved that the old `catch -> return []` made a broken producer look like
+ * "0 findings, PASS" — silent blindness. There is nothing safe to return in
+ * that case, so this now propagates the error to `run()`, which turns it
+ * into a real finding rather than papering over it.
  */
 function loadDumpRows( ctx ) {
 	if ( ctx && Array.isArray( ctx.__deadControlsDumpRows ) ) {
+		ctx.__deadControlsDumpRows.forEach( assertDumpRowShape );
 		return ctx.__deadControlsDumpRows;
 	}
+	if ( cachedDumpError ) {
+		throw cachedDumpError;
+	}
 	if ( ! cachedDumpRows ) {
-		cachedDumpRows = runDumpJson();
+		try {
+			const rows = runDumpJson();
+			if ( ! Array.isArray( rows ) || rows.length === 0 ) {
+				throw new Error(
+					'check-dead-controls.js --dump-json produced a zero-length dump ' +
+						`(got ${ Array.isArray( rows ) ? '0 rows' : typeof rows }) — expected thousands of ` +
+						'rows. Treated as a producer FAILURE, not "nothing to report".'
+				);
+			}
+			rows.forEach( assertDumpRowShape );
+			cachedDumpRows = rows;
+		} catch ( e ) {
+			cachedDumpError = e;
+			throw e;
+		}
 	}
 	return cachedDumpRows;
 }
@@ -191,24 +268,85 @@ module.exports = {
 	title: "Every attribute block.json declares is consumed somewhere on the render side (via check-dead-controls.js's verdict)",
 	scope: 'per-block',
 	needs: [ 'json:block.json' ],
-	classifyKind, // exported for the self-test's direct-classification assertions
 	run( ctx, block ) {
 		const blockJsonFile = path.join( ctx.blocksDir, block.tail, 'block.json' );
 		const blockJson = ctx.json( blockJsonFile );
 		if ( ! blockJson.ok ) return []; // malformed/absent block.json is roster-drift/parse-error territory
 
+		const attrNames = Object.keys( blockJson.data.attributes || {} );
+
 		let rows;
 		try {
 			rows = loadDumpRows( ctx );
 		} catch ( e ) {
-			// The blocking gate itself failing to run is not this advisory rule's
-			// business to paper over with a guess — surface nothing rather than
-			// fabricate a verdict check-dead-controls.js never produced.
-			return [];
+			// Critical 1 (2026-08-27, review findings): the blocking gate failing to
+			// run used to be swallowed here and papered over with an empty array —
+			// proven, by tampering, to make a broken producer read as "PASS,
+			// 0 finding(s)". An advisory rule with no floor is worse than no rule:
+			// it actively hides the fact that NOTHING was verified this scan. This
+			// now surfaces an error-severity finding naming the failure instead —
+			// which pushes this block's (and, since the failure is cached across
+			// every per-block run() call, every OTHER block's) FLAGGED count well
+			// past the ratchet's openBacklog ceiling, so `--check` fails closed
+			// rather than passing on a guess.
+			return [
+				makeFinding( {
+					rule: this.id,
+					block: block.slug,
+					file: blockJsonFile,
+					severity: 'error',
+					kind: 'producer-failure',
+					detail:
+						'check-dead-controls.js --dump-json failed to run or returned an unusable dump ' +
+						`(${ e.message }). Rule 34 cannot verify render-side consumption for ANY block while ` +
+						'this is broken — reporting 0 findings here would be a false PASS, not a clean scan.',
+					fix:
+						'Run `node plugins/sgs-blocks/scripts/check-dead-controls.js --dump-json` directly from ' +
+						'the `scripts/` directory (it anchors on `__dirname` — running it from elsewhere scans ' +
+						'nothing) and fix whatever it throws before trusting this rule\'s output again.',
+					keyParts: [ 'producer-failure' ],
+				} ),
+			];
 		}
 
 		const findings = [];
-		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
+
+		// Critical 1, second clause: even when the producer runs and returns a
+		// non-empty dump, a bug could still make it skip THIS block entirely (a
+		// directory filter, a malformed block.json readBlock() silently drops,
+		// …) while other blocks are scanned fine — a per-block blind spot the
+		// zero-length-dump guard above cannot catch. `sgs/mega-group` declares 0
+		// attributes (verified live, 2026-08-27) so it is the one block for which
+		// zero matched rows is legitimate, not a coverage gap — handled simply by
+		// only running this check when the block declares at least one attribute.
+		if ( attrNames.length > 0 ) {
+			const hasAnyRow = attrNames.some(
+				( attr ) => rows.some( ( r ) => r.block === block.slug && r.attr === attr )
+			);
+			if ( ! hasAnyRow ) {
+				findings.push(
+					makeFinding( {
+						rule: this.id,
+						block: block.slug,
+						file: blockJsonFile,
+						severity: 'error',
+						kind: 'no-dump-coverage',
+						detail:
+							`${ block.slug } declares ${ attrNames.length } attribute(s) in block.json, but NONE ` +
+							'of them appear anywhere in check-dead-controls.js --dump-json\'s output — the ' +
+							'producer never scanned this block at all. A silent zero-finding result here would ' +
+							'be indistinguishable from "everything is fine".',
+						fix:
+							'Run `node plugins/sgs-blocks/scripts/check-dead-controls.js --dump-json` and grep for ' +
+							`"${ block.slug }" — confirm the block directory is being read (BLOCKS_DIR, the ` +
+							'directory-name filter, or a malformed block.json readBlock() silently skips).',
+						keyParts: [ 'no-dump-coverage' ],
+					} )
+				);
+			}
+		}
+
+		for ( const attr of attrNames ) {
 			const row = rows.find(
 				( r ) => r.block === block.slug && r.attr === attr
 			);
@@ -249,6 +387,17 @@ module.exports = {
 			// controlPresent:true, exempt:false.
 			'dead-control-real-bug',
 		],
+		// Critical 2 (2026-08-27, review findings) — requirement 2's entire
+		// deliverable is the `kind` field, and until now NOTHING asserted its
+		// VALUE (only that a finding with SOME name existed). A tampered
+		// `classifyKind()` — the `editor-only` branch deleted, or `:145`
+		// collapsed to always `return 'dead-attr'` — left every existing gate
+		// green. This maps each mustFlag fixture name to the exact `kind` its
+		// finding must carry; `testRule` in core/selftest.js asserts it.
+		mustFlagKind: {
+			'dead-attr-no-control': 'dead-attr',
+			'dead-control-real-bug': 'dead-control',
+		},
 		mustNotFlag: [
 			// Consumed (any renderVia) — the gate says S1 is satisfied, nothing to
 			// report regardless of how it resolved.
@@ -271,6 +420,14 @@ module.exports = {
 			// exemptReason:'key-noise' — a house-convention non-semantic key (id/
 			// url/alt/...), not a real render-consumption question.
 			'exempt-key-noise',
+			// exemptReason:'core-supports' (Task 4, 2026-08-27, Important 4) — a
+			// WP-native `supports`-backed attribute (e.g. `anchor`, mirroring
+			// sgs/button, sgs/heading, sgs/nav-drawer) is consumed by WordPress
+			// core itself, not by this block's own render.php. Proves the new
+			// exemption flows through rule 34's existing `exempt` filter with NO
+			// rule-34 logic change — check-dead-controls.js is the only producer
+			// that had to learn this new reason.
+			'exempt-core-supports',
 		],
 	},
 };

@@ -239,7 +239,7 @@ function testRule( ruleDef, mod ) {
 	if ( ! mod.selfTest ) {
 		return { pass: false, failures: [ `rule ${ ruleDef.id } has no selfTest block` ] };
 	}
-	const { fixture, mustFlag = [], mustNotFlag = [] } = mod.selfTest;
+	const { fixture, mustFlag = [], mustNotFlag = [], mustFlagKind = {} } = mod.selfTest;
 	const fixtureAbsPath = path.resolve( __dirname, '..', fixture );
 	if ( ! fs.existsSync( fixtureAbsPath ) ) {
 		return { pass: false, failures: [ `fixture directory missing: ${ fixtureAbsPath }` ] };
@@ -256,8 +256,21 @@ function testRule( ruleDef, mod ) {
 	if ( shapeErr ) failures.push( `finding-shape: ${ shapeErr }` );
 
 	for ( const name of mustFlag ) {
-		if ( ! findings.some( ( f ) => findingMatchesName( f, name ) ) ) {
+		const match = findings.find( ( f ) => findingMatchesName( f, name ) );
+		if ( ! match ) {
 			failures.push( `expected a finding for "${ name }" (mustFlag) but none was produced` );
+		} else if ( Object.prototype.hasOwnProperty.call( mustFlagKind, name ) ) {
+			// GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md Critical 2 (2026-08-27)
+			// — the `kind` field was requirement 2's entire deliverable and had ZERO
+			// test coverage: a tampered classifyKind() (deleted branch, or collapsed to
+			// a constant return) left every existing mustFlag/mustNotFlag check green
+			// because they only match findings by NAME. This asserts the VALUE too.
+			const expectedKind = mustFlagKind[ name ];
+			if ( match.kind !== expectedKind ) {
+				failures.push(
+					`finding for "${ name }" has kind="${ match.kind }", expected "${ expectedKind }" (mustFlagKind)`
+				);
+			}
 		}
 	}
 	for ( const name of mustNotFlag ) {
