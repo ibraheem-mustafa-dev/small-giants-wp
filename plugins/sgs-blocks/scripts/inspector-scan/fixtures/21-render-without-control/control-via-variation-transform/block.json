@@ -1,0 +1,8 @@
+{
+	"name": "sgs/control-via-variation-transform",
+	"title": "Fixture — control via transform-scoped variation",
+	"attributes": {
+		"headingText":   { "type": "string", "default": "" },
+		"variantPreset": { "type": "string", "default": "plain" }
+	}
+}

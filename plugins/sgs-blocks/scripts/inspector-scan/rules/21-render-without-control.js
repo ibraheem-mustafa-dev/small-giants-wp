@@ -252,6 +252,49 @@ function resolves( attr, corpus, parts ) {
 	return false;
 }
 
+/**
+ * Is `attr` reachable through the block's VARIATION SWITCHER rather than an
+ * inspector control?
+ *
+ * WHY (D792-era close-out, Bean's call 2026-08-26). `sgs/nav-drawer.variantPreset`
+ * was a REAL finding — every variation was `scope: [ 'inserter' ]`, so the look
+ * was chosen once at insertion and could never be changed afterwards. Adding
+ * `'transform'` to each scope gave the native block-toolbar switcher, and every
+ * variation already carried `isActive: [ 'variantPreset' ]`, which is what the
+ * switcher needs. The client CAN now change it — with zero custom UI.
+ *
+ * This rule asks whether an INSPECTOR control resolves the attribute, so it kept
+ * reporting the finding after the fix. That is a false positive, and by this
+ * project's own doctrine a false positive is a detector bug, never baseline
+ * fodder — so the rule learns the surface instead.
+ *
+ * ⛔ BOTH signals are required, and that is the whole precision argument. A
+ * `transform` scope with no `isActive` gives a switcher that cannot tell which
+ * variation is active; an `isActive` with no `transform` scope is inserter-only,
+ * which is exactly the ORIGINAL defect. Either alone must still flag — see the
+ * `variation-inserter-only-still-flags` fixture, which is the negative control
+ * proving this exemption does not overmatch.
+ *
+ * ⚠ KNOWN LIMIT, stated rather than hidden: the two signals are matched across
+ * the whole file, not paired within one variation object. A file mixing a
+ * transform-scoped variation with an inserter-only one that alone carries the
+ * `isActive` would be exempted wrongly. `sgs/nav-drawer` is currently the ONLY
+ * block in the framework with a `variations.js`, so the population is one and
+ * uniform; tighten to per-object pairing if a second block ever disagrees.
+ */
+function resolvedByVariationSwitcher( ctx, block, attr ) {
+	const file = path.join( ctx.blocksDir, block.tail, 'variations.js' );
+	const src = readIfExists( ctx, file );
+	if ( ! src ) return false;
+
+	// Some variation is reachable from the block toolbar after insertion.
+	if ( ! /\bscope\s*:\s*\[[^\]]*['"]transform['"]/.test( src ) ) return false;
+
+	// ...and the switcher can tell which variation this attribute selects.
+	const isActive = src.match( /\bisActive\s*:\s*\[[^\]]*\]/g ) || [];
+	return isActive.some( ( block_ ) => new RegExp( `\\b${ attr }\\b` ).test( block_ ) );
+}
+
 function readIfExists( ctx, file ) {
 	return fs.existsSync( file ) ? ctx.stripped( file ) || '' : '';
 }
@@ -630,6 +673,10 @@ module.exports = {
 			if ( SYSTEM_ATTR_RE.test( attr ) ) continue; // extension surface — structurally invisible here
 			if ( coreControlled.has( attr ) ) continue; // WordPress core surface — likewise invisible here
 			if ( resolves( attr, control.text, controlParts ) ) continue; // reachable by the client
+			// ...or reachable via the native block-toolbar variation switcher,
+			// which is a client-facing control surface this rule cannot see by
+			// reading edit.js alone. See resolvedByVariationSwitcher().
+			if ( resolvedByVariationSwitcher( ctx, block, attr ) ) continue;
 			if ( ! resolves( attr, render, renderParts ) ) continue; // not rendered -> CHECK 4's territory
 
 			findings.push(
@@ -669,9 +716,20 @@ module.exports = {
 			// textAlign is a real support key that registers NO named attribute,
 			// so it must still flag while its sibling fontSize is excluded.
 			'textalign-support-still-flags',
+			// NEGATIVE CONTROL for the variation-switcher exemption. `isActive`
+			// is present but every scope is `inserter` only — the original
+			// nav-drawer defect, where the look is chosen once at insertion and
+			// can never be changed. If this stops flagging, the exemption has
+			// widened to "any variations.js mentioning the attribute".
+			'variation-inserter-only-still-flags',
 		],
 		mustNotFlag: [
 			'rendered-with-control',
+			// A `transform`-scoped variation carrying `isActive` IS a
+			// client-reachable control — the native block-toolbar switcher —
+			// even though no inspector control exists. See
+			// resolvedByVariationSwitcher().
+			'control-via-variation-transform',
 			'control-via-dynamic-key',
 			'declared-but-not-rendered',
 			'control-via-shared-component',
