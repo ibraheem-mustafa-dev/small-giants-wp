@@ -93,15 +93,26 @@
  *                                                     # never changes --check/--json output. Emits a
  *                                                     # JSON array, one row per declared attribute of
  *                                                     # every block this script scans: { block, attr,
- *                                                     # renderConsumed, controlPresent, renderVia }.
- *                                                     # renderVia names WHICH of this script's six-
+ *                                                     # renderConsumed, controlPresent, renderVia,
+ *                                                     # exempt, exemptReason }.
+ *                                                     # renderVia names WHICH of this script's seven-
  *                                                     # corpus resolvers proved consumption (literal /
  *                                                     # dynamic-prefix / prefixed-helper / shared-
- *                                                     # include / block-context / none) — the field a
- *                                                     # downstream consumer needs to distinguish a real
- *                                                     # absence from a resolver limitation. Exists so a
- *                                                     # second instrument (inspector-scan rule 34) can
- *                                                     # consume this script's verdicts instead of
+ *                                                     # include / block-context / responsive-variant /
+ *                                                     # none) — the field a downstream consumer needs to
+ *                                                     # distinguish a real absence from a resolver
+ *                                                     # limitation. exempt/exemptReason surface the SAME
+ *                                                     # gate exemptions checkFullyDeadAttrs() applies
+ *                                                     # before resolving (isSystemAttr / EDITOR_ONLY_ATTRS
+ *                                                     # / KEY_NOISE) — reason one of 'system-attr' /
+ *                                                     # 'editor-only' / 'key-noise' / null — so a
+ *                                                     # `renderConsumed: false` row can be told apart
+ *                                                     # from an attribute the blocking gate actually
+ *                                                     # flags as dead (a by-design editor-only attr like
+ *                                                     # `templateMode` has renderConsumed=false but
+ *                                                     # exempt=true — it is not a real finding). Exists
+ *                                                     # so a second instrument (inspector-scan rule 34)
+ *                                                     # can consume this script's verdicts instead of
  *                                                     # re-deriving them with a narrower corpus — see
  *                                                     # `.superpowers/sdd/task-1-brief.md`.
  *
@@ -1356,20 +1367,38 @@ function findingKey( f ) {
 // inspector-scan rule 34, which currently re-derives consumption with none of
 // these resolvers and drifts 317 findings from this gate) can tell a real
 // absence ('none') apart from a resolver limitation:
-//   'literal'          the attr's own name appears in the block's OWN corpus
-//                       (its .php files / save.js / *view*.js).
-//   'shared-include'    the attr's own name appears only in the shared
-//                       includes/*.php corpus, not the block's own.
-//   'dynamic-prefix'    resolved via isDynamicPrefixConsumed() against a
-//                       structurally-discovered `$attributes[ $var . 'Suffix' ]`
-//                       read (collectDynamicPrefixSuffixes()).
-//   'prefixed-helper'   resolved via a PREFIXED_HELPER_SUFFIXES call site
-//                       (collectPrefixedHelperConsumed()) — e.g.
-//                       sgs/brand-strip.nameFontSize via
-//                       sgs_typography_css_rule( $attributes, 'name', ... ).
-//   'block-context'     resolved via a live providesContext -> usesContext
-//                       chain (contextConsumedByBlock, computed in main()).
-//   'none'              none of the above resolved it.
+//   'literal'            the attr's own name appears in the block's OWN corpus
+//                         (its .php files / save.js / *view*.js).
+//   'shared-include'      the attr's own name appears only in the shared
+//                         includes/*.php corpus, not the block's own.
+//   'dynamic-prefix'      resolved via isDynamicPrefixConsumed() against a
+//                         structurally-discovered `$attributes[ $var . 'Suffix' ]`
+//                         read (collectDynamicPrefixSuffixes()).
+//   'prefixed-helper'     resolved via a PREFIXED_HELPER_SUFFIXES call site
+//                         (collectPrefixedHelperConsumed()) — e.g.
+//                         sgs/brand-strip.nameFontSize via
+//                         sgs_typography_css_rule( $attributes, 'name', ... ).
+//   'block-context'       resolved via a live providesContext -> usesContext
+//                         chain (contextConsumedByBlock, computed in main()).
+//   'responsive-variant'  rule (a): a {base}Tablet/Mobile/Desktop attr whose
+//                         OWN literal name never appears anywhere, resolved
+//                         only because its BASE attr is consumed AND the
+//                         block's own corpus builds tier keys dynamically
+//                         (BREAKPOINT_DYNAMIC_RE) — e.g. `$attributes[ $base
+//                         . 'Tablet' ]`. Distinct from 'literal'/'shared-
+//                         include': what matched is the BASE attr's name, not
+//                         this attr's own, so labelling it 'literal' would be
+//                         wrong by the definition above.
+//   'none'                none of the above resolved it.
+//
+// `exempt` / `exemptReason` surface the SAME three exemptions
+// checkFullyDeadAttrs() applies BEFORE resolving consumption (isSystemAttr() /
+// EDITOR_ONLY_ATTRS / KEY_NOISE — see that function's own comment). Without
+// them, `renderConsumed: false` conflates a genuinely dead control with a
+// by-design editor-only attr (e.g. `templateMode`) or a registered extension
+// attr — both correctly absent from render by design, and both reported by
+// the blocking gate as "not a finding". `exemptReason` is one of
+// 'system-attr' / 'editor-only' / 'key-noise' / null (not exempt).
 
 /**
  * @param {Array<Object>} blocks Parsed block descriptors (readBlock() output).
@@ -1377,7 +1406,8 @@ function findingKey( f ) {
  * @param {string} sharedCorpus Concatenated includes/*.php corpus, comments stripped.
  * @param {Map<string,Set<string>>} contextConsumedByBlock block.name -> Set(attrName),
  *   from main()'s live-context pass (rule (b)).
- * @return {Array<Object>} One row per (block, attr): { block, attr, renderConsumed, controlPresent, renderVia }.
+ * @return {Array<Object>} One row per (block, attr): { block, attr, renderConsumed,
+ *   controlPresent, renderVia, exempt, exemptReason }.
  */
 function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextConsumedByBlock ) {
 	const rows = [];
@@ -1393,6 +1423,18 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 		for ( const attr of block.attrs ) {
 			const controlPresent =
 				controlled.has( attr ) || ( block.usesWrapper && wrapperControlled.has( attr ) );
+
+			// Same three exemptions checkFullyDeadAttrs() applies before resolving
+			// consumption (:875-880) — CALLED, not re-derived, so a change to any
+			// of the three predicates is automatically reflected here.
+			let exemptReason = null;
+			if ( isSystemAttr( attr ) ) {
+				exemptReason = 'system-attr';
+			} else if ( EDITOR_ONLY_ATTRS.has( attr ) ) {
+				exemptReason = 'editor-only';
+			} else if ( KEY_NOISE.has( attr ) ) {
+				exemptReason = 'key-noise';
+			}
 
 			let renderVia = 'none';
 			if ( contextConsumed.has( attr ) ) {
@@ -1410,12 +1452,15 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 				// apply: a {base}Tablet/Mobile/Desktop attr is consumed if its base
 				// is consumed AND the block's own corpus builds responsive keys
 				// dynamically (BREAKPOINT_DYNAMIC_RE), even though the tier attr's
-				// own literal name never appears verbatim.
+				// own literal name never appears verbatim. What matched is the
+				// BASE attr's name, not this attr's own — never 'literal' or
+				// 'shared-include', which both mean "this attr's OWN name
+				// appears" by the docblock's own definition above.
 				const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
 				if ( suffix ) {
 					const base = attr.slice( 0, -suffix[ 1 ].length );
 					if ( base && isConsumed( base, corpus ) && BREAKPOINT_DYNAMIC_RE.test( block.ownCorpus ) ) {
-						renderVia = isConsumed( base, block.ownCorpus ) ? 'literal' : 'shared-include';
+						renderVia = 'responsive-variant';
 					}
 				}
 			}
@@ -1426,6 +1471,8 @@ function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextCons
 				renderConsumed: renderVia !== 'none',
 				controlPresent,
 				renderVia,
+				exempt: exemptReason !== null,
+				exemptReason,
 			} );
 		}
 	}
@@ -2378,15 +2425,40 @@ function runDumpJsonSelfTest( log ) {
 	const os = require( 'os' );
 	let pass = true;
 
+	// This function reassigns the module-level EXTENSION_ATTRS global (below,
+	// for the live brand-strip check) — save/restore it so a caller after this
+	// one (currently none — this runs last in runSelfTest — but that is an
+	// ordering fact about the CALLER, not a guarantee this function can rely
+	// on) always sees the value it had on entry, not whatever this test last
+	// set it to.
+	const savedExtensionAttrs = EXTENSION_ATTRS;
+
 	log( '\n[check-dead-controls --self-test] --dump-json (Task 1 per-attribute dump)\n' );
 
-	// Synthetic block covering five of the six renderVia values on hand-built
-	// corpora (fully isolated from real source, so no real code can make this
-	// pass by accident): literal (own corpus), shared-include (shared corpus
-	// only), prefixed-helper (a real PREFIXED_HELPER_SUFFIXES call shape),
-	// dynamic-prefix (a real `$attributes[ $var . 'Suffix' ]` shape), a
+	// Synthetic block covering all seven renderVia values plus all three
+	// exemption reasons, on hand-built corpora (fully isolated from real
+	// source, so no real code can make this pass by accident): literal (own
+	// corpus), shared-include (shared corpus only), prefixed-helper (a real
+	// PREFIXED_HELPER_SUFFIXES call shape), dynamic-prefix (a real
+	// `$attributes[ $var . 'Suffix' ]` shape), block-context, responsive-
+	// variant (rule (a): a {base}Tablet attr whose OWN name never appears,
+	// resolved via a dynamic `$x . 'Tablet'` key build + a consumed base), a
 	// controlled-but-dead attr (proves controlPresent and renderConsumed vary
-	// independently), and a fully-dead attr (no control, no consumption).
+	// independently), a fully-dead attr (no control, no consumption, not
+	// exempt), and one attr per exemption reason (system-attr / editor-only /
+	// key-noise) each with no control and no consumption, proving `exempt`
+	// disambiguates them from a real fully-dead finding.
+	//
+	// `sgsAnimation` is a REAL registered extension attribute (verified:
+	// includes/extension-attributes.generated.php declares `'sgsAnimation' =>
+	// array(...)`, matching loadExtensionAttrs()'s own `sgs[A-Za-z0-9]+`
+	// extraction pattern — NOT the same allowlist as EXTENSION_EDITOR_ONLY_ATTRS,
+	// whose `fxPreset` entry does not start with `sgs` and so is NOT in
+	// EXTENSION_ATTRS at all), used here — rather than a synthetic name — so
+	// the system-attr case is proven against isSystemAttr()'s real
+	// EXTENSION_ATTRS (loaded earlier in runSelfTest, before this function
+	// runs) instead of requiring a temporary mutation of that global just for
+	// this test.
 	const tmpDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-dump-json-self-test-' ) );
 	const editJsSrc = [
 		"setAttributes( { literalAttr: 'x' } );",
@@ -2403,8 +2475,13 @@ function runDumpJsonSelfTest( log ) {
 			'ctaFontSize',
 			'beforeImageId',
 			'ctxAttr',
+			'respBase',
+			'respBaseTablet',
 			'deadControlledAttr',
 			'fullyDeadAttr',
+			'sgsAnimation',
+			'templateMode',
+			'id',
 		] ),
 		dynamic: true,
 		usesWrapper: false,
@@ -2412,7 +2489,9 @@ function runDumpJsonSelfTest( log ) {
 			"echo esc_html( $attributes['literalAttr'] ?? '' );\n" +
 			"echo sgs_button_element_style_css( $attributes, 'cta', '.cta' );\n" +
 			"$prefix = 'before' === $modifier ? 'before' : 'after';\n" +
-			"echo $attributes[ $prefix . 'ImageId' ] ?? '';\n",
+			"echo $attributes[ $prefix . 'ImageId' ] ?? '';\n" +
+			"echo $attributes['respBase'] ?? '';\n" +
+			"$tierKey = $respVar . 'Tablet';\n",
 		providesContext: {},
 		usesContext: [],
 	};
@@ -2432,31 +2511,40 @@ function runDumpJsonSelfTest( log ) {
 		byAttr[ r.attr ] = r;
 	} );
 
+	// [ attr, expControl, expConsumed, expVia, expExempt, expExemptReason ]
 	const expected = [
-		[ 'literalAttr', true, true, 'literal' ],
-		[ 'sharedAttr', false, true, 'shared-include' ],
-		[ 'ctaFontSize', false, true, 'prefixed-helper' ],
-		[ 'beforeImageId', false, true, 'dynamic-prefix' ],
-		[ 'ctxAttr', false, true, 'block-context' ],
-		[ 'deadControlledAttr', true, false, 'none' ],
-		[ 'fullyDeadAttr', false, false, 'none' ],
+		[ 'literalAttr', true, true, 'literal', false, null ],
+		[ 'sharedAttr', false, true, 'shared-include', false, null ],
+		[ 'ctaFontSize', false, true, 'prefixed-helper', false, null ],
+		[ 'beforeImageId', false, true, 'dynamic-prefix', false, null ],
+		[ 'ctxAttr', false, true, 'block-context', false, null ],
+		[ 'respBaseTablet', false, true, 'responsive-variant', false, null ],
+		[ 'deadControlledAttr', true, false, 'none', false, null ],
+		[ 'fullyDeadAttr', false, false, 'none', false, null ],
+		[ 'sgsAnimation', false, false, 'none', true, 'system-attr' ],
+		[ 'templateMode', false, false, 'none', true, 'editor-only' ],
+		[ 'id', false, false, 'none', true, 'key-noise' ],
 	];
-	for ( const [ attr, expControl, expConsumed, expVia ] of expected ) {
+	for ( const [ attr, expControl, expConsumed, expVia, expExempt, expExemptReason ] of expected ) {
 		const row = byAttr[ attr ];
 		const ok =
 			row &&
 			row.controlPresent === expControl &&
 			row.renderConsumed === expConsumed &&
-			row.renderVia === expVia;
+			row.renderVia === expVia &&
+			row.exempt === expExempt &&
+			row.exemptReason === expExemptReason;
 		if ( ok ) {
 			log(
 				`PASS — Test I (${ attr }): controlPresent=${ row.controlPresent } ` +
-					`renderConsumed=${ row.renderConsumed } renderVia=${ row.renderVia }`
+					`renderConsumed=${ row.renderConsumed } renderVia=${ row.renderVia } ` +
+					`exempt=${ row.exempt } exemptReason=${ row.exemptReason }`
 			);
 		} else {
 			log(
 				`FAIL — Test I (${ attr }): got ${ JSON.stringify( row ) }, expected ` +
-					`controlPresent=${ expControl } renderConsumed=${ expConsumed } renderVia=${ expVia }`
+					`controlPresent=${ expControl } renderConsumed=${ expConsumed } renderVia=${ expVia } ` +
+					`exempt=${ expExempt } exemptReason=${ expExemptReason }`
 			);
 			pass = false;
 		}
@@ -2487,31 +2575,20 @@ function runDumpJsonSelfTest( log ) {
 			liveBlocks.push( b );
 		}
 	}
-	// Same live-context pass as main() — a dump row's block-context resolution
-	// must match what the real build sees.
-	const liveContextKeys = new Set();
-	for ( const b of liveBlocks ) {
-		for ( const key of b.usesContext ) {
-			if ( isConsumed( key, b.ownCorpus ) ) {
-				liveContextKeys.add( key );
-			}
-		}
-	}
-	const contextConsumedByBlockLive = new Map();
-	for ( const b of liveBlocks ) {
-		const set = new Set();
-		for ( const [ key, attrName ] of Object.entries( b.providesContext ) ) {
-			if ( liveContextKeys.has( key ) ) {
-				set.add( attrName );
-			}
-		}
-		contextConsumedByBlockLive.set( b.name, set );
-	}
+	// NOTE: contextConsumedByBlock is passed empty here — this Test J assertion
+	// only checks the prefixed-helper resolution of sgs/brand-strip.nameFontSize
+	// (below), which never depends on block-context, so reconstructing main()'s
+	// full providesContext -> usesContext live-context pass here would be ~20
+	// lines that measure nothing (a MIRROR of main() with no assertion reading
+	// its output — flagged by code review, 2026-08-27). Real block-context
+	// resolution is exercised by Test I's synthetic `ctxAttr` case above; if a
+	// future assertion here needs to depend on a LIVE context-provided attr,
+	// rebuild this pass at that point rather than resurrecting it unused.
 	const liveRows = dumpAttributeRows(
 		liveBlocks,
 		wrapperControlledLive,
 		sharedCorpusLive,
-		contextConsumedByBlockLive
+		new Map()
 	);
 	const brandStripRow = liveRows.find(
 		( r ) => 'sgs/brand-strip' === r.block && 'nameFontSize' === r.attr
@@ -2525,6 +2602,26 @@ function runDumpJsonSelfTest( log ) {
 		log( `FAIL — Test J (live): got ${ JSON.stringify( brandStripRow ) }` );
 		pass = false;
 	}
+
+	// Live check — the synthetic sgsAnimation case above (Test I) proves the
+	// exemptReason='system-attr' WIRING against the real EXTENSION_ATTRS set,
+	// but on a fixture block, not a real block.json. This confirms the SAME
+	// resolution holds through the full live pipeline: sgs/card-grid declares
+	// sgsAnimation for real, and it must come back exempt here too.
+	const cardGridAnimRow = liveRows.find(
+		( r ) => 'sgs/card-grid' === r.block && 'sgsAnimation' === r.attr
+	);
+	if ( cardGridAnimRow && true === cardGridAnimRow.exempt && 'system-attr' === cardGridAnimRow.exemptReason ) {
+		log(
+			'PASS — Test J (live, exempt): sgs/card-grid.sgsAnimation -> exempt=true, ' +
+				"exemptReason='system-attr'."
+		);
+	} else {
+		log( `FAIL — Test J (live, exempt): got ${ JSON.stringify( cardGridAnimRow ) }` );
+		pass = false;
+	}
+
+	EXTENSION_ATTRS = savedExtensionAttrs;
 
 	log(
 		pass
