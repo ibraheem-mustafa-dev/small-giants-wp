@@ -1,0 +1,64 @@
+<!-- Blog posts index (WordPress template hierarchy: `home`).
+
+     Serves whichever page is assigned as Settings -> Reading -> "Posts page"
+     (page_for_posts). front-page.html stays the STATIC front page and is NOT
+     touched by this template — the two do not compete once show_on_front=page.
+
+     ⚠ While show_on_front=posts, front-page.html takes precedence for the site
+     root and THIS FILE IS NEVER USED. It is correct and ready, but inert until
+     the Reading settings are switched. Artefact presence is not behaviour —
+     do not record this template as working until it has been opened.
+
+     Heading is a literal "Blogs" (Bean, 2026-08-25) rather than core/query-title:
+     query-title with type="archive" returns EMPTY on a posts index, because WP
+     core gates it on is_archive() and a posts page is is_home(). Verified in
+     wp-includes/blocks/query-title.php:23-29. Using it here would render nothing.
+
+     Header composition matches archive.html / search.html / archive-product.html:
+     shared breadcrumb part -> h1 -> count. -->
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"normal"},"flexWrap":"wrap"} -->
+
+	<!-- wp:template-part {"slug":"sgs-archive-toolbar"} /-->
+
+	<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|40"},"flexWrap":"wrap","layout":"stack"} -->
+		<!-- wp:sgs/heading {"content":"Blogs","level":"h1","textColour":"text"} /-->
+	<!-- /wp:sgs/container -->
+
+	<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"},"flexWrap":"wrap"} -->
+
+		<!-- wp:query {"queryId":1,"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true},"layout":{"type":"default"}} -->
+		<div class="wp-block-query">
+			<!-- wp:query-total {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+
+			<!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+
+				<!-- wp:sgs/container {"tagName":"article","style":{"border":{"radius":"8px"}},"backgroundColour":"surface-alt","className":"has-shadow-sm","padding":{"top":"0","bottom":"var:preset|spacing|40","left":"0","right":"0"},"flexWrap":"wrap"} -->
+					<!-- wp:post-featured-image {"isLink":true,"className":"sgs-u-media-16x9","style":{"border":{"radius":{"topLeft":"8px","topRight":"8px"}}}} /-->
+					<!-- wp:sgs/container {"tagName":"div","padding":{"left":"var:preset|spacing|30","right":"var:preset|spacing|30","top":"var:preset|spacing|30"},"flexWrap":"wrap"} -->
+						<!-- wp:post-title {"level":2,"isLink":true,"fontSize":"x-large","className":"sgs-u-tap-44 sgs-u-clamp-2"} /-->
+						<!-- wp:post-date {"fontSize":"small","textColor":"text-muted","className":"sgs-u-meta-label"} /-->
+						<!-- wp:post-excerpt {"excerptLength":20,"className":"sgs-u-clamp-3"} /-->
+					<!-- /wp:sgs/container -->
+				<!-- /wp:sgs/container -->
+
+			<!-- /wp:post-template -->
+
+			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+
+			<!-- wp:query-no-results -->
+				<!-- wp:sgs/text {"text":"No posts published yet.","textAlign":"center","textColour":"text-muted"} /-->
+			<!-- /wp:query-no-results -->
+		</div>
+		<!-- /wp:query -->
+
+	<!-- /wp:sgs/container -->
+
+<!-- /wp:sgs/container -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
