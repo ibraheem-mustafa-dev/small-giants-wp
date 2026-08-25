@@ -33,6 +33,7 @@ import MediaPicker from '../../components/MediaPicker';
 import {
 	resolveShadowPreview,
 	colourVar,
+	resolveBackgroundPaintPreviewStyle,
 } from '../../utils';
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
@@ -288,7 +289,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const isSplit = variant === 'split';
 
-	const wrapperStyle = {};
+	// Root background paint (backgroundColour / backgroundColourGradient).
+	// Spread FIRST so the background-image branch below still wins when a media
+	// image is set — mirroring render.php's documented precedence ("the image
+	// always paints over the colour", render.php:914-933).
+	//
+	// Without this the canvas painted the `:where()` fallback in style.css
+	// (`:where(.sgs-hero):not(.has-background)`) no matter what the client
+	// picked, because NOTHING here consumed the attribute — proven live in the
+	// canary editor 2026-08-28 by setting backgroundColour to #00FF00 and
+	// measuring the canvas unchanged at rgb(197,106,122). The fallback is
+	// de-specified to (0,0,0), so an inline paint is sufficient on its own:
+	// no `has-background` class and no editor.css change are needed, and adding
+	// either would be a second overlapping fix for an already-fixed cause.
+	const wrapperStyle = {
+		...resolveBackgroundPaintPreviewStyle(
+			backgroundColour,
+			backgroundColourGradient
+		),
+	};
 	if ( ! isSplit && backgroundImage?.url ) {
 		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
 		wrapperStyle.backgroundSize = 'cover';

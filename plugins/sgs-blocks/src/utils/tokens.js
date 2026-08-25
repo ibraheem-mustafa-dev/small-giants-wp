@@ -130,3 +130,94 @@ export function resolveTextColourPreviewStyle( flatValue, gradientValue, resolve
 	}
 	return { color: resolveSolid ? resolveSolid( flatValue ) : flatValue };
 }
+
+/**
+ * Resolve a colour attribute value the way the SERVER does — the JS mirror of
+ * `sgs_colour_value()` (includes/helpers-tokens.php).
+ *
+ * WHY THIS EXISTS: `colourVar()` above wraps its argument in
+ * `var(--wp--preset--color--{slug})` UNCONDITIONALLY. That is correct for a
+ * theme preset slug and wrong for everything else — a custom hex produces
+ * `var(--wp--preset--color--#00FF00)`, which is invalid CSS, so the browser
+ * drops the whole declaration and the colour silently does nothing in the
+ * editor canvas while rendering correctly on the live page. Measured in the
+ * canary editor 2026-08-28: `textColour:'#00FF00'` left the element with no
+ * `color` property at all, whereas `textColour:'primary'` painted.
+ *
+ * The server has always handled this — `sgs_colour_value()` passes a raw CSS
+ * colour and an already-formed `var(...)` through untouched, and only
+ * slug-wraps what is left. This function is that same decision on the client.
+ *
+ * SLUG-vs-LITERAL is decided by `CSS.supports()` rather than by porting the
+ * server's 148-entry named-colour list. The browser IS the CSS colour spec, so
+ * this is complete by construction and cannot drift from it — and duplicating a
+ * resolver is the exact mistake that put two of this repo's own instruments 317
+ * findings apart. A theme slug (`primary`, `text-inverse`) is not a valid
+ * colour, so it falls through to the preset wrap; `#0A5B5D`, `rgb(…)`,
+ * `oklch(…)`, `red` and `var(--x)` are all valid, so they pass through.
+ *
+ * @param {string} slugOrValue A preset slug, a raw CSS colour, or a `var()` reference.
+ * @return {string|undefined} A CSS colour value, or undefined when there is nothing to paint.
+ */
+export function colourValue( slugOrValue ) {
+	if ( ! slugOrValue || typeof slugOrValue !== 'string' ) {
+		return undefined;
+	}
+
+	const value = slugOrValue.trim();
+
+	if ( ! value ) {
+		return undefined;
+	}
+
+	// A literal the browser already understands (hex / functional / named /
+	// custom-property reference) is used as-is — never slug-wrapped.
+	if (
+		typeof CSS !== 'undefined' &&
+		typeof CSS.supports === 'function' &&
+		CSS.supports( 'color', value )
+	) {
+		return value;
+	}
+
+	return colourVar( value );
+}
+
+/**
+ * Build the inline-style fragment that previews a block's BACKGROUND paint in
+ * the editor canvas — the JS mirror of `sgs_background_paint_value()`
+ * (includes/helpers-tokens.php), and the background sibling of
+ * `resolveTextColourPreviewStyle()` above.
+ *
+ * Precedence is the server's, so the canvas cannot disagree with the render:
+ * a non-empty gradient WINS over the flat colour and paints via
+ * `background-image`; otherwise the flat colour paints via `background-color`;
+ * otherwise nothing is emitted and whatever default the stylesheet provides is
+ * left alone.
+ *
+ * Blocks with a hand-built canvas preview (no `<ServerSideRender>`) spread the
+ * result into the element's style object. Because that lands as an inline
+ * style, it beats the `:where()`-de-specified (0,0,0) fallbacks in the block's
+ * own style.css / editor.css without any specificity work — which is why
+ * painting the value is the ONLY change needed to make those fallbacks yield.
+ *
+ * @param {string} flatValue     The flat colour attribute (slug, raw colour, or var()).
+ * @param {string} gradientValue The sibling `{attr}Gradient` attribute's value.
+ * @return {Object} A style fragment to spread into the element's inline style object.
+ */
+export function resolveBackgroundPaintPreviewStyle( flatValue, gradientValue ) {
+	if (
+		gradientValue &&
+		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gradientValue.trim() )
+	) {
+		return { backgroundImage: gradientValue.trim() };
+	}
+
+	const colour = colourValue( flatValue );
+
+	if ( ! colour ) {
+		return {};
+	}
+
+	return { backgroundColor: colour };
+}
