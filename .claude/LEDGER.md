@@ -99,41 +99,43 @@ the next editor save DELETES them. It also blocks `oldshape-audit` on deploys. N
 them and aborts.** Its sibling guard `deploy_roots_for_scope()` was narrowed for exactly this
 reason; the audit should be too. Until then a theme-only deploy needs `--skip-oldshape-audit`.
 
-## ▶ MOTION TRACK — 2026-08-24 (FR-38-28 complete; the editor is the open gap)
+## ▶ MOTION TRACK — 2026-08-25 (FR-38-30 + FR-38-31 shipped; the gradient's LOOK is the open gap)
 
-⭐ **START HERE: `.claude/prompts/2026-08-25-motion-next.md`** — the executable front. It opens
-with the research decision, then the editor verification.
+⭐ **START HERE: `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`** — scratch POC of
+stripe.com's actual hero technique before touching FR-38-31 again.
 
-**Status:** `.claude/plans/2026-08-24-spec38-motion-register.md` (session-close audit at the top).
-Decisions **D766** + **D767**. Canary **page 2721** — five looks, three controls, one page.
-2716 and 2717 are deleted; do not go looking for them.
+**Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, not decision-logged yet.
+Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).
 
-✅ **FR-38-28 IS COMPLETE.** All four looks Bean signed on 2026-08-07 ship, plus three follow-ons
-he asked for on sight: `brick-reveal`, TRAIL (lerp) and SHAPE. Spec 38's field-type table and
-FR-38-28 section carry the detail — do not restate it here.
+✅ Bean's eye-review of 2721 found 3 gate-passed defects: TORCH's mask had no height (fixed);
+"Trail" renamed **"Drag weight"** (a lerp follower, no fade); invariant **I8** computed but was
+never registered, so `--check` silently under-reported. AURORA rebuilt as a mesh gradient that now
+arrives/leaves WITH the pointer (was parking a lit pool at each section's centre).
+✅ **Editor opened for the first time** — Spec 38 §9's "canvas shows the resting field" claim was
+WRONG, not unverified (canvas iframe carries zero fx attrs; `sgs/container` uses `edit.js` there).
+Info Notice now ships; otherwise healthy (36 blocks, 0 invalid, 0 console errors).
+✅ **FR-38-30 Magnetic pull** shipped — generalised mega-menu's `magnet.js` to 2 axes + proximity
+radius. Reaches every fx-panel block, live-verified on 2737.
+✅ **FR-38-31 Flowing gradient** shipped (Tier W's 2nd entry, autonomous per Bean, fixes mobile
+where cursor-fx shows nothing) — simplex-displaced mesh, 4 colour stops, 3648B gzip, pause control.
+Its own clobbered canvas was really `sgs/container`'s child-lift list missing the canvas.
+✅ Deploy gate scoped — blocks-only/theme-only no longer aborts on another track's dirty theme
+files; 3 new self-tests, each watched failing first.
 
-✅ **A 23-DAY-OLD BUG IS FIXED (D767).** `spotlight-mask` lit a spot offset by the element's
-distance from the viewport top — a mask resolves against the element box, the layer against the
-viewport. Offset +256 → 0. **Masked types are now EMITTER-ONLY** (Bean's option A). New gate
-invariant **I8** fails the build if a masked type reads the wrong pair or forgets the opt-out.
-⛔ `mask-attachment` is in CSS Masking L1 and **no engine implements it** — there is no CSS-only
-fix. Do not re-propose one.
+⭐ **OPEN ITEM THAT MATTERS MOST:** Bean rejected the gradient's LOOK ("B-movie 3D VFX"). Cause:
+the `minigl` mesh everyone documents is stripe's OLD (2020-21) hero — their CURRENT one samples a
+hand-painted `palette.png` texture; 4 interpolated colour stops can't reproduce that variation.
 
 ### ▶ NEXT, in order
 
-1. **Decide what to act on from the cursor-effects research** — three agents surveyed award-tier
-   work. The prompt carries the shortlist and the questions.
-2. **⚠ OPEN THE EDITOR.** Every verification on this feature is FRONTEND. §9's row is honestly
-   flagged *"reasoned, not observed"*. The client picks these looks in the editor and nobody has
-   looked. This project has shipped 0-of-6 blocks rendering in the editor while 5-of-5 rendered
-   live — that is the failure shape this gap invites.
-3. **Bean's eye on the five looks** (R-31-13). Mechanism is verified; aesthetics are not.
-4. **`floating-objects`** — the fifth field type, needs new JS and its own design gate.
+1. **Run the stripe-hero-replication POC** (prompt above) before touching FR-38-31's colour again.
+2. **Bean's eye on the 5 cursor-field looks** (R-31-13) — mechanism verified, aesthetics not.
+3. **Particle engine design gate** (Sparks/Gravity/Ripple) — real fading trail is Sparks, not
+   "Drag weight".
+4. **`floating-objects`** field type + generative-cover-images (bake brand colours into cached
+   cover art) — both approved-in-principle, unbuilt.
 
-⛔ **Method, carried from this session's own failures:** a commit body is not a living doc (D767's
-bug sat in one while D766 congratulated itself for fixing nine stale claims elsewhere); an absence
-verdict is only as wide as its search (wrong twice); and three "seamless by construction" tiling
-claims were each refuted by rendering them. **Render it before claiming it.**
+⛔ **Carried failure:** §9's editor claim was asserted, never observed, until opened this session.
 
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
@@ -279,9 +281,8 @@ change that would most raise the grade.** Not built — Bean's call.
 ✅ **THE RULE IS ENFORCED** (`hooks/detector-first-commit-gate.py`, PreToolUse/Bash). 4+ code
 files with substantially the same change and no detector → DENIED; bypass `[repeat-ok:<reason>]`.
 
-**T1 — `prebuild` 153.4s → 31.0s** (roster `scripts/gates.json` + `run-gates.py`; 4 heavyweights
-pre-deploy via `step_gate_full()`; `npm run gate:wired` fails closed if that call disappears).
-**T3 — the burn-down**, `scripts/programme-progress.py`. ⛔ No percentage, deliberately.
+**T1 — `prebuild` 153.4s → 31.0s** (`scripts/gates.json` + `run-gates.py`; 4 heavyweights
+pre-deploy). **T3 — the burn-down**, `scripts/programme-progress.py`, no percentage by design.
 
 **T4 — `--all-properties` SHIPPED (`a0d15a98f`) and it REFUTED the batching carve-out.** Census:
 `reports/migrations/tier-object-all-properties-census.json`. `margin`/`padding`/`borderRadius` —
@@ -289,16 +290,18 @@ the three it exempted — are DONE, zero migratable. Their "41/39/11" were DB at
 migration scope: 41 blocks carry `marginTablet` but only 5 declare a base `margin`; the other 39
 get it from WP-native `supports.spacing`, which `block_attributes` cannot see. Carve-out stays
 withdrawn. **Full remaining scope now lives in the scope register, not here.**
-**T2 — 6 of 27 orphans WIRED (D776); every remaining verdict is in the register**
-(`reports/2026-08-24-script-revival-register.md`). Gates 66-71, `fast`, ~0.55s. 7 of 27 now wired.
-
-⛔ **`fanout-overlay-sibling-attrs.py` was RED against a contract D739 DELETED.** The evidence
-agent recommended `--fix --apply`, which would have **reintroduced 32 deliberately-removed
-attributes**. Retargeted to the opacity axis + made shape-aware. **A red gate on an obsolete
-contract is worse than no gate — its red reads as a backlog.** SUPERSEDED/retarget is a FOURTH
-verdict state. ⚠ Three docs gave three counts of how many were wired (0 / 2 / enumerated **1**).
+**T2 — 6 of 27 orphans WIRED (D776)**; every verdict in
+`reports/2026-08-24-script-revival-register.md`. Gates 66-71, `fast`, ~0.55s. 7 of 27 wired.
+⛔ `fanout-overlay-sibling-attrs.py` was RED against a contract **D739 DELETED** — the obvious
+`--fix --apply` would have reintroduced 32 removed attrs. Retargeted + shape-aware. **A red gate on
+an obsolete contract is worse than none: its red reads as a backlog.** SUPERSEDED/retarget is a
+4th verdict state. ⚠ Three docs gave three wired-counts (0 / 2 / enumerated **1**).
 🚫 `button_group.py` — Bean: NOT wanted; the draft authors the wrapper.
+
 ### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
+
+⭐ **NEXT SESSION: `.claude/prompts/2026-08-27-council-the-burn-down-method.md`** — council the
+D778 burn-down edits (UNGRADED), then triage rule 21's 222 through the new Step 7b.
 
 ⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
 items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the
