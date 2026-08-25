@@ -1,3 +1,49 @@
+## D794 [INCIDENT] — a tracked-forever report reproduced third-party GLSL while certifying that it didn't
+
+**2026-08-26.** A six-seat `/adversarial-council` on the flowing-gradient technique spec found that
+`.claude/reports/2026-08-25-stripe-hero-anatomy.md` — **git-tracked, in `reports/`, which project
+policy makes permanent** — contained two verbatim GLSL excerpts (Q3, Q4c) plus two inline shader
+expressions, while its own PROVENANCE table promised *"Described here, never reproduced."*
+
+⛔ **The failure mode, which is the reusable part: I gated the NEW artefact and never re-checked the
+one I was editing.** The same day I committed to that file twice under a stated definition-of-done
+reading "No Stripe material in any tracked file", and I verified exactly that — against the new
+technique spec, which was clean. A self-certification of cleanliness is worthless unless something
+greps the file it certifies. **Prose cannot enforce prose.**
+
+**Fixed:** excerpts redacted in place and replaced with plain-English mechanism descriptions (Bean's
+call: redact, keep history — the repo is private and a force-push across four concurrent tracks is
+disproportionate to a low-severity self-identified issue). The measurement record, which is entirely
+ours and load-bearing, stays tracked.
+
+**Structural defence built, not promised:** `.claude/hooks/check-no-third-party-glsl.py`.
+- Scans **tracked** `.claude/**/*.md` only — deliberately NOT `plugins/`/`theme/`, which hold our
+  own shaders.
+- Two signals: a shader-tagged code fence always fails; GLSL syntactic tokens above a threshold
+  also fail, so stripping the fence while keeping the code is not a way past it.
+- Allows naming a symbol (`u_time`, `blurAngular`) and quoting a bare declaration as evidence —
+  names and types are not expression, and identifying what was studied is the job of an analysis.
+- **Proven, not asserted:** `--self-test` passes both directions, and run against the pre-redaction
+  commit it returns **12 findings** vs **0** on the corrected file. 809 tracked documents scanned.
+- ⚠ It failed twice while being built, both silently-vacuous shapes: `git ls-files '.claude/*.md'`
+  does not recurse (0 files), and `dirname(dirname(__file__))` resolves to `.claude`, not the repo
+  root (0 files again). **It only surfaced because the empty case returns exit 1 rather than a
+  clean pass.** A gate that scans nothing must fail, never pass.
+
+**Council findings NOT accepted as given** — each was re-derived before action, per the standing
+fact-check rule: the seat's toggle-contrast figure of "~2.7:1" is wrong (computed: **3.36:1** on
+white, 3.55:1 on `#f7f7f5`) — still a fail against 4.5:1, but overstated by a third. And its "strip
+every Stripe reference from shipped code" fix is **over-broad**: `wave-gradient.js:59-62` records
+the MIT attribution for `sa3dany/wave-gradient`, whose own header carries that lineage — deleting
+it would breach the licence we rely on. Correct split: keep MIT attribution, restate
+design-rationale-attributed-to-Stripe without the name, drop the shipped-code pointer to the report.
+
+**Still open from the same council** (see `.claude/plans/` orchestration plan): 53 Stripe references
+across `plugins/`+`theme/` excluding payment files; three verified live bugs (context-loss dead
+rectangle, `hexToRgb` silent kill switch, `capability.js` never wired to this effect); and the
+technique spec's own must-fix register — it does not specify the animation, the camera, or any
+acceptance criterion.
+
 ## D793 [INCIDENT] — the child-lift trap was live in TWO more files, and the seventh victim had worked around it
 
 **2026-08-25.** `assets/css/fx-wave-gradient.css`, `assets/css/fx-cursor-field.css`,

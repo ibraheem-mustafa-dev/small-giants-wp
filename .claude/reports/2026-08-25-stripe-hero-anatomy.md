@@ -21,7 +21,7 @@ machinery. The constraint is hue adjacency, not colour count. Measured, not argu
 
 | Asset | Owner | Status |
 |---|---|---|
-| GLSL modules 68467 / 56878 / 39798 / 98230 / 46342 / 26850 | Stripe, all rights reserved | Study only, in `.claude/scratch/` (gitignored). **Described here, never reproduced.** Deleted at Gate E. |
+| GLSL modules 68467 / 56878 / 39798 / 98230 / 46342 / 26850 | Stripe, all rights reserved | Study only, in `.claude/scratch/` (gitignored). Deleted at Gate E. **Described here, never reproduced — TRUE ONLY SINCE 2026-08-26 (D792).** ⛔ This row asserted that while the document contained two verbatim shader excerpts (Q3, Q4c) and two inline expressions. An adversarial council found them; they are now redacted in place. The lesson: **this file is tracked in `reports/`, which is permanent — a self-certification of cleanliness is worthless unless something actually greps the file it certifies.** A `check-no-third-party-glsl` gate now does. |
 | `palette.png` ×2 + `billing_hero_palette.png` | Stripe / Contentful CDN | Study only. Measured statistically; **not reproduced here.** Deleted at Gate E. |
 | three.js r179 | MIT | Vendored to scratch only, per **D783**. Deleted at Gate E. |
 
@@ -104,8 +104,8 @@ vendored library then self-reports `REVISION: 179`.
 An earlier version said the edge comes from `mix(u_clearColor, color.rgb, a * (1.0 - depthFade))`
 with `depthFade` from `v_clipPosition.z`. **That code exists only in `98230.glsl` — the dark-theme
 fragment.** Verified by grep on the live light fragment `39798.glsl`: `depthFade` 0 occurrences,
-`mix(u_clearColor` 0, `v_clipPosition.` 0. The live light shader ends
-`color += (1.0 - pdy) * 0.25; gl_FragColor = clamp(color, 0.0, 1.0);` — no depth fade at all.
+`mix(u_clearColor` 0, `v_clipPosition.` 0. The live light shader ends by adding a small constant fraction of an inverted
+derivative term to the colour and clamping to 0–1 — **no depth fade at all.**
 
 **What is actually established:** the palette PNG is RGB with no alpha channel (verified with PIL),
 so the shape does not come from a palette mask. The light material sets **custom blending**
@@ -124,12 +124,15 @@ from the wrong theme, and implementing it would reproduce a mechanism the live e
 
 **Directly by the surface's own UV coordinates**, then graded:
 
-```glsl
-vec4 color = texture2D(u_paletteTexture, vec2(v_uv.x, v_uv.y));
-color.rgb = contrast(color.rgb, u_colorContrast);
-color.rgb = desaturate(color.rgb, 1.0 - u_colorSaturation);
-color.rgb = hueShift(color.rgb, u_colorHueShift);
-```
+> ⛔ **REDACTED 2026-08-26 (D792).** A verbatim four-line shader excerpt stood here. This file is
+> tracked in `reports/`, which is permanent, and this report's own PROVENANCE table promises
+> "described here, never reproduced" — so the excerpt contradicted the document containing it.
+> Described instead, which is all a reimplementation needs:
+
+The palette texture is sampled once at the fragment's own interpolated UV — both components taken
+directly, with no transformation of the coordinate. The sampled colour then passes through a
+three-step grading chain in this order: **contrast about mid-grey → desaturation toward luminance →
+hue rotation**, each driven by its own uniform.
 
 **The shader constructs no colour whatsoever.** ⭐ This is the largest single difference from
 FR-38-31, which computes colour arithmetically by blending four stops per vertex. On the live light
@@ -148,9 +151,10 @@ glow ramp (`glowAmount 1.98`, `glowPower 0.806`, `glowRamp 0.834`) and a parabol
 runtime, so the band machinery is dormant and the hard-coded `strength 0.2 / freq 600 /
 colorAttenuation 0.9 / parabolaPower 3` are what actually run.
 
-**(b) Dark path — 98230, derivative-antialiased periodic lines.** `abs(sin(v_uv.x * u_lineAmount))`
-with thickness `pow(abs(dFdy(v_uv).s * u_maxWidth), u_lineDerivativePower)`, `u_maxWidth = 1232`,
-`lineAmount 425`. The screen-space derivative is what stops the stripes crawling: where the surface
+**(b) Dark path — 98230, derivative-antialiased periodic lines.** A rectified sine of the U
+coordinate scaled by a large line count, with the line THICKNESS derived from the screen-space
+derivative of that coordinate scaled by a large constant and raised to a power
+(`u_maxWidth = 1232`, `lineAmount 425`). The screen-space derivative is what stops the stripes crawling: where the surface
 turns away, the lines thicken and fade rather than aliasing into moiré. On the light preset
 `lineAmount` is **1**, i.e. this path is effectively off — consistent with the light fragment not
 using it at all.
@@ -158,12 +162,12 @@ using it at all.
 **(c) ⭐ A full-screen post-process — angular blur plus grain.** This was missed entirely on first
 pass and is likely a large part of why the result reads as photographic:
 
-```glsl
-vec4 blurColor = blurAngular(u_scene, v_uv, u_blurAmount, u_blurSamples);
-float blurPower = smoothstep(0.0, 0.7, v_uv.y) - smoothstep(0.2, 1.0, v_uv.y);
-vec4 finalColor  = mix(blurColor, sceneColor, blurPower);
-finalColor.rgb   = grain(finalColor.rgb, u_grainAmount);
-```
+> ⛔ **REDACTED 2026-08-26 (D792)** — same reason as the excerpt in Q3. Described instead:
+
+The pass samples the rendered scene through an angular blur, then computes a **vertical band mask**
+as the difference of two smoothstep ramps over the V coordinate — one rising through the lower
+portion, one rising through the upper — so the mask peaks across a horizontal band and falls off
+above and below it. Blurred and sharp are mixed by that mask, and grain is applied to the result.
 
 `blurAngular` spins the sample coordinate about the canvas centre — 6 samples, `blurAmount 0.02` —
 and `blurPower` is a **vertical band mask**, so the image is sharp through a horizontal band and
