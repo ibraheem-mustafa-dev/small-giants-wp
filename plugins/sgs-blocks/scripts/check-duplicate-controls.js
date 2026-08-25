@@ -12,28 +12,30 @@
  * THREE CHECKS
  * ------------
  *  CHECK 1 — UNIVERSAL-HOVER-VS-PRIVATE-HOVER (primary target, per block):
- *    src/blocks/extensions/hover-effects.js injects a universal `sgsHover*`
- *    attribute family + "Hover Effects" inspector panel onto EVERY block that
- *    does not declare `supports.sgs.hideExtensions: ["hover", ...]`. Many
- *    blocks ALSO declare their OWN private `*Hover` attrs (e.g. card-grid's
- *    `scaleHover`/`shadowHover`, hero's `backgroundColourHover`) covering the
- *    same semantic ground (scale / shadow / bg-colour / text-colour /
- *    border-colour / image-zoom / grayscale). If the block does not hide the
- *    universal hover extension, the client is looking at TWO systems
- *    nominally responsible for the same visual effect. Two severities:
- *      - 'controlled'   the private attr ALSO has its own edit.js control —
- *                        the client literally sees two knobs for one thing.
- *      - 'shadow'        the private attr is declared + consumed by
- *                        render.php/save.js but has NO editor control of its
- *                        own — it silently sits at its default forever while
- *                        the universal control is the only live one, so the
- *                        private attribute is dead weight that LOOKS load-
- *                        bearing (a hidden duplicate, not a visible one).
- *    Sub-element-scoped private attrs (prefixed cta/tab/link/icon/shape/
- *    overlay/ripple — e.g. hero's `ctaPrimaryHoverBackground`) target a named
- *    CHILD element, not the whole block, so they are NOT the same setting as
- *    the block-wide universal control — reported separately at lower
- *    confidence ('scoped') rather than folded into the primary finding.
+ *    src/blocks/extensions/hover-effects.js provides a universal `sgsHover*`
+ *    attribute family + "Hover Effects" inspector panel. It is OPT-IN: since
+ *    D551 (Phase 2.1) a block carries the panel only when its block.json lists
+ *    `supports.sgs.enabledExtensions: ["hover", ...]`. A block that has NOT
+ *    opted in never had the universal panel, so its private `*Hover` attrs
+ *    cannot duplicate it and it is skipped outright. (`hideExtensions` is a
+ *    legacy DENYLIST, now a no-op under the opt-in model; it is still honoured
+ *    defensively but is not the gate. ⚠ CORRECTED 2026-08-25: this docblock
+ *    previously described CHECK 1 as opt-OUT via `hideExtensions`, which had
+ *    been false since D551 — the code always read `enabledExtensions`.)
+ *    Many opted-in blocks ALSO declare their OWN private `*Hover` attrs (e.g.
+ *    card-grid's `scaleHover`/`shadowHover`) covering the same semantic
+ *    ground, so the client is looking at TWO systems nominally responsible for
+ *    the same visual effect. Severities `hover:controlled` / `hover:shadow` /
+ *    `hover:scoped` / `hover:scoped-shadow` — see SEVERITY_MEANINGS below for
+ *    the authoritative text of each.
+ *    ⚠ CORRECTED 2026-08-25: the category list above USED to read "scale /
+ *    shadow / bg-colour / text-colour / border-colour / image-zoom /
+ *    grayscale". The three COLOUR categories were deleted from
+ *    UNIVERSAL_HOVER_BY_CATEGORY the same day because hover-effects.js
+ *    registers no colour attr at all and exposes no colour control — 36 of 64
+ *    findings named a keeper that does not exist. The live categories are
+ *    scale / shadow / imageZoom / grayscale / duration / easing / effect, and
+ *    the drift guard below now fails loudly rather than let that list rot.
  *
  *  CHECK 2 — SAME-ATTR-TWO-CONTROLS (per block, one edit.js):
  *    Two distinct JSX control elements (SelectControl/RangeControl/
@@ -41,6 +43,16 @@
  *    `update('attr', val)` setter) in the SAME block's edit.js both write the
  *    same attribute via setAttributes. AST-parsed (@babel/parser + traverse)
  *    so it is not fooled by nested/duplicated JSX text.
+ *    Since 2026-08-25 it ALSO resolves DISPATCHER-driven controls — a shared
+ *    component handed an attribute-name map that writes a COMPUTED key
+ *    (`setAttributes( { [ attrNames.valueHover ]: v } )`), which the literal-key
+ *    path could not see. CHECK 1 already folded these in; CHECK 2 did not, so
+ *    `ShadowControl` (mounted by 15 blocks) was invisible to it. Gated
+ *    behaviourally — a tag counts as a dispatcher only if its DEFINING FILE
+ *    really contains a computed-key setAttributes. See componentIsDispatcher.
+ *    CHECK 2 deliberately stays on the block's OWN edit.js while CHECK 1 scans
+ *    a widened transitive corpus; that asymmetry is intentional and the reason
+ *    is documented at checkSameFileDuplicateAst().
  *
  *  CHECK 3 — PARENT-CHILD-DUPLICATION (per composite block, heuristic):
  *    A composite block's edit.js mounts InnerBlocks with a `template` that
@@ -53,6 +65,26 @@
  *    reported here from the DUPLICATE angle (two controls exist; only one is
  *    ever visibly load-bearing depending on CSS specificity). Best-effort
  *    static heuristic — under-reports rather than over-reports by design.
+ *    Severity `parent-child:heuristic`. Since 2026-08-25 the child slug is
+ *    RESOLVED to a real block on disk (name-checked, not merely a directory)
+ *    before the finding may claim that child owns the setting — an
+ *    unvalidated keeper advises deleting a working control in favour of
+ *    nothing. See resolveChildBlockDir.
+ *
+ * SEVERITIES ARE NAMESPACED `<check>:<severity>` (2026-08-25). CHECK 1 and
+ * CHECK 3 both used to emit a bare `scoped` meaning two unrelated things, and
+ * both emitted a bare `controlled`. Full rationale + the authoritative meaning
+ * of every token: the SEVERITY_MEANINGS block below.
+ *
+ * FAIL-CLOSED ON BLINDNESS (2026-08-25). Every parse this file performs feeds
+ * a "does this attribute have a control?" question, and a parse that silently
+ * yields nothing makes a controlled attr look UNCONTROLLED — inventing a
+ * finding rather than merely missing one. So: all parses run through
+ * parseWithRecovery(), which records both hard throws and Babel's recovered
+ * `ast.errors` (three `errorRecovery: true` parses previously never inspected
+ * them); an unreadable block.json no longer drops a block silently; and
+ * `--check` now exits 1 on a non-empty `unparseable`, which never reached the
+ * exit code before.
  *
  * BASELINE: scripts/duplicate-controls-baseline.json — same shape/philosophy
  * as the sibling guards. Starts EMPTY. To accept a finding, add it with a
@@ -73,9 +105,21 @@
  * Usage:
  *   node scripts/check-duplicate-controls.js                  # report, always exit 0
  *   node scripts/check-duplicate-controls.js --json             # machine-readable, always exit 0
- *   node scripts/check-duplicate-controls.js --check             # exit 1 on any net-new finding
+ *   node scripts/check-duplicate-controls.js --check             # exit 1 on any net-new finding OR any unparseable surface
  *   node scripts/check-duplicate-controls.js --update-baseline   # accept every current finding, exit 0
- *   node scripts/check-duplicate-controls.js --self-test  # in-memory fixture assertions, no disk access
+ *   node scripts/check-duplicate-controls.js --self-test  # fixture assertions; READS the real tree + WRITES a tmpdir
+ *
+ * ⚠ CORRECTED 2026-08-25: the --self-test line above claimed "in-memory
+ * fixture assertions, no disk access". False on both counts, and it matters —
+ * a reader who believes it will not expect the test to notice a change in the
+ * live tree, nor to need a writable tmpdir. It (a) READS the real tree: the
+ * R3-a widening case and the CHECK 3 slug-resolution cases resolve real
+ * components/blocks through resolveComponentFiles() + BLOCKS_DIR, which is the
+ * point — a tmpdir fixture cannot exercise a filesystem-indexing resolver; and
+ * (b) WRITES to disk: the CHECK 1 severity cases mkdtemp a directory under
+ * os.tmpdir(), write fixture edit.js files into it, and rm it in a `finally`.
+ * The genuinely in-memory groups are the CHECK 2 AST cases, classifyHoverAttr,
+ * the drift guard, collectIndirectControlledAttrs and the dispatcher cases.
  *
  * @package SGS\Blocks
  */
@@ -284,6 +328,83 @@ function readIfExists( p ) {
 	return fs.existsSync( p ) ? fs.readFileSync( p, 'utf8' ) : '';
 }
 
+// ---------------------------------------------------------------------------
+// PARSE DIAGNOSTICS (2026-08-25 defect 4 — fail-open hardening).
+// ---------------------------------------------------------------------------
+//
+// THE FAILURE DIRECTION IS WHAT MAKES THIS LOAD-BEARING. Every one of this
+// file's parses feeds a "does this attribute have a control?" question. A
+// parse that silently returns nothing makes the attr look UNCONTROLLED, which
+// flips CHECK 1's severity from `hover:controlled` to `hover:shadow` and
+// INVENTS a hidden-duplicate finding — i.e. the tool tells an agent to add a
+// control the client already has. Silence here does not under-report, it
+// MIS-reports, so none of these paths may stay silent.
+//
+// Three parses used `errorRecovery: true` and NONE inspected `ast.errors`,
+// which that option exists to populate. Babel then hands back a
+// partially-recovered tree: `traverse` walks it happily, finds fewer
+// setAttributes() calls than the file really contains, and reports success.
+// Two of them additionally swallowed a hard throw with a bare `catch { return; }`.
+//
+// Every parse now goes through parseWithRecovery(), which records BOTH a hard
+// throw and a soft (recovered) error into PARSE_DIAGNOSTICS. main() drains
+// that into `unparseable`, and `--check` now FAILS on a non-empty
+// `unparseable` (see main()). Measured on the clean tree 2026-08-25: 365 JS
+// files under src/blocks + src/components, 0 recovered errors, 0 fatal — so
+// this hardening costs nothing today and only bites when a parse really does
+// degrade.
+const PARSE_DIAGNOSTICS = [];
+
+function resetParseDiagnostics() {
+	PARSE_DIAGNOSTICS.length = 0;
+}
+
+const BABEL_PLUGINS = [
+	'jsx',
+	'classProperties',
+	'objectRestSpread',
+	'optionalChaining',
+	'nullishCoalescingOperator',
+	'dynamicImport',
+];
+
+/**
+ * Parse `src` with Babel's error recovery, surfacing BOTH failure modes
+ * instead of swallowing them.
+ *
+ * @param {string} src   JS source text.
+ * @param {string} label Human-readable origin (block slug / file path) for the
+ *                       diagnostic message.
+ * @return {?Object} The AST, or null when the parse threw outright.
+ */
+function parseWithRecovery( src, label ) {
+	let ast;
+	try {
+		ast = parser.parse( src, {
+			sourceType: 'module',
+			errorRecovery: true,
+			plugins: BABEL_PLUGINS,
+		} );
+	} catch ( e ) {
+		PARSE_DIAGNOSTICS.push( {
+			dir: label,
+			reason: `parse threw (no AST, this file contributed NOTHING to any check): ${ e.message }`,
+		} );
+		return null;
+	}
+	if ( ast.errors && ast.errors.length ) {
+		const first = ast.errors[ 0 ];
+		PARSE_DIAGNOSTICS.push( {
+			dir: label,
+			reason:
+				`parse RECOVERED from ${ ast.errors.length } syntax error(s) — the AST is ` +
+				`partial, so control detection under-reports for this file. First: ` +
+				`${ first.reasonCode || first.message }`,
+		} );
+	}
+	return ast;
+}
+
 /**
  * Strip `//` line comments, `/* *\/` block comments, and a leading `#!`
  * shebang line from `src`, WITHOUT touching text inside a single-quoted,
@@ -448,18 +569,15 @@ function stripComments( src ) {
  *                                NOT — see collectControlledAttrs below).
  * @return {Set<string>} Attribute names with a live control.
  */
-function collectControlledAttrsFromOneFile( src, out ) {
+function collectControlledAttrsFromOneFile( src, out, label ) {
 	if ( ! src ) {
 		return;
 	}
-	let ast;
-	try {
-		ast = parser.parse( src, {
-			sourceType: 'module',
-			errorRecovery: true,
-			plugins: [ 'jsx', 'classProperties', 'objectRestSpread', 'optionalChaining', 'nullishCoalescingOperator' ],
-		} );
-	} catch ( e ) {
+	// Defect 4 (2026-08-25): was `catch ( e ) { return; }` plus an unread
+	// `ast.errors`. Both are now recorded — see parseWithRecovery above for why
+	// silence here MIS-reports rather than under-reports.
+	const ast = parseWithRecovery( src, label || 'collectControlledAttrs' );
+	if ( ! ast ) {
 		return;
 	}
 	try {
@@ -497,6 +615,17 @@ function collectControlledAttrsFromOneFile( src, out ) {
 		// A scope error (e.g. Babel's "Duplicate declaration '__'" when a
 		// caller accidentally folds two files' text together) must not take
 		// down the whole check — skip just this file's contribution.
+		//
+		// DELIBERATE FAIL-OPEN, but no longer a SILENT one (defect 4,
+		// 2026-08-25). Continuing is right: one malformed corpus entry must
+		// not blank the other 82 blocks. Staying quiet was not: skipping this
+		// file's contribution is exactly what makes a controlled attr read as
+		// uncontrolled, so it is recorded and surfaced like any other parse
+		// failure.
+		PARSE_DIAGNOSTICS.push( {
+			dir: label || 'collectControlledAttrs',
+			reason: `traverse failed, this file contributed NO controlled attrs: ${ e.message }`,
+		} );
 	}
 }
 
@@ -514,14 +643,14 @@ function collectControlledAttrsFromOneFile( src, out ) {
  * @param {string[]|string} parts Per-file source strings.
  * @return {Set<string>} Attribute names with a live control.
  */
-function collectControlledAttrs( parts ) {
+function collectControlledAttrs( parts, label ) {
 	const controlled = new Set();
 	if ( ! parts ) {
 		return controlled;
 	}
 	const list = Array.isArray( parts ) ? parts : [ parts ];
 	for ( const src of list ) {
-		collectControlledAttrsFromOneFile( src, controlled );
+		collectControlledAttrsFromOneFile( src, controlled, label );
 	}
 	return controlled;
 }
@@ -549,29 +678,25 @@ function collectControlledAttrs( parts ) {
  * @param {Set<string>} declaredAttrs This block's declared attribute names.
  * @return {Set<string>} Attribute names controlled via a dispatcher table.
  */
-function collectIndirectControlledAttrs( parts, declaredAttrs ) {
+function collectIndirectControlledAttrs( parts, declaredAttrs, label ) {
 	const out = new Set();
 	if ( ! parts || ! parts.length ) {
 		return out;
 	}
 	for ( const src of parts ) {
-		collectIndirectFromOneFile( src, declaredAttrs, out );
+		collectIndirectFromOneFile( src, declaredAttrs, out, label );
 	}
 	return out;
 }
 
-function collectIndirectFromOneFile( src, declaredAttrs, out ) {
+function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 	if ( ! src ) {
 		return;
 	}
-	let ast;
-	try {
-		ast = parser.parse( src, {
-			sourceType: 'module',
-			errorRecovery: true,
-			plugins: [ 'jsx', 'classProperties', 'objectRestSpread', 'optionalChaining', 'nullishCoalescingOperator' ],
-		} );
-	} catch ( e ) {
+	// Defect 4 (2026-08-25): see parseWithRecovery. Previously a bare
+	// `catch { return; }` with `ast.errors` never read.
+	const ast = parseWithRecovery( src, label || 'collectIndirectControlledAttrs' );
+	if ( ! ast ) {
 		return;
 	}
 
@@ -768,12 +893,13 @@ function checkHoverDuplication( blockSlug, blockDir, meta ) {
 	// TIME - parsing folded text throws Babel's `Duplicate declaration "__"`.
 	loadBlockOwnSrc( blockDir );
 	const parts = OWN_SRC_PARTS.get( blockDir ) || [];
-	const controlled = collectControlledAttrs( parts );
+	const controlled = collectControlledAttrs( parts, blockSlug );
 	// Fold in controls reached through a dispatcher table (e.g. ShadowControl's
 	// `attrNames` map) — see collectIndirectControlledAttrs above.
 	for ( const a of collectIndirectControlledAttrs(
 		parts,
-		new Set( Object.keys( attrs ) )
+		new Set( Object.keys( attrs ) ),
+		blockSlug
 	) ) {
 		controlled.add( a );
 	}
@@ -798,7 +924,15 @@ function checkHoverDuplication( blockSlug, blockDir, meta ) {
 			block: blockSlug,
 			attr: attrName,
 			category,
-			severity: hasOwnControl ? ( scoped ? 'scoped' : 'controlled' ) : ( scoped ? 'scoped-shadow' : 'shadow' ),
+			// Defect 1 (2026-08-25): severities are NAMESPACED by check. The
+			// bare token `scoped` used to mean two unrelated things — here
+			// "sub-element-prefixed, so possibly not a duplicate at all", and
+			// in CHECK 3 "parent/child role overlap, low confidence". Anyone
+			// filtering or triaging on `severity` mixed the two populations.
+			// See the SEVERITIES block at the top of this file.
+			severity: hasOwnControl
+				? ( scoped ? 'hover:scoped' : 'hover:controlled' )
+				: ( scoped ? 'hover:scoped-shadow' : 'hover:shadow' ),
 			keeper: universalKeepers.join( ' / ' ),
 			sources: hasOwnControl
 				? [ `${ blockSlug } edit.js: own control for "${ attrName }"`, `universal Hover Effects panel: "${ universalKeepers.join( '" / "' ) }"` ]
@@ -833,6 +967,131 @@ function looksLikeControlComponent( name ) {
 		return false; // lowercase = host element (div/span/...), never a control.
 	}
 	return CONTROL_JSX_NAME_RE.test( name );
+}
+
+// ---------------------------------------------------------------------------
+// CHECK 2 dispatcher resolution (2026-08-25, defect 3).
+// ---------------------------------------------------------------------------
+//
+// THE HOLE. resolveDynamicWrites() (below) is called from exactly ONE place —
+// CHECK 2 — and it skips computed keys (`prop.computed` -> continue). So the
+// shared dispatcher components, which take a name MAP from their caller and
+// write `setAttributes( { [ attrNames.valueHover ]: v } )`, were invisible to
+// CHECK 2 entirely. `ShadowControl` alone is mounted by 15 blocks. A block
+// mounting TWO dispatchers onto one attribute, or a dispatcher alongside its
+// own literal control, is a real visible duplicate CHECK 2 could not see.
+// CHECK 1 already folds these in via collectIndirectControlledAttrs().
+//
+// WHY THE GATE IS BEHAVIOURAL, NOT NAME-KEYED. The obvious cheap version —
+// "harvest string literals out of any object-valued JSX prop" — over-reports
+// badly and in the DANGEROUS direction (CHECK 2 findings ASSERT a duplicate;
+// a false one tells an agent to delete a working control). `<SelectControl
+// options={ [ { label: 'Text colour', value: 'textColour' } ] } />` would
+// register `textColour`, a declared attr on many blocks, as a second writer.
+//
+// So a tag qualifies as a dispatcher only when its DEFINING FILE, resolved
+// through COMPONENT_FILE_MAP, actually contains a computed-key setAttributes.
+// That kills the false positive structurally rather than by heuristic:
+// SelectControl/RangeControl are @wordpress/components imports and are not in
+// the map at all (verified 2026-08-25 — map size 134, `SelectControl` ->
+// undefined, `ShadowControl` -> src/components/ShadowControl.js).
+//
+// NOT suffix-gated. looksLikeControlComponent()'s /(Control|Picker|...)$/ is
+// used for the literal path, but the dispatcher path accepts ANY resolvable
+// component that passes the behavioural test — this project's own rule is to
+// detect a control by what it does, not by its component name, and the six
+// real dispatchers include `BackgroundPanel`, `ProductHandpickPanel` and
+// `ProductTaxonomyChecklist`, none of which match that suffix. Measured both
+// ways on the clean tree: zero findings either way, so the wider gate costs
+// nothing today and covers more tomorrow.
+const DISPATCHER_MEMO = new Map();
+
+/**
+ * Does the component named `tagName` write attributes through a COMPUTED-key
+ * setAttributes — i.e. is it a dispatcher whose caller names the attribute?
+ *
+ * @param {string} tagName JSX tag name.
+ * @return {boolean} True when the resolved component file dispatches.
+ */
+function componentIsDispatcher( tagName ) {
+	if ( DISPATCHER_MEMO.has( tagName ) ) {
+		return DISPATCHER_MEMO.get( tagName );
+	}
+	let result = false;
+	const file = COMPONENT_FILE_MAP.get( tagName );
+	if ( file && fs.existsSync( file ) ) {
+		const ast = parseWithRecovery( readIfExists( file ), `component ${ tagName } (${ file })` );
+		if ( ast ) {
+			try {
+				traverse( ast, {
+					CallExpression( p ) {
+						const c = p.node.callee;
+						if ( ! c || c.type !== 'Identifier' || c.name !== 'setAttributes' ) {
+							return;
+						}
+						const a = p.node.arguments[ 0 ];
+						if ( a && a.type === 'ObjectExpression' && a.properties.some( ( x ) => x.computed ) ) {
+							result = true;
+						}
+					},
+				} );
+			} catch ( e ) {
+				// Same deliberate-but-visible fail-open as elsewhere: a
+				// component we cannot walk is treated as "not a dispatcher"
+				// (the conservative answer, which cannot invent a finding),
+				// but the reason is recorded rather than swallowed.
+				PARSE_DIAGNOSTICS.push( {
+					dir: `component ${ tagName }`,
+					reason: `traverse failed; treated as NOT a dispatcher, so CHECK 2 may under-report: ${ e.message }`,
+				} );
+			}
+		}
+	}
+	DISPATCHER_MEMO.set( tagName, result );
+	return result;
+}
+
+/**
+ * Harvest the attribute names a dispatcher element is told to write, from the
+ * two syntactic positions collectIndirectFromOneFile() already recognises:
+ *   (a) a string VALUE inside an object-valued JSX prop —
+ *       `attrNames={ { valueHover: 'shadowHover' } }`
+ *   (b) a single string ARGUMENT to a call in a JSX prop —
+ *       `onChange={ set( 'effectHover' ) }`
+ * Filtered to `declaredAttrs`, so a stray string can never name an attribute
+ * this block does not have.
+ *
+ * @param {Object}      openingElement Babel JSXOpeningElement node.
+ * @param {Set<string>} declaredAttrs  This block's declared attribute names.
+ * @return {string[]} Attribute names this element dispatches writes to.
+ */
+function resolveDispatcherWrites( openingElement, declaredAttrs ) {
+	const found = new Set();
+	if ( ! declaredAttrs || declaredAttrs.size === 0 ) {
+		return [];
+	}
+	for ( const a of openingElement.attributes || [] ) {
+		if ( a.type !== 'JSXAttribute' || ! a.value || a.value.type !== 'JSXExpressionContainer' ) {
+			continue;
+		}
+		const expr = a.value.expression;
+		if ( ! expr ) {
+			continue;
+		}
+		if ( expr.type === 'ObjectExpression' ) {
+			for ( const pr of expr.properties ) {
+				if ( pr.type === 'ObjectProperty' && pr.value && pr.value.type === 'StringLiteral' &&
+					declaredAttrs.has( pr.value.value ) ) {
+					found.add( pr.value.value );
+				}
+			}
+		} else if ( expr.type === 'CallExpression' && expr.arguments.length === 1 &&
+			expr.arguments[ 0 ] && expr.arguments[ 0 ].type === 'StringLiteral' &&
+			declaredAttrs.has( expr.arguments[ 0 ].value ) ) {
+			found.add( expr.arguments[ 0 ].value );
+		}
+	}
+	return [ ...found ];
 }
 
 const AST_SKIP_KEYS = new Set( [ 'loc', 'start', 'end', 'range', 'leadingComments', 'trailingComments' ] );
@@ -1036,11 +1295,34 @@ function resolveDynamicWrites( fnNode ) {
  *
  * Throws on unparseable source — caller catches and logs to unparseable[].
  *
- * @param {string} blockSlug Block name (e.g. 'sgs/card-grid').
- * @param {string} src       edit.js source (NOT comment-stripped — AST handles comments).
+ * CORPUS ASYMMETRY, DELIBERATE AND DOCUMENTED (2026-08-25, defect 3). CHECK 1
+ * scans a WIDENED corpus — the block's edit.js, its own components/ dir, and
+ * the transitive closure of every framework-wide shared component it mounts
+ * (loadBlockOwnSrc). CHECK 2 stays on the block's OWN edit.js and does not
+ * follow that graph. This asymmetry is KEPT, because the two checks make
+ * different claims:
+ *   - CHECK 1 asks "does a control for this attribute exist ANYWHERE reachable
+ *     from this block?" A wider corpus makes that answer MORE correct, and
+ *     missing a control there invents a false `hover:shadow` finding.
+ *   - CHECK 2 asks "are there TWO knobs in this one editor surface?" Following
+ *     the component graph would compare a shared component (mounted by 15
+ *     blocks) against each block's own controls and call the pair a duplicate
+ *     — a different claim (cross-file duplication) needing its own severity,
+ *     its own keeper semantics and its own baseline. Widening CHECK 2 by
+ *     default would silently convert it into that other check.
+ * What CHECK 2 *does* now follow is one hop, for identity only: a mounted tag
+ * is resolved to its defining file solely to ask "is this a dispatcher?" — no
+ * controls are harvested from that file. See componentIsDispatcher above.
+ *
+ * @param {string}      blockSlug     Block name (e.g. 'sgs/card-grid').
+ * @param {string}      src           edit.js source (NOT comment-stripped — AST handles comments).
+ * @param {Set<string>} declaredAttrs This block's declared attribute names. REQUIRED to
+ *                                    enable dispatcher resolution; when omitted, dispatcher
+ *                                    resolution is skipped entirely (a stray string could
+ *                                    otherwise name an attribute the block does not have).
  * @return {Array<Object>} Findings.
  */
-function checkSameFileDuplicateAst( blockSlug, src ) {
+function checkSameFileDuplicateAst( blockSlug, src, declaredAttrs ) {
 	const findings = [];
 	if ( ! src || ! /setAttributes/.test( src ) ) {
 		return findings;
@@ -1048,16 +1330,22 @@ function checkSameFileDuplicateAst( blockSlug, src ) {
 
 	const ast = parser.parse( src, {
 		sourceType: 'module',
-		plugins: [
-			'jsx',
-			'classProperties',
-			'objectRestSpread',
-			'optionalChaining',
-			'nullishCoalescingOperator',
-			'dynamicImport',
-		],
+		plugins: BABEL_PLUGINS,
 		errorRecovery: true,
 	} );
+	if ( ast.errors && ast.errors.length ) {
+		// Defect 4 (2026-08-25): this parse asked for errorRecovery and then
+		// never looked at what it recovered from. A partial AST here means
+		// fewer JSX controls found, i.e. a real duplicate silently drops off
+		// the report while the run still says PASS.
+		PARSE_DIAGNOSTICS.push( {
+			dir: blockSlug,
+			reason:
+				`same-file-duplicate (AST): parse RECOVERED from ${ ast.errors.length } syntax ` +
+				`error(s) — CHECK 2 under-reports for this block. First: ` +
+				`${ ast.errors[ 0 ].reasonCode || ast.errors[ 0 ].message }`,
+		} );
+	}
 
 	// attrName -> Array<{ tag, line, exclusiveGroup }>
 	const writers = new Map();
@@ -1066,24 +1354,44 @@ function checkSameFileDuplicateAst( blockSlug, src ) {
 		JSXOpeningElement( pathNode ) {
 			const nameNode = pathNode.node.name;
 			const tagName = nameNode && nameNode.type === 'JSXIdentifier' ? nameNode.name : null;
-			if ( ! looksLikeControlComponent( tagName ) ) {
+			if ( ! tagName ) {
 				return;
 			}
-			const onChangeAttr = pathNode.node.attributes.find(
-				( a ) => a.type === 'JSXAttribute' && a.name && a.name.name === 'onChange'
-			);
-			if ( ! onChangeAttr || ! onChangeAttr.value || onChangeAttr.value.type !== 'JSXExpressionContainer' ) {
-				return;
+
+			// PATH B (2026-08-25, defect 3) — DISPATCHER-DRIVEN control. Tried
+			// first because it does not need an inline onChange arrow at all:
+			// the attribute name arrives as a string in a prop, and the
+			// computed-key setAttributes lives in the component's own file.
+			// Gated behaviourally by componentIsDispatcher(), not by tag name.
+			let attrNames = [];
+			let viaDispatcher = false;
+			if ( declaredAttrs && declaredAttrs.size && componentIsDispatcher( tagName ) ) {
+				attrNames = resolveDispatcherWrites( pathNode.node, declaredAttrs );
+				viaDispatcher = attrNames.length > 0;
 			}
-			const expr = onChangeAttr.value.expression;
-			const fnNode =
-				expr.type === 'ArrowFunctionExpression' || expr.type === 'FunctionExpression'
-					? expr
-					: null;
-			if ( ! fnNode ) {
-				return; // onChange={ someNamedHandler } — not statically resolvable here.
+
+			// PATH A — the original literal path: a control-shaped tag with an
+			// inline onChange whose body writes a literal key.
+			if ( ! viaDispatcher ) {
+				if ( ! looksLikeControlComponent( tagName ) ) {
+					return;
+				}
+				const onChangeAttr = pathNode.node.attributes.find(
+					( a ) => a.type === 'JSXAttribute' && a.name && a.name.name === 'onChange'
+				);
+				if ( ! onChangeAttr || ! onChangeAttr.value || onChangeAttr.value.type !== 'JSXExpressionContainer' ) {
+					return;
+				}
+				const expr = onChangeAttr.value.expression;
+				const fnNode =
+					expr.type === 'ArrowFunctionExpression' || expr.type === 'FunctionExpression'
+						? expr
+						: null;
+				if ( ! fnNode ) {
+					return; // onChange={ someNamedHandler } — not statically resolvable here.
+				}
+				attrNames = resolveDynamicWrites( fnNode );
 			}
-			const attrNames = resolveDynamicWrites( fnNode );
 			if ( attrNames.length === 0 ) {
 				return; // no dynamic (user-value-derived) write — e.g. a reset button
 				// that stamps a hardcoded literal; not "a control for" that attr.
@@ -1122,7 +1430,9 @@ function checkSameFileDuplicateAst( blockSlug, src ) {
 			check: 'same-file-duplicate',
 			block: blockSlug,
 			attr: attrName,
-			severity: 'controlled',
+			// Defect 1 (2026-08-25): namespaced. Was the bare `controlled`,
+			// which CHECK 1 also emits with a DIFFERENT meaning.
+			severity: 'same-file:controlled',
 			keeper: sources[ 0 ],
 			sources,
 			reason: `"${ attrName }" is written (with a value genuinely derived from the control's own input, not a hardcoded stamp) by ${ list.length } distinct JSX controls in the same edit.js that do not share a common conditional branch (${ sources.join( ', ' ) }) — the client is shown two knobs for one attribute (or they silently fight over which write wins on re-render).`,
@@ -1174,7 +1484,71 @@ function extractTemplateChildSlugs( src ) {
 	return slugs;
 }
 
-function checkParentChildDuplication( blockSlug, blockDir, meta ) {
+// ---------------------------------------------------------------------------
+// CHECK 3 child-slug existence resolution (2026-08-25, defect 2).
+// ---------------------------------------------------------------------------
+//
+// THE HOLE. CHECK 3's `keeper` was unvalidated free text: `child ${childSlug}'s
+// own typography/colour controls`, where childSlug came from a REGEX over
+// edit.js (extractTemplateChildSlugs) filtered only by the hand-written
+// CHILD_ROLE_KEYWORDS table. Nothing ever confirmed that block exists. The
+// finding then advises deleting a working parent control in favour of a child
+// that owns the setting — if the child is a typo, a renamed block, or a slug
+// that only ever appeared in a comment, the keeper names NOTHING and the
+// advice is "delete this control and get no replacement". That is the exact
+// shape of the 36 wrong findings purged from CHECK 1 earlier the same day,
+// where the keeper named `sgsHoverBgColour` and no such attr was registered.
+//
+// Same shape as CHECK 1's drift guard (readRegisteredUniversalHoverAttrs +
+// computeCategoryDrift): resolve the claimed keeper against the real tree
+// before asserting it. Reuses the existing primitives BLOCKS_DIR and
+// readBlockJson(), and confirms `meta.name === childSlug` rather than merely
+// that a directory exists — a directory name is not a block name.
+//
+// Verified 2026-08-25: all six CHILD_ROLE_KEYWORDS slugs resolve today
+// (sgs/heading, sgs/text, sgs/button, sgs/media, sgs/quote, sgs/icon), so this
+// changes no current finding. It is a guard against the table drifting.
+const CHILD_SLUG_MEMO = new Map();
+
+/**
+ * Resolve an `sgs/foo` child block slug to a real block on disk.
+ *
+ * @param {string} childSlug Block slug from an InnerBlocks template.
+ * @return {?string} The block's directory, or null when it does not resolve.
+ */
+function resolveChildBlockDir( childSlug ) {
+	if ( CHILD_SLUG_MEMO.has( childSlug ) ) {
+		return CHILD_SLUG_MEMO.get( childSlug );
+	}
+	let resolved = null;
+	if ( /^sgs\/[a-z0-9-]+$/.test( childSlug ) ) {
+		const dir = path.join( BLOCKS_DIR, childSlug.replace( 'sgs/', '' ) );
+		try {
+			const childMeta = readBlockJson( dir );
+			// Name check, not a bare existsSync: a directory called `quote`
+			// whose block.json declares some other name is not sgs/quote.
+			if ( childMeta && childMeta.name === childSlug ) {
+				resolved = dir;
+			}
+		} catch ( e ) {
+			resolved = null; // malformed block.json — surfaced by the caller.
+		}
+	}
+	CHILD_SLUG_MEMO.set( childSlug, resolved );
+	return resolved;
+}
+
+/**
+ * @param {string}         blockSlug     Parent block name.
+ * @param {string}         blockDir      Parent block directory.
+ * @param {Object}         meta          Parent block.json.
+ * @param {Array<Object>=} unresolvedOut Optional sink for child slugs that did
+ *                                       not resolve to a real block. Passing it
+ *                                       is how the caller makes the skip
+ *                                       VISIBLE instead of silent.
+ * @return {Array<Object>} Findings.
+ */
+function checkParentChildDuplication( blockSlug, blockDir, meta, unresolvedOut ) {
 	const findings = [];
 	const editJs = readIfExists( path.join( blockDir, 'edit.js' ) );
 	if ( ! editJs || ! /InnerBlocks|useInnerBlocksProps/.test( editJs ) ) {
@@ -1192,6 +1566,23 @@ function checkParentChildDuplication( blockSlug, blockDir, meta ) {
 		if ( ! roleWords ) {
 			continue;
 		}
+		// Defect 2 (2026-08-25): the keeper must name a block that EXISTS
+		// before this finding may claim the child owns the setting.
+		const childDir = resolveChildBlockDir( childSlug );
+		if ( ! childDir ) {
+			if ( unresolvedOut ) {
+				unresolvedOut.push( {
+					dir: blockSlug,
+					reason:
+						`parent-child check: CHILD_ROLE_KEYWORDS names "${ childSlug }", which does ` +
+						`not resolve to a block whose block.json declares that name. Every ` +
+						`parent-child finding for it is SUPPRESSED — its keeper would have ` +
+						`advised deleting a working control in favour of a block that does not ` +
+						`exist. Fix CHILD_ROLE_KEYWORDS or restore the block.`,
+				} );
+			}
+			continue;
+		}
 		for ( const attrName of attrs ) {
 			if ( ! STYLE_SUFFIX_RE.test( attrName ) ) {
 				continue;
@@ -1205,8 +1596,16 @@ function checkParentChildDuplication( blockSlug, blockDir, meta ) {
 				check: 'parent-child-duplicate',
 				block: blockSlug,
 				attr: attrName,
-				severity: 'scoped',
-				keeper: `child ${ childSlug }'s own typography/colour controls`,
+				// Defect 1 (2026-08-25): was the bare token `scoped`, which
+				// CHECK 1 also emits meaning something else entirely
+				// ("sub-element-prefixed"). This one means "role-keyword
+				// overlap between a parent attr and a mounted child block —
+				// heuristic, low confidence".
+				severity: 'parent-child:heuristic',
+				// Defect 2 (2026-08-25): `childSlug` is now RESOLVED to a real
+				// block (see resolveChildBlockDir) before this keeper claims
+				// the child owns the setting.
+				keeper: `child ${ childSlug }'s own typography/colour controls (block resolved at ${ path.relative( ROOT, childDir ) })`,
 				sources: [
 					`${ blockSlug } edit.js: parent-level control for "${ attrName }"`,
 					`${ childSlug } (mounted via this block's InnerBlocks template, role "${ matchedRole }"): its own native typography/colour controls`,
@@ -1235,9 +1634,67 @@ function loadBaseline() {
 	}
 }
 
+/**
+ * The gate's exit decision, as a named function so the self-test asserts
+ * against the REAL rule rather than a re-typed copy of the expression (a
+ * duplicated expression in a test passes even when main() is reverted, which
+ * makes the case vacuous).
+ *
+ * @param {boolean} isCheck        Was --check passed?
+ * @param {number}  netNewCount    Findings not present in the baseline.
+ * @param {number}  unparseableCount Surfaces the gate could not read.
+ * @return {number} Process exit code.
+ */
+function computeExitCode( isCheck, netNewCount, unparseableCount ) {
+	return isCheck && ( netNewCount > 0 || unparseableCount > 0 ) ? 1 : 0;
+}
+
 function findingKey( f ) {
+	// NOTE (2026-08-25): severity is deliberately NOT part of the key. That is
+	// what let defect 1's severity rename land without invalidating a single
+	// baseline entry.
 	return `${ f.check }:${ f.block }:${ f.attr }`;
 }
+
+// ---------------------------------------------------------------------------
+// SEVERITIES — namespaced per check (2026-08-25, defect 1).
+// ---------------------------------------------------------------------------
+//
+// THE BUG. CHECK 1 emitted `scoped` meaning "this private attr is prefixed for
+// a named SUB-ELEMENT, so it may not be a duplicate of the block-wide
+// universal control at all" — a CONFIDENCE-LOWERING qualifier about WHICH
+// element is targeted. CHECK 3 hardcoded the same token `scoped` meaning
+// "parent/child role-keyword overlap, heuristic" — an unrelated claim about a
+// different mechanism. Both also emitted a bare `controlled`. Any consumer
+// filtering or triaging on `severity` silently mixed two populations.
+//
+// FIX CHOSEN: namespace the token as `<check>:<severity>`, rather than the
+// alternative of moving CHECK 3 to an informational stream. Reasons:
+//   1. Demoting CHECK 3 would SUBTRACT gate coverage — 10 of the 13 current
+//      findings are CHECK 3. This project's doc rules are explicit that
+//      structural defences are carried forward, never quietly subtracted.
+//   2. CHECK 3's low confidence is a property of the CHECK, and is now stated
+//      in the token itself (`parent-child:heuristic`), so a reader sees it
+//      without needing a separate stream to infer it from.
+//   3. Namespacing is safe: findingKey() ignores severity (see above), so all
+//      17 baseline entries survived the rename unchanged.
+//
+// Adding a severity? Add it here too — an unexplained token is how the last
+// one drifted.
+const SEVERITY_MEANINGS = {
+	'hover:controlled':
+		'CHECK 1 — private hover attr HAS its own edit.js control while the universal Hover Effects panel also covers it. Two visible knobs.',
+	'hover:shadow':
+		'CHECK 1 — private hover attr is declared + consumed but has NO control of its own. Hidden duplicate; permanently stuck at its default.',
+	'hover:scoped':
+		'CHECK 1 — as hover:controlled, but the private attr is prefixed for a named SUB-ELEMENT (cta/icon/tab/...), so it may legitimately target a different element. LOWER confidence; verify before acting.',
+	'hover:scoped-shadow':
+		'CHECK 1 — as hover:shadow, but sub-element-scoped. LOWER confidence.',
+	'same-file:controlled':
+		'CHECK 2 — two distinct JSX controls in ONE edit.js write the same attribute with a user-derived value, outside a shared conditional branch.',
+	'parent-child:heuristic':
+		'CHECK 3 — a parent styling attr\'s role keyword overlaps a child block mounted in its InnerBlocks template. Static heuristic, LOWEST confidence; the child slug is resolved to a real block but the CSS-specificity outcome is not measured.',
+};
 
 // ---------------------------------------------------------------------------
 // Main
@@ -1304,6 +1761,19 @@ function main() {
 			continue;
 		}
 		if ( ! meta ) {
+			// Defect 4 (2026-08-25): a directory with NO block.json is
+			// normally not a block, so skipping is correct and stays silent.
+			// A directory with an edit.js but no block.json is NOT normal —
+			// it has editor code this gate can never check, because every
+			// check keys off the declared attributes. Surface that one.
+			if ( fs.existsSync( path.join( dir, 'edit.js' ) ) ) {
+				unparseable.push( {
+					dir: path.basename( dir ),
+					reason:
+						'has an edit.js but NO block.json — every check keys off declared ' +
+						'attributes, so this block\'s controls are entirely ungated.',
+				} );
+			}
 			continue;
 		}
 		const blockSlug = meta.name || path.basename( dir );
@@ -1315,7 +1785,9 @@ function main() {
 		}
 
 		try {
-			findings = findings.concat( checkParentChildDuplication( blockSlug, dir, meta ) );
+			findings = findings.concat(
+				checkParentChildDuplication( blockSlug, dir, meta, unparseable )
+			);
 		} catch ( e ) {
 			unparseable.push( { dir: blockSlug, reason: `parent-child check: ${ e.message }` } );
 		}
@@ -1324,11 +1796,23 @@ function main() {
 		if ( fs.existsSync( editJsPath ) ) {
 			try {
 				const src = fs.readFileSync( editJsPath, 'utf8' );
-				findings = findings.concat( checkSameFileDuplicateAst( blockSlug, src ) );
+				findings = findings.concat(
+					checkSameFileDuplicateAst(
+						blockSlug,
+						src,
+						new Set( Object.keys( meta.attributes || {} ) )
+					)
+				);
 			} catch ( e ) {
 				unparseable.push( { dir: blockSlug, reason: `same-file-duplicate (AST): ${ e.message }` } );
 			}
 		}
+	}
+
+	// Defect 4 (2026-08-25): drain the parse diagnostics collected deep inside
+	// the collectors, which previously had no way to reach this report at all.
+	for ( const d of PARSE_DIAGNOSTICS ) {
+		unparseable.push( d );
 	}
 
 	if ( isUpdateBaseline ) {
@@ -1354,7 +1838,13 @@ function main() {
 		// Stable order, so re-baselining on another machine cannot produce
 		// diff churn unrelated to any real change.
 		merged.sort( ( a, b ) => findingKey( a ).localeCompare( findingKey( b ) ) );
-		fs.writeFileSync( BASELINE_FILE, JSON.stringify( { accepted: merged }, null, 2 ) + '\n' );
+		// TAB indent, matching the committed baseline file (2026-08-25). This
+		// wrote 2 SPACES while duplicate-controls-baseline.json is, and always
+		// was, tab-indented — so any --update-baseline run reformatted all 208
+		// lines and buried the one real severity/entry change in a whole-file
+		// diff. Round-tripping the file's own format keeps the diff to what
+		// actually changed.
+		fs.writeFileSync( BASELINE_FILE, JSON.stringify( { accepted: merged }, null, '\t' ) + '\n' );
 		if ( dropped.size ) {
 			// A vanishing acceptance must be visible, not silent.
 			process.stderr.write(
@@ -1391,8 +1881,14 @@ function main() {
 			process.stdout.write( `${ accepted.length } baselined finding(s) (accepted with reason).\n` );
 		}
 		if ( unparseable.length ) {
+			// Defect 4 (2026-08-25): this line used to read "(skipped, logged
+			// — not a failure)" while `unparseable` never touched the exit
+			// code. It IS a failure now: a file this gate cannot read is a
+			// file it cannot gate, and the direction of that blindness is to
+			// make a controlled attr look uncontrolled and invent a finding.
 			process.stdout.write(
-				`${ unparseable.length } block(s) could not be fully parsed (skipped, logged — not a failure):\n`
+				`${ unparseable.length } parse/resolution problem(s) — GATE FAILURE under --check.\n` +
+				'Each one is a surface this gate could not read, so its findings are unreliable:\n'
 			);
 			for ( const u of unparseable ) {
 				process.stdout.write( `  - ${ u.dir }: ${ u.reason }\n` );
@@ -1411,7 +1907,7 @@ function main() {
 					process.stdout.write(
 						`  BLOCK:    ${ f.block }\n` +
 						`  ATTR:     ${ f.attr }\n` +
-						`  SEVERITY: ${ f.severity }\n` +
+						`  SEVERITY: ${ f.severity }${ SEVERITY_MEANINGS[ f.severity ] ? ` — ${ SEVERITY_MEANINGS[ f.severity ] }` : '' }\n` +
 						`  SOURCES:  ${ f.sources.join( '  <->  ' ) }\n` +
 						`  KEEPER:   ${ f.keeper }\n` +
 						`  REASON:   ${ f.reason }\n\n`
@@ -1424,14 +1920,26 @@ function main() {
 	}
 
 	// Plain/--json runs are diagnostic-only and always exit 0. --check is the
-	// real gate: exit 1 when any finding is not already in the baseline.
-	process.exit( isCheck && netNew.length > 0 ? 1 : 0 );
+	// real gate: exit 1 when any finding is not already in the baseline —
+	// OR when any surface could not be parsed/resolved.
+	//
+	// Defect 4 (2026-08-25): `unparseable` now reaches the exit code. It never
+	// did before, so a block whose block.json stopped parsing dropped out of
+	// ALL THREE checks and the gate still said PASS. There is no baseline for
+	// parse failures on purpose: a baseline records an ACCEPTED duplicate,
+	// whereas an unreadable file is not a finding to accept, it is the gate
+	// admitting it cannot see. Measured clean on the current tree (365 JS
+	// files, 0 recovered errors, 0 fatal, 0 unparseable block.json).
+	process.exit( computeExitCode( isCheck, netNew.length, unparseable.length ) );
 }
 
 // ---------------------------------------------------------------------------
-// SELF-TEST (--self-test) — no disk access, in-memory fixtures only.
-// Exercises checkSameFileDuplicateAst(), the CHECK 2 same-file AST detector,
-// directly against synthetic edit.js source strings.
+// SELF-TEST (--self-test). NOT disk-free — see the ⚠ note in the top docblock:
+// it reads the real tree (resolveComponentFiles / BLOCKS_DIR) and writes a
+// temporary fixture directory under os.tmpdir(), removed in a `finally`.
+// Covers CHECK 1 (classify + severities), CHECK 2 (literal + dispatcher),
+// CHECK 3 (role match + child-slug resolution), the drift guard, and the
+// parse-diagnostics fail-closed path.
 // ---------------------------------------------------------------------------
 
 // Two <TextControl> elements in the same edit.js both writing `ctaText` via
@@ -1713,36 +2221,36 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const severityCases = [
 		{
-			name: 'own control, unscoped attr -> severity "controlled"',
+			name: 'own control, unscoped attr -> severity "hover:controlled"',
 			attrName: 'scaleHover',
 			editJs:
 				"import { RangeControl } from '@wordpress/components';\n" +
 				'export default function Edit( { attributes, setAttributes } ) {\n' +
 				"\treturn <RangeControl value={ attributes.scaleHover } onChange={ ( v ) => setAttributes( { scaleHover: v } ) } />;\n" +
 				'}\n',
-			expectSeverity: 'controlled',
+			expectSeverity: 'hover:controlled',
 		},
 		{
-			name: 'no control, unscoped attr -> severity "shadow"',
+			name: 'no control, unscoped attr -> severity "hover:shadow"',
 			attrName: 'grayscaleHover',
 			editJs: 'export default function Edit() {\n\treturn null;\n}\n',
-			expectSeverity: 'shadow',
+			expectSeverity: 'hover:shadow',
 		},
 		{
-			name: 'own control, sub-element-scoped attr ("cta") -> severity "scoped"',
+			name: 'own control, sub-element-scoped attr ("cta") -> severity "hover:scoped"',
 			attrName: 'ctaScaleHover',
 			editJs:
 				"import { RangeControl } from '@wordpress/components';\n" +
 				'export default function Edit( { attributes, setAttributes } ) {\n' +
 				"\treturn <RangeControl value={ attributes.ctaScaleHover } onChange={ ( v ) => setAttributes( { ctaScaleHover: v } ) } />;\n" +
 				'}\n',
-			expectSeverity: 'scoped',
+			expectSeverity: 'hover:scoped',
 		},
 		{
-			name: 'no control, sub-element-scoped attr ("icon") -> severity "scoped-shadow"',
+			name: 'no control, sub-element-scoped attr ("icon") -> severity "hover:scoped-shadow"',
 			attrName: 'iconGrayscaleHover',
 			editJs: 'export default function Edit() {\n\treturn null;\n}\n',
-			expectSeverity: 'scoped-shadow',
+			expectSeverity: 'hover:scoped-shadow',
 		},
 	];
 
@@ -1780,6 +2288,413 @@ export default function Edit( { attributes, setAttributes } ) {
 	} finally {
 		fs.rmSync( tmpRoot, { recursive: true, force: true } );
 	}
+
+	// ===================================================================
+	// ADDED 2026-08-25 — coverage for the four adversarial-council defects.
+	// Every case below was WATCHED FAILING against the unfixed code before
+	// the fix was applied; each carries its own negative control, because a
+	// case that only ever passes proves nothing.
+	// ===================================================================
+
+	const assertCase = ( name, ok, detail ) => {
+		totalCases++;
+		allOk = allOk && ok;
+		process.stdout.write(
+			`  [${ ok ? 'OK' : 'FAIL' }] ${ name }\n` + ( detail ? `         ${ detail }\n` : '' )
+		);
+	};
+
+	// -------------------------------------------------------------------
+	// DEFECT 1 — severity namespacing. The collision test: CHECK 1 and
+	// CHECK 3 must not emit the same token, and every emitted token must be
+	// documented. Under the old code BOTH emitted the bare `scoped`.
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- defect 1: severity namespacing --\n' );
+
+	const c1Severities = new Set();
+	const c3Severities = new Set();
+	const c2Severities = new Set();
+
+	const defect1Tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-sev-selftest-' ) );
+	try {
+		// A CHECK 1 finding (sub-element-scoped, with its own control).
+		const c1Dir = fs.mkdtempSync( path.join( defect1Tmp, 'c1-' ) );
+		fs.writeFileSync(
+			path.join( c1Dir, 'edit.js' ),
+			"import { RangeControl } from '@wordpress/components';\n" +
+				'export default function Edit( { attributes, setAttributes } ) {\n' +
+				'\treturn <RangeControl value={ attributes.ctaScaleHover } onChange={ ( v ) => setAttributes( { ctaScaleHover: v } ) } />;\n' +
+				'}\n'
+		);
+		for ( const f of checkHoverDuplication( 'sgs/sev-c1', c1Dir, {
+			attributes: { ctaScaleHover: { type: 'number' } },
+			supports: { sgs: { enabledExtensions: [ 'hover' ] } },
+		} ) ) {
+			c1Severities.add( f.severity );
+		}
+
+		// A CHECK 3 finding: composite mounting sgs/text with a `textColour` attr.
+		const c3Dir = fs.mkdtempSync( path.join( defect1Tmp, 'c3-' ) );
+		fs.writeFileSync(
+			path.join( c3Dir, 'edit.js' ),
+			"import { InnerBlocks } from '@wordpress/block-editor';\n" +
+				"const template = [\n\t[ 'sgs/text', {} ],\n];\n" +
+				'export default function Edit() {\n\treturn <InnerBlocks template={ template } />;\n}\n'
+		);
+		for ( const f of checkParentChildDuplication( 'sgs/sev-c3', c3Dir, {
+			attributes: { textColour: { type: 'string' } },
+		}, [] ) ) {
+			c3Severities.add( f.severity );
+		}
+	} finally {
+		fs.rmSync( defect1Tmp, { recursive: true, force: true } );
+	}
+
+	for ( const f of checkSameFileDuplicateAst( 'sgs/sev-c2', SELF_TEST_FAIL_FIXTURE ) ) {
+		c2Severities.add( f.severity );
+	}
+
+	const sevFixturesProduced =
+		c1Severities.size > 0 && c2Severities.size > 0 && c3Severities.size > 0;
+	assertCase(
+		'severity fixtures actually produced a finding from all three checks (guards this group against vacuity)',
+		sevFixturesProduced,
+		`check1=[${ [ ...c1Severities ].join( ', ' ) }] check2=[${ [ ...c2Severities ].join( ', ' ) }] check3=[${ [ ...c3Severities ].join( ', ' ) }]`
+	);
+
+	const overlap12 = [ ...c1Severities ].filter( ( s ) => c2Severities.has( s ) );
+	const overlap13 = [ ...c1Severities ].filter( ( s ) => c3Severities.has( s ) );
+	const overlap23 = [ ...c2Severities ].filter( ( s ) => c3Severities.has( s ) );
+	assertCase(
+		'no severity token is emitted by two different checks (CHECK 1 + CHECK 3 both said "scoped" before)',
+		sevFixturesProduced && overlap12.length === 0 && overlap13.length === 0 && overlap23.length === 0,
+		`overlaps: 1x2=[${ overlap12.join( ', ' ) }] 1x3=[${ overlap13.join( ', ' ) }] 2x3=[${ overlap23.join( ', ' ) }]`
+	);
+
+	const allEmitted = [ ...c1Severities, ...c2Severities, ...c3Severities ];
+	const undocumented = allEmitted.filter( ( s ) => ! SEVERITY_MEANINGS[ s ] );
+	assertCase(
+		'every emitted severity token has a SEVERITY_MEANINGS entry',
+		sevFixturesProduced && undocumented.length === 0,
+		`undocumented=[${ undocumented.join( ', ' ) }]`
+	);
+
+	// NEGATIVE CONTROL for the collision test itself: an intentionally
+	// colliding pair MUST be detected as overlapping. Without this, the
+	// assertion above would also "pass" if the overlap maths were broken.
+	const fakeA = new Set( [ 'scoped' ] );
+	const fakeB = new Set( [ 'scoped' ] );
+	assertCase(
+		'NEGATIVE CONTROL: the collision test detects a deliberately colliding token pair',
+		[ ...fakeA ].filter( ( s ) => fakeB.has( s ) ).length === 1,
+		'a synthetic { scoped } x { scoped } pair is reported as overlapping'
+	);
+
+	// -------------------------------------------------------------------
+	// DEFECT 2 — CHECK 3's keeper must name a block that EXISTS.
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- defect 2: CHECK 3 child-slug resolution --\n' );
+
+	assertCase(
+		'NEGATIVE CONTROL: a real child slug (sgs/text, in CHILD_ROLE_KEYWORDS) resolves to its block dir',
+		resolveChildBlockDir( 'sgs/text' ) !== null,
+		`resolved=${ JSON.stringify( resolveChildBlockDir( 'sgs/text' ) ) }`
+	);
+	assertCase(
+		'a slug with no block on disk resolves to null',
+		resolveChildBlockDir( 'sgs/definitely-not-a-real-block' ) === null
+	);
+	assertCase(
+		'a slug that is not a plain sgs/<name> (path traversal shape) resolves to null',
+		resolveChildBlockDir( 'sgs/../../etc' ) === null
+	);
+
+	// End-to-end: a CHILD_ROLE_KEYWORDS entry naming a non-existent block must
+	// produce ZERO findings and ONE visible unresolved report — never a
+	// finding whose keeper points at nothing.
+	const phantomSlug = 'sgs/phantom-child-block';
+	CHILD_ROLE_KEYWORDS[ phantomSlug ] = [ 'title' ];
+	const defect2Tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-child-selftest-' ) );
+	let phantomFindings = [];
+	let phantomUnresolved = [];
+	let realFindings = [];
+	let realUnresolved = [];
+	try {
+		const phantomDir = fs.mkdtempSync( path.join( defect2Tmp, 'phantom-' ) );
+		fs.writeFileSync(
+			path.join( phantomDir, 'edit.js' ),
+			"import { InnerBlocks } from '@wordpress/block-editor';\n" +
+				`const template = [\n\t[ '${ phantomSlug }', {} ],\n];\n` +
+				'export default function Edit() {\n\treturn <InnerBlocks template={ template } />;\n}\n'
+		);
+		const phantomMeta = { attributes: { titleColour: { type: 'string' } } };
+		phantomFindings = checkParentChildDuplication(
+			'sgs/defect2-parent', phantomDir, phantomMeta, phantomUnresolved
+		);
+
+		// NEGATIVE CONTROL: the IDENTICAL fixture pointed at a child that DOES
+		// exist must still be flagged — the fix must suppress only the
+		// unresolvable child, not the check.
+		const realDir = fs.mkdtempSync( path.join( defect2Tmp, 'real-' ) );
+		fs.writeFileSync(
+			path.join( realDir, 'edit.js' ),
+			"import { InnerBlocks } from '@wordpress/block-editor';\n" +
+				"const template = [\n\t[ 'sgs/heading', {} ],\n];\n" +
+				'export default function Edit() {\n\treturn <InnerBlocks template={ template } />;\n}\n'
+		);
+		realFindings = checkParentChildDuplication(
+			'sgs/defect2-parent', realDir, { attributes: { titleColour: { type: 'string' } } }, realUnresolved
+		);
+	} finally {
+		fs.rmSync( defect2Tmp, { recursive: true, force: true } );
+		delete CHILD_ROLE_KEYWORDS[ phantomSlug ];
+	}
+
+	assertCase(
+		'a template child that resolves to NO block yields zero findings (its keeper would name nothing)',
+		phantomFindings.length === 0,
+		`findings=${ phantomFindings.length } (attrs=[${ phantomFindings.map( ( f ) => f.attr ).join( ', ' ) }])`
+	);
+	assertCase(
+		'...and the suppression is REPORTED, not silent',
+		phantomUnresolved.length === 1 && /does not resolve to a block/.test( phantomUnresolved[ 0 ].reason ),
+		`unresolved=${ phantomUnresolved.length }`
+	);
+	assertCase(
+		'NEGATIVE CONTROL: the same fixture with a REAL child (sgs/heading) is still flagged, with a resolved keeper',
+		realFindings.length === 1 &&
+			realFindings[ 0 ].attr === 'titleColour' &&
+			realUnresolved.length === 0 &&
+			/block resolved at/.test( realFindings[ 0 ].keeper ),
+		`findings=${ realFindings.length } keeper=${ JSON.stringify( realFindings.length ? realFindings[ 0 ].keeper : null ) }`
+	);
+
+	// NEGATIVE CONTROL for CHECK 3's own matching rules — a parent attr with
+	// no styling suffix must not be flagged even with a real child mounted.
+	const defect2Tmp2 = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-child-neg-' ) );
+	let nonStyleFindings = [];
+	let noInnerFindings = [];
+	try {
+		const d = fs.mkdtempSync( path.join( defect2Tmp2, 'b-' ) );
+		fs.writeFileSync(
+			path.join( d, 'edit.js' ),
+			"import { InnerBlocks } from '@wordpress/block-editor';\n" +
+				"const template = [\n\t[ 'sgs/heading', {} ],\n];\n" +
+				'export default function Edit() {\n\treturn <InnerBlocks template={ template } />;\n}\n'
+		);
+		nonStyleFindings = checkParentChildDuplication(
+			'sgs/neg', d, { attributes: { titleTag: { type: 'string' } } }, []
+		);
+
+		const d2 = fs.mkdtempSync( path.join( defect2Tmp2, 'c-' ) );
+		fs.writeFileSync(
+			path.join( d2, 'edit.js' ),
+			'export default function Edit() {\n\treturn <div />;\n}\n'
+		);
+		noInnerFindings = checkParentChildDuplication(
+			'sgs/neg2', d2, { attributes: { titleColour: { type: 'string' } } }, []
+		);
+	} finally {
+		fs.rmSync( defect2Tmp2, { recursive: true, force: true } );
+	}
+	assertCase(
+		'NEGATIVE CONTROL: `titleTag` (no styling suffix) is not a parent/child duplicate',
+		nonStyleFindings.length === 0,
+		`findings=${ nonStyleFindings.length }`
+	);
+	assertCase(
+		'NEGATIVE CONTROL: a block that mounts no InnerBlocks is not a parent/child duplicate',
+		noInnerFindings.length === 0,
+		`findings=${ noInnerFindings.length }`
+	);
+
+	// -------------------------------------------------------------------
+	// DEFECT 3 — CHECK 2 must see dispatcher-driven (computed-key) writes.
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- defect 3: CHECK 2 dispatcher resolution --\n' );
+
+	assertCase(
+		'ShadowControl is recognised as a dispatcher (its file has a computed-key setAttributes)',
+		componentIsDispatcher( 'ShadowControl' ) === true
+	);
+	assertCase(
+		'NEGATIVE CONTROL: SelectControl (a @wordpress/components import, not in the component map) is NOT a dispatcher',
+		componentIsDispatcher( 'SelectControl' ) === false
+	);
+	assertCase(
+		'NEGATIVE CONTROL: an unresolvable tag name is NOT a dispatcher',
+		componentIsDispatcher( 'TotallyMadeUpTagName' ) === false
+	);
+
+	const dispatcherDupSrc = `
+import { RangeControl } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<div>
+			<ShadowControl attributes={ attributes } setAttributes={ setAttributes } attrNames={ { valueHover: 'shadowHover' } } />
+			<RangeControl value={ attributes.shadowHover } onChange={ ( v ) => setAttributes( { shadowHover: v } ) } />
+		</div>
+	);
+}
+`;
+	const dispatcherDup = checkSameFileDuplicateAst(
+		'sgs/dispatch-test', dispatcherDupSrc, new Set( [ 'shadowHover' ] )
+	);
+	assertCase(
+		'a dispatcher (<ShadowControl attrNames={{...:"shadowHover"}}/>) PLUS a literal control for the same attr is flagged',
+		dispatcherDup.length === 1 && dispatcherDup[ 0 ].attr === 'shadowHover',
+		`found=[${ dispatcherDup.map( ( f ) => f.attr ).join( ', ' ) }]`
+	);
+
+	const dispatcherSoloSrc = `
+export default function Edit( { attributes, setAttributes } ) {
+	return <ShadowControl attributes={ attributes } setAttributes={ setAttributes } attrNames={ { valueHover: 'shadowHover' } } />;
+}
+`;
+	assertCase(
+		'NEGATIVE CONTROL: a lone dispatcher writing one attr is NOT a duplicate',
+		checkSameFileDuplicateAst( 'sgs/dispatch-solo', dispatcherSoloSrc, new Set( [ 'shadowHover' ] ) ).length === 0
+	);
+
+	// THE FALSE-POSITIVE KILLER. A declared attr name sitting in an
+	// object-valued JSX prop of a control that is NOT a dispatcher. A naive
+	// string-harvesting implementation credits SelectControl as a second
+	// writer for `textColour` and INVENTS a duplicate — the dangerous
+	// direction, since a CHECK 2 finding ASSERTS a duplicate and invites
+	// deleting a working control. The behavioural dispatcher gate must reject it.
+	//
+	// The fixture carries TWO shapes on purpose. `options={ [ { value:
+	// 'textColour' } ] }` is the realistic one but is an ArrayExpression, which
+	// resolveDispatcherWrites never descends into — so on its own this case
+	// passed VACUOUSLY (confirmed by breaking componentIsDispatcher to return
+	// true for everything: the case stayed green). `labelMap={ { colour:
+	// 'textColour' } }` is the shape the harvester really does read, so the
+	// case now goes red the moment the dispatcher gate stops discriminating.
+	const optionsTrapSrc = `
+import { SelectControl, ColorPicker } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<div>
+			<SelectControl
+				options={ [ { label: 'Text colour', value: 'textColour' }, { label: 'None', value: 'none' } ] }
+				labelMap={ { colour: 'textColour' } }
+				value={ attributes.align }
+				onChange={ ( v ) => setAttributes( { align: v } ) }
+			/>
+			<ColorPicker color={ attributes.textColour } onChange={ ( v ) => setAttributes( { textColour: v } ) } />
+		</div>
+	);
+}
+`;
+	const optionsTrap = checkSameFileDuplicateAst(
+		'sgs/options-trap', optionsTrapSrc, new Set( [ 'textColour', 'align' ] )
+	);
+	assertCase(
+		'NEGATIVE CONTROL: a non-dispatcher <SelectControl> carrying "textColour" in options=[] and labelMap={} is NOT a second writer for it',
+		optionsTrap.length === 0,
+		`found=[${ optionsTrap.map( ( f ) => f.attr ).join( ', ' ) }]`
+	);
+
+	assertCase(
+		'NEGATIVE CONTROL: with no declaredAttrs passed, dispatcher resolution is skipped (legacy callers unchanged)',
+		checkSameFileDuplicateAst( 'sgs/dispatch-nodecl', dispatcherDupSrc ).length === 0,
+		'the literal RangeControl alone is one writer, so no duplicate'
+	);
+
+	// -------------------------------------------------------------------
+	// DEFECT 4 — fail-open paths must surface, not stay silent.
+	// -------------------------------------------------------------------
+	process.stdout.write( '\n  -- defect 4: parse diagnostics (fail-closed) --\n' );
+
+	// Babel RECOVERS from a var redeclaration (reasonCode VarRedeclaration):
+	// it returns a usable-looking AST and populates ast.errors, which all
+	// three errorRecovery parses previously ignored.
+	const RECOVERABLE_SRC =
+		'let a = 1; let a = 2;\nexport default function E( { setAttributes } ) { setAttributes( { realAttr: 1 } ); }\n';
+	// Unterminated JSX makes Babel THROW even with errorRecovery on.
+	const FATAL_SRC = 'export default function E() { return <div><span></div>; }\n';
+	const CLEAN_SRC =
+		'export default function E( { setAttributes } ) { setAttributes( { realAttr: 1 } ); }\n';
+
+	resetParseDiagnostics();
+	const recoveredAst = parseWithRecovery( RECOVERABLE_SRC, 'selftest-recoverable' );
+	assertCase(
+		'a RECOVERED parse (ast.errors populated) is recorded — errorRecovery no longer hides a partial AST',
+		recoveredAst !== null && PARSE_DIAGNOSTICS.length === 1 &&
+			/RECOVERED/.test( PARSE_DIAGNOSTICS[ 0 ].reason ),
+		`diagnostics=${ PARSE_DIAGNOSTICS.length } reason=${ JSON.stringify( ( PARSE_DIAGNOSTICS[ 0 ] || {} ).reason || null ) }`
+	);
+
+	resetParseDiagnostics();
+	const fatalAst = parseWithRecovery( FATAL_SRC, 'selftest-fatal' );
+	assertCase(
+		'a THROWN parse returns null and is recorded (was a bare `catch { return; }`)',
+		fatalAst === null && PARSE_DIAGNOSTICS.length === 1 &&
+			/parse threw/.test( PARSE_DIAGNOSTICS[ 0 ].reason ),
+		`diagnostics=${ PARSE_DIAGNOSTICS.length }`
+	);
+
+	resetParseDiagnostics();
+	const cleanAst = parseWithRecovery( CLEAN_SRC, 'selftest-clean' );
+	assertCase(
+		'NEGATIVE CONTROL: a clean parse records NOTHING (the diagnostic is not fired unconditionally)',
+		cleanAst !== null && PARSE_DIAGNOSTICS.length === 0,
+		`diagnostics=${ PARSE_DIAGNOSTICS.length }`
+	);
+
+	// Through the real collector, not just the helper: the collector must both
+	// still extract what it can AND report that the file was degraded.
+	resetParseDiagnostics();
+	const degradedControlled = collectControlledAttrs( [ RECOVERABLE_SRC ], 'sgs/selftest-degraded' );
+	// This fixture trips BOTH fail-open paths at once, which is exactly why it
+	// is the right fixture: Babel recovers the parse (ast.errors populated),
+	// and then traverse() throws a scope error on the duplicate declaration —
+	// so the file contributes NO controlled attrs. Under the old code both
+	// events were silent and the caller saw an empty set indistinguishable
+	// from "this file genuinely controls nothing", which is the mis-report
+	// that invents a `hover:shadow` finding. Assert both are now recorded.
+	const degradedReasons = PARSE_DIAGNOSTICS.map( ( d ) => d.reason ).join( ' | ' );
+	assertCase(
+		'collectControlledAttrs on a degraded file reports BOTH degradations (recovered parse + failed traverse); it used to return silently',
+		PARSE_DIAGNOSTICS.length === 2 &&
+			PARSE_DIAGNOSTICS.every( ( d ) => d.dir === 'sgs/selftest-degraded' ) &&
+			/RECOVERED/.test( degradedReasons ) &&
+			/traverse failed/.test( degradedReasons ) &&
+			degradedControlled.size === 0,
+		`diagnostics=${ PARSE_DIAGNOSTICS.length } controlled=[${ [ ...degradedControlled ].join( ', ' ) }]`
+	);
+
+	resetParseDiagnostics();
+	const cleanControlled = collectControlledAttrs( [ CLEAN_SRC ], 'sgs/selftest-clean' );
+	assertCase(
+		'NEGATIVE CONTROL: collectControlledAttrs on a clean file finds the attr and reports nothing',
+		PARSE_DIAGNOSTICS.length === 0 && cleanControlled.has( 'realAttr' ),
+		`diagnostics=${ PARSE_DIAGNOSTICS.length } controlled=[${ [ ...cleanControlled ].join( ', ' ) }]`
+	);
+
+	// The gate arithmetic itself: `unparseable` must be able to fail --check
+	// independently of findings. This is the line that never reached the exit
+	// code before.
+	assertCase(
+		'--check exits 1 on an unparseable surface even with ZERO net-new findings',
+		computeExitCode( true, 0, 1 ) === 1
+	);
+	assertCase(
+		'NEGATIVE CONTROL: --check still exits 0 when both net-new and unparseable are empty',
+		computeExitCode( true, 0, 0 ) === 0
+	);
+	assertCase(
+		'NEGATIVE CONTROL: a net-new finding still fails --check (the original gate rule is intact)',
+		computeExitCode( true, 1, 0 ) === 1
+	);
+	assertCase(
+		'NEGATIVE CONTROL: without --check, an unparseable surface does NOT fail (diagnostic runs stay exit 0)',
+		computeExitCode( false, 0, 1 ) === 0
+	);
+
+	// Leave no residue for the (unreachable, but cheap to guarantee) case of
+	// a caller running the self-test in-process before main().
+	resetParseDiagnostics();
 
 	process.stdout.write(
 		`\n[check-duplicate-controls] self-test ${ allOk ? 'PASSED' : 'FAILED' } (${ totalCases } cases).\n`

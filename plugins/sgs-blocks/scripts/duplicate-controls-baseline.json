@@ -4,7 +4,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/accordion-item",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/accordion-item edit.js: parent-level control for \"textColour\"",
@@ -16,7 +16,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/cta-section",
 			"attr": "textAlign",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "child sgs/text's own typography/colour controls",
 			"sources": [
 				"sgs/cta-section edit.js: parent-level control for \"textAlign\"",
@@ -28,7 +28,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/hero",
 			"attr": "imageBorderColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "child sgs/media's own typography/colour controls",
 			"sources": [
 				"sgs/hero edit.js: parent-level control for \"imageBorderColour\"",
@@ -40,7 +40,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/hero",
 			"attr": "mediaOverlayColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "child sgs/media's own typography/colour controls",
 			"sources": [
 				"sgs/hero edit.js: parent-level control for \"mediaOverlayColour\"",
@@ -52,7 +52,7 @@
 			"check": "same-file-duplicate",
 			"block": "sgs/product-card",
 			"attr": "ctaText",
-			"severity": "controlled",
+			"severity": "same-file:controlled",
 			"keeper": "<TextControl> at line 569",
 			"sources": [
 				"<TextControl> at line 569",
@@ -64,7 +64,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/product-faq-item",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/product-faq-item edit.js: parent-level control for \"textColour\"",
@@ -76,7 +76,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/site-footer-row",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/site-footer-row edit.js: parent-level control for \"textColour\"",
@@ -88,7 +88,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/tab",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/tab edit.js: parent-level control for \"textColour\"",
@@ -100,7 +100,7 @@
 			"check": "same-file-duplicate",
 			"block": "sgs/tab",
 			"attr": "label",
-			"severity": "controlled",
+			"severity": "same-file:controlled",
 			"keeper": "<TextControl> at line 134",
 			"sources": [
 				"<TextControl> at line 134",
@@ -112,7 +112,7 @@
 			"check": "same-file-duplicate",
 			"block": "sgs/trust-bar",
 			"attr": "label",
-			"severity": "controlled",
+			"severity": "same-file:controlled",
 			"keeper": "<TextControl> at line 173",
 			"sources": [
 				"<TextControl> at line 173",
@@ -124,7 +124,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/hero",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/hero edit.js: parent-level control for \"textColour\"",
@@ -136,7 +136,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/cta-section",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/cta-section edit.js: parent-level control for \"textColour\"",
@@ -148,7 +148,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/site-footer",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/site-footer edit.js: parent-level control for \"textColour\"",
@@ -160,7 +160,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/container",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/container edit.js: parent-level control for \"textColour\"",
@@ -172,7 +172,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/info-box",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/info-box edit.js: parent-level control for \"textColour\"",
@@ -184,7 +184,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/notice-banner",
 			"attr": "textColour",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/notice-banner edit.js: parent-level control for \"textColour\"",
@@ -196,7 +196,7 @@
 			"check": "parent-child-duplicate",
 			"block": "sgs/info-box",
 			"attr": "textAlign",
-			"severity": "scoped",
+			"severity": "parent-child:heuristic",
 			"keeper": "BOTH -- parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
 			"sources": [
 				"sgs/info-box edit.js: parent-level control for \"textAlign\"",
