@@ -2,21 +2,15 @@
 doc_type: guide
 title: The migration method — settle the shape, then build the detector
 date: 2026-08-24
-status: APPLIED — graded B- (round 3). ⚠ The Step 4/5/7b/8/11 burn-down edits (D778) are UNGRADED and UNREVIEWED — round 4 pending
-closes_when: "CLOSED 2026-08-25. Applied end-to-end through Steps 1-11 on a real change
-  (d8bd2cab3) and re-graded: C -> B-. FIVE steps were WRONG or SILENT as written (1, 2, 4, 8, 11)
-  and are corrected above, each tagged (D775). Evidence:
-  .claude/reports/2026-08-26-migration-method-application-log.md."
-graded_by: "3-persona panel on the application evidence — Cutter (delete-only), Cold applier
-  (first-attempt reach), Grader (anchored rubric). Cutter verdict: the problem is CONTENT, not
-  LENGTH — only 26 of 581 lines were cuttable. Recoverability holds at D: the sole defence against
-  a silent whole-file diff is a MANUAL git diff --stat, not a gate. Closing that is the single
-  change that would most raise the grade."
+status: APPLIED — graded C+ (round 4, 2026-08-27). The D778 burn-down edits were reviewed by a
+  four-seat council and THREE seats independently found Step 8's justifying claim false; it and
+  five other CONFIRMED findings are corrected in place, each tagged 2026-08-27.
+grading_history: .claude/rubrics/migration-method-grading.md owns the scale, the round-by-round
+  counts and the per-dimension grades. Do not restate them here — provenance is not instruction.
 applies_to: any change touching more than 3 blocks, attributes, files or call sites
 covers: TWO shapes — (a) build a detector for a new repeating change; (b) burn down an
   EXISTING detector's findings backlog (Step 7b + Step 8's ratchet). Shape (b) was added
   2026-08-25 after the doc was found to actively cause harm on it.
-grading: .claude/rubrics/migration-method-grading.md
 ---
 
 # The migration method
@@ -25,6 +19,12 @@ grading: .claude/rubrics/migration-method-grading.md
 
 ## Do this now
 
+0. ⭐ **BURNING DOWN an existing detector's findings backlog?** (You were handed a rule that
+   already reports findings — e.g. `inspector-scan`.) **Go straight to Step 7b.** Steps 3, 4, 5,
+   6 and 9 are N/A — you are not building a recogniser and there is nothing to `--apply`. Come
+   back to Step 8 for the ratchet and Step 11 for the live check. *(Added 2026-08-27: the
+   frontmatter advertised this shape but the triage had no branch for it, so a cold agent
+   routed into Step 3 and hand-back #8 — upstream of every edit written for this job.)*
 1. **Flat `*Tablet`/`*Mobile` attrs → one object?** The tool exists. Run
    `python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <name> --survey`,
    then read Step 2's ⛔ box for the three things `--survey` will not tell you. Stop here.
@@ -34,9 +34,8 @@ grading: .claude/rubrics/migration-method-grading.md
    what decides whether the change costs a day or a fortnight.
 3. **Otherwise** — a rename, a call-site swap, a helper adoption — start at Step 1.
 
-**STATUS.** The rule below is locked. The 11 steps are `PROVISIONAL-BUT-EXERCISED` —
-follow them, and **log every point where you had to guess, open a file this doc does not
-name, or do something it does not describe.** That log is what closes them.
+**STATUS.** The rule below is locked. The 11 steps are exercised but still imperfect — if you
+hit an instruction that cannot be followed, fix it in place and tag the date.
 
 ---
 
@@ -66,10 +65,12 @@ At 4 instances the detector costs more than the edit. Measured floor: **131 line
 buying the `--check` gate that stops instance 5 arriving next month. **If the change
 genuinely cannot regress, the threshold does not apply.**
 
-### If this migration is a Spec 31 PHASE
+### If this migration is a declared Spec 31 PHASE
 
-⚠ **Unless this migration is a declared Spec 31 PHASE — then R-31-5 governs and you split
-it** into the phase's agreed commit boundaries. "One commit" describes a standalone codemod,
+⚠ **Then R-31-5 governs and you split it** into that phase's agreed commit boundaries. The
+single-landing-commit assumption elsewhere in this document describes a standalone codemod, not
+a phase. *(Rewritten 2026-08-27: this passage was truncated mid-sentence and qualified a
+"one commit" rule that appears nowhere in this document.)*
 
 ## ⛔ When to STOP and hand back to Bean
 
@@ -206,7 +207,7 @@ answered *how many*, and nothing answered *what shape*.
 ## Step 4 — Choose the recogniser, then copy the skeleton
 
 ⛔ **FIRST: does a detector for this subject ALREADY EXIST and report findings?** If Step 1 found
-one that already carries `--check`/`--self-test` and is registered (e.g. `inspector-scan`, 22 rules
+one that already carries `--check`/`--self-test` and is registered (e.g. `inspector-scan`, every rule
 across every block), then **Steps 4 and 5 are N/A — say so and go to Step 7b.** You are not
 building a recogniser; you are burning down the backlog of one that works. Forcing Steps 4-5 here
 produces a second detector competing with the first. (D778.)
@@ -254,9 +255,6 @@ prune during the walk, not after. See hazards.
 has no `classify()`, no `EXCLUDE`, no `rel()`, no `unrecognised` category and two fixtures —
 so it fails this document's own mandatory rules below. Read it for `defs_in()` and the
 aligned-assignment hazard only.
-
-⚠ **If a line number does not land on the named construct, the model has moved.** Re-derive
-with `grep -n '^def \|^SELF_TEST\|^EXCLUDE' plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`.
 
 | Part | Where | What it does |
 |---|---|---|
@@ -437,6 +435,14 @@ reason has a fixture reproducing it.
 ## Step 7b — TRIAGE the findings before you gate them
 
 **Only when the detector already existed and reports a large backlog. Skip for a fresh codemod,
+
+**Get the findings first — this detector is `node`, not `python`, and has no `--survey`:**
+
+```bash
+node plugins/sgs-blocks/scripts/inspector-scan/run.js --json > scan.json
+# then filter to YOUR rule and to status === "FLAGGED" yourself — there is no per-rule flag,
+# and the JSON carries BASELINED findings alongside FLAGGED (see Step 8).
+```
 where every finding is one you defined.**
 
 ⛔ **A finding is not a defect until you have said which of three things it is.** Skipping this is
@@ -447,6 +453,12 @@ advisory forever and the count grows.
 |---|---|---|
 | **REAL** | the defect is genuine | it enters the worklist and the ceiling |
 | **DETECTOR BUG** | the rule is wrong, not the tree | ⛔ **fix the rule.** *"A false positive is a detector bug, never baseline fodder."* |
+
+⛔ **"Fix the rule" has ONE exception: a resolver SHARED across rules.** If the false positive
+traces to shared machinery (e.g. `inspector-scan/core/components.js`), changing it silently
+restages OTHER rules' committed ceilings — rule 21's own `advisoryReason` records a previous
+attempt that "traded 20 false positives for 10 false negatives". That is hand-back #9, not a fix
+you make alone. Record the class on the rule and hand back. *(Added 2026-08-27.)*
 | **ARTEFACT** | true statically, not a real defect — a limit of static analysis | record the limit ON the rule, with the evidence that proves consumption |
 
 ⛔ **The ARTEFACT class is real and large, so do not skip it.** `34-declared-attr-unrendered`
@@ -465,13 +477,20 @@ rather than an inline literal. The resolver was extended, not the prediction low
 code** (`zeroIsAClaim`). A rule that reports 0 having never been able to report anything else is
 indistinguishable from a clean tree.
 
-⚠ **Diff findings on a CONTENT key, never the raw one.** A raw finding key usually embeds a line
-number, so an unrelated edit above a row reports it as net-new. Normalise on
-`block + kind + rowKey`. Rule 31 was measured this way: 17 genuinely closed, ZERO genuinely new,
-where the naive diff claimed several untouched rows had appeared.
+⚠ **Diff findings on a CONTENT key, never a line-keyed one — but CHECK THE SCHEMA FIRST.**
+Where a raw key embeds a line number, an unrelated edit above a row reports it as net-new.
+Rule 31 is the case that needs normalising, and `block + kind + rowKey` is what was used there:
+17 genuinely closed, ZERO genuinely new, where the naive diff claimed untouched rows had appeared.
+
+⛔ **`rowKey` is NOT a finding field, and `kind` is null on 23 of 24 rules — so that recipe is
+rule-31-specific, not general.** Verified 2026-08-27; the finding schema is `rule, checklistItem,
+block, file, line, severity, detail, fix, kind, key, status`. On `21-render-without-control`,
+`line` is `null` and `key` is already `rule|block|file|attr` — **the raw key IS a content key, and
+normalising it would collapse every finding on a block into one.** Read one finding, confirm
+whether its key actually embeds a line number, and only normalise if it does.
 
 ⭐ **The worked example is `plugins/sgs-blocks/scripts/inspector-scan/rules.json`.** Its
-`advisoryReason` fields carry ~12,000 words of exactly this discipline — more than this document —
+`advisoryReason` fields carry thousands of words of exactly this discipline — more than this document —
 and every movement is recorded with its composition **enumerated, not inferred**. Read rule 31's
 before running your own backlog. (D778.)
 
@@ -500,9 +519,26 @@ Register it before the COMMIT, and prove it fails before the commit. That satisf
 ### ⛔ THERE ARE THREE GATE SHAPES, AND THIS STEP USED TO DESCRIBE ONLY ONE
 
 Picking the wrong one is not cosmetic: **demanding a binary `--check` on a backlog that cannot
-reach 0 leaves "make the rule advisory" as the only compliant move.** That is how 15 of
-`inspector-scan`'s rules became permanently unable to fail while carrying 945 findings. This
-document caused that. (D778.)
+reach 0 leaves "make the rule advisory" as the only compliant move.** That is how 17 of
+`inspector-scan`'s rules came to sit advisory carrying a large backlog. This document caused
+that. (D778.)
+
+⛔ **MAP THE SHAPES ONTO THE REAL FIELDS BEFORE YOU CHOOSE — and do NOT read "advisory" as
+"cannot fail".** Corrected 2026-08-27 after a four-seat council found the previous wording false
+in both halves: it said 15 rules (there are 17) had become "permanently unable to fail" (they had
+not). In `inspector-scan` the mapping is:
+
+| The shape above | The actual field | What enforces it |
+|---|---|---|
+| **Binary** | `mode: "gate"` | `computeExit` fails on ANY `FLAGGED` finding (`run.js:171-176`) |
+| **Ratcheted ceiling** | `mode: "advisory"` **plus a numeric `openBacklog`** | the advisory ratchet fails the build when `flagged > openBacklog` (`run.js:190-209`), live since 2026-08-18 |
+| *(registration error)* | `mode: "advisory"` with NO numeric `openBacklog` | hard fail — `run.js:194-201` refuses it, and `:80-83` refuses to start a rule with no `advisoryReason` |
+
+⛔ **An advisory rule DOES red the build.** Advisory means "gated on the ceiling, not on zero" —
+it IS the ratcheted-ceiling shape, not an off switch. Promoting a backlogged rule to `mode:"gate"`
+because you believed advisory was toothless reds the pre-deploy gate for every track. The
+promotion criterion is Bean-locked in `rules.json` `_meta.note`: promote **once `openBacklog`
+reaches 0 AND every remaining baseline entry carries a real human reason** — never before.
 
 | Shape | `--check` behaviour | Use when |
 |---|---|---|
@@ -522,13 +558,22 @@ document caused that. (D778.)
   drop**, or the standard is not in practice enforcing.
 - ⛔ **Never promote a rule to gating on the run that introduces it.** Advisory on introduction is
   deliberate — a rule's first live number is a measurement, not yet a trusted one.
-- **Advisory is a STARTING state with an exit condition, never a resting one.** A rule with no
-  ceiling and no promotion criterion is a measurement nobody will ever act on. If it must stay
-  advisory permanently, write the reason on the rule.
+- **Advisory should be a STARTING state with an exit condition, not a resting one — but note this
+  is PRESCRIPTION, not description.** ⛔ Verified 2026-08-27: **no advisory rule in `rules.json`
+  carries a `promotionCondition`** (all five sit on rules already gated), and four advisory rules
+  sit at `openBacklog: 0` unpromoted. Do not go looking for a per-rule exit field; it does not
+  exist. The real criterion is Bean-locked in `_meta.note` — promote once `openBacklog` reaches 0
+  AND every remaining baseline entry carries a real human reason. Write your rule's exit condition
+  into its `advisoryReason`; if it must stay advisory permanently, write THAT reason there too.
 
 ⚠ **Count only what the gate counts.** `inspector-scan`'s `--json` serialises BASELINED findings
 alongside FLAGGED ones while the exit code filters to FLAGGED — a raw array length over-counts by
 exactly the baselined entries. Check which population your ceiling is measured against.
+
+⛔ **If the detector is ALREADY registered, registration is DONE — skip to the ratchet above.**
+Confirm with `npm run gate:list` (never by grepping `package.json`). Steps 4, 5 and 11 each got
+an "already exists" off-ramp; this one did not, and a cold agent following it literally adds a
+duplicate `gates.json` record and a duplicate alias. *(Added 2026-08-27.)*
 
 Add a record to `plugins/sgs-blocks/scripts/gates.json` — **all seven fields**:
 
@@ -629,9 +674,16 @@ developer-tooling change has no page and no `classify()` categories. **The subst
 provably-identical behaviour**: diff the tool's own output against a baseline recovered with
 `git show <recorded-sha>:` — stronger than a saved file, because it cannot drift. (D775.)
 
-⚠ **"One instance per `classify()` category" does not scale to a findings backlog.** With 22 rules
-across 81 blocks there are no `classify()` categories to enumerate. Sample by **finding KIND** and
-by **the mechanism that fixes it**, not by block — one live check per kind you touched. (D778.)
+⚠ **"One instance per `classify()` category" does not scale to a findings backlog.** Across every
+rule and every block there are no `classify()` categories to enumerate. Sample by **the MECHANISM
+that fixes the finding**, not by block — one live check per mechanism you touched. (D778.)
+
+⛔ **Do NOT sample by the finding's `kind` field — on almost every rule it is null.** Measured
+2026-08-27 across a full scan: `kind` is non-null on **exactly one rule of 24**
+(`31-golden-colour-control`). All 222 of `21-render-without-control`'s findings carry `kind: null`,
+so an agent told to "sample by KIND" has nothing to partition on. Derive the mechanism from the
+finding `key`'s tail (the attribute or symbol) instead. This instruction was generalised from rule
+31 and was wrong for the other 23 — corrected 2026-08-27.
 
 Then open a real page rendering an affected block and check the changed property's computed
 value — **at least one instance per `classify()` category**, not one page.

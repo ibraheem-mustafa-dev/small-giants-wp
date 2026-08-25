@@ -251,3 +251,64 @@ claim on that point reproduces.
 | Gate fails on a real break, then recovers | injected `sgsFakeParityProbeTablet` → exit 1 → restore → exit 0 |
 | Catalogues stale at HEAD, not from this change | `git stash push` my 3 files, re-run both `--check` |
 | 57/57 gates green including the new one | `npm run gate:fast` |
+
+---
+
+## Round 4 — the D778 burn-down edits, councilled 2026-08-27
+
+Four seats, dispatched in parallel and blind: **Cutter** (delete-only), **Cold applier**
+(walked the doc against a real backlog — rule `21-render-without-control`), **Grader**
+(anchored rubric), **Ratchet auditor** (Step 8 vs `inspector-scan/rules.json`).
+
+**Panel counts: CONFIRMED 45 · PEDANTIC 6 · WRONG 3.**
+
+| Seat | Grade (its dimension) | C / P / W |
+|---|---|---|
+| Cutter — length + density | C+ | 11 / 0 / 0 |
+| Cold applier — first-attempt reach | D+ | 11 / 3 / 0 |
+| Grader — overall, anchored | C+ (was B−) | 6 / 2 / 3 |
+| Ratchet auditor — extraction fidelity | C+ | 17 / 1 / 0 |
+
+### The convergent headline (3 of 4 seats, independently)
+
+Step 8's justifying sentence — *"that is how 15 of `inspector-scan`'s rules became permanently
+unable to fail while carrying 945 findings"* — was **false in both halves**, and was false on the
+day it was written. Measured: **17** advisory rules, and `run.js:190-209` has failed the build on
+an advisory ratchet breach since **2026-08-18**, a week before the sentence. Proven directly this
+session by dropping rule 34's ceiling to 318 → exit 1 naming the rule.
+
+D-class under the rubric: `mode:'advisory'` + a numeric `openBacklog` **IS** the doc's own
+"ratcheted ceiling" and `mode:'gate'` **IS** its "binary", so the doc told the agent that advisory
+was the broken state to escape — inverting the mapping. Acting on it means promoting a backlogged
+rule to `gate`, which reds pre-deploy for all five tracks.
+
+### The three WRONG findings (they RAISED the grade)
+
+1. *"Step 4's off-ramp won't fire"* — it does; all three preconditions verified.
+2. *"Routing to 7b skips Step 6, so a fixed rule ships with no fixture"* — `run.js:107-109` refuses
+   to register any rule without a `selfTest` block. Fails closed.
+3. *"Step 8's ratchet quotes are paraphrase dressed as quotation"* — verbatim, verified.
+
+### CONFIRMED findings fixed in place (all tagged 2026-08-27)
+
+| # | Finding | Fix |
+|---|---|---|
+| 1 | Step 8's causal claim false in both halves | Corrected; added a shape→field mapping table (`mode:"gate"` / `mode:"advisory"`+ceiling / registration error) and the Bean-locked promotion criterion from `_meta.note` |
+| 2 | Step 11 "sample by finding KIND" **impossible** — `kind` is non-null on exactly 1 rule of 24; all 222 rule-21 findings carry `kind: null` | Re-pointed to sampling by the fixing MECHANISM; the `kind` trap documented |
+| 3 | Step 7b content key `block + kind + rowKey` names two fields that do not exist — `rowKey` absent from the schema; and rule 21's `line` is `null` with `key` already content-shaped, so the stated premise is false | Rewritten to "check the schema first"; the rule-31-specific recipe kept but labelled |
+| 4 | Entry triage had **no burn-down branch**, so the backlog path was unreachable — a cold agent routed to Step 3 and hand-back #8, upstream of every D778 edit | Added branch 0 routing straight to Step 7b |
+| 5 | Truncated fragment ending mid-sentence, qualifying a "one commit" rule that appears nowhere in the doc | Rewritten as a complete sentence |
+| 6 | *"Advisory is a STARTING state with an exit condition"* presented as **practised** — no advisory rule carries a `promotionCondition`; four sit at `openBacklog: 0` unpromoted | Relabelled prescription-not-description; real criterion cited |
+| 7 | Step 7b's ⛔ "fix the rule" has no blast-radius escape — two of three sampled findings trace to a resolver shared across rules | Exception added, routing to hand-back #9 |
+| 8 | Step 8 had no "gate already exists" off-ramp (Steps 4/5/11 all had one) | Added, with `npm run gate:list` |
+| 9 | Prose-cached counts ("22 rules", "~12,000 words") — `_meta.note` explicitly forbids caching them | Replaced with uncached phrasing |
+
+### Recorded, NOT fixed
+
+- **Recoverability holds at D.** 72 gates enumerated; none inspects diff shape or changed-line
+  count. It failed again this session: the `rules.json` edit was done by TEXT replacement
+  specifically to dodge a `json.dump` whole-file reformat, and the defence was a manual
+  `git diff --stat`. Round 3 named this the single highest-value fix; it remains Bean's call.
+- **Cutter's remaining cuts** (~40 lines: the "Why this exists" section, the duplicated anchoring
+  incident, the third `--allow-dirty` telling). Net length still rose — corrections outrank
+  compression, but the trend is real and the Cutter is right about it.
