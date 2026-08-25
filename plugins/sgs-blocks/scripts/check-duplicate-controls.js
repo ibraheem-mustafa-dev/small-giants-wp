@@ -61,8 +61,14 @@
  *
  * GATE-CAPABLE (fixed 2026-08-18): `--check` now exits 1 when any finding is
  * net-new (not already in the baseline) and 0 otherwise. Plain/--json runs
- * remain diagnostic-only and always exit 0. It is still NOT wired into
- * prebuild/prestart; run it manually or from a future opt-in CI step.
+ * remain diagnostic-only and always exit 0.
+ *
+ * ⚠ CORRECTED 2026-08-25. This previously read "still NOT wired into
+ * prebuild/prestart; run it manually". That is STALE: the gate is
+ * registered in `scripts/gates.json` at tier `fast`, and `prebuild` runs
+ * `run-gates.py --tier fast`, so it gates EVERY build. Grepping package.json
+ * no longer answers this question — the chain moved to gates.json, which is
+ * the exact drift this plugin's own CLAUDE.md warns about.
  *
  * Usage:
  *   node scripts/check-duplicate-controls.js                  # report, always exit 0
@@ -130,14 +136,21 @@ const UNIVERSAL_HOVER_BY_CATEGORY = {
 // control in favour of nothing) and reported loudly.
 // ---------------------------------------------------------------------------
 function readRegisteredUniversalHoverAttrs() {
-	const src = readIfExists(
-		path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects.js' )
+	// Comment-STRIPPED: reading raw source means a comment such as
+	// `// sgsHoverBgColour: RETIRED, do not re-add` re-registers the phantom
+	// as if it were a live key, silently un-guarding this guard. That is a
+	// completely natural way to phrase a retirement note, so it is not a
+	// hypothetical.
+	const src = stripComments(
+		readIfExists(
+			path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects.js' )
+		)
 	);
 	const found = new Set();
 	if ( ! src ) {
 		return found;
 	}
-	const re = /(sgsHover[A-Za-z0-9]*|sgsStagger[A-Za-z0-9]*)\s*:/g;
+	const re = /\b(sgsHover[A-Za-z0-9]*|sgsStagger[A-Za-z0-9]*)\s*:/g;
 	let m;
 	while ( ( m = re.exec( src ) ) !== null ) {
 		found.add( m[ 1 ] );
@@ -309,19 +322,95 @@ function collectControlledAttrs( src ) {
  * @param {Set<string>} declaredAttrs This block's declared attribute names.
  * @return {Set<string>} Attribute names controlled via a dispatcher table.
  */
-function collectIndirectControlledAttrs( src, declaredAttrs ) {
+function collectIndirectControlledAttrs( parts, declaredAttrs ) {
 	const out = new Set();
-	if ( ! src || ! /setAttributes\(\s*\{\s*\[/.test( src ) ) {
+	if ( ! parts || ! parts.length ) {
 		return out;
 	}
-	const valueRe = /[A-Za-z_$][\w$]*\s*:\s*['"]([A-Za-z_$][\w$]*)['"]/g;
-	let m;
-	while ( ( m = valueRe.exec( src ) ) !== null ) {
-		if ( declaredAttrs.has( m[ 1 ] ) ) {
-			out.add( m[ 1 ] );
-		}
+	for ( const src of parts ) {
+		collectIndirectFromOneFile( src, declaredAttrs, out );
 	}
 	return out;
+}
+
+function collectIndirectFromOneFile( src, declaredAttrs, out ) {
+	if ( ! src ) {
+		return;
+	}
+	let ast;
+	try {
+		ast = parser.parse( src, {
+			sourceType: 'module',
+			errorRecovery: true,
+			plugins: [ 'jsx', 'classProperties', 'objectRestSpread', 'optionalChaining', 'nullishCoalescingOperator' ],
+		} );
+	} catch ( e ) {
+		return;
+	}
+
+	// Gate: only blocks that actually contain a COMPUTED-key setAttributes are
+	// candidates. Without one there is no dispatcher to be indirect through.
+	let hasComputedWrite = false;
+	traverse( ast, {
+		CallExpression( p2 ) {
+			const c = p2.node.callee;
+			if ( ! c || c.type !== 'Identifier' || c.name !== 'setAttributes' ) {
+				return;
+			}
+			const arg = p2.node.arguments[ 0 ];
+			if ( arg && arg.type === 'ObjectExpression' &&
+				arg.properties.some( ( pr ) => pr.computed ) ) {
+				hasComputedWrite = true;
+			}
+		},
+	} );
+	if ( ! hasComputedWrite ) {
+		return;
+	}
+
+	// Only two SYNTACTIC POSITIONS count, so an unrelated lookup table such as
+	// `const ICON_LOOKUP = { home: 'ctaIconSlug' }` can never mark an attr
+	// controlled (that over-reach was this function's own bug on 2026-08-25):
+	//
+	//   (a) a string value inside an OBJECT passed as a JSX PROP — the
+	//       `attrNames={ { valueHover: 'shadowHover' } }` map idiom that
+	//       ShadowControl uses across 15 blocks.
+	//   (b) a single string ARGUMENT to a call inside a JSX prop — the curried
+	//       setter idiom `onChange={ set( 'effectHover' ) }` where
+	//       `const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } )`.
+	//       sgs/gallery uses (b) and NOT (a); an earlier version of this
+	//       function claimed to fix gallery and did not, because it only
+	//       understood (a).
+	const consider = ( name ) => {
+		if ( declaredAttrs.has( name ) ) {
+			out.add( name );
+		}
+	};
+	traverse( ast, {
+		JSXAttribute( p2 ) {
+			const v = p2.node.value;
+			if ( ! v || v.type !== 'JSXExpressionContainer' ) {
+				return;
+			}
+			const expr = v.expression;
+			if ( ! expr ) {
+				return;
+			}
+			if ( expr.type === 'ObjectExpression' ) {
+				for ( const pr of expr.properties ) {
+					if ( pr.type === 'ObjectProperty' && pr.value &&
+						pr.value.type === 'StringLiteral' ) {
+						consider( pr.value.value );
+					}
+				}
+				return;
+			}
+			if ( expr.type === 'CallExpression' && expr.arguments.length === 1 &&
+				expr.arguments[ 0 ] && expr.arguments[ 0 ].type === 'StringLiteral' ) {
+				consider( expr.arguments[ 0 ].value );
+			}
+		},
+	} );
 }
 
 /**
@@ -332,6 +421,13 @@ function collectIndirectControlledAttrs( src, declaredAttrs ) {
  * @param {string} blockDir Absolute path to the block's src directory.
  * @return {string} Concatenated, comment-stripped source.
  */
+// Per-block list of the INDIVIDUAL source files loadBlockOwnSrc() folded in.
+// The AST collector must parse each file on its own: parsing the concatenated
+// text throws Babel's scope error `Duplicate declaration "__"` (every file
+// imports `__` from @wordpress/i18n), which silently skipped sgs/gallery,
+// sgs/google-reviews, sgs/pricing-table and sgs/whatsapp-cta entirely.
+const OWN_SRC_PARTS = new Map();
+
 function loadBlockOwnSrc( blockDir ) {
 	const editJsPath = path.join( blockDir, 'edit.js' );
 	let src = readIfExists( editJsPath );
@@ -368,6 +464,10 @@ function loadBlockOwnSrc( blockDir ) {
 			src += '\n' + readIfExists( file );
 		}
 	}
+	OWN_SRC_PARTS.set(
+		blockDir,
+		[ ...readPaths ].map( ( f ) => stripComments( readIfExists( f ) ) )
+	);
 	return stripComments( src );
 }
 
@@ -416,7 +516,7 @@ function checkHoverDuplication( blockSlug, blockDir, meta ) {
 	// Fold in controls reached through a dispatcher table (e.g. ShadowControl's
 	// `attrNames` map) — see collectIndirectControlledAttrs above.
 	for ( const a of collectIndirectControlledAttrs(
-		ownSrc,
+		OWN_SRC_PARTS.get( blockDir ) || [],
 		new Set( Object.keys( attrs ) )
 	) ) {
 		controlled.add( a );
@@ -888,6 +988,45 @@ function findingKey( f ) {
 // ---------------------------------------------------------------------------
 
 function main() {
+	// BLINDNESS CHECK (2026-08-25). The drift guard above validates the hover
+	// category table against hover-effects.js — but it only RUNS when that file
+	// could be read and parsed. If it is renamed, moved, or changes how it
+	// declares attrs, the registered set comes back EMPTY, the guard silently
+	// skips, and the table is used unvalidated: exactly the state that produced
+	// 36 wrong findings before it was fixed. A guard that can quietly stop
+	// guarding is not a guard, so this fails the gate LOUDLY instead.
+	if ( REGISTERED_UNIVERSAL_HOVER.size === 0 ) {
+		process.stderr.write(
+			'[check-duplicate-controls] FAIL - could not read any universal hover attribute\n'
+		);
+		process.stderr.write(
+			'  from src/blocks/extensions/hover-effects.js, so UNIVERSAL_HOVER_BY_CATEGORY\n'
+		);
+		process.stderr.write( '  CANNOT be validated and this gate is blind.\n' );
+		process.stderr.write(
+			'  Either that file moved, or it no longer declares attrs as `sgsHoverX:` /\n'
+		);
+		process.stderr.write(
+			'  `sgsStaggerX:` keys. Fix readRegisteredUniversalHoverAttrs() to match -\n'
+		);
+		process.stderr.write( '  do NOT delete this check.\n' );
+		process.exit( 1 );
+	}
+	if ( UNIVERSAL_MAP_DRIFT.length ) {
+		process.stderr.write(
+			'[check-duplicate-controls] WARNING - UNIVERSAL_HOVER_BY_CATEGORY has drifted\n'
+		);
+		process.stderr.write(
+			'  from hover-effects.js. These name attrs that are NOT registered and were\n'
+		);
+		process.stderr.write(
+			'  DROPPED for this run (they would advise deleting a working control in\n'
+		);
+		process.stderr.write( '  favour of nothing):\n' );
+		for ( const d of UNIVERSAL_MAP_DRIFT ) {
+			process.stderr.write( '    ' + d + '\n' );
+		}
+	}
 	const asJson = process.argv.includes( '--json' );
 	const isCheck = process.argv.includes( '--check' );
 	const isUpdateBaseline = process.argv.includes( '--update-baseline' );
