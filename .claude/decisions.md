@@ -1,3 +1,51 @@
+## D789 [ROUTINE] — the three ungated fx registration points are now gated, driven by disk not by a roster
+
+**2026-08-25.** `plugins/sgs-blocks/scripts/check-fx-registration.py`, wired into
+`scripts/gates.json` at tier `fast` (order 73, 0.10s measured against a 400ms budget).
+Closes the open item D784 named: *"THE REGISTRATION SURFACE IS TEN POINTS, AND THREE ARE
+GATED BY NOTHING."*
+
+An fx effect must register in ten places. Seven were gated (five by `check-fx-list-drift.py`,
+two by the build's own fail-closed generators). The three that were gated by **nothing**:
+the motion-registry **script-module map** (`class-sgs-motion-registry.php:55` `MODULES`), its
+**per-effect CSS map** (`:363` `EFFECT_STYLES`), and the **webpack entry**
+(`webpack.config.js:106`). Miss one and the effect registers, the panel appears, the client
+configures it, and nothing happens on the page — the D452 "configured and invisible" shape.
+
+⭐ **THE ROSTER THAT LOOKED RIGHT WAS THE WRONG DRIVER.** The obvious driver is
+`SHIPPED_EFFECTS` (`src/blocks/extensions/fx.js:68`). It has **13** entries and is the
+EDITOR PICKER list. Four effects — `draggable`, `image-sequence`, `flip`, `carousel-loop` —
+carry a boot module and a webpack entry but are deliberately absent from it. A gate driven by
+that roster would have been **blind to four of the seventeen** while looking complete. The
+driver is the disk: the 17 `fx-*.js` files under `src/shared/effects/[gsap/]`. Sibling of
+`a-roster-is-not-a-definition-check-each-member`.
+
+⭐ **AND "EVERY EFFECT HAS CSS" IS A FALSE INVARIANT.** `EFFECT_STYLES` holds **8 of 17** —
+CSS is opt-in. Asserting the obvious rule would have red-flagged nine healthy effects. R3
+asserts the two TRUE directions instead: every `EFFECT_STYLES` key is a real slug whose file
+exists, and every `assets/css/fx-*.css` on disk is enqueued by a row or declared exempt with a
+reason. That catches the real failure — a stylesheet written but never enqueued — which is the
+same invisible shape. (`DECLARED_CSS_EXEMPT` is empty today; all 8 are enqueued.) Note
+`'morph' => 'assets/css/fx-shape-routes.css'`: filename ≠ slug, so no `fx-<slug>.css` assumption.
+
+**Two traps found during the build, both by the gate's own self-test rather than by review:**
+1. **A third construct that must not be swept in.** `webpack.config.js` has TWO
+   `Object.fromEntries` blocks. The one at `:296` is the 11 gsap effects; the one at **`:113`
+   is 13 gsap VENDOR MODULES** (`vendor-modules/${name}`). A parser keying on the construct
+   swallows the wrong 13. Anchored on the `shared/effects/` entry-name prefix instead.
+2. **A `count=1` blindness case proves nothing when the construct repeats.** Renaming ONE of
+   the 9 `shared/effects/` occurrences leaves the rest parseable, so the gate reported a
+   violation and the blindness arm never ran — it reported itself UNPROVEN rather than
+   passing. `_Case` gained a `min_hits` field asserting ≥5 substitutions landed.
+   ⚠ `check-container-child-lift.py`'s self-test has this same weakness (`.replace(old,new,1)`
+   can silently no-op); `check-fx-list-drift.py`'s `_Case.apply()` returning None on a missed
+   anchor is the hardened shape and is what was copied.
+
+**Self-test: 10 break cases + a negative control**, each watched failing first; all three
+parses fail CLOSED when blinded (`VacuousParse`). Default invocation IS gating mode, following
+`check-container-child-lift.py`; `--self-test` is the only flag. The gate is pure over TEXT —
+zero disk writes — so it plants defects in memory and never touches the tree.
+
 ## D785 [INCIDENT] — a build gate was wrong in BOTH directions, and its own guard was inert
 
 **2026-08-25.** `check-duplicate-controls.js`. Commits `4ab25c6ca` `7a47cce55` `bf08e9feb`

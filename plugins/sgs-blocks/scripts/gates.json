@@ -659,5 +659,14 @@
     "added_commit": null,
     "budget_ms": 250,
     "order": 72
+  },
+  {
+    "id": "check-fx-registration",
+    "cmd": "python scripts/check-fx-registration.py",
+    "tier": "fast",
+    "added_D": "D789",
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 73
   }
 ]
