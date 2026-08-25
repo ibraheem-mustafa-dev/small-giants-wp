@@ -115,12 +115,12 @@ hand-painted `palette.png` texture; 4 interpolated colour stops can't reproduce 
 
 ### ▶ NEXT, in order
 
-1. ⛔ **DEPLOY THE CHILD-LIFT FIX (blocked, not done).** `843f1170d` is committed + pushed but
-   NOT deployed: a concurrent track's uncommitted `src/blocks/hero/render.php` trips the D336
-   dirty-tree guard, and `--payload` must never cover another track's work. Re-run once their
-   tree is clean:
-   `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only`
-   Then re-probe canary **2744** and confirm the canvas computes `position: absolute`.
+1. ✅ **CHILD-LIFT — CLOSED 2026-08-25.** All SIX rules de-specified to `:where()` at
+   (0,0,0); 47 exclusions across 7 selectors deleted. Deployed + live-verified: of 141
+   matched container children, exactly ONE changed (`sgs-particles__canvas`
+   relative->absolute); the canvas now overlays its parent exactly (630px = 630px) instead
+   of inflating the section to 1443px. Gate `check-container-child-lift` (tier fast,
+   `--self-test` proven) stops the list ever regrowing. Full fast suite 64/64.
 2. **Verify the EDITOR surface for `particles`** — never opened. Frontend-only verification is
    exactly the gap that once shipped 0-of-6 blocks rendering in the editor while 5-of-5 rendered
    live. Also confirm live cap-binding and loop-stop (my first probe was a broken instrument).

@@ -75,12 +75,41 @@ the build if a `:not()` chain reappears on these rules, or if the rules vanish e
 (so the gate cannot go blind). `--self-test` proves both failure modes catch, plus a
 clean-tree control.
 
-## Not covered by this report
+## POST-DEPLOY CONFIRMATION — 2026-08-25, deployed and re-measured
 
-Live deploy is BLOCKED by another track's uncommitted `src/blocks/hero/render.php`
-tripping the D336 dirty-tree guard. The A/B above is a faithful in-page simulation of
-the change against the real deployed cascade, not a post-deploy capture. Re-run
-`scripts/check-container-child-lift.py` and the A/B after the real deploy.
+The simulation above predicted exactly one change. The real deploy produced exactly
+that change and nothing else.
+
+Deployed via `build-deploy.py --target sandybrown --blocks-only` on a CLEAN tree
+(183s, oldshape audit + ownership + 3 live motion-QA probes all green).
+
+Census re-run against the live site and diffed against the pre-change baseline:
+
+| | |
+|---|---|
+| elements matched across before/after | 141 |
+| **CHANGED** | **1** |
+| the change | `sgs-particles__canvas`  `relative/z1` -> `absolute/z1` |
+
+Element churn (4 `trust-bar__badge` gone, 1 `container__inner` new) is another
+track's homepage work landing in the same window — attributed, not mine.
+
+Geometry proof that the layer now overlays instead of sitting in flow:
+
+| property | before | after |
+|---|---|---|
+| `position` | `relative` | `absolute`, `inset: 0` |
+| canvas height | 1443px (INFLATING its section) | 630px — exactly the parent |
+| paints | n/a | 2417 lit pixels during a pointer sweep |
+| `pointer-events` | n/a | `none` |
+| canvases on page | n/a | 1 (the no-fx sibling still has none) |
+| console errors | n/a | 0 |
+
+**Full `fast` gate suite: 64/64 PASS**, including the new
+`check-container-child-lift`. The one pre-existing failure (`no-inline`, a
+`sgs/trust-bar` inline style on the live homepage) also cleared on this deploy —
+predicted, because the static source gate was already clean and the live site was
+running stale deployed code.
 
 ---
 ---
