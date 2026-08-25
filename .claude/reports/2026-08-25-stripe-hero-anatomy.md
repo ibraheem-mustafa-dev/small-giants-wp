@@ -8,9 +8,10 @@ last_updated: 2026-08-25
 
 # Stripe hero animation — anatomy
 
-**Status: the rig is built and rendering; six of the seven questions are answered.** Claims are
+**Status: the rig is built and rendering; all seven questions are answered.** Claims are
 labelled `read-source` (verified line-by-line against Stripe's bundle) or `rendered` (observed in
-the working rig). ⚠ marks what is not established. **Q6 has no figure and must not be quoted.**
+the working rig). ⚠ marks what is not established. **Q6 was MEASURED on 2026-08-25 — quote it only
+together with the GPU and configuration it was measured on.**
 
 ⭐ **Headline: Q7's prior conclusion is REVERSED. No artist-painted palette is required.** Four
 hue-adjacent stops — 307 unique colours against Stripe's 82,831 — render as premium through their
@@ -189,10 +190,84 @@ Live light preset: `speed 4e-5`, `timeOffset 17500`, `displaceAmount −7.821`,
 
 ## Q6 — Per-frame cost
 
-⚠ **NOT MEASURED — no figure should be quoted.** Structurally, and now known to be heavier than
-first thought: 33,153 vertices, **two passes** (wave → framebuffer → post), 6 texture samples per
-pixel in the blur, DPR capped at 2, canvas ~1393×916 CSS px. The geometry fold is one-time CPU work
-on a worker, not per-frame.
+✅ **MEASURED 2026-08-25.** Harness: `.claude/scratch/stripe-hero-poc/perf/measure-frame-cost.mjs`,
+raw data `perf/frame-cost.json`. Primary metric is the **GPU timer query**
+(`EXT_disjoint_timer_query_webgl2`, median of 60 samples), corroborated by an independent batched
+wall-clock leg. **Both controls pass and the two methods agree** — see "Why these numbers are
+trustworthy" below.
+
+**Configuration the numbers belong to** (a figure without this is not a measurement):
+NVIDIA RTX 2060, ANGLE/D3D11, Chromium 147.0.7727.15, canvas 1393×761 CSS px, ⭐ **GPU blocklist
+NOT bypassed** — the rig's own capability gate returns `supported: true` on this machine, so this
+is a configuration Stripe would actually serve.
+
+| Config | Backing store | MP | GPU ms/frame | ms/MP |
+|---|---|---|---|---|
+| **Stripe rig — both passes, DPR 1** | 1393×761 | 1.06 | **0.373** | 0.354 |
+| **Stripe rig — both passes, DPR 2** | 2786×1522 | 4.24 | **1.135** | 0.266 |
+| Stripe rig — wave pass only, DPR 1 | 1393×761 | 1.06 | 0.113 | 0.108 |
+| Stripe rig — wave pass only, DPR 2 | 2786×1522 | 4.24 | 0.367 | 0.085 |
+| **FR-38-31 as shipped, DPR 1** | 1393×761 | 1.06 | **0.040** | 0.037 |
+| FR-38-31 as shipped, DPR 2 → capped 1.5 | 2090×1142 | 2.39 | 0.070 | 0.029 |
+| NEGATIVE CONTROL — `glClear` only | 1393×761 | 1.06 | 0.004 | 0.004 |
+
+### ⭐ The three findings, in order of consequence
+
+**1. The post-process pass is ~70% of the total cost.** 0.261ms of 0.373ms at DPR 1 (0.767 of
+1.135 at DPR 2 — the share is stable at 68–70% across both). **The blur-and-grain second pass
+costs 2.3× the wave render it post-processes.** Spec 38 §1.2b names multi-pass/framebuffers as
+the trigger to reopen D479 decision 2 (the OGL question); that decision was being argued with no
+number behind it. This is the number, and the second pass is the expensive half — not a
+10-line add-on.
+
+**2. Stripe's effect costs 9.4× our shipped FR-38-31** at identical pixel count (0.373 vs 0.040ms).
+But in absolute terms 0.373ms is ~2% of a 16.7ms frame budget. **Relatively expensive, absolutely
+cheap — on this GPU.** Both halves of that sentence are load-bearing.
+
+**3. DPR 2 costs 3.0× DPR 1 for 4× the pixels** — sub-linear, so there is a fixed per-frame cost
+independent of resolution. Note FR-38-31's own `resize()` clamps DPR to 1.5, so its "DPR 2" column
+is 2.39MP not 4.24MP; the ms/MP column is what makes the comparison size-independent.
+
+### Live-loop behaviour (measured while the module's own rAF loop was running)
+
+`frameInterval = 2` is now **confirmed empirically rather than read from source**: 601 rAF ticks
+produced 602 GL draw calls at 2 calls per drawn frame = **301 drawn frames**, and the `?nopost`
+config produced 301 calls at 1 per frame. Zero-to-one frames over 20ms in a 6-second window.
+⚠ The display on this machine runs at **100Hz**, not 60 — so "every 2nd frame" is ~50 drawn fps
+here, not 30.
+
+### Why these numbers are trustworthy — and the two instruments that failed first
+
+| Control | Result |
+|---|---|
+| **Negative** — a `glClear`-only page must cost far less than the real effect | **PASS**, 88× cheaper (0.004 vs 0.373ms) |
+| **Positive** — DPR 2 must cost measurably more on a fillrate-bound effect | **PASS**, 3.04× |
+| **Method agreement** — GPU timer vs batched wall-clock | **PASS**, ratios 0.75–1.23 on the real configs |
+
+⛔ **Two instrument failures, both caught only by the controls.**
+
+1. **Per-draw wall-clock timing returned 0.00ms for EVERYTHING — including the negative control.**
+   Chrome clamps `performance.now()` to 100µs, and real frame times here are 0.04–1.1ms, at or
+   below the clock's resolution. Had the controls not been run, "0.00ms per frame" would have
+   looked like a triumphant result rather than a dead instrument.
+2. ⭐ **`gl.finish()` is not a stall on this stack.** After batching fixed the clock-resolution
+   problem, wall-clock still read 0.015ms against the GPU timer's 0.375ms — a 25× disagreement.
+   Under ANGLE/D3D11 `finish()` flushes the command queue rather than blocking until completion.
+   A 1×1 `readPixels()` — a genuine synchronous read-back — is what forces the GPU to finish, and
+   with it the two methods converge. **A timing loop that does not truly stall measures how fast
+   JS can queue work, not how long the GPU takes to do it.**
+
+### ⚠ What this does NOT establish
+
+- **n=1 on the GPU axis**, which is the axis Stripe's own gating says matters most. An RTX 2060 is
+  a strong desktop GPU. Their blocklist and `failIfMajorPerformanceCaveat` exist precisely because
+  this effect gets expensive on weak hardware — see below.
+- One browser, one driver (ANGLE/D3D11), one OS, one display refresh rate.
+- Nothing about CPU-side cost of the one-time geometry fold, which runs on a worker at load.
+
+Structurally, for context: 33,153 vertices, **two passes** (wave → framebuffer → post), 6 texture
+samples per pixel in the blur, DPR capped at 2. The geometry fold is one-time CPU work on a
+worker, not per-frame.
 
 Their own gating is the strongest available signal that this is expensive: the animation requires
 WebGL2 with `EXT_color_buffer_float`, requests `powerPreference: "high-performance"` **and**
@@ -340,8 +415,8 @@ premium, now correctly saturated. The finding does not depend on the bug.
 
 ### Still outstanding
 
-The raw-WebGL2 port, the performance trace (Q6 — still no figure, do not quote one), and the two
-remaining councils.
+The raw-WebGL2 port and the two remaining councils. (The performance trace was run on 2026-08-25 —
+Q6 now carries a figure.)
 
 ### Instrument failures worth carrying forward
 
@@ -504,7 +579,8 @@ comparable.
 
 Unchanged from the retraction: **n=1 on every axis** (one viewport, one DPR, one browser, one GPU,
 one theme, one frame). The 0.66% is one sample. The 5% ceiling remains self-set and underived, and
-a held-out frame has still not been used to validate. Q6 still has no performance figure.
+a held-out frame has still not been used to validate. (Q6 was answered later the same day — see the
+Q6 section. It is no longer open.)
 
 ---
 
@@ -593,4 +669,76 @@ ground truth to the instruction.
   SUSPECTED, not confirmed for this page. The wide/light preset stands in for all three tiers,
   and the code says so.
 - Everything in the earlier retraction still stands: **n=1 on every axis**, no held-out frame,
-  the 5% ceiling is self-set, and **Q6 still has no performance figure**.
+  and the 5% ceiling is self-set. **Q6 is now MEASURED** (see the Q6 section) — the residual perf
+  gap is that it is n=1 on the GPU axis, not that no figure exists.
+  ⚠ **Superseded in part** — the held-out-frame and DPR items were closed later the same day; see
+  the section immediately below.
+
+---
+
+# ✅ THE FIDELITY NUMBER GENERALISES — the circularity objection is answered
+
+The council's fourth finding was that the fix was **selected and graded on the same single frame**:
+`cs-sweep.mjs` chose the winning configuration by comparing against one live capture, and Gate B
+then scored that same configuration against that same capture. That objection is now discharged by
+measurement, not argument.
+
+## 1. The comparator exists as code — it did not before
+
+⛔ The council confirmed the comparator that produced 2.6% / 10.1% "was never committed — run ad
+hoc, now gone". **A fidelity number nobody can re-derive is not a measurement.** It is now
+`perf/compare.py`: metric, crop, tolerance and distribution fixed in code, numpy-based, JSON out.
+
+**It was validated against a known answer before being trusted.** Pointed at the recorded winning
+cell it returns **0.66%, signed R+0.02 / G−0.30 / B−0.45, bias 0.15, within-8 95.2%, worst 124** —
+every figure matching the report's "Now" column exactly. `perf/identify-pairs.py` re-derives all
+four cells of the 2×2 to the second decimal.
+
+⛔ **A filename trap worth carrying forward.** The comparator was first pointed at
+`blend-live-full.png` as the live reference, on the strength of its name, and returned 14.81% with
+a sign-flipped bias. **`blend-live-full.png` is byte-identical to `blend-fixed.png` — it is a RIG
+render, not a live capture.** The real live capture is `gateb-live.png`. A session trusting that
+filename would compare one rig render against another and report the result as fidelity. The pairs
+were recovered by CONTENT, which is the only reliable way. *(Incidentally corroborated in the same
+sweep: `FINAL-rig.png` is byte-identical to eleven other captures, independently confirming that
+the light render never moved across the six SDD tasks.)*
+
+## 2. Held out on two axes at once — nothing about the rig was changed
+
+`perf/capture-heldout.mjs` captures fresh live/rig pairs at a **new `u_time` the rig was never
+tuned against**, at DPR 1 and DPR 2. The rig's configuration was not touched — that is the entire
+point of the exercise.
+
+| Frame | DPR | Backing store | Mean | Bias/abs | ≤4/255 | ≤8/255 | Worst |
+|---|---|---|---|---|---|---|---|
+| Original — the frame the fix was SELECTED on | 1 | 1393×761 | 0.66% | 0.15 | 84.1% | 95.2% | 124 |
+| **HELD OUT** — `u_time` 44101.7 | 1 | 1393×761 | **0.67%** | 0.12 | 83.7% | 96.3% | 96 |
+| **HELD OUT** — `u_time` 44491.7 | 2 | 2786×1522 | **0.69%** | 0.12 | 82.1% | 96.0% | 117 |
+
+Gate B's tuned frame was `u_time` 44345.4; both held-out captures differ from it, asserted in
+`perf/heldout-meta.json` rather than assumed.
+
+**⭐ The number holds: 0.66% → 0.67% → 0.69%.** And the bias/abs ratio *improved* (0.15 → 0.12),
+which strengthens rather than weakens the reading that the residual is noise-shaped rather than a
+second systematic error hiding behind a lucky frame.
+
+**DPR 2 was the real risk and it passed.** Grain is a fixed ±4/255 in *screen* space and the glow
+uses screen-space derivatives, so both are resolution-dependent and there was no reason to assume
+the match would survive quadrupling the pixel count. It did.
+
+## 3. The 5% ceiling — stated, not retro-fitted
+
+It has no derivation and no precedent anywhere else in this project. Rather than invent one, it is
+now recorded for what it is: **a local convention adopted for this study only.** `compare.py`
+prints that caveat with every verdict, so the number cannot be quoted as a project standard by a
+future reader. It is not one.
+
+## What is STILL n=1 after this
+
+Honest residual, unchanged by the above:
+
+- **One GPU** (RTX 2060), one driver (ANGLE/D3D11), one browser (Chromium 147), one OS.
+- **One theme** — light. The dark path renders but has never been diffed against a live dark capture.
+- **One viewport** (1440×900). DPR varied; viewport did not.
+- ⚠ A 1px canvas-size difference persists: live measures 1392×760, the rig 1393×761. It does not
+  appear to hurt the result, but it is a real sub-pixel offset present in every comparison here.

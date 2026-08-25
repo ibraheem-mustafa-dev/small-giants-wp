@@ -1,3 +1,73 @@
+## D791 [ROUTINE] — the post-process pass costs 70% of the frame; multi-pass Tier W is a design gate, not an increment
+
+**2026-08-25.** Q6 measured (`.claude/scratch/stripe-hero-poc/perf/measure-frame-cost.mjs` →
+`perf/frame-cost.json`; write-up in `.claude/reports/2026-08-25-stripe-hero-anatomy.md` §Q6).
+RTX 2060, ANGLE/D3D11, 1393×761, GPU timer query, **GPU blocklist not bypassed**:
+
+| | GPU ms/frame |
+|---|---|
+| Wave pass alone | 0.113 |
+| Wave + post pass | 0.373 |
+| **Post pass alone** | **0.261 — 70% of total, 2.3× the render it post-processes** |
+| FR-38-31 as shipped | 0.040 |
+
+⭐ **Consequence.** Spec 38 §1.2b names multi-pass/framebuffers as the trigger to reopen D479
+decision 2 (the OGL question). That decision was being argued with **no cost figure**; it now has
+one, and the second pass is the expensive half. **A framebuffer pass may not be added to FR-38-31
+as a 10-line increment** — it takes a design gate. Out of scope for the first rework pass.
+
+Also measured: DPR 2 costs 3.0× DPR 1 for 4× the pixels (fillrate-bound, so FR-38-31's existing
+1.5 DPR cap is well-judged); `frameInterval = 2` confirmed empirically (601 rAF ticks → 301 drawn
+frames) rather than read from source.
+
+⛔ **Two instruments failed first, and only the controls caught them.** (a) Per-draw wall-clock
+timing returned 0.00ms for *everything including the negative control* — Chrome clamps
+`performance.now()` to 100µs and real frame times here are 0.04–1.1ms. (b) **`gl.finish()` is not a
+stall under ANGLE/D3D11** — it flushes rather than blocking, so batched timing still read 0.015ms
+against the GPU timer's 0.375ms. A 1×1 `readPixels()` forces the real stall, after which the two
+independent methods agree within 6–23%. ⚠ **A timing loop that does not truly stall measures how
+fast JS can queue work, not how long the GPU takes.**
+
+⚠ n=1 on the GPU axis, which is the axis that matters most for this class of effect.
+
+## D790 [ROUTINE] — Gate E narrowed to 26 content-identified files, and its rationale corrected
+
+**2026-08-25.** D783 admitted a bounded three.js scratch exception and said the study material is
+deleted at Gate E, framed as closing a **licence exposure**. That framing was wrong and is
+corrected here.
+
+**Copyright protects expression, not functionality** — *SAS Institute v World Programming*
+(CJEU C-406/10, 2012; upheld [2013] EWCA Civ 1482), and **CDPA s.50BA** makes observing/studying/
+testing a program to determine its underlying ideas a **permitted act a licence cannot override**.
+Holding the material for study was never unlawful. **The real risk is PROPAGATION** — a scratch
+file drifting into tracked git, a snippet pasted into shipped code, an agent reproducing it in a
+doc. Gate E manages that, not legality.
+
+**The durable asset was extracted FIRST**, which is what makes the originals disposable rather than
+quietly load-bearing: `.claude/reports/2026-08-25-flowing-gradient-technique-spec.md` describes
+every mechanism in our own words, with no third-party source (gate: zero code fences, zero GLSL
+syntax). Combined with the Q7 finding that four hue-adjacent stops beat a painted palette, **the
+FR-38-31 rework needs nothing from the originals.**
+
+**Scope: 26 files**, enumerated by `perf/gate-e-check.py` → `perf/gate-e-manifest.txt`.
+⛔ **My own estimate was 13.** The enumeration found 26 — a `shaders/live/` subdirectory held ten
+further GLSL files the estimate never accounted for. *An estimate is not an enumeration.*
+
+**Classified by CONTENT, not filename**, because filenames here actively lie:
+`blend-live-full.png` is byte-identical to `blend-fixed.png` and is a **rig render**, not a live
+capture. Name-based classification would have put a file we own on the deletion list and left a
+real capture off it.
+
+**`vendor/three*.js` stays** — MIT with its SPDX notice intact. Its problem is doctrine (Spec 38
+forbids three.js as a *dependency*), never licence, and it is gitignored scratch that nothing
+shipped imports.
+
+**Gate E fires on a satisfied precondition, not a date** (a date drifts): technique spec written +
+Q6 measured + held-out fidelity validated. **All three are now DONE** — Gate E is armed and may be
+fired by running the manifest.
+
+Verified: 0 files from `stripe-hero-poc/` are tracked in git; `.gitignore:24` covers the tree.
+
 ## D789 [ROUTINE] — the three ungated fx registration points are now gated, driven by disk not by a roster
 
 **2026-08-25.** `plugins/sgs-blocks/scripts/check-fx-registration.py`, wired into
