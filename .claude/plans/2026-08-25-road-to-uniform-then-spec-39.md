@@ -152,14 +152,23 @@ visible because someone ran it by hand.
   framework-wide, with a recorded rule that **NULL must not be read as "no control"**. The NULL is
   not a defect. ⚠ **Real residual:** the VISUAL column-shape picker Bean approved 2026-07-28
   (spec 37 §3.3) is **UNBUILT** — grep finds no implementation. That is the item, not the column.
-- 🔧 **C19 SHAPE PROPOSED by Bean — confirm 3 details before building.** *"Couldn't we use an
-  altered version of the hero block's split image panel as the standard setup."* Verified viable:
-  hero is the most complete (responsive sources + object-position focal point + bleed), while
-  `testimonial` has NO crop attrs and `image-sequence` has only `aspectRatio`. ⛔ Do not lift it
-  verbatim — decide: (1) drop `splitImageBleed`, which is split-layout-specific? (2) add
-  `aspectRatio`, which hero lacks? (3) normalise hero's **non-standard Tablet/Mobile object-position
-  naming** (`hero/block.json:283` documents it as constrained by the one-key-per-element rule) —
-  lifting as-is propagates that debt.
+- ✅ **C19 SETTLED (Bean, 2026-08-27) — build it, one detail left.** Adapt hero's split-image panel,
+  with three answers:
+  (1) **`splitImageBleed` is DELETED, not carried** — *"a vestigial control in the container panel
+  that breaks the sizing of the media when switched on... made redundant by object fit and image
+  padding, which defaults to 0."* Remove it from `sgs/hero` too.
+  (2) **TWO panel variants, split on ART DIRECTION.** Art-directed = different *assets* per
+  breakpoint (separate attrs, never a responsive object, because they are different files). Regular
+  responsive object = same asset, different CSS values per tier. Panel A (no responsive media): one
+  source, one focal point. Panel B (art-directed): source AND focal point per breakpoint. Hero
+  already proves the split — `imageObjectPositionTablet` / `splitImageMobileObjectPosition` ARE art
+  direction, and are why its naming went non-standard (`hero/block.json:283`). **Normalise the names
+  when lifting.**
+  (3) ⬜ **REMAINING:** box shape is `aspectRatio` (image-sequence) OR `imageHeight` (hero) — the two
+  COMPETE and one wins silently. The controls are a CHAIN: shape → `object-fit` → `object-position`,
+  where fit only matters when the box differs from the image's natural ratio and position only has a
+  visible effect when fit crops or letterboxes. `imagePadding` sits outside, insetting the box.
+  Panel order follows the chain; grey out controls an earlier choice makes inert.
 
 ---
 

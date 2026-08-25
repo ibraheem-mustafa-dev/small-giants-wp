@@ -39,23 +39,68 @@ interrupted again until the visual sign-off in TASK 2.
 TASK 2 builds ONE control and Bean signs off its shape before the other 27 follow. Show him the
 proposed panel on a deployed block and ask: does this feel right? Ten minutes, on a real page.
 
-## Design gate B — C19 crop conversion (Bean proposed the answer; confirm the shape)
+## Design gate B — C19 crop conversion (Bean SETTLED the shape 2026-08-27; build it)
 
-> **Bean, 2026-08-27:** *"Couldn't we use an altered version of the hero block's split image panel
-> as the standard setup since it's most of the way there, with maybe some parts removed and added."*
+Bean proposed adapting hero's split-image panel, then answered all three open details. **This is now
+a build task with one thing left to decide (marked ⬜ below), not a design question.**
 
-**Verified — the proposal is sound, with three caveats to put to him:**
+### ✅ SETTLED — `splitImageBleed` is DELETED, not carried forward
 
-- Hero IS the most complete implementation: `splitImage` + `splitImageTablet` + `splitImageMobile`
-  (responsive sources), `splitImageMobileObjectPosition` + `imageObjectPositionTablet` (focal point),
-  `splitImageBleed`.
-- `testimonial` has **no** crop attributes at all. `image-sequence` has **only** `aspectRatio`.
-- ⛔ **Do not lift hero's panel verbatim.** Three things need deciding:
-  1. `splitImageBleed` is split-layout-specific. Drop from the standard?
-  2. `aspectRatio` exists on `image-sequence` but not hero. Add it to the standard?
-  3. Hero's object-position keys use a **non-standard Tablet/Mobile naming pattern**, documented in
-     `hero/block.json:283` as constrained by the one-key-per-element rule. **Lifting it as-is
-     propagates that debt.** Normalise the names in the standard?
+> **Bean:** *"This is a vestigial control in the container panel that breaks the sizing of the media
+> when switched on, which is going to be removed from the hero block. It was also made redundant by
+> object fit and image padding, which defaults to 0."*
+
+So: drop it from the standard **and remove it from `sgs/hero`**. Same shape as the `templateMode`
+removal on 2026-08-27 — check stored content for occurrences first; if zero, the removal is
+behaviour-neutral and safe.
+
+### ✅ SETTLED — TWO panel variants, split on art direction
+
+> **Bean:** *"For all responsive media slots (image, video, anim, svg) we need art-directed
+> responsives, where they are separate and not an object like the easy CSS responsive objects. It
+> depends on the shape of their media. Do they have responsive media overrides? If not, use the
+> regular responsive object. We could have 2 variant standard panels based on the need for
+> responsive media."*
+
+**The distinction, stated precisely:** art direction means different *assets* per breakpoint (a
+portrait crop on mobile, a wide crop on desktop). Those cannot be one responsive object because they
+are different files, not different values of one property. A regular responsive object is the same
+asset with different CSS values per tier.
+
+| | Panel A — no responsive media | Panel B — art-directed |
+|---|---|---|
+| Source | one | **separate attr per breakpoint** |
+| Focal point | one | **per breakpoint** (a different crop needs a different focal point) |
+| Box shape, fit, padding | regular responsive object | regular responsive object |
+
+⚠ **Hero already proves the split is real:** it carries `imageObjectPositionTablet` and
+`splitImageMobileObjectPosition`. That IS art direction — and it is exactly why its naming went
+non-standard (`hero/block.json:283` documents the one-key-per-element constraint). **Normalise the
+names when lifting; do not propagate the debt.**
+
+### ⬜ THE ONE REMAINING DECISION — box shape: ratio or height?
+
+Measured 2026-08-27 — the two blocks solve the same problem two different ways:
+
+| | `sgs/hero` | `sgs/image-sequence` |
+|---|---|---|
+| Box shape from | `imageHeight` + `imageHeightUnit` | `aspectRatio` (default `16 / 9`) |
+| Fit | `imageObjectFit` | not declared |
+| Focal point | `imageObjectPosition` (+ tiers) | not declared |
+
+**The controls are a CHAIN, not peers:** box shape → `object-fit` → `object-position`.
+- `object-fit` only matters once the box shape differs from the image's natural ratio.
+- `object-position` only has a VISIBLE effect when fit is actually cropping or letterboxing. With
+  `fill`, or a box matching the image ratio, it does nothing.
+- ⛔ **`aspectRatio` and `imageHeight` COMPETE** — both define box shape. Set both and whichever CSS
+  wins decides, silently. **Ask Bean: one model, or does height visibly override ratio?**
+- `imagePadding` sits outside the chain — it insets the box. Defaulting to 0 is what made
+  `splitImageBleed` redundant.
+
+**Panel order follows the chain (and C14's DOM rule): shape → fit → position → padding.** Grey out
+the later controls when an earlier choice makes them inert — `image-sequence` having `aspectRatio`
+alone is coherent, because a fixed-ratio frame sequence never crops, so fit and position would be
+dead controls there.
 
 ## Design gate C — the visual column-shape picker is APPROVED but UNBUILT
 
