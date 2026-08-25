@@ -397,6 +397,49 @@ function exportBody( source, name ) {
 	return null;
 }
 
+/**
+ * The same-file top-level declarations an isolated export body REFERENCES.
+ *
+ * ⛔ WHY THIS EXISTS (2026-08-27). `exportBody()` above isolates one export so
+ * recursion cannot leak across a façade's siblings — that scoping is load-bearing
+ * and is NOT being relaxed. But it assumes an export reaches its children by
+ * RENDERING them as JSX. A TABLE-DRIVEN DISPATCHER does not:
+ *
+ *   const panels = KIND_PANELS[ kind ] ?? KIND_PANELS.section;
+ *   return <InspectorControls>{ panels.map( ( renderPanel ) => renderPanel( … ) ) }</InspectorControls>;
+ *
+ * The only tags in that body are <InspectorControls> and <Fragment>. The panels
+ * are INVOKED, not rendered, so a tag-only frontier dead-ends and every attribute
+ * they own is reported as having no control.
+ *
+ * MEASURED on the live tree the day this was written: that single shape produced
+ * **139 of rule 21's 211 FLAGGED findings**, across the 16 blocks mounting
+ * `ContainerWrapperControls`. Every one was a FALSE POSITIVE — the controls are
+ * reachable in the editor today (`kind="layout"` → `KIND_PANELS.layout` →
+ * `<WidthPanel>` → `contentWidth`). A false positive is a detector bug, never
+ * baseline fodder.
+ *
+ * The fix is deliberately NARROW: follow only declarations the isolated body
+ * actually names, and only within the SAME file. It does NOT fall back to the
+ * whole file — a per-file attempt was measured trading 20 false positives for 10
+ * false negatives, and a false negative hides a real defect forever.
+ *
+ * Guarded by fixture `control-via-dispatcher-table`, written and watched FAILING
+ * before this function existed.
+ */
+function localRefsIn( source, scoped, selfName ) {
+	const DECL = /^(?:export\s+(?:default\s+)?)?(?:function|const|let|class)\s+([A-Za-z_$][\w$]*)/gm;
+	const word = ( n ) => new RegExp( /\b/.source + n + /\b/.source );
+	const out = [];
+	for ( const m of source.matchAll( DECL ) ) {
+		const name = m[ 1 ];
+		if ( name === selfName ) continue;
+		if ( ! word( name ).test( scoped ) ) continue;
+		out.push( name );
+	}
+	return out;
+}
+
 function controlCorpus( ctx, block ) {
 	const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 	const own = readIfExists( ctx, editFile );
@@ -467,7 +510,16 @@ function controlCorpus( ctx, block ) {
 
 				// But only THIS export's own body decides what recurses.
 				const scoped = exportBody( body, name );
-				if ( scoped ) next.push( scoped );
+				if ( scoped ) {
+					next.push( scoped );
+					// A dispatcher reaches its panels by CALLING them rather than
+					// rendering them, so the tag frontier alone dead-ends. Follow the
+					// same-file declarations this body actually names. See localRefsIn().
+					for ( const local of localRefsIn( body, scoped, name ) ) {
+						const localBody = exportBody( body, local );
+						if ( localBody ) next.push( localBody );
+					}
+				}
 			}
 		}
 		frontier = next;
@@ -628,6 +680,10 @@ module.exports = {
 			// levels down (<BackgroundPanel> -> <GradientOverlayControl>) and a
 			// one-level resolver reports five false defects here.
 			'control-via-nested-shared-component',
+			// Guards DISPATCHER-TABLE resolution: the facade invokes its panels from
+			// KIND_PANELS rather than rendering them as JSX tags, so a tag-only
+			// recursion dead-ends and reports a false defect. 139 of 211 live findings.
+			'control-via-dispatcher-table',
 		],
 	},
 };
