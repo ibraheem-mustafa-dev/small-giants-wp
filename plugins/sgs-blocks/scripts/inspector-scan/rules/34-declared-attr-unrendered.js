@@ -1,315 +1,236 @@
 'use strict';
 
-// GROUND-TRUTH: spec=.claude/plans/phase-shop-container-remediation.md "R-3 BATCH
-// ENFORCEMENT-SCRIPT FIX — the register", subsection R3-e ("block.json declares ->
-// render.php consumes it: LARGELY UNCOVERED — the biggest hole. No gate asserts a
-// declared attr is read by render.php or the wrapper. This is the edge that would
-// have caught the contentWidth class of defect.") The register's own instruction on
-// shape: "Build the missing edge as an inspector-scan RULE, not as script #61 — it
-// inherits the resolver and the baseline machinery for free."
+// GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md ("make rule 34 consume the
+// gate's verdicts, split by SURFACE") source=file evidence=live-read
+// plugins/sgs-blocks/scripts/check-dead-controls.js `dumpAttributeRows()`
+// (:1412-1480) + its `--dump-json` CLI branch (:1610-1614), run live
+// 2026-08-27: `node check-dead-controls.js --dump-json` emits 2,657 rows, of
+// which exactly 2 have `renderConsumed:false` AND `exempt:false` —
+// `sgs/before-after::maxWidthUnit` and `sgs/button::fontFamily`.
 //
-// source=file evidence=live-read rule 21 (rules/21-render-without-control.js), which
-// already resolves a block's RENDER corpus (own render.php/view.js/save.js/style.css
-// PLUS shared includes/*.php the block actually calls, e.g. class-sgs-container-
-// wrapper.php via `SGS_Container_Wrapper::render(`). Rule 21 asks the CONTROL-side
-// question ("is a rendered attr reachable by an inspector control?"). This rule asks
-// the orthogonal RENDER-side question the register names as the biggest hole: "is a
-// DECLARED attr consumed by the render surface AT ALL" — irrespective of whether it
-// has a control. That is a genuinely different edge (declared-vs-rendered, not
-// rendered-vs-controlled), so it earns its own rule rather than a branch on 21.
+// ── WHY THIS REWRITE EXISTS ─────────────────────────────────────────────────
+// Rule 34 used to scan ONE corpus (its own render.php/view.js/save.js/style.css
+// + admitted shared includes) with a literal-name + suffix/prefix regex match,
+// duplicated from rule 21's resolver. That produced 319 FLAGGED findings — the
+// blocking gate `check-dead-controls.js`, asking the SAME question with SIX
+// corpora and three resolvers this rule lacked (block-context, prefixed-helper,
+// dynamic-prefix, responsive-variant, plus a wider shared-include reach),
+// reports 2. Joined per (block, attr) the overlap was exactly those 2; the
+// other 317 named attributes the blocking gate proves are genuinely rendered.
+// Worked example: `sgs/brand-strip.nameFontSize` was flagged unrendered by the
+// old literal/suffix scan, while `brand-strip/render.php:412` consumes it via
+// `sgs_typography_css_rule( $attributes, 'name', ... )` — a PREFIXED-HELPER
+// call this rule's own resolver never modelled.
 //
-// The render-corpus resolution machinery (readIfExists/renderCorpus/dynamicPartsOf/
-// resolves/coreSupportedAttrs/DOC_ATTR_RE/SYSTEM_ATTR_RE) is DUPLICATED here from rule
-// 21 rather than imported, deliberately — the same reasoning rule 21 itself gives for
-// keeping its own component resolution local ("Blast radius stays inside rule 21."):
-// widening a shared module to serve a second rule risks silently restaging that
-// rule's own committed backlog (21's is 199), the exact "a write with an untraced
-// reader propagates silently" shape this framework has been bitten by before. A
-// shared core/render-corpus.js extraction is a legitimate FUTURE refactor once both
-// rules' backlogs are stable, not a day-one requirement.
+// Per Bean's governing instruction (2026-08-27): "is this attribute used?" is
+// THREE questions, not one — S1 LIVE RENDER (does it paint on the published
+// page?), S2 EDITOR CANVAS (does it paint/act in the block-editor preview?),
+// S3 CONTROL (can the client actually change it?). check-dead-controls.js's
+// dump already resolves S1 (`renderConsumed`) and S3 (`controlPresent`), and
+// makes S2 visible via `exemptReason:'editor-only'`. Re-deriving any of that
+// here — a second corpus scan, a second suffix loop, a second helper-prefix
+// matcher — is exactly how these two instruments drifted 317 apart with no way
+// to arbitrate. So this rule now does NO source-corpus resolution of its own:
+// it shells out to `node check-dead-controls.js --dump-json` (cached for the
+// lifetime of one scan process — see `loadDumpRows()` below), looks up each
+// block.json-declared attribute's row by (block, attr), and reports ONLY
+// when the gate's own verdict says the attribute is genuinely unrendered.
 //
-// ── THE CANONICAL PROBE (must never flag) ──────────────────────────────────────
-// `contentWidth` on `sgs/container`: declared container/block.json:481, consumed by
-// class-sgs-container-wrapper.php:424 (`$attributes['contentWidth'] ?? ''`) — a
-// LITERAL bracket read inside the shared wrapper class, which container/render.php
-// admits into its render corpus by calling `SGS_Container_Wrapper::render(`. This is
-// the exact shape rule 21's `renderCorpus()`/`resolves()` already handle correctly,
-// so re-using that machinery verbatim is what makes the probe pass by construction
-// rather than by a bespoke carve-out (R-31-1/R-31-9 forbid a named exception).
+// This also RETIRES the old "honest middle ground" informational finding for
+// an unresolvable `$attributes[ $var ]` computed-key read. That branch existed
+// because THIS rule's own literal/suffix resolver could not see past a bare-
+// variable bracket read. check-dead-controls.js has no such gap in the two
+// live findings this rule now reports (both `renderVia:'none'` — no resolver
+// matched anything at all, computed-key or otherwise), and the dump's six
+// `renderVia` values carry no "computed-key-unresolved" case to surface. There
+// is nothing left for that branch to report; a rule that consumes the gate's
+// verdict cannot also invent a fourth kind the gate doesn't emit.
 //
-// ── COMPUTED-KEY READS — THE HONEST-HANDLING DECISION ──────────────────────────
-// `class-sgs-container-wrapper.php` also reads attributes through a COMPUTED key:
-// `foreach ( array( 'alignContent' => 'align-content', ... ) as $sgs_attr => $x ) {
-// if ( isset( $attributes[ $sgs_attr ] ) ) { ... } }` (~:2402-2418). The bracket
-// expression is `$attributes[ $sgs_attr ]` — a bare-variable key, not a string
-// literal and not a concat/interpolation shape `dynamicPartsOf()` can resolve. A
-// human reading the surrounding foreach can see the array literal supplies the real
-// keys, but parsing an arbitrary enclosing foreach's array-literal source reliably is
-// a much bigger undertaking than this rule's scope, and getting it wrong either way
-// is worse than declining to guess (survey-wrapper-capability.js, the sibling census
-// script, independently reached the same conclusion and reports these as "UNRESOLVED
-// computed-key reads" rather than resolving them).
-//
-// So: when a block's render corpus contains ANY bare-variable `$attributes[ $var ]`
-// bracket read, this rule does NOT attempt to resolve which attribute names that
-// covers. For every attribute in that block that isn't otherwise resolved (literal
-// match, or a `dynamicPartsOf` suffix/prefix construction), it emits a DISTINCT,
-// clearly-labelled `informational`-severity finding ("cannot be statically proven
-// either way") instead of silently counting it as consumed (false green) or flagging
-// it as dead (false positive). This is the one honest answer available without a
-// much bigger parser, and is scoped PER-CORPUS (only blocks whose render corpus
-// actually contains the unresolvable shape get the softer treatment) — a block with
-// no computed-key reads anywhere in its corpus still gets the full warn-severity
-// dead-declaration finding.
+// ── THE THREE-KIND CLASSIFICATION (S1 x S3 x exemptReason) ──────────────────
+// `dead-attr`    — no render, no control, not exempt -> DELETE from block.json.
+// `dead-control` — no render, control PRESENT, not exempt -> a REAL bug: the
+//                  client sets something that paints nowhere.
+// `editor-only`  — exempt via `exemptReason:'editor-only'` -> consumed by S2
+//                  (the editor canvas) BY DESIGN, not a defect. Named here for
+//                  a consumer that inspects `classifyKind()`'s full vocabulary
+//                  directly; it can never appear on an actual FINDING, because
+//                  requirement 1 (below) flags ONLY `renderConsumed===false &&
+//                  exempt===false`, and an `editor-only` row is `exempt:true`
+//                  by construction — it is filtered out before `kind` is ever
+//                  read. Today's live run therefore reports `kind:'dead-attr'`
+//                  on both findings (both have `controlPresent:false`);
+//                  `dead-control` and `editor-only` are reachable branches
+//                  with zero live instances, not dead code with none possible.
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { execFileSync } = require( 'child_process' );
 const { makeFinding } = require( '../core/finding' );
 
-// Attribute keys that are documentation, not attributes (house convention, mirrored
-// from rule 21 / check-dead-controls.js:342-352).
-const DOC_ATTR_RE = /^(_comment|_note)/;
+// The blocking gate this rule now consumes. Resolved relative to this file so
+// it is correct regardless of cwd — one level up from rules/ (inspector-scan/),
+// then up out of inspector-scan/ into scripts/, where check-dead-controls.js
+// lives alongside inspector-scan/ as a sibling script.
+const CHECK_DEAD_CONTROLS_SCRIPT = path.resolve(
+	__dirname,
+	'..',
+	'..',
+	'check-dead-controls.js'
+);
 
-// Extension-injected attributes — structurally invisible to this rule for the same
-// reason rule 21 excludes them: `inspector-scan` has no `extensionsDir` corpus wired
-// into buildCtx's render side, so a genuine extension-owned `sgs*` attr would false-
-// positive as "nothing renders it" when in fact `src/blocks/extensions/*.php` does.
-const SYSTEM_ATTR_RE = /^sgs[A-Z_]/;
+// Module-level cache for the real `--dump-json` invocation, scoped to the
+// lifetime of ONE node process. Invalidation: there is none to build, because
+// there is nothing to invalidate — every fresh `node scripts/inspector-scan/
+// run.js` invocation is a new process, so this cache can never carry state
+// across two separate scans. It exists purely so a per-block rule (this one
+// runs once per block in the roster) does not shell out to a 2,657-row JSON
+// dump once per block; it shells out ONCE per scan and every block's run()
+// call reuses the same parsed array. Deliberately NOT written to disk as a
+// snapshot file — a committed dump would go stale the moment render.php/
+// edit.js/block.json changed underneath it, silently re-creating the exact
+// 317-finding drift this task exists to end. The dump is process-memory-only.
+let cachedDumpRows = null;
 
-// ── The WORDPRESS-CORE render surface ───────────────────────────────────────────
-// A block declaring a core `supports` flag gets that named attribute CONSUMED by
-// WordPress core itself (get_block_wrapper_attributes(), the style engine, the
-// typography/colour support classes) — never by the block's own render.php. Copied
-// verbatim from rule 21's citations (re-verified against the same WP 7.0.3 core
-// source reads, 2026-08-08) because the render-side question is identical: does
-// *anything* consume this value, and core counts.
-function coreSupportedAttrs( supports ) {
-	const out = new Set();
-	if ( ! supports || typeof supports !== 'object' ) return out;
-
-	if ( supports.anchor ) out.add( 'anchor' );
-	if ( supports.align ) out.add( 'align' );
-	if ( supports.customClassName !== false ) out.add( 'className' );
-	if ( supports.layout ) out.add( 'layout' );
-
-	const colour = supports.color;
-	if ( colour && typeof colour === 'object' ) {
-		if ( colour.background ) out.add( 'backgroundColor' );
-		if ( colour.text ) out.add( 'textColor' );
-		if ( colour.gradients ) out.add( 'gradient' );
-	}
-
-	const type = supports.typography;
-	if ( type && typeof type === 'object' ) {
-		if ( type.fontSize ) out.add( 'fontSize' );
-		if ( type.fontFamily ) out.add( 'fontFamily' );
-		// No textAlign — core keeps that value in style.typography.textAlign, not a
-		// named `textAlign` attribute, so a block's own `textAlign` attr is genuinely
-		// its own to consume. See rule 21's fuller citation for the WP source proof.
-	}
-
-	return out;
-}
-
-// Files that constitute a block's own RENDER surface — what the framework paints.
-// `save.js` is included deliberately: a STATIC block (save() returns real markup,
-// no render.php) consumes its attributes there instead, and the brief for this rule
-// names that explicitly ("for blocks that are save.js-rendered rather than dynamic
-// — its save.js").
-const OWN_RENDER_FILES = [ 'render.php', 'view.js', 'save.js', 'style.css' ];
-
-// ── Dynamic key-construction shapes (verbatim copy of rule 21's, same corpus,
-// same false-negative trap: a suffix/prefix built from a variable + a literal
-// fragment, e.g. `sgs_typography_attr( $prefix, 'LineHeightTablet' )`). ─────────
-const SUFFIX_SHAPES = [
-	/\$\w+\s*\.\s*['"]([A-Z][A-Za-z0-9_]*)['"]/g,
-	/\{\$\w+\}([A-Z][A-Za-z0-9_]*)/g,
-	/\(\s*[\w$.[\]]+\s*,\s*['"]([A-Z][A-Za-z0-9_]*)['"]\s*\)/g,
-	/\$\{[^}]*\}\s*([A-Z][A-Za-z0-9_]*)/g,
-];
-
-const PREFIX_SHAPES = [
-	/`\s*([a-z][A-Za-z0-9_]*)\$\{/g,
-	/['"]([a-z][A-Za-z0-9_]*)['"]\s*\.\s*\$\w+/g,
-];
-
-// Bare-variable bracket read on `$attributes` — the shape that CANNOT be resolved
-// statically (no literal fragment to key off at all). Matched separately from the
-// SUFFIX/PREFIX shapes above, which all require a literal fragment.
-const COMPUTED_KEY_RE = /\$attributes\s*\[\s*\$[A-Za-z_]\w*\s*\]/;
-
-function lcFirst( s ) {
-	return s.charAt( 0 ).toLowerCase() + s.slice( 1 );
-}
-
-function dynamicPartsOf( corpus ) {
-	const suffixes = new Set();
-	const prefixes = new Set();
-	for ( const re of SUFFIX_SHAPES ) {
-		re.lastIndex = 0;
-		let m;
-		while ( ( m = re.exec( corpus ) ) ) suffixes.add( m[ 1 ] );
-	}
-	for ( const re of PREFIX_SHAPES ) {
-		re.lastIndex = 0;
-		let m;
-		while ( ( m = re.exec( corpus ) ) ) prefixes.add( m[ 1 ] );
-	}
-	return { suffixes, prefixes };
+function runDumpJson() {
+	const out = execFileSync( process.execPath, [ CHECK_DEAD_CONTROLS_SCRIPT, '--dump-json' ], {
+		encoding: 'utf8',
+		maxBuffer: 64 * 1024 * 1024,
+	} );
+	return JSON.parse( out );
 }
 
 /**
- * Does `attr` resolve against this render corpus — either by its literal name
- * (word-boundaried, so `gap` never matches `gapTablet` — STOP-17), or by a
- * dynamic suffix/prefix construction that provably assembles it?
+ * Returns the per-(block,attr) dump rows check-dead-controls.js produces.
+ *
+ * Self-test seam (mirrors `_css-property-map.json`/`_surfaces.json` in
+ * core/selftest.js — the established pattern for a rule whose real-world
+ * dependency can only ever see the REAL repo): a fixture may inject synthetic
+ * rows via `ctx.__deadControlsDumpRows` (loaded from a fixture root's
+ * `_dead-controls-dump.json`) so this rule's OWN logic — the flag filter and
+ * the S1/S2/S3 kind classification — is provably exercisable in isolation,
+ * without re-implementing or re-exercising check-dead-controls.js's resolvers
+ * (that CLI has its own self-test for those; duplicating the proof here would
+ * be exactly the "second copy of the logic" this rewrite exists to remove).
+ * `--dump-json` accepts no `--blocks-dir` flag and this rule must not modify
+ * check-dead-controls.js to add one, so a fixture's synthetic block can never
+ * appear as a real dump row — the seam is the only way to test this rule's
+ * classification logic against a controlled input.
  */
-function resolves( attr, corpus, parts ) {
-	if ( new RegExp( `\\b${ attr }\\b` ).test( corpus ) ) return true;
-
-	for ( const suffix of parts.suffixes ) {
-		if ( attr === lcFirst( suffix ) ) return true;
-		if ( attr.length > suffix.length && attr.endsWith( suffix ) ) return true;
+function loadDumpRows( ctx ) {
+	if ( ctx && Array.isArray( ctx.__deadControlsDumpRows ) ) {
+		return ctx.__deadControlsDumpRows;
 	}
-	for ( const prefix of parts.prefixes ) {
-		if ( attr.length > prefix.length && attr.startsWith( prefix ) ) {
-			const rest = attr.slice( prefix.length );
-			if ( /^[A-Z]/.test( rest ) ) return true;
-		}
+	if ( ! cachedDumpRows ) {
+		cachedDumpRows = runDumpJson();
 	}
-	return false;
+	return cachedDumpRows;
 }
 
-function readIfExists( ctx, file ) {
-	return fs.existsSync( file ) ? ctx.stripped( file ) || '' : '';
+function dumpRowKey( block, attr ) {
+	return block + '::' + attr;
 }
 
 /**
- * The block's RENDER corpus: its own render files, plus only those shared
- * includes/*.php files whose OWN declared functions/classes this block actually
- * calls. Verbatim copy of rule 21's `renderCorpus()` — same admission predicate
- * (a class must be invoked as `Name::`/`new Name`; a bare function must be a
- * genuinely top-level declaration AND be called), same fixture-local `_includes`
- * override for self-test isolation (H6 — a rule reading a fixed absolute
- * real-repo path could never be exercised failing in isolation).
+ * S1 x S3 x exemptReason -> the surface-derived `kind` a consumer can act on
+ * without re-reading the source. Returns `null` for a row this rule has
+ * nothing to say about (genuinely consumed, or exempt for a reason other than
+ * `editor-only`  — `system-attr`/`key-noise` rows are structurally invisible
+ * or documentation-only, exactly as check-dead-controls.js itself treats them
+ * as "not a finding").
  */
-function renderCorpus( ctx, block ) {
-	const dir = path.join( ctx.blocksDir, block.tail );
-	let own = '';
-	for ( const f of OWN_RENDER_FILES ) own += '\n' + readIfExists( ctx, path.join( dir, f ) );
-
-	const fixtureIncludes = path.join( ctx.blocksDir, '_includes' );
-	const includesDir = fs.existsSync( fixtureIncludes )
-		? fixtureIncludes
-		: path.resolve( ctx.blocksDir, '..', '..', 'includes' );
-
-	let shared = '';
-	if ( fs.existsSync( includesDir ) ) {
-		for ( const f of fs.readdirSync( includesDir ) ) {
-			if ( ! f.endsWith( '.php' ) ) continue;
-			const full = path.join( includesDir, f );
-			const src = readIfExists( ctx, full );
-			if ( ! src ) continue;
-
-			let called = false;
-
-			const classRe = /\bclass\s+([A-Za-z_]\w*)/g;
-			let m;
-			while ( ( m = classRe.exec( src ) ) ) {
-				const cls = m[ 1 ];
-				if ( new RegExp( `\\b${ cls }\\s*::|new\\s+${ cls }\\b` ).test( own ) ) {
-					called = true;
-					break;
-				}
-			}
-
-			if ( ! called && ! /\bclass\s+[A-Za-z_]\w*/.test( src ) ) {
-				const fnRe = /^\s*function\s+([a-z_]\w*)\s*\(/gm;
-				while ( ( m = fnRe.exec( src ) ) ) {
-					if ( new RegExp( `\\b${ m[ 1 ] }\\s*\\(` ).test( own ) ) {
-						called = true;
-						break;
-					}
-				}
-			}
-
-			if ( called ) shared += '\n' + src;
-		}
-	}
-	return own + shared;
+function classifyKind( row ) {
+	if ( row.renderConsumed ) return null; // provably consumed on S1 — nothing to report
+	if ( row.exemptReason === 'editor-only' ) return 'editor-only'; // consumed by S2 by design
+	if ( row.exempt ) return null; // system-attr / key-noise — not this rule's business
+	return row.controlPresent ? 'dead-control' : 'dead-attr';
 }
+
+const FINDING_TEXT = {
+	'dead-attr': {
+		severity: 'warn',
+		detail( attr ) {
+			return (
+				`"${ attr }" is declared in block.json but is NOT consumed anywhere on the render side ` +
+				'(check-dead-controls.js\'s full six-corpus resolution found no render-side consumption) and ' +
+				'has NO editor control either — nothing paints it, and the client has no way to set it. ' +
+				'This is a dead declaration.'
+			);
+		},
+		fix( attr ) {
+			return (
+				`Delete "${ attr }" from block.json, OR add render-side consumption for it (render.php, a ` +
+				'shared include this block calls, or save.js for a static block) if it was meant to affect ' +
+				'output. This is the block.json-declares-to-render.php-consumes edge (R3-e).'
+			);
+		},
+	},
+	'dead-control': {
+		severity: 'warn',
+		detail( attr ) {
+			return (
+				`"${ attr }" has an editor control (S3: the client CAN change it) but is NOT consumed anywhere ` +
+				'on the render side (S1: check-dead-controls.js\'s full six-corpus resolution found no ' +
+				"render-side consumption). This is a REAL bug — the client sets a value and sees no effect " +
+				'anywhere on the published page.'
+			);
+		},
+		fix( attr ) {
+			return (
+				`Add render-side consumption for "${ attr }" (render.php, a shared include this block calls, ` +
+				'or save.js for a static block) so the client\'s control actually paints something. If the ' +
+				'control was left over from a removed feature, remove both the control and the block.json ' +
+				'declaration instead.'
+			);
+		},
+	},
+};
 
 module.exports = {
 	id: '34-declared-attr-unrendered',
 	checklistItem: null,
-	title: 'Every attribute block.json declares is consumed somewhere on the render side',
+	title: "Every attribute block.json declares is consumed somewhere on the render side (via check-dead-controls.js's verdict)",
 	scope: 'per-block',
-	needs: [ 'stripped:render.php', 'stripped:save.js', 'json:block.json' ],
+	needs: [ 'json:block.json' ],
+	classifyKind, // exported for the self-test's direct-classification assertions
 	run( ctx, block ) {
 		const blockJsonFile = path.join( ctx.blocksDir, block.tail, 'block.json' );
 		const blockJson = ctx.json( blockJsonFile );
 		if ( ! blockJson.ok ) return []; // malformed/absent block.json is roster-drift/parse-error territory
 
-		const render = renderCorpus( ctx, block );
-		// Nothing renders here at all (no render.php/view.js/save.js/style.css and no
-		// admitted shared include) — a different rule's concern (e.g. the block may be
-		// entirely editor-side), not a "declared but unconsumed" claim this rule can
-		// support with evidence.
-		if ( ! render.trim() ) return [];
-
-		const renderParts = dynamicPartsOf( render );
-		const coreControlled = coreSupportedAttrs( blockJson.data.supports );
-		const hasComputedKeyRead = COMPUTED_KEY_RE.test( render );
+		let rows;
+		try {
+			rows = loadDumpRows( ctx );
+		} catch ( e ) {
+			// The blocking gate itself failing to run is not this advisory rule's
+			// business to paper over with a guess — surface nothing rather than
+			// fabricate a verdict check-dead-controls.js never produced.
+			return [];
+		}
 
 		const findings = [];
 		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
-			if ( DOC_ATTR_RE.test( attr ) ) continue;
-			if ( SYSTEM_ATTR_RE.test( attr ) ) continue; // extension surface — structurally invisible here
-			if ( coreControlled.has( attr ) ) continue; // WordPress core render surface — likewise invisible
+			const row = rows.find(
+				( r ) => r.block === block.slug && r.attr === attr
+			);
+			// No row at all — the gate never scanned this (block,attr) pair (e.g. a
+			// `_comment`/`_note` documentation key, which check-dead-controls.js's
+			// own readBlock() already excludes before building rows). Not this
+			// rule's business to guess at what the gate didn't measure.
+			if ( ! row ) continue;
 
-			if ( resolves( attr, render, renderParts ) ) continue; // provably consumed — nothing to report
+			const kind = classifyKind( row );
+			if ( kind !== 'dead-attr' && kind !== 'dead-control' ) continue; // requirement 1's exact filter
 
-			if ( hasComputedKeyRead ) {
-				// Honest middle ground: the corpus contains a bare-variable computed-key
-				// read this rule cannot resolve, so "not literally found" does not mean
-				// "not consumed". Distinct finding kind, informational severity — never
-				// silently treated as consumed (false green) or as dead (false positive).
-				findings.push(
-					makeFinding( {
-						rule: this.id,
-						block: block.slug,
-						file: blockJsonFile,
-						severity: 'informational',
-						detail:
-							`"${ attr }" is declared in block.json and was NOT found by a literal or dynamic-suffix ` +
-							"match anywhere in this block's render corpus (own render files or a shared include it " +
-							'calls) — but that corpus also contains a computed-key read (`$attributes[ $var ]`) this ' +
-							'rule cannot statically resolve, so consumption cannot be proven or disproven here.',
-						fix:
-							`Manually confirm whether "${ attr }" is read via the computed-key loop in the shared ` +
-							'include this block calls. If it is genuinely unread, remove the declaration; if it is ' +
-							'read, no action is needed — this finding exists because static analysis cannot tell.',
-						keyParts: [ attr, 'computed-key-unresolved' ],
-					} )
-				);
-				continue;
-			}
-
+			const text = FINDING_TEXT[ kind ];
 			findings.push(
 				makeFinding( {
 					rule: this.id,
 					block: block.slug,
 					file: blockJsonFile,
-					severity: 'warn',
-					detail:
-						`"${ attr }" is declared in block.json but is NOT consumed anywhere on this block's render ` +
-						"side — not in its own render.php/view.js/save.js/style.css, not in any shared include " +
-						"(e.g. SGS_Container_Wrapper) it calls, and it is not a WordPress-core-support attribute. " +
-						'Nothing paints this value; a client can set it and see no effect.',
-					fix:
-						`Add render-side consumption for "${ attr }" (render.php, a shared include this block ` +
-						'calls, or save.js for a static block), OR remove it from block.json if it was never meant ' +
-						'to affect output. This is the block.json-declares-to-render.php-consumes edge (R3-e) — the ' +
-						'shape that let contentWidth-class defects ship silently.',
+					severity: text.severity,
+					kind,
+					detail: text.detail( attr ),
+					fix: text.fix( attr ),
 					keyParts: [ attr ],
 				} )
 			);
@@ -321,29 +242,35 @@ module.exports = {
 		mustFlag: [
 			// The rule's basic ability to catch a genuinely dead declaration — proves
 			// it is not a rule that can never fail (the negative-control requirement).
-			'declared-not-rendered',
-			// Proves the honest-handling branch actually fires (a finding IS produced)
-			// rather than the unresolvable case silently vanishing into "consumed".
-			'computed-key-present-unresolved',
+			// dump row: renderConsumed:false, controlPresent:false, exempt:false.
+			'dead-attr-no-control',
+			// S3 present, S1 absent — the REAL-bug shape (the client sets something
+			// that paints nowhere). dump row: renderConsumed:false,
+			// controlPresent:true, exempt:false.
+			'dead-control-real-bug',
 		],
 		mustNotFlag: [
-			// The canonical R3-e probe's self-test analogue: a literal bracket read
-			// inside a shared include the block calls (mirrors contentWidth in the
-			// real class-sgs-container-wrapper.php).
-			'rendered-via-shared-wrapper',
-			// Literal read inside the block's own render.php.
-			'rendered-directly',
-			// Dynamic suffix construction (Trap A from rule 21 — sgs_typography_attr
-			// style prefix+literal-suffix key assembly).
-			'rendered-via-dynamic-key',
-			// Static block: consumed in save.js, no render.php at all.
-			'save-js-rendered',
-			// WordPress-core support attribute — consumed by core, not by us.
-			'core-supports-attr-not-flagged',
-			// House-convention documentation attribute.
-			'doc-attr-not-flagged',
-			// Extension-owned attribute — structurally invisible render surface.
-			'system-attr-not-flagged',
+			// Consumed (any renderVia) — the gate says S1 is satisfied, nothing to
+			// report regardless of how it resolved.
+			'rendered-literal',
+			// The exact drift this rewrite exists to end: attribute name never
+			// appears literally anywhere in the render corpus, consumed ONLY via a
+			// prefixed-helper call (mirrors the real sgs/brand-strip.nameFontSize
+			// shape at brand-strip/render.php:412). Proven watched-failing-first
+			// under the OLD literal/suffix-scan rule (git history / task report),
+			// now passes because this rule trusts the gate's own
+			// `renderVia:'prefixed-helper'` verdict instead of re-deriving it.
+			'rendered-via-prefixed-helper',
+			// exemptReason:'system-attr' — extension surface, structurally invisible
+			// to render-side resolution by design; not this rule's business.
+			'exempt-system-attr',
+			// exemptReason:'editor-only' — renderConsumed:false but consumed by S2
+			// (the editor canvas) by design; proves the exemption suppresses the
+			// finding even though S1 alone would otherwise look dead.
+			'exempt-editor-only',
+			// exemptReason:'key-noise' — a house-convention non-semantic key (id/
+			// url/alt/...), not a real render-consumption question.
+			'exempt-key-noise',
 		],
 	},
 };

@@ -129,6 +129,33 @@ function runRuleAgainstFixture( mod, fixtureAbsPath ) {
 			}
 		}
 
+		// Same reasoning again for rule 34 (34-declared-attr-unrendered, Task 2,
+		// 2026-08-27): it now consumes `check-dead-controls.js --dump-json`'s
+		// per-(block,attr) verdicts instead of re-deriving consumption itself. That
+		// CLI always scans the REAL src/blocks tree (no --blocks-dir flag exists,
+		// and the brief forbids modifying it), so it can never see a fixture's
+		// synthetic blocks — a fixture slug is never a row in the real dump. A
+		// fixture directory may therefore seed synthetic dump rows by placing
+		// `_dead-controls-dump.json` at its root (same array shape the real CLI
+		// emits: { block, attr, renderConsumed, controlPresent, renderVia, exempt,
+		// exemptReason }); absent = the real CLI invocation, unchanged for every
+		// other rule and fixture. This tests rule 34's OWN logic (the two-clause
+		// flag filter + the S1/S2/S3 kind classification) in isolation, without
+		// re-implementing or re-exercising check-dead-controls.js's resolvers —
+		// those already have their own self-test (Task 1).
+		const deadControlsDumpFile = path.join( tmpBase, '_dead-controls-dump.json' );
+		if ( fs.existsSync( deadControlsDumpFile ) ) {
+			try {
+				ctx.__deadControlsDumpRows = JSON.parse( fs.readFileSync( deadControlsDumpFile, 'utf8' ) );
+			} catch ( e ) {
+				return {
+					pass: false,
+					reason: `fixture root has a malformed _dead-controls-dump.json: ${ e.message }`,
+					findings: [],
+				};
+			}
+		}
+
 		let findings = [];
 
 		if ( mod.scope === 'per-block' ) {

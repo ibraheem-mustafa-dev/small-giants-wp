@@ -1,0 +1,1 @@
+{ "name": "sgs/rendered-literal", "attributes": { "renderedAttr": { "type": "string", "default": "" } } }
