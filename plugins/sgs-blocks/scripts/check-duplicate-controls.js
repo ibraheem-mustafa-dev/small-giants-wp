@@ -700,8 +700,51 @@ function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 		return;
 	}
 
-	// Gate: only blocks that actually contain a COMPUTED-key setAttributes are
-	// candidates. Without one there is no dispatcher to be indirect through.
+	// ⛔ THE PRECONDITION IS PER-ELEMENT, AND IT MUST ASK ABOUT THE COMPONENT.
+	//
+	// This gate previously asked "does the BLOCK'S OWN FILE contain a
+	// computed-key setAttributes?" and returned early when it did not. That
+	// question is the wrong one, and it was wrong in the DEAD direction:
+	// the computed write lives in the DISPATCHER COMPONENT (ShadowControl.js),
+	// never in the block that mounts it. A block was therefore only resolved
+	// correctly when it happened to contain an UNRELATED computed write of its
+	// own.
+	//
+	// Measured 2026-08-26: `sgs/card-grid` and `sgs/info-box` carry
+	// BYTE-IDENTICAL `<ShadowControl attrNames={{ base: 'shadowHover', … }} />`
+	// mounts. info-box has 2 unrelated computed writes and passed BY ACCIDENT;
+	// card-grid has 0 and its four dispatcher mounts were invisible, so a fully
+	// controlled `shadowHover` was reported as a DEAD attribute. Per D785 a
+	// false DEAD makes an agent add a duplicate control the client then sees
+	// twice — so this defect actively manufactures the bug the gate exists to
+	// find. `sgs/cta-section` had the same blind spot (0 computed writes, 2
+	// dispatcher mounts).
+	//
+	// The right question already had a helper: `componentIsDispatcher()` walks
+	// the RESOLVED COMPONENT FILE and is memoised. Asking it PER JSX ELEMENT is
+	// strictly more precise than any file-level gate — an object-valued prop on
+	// a non-dispatcher component (e.g. a lookup table, or `options={…}`) can no
+	// longer mark an attribute controlled, which was this function's OTHER
+	// historical over-reach bug. Both directions close with one change.
+	// ⚠ THE TWO SYNTACTIC POSITIONS NEED DIFFERENT PRECONDITIONS. Applying
+	// one to both is a regression the self-test caught during this very fix:
+	//   (a) `attrNames={{ base: 'shadowHover' }}` — the dispatch lives in a
+	//       SHARED COMPONENT, so the question is "is that component a
+	//       dispatcher?" -> componentIsDispatcher( tag ).
+	//   (b) `onChange={ set( 'effectHover' ) }` — the curried setter is a
+	//       LOCAL function in this very file (`const set = ( key ) => ( v ) =>
+	//       setAttributes( { [ key ]: v } )`), mounted on an ordinary control
+	//       that is NOT a dispatcher. Its precondition is the file-level one:
+	//       does THIS file contain a computed-key write? sgs/gallery uses (b).
+	const tagNameOf = ( jsxAttrPath ) => {
+		const el = jsxAttrPath.parent;
+		if ( ! el || el.type !== 'JSXOpeningElement' || ! el.name ) {
+			return null;
+		}
+		return el.name.type === 'JSXIdentifier' ? el.name.name : null;
+	};
+
+	// File-level computed-key write — the precondition for position (b) ONLY.
 	let hasComputedWrite = false;
 	traverse( ast, {
 		CallExpression( p2 ) {
@@ -716,9 +759,6 @@ function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 			}
 		},
 	} );
-	if ( ! hasComputedWrite ) {
-		return;
-	}
 
 	// Only two SYNTACTIC POSITIONS count, so an unrelated lookup table such as
 	// `const ICON_LOOKUP = { home: 'ctaIconSlug' }` can never mark an attr
@@ -748,7 +788,12 @@ function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 			if ( ! expr ) {
 				return;
 			}
+			const tag = tagNameOf( p2 );
 			if ( expr.type === 'ObjectExpression' ) {
+				// Position (a): the dispatch is in the SHARED COMPONENT.
+				if ( ! tag || ! componentIsDispatcher( tag ) ) {
+					return;
+				}
 				for ( const pr of expr.properties ) {
 					if ( pr.type === 'ObjectProperty' && pr.value &&
 						pr.value.type === 'StringLiteral' ) {
@@ -757,7 +802,11 @@ function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 				}
 				return;
 			}
-			if ( expr.type === 'CallExpression' && expr.arguments.length === 1 &&
+			// Position (b): the curried setter is a LOCAL function in this file,
+			// mounted on an ordinary (non-dispatcher) control — so the
+			// precondition is the file-level computed-key write, not the tag.
+			if ( hasComputedWrite &&
+				expr.type === 'CallExpression' && expr.arguments.length === 1 &&
 				expr.arguments[ 0 ] && expr.arguments[ 0 ].type === 'StringLiteral' ) {
 				consider( expr.arguments[ 0 ].value );
 			}
@@ -2185,11 +2234,39 @@ export default function Edit( { attributes, setAttributes } ) {
 			expectAttrs: [],
 		},
 		{
-			name: 'no computed-key setAttributes in the file at all -> returns nothing even with an attrNames map',
+			// ⛔ THIS CASE ASSERTED THE BUG, and is inverted as of 2026-08-26.
+			// It previously expected `[]` — "a file with no computed-key write of
+			// its own returns nothing even with an attrNames map". That IS the
+			// defect: the computed write lives in ShadowControl.js, never in the
+			// block. `sgs/card-grid` (0 own computed writes, 4 dispatcher mounts)
+			// therefore had a fully-controlled `shadowHover` reported DEAD, while
+			// `sgs/info-box` — byte-identical mount, 2 unrelated computed writes —
+			// passed by accident. The precondition is now asked PER ELEMENT, of the
+			// COMPONENT. A test that encodes a bug makes the bug permanent.
+			name: 'attrNames map on a real dispatcher IS found even with no computed-key write in this file',
 			src: `
 export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<ShadowControl attrNames={ { valueHover: 'shadowHover' } } />
+	);
+}
+`,
+			declaredAttrs: [ 'shadowHover' ],
+			expectAttrs: [ 'shadowHover' ],
+		},
+		{
+			// DISCRIMINATION CONTROL for the case above. Dropping the file-level
+			// precondition must NOT mean "any object-valued JSX prop counts".
+			// `SelectControl` is not a dispatcher (it is a @wordpress/components
+			// import, absent from COMPONENT_FILE_MAP), so an attrNames-SHAPED map
+			// on it must still be ignored. Without this, the fix above would trade
+			// a false-DEAD for a false-CONTROLLED, which D785 records as the more
+			// damaging direction (it hides a genuinely dead setting forever).
+			name: 'an attrNames-shaped map on a NON-dispatcher tag is still ignored',
+			src: `
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<SelectControl attrNames={ { valueHover: 'shadowHover' } } />
 	);
 }
 `,

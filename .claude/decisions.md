@@ -1,3 +1,56 @@
+## D795 [INCIDENT] — the dispatcher fix worked only by accident, and a self-test case had frozen the bug
+
+**2026-08-26.** `check-duplicate-controls.js`. Found by a 4-agent source audit of the hover
+opt-in, not by the gate itself. Follow-up to D785 defect 2, which was fixed **conditionally**
+and read as fixed.
+
+⭐ **TWO BLOCKS CARRY BYTE-IDENTICAL `<ShadowControl attrNames={{ base:'shadowHover', … }} />`
+MOUNTS AND THE GATE CLASSIFIED THEM DIFFERENTLY.** `sgs/info-box` → `controlled`.
+`sgs/card-grid` → `shadow` ("no editor control anywhere"). Same component, same props, same
+block.json declaration, no parse error.
+
+**Cause.** `collectIndirectFromOneFile()` gated on *"does the BLOCK'S OWN FILE contain a
+computed-key `setAttributes`?"* and returned early otherwise. That is the wrong question: the
+computed write lives in **`ShadowControl.js`**, never in the block that mounts it. A block was
+resolved correctly only when it happened to contain an **unrelated** computed write of its own.
+Measured: `info-box` has 2 and passed BY ACCIDENT; `card-grid` has 0, so all **4** of its
+dispatcher mounts were invisible. `sgs/cta-section` had the same blind spot (0 writes, 2 mounts).
+
+⛔ **The failure direction is the damaging one.** Per D785, a false DEAD makes an agent add a
+duplicate control the client then sees twice — so this defect actively manufactures the bug the
+gate exists to find. It also corrupted the hover census: `card-grid.shadowHover` was counted as a
+revivable dead attr when it is a live duplicate.
+
+**Fix — ask the right question, PER ELEMENT.** The correct helper already existed:
+`componentIsDispatcher()` walks the RESOLVED COMPONENT FILE and is memoised; it was built for
+CHECK 2 and never wired into CHECK 1. Asking it per JSX element is strictly more precise than any
+file-level gate — an object-valued prop on a NON-dispatcher (a lookup table, an `options={…}`)
+can no longer mark an attr controlled, closing this function's other historical over-reach at the
+same time. Both directions close with one change.
+
+⚠ **THE TWO SYNTACTIC POSITIONS NEED DIFFERENT PRECONDITIONS — applying one to both is a
+regression the self-test caught DURING this fix.** (a) `attrNames={{…}}` dispatches through a
+SHARED COMPONENT → `componentIsDispatcher( tag )`. (b) `onChange={ set('effectHover') }` is a
+LOCAL curried setter mounted on an ordinary control that is NOT a dispatcher → its precondition
+is the file-level computed write. `sgs/gallery` uses (b). The first version of this fix broke (b)
+and went red immediately.
+
+⭐ **AND A SELF-TEST CASE HAD FROZEN THE BUG IN PLACE.** A case literally named *"no computed-key
+setAttributes in the file at all -> returns nothing even with an attrNames map"* asserted
+`expectAttrs: []` — i.e. it encoded the defect as the contract, and would have failed any correct
+fix. Inverted, with the reasoning recorded inline. **A test that encodes a bug makes the bug
+permanent**, and it is indistinguishable from a passing test until something independent
+contradicts it — here, four agents reading the source.
+
+**Added a DISCRIMINATION CONTROL beside it:** an `attrNames`-shaped map on `SelectControl` (not a
+dispatcher, absent from `COMPONENT_FILE_MAP`) must still be ignored — proving the fix did not
+trade a false-DEAD for a false-CONTROLLED. Self-test **47 → 48**; the new case was watched failing
+against the re-broken code and passing against the fix.
+
+**Corrected hover census (8 blocks, re-measured):** **13 duplicates + 10 dead**, not the "12 + 11"
+this gate reported an hour earlier and emphatically not LEDGER's stale "33 + 24". The corrected
+figure independently matches the earlier hand-audit's "nearer 13 and 10".
+
 ## D794 [INCIDENT] — a tracked-forever report reproduced third-party GLSL while certifying that it didn't
 
 **2026-08-26.** A six-seat `/adversarial-council` on the flowing-gradient technique spec found that
