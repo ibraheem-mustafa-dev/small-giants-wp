@@ -138,6 +138,129 @@ D-number - the tier itself D479, the OGL swap D715 - and the admission test's ow
 requires one. A plan file is archived; `decisions.md` is not. Bean's ruling on being shown the
 finding: use the next number and get on with it.
 
+## D788 [INCIDENT] — the Mama's clone was never broken; the blocks moved underneath it
+
+**2026-08-25.** Bean reported a visibly broken homepage: images missing, padding and gaps
+wrong, sections not reaching the edge, hero the wrong pink, reviews absent, fonts
+inconsistent, labels square, product-card borders on the wrong element. Twelve symptoms.
+
+⭐ **It was a 72%-faithful clone that had DRIFTED, not a failed conversion.** Through August
+the framework migrated attributes from flat scalars to per-device objects
+(`fontSize:"19px"` → `{desktop,tablet,mobile}`). Page 2742 was cloned on 24 Aug carrying the
+OLD flat shapes, correct at the time. WordPress does not error on a flat value in an
+object-typed attribute — `prepare_attributes_for_render()` silently substitutes the DEFAULT.
+Every authored value vanished with no error, no log, no failing gate.
+
+⛔ **The pre-deploy gate passed that page completely clean while it held 102 such values.**
+`audit-post-content-blocks.py` checked unparseable attrs, unknown blocks, undeclared attrs
+and stranded content — never attribute TYPES. Added `type-mismatch` + `enum-violation` (the
+latter separate because a value can be the right TYPE and still not permitted — exactly what
+collapsed the testimonial slider to width 0). Union types handled; bool tested before number.
+It now reports all 102 and `--check` exits 1.
+
+**Repaired site-wide, not just the reported page:** 175 tier folds + 27 numeric heading
+levels (`2` → `"h2"`) across **72 posts**, backed up to
+`.claude/backups/2026-08-25/sitewide-post-content.BEFORE.json`. Bean chose migrate-all over
+baselining, including 7 `[GATE]` fixtures; motion QA passed on all three post-deploy, so the
+cross-track risk he accepted came out clean.
+
+⛔ **A REFUSED FOLD IS THE POINT.** The first migration script folded `padding:"22px"` into
+`{"desktop":"22px"}`. Padding is a BOX object (`{top,right,bottom,left}`) — that would have
+silently destroyed spacing site-wide. Caught by testing it, not by reading the agent's
+report. Rebuilt proof-based: fold ONLY where the shape is provable. Bean then corrected the
+premise — `surveys/survey-responsive-shape.py` already states the doctrine (BOX is a CLOSED
+set: padding, margin, border-width, border-radius; anything else object-typed is a TIER),
+which classifies all 533 object attributes with **zero** left ambiguous. An earlier reading
+of mine claimed 234 were undeclared and proposed an 83-file migration to fix it. Wrong: the
+information already existed in the enforcement scripts. Auto-fixable went 19 → 98 of 99.
+
+⚠ **THE LOST UPDATE — the expensive mistake.** Bean had page 2742 open in the block editor
+while `post_content` was being written via WP-CLI. His save wrote the editor's in-memory
+state, loaded BEFORE those writes, over the lot — reverting an entire session of content
+fixes. Only the final write survived. **Never write post_content to a page the operator has
+open in the editor.**
+
+Measured: CSS parity **72% → 80%**, elements off 64 → 41, horizontal overflow 9px → **0**
+(the overflow and the half-width hero media cell were the same cause — see D784).
+
+## D787 [ROUTINE] — nine draft-vs-clone capability gaps, and the dead controls they exposed
+
+**2026-08-25.** Eight blocks across two waves — six parallel branches
+(`/dispatching-parallel-agents`), then two through `/subagent-driven-development`. Every item
+was a MEASURED diff between the draft and its clone, not an abstract capability list — Bean's
+correction when an earlier framing drifted abstract.
+
+`sgs/icon` + `sgs/info-box` + `sgs/container` gained `textAlign`, all defaulting to EMPTY so
+they INHERIT. The draft centres a section with ONE rule and nothing could carry it.
+⭐ `info-box/render.php` ALREADY read `attributes['textAlign']` as "the fallback the cloning
+converter writes" — the renderer was ready and only the declaration was missing, so the
+converter had been writing an UNDECLARED attr that WP dropped from the editor while PHP still
+consumed it. Verified live end to end: section `center` → icon inherits `center`.
+
+`sgs/testimonial` reviewer-name and `sgs/product-card` title moved onto the shared typography
+panel. ⛔ **`TypographyControls` advertises a `showFontFamily` control that NO block had ever
+used, and `sgs_typography_css_rule()` cannot emit font-family** — opting in alone yields a
+dead control. Mirrored `sgs/quote`'s block-private workaround; the shared panel offering a
+control it cannot render is now a NAMED gap.
+
+⛔ **`sgs/container`'s border was DECLARED BUT UNWIRED.** `supports.__experimentalBorder`
+declared width/color/style/radius; nothing read width/color/style, only radius leaked through
+a stray passthrough, and no control was ever mounted. A client had no way to set it — which
+is why two white strips could not take the draft's `1px solid` + `10px radius`. Replaced with
+the R2c block-private pattern; shared wrapper untouched, so no design gate needed.
+
+⭐ **`sgs/hero`'s split media column was capped at half its track.** Measured 1449px: tracks
+736.5/736.5, content cell 737px, MEDIA cell **392px**. Cause: a leftover
+`max-width:calc(50% + spacing-40)` — 50% of 736.5 + 24px = 392 exactly. Written for a hero
+shape whose outer grid carried padding needing a negative-margin bleed; this grid carries
+none. Removed per "hardcoded wrapper defaults are cheats to remove". Predicted ~736.5px,
+measured **733px**, and it took the page's horizontal overflow to 0 with it.
+
+⛔ **THE TRIAL-CARD GRADIENT HAS BEEN DEAD SINCE 2026-06-10 AND NOBODY SAW IT.** The card
+root carried `background: var(--sgs-product-card-bg,#ffffff)` at (0,1,0); the variant's
+gradient sits in `:where(...)` at (0,0,0) so operator controls win. The shorthand sets
+background-image to none, so it ate the gradient from the day it was written — the opaque
+white above it made the card look intentional. **Fixing the white is what exposed it**, and
+the first fix at that layer was itself dead code: `var(--sgs-product-card-bg, transparent)`
+whose fallback can never fire, because the property is defined at `:root`. A `var()` fallback
+fires only when the property is UNDEFINED, never when it merely holds its default. Caught by
+the cross-model reviewer from CSS semantics alone, before it shipped.
+
+⚠ **Still open, found by Bean in the editor:** `splitImageBleed` crops the split image as if
+on mobile whenever it is ON. It was meant to be deleted once object-fit + media padding
+shipped (padding defaults to 0) and never was; D600 made it default `true`. Design-gated to
+next session.
+
+⚠ **Still open:** `sgs/product-card` in typed mode offers only "Remove image" — no replace
+control, no inspector media panel. Confirmed by opening the editor after three wrong answers
+from reading `edit.js`.
+
+## D786 [ROUTINE] — fix what the scanners find; an exemption must be reasoned, not skipped
+
+**2026-08-25, Bean-locked.** A subagent hit three auto-fixable phpcs indentation errors,
+wrote "confirmed pre-existing, not part of my scope", and moved on. Bean's ruling: do not be
+lazy with quick fixes that scanners surface.
+
+Applied across every file this session touched: the reported defect fixed (phpcs clean on
+that file, net **−3**), 14 pre-existing alignment warnings via scoped `phpcbf`, a redundant
+`??` on a variable initialised 200 lines above, and 3 net-new hardcoded-default findings (WP
+`.aligncenter/.alignright/.alignleft` literals scoped into `:where()` so an explicit or
+inherited `textAlign` beats them rather than tying). Every touched file is net-zero or better.
+
+⛔ **The exemptions are the interesting half, and both are reasoned rather than skipped.**
+`hero/render.php:1207` "comment is 43% valid code" is a FALSE POSITIVE — a genuine comment
+containing CSS class and property names. And `check-duplicate-controls` flagging
+`info-box.textAlign` was baselined only after answering the gate's OWN diagnostic question
+with evidence: the two controls emit to DIFFERENT elements (the box root, which children
+inherit, vs the `sgs/text` element itself, which overrides for that instance), so neither is
+dead-by-specificity. That is the inheritable wrapper default HC2 permits, matching the
+existing `sgs/accordion-item` entry carrying Bean's 2026-08-21 ruling.
+
+⚠ `inspector-scan` rule 31 had been lowered to EXACTLY the live count that morning, so one
+new single-state colour row red the build with zero slack. Fixed by completing the row (hover
++ gradient siblings through `sgs_border_states_css()`'s existing map keys) rather than
+bypassing, per that rule's own history: "adding a CORRECT colour row costs zero findings".
+
 ## D782 [INCIDENT] — the homepage becomes a real page, the blog gets a real URL, and page 144's clone is recovered from a pipeline artefact
 
 **2026-08-25.** Three things, one of them an outage I caused.

@@ -28,63 +28,53 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ ARCHIVE / CONTAINER TRACK — 2026-08-25 (register largely CLOSED; residue is next)
+## ▶ MAMA'S CLONE TRACK — 2026-08-25 (desktop CLOSED; mobile never looked at)
 
-⭐ **START HERE: `.claude/prompts/2026-08-26-close-out-the-archive-track.md`.**
-⛔ Read **D772 / D773 / D774 / D782** first. Detail is single-sourced there — not restated here.
-⛔ **The session AFTER the next one goes back to assessing each page template one by one.**
+⭐ **START HERE: `.claude/prompts/2026-08-28-mamas-clone-mobile-and-converter.md`.**
+⛔ Read **D786 / D787 / D788** first. Detail is single-sourced there — not restated here.
 
-**Governing rule (Bean's):** never assess a template by reading code, the DB or REST. Open it
-and LOOK. It earned itself 3× on 2026-08-25 — a breadcrumb printing literal `<span>` that code
-reads missed, a layout regression every gate passed, and a "200 OK" that was the homepage
-ignoring a query var.
+**Governing rule (Bean's):** never assess a page by reading code, the DB or REST. Open it and
+LOOK. It earned itself four more times this session — a media control I insisted existed from
+reading edit.js (it does; the editor shows only "Remove image"), a class list truncated by
+`slice(0,110)`, a margin measured on `__inner` not the outer element, and a grep for `★` when
+the block draws SVG.
 
 ### ✅ CLOSED + LIVE-VERIFIED
-All four archives share one header · breadcrumb tag-leak + `Archives:`/`Category:` prefix gone
-(`Home / Shop`, `Home / Uncategorized`) · duplicate no-results search box deleted · h1→h3 skips
-fixed · **item 1** solid picker **13.14:1** · **item 5** rail genuinely peek-scrolls (327→596,
-4×140px) · **item 8** all five never-opened templates 0 warnings — all eight Bean reported now
-clean · **F** infinite scroll never was wired into a template · **G2/G3** answered ·
-`sgs/site-footer-row` dead Layout control fixed + verified in the EDITOR (class audit: 30 blocks
-mount the component, no other affected) · **`sgs/container` `layout` enum shipped**.
-
-### ✅ HOMEPAGE + BLOG RESTRUCTURED (D782)
-`/` = page **2742**, the recovered native-block Mama's clone (**98 sgs blocks**) from
-`pipeline-state/mamas-munches-144-2026-08-24-031610/stage-4.json`. `/blog/` = page **2741** via
-new `home.html`, h1 "Blogs", 9 posts. Reading: `show_on_front=page`.
-⚠ **Page 144 is hard-deleted** — it 404'd the canary for ~90s when used as `page_on_front`.
-Kept in CLAUDE.md as PROVENANCE (it is what located the artefact), not as a live pointer.
-⛔ Post 66 "Spec16-P7 mockup baseline" is RAW HTML, zero block comments — a mirror, not a clone.
-⚠ Picker fixture = page **2736 `[GATE - DO NOT DELETE]`**, the ONLY solid-preset surface.
+Parity **72% → 80%**, elements off 64 → 41, overflow **9px → 0**. Hero media cell **392 →
+733px** · hero shows the draft's pink (its own fallback gradient painted over a correct
+background-colour — different properties never compete) · reviews restored (slider 0 → 960px)
+· star icon pink · sections padded · product cards 640/384 · gift labels 6px · ingredients
+centred and **icons inherit it** · both white strips padded + 28px gap · trial card
+transparent · all 5 images mapped.
+**Site-wide:** 175 tier folds + 27 heading levels across **72 posts** (backups in
+`.claude/backups/2026-08-25/`). `audit-post-content-blocks.py` now checks attribute TYPES — it
+passed page 2742 clean while that page held 102 broken values.
+**Commits:** `6db78e0e7` · `283335ae7` · `d3e31c890`, all deployed, motion QA green each time.
 
 ### ▶ OPEN — all in the next prompt
-1. **Homepage overflows 9px** at 1440 (scrollWidth 1449) and has never been seen at 375/768.
-2. **C1/C2** — `catalog-sorting` + `query-pagination` still unstyled.
-3. **D1–D4 residual** — the two search blocks LOOK different. Deliberately NOT unified as
-   blocks (`sgs/product-search` is product-scoped; no general-purpose SGS search block exists).
-4. **Register Task 6** — compare templates against previous versions. **G1** — index vs archive.
-5. **Single-child-shrunk sweep** (D757/D773) — never swept repo-wide.
-6. **`oldshape-audit` is over-broad** — `--theme-only` ships zero block schemas yet still trips
-   it; narrow it like `deploy_roots_for_scope()` was. Worked round 3× with a justified skip.
-7. ⚠ **`/sgs-update` not run** after the container enum, so `specs/02-SGS-BLOCKS-REFERENCE.md`
-   is stale on that attr. Deliberate — a shared-DB reseed is a cross-track action.
+1. **Mobile at 375/768 — never assessed.** Containers squash rather than stack. ⚠ Two dead
+   hypotheses: `flexWrap` defaults to `wrap`; the `layout:flex` row default is already fixed
+   here. Untested: `min-width:0` letting children shrink past any wrap point.
+2. **The converter still produces all of this** — flat scalars into object attrs; a block-root
+   BEM modifier routed to a child; section padding sent to an undeployed page-id-scoped
+   stylesheet; `layout:"grid"` onto blocks whose `layout` is a different enum.
+3. **`splitImageBleed` crops the split image as if on mobile when ON** (Bean, in the editor).
+   Meant to be deleted once object-fit + media padding shipped; D600 made it default `true`.
+4. **6 visual-diff bypasses to retire** — all three commits used `SGS_VISUAL_GATE_SKIP`.
+5. **Archive residue:** `core/query-pagination` has zero CSS across 7 templates (⚠
+   `catalog-sorting` IS already themed — the old prompt was wrong); harmonise the two search
+   blocks' LOOK; register Task 6; single-child-shrunk sweep; `oldshape-audit` over-broad on
+   `--theme-only`.
+6. **`/sgs-update` owed** — `specs/02-…` stale on this session's new attrs. Cross-track action.
 
-### ⛔ HANDED TO THE MIGRATION TRACK — not this register
-**flexWrap default flip** (~98 stored instances, several `[GATE]` fixtures; proven to move 3
-elements on `/` and 6 on `/shop/`) and the **83 accidental-column candidates**. ⚠ The
-"52 / 5 / 59" figure is RETIRED — unreproducible from any artefact. `survey-flex-row-shape.py`
-skips containers with an explicit `flexWrap` (line 109), so it answers "is the flip safe?", not
-"how many accidental columns?". Same classifier minus that filter: 125 rows, **83 non-NO-OP**.
-
-⚠ **Not ours:** canary page 2737 (motion track) carries undeclared `sgs/text`/`sgs/button`
-attrs — WP discards them, the next editor save deletes them, and it blocks `oldshape-audit`.
-
-### ⚠ Two traps this track proved live
-- **A one-child flex row is indistinguishable from a stack until a sibling appears** (D773).
-  `sgs/container` defaults to `layout:"flex"` = a CSS ROW. The default did not change; the
-  child count did. Same shape as D757.
-- **Compare LEFT when you mean "is this a row".** A probe asserted `STACKED:true` from TOP
-  offsets while LEFT offsets proved a row.
+### ⚠ Hazards proved this session
+- **Never write `post_content` to a page the operator has open in the editor.** A save wrote
+  Bean's pre-change editor state over a whole session of content fixes; only the last survived.
+- **`main` is shared.** HEAD moved 4× mid-session; two deploys aborted on other tracks' dirty
+  files (both correct). Commit with explicit paths, never `-A`.
+- **A JSON round-trip reformats the whole file** — 206/194 lines vs 12 for a surgical insert.
+- **A ratchet at zero slack**: rule 31 sat exactly on the live count, so one incomplete colour
+  row red the build. A correct row costs zero findings.
 
 ## ▶ MOTION TRACK — 2026-08-25 (FR-38-30 + FR-38-31 shipped; the gradient's LOOK is the open gap)
 
