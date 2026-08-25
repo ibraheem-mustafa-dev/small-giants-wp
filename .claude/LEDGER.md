@@ -121,9 +121,11 @@ hand-painted `palette.png` texture; 4 interpolated colour stops can't reproduce 
    relative->absolute); the canvas now overlays its parent exactly (630px = 630px) instead
    of inflating the section to 1443px. Gate `check-container-child-lift` (tier fast,
    `--self-test` proven) stops the list ever regrowing. Full fast suite 64/64.
-2. **Verify the EDITOR surface for `particles`** — never opened. Frontend-only verification is
-   exactly the gap that once shipped 0-of-6 blocks rendering in the editor while 5-of-5 rendered
-   live. Also confirm live cap-binding and loop-stop (my first probe was a broken instrument).
+2. ✅ **EDITOR SURFACE — CLOSED 2026-08-25.** Opened on page 2744 and verified by observation:
+   picker lists **Particle trail**; Style offers all three presets; Density + Size reachable behind
+   the ToolsPanel menu with Reset all; Notice + 8KB-budget notice both ship; 0 invalid blocks,
+   0 console errors. The `verify-both-surfaces` gap for FR-38-32 is now closed.
+   ⚠ Still unobserved: live cap-binding and loop-stop (the first probe for those was unreliable).
 3. **Run the stripe-hero replication POC** — prompt already written; FR-38-31's look stays
    rejected until it runs.
 4. **Hover: decide the 8 conflicted blocks.** 3 of 11 shipped (google-reviews / pricing-table /
