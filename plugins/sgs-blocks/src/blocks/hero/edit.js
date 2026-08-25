@@ -436,10 +436,35 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
+	// `has-background` suppression flag — mirrors render.php:934-938.
+	//
+	// ⛔ NOT redundant with the inline paint above, and the reason is a CSS fact
+	// that is easy to get wrong (it was, on the first pass at this fix). The
+	// inline `background-color` beats the `:where()` fallback in style.css only
+	// where they COMPETE — and they do not. style.css's fallback is a
+	// `background-image` gradient; a colour and an image are DIFFERENT
+	// properties, so they stack rather than override, and the gradient paints
+	// OVER the client's colour. Verified live in the canary editor: with
+	// backgroundColour '#00FF00' the element carried
+	// `background-color: rgb(0,255,0)` AND still computed
+	// `background-image: linear-gradient(135deg, rgb(197,106,122)…)`.
+	//
+	// This class is what disengages `:where(.sgs-hero):not(.has-background)`,
+	// and render.php has always emitted it (see its own comment at :914-933,
+	// which records the same defect being found on the live Mama's homepage).
+	// The gradient case needs only the inline paint — same property, so it does
+	// override — but the COLOUR case needs both.
+	const hasBackgroundPaint =
+		!! backgroundColour ||
+		!! backgroundColourGradient ||
+		!! backgroundOverlayColour ||
+		!! overlayGradient;
+
 	const className = [
 		'sgs-hero',
 		`sgs-hero--${ variant }`,
 		`sgs-hero--align-${ alignment }`,
+		hasBackgroundPaint ? 'has-background' : null,
 		// splitImageBleed root modifier — mirrors render.php:775-777
 		// ($classes[] = 'sgs-hero--split-bleed').
 		splitImageBleed ? 'sgs-hero--split-bleed' : null,

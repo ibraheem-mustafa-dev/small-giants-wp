@@ -114,7 +114,43 @@ def _contains_box_token(s: str) -> bool:
     false-flagging an unrelated word that happens to contain 'top' loosely;
     we check case-sensitive whole-token containment via word-ish boundaries)."""
     for tok in _BOX_TOKENS:
-        if tok in s:
+        start = 0
+        while True:
+            i = s.find(tok, start)
+            if i < 0:
+                break
+            start = i + 1
+
+            # A token that is merely a SUBSTRING of a longer word is not a
+            # side/corner reference. Without this, 'top' matched inside
+            # 'Desktop' and flagged the converter's DEVICE-TIER regex
+            # `(Tablet|Mobile|Desktop)$` as a box-side regex — a false
+            # positive that failed the build on 2026-08-26. The same bare
+            # test also reaches 'stopPropagation', 'laptop', 'topic',
+            # 'leftover', 'rightmost' and 'bottomless'.
+            #
+            # This is what the docstring above has always claimed ("not just
+            # any substring … word-ish boundaries"); it simply was not
+            # implemented. A false positive is a detector bug, never baseline
+            # fodder, so the gate is corrected rather than the finding accepted.
+            before = s[i - 1] if i > 0 else ''
+            after = s[i + len(tok)] if i + len(tok) < len(s) else ''
+
+            # A LOWERCASE token preceded by a letter is inside a longer word
+            # ('Desk|top', 'lap|top', 's|top'). A CAPITALISED token preceded by
+            # a letter is a camelCase boundary and IS a real reference
+            # ('border|Top|Width', 'padding|Left') — so only the lowercase case
+            # disqualifies. Getting this wrong in the other direction was caught
+            # by the --self-test's must-flag fixtures.
+            if tok[0].islower() and before.isalpha():
+                continue
+            # Followed by a LOWERCASE letter -> the word continues
+            # ('bottom|less', 'left|over', 'top|ic'). A following UPPERCASE
+            # letter is a camelCase boundary and still a real reference
+            # ('topLeft', 'borderTopWidth').
+            if after.isalpha() and after.islower():
+                continue
+
             return True
     return False
 

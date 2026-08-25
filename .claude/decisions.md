@@ -63,13 +63,40 @@ editor canvas and it doesn't change no matter what colours or gradients I pick".
 `backgroundColour` to `#00FF00` via the editor store left the canvas at
 `rgb(197,106,122)` — `has-background` absent, `style` attribute null. The attribute was inert.
 
-**Cause — ONE, not three.** Nothing in `edit.js` consumed the attribute. The fallbacks in
-`hero/style.css:58` and `hero/editor.css:17` are `:where()`-de-specified to (0,0,0), so they
-were NOT winning a cascade fight; they painted because nothing competed. That makes painting
-the value sufficient on its own. Emitting `has-background` as well, or guarding `editor.css`
-as well, would each be a second overlapping fix for an already-fixed cause — unfalsifiable,
-per `prove-the-cause-before-fix.md`. Both were deliberately NOT done.
-(`editor.css:17` targets `--standard` and did not even apply to the split heroes tested.)
+**Cause — TWO fixes, not one and not three.** ⚠ CORRECTED AFTER LIVE VERIFICATION; the first
+version of this entry asserted "ONE, not three" and was half wrong. Recorded in full because the
+error is instructive.
+
+Nothing in `edit.js` consumed the attribute. The fallbacks in `hero/style.css:58` and
+`hero/editor.css:17` are `:where()`-de-specified to (0,0,0), so they were NOT winning a cascade
+fight — they painted because nothing competed. From that I concluded an inline paint alone was
+sufficient and that emitting `has-background` would be a second overlapping fix for an
+already-fixed cause.
+
+**The reasoning error:** an inline declaration beats a `:where()` rule only where the two
+COMPETE, i.e. on the SAME property. `style.css:58`'s fallback is a `background-image` gradient;
+the client's colour is a `background-color`. Different properties do not override — they STACK,
+and the gradient paints over the colour. Measured live after deploying the first fix:
+
+    backgroundColour '#00FF00'
+      -> background-color: rgb(0,255,0)                                    (painted)
+      -> background-image: linear-gradient(135deg, rgb(197,106,122)…)      (STILL painting over it)
+
+So `has-background` is not redundant — it is the fix for the OTHER half, and only the COLOUR
+case needs it (the gradient case is same-property and does override). `render.php:914-933`
+records this exact defect being found on the live Mama's homepage; the LEDGER states the rule as
+"different properties never compete". Both were in front of me and I reasoned past them.
+
+`editor.css:17` remains untouched and that part of the original call stands: it is same-property
+and targets `--standard`, so it never applied to the split heroes tested.
+
+**Verified live in the canary editor after the second fix** — nothing set: default pink shows,
+no `has-background`; slug: `rgb(230,138,149)`, `background-image: none`; custom hex:
+`rgb(0,255,0)`, gradient gone; gradient: red->blue paints. Four of four.
+
+⭐ **The method lesson:** the "no second overlapping fix" rule is about two fixes for the SAME
+cause. Two properties that stack are two different causes, and collapsing them is how a
+half-finished fix ships looking complete.
 
 Fix `14d3801bb`: `resolveBackgroundPaintPreviewStyle()` in `src/utils/tokens.js`, mirroring
 `sgs_background_paint_value()`, spread into hero's `wrapperStyle` before the background-image
