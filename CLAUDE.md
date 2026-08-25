@@ -194,7 +194,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
 ```
 
-- **Canary (the ONLY site — palestine-lives.org is GONE, removed from TARGETS 2026-08-10):** sandybrown-nightingale-600381.hostingersite.com, on **WP 7.1** (Bean upgraded 2026-08-20; verified same day via `wp core version` over SSH — re-check rather than trusting this line). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
+- **Canary (the ONLY site — palestine-lives.org is GONE, removed from TARGETS 2026-08-10):** sandybrown-nightingale-600381.hostingersite.com, on **WP 7.1** (Bean upgraded 2026-08-20; verified same day via `wp core version` over SSH — re-check rather than trusting this line). ⚠ **Page 144 NO LONGER EXISTS** (hard-deleted; not in trash, no surviving revisions). Setting `page_on_front=144` from this line 404'd the canary on 2026-08-25 — **verify a post ID exists before pointing anything at it.** Keep the number: it is still the PROVENANCE that locates the clone. The native-block Mama's homepage (98 sgs blocks) survives at `pipeline-state/mamas-munches-144-2026-08-24-031610/stage-4.json` and was restored to **page 2742** (`/`) on 2026-08-25. Posts page = **2741** (`/blog/`). ⛔ Post 66 'Spec16-P7 mockup baseline' is RAW HTML, zero block comments — a mirror, not a clone; do not reuse it as a page.
 - **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`). WP admin user: `Claude`.
 - **Canary credentials (gitignored, ALWAYS available — no need to ask):** `.claude/secrets/sandybrown.env` holds the test-site logins — `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` (browser/admin login at wp-login.php) + `WP_APP_PWD_SANDYBROWN` (REST/Store-API Basic auth) + `WP_URL_SANDYBROWN`. Use them directly for Playwright editor login + REST verification. (Cloning dev-site app passwords: `A:/.openclaw/.secrets/wp-app-passwords.env`.)
 - **No Node.js on server** — build locally, deploy compiled `build/`.
@@ -205,7 +205,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 Theme + blocks must work on ANY WordPress install for ANY client. Every design decision must pass: "Will this make sense for a restaurant, a wedding planner, AND a law firm — not just <current client>?" Never hard-code client colours, copy, imagery, structure into base theme / blocks plugin. Client-specific work lives in `sites/<client>/` only.
 
 ### cv2 output goes to WP PAGES, not POSTS
-Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. `/sgs-clone --deploy-target page:144` for current Mama's canary.
+Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. `/sgs-clone --deploy-target page:2742` for the current Mama's homepage (144 is deleted — see the canary line above).
 
 ### Client experience is primary
 No block feature is complete until it has full block-editor UI controls. Clients are tech-illiterate — they use the block editor exclusively. Every customisable property must be exposed as an inspector control. If a setting requires touching code, it is not done. WP-CLI is a developer tool only; never something clients touch.
