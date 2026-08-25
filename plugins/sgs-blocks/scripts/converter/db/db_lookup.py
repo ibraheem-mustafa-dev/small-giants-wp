@@ -34,6 +34,10 @@ from pathlib import Path
 from typing import NamedTuple
 
 SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+# Device-tier sibling suffixes — a name ending in one of these is a tier SIBLING,
+# never a tier BASE (see tier_object_base condition 3).
+_TIER_SIBLING_SUFFIX_RE = re.compile(r"(Tablet|Mobile|Desktop)$")
 UIMAX_DB = Path.home() / ".agents" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
 if not UIMAX_DB.exists():
     UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
@@ -1083,6 +1087,63 @@ def box_family_for(block_slug: str, attr_name: str) -> "str | None":
     if not row:
         return None
     return row[0] or None
+
+
+@functools.lru_cache(maxsize=1024)
+def tier_object_base(block_slug: str, attr_name: str) -> bool:
+    """True iff ``attr_name`` is a TIER-SHAPED object attr on this block.
+
+    The TIER shape is ``{desktop, tablet, mobile}`` (Spec 35 Phase 1.4, Bean
+    2026-08-10) — the successor to the legacy FLAT TIER SIBLINGS model
+    (``fontSize`` + ``fontSizeTablet`` + ``fontSizeMobile``). When this returns
+    True the caller MUST accumulate its per-tier writes into ONE object attr
+    rather than re-appending a tier suffix, because the suffixed sibling no
+    longer exists and ``services.validate`` would gap the write silently.
+
+    Sibling of ``box_family_for`` and gated the same way — on DB columns, never
+    on the attr NAME (R-31-1). The two shapes are INDEPENDENT axes and mutually
+    exclusive at the storage layer: BOX is a CLOSED, named set
+    (padding/margin/borderWidth/borderRadius + prefixed variants, carried by the
+    ``box_family`` column); anything else object-typed is a TIER.
+
+    Four conditions, each earning its place against a measured false positive:
+      1. ``attr_type='object'``      — a scalar attr keeps the flat model.
+      2. ``box_family IS NULL``      — a BOX attr accumulates by SIDE, not tier.
+      3. the name is not itself a tier sibling — ``backgroundImageMobile`` is
+         object-typed with no box_family, so conditions 1-2 alone classify it as
+         a tier BASE and a caller would write ``{mobile: ...}`` INTO the mobile
+         sibling. It is an asset sibling, not a base.
+      4. no ``<attr>Tablet``/``<attr>Mobile`` sibling is declared — a block that
+         still declares the flat siblings still uses the flat model, and the
+         suffixed write is correct there. This is what keeps the 307 surviving
+         flat-sibling attrs working unchanged.
+
+    Verified against positive controls (sgs/heading.fontSize, sgs/text.fontSize
+    and .lineHeight, sgs/container.gridTemplateColumns/.columns/.gap) and
+    negative controls (sgs/hero.backgroundImage and .backgroundImageMobile,
+    sgs/text.borderWidth, sgs/heading.fontSizeUnit and .lineHeight — the last
+    being ``number`` on heading while ``object`` on text, which is exactly why
+    this must be resolved per (block, attr) and never by name).
+    """
+    if _TIER_SIBLING_SUFFIX_RE.search(attr_name):
+        return False
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT attr_type, box_family FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+        if not row or row[0] != "object" or row[1]:
+            return False
+        siblings = conn.execute(
+            "SELECT 1 FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name IN (?, ?) LIMIT 1",
+            (block_slug, attr_name + "Tablet", attr_name + "Mobile"),
+        ).fetchone()
+    finally:
+        conn.close()
+    return siblings is None
 
 
 @functools.lru_cache(maxsize=1024)

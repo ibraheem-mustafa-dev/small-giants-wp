@@ -93,8 +93,33 @@ class ElementResult:
                 # though `Write` is a frozen dataclass — freezing blocks
                 # reassigning `.value`, not mutating the dict it points to).
                 out[w.attr] = dict(w.value)
+            elif isinstance(w.value, dict) and db_lookup.tier_object_base(
+                self.block_slug, w.attr
+            ):
+                # TIER-OBJECT partial write ({desktop|tablet|mobile: value}).
+                # Structurally the same accumulation as the box branch above and
+                # merged the same way — three declarations at three device tiers
+                # are three PARTIAL writes to ONE object attr, not a collision.
+                # Distinct from box only in which keys it merges (tiers vs sides),
+                # which is why the predicate is `tier_object_base` and not a name
+                # test: BOX and TIER are independent axes and a single attr is one
+                # or the other, never both (Spec 35 Phase 1.4).
+                #
+                # First-write-per-key wins, matching the box branch and the fold
+                # `setdefault` contract. Tier resolution order runs Desktop first,
+                # so a narrower tier never overwrites a wider one that already
+                # claimed the key.
+                if isinstance(existing, dict):
+                    for k, v in w.value.items():
+                        existing.setdefault(k, v)
+                else:
+                    # COPY, never the Write's own dict — a later partial write
+                    # `setdefault`s INTO this target, and aliasing would mutate a
+                    # frozen Write's history in place (same hazard the box branch
+                    # documents).
+                    out[w.attr] = dict(w.value)
             elif isinstance(w.value, dict):
-                # NON-box dict-valued attr. A single write is fine (stored
+                # NON-box, NON-tier dict-valued attr. A single write is fine (stored
                 # verbatim, copied). A SECOND write to the same attr is an
                 # unresolvable ambiguity — two declarations both claiming the
                 # whole attr — and must raise rather than silently per-key
@@ -146,11 +171,13 @@ def _check_conservation(result: ElementResult) -> None:
         )
     # COLLISION: no two writes may target the same attr (silent last-wins data
     # loss) — UNLESS every write sharing that attr carries a dict value (a
-    # box-object PARTIAL side write, box-object interface contract §3/§4,
-    # 2026-07-09): those are a deliberate merge, not a collision, PROVIDED no
-    # two dict writes for the same attr also share a KEY (that IS a real
-    # collision — two declarations both claiming e.g. 'top') and no dict write
-    # is mixed with a non-dict write for the same attr (an ambiguous shape).
+    # PARTIAL write into a merged object — either a box-object SIDE
+    # (box-object interface contract §3/§4, 2026-07-09) or a TIER-object
+    # DEVICE key (Spec 35 tier shape): those are a deliberate merge, not a
+    # collision, PROVIDED no two dict writes for the same attr also share a
+    # KEY (that IS a real collision — two declarations both claiming e.g.
+    # 'top', or both claiming 'mobile') and no dict write is mixed with a
+    # non-dict write for the same attr (an ambiguous shape).
     by_attr: dict[str, list] = {}
     for w in result.writes:
         by_attr.setdefault(w.attr, []).append(w)
@@ -168,8 +195,8 @@ def _check_conservation(result: ElementResult) -> None:
                     seen_keys.add(k)
             if key_dupes:
                 raise ConservationError(
-                    f"COLLISION: box-object attr {attr!r} for {result.block_slug} "
-                    f"received ≥2 writes for the same side key(s) "
+                    f"COLLISION: merged-object attr {attr!r} for {result.block_slug} "
+                    f"received ≥2 writes for the same key(s) "
                     f"{sorted(key_dupes)} — one would be silently lost."
                 )
             continue  # merge-safe: distinct keys across dict writes
