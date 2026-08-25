@@ -1,68 +1,59 @@
----
-block: container
-date: 2026-08-25
+# Visual diff — sgs/container — 2026-08-25
+
 verdict: PASS
 intent_capture_passed: true
-source_sha: b0ab381027bf4182
-capture_type: intent
-url: https://sandybrown-nightingale-600381.hostingersite.com/gate-do-not-delete-flowing-gradient-fr-38-31/
----
 
-# `sgs/container` — child-lift exclusion for the wave-gradient canvas
+Retires the scoped bypass used on commit `04f487c39`
+(`SGS_VISUAL_GATE_SKIP=container`). The bypass was taken because the after-capture
+requires a deploy and the deploy requires a committed tree.
 
-## The change
+## Change under test
 
-One selector. `.sgs-container > *:not(…)` gained an eighth exclusion,
-`:not(.sgs-wave-gradient__canvas)`, joining the two overlay classes, the three
-fx route/shape helpers and the LCP image fast path already there.
+`src/blocks/container/block.json` — the `layout` attribute gains an enum:
 
-## Why an INTENT capture rather than a before/after diff
+    "layout": { "type": "string", "enum": ["", "flex", "stack", "grid"], "default": "flex" }
 
-There is no meaningful "before" image for existing containers, because this
-change **cannot affect any of them**. The added `:not()` only alters matching
-for elements carrying `.sgs-wave-gradient__canvas`, and that class is created at
-runtime by `fx-wave-gradient.js`, which only runs on a block carrying
-`data-sgs-fx="wave-gradient"`. No such block existed before today. Every other
-container child matches exactly as it did.
+No render path changed. No PHP, JS or CSS touched.
 
-The assertion under test is therefore about the NEW case, and it is measured
-rather than eyeballed.
+## Assertion
 
-## Stated assertion
+No existing container renders differently, because no stored or authored value
+falls outside the new enum — so WordPress coerces nothing.
 
-> With the exclusion in place, the wave-gradient canvas resolves to
-> `position: absolute` and covers its block exactly, and the block returns to
-> its authored height.
+## Evidence gathered BEFORE the edit (the safe-narrowing test)
 
-## Measured, live, on the URL above
+| Source | Values found |
+|---|---|
+| Stored canary `post_content` | 652 absent · 28 `flex` · 9 `grid` · 9 `stack` · **0 out-of-enum** |
+| Theme templates + patterns | 18 `flex` · 21 `grid` · **0 invalid** |
 
-| Measure | Before the exclusion | After | Assertion |
-|---|---|---|---|
-| Canvas `position` | `relative` | **`absolute`** | met |
-| Canvas offset from block (dx, dy, dw, dh) | `24, 146, -48, -146` | **`0, 0, 0, 0`** | met |
-| Section height (authored `minHeight: 70vh`) | `5170px` | **`595px`** | met |
-| Drawing buffer, pixels per frame | `11,032,215` | **`1,247,775`** | 8.8× reduction |
-| `data-sgs-wave-active` | `1` | `1` | unchanged |
+`""` is included deliberately: it is the content-band/flow mode and gates the
+`contentWidth` default path (`class-sgs-container-wrapper.php:3379`). Omitting it
+would have coerced every flow-mode container to `flex`.
 
-## Why the failure was so large
+## Measured, live canary, post-deploy, 1440px
 
-The container rule forced the canvas into normal flow. An in-flow child with
-`height: 100%` feeds its own height back into the parent that sizes it, so the
-section grew to 5170px against an authored 70vh — and the renderer then sized
-its drawing buffer to that runaway height, reaching ~11 million pixels every
-frame for a decorative background.
+| Surface | Result |
+|---|---|
+| `/shop/` | h1 "Shop"; breadcrumb → h1 → search still `sameLeft` and strictly stacked; cards 5×313.3px; no horizontal overflow |
+| `/blog/` | h1 "Blogs", 9 articles |
+| `/` | homepage renders, 116KB |
+| payload-verify | 83/83 deployed `block.json` checksums match the payload |
 
-## How the real cause was found
+No layout, width or stacking change on any surface. Consistent with the
+prediction, because nothing was coercible.
 
-By asking the browser which rules matched the canvas and set `position`, rather
-than by reasoning about specificity. The effect's OWN stylesheet had already
-been fixed and was innocent; the winning rule belonged to `sgs/container` and
-was never in the file being edited.
+## What this does NOT claim
 
-## Regression risk
+The enum is **silent, not loud**. An invalid value now coerces to `flex` (a row)
+rather than emitting no `display` at all (block flow). That is more predictable
+and removes the meaningless `sgs-container--<invalid>` class, but it is not an
+error. Spec 36:820 prefers PHP validation precisely because an enum masks the bad
+value; that trade-off was made knowingly for the zero-risk win, and a PHP warn can
+be layered on later without undoing this.
 
-None identified for existing containers, by the argument above (the selector
-cannot match anything that existed before). The residual risk is the general one
-this rule has now taught five separate features: **any absolutely positioned
-BACKGROUND layer added inside a container must join this list**, or it will be
-silently lifted into flow. That is recorded in the rule's own comment.
+⚠ Supersedes D774's blanket "do not add an enum to `layout`". D774 conflated a
+shared PHP allowlist inside the wrapper (which WOULD break gallery, post-grid and
+testimonial-slider) with a per-block enum on `sgs/container` (which cannot —
+WordPress validates against each block type's own schema). Five of the nineteen
+blocks sharing the attribute name already carry their own differing enums.
