@@ -63,8 +63,16 @@
    `.sgs-container__image-bg` (Phase 2, the <img> LCP fast path) is excluded for
    the identical reason: this rule's `position:relative` would out-rank the
    image's own `position:absolute` (see the rule below), lifting it above the
-   overlay and content instead of sitting behind them. */
-.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg) {
+   overlay and content instead of sitting behind them.
+   `.sgs-wave-gradient__canvas` (FR-38-31, added 2026-08-25) is the fifth member
+   for the same reason, and it failed LOUDLY rather than subtly: forced into
+   normal flow the canvas rendered 24px inset and 146px down instead of filling
+   the block, AND the section grew to 5170px, because an in-flow `height:100%`
+   child feeds its own height back into the parent that sizes it — which then
+   pushed the drawing buffer to ~11 million pixels every frame. Measured live.
+   ⚠ Anything absolutely positioned as a BACKGROUND layer inside a container
+   must join this list; that is now five separate features that have learned it. */
+.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg):not(.sgs-wave-gradient__canvas) {
 	position: relative;
 	z-index: 1;
 }
