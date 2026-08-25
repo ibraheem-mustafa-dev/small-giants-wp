@@ -203,6 +203,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Cursor-reactive field (FR-38-25) + its four looks (FR-38-28) | **V** — the shipped mega-menu spotlight already does pointer-follow in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate; GSAP adds nothing §1.3's ratchet would accept. Measured 982 bytes gzip, no GSAP dependency | block (emitter) + runtime-detected participants | fx panel — field type / colour (`DesignTokenPicker`) / size | `creates_panel = 0` (measured: letting it create panels put a new fx panel on 11 blocks that would also inherit `motion-path` + `scrub`); fine-pointer only; participants carry no control | off | Container-kind + background-image blocks → any block with a paintable background |
 | Magnetic pull (FR-38-30) | **V** — the shipped mega-menu `magnet.js` already does proximity-based pull in vanilla; the 2026-08-02 motion-ecosystem survey independently concluded a magnetic button is "~20-30 lines of vanilla JS — write it, don't dependency it"; GSAP adds nothing §1.3's ratchet would accept | block | fx panel — Pull distance + Reach (shown by default), Direction (behind "+") | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only via `hover`; measured 1054 bytes gzip; distance measured to the element's BOX, not its centre | off | Any of the 32 fx-panel blocks (incl. `sgs/button`, `sgs/multi-button`, `sgs/icon`) → any block with the fx panel exposed |
 | Flowing gradient (FR-38-31, SECOND Tier W entry) | **W** — a mesh gradient needs per-vertex colour interpolated across a subdivided, noise-displaced plane, which CSS cannot generate and GSAP cannot rasterise (§1.2b tests i + ii); GENERATIVE rather than image-wrapping, which widens Tier W's founding fallback premise (see §1.2b) | block (surface) | fx panel-equivalent surface control — 4 client colours (`DesignTokenPicker`) + a mandatory keyboard-reachable Pause control (SC 2.2.2, autonomous motion) | `requires='surface'`; AUTONOMOUS (`triggers='load'`), not cursor-driven — engages SC 2.2.2 so ships a real Pause control, `hidden` until JS confirms it is running; DPR capped at 1.5; IntersectionObserver + `visibilitychange` + context-loss give-up; real CSS fallback required (ships alongside, kept in sync forever — the tier-widening cost) | off | Section/hero surfaces → any block declaring the `surface` capability |
+| Particle trail (FR-38-32) | **V** — a canvas 2D pool of short-lived sprites; vanilla reaches it with no library, so §1.3's ratchet refuses anything dearer. ⛔ NOT Tier W: it needs no GPU shader and that list stays closed at two | block | fx panel — Style (sparks/gravity-dots/ripple) shown by default, Density + Size behind "+" | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only; roster measured 32 before, 32 after; cap 150/emitter, DPR<=1.5; self-terminating loop | off | Any of the 32 fx-panel blocks → any block with the fx panel exposed |
 | *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
 
 ## 3. The capability roster (nothing cut; curated defaults)
@@ -1063,6 +1064,79 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   - (c) a scratch/POC exact replication is the next session's work; prompt at
     `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
 
+- **FR-38-32 Particle trail — Tier V, ONE engine, THREE presets. BUILT 2026-08-25 (D784).**
+  Canary page 2744. A pool of short-lived sprites trails the pointer across an emitter and fades out.
+  ⭐ **This is the real fading trail the owner asked for.** The cursor-field control labelled
+  "Drag weight" (`fxFieldTrail`) is a lerp follower with NO fade and must never be reported as
+  satisfying that ask (FR-38-25 records the same warning).
+
+ **Why its own fx effect and NOT a sixth cursor-field type — the design gate, with its evidence.**
+  (i) There is no JS painter seam to attach to: `cursor-field.js`'s docblock names a `cursor-fields/`
+  module directory that **does not exist** (its only mention repo-wide is that docblock line), and every
+  shipped field type is painted solely by a `[data-sgs-cursor-field="X"]` CSS rule. A canvas cannot be
+  expressed that way — the same structural break §3.3 already records for `floating-objects`.
+  (ii) Field types are MUTUALLY EXCLUSIVE (one `data-sgs-cursor-field` value per emitter), so as a type
+  "Sparks" would REPLACE the client's glow instead of layering over it. As its own effect it composes.
+  Follows the `magnet` precedent (FR-38-30) exactly — a shipped shape, not new infrastructure.
+
+ **Files:** `src/shared/effects/particles.js` (the WP-agnostic engine — canvas, pool, integrator),
+  `src/shared/effects/fx-particles.js` (boot module; ONE document listener, rAF-throttled once, driving
+  every instance — an element-scoped listener cannot see a pointer that has not arrived yet),
+  `assets/css/fx-particles.css` (Spec 32: CSS owns positioning, JS sets only the canvas width/height
+  ATTRIBUTES, which are buffer size and not styling).
+
+ **The three limits, owner-approved at the design gate and enforced in code:**
+  - **Cap** — `MAX_PARTICLES = 150` per emitter, a pool allocated ONCE and written as a ring buffer
+    (`pool[cursor]`, cursor advanced modulo); never `push`/`splice`, so its length cannot grow. One
+    canvas per emitter, DPR clamped to 1.5 (the FR-38-31 precedent). Fine-pointer only.
+  - **Stop-on-idle** — self-terminating with NO timer: the loop runs while `(pool.live > 0 ||
+    movedThisFrame)` and exits when the pool empties, so it is provably zero-cost at rest and restarts
+    on the next movement. Plus `IntersectionObserver` (off-screen runs nothing) and `visibilitychange`.
+  - **Flash ceiling (SC 2.3.1)** — answered STRUCTURALLY, not by a rate limit: alpha is `1 - age/maxAge`
+    and nothing can make it rise, so there is no flash to cap. Particle radius is clamped to a
+    coverage-derived ceiling `r <= sqrt( 0.10 * A / ( pi * CAP ) )`, bounding painted coverage to ~10%
+    of the emitter box against the 25% threshold. `ripple` is additionally gated to 2 rings/second.
+⚠ **A VACUOUS CLAMP WAS FOUND HERE BY THE POST-BUILD COUNCIL AND IS NOW FIXED.** The RING
+    branch read `Math.min( ringRadiusFactor * maxRadius, maxRadius * ringRadiusFactor )` — both
+    arguments are the SAME value by commutativity, so it read as a clamp and clamped nothing. It did
+    not breach the ceiling at the shipped numbers (a 2px-stroked ring at ~3x a ~21px radius, max 2
+    alive, measures ~0.075% of the box), so it was a robustness defect rather than a live one. The
+    correct reading is that a ring is STROKED, not filled, so it is not bounded by the filled-disc
+    ceiling `maxRadius` encodes — its painted area is circumference x lineWidth. The clamp is removed
+    and that reasoning is now stated at the site. **Recorded because a guard that clamps nothing is
+    worse than no guard: it invites reliance.**
+
+ **Reduced motion: SUPPRESS** (§10 row). **SC 2.2.2 does NOT engage** — pointer-initiated, and every
+  preset life (0.55s / 1.3s / 0.85s) is far under the five-second threshold, so no Pause control is owed.
+
+ **DB row:** `fx_effects` tier `V`, scope `block`, `requires='none'`, `creates_panel=0`, `in_picker=1`,
+  `triggers='hover'`, `reduced_motion='suppress'`, `owns_scroll_transform=0`. Panel roster MEASURED
+  **32 before, 32 after**.
+
+ ⛔ **REGISTRATION IS TEN POINTS AND THREE ARE GATED BY NOTHING (D784).** Beyond the five the drift
+  gate covers (`SHIPPED_EFFECTS`, `FX_OPTION_LABELS`, `FX_ATTR_MAP`, `sgs_fx_effect_param_scope()`, the
+  seed row) and the two the build's own generators fail closed on (`generated-fx-effects.php`,
+  `generated-fx-qualifying-blocks.json`), THREE have no gate at all: the motion-registry **script-module
+  map**, its **per-effect CSS map**, and the **webpack entry**. Miss one and the effect registers, the
+  panel appears, the client configures it, and nothing happens — the D452 "configured and invisible"
+  shape. `check-fx-list-drift.py` does not read `class-sgs-motion-registry.php` at all.
+
+ ⛔ **SIXTH FEATURE TO HIT THE CHILD-LIFT TRAP.** `sgs/container`'s child-lift rule
+  (`container/style.css`) carries a hand-maintained `:not()` exclusion list; at nine selector-classes it
+  beat `.sgs-particles__canvas` and overrode ONLY `position`, while `z-index`/`pointer-events`/`display`
+  from the same rule still applied — which is what made it look like the stylesheet had not loaded.
+  Found by enumerating which rules actually matched, never by reasoning about specificity. All nine
+  members are decorative non-flow layers, so the list is a hand-listed enumeration of a CLASS — an
+  R-31-1 smell, and the reason five features learned this independently before this one. **A single
+  marker class would collapse it to one exclusion; that is a shared-mechanism change and owes a design
+  gate (project rule 7) rather than a seventh member.**
+
+ **Live-verified on 2744:** attrs survive WP, canvas present in the effect and ZERO in an adjacent
+  negative-control container, 4249 lit pixels peak during a pointer sweep, 0 console errors, deployed
+  CSS md5-identical to local. ⚠ **NOT yet verified:** the child-lift fix is committed but was NOT
+  deployable at the time (a concurrent track's uncommitted `hero/render.php` correctly tripped the D336
+  dirty-tree guard), and the editor canvas, live cap-binding and loop-stop remain unobserved.
+
 ### 3.4 SVG
 
 - **FR-38-15 DrawSVG + the Vivus retirement (D408).** Element-level stroke-draw on SVG-bearing
@@ -1613,6 +1687,8 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Magnetic pull (FR-38-30) | **Static — no displacement.** The element renders undisplaced, exactly the no-JS/reduce state; a document-level listener drives the effect, and the editor canvas is an iframe the mega-menu's own `magnet.js` precedent already never runs pointer tracking inside. Notice: "Magnetic pull previews on the live site." ⚠ *Reasoned by mechanism, not observed in-editor.* |
 | Flowing gradient (FR-38-31, Tier W) | **The CSS fallback layer**, exactly what a no-WebGL visitor sees on the frontend — the render layer's editor-parity guard does not boot a canvas WebGL context in a ServerSideRender/REST render (same reasoning as the surface-treatment row above), so the canvas shows the honest degraded state rather than a blank. A panel Notice names this: *"The flowing gradient previews on the live site. Visitors without WebGL, and the editor canvas, see the static fallback."* |
 
+| Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* ⚠ *Reasoned by mechanism; the Notice itself is verified present at `fx.js:2857`, the canvas behaviour is not yet observed in-editor.* |
+
 ## 10. Reduced-motion contract (per effect)
 
 Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` registration gate
@@ -1642,6 +1718,8 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Magnetic pull (FR-38-30) | **SUPPRESS — no listener attaches at all.** Under `reduce`, `fx-magnet.js` never attaches its document-level listener, so the element simply never displaces — this is also the exact no-JS state, so there is one code path, not two that could drift apart. Deliberately differs from cursor-field's SIMPLIFY (§3.3 FR-38-30 body has the full reasoning): a resting cursor-field is a legitimate finished PAINT, but a magnet's "resting" position is just the undisplaced layout position, which is what suppression already produces — there is no separate "simplified but still present" state to build. |
 | Flowing gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
 
+| Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js:114` returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
+
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
 
 ### 11.1 Namespace claim
@@ -1660,7 +1738,8 @@ custom property `--sgs-scroll-progress` (set by `assets/js/scroll-progress.js` �
 ```
 data-sgs-fx="<effect>"            e.g. pin-scrub | scrub | horizontal-panel | split-reveal |
                                        scramble | flip | draggable | draw | morph | motion-path |
-                                       image-sequence | magnet (FR-38-30, added 2026-08-24)
+                                       image-sequence | magnet (FR-38-30, added 2026-08-24) |
+                                       particles (FR-38-32, added 2026-08-25)
 data-sgs-fx-trigger="<value>"     load | scroll | hover (per-effect enum)
 data-sgs-fx-start / -end          scroll range (viewport-relative, e.g. "top 80%")
 data-sgs-fx-hold="<value>"        none | short | standard | long — PINNING effects only:
@@ -1691,6 +1770,13 @@ data-sgs-fx-morph-target="<selector>"       resolved TARGET element (render-laye
 data-sgs-fx-motion-path-target="<selector>" resolved TARGET element (render-layer output)
 data-sgs-fx-pin="true"            IMAGE-SEQUENCE only — holds the block in place for the
                                    whole scrub instead of letting it scroll normally
+data-sgs-fx-particle-preset="<sparks|gravity-dots|ripple>"
+                                         PARTICLES only (FR-38-32) — which trail preset paints;
+                                         block attr `fxParticlePreset`
+data-sgs-fx-particle-density="<0.25-3>"  PARTICLES only — spawn multiplier; the 150/emitter pool
+                                         cap binds regardless; block attr `fxParticleDensity`
+data-sgs-fx-particle-size="<0.25-3>"     PARTICLES only — radius multiplier, itself clamped to the
+                                         coverage-derived ceiling; block attr `fxParticleSize`
 data-sgs-fx-magnet-axis="<x|y|both>"     MAGNET only (FR-38-30) — which axis the pull moves
                                           along; block attr `fxMagnetAxis`
 data-sgs-fx-magnet-radius="<px>"         MAGNET only — the proximity radius the pull engages
@@ -1829,6 +1915,7 @@ cheap prefix scan; pattern authors can hand-write it.
 
 Each `data-sgs-fx*` attr maps 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStart`, `fxEnd`,
 `fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin`, `fxShape`, `fxPath`,
+`fxParticlePreset`, `fxParticleDensity`, `fxParticleSize`,
 `fxMagnetAxis`, `fxMagnetRadius`, `fxMagnetStrength` — seeded in `block_attributes` under `fx:*`,
 §6.2). `fxPin` is IMAGE-SEQUENCE-only (D435, 2026-08-01). `fxMagnetAxis`/`fxMagnetRadius`/
 `fxMagnetStrength` are MAGNET-only (FR-38-30, 2026-08-24).

@@ -265,10 +265,20 @@ export function createParticles( el, opts = {} ) {
 			slot.vx = 0;
 			slot.vy = 0;
 			slot.radius = 0;
-			slot.ringRadius = Math.min(
-				preset.ringRadiusFactor * maxRadius,
-				maxRadius * preset.ringRadiusFactor
-			);
+			// A ring is STROKED, not filled, so it is not bounded by the
+			// filled-disc coverage ceiling that `maxRadius` encodes — its
+			// painted area is circumference x lineWidth, not pi*r^2. It may
+			// therefore exceed `maxRadius` deliberately.
+			//
+			// This was previously written as
+			// `Math.min( f * maxRadius, maxRadius * f )` — both arguments are
+			// the SAME value, so the clamp was VACUOUS: it read as a guard and
+			// guarded nothing. Assigning directly is honest about the intent.
+			// The coverage ceiling is still respected in fact: at the shipped
+			// numbers a 2px stroke at 3x a ~21px radius, capped at 2 rings
+			// alive by `minIntervalMs`, measures ~0.075% of the emitter box
+			// against SC 2.3.1's 25% threshold.
+			slot.ringRadius = preset.ringRadiusFactor * maxRadius;
 			slot.currentRingRadius = 0;
 		} else {
 			const angle = Math.random() * Math.PI * 2;
