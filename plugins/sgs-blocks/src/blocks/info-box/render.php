@@ -413,7 +413,7 @@ $sgs_border_width_native = isset( $style_border_args['width'] ) && is_string( $s
 	: '';
 if ( '' !== $sgs_border_gradient ) {
 	$sgs_border_gradient_width = '' !== $sgs_border_width_native ? $sgs_border_width_native : '1px';
-	$scoped_css[]               = sgs_border_gradient_css( $root_sel, $sgs_border_gradient, null, $sgs_border_gradient_width );
+	$scoped_css[]              = sgs_border_gradient_css( $root_sel, $sgs_border_gradient, null, $sgs_border_gradient_width );
 }
 
 // --- Width (kept-scalar, base only) ---

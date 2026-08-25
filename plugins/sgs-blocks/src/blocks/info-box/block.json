@@ -310,6 +310,16 @@
 			"type": "string",
 			"default": "",
 			"description": "HOVER/focus descendant-link colour — no native equivalent existed; new sibling to linkColour."
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

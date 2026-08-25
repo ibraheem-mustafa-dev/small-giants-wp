@@ -645,6 +645,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"titleFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the product title heading, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font — the draft's title has no explicit font-family, so it inherits the draft's body font (Inter) rather than the block's own Fraunces heading font."
+		},
 		"titleLineHeight": {
 			"type": "number"
 		},

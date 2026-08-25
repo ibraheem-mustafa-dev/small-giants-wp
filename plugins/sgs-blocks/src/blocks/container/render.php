@@ -90,8 +90,26 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 	}
 }
 
-if ( ! empty( $sgs_container_style_group['border'] ) && is_array( $sgs_container_style_group['border'] ) ) {
-	$sgs_container_style_engine_input['border'] = $sgs_container_style_group['border'];
+// Border COLOUR/WIDTH/STYLE are block-private (R2c pattern, mirrors
+// sgs/product-card render.php) — NOT read from $sgs_container_style_group any
+// more. Only border-RADIUS stays on the native style.border path (a
+// corner-shape control, not a colour/paint decision), resolved here exactly
+// as sgs/product-card's own radius-only extraction (render.php ~L352-375).
+if ( isset( $sgs_container_style_group['border']['radius'] ) ) {
+	$sgs_container_radius_raw = $sgs_container_style_group['border']['radius'];
+	if ( is_string( $sgs_container_radius_raw ) && '' !== $sgs_container_radius_raw ) {
+		$sgs_container_style_engine_input['border']['radius'] = sgs_css_length_value( $sgs_container_radius_raw );
+	} elseif ( is_array( $sgs_container_radius_raw ) ) {
+		$sgs_container_radius_clean = array();
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_container_corner ) {
+			if ( ! empty( $sgs_container_radius_raw[ $sgs_container_corner ] ) ) {
+				$sgs_container_radius_clean[ $sgs_container_corner ] = sgs_css_length_value( $sgs_container_radius_raw[ $sgs_container_corner ] );
+			}
+		}
+		if ( ! empty( $sgs_container_radius_clean ) ) {
+			$sgs_container_style_engine_input['border']['radius'] = $sgs_container_radius_clean;
+		}
+	}
 }
 if ( ! empty( $sgs_container_style_group['typography'] ) && is_array( $sgs_container_style_group['typography'] ) ) {
 	$sgs_container_style_engine_input['typography'] = $sgs_container_style_group['typography'];
@@ -195,6 +213,52 @@ if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
 		$sgs_container_state_sel,
 		$sgs_container_resting_decls,
 		$sgs_container_hover_decls
+	);
+}
+
+// ── Wrapper border (width/style + colour/gradient) — R2c pattern, mirrors
+// sgs/product-card render.php exactly. borderWidth/borderStyle/borderColour/
+// borderColourGradient are block-private attrs (see block.json note on the
+// wrapper element's attrMap); only border-radius stays native (resolved
+// above via the style engine). No hover pair (block.json declares none).
+$sgs_container_border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$sgs_container_border_width_top    = sgs_css_length_value( $sgs_container_border_width_obj['top'] ?? '' );
+$sgs_container_border_width_right  = sgs_css_length_value( $sgs_container_border_width_obj['right'] ?? '' );
+$sgs_container_border_width_bottom = sgs_css_length_value( $sgs_container_border_width_obj['bottom'] ?? '' );
+$sgs_container_border_width_left   = sgs_css_length_value( $sgs_container_border_width_obj['left'] ?? '' );
+$sgs_container_has_border_width    = ( '' !== $sgs_container_border_width_top || '' !== $sgs_container_border_width_right || '' !== $sgs_container_border_width_bottom || '' !== $sgs_container_border_width_left );
+
+$sgs_container_border_style_raw      = $attributes['borderStyle'] ?? '';
+$sgs_container_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$sgs_container_border_style          = in_array( $sgs_container_border_style_raw, $sgs_container_allowed_border_styles, true ) ? $sgs_container_border_style_raw : '';
+
+if ( '' !== $sgs_container_border_style && 'none' !== $sgs_container_border_style ) {
+	if ( empty( $sgs_container_supports_uid ) ) {
+		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
+	}
+	$sgs_container_border_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
+
+	$sgs_container_border_box_decls = array( 'border-style:' . $sgs_container_border_style );
+	if ( $sgs_container_has_border_width ) {
+		$sgs_container_bwt                = '' !== $sgs_container_border_width_top ? $sgs_container_border_width_top : '0';
+		$sgs_container_bwr                = '' !== $sgs_container_border_width_right ? $sgs_container_border_width_right : '0';
+		$sgs_container_bwb                = '' !== $sgs_container_border_width_bottom ? $sgs_container_border_width_bottom : '0';
+		$sgs_container_bwl                = '' !== $sgs_container_border_width_left ? $sgs_container_border_width_left : '0';
+		$sgs_container_border_box_decls[] = "border-width:{$sgs_container_bwt} {$sgs_container_bwr} {$sgs_container_bwb} {$sgs_container_bwl}";
+	}
+	$sgs_container_supports_css .= $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border_box_decls ) . ';}';
+
+	$sgs_container_supports_css .= sgs_border_states_css(
+		$sgs_container_border_sel,
+		$attributes,
+		array(
+			'base'           => 'borderColour',
+			'gradient'       => 'borderColourGradient',
+			'hover'          => 'borderColourHover',
+			'hover_gradient' => 'borderColourHoverGradient',
+			'width'          => '' !== $sgs_container_border_width_top ? $sgs_container_border_width_top : '1px',
+		)
 	);
 }
 

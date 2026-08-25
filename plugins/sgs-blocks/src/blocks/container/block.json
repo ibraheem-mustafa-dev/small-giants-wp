@@ -35,9 +35,6 @@
 		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -66,6 +63,9 @@
 				],
 				"gridItemBorderRadius": [
 					"gridItemBorderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"elements": {
@@ -92,9 +92,10 @@
 						"css:text-align": "native:typography.textAlign",
 						"css:padding": "padding",
 						"css:margin": "margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
@@ -103,6 +104,7 @@
 						"anim:duration": "bgAnimationDuration",
 						"css:color-gradient": "textColourGradient"
 					},
+					"_note_border": "R2c pattern (mirrors sgs/product-card, D-pending 2026-08-25): root border colour/width/style are block-private attrs (borderColour/borderColourGradient/borderWidth/borderStyle), not the native __experimentalBorder path — a single owner instead of the native Styles-tab colour panel and an SGS panel both writing style.border. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a paint decision) and stays skip-serialised, emitted scoped via the style engine exactly as before. borderWidth has NO default (unset = no border, matching the padding attribute's no-default discipline right below) and is a base-only box object (no Tablet/Mobile siblings, matching product-card's own borderWidth).",
 					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes.",
 					"states": {
 						"hover": {
@@ -619,6 +621,46 @@
 		"margin": {
 			"type": "object",
 			"default": {}
+		},
+		"borderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Wrapper root border colour (R2c pattern — block-private, replaces the native __experimentalBorder.color path). Empty = no border colour; the shared style-engine border-colour rule only emits when borderStyle is also set."
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper's border with a masked ring instead of a flat colour. Non-empty wins over borderColour, matching sgs/product-card."
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Wrapper root border width {top,right,bottom,left}, base-only (no Tablet/Mobile siblings — matches sgs/product-card's own borderWidth). NO DEFAULT (unset = no border), same no-hardcoded-default discipline as the padding attribute above."
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"description": "Wrapper root border style. Empty/none = no border rendered regardless of colour/width — matches sgs/product-card's 'none' sentinel."
 		},
 		"paddingTablet": {
 			"type": "object",

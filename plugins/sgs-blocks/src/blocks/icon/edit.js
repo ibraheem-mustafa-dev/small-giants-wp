@@ -52,6 +52,14 @@ const BG_SHAPES = [
 	{ label: __( 'Outline ring', 'sgs-blocks' ), value: 'outline' },
 ];
 
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
+];
+
 /**
  * Size modifier class for the editor preview wrapper.
  *
@@ -110,6 +118,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		shapeColourHover,
 		scaleHover,
 		iconAlign,
+		textAlign,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
@@ -338,6 +347,19 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</>
 					) }
+				</PanelBody>
+
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { textAlign: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Hover effects', 'sgs-blocks' ) } initialOpen={ false }>

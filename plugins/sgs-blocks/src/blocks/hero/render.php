@@ -99,8 +99,8 @@ $overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient']
 // $overlay_colour_raw above — resolved once, at the point of emission, by
 // sgs_overlay_decls() itself (the same shared owner SGS_Container_Wrapper
 // calls), never a second hand-rolled resolver here.
-$overlay_colour_hover_raw    = $attributes['backgroundOverlayColourHover'] ?? '';
-$overlay_gradient_hover_raw  = $attributes['overlayGradientHover'] ?? '';
+$overlay_colour_hover_raw   = $attributes['backgroundOverlayColourHover'] ?? '';
+$overlay_gradient_hover_raw = $attributes['overlayGradientHover'] ?? '';
 // D739: hero paints its OWN overlay (it opts out of the wrapper's), so it needs
 // its own copy of the tier reads — and this is the SECOND OWNER that made D718's
 // lesson recur: updating the shared wrapper alone left these four stranded, which
@@ -108,7 +108,7 @@ $overlay_gradient_hover_raw  = $attributes['overlayGradientHover'] ?? '';
 // OPACITY now; null means this tier does not override.
 $overlay_opacity_tablet = $attributes['backgroundOverlayOpacityTablet'] ?? null;
 $overlay_opacity_mobile = $attributes['backgroundOverlayOpacityMobile'] ?? null;
-$overlay_blend_mode          = $attributes['backgroundOverlayBlendMode'] ?? '';
+$overlay_blend_mode     = $attributes['backgroundOverlayBlendMode'] ?? '';
 // The split column's sources are TYPED, one family per media kind:
 // splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a
 // per-tier splitMediaType* saying which kind that tier uses.

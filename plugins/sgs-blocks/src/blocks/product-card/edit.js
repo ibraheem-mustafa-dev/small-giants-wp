@@ -1685,6 +1685,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="title"
+							showFontFamily
 						/>
 						<TypographyControls
 							attributes={ attributes }

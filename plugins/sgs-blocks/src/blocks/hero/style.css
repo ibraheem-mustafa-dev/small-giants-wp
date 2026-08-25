@@ -320,16 +320,22 @@ section.sgs-hero {
 
 /* ── Split image bleed modifier ──
  * When splitImageBleed is true the media column fills flush to the container
- * edge — no padding, no border-radius on the image. The block-level padding
- * is removed only on the media side by using a negative margin trick so the
- * content column retains its breathing room. */
+ * edge — no padding, no border-radius on the image.
+ * ⛔ REMOVED 2026-08-25: a `margin-right:-spacing-40; max-width:calc(50% +
+ * spacing-40)` compensation rule used to sit here. It was written for a hero
+ * shape where the OUTER split grid carried its own padding and the media
+ * column needed a negative-margin trick to bleed past it. That padding does
+ * not exist on this grid (see the "NO padding on the outer split grid" note
+ * above `.sgs-hero--split`) — the grid is flush by default. With no padding
+ * to compensate for, the `max-width:calc(50% + 24px)` term was a hardcoded
+ * cap that OVERRODE the media column's real 1fr track width (measured live:
+ * grid track 736.5px, media constrained to 392px — a naked default beating
+ * faithfully-transferred full-bleed CSS, the R-31-1/"hardcoded defaults are
+ * cheats to remove" pattern). `.sgs-hero__media{width:100%;height:100%}`
+ * above already fills the grid track exactly; nothing further is needed for
+ * "flush to the container edge" once there is no padding to bleed past. */
 .sgs-hero--split-bleed {
 	padding-right: 0;
-}
-
-.sgs-hero--split-bleed .sgs-hero__media--bleed {
-	margin-right: calc( -1 * var(--wp--preset--spacing--40, 2rem) );
-	max-width: calc(50% + var(--wp--preset--spacing--40, 2rem));
 }
 
 /* Video/SVG tiers get the column-level bleed above (the .sgs-hero__media--bleed

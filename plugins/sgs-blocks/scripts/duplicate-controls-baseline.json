@@ -191,6 +191,18 @@
 				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
 			],
 			"reason": "Same case as sgs/accordion-item's entry, and covered by the SAME Bean ruling of 2026-08-21, which states in terms that it settles the pattern across EVERY parent mounting sgs/text rather than per block: the parent-level attr is the root-scoped INHERITABLE cascade default for whatever the client nests, and the child's own control overrides it for one instance. Two jobs, correctly two controls. KEEP BOTH. ⚠ THIS FINDING IS PRE-EXISTING, NEWLY VISIBLE — not introduced on 2026-08-23. The duplication already existed via WordPress's own supports.color.text panel at the parent; the native-colour-ui migration only moved that value from core's style.color.text storage into a block-private `textColour` attribute, which is the name this detector matches on. Nothing became more duplicated; it became detectable. Verified against the pre-change tree before accepting."
+		},
+		{
+			"check": "parent-child-duplicate",
+			"block": "sgs/info-box",
+			"attr": "textAlign",
+			"severity": "scoped",
+			"keeper": "BOTH -- parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+			"sources": [
+				"sgs/info-box edit.js: parent-level control for \"textAlign\"",
+				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+			],
+			"reason": "Added 2026-08-25. Same shape as the sgs/accordion-item textColour entry and covered by the same 2026-08-21 Bean ruling: a parent-level alignment on a block that mounts sgs/text is the root-scoped INHERITABLE default, not a duplicate of the child's own control. Verified empirically rather than asserted -- the two emit to DIFFERENT elements: info-box/render.php:351 writes `{root_sel}{text-align:...}` on the BOX ROOT (children inherit through normal CSS), while text/render.php:255 writes text-align onto the sgs/text element ITSELF, overriding the inherited value for that one instance by cascade. Neither is dead-by-specificity -- which is the gate's own diagnostic question. This is the inheritable wrapper default HC2 PERMITS, not the per-element parent control HC2 forbids. Why it exists: the Mama's Munches draft centres its ingredients section with one section-level `text-align:center`, and sgs/info-box declared no alignment attribute at all, so that rule had nowhere to land on the clone."
 		}
 	]
 }

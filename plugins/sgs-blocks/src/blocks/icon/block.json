@@ -206,6 +206,17 @@
 				"center",
 				"right"
 			]
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

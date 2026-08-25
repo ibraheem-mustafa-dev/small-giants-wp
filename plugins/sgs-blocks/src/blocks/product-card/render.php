@@ -84,11 +84,11 @@ $picker_label_colour    = isset( $attributes['pickerLabelColour'] ) ? sanitize_t
 // guards on non-empty), so an un-set card looks unchanged. pickerColourPreset
 // defaults 'solid' — see R5 note in style.css for why (replaces the removed
 // card-scoped --sgs-op-border hardcode).
-$picker_colour_preset       = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
-$picker_show_selected_tick  = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
-$picker_pill_bg_colour      = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
-$picker_pill_text_colour    = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
-$picker_pill_border_colour  = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
+$picker_colour_preset      = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
+$picker_show_selected_tick = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
+$picker_pill_bg_colour     = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
+$picker_pill_text_colour   = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
+$picker_pill_border_colour = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
 // Border-radius forwards are CSS-length STRINGS (e.g. "6px") — the option-picker
 // side reads them as strings, gates on '' !== and sanitises via sgs_css_length_value(),
 // so an explicit "0"/"0px" survives and empty = the picker's own default.
@@ -177,7 +177,22 @@ $classes[] = $sgs_card_uid;
 // list covers EVERY render branch's markup for that visual role (typed BEM
 // classes + the read-only/live-data plain classes) so ONE control governs the
 // element everywhere it can appear — no per-branch carve-out (R-31-9 / CG-9).
-$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
+$sgs_card_typo_css = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
+// titleFontFamily: the shared sgs_typography_css_rule() helper does not emit
+// font-family (it only covers size/weight/style/line-height/transform/
+// decoration/letter-spacing/text-align) — same gap sgs/quote's
+// attributionFontFamily works around. Sourced from theme.json's
+// typography.fontFamilies preset list via TypographyControls' showFontFamily
+// picker, so the stored value is already a trusted theme-preset font-family
+// string; still allowlist-sanitised (letters, digits, space, comma, quotes,
+// hyphen) before interpolation, matching quote/render.php's discipline.
+$sgs_title_font_family = $attributes['titleFontFamily'] ?? '';
+if ( '' !== $sgs_title_font_family ) {
+	$sgs_title_ff_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $sgs_title_font_family );
+	if ( '' !== $sgs_title_ff_safe ) {
+		$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3{font-family:' . $sgs_title_ff_safe . ';}';
+	}
+}
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
 // 'pill' typography targets the option-picker pill (both typed + bound pack
@@ -272,7 +287,7 @@ $sgs_pc_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
 	(string) ( $attributes['textColourHover'] ?? '' ),
 	(string) ( $attributes['textColourHoverGradient'] ?? '' )
 );
-$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
+$sgs_card_typo_css          .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
 if ( '' !== $sgs_pc_text_hover_resolved && $sgs_pc_text_hover_resolved !== $sgs_pc_text_normal_resolved ) {
 	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel . ':hover,' . $sgs_pc_root_sel . ':focus-visible', $sgs_pc_text_hover_resolved );
 }
@@ -281,7 +296,7 @@ if ( '' !== $sgs_pc_text_hover_resolved && $sgs_pc_text_hover_resolved !== $sgs_
 // layer, never the root itself, so a text gradient on the SAME element
 // (background-clip:text, above) cannot clip or overwrite it (mirrors
 // sgs/heading + sgs/text's background/text pseudo-element split). ---
-$sgs_pc_bg_decls = sgs_fill_decls(
+$sgs_pc_bg_decls    = sgs_fill_decls(
 	$attributes,
 	array(
 		'base'           => 'backgroundColour',
@@ -338,7 +353,7 @@ if ( 'none' !== $sgs_pc_border_style ) {
 // skip-serialised style.border.radius object and emitted scoped via the
 // stable core style engine. ---
 $sgs_pc_style_engine_args = array();
-$sgs_pc_radius_args        = array();
+$sgs_pc_radius_args       = array();
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
@@ -393,7 +408,7 @@ if ( '' !== $sgs_pc_preset_border ) {
 	$classes[] = 'has-' . $sgs_pc_preset_border . '-border-color';
 }
 
-$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
+$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 // Base opts shared across all branches (no WP Interactivity attrs).
 $base_opts = array(
@@ -450,7 +465,7 @@ if ( 'typed' === $source_mode ) {
 	}
 	$sgs_card_typo_css .= $sgs_tag_box_css;
 
-	$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
+	$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 	// Built-in element render — the ONLY typed path (no InnerBlocks slot).
 	// Prepend the scoped typography + CTA <style>. Pass the uid so the trial tag

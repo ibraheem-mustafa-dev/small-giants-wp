@@ -173,6 +173,13 @@ const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 ];
 
+const TEXT_ALIGN_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+];
+
 /**
  * Media type options for the "Media type" convenience dropdown.
  * A leading placeholder covers the "custom first child" case — where the
@@ -263,6 +270,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		cardStyle,
 		effectHover,
 		iconPosition,
+		textAlign,
 		width,
 		maxWidth,
 		paddingTablet,
@@ -637,6 +645,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ iconPosition }
 						options={ ICON_POSITION_OPTIONS }
 						onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Text align', 'sgs-blocks' ) }
+						value={ textAlign }
+						options={ TEXT_ALIGN_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { textAlign: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

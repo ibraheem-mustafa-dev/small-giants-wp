@@ -127,6 +127,12 @@ if ( ! in_array( $icon_align, $allowed_aligns, true ) ) {
 	$icon_align = 'left';
 }
 
+$text_align          = $attributes['textAlign'] ?? '';
+$allowed_text_aligns = array( '', 'left', 'center', 'right', 'justify' );
+if ( ! in_array( $text_align, $allowed_text_aligns, true ) ) {
+	$text_align = '';
+}
+
 // ---------------------------------------------------------------------------
 // 2. WP `color`/`spacing` support values (skip-serialised in block.json → NOT
 // auto-inlined) + the new responsive box-object tiers.
@@ -234,6 +240,10 @@ if ( 'none' !== $bg_shape && '' !== $bg_padding ) {
 	if ( '' !== $sgs_bg_padding_css ) {
 		$root_decls[] = '--sgs-icon-shape-padding:' . $sgs_bg_padding_css;
 	}
+}
+// Text-align — when unset (empty), emit nothing so inheritance works.
+if ( $text_align ) {
+	$root_decls[] = 'text-align:' . esc_attr( $text_align );
 }
 if ( $root_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';

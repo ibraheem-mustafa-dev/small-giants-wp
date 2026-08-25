@@ -122,7 +122,8 @@
 					],
 					"prefix": "name",
 					"attrMap": {
-						"css:color": "nameColour"
+						"css:color": "nameColour",
+						"css:font-size": "nameFontSize"
 					}
 				},
 				"reviewer-role": {
@@ -373,6 +374,15 @@
 		"nameFontWeight": {
 			"type": "string",
 			"default": "700"
+		},
+		"nameFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Reviewer-name font size, per-device tier {desktop,tablet,mobile} (Spec 35 tier-object shape). Empty object = inherit the theme default (style.css var(--wp--preset--font-size--small)). Rendered via the shared sgs_typography_css_rule() helper, scoped to .sgs-testimonial__name."
+		},
+		"nameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
 		},
 		"nameColour": {
 			"type": "string",

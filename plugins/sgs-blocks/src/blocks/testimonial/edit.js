@@ -29,6 +29,7 @@ import {
 	ResponsiveControl,
 	ShadowControl,
 	SgsColourPanel,
+	TypographyControls,
 	fillRow,
 	textRow,
 } from '../../components';
@@ -201,6 +202,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		ratingColour,
 		ratingSize,
 		nameFontWeight,
+		nameFontSize,
 		effectHover,
 		backgroundColourHover,
 		textColourHover,
@@ -871,6 +873,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								quoteMarginBottom: '',
 								summaryFontSize: '',
 								nameFontWeight: '700',
+								nameFontSize: {},
 							} )
 						}
 					>
@@ -983,6 +986,35 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								</ToolsPanelItem>
 							</>
 						) }
+						{ /*
+						 * Reviewer-name font size (responsive: desktop/tablet/mobile)
+						 * via the shared TypographyControls component (Bean R-22-13).
+						 * showWeight=false because the existing Name font weight
+						 * SelectControl below already owns nameFontWeight with its
+						 * own restricted option set.
+						 */ }
+						<ToolsPanelItem
+							label={ __( 'Name font size', 'sgs-blocks' ) }
+							hasValue={ () => {
+								const fsObj = nameFontSize && 'object' === typeof nameFontSize ? nameFontSize : {};
+								return !! fsObj.desktop || !! fsObj.tablet || !! fsObj.mobile;
+							} }
+							onDeselect={ () =>
+								setAttributes( { nameFontSize: {} } )
+							}
+							isShownByDefault
+						>
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="name"
+								showSize={ true }
+								showWeight={ false }
+								showStyle={ false }
+								showLineHeight={ false }
+								showResponsive={ true }
+							/>
+						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Name font weight', 'sgs-blocks' ) }
 							hasValue={ () => nameFontWeight !== '700' }

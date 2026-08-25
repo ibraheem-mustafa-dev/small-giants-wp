@@ -309,16 +309,25 @@ if ( '' !== $quote_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $quote_colour_sel, $quote_colour_effective );
 }
 
-// Reviewer name.
+// Reviewer name — colour stays on the shared per-element rule builder;
+// font-size (new, Spec 35 tier-object shape) + font-weight (pre-existing,
+// unchanged attribute/default/control) now route through the shared
+// TypographyControls companion helper, sgs_typography_css_rule(), so both
+// live in ONE emitted rule instead of two separate declarations of
+// font-weight on the same selector (D192/R-22-13: one shared mechanism,
+// never a bespoke duplicate).
 $name_rule = $sgs_el_rule(
 	'.sgs-testimonial__name',
 	array(
-		'color'       => $name_colour,
-		'font-weight' => $name_font_weight,
+		'color' => $name_colour,
 	)
 );
 if ( '' !== $name_rule ) {
 	$scoped_css[] = $name_rule;
+}
+$name_typography_css = sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-testimonial__name' );
+if ( '' !== $name_typography_css ) {
+	$scoped_css[] = $name_typography_css;
 }
 
 // Reviewer role.
@@ -509,9 +518,9 @@ if ( $wrapper_vars ) {
 if ( $hover_decls ) {
 	// Via the ONE shared hover-colour helper, which also emits the
 	// `:focus-visible` twin a keyboard user needs.
-if ( '' !== ( $attributes['quoteColourHover'] ?? '' ) ) {
-	$hover_decls[] = 'color:' . sgs_colour_value( $attributes['quoteColourHover'] );
-}
+	if ( '' !== ( $attributes['quoteColourHover'] ?? '' ) ) {
+		$hover_decls[] = 'color:' . sgs_colour_value( $attributes['quoteColourHover'] );
+	}
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
 }
 
