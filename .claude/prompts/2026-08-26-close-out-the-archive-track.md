@@ -1,5 +1,16 @@
 # Close out the archive track — then the template-by-template pass
 
+> ⛔ **SUPERSEDED 2026-08-25 — do NOT execute this file.**
+> Its residue was absorbed into `.claude/prompts/2026-08-28-mamas-clone-mobile-and-converter.md`
+> (item 5, plus the template-by-template pass). Read that instead.
+>
+> ⚠ **One claim in here is WRONG and was measured wrong on 2026-08-25:** it says
+> `woocommerce/catalog-sorting` "still ignores the site's tokens". It does not —
+> `theme/sgs-theme/assets/css/woocommerce.css:2401` themes `select.orderby` with a 44px
+> target, a tokenised border and a custom chevron. Only `core/query-pagination` genuinely
+> has zero CSS. Closed items: the 9px homepage overflow (now 0, same cause as the hero
+> media cell — D787), and the ledger/decisions entries (D786-D788).
+
 Invoke `/autopilot` before anything else.
 
 > Supersedes `2026-08-25-container-layout-and-archive-design.md`, which is DONE. Every item

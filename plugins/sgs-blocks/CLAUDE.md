@@ -419,6 +419,58 @@ in the script's own header).
 
 **Conformance gates — WIRED (update 2026-07-06 D283).** **Gate A** — the converter golden-fixture regression (`tests/test_converter_conformance.py`) is live (D276 programme). **Gate B — `scripts/check-hardcoded-render-defaults.js` is LIVE + wired into `prebuild`** (it blocks the build when a `render.php`/`style.css` hardcodes a layout/visual constant for a property the block declares an attr for — the F3 family defence; 17 baselined debt items). **E11 selector-aware governance (D283, `d7039a79`):** a PREFIXED-HELPER attr (consumed by `sgs_button_element_style_css` / `sgs_typography_css_rule`, which build the CSS key by `$prefix.'Suffix'` concatenation and apply it to a SPECIFIC call-site selector) governs ONLY those selectors — the gate parses render.php for the helper call, extracts the prefix + selector class tokens, and flags a hardcoded value of that attr's property ONLY when the containing style.css rule references a governed token. Native-attr E1/E6 behaviour is unchanged. This is why adding e.g. `ctaBorderRadius` no longer false-flags an unrelated `.pill`/tag border-radius. Do NOT baseline a prefixed-helper false positive — the E11 governance is the fix. (Original "planned" note: `.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`.)
 
+### S5 (STORED post_content) — `scripts/migrate-stored-tier-scalars.py` (D788, 2026-08-25)
+
+The FIFTH place a flat scalar hides, after block.json (S1) / edit.js (S2) / render.php (S3) /
+theme files (S4): **stored `post_content` on a live site**. A page cloned or authored before a
+property migrated still holds the flat value, and WordPress does not error —
+`WP_Block_Type::prepare_attributes_for_render()` silently substitutes the attribute's DEFAULT
+when a stored value fails schema validation. The authored value vanishes with no error, no
+log, and no failing gate.
+
+```bash
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --survey <dir>
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --fix <dir>          # dry run
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --fix --apply <dir>  # write
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --check <dir>        # gate
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --self-test          # 15 assertions, 3 watched controls
+```
+
+Takes a directory of `<post-id>.txt` files (pull them with one `wp post list --format=json`),
+matching `audit-post-content-blocks.py`'s input shape.
+
+⛔ **IT FOLDS ONLY WHAT IT CAN PROVE, AND THE REFUSALS ARE THE POINT.** An early revision
+folded `padding:"22px"` into `{"desktop":"22px"}` — padding is a BOX object
+(`{top,right,bottom,left}`), so that would have silently destroyed spacing site-wide. Four
+buckets, per `surveys/survey-responsive-shape.py`'s settled doctrine (Spec 35 Phase 1.4, Bean
+2026-08-10): **BOX is a CLOSED, NAMED set** — `padding` / `margin` / `borderWidth` /
+`borderRadius` and their prefixed variants (`cardPadding`, `gridItemBorderRadius`, …).
+Anything else object-typed is a TIER. That rule classifies all 533 object attributes in the
+tree with **zero** left ambiguous.
+
+⚠ **Do NOT re-derive the shape from `default`.** A `"default": {}` proves nothing — 448 of 532
+object attrs declare exactly that. A reading based on the default alone concluded 234 were
+"undeclared" and proposed an 83-file migration to add information that already existed in the
+survey script. Read the doctrine, not the defaults.
+
+⛔ **ENUM violations are a separate class and are NEVER auto-fixed.** A value can be the right
+TYPE and still not a permitted one — `layout:"grid"` on `sgs/testimonial-slider`, whose enum
+is `["full","split"]`, coerced to `"full"` and rendered the slider at width 0. There is no
+correct fold; it is reported and refused.
+
+**Companion gate — `audit-post-content-blocks.py` now checks attribute TYPES.** It previously
+checked unparseable attrs / unknown blocks / undeclared attrs / stranded content and passed a
+canary page completely clean while that page held **102** type-broken values. It now emits
+`type-mismatch` and `enum-violation` (separate classes, for the reason above), handles union
+types (`["string","number"]` is legal and is NOT a finding), and tests bool BEFORE number
+because `bool` subclasses `int` in Python. It runs on every deploy via `build-deploy.py`'s
+`step_oldshape_audit()`, so this class of drift now fails the deploy rather than shipping.
+
+⚠ **NEVER write `post_content` to a page the operator has open in the block editor.** A save
+from the editor writes its in-memory state — loaded BEFORE your writes — over everything. It
+silently reverted a full session of content fixes on 2026-08-25; only the last write survived.
+
+
 ## Deploy
 
 ```bash

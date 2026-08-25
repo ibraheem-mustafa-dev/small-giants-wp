@@ -25,7 +25,7 @@ Each was a wrong instrument, not a wrong fix. Opening the page was faster every 
 ## ⚠ Read first, in this order
 
 1. `.claude/LEDGER.md` — the Mama's-clone block at the top
-2. `decisions.md` D783–D785 (this session)
+2. `decisions.md` **D786–D788** (this session — renumbered from D783-785 on write, because another live session claimed those numbers first; the duplicate-id check caught it)
 3. `reports/mamas-parity-final.json` — the live draft-vs-clone diff
 4. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **in full** before touching the converter
 
@@ -103,7 +103,18 @@ Write `reports/visual-diff/{icon,info-box,testimonial,product-card,hero,containe
 - **Single-child-shrunk container sweep** (D757/D773) — never swept repo-wide. Measure LEFT offsets, not TOP, when asking "is this a row".
 - **`oldshape-audit` is over-broad on `--theme-only`** — it ships zero block schemas yet still evaluates them. Narrow it like `deploy_roots_for_scope()` was.
 
-### 5. `/sgs-update` — owed, deliberately deferred
+### 5. Template-by-template assessment — carried forward, twice deferred
+
+The archive-track prompt deferred this to "the session after", and that session became this
+one. It has now slipped twice, so it is written down rather than assumed: open each of the
+twelve templates in `theme/sgs-theme/templates/` and LOOK at it — the governing rule at the
+top of this file applies exactly here.
+
+⚠ Canary content constrains it: 9 posts, 135 pages, 5 products, 1 category, **0 approved
+comments** (so `single.html`'s 14 comment blocks cannot be demonstrated without seeding one).
+`index.html` is genuinely unreachable and that is the healthy state for a fallback template.
+
+### 6. `/sgs-update` — owed, deliberately deferred
 
 Not run after this session's new attributes (`textAlign` ×3, container border family, `nameFontSize`, `titleFontFamily`). `specs/02-SGS-BLOCKS-REFERENCE.md` is stale on all of them. A shared-DB reseed is a **cross-track action** — check no other session is mid-build first.
 
