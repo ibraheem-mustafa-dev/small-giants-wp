@@ -261,40 +261,244 @@ function readIfExists( p ) {
 	return fs.existsSync( p ) ? fs.readFileSync( p, 'utf8' ) : '';
 }
 
+/**
+ * Strip `//` line comments, `/* *\/` block comments, and a leading `#!`
+ * shebang line from `src`, WITHOUT touching text inside a single-quoted,
+ * double-quoted, or template-literal string.
+ *
+ * The previous regex implementation matched a bare `//` anywhere and
+ * ANYWHERE, including inside a string or template literal, to end of line.
+ * `const label = 'Half // Half'; setAttributes({ realAttr: 1 });` lost the
+ * setAttributes() call entirely (FALSE DEAD downstream). The `(^|[^:])`
+ * guard only protects a `://` URL pattern, not a bare `//` inside a string.
+ *
+ * This is a small character scanner that tracks whether it is currently
+ * inside a single-quote string, double-quote string, template literal, line
+ * comment, or block comment, honouring backslash escapes, and only blanks
+ * out `//...` / `/* ... *\/` when in plain code state. Interpolation bodies
+ * inside a template literal (`${...}`) are copied through untouched — we
+ * don't need to parse them, only to avoid misreading a `//`/`/*` inside the
+ * literal's own text as a comment.
+ *
+ * @param {string} src Raw JS source.
+ * @return {string} Source with comments blanked out (same length/line count
+ *                   preserved where practical), strings left intact.
+ */
 function stripComments( src ) {
-	return src
-		.replace( /\/\*[\s\S]*?\*\//g, ' ' )
-		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' )
-		.replace( /^\s*#[^\n]*/gm, ' ' );
+	// Shebang handling identical to the original: blank out a leading
+	// `#...` line (e.g. `#!/usr/bin/env node`).
+	src = src.replace( /^\s*#[^\n]*/, ( m ) => ' '.repeat( m.length ) );
+
+	let out = '';
+	let i = 0;
+	const n = src.length;
+	// States: 'code', 'sq' (single-quote string), 'dq' (double-quote string),
+	// 'tpl' (template literal), 'line' (// comment), 'block' (/* */ comment).
+	let state = 'code';
+
+	while ( i < n ) {
+		const ch = src[ i ];
+		const next = i + 1 < n ? src[ i + 1 ] : '';
+
+		if ( state === 'code' ) {
+			if ( ch === '/' && next === '/' ) {
+				state = 'line';
+				out += '  ';
+				i += 2;
+				continue;
+			}
+			if ( ch === '/' && next === '*' ) {
+				state = 'block';
+				out += '  ';
+				i += 2;
+				continue;
+			}
+			if ( ch === '\'' ) {
+				state = 'sq';
+				out += ch;
+				i += 1;
+				continue;
+			}
+			if ( ch === '"' ) {
+				state = 'dq';
+				out += ch;
+				i += 1;
+				continue;
+			}
+			if ( ch === '`' ) {
+				state = 'tpl';
+				out += ch;
+				i += 1;
+				continue;
+			}
+			out += ch;
+			i += 1;
+			continue;
+		}
+
+		if ( state === 'sq' || state === 'dq' ) {
+			const quote = state === 'sq' ? '\'' : '"';
+			if ( ch === '\\' && i + 1 < n ) {
+				// Preserve the escape pair verbatim so an escaped quote
+				// doesn't prematurely end the string.
+				out += ch + next;
+				i += 2;
+				continue;
+			}
+			if ( ch === quote ) {
+				state = 'code';
+				out += ch;
+				i += 1;
+				continue;
+			}
+			out += ch;
+			i += 1;
+			continue;
+		}
+
+		if ( state === 'tpl' ) {
+			if ( ch === '\\' && i + 1 < n ) {
+				out += ch + next;
+				i += 2;
+				continue;
+			}
+			if ( ch === '`' ) {
+				state = 'code';
+				out += ch;
+				i += 1;
+				continue;
+			}
+			out += ch;
+			i += 1;
+			continue;
+		}
+
+		if ( state === 'line' ) {
+			if ( ch === '\n' ) {
+				state = 'code';
+				out += ch;
+				i += 1;
+				continue;
+			}
+			out += ' ';
+			i += 1;
+			continue;
+		}
+
+		// state === 'block'
+		if ( ch === '*' && next === '/' ) {
+			state = 'code';
+			out += '  ';
+			i += 2;
+			continue;
+		}
+		out += ch === '\n' ? '\n' : ' ';
+		i += 1;
+	}
+
+	return out;
 }
 
 /**
  * Collect attribute names written via setAttributes(...) or the house-style
- * update('attr', val) setter anywhere in `src`. Regex-based (mirrors
- * check-dead-controls.js) — used as the CHECK 1 "is this private attr
- * actually controlled" test, since it is robust and never throws.
+ * update('attr', val) setter, parsed as a Babel AST.
  *
- * @param {string} src JS source (block's own edit.js + block-local components).
+ * WHY (2026-08-25, defect fix). The previous regex implementation —
+ * `/setAttributes\(\s*\{\s*([^}]*)\}/g` — used `[^}]*`, which stops at the
+ * FIRST closing brace. For a nested call such as
+ *   setAttributes( { style: { ...style, border: { ...style?.border, radius: {} } }, shadowHover: 'none' } )
+ * the captured body was truncated mid-nest: `style`, `border`, `radius` (a
+ * NESTED object's keys, not top-level attribute names) were extracted as if
+ * top-level (FALSE CONTROLLED), and the sibling top-level key `shadowHover`
+ * — which appears AFTER the first `}` — was never seen at all (FALSE DEAD).
+ * A balanced-brace scan of the live tree found 28 real setAttributes() calls
+ * with at least one top-level key invisible to the old regex.
+ *
+ * This walks the AST instead, so nesting depth of the VALUE doesn't matter:
+ * only the TOP-LEVEL properties of the ObjectExpression passed directly to
+ * setAttributes(...) are collected (a computed key is skipped — it names an
+ * attribute only through collectIndirectControlledAttrs, never a literal).
+ *
+ * @param {string[]|string} parts One or more JS source strings — each MUST
+ *                                be a single file's source (comment-stripped
+ *                                is fine; already-folded multi-file text is
+ *                                NOT — see collectControlledAttrs below).
  * @return {Set<string>} Attribute names with a live control.
  */
-function collectControlledAttrs( src ) {
-	const controlled = new Set();
+function collectControlledAttrsFromOneFile( src, out ) {
 	if ( ! src ) {
+		return;
+	}
+	let ast;
+	try {
+		ast = parser.parse( src, {
+			sourceType: 'module',
+			errorRecovery: true,
+			plugins: [ 'jsx', 'classProperties', 'objectRestSpread', 'optionalChaining', 'nullishCoalescingOperator' ],
+		} );
+	} catch ( e ) {
+		return;
+	}
+	try {
+		traverse( ast, {
+			CallExpression( p2 ) {
+				const callee = p2.node.callee;
+				if ( ! callee || callee.type !== 'Identifier' ) {
+					return;
+				}
+				if ( callee.name === 'setAttributes' ) {
+					const arg = p2.node.arguments[ 0 ];
+					if ( arg && arg.type === 'ObjectExpression' ) {
+						for ( const pr of arg.properties ) {
+							if ( pr.type !== 'ObjectProperty' || pr.computed ) {
+								continue;
+							}
+							if ( pr.key.type === 'Identifier' ) {
+								out.add( pr.key.name );
+							} else if ( pr.key.type === 'StringLiteral' ) {
+								out.add( pr.key.value );
+							}
+						}
+					}
+					return;
+				}
+				if ( callee.name === 'update' ) {
+					const arg = p2.node.arguments[ 0 ];
+					if ( arg && arg.type === 'StringLiteral' ) {
+						out.add( arg.value );
+					}
+				}
+			},
+		} );
+	} catch ( e ) {
+		// A scope error (e.g. Babel's "Duplicate declaration '__'" when a
+		// caller accidentally folds two files' text together) must not take
+		// down the whole check — skip just this file's contribution.
+	}
+}
+
+/**
+ * Collect attribute names written via setAttributes(...) or update(...)
+ * across one or more source files.
+ *
+ * Parsing MUST happen PER FILE, not on concatenated multi-file text: every
+ * SGS block file imports `__` from @wordpress/i18n, so parsing two files'
+ * text joined together throws Babel's scope error `Duplicate declaration
+ * "__"`. Callers pass the per-file parts array (see OWN_SRC_PARTS / the
+ * pattern collectIndirectControlledAttrs already uses), not the folded
+ * `loadBlockOwnSrc()` string.
+ *
+ * @param {string[]|string} parts Per-file source strings.
+ * @return {Set<string>} Attribute names with a live control.
+ */
+function collectControlledAttrs( parts ) {
+	const controlled = new Set();
+	if ( ! parts ) {
 		return controlled;
 	}
-	const setAttrRe = /setAttributes\(\s*\{\s*([^}]*)\}/g;
-	let m;
-	while ( ( m = setAttrRe.exec( src ) ) !== null ) {
-		const body = m[ 1 ];
-		const keyRe = /(?:^|[\s,])(?:['"]?)([A-Za-z_$][\w$]*)(?:['"]?)\s*:/g;
-		let k;
-		while ( ( k = keyRe.exec( body ) ) !== null ) {
-			controlled.add( k[ 1 ] );
-		}
-	}
-	const updateRe = /\bupdate\(\s*['"]([A-Za-z_$][\w$]*)['"]/g;
-	while ( ( m = updateRe.exec( src ) ) !== null ) {
-		controlled.add( m[ 1 ] );
+	const list = Array.isArray( parts ) ? parts : [ parts ];
+	for ( const src of list ) {
+		collectControlledAttrsFromOneFile( src, controlled );
 	}
 	return controlled;
 }
@@ -536,12 +740,16 @@ function checkHoverDuplication( blockSlug, blockDir, meta ) {
 	}
 
 	const attrs = meta.attributes || {};
-	const ownSrc = loadBlockOwnSrc( blockDir );
-	const controlled = collectControlledAttrs( ownSrc );
+	// loadBlockOwnSrc()'s RETURN value is folded text; we want its side effect of
+	// populating OWN_SRC_PARTS, because both collectors must parse ONE FILE AT A
+	// TIME - parsing folded text throws Babel's `Duplicate declaration "__"`.
+	loadBlockOwnSrc( blockDir );
+	const parts = OWN_SRC_PARTS.get( blockDir ) || [];
+	const controlled = collectControlledAttrs( parts );
 	// Fold in controls reached through a dispatcher table (e.g. ShadowControl's
 	// `attrNames` map) — see collectIndirectControlledAttrs above.
 	for ( const a of collectIndirectControlledAttrs(
-		OWN_SRC_PARTS.get( blockDir ) || [],
+		parts,
 		new Set( Object.keys( attrs ) )
 	) ) {
 		controlled.add( a );
