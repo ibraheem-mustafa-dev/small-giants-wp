@@ -916,7 +916,24 @@ if ( '' !== $hero_preset_text_slug ) {
 // (`.sgs-hero:not(.has-background)`, style.css line ~50) fires — without it
 // the framework's default primary-dark→primary gradient shows through a
 // translucent overlay colour.
-if ( ( '' !== $overlay_colour_raw || $overlay_gradient_value ) && ! in_array( 'has-background', $classes, true ) ) {
+//
+// The RESTING background (`backgroundColour` / `backgroundColourGradient`) needs
+// it for the same reason, and did not set it until 2026-08-25. That default
+// gradient is `background-image`, while the resting colour is painted as
+// `background-color` on the block's own `.{uid}` rule — two DIFFERENT properties,
+// so they never compete and no amount of `:where()` de-specification helps: the
+// image always paints over the colour. Measured live on the Mama's homepage
+// clone, where a correct `background-color: surface-pink` sat invisible beneath
+// the framework's primary-dark->primary gradient.
+// `sgs/cta-section` already sets `has-background` from its own `backgroundColour`
+// (cta-section/render.php:391) — this makes the hero mirror it, per the
+// composite-mirror rule. Only the suppression flag is added, NOT the
+// `has-<slug>-background-color` class: unlike cta-section, the hero paints its
+// colour through the scoped `.{uid}` rule, so the preset class would be a second
+// owner for one value.
+if ( ( '' !== $overlay_colour_raw || $overlay_gradient_value
+	|| '' !== $resting_background_colour || '' !== $resting_background_colour_gradient )
+	&& ! in_array( 'has-background', $classes, true ) ) {
 	$classes[] = 'has-background';
 }
 

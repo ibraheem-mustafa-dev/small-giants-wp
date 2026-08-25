@@ -11,8 +11,6 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -20,7 +18,6 @@ import {
 	RangeControl,
 	ToggleControl,
 	TextControl,
-	Button,
 } from '@wordpress/components';
 import { SgsColourPanel, fillRow } from '../../components';
 import { colourVar } from '../../utils';
@@ -32,11 +29,6 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-];
-
-const LAYOUT_OPTIONS = [
-	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
-	{ label: __( 'Split (image + slider)', 'sgs-blocks' ), value: 'split' },
 ];
 
 // Options mirror the 7 sgs/testimonial variants (block.json supports.sgs.variants),
@@ -72,8 +64,6 @@ const SLIDER_TEMPLATE = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		layout,
-		sideImage,
 		autoplay,
 		autoplaySpeed,
 		showDots,
@@ -90,11 +80,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 	} = attributes;
 
-	const isSplit = layout === 'split';
-
 	const className = [
 		'sgs-testimonial-slider',
-		isSplit ? 'sgs-testimonial-slider--split' : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -193,81 +180,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Layout', 'sgs-blocks' ) }
-						value={ layout || 'full' }
-						options={ LAYOUT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { layout: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				{ isSplit && (
-					<PanelBody
-						title={ __( 'Side Image', 'sgs-blocks' ) }
-						initialOpen={ true }
-					>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( {
-										sideImage: {
-											id: media.id,
-											url: media.url,
-											alt: media.alt,
-										},
-									} )
-								}
-								allowedTypes={ [ 'image' ] }
-								value={ sideImage?.id }
-								render={ ( { open } ) => (
-									<div>
-										{ sideImage?.url ? (
-											<>
-												<img
-													src={ sideImage.url }
-													alt=""
-													style={ {
-														maxWidth: '100%',
-														marginBottom: '8px',
-														borderRadius: '4px',
-													} }
-												/>
-												<Button
-													variant="secondary"
-													onClick={ () =>
-														setAttributes( {
-															sideImage:
-																undefined,
-														} )
-													}
-													isDestructive
-												>
-													{ __(
-														'Remove image',
-														'sgs-blocks'
-													) }
-												</Button>
-											</>
-										) : (
-											<Button
-												variant="secondary"
-												onClick={ open }
-											>
-												{ __(
-													'Select side image',
-													'sgs-blocks'
-												) }
-											</Button>
-										) }
-									</div>
-								) }
-							/>
-						</MediaUploadCheck>
-					</PanelBody>
-				) }
 
 				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
 				   ToolsPanel's own "Slider Settings" title with no
@@ -542,12 +454,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
-			{ /* showLayout={false}: this block owns its own Layout control above
-			     (Full / Split). The shared one writes stack/flex/grid into the
-			     same `layout` attr, whose enum here is full|split — so every
-			     write from it was accepted in the editor, stored, then SILENTLY
-			     reverted to "full" by WordPress enum coercion. Same defect and
-			     same fix as sgs/gallery. */ }
+			{ /* showLayout={false}: this block builds its OWN internal structure
+			     (__stage > __track, slide count driven by --sgs-slides-visible), so a
+			     container layout control would be a SECOND owner of one behaviour.
+			     History: the block used to declare its own `layout` attr with an
+			     enum of full|split, colliding with the container vocabulary the
+			     shared control writes (stack/flex/grid). Every such write was
+			     accepted in the editor, stored, then SILENTLY reverted by WordPress
+			     enum coercion — and the CONVERTER hit the same collision on a path
+			     this workaround never covered, emitting layout:"grid" and collapsing
+			     a cloned slider to zero width. The attr (and the redundant split
+			     shell, which a container composes better) was removed 2026-08-25;
+			     hiding the control is now a statement about ownership, not a
+			     workaround for a name clash. Same collision family as sgs/gallery. */ }
 			<ContainerWrapperControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
@@ -556,15 +475,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 
 			<div { ...blockProps }>
-				{ isSplit && sideImage?.url && (
-					<div className="sgs-testimonial-slider__side-image">
-						<img
-							src={ sideImage.url }
-							alt={ sideImage.alt || '' }
-							className="sgs-testimonial-slider__side-img"
-						/>
-					</div>
-				) }
 				{ /*
 				 * useInnerBlocksProps renders the .sgs-testimonial-slider__track
 				 * directly with the InnerBlocks appender inside. Each sgs/testimonial
@@ -573,13 +483,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				 * wraps each inner block in .sgs-testimonial-slider__slide so view.js
 				 * querySelectorAll finds them correctly.
 				 */ }
-				{ isSplit ? (
-					<div className="sgs-testimonial-slider__slider-content">
-						<div { ...innerBlocksProps } />
-					</div>
-				) : (
-					<div { ...innerBlocksProps } />
-				) }
+				<div { ...innerBlocksProps } />
 			</div>
 		</>
 	);

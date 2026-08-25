@@ -31,6 +31,12 @@ DETECTION (all schema/source-derived — no hardcoded block lists, R-31-1)
 ------------------------------------------------------------------------
 * undeclared-attr : attr key absent from block.json attributes and not a WP-native
                     / SGS-extension key.
+* type-mismatch   : stored attribute value type does not match the declared type
+                    (e.g. string "48px" stored for an object-type attr). WP silently
+                    substitutes the default on render; the authored value vanishes.
+* enum-violation  : stored attribute value is the correct type but not in the
+                    declared enum list (e.g. layout:"grid" where enum:["full","split"]).
+                    WP silently substitutes the default; the authored value vanishes.
 * stranded-content: SELF-CLOSING instance of a block whose save.js emits
                     <InnerBlocks.Content /> (i.e. content is child-rendered) while
                     the instance carries populated content — a `role:"content"`
@@ -250,6 +256,75 @@ def populated_content(attrs, schema):
     return hits
 
 
+def _type_matches(val, wp_type):
+    """Check if a Python value matches a WordPress type declaration.
+
+    Type mapping: object→dict, array→list, string→str, number→int/float,
+    boolean→bool, integer→int. Check bool BEFORE number/integer, since bool
+    is a subclass of int in Python.
+    """
+    if wp_type == 'boolean':
+        return isinstance(val, bool)
+    elif wp_type == 'integer':
+        return isinstance(val, int) and not isinstance(val, bool)
+    elif wp_type == 'number':
+        return isinstance(val, (int, float)) and not isinstance(val, bool)
+    elif wp_type == 'string':
+        return isinstance(val, str)
+    elif wp_type == 'array':
+        return isinstance(val, list)
+    elif wp_type == 'object':
+        return isinstance(val, dict)
+    return False
+
+
+def check_attr_type_and_enum(key, stored_val, spec, label, line, block_slug):
+    """Yield type-mismatch and enum-violation findings for a single attribute.
+
+    Type mismatch: stored type does not match declared type.
+    Enum violation: stored value is correct type but not in enum list.
+    Union types (declared type is a list) are legal and checked against all
+    permitted types.
+    """
+    declared_type = spec.get('type')
+    if declared_type is None:
+        return
+
+    # Handle union types (list of types) — these are legal; skip if matches any
+    if isinstance(declared_type, list):
+        matches_any = any(_type_matches(stored_val, t) for t in declared_type)
+        if not matches_any:
+            type_names = ', '.join(str(t) for t in declared_type)
+            yield {
+                'post': label, 'line': line, 'block': block_slug,
+                'type': 'type-mismatch', 'severity': 'HIGH',
+                'detail': f'"{key}" stored value type does not match declared union types [{type_names}] — '
+                          'WP silently substitutes the default'
+            }
+        return
+
+    # Single type — check conformance
+    type_match = _type_matches(stored_val, declared_type)
+    if not type_match:
+        yield {
+            'post': label, 'line': line, 'block': block_slug,
+            'type': 'type-mismatch', 'severity': 'HIGH',
+            'detail': f'"{key}" stored value type does not match declared type "{declared_type}" — '
+                      'WP silently substitutes the default'
+        }
+        return
+
+    # Check enum conformance (only if type matches and enum is declared)
+    enum_vals = spec.get('enum')
+    if enum_vals and stored_val not in enum_vals:
+        yield {
+            'post': label, 'line': line, 'block': block_slug,
+            'type': 'enum-violation', 'severity': 'HIGH',
+            'detail': f'"{key}" value "{stored_val}" not in allowed values {enum_vals} — '
+                      'WP silently substitutes the default'
+        }
+
+
 def scan_text(label, markup, schemas):
     findings = []
     for slug, attrs, self_closing, line, parse_error in harvest_blocks(markup):
@@ -265,12 +340,17 @@ def scan_text(label, markup, schemas):
                              'type': 'unknown-block', 'severity': 'HIGH',
                              'detail': 'no local block.json — renders a deleted-block placeholder'})
             continue
-        for key in attrs:
+        for key, val in attrs.items():
             if not is_legit(key, schema['attrs']):
                 findings.append({'post': label, 'line': line, 'block': slug,
                                  'type': 'undeclared-attr', 'severity': 'HIGH',
                                  'detail': f'"{key}" not declared in block.json — WP discards it; '
                                            'the next editor save DELETES it from post_content'})
+            else:
+                # Attr is declared; check type and enum conformance
+                spec = schema['attrs'].get(key)
+                if spec:
+                    findings.extend(check_attr_type_and_enum(key, val, spec, label, line, slug))
         if self_closing and schema['innerblocks_save']:
             stranded = populated_content(attrs, schema)
             if stranded:
@@ -302,7 +382,7 @@ def collect_inputs(args):
 def finding_key(x):
     """Stable identity for baselining: post|block|type|attr (line numbers drift)."""
     attr = ''
-    if x['type'] == 'undeclared-attr':
+    if x['type'] in ('undeclared-attr', 'type-mismatch', 'enum-violation'):
         attr = x['detail'].split('"')[1]
     elif x['type'] == 'stranded-content':
         attr = x['detail'].split('stranded: ')[-1]

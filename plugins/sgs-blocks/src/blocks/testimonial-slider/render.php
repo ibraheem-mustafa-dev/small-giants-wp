@@ -45,8 +45,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // CSS length/unit sanitiser — for free-text length values (letterSpacing,
 // border width/radius) concatenated into raw CSS declarations.
 // ── Attribute extraction ───────────────────────────────────────────────────
-$layout         = $attributes['layout'] ?? 'full';
-$side_image     = $attributes['sideImage'] ?? null;
 $autoplay       = $attributes['autoplay'] ?? false;
 $autoplay_speed = $attributes['autoplaySpeed'] ?? 5000;
 $show_dots      = $attributes['showDots'] ?? true;
@@ -91,13 +89,9 @@ $inner_blocks       = $block->inner_blocks ?? array();
 $total_testimonials = count( $inner_blocks );
 
 // ── Wrapper classes + CSS vars ─────────────────────────────────────────────
-$is_split = 'split' === $layout;
-$classes  = array(
+$classes = array(
 	'sgs-testimonial-slider',
 );
-if ( $is_split ) {
-	$classes[] = 'sgs-testimonial-slider--split';
-}
 $allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
 $safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 if ( 'none' !== $safe_hover_effect ) {
@@ -431,34 +425,6 @@ if ( $total_testimonials > 0 ) {
 	$controls_html = '<div class="sgs-testimonial-slider__controls">' . $dots_html . '</div>';
 }
 
-// ── Side image (split layout) ──────────────────────────────────────────────
-$side_image_html = '';
-if ( $is_split && ! empty( $side_image['url'] ) ) {
-	$side_img_id     = ! empty( $side_image['id'] ) ? absint( $side_image['id'] ) : 0;
-	$side_img_tag    = sgs_responsive_image(
-		$side_img_id,
-		$side_image['url'],
-		$side_image['alt'] ?? '',
-		'large',
-		array(
-			'class'   => 'sgs-testimonial-slider__side-img',
-			'loading' => 'lazy',
-		)
-	);
-	$side_image_html = '<div class="sgs-testimonial-slider__side-image">' . $side_img_tag . '</div>';
-
-	// Side-image object-fit/object-position (Spec 35 capability-routing
-	// doctrine mechanism (c), Part 9) — explicit call to the shared helper
-	// with this block's OWN known selector, since
-	// supports.sgs.imageControlsExplicit=true opts this block out of the
-	// guessing render_block filter (includes/image-controls.php). Returns ''
-	// when unset, leaving style.css's hardcoded `object-fit:cover` default in
-	// place (style.css:349).
-	$side_image_position_css = sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-testimonial-slider__side-img' );
-	if ( '' !== $side_image_position_css ) {
-		$slider_scoped_css .= $side_image_position_css;
-	}
-}
 
 // ── Schema.org Review JSON-LD ──────────────────────────────────────────────
 // Rebuilt from inner block attrs above. If $total_testimonials is 0
@@ -505,16 +471,10 @@ $slider_inner = sprintf(
 );
 
 // ── Build $inner_html for the wrapper helper ───────────────────────────────
-// For the split layout the interior wraps in a two-column shell (side image +
-// slider content div). For full-width, the slider inner IS the interior.
-// $schema_html is appended outside the region tag (same as before) — it is a
-// <script type="application/ld+json"> which must not be inside a landmark.
-if ( $is_split ) {
-	$carousel_inner = $side_image_html
-		. '<div class="sgs-testimonial-slider__slider-content">' . $slider_inner . '</div>';
-} else {
-	$carousel_inner = $slider_inner;
-}
+// The slider inner IS the interior. $schema_html is appended outside the region
+// tag (same as before) — it is a <script type="application/ld+json"> which must
+// not be inside a landmark.
+$carousel_inner = $slider_inner;
 
 // ── Own scoped <style> (no-inline contract §A) ──────────────────────────────
 // $slider_scoped_css holds this block's color/typography/border output (built

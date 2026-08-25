@@ -18,8 +18,6 @@
 	"supports": {
 		"sgs": {
 			"collection": true,
-			"imageControls": true,
-			"imageControlsExplicit": true,
 			"containerKind": "layout",
 			"elements": {
 				"slider": {
@@ -69,12 +67,6 @@
 					},
 					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared)."
 				},
-				"side-image": {
-					"label": "Side image (split layout)",
-					"order": 2,
-					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) — sideImage is a MediaPicker object with no independent Text/Fill/Layout style attrs (render.php:374-389)."
-				},
 				"arrow": {
 					"label": "Prev/next arrow",
 					"order": 3,
@@ -94,7 +86,7 @@
 					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` (render.php:304,480) — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS (render.php:304). Added 2026-08-15, no manifest element previously covered it. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
 				}
 			},
-			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots, side-image) is declared above."
+			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots) is declared above."
 		},
 		"align": [
 			"wide",
@@ -139,20 +131,9 @@
 		"typography": ".sgs-testimonial-slider__quote"
 	},
 	"attributes": {
-		"layout": {
-			"type": "string",
-			"default": "full",
-			"enum": [
-				"full",
-				"split"
-			]
-		},
 		"alignItems": {
 			"type": "string",
 			"default": ""
-		},
-		"sideImage": {
-			"type": "object"
 		},
 		"testimonials": {
 			"type": "array",
