@@ -286,13 +286,17 @@ Scanner total **945 -> 499**. Vestigial `templateMode` removed from 6 blocks. 27
 (1) hero background colour is STUCK in the editor canvas AND the parity gate has a PROVEN false
 negative (14 hero findings, `backgroundColour` not among them); (2) Step 3 on rule 21's 83 —
 motion+hover is 28 across 8 blocks; (3) the diff-shape commit gate (Bean approved).
-⚠ **All six blocking decisions are ANSWERED (2026-08-27)** — detail in the scope register, do not
-re-ask: C14 SETTLED (DOM order; WP-native at root; Advanced bottom, Visibility 2nd bottom) ·
-C16 SETTLED (box-object presets that switch the unit too) · C17 CLOSED (keep our per-block
-equivalents) · C18 CLOSED as a non-problem — spec 37 §3.3 already documents the reasoning and the
-column has zero converter consumers at 64.6% NULL; the real residual is the approved-but-UNBUILT
-visual column-shape picker · C19 shape proposed by Bean (adapt hero's split-image panel) with 3
-details to confirm · C15 is RESEARCH not a decision (brainstorm + research council, propose gaps).
+⚠ **All six blocking decisions ANSWERED (2026-08-27)** — detail in the scope register + the prompt,
+do not re-ask. C14/C16 SETTLED · C17/C18 CLOSED · C19 settled bar one call · C15 is RESEARCH.
+⭐ **HERO CHANGES APPROVED, NOT BUILT** (spec 02 §Hero carries the full box): rename the 19 bare
+`image*` styling attrs → `splitMedia*` (the split slot is type-agnostic — `splitMediaType` picks
+among `splitImage`/`splitVideo`/`splitSvg`, so `image` is a misnomer); ⛔ do NOT rename those three
+sources or the discriminator; delete vestigial `splitImageBleed`; `sizingMode` picker proposed
+(height and aspectRatio compete — CSS lets a definite height silently beat a ratio).
+⛔ **CLONING-FIDELITY BUG found 2026-08-27:** 4 hero DB rows carry `css_element: media` while
+`render.php:602` emits them on `.sgs-hero__split-image`. The converter routes cloned CSS by that
+column, so a draft's `border-color` lands on the wrapper — value transfers, appearance does not.
+Invisible locally, only shows in clones. The render is right; the data about it is wrong.
 
 ⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
 items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the

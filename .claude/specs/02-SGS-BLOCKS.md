@@ -214,6 +214,51 @@ block-name/
 
 **Tier:** `class-section` (recognised at voter confidence 1.0 by `sgs-hero` BEM-block; declared via `supports.sgs.is_section_root: true` in `block.json`; populated into `blocks.tier` column by `/sgs-update`). See D107 (voter rewrite) and [`00-naming-conventions.md` §3.2](00-naming-conventions.md).
 
+⛔ **PLANNED CHANGES — approved 2026-08-27, not yet built.** Design gates in
+`.claude/prompts/2026-08-28-hero-canvas-bug-and-the-first-control.md`. Do not build against the
+attribute names below without reading this box first.
+
+**1. The split media slot is TYPE-AGNOSTIC, and the `image*` styling prefix is a misnomer.**
+`splitMediaType` (`enum: image|video|svg`) selects among three PARALLEL SOURCES — `splitImage`,
+`splitVideo`, `splitSvg` (the first two both `type:object`). The 19 bare `image*` attributes do not
+style an image; they style **whichever type is active**.
+
+- **RENAME → `splitMedia*`:** the 19 bare `image*` attrs (`imageHeight`, `imageWidth*`,
+  `imagePadding*`, `imageBorderRadius*`, `imageBorderStyle/Width/Colour*`, `imageObjectFit`,
+  `imageObjectPosition*`), plus `splitImageMobileObjectPosition` → `splitMediaObjectPositionMobile`
+  (a styling attr wearing a source prefix). This also clears the non-standard Tablet/Mobile
+  object-position naming recorded at `block.json:283`.
+- ⛔ **DO NOT RENAME** `splitImage` / `splitVideo` / `splitSvg` (parallel sources) or
+  `splitMediaType` (the discriminator). Renaming `splitImage` → `splitMedia` would sit it beside
+  `splitMediaType` while `splitVideo`/`splitSvg` remain — the name would claim more than it holds.
+- Migration risk measured NONE: zero hero `image*`/`media*` attrs appear in stored content on the
+  canary. Re-measure before applying; do not inherit the figure.
+
+**2. TWO elements, and they must not be merged.**
+`.sgs-hero__media` is the SLOT (24 refs; `render.php:244` — *"outer padding + background on the
+wrapper"*), carrying `mediaBackground*`, `mediaPadding*`, `mediaOverlay*`, `mediaParallax`,
+`mediaKenBurns` — already correctly named. `.sgs-hero__split-image` is the MEDIA INSIDE IT.
+**`mediaPadding` insets the slot; `imagePadding` insets the media.** Two real boxes.
+
+**3. ⛔ FOUR DB ROWS DISAGREE WITH THE RENDER — a cloning-fidelity bug.**
+`imageBorderColour`, `imageBorderStyle`, `imageBorderWidth` (check `imageObjectFit` too) carry
+`css_element: media` in `block_attributes`, while `render.php:602` emits them onto
+`.sgs-hero__split-image`. The converter's Front-1 declarative routing uses `css_element` to choose
+which node a draft's declaration lands on, so a cloned `border-color` is routed to the wrapper
+instead of the media: **the value transfers, the appearance does not.** Nothing looks broken
+locally — it only shows in clones. The RENDER is correct; the DATA ABOUT it is wrong.
+
+**4. `splitImageBleed` is being DELETED, not renamed.** Bean 2026-08-27: *"a vestigial control in the
+container panel that breaks the sizing of the media when switched on... made redundant by object fit
+and image padding, which defaults to 0."*
+
+**5. Box sizing — a `sizingMode` picker is proposed (Auto | Fixed height | Aspect ratio).**
+`hero.imageHeight` (a TIER OBJECT) and `image-sequence.aspectRatio` solve the same job two ways and
+**compete**: CSS applies `aspect-ratio` only when an axis is `auto`, so a definite height silently
+wins. The controls are a CHAIN — box shape → `object-fit` → `object-position` — where each only
+matters if the previous one made it relevant. ⚠ `imageHeight` is already inside the set
+`orchestrator/check_flat_tier_regression.py` (D554-C) blocks from cloning until Spec 39 lands.
+
 **Rich-text content (XS-9.1, D104):** Inner content rich-text uses `sgs/heading` with `wp_kses_post()` sanitisation — supports inline emphasis/strong/anchor while blocking script/style tags.
 
 **Variants:**
