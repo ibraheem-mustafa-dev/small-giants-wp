@@ -159,69 +159,32 @@ is what PHASE 0 is for.
 
 **Put the mode picker to Bean for a yes, then build. It is the last thing blocking C19.**
 
-## Design gate B2 — rename hero's `image*` prefix (Bean proposed 2026-08-27; investigated)
+## ✅ B2 DONE — hero `image*` -> `splitMedia*` SHIPPED 2026-08-27 (`40ba47640`)
 
-> **Bean:** *"Can we replace the image prefix and replace it with media from the hero attributes and
-> the split panel, if these controls apply to all media options?"*
+Renamed all 19 bare `image*` styling attrs plus `splitImageMobileObjectPosition` ->
+`splitMediaObjectPositionMobile` (which also cleared the non-standard Tablet/Mobile ordering
+`block.json:283` documented). `splitImage` / `splitVideo` / `splitSvg` and `splitMediaType` were
+deliberately NOT renamed. `/sgs-update` reseeded: **23 `splitMedia*` rows, 0 stale `image*` rows**.
+Build green across 64 gates.
 
-**The premise is correct.** The split slot already takes image, video OR svg — `splitMediaType`,
-`splitVideo*`, `splitSvg*` all exist — so an `image` prefix on its STYLING attrs is a misnomer.
+⚠ **Scoped to hero, and the census is why:** `sgs/media` (15 occurrences), `sgs/product-card` (12)
+and `sgs/mega-aside` (1) declare their OWN `imageHeight`/`imageWidth`. A repo-wide replace would have
+renamed three other blocks silently. **If those are ever renamed, do them as separate scoped passes.**
 
-**Bean clarified 2026-08-27:** *"I meant split — I just didn't mention it because I wanted to swap
-image with media and didn't want to touch the split part of the name."* So: `split` stays,
-`image` → `media`. **Scoped to the STYLING attrs only** — applying it to every name containing
-"image" would collide.
+### ⛔ STILL OPEN from B2 — the cloning-fidelity bug is NOT fixed
 
-**Rename these:**
+Four hero DB rows carry `css_element: media` while `render.php` emits those declarations onto
+`.sgs-hero__split-image`: `splitMediaBorderColour`, `splitMediaBorderStyle`, `splitMediaBorderWidth`
+(check `splitMediaObjectFit` too). The converter routes cloned CSS by that column, so a draft's
+`border-color` lands on the wrapper — value transfers, appearance does not. Invisible locally, only
+in clones. **The render is right; the data about it is wrong.** Full detail in
+`specs/02-SGS-BLOCKS.md` §Hero.
 
-| Family | Rename to | Why |
-|---|---|---|
-| the **19 bare `image*`** — height, width, padding, border, border-radius, object-fit, object-position | **`splitMedia*`** | They style whichever media type is active, so `image` is the misnomer |
-| `splitImageMobileObjectPosition` | `splitMediaObjectPositionMobile` | A styling attr wearing a source prefix |
+### ⛔ ALSO STILL OPEN — `splitImageBleed` deletion
 
-**⛔ Do NOT rename these:**
-
-| Attr | Why it stays |
-|---|---|
-| `splitImage`, `splitVideo`, `splitSvg` | Three PARALLEL SOURCES (`splitImage` is `type:object`, same as `splitVideo`). Renaming `splitImage` → `splitMedia` would sit it beside `splitMediaType` and read as "the media source" while `splitVideo`/`splitSvg` sit next to it |
-| `splitMediaType` | The discriminator — `enum: [image, video, svg]`, default `image` |
-
-**And note the SECOND element, which is separate from all of the above.** `.sgs-hero__media` is a
-real wrapper (24 refs; `render.php:244` — *"outer padding + background on the wrapper"*) carrying
-`mediaBackground*`, `mediaPadding*`, `mediaOverlay*`, `mediaParallax`, `mediaKenBurns`. Those are
-already correctly named and must not be merged with the styling family: **`mediaPadding` insets the
-SLOT, `imagePadding` insets the MEDIA INSIDE IT.** Two real boxes.
-
-⭐ **This also clears the non-standard naming flagged in gate B.** `splitImageMobileObjectPosition`
-and `imageObjectPositionTablet` normalise to `splitMediaObjectPositionMobile` / `…Tablet` in the same
-pass, so that debt does not need its own migration.
-
-### ⛔ A CLONING-FIDELITY BUG found while checking — fix it in the same pass
-
-**Four DB rows disagree with the render.** `imageBorderColour`, `imageBorderStyle`,
-`imageBorderWidth` (and check `imageObjectFit`) carry `css_element: media`, while `render.php:602`
-emits them onto `.sgs-hero__split-image` — the same element as `imageBorderRadius`.
-
-The converter's Front-1 declarative routing uses `css_element` to decide WHICH NODE a draft's
-declaration lands on. A wrong element routes a draft's `border-color` to the wrapper instead of the
-media: **the value transfers, the appearance does not.** Nothing looks broken locally; it only shows
-up in clones.
-
-⚠ This was nearly reported as a render defect ("border on one element, its radius on another"). It is
-not — the render is consistent. **The DATA ABOUT the render is wrong**, which is the harder failure
-to see.
-
-### Migration risk: NONE, and measured
-
-**Zero hero `image*` or `media*` attributes are set in any stored content** across all canary posts.
-Same finding as `templateMode` — the rename is behaviour-neutral, not merely low-risk. Re-measure
-before applying; do not inherit this figure.
-
-**Blast radius:** 19 attrs across `block.json`, `edit.js`, `render.php`, plus 19 DB rows. Past 3
-files, so **the detector is the first deliverable**. `scripts/lib/oldshape-mappings.js` already
-carries the `RENAMES` mechanism for exactly this shape (currently `sgs/multi-button` only).
-
-⛔ Rule 7 design gate — Bean's approval on the two-prefix split before building.
+Bean approved deleting it (*"vestigial... breaks the sizing of the media when switched on... made
+redundant by object fit and image padding, which defaults to 0"*). It was left untouched by the
+rename. Check stored content first; if zero occurrences, the removal is behaviour-neutral.
 
 ## Design gate C — the visual column-shape picker is APPROVED but UNBUILT
 

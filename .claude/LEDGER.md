@@ -288,7 +288,10 @@ negative (14 hero findings, `backgroundColour` not among them); (2) Step 3 on ru
 motion+hover is 28 across 8 blocks; (3) the diff-shape commit gate (Bean approved).
 ⚠ **All six blocking decisions ANSWERED (2026-08-27)** — detail in the scope register + the prompt,
 do not re-ask. C14/C16 SETTLED · C17/C18 CLOSED · C19 settled bar one call · C15 is RESEARCH.
-⭐ **HERO CHANGES APPROVED, NOT BUILT** (spec 02 §Hero carries the full box): rename the 19 bare
+⭐ **HERO RENAME SHIPPED 2026-08-27 (`40ba47640`)** — 19 `image*` -> `splitMedia*` + the normalised
+object-position; sources/discriminator untouched; `/sgs-update` reseeded 23 rows, 0 stale; build green.
+Scoped to hero — media/product-card/mega-aside declare their own `imageHeight` and were NOT touched.
+STILL OPEN: the 4 wrong `css_element` rows + `splitImageBleed` deletion. Prior note: (spec 02 §Hero carries the full box): rename the 19 bare
 `image*` styling attrs → `splitMedia*` (the split slot is type-agnostic — `splitMediaType` picks
 among `splitImage`/`splitVideo`/`splitSvg`, so `image` is a misnomer); ⛔ do NOT rename those three
 sources or the discriminator; delete vestigial `splitImageBleed`; `sizingMode` picker proposed
