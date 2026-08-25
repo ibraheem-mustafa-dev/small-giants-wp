@@ -260,46 +260,42 @@ TASK C in it are now SHIPPED. Only **TASK B (the 27 orphans)** remains.
 application log: `reports/2026-08-26-migration-method-application-log.md` · grading rubric:
 `rubrics/migration-method-grading.md`.
 
-### ✅ CLOSED
+### ✅ CLOSED — detail single-sourced, do NOT restate
 
-**T0 — the method was APPLIED (D775) and then COUNCILLED again (round 4 above).** History:
-`memory/session-2026-08-24-detector-first-and-the-serial-loop.md` + the application log.
+T0 (method APPLIED, D775) · T1 (`prebuild` 153.4s -> 31.0s) · T2 (7 of 27 orphans wired) ·
+T3 (burn-down, `scripts/programme-progress.py`) · T4 (`--all-properties` REFUTED the batching
+carve-out). History: `memory/session-2026-08-24-detector-first-and-the-serial-loop.md` + the
+application log + `reports/2026-08-24-script-revival-register.md`.
+⛔ A red gate asserting a DELETED contract is worse than none — its red reads as a backlog.
+🚫 `button_group.py` — Bean: not wanted.
 
-✅ **THE RULE IS ENFORCED** (`hooks/detector-first-commit-gate.py`, PreToolUse/Bash). 4+ code
-files with substantially the same change and no detector → DENIED; bypass `[repeat-ok:<reason>]`.
-
-**T1 — `prebuild` 153.4s → 31.0s** (`scripts/gates.json` + `run-gates.py`; 4 heavyweights
-pre-deploy). **T3 — the burn-down**, `scripts/programme-progress.py`, no percentage by design.
-
-**T4 — `--all-properties` shipped and REFUTED the batching carve-out** (census:
-`reports/migrations/tier-object-all-properties-census.json`). **T2 — 7 of 27 orphans wired**;
-verdicts in `reports/2026-08-24-script-revival-register.md`. ⛔ A red gate asserting a DELETED
-contract is worse than none — its red reads as a backlog. 🚫 `button_group.py` — Bean: not wanted.
+✅ **STRUCTURAL DEFENCE — THE RULE IS ENFORCED** (`hooks/detector-first-commit-gate.py`,
+PreToolUse/Bash). 4+ code files with substantially the same change and no detector → DENIED;
+bypass `[repeat-ok:<reason>]`.
 
 ### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
 
-✅ **2026-08-27 CLOSED.** Method councilled -> **C+** (3 of 4 seats found Step 8's justifying
-claim FALSE), 9 fixes. **Rule 21: 211 -> 83** (128 were ONE detector bug). **Rule 34: 319 -> 2**
-(it now CONSUMES check-dead-controls.js's verdicts; ~505 lines of duplicated resolver deleted).
-Scanner total **945 -> 499**. Vestigial `templateMode` removed from 6 blocks. 2737 needed no fix.
-⭐ **NEXT SESSION: `.claude/prompts/2026-08-28-hero-canvas-bug-and-the-first-control.md`** —
-(1) hero background colour is STUCK in the editor canvas AND the parity gate has a PROVEN false
-negative (14 hero findings, `backgroundColour` not among them); (2) Step 3 on rule 21's 83 —
-motion+hover is 28 across 8 blocks; (3) the diff-shape commit gate (Bean approved).
-⚠ **All six blocking decisions ANSWERED (2026-08-27)** — detail in the scope register + the prompt,
-do not re-ask. C14/C16 SETTLED · C17/C18 CLOSED · C19 settled bar one call · C15 is RESEARCH.
-⭐ **HERO RENAME SHIPPED 2026-08-27 (`40ba47640`)** — 19 `image*` -> `splitMedia*` + the normalised
-object-position; sources/discriminator untouched; `/sgs-update` reseeded 23 rows, 0 stale; build green.
-Scoped to hero — media/product-card/mega-aside declare their own `imageHeight` and were NOT touched.
-STILL OPEN: the 4 wrong `css_element` rows + `splitImageBleed` deletion. Prior note: (spec 02 §Hero carries the full box): rename the 19 bare
-`image*` styling attrs → `splitMedia*` (the split slot is type-agnostic — `splitMediaType` picks
-among `splitImage`/`splitVideo`/`splitSvg`, so `image` is a misnomer); ⛔ do NOT rename those three
-sources or the discriminator; delete vestigial `splitImageBleed`; `sizingMode` picker proposed
-(height and aspectRatio compete — CSS lets a definite height silently beat a ratio).
-⛔ **CLONING-FIDELITY BUG found 2026-08-27:** 4 hero DB rows carry `css_element: media` while
-`render.php:602` emits them on `.sgs-hero__split-image`. The converter routes cloned CSS by that
-column, so a draft's `border-color` lands on the wrapper — value transfers, appearance does not.
-Invisible locally, only shows in clones. The render is right; the data about it is wrong.
+✅ **2026-08-27 CLOSED.** Method councilled -> **C+**, 9 fixes. **Rule 21: 211 -> 83** (128 were
+ONE detector bug) · **Rule 34: 319 -> 2** (~505 lines of duplicated resolver deleted) · scanner
+**945 -> 499** · `templateMode` removed from 6 blocks. Full triage:
+`reports/2026-08-27-rule-21-triage.md` + `-rule-34-false-positives.md`.
+✅ **HERO CANVAS + colourVar — CLOSED 2026-08-26, live-verified, pushed** (`14d3801bb`
+`9efc58348` `dc2243e1e`). ⛔ **Detail single-sourced to D792 — do not restate.** Headlines:
+· Hero needed **TWO** fixes, not one — inline paint AND `has-background`; the default
+  `background-image` gradient stacked over the client's `background-color`. D792 records the
+  reasoning error, which is the useful part.
+· **`colourVar()` slug-wrapped unconditionally** → every custom (non-palette) colour was
+  invisible in the canvas across **120 call sites / 39 blocks**, fine on the live page. Fixed via
+  `CSS.supports`. Gate `check-colour-preview-resolver` (gates.json 74), `--self-test` **watched
+  failing first: 7/10 break on the old code.** Bean-approved Rule 7 blast radius.
+· ⛔ **CHECK A missed both** — a 2nd and 3rd proven false negative. TASK 1b still open.
+· **Stored content migrated** (the rename's missing half): 2742/2511/2353 held 6 old `image*`
+  names WP was discarding; the next editor save would have DELETED them. Backups in
+  `.claude/backups/2026-08-26-hero-rename-oldshape/`. RESTORED the homepage hero's authored crop.
+  ⚠ My first pass renamed 2 attrs on an `sgs/media` block — gate caught it, reverted, byte-clean.
+· **`check-box-family-guard` FP fixed** — `'top'` matched inside `'Desktop'`; 21-case control.
+⛔ **STILL OPEN:** `splitImageBleed`. The "4 rows carry `css_element: media`" claim is **FALSE** —
+exactly ONE does; measured table + the real unnamed anomaly in **D792**.
 
 ⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
 items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the

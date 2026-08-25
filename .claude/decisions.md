@@ -178,6 +178,24 @@ Verified in-browser across 10 cases (slug, hyphenated slug, 6- and 3-digit hex, 
 ⚠ **This is exactly CHECK A's remit and CHECK A does not report it** — a second proven false
 negative in the same gate, alongside the `backgroundColour` one that opened this session.
 
+### The brief's `css_element` claim is FALSE — measured, do not act on it
+
+The 2026-08-27 hero note says *"four hero rows carry `css_element: media`"*. Queried live:
+
+| Attribute | `css_element` |
+|---|---|
+| `splitMediaBorderColour` / `BorderStyle` / `BorderWidth` | **NULL** (not `media`) |
+| `splitMediaObjectFit` | `media` — the ONLY one |
+| `splitMediaObjectPositionMobile` | `split-media` — **unmentioned by the brief** |
+| `splitMediaObjectPosition` / `…Tablet` | `split-image` |
+
+Exactly ONE row carries `media`, not four. NULL is the MAJORITY state on this block (79 of its
+rows; then `split-image` 12, `wrapper` 11, `inner` 10, `media` 8), so neither NULL nor `media` is
+defect-shaped on its face. The strongest real anomaly is the one nobody named:
+`splitMediaObjectPositionMobile` = `split-media`, a value used exactly ONCE in the whole block
+while its own base and Tablet siblings use `split-image`. Establish what the converter does with a
+NULL `css_element` before fixing anything — otherwise it is a fix for an unproven cause.
+
 ⚠ **NOT live-verified.** The canary deploy aborted correctly (`deployed-files-dirty`) on the
 motion track's four uncommitted fx/mega-panel CSS files, modified minutes earlier. Not forced:
 `--allow-dirty` would have pushed another track's unfinished work live (D336).
