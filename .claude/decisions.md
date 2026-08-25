@@ -1,3 +1,59 @@
+## D785 [INCIDENT] — a build gate was wrong in BOTH directions, and its own guard was inert
+
+**2026-08-25.** `check-duplicate-controls.js`. Commits `4ab25c6ca` `7a47cce55` `bf08e9feb`
+`77683d733` `40978af12`. Found by hand-verifying the gate's own output, then by an
+`/adversarial-council` on the script itself.
+
+⭐ **OF THE 64 FINDINGS IT PRODUCED FOR THE HOVER ROLLOUT, ONLY 10 WERE REAL.** The rest were
+noise or backwards, and acting on them would have damaged working blocks. Its findings are
+acted on by agents who usually do not verify them, so both error directions cost:
+a FALSE DEAD makes an agent add a duplicate control the client sees; a FALSE CONTROLLED hides
+a genuinely dead setting forever.
+
+**Six defects, each fixed and each proven with a negative control:**
+1. **Phantom keepers (36 of 64).** `UNIVERSAL_HOVER_BY_CATEGORY` named `sgsHoverBgColour`,
+   `sgsHoverTextColour`, `sgsHoverBorderColour`. `hover-effects.js` registers none of them and
+   exposes no colour control at all. Every colour finding advised deleting a working control in
+   favour of an attribute that does not exist.
+2. **Blind to dispatcher tables (5, backwards).** The detector matched a LITERAL key in
+   `setAttributes({attr:…})`. `ShadowControl` — mounted by 15 blocks — takes an `attrNames` map
+   and writes a COMPUTED key, so `shadowHover` on card-grid/info-box/team-member read as DEAD.
+   Same blind spot inspector-scan rule 21 hit.
+3. **Category collision (5).** `shadowHoverColour` was caught by the `has('shadow')` branch and
+   called a duplicate of `sgsHoverShadow` — but that attr is a shadow ELEVATION PRESET and the
+   other is its COLOUR. Deleting the private one removes the only way to colour a hover shadow.
+4. **`collectControlledAttrs` truncated at the first `}`.** `[^}]*` stopped mid-nest, capturing
+   nested keys as attributes AND missing the sibling key after them — both directions wrong at
+   once. A balanced-brace scan found 28 real calls affected. Now walks the Babel AST.
+5. **`stripComments` deleted real code** around a `//` inside a string or template literal.
+6. **Single-hop component resolution.** `GradientOverlayControl` is reached only via
+   `BackgroundPanel`; SEVEN blocks mount that panel with no direct mount of their own, so its
+   source was never folded in. Now iterated to a fixed point (trust-bar 15 -> 22 files).
+
+⛔ **AND THE GUARD I ADDED THAT MORNING WAS ITSELF INERT.** Its regex literal contained a stray
+BACKSPACE character (0x08) where a word boundary belonged, so it matched nothing, the registered
+set was always empty, and the guard silently skipped. **The table it existed to validate was
+never validated once**, and the gate stayed green because the guard FAILS OPEN. It surfaced only
+because a blindness check added hours later refused to accept an empty set. A guard that can
+quietly stop guarding is worse than none: it looks present.
+
+**Also fixed:** `--update-baseline` overwrote the file with only the current run's findings,
+destroying hand-authored `reason` text — including a Bean ruling of 2026-08-21 — while the
+docblock instructs the reader to add exactly that. Now merges by key. Negative control: the 17
+fresh findings carry ZERO hand-authored rulings, so the old path took the count 8 -> 0.
+
+**Self-test 4 cases -> 19.** CHECK 1, the file's own stated PRIMARY target, previously had NONE;
+all four existing cases tested CHECK 2. Every new case has a negative control, and one was
+verified independently rather than on the agent's word.
+
+⚠ **THREE FIGURES RECORDED BEFORE THIS FIX ARE STALE** — LEDGER's "33 duplicates + 24 dead"
+among them. Re-run the fixed gate before acting on any per-block hover number.
+
+**The method note worth keeping:** three times in one session, evidence that looked like a
+product defect was a broken instrument — a canvas reading 0 lit pixels, an inspector panel
+"missing" because the selector only matched `PanelBody`, and a menu query returning the
+WordPress admin bar. A no-evidence result is a broken probe until proven otherwise.
+
 ## D784 [INCIDENT] — the particle trail ships, and the registration surface is WIDER than any gate knows
 
 **2026-08-25.** FR-38-32. Sparks / gravity-dots / ripple, one engine, Tier V vanilla canvas 2D,

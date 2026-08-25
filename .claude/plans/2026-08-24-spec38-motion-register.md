@@ -56,10 +56,11 @@ superseded**). Canary: still page **2721**.
    `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
 2. **Bean's eye on the five cursor-field looks** — mechanism now verified end-to-end (frontend
    AND editor); the aesthetics of each look are not yet Bean-reviewed.
-3. **The particle engine (Sparks / Gravity dots / Ripple)** still needs its own design gate — cap,
-   stop-on-idle, flash ceiling. ⚠ Record clearly: the real fading trail Bean originally asked for
-   is the Sparks preset in this engine. The renamed "Drag weight" control is momentum, and is
-   NOT it.
+3. ✅ **The particle engine SHIPPED 2026-08-25 (FR-38-32, D784).** Design-gated (cap 150/emitter,
+   self-terminating loop, monotonic-alpha flash ceiling — all owner-approved), built as its OWN fx
+   effect rather than a sixth cursor-field type, deployed, and verified on BOTH surfaces. ⭐ The
+   real fading trail is its **Sparks** preset; "Drag weight" is momentum and never satisfied that
+   ask. ⚠ Live cap-binding and loop-stop remain unmeasured.
 4. **`floating-objects`** — unchanged from the prior close, still needs its opt-in design gate.
 5. **Generative cover images** — Bean approved pursuing this direction (bake brand colours into
    cached cover artwork). Not started.

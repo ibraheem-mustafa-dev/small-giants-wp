@@ -124,17 +124,12 @@ here ("4 interpolated stops can't reproduce that variation") was measured FALSE 
 ⭐ **START HERE: `.claude/prompts/2026-08-26-hover-decision-and-gate-residue.md`** — carries
 Tasks A-E below with exact file:line and done-when for each.
 
-1. ✅ **CHILD-LIFT — CLOSED 2026-08-25.** All SIX rules de-specified to `:where()` at
-   (0,0,0); 47 exclusions across 7 selectors deleted. Deployed + live-verified: of 141
-   matched container children, exactly ONE changed (`sgs-particles__canvas`
-   relative->absolute); the canvas now overlays its parent exactly (630px = 630px) instead
-   of inflating the section to 1443px. Gate `check-container-child-lift` (tier fast,
-   `--self-test` proven) stops the list ever regrowing. Full fast suite 64/64.
-2. ✅ **EDITOR SURFACE — CLOSED 2026-08-25.** Opened on page 2744 and verified by observation:
-   picker lists **Particle trail**; Style offers all three presets; Density + Size reachable behind
-   the ToolsPanel menu with Reset all; Notice + 8KB-budget notice both ship; 0 invalid blocks,
-   0 console errors. The `verify-both-surfaces` gap for FR-38-32 is now closed.
-   ⚠ Still unobserved: live cap-binding and loop-stop (the first probe for those was unreliable).
+1. ✅ **CHILD-LIFT — CLOSED.** Six rules de-specified to `:where()`, 47 exclusions deleted.
+   Deployed + live-verified: 141 container children, exactly ONE changed. Gate
+   `check-container-child-lift` (fast, `--self-test` proven) stops it regrowing. Detail: D784.
+2. ✅ **EDITOR SURFACE — CLOSED.** Opened on 2744; every control reachable, 0 console errors.
+   FR-38-32's `verify-both-surfaces` gap is closed. ⚠ Live cap-binding and loop-stop remain
+   UNMEASURED — the first probe was unreliable. Detail: Spec 38 §3.3.
 3. ✅ **Stripe-hero POC — DONE 2026-08-25** (0.66%, 26/26 mechanisms, QC 10/10). Superseded by
    **the FR-38-31 rework**: form → ground → hue adjacency → detail field → colour source.
 4. ⛔ **Hover: decide the 8 conflicted blocks — RE-MEASURE FIRST.** 3 of 11 shipped

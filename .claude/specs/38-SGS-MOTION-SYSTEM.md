@@ -1156,9 +1156,21 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 
  **Live-verified on 2744:** attrs survive WP, canvas present in the effect and ZERO in an adjacent
   negative-control container, 4249 lit pixels peak during a pointer sweep, 0 console errors, deployed
-  CSS md5-identical to local. ⚠ **NOT yet verified:** the child-lift fix is committed but was NOT
-  deployable at the time (a concurrent track's uncommitted `hero/render.php` correctly tripped the D336
-  dirty-tree guard), and the editor canvas, live cap-binding and loop-stop remain unobserved.
+  CSS md5-identical to local.
+
+ ✅ **CHILD-LIFT FIX DEPLOYED AND VERIFIED 2026-08-25** (this line previously read "NOT yet
+  verified... committed but NOT deployable"). Of 141 matched container children across four
+  pages, exactly ONE changed — this canvas, `relative` -> `absolute`. It now overlays its
+  parent exactly (630px = 630px) where it had been 1443px and inflating the section.
+
+ ✅ **EDITOR SURFACE OBSERVED 2026-08-25** — see the §9 row.
+
+ ⚠ **STILL UNMEASURED, and not claimed:** live cap-binding (150/emitter) and loop-stop. The
+  first probe for those was unreliable, so treat them as unproven rather than assumed. Two
+  traps for whoever measures them: instrument the MODULE, not the page (a global rAF counter
+  catches every other effect and proves nothing); and sample DURING the pointer sweep, not
+  after (sampling once afterwards read 0 lit pixels and nearly filed working code as dead,
+  while sampling during read 2417).
 
 ### 3.4 SVG
 
