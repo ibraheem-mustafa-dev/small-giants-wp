@@ -73,18 +73,18 @@
 					"mediaPaddingTablet",
 					"mediaPaddingMobile"
 				],
-				"imagePadding": [
-					"imagePadding",
-					"imagePaddingTablet",
-					"imagePaddingMobile"
+				"splitMediaPadding": [
+					"splitMediaPadding",
+					"splitMediaPaddingTablet",
+					"splitMediaPaddingMobile"
 				],
-				"imageBorderWidth": [
-					"imageBorderWidth"
+				"splitMediaBorderWidth": [
+					"splitMediaBorderWidth"
 				],
-				"imageBorderRadius": [
-					"imageBorderRadius",
-					"imageBorderRadiusTablet",
-					"imageBorderRadiusMobile"
+				"splitMediaBorderRadius": [
+					"splitMediaBorderRadius",
+					"splitMediaBorderRadiusTablet",
+					"splitMediaBorderRadiusMobile"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
@@ -197,11 +197,11 @@
 					"prefix": "image",
 					"attrMap": {
 						"css:background-color": "mediaBackground",
-						"css:object-fit": "imageObjectFit",
+						"css:object-fit": "splitMediaObjectFit",
 						"anim:parallax": "mediaParallax",
 						"anim:duration": "mediaAnimationDuration"
 					},
-					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (imageBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via mediaParallax/mediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. mediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
+					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via mediaParallax/mediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. mediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
 				},
 				"headline": {
 					"label": "Headline",
@@ -265,13 +265,13 @@
 					"clusters": [],
 					"prefix": "",
 					"attrMap": {
-						"css:width": "imageWidth",
-						"css:height": "imageHeight",
-						"css:border-radius": "imageBorderRadius",
-						"css:padding": "imagePadding",
-						"css:object-position": "imageObjectPosition"
+						"css:width": "splitMediaWidth",
+						"css:height": "splitMediaHeight",
+						"css:border-radius": "splitMediaBorderRadius",
+						"css:padding": "splitMediaPadding",
+						"css:object-position": "splitMediaObjectPosition"
 					},
-					"_note": "The rendered split-media image node itself (`.sgs-hero__split-image`, nested inside the `media` grid-area's wrapper div — render.php ~line 1129-625). imageWidth/imageHeight/imageBorderRadius/imagePadding (and their Tablet/Mobile siblings) all target this node directly, not the `.sgs-hero__media` wrapper div. Ground-truth check (render.php lines 560-625) also shows imageObjectFit/imageObjectPosition(desktop)/imageBorderColour/imageBorderStyle/imageBorderWidth painting on this SAME node, yet the DB currently tags those css_element='media' — that is a separate, pre-existing DB-side inconsistency (both actually paint on split-image per render.php) left untouched here: fixing it needs a DB write, which this manifest-only fix cannot do, and 'media' is already a declared element so it produces no orphan finding. `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 11 attrs css_element='split-image', undeclared until now."
+					"_note": "The rendered split-media image node itself (`.sgs-hero__split-image`, nested inside the `media` grid-area's wrapper div — render.php ~line 1129-625). splitMediaWidth/splitMediaHeight/splitMediaBorderRadius/splitMediaPadding (and their Tablet/Mobile siblings) all target this node directly, not the `.sgs-hero__media` wrapper div. Ground-truth check (render.php lines 560-625) also shows splitMediaObjectFit/splitMediaObjectPosition(desktop)/splitMediaBorderColour/splitMediaBorderStyle/splitMediaBorderWidth painting on this SAME node, yet the DB currently tags those css_element='media' — that is a separate, pre-existing DB-side inconsistency (both actually paint on split-image per render.php) left untouched here: fixing it needs a DB write, which this manifest-only fix cannot do, and 'media' is already a declared element so it produces no orphan finding. `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 11 attrs css_element='split-image', undeclared until now."
 				},
 				"split-media": {
 					"label": "Split media",
@@ -280,7 +280,7 @@
 					"clusters": [],
 					"prefix": "",
 					"attrMap": {},
-					"_note": "The type-agnostic base class emitted by `sgs_tier_media_render()` (`render.php:1135`) — carries `sgs-hero__split-media`, `--{tier}`, and `--{type}` modifiers alongside the type-specific `split-image`/`split-video`/`split-svg` extra class on the same node. object-position tiers (imageObjectPositionTablet, splitImageMobileObjectPosition) paint on the SAME `.sgs-hero__split-image` node via compound selectors (`.split-image.split-media--mobile` at mobile), not on a separate element — all three variants are now unified under the split-image element's claim (constrained to desktop base due to the one-key-per-element rule and the non-standard Tablet/Mobile naming pattern)."
+					"_note": "The type-agnostic base class emitted by `sgs_tier_media_render()` (`render.php:1135`) — carries `sgs-hero__split-media`, `--{tier}`, and `--{type}` modifiers alongside the type-specific `split-image`/`split-video`/`split-svg` extra class on the same node. object-position tiers (splitMediaObjectPositionTablet, splitMediaObjectPositionMobile) paint on the SAME `.sgs-hero__split-image` node via compound selectors (`.split-image.split-media--mobile` at mobile), not on a separate element — all three variants are now unified under the split-image element's claim (constrained to desktop base due to the one-key-per-element rule and the non-standard Tablet/Mobile naming pattern)."
 				}
 			}
 		}
@@ -374,11 +374,11 @@
 			"type": "string",
 			"default": ""
 		},
-		"splitImageMobileObjectPosition": {
+		"splitMediaObjectPositionMobile": {
 			"type": "string",
 			"default": "center 20%"
 		},
-		"imageObjectPositionTablet": {
+		"splitMediaObjectPositionTablet": {
 			"type": "string",
 			"default": ""
 		},
@@ -486,73 +486,73 @@
 			"type": "boolean",
 			"default": true
 		},
-		"imageObjectFit": {
+		"splitMediaObjectFit": {
 			"type": "string",
 			"default": "cover"
 		},
-		"imageObjectPosition": {
+		"splitMediaObjectPosition": {
 			"type": "string",
 			"default": "center center"
 		},
-		"imageWidth": {
+		"splitMediaWidth": {
 			"type": "number"
 		},
-		"imageWidthTablet": {
+		"splitMediaWidthTablet": {
 			"type": "number"
 		},
-		"imageWidthMobile": {
+		"splitMediaWidthMobile": {
 			"type": "number"
 		},
-		"imageWidthUnit": {
+		"splitMediaWidthUnit": {
 			"type": "string",
 			"default": "%"
 		},
-		"imageHeight": {
+		"splitMediaHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"imageHeightUnit": {
+		"splitMediaHeightUnit": {
 			"type": "string",
 			"default": "px"
 		},
-		"imageBorderRadius": {
+		"splitMediaBorderRadius": {
 			"type": "object",
 			"default": {}
 		},
-		"imageBorderRadiusTablet": {
+		"splitMediaBorderRadiusTablet": {
 			"type": "object",
 			"default": {}
 		},
-		"imageBorderRadiusMobile": {
+		"splitMediaBorderRadiusMobile": {
 			"type": "object",
 			"default": {}
 		},
-		"imageBorderStyle": {
+		"splitMediaBorderStyle": {
 			"type": "string",
 			"default": "none"
 		},
-		"imageBorderWidth": {
+		"splitMediaBorderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"imageBorderColour": {
+		"splitMediaBorderColour": {
 			"type": "string",
 			"default": ""
 		},
-		"imageBorderColourGradient": {
+		"splitMediaBorderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the split-image border instead of a flat colour. Non-empty wins over imageBorderColour at render time (D636)."
+			"description": "CSS gradient string painting the split-image border instead of a flat colour. Non-empty wins over splitMediaBorderColour at render time (D636)."
 		},
-		"imagePadding": {
+		"splitMediaPadding": {
 			"type": "object",
 			"default": {}
 		},
-		"imagePaddingTablet": {
+		"splitMediaPaddingTablet": {
 			"type": "object",
 			"default": {}
 		},
-		"imagePaddingMobile": {
+		"splitMediaPaddingMobile": {
 			"type": "object",
 			"default": {}
 		},

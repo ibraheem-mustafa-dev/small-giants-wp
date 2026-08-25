@@ -9,13 +9,13 @@
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, backgroundOverlayColour, overlayOpacity,
- *   splitImage, splitImageMobile, splitImageMobileObjectPosition,
- *   imageObjectPositionTablet, minHeight*, background/text/border colour
+ *   splitImage, splitImageMobile, splitMediaObjectPositionMobile,
+ *   splitMediaObjectPositionTablet, minHeight*, background/text/border colour
  *   (resting + Hover, each with a {attr}Gradient sibling — D702),
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns,
  *   bgVideo*, splitImageBleed,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
- *   imageObjectFit/Position, imageWidth*, imageHeight (TIER OBJECT), imageBorderStyle/Colour,
+ *   splitMediaObjectFit/Position, splitMediaWidth*, splitMediaHeight (TIER OBJECT), splitMediaBorderStyle/Colour,
  *   splitColumnRatio*, splitGap*,
  *   splitContentOrder, splitContentOrderTablet, splitContentOrderMobile,
  *   verticalAlignment.
@@ -23,8 +23,8 @@
  *   owned by the child sgs/heading / sgs/text / sgs/label blocks — not emitted
  *   here.
  *
- * BOX-GROUP (contract §B, 2026-07-09): imageBorderRadius, imageBorderWidth,
- * imagePadding, mediaPadding, contentPadding, contentBandPadding are box
+ * BOX-GROUP (contract §B, 2026-07-09): splitMediaBorderRadius, splitMediaBorderWidth,
+ * splitMediaPadding, mediaPadding, contentPadding, contentBandPadding are box
  * OBJECTS ({top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight},
  * base + Tablet + Mobile tiers) — no more flat per-side attrs or *Unit
  * companions. contentBandPadding is read + emitted entirely by
@@ -137,11 +137,11 @@ $split_svg_tablet        = (string) ( $attributes['splitSvgTablet'] ?? '' );
 $split_svg_mobile        = (string) ( $attributes['splitSvgMobile'] ?? '' );
 // ⛔ The `splitMedia` -> `splitVideo` alias bridge was DELETED here 2026-08-13.
 // `splitVideo*` is the only video source; a video is set through its own control.
-$split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
+$split_image_mobile_object_position = $attributes['splitMediaObjectPositionMobile'] ?? 'center 20%';
 // Tablet tier of the object-position triple (Spec 35 Track 1b Phase 1.4c —
 // promoted from a mobile-only orphan). Desktop tier is $image_object_position
-// below (imageObjectPosition, already wired); '' = inherit desktop.
-$image_object_position_tablet = $attributes['imageObjectPositionTablet'] ?? '';
+// below (splitMediaObjectPosition, already wired); '' = inherit desktop.
+$image_object_position_tablet = $attributes['splitMediaObjectPositionTablet'] ?? '';
 // Free-text embedded length strings (e.g. "600px") — sanitised before reaching
 // the scoped <style> rule below (was esc_attr()-only, which does not strip
 // ;{}() and so cannot prevent CSS-rule breakout).
@@ -160,9 +160,9 @@ $min_height_mobile = sgs_css_length_value( $min_height_obj['mobile'] ?? '360px' 
 // and subHeadlineMaxWidth controls were retired (Spec 35 Phase 2.3) once the
 // content moved to child InnerBlocks at FR-22-6.
 // splitImageHeight / splitImageHeightTablet / splitImageMobileHeight were removed
-// — they duplicated `imageHeight` on the same property AND the same element
+// — they duplicated `splitMediaHeight` on the same property AND the same element
 // (`.sgs-hero__split-image`). See the consolidation note at the emission site.
-// Height for the split image now comes solely from the `imageHeight` object.
+// Height for the split image now comes solely from the `splitMediaHeight` object.
 
 // D702 — root background/text colour, resting + hover, each with a sibling
 // `{attr}Gradient` (D636 storage shape: two attributes, gradient wins when
@@ -201,45 +201,45 @@ $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 $split_image_bleed = ! empty( $attributes['splitImageBleed'] );
 
 // ── Phase 1: Image display attributes ──────────────────────────────────────
-$image_object_fit      = $attributes['imageObjectFit'] ?? 'cover';
-$image_object_position = $attributes['imageObjectPosition'] ?? 'center center';
+$image_object_fit      = $attributes['splitMediaObjectFit'] ?? 'cover';
+$image_object_position = $attributes['splitMediaObjectPosition'] ?? 'center center';
 
-$image_width        = $attributes['imageWidth'] ?? null;
-$image_width_tablet = $attributes['imageWidthTablet'] ?? null;
-$image_width_mobile = $attributes['imageWidthMobile'] ?? null;
-$image_width_unit   = sgs_css_length_value( $attributes['imageWidthUnit'] ?? '%' );
+$image_width        = $attributes['splitMediaWidth'] ?? null;
+$image_width_tablet = $attributes['splitMediaWidthTablet'] ?? null;
+$image_width_mobile = $attributes['splitMediaWidthMobile'] ?? null;
+$image_width_unit   = sgs_css_length_value( $attributes['splitMediaWidthUnit'] ?? '%' );
 
-// imageHeight is a TIER OBJECT (Spec 35): one attr carrying all three tiers,
-// replacing the imageHeight/imageHeightTablet/imageHeightMobile trio 2026-08-10.
+// splitMediaHeight is a TIER OBJECT (Spec 35): one attr carrying all three tiers,
+// replacing the splitMediaHeight/splitMediaHeightTablet/splitMediaHeightMobile trio 2026-08-10.
 // It also absorbed the removed splitImageHeight family — see the emission site.
 // sgs_responsive_normalise_object() is the canonical reader (helpers-responsive.php:273);
 // it always returns desktop/tablet/mobile keys, so the emission code below is unchanged.
-$image_height_obj    = sgs_responsive_normalise_object( $attributes['imageHeight'] ?? null );
+$image_height_obj    = sgs_responsive_normalise_object( $attributes['splitMediaHeight'] ?? null );
 $image_height        = $image_height_obj['desktop'] ?? null;
 $image_height_tablet = $image_height_obj['tablet'] ?? null;
 $image_height_mobile = $image_height_obj['mobile'] ?? null;
-$image_height_unit   = sgs_css_length_value( $attributes['imageHeightUnit'] ?? 'px' );
+$image_height_unit   = sgs_css_length_value( $attributes['splitMediaHeightUnit'] ?? 'px' );
 
 // Image border radius — box-object family (contract §B): base + tablet +
 // mobile, each { topLeft, topRight, bottomLeft, bottomRight }, string values
 // with the unit baked in (no separate *Unit companion any more).
-$image_border_radius_obj        = is_array( $attributes['imageBorderRadius'] ?? null ) ? $attributes['imageBorderRadius'] : array();
-$image_border_radius_tablet_obj = is_array( $attributes['imageBorderRadiusTablet'] ?? null ) ? $attributes['imageBorderRadiusTablet'] : array();
-$image_border_radius_mobile_obj = is_array( $attributes['imageBorderRadiusMobile'] ?? null ) ? $attributes['imageBorderRadiusMobile'] : array();
+$image_border_radius_obj        = is_array( $attributes['splitMediaBorderRadius'] ?? null ) ? $attributes['splitMediaBorderRadius'] : array();
+$image_border_radius_tablet_obj = is_array( $attributes['splitMediaBorderRadiusTablet'] ?? null ) ? $attributes['splitMediaBorderRadiusTablet'] : array();
+$image_border_radius_mobile_obj = is_array( $attributes['splitMediaBorderRadiusMobile'] ?? null ) ? $attributes['splitMediaBorderRadiusMobile'] : array();
 
 // Image border — width is a box-object family (base only, no tiers, matches
 // the pre-existing base-only contract). Style/colour stay scalar attrs.
-$image_border_style     = sgs_css_keyword_sanitise( $attributes['imageBorderStyle'] ?? 'none' );
-$image_border_width_obj = is_array( $attributes['imageBorderWidth'] ?? null ) ? $attributes['imageBorderWidth'] : array();
-$image_border_colour    = $attributes['imageBorderColour'] ?? '';
+$image_border_style     = sgs_css_keyword_sanitise( $attributes['splitMediaBorderStyle'] ?? 'none' );
+$image_border_width_obj = is_array( $attributes['splitMediaBorderWidth'] ?? null ) ? $attributes['splitMediaBorderWidth'] : array();
+$image_border_colour    = $attributes['splitMediaBorderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $image_border_colour when set.
-$image_border_colour_gradient = sgs_css_gradient_value( $attributes['imageBorderColourGradient'] ?? '' );
+$image_border_colour_gradient = sgs_css_gradient_value( $attributes['splitMediaBorderColourGradient'] ?? '' );
 
-// imagePadding — inner padding on the <img> element itself. Box-object
+// splitMediaPadding — inner padding on the <img> element itself. Box-object
 // family: base + tablet + mobile, each { top, right, bottom, left }.
-$image_padding_obj        = is_array( $attributes['imagePadding'] ?? null ) ? $attributes['imagePadding'] : array();
-$image_padding_tablet_obj = is_array( $attributes['imagePaddingTablet'] ?? null ) ? $attributes['imagePaddingTablet'] : array();
-$image_padding_mobile_obj = is_array( $attributes['imagePaddingMobile'] ?? null ) ? $attributes['imagePaddingMobile'] : array();
+$image_padding_obj        = is_array( $attributes['splitMediaPadding'] ?? null ) ? $attributes['splitMediaPadding'] : array();
+$image_padding_tablet_obj = is_array( $attributes['splitMediaPaddingTablet'] ?? null ) ? $attributes['splitMediaPaddingTablet'] : array();
+$image_padding_mobile_obj = is_array( $attributes['splitMediaPaddingMobile'] ?? null ) ? $attributes['splitMediaPaddingMobile'] : array();
 
 // mediaPadding — outer padding + background on the .sgs-hero__media wrapper.
 $media_padding_obj        = is_array( $attributes['mediaPadding'] ?? null ) ? $attributes['mediaPadding'] : array();
@@ -514,10 +514,10 @@ if ( $is_split ) {
 	}
 	// Split-image height is NOT emitted here. The `splitImageHeight` family wrote
 	// `height` to `.sgs-hero__split-image` — the exact same property on the exact
-	// same element as `imageHeight` below, so the two contended for one routing
-	// slot. `imageHeight` is the survivor: it carries a configurable unit
-	// (`imageHeightUnit`) rather than hardcoding px, forces no `object-fit`, and is
-	// named consistently across all three tiers. See the imageHeight block below.
+	// same element as `splitMediaHeight` below, so the two contended for one routing
+	// slot. `splitMediaHeight` is the survivor: it carries a configurable unit
+	// (`splitMediaHeightUnit`) rather than hardcoding px, forces no `object-fit`, and is
+	// named consistently across all three tiers. See the splitMediaHeight block below.
 
 	// Desktop/base column order. Blank ('') = natural DOM order (content is
 	// first in markup, so it lands in the first/left grid track). 'media-first'
@@ -549,7 +549,7 @@ if ( $is_split ) {
 	}
 }
 
-// ── imagePadding: box-object family — base + tablet + mobile (on the <img>
+// ── splitMediaPadding: box-object family — base + tablet + mobile (on the <img>
 // element). Gated on $is_split, matching the old emission's scope.
 if ( $is_split ) {
 	$img_pad_base = sgs_box_object_shorthand( $image_padding_obj );
@@ -566,7 +566,7 @@ if ( $is_split ) {
 	}
 }
 
-// ── imageBorderRadius: box-object family — base + tablet + mobile.
+// ── splitMediaBorderRadius: box-object family — base + tablet + mobile.
 // Gated on $is_split to match the old inline emission (which only ran inside
 // the split-image branch).
 if ( $is_split ) {
@@ -583,7 +583,7 @@ if ( $is_split ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $img_radius_mob . '}}';
 	}
 
-	// ── imageBorderWidth / style / colour — box-object family (base only, no
+	// ── splitMediaBorderWidth / style / colour — box-object family (base only, no
 	// tiers). Moved here from the inline style="" on the <img> element
 	// (contract §A) — was previously the only remaining inline decl on the
 	// split image alongside object-fit/object-position (below).
@@ -632,7 +632,7 @@ if ( $is_split ) {
 	}
 }
 
-// ── imageWidth: base + tablet + mobile (custom fit only) ──────────────────
+// ── splitMediaWidth: base + tablet + mobile (custom fit only) ──────────────────
 // Base moved here from the inline style="" on the split <img> (Pattern A).
 if ( 'custom' === $image_object_fit ) {
 	if ( null !== $image_width ) {
@@ -646,11 +646,11 @@ if ( 'custom' === $image_object_fit ) {
 	}
 }
 
-// ── imageHeight: base + tablet + mobile, UNCONDITIONAL ────────────────────
+// ── splitMediaHeight: base + tablet + mobile, UNCONDITIONAL ────────────────────
 // Deliberately OUTSIDE the `custom` object-fit gate above (2026-08-10). Height
 // used to be gated with width, while the now-removed `splitImageHeight` family
 // wrote the same property to the same element with NO gate. Consolidating onto
-// `imageHeight` therefore has to keep the UNGATED reach, or every hero that set
+// `splitMediaHeight` therefore has to keep the UNGATED reach, or every hero that set
 // a split-image height without also choosing `custom` object-fit would silently
 // lose it. Width stays gated — it never had an ungated equivalent.
 // Emitted base -> tablet -> mobile so the later, narrower @media rule wins at

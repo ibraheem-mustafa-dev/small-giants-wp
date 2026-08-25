@@ -340,7 +340,7 @@ section.sgs-hero {
 
 /* Video/SVG tiers get the column-level bleed above (the .sgs-hero__media--bleed
  * rule is type-agnostic) but were missing the element-level half: the whole
- * imageBorderRadius/imageWidth/imageHeight/imagePadding/imageObjectFit control
+ * splitMediaBorderRadius/splitMediaWidth/splitMediaHeight/splitMediaPadding/splitMediaObjectFit control
  * family is scoped ONLY to `.sgs-hero__split-image` (render.php:528-625), so a
  * bled VIDEO or SVG tier kept its default rounded corners and never filled the
  * bled column's height — a pre-existing gap, not something this rule alone can
@@ -533,7 +533,7 @@ section.sgs-hero {
 }
 
 /* Media Ken-Burns — clip at `.sgs-hero__media`'s own edges (respects
- * imageBorderRadius/mediaPadding, matching the existing splitImageBleed
+ * splitMediaBorderRadius/mediaPadding, matching the existing splitImageBleed
  * clipping pattern above) and animate the CHILD tier element
  * (`.sgs-hero__split-media`, the class every image/video/SVG tier carries —
  * see `sgs_tier_media_render()`), never `.sgs-hero__media` itself. Animating

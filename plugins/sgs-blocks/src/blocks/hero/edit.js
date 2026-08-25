@@ -220,23 +220,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		minHeight,
 		shadow,
 		// Phase 1 — image display.
-		imageObjectFit,
-		imageWidth,
-		imageWidthTablet,
-		imageWidthMobile,
-		imageWidthUnit,
-		// imageHeight is a TIER OBJECT {desktop,tablet,mobile} as of 2026-08-10 —
-		// the imageHeightTablet/imageHeightMobile siblings no longer exist.
-		imageHeight,
-		imageHeightUnit,
+		splitMediaObjectFit,
+		splitMediaWidth,
+		splitMediaWidthTablet,
+		splitMediaWidthMobile,
+		splitMediaWidthUnit,
+		// splitMediaHeight is a TIER OBJECT {desktop,tablet,mobile} as of 2026-08-10 —
+		// the splitMediaHeightTablet/splitMediaHeightMobile siblings no longer exist.
+		splitMediaHeight,
+		splitMediaHeightUnit,
 		// Box-object families (contract §B, 2026-07-09).
-		imageBorderRadius,
-		imageBorderRadiusTablet,
-		imageBorderRadiusMobile,
-		imageBorderStyle,
-		imageBorderWidth,
-		imageBorderColour,
-		imageBorderColourGradient,
+		splitMediaBorderRadius,
+		splitMediaBorderRadiusTablet,
+		splitMediaBorderRadiusMobile,
+		splitMediaBorderStyle,
+		splitMediaBorderWidth,
+		splitMediaBorderColour,
+		splitMediaBorderColourGradient,
 		// D701 — resting (non-hover) border-colour gradient. Sibling to the
 		// WP-native __experimentalBorder.color support (attributes.style.border.color),
 		// wins over it at render time when set. No `borderColourHover`/
@@ -256,9 +256,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
-		imagePadding,
-		imagePaddingTablet,
-		imagePaddingMobile,
+		splitMediaPadding,
+		splitMediaPaddingTablet,
+		splitMediaPaddingMobile,
 		contentBackground,
 		contentBackgroundGradient,
 		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
@@ -354,38 +354,38 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display
 	// attributes so the editor canvas stops silently disagreeing with the
 	// frontend. Desktop tier only, matching every other preview builder in
-	// this file (imageWidthTablet/imageWidthMobile stay editor-only-inert
+	// this file (splitMediaWidthTablet/splitMediaWidthMobile stay editor-only-inert
 	// here, same as the other *Tablet/*Mobile pairs above).
 	const imagePreviewStyle = {};
-	// object-fit — render.php:577-580 (gated OFF when imageObjectFit==='custom',
+	// object-fit — render.php:577-580 (gated OFF when splitMediaObjectFit==='custom',
 	// which switches to explicit width/height below instead).
-	if ( 'custom' !== imageObjectFit ) {
-		imagePreviewStyle.objectFit = imageObjectFit || 'cover';
+	if ( 'custom' !== splitMediaObjectFit ) {
+		imagePreviewStyle.objectFit = splitMediaObjectFit || 'cover';
 	}
-	// width — render.php:597-599, gated behind imageObjectFit==='custom'.
-	// imageWidth itself has no dedicated ticket item here, but imageWidthUnit
+	// width — render.php:597-599, gated behind splitMediaObjectFit==='custom'.
+	// splitMediaWidth itself has no dedicated ticket item here, but splitMediaWidthUnit
 	// is meaningless without it (same CSS declaration), so both are applied
 	// together, desktop tier only.
-	if ( 'custom' === imageObjectFit && imageWidth ) {
-		imagePreviewStyle.width = `${ imageWidth }${ imageWidthUnit || '%' }`;
+	if ( 'custom' === splitMediaObjectFit && splitMediaWidth ) {
+		imagePreviewStyle.width = `${ splitMediaWidth }${ splitMediaWidthUnit || '%' }`;
 	}
 	// height — render.php:618-619, deliberately UNGATED (not tied to
-	// imageObjectFit==='custom' — see render.php's "UNGATED reach" comment
+	// splitMediaObjectFit==='custom' — see render.php's "UNGATED reach" comment
 	// at line 609-615).
-	if ( imageHeight?.desktop ) {
-		imagePreviewStyle.height = `${ imageHeight.desktop }${ imageHeightUnit || 'px' }`;
+	if ( splitMediaHeight?.desktop ) {
+		imagePreviewStyle.height = `${ splitMediaHeight.desktop }${ splitMediaHeightUnit || 'px' }`;
 	}
 	// border style/width/colour — render.php:561-573 (box-object family,
 	// base only, no tiers). Entry condition matches render.php exactly:
 	// emit when style isn't 'none' OR a width is set.
-	const imageBorderWidthPreview = boxShorthand( imageBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( 'none' !== imageBorderStyle || imageBorderWidthPreview ) {
-		imagePreviewStyle.borderStyle = imageBorderStyle;
-		if ( imageBorderWidthPreview ) {
-			imagePreviewStyle.borderWidth = imageBorderWidthPreview;
+	const splitMediaBorderWidthPreview = boxShorthand( splitMediaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( 'none' !== splitMediaBorderStyle || splitMediaBorderWidthPreview ) {
+		imagePreviewStyle.borderStyle = splitMediaBorderStyle;
+		if ( splitMediaBorderWidthPreview ) {
+			imagePreviewStyle.borderWidth = splitMediaBorderWidthPreview;
 		}
-		if ( imageBorderColour ) {
-			imagePreviewStyle.borderColor = imageBorderColour;
+		if ( splitMediaBorderColour ) {
+			imagePreviewStyle.borderColor = splitMediaBorderColour;
 		}
 	}
 
@@ -1238,7 +1238,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							     Height control below, which carries a unit picker instead of hardcoding
 							     px. Its render is now UNGATED so it keeps this control's reach. */ }
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Display', 'sgs-blocks' ) }</p>
-							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
+							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ splitMediaObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { splitMediaObjectFit: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
 							{ /* Upgraded from a free-text "center 20%" TextControl to a
 							     crosshair 2026-08-11 (Spec 35 capability-routing doctrine,
 							     Part 9) — this control was the ONLY known-good, already-
@@ -1253,9 +1253,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<ResponsiveControl label={ __( 'Object position', 'sgs-blocks' ) }>
 								{ ( breakpoint ) => {
 									const posAttrMap = {
-										desktop: 'imageObjectPosition',
-										tablet: 'imageObjectPositionTablet',
-										mobile: 'splitImageMobileObjectPosition',
+										desktop: 'splitMediaObjectPosition',
+										tablet: 'splitMediaObjectPositionTablet',
+										mobile: 'splitMediaObjectPositionMobile',
 									};
 									const posKey = posAttrMap[ breakpoint ];
 									const posDefault = {
@@ -1277,7 +1277,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									// touched (same as every other breakpoint here).
 									const effectiveValue =
 										'tablet' === breakpoint && ! posValue
-											? attributes.imageObjectPosition ?? posDefault
+											? attributes.splitMediaObjectPosition ?? posDefault
 											: posValue ?? posDefault;
 									return (
 										<FocalPositionField
@@ -1292,25 +1292,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									);
 								} }
 							</ResponsiveControl>
-							{ imageObjectFit === 'custom' && (
+							{ splitMediaObjectFit === 'custom' && (
 								<>
 									<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>
-									<RRangeControl label={ __( 'Width', 'sgs-blocks' ) } attrDesktop="imageWidth" attrTablet="imageWidthTablet" attrMobile="imageWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
+									<RRangeControl label={ __( 'Width', 'sgs-blocks' ) } attrDesktop="splitMediaWidth" attrTablet="splitMediaWidthTablet" attrMobile="splitMediaWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
 									<UnitControl
 										label={ __( 'Width unit', 'sgs-blocks' ) }
-										value={ `${ imageWidth || 0 }${ imageWidthUnit || 'px' }` }
+										value={ `${ splitMediaWidth || 0 }${ splitMediaWidthUnit || 'px' }` }
 										units={ [
 											{ value: 'px', label: 'px', default: 0 },
 											{ value: '%',  label: '%',  default: 0 },
 										] }
 										onChange={ ( val ) => {
 											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-											setAttributes( { imageWidthUnit: unit } );
+											setAttributes( { splitMediaWidthUnit: unit } );
 										} }
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
-									{ /* imageHeight is the OBJECT model (Spec 35 / FR-37-16): one attr
+									{ /* splitMediaHeight is the OBJECT model (Spec 35 / FR-37-16): one attr
 									     holding all three tiers, so this uses ResponsiveOverride rather
 									     than the flat attrDesktop/attrTablet/attrMobile trio the Width
 									     control above still uses. A blank tier INHERITS the tier above.
@@ -1318,8 +1318,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									     control — both wrote `height` to `.sgs-hero__split-image`. */ }
 									<ResponsiveOverride
 										label={ __( 'Height', 'sgs-blocks' ) }
-										value={ imageHeight }
-										onChange={ ( obj ) => setAttributes( { imageHeight: obj } ) }
+										value={ splitMediaHeight }
+										onChange={ ( obj ) => setAttributes( { splitMediaHeight: obj } ) }
 									>
 										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 											<RangeControl
@@ -1338,14 +1338,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									</ResponsiveOverride>
 									<UnitControl
 										label={ __( 'Height unit', 'sgs-blocks' ) }
-										value={ `${ imageHeight?.desktop || 0 }${ imageHeightUnit || 'px' }` }
+										value={ `${ splitMediaHeight?.desktop || 0 }${ splitMediaHeightUnit || 'px' }` }
 										units={ [
 											{ value: 'px', label: 'px', default: 0 },
 											{ value: '%',  label: '%',  default: 0 },
 										] }
 										onChange={ ( val ) => {
 											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-											setAttributes( { imageHeightUnit: unit } );
+											setAttributes( { splitMediaHeightUnit: unit } );
 										} }
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
@@ -1357,29 +1357,29 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<ResponsiveBorderRadiusControl
 								label={ __( 'Image border radius', 'sgs-blocks' ) }
 								values={ {
-									base: imageBorderRadius ?? {},
-									tablet: imageBorderRadiusTablet ?? {},
-									mobile: imageBorderRadiusMobile ?? {},
+									base: splitMediaBorderRadius ?? {},
+									tablet: splitMediaBorderRadiusTablet ?? {},
+									mobile: splitMediaBorderRadiusMobile ?? {},
 								} }
 								onChange={ ( tier, next ) => {
 									const attrMap = {
-										base: 'imageBorderRadius',
-										tablet: 'imageBorderRadiusTablet',
-										mobile: 'imageBorderRadiusMobile',
+										base: 'splitMediaBorderRadius',
+										tablet: 'splitMediaBorderRadiusTablet',
+										mobile: 'splitMediaBorderRadiusMobile',
 									};
 									setAttributes( { [ attrMap[ tier ] ]: next } );
 								} }
 							/>
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border', 'sgs-blocks' ) }</p>
-							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ imageBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { imageBorderStyle: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
-							{ imageBorderStyle !== 'none' && (
+							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ splitMediaBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { splitMediaBorderStyle: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
+							{ splitMediaBorderStyle !== 'none' && (
 								<>
 									<ResponsiveBoxControl
 										label={ __( 'Border width', 'sgs-blocks' ) }
-										values={ { base: imageBorderWidth ?? {} } }
+										values={ { base: splitMediaBorderWidth ?? {} } }
 										showResponsive={ false }
-										onChange={ ( tier, next ) => setAttributes( { imageBorderWidth: next } ) }
+										onChange={ ( tier, next ) => setAttributes( { splitMediaBorderWidth: next } ) }
 									/>
 									<DesignTokenPicker
 										label={ __( 'Border colour', 'sgs-blocks' ) }
@@ -1387,11 +1387,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											{
 												key: 'normal',
 												label: __( 'Normal', 'sgs-blocks' ),
-												value: imageBorderColour,
-												onChange: ( val ) => setAttributes( { imageBorderColour: val } ),
-												gradientValue: imageBorderColourGradient,
+												value: splitMediaBorderColour,
+												onChange: ( val ) => setAttributes( { splitMediaBorderColour: val } ),
+												gradientValue: splitMediaBorderColourGradient,
 												onGradientChange: ( val ) =>
-													setAttributes( { imageBorderColourGradient: val ?? '' } ),
+													setAttributes( { splitMediaBorderColourGradient: val ?? '' } ),
 											},
 										] }
 									/>
@@ -1403,15 +1403,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<ResponsiveBoxControl
 								label={ __( 'Image padding', 'sgs-blocks' ) }
 								values={ {
-									base: imagePadding ?? {},
-									tablet: imagePaddingTablet ?? {},
-									mobile: imagePaddingMobile ?? {},
+									base: splitMediaPadding ?? {},
+									tablet: splitMediaPaddingTablet ?? {},
+									mobile: splitMediaPaddingMobile ?? {},
 								} }
 								onChange={ ( tier, next ) => {
 									const attrMap = {
-										base: 'imagePadding',
-										tablet: 'imagePaddingTablet',
-										mobile: 'imagePaddingMobile',
+										base: 'splitMediaPadding',
+										tablet: 'splitMediaPaddingTablet',
+										mobile: 'splitMediaPaddingMobile',
 									};
 									setAttributes( { [ attrMap[ tier ] ]: next } );
 								} }
