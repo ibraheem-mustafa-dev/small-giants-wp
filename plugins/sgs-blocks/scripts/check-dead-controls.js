@@ -88,6 +88,22 @@
  *   node scripts/check-dead-controls.js          # report (exit 0 unless net-new findings)
  *   node scripts/check-dead-controls.js --check   # same, for prebuild/CI (exit 1 on net-new)
  *   node scripts/check-dead-controls.js --json     # machine-readable findings
+ *   node scripts/check-dead-controls.js --dump-json  # per-(block,attr) consumption dump (Task 1,
+ *                                                     # 2026-08-27) — REPORTING ONLY, always exit 0,
+ *                                                     # never changes --check/--json output. Emits a
+ *                                                     # JSON array, one row per declared attribute of
+ *                                                     # every block this script scans: { block, attr,
+ *                                                     # renderConsumed, controlPresent, renderVia }.
+ *                                                     # renderVia names WHICH of this script's six-
+ *                                                     # corpus resolvers proved consumption (literal /
+ *                                                     # dynamic-prefix / prefixed-helper / shared-
+ *                                                     # include / block-context / none) — the field a
+ *                                                     # downstream consumer needs to distinguish a real
+ *                                                     # absence from a resolver limitation. Exists so a
+ *                                                     # second instrument (inspector-scan rule 34) can
+ *                                                     # consume this script's verdicts instead of
+ *                                                     # re-deriving them with a narrower corpus — see
+ *                                                     # `.superpowers/sdd/task-1-brief.md`.
  *
  * Wired into `prebuild` / `prestart` in package.json, so `npm run build` FAILS
  * on a net-new dead control (it actually runs — not a dormant --check).
@@ -1326,6 +1342,97 @@ function findingKey( f ) {
 }
 
 // ---------------------------------------------------------------------------
+// --dump-json — per-(block, attr) consumption dump (Task 1, 2026-08-27)
+// ---------------------------------------------------------------------------
+//
+// REPORTING ONLY. Reuses this script's existing resolver functions exactly as
+// CHECK 1 / CHECK 4 call them — isConsumed / isDynamicPrefixConsumed /
+// collectPrefixedHelperConsumed / collectDynamicPrefixSuffixes / the live
+// providesContext->usesContext chain / the BREAKPOINT_DYNAMIC_RE responsive-
+// variant rule — with NO changes to any of them. It does not touch findings,
+// baselines, or the exit code; main() reads it in a fully separate branch.
+//
+// `renderVia` names WHICH resolver proved consumption, so a consumer (e.g.
+// inspector-scan rule 34, which currently re-derives consumption with none of
+// these resolvers and drifts 317 findings from this gate) can tell a real
+// absence ('none') apart from a resolver limitation:
+//   'literal'          the attr's own name appears in the block's OWN corpus
+//                       (its .php files / save.js / *view*.js).
+//   'shared-include'    the attr's own name appears only in the shared
+//                       includes/*.php corpus, not the block's own.
+//   'dynamic-prefix'    resolved via isDynamicPrefixConsumed() against a
+//                       structurally-discovered `$attributes[ $var . 'Suffix' ]`
+//                       read (collectDynamicPrefixSuffixes()).
+//   'prefixed-helper'   resolved via a PREFIXED_HELPER_SUFFIXES call site
+//                       (collectPrefixedHelperConsumed()) — e.g.
+//                       sgs/brand-strip.nameFontSize via
+//                       sgs_typography_css_rule( $attributes, 'name', ... ).
+//   'block-context'     resolved via a live providesContext -> usesContext
+//                       chain (contextConsumedByBlock, computed in main()).
+//   'none'              none of the above resolved it.
+
+/**
+ * @param {Array<Object>} blocks Parsed block descriptors (readBlock() output).
+ * @param {Set<string>} wrapperControlled Attrs the shared ContainerWrapperControls mounts.
+ * @param {string} sharedCorpus Concatenated includes/*.php corpus, comments stripped.
+ * @param {Map<string,Set<string>>} contextConsumedByBlock block.name -> Set(attrName),
+ *   from main()'s live-context pass (rule (b)).
+ * @return {Array<Object>} One row per (block, attr): { block, attr, renderConsumed, controlPresent, renderVia }.
+ */
+function dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextConsumedByBlock ) {
+	const rows = [];
+	for ( const block of blocks ) {
+		const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
+		// Same widened control-resolution CHECK 1/CHECK 4 use (R3-a).
+		const controlled = collectControlledAttrs( editJs + collectReferencedComponentSources( editJs ) );
+		const corpus = block.ownCorpus + '\n' + sharedCorpus;
+		const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
+		const dynamicPrefixSuffixes = collectDynamicPrefixSuffixes( corpus );
+		const contextConsumed = contextConsumedByBlock.get( block.name ) || new Set();
+
+		for ( const attr of block.attrs ) {
+			const controlPresent =
+				controlled.has( attr ) || ( block.usesWrapper && wrapperControlled.has( attr ) );
+
+			let renderVia = 'none';
+			if ( contextConsumed.has( attr ) ) {
+				renderVia = 'block-context';
+			} else if ( prefixedHelperConsumed.has( attr ) ) {
+				renderVia = 'prefixed-helper';
+			} else if ( isDynamicPrefixConsumed( attr, corpus, dynamicPrefixSuffixes ) ) {
+				renderVia = 'dynamic-prefix';
+			} else if ( isConsumed( attr, block.ownCorpus ) ) {
+				renderVia = 'literal';
+			} else if ( isConsumed( attr, sharedCorpus ) ) {
+				renderVia = 'shared-include';
+			} else {
+				// Rule (a) — the same responsive-variant fallback CHECK 1/CHECK 4
+				// apply: a {base}Tablet/Mobile/Desktop attr is consumed if its base
+				// is consumed AND the block's own corpus builds responsive keys
+				// dynamically (BREAKPOINT_DYNAMIC_RE), even though the tier attr's
+				// own literal name never appears verbatim.
+				const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
+				if ( suffix ) {
+					const base = attr.slice( 0, -suffix[ 1 ].length );
+					if ( base && isConsumed( base, corpus ) && BREAKPOINT_DYNAMIC_RE.test( block.ownCorpus ) ) {
+						renderVia = isConsumed( base, block.ownCorpus ) ? 'literal' : 'shared-include';
+					}
+				}
+			}
+
+			rows.push( {
+				block: block.name,
+				attr,
+				renderConsumed: renderVia !== 'none',
+				controlPresent,
+				renderVia,
+			} );
+		}
+	}
+	return rows;
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -1385,6 +1492,7 @@ function main() {
 	const check = process.argv.includes( '--check' );
 	const asJson = process.argv.includes( '--json' );
 	const tierAuditOnly = process.argv.includes( '--tier-audit' );
+	const dumpJsonOnly = process.argv.includes( '--dump-json' );
 
 	EXTENSION_ATTRS = loadExtensionAttrs();
 	const sharedCorpus = stripComments( loadSharedCorpus() );
@@ -1450,6 +1558,12 @@ function main() {
 			}
 		}
 		contextConsumedByBlock.set( b.name, set );
+	}
+
+	if ( dumpJsonOnly ) {
+		const rows = dumpAttributeRows( blocks, wrapperControlled, sharedCorpus, contextConsumedByBlock );
+		process.stdout.write( JSON.stringify( rows, null, 2 ) + '\n' );
+		process.exit( 0 );
 	}
 
 	let findings = [];
@@ -1834,8 +1948,9 @@ function runSelfTest() {
 
 	const check4Pass = runCheck4SelfTest( log );
 	const check5Pass = runCheck5SelfTest( log );
+	const dumpJsonPass = runDumpJsonSelfTest( log );
 
-	if ( ! pass || ! check4Pass || ! check5Pass ) {
+	if ( ! pass || ! check4Pass || ! check5Pass || ! dumpJsonPass ) {
 		process.exit( 1 );
 	}
 }
@@ -2247,6 +2362,174 @@ function runCheck5SelfTest( log ) {
 		pass
 			? '\n[check-dead-controls --self-test] CHECK 5 — ALL SYNTHETIC TESTS PASS.'
 			: '\n[check-dead-controls --self-test] CHECK 5 — FAIL.'
+	);
+	return pass;
+}
+
+// ---------------------------------------------------------------------------
+// --dump-json self-test (Task 1, 2026-08-27) — proves dumpAttributeRows()
+// reports every one of the six renderVia values correctly, including a real
+// LIVE example of the prefixed-helper resolver (sgs/brand-strip.nameFontSize
+// via sgs_typography_css_rule(), brand-strip/render.php:412) so the field
+// this task exists to add is proven against real code, not only a fixture.
+// ---------------------------------------------------------------------------
+
+function runDumpJsonSelfTest( log ) {
+	const os = require( 'os' );
+	let pass = true;
+
+	log( '\n[check-dead-controls --self-test] --dump-json (Task 1 per-attribute dump)\n' );
+
+	// Synthetic block covering five of the six renderVia values on hand-built
+	// corpora (fully isolated from real source, so no real code can make this
+	// pass by accident): literal (own corpus), shared-include (shared corpus
+	// only), prefixed-helper (a real PREFIXED_HELPER_SUFFIXES call shape),
+	// dynamic-prefix (a real `$attributes[ $var . 'Suffix' ]` shape), a
+	// controlled-but-dead attr (proves controlPresent and renderConsumed vary
+	// independently), and a fully-dead attr (no control, no consumption).
+	const tmpDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-dump-json-self-test-' ) );
+	const editJsSrc = [
+		"setAttributes( { literalAttr: 'x' } );",
+		"setAttributes( { deadControlledAttr: 'x' } );",
+	].join( '\n' );
+	fs.writeFileSync( path.join( tmpDir, 'edit.js' ), editJsSrc, 'utf8' );
+
+	const syntheticBlock = {
+		name: 'sgs/fixture-dump',
+		dir: tmpDir,
+		attrs: new Set( [
+			'literalAttr',
+			'sharedAttr',
+			'ctaFontSize',
+			'beforeImageId',
+			'ctxAttr',
+			'deadControlledAttr',
+			'fullyDeadAttr',
+		] ),
+		dynamic: true,
+		usesWrapper: false,
+		ownCorpus:
+			"echo esc_html( $attributes['literalAttr'] ?? '' );\n" +
+			"echo sgs_button_element_style_css( $attributes, 'cta', '.cta' );\n" +
+			"$prefix = 'before' === $modifier ? 'before' : 'after';\n" +
+			"echo $attributes[ $prefix . 'ImageId' ] ?? '';\n",
+		providesContext: {},
+		usesContext: [],
+	};
+	const syntheticSharedCorpus = "echo $attributes['sharedAttr'] ?? '';\n";
+	const syntheticContextConsumedByBlock = new Map( [
+		[ 'sgs/fixture-dump', new Set( [ 'ctxAttr' ] ) ],
+	] );
+
+	const rows = dumpAttributeRows(
+		[ syntheticBlock ],
+		new Set(), // wrapperControlled — irrelevant, syntheticBlock.usesWrapper is false
+		syntheticSharedCorpus,
+		syntheticContextConsumedByBlock
+	);
+	const byAttr = {};
+	rows.forEach( ( r ) => {
+		byAttr[ r.attr ] = r;
+	} );
+
+	const expected = [
+		[ 'literalAttr', true, true, 'literal' ],
+		[ 'sharedAttr', false, true, 'shared-include' ],
+		[ 'ctaFontSize', false, true, 'prefixed-helper' ],
+		[ 'beforeImageId', false, true, 'dynamic-prefix' ],
+		[ 'ctxAttr', false, true, 'block-context' ],
+		[ 'deadControlledAttr', true, false, 'none' ],
+		[ 'fullyDeadAttr', false, false, 'none' ],
+	];
+	for ( const [ attr, expControl, expConsumed, expVia ] of expected ) {
+		const row = byAttr[ attr ];
+		const ok =
+			row &&
+			row.controlPresent === expControl &&
+			row.renderConsumed === expConsumed &&
+			row.renderVia === expVia;
+		if ( ok ) {
+			log(
+				`PASS — Test I (${ attr }): controlPresent=${ row.controlPresent } ` +
+					`renderConsumed=${ row.renderConsumed } renderVia=${ row.renderVia }`
+			);
+		} else {
+			log(
+				`FAIL — Test I (${ attr }): got ${ JSON.stringify( row ) }, expected ` +
+					`controlPresent=${ expControl } renderConsumed=${ expConsumed } renderVia=${ expVia }`
+			);
+			pass = false;
+		}
+	}
+
+	fs.rmSync( tmpDir, { recursive: true, force: true } );
+
+	// Live check — the exact case the brief names as verified: sgs/brand-strip
+	// declares `nameFontSize` with NO own edit.js control (it is emitted via the
+	// shared TypographyControls component, resolved separately from this
+	// PHP-side check) and consumes it via
+	// sgs_typography_css_rule( $attributes, 'name', ... ) at
+	// brand-strip/render.php:412 — a genuine PREFIXED_HELPER_SUFFIXES call.
+	log( '\n[check-dead-controls --self-test] Live check: sgs/brand-strip.nameFontSize via --dump-json' );
+	EXTENSION_ATTRS = loadExtensionAttrs();
+	const sharedCorpusLive = stripComments( loadSharedCorpus() );
+	const wrapperControlledLive = collectControlledAttrs(
+		collectFacadeResolvedSources( SHARED_CONTROLS_JS )
+	);
+	const liveBlockDirs = fs
+		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )
+		.filter( ( d ) => d.isDirectory() && d.name !== 'extensions' )
+		.map( ( d ) => path.join( BLOCKS_DIR, d.name ) );
+	const liveBlocks = [];
+	for ( const dir of liveBlockDirs ) {
+		const b = readBlock( dir );
+		if ( b ) {
+			liveBlocks.push( b );
+		}
+	}
+	// Same live-context pass as main() — a dump row's block-context resolution
+	// must match what the real build sees.
+	const liveContextKeys = new Set();
+	for ( const b of liveBlocks ) {
+		for ( const key of b.usesContext ) {
+			if ( isConsumed( key, b.ownCorpus ) ) {
+				liveContextKeys.add( key );
+			}
+		}
+	}
+	const contextConsumedByBlockLive = new Map();
+	for ( const b of liveBlocks ) {
+		const set = new Set();
+		for ( const [ key, attrName ] of Object.entries( b.providesContext ) ) {
+			if ( liveContextKeys.has( key ) ) {
+				set.add( attrName );
+			}
+		}
+		contextConsumedByBlockLive.set( b.name, set );
+	}
+	const liveRows = dumpAttributeRows(
+		liveBlocks,
+		wrapperControlledLive,
+		sharedCorpusLive,
+		contextConsumedByBlockLive
+	);
+	const brandStripRow = liveRows.find(
+		( r ) => 'sgs/brand-strip' === r.block && 'nameFontSize' === r.attr
+	);
+	if ( brandStripRow && true === brandStripRow.renderConsumed && 'prefixed-helper' === brandStripRow.renderVia ) {
+		log(
+			'PASS — Test J (live): sgs/brand-strip.nameFontSize -> renderConsumed=true, ' +
+				'renderVia=prefixed-helper (brand-strip/render.php:412).'
+		);
+	} else {
+		log( `FAIL — Test J (live): got ${ JSON.stringify( brandStripRow ) }` );
+		pass = false;
+	}
+
+	log(
+		pass
+			? '\n[check-dead-controls --self-test] --dump-json — ALL TESTS PASS.'
+			: '\n[check-dead-controls --self-test] --dump-json — FAIL.'
 	);
 	return pass;
 }
