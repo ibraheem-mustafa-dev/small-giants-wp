@@ -35,8 +35,8 @@
 			"checklistItem": 18,
 			"file": "rules/18-decorative-image-aria.js",
 			"mode": "advisory",
-			"advisoryReason": "Measured live 2026-08-03: 15/84 blocks render an <img> (directly or via the shared MediaPicker component) with no decorative/ariaLabel attribute declared. Independently cross-checked (12 matched a first script exactly; a further check for shared-component indirection found 3 more genuinely missed blocks — brand-strip, team-member, cta-section — now included; see the rule file header).",
-			"openBacklog": 13
+			"advisoryReason": "LOWERED 13 -> 12 (2026-08-27). Enumerated, not inferred: the cleared finding is sgs/testimonial-slider|no-decorative-toggle, closed by another track in 74dfd743f (retire testimonial-slider full/split). Re-measured because a ceiling above the live count is SLACK and lets a brand-new violation land green - re-measure and lower after every drop, including drops you did not make. Measured live 2026-08-03: 15/84 blocks render an <img> (directly or via the shared MediaPicker component) with no decorative/ariaLabel attribute declared. Independently cross-checked (12 matched a first script exactly; a further check for shared-component indirection found 3 more genuinely missed blocks — brand-strip, team-member, cta-section — now included; see the rule file header).",
+			"openBacklog": 12
 		},
 		{
 			"id": "20-pattern-template-lock",
