@@ -70,17 +70,27 @@
 	opacity: 1;
 }
 
-/* The block's own children must sit above the canvas. `> *` rather than a
-   descendant selector, so nested structures are not each given their own layer.
-   ⛔ THE CANVAS AND THE TOGGLE MUST BE EXCLUDED. `> *` matches them too, and at
-   equal specificity (0,1,0 both ways) the later rule wins — so this rule was
-   overriding the canvas's own `position: absolute` and dropping it into normal
-   flow. Measured live before this exclusion existed: the canvas rendered at
-   x=24 y=466 instead of filling the block, AND the section grew to 5266px,
-   because an in-flow `height: 100%` child feeds its own height back into the
-   parent that sizes it. One selector, three symptoms. */
-[data-sgs-fx="wave-gradient"]
-	> *:not( .sgs-wave-gradient__canvas ):not( .sgs-wave-gradient__toggle ) {
+/* CHILD-LIFT — deliberately ZERO specificity, via `:where()`. Lifts the block's
+   own children above the canvas. `> *` rather than a descendant selector, so
+   nested structures are not each given their own layer.
+
+   ⛔ DO NOT reintroduce a `:not()` chain here. Until 2026-08-25 this rule
+   excluded `.sgs-wave-gradient__canvas` and `.sgs-wave-gradient__toggle` by
+   name, because at equal specificity (0,1,0 both ways) the later rule won and
+   this one overrode the canvas's own `position: absolute`, dropping it into
+   normal flow. Measured live at the time: the canvas rendered at x=24 y=466
+   instead of filling the block, AND the section grew to 5266px, because an
+   in-flow `height: 100%` child feeds its own height back into the parent that
+   sizes it. One selector, three symptoms.
+
+   That exclusion list was the same self-defeating shape D784 removed from
+   `container/style.css`: each `:not(.x)` ADDS specificity, so every name added
+   made the NEXT unlisted layer more certain to lose. At (0,0,0) it cannot
+   recur — the canvas (`:55`, `position:absolute; z-index:0`) and the toggle
+   both out-rank this rule on their own declarations, with no registration
+   anywhere. A new decorative layer needs to do nothing except style itself.
+   Enforced by `scripts/check-child-lift.py`. */
+:where( [data-sgs-fx="wave-gradient"] ) > * {
 	position: relative;
 	z-index: 1;
 }

@@ -1,3 +1,59 @@
+## D793 [INCIDENT] — the child-lift trap was live in TWO more files, and the seventh victim had worked around it
+
+**2026-08-25.** `assets/css/fx-wave-gradient.css`, `assets/css/fx-cursor-field.css`,
+`assets/css/fx-surface-treatment.css`, `src/blocks/mega-panel/style.css`, new gate
+`scripts/check-child-lift.py` (tier `fast`, order 72), superseding
+`check-container-child-lift.py` (D784).
+
+D784 de-specified `container/style.css`'s six child-lift rules to `:where()` and deleted 47
+exclusions. **It closed the trap in ONE file and was recorded as closed.** A 5-seat
+`/adversarial-council` on a proposed layer-role model found it live in two more, and the census
+built to check found a third nobody had named.
+
+⭐ **THE SEVENTH VICTIM HAD ALREADY WORKED AROUND IT, IN A COMMENT, AND NOBODY NOTICED.**
+`fx-surface-treatment.css:19-37` carried a "SPECIFICITY WARNING — do not simplify this selector to
+a bare class rule", explaining that `[data-sgs-cursor-field] > *` forces every direct child to
+`z-index:1` at (0,1,0), that a host can carry both extensions, and that an unqualified rule "could
+lose that cascade fight depending on source order". It hand-raised its own specificity to survive.
+**That is the D784 trap, described accurately, by its victim, after D784 shipped** — a feature
+learning the lesson privately instead of fixing the cause.
+
+**Fixed at the cause, four files:**
+- `fx-wave-gradient.css` — the `:not( __canvas ):not( __toggle )` chain DELETED, rule `:where()`-wrapped.
+- `fx-cursor-field.css` — `:where()`-wrapped; it was at (0,1,0) with no chain, tying with every
+  layer that declares its own `position` and winning on source order alone.
+- `fx-surface-treatment.css` — the defensive parent-scoping REVERTED to a bare `.sgs-webgl-surface`
+  rule. **This is the NEGATIVE CONTROL for the whole change**: at (0,1,0) it now out-ranks both
+  de-specified lifts outright, in either source order. Removing the workaround is what proves the
+  fix works rather than merely looking tidy.
+- `mega-panel/style.css` — NOT a live defect (its only decorative layer is a `::before`, and `> *`
+  cannot match a pseudo-element) but at (0,3,0) it was the highest-specificity lift in the tree, so
+  the first real decorative child added would have been trapped hardest. De-specified pre-emptively
+  rather than exempted — growing an exemption list is the exact failure D784 removed.
+
+**The gate is repo-wide, because the old one's corpus was the problem.** `check-child-lift.py`
+scans 136 stylesheets (plugin `assets/css` + every block `style.css`/`editor.css` + the theme),
+finds all 8 child-lift rules, and asserts R1 `:where()`-wrapped and R2 no `:not()` chain. Anti-
+vacuity floor of 5 fails CLOSED on a blind scan. `--self-test`: **12 cases including three controls**
+(negative, positive, overmatch), each watched failing first.
+
+⭐ **A WIDENED RULE FALSE-POSITIVED IMMEDIATELY, AND THE GATE CAUGHT ITSELF.** R2 was briefly
+widened to flag a `:not()` on ANY `> *` rule, not just a lift. It instantly flagged
+`site-footer-row/editor.css` and `site-header-row/editor.css`, which use `:not( :has( > * ) )` — an
+EMPTY-STATE selector meaning "a row with no children". The `> *` is nested inside `:has()` inside
+`:not()`; it is neither an exclusion chain nor a lift. Reverted to lift-only scope, and **that exact
+shape is now self-test case [8b]**, verbatim from the file, so the overmatch cannot regress. The
+pre-existing overmatch control missed it because it tested `> * + *` — a control is only as good as
+the shape it imitates.
+
+⚠ **Supersession, recorded rather than assumed:** `check-container-child-lift.py` is DELETED. Its
+sole corpus, `container/style.css`, is inside the new gate's corpus and contributes 5 of the 8 rules
+— asserted by self-test case [9], so "strictly wider" is demonstrated, not claimed.
+
+⚠ **The census was the deliverable, not the edit.** Three of the four files were found by running a
+scan over 136 stylesheets, not by reasoning: the council named one, the scan found two more.
+Per this project's own rule, the detector comes before the edit past ~3 files.
+
 ## D792 [INCIDENT] — the hero's editor canvas never painted backgroundColour, and colourVar() silently drops every custom colour across 39 blocks
 
 **2026-08-28.** Bean: the hero background is "stuck as the primary dark shade of pink in the
@@ -118,8 +174,18 @@ forbids three.js as a *dependency*), never licence, and it is gitignored scratch
 shipped imports.
 
 **Gate E fires on a satisfied precondition, not a date** (a date drifts): technique spec written +
-Q6 measured + held-out fidelity validated. **All three are now DONE** — Gate E is armed and may be
-fired by running the manifest.
+Q6 measured + held-out fidelity validated. All three are DONE, so the manifest is ready.
+
+⛔ **BEAN'S RULING (2026-08-25), and it OVERRIDES the trigger above: DO NOT FIRE GATE E until the
+FR-38-31 rework has SHIPPED.** The reasoning is that the POC rig is the only reference available
+for comparison and analysis while the rework is being built — deleting it at the start of the build
+throws away the thing the build is measured against. The three preconditions were necessary but are
+not sufficient; **shipping the rework is now the fourth and binding one.**
+
+Consequence to hold onto: the study material stays on disk for the duration of the rework, so the
+propagation risk this decision exists to manage stays live for that period. It is contained by the
+tree being gitignored (verified: 0 tracked files) and by the technique spec meaning no build step
+ever needs to open the originals.
 
 Verified: 0 files from `stripe-hero-poc/` are tracked in git; `.gitignore:24` covers the tree.
 

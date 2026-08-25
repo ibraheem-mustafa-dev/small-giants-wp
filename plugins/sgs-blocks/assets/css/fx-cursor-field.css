@@ -438,10 +438,19 @@
 	mask-composite: var(--sgs-cursor-field-mask-composite, add);
 }
 
-/* The emitter's own children must sit above the field, or the field paints
-   over the block's content instead of behind it. `> *` (not a descendant
-   selector) so nested structures are not each pushed onto their own layer. */
-[data-sgs-cursor-field] > * {
+/* CHILD-LIFT — deliberately ZERO specificity, via `:where()`. The emitter's own
+   children must sit above the field, or the field paints over the block's
+   content instead of behind it. `> *` (not a descendant selector) so nested
+   structures are not each pushed onto their own layer.
+
+   ⛔ DO NOT re-specify this rule, and DO NOT add a `:not()` chain to it. At
+   (0,1,0) it used to out-rank, by source order alone, any decorative layer that
+   declared its own `position` at the same specificity — the D784 trap, and this
+   rule is the one `fx-surface-treatment.css` had to defensively parent-scope
+   itself against (its own comment recorded the cascade fight). At (0,0,0) any
+   layer declaring its own `position` wins automatically, with no registration
+   anywhere. Enforced by `scripts/check-child-lift.py`. */
+:where( [data-sgs-cursor-field] ) > * {
 	position: relative;
 	z-index: 1;
 }

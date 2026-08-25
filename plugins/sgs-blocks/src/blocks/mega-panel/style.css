@@ -212,7 +212,18 @@
 		transparent 70%
 	);
 }
-.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ] > * {
+/* CHILD-LIFT — `:where()`-wrapped at ZERO specificity (2026-08-25, D793), for the
+   same reason as `container/style.css` and the two fx child-lifts. NOT a live
+   defect today: this aside's only decorative layer is the `::before` glow above,
+   and `> *` can never match a pseudo-element. But at (0,3,0) this was the
+   HIGHEST-specificity child-lift in the tree, so the first REAL decorative child
+   element added inside `.sgs-mega-aside` would have been trapped hardest here.
+   De-specified pre-emptively rather than added to an exemption list — growing
+   that list is the exact failure D784 removed. The aside content still paints
+   above the glow: nothing else declares `position` on these children, and the
+   glow is at `z-index:auto` in the `::before`. Enforced by
+   `scripts/check-child-lift.py`. */
+:where( .wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ] ) > * {
 	position: relative;
 	z-index: 1;
 }

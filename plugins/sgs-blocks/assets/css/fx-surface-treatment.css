@@ -16,19 +16,27 @@
 }
 
 /*
- * SPECIFICITY WARNING — do not simplify this selector to a bare class rule.
+ * A BARE CLASS RULE, and that is now the correct shape — this is the NEGATIVE
+ * CONTROL for the 2026-08-25 child-lift de-specification.
  *
- * Elsewhere in this codebase, `[data-sgs-cursor-field] > *` (fx-cursor-
- * field.css) forces every direct child to `z-index: 1`. If a surface-
- * treatment host is ALSO a cursor-field emitter (both are extension
- * attributes on the same root — nothing stops a block carrying both), an
- * unqualified `.sgs-webgl-surface { z-index: … }` rule could lose that
- * cascade fight depending on source order, since both rules share the same
- * specificity otherwise. Scoping to the parent attribute selector keeps this
- * rule's specificity explicit and predictable rather than relying on
- * declaration order between two unrelated stylesheets.
+ * This selector used to be parent-scoped to `[data-sgs-fx="surface-treatment"]
+ * > .sgs-webgl-surface` purely defensively. Its own comment recorded why:
+ * `[data-sgs-cursor-field] > *` (fx-cursor-field.css) forced every direct child
+ * to `z-index: 1` at (0,1,0), and a surface-treatment host can ALSO be a
+ * cursor-field emitter (both are extension attributes on the same root, and
+ * nothing stops a block carrying both) — so an unqualified rule at the same
+ * (0,1,0) could lose that cascade fight on source order alone. Hand-raising
+ * this rule's specificity was the workaround. That made this the SEVENTH
+ * feature to work around the child-lift trap independently.
+ *
+ * Both child-lift rules are now `:where()`-wrapped at (0,0,0), so this bare
+ * class rule at (0,1,0) out-ranks them outright, in either source order. The
+ * workaround is therefore unnecessary, and REMOVING it is what proves the
+ * de-specification actually works rather than merely looking tidy. If a future
+ * change makes this rule lose again, the child-lift fix has regressed — fix it
+ * THERE, never by re-scoping this selector.
  */
-[data-sgs-fx="surface-treatment"] > .sgs-webgl-surface {
+.sgs-webgl-surface {
 	position: absolute;
 	inset: 0;
 	width: 100%;

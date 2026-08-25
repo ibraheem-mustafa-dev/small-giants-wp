@@ -652,12 +652,12 @@
     "order": 71
   },
   {
-    "id": "check-container-child-lift",
-    "cmd": "python scripts/check-container-child-lift.py",
+    "id": "check-child-lift",
+    "cmd": "python scripts/check-child-lift.py",
     "tier": "fast",
-    "added_D": "D784",
+    "added_D": "D793",
     "added_commit": null,
-    "budget_ms": 250,
+    "budget_ms": 400,
     "order": 72
   },
   {
