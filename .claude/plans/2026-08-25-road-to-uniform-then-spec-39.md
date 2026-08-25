@@ -136,9 +136,42 @@ visible because someone ran it by hand.
   then Typography). Pinned positions: the helpers; **Advanced always bottom of Settings**;
   **Visibility conditions always second from bottom**. → record in Spec 35 + build the enforcing
   gate (CO-2 still has none; the `consistency-scanner` it cites does not exist).
-- 🔬 **C15 RESEARCH, not a decision.** Bean: *"No idea, this is an area where you have to perform
-  some brainstorming and a research council then propose any gaps we should add to the scope."*
-  → `/brainstorming` + `/research-council`; deliverable is a proposal of scope gaps to ADD here.
+- ✅ **C15 RESEARCHED + SCOPED (Bean, 2026-08-26).** Full report:
+  `.claude/reports/2026-08-28-c15-block-bindings-scope-proposal.md`. Ground truth, re-counted:
+  **3 of 83 blocks** bindable (`sgs/text`, `sgs/heading`, `sgs/button`), 2 sources, **6 bindings
+  in the whole tree**, all hand-typed into 2 pattern files, and **zero editor-side JS**. The gap
+  is NOT more sources — it is that a client cannot see, create or change a binding at all, in a
+  framework whose premise is that clients never touch code. Bean adopted four items:
+
+  - **C15-2 + C15-3 — the client-facing editor UI. THE headline item.** Register the source in
+    JS and supply `getFieldsList()` so core's own 6.9 picker lists SGS fields; the client picks
+    "Phone" from a dropdown. This is the single change that converts bindings from a developer
+    trick into a client feature. Everything else is secondary. Size M.
+  - **C15-5 — widen past 3 blocks.** No image, card, hero or shop block can carry a binding, so
+    a client cannot bind a logo, a price, or an address inside a card. ⚠ Bean did NOT adopt
+    C15-12 (the coverage detector). THE-MIGRATION-METHOD still applies at the 4th file edit, and
+    `hooks/detector-first-commit-gate.py` will DENY the commit without one — so the detector is
+    effectively mandatory for this item regardless; raise it with Bean when C15-5 starts.
+  - **C15-6 — `sgs-product/field`. ⚠ THE FIRST SUMMARY OF THIS WAS WRONG; Bean caught it.**
+    "Product card binds normally" — correct. `Product_Bindings` has TWO doorways:
+    `get_product_data()` (:276) is LIVE, called by `product-card/render.php:521`, and is what
+    makes product cards work; only `get_value()` (:65), the Block-Bindings-API callback, has no
+    consumers. It is **unexposed, not dead** — the source would resolve today on `sgs/text` /
+    `sgs/heading` (both allowlisted), letting a client put a product price into a heading.
+    **Recommendation flipped: KEEP it.** It becomes usable the moment C15-2/C15-3 land.
+  - **C15-1 — the version floor. RE-GRADED P0 → P3 hygiene (Bean challenged the grade; he was
+    right).** `sgs-blocks.php:11` declares `Requires at least: 6.7`; the
+    `block_bindings_supported_attributes_{$block_type}` filter is `@since 6.9.0` — verified
+    against core on the canary AND the published hook docs, not the in-repo docblock. On 6.7/6.8
+    the contact patterns print the literal `placeholder — replaced at render` and the two CTA
+    buttons have no href. **Costs nothing today: the canary is 7.1 and is the only target.** It
+    bites only when SGS is installed somewhere Bean did not provision. One line, take it in
+    passing. ⛔ The original P0 grade was inherited from the research agent without being
+    pressure-tested — the same accept-the-number failure this programme keeps catching.
+
+  Not adopted this round: C15-4 (write-back), C15-7 (`core/post-meta`, a free win), C15-8
+  (pattern overrides), C15-9 (fallbacks), C15-10 (`data-*`), C15-11 (picker grouping),
+  C15-12 (coverage gate — but see C15-5 above). All remain in the report.
 - ✅ **C16 SETTLED — spacing presets.** Keep the responsive box-object control (input + measurement
   picker + slider) and ADD presets. Selecting a preset changes the value **and** the measurement
   type when the preset's unit differs from the attribute's active unit. The unit switch is the part
