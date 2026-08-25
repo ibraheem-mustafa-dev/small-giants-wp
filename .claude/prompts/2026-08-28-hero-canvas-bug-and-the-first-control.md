@@ -78,29 +78,48 @@ asset with different CSS values per tier.
 non-standard (`hero/block.json:283` documents the one-key-per-element constraint). **Normalise the
 names when lifting; do not propagate the debt.**
 
-### ⬜ THE ONE REMAINING DECISION — box shape: ratio or height?
+### ⬜ LAST DETAIL — box shape. Bean proposed harmonising; here is the grounded shape
 
-Measured 2026-08-27 — the two blocks solve the same problem two different ways:
+> **Bean, 2026-08-27:** *"Maybe we could harmonise the height and aspectRatio controls so they work
+> together, or at least the aspectRatio is set to custom or blank by default so it doesn't interfere
+> unless set, and treated as an authoritative control?"*
+
+Measured 2026-08-27 — the two blocks size their box two different ways:
 
 | | `sgs/hero` | `sgs/image-sequence` |
 |---|---|---|
-| Box shape from | `imageHeight` + `imageHeightUnit` | `aspectRatio` (default `16 / 9`) |
+| Box shape from | `imageHeight` (**a TIER OBJECT**, Spec 35 — one attr, all three tiers) | `aspectRatio` (default `16 / 9`) |
 | Fit | `imageObjectFit` | not declared |
 | Focal point | `imageObjectPosition` (+ tiers) | not declared |
 
-**The controls are a CHAIN, not peers:** box shape → `object-fit` → `object-position`.
-- `object-fit` only matters once the box shape differs from the image's natural ratio.
-- `object-position` only has a VISIBLE effect when fit is actually cropping or letterboxing. With
-  `fill`, or a box matching the image ratio, it does nothing.
-- ⛔ **`aspectRatio` and `imageHeight` COMPETE** — both define box shape. Set both and whichever CSS
-  wins decides, silently. **Ask Bean: one model, or does height visibly override ratio?**
-- `imagePadding` sits outside the chain — it insets the box. Defaulting to 0 is what made
-  `splitImageBleed` redundant.
+**⛔ THE CSS FACT THAT DECIDES BETWEEN BEAN'S TWO OPTIONS.** `aspect-ratio` applies only when at
+least one axis is `auto`. **A definite height already beats it** — that is the CSS spec, not our
+emit. So:
+- *"blank by default, does not interfere unless set"* costs **nothing** — it is what CSS does anyway.
+- *"authoritative when set"* **inverts CSS** and requires forcing `height:auto` whenever a ratio is
+  set, or the ratio silently loses. It fights the platform.
 
-**Panel order follows the chain (and C14's DOM rule): shape → fit → position → padding.** Grey out
-the later controls when an earlier choice makes them inert — `image-sequence` having `aspectRatio`
-alone is coherent, because a fixed-ratio frame sequence never crops, so fit and position would be
-dead controls there.
+**⚠ MIGRATION CATCH — do not simply blank the default.** `image-sequence/render.php:50` reads
+`$attributes['aspectRatio'] ?? '16 / 9'` and **always** emits it (`:132`). Every existing
+image-sequence block is rendering at 16/9 **from the default**, even though `aspectRatio` is set in
+ZERO stored content on the canary. Blanking the default would silently restyle all of them.
+
+**RECOMMENDED — a SIZING MODE picker, which is Bean's "harmonise" option made concrete:**
+
+`Auto` · `Fixed height` · `Aspect ratio` — one control, mutually exclusive, so the conflict **cannot
+occur** rather than being resolved by a precedence rule the client must learn.
+
+- It IS the "box shape" step of the chain, so it inherits the grey-out rule: Auto hides both inputs;
+  Aspect ratio greys out height; Fixed height greys out ratio.
+- **Keeps `image-sequence` visually identical** — default its mode to `Aspect ratio` at `16 / 9`, and
+  nothing on the canary changes. This is what makes the migration safe.
+- Underneath, keep the emit CSS-native: a ratio paints only when height is auto. The stylesheet then
+  reads the way a developer expects even if someone bypasses the control.
+- ⚠ `hero.imageHeight` is a **tier object**, so `Fixed height` must stay responsive per tier. Do not
+  flatten it. `hero/render.php:163-165` records that an earlier duplicate-height emit was already
+  removed once — height now comes solely from that object. Do not reintroduce a second source.
+
+**Put the mode picker to Bean for a yes, then build. It is the last thing blocking C19.**
 
 ## Design gate C — the visual column-shape picker is APPROVED but UNBUILT
 
