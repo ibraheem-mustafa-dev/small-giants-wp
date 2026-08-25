@@ -281,29 +281,23 @@ files with substantially the same change and no detector → DENIED; bypass `[re
 **T1 — `prebuild` 153.4s → 31.0s** (`scripts/gates.json` + `run-gates.py`; 4 heavyweights
 pre-deploy). **T3 — the burn-down**, `scripts/programme-progress.py`, no percentage by design.
 
-**T4 — `--all-properties` SHIPPED (`a0d15a98f`) and it REFUTED the batching carve-out.** Census:
-`reports/migrations/tier-object-all-properties-census.json`. `margin`/`padding`/`borderRadius` —
-the three it exempted — are DONE, zero migratable. Their "41/39/11" were DB attr-row counts, not
-migration scope: 41 blocks carry `marginTablet` but only 5 declare a base `margin`; the other 39
-get it from WP-native `supports.spacing`, which `block_attributes` cannot see. Carve-out stays
-withdrawn. **Full remaining scope now lives in the scope register, not here.**
-**T2 — 6 of 27 orphans WIRED (D776)**; every verdict in
-`reports/2026-08-24-script-revival-register.md`. Gates 66-71, `fast`, ~0.55s. 7 of 27 wired.
-⛔ `fanout-overlay-sibling-attrs.py` was RED against a contract **D739 DELETED** — the obvious
-`--fix --apply` would have reintroduced 32 removed attrs. Retargeted + shape-aware. **A red gate on
-an obsolete contract is worse than none: its red reads as a backlog.** SUPERSEDED/retarget is a
-4th verdict state. ⚠ Three docs gave three wired-counts (0 / 2 / enumerated **1**).
-🚫 `button_group.py` — Bean: NOT wanted; the draft authors the wrapper.
+**T4 — `--all-properties` shipped and REFUTED the batching carve-out** (census:
+`reports/migrations/tier-object-all-properties-census.json`). **T2 — 7 of 27 orphans wired**;
+verdicts in `reports/2026-08-24-script-revival-register.md`. ⛔ A red gate asserting a DELETED
+contract is worse than none — its red reads as a backlog. 🚫 `button_group.py` — Bean: not wanted.
 
 ### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
 
-✅ **2026-08-27 CLOSED: council + rule-21 triage.** Method graded **C+** (was B−) — 3 of 4 seats
-independently found Step 8's justifying claim FALSE (17 advisory rules, not 15, and advisory
-rules DO red the build since 2026-08-18). 9 findings fixed. **Rule 21: 211 → 83 FLAGGED.**
-128 were ONE detector bug (dispatcher-table resolution), 82 are REAL, 1 known limit.
-⭐ Worklist: `.claude/reports/2026-08-27-rule-21-triage.md`. **Motion+hover = 28 of the 82
-across 8 blocks — one shape decision covers a third.** Next: Step 3 with Bean on ONE instance.
-⚠ 2737 needed NO fix — already canonical; oldshape-audit passes on all 396 posts.
+✅ **2026-08-27 CLOSED.** Method councilled -> **C+** (3 of 4 seats found Step 8's justifying
+claim FALSE), 9 fixes. **Rule 21: 211 -> 83** (128 were ONE detector bug). **Rule 34: 319 -> 2**
+(it now CONSUMES check-dead-controls.js's verdicts; ~505 lines of duplicated resolver deleted).
+Scanner total **945 -> 499**. Vestigial `templateMode` removed from 6 blocks. 2737 needed no fix.
+⭐ **NEXT SESSION: `.claude/prompts/2026-08-28-hero-canvas-bug-and-the-first-control.md`** —
+(1) hero background colour is STUCK in the editor canvas AND the parity gate has a PROVEN false
+negative (14 hero findings, `backgroundColour` not among them); (2) Step 3 on rule 21's 83 —
+motion+hover is 28 across 8 blocks; (3) the diff-shape commit gate (Bean approved).
+⚠ Bean SETTLED C14 (panel order = DOM order; WP-native at root; Advanced bottom, Visibility 2nd
+bottom) and C16 (box-object presets that also switch the unit). C15/C17/C18/C19 still open.
 
 ⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
 items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the
