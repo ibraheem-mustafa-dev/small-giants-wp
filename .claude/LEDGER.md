@@ -296,8 +296,13 @@ Scanner total **945 -> 499**. Vestigial `templateMode` removed from 6 blocks. 27
 (1) hero background colour is STUCK in the editor canvas AND the parity gate has a PROVEN false
 negative (14 hero findings, `backgroundColour` not among them); (2) Step 3 on rule 21's 83 —
 motion+hover is 28 across 8 blocks; (3) the diff-shape commit gate (Bean approved).
-⚠ Bean SETTLED C14 (panel order = DOM order; WP-native at root; Advanced bottom, Visibility 2nd
-bottom) and C16 (box-object presets that also switch the unit). C15/C17/C18/C19 still open.
+⚠ **All six blocking decisions are ANSWERED (2026-08-27)** — detail in the scope register, do not
+re-ask: C14 SETTLED (DOM order; WP-native at root; Advanced bottom, Visibility 2nd bottom) ·
+C16 SETTLED (box-object presets that switch the unit too) · C17 CLOSED (keep our per-block
+equivalents) · C18 CLOSED as a non-problem — spec 37 §3.3 already documents the reasoning and the
+column has zero converter consumers at 64.6% NULL; the real residual is the approved-but-UNBUILT
+visual column-shape picker · C19 shape proposed by Bean (adapt hero's split-image panel) with 3
+details to confirm · C15 is RESEARCH not a decision (brainstorm + research council, propose gaps).
 
 ⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
 items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the

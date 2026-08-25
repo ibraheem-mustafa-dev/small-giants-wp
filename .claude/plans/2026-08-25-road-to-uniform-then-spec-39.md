@@ -129,18 +129,37 @@ visible because someone ran it by hand.
 - C13 Element-first panel ordering for direct-panel blocks — only container-family blocks route
   through the shared renderer, so the rest needs a live editor walkthrough
 
-**⛔ 6 need a BEAN DECISION before anything can be built — batch these (see below):**
+**Bean answered all six on 2026-08-27. Status below — do NOT re-ask the settled ones.**
 
-- C14 **CO-28 canonical panel/cluster/control ORDER.** Genuinely novel — *"nobody centralises
-  panel order"*. Nothing can be built until Bean picks one
-- C15 **Block Bindings scope** — wired for 3 blocks + 2 sources. Is 3 the intended final scope?
-- C16 **Spacing token control** — every block uses raw px rather than the theme.json S/M/L scale.
-  Does the contract require the token scale once it exists?
-- C17 **Section Styles (WP 6.6 block style variations)** — 0 hits anywhere. Which variant-switching
-  blocks should adopt it?
-- C18 **`site-{header,footer}-row` NULL `inspector_control_type`** — a multi-attribute façade
-  control cannot be recorded in a single-value column. A contract question, not a data bug
-- C19 **`testimonial` / `image-sequence` crop conversion** — each needs its own per-block call
+- ✅ **C14 SETTLED — panel/control ORDER.** DOM order: first from top to bottom; where two elements
+  sit at the same level, left to right. At root, follow WP-native ordering (Styles, then Colour,
+  then Typography). Pinned positions: the helpers; **Advanced always bottom of Settings**;
+  **Visibility conditions always second from bottom**. → record in Spec 35 + build the enforcing
+  gate (CO-2 still has none; the `consistency-scanner` it cites does not exist).
+- 🔬 **C15 RESEARCH, not a decision.** Bean: *"No idea, this is an area where you have to perform
+  some brainstorming and a research council then propose any gaps we should add to the scope."*
+  → `/brainstorming` + `/research-council`; deliverable is a proposal of scope gaps to ADD here.
+- ✅ **C16 SETTLED — spacing presets.** Keep the responsive box-object control (input + measurement
+  picker + slider) and ADD presets. Selecting a preset changes the value **and** the measurement
+  type when the preset's unit differs from the attribute's active unit. The unit switch is the part
+  that is easy to get wrong — build one, Bean's eye, then roll out.
+- ✅ **C17 CLOSED — Section Styles.** Bean accepted the recommendation: do NOT rebuild our per-block
+  equivalents (Styles panel on info-box/heading/text, button's style-variations dropdown, hero's
+  variant picker) on WP 6.6's native mechanism. Ours work; native mainly buys cross-block cascade.
+- ✅ **C18 CLOSED — a non-problem, and the reasoning Bean asked for exists.** (a) `specs/37` §3.3
+  establishes `cluster` vs `columns` as row layout MODES, Bean-locked 2026-07-21 — it is not a style
+  variant. (b) `inspector_control_type` has **zero converter consumers** and is **64.6% NULL**
+  framework-wide, with a recorded rule that **NULL must not be read as "no control"**. The NULL is
+  not a defect. ⚠ **Real residual:** the VISUAL column-shape picker Bean approved 2026-07-28
+  (spec 37 §3.3) is **UNBUILT** — grep finds no implementation. That is the item, not the column.
+- 🔧 **C19 SHAPE PROPOSED by Bean — confirm 3 details before building.** *"Couldn't we use an
+  altered version of the hero block's split image panel as the standard setup."* Verified viable:
+  hero is the most complete (responsive sources + object-position focal point + bleed), while
+  `testimonial` has NO crop attrs and `image-sequence` has only `aspectRatio`. ⛔ Do not lift it
+  verbatim — decide: (1) drop `splitImageBleed`, which is split-layout-specific? (2) add
+  `aspectRatio`, which hero lacks? (3) normalise hero's **non-standard Tablet/Mobile object-position
+  naming** (`hero/block.json:283` documents it as constrained by the one-key-per-element rule) —
+  lifting as-is propagates that debt.
 
 ---
 
