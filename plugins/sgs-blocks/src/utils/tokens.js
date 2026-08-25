@@ -6,11 +6,61 @@
  *   style={{ backgroundColor: colourVar('primary'), padding: spacingVar('40') }}
  */
 
+/**
+ * Resolve a colour attribute value for an editor-canvas preview — the JS mirror
+ * of `sgs_colour_value()` (includes/helpers-tokens.php).
+ *
+ * A theme preset SLUG becomes `var(--wp--preset--color--{slug})`. Anything the
+ * browser already understands as a colour — hex, `rgb()`, `oklch()`, a named
+ * keyword, or an existing `var(...)` reference — is returned untouched.
+ *
+ * ⛔ WHY THE LITERAL PASSTHROUGH EXISTS (D792, 2026-08-28). This function used
+ * to wrap its argument UNCONDITIONALLY. That is correct for a slug and invalid
+ * for a custom colour: `#00FF00` became `var(--wp--preset--color--#00FF00)`,
+ * which is not a valid CSS value, so the browser discarded the whole
+ * declaration. The result was that every custom (non-palette) colour a client
+ * picked was SILENTLY INVISIBLE in the editor canvas while rendering correctly
+ * on the live page — across 120 call sites in 39 blocks. Measured on
+ * `sgs/heading` in the canary editor, reading the attribute back at the same
+ * instant as the DOM so a stale render could not masquerade as a result:
+ *
+ *   textColour = 'primary'  -> `color: var(--wp--preset--color--primary)`  ✓
+ *   textColour = '#00FF00'  -> no `color` property emitted at all          ✗
+ *
+ * The server never had this bug; only the preview did. This makes the two agree.
+ *
+ * SLUG-vs-LITERAL is decided by `CSS.supports()` rather than by porting the
+ * server's 148-entry named-colour list. The browser IS the CSS colour spec, so
+ * the test is complete by construction and cannot drift from it — and
+ * duplicating a resolver is the exact mistake that put two of this repo's own
+ * instruments 317 findings apart. Checked 2026-08-28: no slug in theme.json or
+ * in any of the 8 client theme snapshots collides with a CSS named colour, and
+ * were one ever added, both sides would classify it identically because they
+ * apply the same rule.
+ *
+ * @param {string} slug A preset slug, a raw CSS colour, or a `var()` reference.
+ * @return {string|undefined} A CSS colour value, or undefined when there is nothing to paint.
+ */
 export function colourVar( slug ) {
-	if ( ! slug ) {
+	if ( ! slug || typeof slug !== 'string' ) {
 		return undefined;
 	}
-	return `var(--wp--preset--color--${ slug })`;
+
+	const value = slug.trim();
+
+	if ( ! value ) {
+		return undefined;
+	}
+
+	if (
+		typeof CSS !== 'undefined' &&
+		typeof CSS.supports === 'function' &&
+		CSS.supports( 'color', value )
+	) {
+		return value;
+	}
+
+	return `var(--wp--preset--color--${ value })`;
 }
 
 export function spacingVar( slug ) {
@@ -132,58 +182,6 @@ export function resolveTextColourPreviewStyle( flatValue, gradientValue, resolve
 }
 
 /**
- * Resolve a colour attribute value the way the SERVER does — the JS mirror of
- * `sgs_colour_value()` (includes/helpers-tokens.php).
- *
- * WHY THIS EXISTS: `colourVar()` above wraps its argument in
- * `var(--wp--preset--color--{slug})` UNCONDITIONALLY. That is correct for a
- * theme preset slug and wrong for everything else — a custom hex produces
- * `var(--wp--preset--color--#00FF00)`, which is invalid CSS, so the browser
- * drops the whole declaration and the colour silently does nothing in the
- * editor canvas while rendering correctly on the live page. Measured in the
- * canary editor 2026-08-28: `textColour:'#00FF00'` left the element with no
- * `color` property at all, whereas `textColour:'primary'` painted.
- *
- * The server has always handled this — `sgs_colour_value()` passes a raw CSS
- * colour and an already-formed `var(...)` through untouched, and only
- * slug-wraps what is left. This function is that same decision on the client.
- *
- * SLUG-vs-LITERAL is decided by `CSS.supports()` rather than by porting the
- * server's 148-entry named-colour list. The browser IS the CSS colour spec, so
- * this is complete by construction and cannot drift from it — and duplicating a
- * resolver is the exact mistake that put two of this repo's own instruments 317
- * findings apart. A theme slug (`primary`, `text-inverse`) is not a valid
- * colour, so it falls through to the preset wrap; `#0A5B5D`, `rgb(…)`,
- * `oklch(…)`, `red` and `var(--x)` are all valid, so they pass through.
- *
- * @param {string} slugOrValue A preset slug, a raw CSS colour, or a `var()` reference.
- * @return {string|undefined} A CSS colour value, or undefined when there is nothing to paint.
- */
-export function colourValue( slugOrValue ) {
-	if ( ! slugOrValue || typeof slugOrValue !== 'string' ) {
-		return undefined;
-	}
-
-	const value = slugOrValue.trim();
-
-	if ( ! value ) {
-		return undefined;
-	}
-
-	// A literal the browser already understands (hex / functional / named /
-	// custom-property reference) is used as-is — never slug-wrapped.
-	if (
-		typeof CSS !== 'undefined' &&
-		typeof CSS.supports === 'function' &&
-		CSS.supports( 'color', value )
-	) {
-		return value;
-	}
-
-	return colourVar( value );
-}
-
-/**
  * Build the inline-style fragment that previews a block's BACKGROUND paint in
  * the editor canvas — the JS mirror of `sgs_background_paint_value()`
  * (includes/helpers-tokens.php), and the background sibling of
@@ -213,7 +211,7 @@ export function resolveBackgroundPaintPreviewStyle( flatValue, gradientValue ) {
 		return { backgroundImage: gradientValue.trim() };
 	}
 
-	const colour = colourValue( flatValue );
+	const colour = colourVar( flatValue );
 
 	if ( ! colour ) {
 		return {};

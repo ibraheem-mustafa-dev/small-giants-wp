@@ -668,5 +668,14 @@
     "added_commit": null,
     "budget_ms": 400,
     "order": 73
+  },
+  {
+    "id": "check-colour-preview-resolver",
+    "cmd": "node scripts/check-colour-preview-resolver.js --check",
+    "tier": "fast",
+    "added_D": "D792",
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 74
   }
 ]
