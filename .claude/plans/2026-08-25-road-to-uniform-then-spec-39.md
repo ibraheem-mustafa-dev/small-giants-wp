@@ -133,6 +133,51 @@ visible because someone ran it by hand.
 
 ---
 
+### D. inspector-scan — 945 advisory findings that CANNOT fail (added 2026-08-25, Bean asked)
+
+⛔ **THE BIGGEST GAP IN THIS REGISTER, AND IT WAS MISSED ON THE FIRST PASS.** Section C recorded
+the colour work as "the 29-row worklist" — a number taken from a PLAN FILE. Running the scanner
+reports **291** findings for that rule alone. Never take a count from a doc when a command exists.
+
+`npm run inspector-scan` → **958 findings across 81 of 83 blocks.** `--check` exits **0**.
+
+| Count | Rule | What it means |
+|---|---|---|
+| 319 | `34-declared-attr-unrendered` | a setting is declared but nothing renders it |
+| 291 | `31-golden-colour-control` | colour rows missing a hover state or a gradient path |
+| **222** | **`21-render-without-control`** | **the block renders something the client CANNOT control** |
+| 57 | `01-tab-group` | panel/tab grouping |
+| 23 | `20-pattern-template-lock` | |
+| 15 | `03-dense-panel-candidate` | the ToolsPanel conversions (= C6) |
+| 13 | `18-decorative-image-aria` | = C7 |
+
+**The structural problem, verbatim from its own summary:** `advisory rules: 15 · advisory findings:
+945 (never gate)`. Fifteen rules are set to `advisory` mode — **configured to be incapable of
+failing.** The gate also sits in tier `full`, so it only runs pre-deploy, never on a build.
+Same shape as `check-box-flat`, whose exit code is explicitly not propagated. Two whole classes of
+spec conformance are measured and then discarded.
+
+⚠ **These are NOT 945 defects, and nobody knows how many are.** Rule 34's own `advisoryReason`
+documents a large class as a **static-analysis blind spot** — computed-key attribute reads that ARE
+consumed, cross-verified against `check-dead-controls.js`. Rule 21's records a ceiling raised
+199 → 211 as *"a staleness correction rather than accepted new debt"*, carrying a
+`⚠ SUSPECTED DEFECT, NOT INVESTIGATED` flag. **The unknown share is the actual problem:** the rules
+that would tell you cannot fail, so the real count has never been established.
+
+**Rule 21 is the one that matters most for client work.** 222 cases where a block paints something
+the client has no inspector control for — against CLAUDE.md's own *"no block feature is complete
+until it has full block-editor UI controls"* and *"clients are tech-illiterate — they use the block
+editor exclusively"*. That is the uniformity problem stated as a number.
+
+**D1.** Triage rule 21's 222 — real missing control vs static-analysis artefact. Highest client value.
+**D2.** Triage rule 34's 319 against `check-dead-controls.js`; separate genuine dead attrs from
+computed-key false positives, and teach the rule the pattern so the count means something.
+**D3.** Rule 31's 291 IS the colour-conformance work (C1) — scope C1 from the scanner, not the plan.
+**D4.** Decide per rule: promote to gating with a ratchet, or record why it stays advisory forever.
+An advisory rule with no ratchet is a measurement nobody acts on.
+
+---
+
 ## Order of work
 
 **Step 0 — unblock the instruments (do first, it is small).**
