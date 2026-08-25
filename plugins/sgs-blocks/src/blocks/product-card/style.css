@@ -32,7 +32,12 @@
 
 .product-card {
 	background-color: var(--sgs-product-card-bg, #ffffff);
-	background-image: none;
+	/* NO `background-image: none` here, and no `background:` shorthand either.
+	   Either one sits at (0,1,0) and beats the trial variant's gradient, which is
+	   deliberately wrapped in :where() at (0,0,0) so an operator's own controls
+	   win. That is why the trial gradient rendered as `none` from the day it was
+	   written — measured live 2026-08-25. background-image already defaults to
+	   none, so declaring it here bought nothing and cost the variant its gradient. */
 	border-radius: 16px;
 	overflow: hidden;
 	border: 1px solid var( --wp--preset--color--border, #D4DBE5 );
