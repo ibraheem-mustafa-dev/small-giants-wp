@@ -167,16 +167,30 @@ is what PHASE 0 is for.
 **The premise is correct.** The split slot already takes image, video OR svg — `splitMediaType`,
 `splitVideo*`, `splitSvg*` all exist — so an `image` prefix on its STYLING attrs is a misnomer.
 
-**But it is TWO prefixes following TWO elements, not one blanket swap.** Verified against the DB and
-`render.php`:
+**Bean clarified 2026-08-27:** *"I meant split — I just didn't mention it because I wanted to swap
+image with media and didn't want to touch the split part of the name."* So: `split` stays,
+`image` → `media`. **Scoped to the STYLING attrs only** — applying it to every name containing
+"image" would collide.
 
-| Element | Prefix | Carries |
+**Rename these:**
+
+| Family | Rename to | Why |
 |---|---|---|
-| `.sgs-hero__media` — the slot (24 refs; `render.php:244` *"outer padding + background on the wrapper"*) | `media*` | `mediaBackground*`, `mediaPadding*`, `mediaOverlay*`, `mediaParallax`, `mediaKenBurns` — already correct |
-| `.sgs-hero__split-image` — the media itself | **`splitMedia*`** | the 19 `image*` attrs — height, width, padding, border, border-radius, object-fit, object-position |
+| the **19 bare `image*`** — height, width, padding, border, border-radius, object-fit, object-position | **`splitMedia*`** | They style whichever media type is active, so `image` is the misnomer |
+| `splitImageMobileObjectPosition` | `splitMediaObjectPositionMobile` | A styling attr wearing a source prefix |
 
-`mediaPadding` insets the SLOT; `imagePadding` insets the MEDIA INSIDE IT. Two real boxes, not
-duplicates — do not collapse them.
+**⛔ Do NOT rename these:**
+
+| Attr | Why it stays |
+|---|---|
+| `splitImage`, `splitVideo`, `splitSvg` | Three PARALLEL SOURCES (`splitImage` is `type:object`, same as `splitVideo`). Renaming `splitImage` → `splitMedia` would sit it beside `splitMediaType` and read as "the media source" while `splitVideo`/`splitSvg` sit next to it |
+| `splitMediaType` | The discriminator — `enum: [image, video, svg]`, default `image` |
+
+**And note the SECOND element, which is separate from all of the above.** `.sgs-hero__media` is a
+real wrapper (24 refs; `render.php:244` — *"outer padding + background on the wrapper"*) carrying
+`mediaBackground*`, `mediaPadding*`, `mediaOverlay*`, `mediaParallax`, `mediaKenBurns`. Those are
+already correctly named and must not be merged with the styling family: **`mediaPadding` insets the
+SLOT, `imagePadding` insets the MEDIA INSIDE IT.** Two real boxes.
 
 ⭐ **This also clears the non-standard naming flagged in gate B.** `splitImageMobileObjectPosition`
 and `imageObjectPositionTablet` normalise to `splitMediaObjectPositionMobile` / `…Tablet` in the same
