@@ -78,15 +78,15 @@ passed page 2742 clean while that page held 102 broken values.
 
 ## ▶ MOTION TRACK — 2026-08-25 (FR-38-30 + FR-38-31 shipped; the gradient's LOOK is the open gap)
 
-✅ **Stripe-hero POC DONE (2026-08-25)** — 0.66% vs live, 26/26 mechanisms, QC 10/10
 ⭐ **START HERE: the FR-38-31 rework** — **form → ground → hue adjacency → detail field → colour
 source**. Start at form; the first three are attribute/composition, not shader work.
 ⛔ **Two beliefs measured FALSE:** four HUE-ADJACENT stops DO suffice (no artist needed;
 complementary stops make the mud), and FR-38-31 does **not** band (mean run 1.19) so the dither
 and `mediump`→`highp` fixes are withdrawn.
-Detail + opens (no Q6 perf number, fidelity n=1, Gate E unrun):
-`.claude/reports/2026-08-25-stripe-hero-anatomy.md` ·
-`.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
+✅ **POC + Q6 + Gate E CLOSED (D790/D791, `9b184de6b`).** ⭐ **Post pass = 70% of frame cost** → a
+framebuffer pass is a DESIGN GATE, not an increment. Fidelity n=1→3 (held-out 0.67/0.69%).
+Build from `.claude/reports/2026-08-25-flowing-gradient-technique-spec.md` ·
+`…-stripe-hero-anatomy.md`.
 
 **Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, logged as **D778-D781**.
 Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).
