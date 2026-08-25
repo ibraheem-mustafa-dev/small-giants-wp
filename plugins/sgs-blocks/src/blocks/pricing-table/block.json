@@ -40,6 +40,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"enabledExtensions": [ "hover" ],
 			"collection": true,
 			"iconPicker": true,
 			"imageControls": false,

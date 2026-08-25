@@ -288,6 +288,17 @@ class SGS_Motion_Registry {
 		),
 
 		/*
+		 * Particle trail (Spec 38 FR-38-32). NO deps — a plain <canvas> 2D
+		 * pool with one rAF loop, no GSAP, so a page using this and no
+		 * Tier G effect ships zero GSAP bytes, the same guarantee
+		 * `@sgs/fx-magnet` and `@sgs/fx-cursor-field` keep above.
+		 */
+		'@sgs/fx-particles'        => array(
+			'path' => 'build/shared/effects/fx-particles.js',
+			'deps' => array(),
+		),
+
+		/*
 		 * Infinite-loop carousels (Spec 38 §11 loop FR, Bean's ruling that
 		 * looping must be an INDEPENDENT control, never tied to drag). NO
 		 * deps — pure DOM clone + scrollLeft management, no GSAP. Registered
@@ -382,6 +393,16 @@ class SGS_Motion_Registry {
 		 * months (D452).
 		 */
 		'magnet'           => 'assets/css/fx-magnet.css',
+
+		/*
+		 * Particle trail needs one for the same reason magnet does: the JS
+		 * paints entirely onto its OWN canvas element, which
+		 * `assets/css/fx-particles.css` positions/layers (Spec 32 — no
+		 * inline styling). Without this enqueue the canvas would exist with
+		 * no size and no stacking position, so the pool would run and paint
+		 * nothing a visitor could ever see.
+		 */
+		'particles'        => 'assets/css/fx-particles.css',
 
 		/*
 		 * The wave gradient's stylesheet is its FALLBACK CONTRACT, not

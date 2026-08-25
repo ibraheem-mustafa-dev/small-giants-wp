@@ -72,7 +72,7 @@
    pushed the drawing buffer to ~11 million pixels every frame. Measured live.
    ⚠ Anything absolutely positioned as a BACKGROUND layer inside a container
    must join this list; that is now five separate features that have learned it. */
-.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg):not(.sgs-wave-gradient__canvas) {
+.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay):not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target):not(.sgs-container__image-bg):not(.sgs-wave-gradient__canvas):not(.sgs-particles__canvas) {
 	position: relative;
 	z-index: 1;
 }

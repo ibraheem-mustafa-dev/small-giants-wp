@@ -169,6 +169,20 @@ const SHIPPED_EFFECTS = [
 	// resolves palette slugs into the custom properties both the CSS fallback
 	// and the shader read, and the panel below carries six real controls.
 	'wave-gradient',
+	// `particles` ADDED (FR-38-32). Every leg verified rather than assumed:
+	// the runtime modules exist (`shared/effects/fx-particles.js` +
+	// `shared/effects/particles.js`), the registry enqueues both the module
+	// AND its stylesheet (`class-sgs-motion-registry.php` MODULES +
+	// EFFECT_STYLES — the stylesheet is load-bearing here for the same
+	// reason it is for magnet/cursor-field: without it the canvas would
+	// track the pointer and paint nothing visible would move into place),
+	// the generic `fx-attributes.php` injector stamps its three params from
+	// FX_ATTR_MAP, and the panel below carries a preset picker plus
+	// density/size fine-tune controls.
+	//
+	// ⚠ Heeding this array's own warning above: an effect fully wired in
+	// every other layer is still DEAD CODE until its name appears here.
+	'particles',
 ];
 
 const FX_OPTION_LABELS = {
@@ -184,6 +198,7 @@ const FX_OPTION_LABELS = {
 	'surface-treatment': __( 'Surface treatment', 'sgs-blocks' ),
 	magnet: __( 'Magnetic pull', 'sgs-blocks' ),
 	'wave-gradient': __( 'Flowing gradient', 'sgs-blocks' ),
+	particles: __( 'Particle trail', 'sgs-blocks' ),
 };
 
 /**
@@ -406,6 +421,23 @@ const FX_MAGNET_AXIS_OPTIONS = [
 	{ label: __( 'Follows the cursor', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Side to side only', 'sgs-blocks' ), value: 'x' },
 	{ label: __( 'Up and down only', 'sgs-blocks' ), value: 'y' },
+];
+
+/**
+ * The three shipped particle presets (FR-38-32). '' maps to 'sparks' at the
+ * boot module — see `fx-particles.js`'s `readOptions()` — so this list's
+ * first real option is the headline preset, matching `fxMagnetAxis`'s own
+ * "'' is the sensible default" shape immediately above.
+ *
+ * @type {Array<{label: string, value: string}>}
+ */
+const FX_PARTICLE_PRESET_OPTIONS = [
+	{ label: __( 'Sparks — a fading trail', 'sgs-blocks' ), value: 'sparks' },
+	{
+		label: __( 'Gravity dots — drift down and settle', 'sgs-blocks' ),
+		value: 'gravity-dots',
+	},
+	{ label: __( 'Ripple — expanding rings', 'sgs-blocks' ), value: 'ripple' },
 ];
 
 const FX_FIELD_SHAPE_OPTIONS = [
@@ -1024,6 +1056,20 @@ function addFxAttributes( settings, name ) {
 			fxMagnetAxis: { type: 'string', default: '' },
 			fxMagnetRadius: { type: 'number' },
 			fxMagnetStrength: { type: 'number' },
+			/*
+			 * Particle trail (FR-38-32). `fxParticlePreset` picks which of
+			 * the three `PRESETS` in `particles.js` runs — '' is treated as
+			 * 'sparks' by the boot module, so an instance saved before this
+			 * shipped renders the headline preset rather than nothing.
+			 * `fxParticleDensity`/`fxParticleSize` are UNDEFINED-when-
+			 * untouched (never `default: null` — a null on a number attr
+			 * 400s every ServerSideRender preview, D755), same reasoning as
+			 * `fxMagnetRadius`/`fxMagnetStrength` immediately above: the
+			 * engine's own preset default stands until a client changes it.
+			 */
+			fxParticlePreset: { type: 'string', default: '' },
+			fxParticleDensity: { type: 'number' },
+			fxParticleSize: { type: 'number' },
 			fxFieldBlend: { type: 'number' },
 			/* Stored as `fxFieldTrail`, shown to the client as "Drag weight".
 			   The names differ DELIBERATELY. This is a lerp follower and has no
@@ -1234,6 +1280,7 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// is falsy here and correctly skipped by the `if ( value )` guard
 		// below, matching the render layer's "presence means off" contract.
 		'data-sgs-fx-treatment-reveal': attributes.fxTreatmentReveal,
+		'data-sgs-fx-particle-preset': attributes.fxParticlePreset,
 	};
 	Object.entries( optional ).forEach( ( [ key, value ] ) => {
 		if ( value ) {
@@ -1267,6 +1314,8 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// Surface-treatment intensity, 0-1. The render layer clamps it and
 		// drops a 0 back to unset — see the attribute declaration above.
 		'data-sgs-fx-treatment-intensity': attributes.fxTreatmentIntensity,
+		'data-sgs-fx-particle-density': attributes.fxParticleDensity,
+		'data-sgs-fx-particle-size': attributes.fxParticleSize,
 	};
 	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
 	// discarded a deliberate 0 — see the attribute declarations above.
@@ -2700,6 +2749,112 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 								<Notice status="info" isDismissible={ false }>
 									{ __(
 										'Magnetic pull previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it.',
+										'sgs-blocks'
+									) }
+								</Notice>
+							</>
+						) }
+
+						{ 'particles' === fx && (
+							<>
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxParticlePreset
+									}
+									label={ __( 'Style', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxParticlePreset: '' } )
+									}
+									isShownByDefault
+								>
+									<SelectControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Style', 'sgs-blocks' ) }
+										value={
+											attributes.fxParticlePreset ||
+											'sparks'
+										}
+										options={ FX_PARTICLE_PRESET_OPTIONS }
+										onChange={ ( value ) =>
+											setParam( {
+												fxParticlePreset: value,
+											} )
+										}
+										help={ __(
+											'What trails the cursor across this block on the live site.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !==
+										attributes.fxParticleDensity
+									}
+									label={ __( 'Density', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( {
+											fxParticleDensity: undefined,
+										} )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Density', 'sgs-blocks' ) }
+										value={ attributes.fxParticleDensity }
+										onChange={ ( value ) =>
+											setParam( {
+												fxParticleDensity: value,
+											} )
+										}
+										min={ 0.25 }
+										max={ 3 }
+										step={ 0.25 }
+										help={ __(
+											'How many particles spawn per pointer movement. Higher reads as busier, not faster.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !==
+										attributes.fxParticleSize
+									}
+									label={ __( 'Size', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( {
+											fxParticleSize: undefined,
+										} )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Size', 'sgs-blocks' ) }
+										value={ attributes.fxParticleSize }
+										onChange={ ( value ) =>
+											setParam( {
+												fxParticleSize: value,
+											} )
+										}
+										min={ 0.25 }
+										max={ 3 }
+										step={ 0.25 }
+										help={ __(
+											'A ceiling derived from this block\'s own size still caps how large any single particle can get, so this never overwhelms a small button.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it.',
 										'sgs-blocks'
 									) }
 								</Notice>

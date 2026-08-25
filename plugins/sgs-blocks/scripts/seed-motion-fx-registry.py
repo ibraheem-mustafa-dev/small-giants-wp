@@ -776,6 +776,49 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
+        # FR-38-32, owner-approved. A canvas-painted pointer trail — three
+        # presets (sparks / gravity-dots / ripple), one shared engine
+        # (`src/shared/effects/particles.js`); the params table inside that
+        # file is the only thing that differs per preset.
+        "effect": "particles",
+        # in_picker=1 with creates_panel=0, the same pair magnet/cursor-field
+        # carry and for the same reason: offered wherever an fx panel already
+        # exists, never creating one.
+        "in_picker": 1,
+        # Pointer-driven — there is nothing for 'load' or 'scroll' to mean
+        # for an effect that paints only where the cursor has actually been.
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V. A 150-particle pool integrated with plain arithmetic on a
+        # <canvas> 2D context is nowhere near what needs a GPU pass — see
+        # Tier W's own five-part admission test (D479), which this effect
+        # does not come close to needing.
+        "tier": "V",
+        "plugin_set": [],
+        # It paints particles from pointer samples, never drives a scroll
+        # transform, so it does not exclude a Tier V entrance (§4.3).
+        "owns_scroll_transform": 0,
+        # SUPPRESS, same reasoning as magnet's own row above: a painted
+        # particle is not a finished resting state the way a still field is
+        # for cursor-field — there is nothing to paint until the pointer
+        # moves, so under `reduce` there is simply nothing, which is also
+        # exactly the no-JS state. No second code path.
+        "reduced_motion": "suppress",
+        # The editor canvas never boots frontend script modules, so it shows
+        # the block exactly as authored, with no trail — the resting state.
+        "editor_story": "end-state",
+        "scope": "block",
+        # PERMISSIVE, same reasoning as magnet's own row above: structurally
+        # anything with a box can host a pointer trail — there is no
+        # capability to require. Combined with creates_panel=0 it reaches
+        # every block that already hosts an fx panel, with zero widening of
+        # the panel roster.
+        "requires": "none",
+        # Offered where a panel exists; never creates one. Same containment
+        # discipline D459 established for cursor-field/magnet.
+        "creates_panel": 0,
+    },
+    {
         # Spec 38 §11 loop FR. Bean, verbatim: "looping should not be tied to
         # the drag effect — they should be independent controls", and "we're
         # not setting the default behaviour in all carousels, just making the

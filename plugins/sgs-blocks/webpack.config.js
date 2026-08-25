@@ -232,6 +232,24 @@ if ( moduleConfig ) {
 				'fx-magnet.js'
 			),
 			/*
+			 * Particle trail (Spec 38 FR-38-32) — Tier V, same shape as
+			 * fx-magnet above: a <canvas> 2D pool + one rAF loop, no GSAP
+			 * import, so a page using this and no Tier G effect ships zero
+			 * GSAP bytes.
+			 *
+			 * FILENAME is load-bearing exactly as it is for the entries
+			 * above: the PHP registry derives its module ID as
+			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `particles` — so this must stay `fx-particles.js`.
+			 */
+			'shared/effects/fx-particles': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-particles.js'
+			),
+			/*
 			 * Infinite-loop carousels (Spec 38 §11 loop FR) — Tier V, same
 			 * shape as fx-cursor-field above: pure DOM clone + scrollLeft
 			 * management, no GSAP import, so a page using this and no Tier G

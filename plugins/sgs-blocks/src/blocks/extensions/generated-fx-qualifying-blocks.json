@@ -5,6 +5,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -12,6 +13,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -21,12 +23,14 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub"
 	],
 	"sgs/collapsible-text": [
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -38,6 +42,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
 		"scrub",
 		"wave-gradient"
@@ -46,6 +51,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -57,6 +63,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
 		"scrub",
 		"surface-treatment",
@@ -66,6 +73,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -74,6 +82,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -82,6 +91,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -89,6 +99,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -100,6 +111,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
 		"scrub",
 		"surface-treatment",
@@ -110,6 +122,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub"
 	],
 	"sgs/image-sequence": [
@@ -117,6 +130,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -125,6 +139,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal",
@@ -134,6 +149,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -144,6 +160,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"wave-gradient"
 	],
@@ -154,6 +171,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
 		"scrub",
 		"wave-gradient"
@@ -163,6 +181,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -170,6 +189,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -178,6 +198,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal",
@@ -188,6 +209,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal",
@@ -197,6 +219,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -205,6 +228,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -213,12 +237,14 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub"
 	],
 	"sgs/team-member": [
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal",
@@ -229,6 +255,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal",
@@ -239,6 +266,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"
@@ -249,6 +277,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal",
@@ -261,6 +290,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"pin-scrub",
 		"scramble",
 		"scrub",
@@ -273,6 +303,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scrub",
 		"surface-treatment"
 	],
@@ -280,6 +311,7 @@
 		"magnet",
 		"morph",
 		"motion-path",
+		"particles",
 		"scramble",
 		"scrub",
 		"split-reveal"

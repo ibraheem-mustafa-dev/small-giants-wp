@@ -140,6 +140,17 @@ const FX_ATTR_MAP = array(
 	'fxTreatmentTint'      => 'data-sgs-fx-treatment-tint',
 	'fxTreatmentInk'       => 'data-sgs-fx-treatment-ink',
 	'fxTreatmentReveal'    => 'data-sgs-fx-treatment-reveal',
+
+	/*
+	 * Particle trail (FR-38-32). Same reasoning as cursor-field/magnet/
+	 * wave-gradient above: most qualifying hosts (`sgs/container`,
+	 * `sgs/hero`, `sgs/cta-section`, `sgs/button`…) are DYNAMIC blocks, so
+	 * these MUST be injected here, not just baked in by `fx.js`'s save
+	 * filter for static blocks.
+	 */
+	'fxParticlePreset'     => 'data-sgs-fx-particle-preset',
+	'fxParticleDensity'    => 'data-sgs-fx-particle-density',
+	'fxParticleSize'       => 'data-sgs-fx-particle-size',
 );
 
 /**
@@ -429,6 +440,16 @@ function sgs_fx_effect_param_scope(): array {
 			'fxTreatmentInk',
 			'fxTreatmentReveal',
 		),
+
+		/*
+		 * Particle trail (FR-38-32). LOAD-BEARING, not bookkeeping — the
+		 * same `cursor-field`/`surface-treatment` trap documented above,
+		 * repeated for a third effect: `sgs_fx_clear_stale_params()` below
+		 * nulls every scoped key not in this effect's own allowlist, so
+		 * omitting this row would wipe the client's chosen preset/density/
+		 * size on every render regardless of which effect is selected.
+		 */
+		'particles'         => array( 'fxParticlePreset', 'fxParticleDensity', 'fxParticleSize' ),
 	);
 }
 
