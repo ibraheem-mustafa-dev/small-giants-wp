@@ -159,32 +159,9 @@ is what PHASE 0 is for.
 
 **Put the mode picker to Bean for a yes, then build. It is the last thing blocking C19.**
 
-## ✅ B2 DONE — hero `image*` -> `splitMedia*` SHIPPED 2026-08-27 (`40ba47640`)
+## ✅ B2 — hero `image*` -> `splitMedia*` is DONE (`40ba47640`). Nothing to ask.
 
-Renamed all 19 bare `image*` styling attrs plus `splitImageMobileObjectPosition` ->
-`splitMediaObjectPositionMobile` (which also cleared the non-standard Tablet/Mobile ordering
-`block.json:283` documented). `splitImage` / `splitVideo` / `splitSvg` and `splitMediaType` were
-deliberately NOT renamed. `/sgs-update` reseeded: **23 `splitMedia*` rows, 0 stale `image*` rows**.
-Build green across 64 gates.
-
-⚠ **Scoped to hero, and the census is why:** `sgs/media` (15 occurrences), `sgs/product-card` (12)
-and `sgs/mega-aside` (1) declare their OWN `imageHeight`/`imageWidth`. A repo-wide replace would have
-renamed three other blocks silently. **If those are ever renamed, do them as separate scoped passes.**
-
-### ⛔ STILL OPEN from B2 — the cloning-fidelity bug is NOT fixed
-
-Four hero DB rows carry `css_element: media` while `render.php` emits those declarations onto
-`.sgs-hero__split-image`: `splitMediaBorderColour`, `splitMediaBorderStyle`, `splitMediaBorderWidth`
-(check `splitMediaObjectFit` too). The converter routes cloned CSS by that column, so a draft's
-`border-color` lands on the wrapper — value transfers, appearance does not. Invisible locally, only
-in clones. **The render is right; the data about it is wrong.** Full detail in
-`specs/02-SGS-BLOCKS.md` §Hero.
-
-### ⛔ ALSO STILL OPEN — `splitImageBleed` deletion
-
-Bean approved deleting it (*"vestigial... breaks the sizing of the media when switched on... made
-redundant by object fit and image padding, which defaults to 0"*). It was left untouched by the
-rename. Check stored content first; if zero occurrences, the removal is behaviour-neutral.
+Shipped 2026-08-27. **Its two residuals are real open work — see TASK 1b below, not here.**
 
 ## Design gate C — the visual column-shape picker is APPROVED but UNBUILT
 
@@ -247,6 +224,34 @@ advisory rules, which at least have one.
 **Done when:** a client can change the hero background in the canvas; the blind spot is named and
 fixed with a fixture **watched failing first**; the 235 are classified; CHECK A has a ceiling.
 `/qc-inline` before moving on.
+
+---
+
+# TASK 1b — Two hero residuals left by the rename (small, do with TASK 1)
+
+Both were deliberately left out of the rename commit. Neither is optional.
+
+## 1b-i — ⛔ The cloning-fidelity bug (NOT fixed)
+
+Four hero rows carry `css_element: media` while `render.php` emits those declarations onto
+`.sgs-hero__split-image`: `splitMediaBorderColour`, `splitMediaBorderStyle`,
+`splitMediaBorderWidth` — **and check `splitMediaObjectFit` too**.
+
+The converter's Front-1 declarative routing picks the target node from that column, so a cloned
+draft's `border-color` lands on the wrapper instead of the media: **the value transfers, the
+appearance does not.** Invisible locally — the hero renders correctly — and only visible in clones.
+**The render is right; the data describing it is wrong.** Full detail: `specs/02-SGS-BLOCKS.md` §Hero.
+
+⚠ Fix it in the classifier/override layer, not by hand-editing the DB — `/sgs-update` regenerates
+`css-property-classifications.json` and a hand-edited row would be overwritten on the next run.
+
+## 1b-ii — `splitImageBleed` deletion (approved, untouched)
+
+> **Bean:** *"a vestigial control in the container panel that breaks the sizing of the media when
+> switched on... made redundant by object fit and image padding, which defaults to 0."*
+
+Check stored content first. If zero occurrences — as was true for `templateMode` and for every hero
+`image*` attr — the removal is **behaviour-neutral**, not merely low-risk.
 
 ---
 
