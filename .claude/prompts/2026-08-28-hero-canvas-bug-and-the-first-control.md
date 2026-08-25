@@ -159,6 +159,56 @@ is what PHASE 0 is for.
 
 **Put the mode picker to Bean for a yes, then build. It is the last thing blocking C19.**
 
+## Design gate B2 — rename hero's `image*` prefix (Bean proposed 2026-08-27; investigated)
+
+> **Bean:** *"Can we replace the image prefix and replace it with media from the hero attributes and
+> the split panel, if these controls apply to all media options?"*
+
+**The premise is correct.** The split slot already takes image, video OR svg — `splitMediaType`,
+`splitVideo*`, `splitSvg*` all exist — so an `image` prefix on its STYLING attrs is a misnomer.
+
+**But it is TWO prefixes following TWO elements, not one blanket swap.** Verified against the DB and
+`render.php`:
+
+| Element | Prefix | Carries |
+|---|---|---|
+| `.sgs-hero__media` — the slot (24 refs; `render.php:244` *"outer padding + background on the wrapper"*) | `media*` | `mediaBackground*`, `mediaPadding*`, `mediaOverlay*`, `mediaParallax`, `mediaKenBurns` — already correct |
+| `.sgs-hero__split-image` — the media itself | **`splitMedia*`** | the 19 `image*` attrs — height, width, padding, border, border-radius, object-fit, object-position |
+
+`mediaPadding` insets the SLOT; `imagePadding` insets the MEDIA INSIDE IT. Two real boxes, not
+duplicates — do not collapse them.
+
+⭐ **This also clears the non-standard naming flagged in gate B.** `splitImageMobileObjectPosition`
+and `imageObjectPositionTablet` normalise to `splitMediaObjectPositionMobile` / `…Tablet` in the same
+pass, so that debt does not need its own migration.
+
+### ⛔ A CLONING-FIDELITY BUG found while checking — fix it in the same pass
+
+**Four DB rows disagree with the render.** `imageBorderColour`, `imageBorderStyle`,
+`imageBorderWidth` (and check `imageObjectFit`) carry `css_element: media`, while `render.php:602`
+emits them onto `.sgs-hero__split-image` — the same element as `imageBorderRadius`.
+
+The converter's Front-1 declarative routing uses `css_element` to decide WHICH NODE a draft's
+declaration lands on. A wrong element routes a draft's `border-color` to the wrapper instead of the
+media: **the value transfers, the appearance does not.** Nothing looks broken locally; it only shows
+up in clones.
+
+⚠ This was nearly reported as a render defect ("border on one element, its radius on another"). It is
+not — the render is consistent. **The DATA ABOUT the render is wrong**, which is the harder failure
+to see.
+
+### Migration risk: NONE, and measured
+
+**Zero hero `image*` or `media*` attributes are set in any stored content** across all canary posts.
+Same finding as `templateMode` — the rename is behaviour-neutral, not merely low-risk. Re-measure
+before applying; do not inherit this figure.
+
+**Blast radius:** 19 attrs across `block.json`, `edit.js`, `render.php`, plus 19 DB rows. Past 3
+files, so **the detector is the first deliverable**. `scripts/lib/oldshape-mappings.js` already
+carries the `RENAMES` mechanism for exactly this shape (currently `sgs/multi-button` only).
+
+⛔ Rule 7 design gate — Bean's approval on the two-prefix split before building.
+
 ## Design gate C — the visual column-shape picker is APPROVED but UNBUILT
 
 `.claude/specs/37-HEADER-FOOTER-BUILDER.md` §3.3 records Bean approving it on 2026-07-28: *"A row
