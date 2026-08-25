@@ -1,3 +1,87 @@
+## D784 [INCIDENT] — the particle trail ships, and the registration surface is WIDER than any gate knows
+
+**2026-08-25.** FR-38-32. Sparks / gravity-dots / ripple, one engine, Tier V vanilla canvas 2D,
+zero dependency. Commit `843f1170d`. **This is the real fading trail Bean asked for — the control
+labelled "Drag weight" is a lerp follower with no fade and must never be reported as delivering it.**
+
+⭐ **DESIGN GATE: its own fx effect, NOT a sixth cursor-field type.** Two findings decided it.
+(i) There is no JS painter seam: `cursor-field.js:7` names a `cursor-fields/` directory that **does
+not exist** — its only mention in the repo is that docblock line — and every shipped field type is
+painted solely by a `[data-sgs-cursor-field="X"]` CSS rule. (ii) Field types are MUTUALLY EXCLUSIVE,
+so as a type "Sparks" would REPLACE the client's glow rather than layer over it. Follows the magnet
+precedent (D778). Panel roster measured **32 before, 32 after** (`creates_panel=0`).
+
+⛔ **THE REGISTRATION SURFACE IS TEN POINTS, AND THREE ARE GATED BY NOTHING.** The pre-dispatch
+council found 8 and corrected the plan from 5; the build's own fail-closed generators then found
+two more (`generated-fx-effects.php`, `generated-fx-qualifying-blocks.json`). The three with NO
+gate at all: the motion-registry **script-module map**, its **per-effect CSS map**, and the
+**webpack entry**. Miss one and the effect registers, the panel appears, the client configures it,
+and nothing happens — the D452 "configured and invisible" shape. `check-fx-list-drift.py` does not
+read `class-sgs-motion-registry.php` at all (grep: zero hits).
+
+⭐ **SIXTH TIME: `sgs/container`'s child-lift rule clobbered the canvas.** `container/style.css:75`
+carries an 8-member `:not()` exclusion list already holding `.sgs-wave-gradient__canvas` — the
+FIFTH feature to learn this. At 9 selector-classes vs 1 it beat `.sgs-particles__canvas`, overriding
+ONLY `position` while `z-index`/`pointer-events`/`display` from the same rule still applied — which
+is what made it look like the stylesheet had not loaded. Found by **enumerating which rules actually
+matched**, not by reasoning about specificity. Now the ninth exclusion. **Five features learning the
+same trap independently is a missing gate, not five coincidences.**
+
+⚠ **MY OWN PROBE WAS THE BROKEN INSTRUMENT FIRST.** It sampled the canvas ONCE after the pointer
+sweep and read 0 lit pixels — the particles had faded during the round-trip. Sampling DURING the
+sweep gave **4249**. A no-evidence result is a broken probe until proven otherwise; I nearly filed
+working code as dead.
+
+**Hover opt-in: 3 of 11 shipped, 8 deliberately reverted.** `enabledExtensions:["hover"]` on
+google-reviews / pricing-table / whatsapp-cta only. The other 8 trip `check-duplicate-controls`
+with **33 genuine two-live-controls findings** (plus 24 "shadow" findings where the block attr is
+dead and the universal panel is the FIX). Proven mine by negative control: 2 gates fail with the
+edits, 1 without. **Hover's disconnection is deliberate (D551/D579), not a bug** — the real defect
+is the asymmetry: `inject_hover_effects()` (`hover-effects.php:37`) is ungated and keys off a
+hardcoded 11-block list, so those blocks get injected motion while the control is switched off.
+
+⚠ **OPEN — deploy blocked, not finished.** The child-lift fix is committed but NOT deployed: a
+concurrent track's uncommitted `src/blocks/hero/render.php` correctly trips the D336 dirty-tree
+guard, and `--payload` cannot cover another track's work. Editor surface, live cap-binding and
+loop-stop remain unverified. Canary page **2744** `[GATE - DO NOT DELETE]` carries the effect plus
+a negative-control container.
+
+## D783 [ROUTINE] - three.js is vendored into a scratch study rig, bounded and with an expiry
+
+**2026-08-25.** Spec 38 SS1.2b names three.js **by name** in Tier W's ban list: *"Tier W must
+never become: a 3D engine (three.js is 182KB gzip - 3.6x the whole page budget - and 'since
+we're doing WebGL anyway' is the single most likely way this goes over)"*. This decision admits
+it anyway, in one place only, and records the boundary so the next person bending a Spec 38 rule
+"just in scratch" has something citable instead of a remembered conversation.
+
+**Why it is needed.** Stripe's hero renders through three.js, and its shaders are
+`ShaderMaterial` source - verified: no module declares `projectionMatrix`, `modelViewMatrix`,
+`position`, `normal` or `uv`, yet the vertex code uses them, so three.js injects those at compile
+time. A raw-WebGL2 rig cannot compile the recovered GLSL without reproducing that preamble. The
+faithful reference build therefore needs the real library; the raw port beside it is what proves
+we can leave the library behind.
+
+**Scope, and it is the whole of the scope:**
+- Location: `.claude/scratch/stripe-hero-poc/vendor/` and nowhere else. That tree is gitignored
+  (`.gitignore:24`), so nothing enters version control.
+- `port.html` must import **nothing** from `vendor/` - `grep -c vendor/ port.html` returns 0 is a
+  gate, not a habit.
+- **Expiry: deleted at the phase's Gate E**, together with Stripe's palette/shader study material.
+  Not "left to age out".
+- The scratch tree is **exempt from the `scratch/` -> `reports/` promotion rule**
+  (`.claude/CLAUDE.md:47`). `reports/` is tracked forever; this must never promote into it.
+
+**This does not widen Tier W.** Tier W's closed list still has two entries (`surface-treatment`
+FR-38-29, `flowing-gradient` FR-38-31). Nothing here is admitted to it, nothing ships, and no
+block gains a dependency. If a future effect wants three.js *in the plugin*, that is a separate
+decision against the five-part admission test, and this D-number is not precedent for it.
+
+**Raised by an adversarial council, not noticed unaided.** The plan originally authorised this
+with the sentence *"Bean approved this explicitly"*. Every other exception to Spec 38 carries a
+D-number - the tier itself D479, the OGL swap D715 - and the admission test's own part (v)
+requires one. A plan file is archived; `decisions.md` is not. Bean's ruling on being shown the
+finding: use the next number and get on with it.
+
 ## D782 [INCIDENT] — the homepage becomes a real page, the blog gets a real URL, and page 144's clone is recovered from a pipeline artefact
 
 **2026-08-25.** Three things, one of them an outage I caused.

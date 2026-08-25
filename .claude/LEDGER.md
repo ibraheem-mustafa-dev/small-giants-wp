@@ -115,15 +115,28 @@ hand-painted `palette.png` texture; 4 interpolated colour stops can't reproduce 
 
 ### ▶ NEXT, in order
 
-1. **Run the stripe-hero-replication POC** (prompt above) before touching FR-38-31's colour again.
-2. **Bean's eye on the 5 cursor-field looks** (R-31-13) — mechanism verified, aesthetics not.
-3. **Particle engine design gate** (Sparks/Gravity/Ripple) — real fading trail is Sparks, not
-   "Drag weight".
-4. **`floating-objects`** field type + generative-cover-images (bake brand colours into cached
-   cover art) — both approved-in-principle, unbuilt.
+1. ⛔ **DEPLOY THE CHILD-LIFT FIX (blocked, not done).** `843f1170d` is committed + pushed but
+   NOT deployed: a concurrent track's uncommitted `src/blocks/hero/render.php` trips the D336
+   dirty-tree guard, and `--payload` must never cover another track's work. Re-run once their
+   tree is clean:
+   `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only`
+   Then re-probe canary **2744** and confirm the canvas computes `position: absolute`.
+2. **Verify the EDITOR surface for `particles`** — never opened. Frontend-only verification is
+   exactly the gap that once shipped 0-of-6 blocks rendering in the editor while 5-of-5 rendered
+   live. Also confirm live cap-binding and loop-stop (my first probe was a broken instrument).
+3. **Run the stripe-hero replication POC** — prompt already written; FR-38-31's look stays
+   rejected until it runs.
+4. **Hover: decide the 8 conflicted blocks.** 3 of 11 shipped (google-reviews / pricing-table /
+   whatsapp-cta). The other 8 produce **33 genuine duplicate-control findings** + 24 dead-attr
+   ones; `check-duplicate-controls` has already computed a KEEPER for every finding, so the work
+   is specified — it needs Bean's call, not more analysis. ⚠ D338 hazard on any attr REMOVAL.
+5. **Gate the three ungated registration points** (motion-registry module map, its CSS map, the
+   webpack entry) — see D784. Five features have now hit the child-lift trap independently.
+6. **`floating-objects`** + **generative cover images** — both approved-in-principle, unbuilt.
+   Covers should FOLLOW the stripe POC (same palette-texture capability, D781).
 
-⛔ **Carried failure:** §9's editor claim was asserted, never observed, until opened this session.
-
+⛔ **Carried:** the real fading trail is `particles`/Sparks. "Drag weight" is momentum and is NOT
+it — never report it as satisfying that ask.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
