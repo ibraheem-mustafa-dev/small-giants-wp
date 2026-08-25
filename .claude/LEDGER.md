@@ -280,58 +280,58 @@ change that would most raise the grade.** Not built — Bean's call.
 ✅ **THE RULE IS ENFORCED** (`hooks/detector-first-commit-gate.py`, PreToolUse/Bash). 4+ code
 files with substantially the same change and no detector → DENIED; bypass `[repeat-ok:<reason>]`.
 
-**T1 — `prebuild` 153.4s → 31.0s**, both ends measured. Roster: `scripts/gates.json` +
-`run-gates.py`. The 4 heavyweights run pre-deploy via `build-deploy.py`'s `step_gate_full()`;
-`npm run gate:wired` fails closed if that call disappears.
+**T1 — `prebuild` 153.4s → 31.0s** (roster `scripts/gates.json` + `run-gates.py`; 4 heavyweights
+pre-deploy via `step_gate_full()`; `npm run gate:wired` fails closed if that call disappears).
+**T3 — the burn-down**, `scripts/programme-progress.py`. ⛔ No percentage, deliberately.
 
-**T3 — the burn-down.** `scripts/programme-progress.py`. ⛔ No percentage, deliberately.
+**T4 — `--all-properties` SHIPPED (`a0d15a98f`) and it REFUTED the batching carve-out.** Census:
+`reports/migrations/tier-object-all-properties-census.json`. `margin`/`padding`/`borderRadius` —
+the three it exempted — are DONE, zero migratable. Their "41/39/11" were DB attr-row counts, not
+migration scope: 41 blocks carry `marginTablet` but only 5 declare a base `margin`; the other 39
+get it from WP-native `supports.spacing`, which `block_attributes` cannot see. Carve-out stays
+withdrawn. **Full remaining scope now lives in the scope register, not here.**
+**T2 — 6 of 27 orphans WIRED (D776); every remaining verdict is in the register**
+(`reports/2026-08-24-script-revival-register.md`). Gates 66-71, `fast`, ~0.55s. 7 of 27 now wired.
 
-**T4 — `--all-properties` SHIPPED (`a0d15a98f`), and it REFUTED the batching carve-out.**
-Census: `reports/migrations/tier-object-all-properties-census.json`. **40 declared, 24 MIGRATABLE,
-16 already done.** 23 of the 24 touch 1-2 blocks; exactly ONE touches more
-(`backgroundOverlayOpacity`, 8). **Total remaining: 34 block-touches, not 91.**
-⛔ **`margin`/`padding`/`borderRadius` — the three the carve-out exempted — are DONE, zero
-migratable.** Their "41/39/11" figures were DB attr-row counts, not migration scope: 41 blocks
-carry `marginTablet` but only 5 declare a base `margin`, because the other 39 get it from
-WP-native `supports.spacing`, which `block_attributes` cannot see. **The carve-out stays
-withdrawn — there is no slow path to exempt anything from.**
+⛔ **`fanout-overlay-sibling-attrs.py` was RED against a contract D739 DELETED.** The evidence
+agent recommended `--fix --apply`, which would have **reintroduced 32 deliberately-removed
+attributes**. Retargeted to the opacity axis + made shape-aware. **A red gate on an obsolete
+contract is worse than no gate — its red reads as a backlog.** SUPERSEDED/retarget is a FOURTH
+verdict state. ⚠ Three docs gave three counts of how many were wired (0 / 2 / enumerated **1**).
+🚫 `button_group.py` — Bean: NOT wanted; the draft authors the wrapper.
+### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
 
-**T2 — 6 of 27 orphans WIRED (D776), every remaining verdict recorded.**
-Register: `reports/2026-08-24-script-revival-register.md`. Gates 66-71, tier `fast`, **~0.55s**.
-Wired: personal-data lint · render-closures · theme-native-spacing · shadow-mounts ·
-font-source-audit · overlay-siblings. **7 of 27 now wired** (1 already was).
+⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
+items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the
+project's own ordering rule **D552: standard leads, pipeline follows.**
 
-⛔ **`fanout-overlay-sibling-attrs.py` was RED against a contract D739 DELETED** — it wanted
-the colour/gradient tier siblings back. The evidence agent recommended `--fix --apply`, which
-would have **reintroduced 32 attributes another track deliberately removed**. Retargeted to the
-opacity axis (Bean's ruling) + made shape-aware. **A red gate on an obsolete contract is worse
-than no gate — its red reads as a backlog.** SUPERSEDED/retarget is a FOURTH verdict state the
-register's three did not have.
+⛔ **SPEC 39 DOES NOT EXIST AS A FILE.** No `39-*.md`, absent from `specs/README.md`, yet D554-C
+names it THE PACING ITEM: the clone gate (`orchestrator/check_flat_tier_regression.py`) blocks
+cloning for every migrated property until it lands. **Measured cost: 37 conformance goldens sit
+`xfail(strict=True)` in `tests/fixtures/conformance/quarantine.json`, whose `unquarantine_when`
+literally names "Spec 39's converter rework".** Finishing more of the migration INCREASES the
+blocked surface until it lands — by design, but that is why it follows immediately.
 
-⚠ **Three docs gave three counts of how many were wired** — register 0, LEDGER/prompt 2,
-enumerated **1**. Only the enumerated one was right.
+1. **Step 0 — fix the instruments (small, do first).** `migrate-tier-object.py` has a 3-family
+   BLIND SPOT: `classify()` needs a BARE base, so it cannot see a family whose base is
+   `<name>Desktop` — `brand-strip.columns`, `hero.textAlign`, `whatsapp-cta.showOn`. **True
+   remaining scope is 37 families, not 34.** Then check whether `audit-inline-styling.js`'s 11
+   "tier-without-base" blocks share that cause. Scope A honestly only after both agree.
+2. **Step 1 — batch the SIX Bean decisions in one sitting** (register C14-C19: CO-28 panel order ·
+   Bindings scope · spacing tokens · Section Styles · façade `inspector_control_type` ·
+   testimonial/image-sequence crop). Four block ready-to-run mechanical work.
+3. **Step 2 — the mechanical sweep behind detectors:** 37 families · Spec 32 B1/B3/B5 ·
+   Spec 35 C1-C11 (colour R2-R6, ToolsPanel 0/15, decorative-image 1/14, imageControls 2/15,
+   border-builder 1-of-48). THE-MIGRATION-METHOD.md applies to every one.
+4. **Step 3-4 — the two live passes** (a11y + element-first panel order) and the hex-literal triage.
+5. **Step 5 — WRITE SPEC 39**, then the converter rework. Check first whether its scope is already
+   settled across D276/D552/D554 — it may be transcription plus a design gate, not open design.
+6. ⏸ Whole-file-diff detection — **downgraded** (Bean, 2026-08-25): a reformat is recoverable via
+   git/worktree, so this is a detection nicety, not a safety gate. Only the truncation case is
+   genuinely undetectable, and it is narrow.
 
-🚫 **`button_group.py` — Bean's ruling: NOT wanted.** The draft should author the wrapper for
-multi-button if it needs one; `recognition.py`'s draft-authored path is the mechanism.
-
-### ▶ OPEN — priority order
-
-1. **The whole-file-diff gate** — closes the method's LAST D-grade dimension (recoverability).
-   Make `changed-lines ≈ file-length` fail automatically instead of relying on a human
-   remembering `git diff --stat`. Small, and the panel named it as the single highest-value fix.
-2. **5 reporters need a fail condition before wiring** — they exit 0 regardless while finding
-   229 role refinements / 4,310 comment blocks / 393 fidelity gaps / 4 DB orphans. Wiring them
-   as-is enforces nothing.
-3. **2 gates are red against something REAL** — `attribution_ground_truth.py` (39 attributor
-   mismatches, all `rt-pseudo-before`) and `qc-correctness-regression.py` (`reports/baselines/`
-   never seeded). Fix the divergence / seed the baseline, then wire. Do NOT wire red.
-4. **Promote `probe-text-equivalence.js`** out of `migrate-core-blocks/` — it is generic (two
-   arbitrary URLs) and is the only working implementation of CLAUDE.md rule 4a. Its FOLDER is
-   why it was dismissed.
-5. **Spec 39's converter rework** — the pacing item for cloning.
-6. ⚠ **Bean's call: the revenue lane.** Council graded runway **F** — 11 of 1,740 commits
-   touched `sites/` in 30 days, none client build work. Real and urgent; not started unprompted.
-7. ⏸ **Option A, deferred by design:** interrupt at the 4th file EDIT rather than the commit.
+⚠ **`check-box-flat` is wired into `prebuild` but its exit code is NOT propagated** — its findings
+sit behind a passing suite. That is how `multi-button::childBtnBorderRadius` went unnoticed.
 ### ▶ Anchored grades — round 3 (as EXERCISED, not as written)
 
 working-change **B** (was D) · recoverability **D** (held) · governance **B** (floor, untested) ·
