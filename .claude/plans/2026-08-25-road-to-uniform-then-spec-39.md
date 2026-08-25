@@ -56,7 +56,9 @@ Every item below was verified against source by a survey agent, not read off a d
 
 **37 families remain flat.** Not 34, and not 24.
 
-⛔ **`migrate-tier-object.py` has a 3-family BLIND SPOT — fix this first.** Its `classify()`
+✅ **FIXED 2026-08-25 (D777, `807ef4611`).** The blind spot below is CLOSED — the migrator now sees all 37.
+
+~~⛔ `migrate-tier-object.py` has a 3-family BLIND SPOT.~~ Its `classify()`
 requires a *bare* base attribute, so it cannot see a family whose base is declared as
 `<name>Desktop`. Reconciled 2026-08-25 (DB-derived 37 vs disk-derived 34, disk-minus-DB = 0):
 
@@ -66,9 +68,18 @@ requires a *bare* base attribute, so it cannot see a family whose base is declar
 | `sgs/hero` | `textAlign` | `textAlignDesktop` |
 | `sgs/whatsapp-cta` | `showOn` | `showOnDesktop` |
 
-Left unfixed, `--check` eventually reports clean while three families are still flat — a green
-gate over remaining work, the same shape as two other defects found on 2026-08-25.
+`classify()` required a BARE base attr, so a family declaring its desktop tier as `<prop>Desktop`
+returned ABSENT. `--check` would have reported CLEAN with three families still flat.
+Fixed by mirroring `programme-progress.py`'s `base_bare`/`base_desktop` logic into a new
+`_base_attr_spec()` helper. **34 → 37 block-touches; 24 → 27 migratable properties.**
+Blast radius proven: `--survey` byte-identical for margin/padding/gap/borderRadius, exactly the
+three target families changed. 8 new fixtures incl. a non-vacuous negative control. 63/63 green.
 
+⛔ **RESIDUAL — do NOT run `--fix` on these three families yet.** `reads_attr_directly`,
+`edit_refs`, `render_state`, `edit_state` and `apply_block_json` still text-scan / write the BARE
+name, while these blocks genuinely use the suffixed key (verified: `brand-strip/render.php:57`
+reads `$attributes['columnsDesktop']`, never `$attributes['columns']`). `--survey`'s render/edit
+columns UNDER-REPORT for the three; `--check` is unaffected. Widening those five is the follow-up.
 ⚠ `audit-inline-styling.js` reports a **separate** "tier-without-base" count of **11 blocks**
 (per-side spacing + border/typography roots). It also does not recognise a `Desktop`-named base,
 so some of the 11 may be false positives of the same cause. **Not yet measured — do that before
