@@ -38,40 +38,28 @@ the DB or calling REST. Open it in a browser and LOOK. This session it earned it
 — a client-visible breadcrumb bug that several code-reading passes missed, and a layout
 regression I shipped that every gate passed.
 
-### ✅ SHIPPED + LIVE-VERIFIED 2026-08-25
-- **All four archives share one header** (D772) — `parts/sgs-archive-toolbar.html` is now the
-  shared breadcrumb; each template composes its own correctly-typed title/count after it.
-  Verified live 1440: shop 73/200 → 238 → 306, search 73/216 → 238 → 298 → 420, all `sameLeft`.
-- **Breadcrumb tag leak fixed** (`419734b84`) — archives printed literal `<span>` text.
-  `literalTagInText` true → **false**. Report: `reports/visual-diff/breadcrumbs-2026-08-24.md`.
-- **Duplicate search box deleted** — a no-results search rendered two (y=216 + y=570). Now 1.
-- **h1→h3 heading skip fixed** on search.html + archive.html. Live: H1→H2.
-- **Item 1 (solid picker contrast) VERIFIED** — 13.14:1 resting border. Fixture = canary page
-  **2736 `[GATE - DO NOT DELETE]`**, the ONLY surface rendering this preset. Do not delete it.
-- **Item 5 CLOSED** — the PDP rail genuinely peek-scrolls (327→596, `didScroll` true, 4×140px).
-  It is NOT the 2-up 155px grid the old note described. Bean owed no decision.
-- **Item F answered** — infinite scroll lives in `sgs/post-grid` (still works) but was NEVER
-  wired into any archive template. Nothing was removed; restoring it is a choice, not a repair.
-
-### ✅ ALSO CLOSED 2026-08-25 (second wave)
-- **Item 8 DONE — all five never-opened templates are CLEAN.** Opened in the Site Editor,
-  0 validation warnings and 0 error notices each: Search Results (60 blocks/733 chars),
-  Single Product (79/4362), Products by Attribute (62/1040), Order Confirmation (56/906),
-  Coming soon (44/581). **All eight templates Bean reported are now confirmed clean.**
-- **G3 answered:** 11 templates are ours (`src:"theme"`), 4 are WooCommerce's
-  (`src:"plugin"` — cart, checkout, order-confirmation, coming-soon).
-- **G2 answered by ATTEMPTING it, not by reading `attribute_public`:** four candidate URLs
-  tried; the only 200 was the homepage ignoring the query var (`body class="home blog"`).
-  Products by Attribute has no reachable front end — editor-only by construction.
-- **`sgs/site-footer-row` duplicate Layout control fixed** (`fdd7352e1`) and **verified in
-  the EDITOR**: with the block selected the sidebar shows only "ROW LAYOUT" (its own) —
-  the duplicate that silently coerced Stack->grid is gone. Class audit: all 30 blocks
-  mounting ContainerWrapperControls checked, **no other block carries this bug**.
-- **Breadcrumb prefix dropped** (`7939844f3`) — `Home / Archives: Shop` -> **`Home / Shop`**,
-  matching what woocommerce/breadcrumbs rendered before the swap. Canonical
-  `get_the_archive_title_prefix` filter, applied locally. Both visual-gate bypasses are
-  RETIRED with captures in `reports/visual-diff/breadcrumbs-2026-08-24.md`.
-
+### ✅ SHIPPED + LIVE-VERIFIED 2026-08-25 (all measured on the canary, not reasoned)
+Detail is single-sourced to **D772/D773/D774** + the commits — do not restate it here.
+- **All four archives share one header** (D772). Shop 73/232→270→338, search 73/216→238→298→420,
+  all `sameLeft`. The part carries the BREADCRUMB only: `query-title` is page-type-gated in WP
+  core and `query-total` needs a Query Loop, so neither can live in a shared part.
+- **Breadcrumb: tag leak fixed, prefix dropped** — `Home / Category: <span>Uncategorized</span>`
+  → **`Home / Uncategorized`**; `Home / Archives: Shop` → **`Home / Shop`** (parity with the old
+  WooCommerce trail). Both visual-gate bypasses RETIRED with captures in
+  `reports/visual-diff/breadcrumbs-2026-08-24.md`.
+- **Term-archive `<h1>` prefix dropped** (`bc3b8452d`) — now "Uncategorized", matching "Shop".
+- **Duplicate search box deleted** (a no-results search rendered two, y=216 + y=570) and the
+  **h1→h3 heading skip fixed** (live: H1→H2×9).
+- **Item 1 VERIFIED** — solid picker resting border **13.14:1**. Fixture = canary page **2736
+  `[GATE - DO NOT DELETE]`**, the ONLY surface rendering this preset. Do not delete it.
+- **Item 5 CLOSED** — rail genuinely scrolls (327→596, `didScroll` true, 4×140px), not a 2-up grid.
+- **Item F answered** — infinite scroll lives in `sgs/post-grid`, was NEVER wired into a template.
+- **Item 8 DONE** — all five never-opened templates clean in the Site Editor, 0 validation
+  warnings each. All eight Bean reported are now confirmed.
+- **G3** 11 templates ours / 4 WooCommerce's. **G2** answered by ATTEMPTING the URL (the only
+  200 was the homepage ignoring the query var), not by reading `attribute_public`.
+- **`sgs/site-footer-row` dead Layout control fixed** (`fdd7352e1`) + **verified in the EDITOR**
+  (only "ROW LAYOUT" remains). Class audit: 30 blocks mount the component, **no other has it**.
 ### ▶ OPEN, in order
 1. ⛔ **BLOCKED, needs a build not a toggle — the blog listing has NO `<h1>` and ~104 chars.**
    `show_on_front=posts` so the site ROOT is the blog listing, but `front-page.html` is a
@@ -95,10 +83,6 @@ regression I shipped that every gate passed.
 3. **C1/C2** — `woocommerce/catalog-sorting` + `core/query-pagination` still unstyled.
 4. **Item 4's 83 candidates** — needs Bean's eye per candidate, not a mechanical sweep.
 
-### ✅ ALSO CLOSED 2026-08-25 (third wave)
-- **Term-archive `<h1>` prefix dropped** (`bc3b8452d`, live-verified): `/category/…/` h1 was
-  "Category: Uncategorized", now **"Uncategorized"** — matching the shop's "Shop".
-  `showPrefix:false` on `core/query-title`, the mechanism archive-product.html already used.
 ### ⚠ Two traps this track proved live
 - **A one-child flex row is indistinguishable from a stack until a sibling appears** (D773).
   `sgs/container` defaults to `layout:"flex"` = a CSS ROW. Adding a second child makes the
