@@ -261,22 +261,8 @@ application log: `reports/2026-08-26-migration-method-application-log.md` · gra
 
 ### ✅ CLOSED
 
-**T0 — THE METHOD HAS BEEN APPLIED (D775).** `.claude/THE-MIGRATION-METHOD.md` is now
-`status: APPLIED`, graded **B−** (was C) by a 3-persona panel on the APPLICATION EVIDENCE rather
-than another read-through: **9 CONFIRMED / 1 PEDANTIC / 0 WRONG**. Its 11 steps had been reviewed
-15 times and never once allowed to write a file. **FIVE steps were WRONG or SILENT as written
-(1, 2, 4, 8, 11)** — all corrected in place, each tagged (D775).
-
-⛔ **The Cutter's verdict overturns the old "capped by STRUCTURE" reading:** the problem is
-**CONTENT, not LENGTH**. Hunting for cuts across 581 lines found only **26** worth removing (4.5%);
-the STOP repeats and the codemod skeleton all survived scrutiny. Nine reviewers made it longer;
-the first real run proved parts of it wrong. Two different diseases — only the second is serious.
-
-⚠ **Recoverability still grades D, and it is the ONE thing holding the overall grade.** The sole
-defence against a silent whole-file diff is a MANUAL `git diff --stat`. It fired this session (a
-JSON round-trip on tab-indented `package.json` turned a 1-line alias into a **241-line diff**), but
-a habit is not a gate. **Making `changed-lines ≈ file-length` fail automatically is the single
-change that would most raise the grade.** Not built — Bean's call.
+**T0 — the method was APPLIED (D775) and then COUNCILLED again (round 4 above).** History:
+`memory/session-2026-08-24-detector-first-and-the-serial-loop.md` + the application log.
 
 ✅ **THE RULE IS ENFORCED** (`hooks/detector-first-commit-gate.py`, PreToolUse/Bash). 4+ code
 files with substantially the same change and no detector → DENIED; bypass `[repeat-ok:<reason>]`.
@@ -300,8 +286,13 @@ an obsolete contract is worse than none: its red reads as a backlog.** SUPERSEDE
 
 ### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
 
-⭐ **NEXT SESSION: `.claude/prompts/2026-08-27-council-the-burn-down-method.md`** — council the
-D778 burn-down edits (UNGRADED), then triage rule 21's 222 through the new Step 7b.
+✅ **2026-08-27 CLOSED: council + rule-21 triage.** Method graded **C+** (was B−) — 3 of 4 seats
+independently found Step 8's justifying claim FALSE (17 advisory rules, not 15, and advisory
+rules DO red the build since 2026-08-18). 9 findings fixed. **Rule 21: 211 → 83 FLAGGED.**
+128 were ONE detector bug (dispatcher-table resolution), 82 are REAL, 1 known limit.
+⭐ Worklist: `.claude/reports/2026-08-27-rule-21-triage.md`. **Motion+hover = 28 of the 82
+across 8 blocks — one shape decision covers a third.** Next: Step 3 with Bean on ONE instance.
+⚠ 2737 needed NO fix — already canonical; oldshape-audit passes on all 396 posts.
 
 ⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
 items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the
@@ -334,12 +325,13 @@ blocked surface until it lands — by design, but that is why it follows immedia
 
 ⚠ **`check-box-flat` is wired into `prebuild` but its exit code is NOT propagated** — its findings
 sit behind a passing suite. That is how `multi-button::childBtnBorderRadius` went unnoticed.
-### ▶ Anchored grades — round 3 (as EXERCISED, not as written)
+### ▶ Anchored grades — round 4, 2026-08-27 (as EXERCISED)
 
-working-change **B** (was D) · recoverability **D** (held) · governance **B** (floor, untested) ·
-durability **B** (was B−) · first-attempt reach **B** (was C). **Overall B−, was C.**
-Recoverability anchors the ceiling; governance moved only because no CONFIRMED finding exercised
-it, which is a coverage gap in this exercise, not a fix.
+working-change **C** · recoverability **D** (held) · governance **C** · durability **C** ·
+first-attempt reach **C**. **Overall C+, was B−.** CONFIRMED 45 · PEDANTIC 6 · WRONG 3.
+Four dimensions fell: the D778 edits made the doc WIDER and WRONGER. **Recoverability is still
+the ceiling — 72 gates, none inspects diff shape; it failed again this session.** Bean's call.
+⚠ Ratchet slack removed everywhere: rule 34 416→319 (97 slack), 31 292→291, 01 58→57, 21 →83.
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
 Drawer covered the fold in every template editor; several blocks errored. Three unrelated
