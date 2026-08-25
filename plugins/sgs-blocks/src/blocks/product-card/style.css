@@ -31,7 +31,8 @@
 }
 
 .product-card {
-	background: var(--sgs-product-card-bg, #ffffff);
+	background-color: var(--sgs-product-card-bg, #ffffff);
+	background-image: none;
 	border-radius: 16px;
 	overflow: hidden;
 	border: 1px solid var( --wp--preset--color--border, #D4DBE5 );
@@ -49,6 +50,14 @@
 	 * Border is kept for definition; shadow adds perceivable depth.
 	 */
 	box-shadow: var(--sgs-product-card-shadow, 0 2px 12px rgba(58, 46, 38, 0.10));
+}
+
+/* Trial variant — re-declare the inherited custom property as transparent
+   so the base rule's var(--sgs-product-card-bg) resolves locally to transparent
+   instead of #ffffff. A var() fallback only fires when the property is UNDEFINED —
+   the fallback on line 34's base rule is overridden by this closer declaration. */
+.product-card.trial-card {
+	--sgs-product-card-bg: transparent;
 }
 
 .product-card .product-card-img {
@@ -181,15 +190,16 @@
 
 /* Trial variant — dashed border + gradient overlay (B6, 2026-06-10): wrapped in
    :where() so specificity is 0 and the operator's border/background controls
-   (universal container-mirror supports, A1) always override these defaults. */
+   (universal container-mirror supports, A1) always override these defaults.
+   The background-image is now a standalone declaration (not a shorthand) to preserve
+   the transparent background-color set by the .product-card.trial-card rule above. */
 :where(.product-card.trial-card) {
 	border: 2px dashed var(--wp--preset--color--accent, #f5d050);
-	background:
-		linear-gradient(
-			135deg,
-			rgba(245, 208, 80, 0.08) 0%,
-			rgba(31, 122, 122, 0.06) 100%
-		);
+	background-image: linear-gradient(
+		135deg,
+		rgba(245, 208, 80, 0.08) 0%,
+		rgba(31, 122, 122, 0.06) 100%
+	);
 }
 
 /* NOTE (2026-07-26, F3 drain): the legacy `.product-card .trial-tag` rule was

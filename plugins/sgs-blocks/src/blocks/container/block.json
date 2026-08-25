@@ -710,6 +710,17 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient for the hover root text colour. Non-empty wins over textColourHover."
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
 		}
 	},
 	"providesContext": {

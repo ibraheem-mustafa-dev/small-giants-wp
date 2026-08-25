@@ -249,6 +249,19 @@ function overlayPaintPreview( colour, gradient, opacity, blendMode, palette ) {
 	return { hasOverlay: true, vars };
 }
 
+// Mirrors sgs/icon and sgs/info-box, which hoist the identical list. "" is the
+// INHERIT option deliberately: an unset container emits no text-align, so the
+// value cascades from its own parent — that inheritance is the whole reason
+// this attribute exists (the draft carries alignment on the section, not on
+// each child).
+const TEXT_ALIGN_OPTIONS = [
+  { label: __( "— inherit —", "sgs-blocks" ), value: "" },
+  { label: __( "Left", "sgs-blocks" ), value: "left" },
+  { label: __( "Centre", "sgs-blocks" ), value: "center" },
+  { label: __( "Right", "sgs-blocks" ), value: "right" },
+  { label: __( "Justify", "sgs-blocks" ), value: "justify" },
+];
+
 export default function Edit({ attributes, setAttributes, name }) {
   const {
     layout,
@@ -715,6 +728,14 @@ export default function Edit({ attributes, setAttributes, name }) {
               />
             ) }
           </ResponsiveOverride>
+          <SelectControl
+            label={ __( "Text align", "sgs-blocks" ) }
+            value={ attributes.textAlign || "" }
+            options={ TEXT_ALIGN_OPTIONS }
+            onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+            __nextHasNoMarginBottom
+            __next40pxDefaultSize
+          />
         </PanelBody>
 
         {/* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default

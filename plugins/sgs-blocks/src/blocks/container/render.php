@@ -262,6 +262,21 @@ if ( '' !== $sgs_container_border_style && 'none' !== $sgs_container_border_styl
 	);
 }
 
+// ── Text align — allows inheritance when empty, so child blocks can pick up
+// this value and override per-instance. Emitted only when set (non-empty).
+$sgs_container_text_align_raw      = $attributes['textAlign'] ?? '';
+$sgs_container_allowed_text_aligns = array( '', 'left', 'center', 'right', 'justify' );
+$sgs_container_text_align          = in_array( $sgs_container_text_align_raw, $sgs_container_allowed_text_aligns, true ) ? $sgs_container_text_align_raw : '';
+
+if ( '' !== $sgs_container_text_align ) {
+	if ( empty( $sgs_container_supports_uid ) ) {
+		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
+	}
+	$sgs_container_text_align_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
+	$sgs_container_supports_css  .= $sgs_container_text_align_sel . '{text-align:' . esc_attr( $sgs_container_text_align ) . ';}';
+}
+
 // Preset font-size slug — skip-serialisation drops WP's automatic has-*-font-size
 // class, so re-add it manually (mirrors sgs/label). fontSize IS declared/supported
 // on this block (typography.fontSize), unlike the two ghosts removed below.
