@@ -1,3 +1,54 @@
+## D782 [INCIDENT] — the homepage becomes a real page, the blog gets a real URL, and page 144's clone is recovered from a pipeline artefact
+
+**2026-08-25.** Three things, one of them an outage I caused.
+
+⭐ **THE ENUM RULING IN D774 WAS WRONG AND IS SUPERSEDED.** Bean challenged it: *"why can't
+we set the enums differently for each of the blocks?"* He was right. D774 conflated a SHARED
+PHP ALLOWLIST inside `SGS_Container_Wrapper` — which does see every calling block's
+attributes and WOULD break gallery/post-grid/testimonial-slider — with a `block.json` ENUM ON
+`sgs/container` ALONE, which cannot, because WordPress validates against each block type's
+own schema. **Five of the nineteen blocks sharing the attribute name already carry their own
+differing enums.** Safe-narrowing test then run: stored canary content 652 absent / 28 flex /
+9 grid / 9 stack / **0 out-of-enum**; theme files 18 flex / 21 grid / 0 invalid. Shipped
+`04f487c39`, live-verified, no surface changed. It kills the meaningless
+`sgs-container--<invalid>` class; it is still SILENT (a typo coerces to `flex`), which is the
+accepted trade-off. Report: `reports/visual-diff/container-2026-08-25.md`.
+
+**THE BLOG LISTING HAD NO `<h1>` AND ~104 CHARACTERS.** `show_on_front=posts` made the site
+root the blog listing, but `front-page.html` is a static-page shell (`main > post-content`,
+no query loop) — so there was nothing for a heading to head. Bean's ruling: static homepage +
+a real `/blog/`. `home.html` added (WP's `home` template, serving `page_for_posts`);
+`front-page.html` untouched, because once `show_on_front=page` the two stop competing and
+nothing had to be deleted. Its h1 is a LITERAL "Blogs" via `sgs/heading` — `core/query-title`
+with `type="archive"` returns EMPTY on a posts index (core gates it on `is_archive()`; a
+posts page is `is_home()`), which is the same trap that made the homepage headless.
+Live: `/blog/` h1 "Blogs" + 9 articles; `/` renders; `/shop/` unchanged.
+
+⛔ **I 404'd THE CANARY FOR ~90 SECONDS.** CLAUDE.md said *"Canary page for Mama's = 144"*. I
+set `page_on_front=144` from that line without checking. Page 144 is hard-deleted — not in
+trash, no surviving revisions — so the root went 404. Caught on the next command, reverted to
+`show_on_front=posts`, restored to 200. **Verify a post ID exists before pointing anything at
+it**; `wp post get <id>` costs five seconds. Third cached-doc-fact failure in one day, after a
+stale `migrate-core-blocks` path and the un-reproducible "52 / 5 / 59" split.
+
+⭐ **BUT THE STALE REFERENCE IS WHAT FOUND THE CLONE, and Bean corrected me for calling it
+simply stale.** "144" named the pipeline run. The native-block Mama's homepage — **98 SGS
+blocks, 26 distinct types** — survives at
+`pipeline-state/mamas-munches-144-2026-08-24-031610/stage-4.json` and was restored to page
+**2742**. So the number is reclassified in CLAUDE.md as PROVENANCE, not deleted: wrong as a
+live pointer, load-bearing as history. A doc fact can be both.
+
+⛔ **Post 66 "Spec16-P7 mockup baseline" is NOT the clone.** 42,615 bytes of RAW HTML — a
+`<style>` block plus 52 divs, **zero** `wp:` block comments. It is the draft stored for pixel
+comparison, a mirror not a conversion (7-rules #1). Bean: *"this is a crap way to try to
+preserve it."* The pipeline artefacts were the correct preservation all along, and they
+outlived the page.
+
+Canary now: `/` = 2742 (restored clone), `/blog/` = 2741, picker fixture = 2736
+`[GATE - DO NOT DELETE]`. ⚠ Homepage has 9px of horizontal overflow at 1440 (scrollWidth 1449)
+and has never been viewed at 375/768 — first item in the next prompt.
+
+
 ## D781 [INCIDENT] — the "Stripe gradient" everyone documents is Stripe's OLD hero, and we built it (2026-08-25)
 
 **Three Aurora attempts and one full Tier W build were made against a reference nobody had

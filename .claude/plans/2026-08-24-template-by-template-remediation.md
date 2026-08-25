@@ -23,6 +23,39 @@ that clearly were not designed against each other.
 build, or by my own live measurements.** That is the single most important fact in
 this document and it shapes the whole approach below.
 
+---
+
+# ⛔ STATUS 2026-08-25 — MOST OF THIS REGISTER IS CLOSED. READ THIS BEFORE ACTING ON ANY SECTION.
+
+Live front is now `.claude/prompts/2026-08-26-close-out-the-archive-track.md`.
+Detail is single-sourced to **D772 / D773 / D774** — do not restate it here.
+
+| Section | State |
+|---|---|
+| A — validation/loading errors | ✅ CLOSED. All five never-opened templates opened in the Site Editor: Search Results, Single Product, Products by Attribute, Order Confirmation, Coming soon. **0 validation warnings, 0 error notices each.** All eight Bean reported are now confirmed clean. |
+| B — listings not using the bespoke card | ✅ CLOSED (D757). |
+| C1 / C2 — unstyled `catalog-sorting` + `query-pagination` | ⛔ **STILL OPEN.** The last visibly-foreign elements on four harmonised archives. |
+| D1–D4 — cross-template inconsistency | ✅ MOSTLY CLOSED (D772). All four archives share one header part; breadcrumb standardised on `sgs/breadcrumbs`; duplicate no-results search box deleted; h1→h3 heading skips fixed. ⛔ RESIDUAL: the two search blocks still LOOK different — deliberately NOT unified as blocks (`sgs/product-search` is product-scoped by design and no general-purpose SGS search block exists), so harmonise appearance only. |
+| E — Product Archive layout regression | ✅ CLOSED. Header stacks correctly (73/232→270→338 at 1440); cards 5×313.3px. |
+| F — pagination vs infinite scroll | ✅ ANSWERED. Infinite scroll exists in `sgs/post-grid` (still functional) but was **never wired into any archive template** — they used numbered `query-pagination` from the day each was created. Nothing was removed; restoring it is a choice, not a repair. |
+| G1 — `index.html` duplicates `archive.html` | ⛔ OPEN. |
+| G2 — why "Products by Attribute" exists | ✅ ANSWERED by ATTEMPTING the URL, not by reading `attribute_public`: four candidate paths tried, the only 200 was the homepage ignoring the query var (`body class="home blog"`). No reachable front end; editor-only by construction. |
+| G3 — which templates are ours | ✅ ANSWERED. 11 are ours (`src:"theme"`), 4 are WooCommerce's (`src:"plugin"` — cart, checkout, order-confirmation, coming-soon). |
+| Task 4 — harmonise the archives | ✅ DONE (D772), live-verified. |
+| Task 6 — compare against previous versions | ⛔ STILL OPEN. |
+| Task 7 — style the orphan blocks | ⛔ = C1/C2 above, still open. |
+
+**Carried out of the 2026-08-24 wave:** items 1 (shop last-row stretch), 2 (solid picker
+contrast — VERIFIED at 13.14:1) and 3 (mobile card width — the rail peek-scrolls at 140px,
+no decision owed) are all CLOSED. Item 4 (single-child-shrunk container swept repo-wide)
+remains OPEN and is in the next prompt.
+
+**Moved to the migration track, NOT this register:** the flexWrap default flip (~98 stored
+instances) and the 83 accidental-column candidates (the old "52 / 5 / 59" figure is retired —
+it cannot be reproduced from any artefact on disk).
+
+---
+
 ## The rule that governs every task here
 
 > **Agents may NOT assess a template by reading its code, querying the database,

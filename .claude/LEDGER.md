@@ -28,76 +28,63 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ ⛔ CONTAINER-LAYOUT + TEMPLATE REMEDIATION — 2026-08-25 (archives SHIPPED; item 8 open)
+## ▶ ARCHIVE / CONTAINER TRACK — 2026-08-25 (register largely CLOSED; residue is next)
 
-⭐ **START HERE: `.claude/prompts/2026-08-25-container-layout-and-archive-design.md`.**
-⛔ **Read D772/D773/D774 before touching an archive template or `sgs/container`'s layout.**
+⭐ **START HERE: `.claude/prompts/2026-08-26-close-out-the-archive-track.md`.**
+⛔ Read **D772 / D773 / D774 / D782** first. Detail is single-sourced there — not restated here.
+⛔ **The session AFTER the next one goes back to assessing each page template one by one.**
 
-**Governing rule, Bean's, unchanged:** do NOT assess a template by reading code, querying
-the DB or calling REST. Open it in a browser and LOOK. This session it earned itself twice
-— a client-visible breadcrumb bug that several code-reading passes missed, and a layout
-regression I shipped that every gate passed.
+**Governing rule (Bean's):** never assess a template by reading code, the DB or REST. Open it
+and LOOK. It earned itself 3× on 2026-08-25 — a breadcrumb printing literal `<span>` that code
+reads missed, a layout regression every gate passed, and a "200 OK" that was the homepage
+ignoring a query var.
 
-### ✅ SHIPPED + LIVE-VERIFIED 2026-08-25 (all measured on the canary, not reasoned)
-Detail is single-sourced to **D772/D773/D774** + the commits — do not restate it here.
-- **All four archives share one header** (D772). Shop 73/232→270→338, search 73/216→238→298→420,
-  all `sameLeft`. The part carries the BREADCRUMB only: `query-title` is page-type-gated in WP
-  core and `query-total` needs a Query Loop, so neither can live in a shared part.
-- **Breadcrumb: tag leak fixed, prefix dropped** — `Home / Category: <span>Uncategorized</span>`
-  → **`Home / Uncategorized`**; `Home / Archives: Shop` → **`Home / Shop`** (parity with the old
-  WooCommerce trail). Both visual-gate bypasses RETIRED with captures in
-  `reports/visual-diff/breadcrumbs-2026-08-24.md`.
-- **Term-archive `<h1>` prefix dropped** (`bc3b8452d`) — now "Uncategorized", matching "Shop".
-- **Duplicate search box deleted** (a no-results search rendered two, y=216 + y=570) and the
-  **h1→h3 heading skip fixed** (live: H1→H2×9).
-- **Item 1 VERIFIED** — solid picker resting border **13.14:1**. Fixture = canary page **2736
-  `[GATE - DO NOT DELETE]`**, the ONLY surface rendering this preset. Do not delete it.
-- **Item 5 CLOSED** — rail genuinely scrolls (327→596, `didScroll` true, 4×140px), not a 2-up grid.
-- **Item F answered** — infinite scroll lives in `sgs/post-grid`, was NEVER wired into a template.
-- **Item 8 DONE** — all five never-opened templates clean in the Site Editor, 0 validation
-  warnings each. All eight Bean reported are now confirmed.
-- **G3** 11 templates ours / 4 WooCommerce's. **G2** answered by ATTEMPTING the URL (the only
-  200 was the homepage ignoring the query var), not by reading `attribute_public`.
-- **`sgs/site-footer-row` dead Layout control fixed** (`fdd7352e1`) + **verified in the EDITOR**
-  (only "ROW LAYOUT" remains). Class audit: 30 blocks mount the component, **no other has it**.
-### ▶ OPEN, in order
-1. ⛔ **BLOCKED, needs a build not a toggle — the blog listing has NO `<h1>` and ~104 chars.**
-   `show_on_front=posts` so the site ROOT is the blog listing, but `front-page.html` is a
-   static-page shell (`main > post-content`, no query loop). Bean ruled: static homepage +
-   a real `/blog/`. **`theme/sgs-theme/templates/home.html` is BUILT and committed
-   (`4ad56b00d`) but INERT** — front-page.html wins the hierarchy until Reading changes.
-   ⛔ The flip needs a page assigned as `page_on_front`; the canary has 135 published pages
-   and NONE is a homepage. Building one is a design task. Also: other tracks BASELINE `/`
-   (the flexWrap work recorded `/ baseline {row|nowrap 39, row|wrap 6, …}`), so flipping it
-   mid-session would silently move their measurements.
-2. **`layout` enum on `sgs/container` — RECOMMENDED, awaiting Bean's go** (supersedes D774's
-   blanket 'do not add an enum'). ⭐ **D774 CONFLATED TWO PROPOSALS.** A *shared PHP
-   allowlist in the wrapper* WOULD break gallery/post-grid/testimonial-slider — it sees
-   every calling block's attrs. A **`block.json` enum on `sgs/container` alone does NOT**:
-   WP validates per block type, and 5 of the 19 blocks sharing the attr name already carry
-   their own differing enums (gallery `grid|masonry|carousel`, testimonial-slider
-   `full|split`, …). Safe-narrowing test PASSES — stored canary content is 652 absent /
-   28 flex / 9 grid / 9 stack / **0 out-of-enum**; theme files 18 flex / 21 grid / 0 invalid.
-   Enum kills the garbage `sgs-container--<invalid>` class (WP coerces before PHP sees it).
-   Caveat: still silent — a typo becomes `flex`, not an error.
-3. **C1/C2** — `woocommerce/catalog-sorting` + `core/query-pagination` still unstyled.
-4. **Item 4's 83 candidates** — needs Bean's eye per candidate, not a mechanical sweep.
+### ✅ CLOSED + LIVE-VERIFIED
+All four archives share one header · breadcrumb tag-leak + `Archives:`/`Category:` prefix gone
+(`Home / Shop`, `Home / Uncategorized`) · duplicate no-results search box deleted · h1→h3 skips
+fixed · **item 1** solid picker **13.14:1** · **item 5** rail genuinely peek-scrolls (327→596,
+4×140px) · **item 8** all five never-opened templates 0 warnings — all eight Bean reported now
+clean · **F** infinite scroll never was wired into a template · **G2/G3** answered ·
+`sgs/site-footer-row` dead Layout control fixed + verified in the EDITOR (class audit: 30 blocks
+mount the component, no other affected) · **`sgs/container` `layout` enum shipped**.
+
+### ✅ HOMEPAGE + BLOG RESTRUCTURED (D782)
+`/` = page **2742**, the recovered native-block Mama's clone (**98 sgs blocks**) from
+`pipeline-state/mamas-munches-144-2026-08-24-031610/stage-4.json`. `/blog/` = page **2741** via
+new `home.html`, h1 "Blogs", 9 posts. Reading: `show_on_front=page`.
+⚠ **Page 144 is hard-deleted** — it 404'd the canary for ~90s when used as `page_on_front`.
+Kept in CLAUDE.md as PROVENANCE (it is what located the artefact), not as a live pointer.
+⛔ Post 66 "Spec16-P7 mockup baseline" is RAW HTML, zero block comments — a mirror, not a clone.
+⚠ Picker fixture = page **2736 `[GATE - DO NOT DELETE]`**, the ONLY solid-preset surface.
+
+### ▶ OPEN — all in the next prompt
+1. **Homepage overflows 9px** at 1440 (scrollWidth 1449) and has never been seen at 375/768.
+2. **C1/C2** — `catalog-sorting` + `query-pagination` still unstyled.
+3. **D1–D4 residual** — the two search blocks LOOK different. Deliberately NOT unified as
+   blocks (`sgs/product-search` is product-scoped; no general-purpose SGS search block exists).
+4. **Register Task 6** — compare templates against previous versions. **G1** — index vs archive.
+5. **Single-child-shrunk sweep** (D757/D773) — never swept repo-wide.
+6. **`oldshape-audit` is over-broad** — `--theme-only` ships zero block schemas yet still trips
+   it; narrow it like `deploy_roots_for_scope()` was. Worked round 3× with a justified skip.
+7. ⚠ **`/sgs-update` not run** after the container enum, so `specs/02-SGS-BLOCKS-REFERENCE.md`
+   is stale on that attr. Deliberate — a shared-DB reseed is a cross-track action.
+
+### ⛔ HANDED TO THE MIGRATION TRACK — not this register
+**flexWrap default flip** (~98 stored instances, several `[GATE]` fixtures; proven to move 3
+elements on `/` and 6 on `/shop/`) and the **83 accidental-column candidates**. ⚠ The
+"52 / 5 / 59" figure is RETIRED — unreproducible from any artefact. `survey-flex-row-shape.py`
+skips containers with an explicit `flexWrap` (line 109), so it answers "is the flip safe?", not
+"how many accidental columns?". Same classifier minus that filter: 125 rows, **83 non-NO-OP**.
+
+⚠ **Not ours:** canary page 2737 (motion track) carries undeclared `sgs/text`/`sgs/button`
+attrs — WP discards them, the next editor save deletes them, and it blocks `oldshape-audit`.
 
 ### ⚠ Two traps this track proved live
 - **A one-child flex row is indistinguishable from a stack until a sibling appears** (D773).
-  `sgs/container` defaults to `layout:"flex"` = a CSS ROW. Adding a second child makes the
-  latent default visible. This is the shape behind "accidental columns" AND D757.
-- **Item 4's count is 83, not 59 and not 0** (D774). `survey-flex-row-shape.py` skips
-  containers with an explicit `flexWrap` (line 109), so it answers "is the default flip
-  safe?" — not "how many accidental columns?". Re-run without that filter: 125 rows, 83
-  non-NO-OP. The 52/5/59 split cannot be reproduced from any artefact on disk.
-
-⚠ **Cross-track:** canary page 2737 (`[GATE — DO NOT DELETE] Magnetic pull`, motion track)
-carries undeclared attrs (`content` on sgs/text, `text` on sgs/button). WP discards them and
-the next editor save DELETES them. It also blocks `oldshape-audit` on deploys. Not ours.
-⚠ **`--theme-only` deploys ship ZERO block schemas, yet `oldshape-audit` still evaluates
-them and aborts.** Its sibling guard `deploy_roots_for_scope()` was narrowed for exactly this
-reason; the audit should be too. Until then a theme-only deploy needs `--skip-oldshape-audit`.
+  `sgs/container` defaults to `layout:"flex"` = a CSS ROW. The default did not change; the
+  child count did. Same shape as D757.
+- **Compare LEFT when you mean "is this a row".** A probe asserted `STACKED:true` from TOP
+  offsets while LEFT offsets proved a row.
 
 ## ▶ MOTION TRACK — 2026-08-25 (FR-38-30 + FR-38-31 shipped; the gradient's LOOK is the open gap)
 

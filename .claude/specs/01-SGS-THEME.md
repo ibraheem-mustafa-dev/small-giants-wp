@@ -63,7 +63,12 @@ sgs-theme/
 │
 ├── templates/
 │   ├── index.html               # Default fallback template
-│   ├── front-page.html          # Homepage template
+│   ├── front-page.html          # Static front page (show_on_front=page). NOT the blog listing
+│   ├── home.html                # Blog posts index — the page assigned as page_for_posts.
+│   │                            #   h1 is a LITERAL "Blogs" (sgs/heading), not core/query-title:
+│   │                            #   query-title type="archive" returns EMPTY on a posts index,
+│   │                            #   because core gates it on is_archive() and a posts page is
+│   │                            #   is_home(). Added 2026-08-25.
 │   ├── page.html                # Standard page template
 │   ├── single.html              # Single post template
 │   ├── archive.html             # Archive/blog listing template
