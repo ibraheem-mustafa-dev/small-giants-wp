@@ -84,6 +84,27 @@ function resolveBlockDefaults( settings ) {
 	};
 }
 
+/**
+ * Resolve a block's declared hover-control exclusions.
+ *
+ * Gate A cleanup (D808 follow-up, 2026-08-27): mirrors
+ * resolve_hover_excluded_controls() in includes/hover-effects.php — both read
+ * the same `supports.sgs.hoverExcludeControls` array declared in the block's
+ * own block.json, so there is ONE declaration and no named-block array in
+ * either shared file (same discipline D805 already enforced for
+ * hoverDefaults). pricing-table / google-reviews / whatsapp-cta declare
+ * `["imageZoom", "grayscale"]` — they are root-hover blocks (D808) with no
+ * image element for those two toggles to bind to; leaving them present but
+ * inert is the D805 failure shape this suppresses.
+ *
+ * @param {Object} settings Block settings (registered type or registerBlockType settings).
+ * @return {string[]} Excluded control keys, e.g. [ 'imageZoom', 'grayscale' ].
+ */
+function resolveHoverExcludedControls( settings ) {
+	const excluded = settings?.supports?.sgs?.hoverExcludeControls;
+	return Array.isArray( excluded ) ? excluded : [];
+}
+
 const SHADOW_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Subtle', 'sgs-blocks' ), value: 'subtle' },
@@ -236,6 +257,15 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		const hideBlockLink = ! isExtensionEnabled( name, 'blockLink' );
 		const hideClick = isExtensionHidden( name, 'clickEffects' );
 
+		// Gate A cleanup (D808 follow-up): suppress ONLY the two toggles a
+		// block has declared as excluded (no image element to bind to) —
+		// every other Hover Effects control (scale, shadow, duration,
+		// easing, stagger, focus ring) still applies. See
+		// resolveHoverExcludedControls() above + the PHP twin.
+		const excludedHoverControls = resolveHoverExcludedControls( type );
+		const hideImageZoom = excludedHoverControls.includes( 'imageZoom' );
+		const hideGrayscale = excludedHoverControls.includes( 'grayscale' );
+
 		const {
 			sgsHoverScale,
 			sgsHoverShadow,
@@ -339,18 +369,22 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+						{ ! hideImageZoom && (
 						<ToggleControl
 							label={ __( 'Zoom image on hover', 'sgs-blocks' ) }
 							help={ __( 'Gently scales any image inside the block when hovered.', 'sgs-blocks' ) }
 							checked={ sgsHoverImageZoom }
 							onChange={ ( val ) => setAttributes( { sgsHoverImageZoom: val } ) }
 						/>
+						) }
+						{ ! hideGrayscale && (
 						<ToggleControl
 							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
 							help={ __( 'Desaturates images at rest; restores colour on hover.', 'sgs-blocks' ) }
 							checked={ sgsHoverGrayscale }
 							onChange={ ( val ) => setAttributes( { sgsHoverGrayscale: val } ) }
 						/>
+						) }
 						<ToggleControl
 							label={ __( 'Border accent line on hover', 'sgs-blocks' ) }
 							help={ __( 'Adds a coloured line at the bottom that scales in on hover.', 'sgs-blocks' ) }

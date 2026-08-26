@@ -96,12 +96,70 @@ function resolve_hover_defaults( string $block_name ): array {
 		return $all_off;
 	}
 
+	$excluded = resolve_hover_excluded_controls( $block_name );
+
 	return array(
 		'scale_preset' => is_string( $declared['scalePreset'] ?? null ) ? $declared['scalePreset'] : '',
 		'shadow'       => is_string( $declared['shadow'] ?? null ) ? $declared['shadow'] : '',
-		'image_zoom'   => (bool) ( $declared['imageZoom'] ?? false ),
+		// Gate A cleanup: a block that declares an imageZoom default but has no
+		// image element to bind it to is the D805 shape (a client-visible
+		// default with no effect) — see resolve_hover_excluded_controls() below.
+		'image_zoom'   => in_array( 'imageZoom', $excluded, true ) ? false : (bool) ( $declared['imageZoom'] ?? false ),
 		'focus_ring'   => (bool) ( $declared['focusRing'] ?? false ),
 	);
+}
+
+/**
+ * Resolve a block's declared hover-control exclusions.
+ *
+ * Gate A cleanup (D808 follow-up, 2026-08-27): pricing-table, google-reviews
+ * and whatsapp-cta are root-hover blocks (D808) but have no image element for
+ * the panel's "Zoom image on hover" / "Grayscale to colour" toggles to bind
+ * to — cta-section is the only one of the four with a real (optional
+ * background) image; see plugins/sgs-blocks/src/blocks/cta-section/style.css.
+ * Leaving the toggles present-but-inert on the other three is exactly the
+ * D805 failure shape (a control the client can flip that does nothing), so
+ * they are suppressed structurally rather than left for the client to
+ * discover are dead.
+ *
+ * Declared per-block via `supports.sgs.hoverExcludeControls` (a plain array
+ * of control keys, e.g. `["imageZoom", "grayscale"]`), read identically by
+ * the JS twin (resolveHoverExcludedControls() in hover-effects.js). ONE
+ * declaration per block, no named-block array in this shared file — the same
+ * discipline D805 already enforced for hoverDefaults/enabledExtensions.
+ *
+ * @param string $block_name Block name (e.g. 'sgs/pricing-table').
+ * @return string[] Excluded control keys.
+ */
+function resolve_hover_excluded_controls( string $block_name ): array {
+	if ( '' === $block_name ) {
+		return array();
+	}
+
+	$type = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+	if ( ! $type instanceof \WP_Block_Type ) {
+		return array();
+	}
+
+	$sgs = $type->supports['sgs'] ?? array();
+	if ( ! is_array( $sgs ) ) {
+		return array();
+	}
+
+	$excluded = $sgs['hoverExcludeControls'] ?? array();
+	if ( ! is_array( $excluded ) ) {
+		return array();
+	}
+
+	// NOT sanitize_key() — it lowercases, and every caller compares against the
+	// literal camelCase control key ('imageZoom'/'grayscale'). sanitize_key()
+	// would silently turn 'imageZoom' into 'imagezoom', breaking every
+	// in_array( 'imageZoom', $excluded, true ) check downstream (caught live by
+	// a standalone harness against this exact function before deploy — 'grayscale'
+	// happened to survive because it has no capital letters to begin with, so
+	// only imageZoom's suppression was silently broken). This mirrors
+	// `enabledExtensions` immediately above, which is also compared unsanitised.
+	return array_values( array_filter( $excluded, 'is_string' ) );
 }
 
 /**
@@ -115,20 +173,29 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$block_name = $block['blockName'] ?? '';
 
 	// Resolve per-block defaults for this block type.
-	$defaults = resolve_hover_defaults( $block_name );
+	$defaults          = resolve_hover_defaults( $block_name );
+	$excluded_controls = resolve_hover_excluded_controls( $block_name );
 
 	$attrs = $block['attrs'] ?? array();
 
-	$hover_scale        = (int) ( $attrs['sgsHoverScale'] ?? 0 );
-	$hover_scale_preset = $attrs['sgsHoverScalePreset'] ?? $defaults['scale_preset'];
-	$hover_shadow       = $attrs['sgsHoverShadow'] ?? $defaults['shadow'];
-	$hover_dur_slug     = $attrs['sgsHoverDuration'] ?? 'medium';
-	$hover_easing_slug  = $attrs['sgsHoverEasing'] ?? 'default';
-	$hover_img_zoom     = (bool) ( $attrs['sgsHoverImageZoom'] ?? $defaults['image_zoom'] );
-	$stagger_delay      = (int) ( $attrs['sgsStaggerDelay'] ?? 0 );
-	$hover_grayscale    = (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
-	$hover_border_acc   = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
-	$hover_tilt_3d      = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
+	// Gate A cleanup (D808 follow-up): a block that declares imageZoom/grayscale
+	// as EXCLUDED never emits the class below, even if a stored/legacy attribute
+	// value is true — the class-injection path is where the D805 "present but
+	// inert" shape actually gets fixed, not just the inspector UI.
+	$hover_scale           = (int) ( $attrs['sgsHoverScale'] ?? 0 );
+	$hover_scale_preset    = $attrs['sgsHoverScalePreset'] ?? $defaults['scale_preset'];
+	$hover_shadow          = $attrs['sgsHoverShadow'] ?? $defaults['shadow'];
+	$hover_dur_slug        = $attrs['sgsHoverDuration'] ?? 'medium';
+	$hover_easing_slug     = $attrs['sgsHoverEasing'] ?? 'default';
+	$hover_img_zoom        = in_array( 'imageZoom', $excluded_controls, true )
+		? false
+		: (bool) ( $attrs['sgsHoverImageZoom'] ?? $defaults['image_zoom'] );
+	$stagger_delay         = (int) ( $attrs['sgsStaggerDelay'] ?? 0 );
+	$hover_grayscale       = in_array( 'grayscale', $excluded_controls, true )
+		? false
+		: (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
+	$hover_border_acc      = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
+	$hover_tilt_3d         = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
 	$focus_ring            = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
 	$block_link            = $attrs['sgsBlockLink'] ?? '';
 	$block_link_target     = (bool) ( $attrs['sgsBlockLinkTarget'] ?? false );
@@ -137,9 +204,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$click_ripple_colour   = $attrs['sgsClickRippleColour'] ?? '';
 	$click_ripple_duration = absint( $attrs['sgsClickRippleDuration'] ?? 600 );
 
-	$has_ripple       = 'ripple' === $click_effect;
-	$has_scale_hover  = $hover_scale || $hover_scale_preset;
-	$has_hover        = $has_scale_hover || $hover_shadow;
+	$has_ripple      = 'ripple' === $click_effect;
+	$has_scale_hover = $hover_scale || $hover_scale_preset;
+	$has_hover       = $has_scale_hover || $hover_shadow;
 
 	// Bail early if nothing is active (respects per-block defaults above).
 	if (

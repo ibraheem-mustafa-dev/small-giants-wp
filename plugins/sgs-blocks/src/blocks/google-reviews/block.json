@@ -18,7 +18,8 @@
 	"supports": {
 		"sgs": {
 			"enabledExtensions": [ "hover" ],
-			"hoverDefaults": { "scalePreset": "1.02", "shadow": "raised", "imageZoom": true, "focusRing": true },
+			"hoverDefaults": { "scalePreset": "1.02", "shadow": "raised", "imageZoom": false, "focusRing": true },
+			"hoverExcludeControls": [ "imageZoom", "grayscale" ],
 			"collection": true,
 			"imageControls": false,
 			"presetSelectors": [
