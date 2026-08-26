@@ -12,12 +12,12 @@
  *
  * The noise-displaced-plane technique matches a well-known reference
  * implementation circulated widely from roughly 2020-21 (see the licence-
- * provenance note below). Every tutorial and port describing this technique
- * documents that older version — it is not what modern production sites of
- * this kind use today...
+ * provenance note below): raw-noise vertex colour, no texture sampling, no
+ * striation field, no angular blur pass — which is what modern production
+ * sites of this kind use instead.
  *
- * That difference is the whole reason this effect's look was rejected — so do
- * not read this file as a faithful model of any current commercial
+ * That gap is the whole reason this effect's look was rejected — so do not
+ * read this file as a faithful model of any current commercial
  * implementation.
  *
  * ── WHY THIS IS A SIBLING OF `renderer.js`, NOT AN EXTENSION OF IT ────────
@@ -280,9 +280,12 @@ export function createWaveGradient( canvas, opts = {} ) {
 		alpha: false,
 		depth: false,
 		// Decorative background effect — low-power is the right steady-state
-		// request. Safe to keep alongside the caveat flag below: if
-		// low-power genuinely means "runs badly" on this device, context
-		// creation itself now fails rather than silently running degraded.
+		// request. Kept alongside the caveat flag below on the reasoning that
+		// if low-power genuinely means "runs badly" on this device, context
+		// creation itself now fails rather than silently running degraded —
+		// but this pairing has NOT been independently measured against a
+		// caveat-flagged hybrid-GPU device, so treat it as watched, not
+		// assumed correct forever.
 		powerPreference: 'low-power',
 		// Defence in depth: `probeSurface()` already gated this above using
 		// a throwaway context, but the REAL context this effect actually

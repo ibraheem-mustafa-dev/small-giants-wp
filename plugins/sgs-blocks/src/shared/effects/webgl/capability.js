@@ -112,6 +112,12 @@ export function probeSurface() {
 		// links fine and then draws at a crawl. Context creation returning
 		// null here is exactly the "decline" signal the whole module exists
 		// to produce.
+		// ⚠ SHARED GATE: this same probeSurface() also gates the already-
+		// shipped `surface-treatment` effect (webgl/index.js's initSurface()),
+		// so this flag tightens THAT effect's admission too, not just
+		// wave-gradient's. Intentional — declining is correct behaviour on a
+		// caveat-flagged driver for either effect — but it is a real,
+		// shared-code-path change, not scoped to wave-gradient alone.
 		gl = canvas.getContext( 'webgl2', {
 			failIfMajorPerformanceCaveat: true,
 		} );

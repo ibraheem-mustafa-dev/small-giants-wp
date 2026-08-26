@@ -85,6 +85,55 @@ function parseRgbString( str ) {
 }
 
 /**
+ * One shared, never-attached 1x1 canvas used to resolve any CSS colour syntax
+ * `getComputedStyle().color` returned in its OWN function form (`oklch()`,
+ * `color(display-p3 ...)`, `lab()`, …) instead of normalising to `rgb()`.
+ * Canvas 2D's `fillStyle` setter resolves ANY valid CSS colour to sRGB bytes
+ * internally, regardless of colour-space syntax — this is the fallback for
+ * exactly the wide-gamut case `parseRgbString()` cannot match.
+ *
+ * @return {CanvasRenderingContext2D|null} The 1x1 probe context, or null if
+ *                                          canvas 2D is unavailable.
+ */
+let colourCanvasCtx = null;
+function getColourCanvasCtx() {
+	if ( colourCanvasCtx === null ) {
+		const canvas = document.createElement( 'canvas' );
+		canvas.width = 1;
+		canvas.height = 1;
+		colourCanvasCtx = canvas.getContext( '2d' ) || false;
+	}
+	return colourCanvasCtx || null;
+}
+
+/**
+ * Resolve a computed colour string to 0-1 RGB via canvas 2D, for colour
+ * syntaxes `parseRgbString()` cannot match (`oklch()`, `color(display-p3 …)`,
+ * wide-gamut forms a browser may return instead of normalising to `rgb()`).
+ *
+ * Only ever called on a string the DOM probe already accepted as valid CSS
+ * (`parseCssColour()`'s `el.style.color === ''` check gates that) — so the
+ * validity question is already settled; this only needs to resolve the VALUE.
+ * `ctx.fillStyle` is reset to a known sentinel before each assignment because
+ * an invalid assignment is silently ignored and the property keeps its
+ * previous value, same "reset before assign" discipline the DOM probe uses.
+ *
+ * @param {string} str The computed colour string.
+ * @return {number[]|null} [r,g,b] 0-1, or null if it could not be resolved.
+ */
+function parseViaCanvas( str ) {
+	const ctx = getColourCanvasCtx();
+	if ( ! ctx || typeof str !== 'string' || ! str.trim() ) {
+		return null;
+	}
+	ctx.fillStyle = '#000000';
+	ctx.fillStyle = str.trim();
+	ctx.fillRect( 0, 0, 1, 1 );
+	const [ r, g, b ] = ctx.getImageData( 0, 0, 1, 1 ).data;
+	return [ r / 255, g / 255, b / 255 ];
+}
+
+/**
  * Parse ANY valid CSS colour (hex, `rgb()`, `hsl()`, `oklch()`, named
  * colours, …) into 0-1 RGB. Returns null on anything invalid.
  *
@@ -112,7 +161,15 @@ function parseCssColour( raw ) {
 		// The browser refused the assignment outright — invalid CSS.
 		return null;
 	}
-	return parseRgbString( getComputedStyle( probe ).color );
+	const computed = getComputedStyle( probe ).color;
+	const rgb = parseRgbString( computed );
+	if ( rgb ) {
+		return rgb;
+	}
+	// The DOM probe already proved this is valid CSS, but the browser
+	// returned it in its OWN function form (oklch()/color()/wide-gamut)
+	// rather than normalising to rgb() — resolve it via canvas 2D instead.
+	return parseViaCanvas( computed );
 }
 
 /**
