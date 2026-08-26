@@ -133,3 +133,46 @@ composition, gap/grid/shadow all sharing the same `style` object) and set a
 padding + margin value on desktop, then flip the device-type toggle to tablet
 and mobile, confirming the canvas box visibly changes at each tier before
 this is considered closed.**
+
+---
+
+## POST-DEPLOY LIVE VERIFICATION (main session, 2026-08-26) — READ THIS
+
+The static verification above is confirmed for PADDING and **refuted for MARGIN**.
+Measured on the canary after deploy, on probe pages built for the purpose.
+
+### Padding — FIXED, and tier-aware
+
+| block | canvas before | canvas @Desktop | canvas @Tablet |
+|---|---|---|---|
+| `sgs/trust-bar` (has `paddingTablet:40px`) | 0px | **120px** | **40px** |
+| `sgs/multi-button` (no tablet tier) | 0px | **120px** | **120px** |
+
+The two blocks DIVERGING at Tablet is what proves tier-awareness: trust-bar drops to
+its own tablet tier while multi-button correctly inherits the base. A desktop-only
+preview would have shown both at 120px and passed falsely.
+
+### Margin — NOT previewable, and it is NOT our bug
+
+Our code does write it: the element carries inline `margin: 80px 0px`, and
+`el.style.marginTop` is `'80px'`, so the declaration parses. But the computed value is
+`0px`.
+
+**The control experiment settles the cause.** `sgs/container` — the reference block this
+module was extracted FROM, which has always previewed spacing correctly — shows exactly
+the same thing: inline `margin: 80px 0px`, computed `marginTop: 0px`, with its padding
+previewing fine at 30px. True for both a first-child and a non-first-child container.
+
+So the editor canvas zeroes block margins for EVERY block, including the one that was
+already "correct". This fix therefore reaches exact parity with container; margin was
+never previewable and this change did not regress it.
+
+Forcing `margin-top: 80px !important` via CSSOM DOES take effect, so it is technically
+overridable — but that means fighting WordPress's own editor layout model, which is a
+design decision, not a bug fix. **Open for Bean.**
+
+⚠ Honest limit: no author-stylesheet rule matching the element was found across 263
+readable sheets, and there are no adopted stylesheets. The exact overriding mechanism
+is therefore NOT identified — only its effect, and the fact that it applies equally to
+container. Do not repeat the guess that it is `.is-layout-flow > :first-child`; the
+non-first-child container behaves identically, which refutes that.
