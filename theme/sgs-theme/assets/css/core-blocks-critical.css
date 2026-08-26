@@ -138,10 +138,44 @@ html {
 .entry-content > .alignfull,
 .wp-site-blocks > .wp-block-group,
 .wp-site-blocks > .wp-block-cover,
-.wp-site-blocks > .wp-block-sgs-hero,
-body .is-root-container > .wp-block {
+.wp-site-blocks > .wp-block-sgs-hero {
 	margin-block-start: 0 !important;
 	margin-block-end: 0 !important;
+}
+
+/*
+ * EDITOR CANVAS — same intent, deliberately WITHOUT `!important`.
+ *
+ * ⛔ DO NOT ADD `!important` BACK. It silently broke every block's margin
+ * control in the editor, and the bug is invisible from the frontend.
+ *
+ * `.is-root-container` exists ONLY inside the block-editor canvas, and unlike
+ * the four frontend arms above — which name three specific block types — this
+ * arm is a CATCH-ALL (`> .wp-block` is every top-level block). With
+ * `!important` it therefore out-ranked the INLINE style that `edit.js` writes
+ * for an operator's own margin, so a client set a margin, the published page
+ * honoured it, and the canvas never moved. Reported by Bean 2026-08-26.
+ *
+ * Measured in the live canary editor, both directions, before this change:
+ *
+ *              operator set 80px    operator set nothing
+ *   !important         0px                 0px          <- the bug
+ *   no !important      80px                0px          <- correct
+ *
+ * The rule's PURPOSE survives without `!important`: WordPress's own
+ * inter-section margin comes from a `:where()` layout rule at specificity
+ * (0,0,0), which this selector at (0,2,1) still beats comfortably. Only an
+ * explicit inline value — i.e. one the operator actually chose — now wins.
+ *
+ * ⚠ The four frontend arms above KEEP `!important` deliberately. They carry
+ * the same latent defect (an explicit margin on a top-level group/cover/hero
+ * would be overridden), but that was NOT measured, and this codebase does not
+ * ship a fix for an unproven cause. Tracked as a follow-up rather than changed
+ * blind.
+ */
+body .is-root-container > .wp-block {
+	margin-block-start: 0;
+	margin-block-end: 0;
 }
 
 /* Universal focus ring — catches anything without a specific rule.
