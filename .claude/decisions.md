@@ -1,3 +1,35 @@
+## D813 [ROUTINE] — the third-party-attribution gate built, and a real bug in it fixed before trusting its count
+
+**2026-08-26.** `.claude/hooks/check-no-thirdparty-attribution.py`, per the FR-38-31 rework plan
+(Step 1 audit + Step 2 gate, `.claude/plans/phase-1-fr3831-hygiene-and-look.md`). Companion to D794's
+`check-no-third-party-glsl.py` — that gate scans tracked `.claude/**/*.md` for reproduced shader
+code; this one scans tracked `plugins/` + `theme/` source (`.js`/`.php`/`.css`) for named
+third-party companies ("stripe"), excluding genuine payment integration and the MIT-required
+attribution notice for `sa3dany/wave-gradient` (allowlisted by exact path + line range 55-62 in
+`wave-gradient.js`, verified against the live file before hardcoding).
+
+**Structural defence, not a promise:** `--self-test` proves both directions (a must-flag fixture
+and a must-pass payment-context fixture) plus a third check that the MIT allowlist excludes only
+lines 59/62, not the whole file or the whole docblock.
+
+**A real over-match caught before the count was trusted.** The first build's `PAYMENT_CONTEXT_RX`
+matched `stripe[_-]?(payment|...)` — an optional single underscore or hyphen, never a space — so it
+missed `sgs-blocks.php:235`'s comment `"// Stripe payment settings and PaymentIntent AJAX
+handler."`, which Step 1's independent audit had already correctly classified as legitimate payment
+plumbing. The gate flagged it anyway (5 files, 11 references) where the audit found 4 files, 10.
+Fixed: `[_-]?` → `[_\s-]?`. Re-run: 4 files, 10 references — now reconciling exactly with the
+audit's 9 (design-rationale, restate) + 1 (internal-report pointer, delete). The 2 MIT-attribution
+lines stay correctly excluded throughout.
+
+⭐ **The method point:** two independently-built instruments (an agent's audit, a second agent's
+gate) disagreeing by one file was the signal, not the gate's own self-test — a self-test only proves
+an instrument is internally consistent, not that it agrees with a second measurement of the same
+ground truth. Caught by running the gate and comparing its live output to the audit report before
+proceeding, per this project's prove-the-cause rule.
+
+Live run is currently EXPECTED to fail (exit 1) — the 10 source references have not been edited yet;
+that happens at Step 4 once Bean signs off Step 3's classification.
+
 ## D812 [ROUTINE] — the enum control-shape threshold, derived from the corpus rather than chosen
 
 **2026-08-26.** `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §3.1,
