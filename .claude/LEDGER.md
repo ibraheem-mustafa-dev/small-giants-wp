@@ -279,56 +279,59 @@ bypass `[repeat-ok:<reason>]`.
 
 ### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
 
-✅ **2026-08-27 CLOSED.** Method councilled -> **C+**, 9 fixes. **Rule 21: 211 -> 83** (128 were
-ONE detector bug) · **Rule 34: 319 -> 2** (~505 lines of duplicated resolver deleted) · scanner
-**945 -> 499** · `templateMode` removed from 6 blocks. Full triage:
+✅ **2026-08-27 CLOSED.** Method councilled -> **C+**, 9 fixes. Rule 21 **211 -> 83** (128 were
+ONE detector bug) · rule 34 **319 -> 2** · scanner **945 -> 499**. Triage:
 `reports/2026-08-27-rule-21-triage.md` + `-rule-34-false-positives.md`.
-✅ **HERO CANVAS + colourVar — CLOSED 2026-08-26, live-verified, pushed** (`14d3801bb`
-`9efc58348` `dc2243e1e`). ⛔ **Detail single-sourced to D792 — do not restate.** Headlines:
-· Hero needed **TWO** fixes, not one — inline paint AND `has-background`; the default
-  `background-image` gradient stacked over the client's `background-color`. D792 records the
-  reasoning error, which is the useful part.
-· **`colourVar()` slug-wrapped unconditionally** → every custom (non-palette) colour was
-  invisible in the canvas across **120 call sites / 39 blocks**, fine on the live page. Fixed via
-  `CSS.supports`. Gate `check-colour-preview-resolver` (gates.json 74), `--self-test` **watched
-  failing first: 7/10 break on the old code.** Bean-approved Rule 7 blast radius.
-· ⛔ **CHECK A missed both** — a 2nd and 3rd proven false negative. TASK 1b still open.
-· **Stored content migrated** (the rename's missing half): 2742/2511/2353 held 6 old `image*`
-  names WP was discarding; the next editor save would have DELETED them. Backups in
-  `.claude/backups/2026-08-26-hero-rename-oldshape/`. RESTORED the homepage hero's authored crop.
-  ⚠ My first pass renamed 2 attrs on an `sgs/media` block — gate caught it, reverted, byte-clean.
-· **`check-box-family-guard` FP fixed** — `'top'` matched inside `'Desktop'`; 21-case control.
-⛔ **STILL OPEN:** `splitImageBleed`. The "4 rows carry `css_element: media`" claim is **FALSE** —
-exactly ONE does; measured table + the real unnamed anomaly in **D792**.
+✅ **CLOSED 2026-08-26, pushed.** ⛔ Detail single-sourced to **D792/D797/D798/D799** — do not
+restate. Shipped: hero canvas background, which needed TWO fixes not one (`14d3801bb` `dc2243e1e`)
+· **`colourVar()` slug-wrapped unconditionally**, so every custom colour was invisible in the
+canvas across **120 sites / 39 blocks** while fine live (`9efc58348`, + gate
+`check-colour-preview-resolver`, self-test watched failing 7/10) · rule 21 learned the variation
+switcher, ceiling **83 → 82** (`d6d863cea`) · **truncation commit gate** = TASK 3, narrowed by
+Bean, proven able to fail twice (`0fdfc7ea9`) · **Gate C / FR-37-42 column-shape picker BUILT**,
+footer-row only (`2e46fc3f2`) · stored content migrated on 2742/2511/2353, restoring the homepage
+hero's authored crop.
+
+⛔ **ONE COMMIT WRITTEN, NOT LANDED — land it FIRST.** Four `sgs/hero` files on disk:
+`splitImageBleed` deleted (inert since 2026-08-25, measured 5 ways) + the `split-image` manifest
+corrected (3 NULL + 1 `media` → `split-image`; NULL reads as the block ROOT, so cloned image
+borders landed on the `<section>`). Blocked by the pre-commit F5 gate on **another track's** rogue
+seed `sgs/product-card.titleFontFamily`; no scoped F5 bypass exists and `--no-verify` was refused.
+**D797/D798.**
+
+⭐ **NEXT: `.claude/prompts/2026-08-27-check-a-blind-spot-and-the-first-controls.md`** — carries
+EVERY remaining task: land the hero commit · TASK 1b/1c/1d (CHECK A has **THREE** proven false
+negatives; 208 net-new, NO ceiling) · TASK 2 (rule 21's 82 — hover **25** + stagger **3** across
+**NINE** blocks; ⛔ a universal hover panel EXISTS writing a different `sgsHover*` family, so a
+naive opt-in gives two of every control) · TASK 4 · Gate C deploy + roll-out · C15's four items.
+
+⚠ **Five tracks on `main`:** 3 deploys aborted, 2 commits blocked by others' staged work.
 
 ⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
 items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the
 project's own ordering rule **D552: standard leads, pipeline follows.**
 
-⛔ **SPEC 39 DOES NOT EXIST AS A FILE.** No `39-*.md`, absent from `specs/README.md`, yet D554-C
-names it THE PACING ITEM: the clone gate (`orchestrator/check_flat_tier_regression.py`) blocks
-cloning for every migrated property until it lands. **Measured cost: 37 conformance goldens sit
-`xfail(strict=True)` in `tests/fixtures/conformance/quarantine.json`, whose `unquarantine_when`
-literally names "Spec 39's converter rework".** Finishing more of the migration INCREASES the
-blocked surface until it lands — by design, but that is why it follows immediately.
+⛔ **SPEC 39 DOES NOT EXIST AS A FILE** — absent from `specs/README.md`, yet D554-C names it THE
+PACING ITEM: `orchestrator/check_flat_tier_regression.py` blocks cloning for every migrated
+property until it lands, and **37 conformance goldens sit `xfail(strict=True)`** naming it.
+Finishing more of the migration INCREASES the blocked surface until it ships. Detail: D554-C.
 
 1. **Step 0 — fix the instruments (small, do first).** `migrate-tier-object.py` has a 3-family
    BLIND SPOT: `classify()` needs a BARE base, so it cannot see a family whose base is
    `<name>Desktop` — `brand-strip.columns`, `hero.textAlign`, `whatsapp-cta.showOn`. **True
    remaining scope is 37 families, not 34.** Then check whether `audit-inline-styling.js`'s 11
    "tier-without-base" blocks share that cause. Scope A honestly only after both agree.
-2. **Step 1 — batch the SIX Bean decisions in one sitting** (register C14-C19: CO-28 panel order ·
-   Bindings scope · spacing tokens · Section Styles · façade `inspector_control_type` ·
-   testimonial/image-sequence crop). Four block ready-to-run mechanical work.
+2. ✅ **Step 1 — the SIX Bean decisions are ANSWERED** (C14-C19). C15 researched + scoped
+   2026-08-26 (4 items adopted); C19's sizing-mode picker approved. Do NOT re-ask.
 3. **Step 2 — the mechanical sweep behind detectors:** 37 families · Spec 32 B1/B3/B5 ·
    Spec 35 C1-C11 (colour R2-R6, ToolsPanel 0/15, decorative-image 1/14, imageControls 2/15,
    border-builder 1-of-48). THE-MIGRATION-METHOD.md applies to every one.
 4. **Step 3-4 — the two live passes** (a11y + element-first panel order) and the hex-literal triage.
 5. **Step 5 — WRITE SPEC 39**, then the converter rework. Check first whether its scope is already
    settled across D276/D552/D554 — it may be transcription plus a design gate, not open design.
-6. ⏸ Whole-file-diff detection — **downgraded** (Bean, 2026-08-25): a reformat is recoverable via
-   git/worktree, so this is a detection nicety, not a safety gate. Only the truncation case is
-   genuinely undetectable, and it is narrow.
+6. ✅ **Whole-file-diff detection — BUILT 2026-08-26** as the TRUNCATION gate
+   (`.claude/hooks/truncation-commit-gate.py`, `0fdfc7ea9`). Bean narrowed it: a reformat is
+   recoverable from git, truncation is the case no other gate can see.
 
 ⚠ **`check-box-flat` is wired into `prebuild` but its exit code is NOT propagated** — its findings
 sit behind a passing suite. That is how `multi-button::childBtnBorderRadius` went unnoticed.

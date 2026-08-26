@@ -252,7 +252,9 @@ opportunity, not a reason to avoid the design**.
 - Shapes are expressed in `fr`, not px, so they stay fluid (the reference's `340px 680px 340px`
   is ≈ `1fr 2fr 1fr`).
 
-**Status:** `NOT-BUILT — approved 2026-07-28, carried as FR-37-42.` Recorded here rather than
+**Status:** `PARTIAL — built 2026-08-26 (`2e46fc3f2`), wired to `sgs/site-footer-row` only;
+`sgs/site-header-row` + `sgs/container` still to roll out. NOT yet deployed or eye-verified.`
+Recorded here rather than
 left in a plan file, because a rejection standing unamended in a governing spec is exactly the
 D358 failure: the next session reads "ratio rejected, do not re-litigate" and never builds it.
 
@@ -1593,7 +1595,34 @@ after, which must be unchanged.
 
 **⚠ Do NOT re-derive the shape list from taste.** It comes from the reference teardowns; any
 shape added later needs a measured reference behind it.
-**Status:** `NOT-BUILT` — approved, queued behind the B3 preset roster it was found by.
+**Status:** `PARTIAL` — built 2026-08-26 (`2e46fc3f2`);
+`src/components/ColumnShapePicker.js`, mounted at `src/blocks/site-footer-row/edit.js:~415`.
+`sgs/site-header-row` and `sgs/container` still to roll out (Bean's build-time call: all three
+share one control). NOT yet deployed, so the eye-verified half of Done-when is OPEN.
+
+**Built to the gold standard, not to taste** — `reports/2026-08-26-column-shape-picker-gold-standard.md`:
+· Core's own column picker is **insert-time only** (`columns/edit.js` swaps the Placeholder once the
+  block has children; its variations are `scope:['block']` with no `isActive`, so
+  `BlockVariationTransforms` renders null). An after-insert shape control is a genuine GAP in core.
+· `ToggleGroupControl` + `ToggleGroupControlOptionIcon`, not a row of `Button isPressed` — a true
+  Ariakit radiogroup with arrow-key roving, via the existing house primitives boundary.
+· ONE string as both visible and accessible name, ratio included ("Wide centre (25 / 50 / 25)") —
+  deliberately NOT core's label/description split, which Gutenberg #66062 records as a live
+  WCAG 2.5.3 failure.
+· Shape names are LOGICAL (`first`/`last`), never directional: "left heavy" and its diagram both
+  invert under RTL while `1fr 2fr` does not.
+
+⛔ **One research recommendation was REJECTED and must stay rejected: storing a shape SLUG** instead
+of writing `gridTemplateColumns`. It contradicts this FR's binding constraints, and its three stated
+reasons fail on checking — deriving via `activeShapeKey()` supplies the stable value the control
+needs; per-column width attrs do not exist on these blocks; and `gridTemplateColumns` is ALREADY a
+per-tier object the wrapper renders. Decisively, a stored slug can DISAGREE with a hand-edited track
+string, which is exactly the lying indicator FR-37-28 exists to prevent. Deriving cannot lie.
+
+⚠ **Multi-row grids need no design (Bean asked, 2026-08-26).** `grid-template-columns` applies to the
+WHOLE grid — every row uses the same tracks — and `sgs/container` has no per-item span support. So
+differing proportions per row means a SECOND container, which is already true today with the count
+control. The shape picker adds no new multi-row concept.
 **Done when:** an operator picks a wide-centre shape with no CSS and no typing; the row renders
 that shape on desktop and stacks to 1 on mobile with no further configuration; the stored value
 is `gridTemplateColumns` and nothing else; and the active-shape indicator is derived, verified

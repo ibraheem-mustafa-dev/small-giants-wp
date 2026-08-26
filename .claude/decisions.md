@@ -1,3 +1,110 @@
+## D799 [ROUTINE] — FR-37-42 column-shape picker built; core's own picker is insert-time only
+
+**2026-08-26.** Approved 2026-07-28, never built. Built (`2e46fc3f2`), wired to
+`sgs/site-footer-row` only, NOT yet deployed or eye-verified. Spec 37 §3.3 + FR-37-42 updated
+to PARTIAL. Bean's build-time call: all three blocks (footer-row, header-row, container) share
+one control.
+
+**Bean asked whether a container needs different column proportions per grid ROW. CSS settles
+it:** `grid-template-columns` applies to the WHOLE grid — every row uses the same tracks — and
+`sgs/container` has no per-item span support. Differing proportions therefore means a SECOND
+container, which is already true today with the count control. The picker adds no new concept.
+
+**Bean asked for gold-standard research first, and it changed the design**
+(`reports/2026-08-26-column-shape-picker-gold-standard.md`):
+- **Core's own picker is INSERT-TIME ONLY** — `columns/edit.js` swaps the Placeholder for the
+  edit container once the block has children, with no route back, and core/columns variations
+  are `scope:['block']` with no `isActive`, so `BlockVariationTransforms` renders null. An
+  after-insert shape control is a genuine GAP in core, not a re-implementation of it.
+- `ToggleGroupControl` + `ToggleGroupControlOptionIcon` instead of a row of `Button isPressed`:
+  a true Ariakit radiogroup with arrow-key roving, via the existing house primitives boundary.
+- ONE string as both visible and accessible name, ratio included — NOT core's label/description
+  split, which Gutenberg #66062 records as a live WCAG 2.5.3 failure.
+- Shape names are LOGICAL (`first`/`last`); "left heavy" inverts under RTL, `1fr 2fr` does not.
+
+⛔ **One recommendation REJECTED: storing a shape SLUG** rather than writing
+`gridTemplateColumns`. It contradicts FR-37-42's binding constraints and its three reasons fail
+on checking — `activeShapeKey()` derivation supplies the stable value; per-column width attrs do
+not exist here; `gridTemplateColumns` is ALREADY a per-tier object the wrapper renders. A stored
+slug can DISAGREE with a hand-edited value, the exact lying indicator FR-37-28 prevents.
+
+⚠ **A council/research recommendation is a HYPOTHESIS, not a spec** (R-31-7). Four of its five
+diffs were adopted; the fifth was checked against the governing spec and refused.
+
+---
+
+## D798 [INCIDENT] — splitImageBleed deleted; Bean's report was right and the cause was already gone
+
+**2026-08-26.** Bean: *"splitImageBleed is auto on and breaks the shape of the image. When I turn
+it off the image actually becomes fullbleed."*
+
+**He was right, and I contradicted him from code before checking.** The modifier once carried
+`margin-right:-spacing-40; max-width:calc(50% + spacing-40)` — a hardcoded cap holding the media
+column to roughly half its track (measured at the time: track 736.5px, media 392px), so
+`object-fit:cover` cropped hard. Turning it OFF released the cap. Exactly his description.
+
+That cap was removed 2026-08-25 in `6db78e0e7` — the commit the LEDGER records as **"Hero media
+cell 392 → 733px"**. The toggle has been INERT since. Measured 2026-08-26 across FIVE conditions
+— editor desktop/tablet/mobile on the real Mama's homepage, the live frontend at a narrow width,
+and test page 2337 — toggling changed nothing: identical geometry, computed height, object-fit.
+0 stored occurrences, 0 theme usage. Deletion is behaviour-neutral BY MEASUREMENT.
+
+⚠ **The deletion had to PRESERVE something.** The image half was redundant
+(`.sgs-hero__split-image` already sets width/height 100% + cover), but the VIDEO and SVG tiers
+had NO other sizing anywhere — their only `width/height:100%` came from the bleed rules, added at
+D600 because a bled video kept its native ratio and overflowed its column. Those rules are now
+UNCONDITIONAL: filling the media column is correct for a split hero regardless of any toggle.
+
+⭐ **Method lesson, the third of the session:** I told Bean deletion would change every split
+hero. It changes nothing. Every wrong call this session came from reading CSS rules; every
+correction came from opening the page. A rule's presence is not evidence of its effect.
+
+⚠ Still live and NOT caused by the toggle: the split image shows real shape distortion —
+**1.45× at tablet, 1.88× on a narrow frontend** — because it is forced to full column height with
+`object-fit:cover`. Separate defect, own item.
+
+---
+
+## D797 [INCIDENT] — hero's split-image element manifest routed cloned CSS to the wrong node
+
+**2026-08-26.** Four `sgs/hero` attributes were mis-declared in `supports.sgs.elements`, and the
+converter reads that manifest to route cloned CSS.
+
+| Attribute | was | now | render.php paints it on |
+|---|---|---|---|
+| `splitMediaBorderColour` / `-Style` / `-Width` | **NULL** | `split-image` | `.sgs-hero__split-image` (:610) |
+| `splitMediaObjectFit` | `media` | `split-image` | `.sgs-hero__split-image` (:629) |
+
+**NULL is not "unset" — `db_lookup.py:1498` reads NULL as the block's OWN ROOT**, identical to
+`root`/`self`. So a cloned draft's split-image border was routed onto the hero `<section>`: the
+value transfers, the appearance does not. Invisible locally, wrong only in clones. `object-fit`
+was mapped to `media`, the column WRAPPER, though it paints on the image.
+
+⛔ **The element's own `_note` already described this mismatch and LEFT it**, recording that
+*"fixing it needs a DB write, which this manifest-only fix cannot do"*. **That premise was wrong,
+and is why the defect survived a full session that had already found it.** `css_element` is
+DERIVED from this `attrMap` — the manifest IS the fix layer, and a hand-edited DB row would be
+overwritten on the next reseed. Verified durable: after Stage 1 the generated classifier derives
+`split-image` for all four and the DB rows follow.
+
+⚠ **The brief's own figure was wrong too.** It said "four rows carry `css_element: media`".
+Measured: exactly ONE did; three were NULL. NULL is the MAJORITY state on this block (79 of its
+rows), so neither value is defect-shaped on its face — what makes these four wrong is that
+`render.php` paints them on a child node.
+
+**RESIDUAL, understood, deliberately unchanged:** `splitMediaObjectPositionMobile` reads
+`css_element='split-media'` while its desktop/tablet siblings read `split-image`. It paints on the
+COMPOUND selector `.sgs-hero__split-image.sgs-hero__split-media--mobile` (:1279) and
+`css_tier='mobile'` already encodes the tier, so the element arguably should be `split-image` too
+— but the compound is documented as deliberate and changing a generated classifier's derivation
+is converter-adjacent. Left for its own gate.
+
+⛔ **NOT COMMITTED.** The pre-commit F5 gate fails on `sgs/product-card.titleFontFamily`, a rogue
+DB seed no classifier declares — verified absent from `css-property-classifications.json` in HEAD
+AND the working tree, and nothing in the hero diff touches product-card. `.githooks/pre-commit`
+offers NO scoped bypass for F5, only `--no-verify`, which discards gitleaks and every other gate.
+Not used. The four hero files sit on disk, verified; landing them is the next session's first act.
+
 ## D796 [INCIDENT] — the hover double-fire was LIVE with the panel switched OFF, and the plan to delete 13 "duplicates" was refuted entirely
 
 **2026-08-26.** `extensions.css`, `card-grid/style.css`, `gallery/style.css`,
