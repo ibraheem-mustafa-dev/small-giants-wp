@@ -1939,6 +1939,26 @@ EXTENSION SURFACE axis correction above.
      row width. Validated on the binding case (`burger-morph` → "Morphed icon", both 12 chars), but
      that is n=1. ⛔ **The gate that enforces this table MUST measure the rendered label, not the
      slug.** The census may use the proxy; an enforcing gate may not.
+
+   ⭐ **THE GATE NOW EXISTS (2026-08-27, `scripts/check-enum-control-shape.py`).** This line
+   previously said the threshold was written "deliberately no gate". It is a SEPARATE instrument
+   from the census, not a wrapper around it, precisely because the census's slug proxy is
+   forbidden here: it reads the actual rendered JSX text (`ToggleGroupControlOption label={ __(
+   '...' ) }`, and `SelectControl`'s `options={[...]}` inline array or `options={IDENTIFIER}`
+   resolved to its module-level `const` definition) for every 2–5-option enum, and classifies the
+   6–10/>10 bands by count alone (label extraction isn't load-bearing there). The 153/282
+   blind-spot cases the census couldn't resolve are carried forward as explicit `skip` entries
+   with a machine-readable reason (`unresolved-binding` / `shared-component` / `ambiguous-binding`
+   / `label-extraction-failed`) — never silently counted as compliant.
+
+   ⚠ **Reading rendered labels instead of slugs found FEWER violations than the census predicted,
+   not more.** The census's slug-derived estimate was 85; the gate's own re-derived count is
+   **45**. Of the 92 label-judged `SelectControl`-in-2–5-band cases, 47 (51%) have a rendered
+   label genuinely longer than 12 characters despite a short slug — `SelectControl` is the
+   CORRECT shape for those, and the slug proxy was wrong to flag them. This is exactly the failure
+   mode the n=1 validation above warned it hadn't ruled out. The 45 real violations are baselined
+   (`scripts/check-enum-control-shape-baseline.json`) and ratcheted — `--check` fails only on a
+   NEW violation, never on the seeded 45.
 2. **Required props** — `value` bound to the attr; `options` matching the declared `enum` **exactly**.
 3. **Banned lookalikes** — (a) a shared aggregator offering options outside the consuming block's
    enum; (b) a PHP-enforced closed set with no `block.json` enum (free-text box, no validation).

@@ -1,0 +1,189 @@
+{
+  "_meta": {
+    "generated": "2026-08-27",
+    "generator": "check-enum-control-shape.py --json (this file's own output)",
+    "why": "Known-debt baseline for the D812 enum control-shape gate. These are 2-5-option enums whose RENDERED LABEL (not slug) is <=12 chars but which currently render as SelectControl instead of ToggleGroupControl. Ratchet: --check fails on any NEW violation, never on these. NOT a fix-immediately list -- see decisions.md D812 + this branch's session notes for why the gate's own count (45) differs from D812's slug-derived estimate (85)."
+  },
+  "violations": [
+    {
+      "block": "audio",
+      "attr": "audioPreload"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "logoFit"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "nameTextAlign"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "scrollDirection"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "tileShape"
+    },
+    {
+      "block": "button",
+      "attr": "textDecorationHover"
+    },
+    {
+      "block": "card-grid",
+      "attr": "source"
+    },
+    {
+      "block": "container",
+      "attr": "textAlign"
+    },
+    {
+      "block": "google-reviews",
+      "attr": "cardStyle"
+    },
+    {
+      "block": "google-reviews",
+      "attr": "theme"
+    },
+    {
+      "block": "heading",
+      "attr": "textDecoration"
+    },
+    {
+      "block": "hero",
+      "attr": "variant"
+    },
+    {
+      "block": "icon",
+      "attr": "textAlign"
+    },
+    {
+      "block": "icon-list",
+      "attr": "defaultIconSource"
+    },
+    {
+      "block": "info-box",
+      "attr": "iconPosition"
+    },
+    {
+      "block": "info-box",
+      "attr": "textAlign"
+    },
+    {
+      "block": "label",
+      "attr": "fontStyle"
+    },
+    {
+      "block": "media",
+      "attr": "alignment"
+    },
+    {
+      "block": "nav-drawer",
+      "attr": "backgroundAttachment"
+    },
+    {
+      "block": "nav-drawer",
+      "attr": "backgroundRepeat"
+    },
+    {
+      "block": "nav-drawer",
+      "attr": "backgroundSize"
+    },
+    {
+      "block": "notice-banner",
+      "attr": "dismissBehaviour"
+    },
+    {
+      "block": "notice-banner",
+      "attr": "displayMode"
+    },
+    {
+      "block": "notice-banner",
+      "attr": "stickyPosition"
+    },
+    {
+      "block": "pricing-table",
+      "attr": "toggleStyle"
+    },
+    {
+      "block": "product-card",
+      "attr": "ctaBorderStyle"
+    },
+    {
+      "block": "product-card",
+      "attr": "ctaStyle"
+    },
+    {
+      "block": "product-card",
+      "attr": "ctaWidthType"
+    },
+    {
+      "block": "product-faq",
+      "attr": "headingLevel"
+    },
+    {
+      "block": "product-faq",
+      "attr": "iconPosition"
+    },
+    {
+      "block": "quote",
+      "attr": "attributionTag"
+    },
+    {
+      "block": "quote",
+      "attr": "attributionTextDecoration"
+    },
+    {
+      "block": "quote",
+      "attr": "attributionTextTransform"
+    },
+    {
+      "block": "separator",
+      "attr": "alignment"
+    },
+    {
+      "block": "separator",
+      "attr": "contentIconSource"
+    },
+    {
+      "block": "separator",
+      "attr": "contentMode"
+    },
+    {
+      "block": "separator",
+      "attr": "widthUnit"
+    },
+    {
+      "block": "tabs",
+      "attr": "orientation"
+    },
+    {
+      "block": "tabs",
+      "attr": "tabAlignment"
+    },
+    {
+      "block": "tabs",
+      "attr": "tabStyle"
+    },
+    {
+      "block": "text",
+      "attr": "textAlign"
+    },
+    {
+      "block": "text",
+      "attr": "textDecoration"
+    },
+    {
+      "block": "text",
+      "attr": "textTransform"
+    },
+    {
+      "block": "trust-bar",
+      "attr": "autoScrollSpeed"
+    },
+    {
+      "block": "trust-bar",
+      "attr": "badgeSize"
+    }
+  ]
+}
