@@ -1,0 +1,10 @@
+{
+	"_comment": "Ratchet baseline for check-css-layer-orphans.py. Seeded 2026-08-26 from a real --survey run: 509 non-NULL css_layer rows across 61 production converter files, of which exactly ONE value has no reader. This gate is VISIBILITY ONLY per Bean's 2026-08-26 ruling — nothing is deleted or renamed. A NEW orphan appearing is the regression it exists to catch.",
+	"known_orphan_css_layer_values": [
+		"GRID_AREA"
+	],
+	"_GRID_AREA": "Bean ruled 2026-08-26: change NOTHING. All GRID_AREA declarations and rows stay. It is recorded here as a KNOWN orphan so it stops being invisible, not as debt scheduled for deletion. ⛔ Do NOT conflate with D642, which deleted a DIFFERENT mechanism sharing the word 'layer' (resolvers/grid_area.py, triggered by ctx.area_name, never set outside test fixtures). That deletion was correct and is not reopened.",
+	"min_css_layer_rows_floor": 400,
+	"min_files_scanned_floor": 40,
+	"_floors": "Anti-vacuity. Measured 509 rows / 61 files on seeding; the floors sit below that with headroom for legitimate churn, so a scan that suddenly sees almost nothing FAILS rather than passing green."
+}
