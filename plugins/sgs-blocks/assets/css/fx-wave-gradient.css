@@ -23,11 +23,19 @@
 
 	/* The four colours. The render layer overrides these per instance; these
 	   defaults exist so the block is never unstyled if it somehow renders
-	   without them. */
-	--sgs-wave-base: #1b2a4a;
-	--sgs-wave-1: #3f7fd1;
-	--sgs-wave-2: #7b4bd8;
-	--sgs-wave-3: #d95f8a;
+	   without them.
+
+	   Light, hue-adjacent set (2026-08-27, Phase 1 Step 5) — replaces a
+	   navy/blue/purple/pink spread (113° of hue) that read as a rendered 3D
+	   object ("B-movie 3D VFX", Bean's verdict). These three sit within a
+	   ~20° blue-cyan band, so the mesh blends rather than separating into
+	   distinct painted blobs, and the base is light enough (CIELAB L* > 90)
+	   that the fallback and the shader both read as a soft, flat surface
+	   tint rather than a dark stage lit from within. */
+	--sgs-wave-base: #f4f8fb;
+	--sgs-wave-1: #7dd3fc;
+	--sgs-wave-2: #38bdf8;
+	--sgs-wave-3: #22d3ee;
 
 	/* THE FALLBACK. Three overlapping radials over a flat base — deliberately
 	   the same layer COUNT and roughly the same composition the shader
@@ -118,9 +126,16 @@
 	min-width: 44px;
 	min-height: 44px;
 	padding: 0 12px;
-	border: 1px solid rgb( 255 255 255 / 45%);
+	border: 1px solid rgb( 255 255 255 / 20%);
 	border-radius: 999px;
-	background: rgb( 0 0 0 / 45%);
+	/* Was rgb(0 0 0 / 45%) — composited to 3.36:1 on white, failing 4.5:1
+	   for 13px text (measured, KJC-3). The ground is now light rather than
+	   the old dark navy, so a translucent pill needs more coverage to keep
+	   its OWN contrast independent of whatever the gradient is doing
+	   underneath — a solid dark control reads reliably against any of the
+	   wave colours, translucent only enough to still read as "floating on
+	   the gradient" rather than a hard UI chrome element. */
+	background: rgb( 15 23 42 / 82%);
 	color: #fff;
 	font-size: 13px;
 	line-height: 1;
@@ -128,7 +143,7 @@
 }
 
 .sgs-wave-gradient__toggle:hover {
-	background: rgb( 0 0 0 / 65%);
+	background: rgb( 15 23 42 / 95%);
 }
 
 .sgs-wave-gradient__toggle:focus-visible {
