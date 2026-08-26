@@ -279,25 +279,29 @@ building, because both are his call:
   arrow-key traversal the research specifically told us to gain.** Recommend building the wrapping
   radiogroup; price it honestly before agreeing.
 
-**3. Brand teal for the diagram bars, replacing the current grey.**
+**3. Brand teal for the diagram bars — Bean's value: `#158697`** (given 2026-08-26).
 
-Currently `background: currentColor; opacity: 0.6`. ⚠ **Do NOT reach for
-`var(--wp--preset--color--primary)`** — that is the CLIENT's palette, and on the canary it resolves
-to Mama's **pink `#e68a95`**, not teal. The picker is SGS tool chrome, so it should look the same
-for every client.
+⚠ **It appears NOWHERE in the repo** — grepped, zero matches — and there is no SGS brand-colour
+source of truth anywhere in the tree to check it against. It is therefore a FOURTH teal alongside
+the three already floating. Bean said "I think", so confirm the value before hardcoding it, and
+consider recording it once as a named constant so the next person has something authoritative to
+read.
 
-| Source | Value |
-|---|---|
-| SGS brand teal (framework `theme.json` primary) | **`#1F7A7A`** |
-| Mama's client primary (what the canary resolves) | `#e68a95` (pink) |
-| Older teal still in block `editor.css` fallbacks | `#0F7E80` |
+| Source | Value | vs white | vs editor grey |
+|---|---|---|---|
+| **Bean's brand teal** | **`#158697`** | 4.30:1 | 3.77:1 |
+| `theme.json` primary | `#1F7A7A` | 5.09:1 | 4.47:1 |
+| older `editor.css` fallback | `#0F7E80` | 4.87:1 | 4.27:1 |
 
-⚠ **Two teal literals already exist in the tree.** Pick ONE, say which and why in the code, and do
-not add a third. `#1F7A7A` is the current `theme.json` value; `#0F7E80` is the older fallback
-appearing in several `editor.css` files. Ask Bean which is his brand teal if it is not obvious.
+✅ **`#158697` PASSES for this use.** The bars are decorative graphics (`aria-hidden`), so the
+governing rule is **WCAG 1.4.11 non-text contrast at 3:1**, not the 4.5:1 text threshold — 4.30:1
+and 3.77:1 both clear it comfortably.
+⛔ **It would FAIL 4.5:1 if ever reused for TEXT.** Do not promote this literal into a text colour
+without re-checking.
 
-⚠ Check contrast on the selected/pressed state — a teal bar on a teal-tinted active option can
-drop below the WCAG 2.1 AA 4.5:1 the framework holds itself to.
+⚠ Do NOT reach for `var(--wp--preset--color--primary)`: that is the CLIENT's palette and resolves
+to Mama's pink `#e68a95` on the canary. The picker is SGS tool chrome and must look identical for
+every client, so it needs the fixed literal.
 
 Research that shaped it: `reports/2026-08-26-column-shape-picker-gold-standard.md`. Core's
 own picker is **insert-time only**, so this fills a genuine gap rather than re-implementing

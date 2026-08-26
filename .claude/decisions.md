@@ -136,7 +136,14 @@ measuring `getBoundingClientRect().width`, not by eye — eye is what let it thr
   roving `tabindex`, or losing the radiogroup and the arrow-key traversal the gold-standard
   research told us to gain. Recommend building the wrapping radiogroup; price it before agreeing.
 
-**3. Brand teal for the diagram bars.** ⚠ The obvious implementation is wrong:
+**3. Brand teal for the diagram bars — Bean gave `#158697` (2026-08-26).** It appears
+NOWHERE in the repo (grepped, zero matches) and no SGS brand-colour source of truth exists in
+the tree, so it is a FOURTH teal; Bean said "I think", so confirm before hardcoding and
+consider recording it once as a named constant. Contrast measured: 4.30:1 on white, 3.77:1 on
+editor grey — ✅ PASSES, because the bars are decorative graphics governed by WCAG 1.4.11's
+**3:1** non-text threshold, not the 4.5:1 text one. ⛔ It would FAIL 4.5:1 if reused for text.
+For reference: `theme.json` primary `#1F7A7A` (5.09:1), older `editor.css` fallback `#0F7E80`
+(4.87:1). ⚠ The obvious implementation is still wrong:
 `var(--wp--preset--color--primary)` is the CLIENT's palette and resolves to Mama's **pink
 `#e68a95`** on the canary. The picker is SGS tool chrome and must look identical for every client,
 so it needs a fixed literal. ⚠ **Two teal literals already exist** — `#1F7A7A` (current
