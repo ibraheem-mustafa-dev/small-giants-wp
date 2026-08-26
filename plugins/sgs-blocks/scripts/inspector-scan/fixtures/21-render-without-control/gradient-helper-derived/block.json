@@ -1,0 +1,8 @@
+{
+	"name": "sgs/gradient-helper-derived",
+	"title": "Fixture — gradientOverlayAttrKeys() call site, the gradient key resolves",
+	"attributes": {
+		"panelOverlay": { "type": "string", "default": "" },
+		"panelOverlayGradient": { "type": "boolean", "default": false }
+	}
+}

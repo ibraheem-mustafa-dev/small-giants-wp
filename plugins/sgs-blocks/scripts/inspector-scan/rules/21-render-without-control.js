@@ -173,6 +173,86 @@ function coreSupportedAttrs( supports ) {
 	return out;
 }
 
+// ── HELPER-DERIVED attribute names ──────────────────────────────────────────
+// A THIRD structurally-invisible control surface, sibling to the core-supports
+// surface above. `shadowAttrKeys()`, `gradientOverlayAttrKeys()` and
+// `typographyAttrKeys()` (src/components/{ShadowControl,GradientOverlayControl,
+// TypographyControls}.js) COMPUTE their returned attribute names at call-time
+// (`base + 'Colour'`) rather than writing them out as literal strings this
+// static scanner can read.
+//
+// MEASURED (D810, 2026-08-26): adopting `gradientOverlayAttrKeys()` on
+// sgs/hero took this rule from 82 -> 84 flagged, the two new findings being
+// `mediaOverlayGradient` and `mediaBackgroundGradient` — exactly the derived
+// keys, both real client-reachable controls the rule could no longer see.
+// Bean-approved fix (D810's own close-out): teach the rule to expand these
+// three call sites rather than leave adoption of a name helper permanently
+// blind to it.
+//
+// This is NOT a name-keyed allowlist of blocks or attributes — the same
+// discipline as `coreSupportedAttrs()` above. It reads the call site's OWN
+// LITERAL first argument (the exact mechanism `shadowAttrKeys( 'boxShadow',
+// { hoverColour: true } )` already uses at ShadowControl.js:129) and derives
+// names with the IDENTICAL formula the real helper uses
+// (ShadowControl.js:76-91, GradientOverlayControl.js:109-120,
+// TypographyControls.js:146-179) — provably exact, not a guessed convention.
+// A call whose base/prefix argument is not a literal string (a variable, e.g.
+// TypographyControls.js:279's own internal `typographyAttrKeys( prefix )`)
+// yields no derivation for that call, so the rule fails toward a false
+// positive there, never a false negative — this rule's own doctrine.
+//
+// `solid` is DELIBERATELY NOT derived for gradientOverlayAttrKeys() — see
+// GradientOverlayControl.js:100-103 and D810: `solid` is `<base>` twice in
+// some overlay families and `<base>Colour` once in others, not a uniform
+// derivation, so every call site is required to write it out literally
+// (`attrNames.solid` or the `{ solid: '...' }` override) and this rule keeps
+// resolving/flagging it exactly as it does today — untouched by this function.
+const SHADOW_KEYS_RE = /\bshadowAttrKeys\(\s*['"]([^'"]+)['"]\s*(?:,\s*(\{[^}]*\}))?\s*\)/g;
+const GRADIENT_KEYS_RE = /\bgradientOverlayAttrKeys\(\s*['"]([^'"]+)['"]/g;
+const TYPOGRAPHY_KEYS_RE = /\btypographyAttrKeys\(\s*(?:['"]([^'"]*)['"]|[^)'"]+)\s*\)/g;
+
+// Mirrors typographyAttrKeys()'s own PascalCase suffix list exactly
+// (TypographyControls.js:158-179) — kept as a literal list here rather than
+// re-deriving it, for the same reason coreSupportedAttrs()'s core-API mapping
+// above is a literal list: it is a fixed, verified-against-source contract,
+// not a pattern to infer.
+const TYPOGRAPHY_SUFFIXES = [
+	'FontFamily', 'FontSize', 'FontSizeUnit', 'FontSizeTablet', 'FontSizeMobile',
+	'FontWeight', 'FontStyle', 'LineHeight', 'LineHeightUnit', 'TextDecoration',
+	'TextTransform', 'LetterSpacing', 'LetterSpacingUnit',
+	'FontWeightHover', 'TextDecorationHover', 'TextTransformHover',
+];
+
+function helperDerivedAttrs( corpus ) {
+	const out = new Set();
+
+	let m;
+	SHADOW_KEYS_RE.lastIndex = 0;
+	while ( ( m = SHADOW_KEYS_RE.exec( corpus ) ) ) {
+		const base = m[ 1 ];
+		const opts = m[ 2 ] || '';
+		out.add( base + 'Colour' );
+		if ( /\bhover\s*:\s*true\b/.test( opts ) ) out.add( base + 'Hover' );
+		if ( /\bhoverColour\s*:\s*true\b/.test( opts ) ) out.add( base + 'ColourHover' );
+	}
+
+	GRADIENT_KEYS_RE.lastIndex = 0;
+	while ( ( m = GRADIENT_KEYS_RE.exec( corpus ) ) ) {
+		out.add( m[ 1 ] + 'Gradient' );
+	}
+
+	TYPOGRAPHY_KEYS_RE.lastIndex = 0;
+	while ( ( m = TYPOGRAPHY_KEYS_RE.exec( corpus ) ) ) {
+		const prefix = m[ 1 ]; // undefined when the call's argument wasn't a literal string
+		if ( prefix === undefined ) continue;
+		for ( const suffix of TYPOGRAPHY_SUFFIXES ) {
+			out.add( prefix ? prefix + suffix : suffix.charAt( 0 ).toLowerCase() + suffix.slice( 1 ) );
+		}
+	}
+
+	return out;
+}
+
 // Files that constitute a block's own RENDER surface — what the framework paints.
 const OWN_RENDER_FILES = [ 'render.php', 'view.js', 'save.js', 'style.css' ];
 
@@ -666,12 +746,17 @@ module.exports = {
 		// Read from the block's OWN declared supports, so the exclusion is a
 		// per-block opt-in rather than a global attribute-name allowlist.
 		const coreControlled = coreSupportedAttrs( blockJson.data.supports );
+		// Read from the block's OWN call sites to shadowAttrKeys()/
+		// gradientOverlayAttrKeys()/typographyAttrKeys() — same per-block
+		// opt-in discipline, see the block comment above helperDerivedAttrs().
+		const helperControlled = helperDerivedAttrs( control.text );
 
 		const findings = [];
 		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
 			if ( DOC_ATTR_RE.test( attr ) ) continue;
 			if ( SYSTEM_ATTR_RE.test( attr ) ) continue; // extension surface — structurally invisible here
 			if ( coreControlled.has( attr ) ) continue; // WordPress core surface — likewise invisible here
+			if ( helperControlled.has( attr ) ) continue; // resolved via a name-derivation helper call site
 			if ( resolves( attr, control.text, controlParts ) ) continue; // reachable by the client
 			// ...or reachable via the native block-toolbar variation switcher,
 			// which is a client-facing control surface this rule cannot see by
@@ -722,6 +807,16 @@ module.exports = {
 			// can never be changed. If this stops flagging, the exemption has
 			// widened to "any variations.js mentioning the attribute".
 			'variation-inserter-only-still-flags',
+			// OVERMATCH GUARDS for helperDerivedAttrs() (D810 fix). Each call
+			// passes a VARIABLE, not a literal string, as the base/prefix
+			// argument, so the derivation formula is genuinely unknown to this
+			// static scanner and the declared attribute must still flag. If the
+			// exemption ever widened from "the call site's own literal
+			// argument" to "any matching helper call anywhere nearby", these
+			// three stop flagging incorrectly.
+			'shadow-helper-dynamic-base-still-flags',
+			'gradient-helper-solid-colour-still-flags',
+			'typography-helper-dynamic-prefix-still-flags',
 		],
 		mustNotFlag: [
 			'rendered-with-control',
@@ -742,6 +837,16 @@ module.exports = {
 			// KIND_PANELS rather than rendering them as JSX tags, so a tag-only
 			// recursion dead-ends and reports a false defect. 139 of 211 live findings.
 			'control-via-dispatcher-table',
+			// NEGATIVE CONTROLS for helperDerivedAttrs() (D810 fix). Each
+			// derived key never appears literally anywhere in its fixture --
+			// it exists only as the value shadowAttrKeys()/
+			// gradientOverlayAttrKeys()/typographyAttrKeys() compute at call
+			// time from the call site's own literal argument. This is the
+			// exact shape that blinded the rule on sgs/hero (D810:
+			// mediaOverlayGradient / mediaBackgroundGradient, 82 -> 84).
+			'shadow-helper-derived',
+			'gradient-helper-derived',
+			'typography-helper-derived',
 		],
 	},
 };

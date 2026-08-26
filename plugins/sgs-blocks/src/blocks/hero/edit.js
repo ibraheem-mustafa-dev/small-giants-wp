@@ -23,7 +23,9 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	ShadowControl,
+	shadowAttrKeys,
 	GradientOverlayControl,
+	gradientOverlayAttrKeys,
 	FocalPositionField,
 	BOX_UNITS,
 	normaliseResponsiveBox,
@@ -797,10 +799,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<GradientOverlayControl
 								attributes={ attributes }
 								setAttributes={ setAttributes }
-								attrNames={ {
-									gradient: 'mediaOverlayGradient',
-									solid: 'mediaOverlayColour',
-								} }
+								attrNames={ gradientOverlayAttrKeys( 'mediaOverlay', { solid: 'mediaOverlayColour' } ) }
 								solidLabel={ __( 'Media overlay colour', 'sgs-blocks' ) }
 							/>
 
@@ -1060,10 +1059,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<GradientOverlayControl
 								attributes={ attributes }
 								setAttributes={ setAttributes }
-								attrNames={ {
-									gradient: 'contentBackgroundGradient',
-									solid: 'contentBackground',
-								} }
+								attrNames={ gradientOverlayAttrKeys( 'contentBackground', { solid: 'contentBackground' } ) }
 								solidLabel={ __( 'Content background colour', 'sgs-blocks' ) }
 							/>
 							{ /* contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
@@ -1440,10 +1436,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<GradientOverlayControl
 								attributes={ attributes }
 								setAttributes={ setAttributes }
-								attrNames={ {
-									gradient: 'mediaBackgroundGradient',
-									solid: 'mediaBackground',
-								} }
+								attrNames={ gradientOverlayAttrKeys( 'mediaBackground', { solid: 'mediaBackground' } ) }
 								solidLabel={ __( 'Media background colour', 'sgs-blocks' ) }
 							/>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>

@@ -1,0 +1,8 @@
+{
+	"name": "sgs/typography-helper-derived",
+	"title": "Fixture — typographyAttrKeys() called directly with a literal prefix",
+	"attributes": {
+		"captionFontWeight": { "type": "string", "default": "" },
+		"captionLetterSpacing": { "type": "number" }
+	}
+}

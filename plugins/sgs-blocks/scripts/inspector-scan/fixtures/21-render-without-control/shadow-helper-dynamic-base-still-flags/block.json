@@ -1,0 +1,7 @@
+{
+	"name": "sgs/shadow-helper-dynamic-base-still-flags",
+	"title": "Fixture — shadowAttrKeys() called with a NON-literal base (negative control)",
+	"attributes": {
+		"tileShadowColour": { "type": "string", "default": "" }
+	}
+}
