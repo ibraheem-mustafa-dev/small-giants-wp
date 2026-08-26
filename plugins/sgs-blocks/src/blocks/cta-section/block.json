@@ -25,7 +25,8 @@
 				"layout",
 				"background",
 				"shapeDividers",
-				"gridItems"
+				"gridItems",
+				"hover"
 			],
 			"arrayContentLift": true,
 			"boxFamilies": {

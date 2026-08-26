@@ -37,70 +37,70 @@ defined( 'ABSPATH' ) || exit;
 add_filter( 'render_block', __NAMESPACE__ . '\\inject_hover_effects', 10, 2 );
 
 /**
- * Resolve per-block hover defaults.
+ * Resolve per-block hover defaults from the BLOCK'S OWN DECLARATION.
  *
- * Mirrors the resolveBlockDefaults() function in hover-effects.js.
+ * Mirrors resolveBlockDefaults() in hover-effects.js — both read the same
+ * `supports.sgs.hoverDefaults` object, so there is ONE declaration per block
+ * and no roster to keep in step.
+ *
+ * ⛔ REPLACED three hardcoded block-name arrays (D805). Those arrays named 11
+ * blocks and NOTHING gated them, so eight blocks received injected hover
+ * motion with the hover panel switched off and no editor control to change it
+ * — a default the client cannot see or reach. Same shape as the 47-name
+ * `:not()` list D784/D793 deleted: named exceptions standing in for a
+ * classification. A twelfth block now declares its own defaults in its own
+ * block.json instead of somebody hand-editing PHP.
+ *
+ * TWO conditions, both required, so "declared but unreachable" cannot recur:
+ *   1. the block declares `supports.sgs.hoverDefaults`, AND
+ *   2. the block opts the hover panel in via `supports.sgs.enabledExtensions`.
+ * Condition 2 is what makes this structural rather than a promise: a default
+ * with no control is exactly the defect being fixed, so the mechanism refuses
+ * to emit one.
  *
  * @param string $block_name Block name (e.g. 'sgs/card-grid').
  * @return array { scale_preset: string, shadow: string, image_zoom: bool, focus_ring: bool }
  */
 function resolve_hover_defaults( string $block_name ): array {
-	// Blocks that get scale + shadow + image zoom.
-	static $opt_in = array(
-		'sgs/card-grid',
-		'sgs/info-box',
-		'sgs/cta-section',
-		'sgs/team-member',
-		'sgs/pricing-table',
-		'sgs/post-grid',
-		'sgs/google-reviews',
-		'sgs/process-steps',
-		'sgs/icon',
-	);
-
-	// Scale + shadow only (no image zoom — no image in block).
-	static $no_zoom = array(
-		'sgs/whatsapp-cta',
-	);
-
-	// Image zoom only (no scale, no shadow — e.g. gallery tiles handle their own interaction).
-	static $image_zoom_only = array(
-		'sgs/gallery',
-	);
-
-	if ( in_array( $block_name, $image_zoom_only, true ) ) {
-		return array(
-			'scale_preset' => '',
-			'shadow'       => '',
-			'image_zoom'   => true,
-			'focus_ring'   => true,
-		);
-	}
-
-	if ( in_array( $block_name, $no_zoom, true ) ) {
-		return array(
-			'scale_preset' => '1.02',
-			'shadow'       => 'raised',
-			'image_zoom'   => false,
-			'focus_ring'   => true,
-		);
-	}
-
-	if ( in_array( $block_name, $opt_in, true ) ) {
-		return array(
-			'scale_preset' => '1.02',
-			'shadow'       => 'raised',
-			'image_zoom'   => true,
-			'focus_ring'   => true,
-		);
-	}
-
-	// All other blocks — default off.
-	return array(
+	$all_off = array(
 		'scale_preset' => '',
 		'shadow'       => '',
 		'image_zoom'   => false,
 		'focus_ring'   => false,
+	);
+
+	if ( '' === $block_name ) {
+		return $all_off;
+	}
+
+	$type = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+	if ( ! $type instanceof \WP_Block_Type ) {
+		return $all_off;
+	}
+
+	$sgs = $type->supports['sgs'] ?? array();
+	if ( ! is_array( $sgs ) ) {
+		return $all_off;
+	}
+
+	// Condition 2 — no hover panel means no injected default. A value the
+	// client cannot reach is the bug, not a feature.
+	$enabled = $sgs['enabledExtensions'] ?? array();
+	if ( ! is_array( $enabled ) || ! in_array( 'hover', $enabled, true ) ) {
+		return $all_off;
+	}
+
+	// Condition 1 — the block's own declaration.
+	$declared = $sgs['hoverDefaults'] ?? null;
+	if ( ! is_array( $declared ) ) {
+		return $all_off;
+	}
+
+	return array(
+		'scale_preset' => is_string( $declared['scalePreset'] ?? null ) ? $declared['scalePreset'] : '',
+		'shadow'       => is_string( $declared['shadow'] ?? null ) ? $declared['shadow'] : '',
+		'image_zoom'   => (bool) ( $declared['imageZoom'] ?? false ),
+		'focus_ring'   => (bool) ( $declared['focusRing'] ?? false ),
 	);
 }
 

@@ -5,7 +5,7 @@
  * easing, duration, focus ring, block link and click-ripple controls.
  *
  * Default model: opted-in blocks start with EMPTY/FALSE defaults (no hover
- * lift). A small opt-in list of card-like blocks gets subtle lift defaults.
+ * lift). A block declaring `supports.sgs.hoverDefaults` gets those defaults.
  *
  * `hover` and `blockLink` are OPT-IN (D551): disconnected from every block by
  * default, attached only when a block declares
@@ -51,57 +51,37 @@ try {
 }
 
 /**
- * Blocks that receive scale + shadow + image-zoom defaults by default.
- * All other blocks default to empty/false so they don't look interactive.
+ * Resolve per-block hover defaults from the BLOCK'S OWN DECLARATION.
  *
- * Special cases:
- *   sgs/whatsapp-cta — scale + shadow only (no image zoom; no image present)
- *   sgs/gallery      — image zoom only (no scale on tiles)
- */
-const SCALE_SHADOW_DEFAULT_BLOCKS = new Set( [
-	'sgs/card-grid',
-	'sgs/info-box',
-	'sgs/cta-section',
-	'sgs/team-member',
-	'sgs/pricing-table',
-	'sgs/post-grid',
-	'sgs/google-reviews',
-	'sgs/process-steps',
-	'sgs/icon',
-	// Special: scale + shadow but no image zoom.
-	'sgs/whatsapp-cta',
-	// Special: image zoom only, no scale.
-	'sgs/gallery',
-] );
-
-// Blocks that get scale+shadow but explicitly NO image zoom.
-const NO_IMAGE_ZOOM_BLOCKS = new Set( [ 'sgs/whatsapp-cta' ] );
-
-// Blocks that get image zoom only (no scale, no shadow).
-const IMAGE_ZOOM_ONLY_BLOCKS = new Set( [ 'sgs/gallery' ] );
-
-/**
- * Resolve per-block attribute defaults based on the opt-in lists above.
+ * Mirrors resolve_hover_defaults() in includes/hover-effects.php — both read
+ * the same `supports.sgs.hoverDefaults` object, so there is ONE declaration
+ * per block and no roster to keep in step.
  *
- * @param {string} blockName Block name (e.g. 'sgs/card-grid').
+ * ⛔ REPLACED three hardcoded block-name Sets (D805) for the reason recorded in
+ * the PHP twin: those Sets named 11 blocks, nothing gated the PHP half, and
+ * eight of the 11 therefore received injected hover motion with the panel
+ * switched off and no control to change it.
+ *
+ * The caller already gates on isExtensionEnabled( settings, 'hover' ), so a
+ * declaration on a block with no hover panel is never reached here — the same
+ * two-condition rule the PHP enforces explicitly.
+ *
+ * @param {Object} settings Block settings from blocks.registerBlockType.
  * @return {{ scalePreset: string, shadow: string, imageZoom: boolean, focusRing: boolean }} Defaults.
  */
-function resolveBlockDefaults( blockName ) {
-	const isOptIn         = SCALE_SHADOW_DEFAULT_BLOCKS.has( blockName );
-	const isNoZoom        = NO_IMAGE_ZOOM_BLOCKS.has( blockName );
-	const isImageZoomOnly = IMAGE_ZOOM_ONLY_BLOCKS.has( blockName );
+function resolveBlockDefaults( settings ) {
+	const declared = settings?.supports?.sgs?.hoverDefaults;
 
-	if ( isImageZoomOnly ) {
-		return { scalePreset: '', shadow: '', imageZoom: true, focusRing: true };
+	if ( ! declared || 'object' !== typeof declared ) {
+		return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false };
 	}
-	if ( isNoZoom ) {
-		return { scalePreset: '1.02', shadow: 'raised', imageZoom: false, focusRing: true };
-	}
-	if ( isOptIn ) {
-		return { scalePreset: '1.02', shadow: 'raised', imageZoom: true, focusRing: true };
-	}
-	// All other blocks: default OFF.
-	return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false };
+
+	return {
+		scalePreset: 'string' === typeof declared.scalePreset ? declared.scalePreset : '',
+		shadow:      'string' === typeof declared.shadow ? declared.shadow : '',
+		imageZoom:   !! declared.imageZoom,
+		focusRing:   !! declared.focusRing,
+	};
 }
 
 const SHADOW_OPTIONS = [
@@ -146,8 +126,9 @@ const EASING_OPTIONS = [
 /**
  * Add hover attributes to all blocks.
  *
- * Per-block defaults are resolved from resolveBlockDefaults() so that
- * the opt-in list gets subtle-lift defaults and everything else starts off.
+ * Per-block defaults come from each block's own `supports.sgs.hoverDefaults`
+ * declaration via resolveBlockDefaults(); a block that declares nothing
+ * starts fully off. There is no roster here and no roster in the PHP twin.
  * A block that hides an extension (supports.sgs.hideExtensions) does NOT get
  * that extension's attributes registered.
  */
@@ -161,7 +142,7 @@ addFilter(
 			return settings;
 		}
 
-		const defaults = resolveBlockDefaults( settings.name );
+		const defaults = resolveBlockDefaults( settings );
 
 		// Declarative per-block opt-IN (D551, Phase 2.1 — see ./hide-extensions.js).
 		// 'hover' and 'blockLink' are DISCONNECTED by default: a block must list
@@ -174,15 +155,15 @@ addFilter(
 			? {
 				// Scale transform — fine-grained slider (0 = off).
 				sgsHoverScale:        { type: 'number',  default: 0 },
-				// Named scale preset — resolved from opt-in list.
+				// Named scale preset — from the block's own hoverDefaults.
 				sgsHoverScalePreset:  { type: 'string',  default: defaults.scalePreset },
-				// Shadow elevation preset — resolved from opt-in list.
+				// Shadow elevation preset — from the block's own hoverDefaults.
 				sgsHoverShadow:       { type: 'string',  default: defaults.shadow },
 				// Duration slug — maps to var(--wp--custom--duration--{slug}).
 				sgsHoverDuration:     { type: 'string',  default: 'medium' },
 				// Easing slug — maps to var(--wp--custom--easing--{slug}).
 				sgsHoverEasing:       { type: 'string',  default: 'default' },
-				// Image zoom on hover — resolved from opt-in list.
+				// Image zoom on hover — from the block's own hoverDefaults.
 				sgsHoverImageZoom:    { type: 'boolean', default: defaults.imageZoom },
 				// Stagger animation delay in ms (applied to direct children).
 				sgsStaggerDelay:      { type: 'number',  default: 0 },

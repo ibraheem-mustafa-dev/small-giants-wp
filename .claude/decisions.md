@@ -1,3 +1,148 @@
+## D808 [ROUTINE] — what the universal hover panel is FOR, written down at last
+
+**2026-08-26.** `plugins/sgs-blocks/CLAUDE.md` §Hover Controls Spec.
+
+⭐ **Nobody had ever written which blocks the panel suits, and that absence caused a whole
+session to open on a false premise** (a plan to switch it on for 8 blocks and delete ~12
+"duplicates", refuted entirely at D796). One paragraph would have prevented it.
+
+**The rule is one sentence: the panel governs a block whose hover target IS the block root.**
+`inject_hover_effects()` is a `render_block` filter — it classes the block's first real tag,
+once per block, never once per card. On a block whose hover belongs to a repeated child the
+panel is not "less useful", it is aimed at the wrong element. SUITS: cta-section, team-member,
+info-box, pricing-table, google-reviews, whatsapp-cta. DOES NOT: card-grid (`__item`),
+post-grid (`__card`), gallery (`__item`), process-steps (`__step`), icon (`__link`).
+
+**Two facts recorded with it.** (1) Its **zoom and grayscale toggles are inert outside four
+blocks** — the PHP emits `sgs-has-img-zoom`/`sgs-has-grayscale`, only card-grid + team-member
+style the first, only those two plus gallery + info-box style the second. ⛔ Reviving them with
+a ROOT rule stays REFUSED (D796): a root rule cascades to every descendant image and
+manufactures a second copy of the double-fire that decision fixed. (2) Its shadow vocabulary is
+four slugs with **no colour input**, which is why a block-owned `shadowHover`+`shadowHoverColour`
+pair is not a duplicate of `sgsHoverShadow`.
+
+⚠ **`focusRing` is near-inert and must not be trusted as a11y cover.** It emits
+`.sgs-has-focus-ring:focus-visible` on the block ROOT, and a div/section root is not focusable
+without `tabindex`. **Measured, not assumed: zero `tabindex` across card-grid, post-grid,
+process-steps, gallery and icon** — so it could never have matched on any of them, and the five
+blocks that lost it in D805 lost nothing that worked.
+
+## D807 [ROUTINE] — FR-38-32's two unmeasured claims, measured; the cap is not the binding constraint
+
+**2026-08-26.** `src/shared/effects/particles.js` (`stats()`), `fx-particles.js`
+(`window.sgsFxParticles`), Spec 38 §3.3 + the §3 roster row. Canary page 2744.
+
+**A permanent read-only probe, kept in the shipped bundle by Bean's approval** — a probe that
+only exists in a debug build cannot verify the build that ships, and this is two integers behind
+a closure.
+
+- **The cap CLAMPS at exactly 150.** 600 `push()` calls inside ONE frame drove `live` 3 → **150**
+  and it held 150 across all 11 trace points — never 151.
+- ⚠ **But the cap is NOT what binds at shipped density — particle LIFETIME is.** A continuous
+  fast real-mouse sweep peaked at **106 of 150** over 362 frames, and 107 on an independent
+  instrument. **"The cap binds" would have been the wrong claim**: under ordinary input the pool
+  never fills. Recorded because the distinction is the useful part.
+- **The loop STOPS.** `ticks` 131 at t0 and 131 at t+2500ms, `live` 0. POSITIVE CONTROL: moving
+  again raised ticks 131 → 169, so a frozen counter is a real stop, not a dead probe.
+- **NEGATIVE CONTROL:** 16 containers on the page, 1 with the effect, instance list length 1 — a
+  container without the effect constructs no instance at all.
+
+⭐ **A THIRD trap, hit for real: the listener is `mousemove`, NOT `pointermove`.** A synthetic
+`PointerEvent` probe returned **0 across 240 frames** against perfectly healthy code, because
+nothing was listening for the event it sent. A 0 from a probe is a broken probe until proven
+otherwise — diagnosed rather than filed as a finding.
+
+**Also corrected:** Spec 38 described the loop guard as `(pool.live > 0 || movedThisFrame)`.
+There is no `movedThisFrame` in the tree and there never was — **0 occurrences repo-wide**. The
+behaviour described was right; the guard named was invented. Prose that names a variable nobody
+wrote reads as a code citation and cannot be grepped back to an owner.
+
+## D806 [INCIDENT] — the gallery lightbox could never have won on z-index, and the briefed cause was half wrong
+
+**2026-08-26.** `gallery/render.php`, `gallery/view.js`, `gallery/style.css`, `modal/style.css`.
+
+**Reproduced live BEFORE touching anything** (canary 2242, 1440×900): with the lightbox open and
+filling the viewport, `elementFromPoint` at the header band returned **`a.sgs-nav-menu__link`**.
+The header genuinely painted over the open lightbox.
+
+⭐ **The briefed cause — "it sits inside a container child at `z-index:1`" — was only half
+right, and the correction changes which fixes could ever work.** Walking the ancestor chain: on
+2242 the sealing contexts are two `.sgs-container__inner` **plus
+`div.entry-content.wp-block-post-content`**; on 2158 `.entry-content` **alone**. `.entry-content`
+is on EVERY page and is not ours. So `z-index:100000` only ever competed inside that context
+while the header's `100` sat in the ROOT context — **no larger number could have won, and no
+container-scoped fix could have either.**
+
+**Fixed with the top layer, per Bean:** a native `<dialog>` opened with `showModal()`, mirroring
+`sgs/modal`. `role`/`aria-modal` dropped (the UA supplies both), the manual `.focus()` deleted
+(the UA moves focus, and the old call queried a class not yet applied at that tick), Escape handed
+to the platform with `data-wp-on--close` syncing state so there is ONE writer for the transition.
+Verified after: topmost element is now `dialog.sgs-gallery__lightbox`, focus lands on the close
+button, 0 console errors. NEGATIVE CONTROL: closed, the same probe returns the header link.
+
+⚠ **A per-instance trap caught during the build:** the first version resolved the dialog with a
+bare document-level `querySelector`, which returns the FIRST lightbox in the document — on a
+two-gallery page, clicking the second gallery would have opened the first one's dialog. Scoped to
+the interactive root with `closest()` instead.
+
+**Also deleted: `--sgs-modal-z-index: 99999`.** Defined once, read nowhere (0 source references
+after removal) — and the modal calls `showModal()`, where `z-index` does not apply at all.
+
+⚠ **Observed, NOT introduced, NOT fixed here:** the gallery page logs a failure to resolve the
+module specifier for the gsap draggable module. That is the carousel drag-scroll effect, not the
+lightbox — the "registers and does nothing" shape of D452/D789. Left for its own investigation
+rather than folded into an unrelated commit.
+
+## D805 [INCIDENT] — eleven blocks got injected hover motion with no control, from three arrays nothing gated
+
+**2026-08-26.** `includes/hover-effects.php`, `src/blocks/extensions/hover-effects.js`, six
+`block.json`, `scripts/duplicate-controls-baseline.json`.
+
+⭐ **`resolve_hover_defaults()` hardcoded THREE block-name arrays naming 11 blocks, and nothing
+gated them.** The JS twin was gated on `enabledExtensions`; **the PHP was not** — so eight of the
+11 received injected hover motion with the panel switched off and **no editor control at all**.
+Same shape as the 47-name `:not()` list D784/D793 deleted: named exceptions standing in for a
+classification, and block twelve got nothing until somebody hand-edited PHP.
+
+**Two client-visible consequences, both Bean-reported and both now verified gone live:**
+`sgs/cta-section` — a full-bleed banner scaling 1.02 whenever the cursor crossed it, unswitchable
+(after: no class, var unset). `sgs/icon` — the injected 1.02 compounding with the block's own 1.1
+into a wobble (after: no class on all 4 instances; it now merely *inherits* the property from an
+ancestor info-box without carrying the class, so nothing applies).
+
+**Fix — the block declares its own defaults.** `supports.sgs.hoverDefaults`
+(`{scalePreset, shadow, imageZoom, focusRing}`), read by both twins, honoured **only when the
+block ALSO opts the panel in**. Both conditions required, so "a default the client cannot reach"
+cannot recur by construction rather than by promise. No roster in either file.
+
+**Bean's rulings.** Panel ON for the three blocks whose hover target IS the root (cta-section,
+team-member, info-box); the other five hover a per-item child the panel cannot reach (D796).
+cta-section and icon declare NO defaults — that is the bug fix. Defaults transposed VERBATIM
+elsewhere, so blast radius is the two named bugs rather than nine blocks.
+
+⭐ **Switching the panel on made the repaired D795 gate go red with 8 findings, and Bean ruled
+them INDIVIDUALLY rather than in bulk.** Traced each to its consumer: both blocks and the panel
+write the SAME `--sgs-hover-scale` and the SAME `sgs-has-grayscale`/`sgs-has-img-zoom` classes —
+a shared namespace, D796's shape. Measured: **zero authorings of scaleHover / grayscaleHover /
+imageZoomHover / shadowHover across 397 canary posts and every theme pattern**, so at their
+defaults the blocks emit nothing and the panel is sole writer. `effectHover` alone is set (6
+posts) and drives a named-look BEM class the panel's three independent knobs cannot express.
+Dispositions: 3 kept as genuine coexistence (both `shadowHover` pairs carry a colour the panel's
+four-slug vocabulary has no field for; `effectHover` is a different vocabulary AND has live
+data), 5 recorded as dormant-but-latent second writers **with an explicit deletion criterion**.
+Nothing deleted (D796). ⭐ Two of them are net GAINS: team-member's image-zoom and info-box's
+grayscale toggles were inert before the opt-in and are live now.
+
+⚠ **An accessibility factor checked rather than assumed.** Five blocks lose the injected
+`focus_ring`. Measured: **zero `tabindex` across all five**, so their roots were never focusable
+and `.sgs-has-focus-ring:focus-visible` could never match. Not a regression — it was already
+inert.
+
+⚠ **A `json.dumps` round-trip on the six block.json files expanded every inline array into a
+whole-file reformat.** Caught on `git diff --stat` before commit and reverted for surgical text
+edits: 14 lines across six files instead. The truncation/reformat gate exists for exactly this,
+and a reformatted file hides the real change from every reviewer.
+
 ## D804 [INCIDENT] — three gates called a live attribute dead, and a bypass that cannot be repaid
 
 **2026-08-26.** Commit `75ca71be9`. After D803 moved font-family onto the shared typography

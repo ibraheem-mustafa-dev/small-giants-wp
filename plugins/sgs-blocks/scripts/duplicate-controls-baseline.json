@@ -203,6 +203,110 @@
 				"sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
 			],
 			"reason": "Added 2026-08-25. Same shape as the sgs/accordion-item textColour entry and covered by the same 2026-08-21 Bean ruling: a parent-level alignment on a block that mounts sgs/text is the root-scoped INHERITABLE default, not a duplicate of the child's own control. Verified empirically rather than asserted -- the two emit to DIFFERENT elements: info-box/render.php:351 writes `{root_sel}{text-align:...}` on the BOX ROOT (children inherit through normal CSS), while text/render.php:255 writes text-align onto the sgs/text element ITSELF, overriding the inherited value for that one instance by cascade. Neither is dead-by-specificity -- which is the gate's own diagnostic question. This is the inheritable wrapper default HC2 PERMITS, not the per-element parent control HC2 forbids. Why it exists: the Mama's Munches draft centres its ingredients section with one section-level `text-align:center`, and sgs/info-box declared no alignment attribute at all, so that rule had nowhere to land on the clone."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/info-box",
+			"attr": "effectHover",
+			"category": "effect",
+			"severity": "hover:controlled",
+			"keeper": "BOTH — the block owns a NAMED-LOOK vocabulary the panel has no field for",
+			"sources": [
+				"sgs/info-box edit.js: own control for \"effectHover\"",
+				"universal Hover Effects panel: \"sgsHoverScale\" / \"sgsHoverShadow\" / \"sgsHoverImageZoom\""
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance, not a bulk sign-off. `effectHover` is a preset SelectControl whose value drives a BEM class `sgs-info-box--hover-${effectHover}` (edit.js:377) — a named look, default \"lift\". The universal panel exposes three INDEPENDENT numeric/boolean knobs (scale, shadow, zoom) and cannot express \"lift\" as one choice. Different vocabulary AND a different mechanism (class vs custom property), so they are not two controls for one effect. Measured: SET in 6 stored posts on the canary, so deleting it would strand live content (D338)."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/info-box",
+			"attr": "scaleHover",
+			"category": "scale",
+			"severity": "hover:shadow",
+			"keeper": "PANEL is the live control; the block attr is dormant, kept deliberately",
+			"sources": [
+				"sgs/info-box block.json + render.php: \"scaleHover\" declared/consumed but no editor control",
+				"universal Hover Effects panel: \"sgsHoverScale\" / \"sgsHoverScalePreset\" (the only LIVE control for this effect)"
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance. NOT covered by either D796 reason: the panel reaches this block's root (that is why the opt-in was granted), and there is no colour companion. Measured dormant rather than assumed: default \"\", NO editor control, and ZERO authorings across 397 canary posts and every theme pattern — so render.php emits nothing and the panel is the SOLE writer of `--sgs-hover-scale`. ⚠ It is a LATENT second writer of that same custom property, so it must never gain a control while the panel covers this block. DELETION CRITERION: remove once a D338-safe attr-removal pass runs; kept now only because Bean's 2026-08-26 ruling was \"delete nothing this session\"."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/info-box",
+			"attr": "shadowHover",
+			"category": "shadow",
+			"severity": "hover:controlled",
+			"keeper": "BOTH — the block-owned pair carries a colour the panel cannot express",
+			"sources": [
+				"sgs/info-box edit.js: own control for \"shadowHover\"",
+				"universal Hover Effects panel: \"sgsHoverShadow\""
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance. `shadowHover` ships `shadowHoverColour` beside it (block.json) and the pair feeds sgs_shadow_value_composed(). The panel's ENTIRE shadow vocabulary is four slugs (subtle/raised/floating/glow) with NO colour input anywhere, so deleting the block's attr swaps a brand-colour swatch for a four-word dropdown. This is the exact case D796 examined and refused."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/info-box",
+			"attr": "grayscaleHover",
+			"category": "grayscale",
+			"severity": "hover:shadow",
+			"keeper": "PANEL is the live control — and switching it on MAKES the toggle work here",
+			"sources": [
+				"sgs/info-box block.json + render.php: \"grayscaleHover\" declared/consumed but no editor control",
+				"universal Hover Effects panel: \"sgsHoverGrayscale\" (the only LIVE control for this effect)"
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance. Boolean, default false, no control, zero authorings — so the block emits no class and the panel is sole writer of `sgs-has-grayscale`. ⭐ This block is one of the FOUR that actually style that class, so granting the panel is a net GAIN: the panel's grayscale toggle was inert here before and is live now (D796 recorded it as inert outside those four). Same latent-second-writer note and deletion criterion as scaleHover."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/team-member",
+			"attr": "scaleHover",
+			"category": "scale",
+			"severity": "hover:shadow",
+			"keeper": "PANEL is the live control; the block attr is dormant, kept deliberately",
+			"sources": [
+				"sgs/team-member block.json + render.php: \"scaleHover\" declared/consumed but no editor control",
+				"universal Hover Effects panel: \"sgsHoverScale\" / \"sgsHoverScalePreset\" (the only LIVE control for this effect)"
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance. Identical to info-box.scaleHover: no control, default \"\", zero authorings in 397 canary posts and every pattern, same `--sgs-hover-scale` namespace as the panel. Latent second writer, same deletion criterion."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/team-member",
+			"attr": "shadowHover",
+			"category": "shadow",
+			"severity": "hover:controlled",
+			"keeper": "BOTH — the block-owned pair carries a colour the panel cannot express",
+			"sources": [
+				"sgs/team-member edit.js: own control for \"shadowHover\"",
+				"universal Hover Effects panel: \"sgsHoverShadow\""
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance. Same shape as info-box.shadowHover, and this is the instance D796 names EXPLICITLY by file:line (block.json:265) as \"the single deletion previously believed safe\", which its colour companion killed. Kept for the same reason."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/team-member",
+			"attr": "imageZoomHover",
+			"category": "imageZoom",
+			"severity": "hover:shadow",
+			"keeper": "PANEL is the live control — and switching it on MAKES the toggle work here",
+			"sources": [
+				"sgs/team-member block.json + render.php: \"imageZoomHover\" declared/consumed but no editor control",
+				"universal Hover Effects panel: \"sgsHoverImageZoom\" (the only LIVE control for this effect)"
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance. Boolean, default false, no control, zero authorings. team-member is one of only TWO blocks that style `sgs-has-img-zoom` (the other is card-grid), so the panel's image-zoom toggle was inert here and is live now. Same latent-second-writer note and deletion criterion."
+		},
+		{
+			"check": "hover-duplicate",
+			"block": "sgs/team-member",
+			"attr": "grayscaleHover",
+			"category": "grayscale",
+			"severity": "hover:shadow",
+			"keeper": "PANEL is the live control — and switching it on MAKES the toggle work here",
+			"sources": [
+				"sgs/team-member block.json + render.php: \"grayscaleHover\" declared/consumed but no editor control",
+				"universal Hover Effects panel: \"sgsHoverGrayscale\" (the only LIVE control for this effect)"
+			],
+			"reason": "RULED 2026-08-26 (D808), per-instance. Same as info-box.grayscaleHover; team-member is also one of the four blocks that style `sgs-has-grayscale`, so the panel toggle becomes live here rather than inert. Zero authorings measured."
 		}
 	]
 }

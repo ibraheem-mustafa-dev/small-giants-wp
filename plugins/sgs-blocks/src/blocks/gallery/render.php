@@ -573,17 +573,30 @@ ob_start();
 	<?php endif; ?>
 
 	<?php /* ----------------------------------------------------------------
-	       Lightbox modal — always in DOM, shown via --open class.
+	       Lightbox modal — always in DOM, opened via dialog.showModal().
 	       Only rendered when enableLightbox is true.
 	       ---------------------------------------------------------------- */ ?>
 	<?php if ( $enable_lightbox ) : ?>
 
-		<div
+		<?php
+		/* A NATIVE <dialog>, opened with showModal() — NOT a <div> with a big
+		   z-index (D806). Measured live on canary 2242: the lightbox is sealed
+		   inside `div.entry-content.wp-block-post-content`, which carries
+		   `position:relative; z-index:1` on EVERY page, so `z-index:100000`
+		   here lost to the sticky site header's `z-index:100` in the ROOT
+		   stacking context. elementFromPoint over the open lightbox returned
+		   `a.sgs-nav-menu__link`. No number could have won that fight and no
+		   container-scoped fix could either — only the top layer escapes an
+		   ancestor stacking context. Mirrors sgs/modal, which already does
+		   this, and inherits the UA focus trap + Escape for free.
+		   `role`/`aria-modal` are deliberately ABSENT: showModal() supplies
+		   both, and authoring them on a native dialog is redundant. */
+		?>
+		<dialog
 			class="sgs-gallery__lightbox"
-			role="dialog"
-			aria-modal="true"
 			aria-label="<?php esc_attr_e( 'Image lightbox', 'sgs-blocks' ); ?>"
 			data-wp-class--sgs-gallery__lightbox--open="state.isLightboxOpen"
+			data-wp-on--close="actions.closeLightbox"
 			data-wp-on-window--keydown="callbacks.onKeydown"
 		>
 			<button
@@ -636,7 +649,7 @@ ob_start();
 
 			<p class="sgs-gallery__lightbox-counter" data-wp-text="state.counterText"></p>
 
-		</div>
+		</dialog>
 
 	<?php endif; ?>
 

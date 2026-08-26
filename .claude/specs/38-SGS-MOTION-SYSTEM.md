@@ -203,7 +203,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Cursor-reactive field (FR-38-25) + its four looks (FR-38-28) | **V** — the shipped mega-menu spotlight already does pointer-follow in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate; GSAP adds nothing §1.3's ratchet would accept. Measured 982 bytes gzip, no GSAP dependency | block (emitter) + runtime-detected participants | fx panel — field type / colour (`DesignTokenPicker`) / size | `creates_panel = 0` (measured: letting it create panels put a new fx panel on 11 blocks that would also inherit `motion-path` + `scrub`); fine-pointer only; participants carry no control | off | Container-kind + background-image blocks → any block with a paintable background |
 | Magnetic pull (FR-38-30) | **V** — the shipped mega-menu `magnet.js` already does proximity-based pull in vanilla; the 2026-08-02 motion-ecosystem survey independently concluded a magnetic button is "~20-30 lines of vanilla JS — write it, don't dependency it"; GSAP adds nothing §1.3's ratchet would accept | block | fx panel — Pull distance + Reach (shown by default), Direction (behind "+") | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only via `hover`; measured 1054 bytes gzip; distance measured to the element's BOX, not its centre | off | Any of the 32 fx-panel blocks (incl. `sgs/button`, `sgs/multi-button`, `sgs/icon`) → any block with the fx panel exposed |
 | Flowing gradient (FR-38-31, SECOND Tier W entry) | **W** — a mesh gradient needs per-vertex colour interpolated across a subdivided, noise-displaced plane, which CSS cannot generate and GSAP cannot rasterise (§1.2b tests i + ii); GENERATIVE rather than image-wrapping, which widens Tier W's founding fallback premise (see §1.2b) | block (surface) | fx panel-equivalent surface control — 4 client colours (`DesignTokenPicker`) + a mandatory keyboard-reachable Pause control (SC 2.2.2, autonomous motion) | `requires='surface'`; AUTONOMOUS (`triggers='load'`), not cursor-driven — engages SC 2.2.2 so ships a real Pause control, `hidden` until JS confirms it is running; DPR capped at 1.5; IntersectionObserver + `visibilitychange` + context-loss give-up; real CSS fallback required (ships alongside, kept in sync forever — the tier-widening cost) | off | Section/hero surfaces → any block declaring the `surface` capability |
-| Particle trail (FR-38-32) | **V** — a canvas 2D pool of short-lived sprites; vanilla reaches it with no library, so §1.3's ratchet refuses anything dearer. ⛔ NOT Tier W: it needs no GPU shader and that list stays closed at two | block | fx panel — Style (sparks/gravity-dots/ripple) shown by default, Density + Size behind "+" | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only; roster measured 32 before, 32 after; cap 150/emitter, DPR<=1.5; self-terminating loop | off | Any of the 32 fx-panel blocks → any block with the fx panel exposed |
+| Particle trail (FR-38-32) | **V** — a canvas 2D pool of short-lived sprites; vanilla reaches it with no library, so §1.3's ratchet refuses anything dearer. ⛔ NOT Tier W: it needs no GPU shader and that list stays closed at two | block | fx panel — Style (sparks/gravity-dots/ripple) shown by default, Density + Size behind "+" | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only; roster measured 32 before, 32 after; cap 150/emitter (MEASURED 2026-08-26 D807: clamps at exactly 150 under saturation, but ordinary pointer input peaks at 106 — LIFETIME binds first, not the cap), DPR<=1.5; self-terminating loop (MEASURED: 0 frames drawn across 2500ms at rest; positive control confirms the counter rises on movement) | off | Any of the 32 fx-panel blocks → any block with the fx panel exposed |
 | *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
 
 ## 3. The capability roster (nothing cut; curated defaults)
@@ -1145,9 +1145,14 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   - **Cap** — `MAX_PARTICLES = 150` per emitter, a pool allocated ONCE and written as a ring buffer
     (`pool[cursor]`, cursor advanced modulo); never `push`/`splice`, so its length cannot grow. One
     canvas per emitter, DPR clamped to 1.5 (the FR-38-31 precedent). Fine-pointer only.
-  - **Stop-on-idle** — self-terminating with NO timer: the loop runs while `(pool.live > 0 ||
-    movedThisFrame)` and exits when the pool empties, so it is provably zero-cost at rest and restarts
-    on the next movement. Plus `IntersectionObserver` (off-screen runs nothing) and `visibilitychange`.
+  - **Stop-on-idle** — self-terminating with NO timer: `step()` returns `liveCount > 0`
+    (`particles.js`) and `tick()` re-schedules only on `true`, so the loop exits the frame the pool
+    empties and `push()` restarts it on the next movement. Plus `IntersectionObserver` (off-screen
+    runs nothing) and `visibilitychange`.
+    ⚠ **Corrected 2026-08-26:** this bullet read `(pool.live > 0 || movedThisFrame)`. There is no
+    `movedThisFrame` in `particles.js` and there never was — 0 occurrences repo-wide. The behaviour
+    described was right; the guard named was invented. Prose that names a variable nobody wrote reads
+    as a code citation and cannot be grepped back to an owner.
   - **Flash ceiling (SC 2.3.1)** — answered STRUCTURALLY, not by a rate limit: alpha is `1 - age/maxAge`
     and nothing can make it rise, so there is no flash to cap. Particle radius is clamped to a
     coverage-derived ceiling `r <= sqrt( 0.10 * A / ( pi * CAP ) )`, bounding painted coverage to ~10%
@@ -1198,12 +1203,35 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 
  ✅ **EDITOR SURFACE OBSERVED 2026-08-25** — see the §9 row.
 
- ⚠ **STILL UNMEASURED, and not claimed:** live cap-binding (150/emitter) and loop-stop. The
-  first probe for those was unreliable, so treat them as unproven rather than assumed. Two
-  traps for whoever measures them: instrument the MODULE, not the page (a global rAF counter
-  catches every other effect and proves nothing); and sample DURING the pointer sweep, not
-  after (sampling once afterwards read 0 lit pixels and nearly filed working code as dead,
-  while sampling during read 2417).
+ ✅ **MEASURED LIVE 2026-08-26 on canary 2744** (D807) — both claims, each with a control,
+  through the permanent read-only `stats()` probe on `createParticles()` plus the
+  `window.sgsFxParticles` handle in `fx-particles.js`. The probe instruments the MODULE.
+  - **The cap CLAMPS at exactly 150.** 600 `push()` calls inside ONE frame (nothing can age or
+    die between them) drove `live` from 3 to **150**, and it held 150 across all 11 subsequent
+    trace points — never 151. The ring buffer is 150 slots allocated once and `spawnOne()`
+    increments `liveCount` only when overwriting a slot that was not alive, so the ceiling is
+    structural — and this exercises the real shipped path rather than asserting it.
+  - ⚠ **But the cap is NOT the binding constraint at shipped density — particle LIFETIME is.**
+    A continuous fast real-mouse sweep peaked at **106 of 150** over 362 frames sampled every
+    frame, and 107 over 90 samples on an independent instrument. Zero samples above 150, but
+    also zero AT 150. Recorded because "the cap binds" would have been the wrong claim: under
+    ordinary pointer input the pool never fills, and a future density rise has real headroom
+    before the cap starts doing any work at all.
+  - **The loop STOPS.** Pointer parked off the emitter: `ticks` was **131 at t0 and 131 at
+    t+2500ms** — 0 frames drawn — with `live` 0, measured past the longest preset life (1.3s).
+    POSITIVE CONTROL: moving the pointer again raised `ticks` 131 → 169, so the sampler can
+    report rising and a frozen counter is a real stop rather than a dead probe.
+  - **NEGATIVE CONTROL:** 16 `.sgs-container` elements on the page, exactly **1** carrying
+    `data-sgs-fx="particles"`, and the module's instance list holds exactly **1** emitter — a
+    container without the effect constructs no instance at all, which is a stronger statement
+    than "its canvas looks empty". 0 console errors.
+
+ ⚠ **Three traps for anyone re-measuring, all hit for real:** instrument the MODULE, not the
+  page (a global rAF counter catches every other effect and proves nothing); sample DURING the
+  sweep, not after (sampling once afterwards read 0 lit pixels and nearly filed working code as
+  dead, while sampling during read 2417); and note the listener is **`mousemove`**, NOT
+  `pointermove` — a synthetic-`PointerEvent` probe returned 0 across 240 frames against
+  perfectly healthy code, because nothing was listening for the event it sent.
 
 ### 3.4 SVG
 

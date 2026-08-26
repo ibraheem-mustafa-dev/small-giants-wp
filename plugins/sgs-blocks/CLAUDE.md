@@ -637,6 +637,49 @@ Blocks with interactive hover states MUST expose these controls in the editor in
 
 These are not just colour shifts. Kadence and Spectra offer transform and shadow controls — SGS must match or exceed.
 
+#### What the UNIVERSAL hover panel is for — and what it is not (D808, 2026-08-26)
+
+**Nobody had written this down, and its absence caused a whole session's work to start from a
+false premise.** Read it before adding `"hover"` to any block's
+`supports.sgs.enabledExtensions`.
+
+**The one rule: the panel governs a block whose hover target IS the block root.** Nothing else.
+`inject_hover_effects()` is a `render_block` filter — it finds the block's first real tag and
+classes THAT. It fires once per block, never once per card, tile, step or link. So on a block
+whose hover belongs to a repeated child, the panel is not "less useful", it is aimed at the
+wrong element, and switching it on gives the client one control acting on the wrapper beside
+another acting on the item.
+
+| Panel SUITS (hover target = root) | Panel does NOT suit (hover target = a child) |
+|---|---|
+| `cta-section` · `team-member` · `info-box` · `pricing-table` · `google-reviews` · `whatsapp-cta` | `card-grid` → `__item` · `post-grid` → `__card` · `gallery` → `__item` · `process-steps` → `__step` · `icon` → `__link` |
+
+**Which effects the panel actually owns.** Scale and shadow it owns outright. Its **zoom and
+grayscale toggles are inert on most blocks** — the PHP emits `sgs-has-img-zoom` /
+`sgs-has-grayscale`, but only **card-grid and team-member** style the first and only those two
+plus **gallery and info-box** style the second. Everywhere else the client flips a switch and
+nothing happens. ⛔ **Reviving them with a root-level rule is REFUSED and D796 records why:** a
+root rule cascades to every descendant image, manufacturing a second copy of the double-fire
+that decision just fixed. Universal reach needs per-block scoping, not a bigger selector.
+
+**Its shadow vocabulary is four slugs** (`subtle` / `raised` / `floating` / `glow`) **with no
+colour input anywhere.** That is why a block-owned `shadowHover` + `shadowHoverColour` pair is
+NOT a duplicate of the panel's `sgsHoverShadow` and must not be deleted for looking like one —
+deleting it swaps a brand-colour swatch for a four-word dropdown (D796).
+
+**Defaults are separate from the panel and are declared by the block.** `supports.sgs.hoverDefaults`
+(`{scalePreset, shadow, imageZoom, focusRing}`) is read by `resolve_hover_defaults()` in
+`includes/hover-effects.php` and its JS twin, and is honoured **only when the block also opts the
+panel in**. A block can have the panel and declare no defaults — that is `cta-section`, and it is
+the fix for a banner that scaled whenever the cursor crossed it. There is no block-name list in
+either file any more; a new block declares its own or gets nothing.
+
+⚠ **`focusRing` is near-inert and must not be trusted as a11y cover.** It emits
+`.sgs-has-focus-ring:focus-visible` on the block ROOT, and a `<div>`/`<section>` root is not
+focusable without `tabindex` — measured 2026-08-26: **zero `tabindex` across card-grid,
+post-grid, process-steps, gallery and icon**, so it could never match on any of them. Real focus
+styling belongs on the focusable descendant.
+
 ## Utility Functions
 
 Import from `../../utils`:

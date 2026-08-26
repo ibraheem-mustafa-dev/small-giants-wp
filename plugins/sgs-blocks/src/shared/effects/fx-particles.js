@@ -54,6 +54,28 @@ const VALID_PRESETS = [ 'sparks', 'gravity-dots', 'ripple' ];
 /** Live instances, so a bfcache restore can tear down before re-init. */
 let instances = [];
 
+/**
+ * PROBE HANDLE — read-only, permanent, no side effects (D807).
+ *
+ * `createParticles()` exposes per-emitter `stats()`, but a live browser probe
+ * runs in page scope and cannot import a module, so the instance list needs a
+ * window handle to be reachable at all. This is that handle and nothing more:
+ * it returns the SAME array the module already keeps, so it adds no state to
+ * go stale, and there is no setter.
+ *
+ * ⛔ Instrument THE MODULE through this, never the page. A global rAF counter
+ * catches every other effect on the page and proves nothing about particles.
+ *
+ * It is also the negative control's instrument: a container carrying no
+ * particle effect must appear in this list ZERO times, which is a stronger
+ * statement than "its canvas looks empty".
+ *
+ * @return {Array<{el: Element, particles: Object}>} Live emitters.
+ */
+if ( typeof window !== 'undefined' ) {
+	window.sgsFxParticles = { instances: () => instances };
+}
+
 /** The single shared pointer driver, or null when nothing is registered. */
 let onPointerMove = null;
 

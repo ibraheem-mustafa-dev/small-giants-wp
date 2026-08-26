@@ -208,6 +208,11 @@ export function createParticles( el, opts = {} ) {
 	}
 	let cursor = 0;
 	let liveCount = 0;
+	// Frames this emitter has actually drawn. Read-only, exported via stats()
+	// so the self-terminating-loop claim can be MEASURED rather than asserted
+	// (D807). Deliberately per-emitter: a global rAF counter catches every
+	// other effect on the page and proves nothing about this one.
+	let tickCount = 0;
 
 	let visible = false;
 	let lastRingAt = 0;
@@ -404,6 +409,7 @@ export function createParticles( el, opts = {} ) {
 	 * @param {number} now `requestAnimationFrame` timestamp.
 	 */
 	function tick( now ) {
+		tickCount++;
 		if ( ! lastTick ) {
 			lastTick = now;
 		}
@@ -495,6 +501,30 @@ export function createParticles( el, opts = {} ) {
 			spawnAt( x, y );
 			ensureLoop();
 		},
+
+		/**
+		 * PROBE API — read-only, permanent, no side effects.
+		 *
+		 * Exists so the two claims FR-38-32 makes about itself can be measured
+		 * on the live page instead of trusted: that the pool CAP BINDS (`live`
+		 * never exceeds MAX_PARTICLES however fast the pointer sweeps) and that
+		 * the LOOP STOPS (`ticks` stops rising once the pointer rests). Both sat
+		 * "STILL UNMEASURED" in Spec 38 §3.3 because the first probe to attempt
+		 * them was unreliable.
+		 *
+		 * Kept in the shipped bundle deliberately (approved by Bean): a probe
+		 * that only exists in a debug build cannot verify the build that ships,
+		 * and this is two integers behind a closure — no listener, no timer, no
+		 * measurable cost.
+		 *
+		 * ⚠ Sample `live` DURING a pointer sweep, never after. Every particle
+		 * dies within its preset life, so a single reading taken afterwards is
+		 * 0 and reads as dead code.
+		 *
+		 * @return {{ live: number, ticks: number }} Live particles now, and
+		 *         frames drawn since this emitter was created.
+		 */
+		stats: () => ( { live: liveCount, ticks: tickCount } ),
 
 		/**
 		 * Tear this instance down completely — loop, both observers, the

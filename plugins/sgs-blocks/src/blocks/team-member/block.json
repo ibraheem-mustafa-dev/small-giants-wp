@@ -50,8 +50,10 @@
 				"cardStyle"
 			],
 			"enabledExtensions": [
-				"blockLink"
+				"blockLink",
+				"hover"
 			],
+			"hoverDefaults": { "scalePreset": "1.02", "shadow": "raised", "imageZoom": true, "focusRing": true },
 			"elements": {
 				"card": {
 					"label": "Card",
