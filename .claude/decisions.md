@@ -1,3 +1,28 @@
+## D816 [ROUTINE] — Step 5 shipped to git; deploy blocked by a second gate, deliberately not forced
+
+**2026-08-27.** `plugins/sgs-blocks/assets/css/fx-wave-gradient.css` (`cf285051a`) — light,
+hue-adjacent palette + accessible Pause toggle. Canary page 2740's first section (the one carrying
+the exact rejected default colours, labelled "the stripe.com technique") updated to the new
+palette directly via `wp post update`; its second section (a deliberate custom-colour re-theme
+demo) left untouched, proving per-instance values still win.
+
+**Deploy attempted, aborted twice by two different gates — neither bypassed on judgement alone:**
+1. `oldshape-audit` failed on **page 2849** (a different, in-progress Mama's Munches clone page —
+   stored `container`/`button`/`media`/`feature-grid`/`testimonial-slider` attrs whose type no
+   longer matches their schema). Unrelated to this phase's payload (no block.json/schema changed).
+   Bean approved `--skip-oldshape-audit` for this deploy only.
+2. `deployed-files-dirty` failed on 9 files with genuinely uncommitted work from other concurrent
+   sessions (`hero/edit.js`, `button/render.php`, `hover-effects.php`/`.js`,
+   `cta-section/style.css`, `button/style.css`, and 3 `block.json` files) — this is the exact gate
+   built after D336 (the July outage that took two client sites down ~2.5h from deploying an
+   uncommitted edit). **Bean's call: do not force it — move on, deploy later** once those tracks
+   commit or the collision otherwise clears.
+
+**Consequence:** Step 5 is code-complete and pushed to `main`; the canary page's stored colours are
+updated; but the LIVE site still serves the pre-fix JS/CSS until a clean deploy succeeds. QA Gate C
+(live Playwright verification, Bean's eye on the look) cannot run until then — **carried forward,
+not closed.**
+
 ## D815 [ROUTINE] — QA Gate B (`/qc-council`) closed the FR-38-31 hygiene fixes, catching one real defect the panel-format itself surfaced
 
 **2026-08-27.** Four-seat verification panel on commits `992c305b3` + `3dc83df13` (Step 4's reference

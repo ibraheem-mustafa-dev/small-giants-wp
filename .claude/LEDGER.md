@@ -82,30 +82,30 @@ report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reason
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (Phase 1 in flight: bugs+hygiene shipped, look-first next)
+## ▶ MOTION TRACK — 2026-08-27 (Steps 1-5 done; DEPLOY BLOCKED, Bean said move on for now)
 
-⭐ **EXECUTING `.claude/plans/phase-1-fr3831-hygiene-and-look.md`.** Steps 1-4 + QA Gates A+B done.
-**Next: Step 5 (the look) → deploy → QA Gate C (live canary + Bean's eye).**
-⛔ **DO NOT build from the technique spec** — 6-seat council NO-GO (D794). Only its §5/§6 survive.
-⭐ **The rejected look is FOUR CSS VALUES** — `fxWave*` all default `''`, effect defaults off, only
-page **2740** uses it (KJC-1: default is STOP if still rejected, not more shader work).
+⭐ **START HERE: `.claude/plans/phase-1-fr3831-hygiene-and-look.md` Step 6.** Steps 1-5 + Gates A+B
+done, code on `main`. **Blocked at deploy (D816) — do NOT retry with `--allow-dirty`.**
+⛔ **9 files have OTHER sessions' genuinely uncommitted work** (`hero/edit.js`,
+`button/render.php`, `hover-effects.php`/`.js`, `cta-section/style.css`, `button/style.css`, 3
+`block.json`s) — the exact post-D336 gate. Bean: wait, don't force. Re-run `build-deploy.py
+--target sandybrown --blocks-only --skip-oldshape-audit` once those tracks commit (skip already
+Bean-approved — page 2849's drift is a different track's clone work; re-check still needed).
+⭐ **The rejected look is FIXED** — palette landed (`cf285051a`): light base + 3 hue-adjacent
+blue-cyan colours replace navy/blue/purple/pink; toggle contrast ~10:1 (was 3.36:1). Canary 2740's
+default-palette section updated; its custom-re-theme section deliberately untouched. **Not LIVE yet.**
 ✅ **3 live bugs FIXED + reviewed (D814/D815):** context-loss dead rectangle, `hexToRgb` silent
-kill switch (now handles oklch/wide-gamut via canvas fallback), capability gate wired (disclosed
-shared effect on `surface-treatment`, traced safe). 2 review rounds + 4-seat QC council; caught a
-real self-test bug that used a live file as its own fixture (fixed, `b9d03ff8e`).
-⚠ **Still owed at QA Gate C:** live Playwright verification of context-loss fallback on canary
-2740 — the fixes above are static-trace + jsdom verified only, not yet live.
-✅ **Attribution gate BUILT (D813), 0 live references (Step 4 applied Step 3's sign-off).**
+kill switch (oklch/wide-gamut via canvas fallback), capability gate wired (shared effect on
+`surface-treatment` disclosed, traced safe). 2 review rounds + 4-seat QC council; caught a real
+self-test bug using a live file as its own fixture (fixed, `b9d03ff8e`).
+⚠ **QA Gate C (live Playwright + Bean's eye) cannot run until deploy lands** — verified so far by
+static-trace/jsdom only, not live.
+✅ **Attribution gate BUILT (D813), 0 live refs.**
 ✅ **POC + Q6 + Gate E CLOSED (D790/D791/D794).** Framebuffer pass needs a DESIGN GATE. Gate E deferred.
 
-**Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, logged as **D778-D781**.
-Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).
-
-✅ Bean's eye-review of 2721 fixed 3 gate-passed defects; "Trail" renamed **"Drag weight"**;
-invariant I8 was computed but never registered. ✅ Editor opened for the first time — Spec 38 §9's
-"canvas shows the resting field" claim was WRONG, not unverified. ✅ **FR-38-30 Magnetic pull** and
-✅ **FR-38-31 Flowing gradient** shipped. ✅ Deploy gate scoped to what a run ships.
-Detail: **D778-D781** — do not restate.
+**Prior history (D766/D767, D778-D781, 2026-08-24/25):** cursor field (2721) + magnetic pull
+(2737) shipped; 3 gate-passed defects fixed on eye-review; FR-38-30/FR-38-31 shipped. Do not
+restate — read the D-numbers if detail is needed.
 
 ⭐ **The gradient's rejected LOOK is diagnosed** — see the top of this track. Its cause stated
 here ("4 interpolated stops can't reproduce that variation") was measured FALSE on 2026-08-25.
