@@ -73,6 +73,22 @@ MIN_COMPONENTS = 10
 MIN_BLOCKS = 20
 
 NAME_HELPER_RE = re.compile(r"export\s+function\s+(\w*(?:AttrName|AttrKeys))\b")
+# APPLICABILITY, added 2026-08-26 after the FIRST version of this script
+# reported 19 "gaps" that CANNOT EXIST. A name-deriving helper only means
+# anything for a control that takes an ATTRIBUTE NAME KEY - `prefix` or
+# `attrNames`. Measured across src/components: 21 controls are mounted, 10 are
+# attribute-aware (they take `setAttributes`), and only FOUR are name-keyed
+# (GradientOverlayControl, ResponsiveBoxControl, ShadowControl,
+# TypographyControls). The other 17 take a `value`/`values`/`rows` prop and
+# never see an attribute name at all - for them there is no naming rule to own,
+# so "missing a JS name helper" is not a gap, it is a category error.
+#
+# Reporting a gap where none can exist is WORSE than reporting nothing: it
+# inflates the backlog and sends the next person to write a helper that can
+# have no caller. Same shape as the recorded failure
+# `a-derived-field-used-as-a-scope-predicate-is-self-fulfilling`.
+NAME_KEY_RE = re.compile(r"\b(prefix|attrNames)\b")
+ATTR_AWARE_RE = re.compile(r"\bsetAttributes\b")
 
 
 def camel_to_slug(name: str) -> str:
@@ -175,6 +191,8 @@ def survey() -> dict:
         comp = path.stem
         text = path.read_text(encoding="utf-8", errors="replace")
         helpers = NAME_HELPER_RE.findall(text)
+        attr_aware = bool(ATTR_AWARE_RE.search(text))
+        name_keyed = attr_aware and bool(NAME_KEY_RE.search(text))
         slug = camel_to_slug(comp)
         # R2 heuristic: any sgs_* function whose name carries the control's slug.
         twin = sorted(f for f in php_fns if slug and slug in f)
@@ -187,34 +205,57 @@ def survey() -> dict:
                 "phpTwin": twin[:3],
                 "hasJs": bool(helpers),
                 "hasPhp": bool(twin),
+                "attrAware": attr_aware,
+                "nameKeyed": name_keyed,
             }
         )
     return {"rows": rows}
 
 
 def gaps(rows: list[dict]) -> list[dict]:
-    """Mounted controls missing either half. Unmounted ones are NOT gaps."""
-    return [r for r in rows if r["mountedIn"] > 0 and not (r["hasJs"] and r["hasPhp"])]
+    """Mounted, NAME-KEYED controls missing either half.
+
+    Scope is `nameKeyed`, NOT merely `mounted` - see the applicability note by
+    NAME_KEY_RE. A value-based control has no attribute-name contract to own, so
+    it can never be "missing" a name helper. Unmounted controls are excluded
+    too: that is a separate finding, not a missing helper.
+    """
+    return [
+        r for r in rows
+        if r["mountedIn"] > 0 and r["nameKeyed"] and not (r["hasJs"] and r["hasPhp"])
+    ]
 
 
 def print_survey(data: dict) -> None:
     rows = sorted(data["rows"], key=lambda r: (-r["mountedIn"], r["component"]))
     print("\n  CONTROL HELPER PARITY — the standard pair per shared control")
     print("  " + "-" * 74)
-    print(f"  {'component':<26}{'mounts':>7}  {'JS':>3} {'PHP':>4}   helper")
+    print(f"  {'component':<26}{'mounts':>7} {'shape':>11}  {'JS':>3} {'PHP':>4}   helper")
     print("  " + "-" * 74)
     for r in rows:
         if not r["mountedIn"]:
             continue
+        # A helper pair is only MEANINGFUL for a name-keyed control. Anything
+        # else is marked n/a rather than shown as a missing half.
+        if not r["nameKeyed"]:
+            shape = "value-based" if not r["attrAware"] else "attr, no key"
+            print(f"  {r['component']:<26}{r['mountedIn']:>7} {shape:>11}  {'n/a':>3} {'n/a':>4}   —")
+            continue
         js = "yes" if r["hasJs"] else " NO"
         php = "yes" if r["hasPhp"] else " NO"
         helper = (r["jsNameHelper"] or r["phpTwin"] or ["—"])[0]
-        print(f"  {r['component']:<26}{r['mountedIn']:>7}  {js:>3} {php:>4}   {helper}")
+        print(f"  {r['component']:<26}{r['mountedIn']:>7} {'name-keyed':>11}  {js:>3} {php:>4}   {helper}")
 
     unmounted = [r["component"] for r in rows if not r["mountedIn"]]
     g = gaps(rows)
     print("  " + "-" * 74)
-    print(f"  {len(rows) - len(unmounted)} mounted control(s); {len(g)} missing a half.")
+    keyed = [r for r in rows if r["mountedIn"] and r["nameKeyed"]]
+    aware = [r for r in rows if r["mountedIn"] and r["attrAware"]]
+    print(f"  {len(rows) - len(unmounted)} mounted control(s); {len(aware)} attribute-aware; "
+          f"{len(keyed)} NAME-KEYED (the only shape a helper pair fits).")
+    print(f"  Of those {len(keyed)}: {len(keyed) - len(g)} complete, {len(g)} missing a half.")
+    if g:
+        print("    still owed: " + ", ".join(r["component"] for r in g))
     if unmounted:
         print(f"  {len(unmounted)} mounted by NO block (a separate finding, not a gap):")
         print("    " + ", ".join(unmounted))

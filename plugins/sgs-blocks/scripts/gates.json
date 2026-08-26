@@ -686,5 +686,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 75
+  },
+  {
+    "id": "check-control-helper-parity",
+    "cmd": "python scripts/check-control-helper-parity.py --check",
+    "tier": "fast",
+    "added_D": "D809",
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 76
   }
 ]

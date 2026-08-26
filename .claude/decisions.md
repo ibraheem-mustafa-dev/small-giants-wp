@@ -53,8 +53,42 @@ must be run IN PLACE.
 literal it replaced BEFORE the swap. ⚠ Note the conformance corpus SHRINKS as adoption proceeds
 (22→20, 10→9): it guards the remaining literals, and adopted sites cannot drift by construction.
 
-⛔ **NOT wired into `gates.json`.** That is shared config across five active tracks and owes its
-own change. The ratchet passes today (19 baselined, 0 net-new).
+✅ **WIRED into `gates.json` the same day, on Bean's instruction** — order 76, tier `fast`,
+`budget_ms` 1500 against a **measured** 1092/1039/1046 ms (three runs; not copied from a
+neighbour's 400). Full suite green: **68/68**, the new gate at 1.05s. The entry was appended as
+TEXT after a `json.dumps` round-trip produced a 697-insertion/688-deletion whole-file reformat —
+the second time that trap fired today, and `git diff --numstat` caught both before commit.
+
+⛔ **THE FIRST VERSION OF THIS SCRIPT REPORTED 19 GAPS THAT CANNOT EXIST — corrected same day,
+before anyone acted on it.** Bean asked whether the 20 remaining controls could be swept
+mechanically. Checking rather than answering revealed the census was scoped wrong: a
+name-deriving helper is only MEANINGFUL for a control that takes an attribute NAME KEY. Measured
+across `src/components`:
+
+| shape | count | helper pair applies? |
+|---|---|---|
+| mounted controls | 21 | — |
+| attribute-aware (take `setAttributes`) | 9 | only if also name-keyed |
+| **name-keyed (`prefix` / `attrNames`)** | **4** | **yes** |
+| value-based (`value`/`values`/`rows`) | 12 | **no — no attr name exists to derive** |
+
+So the real backlog is **2, not 19**: `ResponsiveBoxControl` (48 mounts — the significant one) and
+`GradientOverlayControl` (2). `TypographyControls` and `ShadowControl` are complete. `gaps()` is
+now scoped on `nameKeyed`, and the report prints each control's SHAPE so a value-based control
+reads `n/a` instead of looking like debt.
+
+⭐ **The reusable part: a gap reported where none can exist is worse than reporting nothing.** It
+inflates the backlog and sends the next person to write a helper that can have no caller. Same
+shape as `a-derived-field-used-as-a-scope-predicate-is-self-fulfilling`. It also changes the
+ANSWER to Bean's question — there is no mechanical sweep across 20, because 12 of them have no
+attribute-name contract at all. For those the effort-reducer is the SCAFFOLD (which writes the
+block-side wiring whatever the component's prop shape), not a helper pair.
+
+⚠ **Separately corrected: `SgsLengthControl` is not dead code.** I flagged it as "imported by
+nothing". True, but the framing was wrong — it is a deliberately OPT-IN capability built
+2026-08-19 (theme spacing-scale presets alongside a raw `UnitControl`) that nothing has adopted
+yet. "Built, not yet taken up" is a different finding from "dead", and only the second implies
+deletion.
 
 **Next, in Bean's approved order:** finish the remaining controls' pairs highest-adoption last —
 `ShadowControl` ✅ 15 · `TypographyControls` ✅ 18 · then `DesignTokenPicker` 26 ·
