@@ -286,7 +286,20 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		// out-of-list value emits NO var, so it must emit no class either.
 		$add_classes[] = 'sgs-has-hover-shadow';
 	}
-	if ( $hover_scale || $hover_scale_preset ) {
+	// ⛔ THE ALLOW-LIST MUST BE MIRRORED HERE — it was not, and the comment on the
+	// shadow branch directly above ("out-of-list value emits NO var, so it must
+	// emit no class either") described a rule its own neighbour broke.
+	//
+	// The var guard above only emits `--sgs-hover-scale` for a preset in
+	// ('1.02','1.05','1.1'). This condition had NO allow-list, so an out-of-list
+	// preset emitted the CLASS WITHOUT THE VAR. Both consumers then fell back to
+	// their own defaults — and they differ: the generic root rule
+	// (`extensions.css`) falls back to `scale(1)` (no-op), while a block-owned
+	// item rule such as `card-grid/style.css:237` falls back to `scale(1.05)`.
+	// One operator setting, two different behaviours, decided by which stylesheet
+	// happened to match. Found 2026-08-26 by the WP-core seat of the hover council.
+	$sgs_scale_allowed = array( '1.02', '1.05', '1.1' );
+	if ( $hover_scale || ( $hover_scale_preset && in_array( $hover_scale_preset, $sgs_scale_allowed, true ) ) ) {
 		$add_classes[] = 'sgs-has-hover-scale';
 	}
 	if ( $hover_img_zoom ) {

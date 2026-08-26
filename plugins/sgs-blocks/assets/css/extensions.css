@@ -201,34 +201,29 @@
 	}
 }
 
-/* ===== Hover Image Zoom ===== */
-
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-hover-image-zoom {
-		overflow: hidden;
-	}
-
-	.sgs-hover-image-zoom img {
-		transition: transform 0.5s ease;
-	}
-
-	.sgs-hover-image-zoom:hover img {
-		transform: scale(1.1);
-	}
-}
-
-/* ===== Hover Grayscale ===== */
-
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-hover-grayscale {
-		filter: grayscale(100%);
-		transition: filter 0.5s;
-	}
-
-	.sgs-hover-grayscale:hover {
-		filter: grayscale(0);
-	}
-}
+/* ===== Hover Image Zoom / Hover Grayscale — RULES DELETED 2026-08-26 =====
+ *
+ * This block previously styled `.sgs-hover-image-zoom` and `.sgs-hover-grayscale`.
+ * NOTHING HAS EVER EMITTED EITHER CLASS. `hover-effects.php` emits
+ * `sgs-has-img-zoom` and `sgs-has-grayscale` — different names — so these 27 lines
+ * were dead from the day they were written (verified: zero emitters in `includes/`
+ * or `src/`, both names).
+ *
+ * ⛔ DO NOT "FIX" THIS BY RENAMING THEM TO THE EMITTED NAMES. That was proposed and
+ * refused. Both rules target the ROOT and cascade to every descendant image
+ * (`.sgs-hover-image-zoom:hover img`), while the blocks that actually implement
+ * these effects scope them to a repeated ITEM:
+ *   img-zoom   → card-grid, team-member
+ *   grayscale  → card-grid, gallery, info-box, team-member
+ * Renaming would make BOTH fire — manufacturing a second copy of the root-vs-item
+ * double-application bug this same commit fixes in `card-grid/style.css`.
+ *
+ * Consequence, recorded honestly rather than hidden: the panel's "Zoom image on
+ * hover" and "Grayscale to colour" toggles do something ONLY on the blocks listed
+ * above. Elsewhere they are inert switches. Giving them universal reach needs
+ * per-block scoping (each block declaring where its image lives), NOT a root rule —
+ * that is a separate, scoped change, deliberately not attempted here.
+ */
 
 /* ===== Underline Slide-in ===== */
 

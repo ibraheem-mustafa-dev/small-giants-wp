@@ -234,6 +234,20 @@
 		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
 	}
 
+	/* ⛔ THIS BLOCK OWNS ITS HOVER TARGET — the generic ROOT rule must stand down.
+	   `extensions.css:164` is an unqualified `.sgs-has-hover-scale:hover`, and
+	   `render.php:636` puts that class on THIS BLOCK'S ROOT from the block's own
+	   control. So without the neutraliser below, setting Scale Hover scaled the
+	   WHOLE GRID (on hover of any gap between cards) as well as the hovered card.
+	   ⚠ That was LIVE with the universal hover panel switched OFF — it is a shared
+	   CLASS NAMESPACE collision, not a panel bug, so deleting this block's own attr
+	   would not have fixed it. Found 2026-08-26 by the hover council.
+	   Specificity (0,3,0) beats the generic (0,2,0) deterministically — no
+	   `!important`, and no dependence on stylesheet load order. */
+	.sgs-card-grid.sgs-has-hover-scale:hover {
+		transform: none;
+	}
+
 	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item:hover {
 		transform: scale(var(--sgs-hover-scale, 1.05));
 	}

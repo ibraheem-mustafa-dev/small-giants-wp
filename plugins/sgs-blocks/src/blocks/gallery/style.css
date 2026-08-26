@@ -279,6 +279,19 @@
 	animation-delay: calc(var(--sgs-stagger, 0ms) * var(--sgs-item-index, 0));
 }
 
+/* ⛔ PREVENTATIVE — this block owns its hover target, so the generic ROOT rule
+   must stand down. Unlike card-grid this is NOT live today: gallery's render.php
+   never emits `sgs-has-hover-scale`, so `extensions.css:164` cannot currently
+   match. But the item rule below is UNCONDITIONAL (it just falls back to
+   `scale(1)` when the var is unset), so the moment the universal hover panel is
+   switched on for this block the panel would set the var AND put the class on the
+   root — scaling the whole tile grid on gap-hover as well as the hovered tile.
+   Neutralised now so that decision cannot silently reintroduce card-grid's bug.
+   Specificity (0,2,0) beats the generic (0,1,0). Added 2026-08-26, hover council. */
+.sgs-gallery.sgs-has-hover-scale:hover {
+	transform: none;
+}
+
 .sgs-gallery__item:hover {
 	transform: scale( var( --sgs-hover-scale, 1 ) );
 }

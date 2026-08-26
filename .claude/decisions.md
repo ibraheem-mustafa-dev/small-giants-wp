@@ -1,3 +1,69 @@
+## D796 [INCIDENT] — the hover double-fire was LIVE with the panel switched OFF, and the plan to delete 13 "duplicates" was refuted entirely
+
+**2026-08-26.** `extensions.css`, `card-grid/style.css`, `gallery/style.css`,
+`includes/hover-effects.php`. Four-agent source audit + four-seat council
+(client-experience / WP-core / ship-PM / cynic). Session opened intending to switch the
+universal hover panel on for 8 blocks and mechanically delete ~12 duplicate attrs.
+
+⭐ **ZERO OF THE 13 "DUPLICATES" SHOULD BE DELETED.** Every one either names an effect the
+panel structurally CANNOT reach, or carries a value the panel cannot express.
+- **Reach:** `inject_hover_effects()` finds the first real tag and classes it. `render_block`
+  fires once per block, never per card. 5 of 8 blocks hover a per-card/tile/step element
+  (`.sgs-post-grid__card`, `.sgs-card-grid__item`, `.sgs-gallery__item`,
+  `.sgs-process-steps__step`, `.sgs-icon__link`). Deleting theirs removes the only working
+  per-card hover.
+- **Value:** the panel's entire shadow vocabulary is 4 slugs (`subtle/raised/floating/glow`)
+  with **no colour input anywhere**. Every block-owned `shadowHover` ships a
+  `shadowHoverColour` beside it. Deleting one swaps a brand-colour swatch for a four-word
+  dropdown — which killed even the single deletion previously believed safe
+  (`team-member.shadowHover`, whose colour companion is `block.json:265`).
+
+⛔ **AND THE DOUBLE-FIRE WAS LIVE WITH THE PANEL OFF — I had briefed it as a consequence of
+switching the panel ON, which was wrong.** `card-grid/render.php:636` emits
+`sgs-has-hover-scale` **on the root, from the block's own control**; `extensions.css:164` is
+an unqualified `.sgs-has-hover-scale:hover`; `style.css:237` scales the item. It is a shared
+CLASS NAMESPACE collision, not a panel bug — so deleting the block's attr would not have
+fixed it, and switching the panel on was never its cause.
+
+**Proven in a browser, bug-first:** hovering the root in a GAP scaled the whole grid to 1.05;
+hovering a card scaled BOTH card and grid. After the fix: gap-hover `none`, card-hover still
+1.05. Negative control satisfied — the failure reproduces before the fix.
+
+**Fix = one neutraliser per owning block, at (0,3,0) vs the generic (0,2,0)** —
+`.sgs-card-grid.sgs-has-hover-scale:hover{transform:none}`. No `!important`, no load-order
+dependence, no PHP, no block.json. Added preventatively to `gallery` too: not live there
+(its render never emits the class) but its item rule is unconditional, so switching the panel
+on would have silently reintroduced it.
+
+⭐ **A SECOND BUG, found by the WP-core seat: the allow-list was mirrored on one branch and
+not its neighbour, and the comment above described the rule the neighbour broke.**
+`hover-effects.php` gated `--sgs-hover-scale` on `('1.02','1.05','1.1')` but emitted
+`sgs-has-hover-scale` with NO allow-list. An out-of-list preset emitted **the class without
+the var** — and the two consumers fall back differently (generic root `scale(1)`, block item
+`scale(1.05)`). One operator setting, two behaviours, decided by which stylesheet matched.
+The shadow branch immediately above carries the comment *"out-of-list value emits NO var, so
+it must emit no class either"*. Now mirrored.
+
+**27 dead lines deleted from `extensions.css`.** It styled `.sgs-hover-image-zoom` /
+`.sgs-hover-grayscale`; the PHP emits `sgs-has-img-zoom` / `sgs-has-grayscale`. Zero emitters
+of either dead name, ever. ⛔ **The obvious fix — rename them to the emitted names — was
+proposed and REFUSED:** both target the ROOT and cascade to every descendant image, while the
+blocks implementing these effects scope them to a repeated ITEM (img-zoom: card-grid,
+team-member; grayscale: +gallery, info-box). Renaming manufactures a second copy of the bug
+this commit fixes. Recorded consequence: those two toggles are inert outside those blocks;
+universal reach needs per-block scoping, not a root rule.
+
+⚠ **The selector-registry proposal was REFUSED on necessity, not legality.** Research
+verified the mechanism is real — `wp_get_block_css_selector()` is public API, its lookup is an
+arbitrary `_wp_array_get` path with no allow-list, custom keys survive registration and are
+schema-valid, and multi-node selectors already round-trip here (`sgs/media` declares
+`.sgs-media__img, .sgs-media__video`). It buys **zero additional reach**: the gate-class +
+inherited-custom-property pattern already reaches the item, and `--sgs-stagger` is the in-tree
+proof (no generic root rule, consumed per-item by 3 stylesheets, no double-application bug).
+Ecosystem check with a negative control: 220 block.json files across Kadence/Stackable/Otter/
+GenerateBlocks/Spectra, 119 with `supports`, **0 with `selectors`** — and every cross-block
+extension in all five is root-only. Parked; revisit when a third block needs per-item hover.
+
 ## D795 [INCIDENT] — the dispatcher fix worked only by accident, and a self-test case had frozen the bug
 
 **2026-08-26.** `check-duplicate-controls.js`. Found by a 4-agent source audit of the hover
@@ -719,9 +785,10 @@ implemented faithfully and the research was accurate about that technique. Nobod
 thing being copied still looked like what we thought. One screenshot at the start would have
 saved the whole build.
 
-**Next:** a scratch/POC exact replication (Bean's framing — a study rig, never deployed) at
-`.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`. FR-38-31 stays exactly as shipped
-until we know what replaces it.
+**Next:** a scratch/POC exact replication (Bean's framing — a study rig, never deployed).
+FR-38-31 stays exactly as shipped until we know what replaces it.
+⚠ **Superseded 2026-08-26.** The POC is DONE (D791) and its prompt was retired. The live front is
+`.claude/plans/phase-1-fr3831-hygiene-and-look.md`.
 
 ## D780 [ROUTINE] — the deploy's dirty-tree guard now scopes to what the run actually ships (2026-08-25)
 
