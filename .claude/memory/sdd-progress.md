@@ -221,4 +221,19 @@ Task 1 (frontend !important): COMPLETE (commit c0f422a87, opus review clean afte
   injection and the "hero" row actually exercised .entry-content > .alignfull. Labels corrected.
   ⚠ Deploys needed --skip-oldshape-audit for PRE-EXISTING page 2849 (another track's stale clone,
   51 HIGH type-mismatches). Unrelated to a CSS payload, but it WILL block the next blocks deploy.
-Task 2 (blockGap editor/frontend divergence): NOT STARTED.
+Task 2 (blockGap editor/frontend divergence): COMPLETE (commit 9b3f4d97c, opus review clean
+  after comment-only fixes). Editor arm narrowed from catch-all to the same 4 block-type families
+  as the frontend. sgs/container no-margin: editor 0px -> 24px, matching the frontend.
+  ⚠ The selector also changed SHAPE (`body ` prefix dropped, (0,2,1)->(0,2,0)); reasoned inert and
+  confirmed live — :where() is (0,0,0) so still beaten, no !important so inline still wins.
+  ⚠ It is a UNION, not a mirror: `.is-root-container` is the canvas root in BOTH editors and maps
+  to a different frontend root in each. Known residual recorded in the CSS comment.
+  ⚠ CONTROL 3 WAS VACUOUS: the no-regression probe used a type the narrowed rule no longer
+  matches, so the pass was structurally guaranteed. Risk nil by construction; claim unearned.
+  ⭐ SURFACED, NOT FIXED — needs Bean: `sgs/container` is in NEITHER arm list, so adjacent
+  containers with different backgrounds show a 24px white band on the LIVE page — the exact
+  symptom this rule exists to prevent, on the dominant section block. This change makes the
+  CANVAS show them too (correct, but will LOOK like a regression). Reviewer's recommended
+  resolution is a THIRD task: add sgs/container to BOTH arm lists, so both surfaces are flush
+  AND in agreement.
+BOTH TASKS COMPLETE. Base 346861ed9 -> 9b3f4d97c.
