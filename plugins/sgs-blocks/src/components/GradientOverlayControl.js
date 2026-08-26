@@ -75,6 +75,72 @@ const DEFAULT_ATTR_NAMES = {
 };
 
 
+/**
+ * Derive ONE of a gradient-overlay family's attribute names from its base.
+ *
+ * The standard helper pair for this control, mirroring `shadowAttrName()` and
+ * `typographyAttrName()`. See `scripts/check-control-helper-parity.py` for the
+ * census of which controls carry theirs.
+ *
+ * ⭐ ENUMERATED, NOT GENERALISED — and the enumeration found the rule is only
+ * HALF derivable. Every mount in the tree (2026-08-26, all three in `sgs/hero`;
+ * `sgs/info-box` merely DISCUSSES this control in a docblock and mounts no such
+ * thing):
+ *
+ *   solid                  gradient
+ *   ---------------------  --------------------------
+ *   mediaOverlayColour     mediaOverlayGradient
+ *   contentBackground      contentBackgroundGradient
+ *   mediaBackground        mediaBackgroundGradient
+ *
+ *   • `gradient` = `<base>Gradient`  — holds **3/3**, so it is derivable.
+ *   • `solid`    = `<base>` twice, `<base>Colour` once — **NOT uniform**, so it
+ *     is NOT derived. It defaults to `<base>` (the majority) and is overridable.
+ *
+ * ⛔ Deriving `solid` from a single rule would have named a non-existent
+ * attribute on one of the three mounts, and WordPress SILENTLY DISCARDS writes
+ * to undeclared attributes (D338) — an editor control that moves and does
+ * nothing. The shadow pair learned this the expensive way; this one did not.
+ *
+ * @param {string} base Base attribute name, e.g. 'mediaOverlay'.
+ * @param {string} part One of 'gradient' | 'solid'.
+ * @return {string} The attribute key, or '' for an unknown part.
+ */
+export function gradientOverlayAttrName( base, part = 'gradient' ) {
+	if ( ! base ) {
+		return '';
+	}
+	if ( 'gradient' === part ) {
+		return base + 'Gradient';
+	}
+	if ( 'solid' === part ) {
+		return base;
+	}
+	return '';
+}
+
+/**
+ * The attribute-key map for a gradient-overlay family.
+ *
+ * `solid` defaults to the base name and is overridable for the families that
+ * suffix it with `Colour` — see the enumeration above for why that override
+ * exists rather than a second rule.
+ *
+ * The PHP twin is `sgs_gradient_overlay_attr_map()` (`includes/helpers-tokens.php`),
+ * which carries the same default and the same override.
+ *
+ * @param {string} base              Base attribute name, e.g. 'contentBackground'.
+ * @param {Object} [options]         Options.
+ * @param {string} [options.solid]   Override the solid-colour attribute name.
+ * @return {{gradient: string, solid: string}} The keys.
+ */
+export function gradientOverlayAttrKeys( base, { solid } = {} ) {
+	return {
+		gradient: gradientOverlayAttrName( base, 'gradient' ),
+		solid: solid || gradientOverlayAttrName( base, 'solid' ),
+	};
+}
+
 export default function GradientOverlayControl( {
 	attributes,
 	setAttributes,

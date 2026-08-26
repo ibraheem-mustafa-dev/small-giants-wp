@@ -22,7 +22,7 @@ export { default as MediaGalleryPicker } from './MediaGalleryPicker';
 // collapse) but stayed listed here, so the barrel advertised two bindings that resolve
 // to `undefined` at runtime — a webpack WARNING, not an error, which is why a green
 // build never caught it. Removed 2026-08-16 (D643).
-export { default as GradientOverlayControl } from './GradientOverlayControl';
+export { default as GradientOverlayControl, gradientOverlayAttrName, gradientOverlayAttrKeys } from './GradientOverlayControl';
 // Exported 2026-08-16 (D643). Previously reachable only via a deep import from
 // GradientOverlayControl; the universal gradient rollout needs it as a first-class
 // control (Spec 35 control-type contract field 8 — SgsGradientPicker REPLACES the

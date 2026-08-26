@@ -887,6 +887,57 @@ function sgs_block_background_layer_css( string $selector, string $paint_decl, s
 }
 
 /**
+ * Derive ONE of a gradient-overlay family's attribute names from its base.
+ *
+ * PHP twin of `gradientOverlayAttrName()` in
+ * `src/components/GradientOverlayControl.js`. Both derive from one rule, so a
+ * block names its base ONCE and neither side can typo the pairing.
+ *
+ * ⭐ ENUMERATED, NOT GENERALISED, and only HALF derivable. Every mount in the
+ * tree (2026-08-26, all three in `sgs/hero`):
+ *   `gradient` = `<base>Gradient`  — holds 3/3.
+ *   `solid`    = `<base>` twice, `<base>Colour` once — NOT uniform, so it is
+ *                defaulted and overridden, never derived from a second rule.
+ * Deriving it would have named a non-existent attribute on one of the three,
+ * and WP silently discards writes to undeclared attributes (D338).
+ *
+ * @param string $base Base attribute name, e.g. 'mediaOverlay'.
+ * @param string $part One of 'gradient' | 'solid'.
+ * @return string The attribute key, or '' for an unknown part.
+ */
+function sgs_gradient_overlay_attr( string $base, string $part = 'gradient' ): string {
+	if ( '' === $base ) {
+		return '';
+	}
+	if ( 'gradient' === $part ) {
+		return $base . 'Gradient';
+	}
+	if ( 'solid' === $part ) {
+		return $base;
+	}
+	return '';
+}
+
+/**
+ * The attribute-key map for a gradient-overlay family.
+ *
+ * Feeds the value-taking consumers that already exist — `sgs_overlay_decls()`
+ * and `sgs_background_paint_decl()` — so a render.php reads its two attributes
+ * by ONE base name instead of two hand-typed keys.
+ *
+ * @param string      $base  Base attribute name, e.g. 'contentBackground'.
+ * @param string|null $solid Override the solid-colour attribute name, for the
+ *                           families that suffix it with `Colour`.
+ * @return array{gradient:string, solid:string}
+ */
+function sgs_gradient_overlay_attr_map( string $base, ?string $solid = null ): array {
+	return array(
+		'gradient' => sgs_gradient_overlay_attr( $base, 'gradient' ),
+		'solid'    => $solid ? $solid : sgs_gradient_overlay_attr( $base, 'solid' ),
+	);
+}
+
+/**
  * Resolve an overlay LAYER's complete CSS declaration set — colour/gradient
  * paint plus its own opacity (D717, 2026-08-21) plus its own blend mode
  * (D6/Step 8, 2026-08-22).

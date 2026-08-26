@@ -90,6 +90,27 @@ NAME_HELPER_RE = re.compile(r"export\s+function\s+(\w*(?:AttrName|AttrKeys))\b")
 NAME_KEY_RE = re.compile(r"\b(prefix|attrNames)\b")
 ATTR_AWARE_RE = re.compile(r"\bsetAttributes\b")
 
+# STRIP COMMENTS BEFORE CLASSIFYING — added 2026-08-26 after this script
+# classified `ResponsiveBoxControl` as NAME-KEYED on the strength of FOUR
+# occurrences that are all inside its docblock: three `setAttributes` lines in a
+# usage example, and the word "prefix" in the phrase "`__experimental` prefix
+# needed". Its real signature is `{ label, values, onChange }` — value-based.
+# The false positive SURVIVED the 19->2 narrowing, keeping a control on the
+# backlog that can never have a helper, so "real backlog is 2" was itself one
+# too high. The true backlog is GradientOverlayControl alone.
+#
+# This repo already had the answer: `surveys/survey-control-mounts.py` strips
+# comments for exactly this reason — "a docblock naming a component is not a
+# mount". Same rule one level up: a docblock naming a PROP is not a prop.
+# Sibling of the recorded failure `resolve-every-match-back-to-its-owner`.
+BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.S)
+LINE_COMMENT_RE = re.compile(r"(?<![:'\"])//[^\n]*")
+
+
+def strip_comments(text: str) -> str:
+    """Remove block + line comments so prose cannot be read as code."""
+    return LINE_COMMENT_RE.sub("", BLOCK_COMMENT_RE.sub("", text))
+
 
 def camel_to_slug(name: str) -> str:
     """`ShadowControl` -> `shadow`; `ResponsiveBoxControl` -> `responsive_box`."""
@@ -118,7 +139,12 @@ def mounts_by_component() -> dict[str, list[str]]:
         )
     out: dict[str, list[str]] = {}
     for edit in edits:
-        text = edit.read_text(encoding="utf-8", errors="replace")
+        # Comments stripped here too: `sgs/info-box` carries a 14-line docblock
+        # DISCUSSING GradientOverlayControl and mounts no such thing, which this
+        # scan counted as a mount until 2026-08-26. Third instance of one bug in
+        # this file - prose read as code - so the fix belongs at every read site,
+        # not just the one that was noticed.
+        text = strip_comments(edit.read_text(encoding="utf-8", errors="replace"))
         block = edit.parent.name
         for comp in COMPONENT_NAMES:
             # Word-boundary match so `SgsBoxControl` does not count a
@@ -191,8 +217,9 @@ def survey() -> dict:
         comp = path.stem
         text = path.read_text(encoding="utf-8", errors="replace")
         helpers = NAME_HELPER_RE.findall(text)
-        attr_aware = bool(ATTR_AWARE_RE.search(text))
-        name_keyed = attr_aware and bool(NAME_KEY_RE.search(text))
+        code = strip_comments(text)
+        attr_aware = bool(ATTR_AWARE_RE.search(code))
+        name_keyed = attr_aware and bool(NAME_KEY_RE.search(code))
         slug = camel_to_slug(comp)
         # R2 heuristic: any sgs_* function whose name carries the control's slug.
         twin = sorted(f for f in php_fns if slug and slug in f)
@@ -339,13 +366,36 @@ def self_test() -> int:
                 f"(e.g. {b}: base={base!r} uses {actual!r}, rule says {expected!r})"
             )
 
+
+    # [8] A PROP NAMED ONLY IN A DOCBLOCK IS NOT A PROP. Verbatim from
+    #     ResponsiveBoxControl.js, which this script classified as NAME-KEYED
+    #     on the strength of four comment-only occurrences until 2026-08-26.
+    #     Its real signature is `{ label, values, onChange }`.
+    docblock_only = (
+        "/**\n"
+        " * A block's edit.js wires this straight into setAttributes:\n"
+        " *   `__experimental` prefix needed.\n"
+        " */\n"
+        "export default function ResponsiveBoxControl( { label, values = {}, onChange } ) {}\n"
+    )
+    code = strip_comments(docblock_only)
+    if ATTR_AWARE_RE.search(code) or NAME_KEY_RE.search(code):
+        failures.append(
+            "[8] a prop named ONLY in a docblock was read as real "
+            "- comments are not being stripped before classification"
+        )
+    # ...and the control arm: the SAME words outside a comment must still count.
+    real = "export default function X( { attributes, setAttributes, prefix } ) {}"
+    if not (ATTR_AWARE_RE.search(strip_comments(real)) and NAME_KEY_RE.search(strip_comments(real))):
+        failures.append("[8] stripping went too far - real props no longer detected")
+
     for f in failures:
         print("  FAIL " + f)
     if failures:
         print(f"\n  self-test: {len(failures)} failure(s).")
         return 1
     checked = ", ".join(f"{k} {v['checked']}/{v['checked']}" for k, v in conf.items())
-    print(f"  self-test: 7 case(s) passed, including a negative control. Shadow rules: {checked}.")
+    print(f"  self-test: 8 case(s) passed, including a negative control. Shadow rules: {checked}.")
     return 0
 
 
