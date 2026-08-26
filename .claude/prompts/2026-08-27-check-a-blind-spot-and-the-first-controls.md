@@ -240,6 +240,65 @@ Bean asked whether a container needs different proportions per grid row. **CSS a
 container has no per-item span support. Differing proportions means a second container —
 already true today with the count control, so the picker adds no new concept.
 
+### ⭐ Bean's three changes from his eye-review (2026-08-26) — do these FIRST
+
+He saw it live on the canary footer and approved the shape overall. Three corrections:
+
+**1. The bar widths look non-uniform — bars that should match do not.**
+
+He is right, and the cause is arithmetic, not perception. `ShapeDiagram` lays bars out with
+`flex: <weight> 1 0` inside a **34px** box with `gap: 2px`. For a 3-bar shape that leaves 30px of
+bar space, so:
+
+| Shape | weights | bar widths |
+|---|---|---|
+| Equal | 1,1,1 | 10 / 10 / 10 |
+| Wide centre | 1,2,1 | **7.5** / 15 / **7.5** |
+| Wide first | 2,1,1 | 15 / **7.5** / **7.5** |
+
+Those `7.5px` bars land on subpixels, so two bars that are mathematically identical can paint one
+device pixel apart — visibly unequal. **Fix by choosing a bar-space that every weight-total
+divides into exactly.** Catalogue totals are 2, 3, 4 and 5, so use a common multiple: **60px of
+bar space** gives whole-pixel units for every shape (30/20/15/12). Widen the diagram accordingly
+rather than nudging values until it looks right.
+
+⚠ Verify by MEASURING `getBoundingClientRect().width` on each bar and asserting that bars of equal
+weight are equal to the pixel — do not judge it by eye, which is what let this through.
+
+**2. Six shapes per count, laid out 2 rows of 3.** Two real constraints to put to Bean BEFORE
+building, because both are his call:
+
+- ⛔ **FR-37-42 says the catalogue is not open to taste**: *"DO NOT re-derive the shape list from
+  taste. It comes from the reference teardowns; any shape added later needs a measured reference
+  behind it."* Going 3-4 → 6 needs either measured references for the new shapes, or Bean
+  deliberately relaxing that rule. Ask which; do not quietly add three shapes.
+- ⛔ **`ToggleGroupControl` does not wrap.** That is exactly why core falls back to
+  `Button isPressed` past 6 options (gold-standard report §4). "2 rows of 3" therefore CANNOT be
+  TGC — it means either a custom wrapping radiogroup with proper roving `tabindex` and
+  `aria-checked`, or losing the radiogroup and returning to pressed buttons. **Losing it costs the
+  arrow-key traversal the research specifically told us to gain.** Recommend building the wrapping
+  radiogroup; price it honestly before agreeing.
+
+**3. Brand teal for the diagram bars, replacing the current grey.**
+
+Currently `background: currentColor; opacity: 0.6`. ⚠ **Do NOT reach for
+`var(--wp--preset--color--primary)`** — that is the CLIENT's palette, and on the canary it resolves
+to Mama's **pink `#e68a95`**, not teal. The picker is SGS tool chrome, so it should look the same
+for every client.
+
+| Source | Value |
+|---|---|
+| SGS brand teal (framework `theme.json` primary) | **`#1F7A7A`** |
+| Mama's client primary (what the canary resolves) | `#e68a95` (pink) |
+| Older teal still in block `editor.css` fallbacks | `#0F7E80` |
+
+⚠ **Two teal literals already exist in the tree.** Pick ONE, say which and why in the code, and do
+not add a third. `#1F7A7A` is the current `theme.json` value; `#0F7E80` is the older fallback
+appearing in several `editor.css` files. Ask Bean which is his brand teal if it is not obvious.
+
+⚠ Check contrast on the selected/pressed state — a teal bar on a teal-tinted active option can
+drop below the WCAG 2.1 AA 4.5:1 the framework holds itself to.
+
 Research that shaped it: `reports/2026-08-26-column-shape-picker-gold-standard.md`. Core's
 own picker is **insert-time only**, so this fills a genuine gap rather than re-implementing
 core.

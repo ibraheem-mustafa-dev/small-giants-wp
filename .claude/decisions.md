@@ -1,3 +1,37 @@
+## D801 [ROUTINE] — Gate C eye-review: shape approved, three changes, and two of them hit locked constraints
+
+**2026-08-26.** Bean reviewed FR-37-42 live on the canary footer template part and approved the
+overall shape. Verified working before his review: the picker DERIVES the active shape from the
+stored value with nothing stored to say which — `2fr 1fr 1fr` → "Wide first", `1fr 2fr 1fr` →
+"Wide centre", and a hand-edited `340px 680px 340px` → **NO shape active**. That last case is
+FR-37-42's own done-when and the reason the slug-storage recommendation was rejected (D799).
+
+Three changes, deferred to the next session at Bean's request:
+
+**1. Bar widths render non-uniform — a real defect, not perception.** `ShapeDiagram` uses
+`flex: <weight> 1 0` in a 34px box with 2px gaps, leaving 30px of bar space. A 3-bar shape with
+weight-total 4 gives **7.5px** bars, which land on subpixels — so two mathematically identical
+bars can paint a device pixel apart. Fix: choose a bar space every weight-total divides into
+exactly. Totals are 2/3/4/5, so **60px** yields whole-pixel units throughout. Assert equality by
+measuring `getBoundingClientRect().width`, not by eye — eye is what let it through.
+
+**2. Six shapes per count, 2 rows of 3 — blocked on TWO constraints, both Bean's call:**
+- ⛔ FR-37-42 states the catalogue is not open to taste: shapes come from the reference teardowns
+  and any addition needs a measured reference. Going to 6 needs references or a deliberate
+  relaxation of that rule.
+- ⛔ `ToggleGroupControl` does not wrap — precisely why core falls back to `Button isPressed` past
+  6 options. "2 rows of 3" therefore cannot be TGC: it means a custom wrapping radiogroup with
+  roving `tabindex`, or losing the radiogroup and the arrow-key traversal the gold-standard
+  research told us to gain. Recommend building the wrapping radiogroup; price it before agreeing.
+
+**3. Brand teal for the diagram bars.** ⚠ The obvious implementation is wrong:
+`var(--wp--preset--color--primary)` is the CLIENT's palette and resolves to Mama's **pink
+`#e68a95`** on the canary. The picker is SGS tool chrome and must look identical for every client,
+so it needs a fixed literal. ⚠ **Two teal literals already exist** — `#1F7A7A` (current
+`theme.json` primary) and `#0F7E80` (older, still in several block `editor.css` fallbacks). Pick
+one, say why in the code, do not add a third. Check contrast on the pressed state against the
+framework's WCAG 2.1 AA 4.5:1 floor.
+
 ## D800 [ROUTINE] — two control-surface gaps handed to standardisation; the splitImageBleed blocker is already cleared
 
 **2026-08-26.** The cloning track handed over two gaps found while cloning the Mama's Munches
