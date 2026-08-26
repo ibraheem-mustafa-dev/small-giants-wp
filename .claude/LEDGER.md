@@ -291,25 +291,25 @@ detector bug) · rule 34 **319→2** · scanner **945→499**. `reports/2026-08-
 `colourVar()` slug-wrap (120 sites / 39 blocks) · rule 21 ceiling 83→82 · truncation gate ·
 **Gate C picker BUILT** (footer-row only, `2e46fc3f2`).
 
-✅ **2026-08-26 CLOSED, pushed.** **Gate C bars + teal** (`d36c8e629`): uneven bars were
-ARITHMETIC — 34px box + flex weights gave 7.5px subpixel bars; now whole-pixel widths (bar-space
-30/36/40 for counts 2/3/4). ⛔ Bean RULED the other two, do NOT rebuild: catalogue STAYS 3-4
-(FR-37-42; TGC one-row keeps arrow-keys), teal is the literal `#1F7A7A` (he reversed `#158697`;
-NOT the preset var — that is the CLIENT palette).
-**TASK 1b/1c/1d CLOSED + ACTED ON** (`b069c7db5` `11228c3e0` `8f320542a`). Detail is in those
-commits + `reports/2026-08-26-check-a-*` — do not restate.
-⭐ **BLIND SPOT FIXED.** `collectExcludedRanges()` matched only a literal `<InspectorControls>`, so
-`SgsColourPanel` (**65/84 blocks**) read as canvas code. Now any component whose ENTIRE output is a
-control surface is recognised, via the R3-a resolver. Self-test pins both directions.
-⭐ **~100 REAL DEFECTS FIXED + LIVE-VERIFIED.** Shared panels wrote attrs only `container` mirrored
-to canvas; every other block showed the client NOTHING. `src/utils/background-preview.js` now serves
-5 more blocks. Opened the editor: multi-button + trust-bar paint. Container held at 22, same attrs.
-⭐ **6th D792-class bug FIXED** + its gate EXTENDED (CHECK 2 = static audit for composing a colour
-without a resolver). Ceiling **208 → 288 → 238**. ⛔ DOWN only now.
-`reports/visual-diff/container-2026-08-26.md` REPAID `11228c3e0`'s skip in-session.
+✅ **Gate C bars + teal APPROVED** (`d36c8e629`). ⛔ Bean RULED the other two, do NOT rebuild:
+catalogue STAYS 3-4 (FR-37-42; TGC one-row keeps arrow-keys), teal is the literal `#1F7A7A` (NOT
+the preset var — that is the CLIENT palette).
+**TASK 1b/1c/1d CLOSED + ACTED ON** (`b069c7db5` `11228c3e0` `8f320542a`); detail in those commits
++ `reports/2026-08-26-check-a-*`. Blind spot FIXED — the scanner saw only a literal
+`<InspectorControls>`, so `SgsColourPanel` (**65/84 blocks**) read as canvas code. ~100 real canvas
+defects fixed via `src/utils/background-preview.js`. Ceiling **208→288→238**, DOWN only now.
 
-⛔ **BEAN'S EYE OWED, both live on the canary NOW:** the Gate C column-shape picker (footer-row
-inspector — bars + `#1F7A7A`) and whether the canvas backgrounds LOOK right.
+⭐ **MARGIN-IN-CANVAS ROOT-CAUSED — OURS, not WordPress** (`039c19e39`). I first blamed WP because
+`container` did it too — exculpatory reasoning, wrong. Binary search over the canvas stylesheets
+isolated `theme/sgs-theme/assets/css/core-blocks-critical.css:142`: its EDITOR arm
+`body .is-root-container > .wp-block` is a CATCH-ALL with `margin-block:0 !important`, out-ranking
+the inline style `edit.js` writes. That class exists only in the canvas, so the live page never
+showed it. Fix = split the rule, drop `!important` there. Verified live: margin-set **0→80px**,
+margin-unset **0px** (suppression kept). Padding was a separate gap, fixed `756341482`, tier-aware.
+⛔ **Bean ruled: MIGRATE OFF NATIVE `supports.spacing`.** Plan ready, UNSTARTED:
+`.claude/plans/2026-08-26-migrate-off-native-spacing.md`.
+⚠ Unproven, so NOT fixed: the 4 FRONTEND arms share the latent `!important` defect; the editor arm
+still suppresses blockGap the frontend shows. Both pre-existing.
 
 ⛔ **TASK 2 IS BUILT BY ANOTHER TRACK (D805) — do not duplicate.** They opted `info-box` +
 `team-member` (TASK 2's start block) into the hover extension, reddened `check-duplicate-controls`,
