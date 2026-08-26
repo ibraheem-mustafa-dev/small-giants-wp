@@ -2851,6 +2851,15 @@
         "css_layer": "OUTER"
       },
       "_why": "2026-08-23 — same AmbiguousLayerAttrError class as the sgs/product-card.borderWidth override above. The card's OWN outer box and the CTA button inside it both declare this CSS property with css_layer NULL, so the resolver saw one (layer, property) slot with two owners and refused to pick. Their css_element already distinguishes them ('wrapper' vs 'cta') but the resolver keys on (layer, property), not element. Declaring the WRAPPER attr as OUTER leaves the cta* attr the sole CONTENT owner. Scoped deliberately to the two-member wrapper-vs-cta groups — the many-element groups (color, font-size) share a property across title/price/description/tag and have NOT errored, so their resolution path is different and is left untouched rather than changed on a guess."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "title"
+      },
+      "_why": "Declares the DB row db-consistency check #8 flagged as a rogue seed. It was neither rogue nor stray: until 2026-08-26 sgs_typography_css_rule() had no font-family branch, so sgs/product-card emitted the title font-family block-privately and the derived classifier had no standard route to declare. G4 gave the shared helper that branch and deleted the block-private emission in the same commit, which makes titleFontFamily -> font-family a true standard-route mapping. css_element is \"title\" to match its five siblings (titleColour / titleFontSize / titleFontStyle / titleFontWeight / titleLineHeight), every one of which already resolves to that element — titleFontFamily was the lone NULL among them, which is the footprint of the removed workaround rather than a seeding error."
     }
   ]
 }

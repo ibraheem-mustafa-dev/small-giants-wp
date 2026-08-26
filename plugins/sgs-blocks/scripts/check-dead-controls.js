@@ -621,6 +621,17 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'FontSizeUnit',
 		'FontSizeTablet',
 		'FontSizeMobile',
+		// Added 2026-08-26 with the helper's own font-family branch (G4). Until
+		// then `sgs_typography_css_rule()` could NOT emit font-family, so blocks
+		// that offered TypographyControls' showFontFamily picker had to emit it
+		// block-privately — and that private emission was the only LITERAL
+		// occurrence of the attr name. Deleting it in favour of the shared helper
+		// made `sgs/product-card.titleFontFamily` look "fully unused" to this
+		// checker, which is what this list exists to prevent: both the control
+		// (TypographyControls.js:160 builds `typographyAttrName(prefix,
+		// 'FontFamily')`) and the render (`sgs_typography_attr($prefix,
+		// 'FontFamily')`) construct the key, so neither end contains the string.
+		'FontFamily',
 		'FontWeight',
 		'FontStyle',
 		'TextTransform',

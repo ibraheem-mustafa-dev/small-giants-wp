@@ -156,6 +156,12 @@
       "block": "sgs/quote",
       "attr": "backgroundColourHoverGradient",
       "reason": "edit.js binds a control to 'backgroundColourHoverGradient' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "titleFontFamily",
+      "reason": "FALSE POSITIVE — the attr is live at BOTH ends, but neither end contains its literal name. Control: product-card/edit.js mounts <TypographyControls prefix=\"title\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"), reading it at :536 and writing it at :538. Render: helpers-typography.php builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. This is the documented dynamic-key blind spot — the same one recorded for sgs/before-after tier keys, where the checker cannot follow a key whose tail is a second variable. It surfaced on 2026-08-26 because G4 moved font-family onto the shared helper and deleted the block-private emission that had been the only literal occurrence. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this block, or the helper loses its font-family branch, the attr really is dead and this entry must go."
     }
   ]
 }
