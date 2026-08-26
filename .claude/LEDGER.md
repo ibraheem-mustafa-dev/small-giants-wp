@@ -296,18 +296,20 @@ ARITHMETIC — 34px box + flex weights gave 7.5px subpixel bars; now whole-pixel
 30/36/40 for counts 2/3/4). ⛔ Bean RULED the other two, do NOT rebuild: catalogue STAYS 3-4
 (FR-37-42; TGC one-row keeps arrow-keys), teal is the literal `#1F7A7A` (he reversed `#158697`;
 NOT the preset var — that is the CLIENT palette).
-**TASK 1b/1c/1d CLOSED** (`b069c7db5`): CHECK A has a ceiling at 208, `fast` tier, proven able to
-fail at 207. Triage = **REAL 186 · ARTEFACT 22 · DETECTOR BUG 0** — it under-reports, never cries
-wolf. ⭐ The 186 collapse to ~7 shared fixes: shared panels write attrs the PHP wrapper paints but
-only `container`/`hero` mirror them to canvas — ONE shared hook clears ~100.
-⭐ **BLIND SPOT NAMED.** Disabling each of the 8 exemptions in turn: the ladder hides **683** more
-pairs. **E1 `:2424` hides 0 — REFUTED.** E3 hides **561** (~130-160 real, ESTIMATE); E2 **WRONG**
-(9/10 — never checks the child reads the context back), E5 **WRONG** (15/29), E4 TOO BROAD (8/56),
-E6 sound, E7 sound only by accident (block-wide `continue`). Root cause: `collectExcludedRanges()`
-matches only a literal `<InspectorControls>`, so `SgsColourPanel` (**65/84 blocks**) is not seen as
-a control surface. ⛔ Fixing it RAISES the ceiling ONCE — visible debt, not new breakage.
-⛔ **6th live D792-class bug UNFIXED:** `resolveShadowPreviewComposed()` concatenates colour RAW
-(tokens.js:135). Reports: `reports/2026-08-26-check-a-*`.
+**TASK 1b/1c/1d CLOSED + ACTED ON** (`b069c7db5` `11228c3e0` `8f320542a`). Detail is in those
+commits + `reports/2026-08-26-check-a-*` — do not restate.
+⭐ **BLIND SPOT FIXED.** `collectExcludedRanges()` matched only a literal `<InspectorControls>`, so
+`SgsColourPanel` (**65/84 blocks**) read as canvas code. Now any component whose ENTIRE output is a
+control surface is recognised, via the R3-a resolver. Self-test pins both directions.
+⭐ **~100 REAL DEFECTS FIXED + LIVE-VERIFIED.** Shared panels wrote attrs only `container` mirrored
+to canvas; every other block showed the client NOTHING. `src/utils/background-preview.js` now serves
+5 more blocks. Opened the editor: multi-button + trust-bar paint. Container held at 22, same attrs.
+⭐ **6th D792-class bug FIXED** + its gate EXTENDED (CHECK 2 = static audit for composing a colour
+without a resolver). Ceiling **208 → 288 → 238**. ⛔ DOWN only now.
+`reports/visual-diff/container-2026-08-26.md` REPAID `11228c3e0`'s skip in-session.
+
+⛔ **BEAN'S EYE OWED, both live on the canary NOW:** the Gate C column-shape picker (footer-row
+inspector — bars + `#1F7A7A`) and whether the canvas backgrounds LOOK right.
 
 ⛔ **TASK 2 IS BUILT BY ANOTHER TRACK (D805) — do not duplicate.** They opted `info-box` +
 `team-member` (TASK 2's start block) into the hover extension, reddened `check-duplicate-controls`,
