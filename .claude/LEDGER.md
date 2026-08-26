@@ -121,26 +121,25 @@ here ("4 interpolated stops can't reproduce that variation") was measured FALSE 
 
 ### ▶ NEXT, in order
 
-⭐ **START HERE: `.claude/prompts/2026-08-26-hover-decision-and-gate-residue.md`** — carries
-Tasks A-E below with exact file:line and done-when for each.
+⭐ **The 2026-08-26 hover/gate prompt is EXECUTED** — its tasks are items 2/4/5, all closed.
 
-1. ✅ **CHILD-LIFT — CLOSED.** Six rules de-specified to `:where()`, 47 exclusions deleted.
-   Deployed + live-verified: 141 container children, exactly ONE changed. Gate
-   `check-container-child-lift` (fast, `--self-test` proven) stops it regrowing. Detail: D784.
-2. ✅ **EDITOR SURFACE — CLOSED.** Opened on 2744; every control reachable, 0 console errors.
-   FR-38-32's `verify-both-surfaces` gap is closed. ⚠ Live cap-binding and loop-stop remain
-   UNMEASURED — the first probe was unreliable. Detail: Spec 38 §3.3.
-3. ✅ **Stripe-hero POC — DONE 2026-08-25** (0.66%, 26/26 mechanisms, QC 10/10). Superseded by
-   **the FR-38-31 rework**: form → ground → hue adjacency → detail field → colour source.
-4. ⛔ **Hover: decide the 8 conflicted blocks — RE-MEASURE FIRST.** 3 of 11 shipped
-   (google-reviews / pricing-table / whatsapp-cta). ⚠ **The "33 duplicates + 24 dead" figure
-   previously recorded here is STALE and must not be acted on.** The gate that produced it was
-   wrong in BOTH directions and was fixed on 2026-08-25 (D785) — of its 64 findings only 10 were
-   real. A later hand-audit put it nearer 13 and 10, and that predates the final rewrite too.
-   Re-run `check-duplicate-controls.js --json` per block, then put the real numbers to Bean.
-   ⚠ D338 hazard on any attr REMOVAL.
-5. **Gate the three ungated registration points** (motion-registry module map, its CSS map, the
-   webpack entry) — see D784. Five features have now hit the child-lift trap independently.
+1. ✅ **CHILD-LIFT — CLOSED.** Detail: D784 + D793 (gate `check-child-lift`, repo-wide).
+2. ✅ **EDITOR SURFACE + BOTH FR-38-32 CLAIMS — CLOSED 2026-08-26 (D807).** Measured live on
+   2744 via a permanent `stats()` probe: cap **clamps at exactly 150** under saturation, but
+   ordinary input peaks **106** — LIFETIME binds first, so "the cap binds" was the wrong claim.
+   Loop stops (0 frames / 2500ms at rest) with a positive control. Spec 38 updated in BOTH
+   places. ⚠ Third trap found: the listener is `mousemove`, NOT `pointermove`.
+3. ✅ **Stripe-hero POC — DONE.** Superseded by the FR-38-31 rework. Detail: D781/D790/D791.
+4. ✅ **HOVER — RULED + SHIPPED (D805/D808), `a99cf00df` pushed + deployed.** Panel ON for the
+   3 ROOT-hover blocks only; the 3 hardcoded PHP arrays are GONE (a block declares
+   `supports.sgs.hoverDefaults`, honoured only when the panel is also opted in). cta-section +
+   icon bugs verified gone live; 8 gate findings ruled INDIVIDUALLY, nothing deleted.
+   ⚠ **STILL OPEN:** the panel's zoom/grayscale toggles stay inert outside 4 blocks; a root
+   rule to fix that is REFUSED (D796) — needs per-block scoping.
+5. ✅ **Three ungated registration points — CLOSED (D789).** ⚠ TWO NEW, unfixed, neither mine:
+   gallery's carousel drag-scroll fails to resolve `@sgs/gsap-draggable` (registers, does
+   nothing — D452 shape); and `build-deploy.py:818` names a remediation script,
+   `scripts/wp-migrate-oldshape-blocks.js`, that **does not exist in the repo**.
 6. **`floating-objects`** + **generative cover images** — both approved-in-principle, unbuilt.
    ⛔ Covers were scoped as needing "the same palette-texture capability (D781)". **That premise
    was measured false 2026-08-25** — no texture-palette pipeline is required. Scope covers from
