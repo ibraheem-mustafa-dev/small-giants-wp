@@ -223,7 +223,7 @@
  * tile, no repeat and no background-size, so banding and seams cannot occur BY
  * CONSTRUCTION rather than by an argument — three "seamless by construction"
  * arguments were made about the previous build and a screenshot refuted all
- * three. This is the documented mesh-gradient technique (Stripe/Apple), not an
+ * three. This is a documented mesh-gradient technique, not an
  * invention.
  *
  * WHY DIFFERENT MULTIPLIERS. Moving every spot by the same amount is a rigid

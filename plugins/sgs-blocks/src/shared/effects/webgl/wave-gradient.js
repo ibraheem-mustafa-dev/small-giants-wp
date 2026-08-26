@@ -5,21 +5,20 @@
  * simplex noise, with each colour layer blended per-vertex and interpolated
  * across the mesh by the rasteriser.
  *
- * ⛔ THIS IS NOT STRIPE'S CURRENT TECHNIQUE. Corrected 2026-08-25 — an earlier
- * version of this docblock said "this is the stripe.com landing-page technique",
- * which is false and was actively misleading.
+ * ⛔ THIS IS NOT A MODEL OF ANY LIVE COMMERCIAL SITE'S CURRENT TECHNIQUE.
+ * Corrected 2026-08-25 — an earlier version of this docblock claimed it matched
+ * a specific landing-page's technique; that claim was false and actively
+ * misleading.
  *
- * The noise-displaced-plane technique is stripe.com's hero from roughly 2020-21.
- * Every tutorial and port describing "the Stripe gradient" documents that
- * retired version. Their CURRENT hero was recovered from their shipped bundle
- * and is a materially different thing: one vertex shader over a CPU-folded
- * 33,153-vertex plane, colour SAMPLED FROM A PAINTED TEXTURE rather than
- * interpolated between stops, a fine striation field, and a second full-screen
- * pass applying angular blur plus grain.
+ * The noise-displaced-plane technique matches a well-known reference
+ * implementation circulated widely from roughly 2020-21 (see the licence-
+ * provenance note below). Every tutorial and port describing this technique
+ * documents that older version — it is not what modern production sites of
+ * this kind use today...
  *
  * That difference is the whole reason this effect's look was rejected — so do
- * not read this file as a faithful model of what stripe.com does today.
- * Anatomy of the real one: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`.
+ * not read this file as a faithful model of any current commercial
+ * implementation.
  *
  * ── WHY THIS IS A SIBLING OF `renderer.js`, NOT AN EXTENSION OF IT ────────
  *
@@ -66,6 +65,8 @@
  *
  * @package
  */
+
+import { probeSurface } from './capability';
 
 /**
  * Ashima Arts / Stefan Gustavson 3D simplex noise (MIT). Verbatim apart from
@@ -119,7 +120,7 @@ float snoise(vec3 v){
 	return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
 }`;
 
-/** Number of colour layers blended on top of the base. Stripe ships 3. */
+/** Number of colour layers blended on top of the base — matches the reference implementation's layer count (see licence-provenance note above). */
 export const WAVE_LAYERS = 3;
 
 /**
@@ -265,11 +266,29 @@ export function createWaveGradient( canvas, opts = {} ) {
 		return null;
 	}
 
+	// Capability GATE, run before this effect ever opens its own context.
+	// `probeSurface()` proves a real program can compile AND link on the
+	// actual GPU driver, which context creation alone does not (see
+	// capability.js's module docblock) — a blocklisted/software-rendered GPU
+	// must be declined here, not discovered later as a dead rectangle.
+	if ( ! probeSurface() ) {
+		return null;
+	}
+
 	const gl = canvas.getContext( 'webgl2', {
 		antialias: false,
 		alpha: false,
 		depth: false,
+		// Decorative background effect — low-power is the right steady-state
+		// request. Safe to keep alongside the caveat flag below: if
+		// low-power genuinely means "runs badly" on this device, context
+		// creation itself now fails rather than silently running degraded.
 		powerPreference: 'low-power',
+		// Defence in depth: `probeSurface()` already gated this above using
+		// a throwaway context, but the REAL context this effect actually
+		// draws with must refuse the same way if the driver's answer
+		// differs for any reason.
+		failIfMajorPerformanceCaveat: true,
 	} );
 	if ( ! gl ) {
 		return null;

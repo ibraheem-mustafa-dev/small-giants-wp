@@ -30,8 +30,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Colour slots: one base plus three wave layers.
  *
- * THREE IS NOT ARBITRARY — it is what stripe.com ships, and the MIT reference
- * this technique is modelled on carries the same shape (a base colour plus an
+ * THREE IS NOT ARBITRARY — it matches the layer count used by the MIT-licensed
+ * reference implementation this technique is modelled on (a base colour plus an
  * array of wave layers, each with its own colour and noise field). The
  * shader's `WAVE_LAYERS` constant must match this count.
  *

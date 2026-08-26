@@ -106,7 +106,15 @@ export function probeSurface() {
 
 	try {
 		const canvas = document.createElement( 'canvas' );
-		gl = canvas.getContext( 'webgl2' );
+		// `failIfMajorPerformanceCaveat` is what makes this probe actually
+		// mean "can paint WELL", not just "can paint" — without it a
+		// blocklisted/software-rendered GPU still hands back a context that
+		// links fine and then draws at a crawl. Context creation returning
+		// null here is exactly the "decline" signal the whole module exists
+		// to produce.
+		gl = canvas.getContext( 'webgl2', {
+			failIfMajorPerformanceCaveat: true,
+		} );
 		if ( ! gl ) {
 			return false;
 		}

@@ -7,8 +7,8 @@
  *
  * ── THIS EFFECT ANIMATES ON ITS OWN, SO IT OWES SC 2.2.2 AN ANSWER ────────
  *
- * Bean's ruling (2026-08-25): model stripe.com, which animates autonomously
- * rather than following a pointer. That choice fixes the mobile problem — a
+ * Bean's ruling (2026-08-25): animate autonomously rather than following a
+ * pointer. That choice fixes the mobile problem — a
  * cursor effect shows nothing at all on a phone, which is most client traffic —
  * but it engages WCAG SC 2.2.2 (Pause, Stop, Hide): motion that starts
  * automatically, runs beyond five seconds, and is presented IN PARALLEL WITH
@@ -47,28 +47,72 @@ const SELECTOR = '[data-sgs-fx="wave-gradient"]';
 let instances = [];
 
 /**
- * Parse `#rrggbb` (or `#rgb`) into 0-1 RGB. Returns null on anything else, so
- * a malformed value falls back rather than painting black.
+ * One shared, never-rendered element used to ask the browser itself whether a
+ * CSS colour string is valid. `display: none` still resolves computed colour
+ * values (it only removes the box), so a single hidden, document-attached
+ * probe is reused across every parse rather than creating one per call.
  *
- * @param {string} hex Colour.
- * @return {number[]|null} [r,g,b] 0-1, or null.
+ * @return {HTMLElement} The probe element.
  */
-function hexToRgb( hex ) {
-	if ( typeof hex !== 'string' ) {
-		return null;
+let colourProbe = null;
+function getColourProbe() {
+	if ( ! colourProbe ) {
+		colourProbe = document.createElement( 'span' );
+		colourProbe.style.display = 'none';
+		document.body.appendChild( colourProbe );
 	}
-	let h = hex.trim().replace( /^#/, '' );
-	if ( h.length === 3 ) {
-		h = h[ 0 ] + h[ 0 ] + h[ 1 ] + h[ 1 ] + h[ 2 ] + h[ 2 ];
-	}
-	if ( ! /^[0-9a-f]{6}$/i.test( h ) ) {
+	return colourProbe;
+}
+
+/**
+ * Parse a computed `rgb(...)`/`rgba(...)` string into 0-1 RGB.
+ *
+ * @param {string} str The computed colour string.
+ * @return {number[]|null} [r,g,b] 0-1, or null if it did not match.
+ */
+function parseRgbString( str ) {
+	const m = typeof str === 'string' && str.match(
+		/rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i
+	);
+	if ( ! m ) {
 		return null;
 	}
 	return [
-		parseInt( h.slice( 0, 2 ), 16 ) / 255,
-		parseInt( h.slice( 2, 4 ), 16 ) / 255,
-		parseInt( h.slice( 4, 6 ), 16 ) / 255,
+		parseFloat( m[ 1 ] ) / 255,
+		parseFloat( m[ 2 ] ) / 255,
+		parseFloat( m[ 3 ] ) / 255,
 	];
+}
+
+/**
+ * Parse ANY valid CSS colour (hex, `rgb()`, `hsl()`, `oklch()`, named
+ * colours, …) into 0-1 RGB. Returns null on anything invalid.
+ *
+ * Deliberately does NOT use the naive
+ * `el.style.color = raw; getComputedStyle(el).color` pattern on its own —
+ * that pattern cannot tell an invalid value from a legitimate black: an
+ * invalid assignment leaves the CSS property unset, and the browser then
+ * reports its OWN default for the unset property (often black), which is
+ * indistinguishable from a real black. Checking `el.style.color === ''`
+ * IMMEDIATELY after assignment is what actually distinguishes them — an
+ * empty string means the browser rejected the value outright, before any
+ * computed-style fallback ever comes into play.
+ *
+ * @param {string} raw Colour, in any valid CSS colour syntax.
+ * @return {number[]|null} [r,g,b] 0-1, or null.
+ */
+function parseCssColour( raw ) {
+	if ( typeof raw !== 'string' || ! raw.trim() ) {
+		return null;
+	}
+	const probe = getColourProbe();
+	probe.style.color = '';
+	probe.style.color = raw.trim();
+	if ( probe.style.color === '' ) {
+		// The browser refused the assignment outright — invalid CSS.
+		return null;
+	}
+	return parseRgbString( getComputedStyle( probe ).color );
 }
 
 /**
@@ -87,8 +131,17 @@ function readColours( el ) {
 	const out = [];
 	for ( let i = 0; i <= WAVE_LAYERS; i++ ) {
 		const name = i === 0 ? '--sgs-wave-base' : `--sgs-wave-${ i }`;
-		const rgb = hexToRgb( cs.getPropertyValue( name ) );
+		const raw = cs.getPropertyValue( name );
+		const rgb = parseCssColour( raw );
 		if ( ! rgb ) {
+			// Exactly one warning per element per attach() call — this is an
+			// early return, so at most one colour failure is ever reported
+			// even though up to 4 properties are checked.
+			// eslint-disable-next-line no-console
+			console.warn(
+				`SGS wave-gradient: could not parse colour "${ raw.trim() }" for ${ name } — effect not started.`,
+				el
+			);
 			return null;
 		}
 		out.push( rgb );
@@ -122,7 +175,16 @@ function attach( el ) {
 		amplitude: isNaN( amplitude )
 			? undefined
 			: Math.max( 0, Math.min( 1, amplitude / 100 ) ),
-		onLost: () => stop(),
+		// Context loss is the ONE stop() caller that must also drop the
+		// active flag — every other stop() (pause, off-screen, tab-hidden,
+		// draw-failure) is a temporary halt the CSS fallback must NOT flash
+		// under. Losing the context is permanent from this instance's point
+		// of view, so the visitor must see the fallback again, not a dead
+		// rectangle over it.
+		onLost: () => {
+			stop();
+			el.removeAttribute( 'data-sgs-wave-active' );
+		},
 	} );
 	if ( ! gradient ) {
 		return null;
