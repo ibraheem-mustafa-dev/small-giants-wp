@@ -13,7 +13,7 @@ import {
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ResponsiveBorderRadiusControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken } from "../../components";
-import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview } from "../../utils";
+import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, boxShorthand, resolveBoxTierPreview } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -101,57 +101,6 @@ function resolveContentWidthPreview( value ) {
 	if ( v === 'wide' ) return 'var(--wp--style--global--wide-size,1400px)';
 	if ( v === 'full' || v === '' ) return '';
 	return v;
-}
-
-/**
- * Box-object interface contract §1: build an editor-preview shorthand from a
- * 4-side box object — mirrors the pattern already used across every other
- * block's edit.js (e.g. icon-list/edit.js) and render.php's own hand-built
- * shorthand, so the canvas preview matches the frontend.
- *
- * @param {Object|undefined} box  {top,right,bottom,left}, each an already
- *                                 unit-bearing CSS length string or absent.
- * @return {string|undefined} A 4-value CSS shorthand, or undefined when no
- *                             side is set.
- */
-function boxShorthand( box ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	const keys = [ 'top', 'right', 'bottom', 'left' ];
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
-	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
-}
-
-/**
- * padding/margin are NOT tier objects on this block — they are a flat trio of
- * OWNED box attrs (`padding`/`paddingTablet`/`paddingMobile`, each its own
- * {top,right,bottom,left}), the pre-tier-object shape (Spec 35 / D555). The
- * frontend emits the base box through the style engine, then a tablet/mobile
- * `@media` rule for EACH side that tier explicitly sets — an unset side at a
- * narrower tier keeps whatever the wider tier declared (ordinary CSS cascade,
- * both `max-width` queries can be simultaneously true). This mirrors that:
- * merge tablet's declared sides over base, then mobile's over that.
- *
- * @param {Object|undefined} base   Desktop/base box.
- * @param {Object|undefined} tablet Tablet box (only declared sides override).
- * @param {Object|undefined} mobile Mobile box (only declared sides override).
- * @param {string}           tier   Active preview tier.
- * @return {Object} Merged box for the active tier.
- */
-function resolveBoxTierPreview( base, tablet, mobile, tier ) {
-	const merged = { ...( base && typeof base === 'object' ? base : {} ) };
-	if ( tier === 'tablet' || tier === 'mobile' ) {
-		const t = tablet && typeof tablet === 'object' ? tablet : {};
-		[ 'top', 'right', 'bottom', 'left' ].forEach( ( key ) => {
-			if ( t[ key ] ) merged[ key ] = t[ key ];
-		} );
-	}
-	if ( tier === 'mobile' ) {
-		const m = mobile && typeof mobile === 'object' ? mobile : {};
-		[ 'top', 'right', 'bottom', 'left' ].forEach( ( key ) => {
-			if ( m[ key ] ) merged[ key ] = m[ key ];
-		} );
-	}
-	return merged;
 }
 
 /**

@@ -18,7 +18,7 @@ import {
 	DesignTokenPicker,
 	SGS_FONT_WEIGHT_OPTIONS,
 } from '../../components';
-import { backgroundPreview } from '../../utils';
+import { backgroundPreview, spacingPreview } from '../../utils';
 import {
 	PanelBody,
 	SelectControl,
@@ -148,6 +148,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
 	}, colourPalette );
 
+	// Active device tier for the padding/margin preview below, read from the
+	// SAME source sgs/container's editor mirror reads (`core/editor`
+	// getDeviceType) — this block had no previewTier mechanism of its own
+	// (its layout preview above only ever shows the desktop tier), so this
+	// follows container's exactly rather than inventing a second convention.
+	const previewTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
+
+	// Padding/margin canvas preview (measured live 2026-08-26: this block
+	// showed 0px on canvas against a real 120px/80px page). Base padding AND
+	// margin both live in the WP-native `style.spacing` object (this block's
+	// spacing.padding/spacing.margin supports); only padding has its own
+	// paddingTablet/paddingMobile override attrs — margin has no tier
+	// attributes declared in block.json, so marginTablet/marginMobile
+	// resolve to `undefined` here and the base/native margin is all that
+	// previews (still a correct, faithful mirror of what render.php emits).
+	const spacePreview = spacingPreview( {
+		basePadding: attributes.style?.spacing?.padding,
+		paddingTablet: attributes.paddingTablet,
+		paddingMobile: attributes.paddingMobile,
+		baseMargin: attributes.style?.spacing?.margin,
+		marginTablet: attributes.marginTablet,
+		marginMobile: attributes.marginMobile,
+	}, previewTier );
+
 	// Preview the desktop layout in the editor.
 	// Gap comes from the block's own Layout panel Gap control (raw CSS string).
 	const editorStyle = {
@@ -158,6 +187,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		justifyContent: justify,
 		alignItems: align,
 		...bgPreview.style,
+		...spacePreview,
 	};
 
 	// A button group's children are always sgs/button (that IS the block's

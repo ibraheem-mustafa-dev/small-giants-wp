@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
 	SelectControl,
@@ -12,7 +13,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -321,6 +322,31 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
 	}, colourPalette );
 
+	// Active device tier for the padding/margin preview below — this block had
+	// no previewTier mechanism of its own, so this follows sgs/container's
+	// getDeviceType read exactly (same source its own Layout panel writes).
+	const previewTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
+
+	// Padding/margin canvas preview — the pair MEASURED live 2026-08-26 as the
+	// concrete regression evidence for this build (120px/80px on the real
+	// page, 0px on canvas). Base padding + margin live in the WP-native
+	// `style.spacing` object; tablet/mobile overrides are the block-private
+	// paddingTablet/paddingMobile/marginTablet/marginMobile object attrs
+	// (this block declares all four — verified in block.json).
+	const spacePreview = spacingPreview( {
+		basePadding: attributes.style?.spacing?.padding,
+		paddingTablet: attributes.paddingTablet,
+		paddingMobile: attributes.paddingMobile,
+		baseMargin: attributes.style?.spacing?.margin,
+		marginTablet: attributes.marginTablet,
+		marginMobile: attributes.marginMobile,
+	}, previewTier );
+
 	// Build className based on active variant.
 	const blockClassName = [
 		'sgs-trust-bar',
@@ -353,6 +379,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		className: blockClassName,
 		style: {
 			...bgPreview.style,
+			...spacePreview,
 			...( shadow && { boxShadow: resolveShadowPreview( shadow ) } ),
 			...( badgeStyle === 'icon-circle' ? {
 				'--sgs-trust-bar-gap': gapCssValue( gap ),

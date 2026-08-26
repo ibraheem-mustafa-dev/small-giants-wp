@@ -22,7 +22,7 @@ import {
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel } from '../../components';
-import { backgroundPreview } from '../../utils';
+import { backgroundPreview, spacingPreview } from '../../utils';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
@@ -233,9 +233,34 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
 	}, colourPalette );
 
+	// Active device tier for the padding/margin preview below — this block had
+	// no previewTier mechanism of its own, so this follows sgs/container's
+	// getDeviceType read exactly (same source its own Layout panel writes).
+	const previewTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
+
+	// Padding/margin canvas preview (measured live 2026-08-26: sibling blocks
+	// showed 0px padding/margin on canvas against a real 120px/80px page).
+	// Base padding + margin live in the WP-native `style.spacing` object;
+	// tablet/mobile overrides are the block-private paddingTablet/
+	// paddingMobile/marginTablet/marginMobile object attrs (this block
+	// declares all four — verified in block.json).
+	const spacePreview = spacingPreview( {
+		basePadding: attributes.style?.spacing?.padding,
+		paddingTablet: attributes.paddingTablet,
+		paddingMobile: attributes.paddingMobile,
+		baseMargin: attributes.style?.spacing?.margin,
+		marginTablet: attributes.marginTablet,
+		marginMobile: attributes.marginMobile,
+	}, previewTier );
+
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-site-footer', bgPreview.className ].filter( Boolean ).join( ' ' ),
-		style: bgPreview.style,
+		style: { ...bgPreview.style, ...spacePreview },
 	} );
 	const refEl = useRef( null );
 
