@@ -1,3 +1,103 @@
+## D819 [ROUTINE] — the enum-shape gate reads rendered labels; the slug proxy was overcounting violations by nearly 2x
+
+**2026-08-27.** `plugins/sgs-blocks/scripts/check-enum-control-shape.py` (new),
+`check-enum-control-shape-baseline.json` (new), `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
+§3. Branch 5 of the two-design-gates session plan.
+
+⭐ **Built as a SEPARATE instrument from the census, deliberately** — D812 already stated "a
+census may use the proxy; a gate may not". `survey-enum-control-shape.py` measures slug length as
+a stand-in for rendered label length (validated on n=1); this gate reads the actual rendered label
+(`ToggleGroupControlOption label={...}`, `SelectControl options={[...]}` inline or resolved to a
+named module-level `const` array).
+
+**The proxy was wrong more often than the n=1 validation suggested.** Slug-based census: 85
+violations. Label-based gate: **45**. 47 of 92 label-judged `SelectControl`-in-2–5-band cases have
+rendered labels genuinely >12 chars despite short slugs — `SelectControl` is the CORRECT choice
+there, not a violation. Baseline seeded from the gate's own `--json` output (45 entries), not
+copied from D812's cited figure.
+
+**Coverage: 126 of 282 judged (81 compliant, 45 violation), 156 explicitly skipped with a reason**
+(89 unresolved-binding, 52 shared-component-mounted, 12 ambiguous-binding, 3 label-extraction-
+failed) — never silently reported compliant.
+
+**Self-test watched-failing, not just asserted:** deliberately broke label-length resolution
+(`longest = max(...)` → `longest = 0`), confirmed the negative control actually went RED
+(`FAIL [10]`), then restored and confirmed GREEN (10/10).
+
+---
+
+## D818 [ROUTINE] — rule 21 taught 3 attribute-derivation rules; the control-programme rollout is now unblocked
+
+**2026-08-27.** `plugins/sgs-blocks/scripts/inspector-scan/rules/21-render-without-control.js`,
+6 new fixture pairs under `fixtures/21-render-without-control/`, `hero/edit.js`. Branch 3 of the
+two-design-gates session plan; D810 was the trigger (a name-derivation helper blinds rule 21's
+static scan because it computes attribute names at call-time).
+
+**Three rules taught, each read from the real component source before encoding, not from the
+brief's cited fractions:**
+- `shadowAttrKeys(base, opts)` → `base+'Colour'` always; `+'Hover'`/`+'ColourHover'` when the
+  matching opt is set (verified against `ShadowControl.js:76-91`).
+- `gradientOverlayAttrKeys(base)` → `base+'Gradient'` only. `solid` deliberately NOT derived — not
+  uniform across blocks (D810).
+- `typographyAttrKeys(prefix)` → the fixed 16-key PascalCase suffix set, only for a literal string
+  argument; a variable argument falls through to the existing generic dynamic-key resolver
+  unchanged (verified against `TypographyControls.js:158-179`).
+
+⭐ **Each new exemption's `mustFlag` overmatch guard was watched failing before being trusted.**
+Temporarily broadened the rule to ignore literalness; both overmatch fixtures
+(`shadow-helper-dynamic-base-still-flags`, `typography-helper-dynamic-prefix-still-flags`) failed
+as expected, proving they're load-bearing, not decorative. Reverted; full self-test then passed
+for rule 21 and all 21 other self-testable rules, zero cross-rule regression.
+
+**hero/edit.js's 3 `GradientOverlayControl` mounts re-adopted** the helper (media overlay, content
+background, media background) so the count reflects real adoption. **Rule 21: 82 flagged / 11
+baselined, unchanged before and after** — confirmed by grepping the JSON output for zero remaining
+matches on `mediaOverlayGradient`/`mediaBackgroundGradient`/`contentBackgroundGradient`. Lands at
+82, not 84 — both keys D810 found blind now resolve correctly.
+
+---
+
+## D817 [ROUTINE] — Design Gate A closed: hover-panel image toggles get per-block CSS where an image exists, withdrawn where none does
+
+**2026-08-27.** `hover-effects.php`, `hover-effects.js`, `cta-section/style.css`,
+`pricing-table|google-reviews|whatsapp-cta/block.json`. Branch 1 of the two-design-gates session
+plan; Bean's Gate A ruling (per-block scoped CSS, no root rule per D796, no selector registry).
+
+**Investigation before CSS: 3 of the 4 named blocks have no image element at all.** cta-section has
+a genuine (optional) background image; `pricing-table`/`google-reviews` are `SGS_Container_Wrapper`
+kind `'layout'` (no bg/overlay/svg layer by contract) with only an SVG icon; `whatsapp-cta` is a
+bare `<a>` root (Contract §B3) with only an inline SVG. Forcing a zoom/grayscale rule onto an SVG
+icon would misapply the effect — flagged rather than fabricated.
+
+**cta-section fixed:** a `::before` background layer scoped to
+`.sgs-cta-section.sgs-cta-section--has-bg-image`, inheriting the root's own background — filtering
+the root directly would have desaturated/zoomed the headline and buttons too.
+
+**Bean's follow-up ruling on the other 3: withdraw the toggles, don't leave them inert.** New
+declarative opt-out `supports.sgs.hoverExcludeControls` (block.json, not a hardcoded name array in
+the shared PHP — the exact shape D805 already fixed once), read identically by
+`resolve_hover_excluded_controls()` (PHP) and `resolveHoverExcludedControls()` (JS). Gated at BOTH
+the class-injection point (PHP — so the class can never reach output even from a stray legacy
+attribute) and the inspector UI (JS — the two ToggleControls are hidden; every other hover control
+— scale, shadow, duration, easing, stagger, border accent, focus ring — is untouched).
+
+⚠ **A real bug caught before shipping, by the verification harness, not by review.**
+`sanitize_key()` lowercases; every comparison site checks `in_array( 'imageZoom', $excluded, true )`
+(strict, camelCase). `sanitize_key('imageZoom')` → `'imagezoom'` silently broke imageZoom
+suppression — the more important of the two — while grayscale happened to survive only because it
+has no capital letters. Fixed by not transforming case, matching how `enabledExtensions` is already
+compared unsanitised.
+
+⚠ **Live canary/editor verification was not possible this session** — deploy was correctly blocked
+twice by the dirty-tree gate (other concurrent sessions' uncommitted work on `button/*` and
+`hero/edit.js`, correctly left untouched; `--allow-dirty` was not used, per D336). Verified instead
+against the real compiled/shipped code via standalone PHP and JS harnesses driving the actual
+resolver functions, plus `phpcs`/`npm run check:dead-controls`/`check:dead-pattern-attrs`, all
+clean. **Recommend a quick canary re-check** (mount the 4 blocks, confirm live) once the deploy
+conflict clears.
+
+---
+
 ## D816 [ROUTINE] — Step 5 shipped to git; deploy blocked by a second gate, deliberately not forced
 
 **2026-08-27.** `plugins/sgs-blocks/assets/css/fx-wave-gradient.css` (`cf285051a`) — light,
