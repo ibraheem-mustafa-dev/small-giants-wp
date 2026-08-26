@@ -46,6 +46,8 @@ export { default as DateTimePickerField } from './DateTimePickerField';
 export { default as SgsBooleanField } from './SgsBooleanField';
 export { default as SgsFreeTextField } from './SgsFreeTextField';
 export { default as SgsMultiSelectField } from './SgsMultiSelectField';
+export { default as ColumnShapePicker } from './ColumnShapePicker';
+export { activeShapeKey, weightsToTrack } from './ColumnShapePicker';
 export { default as ScaleAxisControl } from './ScaleAxisControl';
 export { default as ShadowControl } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';

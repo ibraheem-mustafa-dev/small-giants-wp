@@ -20,6 +20,7 @@ import {
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
 	SgsColourPanel,
+	ColumnShapePicker,
 	fillRow,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -409,6 +410,59 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									/>
 								);
 							} }
+						</ResponsiveOverride>
+					) }
+
+					{ /* FR-37-42 — optional SECOND step after the count. A client
+					     who just wants "4 columns" never meets it. Writes the
+					     existing gridTemplateColumns object; the active shape is
+					     DERIVED from the stored value, never separately stored,
+					     so a hand-edited value shows no selection rather than
+					     lying (FR-37-28). Still stacks to 1 on mobile via the
+					     wrapper, so an asymmetric desktop shape never reaches a
+					     phone. */ }
+					{ isGrid && (
+						<ResponsiveOverride
+							label={ __( 'Column shape', 'sgs-blocks' ) }
+							value={ gridTemplateColumns }
+							onChange={ ( obj ) =>
+								setAttributes( { gridTemplateColumns: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+								tier,
+							} ) => (
+								<ColumnShapePicker
+									// The shape list depends on how many columns
+									// this tier actually shows, so read the count
+									// for the SAME tier rather than the desktop
+									// one — a 4-column desktop and a 2-column
+									// tablet offer different shapes.
+									count={
+										( columns && columns[ tier ] ) ||
+										( columns && columns.desktop ) ||
+										3
+									}
+									value={
+										( inherited
+											? effectiveValue
+											: ownValue ) || ''
+									}
+									onChange={ ( track ) =>
+										setOwnValue( track || undefined )
+									}
+									// No `label` here on purpose: the wrapping
+									// <ResponsiveOverride> already renders the
+									// visible one, and two copies is a real
+									// defect (inspector-scan rule 29). The
+									// picker keeps its own label internally for
+									// assistive tech, hidden from vision.
+								/>
+							) }
 						</ResponsiveOverride>
 					) }
 
