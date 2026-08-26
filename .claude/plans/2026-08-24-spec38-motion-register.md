@@ -53,7 +53,7 @@ superseded**). Canary: still page **2721**.
    ⚠ Also measured: FR-38-31 **does not band** (mean scanline run 1.19), so the "add a dither"
    and `mediump`→`highp` recommendations are WITHDRAWN — they fixed a defect that does not exist.
    Report: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`. Residual open work:
-   `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
+   `.claude/plans/phase-1-fr3831-hygiene-and-look.md` (the POC prompt it used to name was retired 2026-08-26; the POC is DONE).
 2. **Bean's eye on the five cursor-field looks** — mechanism now verified end-to-end (frontend
    AND editor); the aesthetics of each look are not yet Bean-reviewed.
 3. ✅ **The particle engine SHIPPED 2026-08-25 (FR-38-32, D784).** Design-gated (cap 150/emitter,
@@ -425,9 +425,10 @@ mismatch.
    false**. Four hue-adjacent stops suffice; the constraint is hue adjacency, not colour count.
    **The real next step is the FR-38-31 rework**, now precisely scoped to five ranked changes:
    form → ground → hue adjacency → detail field → colour source. Do NOT start at colour source;
-   the first three are attribute and composition changes. Residual open items (Q6 has no
-   performance number, n=1 fidelity, Gate E unrun):
-   `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
+   the first three are attribute and composition changes.
+   ✅ **All three residuals CLOSED 2026-08-26:** Q6 measured (0.373ms/frame; post pass = 70%),
+   fidelity n=1→3 (held-out 0.67/0.69%), Gate E scoped to 26 files and deferred by Bean until the
+   rework ships. Live front: `.claude/plans/phase-1-fr3831-hygiene-and-look.md`.
 2. **Hover rollout (2.1)** — highest client impact, lowest risk, unchanged from the 2026-08-24
    close. One `enabledExtensions` opt-in makes a built panel appear; separately, 10 blocks
    currently animate uncontrollably.

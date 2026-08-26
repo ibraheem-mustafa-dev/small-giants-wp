@@ -78,15 +78,19 @@ passed page 2742 clean while that page held 102 broken values.
 
 ## ▶ MOTION TRACK — 2026-08-25 (FR-38-30 + FR-38-31 shipped; the gradient's LOOK is the open gap)
 
-⭐ **START HERE: the FR-38-31 rework** — **form → ground → hue adjacency → detail field → colour
-source**. Start at form; the first three are attribute/composition, not shader work.
-⛔ **Two beliefs measured FALSE:** four HUE-ADJACENT stops DO suffice (no artist needed;
-complementary stops make the mud), and FR-38-31 does **not** band (mean run 1.19) so the dither
-and `mediump`→`highp` fixes are withdrawn.
-✅ **POC + Q6 + Gate E CLOSED (D790/D791, `9b184de6b`).** ⭐ **Post pass = 70% of frame cost** → a
-framebuffer pass is a DESIGN GATE, not an increment. Fidelity n=1→3 (held-out 0.67/0.69%).
-Build from `.claude/reports/2026-08-25-flowing-gradient-technique-spec.md` ·
-`…-stripe-hero-anatomy.md`.
+⭐ **START HERE: `.claude/prompts/2026-08-27-fr3831-hygiene-and-the-look.md`** → executes
+`.claude/plans/phase-1-fr3831-hygiene-and-look.md` (docscore A).
+⛔ **DO NOT start at "form", and DO NOT build from the technique spec** — both were reversed by a
+6-seat council (D794). The spec is **NO-GO**: no animation section, no camera, no acceptance
+criteria, §2 contradicts §5. Only its §5 (hue adjacency) + §6 (ground) survive.
+⭐ **The rejected look is FOUR CSS VALUES** — `fxWave*` all default `''`, effect defaults off, only
+page **2740** uses it. ~30 min, one file, reversible. Everything else waits on Bean's eye.
+⛔ Council's sharpest: "B-movie 3D VFX" = reads as rendered 3D, and "form" builds MORE 3D-ness with
+its flattening antidote (§7) deferred. Starting there bets against the diagnosis.
+✅ **POC + Q6 + Gate E CLOSED (D790/D791/D794).** Post pass = **70% of frame cost** → a framebuffer
+pass is a DESIGN GATE. Fidelity n=1→3 (0.67/0.69%). Gate E deferred by Bean until the rework ships.
+⚠ **3 verified live bugs** in Phase 1: context-loss dead rectangle (violates the §1.2b house
+contract Spec 38 claims is honoured), `hexToRgb` silent kill switch, `capability.js` never wired.
 
 **Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, logged as **D778-D781**.
 Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).

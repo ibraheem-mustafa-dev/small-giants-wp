@@ -1027,6 +1027,20 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
  **Three further stops, for POWER rather than compliance:** `IntersectionObserver` (an off-screen
   gradient runs nothing), `visibilitychange` (a hidden tab runs nothing), and a give-up on
   context-loss (never leave a dead black rectangle — the same house contract §1.2b already names).
+
+  ⛔ **THE CONTEXT-LOSS CLAIM ABOVE IS FALSE AS SHIPPED — verified in code 2026-08-26, found by a
+  six-seat adversarial council.** `fx-wave-gradient.js` sets `onLost: () => stop()`, which halts the
+  rAF loop and nothing else; `data-sgs-wave-active` is removed only in `destroy()`, and
+  `fx-wave-gradient.css` holds the canvas at `opacity: 1` while that attribute is present. **So a
+  visitor whose GPU context drops gets exactly the dead rectangle this clause forbids**, sitting over
+  a fallback it hides. The house contract is asserted here and violated there.
+  ⚠ Two further claims in this FR are also unbacked as shipped: `capability.js` exists but is
+  **never wired to this effect** (it serves `surface-treatment` only), and `wave-gradient.js` opens
+  its own context with `powerPreference: 'low-power'` and **no** `failIfMajorPerformanceCaveat` —
+  and `capability.js`'s own `probeSurface()` sets no context options either, so wiring it closes
+  only half the gap. Fix scoped as Step 4 of
+  `.claude/plans/phase-1-fr3831-hygiene-and-look.md`. **Do not read this paragraph as fixed until
+  that step ships and the live context-loss test passes on canary page 2740.**
   **DPR capped at 1.5** — the effect is fillrate-bound, and an uncapped 3× phone display would do
   9× the pixel work of a 1× display for the same visual result.
 
@@ -1084,8 +1098,27 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
     adjacency**, and **a fine detail field** (striations — ours has none). ⚠ Two recommendations
     from the first pass are WITHDRAWN: FR-38-31 was measured and **does not band** (mean scanline
     run-length 1.19), so "add a dither" and `mediump`→`highp` both rest on a defect that does not
-    exist. Report: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`. Remaining open work:
-    `.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
+    exist. Report: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`.
+  - (d) ✅ **Q6 MEASURED + fidelity generalised (2026-08-26, D791).** 0.373ms/frame GPU on an
+    RTX 2060 at 1393×761, blocklist not bypassed. ⭐ **The post-process pass is 0.261ms of that —
+    70% of the frame, 2.3× the render it post-processes.** §1.2b names multi-pass as the trigger to
+    reopen D479 decision 2; that decision now has its cost figure, and **a framebuffer pass is a
+    design gate, not an increment.** Fidelity went n=1 → n=3 and held: 0.66% → 0.67% on a held-out
+    frame → 0.69% at DPR 2.
+  - (e) ⛔ **THE TECHNIQUE SPEC IS NO-GO — do not build shader work from it.**
+    `.claude/reports/2026-08-25-flowing-gradient-technique-spec.md` failed a six-seat adversarial
+    council on 2026-08-26 and **remains unchanged** (re-verified after the council). It never
+    specifies the animation, gives no camera or projection, states no acceptance criterion, and its
+    §2 canvas-gradient mechanism contradicts its own §5 OKLab remedy. Its §5 (hue adjacency) and §6
+    (ground) are sound and are the only parts in scope.
+    ⭐ **The council's sharpest finding, which reversed the plan:** the look was rejected as
+    "B-movie 3D VFX" — it reads as rendered 3D — and the spec's top-ranked mechanism builds a
+    *sculpted 3D ribbon* while deferring §7, the blur-and-grain that flattens it photographically.
+    Building §1 first bets against the diagnosis.
+    **Live front: `.claude/plans/phase-1-fr3831-hygiene-and-look.md`** (docscore A) — hygiene, three
+    verified live bugs, then the look. ⭐ The rejected look is **four CSS values**:
+    `fxWaveBase`/`fxWave1..3` all default to `''` (`src/blocks/extensions/fx.js:1050-1053`), the
+    effect defaults to `off`, and only canary page **2740** uses it.
 
 - **FR-38-32 Particle trail — Tier V, ONE engine, THREE presets. BUILT 2026-08-25 (D784).**
   Canary page 2744. A pool of short-lived sprites trails the pointer across an emitter and fades out.

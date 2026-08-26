@@ -5,8 +5,9 @@
 This session finishes one planned item and five loose ends left open on 2026-08-25. None
 of it is exploratory. Every task below names its file, its done-when, and its hazard.
 
-⚠ **This session is NOT the Stripe hero POC.** That has its own prompt:
-`.claude/prompts/2026-08-25-stripe-hero-replication-poc.md`.
+⚠ **This session is NOT the FR-38-31 gradient work.** That has its own prompt:
+`.claude/prompts/2026-08-27-fr3831-hygiene-and-the-look.md`. (The Stripe hero POC is DONE — its
+prompt was retired 2026-08-26.)
 
 ---
 
