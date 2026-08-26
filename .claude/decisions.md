@@ -1,3 +1,43 @@
+## D800 [ROUTINE] — two control-surface gaps handed to standardisation; the splitImageBleed blocker is already cleared
+
+**2026-08-26.** The cloning track handed over two gaps found while cloning the Mama's Munches
+homepage. Bean's call: both belong to the standardisation work, not to a per-block or converter
+fix. Fixing them in the converter would be a per-block carve-out (R-31-9); fixing them
+block-privately now means redoing them when the standard panel lands.
+
+**1. `sgs/product-card` TYPED mode — replace is unreachable without destroying first.** The typed
+media area offers only a "Remove image" button: no replace control, no inspector media panel. An
+operator whose image URL is broken — **exactly the state a freshly cloned card lands in** — must
+delete the value to get a picker back. Scope: typed mode included (not just `bound`/`wc-product`),
+replace reachable WITHOUT removing first, shape open. Pointers: D787,
+`src/blocks/product-card/edit.js` typed-mode media area. Legacy InnerBlocks was purged at D275, so
+there is no legacy editor path to preserve.
+
+⚠ **How it was found matters: it cost that track three wrong answers.** Reading `edit.js` says the
+control exists — and it does. It simply is not reachable without deleting first. Bean found it by
+opening the editor. Same shape as this session's own three misses.
+
+⭐ **It is a DETECTOR class nothing owns.** Rule 21 asks "does the block paint something with no
+control?" — a control exists here, so rule 21 is silent. `check-dead-controls` asks the inverse.
+**Nothing asks "is this control reachable without first destroying the value?"** A detector before
+the sweep, per THE-MIGRATION-METHOD.
+
+**2. `sgs/hero` split media — video and SVG tiers have NO controls at all.** The whole
+`splitMedia*` family (width/height/border-radius/padding/object-fit) emits only onto
+`.sgs-hero__split-image`, a class added only for the IMAGE type (`render.php:557-665`, `:1215`).
+
+⭐ **That track flagged gap 2 as BLOCKING the approved `splitImageBleed` deletion, on the grounds
+that the bleed CSS is the only thing giving those tiers width/height/border-radius. The premise was
+correct and the blocker is already cleared** — D798's deletion made exactly those rules
+UNCONDITIONAL rather than removing them. Verified: 0 bleed-gated rules remain in `hero/style.css`
+and the `--video`/`--svg` sizing is intact. **What remains is only the CONTROLS gap**, which was
+always separate from the sizing.
+
+**Cross-track:** that track is live in `converter/**`, `helpers-typography.php`,
+`helpers-button-style.php` and the quote/product-card TYPOGRAPHY paths (G4). Anyone starting on
+`product-card/edit.js` must ping them first — their edit there is the typography panel, the
+standardisation edit is the media area. Same file, different regions.
+
 ## D799 [ROUTINE] — FR-37-42 column-shape picker built; core's own picker is insert-time only
 
 **2026-08-26.** Approved 2026-07-28, never built. Built (`2e46fc3f2`), wired to

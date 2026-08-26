@@ -142,6 +142,53 @@ plausibly deliberate developer-only settings — `sgs/form.requireLogin`, `.rate
 
 ---
 
+## TASK 2b — two control-surface gaps handed over by the cloning track (2026-08-26)
+
+Bean's call: these belong to the standardisation work, not to a per-block or converter fix.
+Fixing them in the converter would be a carve-out (R-31-9); fixing them block-privately now
+means redoing them when the standard panel lands.
+
+### `sgs/product-card` TYPED mode — replace is unreachable without destroying first
+
+In typed mode the media area offers only a **"Remove image"** button. No replace control, no
+inspector media panel. An operator whose image URL is broken — **exactly the state a freshly
+cloned card lands in** — must delete the value to get a picker back.
+
+**Done when:** typed mode is in scope (not just `bound`/`wc-product`), and replace is reachable
+WITHOUT removing first. Button, panel, or both — shape is your call. Usual
+`block-migration-DONE-checklist.md`.
+
+Pointers: **D787** · `src/blocks/product-card/edit.js`, typed-mode media area. The block is
+dual-mode and this is the TYPED path; legacy InnerBlocks was purged at D275, so there is no
+legacy editor path to preserve.
+
+⚠ **Read the way this was found, it cost that track three wrong answers.** Reading `edit.js`
+says the control exists — and it does. It simply is not reachable without deleting first. Bean
+found it by opening the editor.
+
+⭐ **This is a DETECTOR class nothing currently owns.** Rule 21 asks "does the block paint
+something with no control?" — here a control exists, so rule 21 is silent. `check-dead-controls`
+asks the inverse. **Nothing asks "is this control reachable without first destroying the value?"**
+Worth a detector before the sweep, per THE-MIGRATION-METHOD.
+
+### `sgs/hero` split media — video and SVG tiers have NO controls at all
+
+The whole `splitMedia*` family (width / height / border-radius / padding / object-fit) emits only
+onto `.sgs-hero__split-image`, a class added only for the IMAGE type
+(`hero/render.php:557-665` and `:1215`). The video and SVG tiers therefore have no controls
+whatever. If your work covers per-type media controls, pull this in.
+
+⭐ **The cloning track flagged this as BLOCKING the splitImageBleed deletion. It no longer is —
+that half is already done and sits in the uncommitted hero commit at the top of this file.** The
+bleed CSS was indeed the only thing giving those tiers width/height/border-radius; the deletion
+therefore made those rules **UNCONDITIONAL** rather than removing them. Verified: 0 bleed-gated
+rules remain in `hero/style.css`, and the `--video`/`--svg` sizing is intact.
+
+**What remains is only the CONTROLS gap**, which was always separate from the sizing. Tell that
+track the deletion is unblocked.
+
+---
+
 ## TASK 4 — three settled decisions, ready to build
 
 ### C14 — panel and control order
@@ -237,6 +284,10 @@ staged work; the shared index was cleared under me once.
 - Commit with explicit paths, always. Never `git add -A`.
 - Re-check the branch in the same command as the commit.
 - If `.git/index.lock` exists, another session is mid-commit — wait, never delete it.
+- ⚠ **The cloning track is live in `converter/**`, `helpers-typography.php`,
+  `helpers-button-style.php` and the quote/product-card TYPOGRAPHY paths (G4).** If you
+  start on `product-card/edit.js`, PING THEM FIRST — their edit there is the typography
+  panel, yours would be the media area. Same file, different regions.
 - **Bypass tokens go in the COMMAND string**, not in a message file — the hooks read
   `tool_input.command`. Verified tokens: `[gates-ok:]` `[repeat-ok:]` `[batch-ok:]`
   `[truncate-ok:]`, plus `SGS_INSPECTOR_GATE_SKIP` + `_REASON` and
