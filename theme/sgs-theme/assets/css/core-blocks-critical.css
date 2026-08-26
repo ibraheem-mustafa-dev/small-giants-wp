@@ -193,29 +193,71 @@ html {
  * ⛔ DO NOT ADD `!important` BACK. It silently broke every block's margin
  * control in the editor, and the bug is invisible from the frontend.
  *
- * `.is-root-container` exists ONLY inside the block-editor canvas, and unlike
- * the four frontend arms above — which name three specific block types — this
- * arm is a CATCH-ALL (`> .wp-block` is every top-level block). With
- * `!important` it therefore out-ranked the INLINE style that `edit.js` writes
- * for an operator's own margin, so a client set a margin, the published page
+ * `.is-root-container` exists ONLY inside the block-editor canvas. With
+ * `!important` it out-ranked the INLINE style that `edit.js` writes for an
+ * operator's own margin, so a client set a margin, the published page
  * honoured it, and the canvas never moved. Reported by Bean 2026-08-26.
  *
- * Measured in the live canary editor, both directions, before this change:
+ * Measured in the live canary editor, both directions, before that change:
  *
  *              operator set 80px    operator set nothing
  *   !important         0px                 0px          <- the bug
  *   no !important      80px                0px          <- correct
  *
+ * ⚠ NARROWED 2026-08-27 (T2 fix pass). This arm used to be a CATCH-ALL
+ * (`.is-root-container > .wp-block`, matching every top-level block type)
+ * while the frontend arms above name only four block-type families
+ * (alignfull / wp-block-group / wp-block-cover / wp-block-sgs-hero). That
+ * mismatch was a real, PROVEN divergence: measured live on an `sgs/container`
+ * with no explicit margin, the frontend showed `margin-top: 24px` (its
+ * WordPress blockGap, untouched because `sgs/container` isn't one of the
+ * four named types) while the canvas showed `0px` (zeroed unconditionally
+ * by the old catch-all) — the canvas rendered tighter than the published
+ * page for every block type the frontend arms don't name.
+ *
+ * Fix: name the SAME four block-type families here, translated to the
+ * editor's single `.is-root-container` root.
+ *
+ * ⚠ THIS IS A UNION, NOT A MIRROR — do not describe it as exact agreement.
+ * `.is-root-container` is the canvas root in BOTH editors and stands in for a
+ * DIFFERENT frontend root in each:
+ *   · post editor  -> `.entry-content` / `.wp-block-post-content`, under which
+ *                     the frontend names only `alignfull` and the hero;
+ *   · site editor  -> `.wp-site-blocks`, under which the frontend names
+ *                     group, cover and the hero — but not bare `alignfull`.
+ * Listing all four under one root is therefore the union of both, which CSS
+ * cannot narrow further (it cannot tell the two editors apart). KNOWN
+ * RESIDUAL, accepted: a top-level non-`alignfull` `core/group` or `core/cover`
+ * inside POST content is zeroed in the canvas but keeps its blockGap on the
+ * frontend — the same defect shape, narrowed from "every block type" to two.
+ * Not a regression: the old catch-all already zeroed those.
+ *
+ * What DID change: un-named types (e.g. `sgs/container`) now keep the same
+ * blockGap in both places, instead of the canvas alone being zeroed.
+ *
+ * Verified live (T2 probe page, sandybrown canary), before -> after:
+ *
+ *   sgs/container, no margin set     frontend 24px | editor 0px  -> 24px
+ *   sgs/container, margin set 80px   frontend 80px | editor 80px (unchanged)
+ *   sgs/hero (named type), no margin frontend 0px  | editor 0px  (unchanged)
+ *
  * The rule's PURPOSE survives without `!important`: WordPress's own
  * inter-section margin comes from a `:where()` layout rule at specificity
- * (0,0,0), which this selector at (0,2,1) still beats comfortably. Only an
- * explicit inline value — i.e. one the operator actually chose — now wins.
+ * (0,0,0) — `:where()` contributes zero — which all four of these selectors,
+ * each (0,2,0), beat comfortably. `add_editor_style()` has WP prefix them with
+ * `.editor-styles-wrapper`, so the effective figure in the canvas is (0,3,0).
+ * Dropping the old `body ` prefix changed the NUMBER, not any outcome.
+ * Only an explicit inline value — i.e. one the operator actually chose —
+ * now wins.
  *
  * ⚠ The four frontend arms above previously kept `!important`. That was
  * PROVEN to carry the same defect (2026-08-26, T1) and has since been fixed
  * the same way — see the comment above the frontend rule.
  */
-body .is-root-container > .wp-block {
+.is-root-container > .alignfull,
+.is-root-container > .wp-block-group,
+.is-root-container > .wp-block-cover,
+.is-root-container > .wp-block-sgs-hero {
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
