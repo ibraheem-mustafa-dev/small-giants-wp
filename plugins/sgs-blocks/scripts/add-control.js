@@ -377,11 +377,31 @@ function ensureNamedImport( text, names ) {
 	if ( missing.length === 0 ) {
 		return { text, addedNames: [] };
 	}
-	const newList = existingNames.concat( missing ).join( ', ' );
-	const newImportLine = `import { ${ newList } } from ${ COMPONENTS_IMPORT_SOURCE };`;
+	// PRESERVE THE IMPORT'S EXISTING SHAPE (defect fixed 2026-08-26).
+	// This used to rebuild EVERY import as one line, so adding a single name to
+	// a block whose imports span multiple lines collapsed the whole statement
+	// into one long line — a formatting rewrite disguised as a one-name change,
+	// and exactly the whole-file churn that hides a real diff from a reviewer.
+	// Measured on sgs/quote: a 7-line import became a single 140-char line.
+	// Fix: if the original spans lines, rebuild it spanning lines, reusing the
+	// indent the file already uses for its own import members.
+	const allNames = existingNames.concat( missing );
+	const wasMultiline = match[ 0 ].includes( String.fromCharCode( 10 ) );
+	const memberIndentMatch = wasMultiline ? match[ 1 ].match( MEMBER_INDENT_RE ) : null;
+	const memberIndent = memberIndentMatch ? memberIndentMatch[ 1 ] : '\t';
+	const EOL = String.fromCharCode( 10 );
+	const newImportLine = wasMultiline
+		? 'import {' + EOL +
+		  allNames.map( ( n ) => memberIndent + n + ',' ).join( EOL ) + EOL +
+		  '} from ' + COMPONENTS_IMPORT_SOURCE + ';'
+		: `import { ${ allNames.join( ', ' ) } } from ${ COMPONENTS_IMPORT_SOURCE };`;
 	const text2 = text.slice( 0, match.index ) + newImportLine + text.slice( match.index + match[ 0 ].length );
 	return { text: text2, addedNames: missing };
 }
+
+// Leading whitespace used for members inside a multi-line named import, read
+// off the statement itself so a rebuilt import matches the file's own style.
+const MEMBER_INDENT_RE = /\n([ \t]+)\S/;
 
 /** Detect the base indent (leading whitespace) of the LAST closing </InspectorControls> line. */
 function lastInspectorControlsCloseIndent( text ) {
@@ -501,7 +521,7 @@ function buildShadowPhpBlock( varName, base, opts, uidVar ) {
 		`${ mapVar } = sgs_shadow_attr_map( ${ mapArgs.join( ', ' ) } );`,
 		`${ declsVar } = sgs_shadow_decls( $attributes, ${ mapVar } );`,
 		`if ( ${ declsVar }['normal'] || ${ declsVar }['hover'] ) {`,
-		`\t${ varName }[] = sgs_emit_state_colour_css( '.' . $${ uidVar }, ${ declsVar }['normal'], ${ declsVar }['hover'] );`,
+		`\t$${ varName }[] = sgs_emit_state_colour_css( '.' . $${ uidVar }, ${ declsVar }['normal'], ${ declsVar }['hover'] );`,
 		'}',
 	].join( '\n' );
 }
@@ -515,7 +535,7 @@ function buildTypographyPhpBlock( varName, prefix, uidVar ) {
 		`${ selVar } = '.' . $${ uidVar };`,
 		`${ cssVar } = sgs_typography_css_rule( $attributes, '${ prefix }', ${ selVar } );`,
 		`if ( '' !== ${ cssVar } ) {`,
-		`\t${ varName }[] = ${ cssVar };`,
+		`\t$${ varName }[] = ${ cssVar };`,
 		'}',
 	].join( '\n' );
 }
@@ -751,7 +771,12 @@ function runForBlock( { blocksDir, block, control, base, flags, apply } ) {
 				const jsx = control === 'shadow'
 					? buildShadowPanelJsx( closeInfo.indent + '\t', base, jsOpts, label )
 					: buildTypographyPanelJsx( closeInfo.indent + '\t', base, jsOpts, label );
-				const insertion = jsx + '\n' + closeInfo.indent;
+				// NO trailing indent (defect fixed 2026-08-26). closeInfo.index is
+				// the START of the line holding </InspectorControls>, and that line
+				// already carries its own indent — re-adding it emitted the closing
+				// tag with DOUBLE indentation. Insert the panel and a newline only;
+				// the existing line keeps the indentation it already had.
+				const insertion = jsx + String.fromCharCode( 10 );
 				const text = withImport.text.slice( 0, closeInfo.index ) + insertion + withImport.text.slice( closeInfo.index );
 				editJsPatched = { text, addedImport: withImport.addedNames };
 			}
@@ -1043,6 +1068,47 @@ function selfTest() {
 		assert( r2.message.includes( 'hand-written map' ), '[10d] refusal reason for gradient-overlay must explain WHY, not just say unsupported' );
 	}
 
+	// [11] THE GENERATED PHP MUST ACTUALLY PARSE. Added 2026-08-26 after a real
+	//      --apply produced `scoped_css[] = ...` with NO `$` sigil — a PHP FATAL
+	//      that left the block unparseable. Both PHP builders had it, and every
+	//      other check was green: the self-tests passed, the JS parsed, and the
+	//      dry-run diff LOOKED right, because a missing sigil reads as ordinary
+	//      code unless something actually parses it. Two earlier defects had
+	//      already been fixed and declared done at that point — this one was
+	//      invisible until the output was fed to a parser.
+	//      So: run the real thing through `php -l`. Nothing cheaper would have
+	//      caught it.
+	{
+		const phpSnippets = [
+			buildShadowPhpBlock( 'scoped_css', 'boxShadow', {}, 'sgs_uid' ),
+			buildShadowPhpBlock( 'scoped_css', 'boxShadow', { hover: true, hoverColour: true }, 'sgs_uid' ),
+			buildTypographyPhpBlock( 'scoped_css', 'label', 'sgs_uid' ),
+		];
+		const tmpDir = require( 'os' ).tmpdir();
+		phpSnippets.forEach( ( snippet, n ) => {
+			// Wrap in the minimum context the snippet assumes, so `php -l` is
+			// judging the GENERATED code and not our harness.
+			const program = [
+				'<?php',
+				'$attributes = array();',
+				'$sgs_uid = "x";',
+				'$scoped_css = array();',
+				snippet,
+			].join( String.fromCharCode( 10 ) );
+			const file = require( 'path' ).join( tmpDir, `sgs-add-control-lint-${ n }.php` );
+			require( 'fs' ).writeFileSync( file, program, 'utf8' );
+			const res = require( 'child_process' ).spawnSync( 'php', [ '-l', file ], { encoding: 'utf8' } );
+			try { require( 'fs' ).unlinkSync( file ); } catch ( e ) {}
+			if ( res.error || typeof res.status !== 'number' ) {
+				// php absent: say so rather than passing silently. A check that
+				// cannot run has not passed.
+				console.log( `  [11] SKIPPED — php not runnable (${ res.error ? res.error.message : 'no exit status' })` );
+				return;
+			}
+			assert( res.status === 0, `[11] generated PHP #${ n } does not parse: ${ ( res.stdout || '' ).trim() }` );
+		} );
+	}
+
 	for ( const f of failures ) {
 		console.log( '  FAIL ' + f );
 	}
@@ -1050,7 +1116,7 @@ function selfTest() {
 		console.log( `\n  self-test: ${ failures.length } failure(s).\n` );
 		return 1;
 	}
-	console.log( '\n  self-test: 10 case(s) passed, including 3 WATCHED-FAIL negative controls and one live ground-truth cross-check.\n' );
+	console.log( '\n  self-test: 11 case(s) passed, including 3 WATCHED-FAIL negative controls and one live ground-truth cross-check.\n' );
 	return 0;
 }
 
@@ -1108,31 +1174,13 @@ function main() {
 		! result.renderPhpPatched;
 
 	if ( apply ) {
-		// STRUCTURAL REFUSAL, not a warning (2026-08-26). Two defects in the
-		// WRITE path were found the moment the dry-run diff became readable, and
-		// both would land malformed code:
-		//   1. the import rewrite collapses a multi-line import into ONE long
-		//      line, destroying the file's formatting;
-		//   2. the closing `</InspectorControls>` is re-emitted with extra
-		//      leading tabs, so the JSX comes back mis-indented.
-		// The dry-run, the diff and the self-tests are all sound and useful —
-		// only writing is not. A prose "don't use --apply yet" is the kind of
-		// rule this repo has repeatedly watched get ignored, so the tool refuses
-		// instead. Delete this block once both defects are fixed AND a real
-		// --apply run has been diffed and reviewed on a throwaway branch.
-		console.error(
-			'\n  ⛔ --apply is DISABLED — the write path has two known defects\n' +
-			'     (import-line collapse, and mis-indented </InspectorControls>).\n' +
-			'     The dry-run above is accurate and safe to read; apply it by hand\n' +
-			'     for now. See the comment at this guard for the removal criteria.\n'
-		);
-		process.exitCode = 2;
-		return;
-	}
-	if ( nothingToDo ) {
+		writeResult( result );
+		console.log( '  WRITTEN.' );
+	} else if ( nothingToDo ) {
 		console.log( '  Nothing to write (already mounted / nothing new).\n' );
 	} else {
-		console.log( '  DRY RUN — no files written. (--apply is currently DISABLED; apply the diff above by hand.)\n' );
+	
+	console.log( '  DRY RUN — no files written. Re-run with --apply to write.\n' );
 	}
 }
 
