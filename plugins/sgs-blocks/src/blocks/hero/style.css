@@ -318,58 +318,59 @@ section.sgs-hero {
 	}
 }
 
-/* ── Split image bleed modifier ──
- * When splitImageBleed is true the media column fills flush to the container
- * edge — no padding, no border-radius on the image.
- * ⛔ REMOVED 2026-08-25: a `margin-right:-spacing-40; max-width:calc(50% +
- * spacing-40)` compensation rule used to sit here. It was written for a hero
- * shape where the OUTER split grid carried its own padding and the media
- * column needed a negative-margin trick to bleed past it. That padding does
- * not exist on this grid (see the "NO padding on the outer split grid" note
- * above `.sgs-hero--split`) — the grid is flush by default. With no padding
- * to compensate for, the `max-width:calc(50% + 24px)` term was a hardcoded
- * cap that OVERRODE the media column's real 1fr track width (measured live:
- * grid track 736.5px, media constrained to 392px — a naked default beating
- * faithfully-transferred full-bleed CSS, the R-31-1/"hardcoded defaults are
- * cheats to remove" pattern). `.sgs-hero__media{width:100%;height:100%}`
- * above already fills the grid track exactly; nothing further is needed for
- * "flush to the container edge" once there is no padding to bleed past. */
-.sgs-hero--split-bleed {
-	padding-right: 0;
-}
-
-/* Video/SVG tiers get the column-level bleed above (the .sgs-hero__media--bleed
- * rule is type-agnostic) but were missing the element-level half: the whole
- * splitMediaBorderRadius/splitMediaWidth/splitMediaHeight/splitMediaPadding/splitMediaObjectFit control
- * family is scoped ONLY to `.sgs-hero__split-image` (render.php:528-625), so a
- * bled VIDEO or SVG tier kept its default rounded corners and never filled the
- * bled column's height — a pre-existing gap, not something this rule alone can
- * fully close (video/svg have no width/height/border/padding controls AT ALL,
- * bled or not). This narrower fix only makes BLEED itself work symmetrically:
+/* ── Split media sizing ──
+ *
+ * ⛔ `splitImageBleed` and its three modifier classes were DELETED 2026-08-26.
+ * Read this before reintroducing any "bleed" toggle.
+ *
+ * The attribute was a client-facing toggle whose ON state genuinely broke the
+ * image: it carried `margin-right:-spacing-40; max-width:calc(50% + spacing-40)`,
+ * a hardcoded cap that OVERRODE the media column's real 1fr track (measured
+ * live: grid track 736.5px, media constrained to 392px) so `object-fit:cover`
+ * cropped hard. That compensation rule was written for an older hero shape
+ * whose outer split grid carried its own padding; this grid has none, so the
+ * term was a naked default beating faithfully-transferred CSS — the
+ * R-31-1 / "hardcoded defaults are cheats to remove" pattern.
+ *
+ * The cap was removed 2026-08-25 (`6db78e0e7`, "Hero media cell 392 -> 733px"),
+ * which left the toggle INERT. Measured 2026-08-26 across five conditions —
+ * editor desktop/tablet/mobile on the real homepage, the live frontend at a
+ * narrow width, and a dedicated test page — toggling it changed NOTHING: same
+ * geometry, same computed height, same object-fit. Deleting it is therefore
+ * behaviour-neutral by measurement, not by assumption.
+ *
+ * ⚠ WHAT THE DELETION HAD TO PRESERVE, and why these rules are now
+ * unconditional rather than gone: the IMAGE half of the old modifier was
+ * redundant (`.sgs-hero__split-image` above already sets width/height 100% +
+ * object-fit:cover), but the VIDEO and SVG tiers had NO other sizing anywhere —
+ * their only `width/height:100%` came from the bleed rules (added at D600 for
+ * exactly that reason: a bled video kept its native aspect ratio and overflowed
+ * its column). Dropping them with the toggle would have reintroduced that bug.
+ * Filling the media column is correct for a split hero regardless of any
+ * toggle, so the gate is removed and the sizing kept.
+ *
+ * ⚠ Still open, and NOT what the toggle caused: video/svg tiers have no
+ * width/height/border/padding/object-fit CONTROLS at all — the whole
+ * splitMedia* control family is scoped to `.sgs-hero__split-image`. That is a
+ * pre-existing capability gap, unchanged by this deletion.
+ *
  * `sgs_tier_media_render()` always emits a `{base}--{type}` class
- * (`sgs-hero__split-media--video`/`--svg`), so target those directly rather
- * than needing a render.php change. */
-.sgs-hero__media--bleed .sgs-hero__split-media--video,
-.sgs-hero__media--bleed .sgs-hero__split-media--svg {
+ * (`sgs-hero__split-media--video` / `--svg`), so these target the type directly
+ * and need no render.php branch. */
+.sgs-hero__split-media--video,
+.sgs-hero__split-media--svg {
 	border-radius: 0;
 	width: 100%;
 	height: 100%;
 }
 
-.sgs-hero__media--bleed .sgs-hero__split-media--video {
+.sgs-hero__split-media--video {
 	object-fit: cover;
 }
 
-.sgs-hero__media--bleed .sgs-hero__split-media--svg svg {
+.sgs-hero__split-media--svg svg {
 	width: 100%;
 	height: 100%;
-}
-
-.sgs-hero__split-image--bleed {
-	border-radius: 0;
-	max-height: none;
-	height: 100%;
-	aspect-ratio: auto;
 }
 
 
@@ -533,8 +534,7 @@ section.sgs-hero {
 }
 
 /* Media Ken-Burns — clip at `.sgs-hero__media`'s own edges (respects
- * splitMediaBorderRadius/mediaPadding, matching the existing splitImageBleed
- * clipping pattern above) and animate the CHILD tier element
+ * splitMediaBorderRadius/mediaPadding) and animate the CHILD tier element
  * (`.sgs-hero__split-media`, the class every image/video/SVG tier carries —
  * see `sgs_tier_media_render()`), never `.sgs-hero__media` itself. Animating
  * the wrapper would scale its padding/background box along with the media;

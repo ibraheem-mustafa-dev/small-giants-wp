@@ -189,7 +189,6 @@ const CTA_STYLE_OPTIONS = [
 export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		variant,
-		splitImageBleed,
 		// Split-media motion (2026-08-13) — mirrors the section's own
 		// bgParallax/bgKenBurns/bgAnimationDuration pair, scoped to the
 		// FOREGROUND media column, never the section background.
@@ -409,15 +408,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	}
 
 	// Media-wrapper (`.sgs-hero__media`) class + style preview — mirrors
-	// render.php:1141-1161 (`sgs-hero__media--bleed` / `--ken-burns` modifier
-	// classes + the ken-burns duration custom property) and the split-image
-	// element's own `--bleed` modifier (render.php:1129-1132). mediaKenBurns
+	// render.php's `--ken-burns` modifier class + the ken-burns duration
+	// custom property. mediaKenBurns
 	// is mutually exclusive with mediaParallax, matching render.php:686's
 	// `$media_ken_burns = ! empty( $attributes['mediaKenBurns'] ) && ! $media_parallax;`
 	const mediaKenBurnsActive = !! mediaKenBurns && ! mediaParallax;
 	const mediaWrapperClassName = [
 		'sgs-hero__media',
-		splitImageBleed ? 'sgs-hero__media--bleed' : null,
 		mediaKenBurnsActive ? 'sgs-hero__media--ken-burns' : null,
 	]
 		.filter( Boolean )
@@ -429,12 +426,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	if ( mediaKenBurnsActive ) {
 		mediaWrapperStyle[ '--sgs-hero-media-ken-burns-duration' ] = `${ mediaAnimationDuration }s`;
 	}
-	const splitImageClassName = [
-		'sgs-hero__split-image',
-		splitImageBleed ? 'sgs-hero__split-image--bleed' : null,
-	]
-		.filter( Boolean )
-		.join( ' ' );
+	const splitImageClassName = 'sgs-hero__split-image';
 
 	// `has-background` suppression flag — mirrors render.php:934-938.
 	//
@@ -465,9 +457,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		`sgs-hero--${ variant }`,
 		`sgs-hero--align-${ alignment }`,
 		hasBackgroundPaint ? 'has-background' : null,
-		// splitImageBleed root modifier — mirrors render.php:775-777
-		// ($classes[] = 'sgs-hero--split-bleed').
-		splitImageBleed ? 'sgs-hero--split-bleed' : null,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -872,9 +861,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     the DECLARED block.json defaults (D328): alignment='left', verticalAlignment='center',
 				     textAlign{Desktop,Tablet,Mobile}='', minHeight='' / minHeightTablet='' / minHeightMobile='360px',
 				     contentBackground='', contentPadding{,Tablet,Mobile}={}, gridTemplateColumns{,Tablet,Mobile}='',
-				     splitContentOrderMobile='media-first', splitImageBleed=true (flipped 2026-08-13 — full-bleed
-				     is now the default per Bean; most real split-hero designs want the image flush to the
-				     block edge, not inset). Text/vertical alignment are
+				     splitContentOrderMobile='media-first'. Text/vertical alignment are
 				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
 				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) }>
 					{ /* The ToolsPanel label deliberately does NOT repeat the
@@ -897,7 +884,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								...( isSplit && {
 									gridTemplateColumns: '',
 									splitContentOrder: { mobile: 'media-first' },
-									splitImageBleed: true,
 								} ),
 							} );
 						} }
@@ -1110,14 +1096,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									!! gridTemplateColumns ||
 										!! splitContentOrder?.desktop ||
 									!! splitContentOrder?.tablet ||
-									( splitContentOrder?.mobile ?? 'media-first' ) !== 'media-first' ||
-									false === splitImageBleed
+									( splitContentOrder?.mobile ?? 'media-first' ) !== 'media-first'
 								}
 								onDeselect={ () =>
 									setAttributes( {
 										gridTemplateColumns: '',
 										splitContentOrder: { mobile: 'media-first' },
-										splitImageBleed: true,
 									} )
 								}
 							>
@@ -1228,15 +1212,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 										);
 									} }
 								</ResponsiveOverride>
-								<ToggleControl
-									label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
-									help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
-									checked={ !! splitImageBleed }
-									onChange={ ( val ) =>
-										setAttributes( { splitImageBleed: val } )
-									}
-									__nextHasNoMarginBottom
-								/>
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>

@@ -13,7 +13,7 @@
  *   splitMediaObjectPositionTablet, minHeight*, background/text/border colour
  *   (resting + Hover, each with a {attr}Gradient sibling — D702),
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns,
- *   bgVideo*, splitImageBleed,
+ *   bgVideo*,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
  *   splitMediaObjectFit/Position, splitMediaWidth*, splitMediaHeight (TIER OBJECT), splitMediaBorderStyle/Colour,
  *   splitColumnRatio*, splitGap*,
@@ -197,8 +197,6 @@ $bg_video_attr   = $attributes['bgVideo'] ?? null;
 $bg_video_tablet = $attributes['bgVideoTablet'] ?? null;
 $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 
-// Split-image bleed — removes border-radius and inner padding from the media column.
-$split_image_bleed = ! empty( $attributes['splitImageBleed'] );
 
 // ── Phase 1: Image display attributes ──────────────────────────────────────
 $image_object_fit      = $attributes['splitMediaObjectFit'] ?? 'cover';
@@ -803,9 +801,6 @@ if ( $bg_parallax ) {
 if ( $bg_ken_burns ) {
 	$classes[] = 'sgs-hero--ken-burns';
 }
-if ( $split_image_bleed ) {
-	$classes[] = 'sgs-hero--split-bleed';
-}
 
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
@@ -1229,9 +1224,6 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 	// suffix directly on `sgs-hero__split-image` (that suffix now lands on the
 	// shared base class per sgs_tier_media_render()'s contract).
 	$sgs_hero_split_image_class = 'sgs-hero__split-image';
-	if ( $split_image_bleed ) {
-		$sgs_hero_split_image_class .= ' sgs-hero__split-image--bleed';
-	}
 	$sgs_hero_tier_result = sgs_tier_media_render(
 		$split_tiers,
 		'sgs-hero__split-media',
@@ -1241,9 +1233,6 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 	);
 	if ( '' !== $sgs_hero_tier_result['html'] ) {
 		$media_class = 'sgs-hero__media';
-		if ( $split_image_bleed ) {
-			$media_class .= ' sgs-hero__media--bleed';
-		}
 		// Media motion classes — scoped to `.sgs-hero__media` ONLY (never the
 		// root `<section>`), and gated inside this `'' !== …['html']` branch so
 		// they can only ever land on a media column that genuinely rendered
