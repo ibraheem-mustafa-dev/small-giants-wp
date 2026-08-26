@@ -1,0 +1,23 @@
+{
+	"accepted": [
+		"ColumnShapePicker",
+		"DesignTokenPicker",
+		"FocalPositionField",
+		"GradientCapableColourControl",
+		"GradientOverlayControl",
+		"LinkPopoverControl",
+		"MediaGalleryPicker",
+		"MediaPicker",
+		"ResponsiveBoxControl",
+		"ResponsiveBoxControls",
+		"ResponsiveControl",
+		"ResponsiveOverride",
+		"ResponsiveTriStateControl",
+		"RowQuickInsertAppender",
+		"RowScrollBehaviourControls",
+		"SgsBooleanField",
+		"SgsColourPanel",
+		"SgsMultiSelectField",
+		"SpacingControl"
+	]
+}

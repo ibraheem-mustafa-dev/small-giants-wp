@@ -11,7 +11,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, fillRow, textRow } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow } from '../../components';
 import { colourVar } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
@@ -631,10 +631,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'shadowHover',
-							colour: 'shadowHoverColour',
-						} }
+						attrNames={ shadowAttrKeys( 'shadowHover' ) }
 					/>
 				</PanelBody>
 

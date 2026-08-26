@@ -47,6 +47,104 @@ import DesignTokenPicker from './DesignTokenPicker';
 import { UnitControl } from './primitives';
 
 /**
+ * Derive ONE of a shadow family's attribute names from its base name.
+ *
+ * The standard helper pair for this control, mirroring `typographyAttrName()`
+ * — the one control that already shipped the pattern. See
+ * `scripts/check-control-helper-parity.py` for the census of which controls
+ * still owe theirs.
+ *
+ * ⭐ THE RULES ARE ENUMERATED, NOT GENERALISED — and generalising got one of
+ * them WRONG first. Every `attrNames` map in the tree was listed and each rule
+ * tested against every row that carries the key (2026-08-26):
+ *   • `colour`      = `<base>Colour`        — holds **22/22**
+ *   • `hoverColour` = `<base>ColourHover`   — holds **10/10**
+ *   • `hover`       = `<base>Hover`         — **0 mounts use it.** The PHP
+ *     `sgs_shadow_decls()` supports a hover SHAPE (Bean's full-symmetry ruling,
+ *     2026-08-22) but no editor mount passes one yet, so this key is available
+ *     and currently unexercised. Do not assume it is proven.
+ * ⛔ The first draft of this helper returned `<base>HoverColour` for the hover
+ * colour, generalised from `sgs/button`'s `boxShadowHoverColour`. That is a
+ * SEPARATE family whose base IS `boxShadowHover`, so it was `<base>Colour` all
+ * along and said nothing about hover colours. Against the real corpus the
+ * guessed rule scored **0/10**. Enumerating cost one command.
+ *
+ * @param {string} base Base attribute name, e.g. 'boxShadow'.
+ * @param {string} part One of 'base' | 'colour' | 'hover' | 'hoverColour'.
+ * @return {string} The attribute key, or '' for an unknown part.
+ */
+export function shadowAttrName( base, part = 'base' ) {
+	if ( ! base ) {
+		return '';
+	}
+	switch ( part ) {
+		case 'base':
+			return base;
+		case 'colour':
+			return base + 'Colour';
+		case 'hover':
+			return base + 'Hover';
+		case 'hoverColour':
+			return base + 'ColourHover';
+	}
+	return '';
+}
+
+/**
+ * The full attribute-key set for a shadow family.
+ *
+ * Returns the RESTING PAIR ONLY by default. `{ hoverColour: true }` adds the
+ * hover colour; `{ hover: true }` adds the hover shape. They are INDEPENDENT
+ * because the corpus has them independently — never fold them into one flag.
+ *
+ * ⛔ THE DEFAULT IS base+colour BECAUSE RETURNING ALL FOUR MANUFACTURES DEAD
+ * CONTROLS, and the survey proves it. Measured 2026-08-26, blocks mounting this
+ * control carry THREE distinct family shapes, not one:
+ *   • resting only   — `boxShadow` + `boxShadowColour`   (media, brand-strip, …)
+ *   • resting+hover  — plus `boxShadowHover` + `…HoverColour` (button, quote)
+ *   • HOVER ONLY     — `shadowHover` + `shadowHoverColour` (info-box,
+ *                      testimonial, card-grid's second family)
+ * On that third shape a four-key map derives `shadowHoverHover`. This component
+ * binds every key it is given, so the control would render a field wired to an
+ * attribute the block never declares — and WordPress SILENTLY DISCARDS a write
+ * to an undeclared attribute (D338). The client gets a knob that moves and does
+ * nothing: precisely the defect `check-dead-controls.js` exists to catch. An
+ * opt-in hover pair cannot produce it.
+ *
+ * Two uses, both removing a hand-typed key name:
+ *   1. `attrNames={ shadowAttrKeys( 'boxShadow', { hoverColour: true } ) }` here.
+ *   2. spreading the canonical set when registering a block's attributes,
+ *      rather than hand-declaring each key in `block.json`.
+ *
+ * The PHP twin is `sgs_shadow_attr_map()` (`includes/helpers-colour-variants.php`),
+ * which returns the same names under `snake_case` keys because that is the shape
+ * `sgs_shadow_decls()` consumes, and carries the same opt-in. Both derive from
+ * one rule, so a block names its base ONCE and neither side can typo the pairing.
+ *
+ * @param {string}  base          Base attribute name, e.g. 'boxShadow'.
+ * @param {Object}  [options]     Options.
+ * @param {boolean} [options.hover=false] Include the hover pair.
+ * @return {{base: string, colour: string, hover?: string, hoverColour?: string}} The keys.
+ */
+export function shadowAttrKeys( base, { hover = false, hoverColour = false } = {} ) {
+	const keys = {
+		base: shadowAttrName( base, 'base' ),
+		colour: shadowAttrName( base, 'colour' ),
+	};
+	// INDEPENDENT flags, because the corpus has them independently: 10 mounts
+	// carry a hover COLOUR (e.g. sgs/before-after) and ZERO carry a hover SHAPE.
+	// One combined flag would hand `sgs/before-after` a `boxShadowHover` key it
+	// never declares — the D338 dead-control trap this helper exists to avoid.
+	if ( hover ) {
+		keys.hover = shadowAttrName( base, 'hover' );
+	}
+	if ( hoverColour ) {
+		keys.hoverColour = shadowAttrName( base, 'hoverColour' );
+	}
+	return keys;
+}
+
+/**
  * Parse a raw CSS shadow-SHAPE string (no colour) into its builder parts.
  * Best-effort — only handles a single shadow layer (the builder's own
  * output shape). Returns null when the string doesn't parse as a longhand

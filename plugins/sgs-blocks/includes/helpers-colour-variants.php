@@ -293,6 +293,92 @@ function sgs_overlay_decls_for( array $attributes, array $map ): array {
 }
 
 /**
+ * Derive ONE of a shadow family's attribute names from its base name.
+ *
+ * The standard helper pair for `ShadowControl`, mirroring the shape
+ * `sgs_typography_attr()` has had all along — see
+ * `check-control-helper-parity.py` for why every shared control owes one.
+ *
+ * ⭐ THE RULES ARE ENUMERATED, NOT GENERALISED — and generalising got one WRONG
+ * first. Every `attrNames` map in the tree was listed and each rule tested
+ * against every row carrying the key (2026-08-26):
+ *   • `colour`       = `<base>Colour`      — holds **22/22**
+ *   • `hover_colour` = `<base>ColourHover` — holds **10/10**
+ *   • `hover`        = `<base>Hover`       — **0 editor mounts use it.**
+ *     `sgs_shadow_decls()` accepts a hover SHAPE (Bean's full-symmetry ruling,
+ *     2026-08-22) but nothing passes one yet; available, not proven.
+ * ⛔ The first draft returned `<base>HoverColour`, generalised from
+ * `sgs/button`'s `boxShadowHoverColour` — a SEPARATE family whose base IS
+ * `boxShadowHover`, so it was `<base>Colour` all along. Against the real corpus
+ * the guessed rule scored **0/10**. This is why R-31-1 wants an enumeration
+ * before a rule replaces a list.
+ *
+ * @param string $base Base attribute name, e.g. 'boxShadow' or 'cardShadow'.
+ * @param string $part One of 'base' | 'colour' | 'hover' | 'hover_colour'.
+ * @return string The attribute key, or '' for an unknown part.
+ */
+function sgs_shadow_attr( string $base, string $part = 'base' ): string {
+	if ( '' === $base ) {
+		return '';
+	}
+	switch ( $part ) {
+		case 'base':
+			return $base;
+		case 'colour':
+			return $base . 'Colour';
+		case 'hover':
+			return $base . 'Hover';
+		case 'hover_colour':
+			return $base . 'ColourHover';
+	}
+	return '';
+}
+
+/**
+ * The full attribute-name map for a shadow family, ready for sgs_shadow_decls().
+ *
+ * Replaces a hand-written array literal at each call site. Hand-writing it is
+ * how a caller pairs the wrong colour attr with a shape attr — the shape of
+ * mistake D805 paid for on a different mechanism the same day, where a PHP
+ * roster and a JS roster of the same names drifted apart.
+ *
+ * The JS twin is `shadowAttrKeys()` in `src/components/ShadowControl.js`;
+ * both derive from the same rule, so a block declares its base name ONCE.
+ *
+ * ⛔ THE HOVER PAIR IS OPT-IN, and the survey is why. Blocks mounting this
+ * control carry THREE family shapes, not one: resting-only (`boxShadow` +
+ * `boxShadowColour`), resting+hover (`sgs/button`, `sgs/quote`), and HOVER-ONLY
+ * (`shadowHover` + `shadowHoverColour` — `sgs/info-box`, `sgs/testimonial`,
+ * `sgs/card-grid`'s second family). On that third shape an unconditional map
+ * derives `shadowHoverHover`. Harmless HERE, because `sgs_shadow_decls()` reads
+ * a missing attribute as '' — but the JS twin BINDS every key it is handed, so
+ * the same unconditional map renders an editor control wired to an attribute the
+ * block never declares, and WordPress silently discards writes to those (D338).
+ * The two sides must carry the SAME opt-in or the pair stops being one rule.
+ *
+ * @param string $base       Base attribute name, e.g. 'boxShadow'.
+ * @param bool   $with_hover_shape  Include the hover SHAPE key. Default false.
+ * @param bool   $with_hover_colour Include the hover COLOUR key. Default false.
+ * @return array{base:string, colour:string, hover?:string, hover_colour?:string}
+ */
+function sgs_shadow_attr_map( string $base, bool $with_hover_shape = false, bool $with_hover_colour = false ): array {
+	$map = array(
+		'base'   => sgs_shadow_attr( $base, 'base' ),
+		'colour' => sgs_shadow_attr( $base, 'colour' ),
+	);
+	// INDEPENDENT flags — the corpus has them independently: 10 editor mounts
+	// carry a hover COLOUR and zero carry a hover SHAPE. Folding them into one
+	// flag would name an attribute the block never declares.
+	if ( $with_hover_shape ) {
+		$map['hover'] = sgs_shadow_attr( $base, 'hover' );
+	}
+	if ( $with_hover_colour ) {
+		$map['hover_colour'] = sgs_shadow_attr( $base, 'hover_colour' );
+	}
+	return $map;
+}
+
+/**
  * Build the SHADOW DECLARATIONS for a block, per state.
  *
  * Façade over sgs_shadow_value_composed( $shape, $colour ), which takes VALUES. Same

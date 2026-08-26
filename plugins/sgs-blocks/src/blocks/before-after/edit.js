@@ -39,8 +39,7 @@ import {
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveOverride,
-	ResponsiveBorderRadiusControl,
-} from '../../components';
+	ResponsiveBorderRadiusControl, shadowAttrKeys } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
@@ -766,11 +765,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'boxShadow',
-								colour: 'boxShadowColour',
-								hoverColour: 'boxShadowColourHover',
-							} }
+							attrNames={ shadowAttrKeys( 'boxShadow', { hoverColour: true } ) }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

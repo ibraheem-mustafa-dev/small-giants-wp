@@ -49,7 +49,7 @@ export { default as SgsMultiSelectField } from './SgsMultiSelectField';
 export { default as ColumnShapePicker } from './ColumnShapePicker';
 export { activeShapeKey, weightsToTrack } from './ColumnShapePicker';
 export { default as ScaleAxisControl } from './ScaleAxisControl';
-export { default as ShadowControl } from './ShadowControl';
+export { default as ShadowControl, shadowAttrName, shadowAttrKeys } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';
 export { default as AnimationControl } from './AnimationControl';
 export { IconPicker, IconPreview } from './IconPicker';
