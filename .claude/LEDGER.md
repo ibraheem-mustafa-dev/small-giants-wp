@@ -102,45 +102,46 @@ kill switch, `capability.js` never wired (PD-1/PD-2/PD-3).
 **Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, logged as **D778-D781**.
 Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).
 
-✅ Bean's eye-review of 2721 found 3 gate-passed defects: TORCH's mask had no height (fixed);
-"Trail" renamed **"Drag weight"** (a lerp follower, no fade); invariant **I8** computed but was
-never registered, so `--check` silently under-reported. AURORA rebuilt as a mesh gradient that now
-arrives/leaves WITH the pointer (was parking a lit pool at each section's centre).
-✅ **Editor opened for the first time** — Spec 38 §9's "canvas shows the resting field" claim was
-WRONG, not unverified (canvas iframe carries zero fx attrs; `sgs/container` uses `edit.js` there).
-Info Notice now ships; otherwise healthy (36 blocks, 0 invalid, 0 console errors).
-✅ **FR-38-30 Magnetic pull** shipped — generalised mega-menu's `magnet.js` to 2 axes + proximity
-radius. Reaches every fx-panel block, live-verified on 2737.
-✅ **FR-38-31 Flowing gradient** shipped (Tier W's 2nd entry, autonomous, fixes mobile where
-cursor-fx shows nothing) — simplex-displaced mesh, 4 stops, 3648B gzip, pause control. Its
-clobbered canvas was `sgs/container`'s child-lift list missing the canvas.
-✅ Deploy gate scoped — blocks-only/theme-only no longer aborts on another track's dirty theme
-files; 3 new self-tests, each watched failing first.
+✅ Bean's eye-review of 2721 fixed 3 gate-passed defects; "Trail" renamed **"Drag weight"**;
+invariant I8 was computed but never registered. ✅ Editor opened for the first time — Spec 38 §9's
+"canvas shows the resting field" claim was WRONG, not unverified. ✅ **FR-38-30 Magnetic pull** and
+✅ **FR-38-31 Flowing gradient** shipped. ✅ Deploy gate scoped to what a run ships.
+Detail: **D778-D781** — do not restate.
 
 ⭐ **The gradient's rejected LOOK is diagnosed** — see the top of this track. Its cause stated
 here ("4 interpolated stops can't reproduce that variation") was measured FALSE on 2026-08-25.
 
 ### ▶ NEXT, in order
 
-⭐ **The 2026-08-26 hover/gate prompt is EXECUTED** — its tasks are items 2/4/5, all closed.
+⭐ **START HERE: `.claude/prompts/2026-08-27-two-design-gates-then-the-control-backlog.md`.**
+Bean's order: run the TWO DESIGN GATES first, then plan orchestration around what they
+decide. Detail single-sourced to **D805-D812** — do not restate.
 
 1. ✅ **CHILD-LIFT — CLOSED.** Detail: D784 + D793 (gate `check-child-lift`, repo-wide).
-2. ✅ **EDITOR SURFACE + BOTH FR-38-32 CLAIMS — CLOSED 2026-08-26 (D807).** Measured live on
-   2744 via a permanent `stats()` probe: cap **clamps at exactly 150** under saturation, but
-   ordinary input peaks **106** — LIFETIME binds first, so "the cap binds" was the wrong claim.
-   Loop stops (0 frames / 2500ms at rest) with a positive control. Spec 38 updated in BOTH
-   places. ⚠ Third trap found: the listener is `mousemove`, NOT `pointermove`.
+2. ✅ **EDITOR SURFACE + BOTH FR-38-32 CLAIMS — CLOSED (D807).** Cap clamps at exactly 150,
+   but ordinary input peaks 106 — LIFETIME binds first, so "the cap binds" was the wrong claim.
+   Loop stops, with a positive control. ⚠ The listener is `mousemove`, NOT `pointermove`.
 3. ✅ **Stripe-hero POC — DONE.** Superseded by the FR-38-31 rework. Detail: D781/D790/D791.
-4. ✅ **HOVER — RULED + SHIPPED (D805/D808), `a99cf00df` pushed + deployed.** Panel ON for the
-   3 ROOT-hover blocks only; the 3 hardcoded PHP arrays are GONE (a block declares
-   `supports.sgs.hoverDefaults`, honoured only when the panel is also opted in). cta-section +
-   icon bugs verified gone live; 8 gate findings ruled INDIVIDUALLY, nothing deleted.
-   ⚠ **STILL OPEN:** the panel's zoom/grayscale toggles stay inert outside 4 blocks; a root
-   rule to fix that is REFUSED (D796) — needs per-block scoping.
-5. ✅ **Three ungated registration points — CLOSED (D789).** ⚠ ONE NEW, unfixed, not mine:
-   gallery's carousel drag-scroll fails to resolve `@sgs/gsap-draggable` — it registers and does
-   nothing (D452 shape). ⛔ A second "finding" here was WRONG and is retracted:
-   `wp-migrate-oldshape-blocks.js` DOES exist, at repo-ROOT `scripts/`. See D806.
+4. ✅ **HOVER — RULED + SHIPPED (D805/D808).** Panel ON for the 3 ROOT-hover blocks; the 3
+   hardcoded PHP arrays GONE. ⚠ **OPEN = DESIGN GATE A:** zoom/grayscale toggles inert outside
+   4 blocks; a root rule is REFUSED (D796), so it needs per-block scoping. Bean picks the shape.
+5. ✅ **Three ungated registration points — CLOSED (D789).** ⚠ OPEN: gallery's carousel
+   drag-scroll fails to resolve `@sgs/gsap-draggable` — registers, does nothing (D452 shape).
+   Specifier IS registered and the 34KB module EXISTS, so suspect conditional registration —
+   prove it. Also answer why `check-fx-registration.py` passes.
+
+### ▶ CONTROL PROGRAMME — 2026-08-26 (D810-D812)
+✅ Helper pairs COMPLETE: 3 of 3 name-keyed controls, **empty baseline, no accepted debt**.
+✅ `add-control.js` scaffold — dry-run default, `--apply` verified end-to-end after THREE
+   defects, the third a PHP fatal only `php -l` could see. ✅ Spec 35 enum threshold written,
+   every bound derived from the corpus. ✅ `check-css-layer-orphans` — GRID_AREA is the only
+   orphan (census 509 rows, not the 53 in the brief); baselined, nothing deleted.
+⛔ **OPEN, Bean-APPROVED:** teach `inspector-scan` rule 21 to expand `*AttrKeys()`. Adopting a
+   helper blinds it (82 -> 84, hero reverted). Gates the whole roll-out. ⛔ Never raise its
+   openBacklog — that rule's doctrine is "a false positive is a detector bug".
+⛔ **OPEN = DESIGN GATE B:** adopt `SgsLengthControl` — 62 raw `UnitControl` mounts, 24 blocks,
+   0 adopted. Client-visible; check each attr's slug-vs-length typing (D338).
+⛔ **OPEN:** the enum gate must measure RENDERED LABELS; the census measures slugs (n=1 proxy).
 6. **`floating-objects`** + **generative cover images** — both approved-in-principle, unbuilt.
    ⛔ Covers were scoped as needing "the same palette-texture capability (D781)". **That premise
    was measured false 2026-08-25** — no texture-palette pipeline is required. Scope covers from
