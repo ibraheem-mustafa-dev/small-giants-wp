@@ -199,26 +199,49 @@ def self_test():
         print('self-test: MUST-PASS fixture (payment context) -> %d finding(s)  %s' %
               (len(pass_findings), 'OK' if ok_pass else 'BROKEN — overmatches'))
 
-        # MIT-ALLOWLIST NARROWNESS: the real wave-gradient.js file must have its
-        # licence-required lines (59, 62) excluded, while an UNRELATED "stripe" mention
-        # elsewhere in the same file (line 8) still flags — proving the allowlist is a
-        # narrow line-range exclusion, not a whole-file exemption.
-        real_rel = 'plugins/sgs-blocks/src/shared/effects/webgl/wave-gradient.js'
-        real_full = os.path.join(ROOT, real_rel)
-        if os.path.exists(real_full):
-            with open(real_full, encoding='utf-8') as fh:
-                real_text = fh.read()
-            real_findings = classify_file(real_rel, real_text)
-            flagged_lines = {ln for ln, _ in real_findings}
-            allowlisted_excluded = (59 not in flagged_lines) and (62 not in flagged_lines)
-            other_still_flagged = 8 in flagged_lines
+        # MIT-ALLOWLIST NARROWNESS: a SYNTHETIC fixture proves the allowlist is a narrow
+        # line-range exclusion, not a whole-file exemption.
+        #
+        # This was originally the LIVE wave-gradient.js file: assert its allowlisted lines
+        # (59, 62 at the time) are excluded, while an "unrelated" stripe mention elsewhere
+        # in the same file (line 8) still flags. That broke the moment the source-cleanup
+        # task (this gate's own reason for existing) removed every non-allowlisted "stripe"
+        # mention from the file — there was no longer an unrelated line left to prove
+        # narrowness against. A live tracked file is a moving target, not a fixture: once
+        # the very edit this gate enforces landed, the self-test's own assumption about that
+        # file's content went stale. Use a synthetic fixture instead, so this check can never
+        # be invalidated by a legitimate future edit to the real source file.
+        mit_rel = 'plugins/sgs-blocks/.selftest-fixture-mit.js'
+        mit_full = os.path.join(ROOT, mit_rel)
+        saved_allowlist = MIT_ALLOWLIST.get(mit_rel)
+        try:
+            with open(mit_full, 'w', encoding='utf-8') as fh:
+                fh.write(
+                    "// line 1: unrelated stripe mention, must flag\n"
+                    "// line 2: filler\n"
+                    "// line 3: filler\n"
+                    "// line 4: filler\n"
+                    "// line 5: allowlisted lines 5-6 start here\n"
+                    "// line 6: allowlisted, must NOT flag (mentions stripe)\n"
+                    "// line 7: filler after the allowlisted range\n"
+                )
+            written.append(mit_full)
+            MIT_ALLOWLIST[mit_rel] = [(5, 6)]
+            with open(mit_full, encoding='utf-8') as fh:
+                mit_text = fh.read()
+            mit_findings = classify_file(mit_rel, mit_text)
+            flagged_lines = {ln for ln, _ in mit_findings}
+            allowlisted_excluded = 6 not in flagged_lines
+            other_still_flagged = 1 in flagged_lines
             ok_mit = allowlisted_excluded and other_still_flagged
-            mit_detail = 'lines 59/62 excluded=%s, unrelated line 8 still flagged=%s' % (
+            mit_detail = 'allowlisted line 6 excluded=%s, unrelated line 1 still flagged=%s' % (
                 allowlisted_excluded, other_still_flagged)
-        else:
-            ok_mit = False
-            mit_detail = 'source file not found at %s' % real_rel
-        print('self-test: MIT-allowlist narrowness (wave-gradient.js) -> %s  %s' %
+        finally:
+            if saved_allowlist is None:
+                MIT_ALLOWLIST.pop(mit_rel, None)
+            else:
+                MIT_ALLOWLIST[mit_rel] = saved_allowlist
+        print('self-test: MIT-allowlist narrowness (synthetic fixture) -> %s  %s' %
               (mit_detail, 'OK' if ok_mit else 'BROKEN'))
 
         ok = ok_flag and ok_pass and ok_mit
