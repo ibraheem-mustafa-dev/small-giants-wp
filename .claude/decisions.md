@@ -1,3 +1,115 @@
+## D804 [INCIDENT] — three gates called a live attribute dead, and a bypass that cannot be repaid
+
+**2026-08-26.** Commit `75ca71be9`. After D803 moved font-family onto the shared typography
+helper, three separate gates — db-consistency check #8, audit-block-file-consistency, and
+inspector-scan rule 34 — flagged `sgs/product-card.titleFontFamily` as a rogue seed, an orphan
+attr, and a dead declaration. It blocked two sessions.
+
+⭐ **All three were the same false positive, and the attribute is live at BOTH ends.** Until
+D803 `sgs_typography_css_rule()` had no font-family branch, so a block offering
+TypographyControls' `showFontFamily` picker emitted font-family BLOCK-PRIVATELY — and that
+private emission was the only LITERAL occurrence of the name anywhere. D803 gave the helper the
+branch and deleted the workaround, at which point both ends became dynamically keyed
+(`typographyAttrName(prefix,'FontFamily')` in the editor, `sgs_typography_attr($prefix,'FontFamily')`
+in PHP) and the string `titleFontFamily` appears in no source file.
+
+The tell was in the DB: its five siblings — `titleColour` / `titleFontSize` / `titleFontStyle` /
+`titleFontWeight` / `titleLineHeight` — all carry `css_element='title'`. `titleFontFamily` was
+the lone NULL among six. Not a seeding error; a capability that did not exist yet.
+
+Fixed at the RESOLVER, not the baseline, per this project's own rule for check-dead-controls:
+`FontFamily` added to `PREFIXED_HELPER_SUFFIXES`. Rule 34 returned to its declared backlog of 2
+and its advisory text still names the two genuine survivors. `audit-block-file-consistency` runs
+an independent scan and still flags, so that one is baselined WITH both ends' evidence and the
+condition that invalidates the row.
+
+⛔ **THE VISUAL-DIFF BYPASSES CANNOT BE RETIRED, AND THE TASK AS FRAMED IS NOT ACHIEVABLE.**
+`visual-report-sha.py` derives `source_sha` from the STAGED bytes of a block's `src/` directory;
+the gate recomputes it at commit time and refuses a mismatch. Its docstring gives the reason — a
+date-keyed gate once waved six blocks through on reports another track had generated hours
+earlier for its own edits to the same blocks. Run against an already-committed change it
+correctly returns "no staged files". `manual-skips.log` is a permanent audit record, not a queue
+to drain; the forward obligation is that the NEXT commit touching each block carries a real
+report. Producing one now would mean re-staging files to manufacture a matching hash — gaming
+the exact mechanism `source_sha` defends. Evidence filed instead at
+`reports/2026-08-26-border-width-live-verification.md`, explicitly marked as not a gate artefact.
+
+## D803 [ROUTINE] — font-family gets a renderer; a border style with no width paints nothing
+
+**2026-08-26, both Bean rulings.** Commit `559cc6d97`, 43 files.
+
+**G4.** `TypographyControls` had always offered a `showFontFamily` picker while
+`sgs_typography_css_rule()` had no font-family branch, so opting in yielded a DEAD control and
+two blocks worked around it privately. The helper now emits it and `sgs_font_family_sanitise()`
+owns the allowlist both blocks had duplicated. `sgs/product-card`'s private emission is deleted —
+it wrote to the same selector the shared call already uses, so output is unchanged. Plain string,
+no tiers: the picker stores theme.json's raw font-family VALUE and declares no Tablet/Mobile
+siblings. Residual: `sgs/quote`'s attribution panel predates TypographyControls and is still
+bespoke; only the sanitiser folded in. Its font-family was never dead, so the defect is closed.
+
+**G5.** Bean: *"border with no width should mean no border by default."* A style with no width
+fell through to CSS's initial `medium` (~3px). Two shared gates now own the rule, plus explicit
+width tests on the hand-rolled emitters. ABSENCE, not `border-width:0` — a zero-width border
+still beats an inherited one. The gate reads a width in EITHER shape, flat or per-side, because
+gating on the flat key alone would strip a legitimate style from an unlinked border and DELETE a
+border the operator can see: worse than the bug.
+
+⭐ **THE COMMIT GATE WAS RIGHT TO REFUSE THE FIRST ATTEMPT.** 22 files changed the same way with
+no detector (D542). The hand census behind those edits found 37 instances and MISSED two —
+`sgs/quote` and `sgs/product-card` — which the resulting script found automatically.
+`check-border-style-without-width.py` ships the triad and is wired into `gates.json`, verified
+reachable via `npm run gate:list` rather than by grepping `package.json`, which false-positives.
+
+⛔ **The detector needed two corrections of its own, in opposite directions.** Its first revision
+read a LINE WINDOW and reported ZERO ungated on a tree containing two — `sgs/quote`'s width test
+is NEARBY but does not ENCLOSE the emission. Brace-aware, it then reported two CORRECTLY-gated
+emitters as violations because the width local is spelled at least four ways
+(`$has_border_width`, `$border_has_width`, `$img_border_has_width`, `$sgs_pc_border_width_top`).
+Both failure shapes are self-test cases now. **A detector that returns 0 on a dirty tree is worse
+than none: it looks present.**
+
+⚠ **Bean then corrected the RULE itself, and the correction stands.** It is not "no width = no
+border" but *"an empty width falls back to the block's own default width"*. Most blocks have no
+default; `sgs/button` has 2px in its own style.css, so button was never an exception. That makes
+the gate wrong for any block declaring its own default — confirmed on `sgs/product-card`
+(`render.php:121` + `style.css:33`), where a `dashed` style with no width now renders solid.
+~17 more are candidates, unproven. **Bean PARKED it deliberately**: the state is narrow, nothing
+is deployed in it, and the hero bug he reported is fixed. Do not reopen for tidiness.
+
+## D802 [INCIDENT] — per-device typography reached no destination and was discarded silently
+
+**2026-08-26.** Commit `14707b01e`. The Mama's clone rendered its hero h1 at 52px on a 375px
+viewport where the draft says 34px.
+
+⭐ **Tier-shaped attrs store device values INSIDE one object; the flat `fontSizeTablet` /
+`fontSizeMobile` siblings were retired 2026-08-11.** The typography resolver still re-appended a
+tier suffix, so `validate` found no such attr and gapped the write as NO_DESTINATION — correct by
+its own contract, and silent. Measured: ZERO tier-suffixed typography attrs across the whole
+page, so every heading carried only its DESKTOP size, overriding the theme's own fluid `hero`
+preset (32px at 375) which had been right all along. Typography is 38% of mobile parity divergence.
+
+Fix: `db_lookup.tier_object_base()` (DB predicate, sibling of `box_family_for`), a partial
+`{tier: value}` write from the typography resolver, and a per-key merge in the orchestrator
+structurally identical to the existing box-side merge. Values stay NUMBERS with the unit in the
+companion attr — a string desktop value is read as a theme preset slug by `heading/render.php:485`
+and resolves to an undefined custom property (D574). The tier→key mapping is DERIVED from
+`modifier_suffixes('breakpoint')`; a first revision hardcoded the three-entry dict and the
+anti-cheat gate correctly refused the commit.
+
+⛔ **THREE ROOT-CAUSE DIAGNOSES DIED BEFORE THIS ONE, EACH KILLED BY A DIFFERENT GATE.** A
+cascade-ordering patch (Bean's pushback), a mobile-first/desktop-first mismatch (`/qc-council`
+Stage 5 — the gap ledger recorded no discarded values, and the CSS turned out intact in
+`variation-d0-d2.css`), and a stranded-CSS census (the real parity tool — `css_router` is a
+DIAGNOSTIC pass, not the production path; `sgs/hero`'s background and `sgs/button`'s border were
+captured after all). Every reading was consistent with the code and wrong about the product.
+**The project's own instrument — Spec 20 computed-parity — answered it, and CLAUDE.md already
+says not to hand-roll a comparison.**
+
+Proven end to end without a deploy: `convert_section()` on the real draft emits
+`sgs/heading fontSize {"desktop":52,"mobile":34}` and `sgs/text {"desktop":18,"mobile":16}`, zero
+retired siblings. ⚠ **No live page has been through the fixed converter** — page 2742 still holds
+the old attrs, and the post-deploy parity run measured 0 elements fixed and 0 newly broken.
+
 ## D801 [ROUTINE] — Gate C eye-review: shape approved, three changes, and two of them hit locked constraints
 
 **2026-08-26.** Bean reviewed FR-37-42 live on the canary footer template part and approved the

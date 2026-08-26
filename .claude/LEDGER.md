@@ -28,53 +28,57 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — 2026-08-25 (desktop CLOSED; mobile never looked at)
+## ▶ MAMA'S CLONE TRACK — 2026-08-26 (mobile MEASURED; converter fixed but not yet live)
 
-⭐ **START HERE: `.claude/prompts/2026-08-28-mamas-clone-mobile-and-converter.md`.**
-⛔ Read **D786 / D787 / D788** first. Detail is single-sourced there — not restated here.
+⭐ **START HERE: `.claude/prompts/2026-08-27-mobile-parity-and-converter-residue.md`.**
+⛔ Read **D802 / D803 / D804** first. Detail is single-sourced there — not restated here.
 
 **Governing rule (Bean's):** never assess a page by reading code, the DB or REST. Open it and
-LOOK. It earned itself four more times this session — a media control I insisted existed from
-reading edit.js (it does; the editor shows only "Remove image"), a class list truncated by
-`slice(0,110)`, a margin measured on `__inner` not the outer element, and a grep for `★` when
-the block draws SVG.
+LOOK. THREE root-cause diagnoses died in a row, each killed by a different gate — Bean's
+pushback, `/qc-council`, then the real parity tool. Every reading was consistent with the code
+and wrong about the product. Enumerated in D802.
 
-### ✅ CLOSED + LIVE-VERIFIED
-Parity **72% → 80%**, elements off 64 → 41, overflow **9px → 0**. Hero media cell **392 →
-733px** · hero shows the draft's pink (its own fallback gradient painted over a correct
-background-colour — different properties never compete) · reviews restored (slider 0 → 960px)
-· star icon pink · sections padded · product cards 640/384 · gift labels 6px · ingredients
-centred and **icons inherit it** · both white strips padded + 28px gap · trial card
-transparent · all 5 images mapped.
-**Site-wide:** 175 tier folds + 27 heading levels across **72 posts** (backups in
-`.claude/backups/2026-08-25/`). `audit-post-content-blocks.py` now checks attribute TYPES — it
-passed page 2742 clean while that page held 102 broken values.
-**Commits:** `6db78e0e7` · `283335ae7` · `d3e31c890`, all deployed, motion QA green each time.
+### ✅ MOBILE MEASURED FOR THE FIRST TIME
+**73% @375 · 77% @768 · vs 80% desktop** — behind, not broken.
+`reports/mamas-parity-mobile-postdeploy-2026-08-26.json`: 456 prop diffs, **typography 38%**
+(line-height 90, font-size 82). ⚠ `grid-template-columns` is not in the top 20, and
+computed-parity matches by TEXT so it is blind to container layout — both instruments needed.
+
+### ✅ SHIPPED + DEPLOYED (blocks-only, EXIT 0, motion QA 3/3)
+`14707b01e` tier objects · `559cc6d97` font-family renderer + border-no-width + detector ·
+`75ca71be9` three gates called a live attr dead · `1a4e45b6a` live border evidence.
+**Effect on page 2742: 0 fixed, 0 newly broken** — correct, the tier fix only changes NEW clones.
 
 ### ▶ OPEN — all in the next prompt
-1. **Mobile at 375/768 — never assessed.** Containers squash rather than stack. ⚠ Two dead
-   hypotheses: `flexWrap` defaults to `wrap`; the `layout:flex` row default is already fixed
-   here. Untested: `min-width:0` letting children shrink past any wrap point.
-2. **The converter still produces all of this** — flat scalars into object attrs; a block-root
-   BEM modifier routed to a child; section padding sent to an undeployed page-id-scoped
-   stylesheet; `layout:"grid"` onto blocks whose `layout` is a different enum.
-3. **`splitImageBleed` crops the split image as if on mobile when ON** (Bean, in the editor).
-   Meant to be deleted once object-fit + media padding shipped; D600 made it default `true`.
-4. **6 visual-diff bypasses to retire** — all three commits used `SGS_VISUAL_GATE_SKIP`.
-5. **Archive residue:** `core/query-pagination` has zero CSS across 7 templates (⚠
-   `catalog-sorting` IS already themed — the old prompt was wrong); harmonise the two search
-   blocks' LOOK; register Task 6; single-child-shrunk sweep; `oldshape-audit` over-broad on
-   `--theme-only`.
-6. **`/sgs-update` owed** — `specs/02-…` stale on this session's new attrs. Cross-track action.
+1. **Re-clone Mama's to a NEW page id, then re-measure.** Converter half PROVEN
+   (`convert_section` emits `heading fontSize {desktop:52, mobile:34}`); no live page has run
+   through it. ⛔ Never write `post_content` to a page Bean has open (D788).
+2. **Converter (b) root-modifier→child and (d) `layout` enum** — located, not started. Plus
+   Bean's G2 ruling: make the pipeline FAIL CLOSED on an undeclared shape.
+3. **Two live defects** — `min-height 44px→0px` on two links (a WCAG AA regression), and a 2px
+   border the draft does not have (⚠ NOT the G5 defect; a block default painting where the
+   draft asked for nothing).
+4. **Stranded CSS**: 90 in-scope, ~84 stranded (A 43 · B 36 · C 5). ⚠ Verify B against cv2 —
+   the census reads `css_router`, a DIAGNOSTIC pass, which already made two counts wrong. Two
+   Bean decisions: `grid-template-areas` on hero (reopens D639), and how a converted section's
+   CSS reaches its container.
+5. **Border rule — PARKED by Bean, deliberately.** An empty width falls back to the BLOCK'S OWN
+   default, so `sgs/button` was never an exception; the shipped gate is wrong for ~18 blocks that
+   declare one (confirmed on product-card). Narrow, undeployed, hero bug fixed. See D803.
+6. **Carried:** `/sgs-update` owed (cross-track) · twelve-template assessment (deferred 3×) ·
+   archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable ·
+   `sgs/quote`'s attribution panel still bespoke.
 
-### ⚠ Hazards proved this session
-- **Never write `post_content` to a page the operator has open in the editor.** A save wrote
-  Bean's pre-change editor state over a whole session of content fixes; only the last survived.
-- **`main` is shared.** HEAD moved 4× mid-session; two deploys aborted on other tracks' dirty
-  files (both correct). Commit with explicit paths, never `-A`.
-- **A JSON round-trip reformats the whole file** — 206/194 lines vs 12 for a surgical insert.
-- **A ratchet at zero slack**: rule 31 sat exactly on the live count, so one incomplete colour
-  row red the build. A correct row costs zero findings.
+### ⛔ The visual-diff bypasses CANNOT be retired — not a queue
+`source_sha` comes from STAGED bytes, so a report only certifies the commit it accompanies;
+`manual-skips.log` is a permanent audit record. The NEXT commit touching each block owes a real
+report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reasoning: D804.
+
+### ⚠ Hazards (full list in the next-session prompt)
+- **`main` is shared:** `git add <paths>` then a BARE commit flushes the whole index — four of
+  another track's staged files were in it. Use `git commit -- <paths>`.
+- **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
+  `git diff --stat` catches all four ways a subagent destroys work.
 
 ## ▶ MOTION TRACK — 2026-08-25 (FR-38-30 + FR-38-31 shipped; the gradient's LOOK is the open gap)
 
@@ -344,14 +348,5 @@ the ceiling — 72 gates, none inspects diff shape; it failed again this session
 ⚠ Ratchet slack removed everywhere: rule 34 416→319 (97 slack), 31 292→291, 01 58→57, 21 →83.
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
-Drawer covered the fold in every template editor; several blocks errored. Three unrelated
-causes, all closed — **full detail in D743, do not restate here**: the drawer shell was
-exactly `100dvh` (now a 46px strip + a preview toggle); six validation errors from comments
-inside `sgs/container`/`sgs/tab` inner content (**dynamic ≠ unvalidated**), 0 bad / 20
-surfaces; and `check-undeclared-attrs.py` read JSX tags before stripping comments — 17 false
-findings, fixed on `main` (`1693918f`), it had broken every build.
-
-⚠ **Not ours:** the canary intermittently 500s (`Error establishing a database connection`)
-under the ~12 concurrent block-renderer calls a template load fires, producing phantom
-"Error loading block" banners that vanish on reload. Infrastructure — don't chase it.
+Narrative swept VERBATIM to `memory/session-2026-08-22-editor-errors-track.md` on 2026-08-26 (cap). Nothing pending. Detail: **D743**.
 
