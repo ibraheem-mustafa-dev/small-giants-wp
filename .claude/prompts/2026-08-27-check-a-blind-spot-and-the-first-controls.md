@@ -1,52 +1,53 @@
 # Next session — CHECK A's blind spot, and the first client controls
 
-**Invoke `/autopilot` before anything else.**
+Invoke `/autopilot` before anything else.
 
 Bean is QC-only. Ask every open question in ONE batch at the start, then work without
 interrupting him until a task needs his eye.
 
 ---
 
-## ⛔ FIRST: one commit is written but NOT landed
+## ✅ The hero change is LANDED, DEPLOYED and LIVE-VERIFIED — do not redo it
 
-`sgs/hero` carries a complete, verified change that no commit contains. **Land it before
-anything else, or you will edit around it.**
+`93e8df23d`, pushed. The canary runs it: deployed `style-index.css` is 5,657 bytes matching the
+local build byte for byte, `--bleed` occurrences **0**, and `splitImageBleed` gone from the
+deployed `block.json`. Live on the homepage: **0 bleed classes** in the rendered markup, no console
+errors, image still fills its column flush.
 
-Four files, already on disk:
-`hero/block.json` · `hero/edit.js` · `hero/render.php` · `hero/style.css`
+⚠ **An earlier draft of this file said the commit was blocked and told you to land it. That is
+stale — it landed.** Recorded because acting on it would mean re-doing finished work.
 
-It does two things, both measured:
+What it did, both halves measured:
 
-1. **Deletes `splitImageBleed`** — the toggle Bean reported as breaking the image's shape.
-   His report was right; the cause was already gone. The modifier once carried
-   `max-width:calc(50% + spacing-40)`, which capped the media column at roughly half its
-   track (measured then: track 736.5px, media 392px), so `object-fit:cover` cropped hard.
-   That cap went on 2026-08-25 in `6db78e0e7` — the commit the LEDGER records as
-   "Hero media cell 392 → 733px". The toggle has been inert ever since. Measured across
-   five conditions — editor desktop/tablet/mobile on the real homepage, the live frontend
-   at a narrow width, and test page 2337 — toggling changed nothing. Zero stored
-   occurrences, zero theme usage.
-   ⚠ The deletion PRESERVES the video/SVG sizing rules by making them unconditional. Those
-   tiers had no other sizing anywhere; dropping them would reintroduce D600's overflow bug.
+1. **Deleted `splitImageBleed`.** Bean reported it broke the image's shape; he was right, and the
+   cause was already gone. The modifier once carried `max-width:calc(50% + spacing-40)`, capping
+   the media column at roughly half its track (measured then: track 736.5px, media 392px), so
+   `object-fit:cover` cropped hard. That cap went on 2026-08-25 in `6db78e0e7` — the commit the
+   LEDGER records as "Hero media cell 392 → 733px". Inert ever since. Toggling it changed nothing
+   across five conditions; zero stored occurrences, zero theme usage.
+   ⚠ The deletion PRESERVED the video/SVG sizing by making those rules unconditional. Those tiers
+   had no other sizing anywhere, so dropping them would have reintroduced D600's overflow bug.
 
-2. **Fixes the `split-image` element manifest.** `border-color`/`-style`/`-width` mapped
-   nowhere, so `css_element` was NULL — and `db_lookup.py:1498` reads NULL as the block's
-   OWN ROOT, routing a cloned draft's image border onto the hero `<section>`. `object-fit`
-   mapped to `media` (the column wrapper) though `render.php:629` paints it on the image.
-   All four now map to `split-image`. Verified durable: the generated classifier derives
-   `split-image` for all four after a Stage-1 reseed.
+2. **Fixed the `split-image` element manifest.** `border-color`/`-style`/`-width` mapped nowhere,
+   so `css_element` was NULL — and `db_lookup.py:1498` reads NULL as the block's OWN ROOT, routing
+   a cloned draft's image border onto the hero `<section>`. `object-fit` mapped to `media`, the
+   column wrapper, though `render.php:629` paints it on the image. All four now map to
+   `split-image`, and the generated classifier still derives it after a Stage-1 reseed.
 
-**Why it did not land:** the pre-commit F5 gate fails on
-`sgs/product-card.titleFontFamily` — a rogue DB seed with a `css_property` that no
-classifier declares. It is not from this change (verified absent from
-`css-property-classifications.json` in HEAD *and* the working tree; nothing in the hero
-diff touches product-card). `.githooks/pre-commit` offers **no scoped bypass** for F5,
-only `--no-verify`, which discards gitleaks and every other gate — deliberately not used.
+**Two residuals, both deliberate:**
 
-**Do this:** establish who owns that row, clear it, then commit. `extract-signatures.py`
-does NOT fix it (re-run: 0 rows written). The visual-diff gate will also ask for a hero
-report — the change touches `render.php` and `style.css`, so that request is correct; use
-the five measurements above as the evidence.
+- ⚠ **No visual-diff report exists for it.** The gate's demand was legitimate — the change touches
+  `render.php` and `style.css` — and it was answered by measurement rather than a capture, with
+  that stated in the commit. **Produce the report on the next deploy.**
+- The commit used `--no-verify` on Bean's explicit instruction, with every skipped gate run by
+  hand first and the results listed in the commit body. Only `db-consistency` failed, on another
+  track's `product-card.titleFontFamily`, which that track has since fixed properly via
+  `ATTR_CLASSIFICATION_OVERRIDES` (not a baseline).
+
+⭐ **The real remaining hero defect is NOT the toggle.** The split image still distorts —
+**1.45× at tablet, 1.88× at a narrow frontend width** — because it is forced to full column height
+with `object-fit:cover`. Measured identical before and after the deletion, which is what proves it
+is a separate defect. It has no owner yet.
 
 ---
 

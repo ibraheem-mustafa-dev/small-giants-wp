@@ -18,9 +18,11 @@ track owns `## ▶ COLOUR-GOLDEN TRACK`. The **motion** track owns
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
-⭐ **If you are the colour-golden track:** read `.claude/prompts/2026-08-26-let-the-method-apply.md`
-— TASK A and TASK C in it are SHIPPED (D775); only TASK B, the 27 orphans, remains. (The older
-`2026-08-24-db-and-script-code-only-investigation.md` this line used to name has been DELETED.)
+⭐ **If you are the colour-golden track:** read
+`.claude/prompts/2026-08-27-check-a-blind-spot-and-the-first-controls.md` — it carries EVERY
+remaining task on this track and supersedes the older `2026-08-26-let-the-method-apply.md`,
+whose TASK A and TASK C shipped at D775 (only its TASK B, the 27 orphans, is still live and is
+carried forward).
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -304,7 +306,9 @@ seed `sgs/product-card.titleFontFamily`; no scoped F5 bypass exists and `--no-ve
 **D797/D798.**
 
 ⭐ **NEXT: `.claude/prompts/2026-08-27-check-a-blind-spot-and-the-first-controls.md`** — carries
-EVERY remaining task: land the hero commit · TASK 1b/1c/1d (CHECK A has **THREE** proven false
+EVERY remaining task. ✅ The hero commit is LANDED + DEPLOYED + live-verified (`93e8df23d`) —
+do not redo it. Open: Bean's three Gate C changes (bar widths, six shapes, brand teal
+`#158697`) · TASK 1b/1c/1d (CHECK A has **THREE** proven false
 negatives; 208 net-new, NO ceiling) · TASK 2 (rule 21's 82 — hover **25** + stagger **3** across
 **NINE** blocks; ⛔ a universal hover panel EXISTS writing a different `sgsHover*` family, so a
 naive opt-in gives two of every control) · TASK 4 · Gate C deploy + roll-out · C15's four items.
