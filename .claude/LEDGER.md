@@ -285,33 +285,37 @@ bypass `[repeat-ok:<reason>]`.
 
 ### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
 
-✅ **2026-08-27 CLOSED.** Method councilled -> **C+**, 9 fixes. Rule 21 **211 -> 83** (128 were
-ONE detector bug) · rule 34 **319 -> 2** · scanner **945 -> 499**. Triage:
-`reports/2026-08-27-rule-21-triage.md` + `-rule-34-false-positives.md`.
-✅ **CLOSED 2026-08-26, pushed.** ⛔ Detail single-sourced to **D792/D797/D798/D799** — do not
-restate. Shipped: hero canvas background, which needed TWO fixes not one (`14d3801bb` `dc2243e1e`)
-· **`colourVar()` slug-wrapped unconditionally**, so every custom colour was invisible in the
-canvas across **120 sites / 39 blocks** while fine live (`9efc58348`, + gate
-`check-colour-preview-resolver`, self-test watched failing 7/10) · rule 21 learned the variation
-switcher, ceiling **83 → 82** (`d6d863cea`) · **truncation commit gate** = TASK 3, narrowed by
-Bean, proven able to fail twice (`0fdfc7ea9`) · **Gate C / FR-37-42 column-shape picker BUILT**,
-footer-row only (`2e46fc3f2`) · stored content migrated on 2742/2511/2353, restoring the homepage
-hero's authored crop.
+✅ **2026-08-27 CLOSED.** Method councilled → **C+**, 9 fixes. Rule 21 **211→83** (128 were ONE
+detector bug) · rule 34 **319→2** · scanner **945→499**. `reports/2026-08-27-rule-21-triage.md`.
 
-⛔ **ONE COMMIT WRITTEN, NOT LANDED — land it FIRST.** Four `sgs/hero` files on disk:
-`splitImageBleed` deleted (inert since 2026-08-25, measured 5 ways) + the `split-image` manifest
-corrected (3 NULL + 1 `media` → `split-image`; NULL reads as the block ROOT, so cloned image
-borders landed on the `<section>`). Blocked by the pre-commit F5 gate on **another track's** rogue
-seed `sgs/product-card.titleFontFamily`; no scoped F5 bypass exists and `--no-verify` was refused.
-**D797/D798.**
+✅ **CLOSED 2026-08-26.** ⛔ Detail single-sourced to **D792/D797/D798/D799**. Hero canvas bg ·
+`colourVar()` slug-wrap (120 sites / 39 blocks) · rule 21 ceiling 83→82 · truncation gate ·
+**Gate C picker BUILT** (footer-row only, `2e46fc3f2`).
 
-⭐ **NEXT: `.claude/prompts/2026-08-27-check-a-blind-spot-and-the-first-controls.md`** — carries
-EVERY remaining task. ✅ The hero commit is LANDED + DEPLOYED + live-verified (`93e8df23d`) —
-do not redo it. Open: Bean's three Gate C changes (bar widths, six shapes, brand teal
-`#158697`) · TASK 1b/1c/1d (CHECK A has **THREE** proven false
-negatives; 208 net-new, NO ceiling) · TASK 2 (rule 21's 82 — hover **25** + stagger **3** across
-**NINE** blocks; ⛔ a universal hover panel EXISTS writing a different `sgsHover*` family, so a
-naive opt-in gives two of every control) · TASK 4 · Gate C deploy + roll-out · C15's four items.
+✅ **2026-08-26 CLOSED, pushed.** **Gate C bars + teal** (`d36c8e629`): uneven bars were
+ARITHMETIC — 34px box + flex weights gave 7.5px subpixel bars; now whole-pixel widths (bar-space
+30/36/40 for counts 2/3/4). ⛔ Bean RULED the other two, do NOT rebuild: catalogue STAYS 3-4
+(FR-37-42; TGC one-row keeps arrow-keys), teal is the literal `#1F7A7A` (he reversed `#158697`;
+NOT the preset var — that is the CLIENT palette).
+**TASK 1b/1c/1d CLOSED** (`b069c7db5`): CHECK A has a ceiling at 208, `fast` tier, proven able to
+fail at 207. Triage = **REAL 186 · ARTEFACT 22 · DETECTOR BUG 0** — it under-reports, never cries
+wolf. ⭐ The 186 collapse to ~7 shared fixes: shared panels write attrs the PHP wrapper paints but
+only `container`/`hero` mirror them to canvas — ONE shared hook clears ~100.
+⭐ **BLIND SPOT NAMED.** Disabling each of the 8 exemptions in turn: the ladder hides **683** more
+pairs. **E1 `:2424` hides 0 — REFUTED.** E3 hides **561** (~130-160 real, ESTIMATE); E2 **WRONG**
+(9/10 — never checks the child reads the context back), E5 **WRONG** (15/29), E4 TOO BROAD (8/56),
+E6 sound, E7 sound only by accident (block-wide `continue`). Root cause: `collectExcludedRanges()`
+matches only a literal `<InspectorControls>`, so `SgsColourPanel` (**65/84 blocks**) is not seen as
+a control surface. ⛔ Fixing it RAISES the ceiling ONCE — visible debt, not new breakage.
+⛔ **6th live D792-class bug UNFIXED:** `resolveShadowPreviewComposed()` concatenates colour RAW
+(tokens.js:135). Reports: `reports/2026-08-26-check-a-*`.
+
+⛔ **TASK 2 IS BUILT BY ANOTHER TRACK (D805) — do not duplicate.** They opted `info-box` +
+`team-member` (TASK 2's start block) into the hover extension, reddened `check-duplicate-controls`,
+then baselined it 13→21.
+⛔ **Gate C deploy OWED + BLOCKED:** 21 dirty plugin/theme files from that track.
+⭐ **NEXT: `.claude/prompts/2026-08-27-check-a-blind-spot-and-the-first-controls.md`** — TASK
+1b/1c/1d CLOSED. Open: TASK 4 · Gate C deploy + roll-out · C15 · TASK 2b.
 
 ⚠ **Five tracks on `main`:** 3 deploys aborted, 2 commits blocked by others' staged work.
 
