@@ -1,3 +1,105 @@
+## D812 [ROUTINE] — the enum control-shape threshold, derived from the corpus rather than chosen
+
+**2026-08-26.** `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §3.1,
+`scripts/surveys/survey-enum-control-shape.py`. Bean: *"is there a script based or mechanical
+way…"* and *"we have made decisions for G in the past"* — which was right, and changed the job
+from **decide** to **consolidate and enforce**.
+
+Spec 35 §3.1 stated the problem against itself: *"the threshold is nowhere written down, so it
+cannot yet be gated."* The prior rulings already fixed both ends — `ToggleGroupControl` **does not
+wrap**, which is why core falls back to `Button isPressed` past 6 options, and §125 puts the
+searchable Combobox above ~10. Only the 6–10 band was missing.
+
+**The written table:** 2–5 options with labels ≤12 chars → `ToggleGroupControl`; 2–5 with longer
+labels → `SelectControl`; 6–10 → `SelectControl`; >10 → `ComboboxControl`; multi-value →
+`FormTokenField`.
+
+⭐ **The 12-character figure is EMPIRICAL, not picked.** It is the longest label among the
+`ToggleGroupControl` mounts that already ship and work — `nav-drawer.closeStyle`, whose longest
+option is `burger-morph` at exactly 12. Corroborated independently: applying it to the corpus
+yields **85** conversion candidates, matching the census's own count exactly.
+
+**Measured corpus: 282 declared enum attributes across 55 blocks** — Spec 35's cached
+"272 rows / 82 files / 14 files" had drifted and is superseded. 216 (77%) carry 2–5 options. Of
+the 129 resolvable, **124 render as `SelectControl` and 5 as `ToggleGroupControl`**, so **85
+confirmed enums are 2–5 short options rendered as a dropdown** — §125's "giant Select"
+anti-pattern is the NORM, not the exception.
+
+⚠ **Two limits stated so no gate is built on them unexamined.** The survey resolves **129 of 282
+(45%)**; the rest are dynamically keyed, shared-component-mounted or ambiguous — the instrument's
+blind spot, NOT findings, never counted as compliant. And it measures the enum **SLUG** while the
+rendered **LABEL** is what constrains row width (validated on `burger-morph` → "Morphed icon",
+both 12 — but n=1). ⛔ **The enforcing gate MUST measure the rendered label.** A census may use the
+proxy; a gate may not. That is why this ships the threshold and deliberately no gate.
+
+## D811 [ROUTINE] — GRID_AREA is the only orphaned css_layer value, and the census figure was 10× off
+
+**2026-08-26.** `scripts/check-css-layer-orphans.py` + baseline. Implements Bean's ruling: **change
+NOTHING, add a gate so a value with no reader becomes visible instead of silent.**
+
+**The inherited figure was wrong by an order of magnitude.** The brief said "53 `css_layer` rows".
+Measured: **509 non-NULL rows across 61 production converter files.** Enumerating cost one run.
+
+**Exactly ONE value is orphaned — `GRID_AREA`** — written to the DB with no production reader,
+which is what the ruling anticipated. Baselined as a KNOWN orphan so it stops being invisible,
+**not** as debt scheduled for deletion. Anti-vacuity floors (400 rows / 40 files) fail the gate
+closed if the scan ever sees almost nothing.
+
+⛔ **Not to be conflated with D642**, which deleted a DIFFERENT mechanism sharing the word "layer"
+(`resolvers/grid_area.py`, triggered by `ctx.area_name`, never set outside test fixtures). That
+deletion was correct and is not reopened. The confusion between the two is precisely what made
+GRID_AREA look like dead code when it is not.
+
+## D810 [INCIDENT] — the parity census read docblocks as code, and the helper pattern blinds a static gate
+
+**2026-08-26.** `scripts/check-control-helper-parity.py`, `src/components/GradientOverlayControl.js`,
+`includes/helpers-tokens.php`, `scripts/add-control.js`.
+
+⭐ **THE CENSUS READ PROSE AS CODE, IN TWO PLACES.** D-prior narrowed it 19 → 2 "gaps"; one of the 2
+was still a false positive, so the true backlog was **1**. `ResponsiveBoxControl` was classified
+NAME-KEYED on FOUR occurrences that are **all inside its docblock** — three `setAttributes` lines in
+a usage example, and the word "prefix" in the phrase *"`__experimental` prefix needed"*. Its real
+signature is `{ label, values, onChange }`: value-based, so it can never have a name helper.
+Chasing that found the same bug in a SECOND read site: `mounts_by_component()` counted
+`sgs/info-box` as mounting `GradientOverlayControl` on a 14-line docblock **discussing** it. Mount
+count 21 → 19. Both sites now strip comments — the fix belongs everywhere the file reads source,
+not only where the symptom showed. This repo already had the answer:
+`surveys/survey-control-mounts.py` strips comments because *"a docblock naming a component is not a
+mount"*. Same rule one level up: **a docblock naming a PROP is not a prop.**
+
+**Self-test case [8], watched failing:** with `strip_comments` reduced to a no-op the case goes red
+AND the survey reproduces the exact wrong figures. It carries both arms — a docblock-only prop must
+not count, and the same words outside a comment must still count — so the fix cannot overshoot.
+
+**`GradientOverlayControl` pair built, closing the backlog to 0 with an EMPTY baseline.** Enumerated
+first: `gradient` = `<base>Gradient` holds 3/3, but `solid` is `<base>` twice and `<base>Colour`
+once — NOT uniform, so it is defaulted and overridable, never derived. Deriving it would have named
+a non-existent attribute and WP silently discards those (D338).
+
+⛔ **THE FINDING THAT MATTERS MOST: adopting a name helper BLINDS `inspector-scan` rule 21.**
+Measured, not inferred — full before/after by finding key: adopting `gradientOverlayAttrKeys()` in
+`sgs/hero` took rule 21 from **82 → 84**, the two new findings being `mediaOverlayGradient` and
+`mediaBackgroundGradient` — exactly the DERIVED keys. The rule reads edit.js statically; a name the
+helper computes is not there to read, so it reports a controlled attr as rendered-without-control.
+**Sharp characterisation: the blindness bites only where a derived name appears nowhere else** —
+`shadowAttrKeys( 'shadowHover' )` adds ZERO findings, because its base is a literal argument and its
+derived `shadowHoverColour` is also named in the block's colour panel.
+**Hero adoption REVERTED (82 restored) rather than raising the backlog**, because rule 21's own
+doctrine, stated repeatedly in its `advisoryReason`, is *"a false positive is a detector bug, never
+baseline fodder."* ⚠ **This gates the whole roll-out:** teaching rule 21 to expand `*AttrKeys()`
+calls is a Bean-approved definitional change to a shared advisory rule, per that rule's own history.
+Until it lands, a helper may only be adopted where every derived name is independently visible.
+
+⚠ **`add-control.js --apply` is STRUCTURALLY DISABLED, not warned against.** Two write-path defects
+(import-line collapse; mis-indented `</InspectorControls>`) surfaced *the moment its diff became
+readable*. Its diff took ONE common prefix and ONE common suffix — correct only for a single edit
+site, and this scaffold always has two — so on `sgs/quote` it emitted **973 removed + 981 added
+lines to describe a net 8-line change**. Rewritten as a multi-hunk LCS diff: **1967 output lines →
+60**, and that readability is what exposed both defects. ⚠ Recorded against myself: an unverified
+edit and a destructive `--apply` shared one invocation, the edit's assertion failed, and the next
+line still ran and wrote to `sgs/quote`. Caught and reverted immediately, nothing committed — but
+the rule is that a write command never shares an invocation with an unverified edit.
+
 ## D809 [ROUTINE] — the standard control-helper pair, and two rules that were wrong until enumerated
 
 **2026-08-26.** `scripts/check-control-helper-parity.py` (+ baseline),
