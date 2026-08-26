@@ -1,3 +1,66 @@
+## D809 [ROUTINE] — the standard control-helper pair, and two rules that were wrong until enumerated
+
+**2026-08-26.** `scripts/check-control-helper-parity.py` (+ baseline),
+`src/components/ShadowControl.js`, `src/components/index.js`,
+`includes/helpers-colour-variants.php`, `src/blocks/{info-box,before-after}/edit.js`.
+Bean-approved shape (design gate, project rule 7): *"helper trio per control, then a scaffold
+command"*, rolled out control-by-control starting with `ShadowControl`.
+
+**The problem, measured.** Mounting one shared control in one block costs THREE hand-kept copies
+of the same attribute names — `block.json` declares them, `edit.js` passes them, `render.php`
+reads them — and nothing binds the three. D805, the same day, was that shape on a different
+mechanism. This repo already ships FOUR gates that CATCH control-wiring mistakes
+(`check-control-ux`, `check-dead-controls`, `check-duplicate-controls`, `check-inert-controls`)
+and nothing that PREVENTS them: four cures, no prevention.
+
+⭐ **THE FIX WAS NOT AN INVENTION — one control already had it.** `TypographyControls` ships
+`typographyAttrName`/`typographyAttrKeys` in JS and `sgs_typography_attr` +
+`sgs_typography_css_rule` in PHP. **It was the only one of 21 mounted controls that did.**
+
+**Detector first (THE-MIGRATION-METHOD).** `check-control-helper-parity.py` surveys every
+component at least one block mounts, driven off disk, never a roster. Census: **21 mounted
+controls, 1 with both halves, 20 missing one**; plus **7 components mounted by NO block**,
+reported separately because that is a different finding (`SgsLengthControl` is imported by
+nothing at all — `SgsBoxControl` and `AnimationControl` looked dead but are alive indirectly, via
+`ResponsiveBoxControl` and the animation extension). `--check` is a RATCHET, not a parity demand:
+R2 (the PHP twin) is a slug heuristic and says so, so a false ABSENT costs a baseline line rather
+than a blocked commit.
+
+⭐ **TWO RULES WERE WRONG UNTIL ENUMERATED, and both would have shipped.**
+1. **The hover colour is `<base>ColourHover`, not `<base>HoverColour`.** I generalised the latter
+   from `sgs/button`'s `boxShadowHoverColour` — a SEPARATE family whose base IS `boxShadowHover`,
+   so it was `<base>Colour` all along and said nothing about hover colours. Against the real
+   corpus the guessed rule scored **0/10**. Listing every `attrNames` map cost ONE command.
+   (`colour` = `<base>Colour` does hold, 22/22.)
+2. **Hover SHAPE and hover COLOUR are INDEPENDENT.** 10 mounts carry a hover colour; **ZERO**
+   carry a hover shape. A single combined flag would have handed `sgs/before-after` a
+   `boxShadowHover` key it never declares — and the component BINDS every key it is given, so
+   that renders an editor control wired to an undeclared attribute, whose writes WordPress
+   silently discards (D338). A knob that moves and does nothing is exactly what
+   `check-dead-controls.js` exists to find. The helper would have manufactured the defect the
+   gate hunts.
+
+**Both are now permanent self-test case [7]**, asserting the helper reproduces EVERY real mount
+(`colour` 20/20, `hoverColour` 9/9 after adoption). Watched failing against the original wrong
+rule, passing on restore. Case [6] (negative control: `TypographyControls` must come back
+complete) was likewise watched failing against a blinded PHP scan. ⚠ The anti-vacuity floor fired
+for real mid-build and failed closed — and one break-test was INVALID because copying the script
+to a temp dir moved its `PLUGIN` root with it, so it failed for the wrong reason. A break test
+must be run IN PLACE.
+
+**Adopted in two blocks covering both branches** — `info-box` (base+colour) and `before-after`
+(base+colour+hoverColour) — so neither branch is dead code, each proven byte-identical to the
+literal it replaced BEFORE the swap. ⚠ Note the conformance corpus SHRINKS as adoption proceeds
+(22→20, 10→9): it guards the remaining literals, and adopted sites cannot drift by construction.
+
+⛔ **NOT wired into `gates.json`.** That is shared config across five active tracks and owes its
+own change. The ratchet passes today (19 baselined, 0 net-new).
+
+**Next, in Bean's approved order:** finish the remaining controls' pairs highest-adoption last —
+`ShadowControl` ✅ 15 · `TypographyControls` ✅ 18 · then `DesignTokenPicker` 26 ·
+`ResponsiveControl` 23 · `ResponsiveBoxControl` 48 · `SgsColourPanel` 65 — then the scaffold
+command that writes all three edits from the pair.
+
 ## D808 [ROUTINE] — what the universal hover panel is FOR, written down at last
 
 **2026-08-26.** `plugins/sgs-blocks/CLAUDE.md` §Hover Controls Spec.
