@@ -3596,11 +3596,55 @@ function main() {
 	const CHECK_A_BLOCKS_BUILD = false;
 	const CHECK_B_BLOCKS_BUILD = true;
 
+	// CHECK A's RATCHET CEILING (2026-08-26).
+	//
+	// Until now CHECK A was advisory with NO numeric ceiling of any kind, which
+	// is strictly worse than the inspector-scan advisory rules — those each carry
+	// an `openBacklog` in `scripts/inspector-scan/rules.json` (rule 21 sits at
+	// 82). Without one, a brand-new desync lands green and indistinguishable from
+	// the existing backlog, which is the whole failure mode a ratchet prevents.
+	//
+	// The semantics deliberately mirror that house pattern:
+	//   · the check stays ADVISORY — the existing backlog does not red the build;
+	//   · but EXCEEDING this number DOES fail `--check`, so a 209th net-new
+	//     finding (i.e. a 236th finding overall, against the 27 baselined) is a
+	//     real regression and stops the build.
+	//
+	// ⛔ A ceiling ABOVE the live count is SLACK and lets a brand-new violation
+	// land green. Re-measure and LOWER it after every drop — including drops you
+	// did not make yourself. Never RAISE it to absorb new debt.
+	//
+	// ⚠ ONE deliberate exception to that rule, recorded so the next person does
+	// not read a raise as debt-laundering. This detector is measurably BLIND, not
+	// merely behind: a differential run on 2026-08-26 (disabling each of the
+	// eight exemption signals in turn) showed the ladder hides 683 further
+	// block+attr pairs, and a 60-pair sample of what `usedOutsideControls` alone
+	// hides classified ~28% as genuine misses. Fixing that blind spot — chiefly
+	// teaching `collectExcludedRanges()` that a shared control component such as
+	// `SgsColourPanel` IS a control surface — will make this number jump sharply.
+	// That jump is newly VISIBLE debt, not newly broken code, exactly as the R3-a
+	// widening was. Raise it ONCE, in the same commit as the blind-spot fix, with
+	// the new figure measured rather than estimated; every other movement is down.
+	//
+	// Measured, not inferred: `node scripts/check-editor-render-parity.js --json`
+	// on 2026-08-26 reported 208 net-new + 27 baselined.
+	// Triaged the same day (REAL 186 · ARTEFACT 22 · DETECTOR BUG 0):
+	//   reports/2026-08-26-check-a-triage-group-a.md
+	//   reports/2026-08-26-check-a-triage-group-b.md
+	const CHECK_A_OPEN_BACKLOG = 208;
+	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
+
 	if ( isJson ) {
 		process.stdout.write(
 			JSON.stringify(
 				{
-					editorCanvasDesync: { netNew: netNewA, accepted: acceptedA, blocking: CHECK_A_BLOCKS_BUILD },
+					editorCanvasDesync: {
+						netNew: netNewA,
+						accepted: acceptedA,
+						blocking: CHECK_A_BLOCKS_BUILD,
+						openBacklog: CHECK_A_OPEN_BACKLOG,
+						overCeiling: checkAOverCeiling,
+					},
 					invalidKeywordPassthrough: { netNew: netNewB, accepted: acceptedB, blocking: CHECK_B_BLOCKS_BUILD },
 					blockCount,
 				},
@@ -3611,10 +3655,24 @@ function main() {
 	} else {
 		process.stdout.write( `[check-editor-render-parity] surveyed ${ blockCount } blocks.\n\n` );
 		printReport( 'CHECK A (editor-canvas desync)', netNewA, acceptedA, CHECK_A_BLOCKS_BUILD );
+		process.stdout.write(
+			checkAOverCeiling
+				? `  ⛔ CHECK A OVER CEILING — ${ netNewA.length } net-new against a ceiling of ` +
+				  `${ CHECK_A_OPEN_BACKLOG }. A NEW editor-canvas desync has been introduced.\n` +
+				  `     Fix it, or — only if it is genuinely pre-existing debt this run made ` +
+				  `visible — raise the ceiling in the same commit with the reason recorded.\n\n`
+				: `  ceiling: ${ netNewA.length }/${ CHECK_A_OPEN_BACKLOG } net-new ` +
+				  `(exceeding it fails --check, even though CHECK A itself is advisory).\n\n`
+		);
 		printReport( 'CHECK B (invalid CSS keyword passthrough)', netNewB, acceptedB, CHECK_B_BLOCKS_BUILD );
 	}
 
-	if ( isCheck && ( ( CHECK_A_BLOCKS_BUILD && netNewA.length ) || ( CHECK_B_BLOCKS_BUILD && netNewB.length ) ) ) {
+	if (
+		isCheck &&
+		( ( CHECK_A_BLOCKS_BUILD && netNewA.length ) ||
+			checkAOverCeiling ||
+			( CHECK_B_BLOCKS_BUILD && netNewB.length ) )
+	) {
 		process.exit( 1 );
 		return;
 	}
