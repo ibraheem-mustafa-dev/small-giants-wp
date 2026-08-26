@@ -82,22 +82,21 @@ report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reason
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-26 (Phase 1 in flight: hygiene gates built, live bugs + look-first pending)
+## ▶ MOTION TRACK — 2026-08-27 (Phase 1 in flight: bugs+hygiene shipped, look-first next)
 
-⭐ **EXECUTING `.claude/plans/phase-1-fr3831-hygiene-and-look.md`.** Pre-conditions + Steps 1+2 +
-QA Gate A done. **Next: Step 3 (Bean sign-off) → Step 4 (bugs) → Step 5 (look) → deploy → Gate C.**
-⛔ **DO NOT build from the technique spec** — 6-seat council NO-GO (D794): no animation section, no
-camera, §2 contradicts §5. Only its §5/§6 survive.
+⭐ **EXECUTING `.claude/plans/phase-1-fr3831-hygiene-and-look.md`.** Steps 1-4 + QA Gates A+B done.
+**Next: Step 5 (the look) → deploy → QA Gate C (live canary + Bean's eye).**
+⛔ **DO NOT build from the technique spec** — 6-seat council NO-GO (D794). Only its §5/§6 survive.
 ⭐ **The rejected look is FOUR CSS VALUES** — `fxWave*` all default `''`, effect defaults off, only
-page **2740** uses it. Council's sharpest: "B-movie 3D VFX" reads as rendered 3D; "form" builds MORE
-3D-ness with its flattening antidote deferred — starting there bets against the diagnosis (KJC-1).
-✅ **Attribution gate BUILT + a real bug fixed (D813).** `check-no-thirdparty-attribution.py`,
-companion to D794's GLSL gate. 4 files/10 refs reconcile vs Step 1's audit; MIT lines 59/62
-excluded; `--self-test` PASS; live run FAILS til Step 4.
-✅ **POC + Q6 + Gate E CLOSED (D790/D791/D794).** Post pass = 70% of frame cost → framebuffer pass
-needs a DESIGN GATE. Gate E deferred.
-⚠ **3 verified live bugs, unfixed pending Step 4:** context-loss dead rectangle, `hexToRgb` silent
-kill switch, `capability.js` never wired (PD-1/PD-2/PD-3).
+page **2740** uses it (KJC-1: default is STOP if still rejected, not more shader work).
+✅ **3 live bugs FIXED + reviewed (D814/D815):** context-loss dead rectangle, `hexToRgb` silent
+kill switch (now handles oklch/wide-gamut via canvas fallback), capability gate wired (disclosed
+shared effect on `surface-treatment`, traced safe). 2 review rounds + 4-seat QC council; caught a
+real self-test bug that used a live file as its own fixture (fixed, `b9d03ff8e`).
+⚠ **Still owed at QA Gate C:** live Playwright verification of context-loss fallback on canary
+2740 — the fixes above are static-trace + jsdom verified only, not yet live.
+✅ **Attribution gate BUILT (D813), 0 live references (Step 4 applied Step 3's sign-off).**
+✅ **POC + Q6 + Gate E CLOSED (D790/D791/D794).** Framebuffer pass needs a DESIGN GATE. Gate E deferred.
 
 **Status:** D766/D767 + 9 commits `cb39fbd54`..`41946db35`, 2026-08-24/25, logged as **D778-D781**.
 Canary page 2721 (cursor field) + page 2737 (magnetic pull — cross-track warning above).

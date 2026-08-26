@@ -1,3 +1,92 @@
+## D815 [ROUTINE] — QA Gate B (`/qc-council`) closed the FR-38-31 hygiene fixes, catching one real defect the panel-format itself surfaced
+
+**2026-08-27.** Four-seat verification panel on commits `992c305b3` + `3dc83df13` (Step 4's reference
+edits + 3 bug fixes), per `.claude/plans/phase-1-fr3831-hygiene-and-look.md` QA Gate B. Each seat
+gave a predicted observable + the command/trace that checks it, not an opinion.
+
+- **Seat 1 (context-loss):** traced every `stop()` call site in both the pre-fix (`84e585400`) and
+  post-fix code. Pre-fix: only `destroy()` cleared `data-sgs-wave-active`; `onLost` never did —
+  confirming the bug was real, not assumed. Post-fix: the removal landed only inside `onLost`; the
+  other 5 call sites (pause/off-screen/tab-hidden/draw-failure/destroy) are byte-identical to
+  pre-fix, so the flash-on-pause regression this fix specifically guards against did not occur.
+  Explicitly flagged that this is a static trace, not the live Playwright verification QA Gate C
+  still owes on the deployed canary (page 2740) — did not claim to close that gate.
+- **Seat 2 (colour parsing):** built a real jsdom harness against the actual sliced source (not a
+  retyped copy) and instrumented `getComputedStyle` call counts. Empirically confirmed: the
+  rejection check (`probe.style.color === ''`) fires with **zero** `getComputedStyle` calls for an
+  invalid input, and exactly one `console.warn` fires across up to 4 bad colour properties in one
+  `attach()` call — both are the two "looks-right-but-backwards" failure modes named in the plan's
+  PD-3/PD-5, and both hold.
+- **Seat 3 (capability-gate cross-effect):** traced the shared `probeSurface()`'s second consumer
+  (`surface-treatment`'s `initSurface()`) through to its actual decline path — a `null` return hits
+  the SAME already-tested "leave the untouched `<img>` alone" branch the module already uses for its
+  missing-image and failed-decode cases, not a new/untested code path. Verdict: safe to ship as
+  disclosed; recommended (not required) a live GPU-blocklist spot-check as a fast follow-up.
+- **Seat 4 (reference-wording + gates):** re-ran the attribution gate, its `--self-test`, the
+  sibling GLSL gate, and the build — and caught a REAL defect: the attribution gate's own
+  `--self-test` was using the LIVE `wave-gradient.js` file as a fixture, asserting line 8 stays
+  flagged as an "unrelated stripe mention" to prove the allowlist doesn't over-exempt the whole
+  file. Step 3/4's approved wording restatement removed "stripe" from line 8 — so once the very
+  edit this gate exists to enforce actually landed, the self-test's own assumption about that
+  file's content went stale and the self-test started failing (exit 1) even though the live gate
+  itself was correct (exit 0, 0 findings).
+
+⭐ **Fixed at the cause, not patched around.** A live tracked file is a moving target, not a fixture
+— this project already carries that exact lesson (`feedback_a_moving_ref_is_not_a_fixture`,
+2026-08-24) and it recurred within 48 hours in a sibling gate built the same week. Replaced the
+MIT-allowlist-narrowness self-test check with a synthetic two-line fixture (one allowlisted line,
+one not) that cannot be invalidated by any future legitimate edit to the real source file.
+`git commit b9d03ff8e`. Self-test now PASS; live gate unchanged (exit 0, 0 references).
+
+**Verdict: all 4 fixes validated-shipped.** No proposal was falsified or unverifiable. Live
+Playwright verification of the context-loss fallback on the deployed canary remains owed at QA
+Gate C (not substituted by Seat 1's static trace) — carried forward, not closed here.
+
+## D814 [INCIDENT] — three verified live bugs in the flowing-gradient effect, fixed and reviewed
+
+**2026-08-27.** `plugins/sgs-blocks/src/shared/effects/fx-wave-gradient.js` +
+`plugins/sgs-blocks/src/shared/effects/webgl/{capability,wave-gradient}.js`. Commits `992c305b3`
+(implementer) + `3dc83df13` (review-finding fixes) + `b9d03ff8e` (self-test fix). Per FR-38-31
+rework plan Step 4, PD-1/PD-2/PD-3.
+
+**[INCIDENT] Context-loss dead rectangle.** `onLost: () => stop()` never removed the
+`data-sgs-wave-active` attribute, so a visitor whose GPU context was lost by the browser (the
+single most-reported WebGL complaint across every major library's issue tracker, per Spec 38
+§1.2b) saw a dead frozen canvas over the CSS fallback instead of the fallback itself — this SHIPPED
+in production violating the named Tier W house contract ("never leave a dead black rectangle").
+Fixed: attribute removal scoped to the `onLost` closure only, never `stop()` (which has 6 other
+call sites — pause/off-screen/tab-hidden/etc — that must not flash the fallback). Verified via
+static control-flow trace by QA Gate B seat 1 (D815); live Playwright verification against the
+canary still owed at QA Gate C.
+
+**Silent kill switch.** `hexToRgb` only parsed `#rgb`/`#rrggbb`; any other valid CSS colour (a
+theme token resolving to `rgb()`/`hsl()`/`oklch()`) silently killed the whole effect with zero
+warning. Fixed: `parseCssColour()` validates via a DOM probe's rejection signal
+(`style.color === ''`, checked BEFORE any computed-value read — reading after rejection would
+return the browser's own default, often black, indistinguishable from a legitimate black) plus a
+canvas-2D `fillStyle`/`getImageData` fallback for wide-gamut colours the regex-based parser can't
+match syntactically. `console.warn` fires at most once per `attach()` call. Empirically verified
+via jsdom harness by QA Gate B seat 2 (D815) — the ordering constraint holds with 0
+`getComputedStyle` calls recorded for an invalid input.
+
+**Capability gate never wired.** `wave-gradient.js` opened its own WebGL2 context with
+`powerPreference:'low-power'` and no `failIfMajorPerformanceCaveat`, never consulting the shared
+`probeSurface()` gate — so it could run badly on a blocklisted/software-rendered GPU instead of
+declining. Fixed (two changes, not one, per PD-1): `probeSurface()` itself now sets
+`failIfMajorPerformanceCaveat: true`; `wave-gradient.js` gates on it before creating its real
+context, which also sets the flag itself as defence in depth. **Disclosed side-effect:** the shared
+probe also gates the already-shipped `surface-treatment` effect (FR-38-29) — QA Gate B seat 3
+traced its decline path to the same already-tested "leave the untouched `<img>`" branch that
+effect already relies on for its other fallback cases, so this is not a new/untested code path.
+
+Two review rounds before this landed: an implementer + 2 independent reviewers found 3 further
+Important findings (oklch/wide-gamut colours didn't actually resolve despite the docblock claiming
+support; the surface-treatment cross-effect was undisclosed in the first commit message; an
+unproven "safe" comment) plus one wording defect inherited from the approved sign-off text — all
+fixed in `3dc83df13` before QA Gate B ran. Reference-wording edits (Step 3 sign-off) applied
+verbatim in the same commit as the bug fixes, per the plan's serialisation constraint (both touch
+`wave-gradient.js`).
+
 ## D813 [ROUTINE] — the third-party-attribution gate built, and a real bug in it fixed before trusting its count
 
 **2026-08-26.** `.claude/hooks/check-no-thirdparty-attribution.py`, per the FR-38-31 rework plan
