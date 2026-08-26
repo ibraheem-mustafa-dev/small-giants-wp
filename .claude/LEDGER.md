@@ -292,32 +292,31 @@ detector bug) · rule 34 **319→2** · scanner **945→499**. `reports/2026-08-
 `colourVar()` slug-wrap (120 sites / 39 blocks) · rule 21 ceiling 83→82 · truncation gate ·
 **Gate C picker BUILT** (footer-row only, `2e46fc3f2`).
 
-✅ **Gate C bars + teal APPROVED** (`d36c8e629`). ⛔ Bean RULED the other two, do NOT rebuild:
-catalogue STAYS 3-4 (FR-37-42; TGC one-row keeps arrow-keys), teal is the literal `#1F7A7A` (NOT
-the preset var — that is the CLIENT palette).
-**TASK 1b/1c/1d CLOSED + ACTED ON** (`b069c7db5` `11228c3e0` `8f320542a`); detail in those commits
-+ `reports/2026-08-26-check-a-*`. Blind spot FIXED — the scanner saw only a literal
-`<InspectorControls>`, so `SgsColourPanel` (**65/84 blocks**) read as canvas code. ~100 real canvas
-defects fixed via `src/utils/background-preview.js`. Ceiling **208→288→238**, DOWN only now.
+✅ **Gate C bars + teal APPROVED** (`d36c8e629`). ⛔ Do NOT rebuild the other two: catalogue STAYS
+3-4 (FR-37-42), teal is the literal `#1F7A7A` (NOT the preset var — that is the CLIENT palette).
+**TASK 1b/1c/1d CLOSED** (`b069c7db5` `11228c3e0` `8f320542a`); detail in those commits +
+`reports/2026-08-26-check-a-*`. Blind spot FIXED (`SgsColourPanel`, 65/84 blocks, read as canvas
+code); ~100 canvas defects fixed. Ceiling **208→288→238**, DOWN only.
 
-⭐ **MARGIN-IN-CANVAS ROOT-CAUSED — OURS, not WordPress** (`039c19e39`). I first blamed WP because
-`container` did it too — exculpatory reasoning, wrong. Binary search over the canvas stylesheets
-isolated `theme/sgs-theme/assets/css/core-blocks-critical.css:142`: its EDITOR arm
-`body .is-root-container > .wp-block` is a CATCH-ALL with `margin-block:0 !important`, out-ranking
-the inline style `edit.js` writes. That class exists only in the canvas, so the live page never
-showed it. Fix = split the rule, drop `!important` there. Verified live: margin-set **0→80px**,
-margin-unset **0px** (suppression kept). Padding was a separate gap, fixed `756341482`, tier-aware.
-⛔ **Bean ruled: MIGRATE OFF NATIVE `supports.spacing`.** Plan ready, UNSTARTED:
-`.claude/plans/2026-08-26-migrate-off-native-spacing.md`.
-⚠ Unproven, so NOT fixed: the 4 FRONTEND arms share the latent `!important` defect; the editor arm
-still suppresses blockGap the frontend shows. Both pre-existing.
-
-⛔ **TASK 2 IS BUILT BY ANOTHER TRACK (D805) — do not duplicate.** They opted `info-box` +
-`team-member` (TASK 2's start block) into the hover extension, reddened `check-duplicate-controls`,
-then baselined it 13→21.
-⛔ **Gate C deploy OWED + BLOCKED:** 21 dirty plugin/theme files from that track.
-⭐ **NEXT: `.claude/prompts/2026-08-27-check-a-blind-spot-and-the-first-controls.md`** — TASK
-1b/1c/1d CLOSED. Open: TASK 4 · Gate C deploy + roll-out · C15 · TASK 2b.
+⭐ **MARGIN/SPACING IN CANVAS — CLOSED** (`039c19e39` `c0f422a87` `9b3f4d97c`, deployed 1.5.81).
+OURS, not WordPress — blaming WP because `container` did it too was exculpatory reasoning. Cause: a
+catch-all EDITOR arm with `margin-block:0 !important` out-ranking the inline style `edit.js` writes.
+⭐ The same reset existed in **THREE files**, each shadowing the next — which is why the
+`!important` looked load-bearing. Now ONE source, 4 arms verified both ways; editor arm narrowed so
+the canvas matches live. Padding separate (`756341482`), tier-aware.
+⛔ **OPEN FOR BEAN — `sgs/container` is in NO arm list**, so adjacent containers with different
+backgrounds show a 24px white band LIVE — the symptom the rule exists to prevent, on the dominant
+section block. Canvas now shows it too (correct, reads as a regression). Decide: key the reset on
+BLOCK TYPE, or on actual full-bleed?
+⛔ **Bean ruled: MIGRATE OFF NATIVE `supports.spacing`**; multi-button gets BOTH padding + margin.
+Plan UNSTARTED: `.claude/plans/2026-08-26-migrate-off-native-spacing.md` (Q1/Q3/Q4 open).
+⚠ `gate:full` FAILS on `sgs/hero` orphan attrs — NOT orphans; another track's refactor builds the
+names via `gradientOverlayAttrKeys()`. Deleting them deletes working features. Use
+`--skip-gate-full` until they fix it.
+✅ 2849 TRASHED — stored-content audit passes again (had blocked 5 deploys).
+✅ Gate C picker deployed; roll-out to `site-header-row` + `container` owed.
+⛔ **TASK 2 WAS BUILT BY ANOTHER TRACK (D805) — do not duplicate.**
+⭐ **NEXT: `.claude/prompts/2026-08-27-the-container-gap-and-the-remaining-controls.md`.**
 
 ⚠ **Five tracks on `main`:** 3 deploys aborted, 2 commits blocked by others' staged work.
 

@@ -496,3 +496,31 @@ by Bean's opening ruling) — so Step 3 is satisfied by this plan itself. The de
    wrapper at all), this becomes a genuine shared-wrapper change and Rule 7's design-gate
    applies before building. **Ask: confirm the wrapper-unchanged assumption, or flag this for a
    pre-build design-gate.**
+
+---
+
+# BEAN'S RULINGS — 2026-08-27
+
+**The migration is APPROVED.** Verbatim: *"We only chose that at the time because it was too large
+to migrate everything, we're migrating off native now."* Do not re-litigate whether to do it.
+
+**Q2 — ANSWERED: `sgs/multi-button` gets BOTH padding and margin.** Full parity with the other
+four, in this same pass. No padding-only carve-out (Rule 3).
+
+⚠ Know what that buys. Unlike the other four, multi-button has ZERO margin UI and ZERO
+`marginTablet`/`marginMobile` attrs today, so this means BUILDING a margin panel and tier attrs
+from scratch rather than redirecting an existing one. It also raises the stored-content risk:
+**8 theme files already author native margin on this block.** Bean was shown this cost and chose
+parity anyway.
+
+**Q1, Q3, Q4 — STILL OPEN.** Carried forward verbatim in §6:
+- Q1: verify `check-dead-pattern-attrs.py` actually detects a fully-removed `supports.spacing`
+  before trusting a green run — its sibling gate missed the analogous native-colour case (D683).
+- Q3: `sgs/site-header`'s pre-existing `hasRestSpacing` logic already manipulates `style.spacing`
+  for an unrelated reason. It is the one block where "copy the container pattern" is not safe.
+- Q4: confirm `SGS_Container_Wrapper` needs no changes. ⚠ Now MORE likely to bite, because Q2's
+  answer scopes multi-button up — and multi-button is the one block that does not route spacing
+  through the wrapper at all. If the wrapper does need a change, Rule 7's design-gate applies
+  BEFORE building.
+
+**Status: NOT STARTED.** Nothing in this plan has been executed.
