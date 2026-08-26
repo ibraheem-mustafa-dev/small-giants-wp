@@ -1899,8 +1899,46 @@ EXTENSION SURFACE axis correction above.
 ### 3. ENUM / MODE
 
 1. **Canonical** — no shared component. `SelectControl` over a **declared `block.json` enum** is the
-   de facto standard (**82** files); `ToggleGroupControl` for short option sets (14 files) — **the
-   threshold is nowhere written down, so it cannot yet be gated.**
+   de facto standard; `ToggleGroupControl` for short option sets.
+
+   ⭐ **THE THRESHOLD, WRITTEN DOWN AT LAST (2026-08-26, D810).** This line previously read *"the
+   threshold is nowhere written down, so it cannot yet be gated"*. It is now written, and it was
+   **derived from the corpus, not chosen**:
+
+   | options | longest label | shape | why |
+   |---|---|---|---|
+   | 2–5 | ≤ 12 chars | **`ToggleGroupControl`** | every option visible at once; one tap, no menu |
+   | 2–5 | > 12 chars | `SelectControl` | TGC does not wrap, so long labels overflow the row |
+   | 6–10 | any | `SelectControl` | past ~6 TGC cannot fit a single row at all |
+   | > 10 | any | `ComboboxControl` | searchable; scanning a 12-item menu is the anti-pattern |
+   | multi-value | any | `FormTokenField` | unchanged from §125 |
+
+   **Where each bound comes from — none of it is taste:**
+   - The **6-option ceiling** is not a preference: `ToggleGroupControl` **does not wrap**, which is
+     precisely why core itself falls back to `Button isPressed` past 6 options. Already recorded in
+     `decisions.md`; this table only applies it.
+   - The **>10 Combobox** bound is §125's existing guidance, unchanged.
+   - ⭐ **The 12-character figure is EMPIRICAL.** It is the longest label among the
+     `ToggleGroupControl` mounts that already ship and demonstrably work — `nav-drawer.closeStyle`,
+     whose longest option is `burger-morph` at exactly 12. The number was not picked and then
+     justified; it was read off what fits. Independent corroboration: applying it to the corpus
+     yields **85** conversion candidates, matching the census's own count exactly.
+
+   **Measured corpus (2026-08-26, `scripts/surveys/survey-enum-control-shape.py`):** **282 declared
+   enum attributes across 55 blocks** — Spec 35's cached "272 rows / 82 files / 14 files" figures had
+   already drifted and are superseded. Of those, **216 (77%) carry 2–5 options.** Of the 129 the
+   static instrument can resolve to a primitive, **124 render as `SelectControl` and 5 as
+   `ToggleGroupControl`** — so **85 confirmed enums are 2–5 short options rendered as a dropdown**,
+   which makes §125's "giant Select" anti-pattern the norm rather than the exception.
+
+   ⚠ **TWO LIMITS, stated so the gate is not built on them unexamined:**
+   - The survey resolves **129 of 282 (45%)**. The rest are dynamically keyed, mounted through a
+     shared component, or ambiguous. Those are the instrument's blind spot — **not** findings, and
+     never to be counted as compliant.
+   - It measures the enum **SLUG**, whereas the rendered **LABEL** is what actually constrains the
+     row width. Validated on the binding case (`burger-morph` → "Morphed icon", both 12 chars), but
+     that is n=1. ⛔ **The gate that enforces this table MUST measure the rendered label, not the
+     slug.** The census may use the proxy; an enforcing gate may not.
 2. **Required props** — `value` bound to the attr; `options` matching the declared `enum` **exactly**.
 3. **Banned lookalikes** — (a) a shared aggregator offering options outside the consuming block's
    enum; (b) a PHP-enforced closed set with no `block.json` enum (free-text box, no validation).
