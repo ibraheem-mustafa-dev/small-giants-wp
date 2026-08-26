@@ -93,6 +93,23 @@ module specifier for the gsap draggable module. That is the carousel drag-scroll
 lightbox — the "registers and does nothing" shape of D452/D789. Left for its own investigation
 rather than folded into an unrelated commit.
 
+⛔ **RETRACTED, same day, by Bean: I claimed `scripts/wp-migrate-oldshape-blocks.js` "does not
+exist anywhere in the repo". It does — at repo-ROOT `scripts/`, tracked since `1d13997d`.**
+`build-deploy.py:818`'s remediation pointer was correct all along and needs no fix. I ran `find`
+with the shell cwd inside `plugins/sgs-blocks/`, so the search never covered the repo root, and
+reported an absence whose corpus excluded the answer.
+
+⭐ **The reusable part is that this was a REPEAT.** `decisions.md` already carried this exact
+correction from 2026-08-11 — same script, same wrong directory, and its own text reads *"searched
+the wrong directory (`plugins/sgs-blocks/scripts/`) and reported absence as fact."* A lesson sitting
+in an archive prevented nothing, because nothing surfaced it at the moment the same search was run.
+Two operational consequences: **(a)** an absence claim must state the corpus it searched — "not in
+`plugins/sgs-blocks/`" is a finding, "not in the repo" is a different and much stronger one; and
+**(b)** on this repo `scripts/` is AMBIGUOUS — there is a repo-root `scripts/` AND a
+`plugins/sgs-blocks/scripts/`, and a relative path in a tool's output is relative to the REPO ROOT,
+not to wherever the shell happens to be. Sibling of
+`a-census-is-only-as-wide-as-its-corpus`.
+
 ## D805 [INCIDENT] — eleven blocks got injected hover motion with no control, from three arrays nothing gated
 
 **2026-08-26.** `includes/hover-effects.php`, `src/blocks/extensions/hover-effects.js`, six

@@ -136,10 +136,10 @@ here ("4 interpolated stops can't reproduce that variation") was measured FALSE 
    icon bugs verified gone live; 8 gate findings ruled INDIVIDUALLY, nothing deleted.
    ⚠ **STILL OPEN:** the panel's zoom/grayscale toggles stay inert outside 4 blocks; a root
    rule to fix that is REFUSED (D796) — needs per-block scoping.
-5. ✅ **Three ungated registration points — CLOSED (D789).** ⚠ TWO NEW, unfixed, neither mine:
-   gallery's carousel drag-scroll fails to resolve `@sgs/gsap-draggable` (registers, does
-   nothing — D452 shape); and `build-deploy.py:818` names a remediation script,
-   `scripts/wp-migrate-oldshape-blocks.js`, that **does not exist in the repo**.
+5. ✅ **Three ungated registration points — CLOSED (D789).** ⚠ ONE NEW, unfixed, not mine:
+   gallery's carousel drag-scroll fails to resolve `@sgs/gsap-draggable` — it registers and does
+   nothing (D452 shape). ⛔ A second "finding" here was WRONG and is retracted:
+   `wp-migrate-oldshape-blocks.js` DOES exist, at repo-ROOT `scripts/`. See D806.
 6. **`floating-objects`** + **generative cover images** — both approved-in-principle, unbuilt.
    ⛔ Covers were scoped as needing "the same palette-texture capability (D781)". **That premise
    was measured false 2026-08-25** — no texture-palette pipeline is required. Scope covers from
