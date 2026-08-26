@@ -403,27 +403,31 @@ add_filter(
 );
 
 /**
- * Output critical layout fix CSS as an inline <style> block.
+ * Output site-wide image hover-scale CSS as an inline <style> block.
  *
- * These rules MUST load before paint to prevent flash of misaligned layout.
- * They are added as an inline style (not an external file) so they cannot be
- * cached and served stale by LiteSpeed's CSS optimiser.
+ * Added as an inline style (not an external file) so it cannot be cached
+ * and served stale by LiteSpeed's CSS optimiser. This is a hover/transition
+ * effect, not critical CSS — it plays no role in first paint, so there is
+ * no "must load before paint" requirement here (that framing described the
+ * alignfull/hero margin reset that USED to also live in this function; see
+ * the note below).
  *
  * Covers:
- * - Section gap: removes block-gap margin between alignfull sections
- * - Hero margin: removes block-gap top-margin from the hero block
  * - Site-wide image hover: subtle scale on hover for content images
+ *
+ * SGS: the alignfull/hero section-gap margin reset used to be duplicated
+ * here with `!important`. That duplicate silently overrode an operatorʼs
+ * explicit margin on the frontend (proven 2026-08-26, T1 fix pass) because
+ * it is a SECOND declaration of the same rule, not a competing-specificity
+ * case the CSS-file fix could beat. The reset now lives ONLY in
+ * core-blocks-critical.css (`.entry-content > .alignfull` /
+ * `.wp-site-blocks > .wp-block-sgs-hero`, no `!important`, incl. the
+ * `.wp-block-post-content >` variants). DO NOT re-add it here — a second
+ * copy would be unfalsifiable (prove-the-cause-before-fix.md: never leave
+ * two overlapping fixes for one behaviour).
  */
 function enqueue_global_layout_fixes(): void {
 	$css = '
-/* SGS: section gap — flush alignfull sections, no white strip between them */
-.wp-block-post-content>.alignfull,.entry-content>.alignfull{margin-block-start:0!important;margin-block-end:0!important}
-/* SGS: hero margin — hero is not alignfull so needs explicit zero top-margin */
-.wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-start:0!important}
-/* SGS: hero full-bleed is now handled in plugins/sgs-blocks/src/blocks/hero/style.css
- * via viewport-aware width: var(--viewport-width, 100vw). No inline override needed. */
-/* SGS: hero bottom margin — zero to prevent white strip between hero and next section */
-.wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-end:0!important}
 /* SGS: site-wide image hover scale — subtle zoom on content images */
 .wp-block-image:not(.brand-logo-tile){overflow:hidden}
 .wp-block-image:not(.brand-logo-tile) img{transition:transform .35s ease}

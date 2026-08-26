@@ -134,13 +134,57 @@ html {
  * colours. We zero these out at the page/post body level so adjacent sections
  * flow together without white bands. Spacing WITHIN sections is preserved via
  * padding on the section containers themselves.
+ *
+ * ⛔ DO NOT ADD `!important` BACK — same defect as the editor arm below, proven
+ * live on the FRONTEND 2026-08-26 (T1 probe, page 2848 on the sandybrown
+ * canary). WordPress's spacing support writes an operator's explicit margin
+ * as an INLINE `style="margin-top:…"` on the block's own markup — exactly the
+ * shape `!important` clobbers, because `!important` on an author rule beats
+ * even an inline declaration. Measured on a top-level `.wp-block-group.alignfull`
+ * direct child of `.entry-content`, before this change:
+ *
+ *              operator set 80px    operator set nothing
+ *   !important         0px                 0px          <- the bug
+ *   no !important      80px                0px          <- correct (verified below)
+ *
+ * The rule's PURPOSE survives without `!important` for the same reason as the
+ * editor arm: WordPress's own inter-section gap comes from
+ * `:where(.is-layout-flow) > *` — specificity (0,0,0) — while this selector
+ * (two classes, e.g. `.entry-content > .alignfull` = 0,2,0) still beats it
+ * comfortably with no `!important` needed. Without a competing inline style
+ * (operator set nothing), our rule wins on specificity alone and the gap stays
+ * suppressed.
+ *
+ * ⚠ Consolidated here 2026-08-26 (T1 fix pass): the alignfull/hero arms used
+ * to ALSO be declared with `!important` in functions.php's
+ * `enqueue_global_layout_fixes()`, as a duplicate inline `<style>` block.
+ * That second declaration is what actually won on the frontend — a
+ * `!important` duplicate isn't a specificity fight this file's fix could
+ * beat. It has been deleted from functions.php; this file is now the ONLY
+ * source. The `.wp-block-post-content >` selectors below are redundant
+ * belt-and-braces, not compensatory coverage: WP core's post-content block
+ * renders `class="entry-content wp-block-post-content"` on the SAME element
+ * (both classes, one node), so `.entry-content >` alone already matches
+ * every post-content page. They are kept only as an explicit, no-cost
+ * safety net in case a future core change ever separates the two classes.
+ *
+ * `.entry-content > .wp-block-sgs-hero` is included explicitly alongside
+ * `.entry-content > .alignfull` even though `sgs/hero` currently adds
+ * `alignfull` unconditionally (`plugins/sgs-blocks/src/blocks/hero/render.php`
+ * ~line 786) and so is already caught by the `.alignfull` arm. Naming the
+ * hero directly removes the hidden cross-file dependency: if the hero's
+ * class list ever changes, this rule still applies without anyone having to
+ * rediscover the alignfull coincidence.
  */
 .entry-content > .alignfull,
+.entry-content > .wp-block-sgs-hero,
+.wp-block-post-content > .alignfull,
 .wp-site-blocks > .wp-block-group,
 .wp-site-blocks > .wp-block-cover,
-.wp-site-blocks > .wp-block-sgs-hero {
-	margin-block-start: 0 !important;
-	margin-block-end: 0 !important;
+.wp-site-blocks > .wp-block-sgs-hero,
+.wp-block-post-content > .wp-block-sgs-hero {
+	margin-block-start: 0;
+	margin-block-end: 0;
 }
 
 /*
@@ -167,11 +211,9 @@ html {
  * (0,0,0), which this selector at (0,2,1) still beats comfortably. Only an
  * explicit inline value — i.e. one the operator actually chose — now wins.
  *
- * ⚠ The four frontend arms above KEEP `!important` deliberately. They carry
- * the same latent defect (an explicit margin on a top-level group/cover/hero
- * would be overridden), but that was NOT measured, and this codebase does not
- * ship a fix for an unproven cause. Tracked as a follow-up rather than changed
- * blind.
+ * ⚠ The four frontend arms above previously kept `!important`. That was
+ * PROVEN to carry the same defect (2026-08-26, T1) and has since been fixed
+ * the same way — see the comment above the frontend rule.
  */
 body .is-root-container > .wp-block {
 	margin-block-start: 0;

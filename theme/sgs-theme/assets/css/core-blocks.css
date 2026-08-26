@@ -896,16 +896,21 @@ footer .wp-block-list a:hover,
 /* ── Section gap fix: remove block-gap between full-width sections ────────
  * WordPress constrained layout applies --wp--style--block-gap as margin-top
  * to every child. alignfull sections should be flush — zero white strips
- * between coloured section containers. */
-.wp-block-post-content > .alignfull,
-.entry-content > .alignfull {
-	margin-block-start: 0 !important;
-	margin-block-end: 0 !important;
-}
+ * between coloured section containers.
+ * ⛔ REMOVED 2026-08-26 (T1 fix pass 3): this file used to duplicate the
+ * `.entry-content > .alignfull` / `.wp-block-post-content > .alignfull`
+ * reset with `!important`, which silently overrode an operator's explicit
+ * margin (the `!important` outranked the specificity-based fix already
+ * shipped elsewhere). The reset now lives SOLELY in
+ * core-blocks-critical.css (the "REMOVE INTER-SECTION GAPS" block, no
+ * `!important`, wins on selector specificity alone) — do NOT re-add a
+ * copy of this rule here or anywhere else; that would recreate a fourth
+ * source of the same bug. */
 
 /* Hero full-bleed + flush gaps are handled by the UNIVERSAL alignfull rules
- * above (the hero is now a widthMode:full alignfull container, mirroring
- * sgs/container — Bean 2026-06-16: no hero-specific layout hacks). The prior
+ * in core-blocks-critical.css (the hero is now a widthMode:full alignfull
+ * container, mirroring sgs/container — Bean 2026-06-16: no hero-specific
+ * layout hacks). The prior
  * per-hero margin-block-start:0 + margin-inline:-24px breakout were removed:
  * the -24px over-broke (real global padding is 16px) and capped the bg span. */
 
