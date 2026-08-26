@@ -204,3 +204,21 @@ hand-rolled `SKILL.md.bak-2026-07-17-preGraft` sitting beside the live file is t
 Bean was shown this and chose to leave it as-is for now (option 3 of 3: `git init` in `~/.agents`,
 add a remote to `~/.claude`, or record and move on). **If the skills tree is ever lost, the two
 edits above are described precisely enough here to be reapplied by hand.**
+
+---
+
+# SDD progress — margin-reset residual defects, 2026-08-26
+Base commit: 346861ed9 (main)
+Plan: .claude/plans/2026-08-26-margin-reset-residual-defects.md
+Task 1 (frontend !important): COMPLETE (commit c0f422a87, opus review clean after 4 findings fixed).
+  ⭐ The reset existed in THREE files, each shadowing the next — which is why the !important
+  LOOKED load-bearing: removing one copy changed nothing visible. Found by fix→redeploy→
+  RE-MEASURE→still failing→hunt the next source, never by reading CSS. No fourth copy (grep).
+  Live, all 4 arms, both directions: explicit 80px applies, nothing-set still 0px.
+  ⚠ Reviewer caught a SILENTLY DROPPED selector (.entry-content > .wp-block-sgs-hero) that no
+  implementer noticed; harmless only because sgs/hero hard-codes alignfull. Added back.
+  ⚠ Only the alignfull arm was exercised by a REAL page element; group/cover were synthetic DOM
+  injection and the "hero" row actually exercised .entry-content > .alignfull. Labels corrected.
+  ⚠ Deploys needed --skip-oldshape-audit for PRE-EXISTING page 2849 (another track's stale clone,
+  51 HIGH type-mismatches). Unrelated to a CSS payload, but it WILL block the next blocks deploy.
+Task 2 (blockGap editor/frontend divergence): NOT STARTED.
