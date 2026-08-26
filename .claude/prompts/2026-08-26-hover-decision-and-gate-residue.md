@@ -1,3 +1,17 @@
+⛔ **EXECUTED 2026-08-26 — SUPERSEDED. Safe to delete.**
+
+Successor: `.claude/prompts/2026-08-27-hover-ruling-particles-and-the-ungated-defaults.md`.
+
+| Task | Outcome |
+|---|---|
+| A — hover decision | Measured on a repaired gate, then councilled. **Premise refuted: delete none of the 13.** D796. Bean's per-block opt-in ruling carries forward. |
+| B — gate the 3 registration points | SHIPPED. `check-fx-registration.py`, tier `fast`. D789. |
+| C — 4 duplicate-controls findings | SHIPPED, plus a 5th found and fixed. Self-test 19 → 48. D795. |
+| D — particle cap + loop-stop | **STILL OPEN.** Blocked on another track's page-2742 hero debt. Carried forward. |
+| E — container layer model | Councilled **NO-GO as written**; superseded by D793 (child-lift closed repo-wide) and D796. |
+
+---
+
 # Next session — the hover decision, and the gate residue
 
 **Invoke `/autopilot` before anything else.**
