@@ -5,6 +5,7 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 	store as blockEditorStore,
+	useSettings,
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
@@ -31,6 +32,7 @@ import {
 import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
+import { backgroundPreview } from '../../utils';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -366,7 +368,31 @@ const TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
-	const blockProps = useBlockProps( { className: 'sgs-site-header' } );
+	// D717/background-preview: BackgroundPanel (mounted below) writes image/
+	// video/overlay/ken-burns/parallax attrs this block never previewed on
+	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
+	// fixes that the same way sgs/container already did.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
+	const blockProps = useBlockProps( {
+		className: [ 'sgs-site-header', bgPreview.className ].filter( Boolean ).join( ' ' ),
+		style: bgPreview.style,
+	} );
 	const refEl = useRef( null );
 
 	// FR-37-28 depth: the header's logo/nav alignment lives on the primary

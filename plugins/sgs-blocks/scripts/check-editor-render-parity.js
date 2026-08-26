@@ -1950,6 +1950,121 @@ function checkNoPreviewNoticeExemption( ast, src, declaredAttrs ) {
 const EXCLUDED_JSX_CONTAINERS = new Set( [ 'InspectorControls', 'BlockControls' ] );
 
 /**
+ * Is this JSX tag a SHARED COMPONENT whose entire rendered output is a control
+ * surface — i.e. it wraps itself in `<InspectorControls>` / `<BlockControls>`
+ * internally rather than being mounted inside one?
+ *
+ * WHY THIS EXISTS (2026-08-26)
+ * ---------------------------
+ * `collectExcludedRanges()` used to recognise a control surface ONLY by the
+ * LITERAL tag names above. `SgsColourPanel` renders its own
+ * `<InspectorControls group="styles">` internally (SgsColourPanel.js:115-137)
+ * but is mounted in edit.js under its own name, as a SIBLING of any literal
+ * `<InspectorControls>`. So its `rows={[…]}` prop was never inside an excluded
+ * range, and every attribute referenced only there counted as "used outside
+ * controls" — which the E3 exemption then treated as proof the editor canvas
+ * paints it.
+ *
+ * It does not. 65 of the 84 blocks mount this component, and a measured
+ * differential put the resulting blind spot at ~130-160 genuinely missed
+ * findings. Evidence: `reports/2026-08-26-check-a-E3-blindspot.md` (root cause
+ * 1) and `-minor-signals.md` (the same mechanism defeating the E5 signal).
+ *
+ * ⛔ THE PREDICATE IS DELIBERATELY STRICT, AND MUST STAY STRICT.
+ * A component counts ONLY when EVERY JSX value it returns is an excluded
+ * container. A component that returns control markup on one branch and CANVAS
+ * markup on another paints something, so excluding it wholesale would hide
+ * real canvas usage and manufacture false NEGATIVES — the very failure this
+ * change exists to remove. `null` returns are ignored (they render nothing);
+ * a non-JSX return disqualifies, because we cannot see what it renders.
+ *
+ * ⚠ Only returns belonging to the component's OWN top-level function count.
+ * `SgsColourPanel` also contains `visible.map( ( row ) => { return ( … ) } )`,
+ * whose return describes that CALLBACK's output, not the component's. Counting
+ * it would disqualify the component and silently restore the blind spot, so
+ * any function nested inside another is skipped.
+ *
+ * Resolution reuses the existing R3-a `COMPONENT_FILE_MAP` rather than adding a
+ * second name-to-file resolver. Derived per component, so a future shared
+ * control panel is recognised automatically — there is no hand-kept list.
+ *
+ * @param {string} name JSX tag name.
+ * @return {boolean} True when the component is a pure control surface.
+ */
+const controlSurfaceCache = new Map();
+
+function isControlSurfaceComponent( name ) {
+	if ( controlSurfaceCache.has( name ) ) {
+		return controlSurfaceCache.get( name );
+	}
+	// Seed false BEFORE recursing: a component cycle must terminate, and the
+	// safe default is "not a control surface" (report, rather than hide).
+	controlSurfaceCache.set( name, false );
+
+	const componentFile = COMPONENT_FILE_MAP.get( name );
+	if ( ! componentFile ) {
+		return false;
+	}
+	const componentSrc = readIfExists( componentFile );
+	if ( ! componentSrc ) {
+		return false;
+	}
+	const componentAst = safeParse( componentSrc );
+	if ( ! componentAst ) {
+		return false;
+	}
+
+	let sawJsxReturn = false;
+	let everyReturnIsControl = true;
+
+	const classify = ( node ) => {
+		if ( ! node ) {
+			return; // bare `return;` renders nothing
+		}
+		if ( node.type === 'NullLiteral' ) {
+			return; // `return null` renders nothing
+		}
+		if ( node.type === 'Identifier' && node.name === 'undefined' ) {
+			return;
+		}
+		if ( node.type !== 'JSXElement' ) {
+			everyReturnIsControl = false; // opaque — cannot prove it is control-only
+			return;
+		}
+		sawJsxReturn = true;
+		if ( ! EXCLUDED_JSX_CONTAINERS.has( jsxOpeningName( node.openingElement ) ) ) {
+			everyReturnIsControl = false;
+		}
+	};
+
+	traverse( componentAst, {
+		ReturnStatement( nodePath ) {
+			const fn = nodePath.getFunctionParent();
+			// Skip returns inside a nested callback — see the `.map()` note above.
+			if ( ! fn || fn.getFunctionParent() ) {
+				return;
+			}
+			classify( nodePath.node.argument );
+		},
+		ArrowFunctionExpression( nodePath ) {
+			// Concise-body arrow component: `const X = () => <InspectorControls…/>`
+			// has no ReturnStatement at all.
+			if ( nodePath.node.body.type === 'BlockStatement' ) {
+				return;
+			}
+			if ( nodePath.getFunctionParent() ) {
+				return;
+			}
+			classify( nodePath.node.body );
+		},
+	} );
+
+	const result = sawJsxReturn && everyReturnIsControl;
+	controlSurfaceCache.set( name, result );
+	return result;
+}
+
+/**
  * Check if the edit.js file contains a ServerSideRender JSX element with
  * an attributes prop that passes the attributes object (either
  * attributes={attributes} or attributes={ attributes }).
@@ -2110,7 +2225,14 @@ function collectExcludedRanges( ast ) {
 	traverse( ast, {
 		JSXElement( nodePath ) {
 			const name = jsxOpeningName( nodePath.node.openingElement );
-			if ( EXCLUDED_JSX_CONTAINERS.has( name ) ) {
+			// A literal control container, OR a shared component that wraps
+			// itself in one (see isControlSurfaceComponent above — this second
+			// arm is what stops `<SgsColourPanel rows={…}>` reading as canvas
+			// code across the 65 blocks that mount it).
+			if (
+				EXCLUDED_JSX_CONTAINERS.has( name ) ||
+				isControlSurfaceComponent( name )
+			) {
 				ranges.push( [ nodePath.node.start, nodePath.node.end ] );
 				nodePath.skip();
 			}
@@ -3554,6 +3676,51 @@ function runSelfTest() {
 		pass = false;
 	}
 
+	// Control-surface predicate regression test (2026-08-26), against the REAL
+	// tree — `isControlSurfaceComponent()` reads COMPONENT_FILE_MAP, which
+	// indexes the real filesystem, so a tmp-dir fixture cannot exercise it.
+	//
+	// This pins BOTH directions, because the predicate can fail two ways and
+	// only one of them is loud:
+	//   POSITIVE — SgsColourPanel wraps its own <InspectorControls>. If this
+	//     regresses to false, the blind spot silently returns and CHECK A goes
+	//     quiet again across the 65 blocks that mount it. Measured 2026-08-26:
+	//     recognising it moved CHECK A from 208 to 288 net-new, and all 14
+	//     independently hand-verified real misses became visible.
+	//   NEGATIVE (over-match control) — ColumnShapePicker returns a
+	//     ToggleGroupControl, i.e. real rendered markup, NOT a control
+	//     container. It must stay UNRECOGNISED. If the predicate ever accepts
+	//     it, whole mounts of ordinary components get excluded and CHECK A
+	//     starts manufacturing false negatives — the exact failure this change
+	//     was made to remove.
+	log( '\n[check-editor-render-parity --self-test] control-surface predicate' );
+	const failuresCS = [];
+	assertTrue(
+		isControlSurfaceComponent( 'SgsColourPanel' ),
+		'POSITIVE: SgsColourPanel wraps its own <InspectorControls> and must be recognised as a control surface — if not, the E3 blind spot has returned',
+		failuresCS
+	);
+	assertTrue(
+		! isControlSurfaceComponent( 'ColumnShapePicker' ),
+		'NEGATIVE (over-match): ColumnShapePicker renders a ToggleGroupControl, not a control container — recognising it would wrongly exclude real canvas markup',
+		failuresCS
+	);
+	assertTrue(
+		! isControlSurfaceComponent( 'NoSuchComponentExistsHere' ),
+		'NEGATIVE (unresolvable): an unknown tag must not be treated as a control surface',
+		failuresCS
+	);
+	if ( failuresCS.length ) {
+		pass = false;
+		log( 'control-surface predicate — FAIL' );
+		failuresCS.forEach( ( f ) => log( '  - ' + f ) );
+	} else {
+		log(
+			'control-surface predicate — PASS (self-wrapping panel recognised; ' +
+				'markup-rendering component and unknown tag both correctly rejected)'
+		);
+	}
+
 	return pass ? 0 : 1;
 }
 
@@ -3631,7 +3798,31 @@ function main() {
 	// Triaged the same day (REAL 186 · ARTEFACT 22 · DETECTOR BUG 0):
 	//   reports/2026-08-26-check-a-triage-group-a.md
 	//   reports/2026-08-26-check-a-triage-group-b.md
-	const CHECK_A_OPEN_BACKLOG = 208;
+	//
+	// 208 -> 238, SAME DAY. This is the ONE sanctioned raise the note above
+	// reserves, and it is the NET of two opposing movements — recorded
+	// separately so neither is hidden inside the other:
+	//
+	//   208 -> 288  (+80) the blind-spot fix. `collectExcludedRanges()` now
+	//                     recognises a shared component that wraps its OWN
+	//                     <InspectorControls> (SgsColourPanel, mounted by 65 of
+	//                     84 blocks). These are newly VISIBLE, not newly broken.
+	//                     All 14 independently hand-verified real misses became
+	//                     visible; 0 of 23 verified-correct exemptions were
+	//                     wrongly flagged. Pinned by the control-surface
+	//                     fixture in runSelfTest(), both directions.
+	//   288 -> 238  (-50) real defects FIXED: the shared canvas background
+	//                     preview (src/utils/background-preview.js) now mirrors
+	//                     BackgroundPanel's attrs for multi-button,
+	//                     physics-canvas, site-footer, site-header and
+	//                     trust-bar, which previously showed the client nothing.
+	//                     sgs/container held at 22 findings with an IDENTICAL
+	//                     attribute set — the regression control.
+	//
+	// ⛔ From here the rule reverts: DOWN only. Re-measure and lower after every
+	// drop. The next raise needs its own recorded justification, and "the number
+	// went up" is not one.
+	const CHECK_A_OPEN_BACKLOG = 238;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {

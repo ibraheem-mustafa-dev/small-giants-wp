@@ -128,6 +128,19 @@ export function resolveShadowPreview( value ) {
  * (starts with a digit or `inset`) gets the colour appended; a bare theme
  * preset slug is self-contained and the colour is ignored.
  *
+ * ⛔ SIBLING OF THE D792 BUG (fixed here 2026-08-26). The colour argument used
+ * to be appended RAW: `${ shape } ${ colour }`. That is correct for a value
+ * the browser already understands (hex/rgb/var()) but invalid for a palette
+ * SLUG — `0 2px 4px primary` is not a valid `box-shadow`, so the browser
+ * discards the whole declaration and the shadow silently vanishes from the
+ * canvas while still rendering on the live page (the PHP twin resolves the
+ * slug via `sgs_colour_value()`). Fixed by routing the colour through
+ * `colourVar()` — the same D792 resolver, not a second parallel one — so a
+ * slug becomes `var(--wp--preset--color--{slug})` and a custom colour passes
+ * through unchanged (idempotent: a caller that already pre-resolved its
+ * colour, e.g. `sgs/button`'s `resolveColourToken()`, is unaffected because
+ * `colourVar()` treats an already-valid CSS colour as a no-op).
+ *
  * @param {string} shape  Stored shadow SHAPE attribute value (or a preset slug).
  * @param {string} colour Stored colour attribute value.
  * @return {string|undefined} CSS box-shadow value, or undefined when empty.
@@ -140,7 +153,7 @@ export function resolveShadowPreviewComposed( shape, colour ) {
 	if ( ! isRawShape ) {
 		return `var(--wp--preset--shadow--${ shape })`;
 	}
-	return `${ shape } ${ colour || 'rgba(0,0,0,0.1)' }`;
+	return `${ shape } ${ colourVar( colour ) || 'rgba(0,0,0,0.1)' }`;
 }
 
 /**

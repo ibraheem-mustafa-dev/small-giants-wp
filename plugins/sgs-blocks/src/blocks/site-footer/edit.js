@@ -5,6 +5,7 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 	store as blockEditorStore,
+	useSettings,
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import { PanelBody, Notice, SelectControl, BoxControl } from '@wordpress/components';
@@ -21,6 +22,7 @@ import {
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel } from '../../components';
+import { backgroundPreview } from '../../utils';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
@@ -210,7 +212,31 @@ const TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
-	const blockProps = useBlockProps( { className: 'sgs-site-footer' } );
+	// D717/background-preview: BackgroundPanel (mounted below) writes image/
+	// video/overlay/ken-burns/parallax attrs this block never previewed on
+	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
+	// fixes that the same way sgs/container already did.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
+	const blockProps = useBlockProps( {
+		className: [ 'sgs-site-footer', bgPreview.className ].filter( Boolean ).join( ' ' ),
+		style: bgPreview.style,
+	} );
 	const refEl = useRef( null );
 
 	// SGS-owned colour (D294/D684 pattern, mirrors sgs/site-header's already-

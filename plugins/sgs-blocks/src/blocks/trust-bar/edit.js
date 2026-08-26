@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -12,7 +12,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -300,12 +300,36 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const iconColourValue = colourVar( iconColour ) || 'currentColor';
 	const textColourValue = colourVar( textColour ) || undefined;
 
+	// D717/background-preview: BackgroundPanel (mounted below) writes image/
+	// video/overlay/ken-burns/parallax attrs this block never previewed on
+	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
+	// fixes that the same way sgs/container already did.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
 	// Build className based on active variant.
 	const blockClassName = [
 		'sgs-trust-bar',
 		`sgs-trust-bar--${ badgeStyle }`,
 		`sgs-trust-bar--${ badgeSize }`,
-	].join( ' ' );
+		bgPreview.className,
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	const circleRadiusValue = ( iconCircleBorderRadius && iconCircleBorderRadius !== '50%' )
 		? iconCircleBorderRadius
@@ -328,6 +352,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const blockProps = useBlockProps( {
 		className: blockClassName,
 		style: {
+			...bgPreview.style,
 			...( shadow && { boxShadow: resolveShadowPreview( shadow ) } ),
 			...( badgeStyle === 'icon-circle' ? {
 				'--sgs-trust-bar-gap': gapCssValue( gap ),

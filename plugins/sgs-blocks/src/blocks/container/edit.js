@@ -13,7 +13,7 @@ import {
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ResponsiveBorderRadiusControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken } from "../../components";
-import { resolveShadowPreview, resolveResponsiveTier } from "../../utils";
+import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -155,28 +155,6 @@ function resolveBoxTierPreview( base, tablet, mobile, tier ) {
 }
 
 /**
- * Resolve a flat colour + its sibling gradient to a paintable BACKGROUND
- * preview — mirrors `sgs_background_paint_decl()` (helpers-tokens.php): a
- * valid gradient always wins over the flat colour. The gradient attribute
- * stores a complete, already-valid CSS gradient function (validated server-
- * side by `sgs_css_gradient_value()` on save/render), so the editor preview
- * can use it verbatim — only the FLAT colour can be a design-token slug that
- * needs `resolveColourToken()` against the live palette (D288).
- *
- * @param {string}      colour   Flat colour attribute value (slug or CSS colour).
- * @param {string}      gradient Sibling gradient attribute value.
- * @param {Array}       palette  Active theme colour palette.
- * @return {Object} A partial style object — {} when both inputs are empty.
- */
-function backgroundPaintPreview( colour, gradient, palette ) {
-	if ( gradient ) {
-		return { backgroundImage: gradient };
-	}
-	const resolved = resolveColourToken( colour, palette );
-	return resolved ? { backgroundColor: resolved } : {};
-}
-
-/**
  * Same resolution rule as `backgroundPaintPreview()`, but for TEXT colour —
  * mirrors `sgs_text_colour_decl()`: a gradient renders via
  * `background-image` + `background-clip:text` + `color:transparent` (the
@@ -200,55 +178,6 @@ function textPaintPreview( colour, gradient, palette ) {
 	return resolved ? { color: resolved } : {};
 }
 
-// The same allowlist `sgs_overlay_decls()` (helpers-tokens.php) enforces server-side —
-// mirrored here rather than trusted as "any string is harmless in CSS", so the editor
-// preview and the frontend refuse the identical out-of-enum set, not just a similar one.
-const OVERLAY_BLEND_MODES = [
-	'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge',
-	'color-burn', 'soft-light', 'hard-light', 'difference', 'exclusion',
-];
-
-/**
- * Resolve the container's own overlay LAYER to a paintable canvas preview —
- * mirrors `sgs_overlay_decls()` (helpers-tokens.php) exactly, the single shared
- * owner class-sgs-container-wrapper.php and sgs/hero's `.sgs-hero__overlay`
- * both call server-side (D717/D718: "the EXISTENCE test IS the shared helper's
- * return value" — colour/gradient/opacity/blend-mode are ONE decision, not
- * layered ad hoc). Resting state only (P2-4b scope) — hover and responsive
- * opacity tiers are deferred.
- *
- * @param {string}        colour     backgroundOverlayColour attribute value.
- * @param {string}        gradient   overlayGradient attribute value.
- * @param {number|string} opacity    backgroundOverlayOpacity, 0-100. 100/empty/
- *                                   null emits no opacity override (CSS default).
- * @param {string}        blendMode  backgroundOverlayBlendMode attribute value.
- * @param {Array}         palette    Active theme colour palette.
- * @return {Object} CSS custom properties for the `::after` mirror in
- *                   editor.css, plus a `hasOverlay` flag — {} / false when
- *                   there is nothing to paint, mirroring the PHP helper's `''`.
- */
-function overlayPaintPreview( colour, gradient, opacity, blendMode, palette ) {
-	const paint = backgroundPaintPreview( colour, gradient, palette );
-	if ( ! paint.backgroundImage && ! paint.backgroundColor ) {
-		return { hasOverlay: false, vars: {} };
-	}
-	const vars = {
-		'--sgs-ed-overlay-image': paint.backgroundImage || 'none',
-		'--sgs-ed-overlay-colour': paint.backgroundColor || 'transparent',
-	};
-	const numericOpacity = parseFloat( opacity );
-	if ( '' !== opacity && null != opacity && ! Number.isNaN( numericOpacity ) ) {
-		const pct = Math.max( 0, Math.min( 100, numericOpacity ) );
-		if ( 100 !== pct ) {
-			vars[ '--sgs-ed-overlay-opacity' ] = pct / 100;
-		}
-	}
-	if ( blendMode && 'normal' !== blendMode && OVERLAY_BLEND_MODES.includes( blendMode ) ) {
-		vars[ '--sgs-ed-overlay-blend' ] = blendMode;
-	}
-	return { hasOverlay: true, vars };
-}
-
 // Mirrors sgs/icon and sgs/info-box, which hoist the identical list. "" is the
 // INHERIT option deliberately: an unset container emits no text-align, so the
 // value cascades from its own parent — that inheritance is the whole reason
@@ -266,10 +195,6 @@ export default function Edit({ attributes, setAttributes, name }) {
   const {
     layout,
     gap,
-    backgroundImage,
-    bgVideo,
-    bgKenBurns = false,
-    bgAnimationDuration = 20,
     shadow,
     // maxWidth and minHeight are both TIER OBJECTS — read via
     // `attributes.maxWidth`/`attributes.minHeight` below, not destructured
@@ -288,15 +213,10 @@ export default function Edit({ attributes, setAttributes, name }) {
     textColourGradient,
     textColourHover,
     textColourHoverGradient,
-    bgParallax = false,
     gridAutoRows = "",
     flexDirection = "",
     flexWrap = "wrap",
     justifyContent = "",
-    backgroundOverlayColour,
-    overlayGradient,
-    backgroundOverlayOpacity,
-    backgroundOverlayBlendMode,
     borderColour,
     borderColourGradient,
     borderColourHover,
@@ -323,44 +243,32 @@ export default function Edit({ attributes, setAttributes, name }) {
     return { Tablet: "tablet", Mobile: "mobile" }[ device ] || "desktop";
   }, [] );
 
-  // Editor preview: show bg-image if set (video not previewed inline — too complex for editor).
-  const hasBgImage = !!backgroundImage?.url;
-  const hasBgVideo = !!bgVideo?.url;
-
-  const overlayPreview = overlayPaintPreview(
-    backgroundOverlayColour,
-    overlayGradient,
-    backgroundOverlayOpacity,
-    backgroundOverlayBlendMode,
-    colourPalette
-  );
+  // Editor preview: media (image/video), overlay, ken-burns and parallax —
+  // extracted to the shared `backgroundPreview()` (`src/utils/background-preview.js`,
+  // 2026-08-26) so the same mirror serves every other block mounting
+  // `BackgroundPanel` (composite-mirror rule, CLAUDE.md). `bgPreview.style`
+  // carries the same custom-property set this block used to build inline.
+  const bgPreview = backgroundPreview( {
+    backgroundImage: attributes.backgroundImage,
+    bgVideo: attributes.bgVideo,
+    backgroundSize: attributes.backgroundSize,
+    backgroundPosition: attributes.backgroundPosition,
+    backgroundRepeat: attributes.backgroundRepeat,
+    backgroundAttachment: attributes.backgroundAttachment,
+    bgKenBurns: attributes.bgKenBurns,
+    bgAnimationDuration: attributes.bgAnimationDuration,
+    bgParallax: attributes.bgParallax,
+    backgroundOverlayColour: attributes.backgroundOverlayColour,
+    overlayGradient: attributes.overlayGradient,
+    backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+    backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+  }, colourPalette );
 
   const style = {
     gap: gapCssValue( gap, previewTier ),
     minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
     ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
-    // Media is handed to a ::before layer via custom properties rather than
-    // painted on the element, MIRRORING the frontend (Phase 1, 2026-08-08).
-    // The editor is the surface clients actually work in, so it has to agree.
-    ...(hasBgImage && !hasBgVideo && {
-      "--sgs-ed-bg-image": `url(${backgroundImage.url})`,
-      "--sgs-ed-bg-size": attributes.backgroundSize || "cover",
-      "--sgs-ed-bg-position": attributes.backgroundPosition || "center center",
-      "--sgs-ed-bg-repeat": attributes.backgroundRepeat || "no-repeat",
-      "--sgs-ed-bg-attachment":
-        attributes.backgroundAttachment === "fixed" ? "fixed" : "scroll",
-    }),
-    ...(hasBgVideo && {
-      // Show a teal placeholder in editor when video is set
-      backgroundColor: "var(--wp--preset--color--primary, #0F7E80)",
-    }),
-    ...(bgKenBurns && hasBgImage && {
-      "--sgs-ken-burns-duration": `${bgAnimationDuration}s`,
-    }),
-    // Overlay layer — a ::after mirror in editor.css, same reasoning as the
-    // background-image ::before above: painting it on the element itself
-    // would dim the client's real content, not just the decorative layer.
-    ...overlayPreview.vars,
+    ...bgPreview.style,
     // Base (SGS-owned) background paint — the OUTER-most layer, below the
     // media ::before and the overlay span. Text paint is applied AFTER
     // background so it wins the shared `backgroundImage` key exactly as the
@@ -528,21 +436,19 @@ export default function Edit({ attributes, setAttributes, name }) {
     .filter(Boolean)
     .join(" ");
 
-  // Gate the editor's ::before media layer on a class so the pseudo-element
-  // exists ONLY on containers that actually have a background image — every
-  // other container in the canvas is untouched (mirrors the frontend, where the
-  // layer's box properties are only emitted when there is media to paint).
+  // Gate the editor's ::before media / ::after overlay layers + the parallax
+  // class on marker classes so the pseudo-elements exist ONLY on containers
+  // that actually have something to paint — every other container in the
+  // canvas is untouched (mirrors the frontend, where the layer's box
+  // properties are only emitted when there is media/overlay to paint).
   // bgParallax: mirrors the frontend's `sgs-container--parallax` class
   // (class-sgs-container-wrapper.php ~:1455) — full scroll-driven playback
   // isn't previewed in a static canvas, but the class itself IS what the
   // frontend gates its `background-attachment:fixed` styling on, so applying
   // it here at least shows the state took effect instead of looking silent.
-  const editorClassName = [
-    className,
-    hasBgImage && !hasBgVideo ? "sgs-container--has-bg-media" : "",
-    bgParallax ? "sgs-container--parallax" : "",
-    overlayPreview.hasOverlay ? "sgs-container--has-overlay" : "",
-  ]
+  // `bgPreview.className` is the shared marker set (`src/utils/background-preview.js`,
+  // 2026-08-26) — the same one every other adopting block now applies.
+  const editorClassName = [ className, bgPreview.className ]
     .filter( Boolean )
     .join( " " );
 

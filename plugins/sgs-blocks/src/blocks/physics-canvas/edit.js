@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl, Notice, BoxControl } from '@wordpress/components';
 import {
@@ -14,6 +15,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
+import { backgroundPreview } from '../../utils';
 // Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
 // D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
 // its box + width controls must be the SAME shape sgs/container itself exposes —
@@ -66,7 +68,28 @@ const ALLOWED_BLOCKS = [
 export default function Edit( { attributes, setAttributes, name } ) {
 	const { physicsGravity, physicsBounce, physicsEdgeResistance } = attributes;
 
-	const blockProps = useBlockProps();
+	// D717/background-preview: BackgroundPanel (mounted below) writes image/
+	// video/overlay/ken-burns/parallax attrs this block never previewed on
+	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
+	// fixes that the same way sgs/container already did.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
+	const blockProps = useBlockProps( { className: bgPreview.className, style: bgPreview.style } );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
 		templateLock: false,

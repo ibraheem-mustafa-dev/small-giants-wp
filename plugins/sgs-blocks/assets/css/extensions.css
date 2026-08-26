@@ -592,3 +592,64 @@
 	line-height: 1.5;
 	color: #757575;
 }
+
+/* ===== Shared BackgroundPanel editor-canvas preview (2026-08-26) =====
+ *
+ * Every block that mounts the shared `BackgroundPanel` control
+ * (`src/blocks/container/components/ContainerWrapperControls.js` —
+ * sgs/container, sgs/multi-button, sgs/physics-canvas, sgs/site-footer,
+ * sgs/site-header, sgs/trust-bar; sgs/hero has its own equivalent copy,
+ * out of scope here) writes background image/video, overlay, ken-burns and
+ * parallax attributes that `SGS_Container_Wrapper::render()` paints on the
+ * FRONTEND. Until this pass only sgs/container built a JS+CSS mirror so the
+ * EDITOR CANVAS showed the same thing — CHECK A finding group
+ * "BackgroundPanel canvas-preview gap"
+ * (reports/2026-08-26-check-a-triage-group-b.md, root-cause group 1).
+ *
+ * `src/utils/background-preview.js`'s `backgroundPreview()` is the ONE JS
+ * mirror every adopting block now calls; it writes the `--sgs-ed-bg-*` /
+ * `--sgs-ed-overlay-*` custom properties consumed below and applies the
+ * `.sgs-ed-has-bg-media` / `.sgs-ed-has-overlay` marker classes these rules
+ * are gated on, so a block instance with no background image/overlay set
+ * never grows an empty pseudo-element.
+ *
+ * This stylesheet is the SHARED editor extension stylesheet — loaded into
+ * the editor canvas IFRAME via `enqueue_block_assets` (iframe-aware; see
+ * `includes/class-sgs-blocks.php::enqueue_editor_extension_styles()`), which
+ * is why these rules live here rather than being duplicated into six
+ * per-block `editor.css` files. It is ALSO loaded on the frontend under the
+ * `sgs-extensions` handle — harmless there, since only `edit.js` ever
+ * applies these marker classes, never `render.php`.
+ */
+.sgs-ed-has-bg-media {
+	position: relative;
+}
+
+.sgs-ed-has-bg-media::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-image: var( --sgs-ed-bg-image );
+	background-size: var( --sgs-ed-bg-size, cover );
+	background-position: var( --sgs-ed-bg-position, center center );
+	background-repeat: var( --sgs-ed-bg-repeat, no-repeat );
+	background-attachment: var( --sgs-ed-bg-attachment, scroll );
+}
+
+.sgs-ed-has-overlay {
+	position: relative;
+}
+
+.sgs-ed-has-overlay::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image: var( --sgs-ed-overlay-image, none );
+	background-color: var( --sgs-ed-overlay-colour, transparent );
+	opacity: var( --sgs-ed-overlay-opacity, 1 );
+	mix-blend-mode: var( --sgs-ed-overlay-blend, normal );
+}

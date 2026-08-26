@@ -4,3 +4,4 @@ export * from './icons';
 export * from './objectPosition';
 export * from './cssLength';
 export * from './presetSettings';
+export * from './background-preview';

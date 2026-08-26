@@ -4,6 +4,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
@@ -17,6 +18,7 @@ import {
 	DesignTokenPicker,
 	SGS_FONT_WEIGHT_OPTIONS,
 } from '../../components';
+import { backgroundPreview } from '../../utils';
 import {
 	PanelBody,
 	SelectControl,
@@ -125,6 +127,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		} );
 	};
 
+	// D717/background-preview: BackgroundPanel (mounted below) writes image/
+	// video/overlay/ken-burns/parallax attrs this block never previewed on
+	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
+	// fixes that the same way sgs/container already did.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
 	// Preview the desktop layout in the editor.
 	// Gap comes from the block's own Layout panel Gap control (raw CSS string).
 	const editorStyle = {
@@ -134,6 +157,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gap: gap?.desktop || undefined,
 		justifyContent: justify,
 		alignItems: align,
+		...bgPreview.style,
 	};
 
 	// A button group's children are always sgs/button (that IS the block's
@@ -141,7 +165,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// row this block renders, so this roster is never relaxed.
 	const allowedBlocks = [ 'sgs/button' ];
 
-	const blockProps = useBlockProps( { style: editorStyle } );
+	const blockProps = useBlockProps( { className: bgPreview.className, style: editorStyle } );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks,
 		template: TEMPLATE,
