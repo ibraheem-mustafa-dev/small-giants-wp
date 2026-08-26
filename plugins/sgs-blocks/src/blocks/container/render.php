@@ -232,7 +232,10 @@ $sgs_container_border_style_raw      = $attributes['borderStyle'] ?? '';
 $sgs_container_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $sgs_container_border_style          = in_array( $sgs_container_border_style_raw, $sgs_container_allowed_border_styles, true ) ? $sgs_container_border_style_raw : '';
 
-if ( '' !== $sgs_container_border_style && 'none' !== $sgs_container_border_style ) {
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width.
+if ( '' !== $sgs_container_border_style && 'none' !== $sgs_container_border_style && $sgs_container_has_border_width ) {
 	if ( empty( $sgs_container_supports_uid ) ) {
 		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 		$sgs_container_supports_classes[] = $sgs_container_supports_uid;

@@ -173,7 +173,10 @@ $scoped_css = array();
 // --- Root box/border declarations (custom borderWidth/Colour/Style — no WP
 // native support for per-side width, matches sgs/quote + sgs/button). ---
 $root_decls = array();
-if ( 'none' !== $border_style ) {
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width.
+if ( 'none' !== $border_style && $has_border_width ) {
 	if ( $has_border_width ) {
 		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
 		$bwr          = '' !== $border_width_right ? $border_width_right : '0';

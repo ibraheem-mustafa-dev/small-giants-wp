@@ -677,5 +677,14 @@
     "added_commit": null,
     "budget_ms": 400,
     "order": 74
+  },
+  {
+    "id": "check-border-style-without-width",
+    "cmd": "python scripts/check-border-style-without-width.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 75
   }
 ]

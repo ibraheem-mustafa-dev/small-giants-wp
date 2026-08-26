@@ -177,22 +177,12 @@ $classes[] = $sgs_card_uid;
 // list covers EVERY render branch's markup for that visual role (typed BEM
 // classes + the read-only/live-data plain classes) so ONE control governs the
 // element everywhere it can appear — no per-branch carve-out (R-31-9 / CG-9).
-$sgs_card_typo_css = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
-// titleFontFamily: the shared sgs_typography_css_rule() helper does not emit
-// font-family (it only covers size/weight/style/line-height/transform/
-// decoration/letter-spacing/text-align) — same gap sgs/quote's
-// attributionFontFamily works around. Sourced from theme.json's
-// typography.fontFamilies preset list via TypographyControls' showFontFamily
-// picker, so the stored value is already a trusted theme-preset font-family
-// string; still allowlist-sanitised (letters, digits, space, comma, quotes,
-// hyphen) before interpolation, matching quote/render.php's discipline.
-$sgs_title_font_family = $attributes['titleFontFamily'] ?? '';
-if ( '' !== $sgs_title_font_family ) {
-	$sgs_title_ff_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $sgs_title_font_family );
-	if ( '' !== $sgs_title_ff_safe ) {
-		$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3{font-family:' . $sgs_title_ff_safe . ';}';
-	}
-}
+// titleFontFamily: emitted by sgs_typography_css_rule() itself now (G4,
+// helpers-typography.php) — the shared helper's own base_decls font-family
+// branch, sanitised via sgs_font_family_sanitise(). No block-private
+// duplicate emission needed any more.
+
+$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
 // 'pill' typography targets the option-picker pill (both typed + bound pack
@@ -328,7 +318,14 @@ $sgs_pc_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'dou
 $sgs_pc_border_style          = in_array( $sgs_pc_border_style_raw, $sgs_pc_allowed_border_styles, true ) ? $sgs_pc_border_style_raw : 'none';
 
 if ( 'none' !== $sgs_pc_border_style ) {
-	$sgs_pc_border_box_decls = array( 'border-style:' . $sgs_pc_border_style );
+	// G5 (Bean, 2026-08-26): "border with no width should mean no border by
+	// default." The width block below is nested, so seeding the array with the
+	// style meant a style with no width fell through to the browser's initial
+	// `medium` (~3px). The style is now seeded only alongside a real width;
+	// border-colour below is legitimately independent and still emits.
+	$sgs_pc_border_box_decls = $sgs_pc_has_border_width
+		? array( 'border-style:' . $sgs_pc_border_style )
+		: array();
 	if ( $sgs_pc_has_border_width ) {
 		$sgs_pc_bwt                = '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '0';
 		$sgs_pc_bwr                = '' !== $sgs_pc_border_width_right ? $sgs_pc_border_width_right : '0';

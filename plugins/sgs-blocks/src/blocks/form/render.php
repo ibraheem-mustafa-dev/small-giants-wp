@@ -137,7 +137,10 @@ if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_gro
 	if ( isset( $sgs_form_border_raw['color'] ) && '' !== $sgs_form_border_raw['color'] ) {
 		$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
 	}
-	if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] ) {
+	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+	// default — never fall through to the browser's initial medium (~3px)
+	// border-width.
+	if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] && isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
 		$sgs_form_border['style'] = sgs_css_keyword_sanitise( $sgs_form_border_raw['style'] );
 	}
 	if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {

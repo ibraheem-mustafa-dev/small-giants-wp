@@ -223,8 +223,12 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width. The gate strips a lone 'style' key so this rule is
+// applied identically everywhere, not per block (helpers-box.php).
 if ( ! empty( $native_border ) ) {
-	$base_style_engine_args['border'] = $native_border;
+	$base_style_engine_args['border'] = sgs_gate_native_border_style( $native_border );
 }
 
 $color_args = array();

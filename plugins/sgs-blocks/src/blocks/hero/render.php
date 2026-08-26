@@ -587,19 +587,30 @@ if ( $is_split ) {
 	// tiers). Moved here from the inline style="" on the <img> element
 	// (contract §A) — was previously the only remaining inline decl on the
 	// split image alongside object-fit/object-position (below).
+	// G5 (Bean, 2026-08-26): THIS is the bug that bit the hero image —
+	// 'style set, no width' fell through to the browser's initial medium
+	// (~3px) border-width. border-style is now only ever emitted alongside
+	// a real width; a width-only or colour-only declaration is unchanged
+	// (CSS's initial border-style is already 'none', so those already
+	// rendered no visible border).
 	$img_border_width_val = sgs_box_object_shorthand( $image_border_width_obj );
 	$img_border_has_width = null !== $img_border_width_val;
 	if ( 'none' !== $image_border_style || $img_border_has_width ) {
-		$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-		$safe_border_style     = in_array( $image_border_style, $allowed_border_styles, true ) ? $image_border_style : 'solid';
-		$img_border_decls      = array( 'border-style:' . $safe_border_style );
+		$img_border_decls = array();
 		if ( $img_border_has_width ) {
-			$img_border_decls[] = 'border-width:' . $img_border_width_val;
+			$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+			$safe_border_style     = in_array( $image_border_style, $allowed_border_styles, true ) ? $image_border_style : 'solid';
+			$img_border_decls[]    = 'border-width:' . $img_border_width_val;
+			if ( 'none' !== $safe_border_style ) {
+				$img_border_decls[] = 'border-style:' . $safe_border_style;
+			}
 		}
 		if ( $image_border_colour ) {
 			$img_border_decls[] = 'border-color:' . sgs_colour_value( $image_border_colour );
 		}
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{' . implode( ';', $img_border_decls ) . '}';
+		if ( $img_border_decls ) {
+			$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{' . implode( ';', $img_border_decls ) . '}';
+		}
 	}
 
 	// D636 border builder — masked ::before, wins over the flat border-color
@@ -809,11 +820,16 @@ $border_args = array();
 if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
 	$border_args['color'] = (string) $attributes['style']['border']['color'];
 }
-if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-	$border_args['style'] = sgs_css_keyword_sanitise( $attributes['style']['border']['style'] );
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width. Gated together via the shared helper (helpers-box.php)
+// so this rule is applied identically everywhere, not per block.
+$sgs_border_style_width = sgs_native_border_style_width_args( $attributes['style']['border']['style'] ?? null, $attributes['style']['border']['width'] ?? null );
+if ( isset( $sgs_border_style_width['width'] ) ) {
+	$border_args['width'] = $sgs_border_style_width['width'];
 }
-if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
+if ( isset( $sgs_border_style_width['style'] ) ) {
+	$border_args['style'] = $sgs_border_style_width['style'];
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$radius_raw = $attributes['style']['border']['radius'];

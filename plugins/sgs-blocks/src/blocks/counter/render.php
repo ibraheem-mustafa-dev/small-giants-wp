@@ -214,7 +214,9 @@ if ( null !== $base_border_radius ) {
 if ( '' !== $border_width_val ) {
 	$border_args['width'] = $border_width_val;
 }
-if ( '' !== $border_style_val ) {
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by default —
+// never fall through to the browser's initial medium (~3px) border-width.
+if ( '' !== $border_style_val && '' !== $border_width_val ) {
 	$border_args['style'] = $border_style_val;
 }
 if ( '' !== $border_color_val ) {

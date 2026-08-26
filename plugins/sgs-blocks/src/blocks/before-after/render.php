@@ -171,7 +171,10 @@ $wrapper_decls = array();
 if ( $style_color_bg ) {
 	$wrapper_decls[] = 'background-color:' . sgs_colour_value( $style_color_bg );
 }
-if ( 'none' !== $border_style ) {
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width.
+if ( 'none' !== $border_style && $border_width_raw ) {
 	if ( $border_width_raw ) {
 		$wrapper_decls[] = 'border-width:' . sgs_css_length_value( $border_width_raw );
 	}

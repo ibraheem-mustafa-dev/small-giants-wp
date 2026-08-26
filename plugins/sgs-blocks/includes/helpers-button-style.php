@@ -131,7 +131,14 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( '' !== $colour_border ) {
 			$base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';
 		}
-		if ( '' !== $border_style ) {
+		// G5 (Bean, 2026-08-26): "border with no width should mean no border by
+		// default." A border-style set with no width falls through to the
+		// browser's initial border-width (`medium`, ~3px) — bit the hero image.
+		// $border_has_width mirrors sgs_native_border_style_width_args()'s gate
+		// (helpers-box.php) so every border emitter in the plugin applies the
+		// same rule; border-style is only ever emitted alongside a real width.
+		$border_has_width = ( null !== $border_width_shorthand || null !== $border_width );
+		if ( '' !== $border_style && $border_has_width ) {
 			$base_decls[] = 'border-style:' . $border_style . ';';
 		}
 		if ( null !== $border_width_shorthand ) {

@@ -410,11 +410,16 @@ $pt_border_args = array();
 if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
 	$pt_border_args['color'] = (string) $attributes['style']['border']['color'];
 }
-if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-	$pt_border_args['style'] = preg_replace( '/[^a-zA-Z-]/', '', (string) $attributes['style']['border']['style'] );
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width. Gated together via the shared helper (helpers-box.php)
+// so this rule is applied identically everywhere, not per block.
+$pt_border_style_width = sgs_native_border_style_width_args( $attributes['style']['border']['style'] ?? null, $attributes['style']['border']['width'] ?? null );
+if ( isset( $pt_border_style_width['width'] ) ) {
+	$pt_border_args['width'] = $pt_border_style_width['width'];
 }
-if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-	$pt_border_args['width'] = sgs_css_length_value( $attributes['style']['border']['width'] );
+if ( isset( $pt_border_style_width['style'] ) ) {
+	$pt_border_args['style'] = $pt_border_style_width['style'];
 }
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$pt_radius_raw = $attributes['style']['border']['radius'];

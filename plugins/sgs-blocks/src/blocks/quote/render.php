@@ -71,13 +71,11 @@ if ( ! $has_body && ! $has_attribution ) {
 // 2. Box-object interface contract §1 + security §D sanitisers.
 // ---------------------------------------------------------------------------
 
-// CSS-length sanitiser — strips everything except digits, dot, %, and unit
-// letters so an object-attr side/corner value can never break out of its
-// declaration. Mirrors sgs/button + sgs/container + sgs/heading.
-// CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
-// declarations (border-style / font-style / text-transform / text-decoration
-// / font-weight). Strips everything except letters + hyphen, so ;{}():digits
-// can never break out of the declaration into a new CSS rule.
+// Both sanitisers are SHARED, not defined here: sgs_css_length_value() and
+// sgs_css_keyword_sanitise() live in includes/helpers-box.php and arrive via
+// render-helpers.php. They stop an object-attr side value or a free-text
+// keyword attr breaking out of its declaration into a new CSS rule.
+
 // ---------------------------------------------------------------------------
 // 3. Extract + validate attribution slot attributes.
 // ---------------------------------------------------------------------------
@@ -120,10 +118,10 @@ $border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' )
 $border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
-$border_style_raw      = $attributes['borderStyle'] ?? 'none';
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
-$border_colour         = $attributes['borderColour'] ?? '';
+$border_style_raw       = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles  = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style           = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+$border_colour          = $attributes['borderColour'] ?? '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 $box_shadow              = $attributes['boxShadow'] ?? '';
@@ -240,8 +238,9 @@ if ( $attrib_font_weight ) {
 	}
 }
 if ( $attrib_font_family ) {
-	// Allow font-name chars (letters, digits, spaces, commas, quotes, hyphen).
-	$ff_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $attrib_font_family );
+	// Sanitised via the shared sgs_font_family_sanitise() (helpers-typography.php,
+	// G4) — ONE owner for the allowlist, rather than a duplicated local regex.
+	$ff_safe = sgs_font_family_sanitise( $attrib_font_family );
 	if ( '' !== $ff_safe ) {
 		$attrib_decls[] = 'font-family:' . $ff_safe;
 	}
@@ -369,7 +368,14 @@ if ( ! $inherit_style ) {
 			$bwl             = '' !== $border_width_left ? $border_width_left : '0';
 			$wrapper_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 		}
-		$wrapper_decls[] = 'border-style:' . $border_style;
+		// G5 (Bean, 2026-08-26): "border with no width should mean no border by
+		// default." The width block above is nested, so this emission was NOT
+		// covered by it — a style with no width fell through to the browser's
+		// initial `medium` (~3px). Gated here rather than on the outer condition
+		// so border-colour, which is legitimately independent, still emits.
+		if ( $has_border_width ) {
+			$wrapper_decls[] = 'border-style:' . $border_style;
+		}
 		if ( $border_colour ) {
 			$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 		}

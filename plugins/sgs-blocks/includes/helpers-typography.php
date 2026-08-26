@@ -14,6 +14,10 @@
  *   fontSizeUnit    string   (px|em|rem)
  *   fontSizeTablet  number
  *   fontSizeMobile  number
+ *   fontFamily      string   (e.g. 'Montserrat, sans-serif') — no responsive
+ *                            tiers; matches TypographyControls' showFontFamily
+ *                            picker, which stores the theme.json preset's raw
+ *                            CSS font-family VALUE (not a slug — see G4).
  *   fontWeight      string   (100–900 | '')
  *   fontStyle       string   (normal|italic | '')
  *   lineHeight      number   (e.g. 1.5)
@@ -46,6 +50,32 @@ if ( ! function_exists( 'sgs_typography_attr' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_font_family_sanitise' ) ) {
+	/**
+	 * Sanitise a font-family value for safe CSS interpolation.
+	 *
+	 * The stored value is the theme.json `typography.fontFamilies` preset's
+	 * raw CSS font-family STRING (e.g. `"Montserrat, sans-serif"` or
+	 * `'"Times New Roman", serif'`) — TypographyControls' showFontFamily
+	 * picker writes `f.fontFamily` verbatim (src/components/TypographyControls.js),
+	 * not a slug, so there is no preset-slug resolution step here. It is still
+	 * attacker-reachable through the editor (an operator could hand-author an
+	 * undeclared value, or a future control could accept free text), so it is
+	 * allowlist-sanitised rather than trusted. `sgs_css_keyword_sanitise()`
+	 * (helpers-box.php) is too narrow — a font-family LIST needs commas,
+	 * spaces and quotes for multi-word names ("Open Sans", sans-serif) which
+	 * that helper strips. This allowlist matches the one already proven live
+	 * in quote/render.php's `$ff_safe` and product-card/render.php's
+	 * `$sgs_title_ff_safe` workarounds, now consolidated to one definition.
+	 *
+	 * @param mixed $value Raw font-family value.
+	 * @return string Sanitised font-family (may be '').
+	 */
+	function sgs_font_family_sanitise( $value ): string {
+		return preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $value );
+	}
+}
+
 if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	/**
 	 * Build a scoped typography CSS rule string (base + responsive) for one
@@ -58,17 +88,18 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
 	function sgs_typography_css_rule( array $attributes, $prefix, $selector ) {
-		$k_size       = sgs_typography_attr( $prefix, 'FontSize' );
-		$k_size_unit  = sgs_typography_attr( $prefix, 'FontSizeUnit' );
-		$k_weight     = sgs_typography_attr( $prefix, 'FontWeight' );
-		$k_style      = sgs_typography_attr( $prefix, 'FontStyle' );
-		$k_transform  = sgs_typography_attr( $prefix, 'TextTransform' );
-		$k_decoration = sgs_typography_attr( $prefix, 'TextDecoration' );
-		$k_line       = sgs_typography_attr( $prefix, 'LineHeight' );
-		$k_line_unit  = sgs_typography_attr( $prefix, 'LineHeightUnit' );
-		$k_letter     = sgs_typography_attr( $prefix, 'LetterSpacing' );
+		$k_size        = sgs_typography_attr( $prefix, 'FontSize' );
+		$k_size_unit   = sgs_typography_attr( $prefix, 'FontSizeUnit' );
+		$k_family      = sgs_typography_attr( $prefix, 'FontFamily' );
+		$k_weight      = sgs_typography_attr( $prefix, 'FontWeight' );
+		$k_style       = sgs_typography_attr( $prefix, 'FontStyle' );
+		$k_transform   = sgs_typography_attr( $prefix, 'TextTransform' );
+		$k_decoration  = sgs_typography_attr( $prefix, 'TextDecoration' );
+		$k_line        = sgs_typography_attr( $prefix, 'LineHeight' );
+		$k_line_unit   = sgs_typography_attr( $prefix, 'LineHeightUnit' );
+		$k_letter      = sgs_typography_attr( $prefix, 'LetterSpacing' );
 		$k_letter_unit = sgs_typography_attr( $prefix, 'LetterSpacingUnit' );
-		$k_align      = sgs_typography_attr( $prefix, 'TextAlign' );
+		$k_align       = sgs_typography_attr( $prefix, 'TextAlign' );
 
 		// Numeric responsive families (font-size / line-height / letter-spacing) may
 		// each be stored EITHER as the modern {desktop,tablet,mobile} OBJECT (Spec 35
@@ -183,6 +214,18 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			$legacy = sgs_font_size_value( (string) $attributes[ $k_size ] );
 			if ( '' !== $legacy ) {
 				$base_decls[] = 'font-size:' . $legacy . ';';
+			}
+		}
+		// Font-family — plain string, no responsive tiers (matches
+		// TypographyControls' showFontFamily picker, which offers no per-device
+		// switcher). Only-set-properties-emitted, same discipline as weight/
+		// style/transform/decoration below. Sanitised via the shared allowlist
+		// rather than the narrower sgs_css_keyword_sanitise() (helpers-box.php),
+		// which strips the commas/spaces/quotes a font-family LIST needs.
+		if ( ! empty( $attributes[ $k_family ] ) ) {
+			$family_safe = sgs_font_family_sanitise( $attributes[ $k_family ] );
+			if ( '' !== $family_safe ) {
+				$base_decls[] = 'font-family:' . $family_safe . ';';
 			}
 		}
 		if ( ! empty( $attributes[ $k_weight ] ) ) {

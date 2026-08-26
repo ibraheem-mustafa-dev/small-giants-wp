@@ -66,7 +66,10 @@ if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['
 	if ( isset( $sgs_fs_border_raw['color'] ) && '' !== $sgs_fs_border_raw['color'] ) {
 		$sgs_fs_border['color'] = (string) $sgs_fs_border_raw['color'];
 	}
-	if ( isset( $sgs_fs_border_raw['style'] ) && '' !== $sgs_fs_border_raw['style'] ) {
+	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+	// default — never fall through to the browser's initial medium (~3px)
+	// border-width.
+	if ( isset( $sgs_fs_border_raw['style'] ) && '' !== $sgs_fs_border_raw['style'] && isset( $sgs_fs_border_raw['width'] ) && '' !== $sgs_fs_border_raw['width'] ) {
 		$sgs_fs_border['style'] = sgs_css_keyword_sanitise( $sgs_fs_border_raw['style'] );
 	}
 	if ( isset( $sgs_fs_border_raw['width'] ) && '' !== $sgs_fs_border_raw['width'] ) {

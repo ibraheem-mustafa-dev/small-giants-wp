@@ -54,6 +54,113 @@ if ( ! function_exists( 'sgs_css_keyword_sanitise' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_native_border_style_width_args' ) ) {
+	/**
+	 * Gate a WP-native `style.border.style` + `style.border.width` PAIR so a
+	 * border-style set with no width never falls through to the browser's
+	 * initial `border-width: medium` (~3px) — Bean's ruling (G5, 2026-08-26):
+	 * "border with no width should mean no border by default."
+	 *
+	 * WP core's own style engine (`WP_Style_Engine::BLOCK_STYLE_DEFINITIONS_METADATA`,
+	 * `border.style`/`border.width`) treats these two properties as fully
+	 * independent declarations — a caller that hands it `style` without
+	 * `width` produces a lone `border-style:solid;`, and CSS's initial
+	 * `border-width` is `medium`, so the browser paints a ~3px border nobody
+	 * asked for. This is the SAME defect class as `sgs_button_element_style_css()`
+	 * (`helpers-button-style.php`) fixes for the CTA-element path; this helper
+	 * is the equivalent single gate for every WP-native `style.border` caller,
+	 * so the rule lives in ONE place rather than being re-derived per block
+	 * (R-31-9 — no per-block carve-outs).
+	 *
+	 * Decision: ABSENCE, not `border-width:0`. A `0`-width border still beats
+	 * an inherited border from a parent/theme rule; Bean's "no border by
+	 * default" means the declaration is never emitted at all, matching what
+	 * an operator who never touched the border controls already sees.
+	 *
+	 * The inverse case — `width` set with `style` absent — is NOT altered
+	 * here. CSS's initial `border-style` is `none`, so a lone `border-width`
+	 * declaration already renders no visible border; that shape was already
+	 * correct and is left as every caller already had it.
+	 *
+	 * @param mixed $style_raw Raw `style.border.style` value (string|null).
+	 * @param mixed $width_raw Raw `style.border.width` value (string|null).
+	 * @return array{style?:string,width?:string} `style` is present ONLY when
+	 *         `width` is also present and non-empty. Empty array when nothing
+	 *         should render.
+	 */
+	function sgs_native_border_style_width_args( $style_raw, $width_raw ): array {
+		$args      = array();
+		$has_width = isset( $width_raw ) && '' !== $width_raw;
+
+		if ( $has_width ) {
+			$args['width'] = sgs_css_length_value( $width_raw );
+		}
+		if ( $has_width && isset( $style_raw ) && '' !== $style_raw ) {
+			$args['style'] = sgs_css_keyword_sanitise( $style_raw );
+		}
+
+		return $args;
+	}
+}
+
+if ( ! function_exists( 'sgs_native_border_has_width' ) ) {
+	/**
+	 * True when a native `style.border` array carries a width in EITHER shape.
+	 *
+	 * WP writes a flat `width` when the four sides are linked and a per-side
+	 * `{top,right,bottom,left}.width` when the operator unlinks them. Both are
+	 * a width; a gate that recognises only the flat key would treat an unlinked
+	 * border as widthless.
+	 *
+	 * @param array $border Native `style.border` array.
+	 * @return bool
+	 */
+	function sgs_native_border_has_width( array $border ): bool {
+		if ( isset( $border['width'] ) && '' !== $border['width'] ) {
+			return true;
+		}
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			if ( isset( $border[ $side ]['width'] ) && '' !== $border[ $side ]['width'] ) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+if ( ! function_exists( 'sgs_gate_native_border_style' ) ) {
+	/**
+	 * Apply the SAME "no width = no border" gate (see
+	 * `sgs_native_border_style_width_args()` above) to an ALREADY-BUILT
+	 * native `style.border` array — for callers that pass the whole
+	 * `style.border` group straight through to `wp_style_engine_get_styles()`
+	 * rather than hand-picking individual keys (e.g. `sgs/brand-strip`,
+	 * `sgs/countdown-timer`, `sgs/product-faq`). Strips `style` when `width`
+	 * is absent/empty; every other key (`color`, `radius`, per-side props)
+	 * is left untouched.
+	 *
+	 * ⚠ A width may be declared FLAT (`width`) or PER SIDE
+	 * (`top.width` / `right.width` / `bottom.width` / `left.width`) — WP's
+	 * BorderBoxControl emits the per-side shape whenever the operator unlinks
+	 * the sides. Either shape counts as "has a width": gating on the flat key
+	 * alone would strip a legitimate style from a per-side border and DELETE a
+	 * border the operator can see, which is a worse defect than the ~3px one
+	 * this helper exists to prevent.
+	 *
+	 * @param array $border Raw/partially-sanitised `style.border` array.
+	 * @return array Same array, with `style` removed when ungated.
+	 */
+	function sgs_gate_native_border_style( array $border ): array {
+		if ( ! isset( $border['style'] ) ) {
+			return $border;
+		}
+		if ( ! sgs_native_border_has_width( $border ) ) {
+			unset( $border['style'] );
+		}
+		return $border;
+	}
+}
+
 if ( ! function_exists( 'sgs_box_object_shorthand' ) ) {
 	/**
 	 * Build a 4-side CSS shorthand ("top right bottom left") from a box object,

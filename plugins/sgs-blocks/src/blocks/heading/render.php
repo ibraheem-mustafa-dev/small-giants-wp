@@ -349,7 +349,9 @@ if ( ! $inherit_style ) {
 	// (same box) a background painted directly on the root. See
 	// `sgs_block_background_layer_css()` in helpers-tokens.php.
 	// $border_style is allowlist-validated above (stronger than the keyword regex).
-	if ( $border_style && 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by default —
+	// never fall through to the browser's initial medium (~3px) border-width.
+	if ( $border_style && 'none' !== $border_style && $has_border_width ) {
 		$wrapper_decls[] = 'border-style:' . $border_style;
 	}
 	if ( $border_colour ) {
