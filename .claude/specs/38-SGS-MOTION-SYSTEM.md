@@ -963,14 +963,15 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   declaration-only predicate excluded the framework's two most obvious image blocks. Same
   correction the `svg` → `svg-subtree` split already made.
 
-  ⚠ **KNOWN GAP, recorded not hidden (STOP-29).** A block that renders its `<img>` as the
-  block ROOT (`sgs/decorative-image` in "naked mode") is offered the treatment but **no-ops**
-  — the boot module looks for a nested `img`. 13 of the 15 offered blocks nest theirs and
-  work. Fixing it needs a re-parent or an injected wrapper, and `decorative-image`'s
-  responsive tiers use COMPOUND selectors on the `<img>` itself, so it is a design decision
-  with real blast radius, not a patch. `sgs/media` is separately not offered at all (it hosts
-  no fx panel and `creates_panel=0` correctly will not create one — the documented escape
-  hatch is `supports.sgs.fx.motionSurface: true` on that block).
+  ✅ **FIXED 2026-08-28 (commits 9ac4b3986, 643f8c4a4) — previously a KNOWN GAP (STOP-29).** A
+  block that renders its `<img>` as the block ROOT (`sgs/decorative-image` in "naked mode") was
+  offered the treatment but silently no-op'd — the boot module looks for a nested `img`. Fixed
+  with a gated `<span>` wrapper rather than a re-parent, so the compound selectors on the
+  `<img>` itself were left alone. `fx` is NOT declared in `sgs/decorative-image`'s `block.json`
+  — it is extension-owned and baselined in `scripts/block-file-consistency-baseline.json`.
+  `sgs/media` is separately not offered at all (it hosts no fx panel and `creates_panel=0`
+  correctly will not create one — the documented escape hatch is
+  `supports.sgs.fx.motionSurface: true` on that block).
 
 - **FR-38-30 Magnetic pull — Tier V, ONE core, TWO consumers. BUILT + LIVE-VERIFIED 2026-08-24.**
   Canary page 2737 (`/gate-do-not-delete-magnetic-pull-fr-38-30/`). An element leans toward the
@@ -1322,10 +1323,23 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `pointermove` — a synthetic-`PointerEvent` probe returned 0 across 240 frames against
   perfectly healthy code, because nothing was listening for the event it sent.
 
-- **FR-38-33 Cursor grid-dot field — Tier V, canvas. OWNER-SPECIFIED 2026-08-27. NOT BUILT.**
-  A background **grid**; a visual item (a dot) sits in each cell. Cells within a set radius of the
-  pointer lean their dot toward it; **each dot is locked inside its own cell and cannot leave it**;
-  when the pointer moves out of range every dot eases back to its cell centre.
+- **FR-38-33 Cursor grid-dot field — Tier V, canvas. OWNER-SPECIFIED 2026-08-27. BUILT AND
+  LIVE-VERIFIED 2026-08-28.** A background **grid**; a visual item (a dot) sits in each cell.
+  Cells within a set radius of the pointer lean their dot toward it; **each dot is locked inside
+  its own cell and cannot leave it**; when the pointer moves out of range every dot eases back to
+  its cell centre.
+
+ **Preset B, chosen by the owner from a live prototype:** cell 40, dot radius 2, interaction
+  radius 150, max lean 12, ease-back 260ms, proximity fade ON. **Measured live:** 752 dots,
+  `leanCeiling` 12, dots move toward the pointer (71px changed near the pointer / 0 far from it),
+  ease back to rest, no leak into non-fx containers.
+
+ **Clamp:** `CELL_LOCK = 0.42` × cell, applied regardless of the configured lean.
+
+ **SC 2.3.1 answered structurally, the FR-38-32 pattern:** dots never spawn/die/pulse, so
+  coverage is constant — measured under 1% of the emitter box against the 25% threshold.
+
+ **Reduced motion: SUPPRESS** — no instance, no canvas, no listener created at all.
 
  **Provenance — this FR exists because the old one was wrong.** `floating-objects` (§3.3, FR-38-25's
   field-type table) recorded a different effect under this ask for seven weeks: per-object drift on
@@ -1344,19 +1358,23 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   ease-back integrator needs no GPU shader, so §1.3's ratchet refuses anything dearer. ⛔ **NOT
   Tier W**; that list stays closed.
 
- ⛔ **OWED BEFORE BUILD, none of it done:**
-  - A **reference the owner has actually seen and approved** (D781 — verify the reference, not just
-    the implementation). No reference image exists for this effect yet.
-  - Its own design gate (project CLAUDE.md rule 7): cell size, radius, lean magnitude, ease-back
-    curve, dot count ceiling, and the §2.3.1 flash/coverage answer FR-38-32 had to give.
-  - §9 (editor canvas story), §10 (reduced-motion) and §6 (`fx_effects` seed) rows are written from
-    BUILT behaviour on this project — all three are owed at build, not predicted now.
-  - The registration surface is TEN points, three of them ungated (FR-38-32's ⛔ note). Read that
-    note before registering anything.
+ **Six client controls now exist (commit f46436954):** dot colour, spacing, dot size, reach,
+  lean, settle. Plus a **static lattice preview in the editor canvas** (CSS radial-gradient, no
+  canvas/JS) — see the §9 row. **Colour default is `primary`, NOT `accent`** — `accent` measured
+  1.35:1 on the client's cream background and was barely visible.
 
- **Reduced motion — the shape is obvious but NOT yet a contract.** Dots resting at cell centres is
-  both the no-JS state and the plausible reduce state, so one code path likely serves both (the
-  FR-38-32 pattern). Written down as an expectation, deliberately NOT entered in §10 until measured.
+ **Registration is now ELEVEN points, not ten (FR-38-32's ⛔ note previously said ten).**
+  `includes/extension-attributes.generated.php`, gated by its own pre-commit gate, is an eleventh
+  point beyond the ten FR-38-32 enumerated. Verify the current count against
+  `class-sgs-motion-registry.php` and the generators before registering a further effect — do not
+  carry either number forward without re-checking.
+
+ **Child-lift — VERIFY BEFORE RELYING ON THIS: the exclusion-list trap this effect would have hit
+  no longer exists.** `sgs/container`'s child-lift rule (`container/style.css`) was rewritten from
+  a hand-maintained `:not()` exclusion chain to a zero-specificity `:where()` selector on
+  2026-08-25 (see the FR-38-32 body above). A layer declaring its own `position` is now immune
+  with no registration required, so this grid-dot canvas needed no addition to any exclusion
+  list.
 
 - **FR-38-34 Repulsion particle field — Tier V, canvas. OWNER-SPECIFIED 2026-08-27. NOT BUILT.**
   Particles that float freely across a surface and **move AWAY from the pointer** as it approaches,
@@ -1929,6 +1947,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Magnetic pull (FR-38-30) | **Static — no displacement.** The element renders undisplaced, exactly the no-JS/reduce state; a document-level listener drives the effect, and the editor canvas is an iframe the mega-menu's own `magnet.js` precedent already never runs pointer tracking inside. Notice: "Magnetic pull previews on the live site." ⚠ *Reasoned by mechanism, not observed in-editor.* |
 | Flowing gradient (FR-38-31, Tier W) | **The CSS fallback layer**, exactly what a no-WebGL visitor sees on the frontend — the render layer's editor-parity guard does not boot a canvas WebGL context in a ServerSideRender/REST render (same reasoning as the surface-treatment row above), so the canvas shows the honest degraded state rather than a blank. A panel Notice names this: *"The flowing gradient previews on the live site. Visitors without WebGL, and the editor canvas, see the static fallback."* |
 
+| Cursor grid-dot field (FR-38-33) | **A static resting lattice** — the CSS radial-gradient preview shows the dots at rest in their grid, not a live effect. **NOT a live preview:** the render filter that produces the live tracking canvas never runs in the editor (the magnet/trail precedent), so the pointer-lean/ease-back behaviour is invisible in-canvas; only the resting grid is honest to show. |
 | Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* ✅ **EDITOR CONTROLS OBSERVED 2026-08-25**, not reasoned. Editor opened on page 2744: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** are reachable behind the ToolsPanel menu alongside Reset all; the Notice ships; a bundle notice reads "about 8 KB of scroll-effect code (budget: 50 KB)"; 0 schema-invalid blocks, 0 console errors. ⚠ Finding the panel took three attempts — it is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. An absence verdict is only as wide as its search. ⛔ **Scope correction, 2026-08-27 (Bean flagged, verified true): the label above is narrower than it reads.** "OBSERVED" covered the EDITOR SURFACE only — the picker, presets, and Notice existing and rendering without error. Nobody has watched the actual frontend trail animate, and Bean has never seen it — confirmed live: a screenshot of page 2744 mid-hover shows the sparks preset firing (a faint dark cluster of specks on a near-black debug panel), but it is only visible on a debug/test canary page, not any client build, and the visual quality/legibility has never had Bean's eye per R-31-13. This is still an OPEN verification item, not a closed one. |
 
 ## 10. Reduced-motion contract (per effect)
@@ -1953,13 +1972,14 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Smooth scrolling (Lenis, Tier H) | **Suppress:** native scroll. Live AND reactive — the instance is destroyed on a mid-session change to `reduce`, and rebuilt on a change back (FR-38-18 condition b) |
 | Page transitions | **Suppress:** instant navigation |
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
-| ~~Cursor-reactive field — `floating-objects` type~~ | ⛔ **ROW VOID — removed 2026-08-27.** It specified *"Simplify to a fixed resting transform, never suppress the object"* for an effect that will never be built: `floating-objects` was a wrong-effect entry (see §3.3) and there is no per-object type. **No replacement row is owed yet** — FR-38-33 and FR-38-34 are UNBUILT, and this project's practice is that §9/§10 rows are written from the built behaviour, not predicted for it. Both owe a row at build time. Recorded rather than deleted silently, because a contract table that quietly loses a row reads as if it never had one. |
+| ~~Cursor-reactive field — `floating-objects` type~~ | ⛔ **ROW VOID — removed 2026-08-27.** It specified *"Simplify to a fixed resting transform, never suppress the object"* for an effect that will never be built: `floating-objects` was a wrong-effect entry (see §3.3) and there is no per-object type. **FR-38-33 now has its own §9/§10 rows above (BUILT 2026-08-28).** FR-38-34 remains UNBUILT and still owes a row at build time, per this project's practice of writing §9/§10 from built behaviour, not predicting it. Recorded rather than deleted silently, because a contract table that quietly loses a row reads as if it never had one. |
 | Surface treatment (FR-38-29, Tier W) | **SIMPLIFY — settle immediately at the treated state, never suppress the treatment.** Under `reduce` the scroll-resolve driver is not created at all (no `IntersectionObserver`, no scroll listener, no per-frame work): `uResolve` is set to 0 once and the image renders at the treatment's full chosen strength. ⛔ **Note the direction — the reduced-motion state is the TREATED image, not the plain photograph.** Falling back to the untreated photo would strip content the client deliberately configured (`degrade-to-more-content-never-less`); the thing being removed under `reduce` is the *developing*, not the *treatment*. There is deliberately no `@media (prefers-reduced-motion: reduce)` rule in `fx-surface-treatment.css` — the gate is in JS, where the driver lives. ⚠ **AMENDED 2026-08-21, same day as the FR.** This row first read "NOTHING TO GATE — the effect draws once and never animates", which was true of the first build and became FALSE within hours when scroll-resolve was added on the owner's instruction. Recorded rather than quietly overwritten: a §10 row is a contract, and one that silently stops matching its effect is the drift this table exists to prevent. |
 | Physics canvas (FR-38-27) | **SIMPLIFY — disable the physics, never the content.** Under `reduce` no Draggable/Inertia/Physics2D is created and **the children still render, static, in their authored positions**. "Disables the surface outright" in D447 means *disables the motion*, not *removes the content*: hiding decorative children a client placed deliberately would be the `degrade-to-more-content-never-less` failure. ⚠ **This row was OWED from the block's build session** — §3.3 recorded it as deferred only to avoid a same-file collision with a concurrent track (STOP-29: mapped, not dropped). Added 2026-08-24, closing FR-38-20. ⚠ D447 recorded the ruling in one phrase that admits both readings and this picks the one consistent with the captured rule; **flagged for Bean's confirmation**, and it is the cheaper error to correct in either direction. |
 | Carousel loop (FR-38-26) | **Suppress-equivalent (measured 2026-08-02):** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. Confirmed identical under reduce on 4 of 5 rollout blocks. Two blocks' own arrow-click code hardcoded `'smooth'` regardless of the preference — a defect in those blocks, not the loop module — fixed same day (`5c45f879`, `ba28ab92`); the one remaining hardcoded case (google-reviews autoplay) is correctly gated by an early return. |
 | Magnetic pull (FR-38-30) | **SUPPRESS — no listener attaches at all.** Under `reduce`, `fx-magnet.js` never attaches its document-level listener, so the element simply never displaces — this is also the exact no-JS state, so there is one code path, not two that could drift apart. Deliberately differs from cursor-field's SIMPLIFY (§3.3 FR-38-30 body has the full reasoning): a resting cursor-field is a legitimate finished PAINT, but a magnet's "resting" position is just the undisplaced layout position, which is what suppression already produces — there is no separate "simplified but still present" state to build. |
 | Flowing gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
 
+| Cursor grid-dot field (FR-38-33) | **SUPPRESS — no instance, no canvas, no listener.** No JS is created under `reduce`; dots resting at cell centres is the same no-JS/reduce state, one code path (the FR-38-32 pattern this row's predecessor only predicted — now measured). |
 | Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js:136` (⚠ line corrected 2026-08-27, was cited as `:114`; the `if ( prefersReducedMotion() ) { return; }` gate inside `boot()`) returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
@@ -1982,7 +2002,7 @@ data-sgs-fx="<effect>"            e.g. pin-scrub | scrub | horizontal-panel | sp
                                        scramble | flip | draggable | draw | morph | motion-path |
                                        image-sequence | magnet (FR-38-30, added 2026-08-24) |
                                        particles (FR-38-32, added 2026-08-25) |
-                                       cursor-grid (FR-38-33, reserved 2026-08-27 — NOT BUILT) |
+                                       cursor-grid (FR-38-33, BUILT 2026-08-28) |
                                        particle-repel (FR-38-34, reserved 2026-08-27 — NOT BUILT)
                                   ⚠ The last two are RESERVED NAMES, not shipped effects. They are
                                     listed here because this project's practice is to claim the

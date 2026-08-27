@@ -177,10 +177,11 @@ must-fix items, still **NO-GO** per D794) is blocked until Bean names one.
 ✅ **Sparks SEEN + approved by Bean.** Was invisible at **1.44:1** (inherited body TEXT colour on a
 near-black panel); `fxParticleColour` shipped, deployed, set to `accent` on 2744. ✅ **3 gates
 CLOSED** — `floating-objects` was the WRONG effect for 7 weeks → FR-38-33/34; decorative-image =
-wrap-only-when-treated (unbuilt); covers → **Spec 40**. ✅ **FR-38-6 CLOSED by observation** (page
+wrap-only-when-treated (BUILT+live D865); covers → **Spec 40**. ✅ **FR-38-6 CLOSED by observation** (page
 2893, markup committed). Detail = the D-numbers; do not restate.
 
-⭐ **NEXT: `.claude/prompts/2026-08-28-motion-build-and-research.md`** (6 owner-set tasks).
+✅ **FR-38-33 grid-dots BUILT+live (D864-D870)**; 3 commits await deploy.
+⭐ **NEXT: `prompts/2026-08-29-motion-deploy-verify-and-timeline.md`**.
 ✅ **Row-collapse reduced-motion CLOSED too (D863)** — "untestable" was wrong; Bean pushed back and
 it measured clean in both arms. `probe-row-collapse-reduced-motion.mjs`. ⛔ Editing template part
 2671 does NOTHING: `parts/header.html` is a `wp:pattern` ref, so
