@@ -80,6 +80,18 @@ SSH_USER_HOST = "u945238940@141.136.39.73"
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLUGIN_DIR = REPO_ROOT / "plugins" / "sgs-blocks"
 BUILD_DIR = PLUGIN_DIR / "build"
+# `composer.phar` is GITIGNORED (only a developer's primary clone has a copy that
+# was hand-downloaded once). REPO_ROOT here is *this checkout's* root — in a git
+# worktree (e.g. `.claude/worktrees/wave-deploy`) or a fresh clone/CI checkout that
+# is a directory that never had the phar dropped into it, so the old hardcoded
+# `REPO_ROOT / "composer.phar"` pointed at a file that simply does not exist there.
+# composer_dump_autoload() then failed, and it is SUPPOSED to fail closed rather
+# than skip the dev-package purge (see its docstring + D849) — but "fails closed"
+# should mean "refuses to deploy with a useful message", not "cannot run at all
+# from a worktree". Hit for real 2026-08-27 working from `wave-deploy`; worked
+# around by hand-copying the phar, which is not repeatable for the next session
+# or for CI. `resolve_composer()` below is the fix: try every real location, in
+# order, and only fail once none of them work.
 COMPOSER_PHAR = REPO_ROOT / "composer.phar"
 TARBALL_NAME = "sgs-deploy.tar"
 # Ceiling for the packaged tarball. MEASURED, not guessed. A blocks-only deploy on
@@ -273,6 +285,75 @@ def run(cmd: list[str], *, dry_run: bool, cwd: Path | None = None) -> int:
     return result.returncode
 
 
+def resolve_composer() -> tuple[list[str], str] | None:
+    """Resolve a runnable Composer invocation, trying every real location in turn.
+
+    Resolved LAZILY (called at the point of use, not at import time) so a
+    failure surfaces with a useful message right when it matters, rather than
+    crashing the whole script at module load with a bare traceback.
+
+    Returns ``(base_cmd, description)`` for the FIRST candidate that resolves,
+    where ``base_cmd`` is the argv prefix to which ``dump-autoload --optimize
+    [--no-dev]`` gets appended — or ``None`` if nothing resolved, in which case
+    the caller must fail closed and name every location tried (see
+    ``composer_dump_autoload()`` below).
+
+    Candidates, in order:
+      1. ``composer.phar`` at THIS checkout's repo root — the original,
+         unchanged behaviour for a normal primary clone.
+      2. ``composer.phar`` at the MAIN worktree's root, derived via
+         ``git rev-parse --git-common-dir``. A git worktree's own directory
+         never holds the gitignored phar, but ``--git-common-dir`` always
+         points at the shared ``.git`` inside the primary clone, whose parent
+         is the primary clone's root — proven to hold the phar on this
+         machine. This is the case that actually broke a deploy on
+         2026-08-27 (see COMPOSER_PHAR's comment above).
+      3. ``composer`` on PATH as a plain executable, via ``resolve_exe()``.
+         Not installed on this machine as of writing, so this branch is
+         implemented carefully but could not be smoke-tested here.
+    """
+    php = resolve_exe("php")
+
+    # Candidate 1 — this checkout's own repo root (unchanged default path).
+    if COMPOSER_PHAR.is_file():
+        return ([php, str(COMPOSER_PHAR)], f"composer.phar at {COMPOSER_PHAR}")
+
+    # Candidate 2 — the main worktree's root, via git's own bookkeeping. A
+    # worktree's `.git` is a FILE pointing at the real gitdir inside the
+    # primary clone, and `--git-common-dir` resolves that indirection for us
+    # rather than us hand-parsing the `.git` file.
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            common_dir = Path(result.stdout.strip())
+            if not common_dir.is_absolute():
+                common_dir = (REPO_ROOT / common_dir).resolve()
+            main_worktree_root = common_dir.parent
+            candidate = main_worktree_root / "composer.phar"
+            if candidate.is_file():
+                return ([php, str(candidate)], f"composer.phar at the main worktree root ({candidate})")
+    except OSError:
+        # git itself not runnable — fall through to the next candidate rather
+        # than treat that as fatal here; the final all-miss message covers it.
+        pass
+
+    # Candidate 3 — `composer` on PATH as a plain executable. Note the command
+    # shape differs from the phar branches above: no `php` prefix, and the
+    # subcommand is `dump-autoload` directly rather than `php composer.phar
+    # dump-autoload`.
+    composer_exe = shutil.which("composer")
+    if composer_exe:
+        return ([composer_exe], f"composer on PATH ({composer_exe})")
+
+    return None
+
+
 def composer_dump_autoload(dry_run: bool, *, no_dev: bool) -> int:
     """Regenerate plugins/sgs-blocks's Composer autoloader, dev-included or not.
 
@@ -296,13 +377,30 @@ def composer_dump_autoload(dry_run: bool, *, no_dev: bool) -> int:
     `--no-dev` is for packaging ONLY, always followed by a dev-included
     regenerate to restore the working tree (see step_tar()'s finally block).
     Never call this with `no_dev=True` and leave it there.
+
+    WHEN and WHETHER this runs, and the `no_dev` semantics, are unchanged by
+    the resolution logic below — only HOW composer is located and invoked
+    changed (see `resolve_composer()`).
     """
-    php = resolve_exe("php")
-    cmd = [php, str(COMPOSER_PHAR), "dump-autoload", "--optimize"]
+    resolved = resolve_composer()
+    if resolved is None:
+        err(
+            "Could not locate a runnable Composer — tried all of:\n"
+            f"    1. {COMPOSER_PHAR} (this checkout's repo root)\n"
+            "    2. composer.phar at the main worktree's root (via `git "
+            "rev-parse --git-common-dir`)\n"
+            "    3. `composer` on PATH\n"
+            "  Fix: drop composer.phar at the repo root, or install Composer "
+            "on PATH."
+        )
+        return 1
+
+    base_cmd, description = resolved
+    cmd = [*base_cmd, "dump-autoload", "--optimize"]
     if no_dev:
-        cmd.insert(3, "--no-dev")
+        cmd.insert(len(base_cmd) + 1, "--no-dev")
     label = "--no-dev (safe for deploy)" if no_dev else "dev-included (safe for local gates)"
-    log(f"  [composer] regenerating autoloader — {label}")
+    log(f"  [composer] regenerating autoloader — {label} — using {description}")
     return run(cmd, dry_run=dry_run, cwd=PLUGIN_DIR)
 
 
