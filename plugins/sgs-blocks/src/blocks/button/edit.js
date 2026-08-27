@@ -773,6 +773,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							showSize={ true }
 							showWeight={ true }
 							showStyle={ true }
+							showFontFamily={ true }
 							showLineHeight={ false }
 							showResponsive={ true }
 						/>
