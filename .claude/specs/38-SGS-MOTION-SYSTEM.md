@@ -263,7 +263,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   when a client can produce usable frames with the documented tooling. Editor shows the poster
   frame only. The block itself exists (`src/blocks/image-sequence/`, agency-only, hidden
   from the inserter), matching `generate-fx-qualifying-blocks.py`'s `EXACT_MATCH_BLOCKS` roster
-  `{"sgs/image-sequence"}`.
+  `{"sgs/image-sequence"}`. **Tooling sub-scope SHIPPED, verified 2026-08-27:**
+  `scripts/image-sequence-prep.py` + `scripts/IMAGE-SEQUENCE-PREP-README.md` exist and document
+  the frame-export/compression pipeline this line called for.
 
 ### 3.2 Text
 
@@ -507,7 +509,12 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   1. **Paint cost.** A `radial-gradient` background repaints every frame the pointer moves, and
      N participants means N repaints. The house rule ("transition only `transform`/`opacity`")
      does not name `background-image`, but the cost class is the same. Measure frame cost on a
-     canary with a realistic participant count.
+     canary with a realistic participant count. ⚠ **Note added 2026-08-27, not a closure:** the
+     mechanism as shipped has no JS painter seam at all — a participant paints via a
+     `[data-sgs-cursor-field="X"]` CSS rule reading an inherited custom property, not a
+     JS-driven per-frame `radial-gradient` redraw. That is architecturally different from the
+     risk this paragraph describes, which may be why it reads as moot — but no explicit frame-cost
+     measurement was found to confirm that, so this is a plausible explanation, not a closed item.
   2. **Legibility.** A moving field under text changes contrast continuously. Measure at the
      field's BRIGHTEST position, never at rest — an effect recomputes every contrast above it.
      Bean's own standing finding applies: a mid-luminance brand accent fails as an indicator
@@ -1748,9 +1755,14 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   ruled FALSE by D426, see §3.3; **redirected to WooCommerce Product Collection and SHIPPED,
   D741 (2026-08-22) — animates live on the shop archive, `animate_product_filtering` ON**),
   DrawSVG + **Vivus retirement** (FR-38-15), MorphSVG (FR-38-16,
-  P-10 revival), MotionPath scrubbed mode (FR-38-17 — its Tier V `offset-path` variant may ship
-  any time, no GSAP needed), ScrambleText (FR-38-11), `sgs/image-sequence` + asset-pipeline
-  tooling (FR-38-9). Stretch: Tier V asset migration onto the registry (FR-38-24).
+  P-10 revival), MotionPath (FR-38-17 — **SHIPPED, verified 2026-08-27**: `@sgs/fx-motion-path`
+  registered and wired in `class-sgs-motion-registry.php`; whether the specific Tier V
+  `offset-path` CSS-only variant this line originally described is the shipped implementation,
+  as opposed to the GSAP-tier module confirmed here, was not separately re-checked), ScrambleText
+  (FR-38-11 — **SHIPPED, verified 2026-08-27**: `@sgs/fx-scramble` registered and wired),
+  `sgs/image-sequence` + asset-pipeline tooling (FR-38-9 — **SHIPPED, verified 2026-08-27**:
+  `scripts/image-sequence-prep.py` + `IMAGE-SEQUENCE-PREP-README.md` exist, alongside the block
+  and its effect module). Stretch: Tier V asset migration onto the registry (FR-38-24).
  **Blast radius: per-block.** The two shipped-block touches (pairing contract; responsive-logo
   runtime swap) each get a before/after live check; everything else is new blocks/modules.
   If C needs splitting, cut along the pairing seam: C1 = Flip + Draggable + before-after;
