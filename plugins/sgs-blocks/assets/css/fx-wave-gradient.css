@@ -169,3 +169,320 @@
 		display: none;
 	}
 }
+
+/*
+ * CSS-ONLY VARIANTS — pastel, horizon, ribbon, veil (Spec 38, client-approved
+ * values). `--aurora` is the WebGL shader variant and is handled entirely
+ * outside this file; nothing below matches it.
+ *
+ * Each variant paints its two moving layers on the block root's own
+ * `::before`/`::after`, because these variants render no child span layers at
+ * all. Layers sit below the block's own content (z-index convention matches
+ * `.sgs-wave-gradient__canvas` above: 0 for the painted layers, content lifted
+ * to 1 by the existing CHILD-LIFT rule) and travel on large `translate`
+ * ranges — never scale-only, which reads as static breathing rather than
+ * motion.
+ */
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil {
+	background-image: none;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before,
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+/* PASTEL — mid-luminance mint/violet blobs travelling over a shifting base. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel {
+	background-color: #7d85ac;
+	background-image: linear-gradient(
+		100deg,
+		#928dc0 0%,
+		#7d85ac 16%,
+		#749490 34%,
+		#7bad79 50%,
+		#769592 64%,
+		#777fa9 80%,
+		#9389c9 100%
+	);
+	background-size: 190% 100%;
+	animation: sgs-wave-pastel-base 26s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before {
+	background: radial-gradient(
+		46% 50% at 50% 50%,
+		#e2fbd2 0%,
+		#95d890 34%,
+		transparent 62%
+	);
+	filter: blur( 40px );
+	opacity: 0.78;
+	mix-blend-mode: screen;
+	animation: sgs-wave-pastel-layer-a 19s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after {
+	background: radial-gradient(
+		46% 50% at 50% 50%,
+		#d3c6ff 0%,
+		#8d80d4 38%,
+		transparent 66%
+	);
+	filter: blur( 46px );
+	opacity: 0.6;
+	mix-blend-mode: screen;
+	animation: sgs-wave-pastel-layer-b 24s ease-in-out infinite;
+	animation-delay: -6s;
+}
+
+/* HORIZON — dark ground, teal/violet glow banked along the bottom edge. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon {
+	background-color: #060810;
+	background-image: linear-gradient(
+		to top,
+		#070a13 0%,
+		#0a1020 46%,
+		#060810 100%
+	);
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before {
+	top: auto;
+	bottom: 0;
+	height: 60%;
+	background: radial-gradient(
+		52% 100% at 50% 100%,
+		#3edcb8 0%,
+		#2a5fd0 48%,
+		transparent 76%
+	);
+	filter: blur( 44px );
+	opacity: 0.78;
+	animation: sgs-wave-horizon-layer-a 17s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after {
+	top: auto;
+	bottom: 0;
+	height: 46%;
+	background: radial-gradient(
+		42% 100% at 50% 100%,
+		#c95fd4 0%,
+		#4a47c8 54%,
+		transparent 78%
+	);
+	filter: blur( 44px );
+	opacity: 0.6;
+	animation: sgs-wave-horizon-layer-b 23s ease-in-out infinite;
+	animation-delay: -8s;
+}
+
+/* RIBBON — a single diagonal band crossing a dark ground, plus a thinner echo. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon {
+	background-color: #05060d;
+	background-image: radial-gradient(
+		120% 120% at 20% 0%,
+		#141b33 0%,
+		#05060d 68%
+	);
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before {
+	top: 50%;
+	left: -25%;
+	right: auto;
+	bottom: auto;
+	width: 150%;
+	height: 66px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		#4c6be0 18%,
+		#4fd2c4 48%,
+		#c267b8 76%,
+		transparent
+	);
+	filter: blur( 19px );
+	opacity: 0.7;
+	transform-origin: center;
+	animation: sgs-wave-ribbon-layer-a 20s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after {
+	top: 50%;
+	left: -25%;
+	right: auto;
+	bottom: auto;
+	width: 150%;
+	height: 40px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		#8a5bd8 26%,
+		#3fa9e0 68%,
+		transparent
+	);
+	filter: blur( 15px );
+	opacity: 0.5;
+	transform-origin: center;
+	animation: sgs-wave-ribbon-layer-a 20s ease-in-out infinite;
+	animation-delay: -9s;
+}
+
+/* VEIL — broad overlapping sheets that cross and swap sides on a dark ground. */
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil {
+	background-color: #06080f;
+	background-image: radial-gradient(
+		100% 100% at 50% 50%,
+		#101728 0%,
+		#06080f 72%
+	);
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before {
+	top: -29%;
+	left: -37%;
+	right: auto;
+	bottom: auto;
+	width: 74%;
+	height: 158%;
+	background: radial-gradient( circle at 50% 50%, #2f63d8, transparent 66% );
+	filter: blur( 52px );
+	opacity: 0.74;
+	mix-blend-mode: screen;
+	animation: sgs-wave-veil-layer-a 22s ease-in-out infinite;
+}
+
+[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+	top: -29%;
+	left: -37%;
+	right: auto;
+	bottom: auto;
+	width: 74%;
+	height: 158%;
+	background: radial-gradient( circle at 50% 50%, #39c7b4, transparent 66% );
+	filter: blur( 52px );
+	opacity: 0.62;
+	mix-blend-mode: screen;
+	animation: sgs-wave-veil-layer-b 28s ease-in-out infinite;
+	animation-delay: -11s;
+}
+
+@keyframes sgs-wave-pastel-base {
+	0%, 100% {
+		background-position: 0% 50%;
+	}
+
+	50% {
+		background-position: 100% 50%;
+	}
+}
+
+@keyframes sgs-wave-pastel-layer-a {
+	0%, 100% {
+		translate: -30% -18%;
+	}
+
+	33% {
+		translate: 26% 20%;
+	}
+
+	66% {
+		translate: 12% -24%;
+	}
+}
+
+@keyframes sgs-wave-pastel-layer-b {
+	0%, 100% {
+		translate: 28% 16%;
+	}
+
+	40% {
+		translate: -24% -20%;
+	}
+
+	75% {
+		translate: -10% 26%;
+	}
+}
+
+@keyframes sgs-wave-horizon-layer-a {
+	0%, 100% {
+		translate: -32% 6%;
+	}
+
+	50% {
+		translate: 32% -10%;
+	}
+}
+
+@keyframes sgs-wave-horizon-layer-b {
+	0%, 100% {
+		translate: 30% -8%;
+	}
+
+	50% {
+		translate: -30% 8%;
+	}
+}
+
+@keyframes sgs-wave-ribbon-layer-a {
+	0%, 100% {
+		translate: -6% -14%;
+		rotate: -19deg;
+	}
+
+	50% {
+		translate: 6% 14%;
+		rotate: -9deg;
+	}
+}
+
+@keyframes sgs-wave-veil-layer-a {
+	0%, 100% {
+		translate: -45% 0%;
+	}
+
+	50% {
+		translate: 45% 8%;
+	}
+}
+
+@keyframes sgs-wave-veil-layer-b {
+	0%, 100% {
+		translate: 45% -6%;
+	}
+
+	50% {
+		translate: -45% 4%;
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--pastel::after,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--horizon::after,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--ribbon::after,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::before,
+	[data-sgs-fx="wave-gradient"].sgs-wave-gradient--veil::after {
+		animation: none;
+	}
+}

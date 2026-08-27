@@ -56,6 +56,7 @@ return array(
 	'fxWaveAmplitude' => array( 'type' => 'number' ),
 	'fxWaveBase' => array( 'type' => 'string' ),
 	'fxWaveSpeed' => array( 'type' => 'number' ),
+	'fxWaveVariant' => array( 'type' => 'string' ),
 	'sgsAnimation' => array( 'type' => 'string' ),
 	'sgsAnimationDelay' => array( 'type' => 'string' ),
 	'sgsAnimationDuration' => array( 'type' => 'string' ),

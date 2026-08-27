@@ -1051,6 +1051,7 @@ function addFxAttributes( settings, name ) {
 			fxWave1: { type: 'string', default: '' },
 			fxWave2: { type: 'string', default: '' },
 			fxWave3: { type: 'string', default: '' },
+			fxWaveVariant: { type: 'string' },
 			fxWaveSpeed: { type: 'number' },
 			fxWaveAmplitude: { type: 'number' },
 			fxMagnetAxis: { type: 'string', default: '' },
@@ -1311,6 +1312,7 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-wave-1': attributes.fxWave1,
 		'data-sgs-fx-wave-2': attributes.fxWave2,
 		'data-sgs-fx-wave-3': attributes.fxWave3,
+		'data-sgs-fx-wave-variant': attributes.fxWaveVariant,
 		'data-sgs-fx-wave-speed': attributes.fxWaveSpeed,
 		'data-sgs-fx-wave-amplitude': attributes.fxWaveAmplitude,
 		'data-sgs-fx-magnet-axis': attributes.fxMagnetAxis,
@@ -2513,6 +2515,47 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						  */ }
 						{ 'wave-gradient' === fx && (
 							<>
+								{ /*
+								  * Style picker. FOUR of these five are pure CSS —
+								  * only "aurora" boots a WebGL context, because
+								  * filamentary curtains need per-pixel noise and
+								  * domain warping, which CSS cannot express
+								  * (proven across three CSS attempts, D838).
+								  * A CSS variant therefore costs no canvas, no
+								  * capability probe and no fallback contract.
+								  */ }
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxWaveVariant
+										}
+										label={ __( 'Style', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxWaveVariant: undefined } )
+										}
+										isShownByDefault
+									>
+										<SelectControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Style', 'sgs-blocks' ) }
+											value={ attributes.fxWaveVariant || 'pastel' }
+											options={ [
+												{ label: __( 'Pastel — soft daylight wash', 'sgs-blocks' ), value: 'pastel' },
+												{ label: __( 'Aurora — northern lights', 'sgs-blocks' ), value: 'aurora' },
+												{ label: __( 'Horizon — glow along the base', 'sgs-blocks' ), value: 'horizon' },
+												{ label: __( 'Ribbon — one band crossing', 'sgs-blocks' ), value: 'ribbon' },
+												{ label: __( 'Veil — broad drifting sheets', 'sgs-blocks' ), value: 'veil' },
+											] }
+											onChange={ ( value ) =>
+												setParam( { fxWaveVariant: value } )
+											}
+											help={ __(
+												'Aurora is drawn on the graphics card; the rest are pure CSS and cost nothing extra.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
 								<ToolsPanelItem
 										hasValue={ () => !! attributes.fxWaveBase }
 										label={ __( 'Base colour', 'sgs-blocks' ) }

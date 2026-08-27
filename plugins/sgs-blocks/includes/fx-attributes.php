@@ -107,6 +107,7 @@ const FX_ATTR_MAP = array(
 	'fxWave1'              => 'data-sgs-fx-wave-1',
 	'fxWave2'              => 'data-sgs-fx-wave-2',
 	'fxWave3'              => 'data-sgs-fx-wave-3',
+	'fxWaveVariant'        => 'data-sgs-fx-wave-variant',
 	'fxWaveSpeed'          => 'data-sgs-fx-wave-speed',
 	'fxWaveAmplitude'      => 'data-sgs-fx-wave-amplitude',
 	'fxMagnetAxis'         => 'data-sgs-fx-magnet-axis',
@@ -413,7 +414,7 @@ function sgs_fx_effect_param_scope(): array {
 		 */
 		'cursor-field'      => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius', 'fxFieldShape', 'fxFieldTrail', 'fxFieldBlend' ),
 		'magnet'            => array( 'fxMagnetAxis', 'fxMagnetRadius', 'fxMagnetStrength' ),
-		'wave-gradient'     => array( 'fxWaveBase', 'fxWave1', 'fxWave2', 'fxWave3', 'fxWaveSpeed', 'fxWaveAmplitude' ),
+		'wave-gradient'     => array( 'fxWaveVariant', 'fxWaveBase', 'fxWave1', 'fxWave2', 'fxWave3', 'fxWaveSpeed', 'fxWaveAmplitude' ),
 
 		/*
 		 * Surface treatment (Tier W, Spec 38 §1.2b, D479). THIS ROW IS

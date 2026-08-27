@@ -106,6 +106,29 @@ function sgs_apply_fx_wave_gradient( string $block_content ): string {
 		$html = \substr( $html, 0, $last ) . $toggle . \substr( $html, $last );
 	}
 
+	/*
+	 * Variant class, emitted on the root BEFORE the early return below.
+	 * Four of the five variants are pure CSS and produce no custom-property
+	 * declarations at all, so if this sat after that return they would ship
+	 * with no class and render nothing — the whole variant system would be
+	 * silently dead for exactly the cases it exists to serve.
+	 */
+	$variant = (string) $processor->get_attribute( 'data-sgs-fx-wave-variant' );
+	if ( '' === $variant || null === $processor->get_attribute( 'data-sgs-fx-wave-variant' ) ) {
+		$variant = 'pastel';
+	}
+	$allowed = array( 'pastel', 'aurora', 'horizon', 'ribbon', 'veil' );
+	if ( ! \in_array( $variant, $allowed, true ) ) {
+		$variant = 'pastel';
+	}
+	$vclass = 'sgs-wave-gradient--' . $variant;
+	$vtag   = new \WP_HTML_Tag_Processor( $html );
+	if ( $vtag->next_tag() ) {
+		$vexisting = (string) $vtag->get_attribute( 'class' );
+		$vtag->set_attribute( 'class', 	rim( $vexisting . ' ' . $vclass ) );
+		$html = $vtag->get_updated_html();
+	}
+
 	if ( empty( $declarations ) ) {
 		return $head . $html;
 	}

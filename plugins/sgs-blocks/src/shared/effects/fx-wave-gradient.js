@@ -37,7 +37,14 @@
  * @package
  */
 
-import { createWaveGradient, WAVE_LAYERS } from './webgl/wave-gradient';
+// WAVE_LAYERS is the colour-slot count (base + 3), shared by both renderers.
+// ⚠ createWaveGradient is deliberately NOT imported: the four non-aurora
+// variants are painted by the stylesheet, so the original mesh renderer has
+// no remaining caller. It is left on disk rather than deleted here — that is
+// its own reviewable change, and it carries the MIT attribution the effect
+// depends on.
+import { WAVE_LAYERS } from './webgl/wave-gradient';
+import { createAurora } from './webgl/aurora';
 import { prefersReducedMotion } from './motion-utils';
 
 /** Elements the render layer marked. */
@@ -213,6 +220,22 @@ function readColours( el ) {
  * @return {Object|null} A teardown record, or null if it could not start.
  */
 function attach( el ) {
+	/*
+	 * Variant gate. Four of the five variants are drawn entirely in CSS, so
+	 * they must NOT create a canvas, probe WebGL, or install a rAF loop — the
+	 * stylesheet has already painted them from the root's variant class. Only
+	 * "aurora" needs the shader, because filamentary curtains require
+	 * per-pixel noise and domain warping that CSS cannot express (D838).
+	 *
+	 * Returning null here is the correct "nothing to tear down" signal that
+	 * boot() already expects; it is NOT a failure path, and it deliberately
+	 * leaves data-sgs-wave-active unset so the CSS keeps painting.
+	 */
+	const variant = ( el.getAttribute( 'data-sgs-fx-wave-variant' ) || 'pastel' ).trim();
+	if ( variant !== 'aurora' ) {
+		return null;
+	}
+
 	const colours = readColours( el );
 	if ( ! colours ) {
 		return null;
@@ -227,7 +250,14 @@ function attach( el ) {
 	const speed = parseFloat( el.getAttribute( 'data-sgs-fx-wave-speed' ) );
 	const amplitude = parseFloat( el.getAttribute( 'data-sgs-fx-wave-amplitude' ) );
 
-	const gradient = createWaveGradient( canvas, {
+	/*
+	 * Only the aurora variant reaches here, so the renderer choice is a
+	 * straight swap rather than a branch: both handles expose the identical
+	 * draw / resize / destroy contract, and every lifecycle call below is
+	 * written against that contract, not against either implementation.
+	 */
+	const createRenderer = createAurora;
+	const gradient = createRenderer( canvas, {
 		colours,
 		amplitude: isNaN( amplitude )
 			? undefined
