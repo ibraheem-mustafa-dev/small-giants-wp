@@ -148,6 +148,17 @@ html {
  * full-bleed by default, so there is no subset to detect, and it would mean
  * changing the wrapper that 48 blocks share.
  *
+ * ⭐ `sgs/site-footer` is here too (2026-08-27). MEASURED, not assumed: a real
+ * 24px gap sat between the last page section and the footer, with the body's
+ * background showing through it — the same visible band.
+ *
+ * ⚠ `sgs/site-header` and `sgs/nav-drawer` are deliberately NOT listed. Both
+ * measure 0px today, so there is no defect to fix and this codebase does not
+ * ship a fix for one that has not been shown. Note WHY the header reads 0px:
+ * it is the FIRST child, and WordPress's own layout zeroes a first child's top
+ * margin. Put a block above it and it would gain the gap — measure again then
+ * rather than pre-emptively adding it now.
+ *
  * ⚠ Every selector here uses `>` — DIRECT CHILD ONLY. This reaches top-level
  * page sections and nothing else; a container nested inside another container
  * keeps its normal spacing.
@@ -202,7 +213,8 @@ html {
 .wp-site-blocks > .wp-block-group,
 .wp-site-blocks > .wp-block-cover,
 .wp-site-blocks > .wp-block-sgs-hero,
-.wp-site-blocks > .wp-block-sgs-container {
+.wp-site-blocks > .wp-block-sgs-container,
+.wp-site-blocks > .wp-block-sgs-site-footer {
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
@@ -278,7 +290,8 @@ html {
 .is-root-container > .wp-block-group,
 .is-root-container > .wp-block-cover,
 .is-root-container > .wp-block-sgs-hero,
-.is-root-container > .wp-block-sgs-container {
+.is-root-container > .wp-block-sgs-container,
+.is-root-container > .wp-block-sgs-site-footer {
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
