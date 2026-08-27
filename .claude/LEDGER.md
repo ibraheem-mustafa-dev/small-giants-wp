@@ -96,7 +96,7 @@ D830-D834 still owes one. Reasoning: D804.
 ⛔ **These were ONE plan file and that cost a full session (D838).** FR-38-31 is a SHIPPED effect;
 the engine is an UNBUILT rebuild. No phase number is shared between them. Never re-merge.
 
-### ▶ A. FR-38-31 `flowing-gradient` — shipped effect, closing out
+### ▶ A. FR-38-31 `flowing-gradient` — ✅ CLOSED 2026-08-27 (shipped, verified live)
 
 Bean's verdict on the D828 re-fix: *"insanely slow… nothing like an aurora, just blurry random
 shapes."* ⭐ **Aurora was never this effect's target** — it was built as a Stripe-hero clone, and
@@ -104,8 +104,12 @@ D781 already found that reference was the wrong thing. **Not reopened for look w
 ⚠ **A working `fxWaveSpeed` control EXISTS** (`fx.js:2598` → `fx-wave-gradient.js:250,271`) — an
 earlier claim that there was none was wrong. The DEFAULT is the defect: ~115s to cross one screen.
 **Derive it as `drift/(2·freq·aspect)`, never from the raw constant** — eyeballing it was wrong 4×.
-Closing scope: speed default+range, help-text reword ("slower reads as more expensive" contradicts
-the verdict), Speed/Wave-depth default-visible, name honesty.
+✅ **SHIPPED + LIVE-VERIFIED (`edc7fed9f`):** LAYER_DRIFT x3.5 (default ~115s -> ~33s per screen,
+max ~11s), morph raised only 1.5x so flow leads over shape-change, Speed + Wave depth now
+`isShownByDefault`, help text reworded, docblock records this is NOT an aurora.
+Both palettes measured drifting on real GPU (negative control 0.0%); editor rows visible without
+the "+" menu; payload-verify 83/83; motion QA 3/3. Figures in **D838**.
+⚠ Measure with a FIXED integer clip, never an element screenshot (D838).
 Plan CLOSED: `plans/archive/2026-08-26-fr3831-look-gate.md`. ✅ D813/D814/D815/D826 closed;
 D827 technique change + D828 regression fix — read the D-numbers, do not restate.
 

@@ -62,6 +62,33 @@ mid-session too: `decisions.md` gained D837 from another track between deriving 
 writing this entry — the assertion caught it. **Derive the D-ceiling immediately before the write,
 not at the start of the work.**
 
+**✅ VERIFIED LIVE (canary page 2740, real GPU via `--use-gl=angle`, 2026-08-27).** Deploy:
+payload-verify 83/83, both cache layers purged, `qa:motion` 3/3 green.
+
+| Measurement (fixed clip, screenshot + PIL, %% of px differing >8/255) | 0.25s | 0.5s | 1.0s | 1.5s |
+|---|---|---|---|---|
+| Light palette (section 1) | 39.7%% | 61.5%% | 79.6%% | 85.5%% |
+| Warm palette (section 2) | — | 28.3%%@0.375s | 71.6%%@1.12s | 79.5%% |
+| **NEGATIVE CONTROL** — static page strip, no effect | | | | **0.0%%, mean 0.00** |
+
+Both palettes now show a proper monotonic drift curve, including the warm one D828 recorded as
+reading static. Identical-image control returns max delta 0, so the comparator can report
+"unchanged". Editor (logged in, block selected via `wp.data`): **Speed and Wave depth are both
+present without ever opening the ToolsPanel "+" menu**, the new help text is live, and the old
+"Slower reads as more expensive" string is gone (0 occurrences).
+
+⛔ **A THIRD instrument failure, caught before it became a false finding — the same class as the
+other two.** The first measurement used Playwright ELEMENT screenshots and reported ~99%% changed at
+*every* gap from 0.125s to 2.5s — flat, saturated, and meaningless. Cause: the host's bounding box
+has a FRACTIONAL y (263.78), so each element screenshot re-rounds it and the whole frame shifts a
+pixel, swamping the real signal. Switching to a **fixed integer `clip` rect** produced the correct
+monotonic curve above. **A metric that reads the same at 0.125s and 2.5s is not measuring what you
+think** — and a saturated metric cannot discriminate speed at all. Related: a "paused" control in
+the same run silently never paused (the selector matched nothing) and would have been reported as a
+control had its own value not been checked; and the inspector labels first read as "absent" purely
+because `innerText` returns CSS `text-transform: uppercase` output and the check was
+case-sensitive. **Three probes, three instrument bugs, zero real defects among them.**
+
 **Bean's decision, recorded:** finish and close FR-38-31 as the modest effect it is (speed default
 and range, help-text reword, controls made default-visible, name honesty), THEN start the engine
 track properly — with its reference picked up front, which has never once been done and is what
