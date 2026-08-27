@@ -605,8 +605,13 @@ export default function Edit({ attributes, setAttributes, name }) {
             split. Mirrors the D548 `sgs/gallery` precedent (its own base tier
             is likewise owned, not native). */}
         <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
+          {/* presets={true} — C16 pilot (2026-08-27). sgs/container is the ONE
+              block piloting spacing presets on the shared SgsBoxControl before
+              the other 50 mounts see them (default stays OFF everywhere else).
+              See .claude/scratch/2026-08-27-c16-spacing-presets-design.md §7. */}
           <ResponsiveBoxControl
             label={ __( "Padding", "sgs-blocks" ) }
+            presets
             values={ {
               base: attributes.padding ?? {},
               tablet: attributes.paddingTablet ?? {},
@@ -628,6 +633,7 @@ export default function Edit({ attributes, setAttributes, name }) {
           <hr style={ { margin: "16px 0" } } />
           <ResponsiveBoxControl
             label={ __( "Margin", "sgs-blocks" ) }
+            presets
             values={ {
               base: attributes.margin ?? {},
               tablet: attributes.marginTablet ?? {},
@@ -706,6 +712,7 @@ export default function Edit({ attributes, setAttributes, name }) {
         <PanelBody title={ __( "Wrapper border", "sgs-blocks" ) } initialOpen={ false }>
           <ResponsiveBoxControl
             label={ __( "Border width", "sgs-blocks" ) }
+            presets
             values={ { base: borderWidth ?? {} } }
             showResponsive={ false }
             onChange={ ( _tier, next ) => setAttributes( { borderWidth: next } ) }

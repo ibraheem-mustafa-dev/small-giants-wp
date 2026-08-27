@@ -119,6 +119,10 @@ export const normaliseResponsiveBox = ( box ) => {
  *                                 `sides` prop (restrict to a subset of sides).
  * @param {boolean}  [props.showResponsive=true] Show the device-icon switcher.
  *                                 When false, only the base tier is editable.
+ * @param {boolean}  [props.presets=false] Passed through to SgsBoxControl —
+ *                                 offer the theme.json spacing-scale dropdown
+ *                                 per side (C16, 2026-08-27). OPT-IN, default
+ *                                 OFF; see SgsBoxControl.js's file header.
  * @return {JSX.Element} Controls fragment.
  */
 export default function ResponsiveBoxControl( {
@@ -127,6 +131,7 @@ export default function ResponsiveBoxControl( {
 	onChange,
 	sides,
 	showResponsive = true,
+	presets = false,
 } ) {
 	const tierValues = {
 		base: values.base ?? {},
@@ -141,6 +146,7 @@ export default function ResponsiveBoxControl( {
 				values={ tierValues.base }
 				sides={ sides }
 				units={ BOX_UNITS }
+				presets={ presets }
 				onChange={ ( next ) => onChange( 'base', next ) }
 			/>
 		);
@@ -159,6 +165,7 @@ export default function ResponsiveBoxControl( {
 						values={ tierValues[ tier ] }
 						sides={ sides }
 						units={ BOX_UNITS }
+						presets={ presets }
 						onChange={ ( next ) => onChange( tier, next ) }
 					/>
 				);
