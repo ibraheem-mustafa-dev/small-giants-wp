@@ -742,6 +742,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					   the per-size default padding in style.css governs unchanged. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Pill padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: pillPadding?.desktop ?? {},
 							tablet: pillPadding?.tablet ?? {},
@@ -825,6 +826,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: style?.spacing?.padding ?? {},
 							tablet: paddingTablet ?? {},
@@ -840,6 +842,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: style?.spacing?.margin ?? {},
 							tablet: marginTablet ?? {},
@@ -885,6 +888,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
+						presets={ [ 'XXS', 'XS', 'S' ] }
 						values={ { base: borderWidth ?? {} } }
 						showResponsive={ false }
 						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }

@@ -1129,6 +1129,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						<ResponsiveBoxControl
 							label={ __( 'Padding', 'sgs-blocks' ) }
+							presets
 							values={ {
 								base: attributes.style?.spacing?.padding ?? {},
 								tablet: attributes.paddingTablet ?? {},
@@ -1238,6 +1239,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						   matching nav-drawer's drawerPadding shape. */ }
 						<ResponsiveBoxControl
 							label={ __( 'Inner spacing', 'sgs-blocks' ) }
+							presets
 							values={ {
 								base: submenuPadding?.desktop ?? {},
 								tablet: submenuPadding?.tablet ?? {},

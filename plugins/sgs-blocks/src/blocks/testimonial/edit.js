@@ -1201,6 +1201,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 				>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: style?.spacing?.padding ?? {},
 							tablet: paddingTablet ?? {},
@@ -1223,6 +1224,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: style?.spacing?.margin ?? {},
 							tablet: marginTablet ?? {},

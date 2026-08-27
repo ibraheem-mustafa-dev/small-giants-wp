@@ -213,6 +213,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: asidePadding?.desktop ?? {},
 							tablet: asidePadding?.tablet ?? {},
@@ -251,6 +252,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
+						presets={ [ 'XXS', 'XS', 'S' ] }
 						values={ { base: asideBorderWidth ?? {} } }
 						showResponsive={ false }
 						onChange={ ( tier, next ) =>

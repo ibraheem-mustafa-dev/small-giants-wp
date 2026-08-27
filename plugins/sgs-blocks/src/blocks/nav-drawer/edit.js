@@ -470,6 +470,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ResponsiveBoxControl
 						label={ __( 'Popup padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: drawerPadding?.desktop ?? {},
 							tablet: drawerPadding?.tablet ?? {},

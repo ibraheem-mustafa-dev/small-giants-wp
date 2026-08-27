@@ -385,6 +385,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ResponsiveBoxControl
 						label={ __( 'Panel padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: panelPadding?.desktop ?? {},
 							tablet: panelPadding?.tablet ?? {},

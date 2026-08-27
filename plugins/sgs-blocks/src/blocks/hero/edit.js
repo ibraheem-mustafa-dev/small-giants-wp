@@ -1068,6 +1068,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							     4-side box, unchanged in shape from the old sibling attrs. */ }
 							<ResponsiveBoxControl
 								label={ __( 'Content padding', 'sgs-blocks' ) }
+								presets
 								values={ {
 									base: contentPadding?.desktop ?? {},
 									tablet: contentPadding?.tablet ?? {},
@@ -1391,6 +1392,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								<>
 									<ResponsiveBoxControl
 										label={ __( 'Border width', 'sgs-blocks' ) }
+										presets={ [ 'XXS', 'XS', 'S' ] }
 										values={ { base: splitMediaBorderWidth ?? {} } }
 										showResponsive={ false }
 										onChange={ ( tier, next ) => setAttributes( { splitMediaBorderWidth: next } ) }
@@ -1416,6 +1418,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the image and the wrapper border.', 'sgs-blocks' ) }</p>
 							<ResponsiveBoxControl
 								label={ __( 'Image padding', 'sgs-blocks' ) }
+								presets
 								values={ {
 									base: splitMediaPadding ?? {},
 									tablet: splitMediaPaddingTablet ?? {},
@@ -1442,6 +1445,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
 							<ResponsiveBoxControl
 								label={ __( 'Media padding', 'sgs-blocks' ) }
+								presets
 								values={ {
 									base: mediaPadding ?? {},
 									tablet: mediaPaddingTablet ?? {},
@@ -1561,6 +1565,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: attributes.padding ?? {},
 							tablet: attributes.paddingTablet ?? {},
@@ -1578,6 +1583,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: attributes.margin ?? {},
 							tablet: attributes.marginTablet ?? {},

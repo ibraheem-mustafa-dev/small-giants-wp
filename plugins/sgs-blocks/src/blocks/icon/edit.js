@@ -387,6 +387,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: style?.spacing?.padding ?? {},
 							tablet: paddingTablet ?? {},
@@ -402,6 +403,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: style?.spacing?.margin ?? {},
 							tablet: marginTablet ?? {},
