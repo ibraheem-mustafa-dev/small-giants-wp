@@ -11,7 +11,7 @@ import {
 	Notice,
 	BoxControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, spacingPreview } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
@@ -31,7 +31,6 @@ import {
 	GridItemDefaultsPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { UnitControl } from '../../components/primitives';
 
 /**
  * Resolve a gap attribute value to a valid CSS string for editor preview.
@@ -334,15 +333,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	// Padding/margin canvas preview — the pair MEASURED live 2026-08-26 as the
 	// concrete regression evidence for this build (120px/80px on the real
-	// page, 0px on canvas). Base padding + margin live in the WP-native
-	// `style.spacing` object; tablet/mobile overrides are the block-private
+	// page, 0px on canvas). Base padding + margin are now the block-OWNED
+	// `padding`/`margin` object attrs (D555 gutter-default migration — no
+	// `supports.spacing`); tablet/mobile overrides are the block-private
 	// paddingTablet/paddingMobile/marginTablet/marginMobile object attrs
 	// (this block declares all four — verified in block.json).
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.style?.spacing?.padding,
+		basePadding: attributes.padding,
 		paddingTablet: attributes.paddingTablet,
 		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.style?.spacing?.margin,
+		baseMargin: attributes.margin,
 		marginTablet: attributes.marginTablet,
 		marginMobile: attributes.marginMobile,
 	}, previewTier );
@@ -639,26 +639,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				{ /* ── Padding & margin (box-object tiers) ───────────────────── */ }
 				{ /* Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-				     §5): base tier writes to the WP-native style.spacing object (also visible
-				     in the Styles > Dimensions panel); tablet/mobile write to the
-				     paddingTablet/paddingMobile + marginTablet/marginMobile object attrs
-				     read by the shared wrapper's @media tiers. Mirrors sgs/container's edit.js. */ }
+				     §5): base tier writes to the block-OWNED `padding`/`margin` attrs
+				     (also visible in the Styles > Dimensions panel); tablet/mobile write
+				     to the paddingTablet/paddingMobile + marginTablet/marginMobile object
+				     attrs read by the shared wrapper's @media tiers. Mirrors sgs/container's edit.js. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
+							base: attributes.padding ?? {},
 							tablet: attributes.paddingTablet ?? {},
 							mobile: attributes.paddingMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
+								setAttributes( { padding: next } );
 							} else {
 								setAttributes( {
 									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
@@ -670,18 +665,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
+							base: attributes.margin ?? {},
 							tablet: attributes.marginTablet ?? {},
 							mobile: attributes.marginMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
+								setAttributes( { margin: next } );
 							} else {
 								setAttributes( {
 									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
@@ -827,7 +817,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						     load-bearing here — the attribute DEFAULTS to '50%' to
 						     make the circle, so a px-only units array would silently
 						     remove the block's own default shape. */ }
-						<UnitControl
+						<SgsLengthControl
+							presets={ false }
 							label={ __( 'Icon circle border radius', 'sgs-blocks' ) }
 							value={ iconCircleBorderRadius }
 							onChange={ ( val ) => setAttributes( { iconCircleBorderRadius: val || '' } ) }
@@ -838,7 +829,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								{ value: 'em', label: 'em', default: 0.5 },
 							] }
 							help={ __( "50% makes a circle; a px value makes a rounded square.", 'sgs-blocks' ) }
-							__next40pxDefaultSize
 						/>
 						<ShadowControl
 							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
@@ -900,7 +890,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ /* §14.3 raw-TextControl violation fixed (D561). Same units
 						     array as the icon circle above — '%' reaches the circle
 						     case the old help text advertised. */ }
-						<UnitControl
+						<SgsLengthControl
+							presets={ false }
 							label={ __( 'Badge image border radius', 'sgs-blocks' ) }
 							value={ badgeImageBorderRadius }
 							onChange={ ( val ) => setAttributes( { badgeImageBorderRadius: val || '' } ) }
@@ -911,7 +902,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								{ value: 'em', label: 'em', default: 0.5 },
 							] }
 							help={ __( 'Leave blank for square corners; 50% makes a circle.', 'sgs-blocks' ) }
-							__next40pxDefaultSize
 						/>
 						<ShadowControl
 							label={ __( 'Badge image shadow', 'sgs-blocks' ) }

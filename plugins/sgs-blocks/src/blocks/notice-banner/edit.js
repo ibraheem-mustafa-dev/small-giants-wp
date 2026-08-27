@@ -15,11 +15,12 @@ import {
 	IconPreview,
 	ResponsiveBoxControl,
 	SgsColourPanel,
+	SgsLengthControl,
 	fillRow,
 	textRow,
 } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only, matches the pre-existing attribute set). contentWidth was
@@ -241,14 +242,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				     is always full-width + fixed. */ }
 				{ ! isAnnouncement && (
 					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
-						<UnitControl
+						<SgsLengthControl
+							presets={ false }
 							label={ __( 'Outer max-width', 'sgs-blocks' ) }
 							value={ maxWidth || '' }
 							units={ LENGTH_UNITS }
 							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 						<ResponsiveBoxControl
 							label={ __( 'Padding', 'sgs-blocks' ) }

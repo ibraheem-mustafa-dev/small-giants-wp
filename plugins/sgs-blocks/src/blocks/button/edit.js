@@ -30,8 +30,9 @@ import {
 	SgsColourPanel,
 	ShadowControl,
 	resolveColourToken,
+	SgsLengthControl,
 } from '../../components';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 
@@ -703,7 +704,8 @@ export default function Edit( { attributes, setAttributes } ) {
 										__next40pxDefaultSize
 									/>
 									{ 'custom' === typeVal && (
-										<UnitControl
+										<SgsLengthControl
+											presets={ false }
 											label={ __( 'Custom width', 'sgs-blocks' ) }
 											value={ composeUnit( numVal, unitVal ) }
 											units={ CUSTOM_WIDTH_UNITS }
@@ -714,9 +716,7 @@ export default function Edit( { attributes, setAttributes } ) {
 													customWidthUnit: { ...unitObj, [ tier ]: unit },
 												} );
 											} }
-											__nextHasNoMarginBottom
 											style={ { marginTop: '8px' } }
-											__next40pxDefaultSize
 										/>
 									) }
 								</>
@@ -735,7 +735,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Min height', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeUnit(
@@ -751,8 +752,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										setAttributes( { [ minHeightUnitAttr ]: unit } );
 									}
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -793,7 +792,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ ( { ownValue, setOwnValue } ) => {
 								const lineHeightUnit = attributes.lineHeightUnit !== undefined ? attributes.lineHeightUnit : '';
 								return (
-									<UnitControl
+									<SgsLengthControl
+										presets={ false }
 										label={ __( 'Line height', 'sgs-blocks' ) }
 										value={ composeUnit( ownValue, lineHeightUnit ) }
 										units={ LINE_HEIGHT_UNITS }
@@ -802,8 +802,6 @@ export default function Edit( { attributes, setAttributes } ) {
 											setOwnValue( num );
 											setAttributes( { lineHeightUnit: unit } );
 										} }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
 									/>
 								);
 							} }

@@ -31,8 +31,7 @@ import {
 	PanelBody,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, fillRow } from '../../components';
-import { UnitControl } from '../../components/primitives';
+import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow } from '../../components';
 import { colourVar } from '../../utils';
 
 const HEADING_LEVEL_OPTIONS = [
@@ -269,14 +268,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						} }
 					/>
-					<UnitControl
+					<SgsLengthControl
+						presets={ false }
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 1200px. Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

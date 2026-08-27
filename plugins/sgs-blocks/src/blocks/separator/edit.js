@@ -31,9 +31,10 @@ import {
 	TypographyControls,
 	SgsColourPanel,
 	SgsGradientPicker,
+	SgsLengthControl,
 } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -369,7 +370,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						>
 							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									label={ __( 'Thickness', 'sgs-blocks' ) }
 									hideLabelFromVision
 									value={ composeUnit( ownValue, thicknessUnit ) }
@@ -387,8 +389,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										setOwnValue( num === undefined ? '' : num );
 										setAttributes( { thicknessUnit: unit } );
 									} }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -456,7 +456,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { width: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeUnit( ownValue, widthUnit ) }
@@ -474,8 +475,6 @@ export default function Edit( { attributes, setAttributes } ) {
 									setOwnValue( num === undefined ? '' : num );
 									setAttributes( { widthUnit: unit } );
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

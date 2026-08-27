@@ -14,8 +14,7 @@ import {
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride } from '../../components';
-import { UnitControl } from '../../components/primitives';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl } from '../../components';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -416,7 +415,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeMaxBoxValue( ownValue, maxWidthUnit || 'px' ) }
@@ -427,8 +427,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								units={ MAX_BOX_UNITS }
 								onChange={ ( val ) => onMaxWidthChange( setOwnValue, val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -438,7 +436,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { maxHeight: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Max height', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeMaxBoxValue( ownValue, maxHeightUnit || 'px' ) }
@@ -449,8 +448,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								units={ MAX_BOX_UNITS }
 								onChange={ ( val ) => onMaxHeightChange( setOwnValue, val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

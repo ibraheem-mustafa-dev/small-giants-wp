@@ -11,9 +11,8 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow, SgsLengthControl } from '../../components';
 import { colourVar } from '../../utils';
-import { UnitControl } from '../../components/primitives';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -547,23 +546,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* ===== Width (kept-scalar, base only — matches render.php scope) ===== */ }
 				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
-					<UnitControl
+					<SgsLengthControl
+						presets={ false }
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
-					<UnitControl
+					<SgsLengthControl
+						presets={ false }
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ width || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

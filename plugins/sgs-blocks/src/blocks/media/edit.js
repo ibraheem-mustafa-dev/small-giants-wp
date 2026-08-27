@@ -24,9 +24,10 @@ import {
 	LinkPopoverField,
 	SgsColourPanel,
 	ShadowControl,
+	SgsLengthControl,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
@@ -518,12 +519,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 						>
 							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									value={ ownValue || '' }
 									placeholder={ inherited ? effectiveValue || '' : '' }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -553,12 +553,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( obj ) => setAttributes( { maxHeight: obj } ) }
 						>
 							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									value={ ownValue || '' }
 									placeholder={ inherited ? effectiveValue || '' : '' }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -589,12 +588,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( obj ) => setAttributes( { height: obj } ) }
 						>
 							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									value={ ownValue || '' }
 									placeholder={ inherited ? effectiveValue || '' : '' }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>

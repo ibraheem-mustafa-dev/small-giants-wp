@@ -26,8 +26,8 @@ import {
 	DesignTokenPicker,
 	GradientOverlayControl,
 	SgsColourPanel,
+	SgsLengthControl,
 } from '../../../components';
-import { UnitControl } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 import { LENGTH_UNITS } from './_shared';
 
@@ -540,7 +540,8 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 											onChange={ ( val ) => setAttributes( { bgSvgTextShadow: val } ) }
 											__nextHasNoMarginBottom
 										/>
-										<UnitControl
+										<SgsLengthControl
+											presets={ false }
 											label={ __( 'Minimum height', 'sgs-blocks' ) }
 											value={ bgSvgMinHeight }
 											units={ LENGTH_UNITS }
@@ -549,8 +550,6 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 												'Minimum height applied to the SVG background layer, e.g. 400px or 50vh. Leave blank for no minimum.',
 												'sgs-blocks'
 											) }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
 										/>
 									</>
 								) }

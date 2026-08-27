@@ -12,8 +12,13 @@
 
 import { __ } from '@wordpress/i18n';
 import { SelectControl, RangeControl, TextControl } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, SpacingControl } from '../../../components';
-import { UnitControl } from '../../../components/primitives';
+import {
+	ColumnShapePicker,
+	ResponsiveControl,
+	ResponsiveOverride,
+	SgsLengthControl,
+	SpacingControl,
+} from '../../../components';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 
 const LAYOUT_OPTIONS = [
@@ -59,6 +64,16 @@ export function LayoutPanel( {
 	// caller whose own block.json declares supports.sgs.intrinsicColumns passes
 	// true.
 	enableIntrinsicColumns = false,
+	// ADDITIVE OPT-IN, DEFAULTING OFF — mirrors `showLayout` above. LayoutPanel
+	// is shared by ~20 blocks via ContainerWrapperControls; shipping the
+	// ColumnShapePicker unconditionally inside "Custom column template" would
+	// hit every one of them. Bean's ruling (2026-08-27): only a caller that
+	// explicitly opts in gets the picker, so today that is `sgs/container`'s
+	// own edit.js alone. When true, the picker REPLACES the raw TextControl
+	// for the SAME `gridTemplateColumns` tier (never both) — two controls
+	// writing one attribute is the silent-data-loss trap `showLayout`'s own
+	// docblock warns about two panels up.
+	enableColumnShapePicker = false,
 } ) {
 	const {
 		layout = 'flex',
@@ -253,25 +268,68 @@ export function LayoutPanel( {
 						  writing them through ResponsiveControl would save nothing
 						  (D338) while the desktop branch wrote a string into an
 						  object-typed attr and destroyed the setting (D563).
+
+						  `enableColumnShapePicker` gates which control writes this
+						  SAME attr — the raw TextControl (default, every other
+						  caller) OR the diagram picker (`sgs/container` only,
+						  FR-37-42). Never both: two controls bound to one attribute
+						  is the silent-data-loss shape `showLayout`'s docblock
+						  already warns about, and site-footer-row's own mount
+						  resolved it the same way — the picker replaces the raw
+						  field entirely rather than sitting alongside it.
 						*/ }
 					<ResponsiveOverride
 						label={ __( 'Custom column template', 'sgs-blocks' ) }
 						value={ attributes.gridTemplateColumns }
 						onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<TextControl
-								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
-								onChange={ ( val ) => setOwnValue( val ) }
-								help={ __(
-									"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue, tier } ) =>
+							enableColumnShapePicker ? (
+								<ColumnShapePicker
+									// The shape list depends on how many columns THIS
+									// tier actually shows, so read the count for the
+									// SAME tier rather than always the desktop one —
+									// a 4-column desktop and a 2-column tablet offer
+									// different shapes. Falls back to `2`, this
+									// block's own declared `columns.desktop` default
+									// (site-footer-row falls back to `3`, its own
+									// default — the fallback always mirrors the
+									// owning block's default, never a shared literal).
+									count={
+										( attributes.columns &&
+											attributes.columns[ tier ] ) ||
+										( attributes.columns &&
+											attributes.columns.desktop ) ||
+										2
+									}
+									value={
+										( inherited
+											? effectiveValue
+											: ownValue ) || ''
+									}
+									onChange={ ( track ) =>
+										setOwnValue( track || undefined )
+									}
+									// No `label` here on purpose: the wrapping
+									// <ResponsiveOverride> already renders the
+									// visible one, and two copies is a real defect
+									// (inspector-scan rule 29) — same reasoning as
+									// site-footer-row's mount.
+								/>
+							) : (
+								<TextControl
+									value={ ownValue || '' }
+									placeholder={ inherited ? effectiveValue || '' : '' }
+									onChange={ ( val ) => setOwnValue( val ) }
+									help={ __(
+										"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							)
+						}
 					</ResponsiveOverride>
 
 					{ /*
@@ -331,7 +389,8 @@ export function LayoutPanel( {
 								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
 									const minColumnWidthUnit = attributes.minColumnWidthUnit || 'px';
 									return (
-									<UnitControl
+									<SgsLengthControl
+										presets={ false }
 										value={
 											'' !== ownValue && null != ownValue
 												? `${ ownValue }${ minColumnWidthUnit }`
@@ -363,8 +422,6 @@ export function LayoutPanel( {
 											'The floor a grid column may shrink to before one drops to the next row. Leave empty to use the framework default (16rem).',
 											'sgs-blocks'
 										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
 									/>
 									);
 								} }

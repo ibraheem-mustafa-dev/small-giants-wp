@@ -11,8 +11,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { ResponsiveControl, ResponsiveOverride } from '../../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
+import { ResponsiveControl, ResponsiveOverride, SgsLengthControl } from '../../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 import { LENGTH_UNITS } from './_shared';
 
 /**
@@ -155,7 +155,8 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 				onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-					<UnitControl
+					<SgsLengthControl
+						presets={ false }
 						value={ ownValue || '' }
 						placeholder={
 							inherited
@@ -168,8 +169,6 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 							'Exact CSS length applied as max-width on the outer block (e.g. 800px). Leave blank for no cap — on tablet or mobile, blank inherits the tier above. Breakout (wide / full) is set via the block toolbar.',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>
@@ -223,14 +222,13 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 								) ) }
 							</ToggleGroupControl>
 							{ preset === 'custom' && (
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									label={ __( 'Custom content band width', 'sgs-blocks' ) }
 									value={ literal }
 									units={ LENGTH_UNITS }
 									onChange={ ( val ) => setOwnValue( val ?? '' ) }
 									help={ __( 'Exact CSS length, e.g. 900px or 60rem.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							) }
 						</>

@@ -34,7 +34,7 @@ import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
-import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle } from '../../utils';
 
 /** Sentinel value for the "No product connected" option. */
@@ -2255,14 +2255,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { pickerPillBorderRadius: '' } )
 								}
 							>
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									label={ __( 'Pill border radius', 'sgs-blocks' ) }
 									value={ pickerPillBorderRadius || '' }
 									units={ PICKER_RADIUS_UNITS }
 									onChange={ ( v ) => setAttributes( { pickerPillBorderRadius: v ?? '' } ) }
 									help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -2272,14 +2271,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { pickerPillSelectedBorderRadius: '' } )
 								}
 							>
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
 									value={ pickerPillSelectedBorderRadius || '' }
 									units={ PICKER_RADIUS_UNITS }
 									onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderRadius: v ?? '' } ) }
 									help={ __( 'Blank = match resting radius; 0 = square.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						</ToolsPanel>
@@ -2317,23 +2315,65 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									display: 'block',
 								} }
 							/>
-							<Button
-								isDestructive
-								isSmall
+							{ /* D787 — a broken/mismatched image (exactly how a freshly
+							     cloned card lands) previously left only a destructive
+							     "Remove image" button here; a client had to DELETE the
+							     value before the MediaPlaceholder picker (in the else
+							     branch below) reappeared. "Replace image" mounts the
+							     same picker inline so a client can swap the image
+							     without first destroying it. */ }
+							<div
 								style={ {
 									position: 'absolute',
 									top: 8,
 									right: 8,
+									display: 'flex',
+									gap: '4px',
 								} }
-								onClick={ () =>
-									setAttributes( {
-										image: '',
-										imageAlt: '',
-									} )
-								}
 							>
-								{ __( 'Remove image', 'sgs-blocks' ) }
-							</Button>
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={ ( media ) =>
+											setAttributes( {
+												image: media.url,
+												imageAlt: media.alt || '',
+											} )
+										}
+										allowedTypes={ [ 'image' ] }
+										render={ ( { open } ) => (
+											<Button
+												variant="secondary"
+												onClick={ open }
+												style={ {
+													minHeight: '44px',
+													minWidth: '44px',
+												} }
+											>
+												{ __(
+													'Replace image',
+													'sgs-blocks'
+												) }
+											</Button>
+										) }
+									/>
+								</MediaUploadCheck>
+								<Button
+									isDestructive
+									variant="secondary"
+									style={ {
+										minHeight: '44px',
+										minWidth: '44px',
+									} }
+									onClick={ () =>
+										setAttributes( {
+											image: '',
+											imageAlt: '',
+										} )
+									}
+								>
+									{ __( 'Remove image', 'sgs-blocks' ) }
+								</Button>
+							</div>
 						</div>
 					) : (
 						<MediaUploadCheck>

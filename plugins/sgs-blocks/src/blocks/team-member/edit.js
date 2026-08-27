@@ -39,10 +39,9 @@ import {
 	ToggleControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, fillRow, textRow } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
-import { UnitControl } from '../../components/primitives';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -562,14 +561,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
 				   pre-existing contract for this block). */ }
 				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
-					<UnitControl
+					<SgsLengthControl
+						presets={ false }
 						label={ __( 'Max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

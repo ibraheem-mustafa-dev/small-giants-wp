@@ -39,9 +39,10 @@ import {
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveOverride,
-	ResponsiveBorderRadiusControl, shadowAttrKeys } from '../../components';
+	ResponsiveBorderRadiusControl, shadowAttrKeys,
+	SgsLengthControl } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const HEIGHT_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -683,7 +684,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { tier, ownValue, effectiveValue, inherited, setOwnValue } ) => {
 							const val = inherited ? effectiveValue : ownValue;
 							return (
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									value={
 										null === val || undefined === val || '' === val
 											? ''
@@ -705,7 +707,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										}
 									} }
 									units={ HEIGHT_UNITS }
-									__next40pxDefaultSize
 								/>
 							);
 						} }
@@ -725,12 +726,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue || '' : '' }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								units={ WIDTH_UNITS }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
