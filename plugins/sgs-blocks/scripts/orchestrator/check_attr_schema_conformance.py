@@ -178,6 +178,8 @@ _CONDITIONAL_NATIVE_ATTRS: tuple[tuple[str, str | None, str], ...] = (
     ("color", "gradients", "gradient"),
     ("typography", "fontSize", "fontSize"),
     ("typography", "fontFamily", "fontFamily"),
+    ("__experimentalBorder", "color", "borderColor"),
+    ("shadow", None, "shadow"),
 )
 
 
