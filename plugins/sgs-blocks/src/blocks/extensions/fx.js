@@ -1641,6 +1641,18 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 					<ToolsPanel
 						label={ __( 'Scroll & effects', 'sgs-blocks' ) }
 						resetAll={ resetAll }
+						/*
+						 * Scoping hook for `fx-panel.scss`. Added 2026-08-28 for
+						 * the budget Notice below, which rendered at HALF WIDTH:
+						 * `ToolsPanel` lays its children out in a TWO-COLUMN
+						 * grid, so a plain (non-ToolsPanelItem) child occupies
+						 * one column unless it is told to span. Scoped to this
+						 * panel rather than fixing `.components-tools-panel >
+						 * .components-notice` globally, because that selector
+						 * would silently restyle every other panel's notices
+						 * across the editor.
+						 */
+						className="sgs-fx-panel"
 					>
 						{ /*
 						 * Per-page motion cost (D446 Task 19 / Bean's D448

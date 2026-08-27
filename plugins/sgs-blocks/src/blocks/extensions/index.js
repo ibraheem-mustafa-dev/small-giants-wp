@@ -46,4 +46,10 @@ import './responsive-visibility';
 // Spec-31 F5 anti-cheat gate on sgs/accordion).
 import '../../components/colour-picker/color-picker/editor.scss';
 import '../../components/colour-picker/dropdown/editor.scss';
+// "Scroll & effects" panel — the motion-budget Notice spans both ToolsPanel
+// grid columns. Imported HERE rather than from fx.js for the reason the comment
+// above gives: an editor stylesheet imported from a non-entry module gets
+// attributed to an arbitrary block's FRONTEND bundle by webpack's per-entry CSS
+// extraction, which the F5 anti-cheat gate catches on sgs/accordion.
+import './fx-panel.scss';
 import './conditional-visibility';

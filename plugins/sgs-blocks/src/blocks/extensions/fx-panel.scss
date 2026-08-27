@@ -1,0 +1,41 @@
+/**
+ * SGS motion — "Scroll & effects" inspector panel (Spec 38 §7).
+ *
+ * Editor-only. One rule, for one real defect.
+ *
+ * ── THE DEFECT ────────────────────────────────────────────────────────────
+ * The per-page motion-budget `<Notice>` rendered at HALF the sidebar's width,
+ * squeezing "This page loads about 7.7 KB of scroll-effect code (budget: 50
+ * KB)." into a narrow column with a ragged wrap. Reported from a screenshot,
+ * 2026-08-28.
+ *
+ * ── WHY ───────────────────────────────────────────────────────────────────
+ * `ToolsPanel` lays its children out in a TWO-COLUMN CSS grid — that is how
+ * paired controls (a label and its reset, two half-width fields) sit side by
+ * side. Every `ToolsPanelItem` participates in that grid knowingly. The Notice
+ * is deliberately NOT a `ToolsPanelItem` (it is informational, has nothing for
+ * "Reset all" to clear, and should not appear in the "+" disclosure menu), so
+ * it lands in the grid as a plain child and takes ONE column.
+ *
+ * Spanning both columns is the fix. `1 / -1` spans first line to last, so it
+ * stays correct if the panel's column count ever changes.
+ *
+ * ⛔ SCOPED TO `.sgs-fx-panel`, NEVER GLOBAL. The obvious rule
+ * `.components-tools-panel > .components-notice { grid-column: 1 / -1 }` would
+ * restyle every notice in every ToolsPanel across the whole editor — core's,
+ * WooCommerce's and every other SGS panel's — to fix one of ours. The class is
+ * set on the ToolsPanel in `fx.js`.
+ */
+
+.sgs-fx-panel > .components-notice,
+.sgs-fx-panel > .components-notice-list {
+	grid-column: 1 / -1;
+
+	/*
+	 * `Notice` carries WP's own horizontal margins, which are sized for the
+	 * full-width notice areas it usually lives in and read as an indent inside
+	 * a panel that already has padding.
+	 */
+	margin-left: 0;
+	margin-right: 0;
+}
