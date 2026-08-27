@@ -18,11 +18,12 @@ track owns `## ▶ COLOUR-GOLDEN TRACK`. The **motion** track owns
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
-⭐ **If you are the colour-golden track:** read
-`.claude/prompts/2026-08-27-check-a-blind-spot-and-the-first-controls.md` — it carries EVERY
-remaining task on this track and supersedes the older `2026-08-26-let-the-method-apply.md`,
-whose TASK A and TASK C shipped at D775 (only its TASK B, the 27 orphans, is still live and is
-carried forward).
+⭐ **If you are the colour-golden / client-controls track:** read
+`.claude/prompts/2026-08-28-check-a-backlog-and-the-settled-designs.md` — it carries EVERY
+remaining task on this track. Its four predecessors were all executed and DELETED on 2026-08-27
+(`the-remaining-client-controls`, `the-container-gap-and-the-remaining-controls`,
+`check-a-blind-spot-and-the-first-controls`, `council-the-burn-down-method`) — if you find a
+reference to any of them anywhere, it is stale.
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -283,7 +284,7 @@ detector bug) · rule 34 **319→2** · scanner **945→499**. `reports/2026-08-
 joined the reset, homepage has ZERO gapped sections (1.5.83). ⚠ Two of my claims were wrong, Bean
 caught both: it was our theme not WordPress, and `maxWidth`(OUTER)=full-bleed vs
 `contentWidth`(INNER)=normal, so no detect-and-mark was needed.
-⭐ **NEXT + all detail: `.claude/prompts/2026-08-27-the-remaining-client-controls.md`**
+⭐ **NEXT + all detail: `.claude/prompts/2026-08-28-check-a-backlog-and-the-settled-designs.md`**
 
 ### ✅ SPACING MIGRATION 4/5 SHIPPED (`fa11f794c`) · picker header-row (`71a5d4d42`)
 Full detail: `~/.claude/plans/next-session-ethereal-lightning.md`. **Q1/Q3/Q4 ANSWERED from
@@ -306,9 +307,9 @@ visually** (deploy impossible, shared tree dirty). Next commit on each block owe
 names via `gradientOverlayAttrKeys()`. Deleting them deletes working features. Use
 `--skip-gate-full` until they fix it.
 ✅ 2849 TRASHED — stored-content audit passes again (had blocked 5 deploys).
-✅ Gate C picker deployed; roll-out to `site-header-row` + `container` owed.
+✅ Gate C picker roll-out COMPLETE on all 3 blocks (footer-row, header-row, container).
 ⛔ **TASK 2 WAS BUILT BY ANOTHER TRACK (D805) — do not duplicate.**
-⭐ **NEXT: `.claude/prompts/2026-08-27-the-remaining-client-controls.md`.**
+⭐ **NEXT: `.claude/prompts/2026-08-28-check-a-backlog-and-the-settled-designs.md`.**
 
 ⚠ **Five tracks on `main`:** 3 deploys aborted, 2 commits blocked by others' staged work.
 
