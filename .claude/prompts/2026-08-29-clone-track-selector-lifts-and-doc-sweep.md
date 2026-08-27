@@ -1,10 +1,13 @@
-# Next session — three selector-shaped lift bugs, then a doc sweep
+# Next session — the SGS border control, three lift bugs, then a doc sweep
 
 Invoke `/autopilot` before anything else.
 
 This replaces `2026-08-28-four-carried-clone-track-items.md`, which is done. Of its four items,
 three closed and one grew: the product-card work uncovered a converter regression dated
-2026-08-22 that is still open.
+2026-08-22, and investigating it led Bean to a library-wide decision (Task 0) that now leads.
+
+**Task 0 is the big one and is Bean-directed with its target shape already settled.** Tasks 1-3
+are the clone-track residue. Task 4 closes with the doc sweep.
 
 **Read the cited D-numbers. Do not ask for them to be restated.**
 
@@ -26,6 +29,59 @@ and were when checked. The *bug* was real and is fixed; that page never showed i
 2884 as evidence of anything.
 
 ---
+
+## Task 0 — `SgsBorderControl`: native's one-row border UI, extended (Bean-directed, LEADS)
+
+**Bean, 2026-08-27, seeing the native control:** *"I love the native's border control setup, it
+has all of those different settings on one line, super intuitive and easy."*
+
+**The decision: keep moving off native, but stop losing the UI.** Vendor WP core's
+`BorderBoxControl` shape into a thin SGS wrapper — the pattern this repo already uses for the
+time control, the colour picker and `BorderStyleControl` — then replace native across the library.
+`cfc12751f` (2026-08-22) took product-card off the native path for a sound reason (one owner for
+the box, instead of the native Styles tab and the SGS panel both writing the same object) and
+discarded the native *control* as a side effect. Those are separable: own the data, keep the UI.
+
+### The TARGET SHAPE is settled — do not re-derive it (THE-MIGRATION-METHOD Step 3)
+
+One row, native's layout, composed from three components that ALL ALREADY EXIST:
+
+| Slot | Component | Notes |
+|---|---|---|
+| Width | `SgsLengthControl.js` | linked, with native's per-side split toggle — the stored `{top,right,bottom,left}` object already supports it |
+| Style | `BorderStyleControl.js` | native-exact already (solid/dashed/dotted, deselect = none); built 2026-08-19, do not rebuild |
+| Colour | `GradientCapableColourControl.js` | **this is the extension** |
+
+**Bean's extension, in his words:** *"match native and extend it to take on the extra
+functionality of my border colour helper with the 2 states as well as static and gradient options
+in the popovers."* `GradientCapableColourControl` (319 lines) is that helper and already provides
+all of it: in-popover Normal/Hover tabs, a Solid/Gradient `ToggleGroupControl`, and
+sibling-attribute storage (`{attr}` + `{attr}Gradient`, gradient wins when non-empty, resolved by
+`sgs_resolve_text_colour_or_gradient()`). **Compose it; do not re-implement it.**
+
+So the deliverable is a COMPOSITE, not three new controls. Read
+`BorderStyleControl.js`'s header first — it documents the vendoring convention: name the exact
+core source file and version you read, and record every deliberate divergence.
+
+### Scope: all 62 blocks (Bean chose this over the smaller options)
+
+52 blocks declare native `__experimentalBorder`; 10 already hand-roll block-private border attrs.
+Bean chose full replacement so the library has ONE border system — the split between the two is
+what produced the 1a regression below, and leaving it guarantees the next block moved off native
+repeats it.
+
+**62 blocks means the detector comes first.** Build the survey/fix/check triad
+(`THE-MIGRATION-METHOD`), settle nothing by hand. `--survey` classifies each block as
+NATIVE / BLOCK-PRIVATE / ALREADY-MIGRATED / UNCLEAR, and refuses to guess rather than
+half-migrating an unclear one.
+
+⚠ **Migrating a block off native `supports.border` silently breaks theme patterns that authored
+native border attrs** — the D683 failure, where retiring native colour broke 7 header patterns and
+`check-dead-pattern-attrs.py` missed it (it asks whether `supports.color` is declared, not whether
+its sub-flags are on). Check the pattern/template markup in the same pass.
+
+**Design-gate with Bean before building** (Rule 7): 62 blocks, a shared component, and a data-model
+change on every one of them.
 
 ## Task 1 — Three lift bugs that share one shape (the main work)
 
