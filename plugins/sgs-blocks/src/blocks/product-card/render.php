@@ -177,10 +177,20 @@ $classes[] = $sgs_card_uid;
 // list covers EVERY render branch's markup for that visual role (typed BEM
 // classes + the read-only/live-data plain classes) so ONE control governs the
 // element everywhere it can appear — no per-branch carve-out (R-31-9 / CG-9).
-// titleFontFamily: emitted by sgs_typography_css_rule() itself now (G4,
-// helpers-typography.php) — the shared helper's own base_decls font-family
-// branch, sanitised via sgs_font_family_sanitise(). No block-private
-// duplicate emission needed any more.
+// FONT FAMILIES — titleFontFamily, descFontFamily, priceFontFamily and
+// priceNoteFontFamily are all emitted by sgs_typography_css_rule() itself (G4,
+// helpers-typography.php) via its own base_decls font-family branch, sanitised
+// through sgs_font_family_sanitise(). No block-private duplicate emission is
+// needed, and none of the four is read by name in this file.
+//
+// ⚠ All four are DYNAMIC-KEY attrs: the helper builds its key as
+// `$prefix . 'FontFamily'` (helpers-typography.php:93) and TypographyControls
+// builds the matching editor key the same way, so the literal attribute name
+// exists at neither end. audit-block-file-consistency.py greps for the literal
+// with comments STRIPPED, so all four are carried as documented FALSE POSITIVES
+// in block-file-consistency-baseline.json — this comment does not and cannot
+// satisfy that gate. Adding a fifth prefixed font-family attr means adding a
+// fifth baseline row, with the same verify-before-trusting clause.
 
 $sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );

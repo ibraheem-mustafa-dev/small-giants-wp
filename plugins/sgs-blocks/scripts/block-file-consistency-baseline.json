@@ -172,6 +172,24 @@
     },
     {
       "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "descFontFamily",
+      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"desc\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:187 calls sgs_typography_css_rule($attributes, 'desc', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "priceFontFamily",
+      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"price\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:186 calls sgs_typography_css_rule($attributes, 'price', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "priceNoteFontFamily",
+      "reason": "FALSE POSITIVE, verified 2026-08-27 - live at BOTH ends, but neither end contains the literal attribute name. Control: product-card/edit.js mounts <TypographyControls prefix=\"priceNote\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"). Render: render.php:191 calls sgs_typography_css_rule($attributes, 'priceNote', ...), and helpers-typography.php:93 builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. Same dynamic-key blind spot already recorded for product-card.titleFontFamily. Added so description/price/price-note text can carry a typeface at all - previously only the title could. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this prefix, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+    },
+    {
+      "type": "orphan_attr",
       "block": "sgs/hero",
       "attr": "mediaBackgroundGradient",
       "reason": "FALSE POSITIVE, verified 2026-08-27 — genuinely live at both ends, but neither end contains the literal attribute name. Render: render.php:700 reads $attributes['mediaBackgroundGradient'] and emits background-image when set (render.php:701-704). Control: hero/edit.js mounts <GradientOverlayControl attrNames={ gradientOverlayAttrKeys('mediaBackground', {...}) } />, and GradientOverlayControl.js:113-114 builds the key as base + 'Gradient' at runtime (gradientOverlayAttrName()) rather than spelling it as a literal string. Same dynamic-key blind spot already recorded for product-card.titleFontFamily above. VERIFY BEFORE TRUSTING THIS ROW: if hero/edit.js stops mounting GradientOverlayControl with base 'mediaBackground', the attr really is dead and this entry must go."
