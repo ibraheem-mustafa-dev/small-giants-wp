@@ -90,50 +90,47 @@ D830-D834 still owes one. Reasoning: D804.
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (D827 regression FIXED same-day; Bean's verdict pending again)
+## ▶ MOTION TRACK — 2026-08-27 (TWO SEPARATE TRACKS — do not merge them again)
 
-⭐ **START HERE: Bean's verdict on the RE-FIXED translucent technique (D828).** D827 (mesh ->
-translucent layers) shipped a real bug: additive blending clipped the light palette to solid white
-and read as static (invisible) on the warm one — same root cause, additive needs headroom below
-white and this ground is deliberately light. Root-caused via a WebGL2 bisection harness using the
-exact live uniform values, fixed with standard alpha-OVER `mix()` (bounded, no clipping possible).
-⚠ First re-check via `readPixels` STILL showed black — that was the verification method racing the
-browser's buffer-clear between frames, not the fix. Re-verified via actual screenshot pixel
-sampling: real varied colour, 63.5% of warm-section pixels changed across 2.5s. Deployed +
-payload-verified via isolated worktree.
-⛔ **This is round 2 on this exact technique.** Per the original "one bounded experiment" framing
-and Bean's repeated "we need to move on" — a further failure here should go to Bean's call (ship
-current version and park vs full rebuild), not a third silent iteration.
-⭐ **Real differentiator identified, NOT built (parked):** effect recolours itself via the same
-per-client theme tokens the whole site uses — no forked-shader competitor can match that.
-✅ **CLOSED (D826, prior round):** Pause toggle's `[hidden]` specificity tie fixed
-   (`:not([hidden])`), live-verified — `display:none` confirmed when hidden.
-✅ 3 live bugs FIXED (D814/D815), attribution gate BUILT (D813), POC/Q6/Gate E CLOSED
-(D790/D791/D794). Framebuffer still needs its own design gate.
+⛔ **These were ONE plan file and that cost a full session (D838).** FR-38-31 is a SHIPPED effect;
+the engine is an UNBUILT rebuild. No phase number is shared between them. Never re-merge.
 
-**Prior history (D766/D767, D778-D781, 2026-08-24/25):** cursor field (2721) + magnetic pull
-(2737) shipped; 3 gate-passed defects fixed on eye-review. Do not restate — read the D-numbers.
+### ▶ A. FR-38-31 `flowing-gradient` — shipped effect, closing out
+
+Bean's verdict on the D828 re-fix: *"insanely slow… nothing like an aurora, just blurry random
+shapes."* ⭐ **Aurora was never this effect's target** — it was built as a Stripe-hero clone, and
+D781 already found that reference was the wrong thing. **Not reopened for look work.**
+⚠ **A working `fxWaveSpeed` control EXISTS** (`fx.js:2598` → `fx-wave-gradient.js:250,271`) — an
+earlier claim that there was none was wrong. The DEFAULT is the defect: ~115s to cross one screen.
+**Derive it as `drift/(2·freq·aspect)`, never from the raw constant** — eyeballing it was wrong 4×.
+Closing scope: speed default+range, help-text reword ("slower reads as more expensive" contradicts
+the verdict), Speed/Wave-depth default-visible, name honesty.
+Plan CLOSED: `plans/archive/2026-08-26-fr3831-look-gate.md`. ✅ D813/D814/D815/D826 closed;
+D827 technique change + D828 regression fix — read the D-numbers, do not restate.
+
+### ▶ B. GENERATIVE BACKGROUND ENGINE — the POC rebuild (NOT started)
+
+⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`.** ONE configurable engine —
+colours / shapes / sizes / positions / speed as client controls, not one fixed hero look.
+The technique spec **IS its build spec** (renamed
+`reports/2026-08-25-generative-background-engine-technique-spec.md`); **D794's NO-GO was
+COMPLETENESS, not purpose** — stop calling it a document rewrite.
+⛔ **Phase 1 = pick a reference BEFORE any code.** Never once done; skipping it wasted every prior
+round (D781's rule, in capitals). Licence: nimitz = NON-COMMERCIAL; paper-design (Apache-2.0) ships
+no aurora — **an aurora must be WRITTEN, not borrowed**. Differentiator (parked): recolours itself
+from the per-client theme tokens.
 
 ### ▶ NEXT
 
-⭐ **START HERE: `.claude/prompts/2026-08-27-motion-track-remaining-open-tasks.md`.** Full detail,
-time estimates, and likely files per task live there — do not restate here. Three items need
-Bean's design-gate decision before anything builds (`floating-objects`, generative covers,
-`decorative-image` naked mode); the rest are scoped tasks or quick verification checks.
-
-**Everything the two prior prompts named is now CLOSED** — child-lift, editor surface + FR-38-32
-measurement, Stripe-hero POC, the hover ruling + Design Gate A (D805/D808/D817, canary-verified),
-the three ungated registration points + the physics-canvas fix (D789/D820), the control-programme
-helper pairs + `add-control.js` + rule 21 (D818) + Design Gate B (D821/D825, canary-verified) +
-the enum gate (D819) + the fx-list-drift registry check (D829). Detail single-sourced to
-**D805-D829** — do not restate.
+⭐ `.claude/prompts/2026-08-27-motion-track-remaining-open-tasks.md` — full detail + times per task.
+Three need Bean's design gate (`floating-objects`, generative covers, `decorative-image` naked mode).
+**Everything the two prior prompts named is CLOSED** — single-sourced to **D805-D838**.
 
 ⛔ **Carried:** `particles`/Sparks (FR-38-32) is the real fading trail — "Drag weight" is momentum
-and is NOT it, never report it as satisfying that ask. ⚠ **But `particles`/Sparks itself has NEVER
-been shown to Bean** (flagged by him 2026-08-27, verified true) — it only exists on debug canary
-page 2744, and the effect is visually very faint even when it fires. "OBSERVED 2026-08-25" in
-Spec 38 §9 covered the editor's inspector controls only, never the frontend visual. Show Bean the
-actual trail live before calling this effect done in any client-facing sense.
+and is NOT it, never report it as satisfying that ask. ⚠ **Sparks has NEVER been shown to Bean**
+(verified 2026-08-27) — debug canary page 2744 only, and visually very faint even when it fires.
+Spec 38 §9's "OBSERVED 2026-08-25" covered inspector controls, never the frontend visual. Show him
+the live trail before calling this done in any client-facing sense.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 

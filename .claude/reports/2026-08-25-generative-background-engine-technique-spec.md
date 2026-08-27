@@ -2,16 +2,45 @@
 doc_type: report
 project: small-giants-wp
 spec_ref: 38
-status: reference spec for the FR-38-31 rework — describes mechanisms, reproduces no third-party source
-last_updated: 2026-08-25
+status: INCOMPLETE build spec for the GENERATIVE BACKGROUND ENGINE — NO-GO at D794 pending completion; not a tuning guide for FR-38-31
+last_updated: 2026-08-27
 ---
 
-# Flowing-gradient technique — implementation reference
+# Generative background engine — technique / implementation reference
+
+> ## ⛔ READ THIS FIRST — what this document is for (re-headed 2026-08-27)
+>
+> **What it IS.** The **build spec for our own configurable generative-background engine**,
+> derived from the Stripe hero anatomy study using **none of Stripe's assets**. A spec is what
+> precedes a build — this is not paperwork. Its owning plan is
+> [`.claude/plans/2026-08-27-generative-background-engine.md`](../plans/2026-08-27-generative-background-engine.md).
+>
+> **What it is NOT.** It is **not** a tuning guide for `FR-38-31`, the shipped `flowing-gradient`
+> fx effect. That is a separate, finished, modest effect, closed at
+> [`.claude/plans/archive/2026-08-26-fr3831-look-gate.md`](../plans/archive/2026-08-26-fr3831-look-gate.md).
+> This file was previously named `…-flowing-gradient-technique-spec.md` and its status line said
+> *"reference spec for the FR-38-31 rework"*, which is precisely how the two products got
+> conflated and cost a full session on 2026-08-27.
+>
+> **Why D794 said NO-GO — completeness, NOT purpose.** Every finding was *"this is missing"*: no
+> animation section, no camera or coordinate space, no acceptance criteria, no statement of which
+> file the code lands in, evidence pointers into a since-deleted tree. Exactly one finding was
+> directional, and it was a **re-ranking**: §1 (the CPU-folded ribbon) plausibly *deepens* the
+> "rendered 3D" quality that was rejected, while §5 and §6 are free and highest-yield but ranked
+> last. **Nothing in the register says the goal is wrong.**
+>
+> ⛔ **Do not build from this document as it stands.** The 13-item completion list is Phase 2 of
+> the owning plan, and the finished spec must earn a GO from `/adversarial-council` first.
+>
+> ⚠ **§6's ground is a CONTROL, not a fixed choice.** §6 commits to *"bright colour on white"*,
+> while an aurora requires a near-black base (*"Aurora over a light background dies"*). §6 itself
+> says *"This is an attribute default, not a mechanism"* — so the engine carries both as presets.
+> Resolve it that way rather than picking a side.
 
 **What this is.** A description, in our own words, of the seven mechanisms that make a
 premium-feeling animated gradient hero, precise enough to implement from without opening anyone
-else's source. It exists so that the FR-38-31 rework has a durable specification to build against
-and the study material it was derived from becomes genuinely disposable.
+else's source. It exists so that the **generative background engine** has a durable specification to
+build against and the study material it was derived from becomes genuinely disposable.
 
 **What this is not.** It is not a porting guide and it contains no third-party shader source,
 no reproduced imagery and no transliterated code. Where a reference implementation's measured

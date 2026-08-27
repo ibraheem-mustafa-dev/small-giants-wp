@@ -996,9 +996,27 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   reach. Axis lock proven with a genuine negative control: a locked instance held `y=0.00` while an
   unlocked neighbour moved `y=-19.25` under identical pointer input.
 
-- **FR-38-31 Flowing gradient — the SECOND Tier W entry. BUILT + LIVE, look REJECTED
-  2026-08-25.** A subdivided plane whose VERTICES are displaced by simplex noise, with colour
-  computed PER VERTEX and interpolated across each triangle by the rasteriser.
+- **FR-38-31 Flowing gradient — the SECOND Tier W entry. BUILT + LIVE.**
+  ⛔ **SCOPE (D838, 2026-08-27): FR-38-31 is a FINISHED, SELF-CONTAINED effect.** The
+  configurable **generative background engine** — one engine remappable for colours, shapes,
+  sizes and positions — is SEPARATE, unbuilt work with its own plan
+  (`.claude/plans/2026-08-27-generative-background-engine.md`) and its own build spec
+  (`.claude/reports/2026-08-25-generative-background-engine-technique-spec.md`). It will carry its
+  own FR when it is built. **Do not read the rejected-look history below as an open build item on
+  FR-38-31, and do not do engine work under this FR.**
+  ⚠ **The aurora look was never this effect's target** — it was modelled on stripe.com's hero, and
+  D781 found that reference was itself the wrong thing. Aurora belongs to the engine track.
+
+  ⚠ **TECHNIQUE CHANGED 2026-08-27 (D827/D828) — the description that stood here was stale.** It
+  is no longer a vertex-displaced mesh. It is a **fullscreen triangle generated from
+  `gl_VertexID`** (no vertex or index buffers) with colour computed **PER PIXEL** from three
+  independent drifting noise fields, composited with standard alpha-OVER `mix()`.
+  ⛔ Additive/screen blending was tried and REVERTED at D828: it needs headroom below white, and
+  this effect's ground is deliberately light, so it clipped to solid white on one palette and read
+  as static on the other. Do not reintroduce it.
+  *Historical, for context only —* the ORIGINAL build was a subdivided plane whose vertices were
+  displaced by simplex noise, with colour computed per vertex and interpolated by the rasteriser.
+  Bean's verdict on it was "B-movie 3D VFX", which is what prompted the D827 change.
   ⚠ **This is NOT stripe.com's current technique** — an earlier version of this line called it
   "stripe.com's mesh-gradient technique", which contradicted clause (a) below 60 lines later. It
   is their **~2020-21** hero, the one every public tutorial documents. Their current hero was
@@ -1119,7 +1137,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
     design gate, not an increment.** Fidelity went n=1 → n=3 and held: 0.66% → 0.67% on a held-out
     frame → 0.69% at DPR 2.
   - (e) ⛔ **THE TECHNIQUE SPEC IS NO-GO — do not build shader work from it.**
-    `.claude/reports/2026-08-25-flowing-gradient-technique-spec.md` failed a six-seat adversarial
+    `.claude/reports/2026-08-25-generative-background-engine-technique-spec.md` failed a six-seat adversarial
     council on 2026-08-26 and **remains unchanged** (re-verified after the council). It never
     specifies the animation, gives no camera or projection, states no acceptance criterion, and its
     §2 canvas-gradient mechanism contradicts its own §5 OKLab remedy. Its §5 (hue adjacency) and §6
