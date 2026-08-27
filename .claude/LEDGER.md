@@ -7,6 +7,27 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 # small-giants-wp — LEDGER (the one living status)
 
+## Human Summary
+
+Plain English, for Bean. The framework is a WordPress block system that clones any design draft
+into native blocks a non-technical client can then edit. Five tracks work on it in parallel,
+sharing one `main` branch — which is why almost every rule below is about not treading on
+another track's work.
+
+Right now: the cloning pipeline and the motion system are both stable. The live front is
+**client controls** — making sure every setting a client can change actually does something
+visible, in the editor as well as on the published page. The canary test site is
+sandybrown-nightingale-600381.hostingersite.com; there are no live client sites on this
+framework yet, so breakage there costs time, not money.
+
+## State Snapshot
+
+- **Branch:** `main`, shared by five tracks. Commit with explicit paths, never `git add -A`.
+- **Canary:** WP 7.1. Deploy via `build-deploy.py --target sandybrown` — the only sanctioned path.
+- **Build:** green. Deploy payload is ~29MB (was 114MB).
+- **Live fronts:** client controls (below) and motion. Cloning + consolidation are closed.
+- **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
+
 # ▶ NEXT SESSION STARTS HERE
 
 **Invoke `/autopilot` first.**
