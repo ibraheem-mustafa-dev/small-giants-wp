@@ -166,7 +166,8 @@
 				"",
 				"none",
 				"underline",
-				"line-through"
+				"line-through",
+				"overline"
 			],
 			"default": ""
 		},

@@ -52,6 +52,7 @@ import {
 	SgsColourPanel,
 	ShadowControl,
 	SgsLengthControl,
+	TypographyControls,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -72,53 +73,6 @@ const ATTRIB_TAG_OPTIONS = [
 	{ label: __( 'footer', 'sgs-blocks' ), value: 'footer' },
 	{ label: __( 'div', 'sgs-blocks' ), value: 'div' },
 	{ label: __( 'cite', 'sgs-blocks' ), value: 'cite' },
-];
-
-const FONT_WEIGHT_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Thin (100)', 'sgs-blocks' ), value: '100' },
-	{ label: __( 'Extra-light (200)', 'sgs-blocks' ), value: '200' },
-	{ label: __( 'Light (300)', 'sgs-blocks' ), value: '300' },
-	{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-	{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-	{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-	{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-	{ label: __( 'Extra-bold (800)', 'sgs-blocks' ), value: '800' },
-	{ label: __( 'Black (900)', 'sgs-blocks' ), value: '900' },
-];
-
-const FONT_STYLE_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
-];
-
-const TEXT_DECORATION_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
-	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
-const TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
-	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
-	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
-];
-
-const FONT_SIZE_UNITS = [
-	{ value: 'px', label: 'px', default: 16 },
-	{ value: 'em', label: 'em', default: 1 },
-	{ value: 'rem', label: 'rem', default: 1 },
-];
-
-const LINE_HEIGHT_UNITS = [
-	{ value: 'em', label: 'em', default: 1.5 },
-	{ value: 'rem', label: 'rem', default: 1.5 },
-	{ value: 'px', label: 'px', default: 24 },
-	{ value: '', label: '—', default: 1.5 },
 ];
 
 const MARGIN_UNITS = [
@@ -246,10 +200,7 @@ function buildWrapperStyle( attributes ) {
 
 function buildAttribStyle( attributes ) {
 	const {
-		attributionColour, attributionFontSize, attributionFontSizeUnit,
-		attributionFontWeight, attributionFontFamily, attributionFontStyle,
-		attributionTextDecoration, attributionTextTransform,
-		attributionLineHeight, attributionLineHeightUnit,
+		attributionColour,
 		attributionMarginTop, attributionMarginUnit,
 	} = attributes;
 	const style = {};
@@ -258,18 +209,12 @@ function buildAttribStyle( attributes ) {
 			? attributionColour
 			: colourVar( attributionColour );
 	}
-	// attributionFontSize / attributionMarginTop are TIER OBJECTS — the canvas
-	// preview (desktop-only; responsive tiers render via PHP) reads the
-	// desktop tier.
-	if ( attributionFontSize?.desktop ) { style.fontSize = `${ attributionFontSize.desktop }${ attributionFontSizeUnit }`; }
-	if ( attributionFontWeight ) { style.fontWeight = attributionFontWeight; }
-	if ( attributionFontFamily ) { style.fontFamily = attributionFontFamily; }
-	if ( attributionFontStyle ) { style.fontStyle = attributionFontStyle; }
-	if ( attributionTextDecoration ) { style.textDecoration = attributionTextDecoration; }
-	if ( attributionTextTransform ) { style.textTransform = attributionTextTransform; }
-	if ( attributionLineHeight != null ) {
-		style.lineHeight = `${ attributionLineHeight }${ attributionLineHeightUnit }`;
-	}
+	// attributionMarginTop is a TIER OBJECT — the canvas preview (desktop-only;
+	// responsive tiers render via PHP) reads the desktop tier. Typography
+	// (font-size/weight/family/style/decoration/transform/line-height) no
+	// longer gets a canvas preview here — same as sgs/testimonial's `nameStyle`
+	// (colour-only), which this now mirrors; those properties render correctly
+	// via the block's own scoped <style> on the FRONTEND only.
 	if ( attributionMarginTop?.desktop != null ) {
 		style.marginTop = `${ attributionMarginTop.desktop }${ attributionMarginUnit }`;
 	}
@@ -519,6 +464,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* ---- Attribution slot ---- */ }
+				{ /* Object-valued (tiered) attrs are ordered LAST in this reset call
+				   below, deliberately — a shared build-time detector
+				   (check-editor-render-parity.js SIGNAL 2, checkCompanionExemption)
+				   regex-parses a setAttributes() call-site's keys and cannot see
+				   past a nested object-literal value. Keeping every scalar-valued
+				   key ahead of the two object-valued resets lets the detector
+				   correctly recognise the co-write group (attributionColour /
+				   attributionMarginTop are both used outside InspectorControls, via
+				   buildAttribStyle) and companion-exempt the rest — same runtime
+				   result either way, order-independent. */ }
 				<ToolsPanel
 					label={ __( 'Attribution', 'sgs-blocks' ) }
 					resetAll={ () =>
@@ -528,15 +483,15 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributionColour: '',
 							attributionFontStyle: '',
 							attributionFontWeight: '',
-							attributionFontSize: {},
 							attributionFontSizeUnit: 'px',
 							attributionFontFamily: '',
 							attributionTextDecoration: '',
 							attributionTextTransform: '',
 							attributionLineHeight: undefined,
 							attributionLineHeightUnit: 'em',
-							attributionMarginTop: {},
 							attributionMarginUnit: 'px',
+							attributionFontSize: {},
+							attributionMarginTop: {},
 						} )
 					}
 				>
@@ -575,147 +530,53 @@ export default function Edit( { attributes, setAttributes } ) {
 							</ToolsPanelItem>
 							{ /* Attribution text colour moved to the top-level SgsColourPanel
 							   (D618/D621) — "Attribution colour" row. */ }
-							<ToolsPanelItem
-								label={ __( 'Font style', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionFontStyle }
-								onDeselect={ () =>
-									setAttributes( { attributionFontStyle: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Font style', 'sgs-blocks' ) }
-									value={ attributionFontStyle }
-									options={ FONT_STYLE_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionFontStyle: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Font weight', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionFontWeight }
-								onDeselect={ () =>
-									setAttributes( { attributionFontWeight: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Font weight', 'sgs-blocks' ) }
-									value={ attributionFontWeight }
-									options={ FONT_WEIGHT_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionFontWeight: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
 
-							{ /* Attribution font size — ResponsiveOverride + UnitControl.
-							     attributionFontSize is a TIER OBJECT (Spec 35 pass 3b)
-							     storing the bare NUMBER per tier; attributionFontSizeUnit
-							     stays a single shared unit selector across all tiers
-							     (unchanged). */ }
+							{ /* Attribution typography (font size/weight/style/family/
+							   decoration/transform/line-height) — rebuilt onto the shared
+							   TypographyControls component (Bean R-22-13), matching
+							   sgs/testimonial's `name` prefix pattern, rather than the
+							   bespoke controls this used to hand-roll. One shared UI,
+							   one shared render.php helper (sgs_typography_css_rule). */ }
 							<ToolsPanelItem
-								label={ __( 'Font size', 'sgs-blocks' ) }
+								label={ __( 'Typography', 'sgs-blocks' ) }
 								hasValue={ () =>
+									!! attributionFontFamily ||
+									!! attributionFontWeight ||
+									!! attributionFontStyle ||
+									!! attributionTextDecoration ||
+									!! attributionTextTransform ||
+									attributionLineHeight != null ||
 									attributionFontSize?.desktop != null ||
 									attributionFontSize?.tablet != null ||
 									attributionFontSize?.mobile != null
 								}
 								onDeselect={ () =>
-									setAttributes( { attributionFontSize: {} } )
+									setAttributes( {
+										attributionFontFamily: '',
+										attributionFontWeight: '',
+										attributionFontStyle: '',
+										attributionTextDecoration: '',
+										attributionTextTransform: '',
+										attributionLineHeight: undefined,
+										attributionLineHeightUnit: 'em',
+										attributionFontSize: {},
+										attributionFontSizeUnit: 'px',
+									} )
 								}
 								isShownByDefault
 							>
-								<ResponsiveOverride
-									label={ __( 'Font size', 'sgs-blocks' ) }
-									value={ attributionFontSize }
-									onChange={ ( obj ) => setAttributes( { attributionFontSize: obj } ) }
-								>
-									{ ( { ownValue, setOwnValue } ) => {
-										const unitVal = attributionFontSizeUnit || 'px';
-										return (
-											<SgsLengthControl
-												label={ __( 'Font size', 'sgs-blocks' ) }
-												hideLabelFromVision
-												value={ composeUnit( ownValue, unitVal ) }
-												units={ FONT_SIZE_UNITS }
-												onChange={ ( raw ) => {
-													const { num, unit } = parseUnit( raw, unitVal );
-													setOwnValue( num );
-													setAttributes( { attributionFontSizeUnit: unit } );
-												} }
-												presets={ false }
-											/>
-										);
-									} }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-
-							<ToolsPanelItem
-								label={ __( 'Font family', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionFontFamily }
-								onDeselect={ () =>
-									setAttributes( { attributionFontFamily: '' } )
-								}
-							>
-								<TextControl
-									label={ __( 'Font family', 'sgs-blocks' ) }
-									value={ attributionFontFamily }
-									onChange={ ( val ) => setAttributes( { attributionFontFamily: val } ) }
-									placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Text decoration', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionTextDecoration }
-								onDeselect={ () =>
-									setAttributes( { attributionTextDecoration: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Text decoration', 'sgs-blocks' ) }
-									value={ attributionTextDecoration }
-									options={ TEXT_DECORATION_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionTextDecoration: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Text transform', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionTextTransform }
-								onDeselect={ () =>
-									setAttributes( { attributionTextTransform: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Text transform', 'sgs-blocks' ) }
-									value={ attributionTextTransform }
-									options={ TEXT_TRANSFORM_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionTextTransform: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-
-							{ /* Attribution line height — UnitControl (single, no responsive) */ }
-							<ToolsPanelItem
-								label={ __( 'Line height', 'sgs-blocks' ) }
-								hasValue={ () => attributionLineHeight != null }
-								onDeselect={ () =>
-									setAttributes( { attributionLineHeight: undefined } )
-								}
-							>
-								<SgsLengthControl
-									label={ __( 'Line height', 'sgs-blocks' ) }
-									value={ composeUnit( attributionLineHeight, attributionLineHeightUnit ) }
-									units={ LINE_HEIGHT_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit( raw, attributionLineHeightUnit || 'em' );
-										setAttributes( { attributionLineHeight: num, attributionLineHeightUnit: unit } );
-									} }
-									presets={ false }
+								<TypographyControls
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+									prefix="attribution"
+									showSize
+									showWeight
+									showStyle
+									showLineHeight
+									showFontFamily
+									showDecoration
+									showTransform
+									showResponsive
 								/>
 							</ToolsPanelItem>
 

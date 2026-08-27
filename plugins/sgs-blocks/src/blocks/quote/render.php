@@ -80,18 +80,9 @@ if ( ! $has_body && ! $has_attribution ) {
 // 3. Extract + validate attribution slot attributes.
 // ---------------------------------------------------------------------------
 
-$attrib_tag              = $attributes['attributionTag'] ?? 'footer';
-$attrib_colour           = $attributes['attributionColour'] ?? '';
-$attrib_font_size_unit   = $attributes['attributionFontSizeUnit'] ?? 'px';
-$attrib_font_weight      = $attributes['attributionFontWeight'] ?? '';
-$attrib_font_family      = $attributes['attributionFontFamily'] ?? '';
-$attrib_font_style       = $attributes['attributionFontStyle'] ?? '';
-$attrib_text_decoration  = $attributes['attributionTextDecoration'] ?? '';
-$attrib_text_transform   = $attributes['attributionTextTransform'] ?? '';
-$attrib_line_height_unit = $attributes['attributionLineHeightUnit'] ?? 'em';
-// Decode the "unitless" sentinel so line-height emits a bare number.
-$attrib_line_height_unit = ( 'unitless' === $attrib_line_height_unit ) ? '' : $attrib_line_height_unit;
-$attrib_margin_unit      = $attributes['attributionMarginUnit'] ?? 'px';
+$attrib_tag         = $attributes['attributionTag'] ?? 'footer';
+$attrib_colour      = $attributes['attributionColour'] ?? '';
+$attrib_margin_unit = $attributes['attributionMarginUnit'] ?? 'px';
 
 // Validate attribution tag.
 if ( ! in_array( $attrib_tag, array( 'footer', 'div', 'cite' ), true ) ) {
@@ -231,81 +222,43 @@ $attrib_decls = array();
 if ( $attrib_colour ) {
 	$attrib_decls[] = 'color:' . sgs_colour_value( $attrib_colour );
 }
-if ( $attrib_font_weight ) {
-	$fw_safe = sgs_css_keyword_sanitise( $attrib_font_weight );
-	if ( '' !== $fw_safe ) {
-		$attrib_decls[] = 'font-weight:' . $fw_safe;
-	}
-}
-if ( $attrib_font_family ) {
-	// Sanitised via the shared sgs_font_family_sanitise() (helpers-typography.php,
-	// G4) — ONE owner for the allowlist, rather than a duplicated local regex.
-	$ff_safe = sgs_font_family_sanitise( $attrib_font_family );
-	if ( '' !== $ff_safe ) {
-		$attrib_decls[] = 'font-family:' . $ff_safe;
-	}
-}
-if ( $attrib_font_style ) {
-	$fs_safe = sgs_css_keyword_sanitise( $attrib_font_style );
-	if ( '' !== $fs_safe ) {
-		$attrib_decls[] = 'font-style:' . $fs_safe;
-	}
-}
-if ( $attrib_text_decoration ) {
-	$td_safe = sgs_css_keyword_sanitise( $attrib_text_decoration );
-	if ( '' !== $td_safe ) {
-		$attrib_decls[] = 'text-decoration:' . $td_safe;
-	}
-}
-if ( $attrib_text_transform ) {
-	$tt_safe = sgs_css_keyword_sanitise( $attrib_text_transform );
-	if ( '' !== $tt_safe ) {
-		$attrib_decls[] = 'text-transform:' . $tt_safe;
-	}
-}
 
 $css_attrib_base = $attrib_decls ? ( $attrib_scope . '{' . implode( ';', $attrib_decls ) . ';}' ) : '';
 
-// Attribution font-size / line-height / margin-top — base + tablet + mobile on
-// the SAME selector (Pattern A). attributionMarginTop is a KEPT-SCALAR
-// single-side family (contract §C).
+// Attribution font-size/weight/style/family/decoration/transform/line-height —
+// the shared TypographyControls companion helper, sgs_typography_css_rule()
+// (Bean R-22-13), so this ONE call replaces the bespoke per-property
+// extraction + sanitisation this block used to hand-roll — same pattern as
+// sgs/testimonial's `name` prefix (render.php:328). The helper reads
+// attributionFontSize's TIER-OBJECT shape {desktop,tablet,mobile} (Spec 35
+// pass 3b, 2026-08-11) directly off $attributes, and attributionLineHeight's
+// still-plain-scalar shape, routing each independently — no manual
+// normalise-and-refeed needed here any more.
+$css_attrib_typography = sgs_typography_css_rule( $attributes, 'attribution', $attrib_scope );
+
+// Attribution margin-top — base + tablet + mobile on the SAME selector
+// (Pattern A). A KEPT-SCALAR single-side family (contract §C), NOT part of
+// the shared typography helper above.
 //
-// attributionFontSize / attributionMarginTop are TIER OBJECTS
-// {desktop,tablet,mobile} (Spec 35 pass 3b, 2026-08-11) — the *Tablet/*Mobile
-// siblings no longer exist in block.json. sgs_responsive_css_rule() reads its
-// prop_map by ATTRIBUTE NAME from a flat $attributes-shaped array, so the two
-// object attrs are normalised here and fed back in under their old flat key
-// names (attributionLineHeight is untouched — still a plain scalar attr) —
-// this keeps sgs_responsive_css_rule()'s per-tier emission behaviour
-// byte-identical to before the migration, just fed from the new storage shape.
-$attrib_font_size_tiers  = sgs_responsive_normalise_object( $attributes['attributionFontSize'] ?? null );
+// attributionMarginTop is a TIER OBJECT {desktop,tablet,mobile} (Spec 35
+// pass 3b, 2026-08-11) — the *Tablet/*Mobile siblings no longer exist in
+// block.json. sgs_responsive_css_rule() reads its prop_map by ATTRIBUTE NAME
+// from a flat $attributes-shaped array, so the object attr is normalised
+// here and fed back in under its old flat key names — this keeps
+// sgs_responsive_css_rule()'s per-tier emission behaviour byte-identical to
+// before the migration, just fed from the new storage shape.
 $attrib_margin_top_tiers = sgs_responsive_normalise_object( $attributes['attributionMarginTop'] ?? null );
-$css_attrib_prop_attrs   = array_merge(
+$css_attrib_margin_attrs = array_merge(
 	$attributes,
 	array(
-		'attributionFontSize'        => $attrib_font_size_tiers['desktop'] ?? null,
-		'attributionFontSizeTablet'  => $attrib_font_size_tiers['tablet'] ?? null,
-		'attributionFontSizeMobile'  => $attrib_font_size_tiers['mobile'] ?? null,
 		'attributionMarginTop'       => $attrib_margin_top_tiers['desktop'] ?? null,
 		'attributionMarginTopTablet' => $attrib_margin_top_tiers['tablet'] ?? null,
 		'attributionMarginTopMobile' => $attrib_margin_top_tiers['mobile'] ?? null,
 	)
 );
-$css_attrib_tiers        = sgs_responsive_css_rule(
-	$css_attrib_prop_attrs,
+$css_attrib_margin       = sgs_responsive_css_rule(
+	$css_attrib_margin_attrs,
 	array(
-		array(
-			'attr'         => 'attributionFontSize',
-			'css'          => 'font-size',
-			'unit_default' => $attrib_font_size_unit,
-			'tablet_attr'  => 'attributionFontSizeTablet',
-			'mobile_attr'  => 'attributionFontSizeMobile',
-		),
-		array(
-			'attr'         => 'attributionLineHeight',
-			'css'          => 'line-height',
-			'unit_default' => $attrib_line_height_unit,
-		),
 		array(
 			'attr'         => 'attributionMarginTop',
 			'css'          => 'margin-top',
@@ -513,8 +466,11 @@ if ( ! $inherit_style ) {
 if ( $css_attrib_base ) {
 	$scoped_css[] = $css_attrib_base;
 }
-if ( $css_attrib_tiers ) {
-	$scoped_css[] = $css_attrib_tiers;
+if ( $css_attrib_typography ) {
+	$scoped_css[] = $css_attrib_typography;
+}
+if ( $css_attrib_margin ) {
+	$scoped_css[] = $css_attrib_margin;
 }
 
 // ---------------------------------------------------------------------------
