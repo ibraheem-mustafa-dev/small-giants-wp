@@ -38,8 +38,15 @@ deploy was blocked by another track's dirty `media`/`post-grid` files.
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only
 ```
 
-If the dirty-tree gate still fires, check whether the named files are yours. If they are not, deploy
-from a clean worktree at `origin/main` — the pattern is in D838, and ⛔ **unlink the junctions before
+⭐ **Run it PLAIN first — no skip flags.** At session close all **68 fast-tier gates passed**
+(verified 2026-08-27, `run-gates.py --tier fast`). Every deploy earlier that day needed
+`--skip-gate-full` and `--skip-oldshape-audit` for failures that belonged to other tracks
+(responsive-family-without-switcher on five blocks, a `parse_blocks` allowlist gap, a stale roster).
+Those tracks have since fixed them. Do not carry yesterday's skip flags forward as habit — that is
+how a real failure gets waved through.
+
+If the dirty-tree gate fires, check whether the named files are yours. If they are not, deploy from a
+clean worktree at `origin/main` — the pattern is in D838, and ⛔ **unlink the junctions before
 `git worktree remove`**, which once emptied `node_modules`.
 
 **Acceptance:** page 2740 returns HTTP 200 and carries `sgs-wave-gradient--pastel`. Then switch a
