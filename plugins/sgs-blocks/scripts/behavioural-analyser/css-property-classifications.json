@@ -7635,7 +7635,7 @@
       "slug": "sgs/product-card",
       "attr": "backgroundColourGradient",
       "fields": {
-        "css_property": "background-color-gradient",
+        "css_property": "background-image",
         "css_element": "wrapper"
       }
     },
