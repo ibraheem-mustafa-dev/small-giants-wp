@@ -1392,7 +1392,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								<>
 									<ResponsiveBoxControl
 										label={ __( 'Border width', 'sgs-blocks' ) }
-										presets={ [ 'XXS', 'XS', 'S' ] }
+										presets={ [ '10', '20', '30' ] }
 										values={ { base: splitMediaBorderWidth ?? {} } }
 										showResponsive={ false }
 										onChange={ ( tier, next ) => setAttributes( { splitMediaBorderWidth: next } ) }

@@ -1381,7 +1381,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<PanelBody title={ __( 'Card border', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
-						presets={ [ 'XXS', 'XS', 'S' ] }
+						presets={ [ '10', '20', '30' ] }
 						values={ { base: borderWidth ?? {} } }
 						showResponsive={ false }
 						onChange={ ( _tier, next ) => setAttributes( { borderWidth: next } ) }
@@ -2031,7 +2031,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							>
 								<ResponsiveBoxControl
 									label={ __( 'Border width', 'sgs-blocks' ) }
-									presets={ [ 'XXS', 'XS', 'S' ] }
+									presets={ [ '10', '20', '30' ] }
 									values={ { base: ctaBorderWidth ?? {} } }
 									showResponsive={ false }
 									onChange={ ( _tier, next ) =>

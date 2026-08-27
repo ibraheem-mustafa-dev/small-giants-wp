@@ -32,7 +32,10 @@ expression, looks up `block_attributes.box_family` (read-only sqlite) for that a
 (and its Tablet/Mobile siblings, since box_family is sometimes only seeded on the sibling
 rows -- see block_attributes for sgs/container.padding, whose OWN row is NULL but whose
 `paddingTablet` row carries box_family='padding'), and inserts:
-  - `presets={ [ 'XXS', 'XS', 'S' ] }` when the resolved family is border-width shaped
+  - `presets={ [ '10', '20', '30' ] }` (theme.json spacing-scale SLUGS for XXS/XS/S --
+    SgsBoxControl.js filters by slug, not display name; the display-name form was shipped
+    2026-08-27 and silently no-op'd across all 13 affected files -- fixed same day, live-
+    verified) when the resolved family is border-width shaped
     (box_family == 'borderWidth' or ends with the literal suffix 'BorderWidth', e.g.
     'ctaBorderWidth', 'splitMediaBorderWidth')
   - bare `presets` (boolean shorthand, matching this codebase's existing style at
@@ -82,7 +85,7 @@ PRESETS_ATTR_RE = re.compile(
     r'\s*\})?'
 )
 BASE_KEY_RE = re.compile(r'\bbase\s*:\s*')
-RESTRICTED_PRESETS = "presets={ [ 'XXS', 'XS', 'S' ] }"
+RESTRICTED_PRESETS = "presets={ [ '10', '20', '30' ] }"
 FULL_PRESETS = 'presets'
 
 # ── Bound-attribute resolution, in priority order (mirrors the shapes verified live

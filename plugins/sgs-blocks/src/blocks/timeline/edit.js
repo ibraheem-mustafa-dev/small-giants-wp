@@ -534,7 +534,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ borderStyle !== 'none' && (
 						<ResponsiveBoxControl
 							label={ __( 'Border width', 'sgs-blocks' ) }
-							presets={ [ 'XXS', 'XS', 'S' ] }
+							presets={ [ '10', '20', '30' ] }
 							values={ { base: borderWidth ?? {} } }
 							showResponsive={ false }
 							onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
