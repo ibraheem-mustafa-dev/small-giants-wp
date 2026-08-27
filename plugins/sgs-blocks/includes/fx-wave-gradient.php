@@ -125,7 +125,7 @@ function sgs_apply_fx_wave_gradient( string $block_content ): string {
 	$vtag   = new \WP_HTML_Tag_Processor( $html );
 	if ( $vtag->next_tag() ) {
 		$vexisting = (string) $vtag->get_attribute( 'class' );
-		$vtag->set_attribute( 'class', 	rim( $vexisting . ' ' . $vclass ) );
+		$vtag->set_attribute( 'class', \trim( $vexisting . ' ' . $vclass ) );
 		$html = $vtag->get_updated_html();
 	}
 
