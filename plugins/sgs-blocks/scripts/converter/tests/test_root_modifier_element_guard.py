@@ -29,6 +29,18 @@ Coverage:
   * ``test_synthetic_outer_layer_child_element_is_excluded_from_root_domain``
     — a schema-only control independent of the live DB's current seed, so
     this suite cannot go vacuous if any of the above rows is ever re-tagged.
+  * ``test_custom_wrapper_element_root_case_resolves_as_root_domain`` /
+    ``test_custom_wrapper_element_child_case_excluded_despite_matching_name``
+    / ``test_custom_wrapper_element_guard_is_not_vacuous`` — Task 1 v2
+    re-fix (2026-08-27): a block's CUSTOM isWrapper element name (e.g.
+    before-after's 'frame') is recognised as root-domain ONLY when the row's
+    derived_selector is the block's own root selector verbatim (or NULL) —
+    never by a "contains __" string-shape heuristic. All three tests use a
+    fabricated synthetic block + monkeypatched ``_get_block_root_element``,
+    independent of live DB state (the v1 attempt's equivalent test called
+    live ``sgs/before-after``, which this session's stopgap migration had
+    already relabelled to css_element='wrapper', so it proved nothing about
+    the new mechanism).
 
 Run from plugins/sgs-blocks/scripts:
     python -m pytest converter/tests/test_root_modifier_element_guard.py -q
@@ -208,24 +220,26 @@ def synthetic_db(tmp_path, monkeypatch):
             css_property TEXT,
             css_element TEXT,
             css_state TEXT,
-            css_tier TEXT
+            css_tier TEXT,
+            derived_selector TEXT
         )
         """
     )
     rows = [
         # A genuine root/wrapper attr, css_layer='OUTER' — must be admitted.
-        ("sgs/__synthetic__", "rootBorderColour", "string", "OUTER", "border-color", "wrapper", None, None),
+        # derived_selector=NULL means it targets the block's root.
+        ("sgs/__synthetic__", "rootBorderColour", "string", "OUTER", "border-color", "wrapper", None, None, None),
         # A NAMED-CHILD attr that ALSO carries css_layer='OUTER' — the exact
         # shape that used to slip through unguarded. Must be EXCLUDED.
-        ("sgs/__synthetic__", "childBorderColour", "string", "OUTER", "border-color", "cta", None, None),
+        ("sgs/__synthetic__", "childBorderColour", "string", "OUTER", "border-color", "cta", None, None, None),
         # A named-child attr with NO css_layer at all — must stay excluded
         # (unaffected control; this was never the buggy path).
-        ("sgs/__synthetic__", "otherChildColour", "string", None, "border-color", "cta", None, None),
+        ("sgs/__synthetic__", "otherChildColour", "string", None, "border-color", "cta", None, None, None),
     ]
     conn.executemany(
         "INSERT INTO block_attributes "
-        "(block_slug, attr_name, attr_type, css_layer, css_property, css_element, css_state, css_tier) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "(block_slug, attr_name, attr_type, css_layer, css_property, css_element, css_state, css_tier, derived_selector) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         rows,
     )
     conn.commit()
@@ -251,3 +265,187 @@ def test_synthetic_outer_layer_child_element_is_excluded_from_root_domain(synthe
         "css_layer, and a child attr with no css_layer at all must never enter "
         "either."
     )
+
+
+# ---------------------------------------------------------------------------
+# Task 1 v2 re-fix (2026-08-27): the guard recognises a block's own CUSTOM
+# isWrapper element name (from block.json), but ONLY admits a row using that
+# name when the row's derived_selector is the block's own root selector
+# verbatim (or empty/NULL) -- never by a string-shape heuristic on the
+# selector's characters (see _root_domain_element_clause's docstring for why
+# the v1 attempt's 'contains __' check was wrong on two counts).
+#
+# These tests use ONLY the synthetic_db pattern -- fabricated rows in a
+# throwaway SQLite DB, PLUS a monkeypatched _get_block_root_element so no
+# real block.json is needed either. This is deliberate: the v1 attempt's
+# equivalent test called live db_lookup.attr_for_layer_property('sgs/before-
+# after', ...), which happened to pass against BOTH the old and the new code
+# because this same session's stopgap migration
+# (migrations/2026-08-27-before-after-boxshadowcolour-css-element-fix.py)
+# had already relabelled that row's css_element to the generic 'wrapper' --
+# so the live case no longer exercises the custom-isWrapper-name route at
+# all. Building genuinely synthetic data with a FABRICATED custom isWrapper
+# name is the only way to prove the new mechanism does something, independent
+# of whatever the live DB happens to contain today.
+# ---------------------------------------------------------------------------
+
+_SYNTHETIC_CUSTOM_WRAPPER_SLUG = "sgs/__synthetic_custom_wrapper__"
+
+
+@pytest.fixture
+def synthetic_db_with_custom_wrapper(tmp_path, monkeypatch):
+    """A fabricated block declaring a CUSTOM-NAMED isWrapper element ('frame'
+    -- mirroring before-after's real shape), with three rows:
+
+      * ``rootShadowColour`` -- css_element='frame' (the custom isWrapper
+        name) AND derived_selector equal to the block's own root selector
+        verbatim. Must resolve as ROOT (route 2 of the guard).
+      * ``childShadowColour`` -- SAME css_element='frame', but
+        derived_selector targets a specific nested child node, not the root
+        selector. Must stay EXCLUDED -- proving the guard does not treat
+        "css_element matches the isWrapper name" alone as sufficient (this
+        is the media/before-after distinction, reproduced synthetically).
+      * ``unrelatedChildColour`` -- a genuinely different named-child element
+        (not the block's isWrapper name at all), css_layer='OUTER'. Must stay
+        excluded regardless -- a negative control proving the predicate can
+        fail, not a vacuous always-true check.
+    """
+    root_selector = db_lookup._get_block_root_selector(_SYNTHETIC_CUSTOM_WRAPPER_SLUG)
+    db_path = tmp_path / "synthetic-custom-wrapper.db"
+    conn = sqlite3.connect(db_path)
+    conn.execute(
+        """
+        CREATE TABLE block_attributes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_slug TEXT NOT NULL,
+            attr_name TEXT NOT NULL,
+            attr_type TEXT NOT NULL,
+            css_layer TEXT,
+            css_property TEXT,
+            css_element TEXT,
+            css_state TEXT,
+            css_tier TEXT,
+            derived_selector TEXT
+        )
+        """
+    )
+    rows = [
+        (_SYNTHETIC_CUSTOM_WRAPPER_SLUG, "rootShadowColour", "string", "OUTER",
+         "box-shadow-color", "frame", None, None, root_selector),
+        (_SYNTHETIC_CUSTOM_WRAPPER_SLUG, "childShadowColour", "string", "OUTER",
+         "box-shadow-color", "frame", None, None, ".sgs-synthetic__inner-panel"),
+        (_SYNTHETIC_CUSTOM_WRAPPER_SLUG, "unrelatedChildColour", "string", "OUTER",
+         "box-shadow-color", "some-other-child", None, None, None),
+    ]
+    conn.executemany(
+        "INSERT INTO block_attributes "
+        "(block_slug, attr_name, attr_type, css_layer, css_property, css_element, css_state, css_tier, derived_selector) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        rows,
+    )
+    conn.commit()
+    conn.close()
+
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+    # Simulate the block's block.json declaring 'frame' as its isWrapper
+    # element, without needing a real file on disk for a fabricated slug.
+    monkeypatch.setattr(
+        db_lookup,
+        "_get_block_root_element",
+        lambda slug: "frame" if slug == _SYNTHETIC_CUSTOM_WRAPPER_SLUG else None,
+    )
+    db_lookup._base_domain_attrs_for_css_property.cache_clear()
+    db_lookup.declared_attrs_for_css_property.cache_clear()
+    yield _SYNTHETIC_CUSTOM_WRAPPER_SLUG
+    db_lookup._base_domain_attrs_for_css_property.cache_clear()
+    db_lookup.declared_attrs_for_css_property.cache_clear()
+
+
+def test_custom_wrapper_element_root_case_resolves_as_root_domain(
+    synthetic_db_with_custom_wrapper,
+):
+    """(a) A block's custom isWrapper element name ('frame'), on a row whose
+    derived_selector equals the block's own root selector verbatim, must
+    resolve as root-domain."""
+    block_slug = synthetic_db_with_custom_wrapper
+    declared = db_lookup._base_domain_attrs_for_css_property(block_slug, "box-shadow-color")
+    assert declared == ("rootShadowColour",), (
+        f"expected only the genuine root attr for the custom isWrapper name "
+        f"'frame', got {declared!r} — a row whose derived_selector is the "
+        "block's own root selector, verbatim, must be admitted as root-domain "
+        "even though its css_element is a CUSTOM name, not the generic "
+        "'wrapper' string"
+    )
+    resolved = db_lookup.attr_for_layer_property(block_slug, "OUTER", "box-shadow-color")
+    assert resolved == "rootShadowColour", (
+        f"attr_for_layer_property resolved to {resolved!r}, expected "
+        "'rootShadowColour' via the custom-isWrapper-name root route"
+    )
+
+
+def test_custom_wrapper_element_child_case_excluded_despite_matching_name(
+    synthetic_db_with_custom_wrapper,
+):
+    """(b) A row sharing the SAME custom isWrapper name ('frame') as
+    css_element, but whose derived_selector targets a specific nested child
+    node (not the block's root selector), must stay excluded — proving the
+    guard is not fooled by a css_element string match alone. This is the
+    synthetic reproduction of the real media-vs-before-after distinction."""
+    block_slug = synthetic_db_with_custom_wrapper
+    declared = db_lookup._base_domain_attrs_for_css_property(block_slug, "box-shadow-color")
+    assert "childShadowColour" not in declared, (
+        f"got {declared!r} — childShadowColour shares css_element='frame' "
+        "with the genuine root attr, but its derived_selector "
+        "('.sgs-synthetic__inner-panel') targets a specific nested child "
+        "node, not the block's own root selector, so it must never enter "
+        "the root domain"
+    )
+
+
+def test_custom_wrapper_element_guard_is_not_vacuous(synthetic_db_with_custom_wrapper):
+    """(c) Negative control: an unrelated named-child element
+    ('some-other-child', not the block's isWrapper name at all) tagged
+    css_layer='OUTER' must ALSO stay excluded — proving this predicate can
+    fail (reject a row) and is not a check that always returns True."""
+    block_slug = synthetic_db_with_custom_wrapper
+    declared = db_lookup._base_domain_attrs_for_css_property(block_slug, "box-shadow-color")
+    assert "unrelatedChildColour" not in declared, (
+        f"got {declared!r} — a named-child element that is neither a "
+        "generic root convention nor the block's own custom isWrapper name "
+        "must never enter the root domain, regardless of css_layer"
+    )
+    assert declared == ("rootShadowColour",), (
+        f"expected exactly one root-domain attr, got {declared!r}"
+    )
+
+
+def test_get_block_root_element_reads_real_block_json_not_monkeypatched():
+    """Direct, non-monkeypatched proof that _get_block_root_element reads the
+    ACTUAL repo block.json files correctly — every other test in this file
+    monkeypatches this function out entirely, so the block.json path
+    arithmetic, the supports.sgs.elements traversal, and the isWrapper
+    predicate (the real R-31-1-compliance mechanism this task adds) were
+    previously proven only by manual inspection, never by a running test.
+    Reads real files on disk, not the shared DB — this does not reintroduce
+    the live-DB-dependency problem those other tests were fixed to avoid."""
+    assert db_lookup._get_block_root_element("sgs/before-after") == "frame", (
+        "sgs/before-after's block.json declares its wrapper element as "
+        "'frame' via supports.sgs.elements.frame.isWrapper — if this ever "
+        "returns something else, the block.json schema changed or the "
+        "reader's traversal broke"
+    )
+    assert db_lookup._get_block_root_element("sgs/media") == "media", (
+        "sgs/media's own isWrapper element name is 'media' — confirms the "
+        "reader is not just matching a single hardcoded case"
+    )
+    assert db_lookup._get_block_root_element("sgs/container") == "wrapper", (
+        "sgs/container uses the generic convention name 'wrapper' itself — "
+        "confirms the reader also handles the common case, not just custom "
+        "names"
+    )
+    assert db_lookup._get_block_root_element("sgs/does-not-exist") is None, (
+        "a block with no block.json must return None (defensive default), "
+        "not raise"
+    )
+
+
