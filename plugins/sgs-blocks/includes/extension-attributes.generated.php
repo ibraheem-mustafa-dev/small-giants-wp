@@ -22,6 +22,8 @@ return array(
 	'fxFieldType' => array( 'type' => 'string' ),
 	'fxGridCell' => array( 'type' => 'number' ),
 	'fxGridDotColour' => array( 'type' => 'string' ),
+	'fxGridDotHoverColour' => array( 'type' => 'string' ),
+	'fxGridDotShape' => array( 'type' => 'string' ),
 	'fxGridDotSize' => array( 'type' => 'number' ),
 	'fxGridEase' => array( 'type' => 'number' ),
 	'fxGridLean' => array( 'type' => 'number' ),

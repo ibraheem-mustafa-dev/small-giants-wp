@@ -1115,6 +1115,31 @@ function addFxAttributes( settings, name ) {
 			 */
 			fxGridDotColour: { type: 'string', default: '' },
 			/*
+			 * The colour a dot reaches AT the pointer; dots interpolate from
+			 * `fxGridDotColour` to this one by proximity.
+			 *
+			 * It is a second attribute rather than a second field on the first
+			 * because D609's colour contract is one control carrying N STATES,
+			 * and a state is a separate stored value. Passing both to a single
+			 * `DesignTokenPicker` via its `states` prop is what produces the
+			 * Normal/Hover tab toggle inside the popover.
+			 *
+			 * Added 2026-08-28: proximity previously drove ALPHA ONLY, via a
+			 * constant the client could not reach.
+			 */
+			fxGridDotHoverColour: { type: 'string', default: '' },
+			/*
+			 * Marker shape. `line` and `triangle` rotate to point at the
+			 * pointer — the "magnetic filings" pattern, and the only way the
+			 * `fxGridLean` value becomes visible while a dot is at rest, since
+			 * a circle is radially symmetric.
+			 *
+			 * ⛔ Deliberately NOT an arbitrary icon. At lattice scale (a few px,
+			 * hundreds of instances) an icon degrades to an unreadable blob and
+			 * costs a path draw per cell per frame instead of one `arc()`.
+			 */
+			fxGridDotShape: { type: 'string', default: '' },
+			/*
 			 * FR-38-33 grid-dot geometry. The five values Bean tuned in the
 			 * 2026-08-28 prototype, exposed after he saw the shipped panel with
 			 * nothing under the effect picker: "the controls for the grid dots
@@ -2889,17 +2914,28 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						) }
 
 						{ /*
-						  * FR-38-33 grid-dot field. Six controls, added
-						  * 2026-08-28 after Bean saw the shipped panel with
-						  * nothing under the effect picker. It had shipped
-						  * param-less on the reasoning that the design gate
-						  * settled one configuration — true, but a settled
-						  * DEFAULT is not the same as no CONTROL, and every
-						  * sibling effect offers a panel of them.
+						  * FR-38-33 grid-dot field. Added 2026-08-28 after Bean
+						  * saw the shipped panel with nothing under the effect
+						  * picker. It had shipped param-less on the reasoning
+						  * that the design gate settled one configuration —
+						  * true, but a settled DEFAULT is not the same as no
+						  * CONTROL, and every sibling effect offers a panel of
+						  * them.
 						  *
-						  * These are exactly the five values Bean tuned in the
+						  * These are the five values Bean tuned in the
 						  * prototype that ran the design gate, plus the colour
-						  * whose accent default measured 1.35:1 on his own site.
+						  * whose accent default measured 1.35:1 on his own
+						  * site, plus a shape picker.
+						  *
+						  * ⛔ EVERY ITEM SETS `isShownByDefault`. The first
+						  * cut set it on the colour alone, so the five geometry
+						  * controls existed but sat behind the ToolsPanel "+"
+						  * menu — and the report that came back was that they
+						  * did not exist at all. For a client who will never
+						  * open that menu, hidden and absent are the same
+						  * thing. `cursor-field` states the rule outright in
+						  * its own panel: none of these is an optional
+						  * refinement, so none of them hides.
 						  *
 						  * ⛔ Every `value` is passed RAW (possibly undefined)
 						  * rather than defaulted to a number here. The engine's
@@ -2913,28 +2949,140 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 							<>
 								<ToolsPanelItem
 									hasValue={ () =>
-										!! attributes.fxGridDotColour
+										!! attributes.fxGridDotColour ||
+										!! attributes.fxGridDotHoverColour
 									}
 									label={ __( 'Dot colour', 'sgs-blocks' ) }
 									onDeselect={ () =>
-										setParam( { fxGridDotColour: '' } )
+										setParam( {
+											fxGridDotColour: '',
+											fxGridDotHoverColour: '',
+										} )
 									}
 									isShownByDefault
 								>
+									{ /*
+									  * D609 SHAPE: one thin control, states as
+									  * TABS inside its popover — never a second
+									  * sibling row. Passing `states` is what
+									  * selects that shape; called without it,
+									  * `DesignTokenPicker` silently falls back
+									  * to the legacy single-swatch rendering,
+									  * which is how this control shipped
+									  * looking wrong while using the right
+									  * component.
+									  *
+									  * `enableAlpha` is the whole opacity
+									  * story now. The engine stopped forcing a
+									  * 0.34 rest alpha, so a translucent
+									  * lattice is a translucent COLOUR the
+									  * client picks here, per state.
+									  */ }
 									<DesignTokenPicker
 										label={ __(
 											'Dot colour',
 											'sgs-blocks'
 										) }
-										value={ attributes.fxGridDotColour }
+										linked
+										enableAlpha
+										states={ [
+											{
+												key: 'normal',
+												label: __(
+													'Normal',
+													'sgs-blocks'
+												),
+												value: attributes.fxGridDotColour,
+												onChange: ( value ) =>
+													setParam( {
+														fxGridDotColour: value,
+													} ),
+											},
+											{
+												key: 'hover',
+												label: __(
+													'Pointer',
+													'sgs-blocks'
+												),
+												value: attributes.fxGridDotHoverColour,
+												onChange: ( value ) =>
+													setParam( {
+														fxGridDotHoverColour:
+															value,
+													} ),
+											},
+										] }
+										help={ __(
+											'Normal is the resting lattice; Pointer is the colour dots reach nearest the cursor. Pick something that reads against this section’s background — a brand accent is usually too close to it. Use the opacity slider for a subtler field.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxGridDotShape
+									}
+									label={ __( 'Dot shape', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxGridDotShape: '' } )
+									}
+									isShownByDefault
+								>
+									<SelectControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __(
+											'Dot shape',
+											'sgs-blocks'
+										) }
+										value={
+											attributes.fxGridDotShape || 'circle'
+										}
+										options={ [
+											{
+												label: __(
+													'Circle',
+													'sgs-blocks'
+												),
+												value: 'circle',
+											},
+											{
+												label: __(
+													'Line — points at the cursor',
+													'sgs-blocks'
+												),
+												value: 'line',
+											},
+											{
+												label: __(
+													'Square',
+													'sgs-blocks'
+												),
+												value: 'square',
+											},
+											{
+												label: __(
+													'Triangle — points at the cursor',
+													'sgs-blocks'
+												),
+												value: 'triangle',
+											},
+											{
+												label: __(
+													'Cross',
+													'sgs-blocks'
+												),
+												value: 'cross',
+											},
+										] }
 										onChange={ ( value ) =>
 											setParam( {
-												fxGridDotColour: value,
+												fxGridDotShape: value,
 											} )
 										}
-										linked
 										help={ __(
-											'Defaults to your primary colour. Pick something that reads against this section’s background — a brand accent is usually too close to it.',
+											'Line and Triangle rotate to point at the cursor, which makes the Lean setting visible even before a marker moves. Circle, Square and Cross stay upright.',
 											'sgs-blocks'
 										) }
 									/>
@@ -2948,6 +3096,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									onDeselect={ () =>
 										setParam( { fxGridCell: undefined } )
 									}
+									isShownByDefault
 								>
 									<RangeControl
 										__nextHasNoMarginBottom
@@ -2975,6 +3124,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									onDeselect={ () =>
 										setParam( { fxGridDotSize: undefined } )
 									}
+									isShownByDefault
 								>
 									<RangeControl
 										__nextHasNoMarginBottom
@@ -3002,6 +3152,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									onDeselect={ () =>
 										setParam( { fxGridRadius: undefined } )
 									}
+									isShownByDefault
 								>
 									<RangeControl
 										__nextHasNoMarginBottom
@@ -3029,6 +3180,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									onDeselect={ () =>
 										setParam( { fxGridLean: undefined } )
 									}
+									isShownByDefault
 								>
 									<RangeControl
 										__nextHasNoMarginBottom
@@ -3056,6 +3208,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									onDeselect={ () =>
 										setParam( { fxGridEase: undefined } )
 									}
+									isShownByDefault
 								>
 									<RangeControl
 										__nextHasNoMarginBottom
@@ -4017,6 +4170,27 @@ const withGridDotsEditorPreview = createHigherOrderComponent(
 			const cell = attributes.fxGridCell || 40;
 			const dot = attributes.fxGridDotSize || 2;
 
+			/*
+			 * Resolve the stored colour the SAME way `fx-grid-dots.php` does:
+			 * a palette SLUG becomes its preset custom property (so the preview
+			 * re-colours with the theme, exactly as the live field does), and a
+			 * hex/hex8 passes through verbatim so a picked alpha previews too.
+			 * An unset value emits nothing and the stylesheet's own fallback
+			 * chain applies.
+			 *
+			 * This exists because the preview previously painted with
+			 * `currentColor` — the block's TEXT colour — and so showed a colour
+			 * that never ships. It drew crisp dark dots over the exact faint
+			 * pink field Bean could not see on the live page.
+			 */
+			const stored = attributes.fxGridDotColour || '';
+			let previewColour = '';
+			if ( /^#/.test( stored ) ) {
+				previewColour = stored;
+			} else if ( /^[a-z0-9-]+$/.test( stored ) ) {
+				previewColour = `var(--wp--preset--color--${ stored })`;
+			}
+
 			const wrapperProps = {
 				...( props.wrapperProps || {} ),
 				className: [ props.wrapperProps?.className, 'sgs-grid-dots-preview' ]
@@ -4026,6 +4200,9 @@ const withGridDotsEditorPreview = createHigherOrderComponent(
 					...( props.wrapperProps?.style || {} ),
 					'--sgs-gd-cell': `${ cell }px`,
 					'--sgs-gd-dot': `${ dot }px`,
+					...( previewColour
+						? { '--sgs-gd-colour': previewColour }
+						: {} ),
 				},
 			};
 

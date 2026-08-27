@@ -32,6 +32,19 @@
  * `getPropertyValue()` on a custom property returns the `var(...)` text
  * UNRESOLVED and a canvas cannot paint with a string.
  *
+ * There are TWO such channels: `color` for the resting colour and
+ * `text-decoration-color` for the colour at the pointer. Text decoration does
+ * not render on a canvas, so the second is inert and carries data only.
+ *
+ * ── OPACITY BELONGS TO THE COLOUR, NOT TO THE ENGINE (2026-08-28) ──────────
+ * This module used to force `globalAlpha = 0.34 + prox * 0.66`. Canvas
+ * MULTIPLIES globalAlpha by the fill colour's own alpha, so that constant
+ * quietly overrode whatever the client picked — a lattice set to an opaque
+ * brand colour still painted at roughly a third, which is how the field
+ * shipped at ~1.3:1 against a client's own cream background while every gate
+ * stayed green. globalAlpha is now left at 1 and the alpha travels in the
+ * colour, where the client's picker can reach it.
+ *
  * ── NO INLINE STYLE (Spec 32) ─────────────────────────────────────────────
  * This module writes the canvas's WIDTH/HEIGHT ATTRIBUTES (the drawing buffer)
  * and nothing else. `assets/css/fx-grid-dots.css` owns position/inset/z-index/
@@ -61,7 +74,77 @@ const DEFAULTS = {
 	maxLean: 12,
 	easeMs: 260,
 	fade: true,
+	shape: 'circle',
 };
+
+/**
+ * Marker shapes that carry an ORIENTATION, and so rotate to point at the
+ * pointer. For everything else the angle is never computed at all.
+ *
+ * This is the "magnetic filings" pattern rather than an invention: a lattice of
+ * line segments that swing toward the cursor is an established genre, and it is
+ * the only way the `lean` parameter becomes VISIBLE at rest — a circle is
+ * radially symmetric, so a leaning circle and a still circle are the same
+ * picture until it has physically moved.
+ */
+const DIRECTIONAL_SHAPES = new Set( [ 'line', 'triangle' ] );
+
+/**
+ * Parse a browser-computed colour into numeric channels.
+ *
+ * The input is ALWAYS `getComputedStyle`'s output, never author CSS, so it is
+ * already normalised to `rgb()`/`rgba()` — hex, hex8, named colours and
+ * `color-mix()` have all been resolved by the engine before we see them. That
+ * is why this handles no other notation: adding hex/hsl parsing here would be
+ * dead code that implies a contract this function does not have.
+ *
+ * Both the legacy comma form (`rgba(1, 2, 3, 0.4)`) and the modern slash form
+ * (`rgb(1 2 3 / 40%)`) are accepted because engines differ on which they emit.
+ *
+ * @param {string} value A computed CSS colour.
+ * @return {number[]} `[r, g, b, a]`, or opaque white when unparseable.
+ */
+function parseColour( value ) {
+	const inner = /rgba?\(([^)]*)\)/i.exec( String( value || '' ) );
+	if ( ! inner ) {
+		return [ 255, 255, 255, 1 ];
+	}
+	// One split handles both separator styles, which keeps this readable and
+	// avoids a regex complex enough to trip the lint ceiling.
+	const parts = inner[ 1 ].trim().split( /[\s,/]+/ ).filter( Boolean );
+	if ( parts.length < 3 ) {
+		return [ 255, 255, 255, 1 ];
+	}
+	const channel = ( raw ) => {
+		const n = parseFloat( raw );
+		return Number.isNaN( n ) ? 0 : n;
+	};
+	let alpha = 1;
+	if ( parts.length > 3 ) {
+		alpha = channel( parts[ 3 ] );
+		if ( parts[ 3 ].includes( '%' ) ) {
+			alpha /= 100;
+		}
+	}
+	return [
+		channel( parts[ 0 ] ),
+		channel( parts[ 1 ] ),
+		channel( parts[ 2 ] ),
+		alpha,
+	];
+}
+
+/**
+ * Shortest-path angular difference, so a marker crossing the ±π seam turns the
+ * short way round instead of spinning most of a full circle.
+ *
+ * @param {number} from Current angle in radians.
+ * @param {number} to   Target angle in radians.
+ * @return {number} Signed delta in `(-π, π]`.
+ */
+function angleDelta( from, to ) {
+	return ( ( to - from + Math.PI * 3 ) % ( Math.PI * 2 ) ) - Math.PI;
+}
 
 /**
  * Build a grid-dot field over one element.
@@ -109,19 +192,35 @@ export function createGridDots( el, opts = {} ) {
 	let raf = 0;
 	let visible = true;
 	let colour = 'rgba(255,255,255,0.8)';
+	let restRgba = [ 255, 255, 255, 0.8 ];
+	let hotRgba = [ 255, 255, 255, 0.8 ];
 	let destroyed = false;
 
 	/**
-	 * Resolve the paint colour from the CANVAS's computed `color`. See the
-	 * module docblock — never read the custom property directly.
+	 * Resolve BOTH paint colours from the canvas's own computed style. See the
+	 * module docblock — never read a custom property directly.
+	 *
+	 * The resting colour comes from `color` and the pointer colour from
+	 * `text-decoration-color`, both set by the stylesheet from their custom
+	 * properties. Text decoration does not render on a canvas, so that property
+	 * is inert here and serves purely as a second resolved-colour channel.
 	 *
 	 * @return {void}
 	 */
 	function readColour() {
-		const c = window.getComputedStyle( canvas ).color;
-		if ( c ) {
-			colour = c;
+		const computed = window.getComputedStyle( canvas );
+		if ( computed.color ) {
+			colour = computed.color;
+			restRgba = parseColour( computed.color );
 		}
+		/*
+		 * Fall back to the resting colour rather than to a literal. An absent
+		 * or unparseable pointer colour must mean "no colour shift", never a
+		 * hardcoded one that would silently override the client's choice.
+		 */
+		hotRgba = computed.textDecorationColor
+			? parseColour( computed.textDecorationColor )
+			: restRgba;
 	}
 
 	/**
@@ -162,7 +261,10 @@ export function createGridDots( el, opts = {} ) {
 			for ( let col = 0; col < cols; col++ ) {
 				const hx = offsetX + col * cellPx;
 				const hy = offsetY + row * cellPx;
-				dots.push( { hx, hy, x: hx, y: hy } );
+				// `a` is the marker's own rotation, eased like x/y so a
+				// directional shape swings toward the pointer rather than
+				// snapping. Unused by symmetric shapes.
+				dots.push( { hx, hy, x: hx, y: hy, a: 0 } );
 			}
 		}
 		readColour();
@@ -193,6 +295,72 @@ export function createGridDots( el, opts = {} ) {
 	}
 
 	/**
+	 * Paint one marker at its current position, in the configured shape.
+	 *
+	 * `cfg.dot` is a RADIUS (it always was, for the circle), so every other
+	 * shape is sized as a multiple of it rather than reusing it as a side
+	 * length — that keeps a given "Dot size" visually comparable when the
+	 * client switches shape, instead of the field jumping in weight.
+	 *
+	 * Only `line` and `triangle` consult the rotation; the rest are symmetric,
+	 * so rotating them would cost transform state per dot and change nothing on
+	 * screen. `ctx.fillStyle` is already set by the caller.
+	 *
+	 * @param {string}  shape       One of circle|line|square|triangle|cross.
+	 * @param {Object}  d           The dot record.
+	 * @param {boolean} directional Whether this shape uses `d.a`.
+	 * @return {void}
+	 */
+	function paintMarker( shape, d, directional ) {
+		const r = cfg.dot;
+
+		if ( 'circle' === shape ) {
+			ctx.beginPath();
+			ctx.arc( d.x, d.y, r, 0, Math.PI * 2 );
+			ctx.fill();
+			return;
+		}
+
+		if ( 'square' === shape ) {
+			const side = r * 1.8;
+			ctx.fillRect( d.x - side / 2, d.y - side / 2, side, side );
+			return;
+		}
+
+		if ( 'cross' === shape ) {
+			const arm = r * 1.9;
+			const thick = Math.max( 1, r * 0.7 );
+			ctx.fillRect( d.x - arm, d.y - thick / 2, arm * 2, thick );
+			ctx.fillRect( d.x - thick / 2, d.y - arm, thick, arm * 2 );
+			return;
+		}
+
+		// Directional shapes past this point.
+		ctx.save();
+		ctx.translate( d.x, d.y );
+		ctx.rotate( directional ? d.a : 0 );
+
+		if ( 'line' === shape ) {
+			// Longer than it is wide, or it reads as a smeared dot rather than
+			// a filing pointing somewhere.
+			const len = r * 4;
+			const thick = Math.max( 1, r * 0.75 );
+			ctx.fillRect( -len / 2, -thick / 2, len, thick );
+		} else {
+			// Triangle, apex forward along the rotation.
+			const reach = r * 1.9;
+			ctx.beginPath();
+			ctx.moveTo( reach, 0 );
+			ctx.lineTo( -reach * 0.7, reach * 0.8 );
+			ctx.lineTo( -reach * 0.7, -reach * 0.8 );
+			ctx.closePath();
+			ctx.fill();
+		}
+
+		ctx.restore();
+	}
+
+	/**
 	 * One frame. Returns whether anything is still in motion, so the caller
 	 * can stop scheduling — the self-terminating shape `particles.js` uses,
 	 * with no timer anywhere.
@@ -207,6 +375,8 @@ export function createGridDots( el, opts = {} ) {
 
 		const lean = leanCeiling();
 		const radius = cfg.radius;
+		const shape = cfg.shape || 'circle';
+		const directional = DIRECTIONAL_SHAPES.has( shape );
 		// Frame-rate independent approach factor: the fraction of the
 		// remaining distance to close in one ~60fps frame for the configured
 		// time constant. A fixed per-frame constant would ease at different
@@ -219,6 +389,7 @@ export function createGridDots( el, opts = {} ) {
 			let tx = d.hx;
 			let ty = d.hy;
 			let prox = 0;
+			let ta = 0;
 
 			if ( pointerLive ) {
 				const dx = pointerX - d.hx;
@@ -232,26 +403,50 @@ export function createGridDots( el, opts = {} ) {
 					const mag = force * lean;
 					tx = d.hx + ( dx / dist ) * mag;
 					ty = d.hy + ( dy / dist ) * mag;
+					if ( directional ) {
+						ta = Math.atan2( dy, dx );
+					}
 				}
 			}
 
 			d.x += ( tx - d.x ) * k;
 			d.y += ( ty - d.y ) * k;
+			if ( directional ) {
+				d.a += angleDelta( d.a, ta ) * k;
+			}
 
 			if (
 				Math.abs( d.x - d.hx ) > 0.05 ||
-				Math.abs( d.y - d.hy ) > 0.05
+				Math.abs( d.y - d.hy ) > 0.05 ||
+				( directional && Math.abs( angleDelta( d.a, ta ) ) > 0.01 )
 			) {
 				moving = true;
 			}
 
-			ctx.globalAlpha = cfg.fade ? 0.34 + prox * 0.66 : 0.82;
-			ctx.fillStyle = colour;
-			ctx.beginPath();
-			ctx.arc( d.x, d.y, cfg.dot, 0, Math.PI * 2 );
-			ctx.fill();
+			/*
+			 * ⛔ globalAlpha stays at 1 and the alpha rides in the fill colour.
+			 *
+			 * Canvas MULTIPLIES globalAlpha by the fill colour's own alpha, so
+			 * the two are not interchangeable: a 70%-alpha colour under a 0.34
+			 * globalAlpha paints at 0.238. While a constant lived here, a
+			 * client who set a translucent colour in the picker silently got a
+			 * third of what they chose, and one who set an opaque colour still
+			 * got a third — which is exactly how this effect shipped painting
+			 * at 1.3:1 against the client's own background.
+			 *
+			 * Opacity is now the COLOUR's, and therefore the client's. The
+			 * proximity response is a colour interpolation (resting -> pointer,
+			 * alpha included), so `fade: false` means "no interpolation, paint
+			 * the resting colour" rather than "swap one constant for another".
+			 */
+			const t = cfg.fade ? prox : 0;
+			const r = Math.round( restRgba[ 0 ] + ( hotRgba[ 0 ] - restRgba[ 0 ] ) * t );
+			const g = Math.round( restRgba[ 1 ] + ( hotRgba[ 1 ] - restRgba[ 1 ] ) * t );
+			const b = Math.round( restRgba[ 2 ] + ( hotRgba[ 2 ] - restRgba[ 2 ] ) * t );
+			const a = restRgba[ 3 ] + ( hotRgba[ 3 ] - restRgba[ 3 ] ) * t;
+			ctx.fillStyle = `rgba(${ r },${ g },${ b },${ a })`;
+			paintMarker( shape, d, directional );
 		}
-		ctx.globalAlpha = 1;
 
 		return moving;
 	}
@@ -337,6 +532,15 @@ export function createGridDots( el, opts = {} ) {
 				leanCeiling: leanCeiling(),
 				running: raf !== 0,
 				colour,
+				shape: cfg.shape || 'circle',
+				/*
+				 * Both RESOLVED colours, so a probe can assert the painted
+				 * alpha rather than inferring it. The old hardcoded 0.34 was
+				 * invisible to every probe precisely because it lived in
+				 * globalAlpha and never appeared in any reported value.
+				 */
+				restRgba: restRgba.slice(),
+				hotRgba: hotRgba.slice(),
 			};
 		},
 		/** @return {void} */

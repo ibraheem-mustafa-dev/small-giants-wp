@@ -92,12 +92,22 @@ function readOptions( el ) {
 		return Math.min( Math.max( v, min ), max );
 	};
 
+	/*
+	 * An unrecognised shape passes `undefined` so the engine's own default
+	 * wins, exactly as an unparseable number does above. Validating against the
+	 * SAME list the engine draws means a typo degrades to a circle rather than
+	 * reaching `paintMarker()` and falling through to the triangle branch.
+	 */
+	const SHAPES = [ 'circle', 'line', 'square', 'triangle', 'cross' ];
+	const rawShape = el.getAttribute( 'data-sgs-fx-grid-shape' );
+
 	return {
 		cell: num( 'data-sgs-fx-grid-cell', 12, 200 ),
 		dot: num( 'data-sgs-fx-grid-dot', 0.5, 12 ),
 		radius: num( 'data-sgs-fx-grid-radius', 20, 600 ),
 		maxLean: num( 'data-sgs-fx-grid-lean', 1, 60 ),
 		easeMs: num( 'data-sgs-fx-grid-ease', 60, 1200 ),
+		shape: SHAPES.includes( rawShape ) ? rawShape : undefined,
 		// Absent attribute => undefined => engine default (true). Only an
 		// explicit "0" turns the proximity fade off.
 		fade:

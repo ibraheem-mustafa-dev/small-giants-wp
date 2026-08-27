@@ -17,9 +17,24 @@
  *   1. The DEFAULT. A brand ACCENT is a ground, never an indicator — accents
  *      are picked to sit behind content, so they are mid-luminance by
  *      construction and fail on light AND dark surfaces. The default is now
- *      `primary` (~7:1 on that same cream).
+ *      `primary`.
  *   2. The ABSENCE OF A CONTROL. A default cannot be right for every client
  *      palette. This file is the escape hatch.
+ *
+ * ⚠ CORRECTED 2026-08-28 — point 1 above used to end "(~7:1 on that same
+ * cream)". That figure was measured on the stylesheet's FALLBACK teal
+ * `#1F7A7A`, then written as though it described `primary`. `primary` is not a
+ * colour; it is whatever the client's palette says. On this very canary it is
+ * `#e68a95`, which measures **2.25:1** on the cream — better than the accent it
+ * replaced, nowhere near 7:1. A token's contrast is a per-client fact and must
+ * never be quoted as a fixed property of the token.
+ *
+ * ── A SECOND COLOUR, AND WHERE OPACITY LIVES (2026-08-28) ─────────────────
+ * The field now resolves TWO colours: a resting colour and the colour a dot
+ * reaches at the pointer, interpolated by proximity in `grid-dots.js`. Both
+ * accept an alpha channel (the picker stores hex8), and the engine no longer
+ * multiplies a hardcoded `0.34` over them — so the opacity a client picks is
+ * the opacity that paints.
  *
  * ── MIRRORS `fx-particles.php`, DELIBERATELY ──────────────────────────────
  * Same structure, same resolver, same uid-scoping. That file is the D846 fix
@@ -44,6 +59,13 @@ if ( ! \defined( 'ABSPATH' ) ) {
  * unresolved, and a canvas cannot paint with a string.
  */
 const SGS_FX_GRID_DOT_COLOUR_VAR = '--sgs-fx-grid-dot-colour';
+
+/**
+ * The pointer-colour property. The canvas exposes it to the JS as its computed
+ * `text-decoration-color` — a real colour-valued property (so it resolves,
+ * unlike a custom property read directly) that paints nothing on a canvas.
+ */
+const SGS_FX_GRID_DOT_COLOUR_HOVER_VAR = '--sgs-fx-grid-dot-colour-hover';
 
 /**
  * Emit the per-instance grid-dot colour override.
@@ -93,15 +115,31 @@ function sgs_apply_fx_grid_dots( string $block_content ): string {
 	 */
 	$colour = sgs_fx_cursor_field_colour( $stored );
 
-	if ( '' === $colour ) {
-		// Nothing to override — the stylesheet's `primary` default stands.
-		// Return the ORIGINAL content, not the processor's output: re-prepending
-		// `$head` around an unmodified processor is a no-op that still costs a
-		// string rebuild on every grid-dots block.
+	$stored_hover = (string) $processor->get_attribute( 'data-sgs-fx-grid-colour-hover' );
+	$colour_hover = sgs_fx_cursor_field_colour( $stored_hover );
+
+	if ( '' === $colour && '' === $colour_hover ) {
+		// Nothing to override — the stylesheet's own defaults stand. Return the
+		// ORIGINAL content, not the processor's output: re-prepending `$head`
+		// around an unmodified processor is a no-op that still costs a string
+		// rebuild on every grid-dots block.
 		return $block_content;
 	}
 
-	$declarations = array( SGS_FX_GRID_DOT_COLOUR_VAR . ':' . $colour );
+	/*
+	 * Each property is emitted ONLY when that colour was actually set. Writing
+	 * an empty declaration for the unset one would replace the stylesheet's
+	 * fallback CHAIN with nothing — and for the hover colour that chain is what
+	 * degrades a palette without `primary-dark` down to `contrast` and finally
+	 * to the resting colour. An unset value must inherit the chain, not blank it.
+	 */
+	$declarations = array();
+	if ( '' !== $colour ) {
+		$declarations[] = SGS_FX_GRID_DOT_COLOUR_VAR . ':' . $colour;
+	}
+	if ( '' !== $colour_hover ) {
+		$declarations[] = SGS_FX_GRID_DOT_COLOUR_HOVER_VAR . ':' . $colour_hover;
+	}
 
 	// A per-instance id scopes the rule to THIS block, derived from the
 	// declarations themselves so two instances configured identically share one

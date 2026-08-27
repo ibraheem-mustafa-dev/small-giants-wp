@@ -155,6 +155,8 @@ const FX_ATTR_MAP = array(
 	'fxParticleColour'     => 'data-sgs-fx-particle-colour',
 	// FR-38-33 grid-dot field. Same shape as the particle colour above.
 	'fxGridDotColour'      => 'data-sgs-fx-grid-colour',
+	'fxGridDotHoverColour' => 'data-sgs-fx-grid-colour-hover',
+	'fxGridDotShape'       => 'data-sgs-fx-grid-shape',
 	// Geometry. These attribute names are the ones `fx-grid-dots.js`'s
 	// readOptions() already reads and clamps; the engine's own DEFAULTS table
 	// supplies any value a client leaves unset.
@@ -439,6 +441,8 @@ function sgs_fx_effect_param_scope(): array {
 		 */
 		'grid-dots'         => array(
 			'fxGridDotColour',
+			'fxGridDotHoverColour',
+			'fxGridDotShape',
 			'fxGridCell',
 			'fxGridDotSize',
 			'fxGridRadius',

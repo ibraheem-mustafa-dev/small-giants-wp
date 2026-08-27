@@ -60,8 +60,25 @@
  * and density preview; the live colour is authoritative.
  */
 .sgs-grid-dots-preview {
+	/*
+	 * ⛔ NOT `currentColor`. This preview painted with the block's TEXT colour
+	 * until 2026-08-28, which made it actively misleading: on the canary it
+	 * drew crisp near-black dots while the live field painted faint pink ones,
+	 * so the one question the preview exists to answer — "can I see these
+	 * against this background?" — was answered with a colour that never ships.
+	 *
+	 * The HOC now resolves the client's own dot colour (slug -> preset var, or
+	 * a raw hex/hex8 verbatim) into `--sgs-gd-colour`, mirroring what
+	 * `includes/fx-grid-dots.php` does for the frontend. The fallback chain
+	 * matches `assets/css/fx-grid-dots.css` so an unset colour previews as the
+	 * same default that will actually render.
+	 */
 	background-image: radial-gradient(
-		currentColor var(--sgs-gd-dot, 2px),
+		var(
+			--sgs-gd-colour,
+			var(--wp--preset--color--primary, #1f7a7a)
+		)
+			var(--sgs-gd-dot, 2px),
 		transparent var(--sgs-gd-dot, 2px)
 	);
 	background-size: var(--sgs-gd-cell, 40px) var(--sgs-gd-cell, 40px);
