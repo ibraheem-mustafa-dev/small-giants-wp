@@ -263,6 +263,15 @@
 					"order": 12,
 					"clusters": [],
 					"prefix": "",
+					"attrMap": {},
+					"_note": "The IMAGE type's extra class, applied by sgs_tier_media_render()'s per-type $extra argument so it lands ONLY on an <img> tier. It intentionally carries NO attrMap: as of 2026-08-27 (commit 33816708e) every splitMedia* control paints on the type-agnostic `.sgs-hero__split-media` base class instead, so video and SVG tiers obey the same controls — they previously obeyed none. The class is still emitted and still load-bearing for STATIC, image-only styling in style.css: the base width/height/object-fit/display rule (style.css:292) and the hover-zoom transform (style.css:305-318). Neither is attribute-driven, so neither belongs to an attr and neither maps here."
+				},
+				"split-media": {
+					"label": "Split media",
+					"layer": "GRID_AREA",
+					"order": 13,
+					"clusters": [],
+					"prefix": "",
 					"attrMap": {
 						"css:width": "splitMediaWidth",
 						"css:height": "splitMediaHeight",
@@ -274,16 +283,7 @@
 						"css:object-fit": "splitMediaObjectFit",
 						"css:object-position": "splitMediaObjectPosition"
 					},
-					"_note": "The rendered split-media image node itself (`.sgs-hero__split-image`, nested inside the `media` grid-area wrapper div). Every one of these paints on THIS node per render.php: width, height, border-radius, border-color/style/width (:610), padding, object-fit (:629) and object-position (:633). RESOLVED 2026-08-26: border-color/style/width were mapped NOWHERE (so block_attributes.css_element was NULL, which the converter reads as the block OWN ROOT - db_lookup.py:1498 treats NULL identically to root/self - routing a cloned draft's split-image border onto the hero <section>), and object-fit was mapped to `media` (the COLUMN WRAPPER) though it paints on this node. Both are corrected above. A previous pass found the same mismatch and left it, recording that 'fixing it needs a DB write, which this manifest-only fix cannot do' - that premise was WRONG and is why it survived: css_element is DERIVED from this attrMap by /sgs-update, so the manifest IS the fix layer and a hand-edited DB row would be overwritten on the next reseed. `prefix: \"\"` opts this element out of orphan-candidate scanning."
-				},
-				"split-media": {
-					"label": "Split media",
-					"layer": "GRID_AREA",
-					"order": 13,
-					"clusters": [],
-					"prefix": "",
-					"attrMap": {},
-					"_note": "The type-agnostic base class emitted by `sgs_tier_media_render()` (`render.php:1135`) — carries `sgs-hero__split-media`, `--{tier}`, and `--{type}` modifiers alongside the type-specific `split-image`/`split-video`/`split-svg` extra class on the same node. object-position tiers (splitMediaObjectPositionTablet, splitMediaObjectPositionMobile) paint on the SAME `.sgs-hero__split-image` node via compound selectors (`.split-image.split-media--mobile` at mobile), not on a separate element — all three variants are now unified under the split-image element's claim (constrained to desktop base due to the one-key-per-element rule and the non-standard Tablet/Mobile naming pattern)."
+					"_note": "The type-agnostic base class emitted by sgs_tier_media_render() — carries `sgs-hero__split-media` plus `--{tier}` and `--{type}` modifiers on EVERY tier node whatever its type. It OWNS the whole splitMedia* control family as of 2026-08-27 (commit 33816708e): width, height, border-radius, border-color/style/width, padding, object-fit and object-position all emit scoped to this class in render.php, which is what lets a video or SVG tier honour them. object-fit/object-position emit on the compound `.sgs-hero__split-media--image,.sgs-hero__split-media--video` selector — replaced-element properties do nothing on the <span> wrapping inline SVG — and a BEM MODIFIER is never an element, so the classifier's deriver cuts at the `--` and still resolves here. ⛔ WHY THIS MAP MOVED: it lived on split-image, which pinned 16 block_attributes.css_element rows to a class those properties no longer paint on. The tier variants (splitMediaPaddingTablet, splitMediaObjectPositionMobile, …) were already correct because they carry no attrMap key and fall through to selector derivation — that split is what exposed the stale manifest."
 				}
 			}
 		}
