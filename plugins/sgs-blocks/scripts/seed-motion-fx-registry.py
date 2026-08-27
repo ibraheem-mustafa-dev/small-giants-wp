@@ -819,6 +819,46 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
+        # FR-38-33 cursor grid-dot field. Owner-specified 2026-08-27, built
+        # 2026-08-28 to Preset B after a design gate run against a live
+        # prototype (nine published references were measured first and NOT ONE
+        # does this — they attract without clamping, repel, or only brighten).
+        "effect": "grid-dots",
+        "in_picker": 1,
+        # Pointer-driven, so 'hover' is the only coherent trigger — there is
+        # nothing for 'load' or 'scroll' to mean for an effect whose entire
+        # state is a function of where the pointer currently is. Same reasoning
+        # cursor-field / magnet / particles each record.
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V. A grid of dots with an ease-back integrator needs no GPU
+        # shader, so §1.3's ratchet refuses anything dearer. ⛔ NOT Tier W —
+        # that list stays closed (FR-38-33 says so explicitly).
+        "tier": "V",
+        "plugin_set": [],
+        # Never touches scroll position; it paints a background layer.
+        "owns_scroll_transform": 0,
+        # SUPPRESS, not simplify — matching magnet/particles rather than
+        # cursor-field. `fx-grid-dots.js` creates NO instance and attaches NO
+        # listener under reduced motion, so there is no canvas at all and the
+        # page is byte-identical to the no-JS state. Nothing is hidden from a
+        # reduced-motion visitor that a JS-less visitor would have seen.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "block",
+        # 'surface' — it paints a background field across an area, so it needs a
+        # paintable surface, exactly as cursor-field and wave-gradient do. This
+        # is the field that decides the qualifying roster, and 'surface' is what
+        # scopes it to the section-shaped blocks (container / cta-section /
+        # hero) rather than offering a full-bleed dot lattice on a button.
+        "requires": "surface",
+        # Offered where a panel exists; never creates one. Same containment
+        # discipline as cursor-field/magnet/particles above — a background
+        # decoration must not be the reason a brand-new fx panel appears on a
+        # nav or a form.
+        "creates_panel": 0,
+    },
+    {
         # Spec 38 §11 loop FR. Bean, verbatim: "looping should not be tied to
         # the drag effect — they should be independent controls", and "we're
         # not setting the default behaviour in all carousels, just making the

@@ -250,6 +250,30 @@ if ( moduleConfig ) {
 				'fx-particles.js'
 			),
 			/*
+			 * Cursor grid-dot field (Spec 38 FR-38-33) — Tier V, same shape as
+			 * fx-particles above: a <canvas> 2D lattice + one self-terminating
+			 * rAF loop, no GSAP import, so a page using this and no Tier G
+			 * effect ships zero GSAP bytes.
+			 *
+			 * FILENAME is load-bearing exactly as it is for the entries above:
+			 * the PHP registry derives its module ID as
+			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `grid-dots` — so this must stay `fx-grid-dots.js`.
+			 *
+			 * ⛔ This entry is the THIRD of the three registration points with
+			 * no gate at all (D784). Nothing checks that a shipped effect has a
+			 * webpack entry: miss it and `build/shared/effects/fx-grid-dots.js`
+			 * simply never exists, the registry enqueues a 404, and the client
+			 * gets a configured effect that does nothing.
+			 */
+			'shared/effects/fx-grid-dots': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-grid-dots.js'
+			),
+			/*
 			 * Infinite-loop carousels (Spec 38 §11 loop FR) — Tier V, same
 			 * shape as fx-cursor-field above: pure DOM clone + scrollLeft
 			 * management, no GSAP import, so a page using this and no Tier G

@@ -38,6 +38,7 @@
 	"sgs/container": [
 		"cursor-field",
 		"draw",
+		"grid-dots",
 		"horizontal-panel",
 		"magnet",
 		"morph",
@@ -59,6 +60,7 @@
 	"sgs/cta-section": [
 		"cursor-field",
 		"draw",
+		"grid-dots",
 		"horizontal-panel",
 		"magnet",
 		"morph",
@@ -107,6 +109,7 @@
 	"sgs/hero": [
 		"cursor-field",
 		"draw",
+		"grid-dots",
 		"horizontal-panel",
 		"magnet",
 		"morph",
@@ -136,6 +139,7 @@
 	],
 	"sgs/info-box": [
 		"cursor-field",
+		"grid-dots",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -157,6 +161,7 @@
 	"sgs/multi-button": [
 		"cursor-field",
 		"draw",
+		"grid-dots",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -167,6 +172,7 @@
 	"sgs/physics-canvas": [
 		"cursor-field",
 		"draw",
+		"grid-dots",
 		"horizontal-panel",
 		"magnet",
 		"morph",
@@ -206,6 +212,7 @@
 	],
 	"sgs/product-faq": [
 		"cursor-field",
+		"grid-dots",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -252,6 +259,7 @@
 	],
 	"sgs/testimonial": [
 		"cursor-field",
+		"grid-dots",
 		"magnet",
 		"morph",
 		"motion-path",
@@ -286,6 +294,7 @@
 	"sgs/trust-bar": [
 		"cursor-field",
 		"draw",
+		"grid-dots",
 		"horizontal-panel",
 		"magnet",
 		"morph",

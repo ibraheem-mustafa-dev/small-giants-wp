@@ -183,6 +183,24 @@ const SHIPPED_EFFECTS = [
 	// ⚠ Heeding this array's own warning above: an effect fully wired in
 	// every other layer is still DEAD CODE until its name appears here.
 	'particles',
+	// `grid-dots` ADDED (FR-38-33, owner-specified 2026-08-27, built
+	// 2026-08-28). Every leg verified rather than assumed, in the order this
+	// array's own warning demands: the runtime modules exist
+	// (`shared/effects/fx-grid-dots.js` + `shared/effects/grid-dots.js`), the
+	// webpack entry emits them, and the registry enqueues BOTH the module and
+	// its stylesheet (`class-sgs-motion-registry.php` MODULES + EFFECT_STYLES
+	// — the stylesheet is load-bearing here exactly as it is for
+	// magnet/cursor-field/particles: it positions the canvas AND carries the
+	// `color` channel the JS reads its paint colour from, so without it the
+	// lattice would compute correctly and paint nothing you could see).
+	//
+	// It needs no new params: the design gate settled one configuration
+	// (Preset B — cell 40 / dot 2 / radius 150 / lean 12 / ease 260, proximity
+	// fade on), so selecting the effect is the whole interaction. Per-instance
+	// controls are a deliberate follow-up, not an oversight — the owner asked
+	// for the fade specifically to become controllable "later", and adding
+	// knobs nobody has asked to turn is how a panel grows dead controls.
+	'grid-dots',
 ];
 
 const FX_OPTION_LABELS = {
@@ -199,6 +217,10 @@ const FX_OPTION_LABELS = {
 	magnet: __( 'Magnetic pull', 'sgs-blocks' ),
 	'wave-gradient': __( 'Flowing gradient', 'sgs-blocks' ),
 	particles: __( 'Particle trail', 'sgs-blocks' ),
+	// Named for what the CLIENT sees, like every label above — not for the
+	// mechanism. "Grid dots" says what is on the screen; "cursor grid-dot
+	// field" is the spec's name for it and would be the longest label here.
+	'grid-dots': __( 'Grid dots (follow cursor)', 'sgs-blocks' ),
 };
 
 /**

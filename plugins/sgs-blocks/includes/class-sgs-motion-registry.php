@@ -299,6 +299,23 @@ class SGS_Motion_Registry {
 		),
 
 		/*
+		 * Cursor grid-dot field (Spec 38 FR-38-33). NO deps — a plain <canvas>
+		 * 2D lattice with one self-terminating rAF loop and no GSAP, so a page
+		 * using this and no Tier G effect ships zero GSAP bytes, the same
+		 * guarantee `@sgs/fx-magnet`, `@sgs/fx-cursor-field` and
+		 * `@sgs/fx-particles` keep.
+		 *
+		 * ⛔ This map is one of the THREE registration points with no gate at
+		 * all (D784) — `check-fx-list-drift.py` does not read this file. Miss
+		 * this entry and the effect registers, the panel appears, the client
+		 * selects it, and nothing happens.
+		 */
+		'@sgs/fx-grid-dots'        => array(
+			'path' => 'build/shared/effects/fx-grid-dots.js',
+			'deps' => array(),
+		),
+
+		/*
 		 * Infinite-loop carousels (Spec 38 §11 loop FR, Bean's ruling that
 		 * looping must be an INDEPENDENT control, never tied to drag). NO
 		 * deps — pure DOM clone + scrollLeft management, no GSAP. Registered
@@ -424,6 +441,29 @@ class SGS_Motion_Registry {
 		 * intrinsic size instead of covering the image it treats.
 		 */
 		'surface-treatment' => 'assets/css/fx-surface-treatment.css',
+
+		/*
+		 * Cursor grid-dot field (Spec 38 FR-38-33). LOAD-BEARING, not
+		 * decoration, for two independent reasons — either alone would make
+		 * the effect look broken rather than absent:
+		 *
+		 *  1. It positions the `<canvas class="sgs-grid-dots__canvas">` the
+		 *     engine appends (Spec 32: that module writes buffer-size
+		 *     ATTRIBUTES only, never inline style), so without it the canvas
+		 *     paints at its intrinsic 300x150 in the corner.
+		 *  2. It carries the `color` channel the engine READS its paint colour
+		 *     from. The JS deliberately does not read the custom property —
+		 *     `getPropertyValue()` returns the `var(...)` text unresolved and a
+		 *     canvas cannot paint with a string — so without this stylesheet
+		 *     the lattice computes perfectly and paints in whatever `color`
+		 *     happens to be inherited. That is D846's exact failure: a canvas
+		 *     firing correctly at 1.44:1 contrast, invisible, with every
+		 *     automated signal green.
+		 *
+		 * ⛔ This map is the SECOND of the three registration points with no
+		 * gate at all (D784).
+		 */
+		'grid-dots'         => 'assets/css/fx-grid-dots.css',
 	);
 
 	/**

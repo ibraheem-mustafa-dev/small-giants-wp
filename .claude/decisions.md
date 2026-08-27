@@ -1,3 +1,66 @@
+## D869 [ROUTINE] — FR-38-33 grid-dot field BUILT to Preset B; no reference existed, so the prototype became the design gate
+
+**2026-08-28.** The cursor grid-dot field Bean specified on 2026-08-27 is built: a background grid
+with a dot per cell, dots within radius leaning toward the pointer, **each locked inside its own
+cell**, easing back to centre when the pointer leaves. Tier V, canvas 2D, NOT Tier W.
+
+⭐ **THE DESIGN GATE RAN AGAINST A LIVE PROTOTYPE, BECAUSE NO REFERENCE EXISTS.** FR-38-33 owed "a
+reference the owner has actually seen and approved" (D781). Nine published examples were researched
+and **seven were measured in a browser** — dot positions recorded at rest, during hover, and after
+the pointer left. **Not one matches all four requirements:**
+
+| Reference | Fails on |
+|---|---|
+| Zach Saucier (closest) | Attracts, but NOT clamped — 38.5px travel on a 36px cell; dots collapse into a blob and leave a hole |
+| React Bits DotGrid | Dots move **0.1px** — brightness only, not movement |
+| React Bits DotField | Moves dots **away** (bulge), max 1.4px |
+| Motion "magnetic filings" | Genuinely clamped — but by ROTATING, and never eases back |
+| aaronmedina | The exact maths, clamped at 0.67 cell — **sign inverted** (repels) |
+
+So there was nothing to approve. A working prototype with three presets and live sliders was built
+instead and Bean chose from the effect itself. **He picked Preset B** (cell 40 / dot 2 / radius 150 /
+lean 12 / ease 260ms) with proximity fade ON, noting the fade should become client-controllable later.
+
+**The clamp is the whole effect, and it is not a tuning knob.** `CELL_LOCK = 0.42` caps displacement
+at 0.42 × cell REGARDLESS of the configured lean — strictly less than the half-cell distance to the
+boundary, so a dot cannot reach its own wall let alone cross it. Zach Saucier's blob is what the
+absence of that cap looks like.
+
+**SC 2.3.1 answered STRUCTURALLY, and more easily than FR-38-32's.** That effect needed
+`alpha = 1 - age/maxAge` because particles spawn and die. Grid dots never spawn, die or pulse — they
+only move — so painted coverage is CONSTANT. Measured: **under 1% of the emitter box** at every
+preset, against the 25% threshold. There is no flash to cap.
+
+**Reduced motion = SUPPRESS, not simplify.** No instance, no canvas, no listener — byte-identical to
+the no-JS state. The resting lattice is also the pre-pointer state, so one picture serves both and
+nothing is withheld from a reduced-motion visitor.
+
+**All ten registration points wired, including the three D784 says are gated by NOTHING** — the
+motion-registry script-module map, its per-effect CSS map, and the webpack entry. Verified by
+building and confirming `build/shared/effects/fx-grid-dots.js` actually emits, not by assuming.
+
+⛔ **A param-less effect OMITS its `sgs_fx_effect_param_scope()` row — it does NOT get an empty
+one.** An empty `array()` was written first, reasoning it made the emptiness legible. The drift
+gate rejected it as a VACUOUS PARSE: it cannot distinguish an empty row from a failed parse, so an
+empty row would silently turn every comparison it feeds into empty-vs-empty. `scramble` and `draw`
+both ship with no row at all — that is the convention, and the gate is right to enforce it.
+
+⚠ **The child-lift trap warning in FR-38-32's registration note is now STALE.** It says this would be
+the seventh feature to hit `sgs/container`'s `:not()` chain. That chain was replaced with `:where()`
+at (0,0,0) on 2026-08-25, so any layer declaring its own `position` out-ranks it with no registration
+anywhere. The canvas declares `position: absolute`; that declaration IS the registration.
+
+**Colour ships on day one, from the CANVAS's computed `color`** — never the custom property, which
+`getPropertyValue()` returns as unresolved `var(...)` text a canvas cannot paint with. D846 is the
+reason: the particle trail shipped without a colour control and painted ~7,400 pixels at 1.44:1,
+firing perfectly and invisibly.
+
+**NOT yet done, and owed before this can be called closed:** live verification on the canary (build
+gate blocked by a full disk — see below), Bean watching it (R-31-13), and the §6/§9/§10 spec rows,
+which this project writes from BUILT behaviour rather than predicting.
+
+---
+
 ## D868 [ROUTINE] — Spec 40's cover-image reference is CHOSEN: ArtCenter-style modular geometry on a light ground, one brand hue per cover
 
 **2026-08-28. Bean picked, from verified images.** Spec 40's build gate was blocked on a reference
