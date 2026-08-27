@@ -106,56 +106,19 @@ per-client theme tokens the whole site uses — no forked-shader competitor can 
 **Prior history (D766/D767, D778-D781, 2026-08-24/25):** cursor field (2721) + magnetic pull
 (2737) shipped; 3 gate-passed defects fixed on eye-review. Do not restate — read the D-numbers.
 
-### ▶ NEXT, in order
+### ▶ NEXT
 
-⭐ **START HERE: `.claude/prompts/2026-08-27-two-design-gates-then-the-control-backlog.md`.**
-Bean's order: run the TWO DESIGN GATES first, then plan orchestration around what they
-decide. Detail single-sourced to **D805-D812** — do not restate.
+⭐ **START HERE: `.claude/prompts/2026-08-27-motion-track-remaining-open-tasks.md`.** Full detail,
+time estimates, and likely files per task live there — do not restate here. Three items need
+Bean's design-gate decision before anything builds (`floating-objects`, generative covers,
+`decorative-image` naked mode); the rest are scoped tasks or quick verification checks.
 
-1. ✅ **CHILD-LIFT — CLOSED.** Detail: D784 + D793 (gate `check-child-lift`, repo-wide).
-2. ✅ **EDITOR SURFACE + BOTH FR-38-32 CLAIMS — CLOSED (D807).** Cap clamps at exactly 150,
-   but ordinary input peaks 106 — LIFETIME binds first, so "the cap binds" was the wrong claim.
-   Loop stops, with a positive control. ⚠ The listener is `mousemove`, NOT `pointermove`.
-3. ✅ **Stripe-hero POC — DONE.** Superseded by the FR-38-31 rework. Detail: D781/D790/D791.
-4. ✅ **HOVER — RULED + SHIPPED (D805/D808).** Panel ON for the 3 ROOT-hover blocks; the 3
-   hardcoded PHP arrays GONE. ✅ **DESIGN GATE A — CLOSED (D817).** Per-block scoped CSS: only
-   cta-section had a real image (fixed); pricing-table/google-reviews/whatsapp-cta have none —
-   Bean ruled withdraw, not leave-inert, so their toggles are now excluded via
-   `supports.sgs.hoverExcludeControls` (block.json, not a shared-file name array). ⚠ Not yet
-   canary-verified live — deploy blocked by another session's dirty files; verified against real
-   compiled code via standalone harnesses instead. Re-check on canary once that clears.
-5. ✅ **Three ungated registration points — CLOSED (D789).** ✅ **CLOSED (D820):** the brief's
-   premise was WRONG — the defect wasn't `sgs/gallery` (its draggable path was already clean),
-   it was `sgs/physics-canvas`'s view-module deps losing to WP core's own registration timing.
-   Fixed via `init` priority-5 pre-registration; `check-fx-registration.py` gained R6 (every
-   static `@sgs/*` view.js import needs a matching `wp_register_script_module()` call).
-
-### ▶ CONTROL PROGRAMME — 2026-08-26 (D810-D812)
-✅ Helper pairs COMPLETE: 3 of 3 name-keyed controls, **empty baseline, no accepted debt**.
-✅ `add-control.js` scaffold — dry-run default, `--apply` verified end-to-end after THREE
-   defects, the third a PHP fatal only `php -l` could see. ✅ Spec 35 enum threshold written,
-   every bound derived from the corpus. ✅ `check-css-layer-orphans` — GRID_AREA is the only
-   orphan (census 509 rows, not the 53 in the brief); baselined, nothing deleted.
-✅ **CLOSED (D818):** taught `inspector-scan` rule 21 to expand `*AttrKeys()` — 3 rules, each
-   with a watched-failing overmatch fixture. Rule 21 holds at 82 (unchanged before/after), hero's
-   3 gradient mounts re-adopted for real. Control-programme roll-out now unblocked.
-✅ **CLOSED = DESIGN GATE B (D821/D825).** All ~67 mounts adopted `SgsLengthControl` except 1
-   deliberate permanent skip (`gridItemBorder`, shorthand-string, not the component's shape).
-   Component had NO prop-spread — dropped `help`/`placeholder`/`hideLabelFromVision` silently; 2
-   of 5 parallel groups shipped a live regression before catching it; fixed at the component, all
-   affected call sites restored verbatim. Live-verified on the canary: `cta-section`'s hover
-   zoom+grayscale (real transform/filter change, headline text untouched) and the toggle
-   withdrawal on `pricing-table`/`google-reviews` (class never emits even with stray attrs=true).
-   Editor-UI prop restoration verified at code+build level, not a live screenshot — standard
-   WP-native prop forwarding, judged not to need it. `presets={true}` typing check (D338) is
-   DEFERRED, not urgent — confirmed zero mounts anywhere currently use it, so no live risk exists.
-✅ **CLOSED (D819):** the enum gate now measures RENDERED LABELS, not slugs — the slug proxy was
-   overcounting violations nearly 2x (85 → 45 real). 156 unresolvable cases explicitly skipped
-   with a reason, never silently compliant. Spec 35 §3 updated.
-6. **`floating-objects`** + **generative cover images** — both approved-in-principle, unbuilt.
-   ⛔ Covers were scoped as needing "the same palette-texture capability (D781)". **That premise
-   was measured false 2026-08-25** — no texture-palette pipeline is required. Scope covers from
-   form, ground and hue adjacency instead.
+**Everything the two prior prompts named is now CLOSED** — child-lift, editor surface + FR-38-32
+measurement, Stripe-hero POC, the hover ruling + Design Gate A (D805/D808/D817, canary-verified),
+the three ungated registration points + the physics-canvas fix (D789/D820), the control-programme
+helper pairs + `add-control.js` + rule 21 (D818) + Design Gate B (D821/D825, canary-verified) +
+the enum gate (D819) + the fx-list-drift registry check (D829). Detail single-sourced to
+**D805-D829** — do not restate.
 
 ⛔ **Carried:** the real fading trail is `particles`/Sparks. "Drag weight" is momentum and is NOT
 it — never report it as satisfying that ask.
