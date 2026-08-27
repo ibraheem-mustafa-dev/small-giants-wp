@@ -329,9 +329,9 @@ with a plain-English reason. Frontend byte-identical before/after with a positiv
 C16 COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
 `inspector-scan/rules/36-box-control-presets-missing.js` + `scripts/migrate-box-control-presets.py`.
 C19 rolled out to the full `aspectRatio` surface (card-grid, gallery, image-sequence, media,
-post-grid). ⛔ **`detector-first-commit-gate.py` HAS A NAMED HOLE** (proven): contract says ">3 files",
-mechanism needs 4+ files sharing a normalised SHAPE. An adaptive rollout has none, so it is
-invisible — catches copy-paste, misses adaptation. Evidence: prompt Task 7.
+post-grid). ⛔ **`detector-first-commit-gate.py` HAS A NAMED HOLE** (reproduced): `MIN_SHARED_LINES = 3`
+rejects a genuine 4-file repeat that shares only ONE line. A component rollout IS a one-line
+repeat, so the rule for "trivial sweeps" eats it. Evidence: prompt Task 7.
 
 ### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
 Root-caused: **three causes, not one bug** (`.claude/reports/2026-08-27-null-css-element-root-cause.md`).
