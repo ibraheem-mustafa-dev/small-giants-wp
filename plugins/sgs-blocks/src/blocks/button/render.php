@@ -190,6 +190,18 @@ $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null 
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
 // Typography (custom mode only).
+// fontFamily: plain string, no responsive tiers — matches TypographyControls'
+// showFontFamily picker shape (theme.json fontFamilies preset's raw CSS
+// value, not a slug). Sanitised with the same allowlist the shared
+// sgs_typography_css_rule() helper uses (G4, helpers-typography.php) so a
+// family LIST ("Open Sans", sans-serif) survives while anything that could
+// escape the declaration is stripped. sgs/button hand-rolls its own
+// $base_decls array rather than calling that helper (its typography is a
+// tier-object system built around sgs_responsive_css_rule()), so this is a
+// one-line wire-up rather than a shared-helper call — the control has
+// existed since the block's typo attribute set was declared but had no
+// renderer.
+$font_family     = isset( $attributes['fontFamily'] ) ? sgs_font_family_sanitise( $attributes['fontFamily'] ) : '';
 $font_weight     = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $attributes['fontWeight'] ) : '';
 $font_style_attr = isset( $attributes['fontStyle'] ) ? sgs_css_keyword_sanitise( $attributes['fontStyle'] ) : 'normal';
 $text_transform  = isset( $attributes['textTransform'] ) ? sgs_css_keyword_sanitise( $attributes['textTransform'] ) : '';
@@ -371,8 +383,19 @@ if ( $has_border_width ) {
 	$bwl          = '' !== $border_width_lft ? $border_width_lft : '0';
 	$base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 }
-if ( $border_style && 'solid' !== $border_style ) {
+// G5 (border-style-without-width): a style override only paints safely when
+// a real border-width exists SOMEWHERE for it to pair with — either the
+// operator's own borderWidth attr ($has_border_width), or the preset class's
+// own border-width:2px (now declared per-preset in style.css, not on the
+// base rule — see the 2026-08-27 defect-2 fix above). Without this gate a
+// custom/preset-less button with a style override but no width would fall
+// through to the browser's initial ~3px `medium`.
+$border_style_has_width = $has_border_width || in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true );
+if ( $border_style && 'solid' !== $border_style && $border_style_has_width ) {
 	$base_decls[] = 'border-style:' . $border_style;
+}
+if ( '' !== $font_family ) {
+	$base_decls[] = 'font-family:' . $font_family;
 }
 if ( $font_weight ) {
 	$base_decls[] = 'font-weight:' . intval( $font_weight );
@@ -587,19 +610,36 @@ if ( $icon ) {
 // through it. Because the base value lives in this same-selector <style>
 // rule (not inline on the element), the tier overrides do not need
 // !important to win.
-$min_height_decls = array();
-if ( $min_height ) {
-	$min_height_decls[] = ".{$uid}.sgs-button{min-height:{$min_height}{$min_height_unit};}";
-}
+//
+// The base tier is now ALWAYS emitted (falling back to style.css's own
+// 48px default when no explicit minHeight is set) rather than only when
+// $min_height was truthy. Root cause (2026-08-27, found live on the Mama's
+// Munches canary clone — "Read the full story" + "Find out more" both
+// computed min-height:0px): sgs/container's shrink-to-fit backstop
+// (class-sgs-container-wrapper.php, `>*{min-width:0;min-height:0}` on its
+// flex/grid direct children) matches at (0,2,0) specificity — TWO classes
+// (.uid>.inner>*) — which beats this block's own base `.sgs-button{min-
+// height:48px}` rule in style.css at (0,1,0).
+//
+// ⛔ CORRECTED 2026-08-27 (same day, caught by a live re-check before this
+// "fix" shipped): emitting the SAME (0,2,0)-specificity selector here
+// (`.{$uid}.sgs-button`) does NOT reliably resolve the tie. The claim that
+// "this block's own <style> always renders after its parent container's"
+// was measured FALSE live — the browser's own CSSOM confirmed the
+// container's (0,2,0) rule can appear LATER than this one, so on an equal
+// specificity tie the container still wins and min-height still computes
+// to 0. The selector below repeats the uid class (`.{$uid}.{$uid}`) to
+// reach (0,3,0) — strictly higher than the container's (0,2,0) — so this
+// wins regardless of source order, not by a source-order assumption.
+$min_height_base  = null !== $min_height ? $min_height : 48;
+$min_height_decls = array( ".{$uid}.{$uid}.sgs-button{min-height:{$min_height_base}{$min_height_unit};}" );
 if ( null !== $min_height_tab ) {
-	$min_height_decls[] = "@media(max-width:1023px){.{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
+	$min_height_decls[] = "@media(max-width:1023px){.{$uid}.{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
 }
 if ( null !== $min_height_mob ) {
-	$min_height_decls[] = "@media(max-width:767px){.{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
+	$min_height_decls[] = "@media(max-width:767px){.{$uid}.{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
 }
-if ( $min_height_decls ) {
-	$scoped_css_parts[] = implode( '', $min_height_decls );
-}
+$scoped_css_parts[] = implode( '', $min_height_decls );
 
 // Width — base + tablet + mobile on the SAME selector (Pattern A). Each tier's
 // width derives from its own widthType enum: full → 100%, custom → value+unit,

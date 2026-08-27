@@ -162,6 +162,18 @@
       "block": "sgs/product-card",
       "attr": "titleFontFamily",
       "reason": "FALSE POSITIVE — the attr is live at BOTH ends, but neither end contains its literal name. Control: product-card/edit.js mounts <TypographyControls prefix=\"title\" showFontFamily />, and TypographyControls.js:160 builds k.fontFamily = typographyAttrName(prefix, \"FontFamily\"), reading it at :536 and writing it at :538. Render: helpers-typography.php builds $k_family = sgs_typography_attr($prefix, \"FontFamily\") and emits font-family when set. This is the documented dynamic-key blind spot — the same one recorded for sgs/before-after tier keys, where the checker cannot follow a key whose tail is a second variable. It surfaced on 2026-08-26 because G4 moved font-family onto the shared helper and deleted the block-private emission that had been the only literal occurrence. VERIFY BEFORE TRUSTING THIS ROW: if TypographyControls stops mounting with showFontFamily on this block, or the helper loses its font-family branch, the attr really is dead and this entry must go."
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/hero",
+      "attr": "mediaBackgroundGradient",
+      "reason": "FALSE POSITIVE, verified 2026-08-27 — genuinely live at both ends, but neither end contains the literal attribute name. Render: render.php:700 reads $attributes['mediaBackgroundGradient'] and emits background-image when set (render.php:701-704). Control: hero/edit.js mounts <GradientOverlayControl attrNames={ gradientOverlayAttrKeys('mediaBackground', {...}) } />, and GradientOverlayControl.js:113-114 builds the key as base + 'Gradient' at runtime (gradientOverlayAttrName()) rather than spelling it as a literal string. Same dynamic-key blind spot already recorded for product-card.titleFontFamily above. VERIFY BEFORE TRUSTING THIS ROW: if hero/edit.js stops mounting GradientOverlayControl with base 'mediaBackground', the attr really is dead and this entry must go."
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/hero",
+      "attr": "mediaOverlayGradient",
+      "reason": "FALSE POSITIVE, verified 2026-08-27 — same shape as mediaBackgroundGradient above. Render: render.php:716 reads $attributes['mediaOverlayGradient'] via sgs_css_gradient_value(), feeding media_overlay_has_colour (render.php:717). Control: hero/edit.js mounts <GradientOverlayControl attrNames={ gradientOverlayAttrKeys('mediaOverlay', { solid: 'mediaOverlayColour' }) } />, key built at runtime by gradientOverlayAttrName() (GradientOverlayControl.js:113-114), never as a literal string. VERIFY BEFORE TRUSTING THIS ROW: if hero/edit.js stops mounting GradientOverlayControl with base 'mediaOverlay', the attr really is dead and this entry must go."
     }
   ]
 }

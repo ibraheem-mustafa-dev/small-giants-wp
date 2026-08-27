@@ -42,8 +42,17 @@
 	font-size: var(--sgs-mb-btn-font-size-default, 15px);
 	line-height: 1.2;
 	padding: 14px 24px;
-	border-width: 2px;
-	border-style: solid;
+	/* border-width/border-style are NOT declared here (2026-08-27 fix — a
+	   hardcoded default painting a real 2px solid border through every button,
+	   including custom/preset-less instances that set no border attribute at
+	   all). They are set per-PRESET below (.sgs-button--primary/secondary/
+	   outline, which genuinely need the box reserved for their border-colour
+	   look) and per-INSTANCE by render.php's higher-specificity .uid.sgs-button
+	   rule when an operator sets a custom border. A button with neither —
+	   found live 2026-08-27 on the Mama's Munches clone's "Find out more"
+	   button, which had no preset class and no custom border yet still
+	   computed border:2px solid transparent — now renders no border at all,
+	   matching the draft. */
 	border-radius: var(--sgs-mb-btn-radius-default, 10px);
 	min-height: 48px;
 	text-align: center;
@@ -101,6 +110,11 @@
 /* ── Style presets (Spec 32) — each SETS the six colour vars from the
    per-client token with a framework theme-token fallback. ──────────────── */
 .sgs-button--primary {
+	/* Preset-only border reservation (see the base-rule comment above) — every
+	   preset needs the same box regardless of whether its border-colour is
+	   visually distinct from its background. */
+	border-width: 2px;
+	border-style: solid;
 	--sgs-btn-color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
 	--sgs-btn-bg: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
 	--sgs-btn-border: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
@@ -111,6 +125,8 @@
 }
 
 .sgs-button--secondary {
+	border-width: 2px;
+	border-style: solid;
 	--sgs-btn-color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary));
 	--sgs-btn-bg: var(--wp--custom--button-presets--secondary--background, transparent);
 	--sgs-btn-border: var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
@@ -121,6 +137,8 @@
 }
 
 .sgs-button--outline {
+	border-width: 2px;
+	border-style: solid;
 	--sgs-btn-color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
 	--sgs-btn-bg: var(--wp--custom--button-presets--outline--background, transparent);
 	--sgs-btn-border: var(--wp--custom--button-presets--outline--border, var(--wp--preset--color--border));

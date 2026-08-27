@@ -12,13 +12,5 @@
     "Add an entry ONLY when gating the emission would make the render WORSE.",
     "Everywhere else, gate it."
   ],
-  "entries": [
-    {
-      "key": "plugins/sgs-blocks/src/blocks/button/render.php:375",
-      "reason": "sgs/button never reaches the browser's UA default: its own style.css:45 declares a real `border-width: 2px` on the element. Gating the style here would be a REGRESSION, not a fix — a button set to `dashed` with no explicit width would lose the dashed style while keeping the stylesheet's 2px, rendering 2px SOLID instead of 2px dashed. The defect this gate exists to catch (a style falling through to `medium`) cannot occur on this block.",
-      "recheck": "If button/style.css ever stops declaring border-width, this exemption is void and the emission must be gated. Verify with: grep -n 'border-width' plugins/sgs-blocks/src/blocks/button/style.css",
-      "added": "2026-08-26",
-      "authority": "G5 branch analysis, independently re-verified against button/style.css:45"
-    }
-  ]
+  "entries": []
 }
