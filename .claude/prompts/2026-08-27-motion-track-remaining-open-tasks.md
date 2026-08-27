@@ -120,14 +120,29 @@ otherwise WordPress silently discards the value (D338).
 
 ## ⚪ Verification debt — quick checks, no build
 
-### 7. Keyboard focus inside a pinned element
+### 7. Show Bean the particle trail (FR-38-32, "sparks") live
+
+Bean flagged this himself (2026-08-27) — he's never seen it. Verified true: the effect genuinely
+fires on hover (confirmed live via Playwright), but only on debug canary page 2744, and it's
+visually very faint even in a full-page screenshot. The doc previously said "OBSERVED
+2026-08-25," which sounds like a full sign-off; it only ever covered the editor's inspector
+controls (picker, presets, Notice text), never the frontend visual or Bean's eye. Show him the
+actual live trail — a client build, or at minimum a clean canary demo — before this counts as
+done in any client-facing sense (per project rule R-31-13, script measurement alone never closes
+a visual claim).
+
+- **Estimate:** 5–10 min to demo live; longer if the visual itself needs tuning once seen.
+- **Likely files:** none, unless Bean asks for a visual change — then
+  `plugins/sgs-blocks/src/shared/effects/particles.js`, `fx-particles.js`, `fx-particles.css`.
+
+### 8. Keyboard focus inside a pinned element
 
 No canary fixture currently has focusable content inside a scroll-pin. Spec 38 §3.1's honesty flag
 on FR-38-6/FR-38-8 is still open.
 
 - **Estimate:** 5–10 min — build one small test fixture, Playwright-check tab order through it.
 
-### 8. Reduced-motion arm of the header row-collapse interaction
+### 9. Reduced-motion arm of the header row-collapse interaction
 
 Spec 38 §12 flags this as unproven by direct observation.
 
