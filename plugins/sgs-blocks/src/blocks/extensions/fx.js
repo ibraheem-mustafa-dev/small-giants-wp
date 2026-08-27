@@ -2594,6 +2594,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										onDeselect={ () =>
 											setParam( { fxWaveSpeed: undefined } )
 										}
+										isShownByDefault
 									>
 										<RangeControl
 											__nextHasNoMarginBottom
@@ -2607,7 +2608,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											max={ 150 }
 											step={ 5 }
 											help={ __(
-												'How quickly the colours move. Slower reads as more expensive.',
+												'How quickly the colours drift across the section.',
 												'sgs-blocks'
 											) }
 										/>
@@ -2621,6 +2622,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										onDeselect={ () =>
 											setParam( { fxWaveAmplitude: undefined } )
 										}
+										isShownByDefault
 									>
 										<RangeControl
 											__nextHasNoMarginBottom

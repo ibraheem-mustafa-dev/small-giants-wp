@@ -44,15 +44,26 @@
  *     post-pass (D791, 70% of frame cost) are UNCHANGED prohibitions — this
  *     experiment does not touch either.
  *
- * `opts.amplitude` is KEPT as the public option name (the client-facing
- * inspector control is still labelled "Amplitude") but its MEANING changed:
+ * `opts.amplitude` is KEPT as the public option name but its MEANING changed:
  * it no longer scales geometric displacement (there is none), it scales how
- * strongly the three layers assert themselves against the base colour.
+ * strongly the three layers assert themselves against the base colour. The
+ * client-facing inspector control for it is labelled "Wave depth" (this
+ * docblock said "Amplitude" until 2026-08-27; the UI never did).
  *
  * ⛔ THIS IS NOT A MODEL OF ANY LIVE COMMERCIAL SITE'S CURRENT TECHNIQUE. It
- * is a from-scratch response to Bean's specific description of what "aurora,
- * translucent, overlapping, drifting" should look like, not a port of
+ * is a from-scratch response to Bean's specific description of what
+ * "translucent, overlapping, drifting" should look like, not a port of
  * anything. Read it on its own terms.
+ *
+ * ⛔ THIS EFFECT IS NOT AN AURORA, AND IS NOT TRYING TO BE (D838).
+ * FR-38-31 is a self-contained "flowing gradient" — that is its inspector
+ * label and its honest description. It was modelled on stripe.com's hero, and
+ * D781 found even THAT reference was the wrong thing. Bean's aurora ask
+ * belongs to the separate, unbuilt GENERATIVE BACKGROUND ENGINE:
+ *   plan  .claude/plans/2026-08-27-generative-background-engine.md
+ *   spec  .claude/reports/2026-08-25-generative-background-engine-technique-spec.md
+ * An aurora also needs a NEAR-BLACK ground, which is the opposite of this
+ * effect's deliberately light one. Do not do engine work in this file.
  *
  * ── WHY THIS BREAKS TIER W'S FOUNDING INVARIANT, AND WHAT REPLACES IT ─────
  *
@@ -226,7 +237,7 @@ void main() {
 		// coordinate the noise field is read FROM that moves, which is what
 		// makes it read as flowing light rather than a physical material.
 		vec2 sampleUv = uv * u_layerFreq[ i ] + u_layerDrift[ i ] * u_time;
-		float n = snoise( vec3( sampleUv, u_layerSeed[ i ] + u_time * 0.04 ) );
+		float n = snoise( vec3( sampleUv, u_layerSeed[ i ] + u_time * 0.06 ) );
 
 		// WIDE smoothstep band -> a soft, translucent-edged field, not a
 		// hard-edged blob. This is the alpha half of "different opacity" —
@@ -433,10 +444,23 @@ export function createWaveGradient( canvas, opts = {} ) {
 		[ 1.6, 1.4 ],
 		[ 0.9, 1.8 ],
 	];
+	// ⛔ DERIVE these, never eyeball them. A drift constant is NOT a
+	// percentage of the screen: `v_uv` runs 0..2 and `uv = v_uv - 1.0`, so uv
+	// spans TWO units, and uv.x is further scaled by aspect (see main()).
+	// Because sampleUv = uv * freq + drift * t, the fraction of the viewport
+	// crossed per second is:
+	//
+	//     drift / ( 2 * freq * aspect )        [ / (1/aspect) for the y axis ]
+	//
+	// Reading 0.035 as "3.5% per second" was wrong by ~4x and understated how
+	// slow this was — at the old values the default took ~115 SECONDS to cross
+	// one screen, which Bean reported as "like watching clouds move" (D838).
+	// Raised 3.5x on 2026-08-27: default now ~33s per screen (3.0%/s), and the
+	// control's maximum (speed 150 -> rate 3) reaches ~11s (9.1%/s).
 	const LAYER_DRIFT = [
-		[ 0.035, 0.012 ],
-		[ -0.02, 0.028 ],
-		[ 0.015, -0.024 ],
+		[ 0.1225, 0.042 ],
+		[ -0.07, 0.098 ],
+		[ 0.0525, -0.084 ],
 	];
 	const LAYER_OPACITY = [ 0.85, 0.65, 0.55 ];
 	for ( let i = 0; i < WAVE_LAYERS; i++ ) {
