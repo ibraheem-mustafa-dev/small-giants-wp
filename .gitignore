@@ -36,6 +36,14 @@ NUL
 !reports/visual-diff/manual-skips.log
 wp-content/uploads/
 
+# flexWrap migration working cache (migrate-container-flexwrap-and-stack-candidates.py)
+# Each posts-dump-*.json is a FULL copy of every post's content on the canary
+# (~500 KB a run, 2.1 MB after one session). They are a regenerable cache — the
+# script rebuilds them with --pull — and an untracked file is invisible to a
+# git-based dirty gate while still being visible to tar, so leaving them loose
+# is the shape of a real past incident here.
+reports/flexwrap-migration/
+
 # Firecrawl scraping artefacts
 .firecrawl/
 
