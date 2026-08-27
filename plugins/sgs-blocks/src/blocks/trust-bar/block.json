@@ -88,8 +88,8 @@
 						"css:background-repeat": "backgroundRepeat",
 						"css:background-size": "backgroundSize",
 						"css:background-image": "backgroundOverlayColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:border-width": "native:__experimentalBorder.width",
@@ -204,11 +204,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
@@ -222,6 +217,14 @@
 		"typography": ".sgs-trust-bar__label"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"badgeStyle": {
 			"type": "string",
 			"default": "icon-circle",
