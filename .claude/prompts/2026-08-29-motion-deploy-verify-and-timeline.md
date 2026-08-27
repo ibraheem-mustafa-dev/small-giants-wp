@@ -121,6 +121,30 @@ Report them; fix only if the owner agrees.
 2. **`check-render-undefined-vars` passes only with the dev autoloader.** A fresh clone that has
    never run `composer install` gets `exit 1` with "0 findings", which reads as a real failure
    rather than a missing dependency.
+3. ⚠ **`detector-first-commit-gate.py` cannot see a shared-component rollout — and THIS TRACK is in
+   the blast radius.** Do not rely on it to catch an fx rollout across blocks. Established by
+   replaying commit `1612c7b1e` (C19's `MediaSizingPanel`, 4 blocks, no detector) through the gate's
+   own functions:
+
+   ```
+   gate 1  code files with added lines = 6  vs MIN_FILES 4        -> PASS
+   gate 2  lines shared by >=4 files   = 1  vs MIN_SHARED_LINES 3 -> STOP
+   gate 3  never reached
+   ```
+
+   `MIN_SHARED_LINES = 3` exists to "ignore trivial one-line sweeps", but a shared-component
+   adoption IS structurally a one-line repeat — one mount per block, surrounded by per-block props.
+   ⭐ Worse than that: the single line those four files shared was
+   `const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;` — an import ALIAS, not even the mount.
+   A rollout could share **zero** lines and be equally invisible.
+
+   ⛔ **Two traps for whoever fixes it.** First, the gate's `--self-test` PASSES today, negative
+   control and all — that proves it CAN fail, never that it sees this case, so **a fixture built
+   from `1612c7b1e` must go into `--self-test` as part of any fix**, or the hole can be closed and
+   silently reopened. Second, do NOT widen it reflexively: a gate that fires on every multi-file
+   commit gets bypassed by habit and then protects nothing. The narrow candidate is *one shared line
+   across ≥4 files counts WHEN that line is a component mount or an import of a shared component* —
+   which leaves `MIN_SHARED_LINES` doing its real job. Needs its own design gate.
 
 ---
 
