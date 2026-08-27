@@ -325,7 +325,7 @@ Custom/none; C19's grey-out chain disables Height in auto/ratio and Fill style i
 with a plain-English reason. Frontend byte-identical before/after with a positive control
 (`media_sizing` ×8 in the DEPLOYED render.php) — so "unchanged" is not a failed deploy.
 
-### ✅ BOTH ROLLOUTS LANDED (other sessions, same day) — do NOT rebuild
+### ✅ BOTH ROLLOUTS LANDED (other sessions) — do NOT rebuild
 C16 COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
 `inspector-scan/rules/36-box-control-presets-missing.js` + `scripts/migrate-box-control-presets.py`.
 C19 rolled out to the full `aspectRatio` surface (card-grid, gallery, image-sequence, media,
