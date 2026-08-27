@@ -326,10 +326,10 @@ with a plain-English reason. Frontend byte-identical before/after with a positiv
 (`media_sizing` ×8 in the DEPLOYED render.php) — so "unchanged" is not a failed deploy.
 
 ### ✅ BOTH ROLLOUTS LANDED (other sessions, same day) — do NOT rebuild
-C16 is COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
-`inspector-scan/rules/36-box-control-presets-missing.js` and `scripts/migrate-box-control-presets.py`.
-C19 is rolled out to the full `aspectRatio` surface — `card-grid`, `gallery`, `image-sequence`,
-`media`, `post-grid`. ⚠ C19 shipped across 5 blocks with NO detector and `detector-first-commit-gate.py` did not stop
+C16 COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
+`inspector-scan/rules/36-box-control-presets-missing.js` + `scripts/migrate-box-control-presets.py`.
+C19 rolled out to the full `aspectRatio` surface (card-grid, gallery, image-sequence, media,
+post-grid). ⚠ C19 shipped across 5 blocks with NO detector and `detector-first-commit-gate.py` did not stop
 it — establish whether that is a gate hole before relying on it again. Residual: the one block
 `18806e6b0` skipped, and flipping rule 36 advisory -> blocking.
 
