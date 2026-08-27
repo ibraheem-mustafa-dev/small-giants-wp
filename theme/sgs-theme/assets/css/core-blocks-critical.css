@@ -135,6 +135,23 @@ html {
  * flow together without white bands. Spacing WITHIN sections is preserved via
  * padding on the section containers themselves.
  *
+ * ⭐ `sgs/container` IS on this list (added 2026-08-27, Bean's correction).
+ * It belongs for the same reason the hero does: a container is FULL-BLEED BY
+ * DEFAULT. Its OUTER width (`maxWidth`) defaults to `{}` — unlimited — while
+ * its INNER content band (`contentWidth`) defaults to `normal`. So every
+ * top-level container is already a full-width section with constrained
+ * content, and adjacent ones with different background colours were showing
+ * the white band this rule exists to remove.
+ *
+ * ⛔ Do NOT "improve" this by detecting full-bleed at runtime and marking it
+ * with a class. That was considered and is unnecessary: containers are
+ * full-bleed by default, so there is no subset to detect, and it would mean
+ * changing the wrapper that 48 blocks share.
+ *
+ * ⚠ Every selector here uses `>` — DIRECT CHILD ONLY. This reaches top-level
+ * page sections and nothing else; a container nested inside another container
+ * keeps its normal spacing.
+ *
  * ⛔ DO NOT ADD `!important` BACK — same defect as the editor arm below, proven
  * live on the FRONTEND 2026-08-26 (T1 probe, page 2848 on the sandybrown
  * canary). WordPress's spacing support writes an operator's explicit margin
@@ -178,11 +195,14 @@ html {
  */
 .entry-content > .alignfull,
 .entry-content > .wp-block-sgs-hero,
+.entry-content > .wp-block-sgs-container,
 .wp-block-post-content > .alignfull,
+.wp-block-post-content > .wp-block-sgs-hero,
+.wp-block-post-content > .wp-block-sgs-container,
 .wp-site-blocks > .wp-block-group,
 .wp-site-blocks > .wp-block-cover,
 .wp-site-blocks > .wp-block-sgs-hero,
-.wp-block-post-content > .wp-block-sgs-hero {
+.wp-site-blocks > .wp-block-sgs-container {
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
@@ -257,7 +277,8 @@ html {
 .is-root-container > .alignfull,
 .is-root-container > .wp-block-group,
 .is-root-container > .wp-block-cover,
-.is-root-container > .wp-block-sgs-hero {
+.is-root-container > .wp-block-sgs-hero,
+.is-root-container > .wp-block-sgs-container {
 	margin-block-start: 0;
 	margin-block-end: 0;
 }
