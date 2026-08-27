@@ -82,23 +82,21 @@ report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reason
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (DEPLOYED + LIVE-VERIFIED; only Bean's eye left)
+## ▶ MOTION TRACK — 2026-08-27 (colour-pipeline bugs FIXED + deployed; only Bean's eye left)
 
-⭐ **START HERE: Bean's verdict on the look.** Screenshots sent (1440/768/375). Steps 1-6 + Gates
-A+B+C's mechanical checks ALL CLOSED (D822/D823) — LIVE on the canary, deployed from an isolated
-worktree to dodge cross-track collisions (D816). Payload-verify PASSED, 83/83 checksums.
-⭐ **Palette + toggle + context-loss ALL CONFIRMED LIVE on real GPU (D823, corrects D822's "no
-GPU" claim — it just needed launch flags):** `--sgs-wave-base` = `#f4f8fb`; toggle contrast from a
-rendered pixel = **10.74:1** (was 3.36:1); canvas genuinely animates (77% pixel diff/frame, PD-9
-threshold was 10%); forced `WEBGL_lose_context` → attribute cleared + canvas faded to 0 opacity
-within 700ms, no dead rectangle. Second section (custom re-theme demo) confirmed UNCHANGED —
-per-instance values still win.
-⛔ **NEW bug (D822), NOT fixed:** Pause toggle's `hidden` attribute sets correctly but its class
-rule ties CSS specificity with the browser's `[hidden]` default and wins — visible+clickable doing
-nothing when the effect never boots at all (unrelated to the context-loss path above, which
-correctly hides it). One-line fix available, not applied.
+⭐ **START HERE: Bean's verdict on the recoloured + re-shaded effect.** New screenshots sent.
+4-seat council root-caused "still reads as cheap 3D" to 3 shader colour bugs — NOT mesh
+resolution, NOT antialiasing (both disproven with maths). Fixed + deployed + live-verified (D824):
+sharpening moved post-interpolation, blending moved to linear light, displacement fold-over fixed.
+~2hr, +1.6KB gzip, zero rewrite, excludes any blur/texture/FBO pass (that's D794's rejected spec
+under a new name). Steps 1-6 + Gates A+B+C CLOSED (D822/D823), LIVE via isolated worktree (dodges
+shared-tree collisions, D816 — hit twice more this session). Payload-verify PASSED both deploys.
+⭐ **Real differentiator identified, NOT built (parked):** effect recolours itself via the same
+per-client theme tokens the whole site uses — no forked-shader competitor can match that.
+⛔ **Still open (D822):** Pause toggle stays visible+clickable when the effect never boots at
+all (CSS specificity tie with `[hidden]`). One-line fix available, not applied.
 ✅ 3 live bugs FIXED (D814/D815), attribution gate BUILT (D813), POC/Q6/Gate E CLOSED
-(D790/D791/D794). Framebuffer needs a gate
+(D790/D791/D794). Framebuffer still needs its own design gate.
 
 **Prior history (D766/D767, D778-D781, 2026-08-24/25):** cursor field (2721) + magnetic pull
 (2737) shipped; 3 gate-passed defects fixed on eye-review. Do not restate — read the D-numbers.
@@ -307,36 +305,23 @@ caught both: it was our theme not WordPress, and `maxWidth`(OUTER)=full-bleed vs
 `contentWidth`(INNER)=normal, so no detect-and-mark was needed.
 ⭐ **NEXT + all detail: `.claude/prompts/2026-08-27-the-remaining-client-controls.md`**
 
-### ✅ SPACING MIGRATION — 4 of 5 blocks SHIPPED 2026-08-27 (`fa11f794c`, pushed)
-Q1/Q3/Q4 are **ANSWERED from source, do not re-derive** (plan §6 + `~/.claude/plans/next-session-ethereal-lightning.md`):
-**Q4** wrapper needs NO change (owned-attr branch ungated by slug/kind) → no design gate.
-**Q1** `check-dead-pattern-attrs.py` is ADVISORY — `compute_exit_code()` excludes its
-`native-style-undeclared` class, exit stays 0. ⛔ It CANNOT gate this; a partial removal is
-invisible to it. The gate is `scripts/migrate-off-native-spacing.py --check` (verified RED
-pre-migration, PASS now; 16 self-test controls).
-**Q3** site-header was NOT mechanical: `getActiveLayoutPreset`'s `! padding` is now an
-EMPTINESS test (a `{}` default is truthy — left alone the Split/Centred toggle breaks
-silently), and `hasRestSpacing` was DELETED, not redirected.
-Also fixed: multi-button's real **double-emission** (its render.php folded style.spacing while
-the wrapper read the same values) + full margin parity built (Bean's Rule-3 ruling); `attrMap`
-corrected on all blocks, not one.
-🔶 **`sgs/trust-bar` is the ONLY block left** — migration COMPLETE in the working tree but
-UNCOMMITTED: another track has concurrent `SgsLengthControl` edits in its `edit.js` (6 foreign
-hunks). Commit it the moment they land. ⛔ Do not revert or sweep their hunks.
-⚠ **4 visual-diff MANUAL SKIPs logged** (deploy impossible — shared tree dirty). Renders
-identically BY DESIGN, but that is **unverified visually**. The next commit touching each of
-multi-button/physics-canvas/site-footer/site-header owes a real report.
-
-### ✅ Gate C picker — header-row SHIPPED (`71a5d4d42`); container HELD
-`sgs/container`'s picker is complete in the tree but uncommitted: its control lives in
-`container/components/LayoutPanel.js`, which **~20 blocks render** via ContainerWrapperControls,
-so Bean ruled an **additive opt-in prop defaulting OFF** — never an unconditional mount. Another
-track's import-hunk overlaps mine there. Lands when they commit.
-
-### 🔶 product-card reachable replace — BUILT, uncommitted
-Fix + new `check-destructive-only-controls.js` (0 repo-wide findings, empty baseline, proven
-able to fail) are done; `product-card/edit.js` carries 5 foreign hunks. ⛔ Land the detector and
-the fix TOGETHER — the detector alone goes red for everyone else.
+### ✅ SPACING MIGRATION 4/5 SHIPPED (`fa11f794c`) · picker header-row (`71a5d4d42`)
+Full detail: `~/.claude/plans/next-session-ethereal-lightning.md`. **Q1/Q3/Q4 ANSWERED from
+source — do not re-derive.** Q4 wrapper needs NO change → no design gate. **Q1
+`check-dead-pattern-attrs.py` is ADVISORY (`compute_exit_code` drops its finding class, exits 0)
+— it CANNOT gate this; the gate is `scripts/migrate-off-native-spacing.py --check`, verified RED
+pre-migration.** Q3 site-header's `! padding` is now an EMPTINESS test (a `{}` default is
+truthy — else Split/Centred breaks silently) and `hasRestSpacing` was DELETED. Also fixed
+multi-button's real double-emission + built its margin parity; `attrMap` fixed on all, not one.
+🔶 **THREE pieces complete in the tree but UNCOMMITTED — another track has concurrent
+`SgsLengthControl` edits in the same files. Land each the moment they commit; never sweep or
+revert their hunks:** `trust-bar` (edit.js, 6 foreign hunks — the last spacing block) ·
+`container` picker (`LayoutPanel.js`, opt-in prop DEFAULTING OFF — ~20 blocks render it, so
+never an unconditional mount) · `product-card` replace fix + its new
+`check-destructive-only-controls.js` (⛔ land detector AND fix together, or the gate goes red
+for everyone).
+⚠ **4 visual-diff MANUAL SKIPs logged** — renders identically BY DESIGN but is **unverified
+visually** (deploy impossible, shared tree dirty). Next commit on each block owes a real report.
 ⚠ `gate:full` FAILS on `sgs/hero` orphan attrs — NOT orphans; another track's refactor builds the
 names via `gradientOverlayAttrKeys()`. Deleting them deletes working features. Use
 `--skip-gate-full` until they fix it.
