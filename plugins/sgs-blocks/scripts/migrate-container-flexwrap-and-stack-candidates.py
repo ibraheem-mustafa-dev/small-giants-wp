@@ -150,14 +150,99 @@ def classify_shape(kids):
 # Population A — stored post_content, live canary
 # --------------------------------------------------------------------------------------
 
-def _ssh_run(remote_cmd: str, timeout: int = 90) -> str:
+def _ssh_run(remote_cmd: str, timeout: int = 90, stdin_data: str = None) -> str:
+    """Run one command on the canary. ``stdin_data`` is piped in VERBATIM.
+
+    ⛔ NEVER ``text=True``, in EITHER direction. Both legs corrupt content, and
+    both were measured on the canary on 2026-08-27:
+
+    * OUT — `text=True` decodes stdout with the system codepage (cp1252 on this
+      machine), so an em-dash returns as the mojibake ``â€"``. Harmless while
+      only printing; permanent once that value is written BACK to the post.
+      Post 2242's two em-dashes were double-encoded exactly this way and had to
+      be repaired by hand.
+    * IN — `text=True` applies newline translation, so every ``LF`` is sent as
+      ``CRLF``. Post 2242 arrived as 8,364 bytes against 8,181 expected: one
+      extra byte per line. The byte-count check in ``_update_post_content``
+      caught it, but only because that check exists.
+
+    Encoding is therefore explicit UTF-8 on both sides, always.
+    """
+    argv = ['ssh', '-i', SSH_KEY, '-p', SSH_PORT, SSH_HOST, remote_cmd]
     proc = subprocess.run(
-        ['ssh', '-i', SSH_KEY, '-p', SSH_PORT, SSH_HOST, remote_cmd],
-        capture_output=True, text=True, timeout=timeout,
+        argv,
+        input=None if stdin_data is None else stdin_data.encode('utf-8'),
+        capture_output=True, timeout=timeout,
     )
+    out = proc.stdout.decode('utf-8', 'replace')
+    err = proc.stderr.decode('utf-8', 'replace')
     if proc.returncode != 0:
-        raise RuntimeError(f'ssh command failed (exit {proc.returncode}): {proc.stderr.strip()[:800]}')
-    return proc.stdout
+        raise RuntimeError(f'ssh command failed (exit {proc.returncode}): {err.strip()[:800]}')
+    return out
+
+
+# A remote shell truncates its command line at ~8 KB, and a truncated
+# single-quoted string reports as `unexpected EOF while looking for matching "'"`
+# — a QUOTING error for what is really a LENGTH problem. Measured on the canary
+# 2026-08-27: post 2242 (8,148 chars) failed, and bisection put the cliff between
+# 8,080 and 8,148 chars of content. 4,000 leaves generous headroom for the
+# `cd ... && wp post update ...` prefix and for quote-escaping growth (each
+# embedded apostrophe costs 3 extra chars).
+_INLINE_CONTENT_MAX = 4000
+
+# ⛔ `wp post update` with NO user runs as nobody, so WordPress applies KSES to the
+# content — and KSES STRIPS CSS out of block attributes. Measured on the canary
+# 2026-08-27: post 2145's `{"style":{"css":"color: red;"}}` was silently reduced to
+# `{}` on write, and a second attempt emptied the post entirely. Re-running the
+# identical command with `--user=1` (an administrator, who holds `unfiltered_html`
+# on a single site) round-tripped it byte-for-byte.
+#
+# This is NOT specific to this script: ANY tool that writes post_content via wp-cli
+# without a user will quietly delete styling from block attributes.
+_WP_WRITE_FLAGS = '--user=1'
+
+
+def _update_post_content(post_id: int, new_content: str) -> None:
+    """Write ``new_content`` to ``post_id``, over STDIN when it is large.
+
+    ⚠ This is the temp-file path ``_shell_quote_remote``'s docstring has claimed
+    since the script was written ("Content is passed via a temp file when it's
+    large, to avoid hitting an ARG_MAX limit") — it was never actually built, so
+    every post over the cliff failed with a misleading quoting error. 32 of the
+    100 Population-A containers hit it on the first real run.
+
+    Large content travels on STDIN (`cat > file`), so it never touches the
+    command line and no shell quoting applies to it at all. The byte count is
+    verified on the far side BEFORE the update runs — a truncated upload would
+    otherwise overwrite a good post with a partial one, which is worse than the
+    failure this replaces.
+    """
+    if len(new_content) <= _INLINE_CONTENT_MAX:
+        _ssh_run(
+            f'cd {WP_DIR} && wp post update {post_id} {_WP_WRITE_FLAGS} --post_content='
+            + _shell_quote_remote(new_content),
+            timeout=60,
+        )
+        return
+
+    remote_tmp = f'/tmp/sgs-flexwrap-{post_id}.html'
+    _ssh_run(f'cat > {remote_tmp}', timeout=120, stdin_data=new_content)
+    try:
+        want = len(new_content.encode('utf-8'))
+        got = int(_ssh_run(f'wc -c < {remote_tmp}', timeout=30).strip())
+        if got != want:
+            raise RuntimeError(
+                f'upload truncated for post {post_id}: remote file is {got} bytes, '
+                f'expected {want} — REFUSING to update (a partial write would be '
+                f'worse than no write).'
+            )
+        # `wp post update <id> [<file>]` takes post_content from the file.
+        _ssh_run(
+            f'cd {WP_DIR} && wp post update {post_id} {_WP_WRITE_FLAGS} {remote_tmp}',
+            timeout=60,
+        )
+    finally:
+        _ssh_run(f'rm -f {remote_tmp}', timeout=30)
 
 
 def pull_posts_dump(cache_path: Path = None, include_trash: bool = False) -> Path:
@@ -250,11 +335,42 @@ def survey_missing_flexwrap(posts: list) -> list:
     return out
 
 
-def apply_single_flexwrap(post_id: int, container_index: int, dump_path: Path) -> int:
+def _rewrite_container_token(attrs: dict, self_closing: str) -> str:
+    """Rebuild an ``sgs/container`` opening comment, PRESERVING its self-closing form.
+
+    ⛔ ``self_closing`` is ``TOK``'s group(4) — the ``/`` in ``<!-- … /-->``. The
+    original implementation hardcoded the non-self-closing ``-->``, so a void
+    container was rewritten as an OPENING tag with no matching close, and every
+    block after it was silently absorbed into the container. Seven posts were
+    broken this way on the canary on 2026-08-27 (1568, 1722, 2145, 2521, 2525,
+    2526, 2596) and had to be restored from a pre-write snapshot.
+
+    The regex captured the slash all along; the rewrite just dropped it.
+    """
+    new_json = json.dumps(attrs, separators=(',', ':'))
+    return f'<!-- wp:sgs/container {new_json} {self_closing}-->' if self_closing         else f'<!-- wp:sgs/container {new_json} -->'
+
+
+def apply_single_flexwrap(post_id: int, container_index: int, dump_path: Path,
+                          fetch_content=None) -> int:
     """Write `flexWrap:"wrap"` into exactly ONE container instance, in exactly ONE post.
     Refuses (exit 1, no write) on any ambiguity: post not found, container index out of
     range, target already has flexWrap, or the post is a GATE fixture. This is the single
-    load-bearing safety property the whole tool exists to provide — see module docstring."""
+    load-bearing safety property the whole tool exists to provide — see module docstring.
+
+    ⚠ The dump supplies DISCOVERY data (which posts exist, the title for the GATE
+    check) but NOT the content that gets rewritten — that is re-read LIVE, every
+    time. The dump is a snapshot, and this function writes the WHOLE post back:
+    applying two containers in the same post from one snapshot means the second
+    write is built from pre-first-write content and silently REVERTS the first.
+    Only the last container in each post would survive.
+
+    Measured on the canary 2026-08-27, before this was fixed: post 773 had three
+    candidates applied and ended with one; posts 1491 and 1507 had four each and
+    ended with one. No content was lost — container counts were preserved — but
+    the migration silently under-applied, and a survey re-run would have reported
+    the leftovers as if they had never been attempted.
+    """
     posts = json.loads(dump_path.read_text(encoding='utf-8'))
     post = next((p for p in posts if p.get('ID') == post_id), None)
     if post is None:
@@ -265,7 +381,24 @@ def apply_single_flexwrap(post_id: int, container_index: int, dump_path: Path) -
         print(f'REFUSED: post {post_id} ("{title}") is a GATE fixture — never auto-edited.')
         return 1
 
-    content = post.get('post_content') or ''
+    # LIVE re-read — see the docstring warning above. Falls back to the snapshot
+    # only if the fetch returns nothing, and says so rather than silently using
+    # stale content.
+    # `fetch_content` is INJECTABLE so --self-test stays network-free (D847's
+    # "17 assertions, no network required"). Default is the live read. It is a
+    # parameter and not a module flag because a flag defaulting to "offline"
+    # would let a real run silently take the snapshot path — the failure this
+    # whole change exists to remove.
+    if fetch_content is None:
+        def fetch_content(pid):
+            return _ssh_run(
+                f'cd {WP_DIR} && wp post get {pid} --field=post_content', timeout=60
+            )
+    content = fetch_content(post_id)
+    if not content.strip():
+        print(f'REFUSED: post {post_id} returned empty content from the server — '
+              f'refusing to write (a snapshot-based write could revert real edits).')
+        return 1
     toks = list(TOK.finditer(content))
     container_opens = [m for m in toks if not m.group(1) and m.group(2) == 'sgs/container']
     if container_index < 0 or container_index >= len(container_opens):
@@ -280,20 +413,15 @@ def apply_single_flexwrap(post_id: int, container_index: int, dump_path: Path) -
         return 1
 
     attrs['flexWrap'] = 'wrap'
-    new_json = json.dumps(attrs, separators=(',', ':'))
     old_span = m.group(0)
-    new_token = f'<!-- wp:sgs/container {new_json} -->'
+    new_token = _rewrite_container_token(attrs, m.group(4))
     new_content = content[:m.start()] + new_token + content[m.end():]
 
     print(f'post {post_id} ("{title}") container #{container_index}:')
     print(f'  BEFORE: {old_span[:160]}')
     print(f'  AFTER : {new_token[:160]}')
 
-    remote_cmd = (
-        f"cd {WP_DIR} && wp post update {post_id} --post_content="
-        + _shell_quote_remote(new_content)
-    )
-    _ssh_run(remote_cmd, timeout=60)
+    _update_post_content(post_id, new_content)
     print(f'APPLIED: post {post_id} updated.')
     return 0
 
@@ -474,28 +602,79 @@ def self_test() -> int:
             f'got {[r["post_id"] for r in got_rows]}')
 
     # 4. apply_single_flexwrap — refusals, using the SAME fixture, no network.
+    #    The content fetcher is injected so no SSH call is made — see the
+    #    parameter's own comment for why it is a parameter and not a flag.
+    def _snapshot_fetch(pid):
+        _posts = json.loads(tmp_dump.read_text(encoding='utf-8'))
+        _p = next((x for x in _posts if x.get('ID') == pid), None)
+        return (_p or {}).get('post_content') or ''
+
     tmp_dump = CACHE_DIR / '_self_test_dump.json'
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     tmp_dump.write_text(json.dumps(fixture_posts), encoding='utf-8')
     try:
         # (a) GATE post must be refused.
-        rc = apply_single_flexwrap(2, 0, tmp_dump)
+        rc = apply_single_flexwrap(2, 0, tmp_dump, fetch_content=_snapshot_fetch)
         if rc != 1:
             failures.append('apply_single_flexwrap on a GATE post should refuse (exit 1)')
         # (b) already-explicit container must be refused.
-        rc = apply_single_flexwrap(3, 0, tmp_dump)
+        rc = apply_single_flexwrap(3, 0, tmp_dump, fetch_content=_snapshot_fetch)
         if rc != 1:
             failures.append('apply_single_flexwrap on an already-explicit container should refuse')
         # (c) unknown post id must be refused.
-        rc = apply_single_flexwrap(999, 0, tmp_dump)
+        rc = apply_single_flexwrap(999, 0, tmp_dump, fetch_content=_snapshot_fetch)
         if rc != 1:
             failures.append('apply_single_flexwrap on an unknown post id should refuse')
         # (d) out-of-range container index on a real post must be refused.
-        rc = apply_single_flexwrap(1, 5, tmp_dump)
+        rc = apply_single_flexwrap(1, 5, tmp_dump, fetch_content=_snapshot_fetch)
         if rc != 1:
             failures.append('apply_single_flexwrap with an out-of-range container index should refuse')
     finally:
         tmp_dump.unlink(missing_ok=True)
+
+    # 4b. _rewrite_container_token — the SELF-CLOSING form must survive the rewrite.
+    #     This is the bug that broke 7 live posts: the regex captured the "/" and the
+    #     rewrite dropped it, turning a void block into an unclosed opening tag.
+    token_cases = [
+        # (attrs, self_closing_group, must_end_with, label)
+        ({'a': 1}, '/', '/-->', 'self-closing container must stay self-closing'),
+        ({'a': 1}, '',  '} -->', 'NEGATIVE CONTROL: an opening tag must NOT gain a slash'),
+    ]
+    for attrs, sc, tail, label in token_cases:
+        got = _rewrite_container_token(attrs, sc)
+        if not got.endswith(tail):
+            failures.append(f'{label} — got {got!r}, expected it to end with {tail!r}')
+    # Round-trip through the real regex, so the test cannot pass on a hand-made string
+    # that TOK would never actually produce.
+    for src in ('<!-- wp:sgs/container {"x":1} /-->', '<!-- wp:sgs/container {"x":1} -->'):
+        mm = TOK.match(src)
+        if mm is None:
+            failures.append(f'TOK failed to match its own token shape: {src!r}')
+            continue
+        rebuilt = _rewrite_container_token(parse_attrs(mm.group(3)), mm.group(4))
+        if src.endswith('/-->') != rebuilt.endswith('/-->'):
+            failures.append(
+                f'round-trip changed the closing form: {src!r} -> {rebuilt!r}')
+
+    # 4c. Both write paths must carry --user=1, or WordPress strips CSS out of block
+    #     attributes on save (post 2145 lost its style attr, then emptied entirely).
+    #     Count only real CALL SITES (they build a `cd {WP_DIR} && …` command); this
+    #     assertion's own source line contains the same substring, and counting it
+    #     made the check report 3 and fail on correct code — the "resolve every match
+    #     back to its owner" trap, caught by the test failing on its own fix.
+    _src = io.open(__file__, encoding='utf-8').read()
+    _cmd_prefix = chr(102) + chr(39) + 'cd {WP_DIR}'   # the f-string opening a command
+    _sites = [ln for ln in _src.splitlines()
+              if ln.strip().startswith(_cmd_prefix) and 'wp post update' in ln]
+    _flagged = [ln for ln in _sites if '_WP_WRITE_FLAGS' in ln]
+    # BOTH conditions matter, and an early version asserted only the first — which
+    # counted call sites without checking they carried the flag, so deleting the flag
+    # still passed. Caught by deliberately breaking it; the count alone was vacuous.
+    if len(_sites) != 2 or len(_flagged) != len(_sites):
+        failures.append(
+            f'every wp post update call site must pass _WP_WRITE_FLAGS (--user=1) — '
+            f'found {len(_sites)} call site(s), {len(_flagged)} carrying the flag. '
+            'Without it KSES silently strips CSS from block attributes.')
 
     # 5. survey_stack_candidates negative control — a NO-OP container (1 child) must
     #    never appear, even though it is a flex row.
@@ -530,7 +709,7 @@ def self_test() -> int:
     finally:
         tmp_file.unlink(missing_ok=True)
 
-    total = len(gate_cases) + len(shape_cases) + 1 + 4 + 1
+    total = len(gate_cases) + len(shape_cases) + 1 + 4 + len(token_cases) + 2 + 1 + 1
     passed = total - len(failures)
     print(f'self-test: {passed}/{total} pass')
     for f in failures:
