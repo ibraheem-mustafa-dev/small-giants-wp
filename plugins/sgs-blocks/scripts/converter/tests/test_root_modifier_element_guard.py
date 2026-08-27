@@ -1,46 +1,34 @@
 """test_root_modifier_element_guard.py — a block-root BEM modifier must never
 route to a CHILD element's attribute (Task 1, converter bug (b)).
 
-Confirmed live: a root-level BEM modifier (e.g. ``.sgs-product-card--trial``)
-carrying a border/background declaration can land on a CHILD element's attr
-(``ctaBorder*``) instead of the block's own root attr. Root cause, verified
-against the live SGS DB (2026-08-27):
+Protects ``db_lookup._base_domain_attrs_for_css_property`` (the column-first
+domain restriction ``attr_for_property``/``attr_for_layer_property`` use to
+decide which attr owns a block-root CSS declaration): a ``css_layer='OUTER'``
+row must ALSO have a root-domain ``css_element`` (NULL/''/root/self/wrapper —
+``_OUTER_ROOT_ELEMENTS``) to be treated as the block's own root/self attr.
+Without that AND, a NAMED CHILD element's attr merely tagged
+``css_layer='OUTER'`` (e.g. a 'cta'/'overlay'-scoped attr) could masquerade as
+the block's root attr — a block-root declaration landing on a child
+element's attribute instead of its own.
 
-``db_lookup._base_domain_attrs_for_css_property`` (the column-first domain
-restriction ``attr_for_property`` uses) admitted a row into the "root/self
-domain" via TWO conditions OR'd together:
-
-    (css_element IS NULL OR css_element IN ('', 'root', 'self'))
-    OR (css_layer = 'OUTER')
-
-The second arm had NO accompanying ``css_element`` check — ANY attr tagged
-``css_layer='OUTER'``, even one explicitly scoped to a non-root child element
-(``css_element='overlay'``/``'cta'``/etc.), passed the "root domain" filter.
-This is the exact gap the brief names: "the ``css_element`` guard exists only
-on the ``css_layer='OUTER'`` query" — that guard lives in the SIBLING function
-``declared_attrs_for_css_property`` (used by ``attr_for_layer_property``, which
-correctly ANDs ``css_layer='OUTER'`` with a root-domain ``css_element``
-restriction, see its ``_outer_element_clause``); ``_base_domain_attrs_for_css_
-property`` never got the same AND — now fixed via ``_OUTER_ROOT_ELEMENTS``.
-
-Reproduction note (brief's literal example did NOT hold): the brief's
-``.sgs-product-card--trial`` / ``ctaBorder*`` pairing does not reproduce
-against the CURRENT DB seed — product-card's own border-color/-width/-style
-attrs are already correctly ``css_element='wrapper'``. ``sgs/hero`` +
-``background-image`` (below) is the live, currently-reproducible instance of
-the SAME bug class, and is what this suite is built against.
-
-REVIEW ROUND (2026-08-27) found the fix's blast radius is 4 (block, property)
-pairs, not the 1 originally tested — a reviewer enumerated all 4 against a
-live before/after diff (see each test below for its pair). One of the four,
-``sgs/before-after`` + ``box-shadow-color``, was a genuine REGRESSION: that
-row's ``css_element='frame'`` is a stale mis-seed (its own
-``derived_selector`` is ``.wp-block-sgs-before-after`` — the block ROOT, and
-every sibling root attr on that block correctly uses
-``css_element='wrapper'``). Corrected via
-``migrations/2026-08-27-before-after-boxshadowcolour-css-element-fix.py``
-(a one-row DB seed correction, not a code change) — see
-``test_before_after_box_shadow_colour_resolves_after_css_element_reseed``.
+Coverage:
+  * ``test_hero_background_color_resolves_without_crashing`` — the clearest
+    proof: two candidates used to survive the unguarded filter and raise
+    ``AmbiguousCssPropAttrError``; now exactly one survives.
+  * ``test_hero_background_image_does_not_misroute_to_overlay_child_attr`` —
+    a child-scoped attr no longer masquerades as a root destination; the
+    correct answer is an honest gap.
+  * ``test_media_box_shadow_colour_correctly_gaps_to_named_child`` /
+    ``test_before_after_box_shadow_colour_resolves_after_css_element_reseed``
+    — one genuine child attr (correctly excluded) and one root attr with a
+    corrected DB label (must resolve to itself); see
+    ``migrations/2026-08-27-before-after-boxshadowcolour-css-element-fix.py``
+    for the DB-side correction this second test depends on.
+  * ``test_product_card_own_border_attrs_still_resolve_correctly`` — a
+    regression guard on the fix's originally-intended case.
+  * ``test_synthetic_outer_layer_child_element_is_excluded_from_root_domain``
+    — a schema-only control independent of the live DB's current seed, so
+    this suite cannot go vacuous if any of the above rows is ever re-tagged.
 
 Run from plugins/sgs-blocks/scripts:
     python -m pytest converter/tests/test_root_modifier_element_guard.py -q
@@ -59,21 +47,17 @@ pytestmark = pytest.mark.skipif(
 
 
 # ---------------------------------------------------------------------------
-# Headline result: a hard crash (AmbiguousCssPropAttrError) before this fix,
-# a correct single-attr resolution after (Important #3 — the reviewer's
-# strongest evidence, previously untested and unmentioned).
+# Headline case: two candidates used to survive the root-domain filter for
+# this pair — one genuinely root, one a child masquerading via the unguarded
+# css_layer='OUTER' arm — which made attr_for_property raise
+# AmbiguousCssPropAttrError on every hero clone touching background-color.
 # ---------------------------------------------------------------------------
 
 def test_hero_background_color_resolves_without_crashing():
-    """sgs/hero + 'background-color': BEFORE this fix, two candidates survived
-    the (broken) root-domain filter — 'backgroundOverlayColour'
-    (css_element='overlay', wrongly admitted via the unguarded css_layer='OUTER'
-    arm) and 'backgroundColour' (css_element='wrapper', genuinely root) — so
-    attr_for_property raised AmbiguousCssPropAttrError on every hero clone
-    touching background-color. Verified via a temporary revert of the
-    db_lookup.py fix (this exact exception, with this exact message, at
-    commit c6ecb9f40~1). AFTER this fix, only the genuine root attr survives
-    the filter and this resolves cleanly — no exception, no ambiguity.
+    """sgs/hero + 'background-color' must resolve to exactly one attr —
+    the genuine root/wrapper attr 'backgroundColour' — never raise
+    AmbiguousCssPropAttrError, and never resolve to the 'overlay'-scoped
+    child sibling 'backgroundOverlayColour'.
     """
     resolved = db_lookup.attr_for_property("sgs/hero", "background-color")
     assert resolved is not None, "sgs/hero background-color unexpectedly gapped"
@@ -136,15 +120,18 @@ def test_media_box_shadow_colour_correctly_gaps_to_named_child():
 
 
 def test_before_after_box_shadow_colour_resolves_after_css_element_reseed():
-    """sgs/before-after + 'box-shadow-color': Important #1 fix. This row was
-    mis-seeded css_element='frame' despite its own derived_selector
-    ('.wp-block-sgs-before-after') being the block ROOT — every sibling root
-    attr on this block (height/maxWidth/boxShadow) correctly uses
-    css_element='wrapper'. The widened guard correctly excluded 'frame' (an
-    apparent named child) until the DB row itself was corrected via
-    migrations/2026-08-27-before-after-boxshadowcolour-css-element-fix.py.
-    This test locks in the POST-migration, POST-fix state: the block's own
-    root box-shadow colour resolves to itself again, not to a false gap.
+    """sgs/before-after's own root box-shadow colour must resolve to itself
+    ('boxShadowColour'), not gap. This row's css_element was originally
+    'frame' — this block's own block.json name for its isWrapper root
+    element (NOT a mistake), but the OUTER-layer root-element vocabulary
+    (`_OUTER_ROOT_ELEMENTS`) is a closed list that only recognises
+    ('', root, self, wrapper), so 'frame' never matched it. Depends on the
+    DB correction in
+    migrations/2026-08-27-before-after-boxshadowcolour-css-element-fix.py
+    having been applied — a pragmatic relabel to 'wrapper', not a truth
+    correction; see that migration's docstring for the full story and the
+    durability risk (a future /sgs-update reseed could revert it). This test
+    observes only — it does not repair the row itself.
 
     Asserts via attr_for_layer_property, not attr_for_property: 'box-shadow-
     color' has no property_suffixes row, so attr_for_property always
@@ -154,22 +141,6 @@ def test_before_after_box_shadow_colour_resolves_after_css_element_reseed():
     for this property.
     """
     resolved = db_lookup.attr_for_layer_property("sgs/before-after", "OUTER", "box-shadow-color")
-    if resolved is None:
-        # Defensive: the migration is a DB write, not code — if a test
-        # environment's DB predates it, apply it here rather than silently
-        # passing on a stale/undone migration.
-        conn = sqlite3.connect(db_lookup.SGS_DB)
-        conn.execute(
-            "UPDATE block_attributes SET css_element = 'wrapper' "
-            "WHERE block_slug = 'sgs/before-after' AND attr_name = 'boxShadowColour' "
-            "AND css_element = 'frame'"
-        )
-        conn.commit()
-        conn.close()
-        db_lookup._base_domain_attrs_for_css_property.cache_clear()
-        db_lookup.declared_attrs_for_css_property.cache_clear()
-        db_lookup.attr_for_layer_property.cache_clear()
-        resolved = db_lookup.attr_for_layer_property("sgs/before-after", "OUTER", "box-shadow-color")
     assert resolved == "boxShadowColour", (
         f"sgs/before-after box-shadow-color (OUTER layer) resolved to {resolved!r} — "
         "the 2026-08-27-before-after-boxshadowcolour-css-element-fix migration "
@@ -199,13 +170,11 @@ def test_product_card_own_border_attrs_still_resolve_correctly():
 
 
 # ---------------------------------------------------------------------------
-# Important #2 — a synthetic, schema-only control. All tests above depend on
-# the LIVE DB's current seed; if any of those rows is ever re-tagged (exactly
-# what happened to the brief's own product-card/ctaBorder* example, which is
-# why it couldn't be reproduced above), those tests would start passing for
-# the wrong reason or go vacuous. This test builds its OWN tiny throwaway
-# SQLite DB with fabricated rows and asserts the guard PREDICATE directly,
-# independent of whatever the shared live DB happens to contain today.
+# A synthetic, schema-only control. Every test above depends on the LIVE DB's
+# current seed; if any of those rows is ever re-tagged, those tests would
+# start passing for the wrong reason or go vacuous. This test builds its own
+# throwaway SQLite DB with fabricated rows and asserts the guard PREDICATE
+# directly, independent of whatever the shared live DB contains today.
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
