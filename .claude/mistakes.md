@@ -1,9 +1,33 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-19 (header-completeness handoff — 2 entries added: a ratchet asserted but never landed, and a regenerated artefact dropping another branch's work. 2 oldest (2026-08-06) archived to stay level. 34 active against the ~30 target.)
+**Last updated:** 2026-08-27 (clone-track handoff — 2 entries added: wp-cli KSES stripping CSS from block attrs, and a deploy reporting ABORTED after its payload landed. 2 oldest (2026-07-30) archived to stay level. 35 active against the ~30 target.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-27] `wp post update` with no `--user` silently strips CSS out of block attributes
+- **Pattern key:** `wp-cli-post-update-without-user-strips-css-via-kses`
+- **Rule:** wp-cli runs with NO user unless told otherwise, so WordPress applies KSES to
+  `post_content` on save — and KSES strips CSS out of block-comment attributes. Post 2145's
+  `{"style":{"css":"color: red;"}}` was reduced to `{}`, and a second attempt emptied the post
+  entirely; the identical command with `--user=1` (an administrator, who holds `unfiltered_html`)
+  round-tripped it byte-for-byte. This is NOT specific to one script: any tool writing
+  `post_content` via wp-cli without a user will quietly delete styling. Verify the stored value
+  after writing, never the exit code.
+
+### [2026-08-27] A deploy reported ABORTED while its payload was already live
+- **Pattern key:** `a-deploy-can-report-aborted-after-its-payload-landed`
+- **Rule:** `build-deploy.py` exited `[ABORTED] reason: remote-extract-failed`, yet the files were
+  on the server — and the post-deploy cache purge and verify had been skipped. A failure exit is
+  not proof nothing shipped, any more than a success exit is proof something did. Check the server.
+
+### [2026-08-27] An agent's "completed" status is not proof its background deploy finished
+- **Pattern key:** `agent-completed-status-is-not-proof-background-work-finished`
+- **Feedback file:** [feedback_agent_completed_status_is_not_proof_background_work_finished.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_agent_completed_status_is_not_proof_background_work_finished.md)
+
+### [2026-08-28] A taxonomy-routing "bug" was WooCommerce's Enable Archives toggle, not a template mismatch
+- **Pattern key:** `a-live-defect-can-be-wp-config-not-code`
+- **Feedback file:** [feedback_a_live_defect_can_be_wp_config_not_code.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_live_defect_can_be_wp_config_not_code.md)
+
 ### [2026-08-19] I asserted a ratchet in a commit message without re-reading the file — it never landed
 - **Pattern key:** `verify-the-effect-landed-not-the-exit-code`
 - **Evidence:** A merge commit's message stated rule 21's `openBacklog` was set to the measured 199.
@@ -241,20 +265,10 @@
 - **Feedback file:** [feedback_a_metric_that_gets_cheaper_when_you_hide_things.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_metric_that_gets_cheaper_when_you_hide_things.md)
 - **Rule:** a library-wide inspector census (median 12 / max 49 / total 1121) was rejected as a baseline (D543): it scored any composite as ONE row, could not see native `supports` panels (64 of 83 blocks) or `extensions/`, and summed mutually-exclusive branches — error with TWO signs. The live editor then proved it MIS-RANKED (D544): the block scoring 8 shows a client ~50 controls. Ask "what is the cheapest way to make this number fall, and does that help the user?" and validate ORDERING, not just magnitude. Its `--self-test` certified the worst defect as the expected answer, so it could never have caught this.
 
-### [2026-07-30] A budget gate globbed two directories and was structurally blind to the module it was meant to govern
-- **Pattern key:** `a-gate-that-globs-a-directory-is-blind-to-everything-outside-it`
-- **Evidence (D422):** `check-motion-bundle-budget.py` scanned `vendor-modules` + `shared/effects/gsap`. A new module at `shared/effects/smooth-scroll.js` — one level up — built, shipped and enqueued while the gate printed `GATE PASSED`, having never measured it. Fixed by adding `shared/effects` to `_WATCHED_SUBDIRS` and baselining at 5,777 bytes gz.
-- **Rule:** After adding a file a gate is supposed to cover, RUN the gate and confirm the file appears BY NAME in its output. "The gate passed" is not evidence it looked.
-
 ### [2026-07-30] Three admin absence-checks ran logged-out and returned a clean-looking zero
 - **Pattern key:** `a-zero-from-an-unauthenticated-fetch-proves-nothing`
 - **Evidence (D422):** Verifying wp-admin ships no frontend bytes, the credential env failed to source (password contains shell metacharacters). The requests were redirected to the login page and reported "0 references" — a PASS for a test that never ran. Caught only because the result looked too clean; re-run with a real auth cookie plus a control asserting the page was an admin page.
 - **Rule:** Every absence-check carries a positive control proving the fetched thing is what you think it is. A zero is evidence only once you have proved you were looking in the right place.
-
-### [2026-07-30] A grep count was reported as a row count; the header was locked at 3, the regex said 5
-- **Pattern key:** `a-grep-count-is-not-a-measurement`
-- **Evidence (D422):** `grep -c 'wp:sgs/site-header-row'` returned 5 and was stated as "5 rows". Block markup emits an opening AND a closing comment per block (self-closing empty blocks emit one), so 3 rows = 5 matches. The header is `templateLock:'all'` at 3 rows — had 5 been true it would have meant the lock was BREACHED. Bean caught it. Second instance the same session: a "missing" settings blob was present; the pattern broke on the tag.
-- **Rule:** Before quoting a count from a regex, state what ONE unit looks like in the text and confirm the pattern matches it exactly once.
 
 ### [2026-07-30] A library option that does not exist was passed for a session, reading as an enforced safety guarantee
 - **Pattern key:** `an-option-name-that-does-not-exist-is-discarded-in-silence`
@@ -290,9 +304,4 @@
 - **Pattern key:** `a-gate-can-be-date-keyed-instead-of-change-keyed`
 - **Evidence:** The pre-commit visual-diff gate is satisfied by `reports/visual-diff/<block>-<DATE>.md` containing `verdict: PASS` + `first_paint_capture_passed: true`. Four of my changed blocks ALREADY had same-day reports written by a parallel track documenting a completely different change (`brand-strip`'s was about a `scrollDirection` enum; mine deleted a dead transition local). The gate would have passed my commit on their evidence. I appended my evidence to those four, clearly marked, rather than overwriting.
 - **Rule:** When a gate passes, ask what it actually bound itself to. Date-keyed evidence is not change-keyed evidence, and on a shared worktree that difference is reachable in practice, not just in theory.
-
-### [2026-08-08] A truncated search manufactured a false absence, and I told Bean it "existed nowhere"
-- **Pattern key:** `a-truncated-search-manufactures-a-false-absence`
-- **Evidence:** Bean asked whether the QC council's control-ORDER point had been captured. I searched the contract for `order|ordering|sequence|cluster`, piped it through `Select-Object -First 20`, saw only `BorderRadius`/`border` hits, and reported that ordering "existed nowhere". It did exist — Cross-cutting A carried it at ~line 980 ("Panel order — three competitors converged on ordering being deliberate"), well past the 20-hit cutoff. I then wrote a NEW obligation on top of research that was already there. Only re-running the same search unbounded found it.
-- **Rule:** A capped search can only ever prove PRESENCE, never absence. Before writing "X does not exist", re-run the search with no `head`/`-First`/`Select-Object` limit, or count total matches first. Distinct from `a-greps-blind-spot-is-the-shape-of-the-grep` — there the PATTERN was wrong; here the pattern was right and the OUTPUT was cut.
 

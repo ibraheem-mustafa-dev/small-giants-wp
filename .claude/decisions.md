@@ -1,3 +1,65 @@
+## D872 [INCIDENT] — a "zero-risk tidy-up" exposed four content-destroying bugs, and the flexWrap tool now has the guards
+
+**2026-08-27.** Bean asked for the flexWrap stored-content tidy-up, described (correctly, on the
+evidence then available) as zero visual change. The first real `--apply` run destroyed content in
+seven posts. All four causes were in the committed tool; none were visible from its own output,
+which printed `APPLIED` every time. Fixed in `7773ac0b9`, self-test 17 -> 22 assertions.
+
+| Bug | Effect |
+|---|---|
+| Self-closing form dropped | `<!-- … /-->` rewritten as `<!-- … -->` — a void block became an unclosed opening tag, absorbing every block after it. Broke 1568/1722/2145/2521/2525/2526/2596. |
+| **KSES strips CSS from block attrs** | `wp post update` with NO `--user` runs as nobody, so WP applies KSES. Post 2145's `{"style":{"css":"color: red;"}}` became `{}`, then the post emptied. `--user=1` round-tripped it byte-for-byte. |
+| ~8 KB command truncation | A truncated single-quoted string reports as `unexpected EOF while looking for matching "'"` — a QUOTING error for a LENGTH problem. 32 of 100 candidates hit it. Content now travels on STDIN with the byte count verified BEFORE the update. |
+| Stale-snapshot clobber | The rewritten content came from the cached dump, so a second container in the same post reverted the first. Post 773 had three applied and ended with one. Content is re-read LIVE now. |
+
+⛔ **The KSES one is NOT specific to this script.** ANY wp-cli tool writing `post_content` without
+a user will silently delete styling from block attributes. Treat it as a project-wide rule.
+
+**All damage repaired and verified**, not assumed: 7 posts restored to their exact pre-write bytes,
+post 2242's two em-dashes repaired after a `text=True` subprocess double-encoded them, and the final
+sweep compared all 28 posts against the pre-write snapshot — 100 attrs added, self-closing count
+10 before / 10 after, zero mojibake, zero unbalanced tags. Bean's live homepage (2742) was held back
+throughout and confirmed byte-identical.
+
+⭐ **Every one of the four was found by checking the live site, never by the tool's exit code.**
+`--self-test` passed 17/17 against all of them, because none had a fixture. A negative control added
+during the fix initially FAILED to fail — it counted call sites without checking they carried the
+flag — which is the same vacuity the tests were meant to prevent.
+
+## D873 [ROUTINE] — three clone lift bugs share one shape, and one is a five-day-old regression
+
+**2026-08-27.** Found while investigating Bean's live report that product-card text styling looked
+inconsistent. The reported symptom was a MISSING ATTRIBUTE, not a dropped value — `titleFontFamily`
+was the block's only font-family attr, so desc/price/note text could never carry a typeface. Fixed
+(`9104915fb`) alongside a typed-card hover affordance (`f038c57a1`, reversing the byte-identical
+scope guardrail on Bean's instruction: future drafts will carry their own hover effects to clone).
+
+Investigating it surfaced three separate lift bugs, all the same shape — **the value exists in the
+draft, the attribute exists in the block, and they never meet, because the lift looks for the
+declaration at a selector the draft does not use.** None errors; none logs.
+
+**(a) The card's border lands on the CTA button — a REGRESSION, dated.** `cfc12751f` (2026-08-22)
+moved the root box off WP's native style path onto block-private attrs. Sound reasoning; but on the
+native path WP paints the root itself, while the block-private path needs the converter to find the
+element via `derived_selector` — and those three were seeded pointing at `.sgs-product-card__border`,
+which exists in neither the draft nor the block. The comparison is near-controlled: same block, same
+commit, same `css_element` — `backgroundColour` (no selector) lifted `#ffffff`; the three border
+attrs lifted nothing. Fix: clear those three selectors. ⚠ The mechanism by which the values reached
+`ctaBorder*` was NOT proven — trace it before assuming the fix closes it.
+
+**(b) The trial card's gradient is dropped — never worked.** `product-card/style.css` records the
+cause in its own comment: it "rendered as `none` from the day it was written". CSS side fixed
+2026-08-25; the converter still emits no value.
+
+**(c) The trial tag's font-size doesn't lift though its colours do** — same rule, modifier selector.
+
+**Next session builds the detector, not three patches:** an attribute whose `derived_selector` names
+an element appearing nowhere in the block's markup or the draft. (a) sat unnoticed for five days.
+
+⛔ **D851 does not reproduce.** It records page 2884 storing string line-heights; they are numbers.
+The bug it describes was real and is fixed (`a991a508b`, 5 attrs, 724 tests) — that page never showed
+it. Do not cite 2884 as evidence of a live type defect.
+
 ## D871 [INCIDENT] — the six-style engine is LIVE and verified; a dev Composer autoloader 500'd the canary, and the guard against it existed only in one working copy
 
 **2026-08-27.** Closes MOTION TRACK section A. Three of the four queued items resolved; one was
