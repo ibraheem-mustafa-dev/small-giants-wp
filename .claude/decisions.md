@@ -1,3 +1,82 @@
+## D846 [INCIDENT] — the particle trail was invisible for two days, and the lit-pixel count called it healthy
+
+**2026-08-27.** Bean flagged that he had never seen FR-38-32's particle trail. Spec 38 §9 said
+"OBSERVED 2026-08-25" — that covered the editor's inspector controls only. Nobody had ever watched
+the frontend visual, and when it was finally watched it was **invisible**.
+
+**Cause, MEASURED on canary 2744 before any code was written.** `particles.js:241` read the trail
+colour from `getComputedStyle( el ).color` — the emitter's **inherited text colour**. On that page
+it resolves to `rgb(58,46,38)`, inherited straight from `<body>` (the container sets no colour of
+its own), while the container **does** set its own near-black `rgb(16,16,24)` background.
+
+| | |
+|---|---|
+| Trail colour source | `rgb(58, 46, 38)` — body text colour |
+| Painted-on background | `rgb(16, 16, 24)` |
+| **Contrast** | **1.44 : 1** |
+| Lit canvas pixels, 40-point sweep | ~7,400 |
+
+⛔ **The effect was firing perfectly and could not be seen.** Every automated signal was green: the
+canvas existed, the pool ran, ~7,400 pixels were painted. **A lit-pixel count cannot distinguish
+"painting correctly" from "painting invisibly"** — only the contrast ratio and a screenshot could.
+This is `a-green-measurement-is-not-fidelity` with a number attached, and it is why R-31-13 exists.
+
+⚠ **THE DECISIVE EXPERIMENT WAS VACUOUS ON THE FIRST ATTEMPT AND NEARLY KILLED A CORRECT
+HYPOTHESIS.** To prove colour was the cause I set `el.style.color` and dispatched a `window` resize.
+The module observes a **`ResizeObserver` on the element** (`particles.js:483`), not window resize —
+so `resize()` never re-ran, the colour never changed, and the before/after screenshots came back
+**identical**. Read at face value that says "recolouring doesn't help", which would have refuted a
+correct diagnosis and sent the fix somewhere else entirely. It was caught only by sampling the
+**mean drawn pixel RGB** rather than trusting the images:
+
+| Run | Mean drawn RGB |
+|---|---|
+| as-shipped | `[58, 45, 37]` — exactly the inherited text colour |
+| recoloured to `#ffe9c7` (after a REAL size change) | `[255, 233, 199]` — exactly the value set |
+
+**A negative control has its own vacuity mode.** Confirm the control LANDED before trusting what it
+appears to prove.
+
+**Bean's ruling: give the client a control, don't have the engine guess a colour.** He was also
+shown the alternative (an automatic contrast fallback) and rejected it. The decisive argument for
+the control is consistency, not just this bug: the cursor field (FR-38-25) **already ships a colour
+picker** beside its style and size controls, and the particle trail shipped style, density and size
+with no colour. So this closes an inconsistency between two sibling effects as well as a live defect.
+
+**Shipped (`c4f13d8a7`):** `fxParticleColour` → `data-sgs-fx-particle-colour`
+(`fx-attributes.php`, plus the `particles` param scope); a new `includes/fx-particles.php` on
+`render_block` p11 mirroring `fx-cursor-field.php` and **reusing `sgs_fx_cursor_field_colour()`
+verbatim** (as `fx-surface-treatment.php` already does) to emit a uid-scoped `<style>`; a
+`DesignTokenPicker` "Trail colour" control in `fx.js`.
+
+⭐ **The non-obvious part — why the JS reads the CANVAS, not the emitter.** The override is stored
+as a palette SLUG and resolved to `var(--wp--preset--color--<slug>)` so the client's token stays
+live. But **a custom property read back with `getPropertyValue()` returns that `var(...)` text
+UNRESOLVED**, and a canvas cannot paint with a string — the same class as
+`wp-style-engine-emits-an-unresolved-token-slug-as-invalid-css`. Declaring it on a REAL property
+(`.sgs-particles__canvas { color: var( --sgs-fx-particle-colour, inherit ) }`) forces the cascade to
+resolve it, so `getComputedStyle( canvas ).color` is always a concrete `rgb()`. The `inherit`
+fallback IS the shipped default, which is what makes the whole change opt-in.
+
+**Backwards-compatible by construction:** default `''` → the PHP filter returns early → CSS falls
+back to `inherit` → the emitter's text colour, i.e. the pre-D846 behaviour exactly. No existing
+instance moves.
+
+**Gates:** `check-fx-list-drift.py --check` 10/10 (I3/I4 specifically confirm the new attribute
+joined the attr map and a param scope); `npx wp-scripts build` compiled; `php -l` clean.
+
+⛔ **NOT CLOSED — not deployed, so not live-verified, and Bean has still not seen the trail on a
+real page.** `npm run build` cannot complete on `main`: `check-control-ux.js` fails
+`RESPONSIVE-FAMILY-WITHOUT-SWITCHER` on `sgs/site-header` and `sgs/trust-bar`. **Proven
+pre-existing** — a detached worktree at HEAD with zero local changes fails the identical gate with
+identical violations, and nothing in this change touches those blocks. Owed once that gate is green:
+deploy, confirm the control reaches the frontend, and get Bean's eye (R-31-13).
+
+**Deliberately NOT fixed:** canary 2744's own heading text sits at the same 1.44:1 and is a genuine
+WCAG 1.4.3 failure. Bean's call — it is a debug page nobody but us visits. Recorded, not actioned.
+
+Report + screenshots: `reports/visual-diff/particles-colour-2026-08-27.md`.
+
 ## D845 [ROUTINE] — `sgs/quote` attribution panel rebuilt onto shared TypographyControls
 
 **2026-08-27.** Closes the residual named in D803: the attribution panel's bespoke typography
