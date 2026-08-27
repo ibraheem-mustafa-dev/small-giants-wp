@@ -1,3 +1,146 @@
+## D842 [ROUTINE] — two "open tasks" were already-answered questions; a DB row exists iff a block.json declares it
+
+**2026-08-27.** Two items carried as work on the motion track's open list turned out to need no
+work at all — reading the source answered both. Recorded so they are not re-opened.
+
+**1. `fxPath*`/`fxShape*`/`fxMagnet*` have zero `block_attributes` rows, and that is STRUCTURAL.**
+Read-only query: **5** `fx*` rows exist out of 3,181 total (`fxDraggable`, `fxStart`, `fxEnd`,
+`fxScrub`, `fxPin`), and all 5 come from the only two blocks that declare them in a `block.json`
+(`before-after/block.json:165`, `image-sequence/block.json:157-169`). **A row exists iff a
+`block.json` declares the attribute.** Both the writer (`sgs-update-v2.py:1893-1911`) and the
+verifier (`seed-motion-fx-registry.py:1242-1275`) only ever MARK rows that already exist; neither
+inserts. `/sgs-update` would therefore change nothing — and running it to find out would have been
+a cross-track action on a shared tree for zero information (D432 precedent).
+
+⚠ **State it precisely:** this holds for these three families *because they are declared only in
+the `fx.js` extension filter*. It is NOT a general property of "extension-registered attrs" — that
+wider claim was not tested and must not be quoted.
+
+**The task brief was wrong about its own instrument.** It reported
+`check_motion_fx_reseed.py --check` as clean. That file accepts only `--self-test` (`:322`);
+`--check` belongs to `db-consistency/run.py`. And the guard compares **only `fx_effects`**, never
+`block_attributes` — so it structurally cannot see this. Its "clean" was correct for what it
+measures, which is not what was claimed of it.
+
+**Three real gaps found in passing, none fixed (owner not asked yet):** `fxPin` and `fxDraggable`
+rows carry `css_property = NULL` and are absent from `FX_ATTR_CSS_PROPERTY` entirely; `in_picker`
+is written by the seeder but never compared by the guard; and `--self-test` perturbs **5 of the 10**
+guarded columns (`tier`, `plugin_set`, `reduced_motion`, `editor_story`, `creates_panel` are
+guarded but unproven — a self-test that covers half its columns invites the reliance the other half
+does not earn).
+
+**2. `SgsLengthControl` `presets={true}` is unusable at every current mount.** **66** mounts across
+**27** files; `presets={true}` appears **zero** times. ⚠ Precisely: only **4** mounts pass
+`presets={false}` explicitly — the other 62 rely on the component default
+(`SgsLengthControl.js:77`). Functionally identical; do not write "all 66 set it".
+`presets={true}` writes a **token slug** (`:132`), but nearly every mount stores a **number plus a
+separate unit string** via `parseUnit()`, and a slug cannot survive that round-trip. Worst shapes:
+`separator.thickness` (`"type": "object"` — a slug would corrupt a tier object),
+`nav-menu.collapsePoint` (`"number"` — silently swallows a non-numeric slug, and worse, accepts
+`"50"` as 50px, a plausible-looking wrong value), and `hero.splitMediaWidthUnit` (a digit-strip
+regex would write the slug as a CSS *unit*). The component's own docblock (`:44-48`) already says
+this, and the adoption pass respected it. **This is a finding, not a sweep.**
+
+## D841 [ROUTINE] — generative cover images leave the motion spec; Spec 40 written, scope only
+
+**2026-08-27.** Owner's call, and correct: *"Feels like this doesn't really fit well in spec 38
+tbh."* Spec 38 governs motion — four tiers, each with a runtime cost and a reduced-motion
+contract. A cached static image has none of those; it had been riding the motion track only
+because it surfaced in the same conversation as the wave-gradient work.
+
+**Spec 40 written (`.claude/specs/40-GENERATIVE-COVER-IMAGES.md`, v0.1.0, status draft), added to
+`specs/README.md`.** Spec 39 is RESERVED by the tier-migration pacing item (37 `xfail(strict=True)`
+goldens name it), hence 40.
+
+**Owner-decided at the gate:** all four placements (blog headers · section/hero backgrounds · OG
+share images · product/category cards), and **offline script writing cached files** as the
+generator. The OG placement alone rules out any browser-side generator — scrapers do not run JS.
+Colour comes from `sites/<client>/theme-snapshot.json` (Spec 33); output is deterministic from a
+seed so a given post always yields the same cover.
+
+⛔ **A build gate at §5 blocks implementation until the owner supplies a reference image he has
+actually seen** — D781's specific lesson, applied before rather than after this time. Five open
+questions are recorded unanswered rather than invented.
+
+⚠ **Naming collision recorded in §0 as a table.** "Generative" now names two unrelated things: this
+spec's static cached image generator, and the motion track's **live Tier W "generative background
+engine"** (`LEDGER.md` Motion Track §B, plus
+`reports/2026-08-25-generative-background-engine-technique-spec.md`). They share an adjective and
+nothing else. Without the disambiguation these would be conflated inside a session.
+
+## D840 [ROUTINE] — `sgs/decorative-image` naked mode: wrap only when a surface treatment is applied
+
+**2026-08-27.** A client can select grain/halftone/duotone on `sgs/decorative-image`, configure
+intensity and colours, save — and get **nothing, silently**. The "configured and invisible" failure
+class again.
+
+**Cause, read not inferred.** The block is naked by design: `sgs_responsive_image()` emits the
+`<img>` **as the block root** (`render.php:326-333`; the ⚠ note is at `:275-280`), and that helper
+(`includes/helpers-media.php:25`) has no wrapper parameter — both its return paths emit exactly one
+`<img>`. Surface treatment finds its target with `el.querySelector('img')`
+(`fx-surface-treatment.js:353`), which searches descendants and **never matches `el` itself**, then
+returns a silent no-op cleanup (`:354-358`). No log, no warning.
+
+**The obvious third option is DEAD, confirmed by two independent routes:** teaching the effect to
+accept a root `<img>` fails because `initSurface` → `renderer.js:570` does `el.appendChild(canvas)`,
+and an `<img>` is a void element that cannot host children. The `querySelector` guard aborts before
+that line is ever reached, so both the guard and the paint path independently rule it out.
+
+**Owner's decision: inject a wrapper ONLY when a treatment is configured.** Every existing
+naked-mode instance then renders byte-identical, which matters because this block's CSS
+deliberately uses COMPOUND selectors (`.{uid}.sgs-decorative-image--mobile`) that assume no
+ancestor exists — always-wrapping would put every responsive art-direction rule in scope for
+re-checking. The pattern is already in the file: the video branch builds its own `<span>` wrapper
+(`render.php:261-266`). **Not built this session** — recorded as a decided gate.
+
+## D839 [INCIDENT] — `floating-objects` recorded the WRONG EFFECT for seven weeks, and the design gate was gating a question it never asked
+
+**2026-08-27.** Spec 38's `floating-objects` entry (FR-38-25's field-type table) described
+per-object `transform: translate()` on marked decorative children, a `--sgs-float-factor` set via
+`:nth-of-type()`, and an open design-gate question — *"which children become floating objects?"* —
+that had blocked the item since 2026-08-02.
+
+**The owner read it back and said that is not the effect he asked for.** His actual specification,
+now quoted verbatim in the spec so it cannot drift again: a background **grid** with a dot in each
+cell; cells within cursor range lean their dot toward the pointer; **each dot is locked inside its
+own cell**; when the cursor leaves range every dot eases back to its cell centre.
+
+**Three consequences, and they all make the real effect cheaper to place than the wrong one:**
+1. **The design gate DISSOLVES.** It was gating *which child blocks drift*. The real effect has no
+   child participants — it is a surface the emitter paints. No `block.json` flag, no per-instance
+   toggle, no new capability surface. **The item sat blocked for seven weeks behind a question its
+   real form never asked.**
+2. **The recorded objection is void.** The entry refused it for *"MOV[ing] DISCRETE ELEMENTS"*,
+   breaking *"THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT"*. As specified it IS a painted layer.
+3. **But it cannot be a field type.** Per-cell distance-to-cursor plus a per-cell clamp is not
+   expressible in CSS — the exact structural break FR-38-32 already ruled on for the particle
+   trail. **Same ruling, same reason:** its own canvas effect, not a sixth cursor-field type.
+
+**Reclassified to FR-38-33 (cursor grid-dot field).** The per-object drift version is **dropped,
+not deferred** — owner: *"we already have things like magnetic buttons effect built, we have no
+need for what you're describing"* (FR-38-30 covers it). **FR-38-34 (repulsion particle field)** was
+recorded at the same time: free-floating particles that move AWAY from the pointer — a second
+effect he described, distinct from FR-38-32's pointer-spawned dying trail in both respects. Both
+are NOT BUILT and carry an explicit owed-before-build list headed by an owner-approved reference.
+
+**Safe to reclassify — verified, not assumed.** `floating-objects` appears in **zero** of the three
+lists a field type must join (`FX_FIELD_TYPE_OPTIONS`, `SGS_FX_CURSOR_FIELD_TYPES`, the CSS paint
+rules). It was never registered, so invariant I6 had nothing to lose. `check-fx-list-drift.py`
+`--check` re-run after the edit: **all 10 invariants hold, exit 0.**
+
+**Eight mentions were corrected, not two** — including two CONTRACT rows, which is the part that
+mattered: §10's reduced-motion row specified *"never suppress the object"* for an effect that will
+never exist, and FR-38-32 cited `floating-objects` as precedent (that citation got STRONGER, since
+both are now canvas effects). A first pass that fixed only the prose would have left the contract
+tables describing the wrong effect.
+
+⛔ **The lesson, and it is not "read more carefully".** That entry was internally consistent,
+richly argued, and wrong at the root; every downstream sentence reasoned correctly from a premise
+nobody had checked against what was actually asked for. **Same shape as D781** — the technique was
+implemented faithfully against a reference nobody had looked at. *Verify the ask, not just the
+reasoning built on it.* The cost here was seven weeks of a blocked item and a design gate that
+could never have been answered, because the question was about the wrong effect.
+
 ## D838 [INCIDENT] — two products shared one phase sequence; the ambiguity cost a session, and three factual claims about it were wrong
 
 **2026-08-27.** Bean, after a full session of cross-purposes: *"What are the 3 phases for if we're

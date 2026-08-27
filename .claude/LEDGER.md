@@ -127,15 +127,17 @@ from the per-client theme tokens.
 
 ### ▶ NEXT
 
-⭐ `.claude/prompts/2026-08-27-motion-track-remaining-open-tasks.md` — full detail + times per task.
-Three need Bean's design gate (`floating-objects`, generative covers, `decorative-image` naked mode).
-**Everything the two prior prompts named is CLOSED** — single-sourced to **D805-D838**.
+✅ **THE THREE DESIGN GATES ARE DECIDED (2026-08-27).** Single-sourced to **D839-D842** — do not
+restate. `floating-objects` was the WRONG effect → now FR-38-33/34, gate gone ·
+`decorative-image` wraps only when treated · generative covers → **Spec 40** (scope only,
+build-gated on a reference Bean has seen).
 
-⛔ **Carried:** `particles`/Sparks (FR-38-32) is the real fading trail — "Drag weight" is momentum
-and is NOT it, never report it as satisfying that ask. ⚠ **Sparks has NEVER been shown to Bean**
-(verified 2026-08-27) — debug canary page 2744 only, and visually very faint even when it fires.
-Spec 38 §9's "OBSERVED 2026-08-25" covered inspector controls, never the frontend visual. Show him
-the live trail before calling this done in any client-facing sense.
+**OPEN:** tasks 7/8/9 (trail demo · pin keyboard focus · reduced-motion row-collapse) + 3
+fx-registry gaps needing Bean's call (D842).
+⛔ **Page 2114 is TRASHED (D730)**; restoring it = silently-broken page. Build a FRESH pin fixture,
+COMMIT its markup (3rd lost). Reuse `probe-step13-pin-focus.mjs` — do not hand-roll.
+⛔ **Carried:** Sparks (FR-38-32) is the real fading trail, NOT "Drag weight" — and **Bean has
+still never seen it** (canary 2744 only, very faint). Show him before calling it done.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 

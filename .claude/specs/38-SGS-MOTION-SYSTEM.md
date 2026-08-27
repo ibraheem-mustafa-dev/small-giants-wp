@@ -445,38 +445,46 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   | `hue-shift` (Aurora) | a multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask, so the hue arriving at a given point changes as the pointer moves | **SHIPPED 2026-08-24 (FR-38-28 look 2); REBUILT 2026-08-24/25.** Original build mixed toward two opposite hues via `color-mix(in oklch, …)`, base at 65% — **rejected and rebuilt** because mixing cyan into yellow produces muddy green at any ratio, which is why *"the teal was very faint"*. Hues are now ROTATED in OKLCH (`oklch(from … calc(h ± spread))`) instead of mixed. See §3.3 body below for the full correction, including a trap that cost a render. |
   | `parallax-pattern` | a repeating dot pattern travelling at 8% of pointer distance, deliberately UNMASKED | **SHIPPED 2026-08-24 (FR-38-28 look 3).** The difference from `spotlight-mask` is load-bearing: there a static pattern sits under a moving hole and only the REVEAL moves; here the pattern itself moves. Masking it would collapse it back into a slightly different torch |
   | `brick-reveal` | a running-bond brick tile as an SVG **mask**, intersected with the pointer pool; the colour is painted underneath as a flat layer | **SHIPPED 2026-08-24.** Torch's sibling — same reveal, brickwork instead of a dot screen. Built twice: gradients produced a stacked GRID, because a 90deg gradient has no vertical variation, so an SVG tile owns the offset instead. The SVG carries NO colour deliberately — a data-URI cannot read a custom property, so colouring it would freeze the palette token |
-  | `floating-objects` | individual `transform: translate()` per marked object, reading the SAME viewport-space `--sgs-cursor-x`/`--sgs-cursor-y` custom properties the emitter already publishes | **TIER V ARGUED (2026-08-02), STILL NOT BUILT.** See below — the tier question is answered but the opt-in surface is a separate, design-gated decision this residual work deliberately did not make. |
+  | ~~`floating-objects`~~ | — | ⛔ **NOT A FIELD TYPE. Reclassified 2026-08-27 — see FR-38-33.** The text that stood here described the wrong effect (per-object drift on marked children). The owner's actual ask is a canvas grid-dot field, which cannot be a field type at all. Kept as a struck row so the name resolves rather than vanishing |
 
- **`floating-objects` — resolved to Tier V, but deliberately still not built (2026-08-02).**
-  The FR's own open question — *"it is the first type needing per-object JS rather than a
-  single custom-property write"* — turns out to be avoidable. A pure-CSS design clears the same
-  bar `glow`/`spotlight-mask` clear, with **zero new JS runtime**: a floating object reads the
-  emitter's existing `--sgs-cursor-x`/`--sgs-cursor-y` (viewport px, published on every move)
-  directly in a `transform: translate(calc(...))` rule — no lerp, no per-object rAF loop, no
-  inertia maths; per-object variance (so objects don't all move identically) is a CSS-only
-  `--sgs-float-factor` custom property, settable via `:nth-of-type()`. This is the same
-  982-bytes-gzip publish already measured for `glow`, read by a different CSS consumer — exactly
-  the same relationship `spotlight-mask` already has to it. §1.3 test (i) capability real, Tier V
-  reaches it — yes, by the above; (ii)-(iv) are the Tier H test, not applicable here.
+ **`floating-objects` — THE ENTRY HERE DESCRIBED THE WRONG EFFECT. Corrected 2026-08-27.**
+  Everything previously written under this name — per-object `transform: translate()` on marked
+  decorative children, a per-object `--sgs-float-factor` set via `:nth-of-type()`, and the open
+  design-gate question *"which children become floating objects?"* — was **not what the owner
+  specified**. Recorded verbatim from his correction:
 
- **Why it still isn't built despite the tier question closing.** `floating-objects` breaks the
-  load-bearing sentence *"THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT"* — every other field
-  type is a shared BACKGROUND LAYER (`background-image`/`mask-image`, painted identically by
-  emitter and participants via `background-attachment: fixed`). `floating-objects` paints
-  nothing; it MOVES DISCRETE ELEMENTS — a structurally different consumer of the two coordinate
-  properties. That is fine in itself, but it needs an answer this residual task should not
-  invent alone: **which children become floating objects?** Participants are detected at RUNTIME
-  by computed background (a fact about the rendered page). A floating object is the opposite —
-  an author's DECISION that a specific decorative child should move — which needs its own opt-in
-  marker crossing block boundaries the same way `imageControls`/`containerKind` do: a genuine new
-  capability surface, which project CLAUDE.md rule 7 requires design-gating (shared-mechanism,
-  high blast radius) BEFORE building, not after. Shipping it without that decision risks exactly
-  the "13 panels where none makes sense" containment failure `creates_panel` was built to catch
-  for `cursor-field` itself, arriving by a new route. **Recommendation for the design-gate, when
-  it happens:** host the opt-in as a per-instance flag on whatever block already renders inside
-  an emitter as a decorative child (icon, decorative-image), gated the same way `imageControls`
-  is — declared in `block.json` `supports.sgs`, never hand-listed. Do not default it on for any
-  existing block.
+  > *"a bg which was like a grid with a visual item like a dot in each cell of the grid and all
+  > grids within the set range would have their dot follow the cursor but they were locked into
+  > and couldn't leave their grid cell, and whenever the cursor left the range the dots would move
+  > back to the centre point of their grid cell."*
+
+  **Three consequences, all of which make the real effect CHEAPER to place than the wrong one.**
+  1. **The opt-in design gate dissolves.** It was gating *which child blocks drift*. The real
+     effect has no child participants at all — it is a surface the emitter paints. There is no
+     `block.json` flag to decide, no per-instance toggle, and no new capability surface. The item
+     sat blocked from 2026-08-02 to 2026-08-27 behind a question its real form never asked.
+  2. **The stated objection does not apply.** This entry refused the effect because it *"MOVES
+     DISCRETE ELEMENTS"*, breaking *"THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT"*. As actually
+     specified it IS a painted layer, so that objection is void.
+  3. **But it cannot be a field type.** Each cell's dot needs its own distance-to-cursor and a
+     per-cell clamp; CSS cannot compute per-cell distance. That is precisely the structural break
+     FR-38-32 already ruled on — *a canvas cannot be expressed as a `[data-sgs-cursor-field="X"]`
+     CSS rule*. **Same ruling, same reason: it becomes its own canvas effect, FR-38-33.**
+
+  **Owner-decided 2026-08-27** (both the correction and the disposition are his). The per-object
+  drift idea is **dropped, not deferred** — his words: *"we already have things like magnetic
+  buttons effect built, we have no need for what you're describing"* (FR-38-30 covers it).
+
+  ⭐ **Safe to reclassify — verified, not assumed.** `floating-objects` appears in **zero** of the
+  three lists a field type must join (`FX_FIELD_TYPE_OPTIONS` in `fx.js`,
+  `SGS_FX_CURSOR_FIELD_TYPES` in `includes/fx-cursor-field.php`, and the
+  `[data-sgs-cursor-field="…"]` paint rules in `assets/css/fx-cursor-field.css`). It was never
+  registered, so invariant I6 has nothing to lose and no gate changes.
+
+  ⛔ **Lesson, recorded because it cost seven weeks of block:** this entry was internally
+  consistent, richly argued, and wrong at the root. Every downstream sentence reasoned correctly
+  from a premise nobody had checked against what was actually asked for. Same shape as D781 —
+  *verify the reference, not just the implementation*.
 
  **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1/R-31-9). Two roles:
   - **EMITTER** — publishes the pointer coordinates and paints the base field. Eligible: any
@@ -579,7 +587,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      lists diverging silently is a failure this codebase has met before (`TRANSITION_STYLES`,
      `class-sgs-motion-registry.php`) — this is now four,** which is why the gate reads no
      database and cross-checks committed source only.
-  2. **`floating-objects` is spec'd, not built** (see the field-type table above).
+  2. **`floating-objects` RECLASSIFIED OUT of this FR, 2026-08-27** — it was never the effect the owner asked for and is not a field type at all. It is now FR-38-33 (a canvas grid-dot field). This residual is CLOSED as a cursor-field item; nothing is owed here.
   3. **A participant carrying its own `background-image` is deliberately not marked**, because our
      layer would replace it; that child keeps a visible seam. Clobbering a client's chosen image is
      plainly worse. A `::before` fallback for that narrow case is possible if the seam is reported.
@@ -755,9 +763,11 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   (the canvas shows nothing, because `sgs/container` renders via `edit.js` not `render.php` — a
   DIFFERENT finding from "does the picker/controls work", which is what this paragraph closes).
 
- **Still open, and NOT part of FR-38-28:** the `floating-objects` field type (FR-38-25 residual 2).
-  It moves discrete ELEMENTS rather than painting a shared background layer, needs new per-element
-  transform JS, and needs its own opt-in design gate for *which children become objects*.
+ **CLOSED, not open — corrected 2026-08-27.** This paragraph used to read *"Still open… the
+  `floating-objects` field type… needs its own opt-in design gate for which children become
+  objects."* Every clause of that was downstream of the wrong-effect entry corrected in the
+  field-type table above. There is no fifth field type pending, and no opt-in gate is owed: the
+  real ask is FR-38-33, a canvas effect with no child participants.
 
 - **FR-38-27 Physics canvas — a container-equivalent block whose children are throwable
   DECORATIVE bodies. Tier G.** Bean-signed 2026-08-01 (D447); **SCOPE RE-RULED by Bean 2026-08-02
@@ -1161,7 +1171,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   (i) There is no JS painter seam to attach to: `cursor-field.js`'s docblock names a `cursor-fields/`
   module directory that **does not exist** (its only mention repo-wide is that docblock line), and every
   shipped field type is painted solely by a `[data-sgs-cursor-field="X"]` CSS rule. A canvas cannot be
-  expressed that way — the same structural break §3.3 already records for `floating-objects`.
+  expressed that way — the same structural break §3.3 records for `floating-objects`. ⭐ **That citation got STRONGER on 2026-08-27, not weaker.** The `floating-objects` entry was corrected to what the owner actually asked for (a canvas grid-dot field, now FR-38-33), and the corrected effect is a canvas too — so both reach this same ruling by the same route, rather than one being a background layer and the other a canvas.
   (ii) Field types are MUTUALLY EXCLUSIVE (one `data-sgs-cursor-field` value per emitter), so as a type
   "Sparks" would REPLACE the client's glow instead of layering over it. As its own effect it composes.
   Follows the `magnet` precedent (FR-38-30) exactly — a shipped shape, not new infrastructure.
@@ -1263,6 +1273,64 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   dead, while sampling during read 2417); and note the listener is **`mousemove`**, NOT
   `pointermove` — a synthetic-`PointerEvent` probe returned 0 across 240 frames against
   perfectly healthy code, because nothing was listening for the event it sent.
+
+- **FR-38-33 Cursor grid-dot field — Tier V, canvas. OWNER-SPECIFIED 2026-08-27. NOT BUILT.**
+  A background **grid**; a visual item (a dot) sits in each cell. Cells within a set radius of the
+  pointer lean their dot toward it; **each dot is locked inside its own cell and cannot leave it**;
+  when the pointer moves out of range every dot eases back to its cell centre.
+
+ **Provenance — this FR exists because the old one was wrong.** `floating-objects` (§3.3, FR-38-25's
+  field-type table) recorded a different effect under this ask for seven weeks: per-object drift on
+  marked decorative children. The owner corrected it on 2026-08-27; his description is quoted
+  verbatim at that entry. The per-object drift version is **dropped, not deferred** — FR-38-30
+  (magnet) already covers that behaviour, and he said so explicitly.
+
+ **Why its own effect and NOT a sixth cursor-field type — the FR-38-32 ruling, applied unchanged.**
+  A dot's offset depends on its own distance to the pointer, and its travel is clamped to its own
+  cell. CSS cannot compute per-cell distance, so this cannot be a `[data-sgs-cursor-field="X"]`
+  paint rule — the exact structural break FR-38-32 cites. Field types are also MUTUALLY EXCLUSIVE
+  (one `data-sgs-cursor-field` per emitter), so as a type it would REPLACE a client's chosen glow
+  instead of composing with it.
+
+ **Tier V, canvas 2D.** Same substrate as FR-38-32's particle engine — a grid of dots with an
+  ease-back integrator needs no GPU shader, so §1.3's ratchet refuses anything dearer. ⛔ **NOT
+  Tier W**; that list stays closed.
+
+ ⛔ **OWED BEFORE BUILD, none of it done:**
+  - A **reference the owner has actually seen and approved** (D781 — verify the reference, not just
+    the implementation). No reference image exists for this effect yet.
+  - Its own design gate (project CLAUDE.md rule 7): cell size, radius, lean magnitude, ease-back
+    curve, dot count ceiling, and the §2.3.1 flash/coverage answer FR-38-32 had to give.
+  - §9 (editor canvas story), §10 (reduced-motion) and §6 (`fx_effects` seed) rows are written from
+    BUILT behaviour on this project — all three are owed at build, not predicted now.
+  - The registration surface is TEN points, three of them ungated (FR-38-32's ⛔ note). Read that
+    note before registering anything.
+
+ **Reduced motion — the shape is obvious but NOT yet a contract.** Dots resting at cell centres is
+  both the no-JS state and the plausible reduce state, so one code path likely serves both (the
+  FR-38-32 pattern). Written down as an expectation, deliberately NOT entered in §10 until measured.
+
+- **FR-38-34 Repulsion particle field — Tier V, canvas. OWNER-SPECIFIED 2026-08-27. NOT BUILT.**
+  Particles that float freely across a surface and **move AWAY from the pointer** as it approaches,
+  settling again once it leaves. Distinct from FR-38-32 in both respects: that engine's particles
+  are **pointer-SPAWNED and short-lived** (a trail that dies), these are **persistent and
+  pointer-AVOIDANT**.
+
+ **Recorded at the owner's instruction, 2026-08-27**, alongside FR-38-33 — he described both in the
+  same correction and asked for both to be captured. ⭐ **The reason it is written down at all:**
+  `floating-objects` proves an ask held only in conversation drifts into a different effect. This
+  entry exists so that cannot happen twice.
+
+ **Relationship to FR-38-32 — likely shares the engine, and that is a design-gate question, not a
+  decision made here.** `particles.js` owns a pooled canvas, a ring buffer and a self-terminating
+  rAF loop, all reusable. But its pool is built around particles that AGE AND DIE
+  (`alpha = 1 - age/maxAge`, the whole SC 2.3.1 flash answer), and these do neither. Whether that
+  is a new preset or a sibling module must be settled at the gate, with the pool's lifetime model
+  measured rather than assumed.
+
+ ⛔ **OWED BEFORE BUILD:** the same list as FR-38-33 — owner-approved reference, design gate,
+  §6/§9/§10 rows at build, and the ten-point registration check.
+
 
 ### 3.4 SVG
 
@@ -1837,7 +1905,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Smooth scrolling (Lenis, Tier H) | **Suppress:** native scroll. Live AND reactive — the instance is destroyed on a mid-session change to `reduce`, and rebuilt on a change back (FR-38-18 condition b) |
 | Page transitions | **Suppress:** instant navigation |
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
-| Cursor-reactive field — `floating-objects` type (FR-38-25, once built) | **Simplify to a fixed resting transform, never suppress the object.** Differs from the `glow`/`spotlight-mask` SIMPLIFY case above: those rest as a static PAINT (a legitimate finished state); an autonomously-moving OBJECT has no equivalent "just stop tracking" answer, because the object is content an operator placed deliberately (`degrade-to-more-content-never-less`). Under `prefers-reduced-motion: reduce` the object renders at its AUTHORED static position (`transform: none`), identical to the fail-open no-JS state — the reduced-motion state and the no-JS state are the SAME state, needing no separate code path. |
+| ~~Cursor-reactive field — `floating-objects` type~~ | ⛔ **ROW VOID — removed 2026-08-27.** It specified *"Simplify to a fixed resting transform, never suppress the object"* for an effect that will never be built: `floating-objects` was a wrong-effect entry (see §3.3) and there is no per-object type. **No replacement row is owed yet** — FR-38-33 and FR-38-34 are UNBUILT, and this project's practice is that §9/§10 rows are written from the built behaviour, not predicted for it. Both owe a row at build time. Recorded rather than deleted silently, because a contract table that quietly loses a row reads as if it never had one. |
 | Surface treatment (FR-38-29, Tier W) | **SIMPLIFY — settle immediately at the treated state, never suppress the treatment.** Under `reduce` the scroll-resolve driver is not created at all (no `IntersectionObserver`, no scroll listener, no per-frame work): `uResolve` is set to 0 once and the image renders at the treatment's full chosen strength. ⛔ **Note the direction — the reduced-motion state is the TREATED image, not the plain photograph.** Falling back to the untreated photo would strip content the client deliberately configured (`degrade-to-more-content-never-less`); the thing being removed under `reduce` is the *developing*, not the *treatment*. There is deliberately no `@media (prefers-reduced-motion: reduce)` rule in `fx-surface-treatment.css` — the gate is in JS, where the driver lives. ⚠ **AMENDED 2026-08-21, same day as the FR.** This row first read "NOTHING TO GATE — the effect draws once and never animates", which was true of the first build and became FALSE within hours when scroll-resolve was added on the owner's instruction. Recorded rather than quietly overwritten: a §10 row is a contract, and one that silently stops matching its effect is the drift this table exists to prevent. |
 | Physics canvas (FR-38-27) | **SIMPLIFY — disable the physics, never the content.** Under `reduce` no Draggable/Inertia/Physics2D is created and **the children still render, static, in their authored positions**. "Disables the surface outright" in D447 means *disables the motion*, not *removes the content*: hiding decorative children a client placed deliberately would be the `degrade-to-more-content-never-less` failure. ⚠ **This row was OWED from the block's build session** — §3.3 recorded it as deferred only to avoid a same-file collision with a concurrent track (STOP-29: mapped, not dropped). Added 2026-08-24, closing FR-38-20. ⚠ D447 recorded the ruling in one phrase that admits both readings and this picks the one consistent with the captured rule; **flagged for Bean's confirmation**, and it is the cheaper error to correct in either direction. |
 | Carousel loop (FR-38-26) | **Suppress-equivalent (measured 2026-08-02):** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. Confirmed identical under reduce on 4 of 5 rollout blocks. Two blocks' own arrow-click code hardcoded `'smooth'` regardless of the preference — a defect in those blocks, not the loop module — fixed same day (`5c45f879`, `ba28ab92`); the one remaining hardcoded case (google-reviews autoplay) is correctly gated by an early return. |
@@ -1865,7 +1933,14 @@ custom property `--sgs-scroll-progress` (set by `assets/js/scroll-progress.js` �
 data-sgs-fx="<effect>"            e.g. pin-scrub | scrub | horizontal-panel | split-reveal |
                                        scramble | flip | draggable | draw | morph | motion-path |
                                        image-sequence | magnet (FR-38-30, added 2026-08-24) |
-                                       particles (FR-38-32, added 2026-08-25)
+                                       particles (FR-38-32, added 2026-08-25) |
+                                       cursor-grid (FR-38-33, reserved 2026-08-27 — NOT BUILT) |
+                                       particle-repel (FR-38-34, reserved 2026-08-27 — NOT BUILT)
+                                  ⚠ The last two are RESERVED NAMES, not shipped effects. They are
+                                    listed here because this project's practice is to claim the
+                                    grammar slot when the effect is specified (magnet and particles
+                                    were both listed the day they were spec'd), so a draft author
+                                    cannot pick a colliding name. No emit path exists for either.
 data-sgs-fx-trigger="<value>"     load | scroll | hover (per-effect enum)
 data-sgs-fx-start / -end          scroll range (viewport-relative, e.g. "top 80%")
 data-sgs-fx-hold="<value>"        none | short | standard | long — PINNING effects only:
