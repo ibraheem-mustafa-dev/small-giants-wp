@@ -239,6 +239,145 @@ def test_uniform_grid_item_fold_does_not_overwrite_css_pass_value():
     assert '"quote":"hi"' in markup               # content lift still applied
 
 
+# -- Bug (d): an out-of-enum `layout` value gaps instead of silently coercing ----
+#
+# `layout_attrs` derives its value from CSS SIGNATURE alone (display:grid/flex) — it
+# has no idea what enum the RESOLVED block declares for that attr name. A block can
+# reuse the `layout` attr NAME for a display-MODE enum unrelated to the arrangement
+# trigger (e.g. sgs/gallery's live `["grid", "masonry", "carousel"]`, which has no
+# "flex" member) — without a validate() gate, that block's section (whose OWN CSS is
+# display:flex) would have "layout":"flex" written straight through, and WP's schema
+# validation would coerce the out-of-enum value to the enum's first member at render
+# time, SILENTLY (the exact testimonial-slider collapse-to-width-0 shape the brief
+# names).
+#
+# Per review (Important #3): the sibling test at test_uniform_grid_item_fold_skips_
+# box_family_attrs (below) already establishes the house rule for this file — stub
+# the DB lookups a test depends on rather than reading the LIVE shared
+# sgs-framework.db, because that DB is concurrently mutated by other sessions (this
+# task's own commit was blocked once by exactly that drift) and because a block's
+# real-world enum can be widened/migrated later, which would make a live-DB-backed
+# negative test pass vacuously and a live-DB-backed positive test fail on a machine
+# that never received a given seed. `_fake_layout_db` below monkeypatches every
+# db_lookup call assembly.py step 3b makes (`block_attrs`, `get_connection`,
+# `get_container_kind`) with an in-memory, test-owned schema — no live DB read at
+# all — mirroring the existing `_FakeDb` pattern for `arrangement.db_lookup`.
+
+import contextlib
+import sqlite3
+
+
+@contextlib.contextmanager
+def _fake_layout_db(block_slug: str, enum_json: "str | None"):
+    """Stub every DB touch assembly.py step 3b makes for one block's `layout` attr,
+    so the out-of-enum / valid-enum regression tests below never read the live,
+    concurrently-mutated sgs-framework.db (Important #3 review fix — mirrors the
+    `_FakeDb` pattern `test_uniform_grid_item_fold_skips_box_family_attrs` already
+    uses for the same reason).
+
+    Builds a real in-memory sqlite3 connection carrying only a minimal
+    `block_attributes` row for (block_slug, 'layout', enum_json) — exactly what
+    `services.validate.validate()` queries — and patches `db_lookup.block_attrs`
+    (the step 3b existence gate) + `db_lookup.get_connection` (what step 3b hands
+    to `validate()` as `ctx.conn`) + `db_lookup.get_container_kind` (irrelevant to
+    the layout/flexDirection assertions here, since validate()'s KIND-legality
+    check only fires for a `gridItem*`-prefixed attr, but stubbed anyway so the
+    test touches zero live DB state).
+    """
+    from converter.db import db_lookup as _dbl
+
+    _mem = sqlite3.connect(":memory:")
+    _mem.execute("CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, enum_values TEXT)")
+    _mem.execute(
+        "INSERT INTO block_attributes (block_slug, attr_name, enum_values) VALUES (?, 'layout', ?)",
+        (block_slug, enum_json),
+    )
+    _mem.commit()
+
+    _orig_block_attrs = _dbl.block_attrs
+    _orig_get_connection = _dbl.get_connection
+    _orig_get_container_kind = _dbl.get_container_kind
+    try:
+        _dbl.block_attrs = lambda slug: (
+            {"layout": {"attr_type": "string", "role": None,
+                        "canonical_slot": None, "derived_selector": None}}
+            if slug == block_slug else {}
+        )
+        _dbl.get_connection = lambda: _mem
+        _dbl.get_container_kind = lambda slug: None
+        yield
+    finally:
+        _dbl.block_attrs = _orig_block_attrs
+        _dbl.get_connection = _orig_get_connection
+        _dbl.get_container_kind = _orig_get_container_kind
+        _mem.close()
+
+
+def test_layout_attr_out_of_enum_value_gaps_not_coerced(caplog):
+    """A block whose `layout` enum (["grid","masonry","carousel"], sgs/gallery's
+    real shape) does not contain "flex" must GAP a display:flex signature
+    (assembly.py step 3b's validate() call), never write the invalid value for WP
+    to silently coerce. DB stubbed (Important #3) — no live-DB dependency.
+
+    Also asserts the gap was actually RECORDED via `_fold_trace` (review minor
+    #5) — the absent-value assertions alone can't distinguish "gapped and
+    reported" from "the write path silently vanished in a future refactor",
+    which is exactly the class of observability regression `_fold_trace` was
+    built to catch (see its own module docstring)."""
+    from converter.context import Recognition
+    import converter.services.extraction as _ext
+
+    rec = Recognition(kind="named", slug="sgs/gallery", container_kind="layout",
+                       delegates_content=1)
+    node = _node('<section style="display:flex"></section>')
+
+    _orig_css = _ext._build_css_attrs
+    _orig_extract = _ext.extract_content
+    try:
+        _ext._build_css_attrs = lambda *a, **k: {}
+        _ext.extract_content = lambda *a, **k: []
+        with _fake_layout_db("sgs/gallery", '["grid", "masonry", "carousel"]'):
+            with caplog.at_level("WARNING"):
+                markup = _ext.build_block_markup(rec, node, media_map={}, css_rules={}, is_root=True)
+    finally:
+        _ext._build_css_attrs = _orig_css
+        _ext.extract_content = _orig_extract
+
+    assert '"layout"' not in markup           # gapped — never written
+    assert '"layout":"flex"' not in markup     # never the invalid value
+    assert '"layout":"grid"' not in markup     # never silently coerced either
+    # the gap was RECORDED, not just silently dropped (minor #5).
+    assert any("layout_attr_invalid_enum" in r.getMessage() for r in caplog.records)
+
+
+def test_layout_attr_valid_enum_value_still_writes_positive_control():
+    """Positive control: a block whose `layout` enum DOES contain "flex"
+    (["", "flex", "stack", "grid"], the container-mirror shape shared by
+    sgs/hero and 11 others) must still write "layout":"flex" through the
+    validate() gate for the SAME display:flex signature — proves the gate isn't
+    a blanket-reject that would break every container-mirroring composite. DB
+    stubbed (Important #3) — no live-DB dependency."""
+    from converter.context import Recognition
+    import converter.services.extraction as _ext
+
+    rec = Recognition(kind="named", slug="sgs/hero", container_kind="section",
+                       delegates_content=1)
+    node = _node('<section style="display:flex"></section>')
+
+    _orig_css = _ext._build_css_attrs
+    _orig_extract = _ext.extract_content
+    try:
+        _ext._build_css_attrs = lambda *a, **k: {}
+        _ext.extract_content = lambda *a, **k: []
+        with _fake_layout_db("sgs/hero", '["", "flex", "stack", "grid"]'):
+            markup = _ext.build_block_markup(rec, node, media_map={}, css_rules={}, is_root=True)
+    finally:
+        _ext._build_css_attrs = _orig_css
+        _ext.extract_content = _orig_extract
+
+    assert '"layout":"flex"' in markup
+
+
 def test_uniform_grid_item_fold_skips_box_family_attrs():
     """A1 migration (2026-07-26): `lift_uniform_grid_item_css` must SKIP any property
     whose destination attr is box-family-gated (gridItemPadding/gridItemBorderRadius

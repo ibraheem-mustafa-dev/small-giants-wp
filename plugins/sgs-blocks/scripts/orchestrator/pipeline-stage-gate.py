@@ -22,6 +22,15 @@ D554-C   Fails a clone run that emits a flat tier (a <property>Tablet /
          a live regression, not a grandfathered legacy debt. Opt out with
          --skip-flat-tier-gate (diagnostic runs only).
 
+Task 3   Attribute-schema conformance gate (check_attr_schema_conformance.py)
+G2       Fails a clone run that emits an attribute a block does not
+         declare (TYPE), or an out-of-enum value for one it does (ENUM) —
+         Bean's "fail closed on an undeclared shape" ruling, the GENERAL
+         backstop behind the two specific bugs Tasks 1/2 fixed inside the
+         converter's own resolvers. NO baseline — every violation is a
+         live regression. Opt out with --skip-attr-schema-gate
+         (diagnostic runs only).
+
 ADDING A NEW GATE
 =================
 Add a function named gate_<name>(run_dir: Path) -> None and call it from
@@ -64,6 +73,9 @@ BASELINE_PATH = HERE / "check-no-mirror-baseline.json"
 
 # Path to the Spec 35 flat-to-object migration gate (sibling file).
 CHECK_FLAT_TIER_REGRESSION = HERE / "check_flat_tier_regression.py"
+
+# Path to the Task 3 / G2 attribute-schema conformance gate (sibling file).
+CHECK_ATTR_SCHEMA_CONFORMANCE = HERE / "check_attr_schema_conformance.py"
 
 
 # ---------------------------------------------------------------------------
@@ -121,11 +133,37 @@ def gate_flat_tier_regression(run_dir: Path) -> None:
     )
 
 
+def gate_attr_schema_conformance(run_dir: Path) -> None:
+    """Task 3 / G2 attribute-schema conformance gate.
+
+    Runs check_attr_schema_conformance.py in --enforce mode against the same
+    post-Stage-9 extract.json the other two gates already read. No baseline —
+    Bean's "fail closed on an undeclared shape" ruling treats every emission
+    of an attribute a block does not declare (or an out-of-enum value for one
+    it does) as a live regression to fix, not a legacy debt to grandfather.
+    Any violation hard-halts the clone run.
+    """
+    subprocess.run(
+        [
+            sys.executable,
+            str(CHECK_ATTR_SCHEMA_CONFORMANCE),
+            str(run_dir),
+            "--enforce",
+        ],
+        check=True,  # raises CalledProcessError → propagates as non-zero exit
+    )
+
+
 # ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
 
-def run_all_gates(run_dir: Path, *, skip_flat_tier_gate: bool = False) -> None:
+def run_all_gates(
+    run_dir: Path,
+    *,
+    skip_flat_tier_gate: bool = False,
+    skip_attr_schema_gate: bool = False,
+) -> None:
     """Run every armed gate in sequence.  Raises SystemExit(1) on first failure."""
     print(f"pipeline-stage-gate: running gates on {run_dir.name}")
 
@@ -135,6 +173,11 @@ def run_all_gates(run_dir: Path, *, skip_flat_tier_gate: bool = False) -> None:
         print("pipeline-stage-gate: Spec 35 flat-tier-regression gate skipped per --skip-flat-tier-gate")
     else:
         gate_flat_tier_regression(run_dir)
+
+    if skip_attr_schema_gate:
+        print("pipeline-stage-gate: Task 3 / G2 attr-schema-conformance gate skipped per --skip-attr-schema-gate")
+    else:
+        gate_attr_schema_conformance(run_dir)
 
     print("pipeline-stage-gate: all gates passed.")
 
@@ -163,6 +206,16 @@ def main(argv: list[str] | None = None) -> int:
              "The R-31-15 anti-mirror gate still runs. (default: False — "
              "the gate runs.)",
     )
+    parser.add_argument(
+        "--skip-attr-schema-gate",
+        action="store_true",
+        default=False,
+        help="Skip the Task 3 / G2 attribute-schema conformance gate "
+             "(check_attr_schema_conformance.py). Use only for diagnostic "
+             "runs where you need to inspect an undeclared-attribute/enum "
+             "emission without halting. The other gates still run. "
+             "(default: False — the gate runs.)",
+    )
     args = parser.parse_args(argv)
 
     run_dir = Path(args.run_dir)
@@ -171,7 +224,11 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     try:
-        run_all_gates(run_dir, skip_flat_tier_gate=args.skip_flat_tier_gate)
+        run_all_gates(
+            run_dir,
+            skip_flat_tier_gate=args.skip_flat_tier_gate,
+            skip_attr_schema_gate=args.skip_attr_schema_gate,
+        )
     except subprocess.CalledProcessError as exc:
         # Gate script already printed its own error; just relay the exit code.
         return exc.returncode or 1

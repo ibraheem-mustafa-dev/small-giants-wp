@@ -115,7 +115,7 @@
  * 44px target (WCAG 2.5.5), visible focus ring, and a label that changes with
  * state so a screen-reader user knows what it will do.
  */
-.sgs-wave-gradient__toggle {
+.sgs-wave-gradient__toggle:not( [hidden] ) {
 	position: absolute;
 	right: 12px;
 	bottom: 12px;

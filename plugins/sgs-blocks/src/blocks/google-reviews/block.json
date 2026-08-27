@@ -248,6 +248,7 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": ["", "flex", "stack", "grid"],
 			"default": ""
 		},
 		"gridTemplateColumns": {
