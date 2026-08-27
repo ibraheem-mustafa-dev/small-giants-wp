@@ -1,3 +1,119 @@
+## D863 [INCIDENT] — "untestable" was wrong: the header row-collapse reduced-motion arm is now measured, and the reason it looked untestable is a doc-shaped trap
+
+**2026-08-27.** I reported the reduced-motion arm of the Spec 37 per-row header collapse as
+BLOCKED and parked it. Bean pushed back — *"it makes no sense that task 9 is untestable"* — and he
+was right. It took one more hour and the flag is now CLOSED by direct observation in both arms.
+
+**The measurement, from the new repeatable probe
+`scripts/motion-qa/probe-row-collapse-reduced-motion.mjs`:**
+
+| arm | `transitionDuration` | collapsed | inline `block-size` during | after restore |
+|---|---|---|---|---|
+| no-preference | `0.2s` ×5 | yes | `0px` | **`(none)`** |
+| `reduce` | **`1e-05s`** | yes | `0px` | **`(none)`** |
+
+Every link of the chain Spec 38 §12 called "reasoning, not measurement" is now observed: the
+reduced-motion CSS strips the transition → `transitionMs()` returns ~0 → the cleanup timer fires
+early → the transient inline height is CLEARED rather than awaiting a `transitionend` that never
+fires. ⭐ **The `reduce` arm still collapses, and that is the PASS condition** — reduced motion
+removes the animation, never the behaviour.
+
+⛔ **THE ACTUAL TRAP, and it cost hours: editing template part 2671 does nothing.**
+`theme/sgs-theme/parts/header.html` is a single line —
+`<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->` — so the rendered header comes from
+`theme/sgs-theme/patterns/framework-header-default.php`, a PHP file in the theme. The DB template
+part is not what renders.
+
+**Why that was so convincing a dead end.** Every check I ran came back green *and irrelevant*: the
+attribute was declared in `block.json`; it stored successfully and read back correctly; the
+deployed `render.php` contained the emit logic; both LiteSpeed and the object cache were purged.
+Four confirmations, all true, none of them about the file being rendered. **I concluded "the
+behaviour is broken" when the honest conclusion was "I have not found what renders this."** A stack
+of green checks on the wrong artefact is more persuasive than a single red one on the right artefact.
+
+**What actually resolved it** was rendering the block in isolation server-side —
+`render_block()` on a synthetic block array — which emitted `sgs-row-behaviour` and
+`data-sgs-row-hide-on-scroll="desktop tablet mobile"` correctly and immediately. ⚠ The FIRST
+isolated attempt returned empty HTML and nearly produced a second false conclusion: a header row
+with no inner blocks renders nothing at all. The fixture was malformed, not the code.
+
+**Two further routes that fail, recorded so nobody retries them:**
+1. An **in-page fixture cannot work** — `header-behaviours/view.js:67` resolves the header with
+   `document.querySelector('header.sgs-site-header')`, which returns the FIRST header in the
+   document. A second header in page content is never the one found.
+2. **Marking the row from `addInitScript` on `DOMContentLoaded` is too late** — the view module is
+   deferred, so it executes and scans *before* `DOMContentLoaded` fires. Marking it earlier via
+   `MutationObserver` also fails, because at document-start `document.documentElement` is still
+   null and `observe()` throws.
+
+**The probe therefore rewrites the HTML RESPONSE** so the marker is in the source, exactly as a
+real fixture would be, and mutates no live content. The alternative — enabling the behaviour in the
+framework's default header pattern — would change every site using the theme to make one test
+possible. The inert DB edit to part 2671 was reverted.
+
+⛔ **The rule worth keeping: when a change stores correctly and still does not render, stop
+verifying the change and start verifying WHAT RENDERS.** Same shape as the "a read with no writer
+fails silently" family, arrived at from the opposite direction — here there was a writer, a reader,
+and a perfectly good value, pointed at a document nobody was displaying.
+
+`P-ROW-COLLAPSE-FIXTURE` deleted from `parking.md` (it existed for ~40 minutes and was wrong).
+Spec 38 §12's residual flag closed.
+
+## D862 — [ROUTINE] 2026-08-27 — Deploy shipped 114MB; now 29MB, with a fail-closed size ceiling
+
+`plugins/sgs-blocks/stackable/` (278MB, a competitor's GPL checkout) was one deploy from landing
+web-accessible inside the live plugin dir. TWO independent reasons nothing flagged it: untracked
+files never appear in `deployed_dirty_files()` (it reads TRACKED files from `git status`) yet are
+perfectly visible to tar; and `--exclude=plugins/sgs-blocks/src` is PATH-ANCHORED, so it never
+matched `stackable/src`. Both proven with a controlled tar fixture, not inferred. Fixed via
+.gitignore + TAR_EXCLUDES + a tarball size ceiling that fails closed and names the biggest members.
+Then trimmed the real payload: `scripts/` (43MB, zero runtime references — the `wp sgs` CLI tree
+registers from `includes/`, checked explicitly) and Composer's own `dev-package-names` set (29
+packages, 11 namespaces) removed; `vendor/autoload.php` and the six runtime namespaces kept.
+114.4MB → 28.6MB. Ceiling 150 → 45MB. ⚠ The FIRST ceiling (60MB) was a guess and fired on the
+legitimate 113MB baseline — a cry-wolf gate. Measure the baseline before setting a ceiling.
+
+## D861 — [ROUTINE] 2026-08-27 — 85 NULL `css_element` rows are three causes, not one bug
+
+(A) `sgs_emit_state_colour_css()`, used in 21 files, is unregistered in the classifier's helper
+allowlist so its BEM selector argument is never read. (B) a selector held in a PHP variable and
+used by name later is untraced — the classifier does this hop for property chains, not selector
+variables. (C) genuinely root-scoped declarations find no element token and nothing converts that
+into a positive `wrapper`. ~18 further rows are `fx:*` markers, by design. ⛔ NOT bulk-scriptable:
+only 6 of ~67 non-fx rows are individually confirmed, and a WRONG element is worse than a NULL —
+NULL reads as unknown, a wrong value reads as authoritative and misroutes cloned CSS silently.
+Report: `reports/2026-08-27-null-css-element-root-cause.md`.
+
+## D860 — [ROUTINE] 2026-08-27 — Five client spacing ladders were named "2".."9"; renamed by script
+
+WordPress's own native spacing controls label preset swatches by NAME alone, so five of six client
+snapshots offered a client "2, 3, 4". Cause proven: NO generator writes `spacingSizes` — every
+script mentioning it is a reader; the ladders were hand-typed into an unrelated 2026-03-18 visual-QA
+commit. Fixed by `scripts/fix-spacing-preset-names.py` (dry-run default, `--apply`, `--check`,
+`--self-test`), renaming `name` ONLY — slugs are what CSS resolves against. ⚠ Mapping is POSITIONAL:
+clients run slugs 20-90, the framework 10-80, and sizes differ per client, so neither slug nor size
+can be the join key.
+
+## D859 — [ROUTINE] 2026-08-27 — C19: one media size & crop panel; C16: presets on the box control
+
+C19 gives `sgs/media` a mutually-exclusive `Auto · Fixed height · Aspect ratio` mode, resolving a
+real ambiguity where `aspectRatio` and the height family competed and one won silently. C16 extends
+`SgsLengthControl`'s EXISTING preset pattern to the 4-side box control rather than inventing one.
+Both opt-in and piloted on one block. Live-verified in the editor: C16 shows `XXS (0.25rem)`…
+`XXXL (8rem)` + Custom/none; C19 disables Height in auto/ratio and Fill style in auto, each with a
+plain-English reason. ⛔ Neither rollout can proceed without a detector — `detector-first-commit-gate`
+denies 4+ same-shape files — and neither has a `migrate-*.py`. The controls ARE shared helpers, so
+the sweep itself is a one-line flip per block.
+
+## D858 — [ROUTINE] 2026-08-27 — `css_element` is reseed-durable: fix the declaration, not the row
+
+`sgs/post-grid::aspectRatio` (NULL/NULL despite being live) and `sgs/media::objectPosition` (NULL
+beside a mapped sibling) were fixed by declaring `attrMap` entries in block.json, NOT by editing DB
+rows — Spec 31 §13.4 makes those columns derived, so a hand-edited row is silently overwritten by
+the next `/sgs-update`. Same mechanism resolved hero's 16 stale rows: a hand-declared `attrMap`
+OUTRANKS selector derivation, which is why hero's base attrs were stale while their Tablet/Mobile
+siblings — carrying no attrMap key — had already self-corrected. That asymmetry is the diagnostic.
+
 ## D854 [INCIDENT] — the twelve-template review closed: all 5 defects fixed, 2 were WordPress/WooCommerce config, not code
 
 **2026-08-28.** Task 1 (the twelve-template live review, deferred five times) is CLOSED. Every

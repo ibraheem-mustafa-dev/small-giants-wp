@@ -13,17 +13,15 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ⚠ **FIVE TRACKS HAVE TOUCHED `main`. Establish which you are before reading anything else.**
 The shop-archive / R-3 track owns the sections immediately below. The **colour-golden**
-track owns `## ▶ COLOUR-GOLDEN TRACK`. The **motion** track owns
+track owns `## ▶ CLIENT-CONTROLS TRACK`. The **motion** track owns
 `## ▶ MOTION TRACK` below.
 The **consolidation** track is summarised in the next block and is CLOSED bar one phase.
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
-⭐ **If you are the colour-golden / client-controls track:** read
-`.claude/prompts/2026-08-28-check-a-backlog-and-the-settled-designs.md` — it carries EVERY
-remaining task on this track. Its four predecessors were all executed and DELETED on 2026-08-27
-(`the-remaining-client-controls`, `the-container-gap-and-the-remaining-controls`,
-`check-a-blind-spot-and-the-first-controls`, `council-the-burn-down-method`) — if you find a
-reference to any of them anywhere, it is stale.
+⭐ **If you are the client-controls track:** read
+`.claude/prompts/2026-08-28-rollout-detectors-and-the-null-element-tail.md` — it carries EVERY
+remaining task on this track. Every predecessor was executed and DELETED; a reference to
+`check-a-backlog-and-the-settled-designs` or its four forerunners is stale.
 
 ⛔ **Before building ANY script or hand-doing investigative work, grep the two GENERATED
 catalogues in `.claude/dev-setup.md`.** 524 scripts across FIVE directories, and this repo's
@@ -123,8 +121,11 @@ wrap-only-when-treated (unbuilt); covers → **Spec 40**. ✅ **FR-38-6 CLOSED b
 2893, markup committed). Detail = the D-numbers; do not restate.
 
 ⭐ **NEXT: `.claude/prompts/2026-08-28-motion-build-and-research.md`** (6 owner-set tasks).
-⛔ **Parked:** `P-ROW-COLLAPSE-FIXTURE` (no fixture possible) · `P-PARTICLE-TRAIL-VARIATIONS`
-(post-launch).
+✅ **Row-collapse reduced-motion CLOSED too (D863)** — "untestable" was wrong; Bean pushed back and
+it measured clean in both arms. `probe-row-collapse-reduced-motion.mjs`. ⛔ Editing template part
+2671 does NOTHING: `parts/header.html` is a `wp:pattern` ref, so
+`patterns/framework-header-default.php` is what renders.
+⛔ **Parked:** `P-PARTICLE-TRAIL-VARIATIONS` (post-launch, Bean's timing).
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
@@ -246,106 +247,55 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 `.is-layout-constrained > :where(:not(.alignfull))`. Ours therefore cannot express
 "full-bleed child of a constrained parent". Read it there before reopening it.
 
-## ▶ COLOUR-GOLDEN / TOOLING TRACK — 2026-08-25 (T0/T1/T3/T4 + orphans CLOSED)
+## ▶ CLIENT-CONTROLS TRACK — 2026-08-27 (nine commits, deployed + live-verified)
 
-⭐ **START HERE: `.claude/prompts/2026-08-26-let-the-method-apply.md`** — but note TASK A and
-TASK C in it are now SHIPPED. Only **TASK B (the 27 orphans)** remains.
+⭐ **NEXT: `.claude/prompts/2026-08-28-rollout-detectors-and-the-null-element-tail.md`** — it
+carries every open task. Its predecessor was executed and DELETED 2026-08-27.
 
-⭐ Narrative: `memory/session-2026-08-24-detector-first-and-the-serial-loop.md` · method
-application log: `reports/2026-08-26-migration-method-application-log.md` · grading rubric:
-`rubrics/migration-method-grading.md`.
+⛔ Detail is single-sourced to **D855-D862**. Do not restate mechanisms here.
 
-### ✅ CLOSED — detail single-sourced, do NOT restate
+### ✅ SHIPPED — all pushed, canary deployed, gates green
+Hero video/SVG media obey their controls · block bindings reach core's picker (19 fields) ·
+CHECK A 238 → 206 (32 artefacts exempted) · C14 order convention in Spec 35 + inspector-scan
+rule 35 · C16 spacing presets (opt-in, `sgs/container` pilot) · C19 media size & crop panel
+(`sgs/media` pilot) · two NULL `css_element` rows fixed · five client spacing ladders renamed.
 
-T0 (method APPLIED, D775) · T1 (`prebuild` 153.4s -> 31.0s) · T2 (7 of 27 orphans wired) ·
-T3 (burn-down, `scripts/programme-progress.py`) · T4 (`--all-properties` REFUTED the batching
-carve-out). History: `memory/session-2026-08-24-detector-first-and-the-serial-loop.md` + the
-application log + `reports/2026-08-24-script-revival-register.md`.
-⛔ A red gate asserting a DELETED contract is worse than none — its red reads as a backlog.
-🚫 `button_group.py` — Bean: not wanted.
+**Live-verified in the editor, not asserted:** C16 shows `XXS (0.25rem)`…`XXXL (8rem)` +
+Custom/none; C19's grey-out chain disables Height in auto/ratio and Fill style in auto, each
+with a plain-English reason. Frontend byte-identical before/after with a positive control
+(`media_sizing` ×8 in the DEPLOYED render.php) — so "unchanged" is not a failed deploy.
 
-✅ **STRUCTURAL DEFENCE — THE RULE IS ENFORCED** (`hooks/detector-first-commit-gate.py`,
-PreToolUse/Bash). 4+ code files with substantially the same change and no detector → DENIED;
-bypass `[repeat-ok:<reason>]`.
+### ⛔ TWO THINGS THAT BLOCK ANY ROLLOUT
+1. **No migration script exists** for C16 (51 blocks) or C19 (5). The house pattern is
+   `scripts/migrate-*.py`; neither has one.
+2. **`detector-first-commit-gate.py` DENIES** 4+ files with substantially the same change and
+   no detector. Both rollouts cross that line on their first wave. Detector first, then sweep.
+   The controls themselves ARE shared helpers already — `MediaSizingPanel` is barrel-exported,
+   `presets` flows through `ResponsiveBoxControl` — so the sweep is a one-line flip per block.
 
-### ▶ OPEN — Bean's order (2026-08-25): clear Spec 32 + 35 + uniformity, THEN Spec 39
+### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
+Root-caused: **three causes, not one bug** (`reports/2026-08-27-null-css-element-root-cause.md`).
+(A) `sgs_emit_state_colour_css()` — 21 files — is unregistered in the classifier's helper
+allowlist. (B) a selector held in a PHP variable and used later is untraced. (C) genuinely
+root-scoped declarations find no element and nothing turns that into a positive `wrapper`.
+~18 more are `fx:*` markers, by design.
+⛔ Only **6 of ~67** non-fx rows were individually confirmed; the rest is an unverified
+extrapolation. A WRONG element is worse than NULL — NULL reads as unknown, a wrong value reads
+as authoritative and misroutes cloned CSS silently.
 
-✅ **2026-08-27 CLOSED.** Method councilled → **C+**, 9 fixes. Rule 21 **211→83** (128 were ONE
-detector bug) · rule 34 **319→2** · scanner **945→499**. `reports/2026-08-27-rule-21-triage.md`.
+### ⚠ DEPLOY SAFETY — two real near-misses this session
+`plugins/sgs-blocks/stackable/` (278MB of a competitor's GPL source) was one deploy away from
+landing web-accessible on the canary. Untracked files are invisible to the dirty gate and
+visible to tar, and `--exclude=…/src` is path-anchored so it never matched `stackable/src`.
+Now gitignored + excluded, with a tarball size ceiling that fails closed and names the biggest
+members. Separately the deploy went **114MB → 29MB** (dev tooling + dev-only vendor packages
+carved out, each with evidence). Ceiling 150 → 45MB.
 
-✅ **CLOSED 2026-08-26.** ⛔ Detail single-sourced to **D792/D797/D798/D799**. Hero canvas bg ·
-`colourVar()` slug-wrap (120 sites / 39 blocks) · rule 21 ceiling 83→82 · truncation gate ·
-**Gate C picker BUILT** (footer-row only, `2e46fc3f2`).
+### ⚠ Carried
+Hero still owes a visual-diff report (bypassed when a deploy was impossible) · `sgs/media`'s
+element manifest disagrees with its classifier for the whole block (`wrapper` vs `media`),
+predates this work · C16/C19 rollouts past their pilots.
 
-✅ **COLOUR-GOLDEN CLOSED 2026-08-27.** Gate C picker APPROVED. CHECK A blind spot FIXED (ceiling
-208→288→238). Canvas padding/margin fixed; SECTION GAPS CLOSED — `sgs/container` + `sgs/site-footer`
-joined the reset, homepage has ZERO gapped sections (1.5.83). ⚠ Two of my claims were wrong, Bean
-caught both: it was our theme not WordPress, and `maxWidth`(OUTER)=full-bleed vs
-`contentWidth`(INNER)=normal, so no detect-and-mark was needed.
-⭐ **NEXT + all detail: `.claude/prompts/2026-08-28-check-a-backlog-and-the-settled-designs.md`**
-
-### ✅ SPACING MIGRATION 4/5 SHIPPED (`fa11f794c`) · picker header-row (`71a5d4d42`)
-Full detail: `~/.claude/plans/next-session-ethereal-lightning.md`. **Q1/Q3/Q4 ANSWERED from
-source — do not re-derive.** Q4 wrapper needs NO change → no design gate. **Q1
-`check-dead-pattern-attrs.py` is ADVISORY (`compute_exit_code` drops its finding class, exits 0)
-— it CANNOT gate this; the gate is `scripts/migrate-off-native-spacing.py --check`, verified RED
-pre-migration.** Q3 site-header's `! padding` is now an EMPTINESS test (a `{}` default is
-truthy — else Split/Centred breaks silently) and `hasRestSpacing` was DELETED. Also fixed
-multi-button's real double-emission + built its margin parity; `attrMap` fixed on all, not one.
-🔶 **THREE pieces complete in the tree but UNCOMMITTED — another track has concurrent
-`SgsLengthControl` edits in the same files. Land each the moment they commit; never sweep or
-revert their hunks:** `trust-bar` (edit.js, 6 foreign hunks — the last spacing block) ·
-`container` picker (`LayoutPanel.js`, opt-in prop DEFAULTING OFF — ~20 blocks render it, so
-never an unconditional mount) · `product-card` replace fix + its new
-`check-destructive-only-controls.js` (⛔ land detector AND fix together, or the gate goes red
-for everyone).
-⚠ **4 visual-diff MANUAL SKIPs logged** — renders identically BY DESIGN but is **unverified
-visually** (deploy impossible, shared tree dirty). Next commit on each block owes a real report.
-⚠ `gate:full` FAILS on `sgs/hero` orphan attrs — NOT orphans; another track's refactor builds the
-names via `gradientOverlayAttrKeys()`. Deleting them deletes working features. Use
-`--skip-gate-full` until they fix it.
-✅ 2849 TRASHED — stored-content audit passes again (had blocked 5 deploys).
-✅ Gate C picker roll-out COMPLETE on all 3 blocks (footer-row, header-row, container).
-⛔ **TASK 2 WAS BUILT BY ANOTHER TRACK (D805) — do not duplicate.**
-⭐ **NEXT: `.claude/prompts/2026-08-28-check-a-backlog-and-the-settled-designs.md`.**
-
-⚠ **Five tracks on `main`:** 3 deploys aborted, 2 commits blocked by others' staged work.
-
-⭐ **SCOPE REGISTER: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`** — 24 open
-items surveyed against source (Spec 32: 5 · Spec 35: 19) plus the tier migration. Matches the
-project's own ordering rule **D552: standard leads, pipeline follows.**
-
-⛔ **SPEC 39 DOES NOT EXIST AS A FILE** — absent from `specs/README.md`, yet D554-C names it THE
-PACING ITEM: `orchestrator/check_flat_tier_regression.py` blocks cloning for every migrated
-property until it lands, and **37 conformance goldens sit `xfail(strict=True)`** naming it.
-Finishing more of the migration INCREASES the blocked surface until it ships. Detail: D554-C.
-
-1. **Step 0 — fix the instruments (small, do first).** `migrate-tier-object.py` has a 3-family
-   BLIND SPOT: `classify()` needs a BARE base, so it cannot see a family whose base is
-   `<name>Desktop` — `brand-strip.columns`, `hero.textAlign`, `whatsapp-cta.showOn`. **True
-   remaining scope is 37 families, not 34.** Then check whether `audit-inline-styling.js`'s 11
-   "tier-without-base" blocks share that cause. Scope A honestly only after both agree.
-2. ✅ **Step 1 — the SIX Bean decisions are ANSWERED** (C14-C19). C15 researched + scoped
-   2026-08-26 (4 items adopted); C19's sizing-mode picker approved. Do NOT re-ask.
-3. **Step 2 — the mechanical sweep behind detectors:** 37 families · Spec 32 B1/B3/B5 ·
-   Spec 35 C1-C11 (colour R2-R6, ToolsPanel 0/15, decorative-image 1/14, imageControls 2/15,
-   border-builder 1-of-48). THE-MIGRATION-METHOD.md applies to every one.
-4. **Step 3-4 — the two live passes** (a11y + element-first panel order) and the hex-literal triage.
-5. **Step 5 — WRITE SPEC 39**, then the converter rework. Check first whether its scope is already
-   settled across D276/D552/D554 — it may be transcription plus a design gate, not open design.
-6. ✅ **Whole-file-diff detection — BUILT 2026-08-26** as the TRUNCATION gate
-   (`.claude/hooks/truncation-commit-gate.py`, `0fdfc7ea9`). Bean narrowed it: a reformat is
-   recoverable from git, truncation is the case no other gate can see.
-
-⚠ **`check-box-flat` is wired into `prebuild` but its exit code is NOT propagated** — its findings
-sit behind a passing suite. That is how `multi-button::childBtnBorderRadius` went unnoticed.
-### ▶ Anchored grades — round 4, 2026-08-27 (as EXERCISED)
-
-working-change **C** · recoverability **D** (held) · governance **C** · durability **C** ·
-first-attempt reach **C**. **Overall C+, was B−.** CONFIRMED 45 · PEDANTIC 6 · WRONG 3.
-Four dimensions fell: the D778 edits made the doc WIDER and WRONGER. **Recoverability is still
-the ceiling — 72 gates, none inspects diff shape; it failed again this session.** Bean's call.
-⚠ Ratchet slack removed everywhere: rule 34 416→319 (97 slack), 31 292→291, 01 58→57, 21 →83.
 ## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
 
 Narrative swept VERBATIM to `memory/session-2026-08-22-editor-errors-track.md` on 2026-08-26 (cap). Nothing pending. Detail: **D743**.

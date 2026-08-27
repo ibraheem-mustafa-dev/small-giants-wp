@@ -10,7 +10,7 @@ Your job is to build what he decided and to research the one thing he cannot dec
 
 **Read first, in this order:**
 1. `.claude/LEDGER.md` — the PARTICLE + GATES SUB-TRACK block. Confirm nothing below has moved.
-2. `.claude/decisions.md` **D839-D842, D846, D853** — the whole session, single-sourced.
+2. `.claude/decisions.md` **D839-D842, D846, D853, D863** — the whole session, single-sourced.
 3. `.claude/specs/38-SGS-MOTION-SYSTEM.md` — **in full** before touching any motion surface.
 
 **Verify in the same command as any commit:**
@@ -19,7 +19,7 @@ git branch --show-current
 grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1
 ```
 
-⛔ **The D-ceiling moved THREE times inside one session (835 → 838 → 845 → 852).** Re-run that grep
+⛔ **The D-ceiling moved FOUR times inside one session (835 → 838 → 845 → 852 → 862).** Re-run that grep
 immediately before you write a decision, never once at session start. Code comments citing a
 D-number had to be renumbered mid-flight because of exactly this.
 
@@ -194,7 +194,12 @@ Bean's input, so run it in sequence.
 
 - `P-PARTICLE-TRAIL-VARIATIONS` — sparkler and continuous-connected trail looks. **Post-launch**,
   Bean's own timing. Do not start them.
-- `P-ROW-COLLAPSE-FIXTURE` — the reduced-motion header row-collapse cannot be observed. The canary
-  has zero `.sgs-row-behaviour` elements, an in-page fixture cannot work (`view.js:67` takes the
-  first header in the document), and enabling it on the live header part was tried and reverted when
-  the class refused to render. Read the entry before reopening it.
+✅ **Row-collapse is NOT parked any more — it CLOSED on 2026-08-27 (D863).** It was briefly
+recorded as untestable; Bean pushed back, and it measured clean in both arms. Repeatable probe:
+`scripts/motion-qa/probe-row-collapse-reduced-motion.mjs`.
+
+⛔ **Carry this forward, it cost hours:** editing template part **2671 does nothing**.
+`theme/sgs-theme/parts/header.html` is a one-line `wp:pattern` reference, so the rendered header
+comes from `theme/sgs-theme/patterns/framework-header-default.php`. The DB part is not what
+renders. **When a change stores correctly and still does not render, stop verifying the change and
+start verifying what renders.**

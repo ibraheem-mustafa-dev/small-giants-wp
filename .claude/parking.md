@@ -341,29 +341,6 @@ weeks blocked behind a design gate for an effect the owner never asked for (D839
 
 **Trigger:** theme launch complete, and the owner raises trail variations again.
 
-### P-ROW-COLLAPSE-FIXTURE - header row-collapse cannot be observed, no fixture exists
-**Status:** BLOCKED · **Bucket:** framework · **Parked:** 2026-08-27
-
-Spec 38 §12 flags the reduced-motion arm of the Spec 37 header row collapse as unproven by direct
-observation, and it still is. The blocker is that **the canary has ZERO `.sgs-row-behaviour`
-elements** — no header row has any behaviour enabled — and `header-behaviours/view.js:356` selects
-rows by exactly that class, so there is nothing to test.
-
-An in-page fixture does NOT work: `view.js:67` resolves the header with
-`document.querySelector('header.sgs-site-header')`, which returns the FIRST header in the document,
-so a second header placed in page content is never the one found.
-
-⚠ **An attempt to enable it on the live header part (2671) was made and REVERTED on 2026-08-27.**
-`rowHideOnScroll: {"desktop":"on"}` was added to the top row and stored successfully; the attribute
-is declared in `site-header-row/block.json`, the deployed `render.php` contains the emit logic, and
-both LiteSpeed and object caches were purged — **and the `.sgs-row-behaviour` class still did not
-render.** That is unexplained and is itself worth investigating: a declared, stored behaviour
-attribute producing no output is the same "configured and invisible" class as D846. Do NOT assume
-it is a bug from this alone — the value was HAND-AUTHORED, which is precisely where D338 bites, so
-the first step is to set it through the real editor control and compare.
-
-**Trigger:** next session picking up the FR-38-6/FR-38-8 verification thread, or any header work.
-
 ### P-OVERLAY-MASK-SHAPE - a mask/shape for the background overlay
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-22
 

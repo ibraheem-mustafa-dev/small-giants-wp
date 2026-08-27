@@ -2228,8 +2228,28 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
 
 - **Runtime dependency:** `src/shared/effects/` house contracts (motion-utils LIVE
   reduced-motion check, shared rAF budget, init→cleanup, fail-open). The mega-menu effects are
-  live-proven; the one open motion residual is P-ROW-COLLAPSE-RESIDUALS (reduced-motion arm of
-  the Spec 37 row collapse — unproven, honesty-flagged). Stated dependency, not a blocker.
+  live-proven. ✅ **P-ROW-COLLAPSE-RESIDUALS is CLOSED (2026-08-27, D863) — measured, both arms.**
+  It previously read *"the one open motion residual… unproven, honesty-flagged"*.
+
+  Repeatable probe: `scripts/motion-qa/probe-row-collapse-reduced-motion.mjs`. Measured live:
+
+  | arm | `transitionDuration` | collapsed | inline `block-size` during | after restore |
+  |---|---|---|---|---|
+  | no-preference | `0.2s` ×5 | yes | `0px` | **`(none)`** |
+  | `reduce` | **`1e-05s`** | yes | `0px` | **`(none)`** |
+
+  Every link of the four-link chain is now observed rather than reasoned: the reduced-motion CSS
+  strips the transition, so `transitionMs()` returns ~0, so the cleanup timer fires early, so the
+  transient inline height is CLEARED instead of awaiting a `transitionend` that never fires.
+  ⭐ **The `reduce` arm still collapses, and that is the pass condition, not a defect** — reduced
+  motion removes the ANIMATION, never the BEHAVIOUR. A run where `reduce` failed to collapse would
+  be the regression.
+
+  ⛔ **Three cheaper routes were tried first and all three fail — the probe's header records why**,
+  most usefully that editing template part 2671 does NOTHING: `parts/header.html` is a one-line
+  `wp:pattern` reference, so the rendered header comes from
+  `theme/sgs-theme/patterns/framework-header-default.php`. Hours were lost to an edit that stored
+  correctly, passed every check, and was never what rendered.
 - **Spec 31** — cloning contract extension point (§11.3); "Tier 1/2" naming collision avoided
   (§1.5). **Spec 32** — no-inline contract binds all fx CSS output. **Spec 35** — inspector
   standard (§7); `fx` settings-cluster registers alongside the approved-unbuilt FR-35-6
