@@ -1,3 +1,89 @@
+## D845 [ROUTINE] — `sgs/quote` attribution panel rebuilt onto shared TypographyControls
+
+**2026-08-27.** Closes the residual named in D803: the attribution panel's bespoke typography
+controls (7 hand-built `ToolsPanelItem`s, hand-rolled CSS emission in `render.php`) are replaced
+with the shared `TypographyControls` component (`prefix="attribution"`), mirroring `sgs/testimonial`'s
+existing `name`-prefix integration exactly. `/qc-council`-validated first: every current
+`attribution*` attribute name/type already matched what the shared component expects — zero
+attribute renames, zero type changes.
+
+Two must-fix items surfaced by council and bundled into the same commit: (1) `attributionTextDecoration`'s
+enum was missing `"overline"`, which the shared component always offers — added, and proven live
+(`wp.data.select` confirms `"overline"` now saves correctly, where before it would have silently
+discarded back to default). (2) The one pipeline fixture holding a flat (pre-migration)
+`attributionFontSize` value was confirmed to be a test-oracle artefact, not real client content —
+no migration needed.
+
+Verified on BOTH surfaces live on the sandybrown canary (page 1602): editor `wp.data.select`
+round-trip and frontend `getComputedStyle()` match on every attribution property, including the
+newly-added overline option. The refactor also introduced a `check-editor-render-parity.js`
+ratchet-ceiling regression (5 attrs losing canvas-preview usage) — caught and fixed in the same
+pass (reordered `resetAll`'s object-literal keys), landing at exactly the existing ceiling, not
+above it. `npm run check:dead-controls` and `audit-inline-styling.js --check` both clean.
+
+Commit `02758b0fc`. Files: `plugins/sgs-blocks/src/blocks/quote/{block.json,edit.js,render.php}`.
+
+## D844 [ROUTINE] — `styling_content.py` was the 5th unpatched sibling of the D802/D830 tier-object bug class
+
+**2026-08-27.** `sgs/product-card`'s `descFontSize`/`priceFontSize`/`titleFontSize`/`priceNoteFontSize`
+(and `sgs/trust-bar.labelFontSize`) are DB-declared `attr_type='object'` (tier-shaped) but this
+resolver still wrote them flat — WordPress silently discards a flat value against an object schema,
+so the font-size vanished on render. Same bug class D802/D830 already fixed in four sibling
+resolvers (`typography.py`, `grid.py`, `outer_box.py`, `content_band.py`); this file was the fifth,
+unpatched sibling.
+
+**A first fix-shape was rejected by `/qc-council`** (widen the type check + `lifted.setdefault(attr_name,
+{})[key] = value`) — a code-path read found `lifted[attr_name]` gets set flatly by the base/desktop
+pass before the breakpoint loop runs, making `setdefault` a permanent no-op on Tablet/Mobile: the fix
+would have looked correct (desktop right) while silently still dropping the other two tiers. Sent
+back for a corrected design rather than shipped broken.
+
+**Corrected fix:** a new `_emit_tier_value` helper merges into a per-attribute dict keyed by
+`tier_object_key()`, instead of a single flat write — so a later tier's write can never collide with
+or no-op against an earlier one. Deliberately does NOT reuse the newer `tier_object_write()` used by
+the four sibling resolvers (that function expects `ctx`/`decl`/`Write` objects this older,
+single-function resolver has no equivalent of) — forcing that shape in would have been a second,
+parallel architecture bolted onto this one. `_compute_value`'s numeric-split branch widened from
+`attr_type=="number"` to `attr_type in ("number","object")`.
+
+Real Mama's Munches draft has no responsive divergence on these 4 selectors, so it only proves the
+desktop tier (confirmed: `descFontSize→{"desktop":14}` etc., DB-matched against the draft CSS).
+The actual regression — Tablet/Mobile surviving — is proven by a new permanent test,
+`test_tier_object_font_size_lifts_all_three_breakpoints`, asserting all three tiers from genuinely
+divergent per-breakpoint CSS. Full converter suite: 717 passed, 0 failures.
+
+Commit `620c8eaa3`. Files: `plugins/sgs-blocks/scripts/converter/resolvers/styling_content.py`,
+`plugins/sgs-blocks/scripts/converter/tests/test_styling_content.py`.
+
+## D843 [ROUTINE] — a shared padding-routing bug, not an "announcement-bar container gap"
+
+**2026-08-27.** The LEDGER's stranded-CSS census misdiagnosed this: it isn't that the cloning
+walker fails to give the announcement-bar's wrapper its own `sgs/container` — it already does,
+correctly, with background/border/gap/flex-wrap/justify-content all resolving. Only `padding` was
+missing. Root cause: `content_band.py`'s `_layer_priorities()` tries `("CONTENT", "GRID", "OUTER")`
+for padding and stops at the first non-None hit — so a plain (non-grid-item) node's own padding
+incorrectly resolves via `GRID` to `gridItemPadding` (a per-grid-item default meant for genuine
+grid folding, a different mechanism entirely) before `OUTER` — the node's own box padding — ever
+gets a turn.
+
+Fix: reordered to `("CONTENT", "OUTER", "GRID")`. One line, `_layer_priorities()`. Universal —
+applies to every block sharing this resolver (`sgs/container`, `sgs/cta-section`, `sgs/hero`,
+`sgs/trust-bar`, per the D152 composite-mirror family), not a per-block carve-out.
+
+`/qc-council`-validated: no code or test anywhere relies on the old GRID-before-OUTER order for a
+genuinely non-grid-item node. The implementing agent also disproved the brief's own named
+"regression guard" — no section on the Mama's Munches homepage actually uses `gridItemPadding` for
+legitimate per-grid-item folding; the only two occurrences on the whole page were this bug and an
+identical, previously-unreported instance on the social-proof section's Trustpilot bar, which the
+same fix also correctly resolved.
+
+Verified against the real draft (not a synthetic fixture): stage-4.json now shows `"padding":
+{"top":"14px","right":"18px","bottom":"14px","left":"18px"}` in place of `gridItemPadding` on both
+affected sections. Full converter suite: 716 passed, 0 failures. **Not yet verified live on the
+canary** — draft-mode only this pass; live render confirmation is still owed.
+
+Commit `f04fec5cd`. File: `plugins/sgs-blocks/scripts/converter/resolvers/content_band.py`.
+
 ## D842 [ROUTINE] — two "open tasks" were already-answered questions; a DB row exists iff a block.json declares it
 
 **2026-08-27.** Two items carried as work on the motion track's open list turned out to need no

@@ -31,11 +31,27 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — 2026-08-27 (5 fixes merged; converter bugs (b)/(d) + G2 gate CLOSED)
+## ▶ MAMA'S CLONE TRACK — 2026-08-27 (8 fixes merged; Task 1 template review still owed, first in queue)
 
-⭐ **START HERE: `.claude/prompts/2026-08-27-finish-the-template-review.md`** (another track is
-writing this prompt concurrently — read it before acting).
-⛔ Detail is single-sourced to **D830-D835** — do not restate the mechanisms here.
+⭐ **NEXT SESSION: the twelve-template live review (Task 1 of
+`.claude/prompts/2026-08-27-finish-the-template-review.md`) — deferred a fifth time this session,
+by Bean's explicit choice, to close Tasks 2-7 first. Do not defer it again.** Its 5 defects + the
+missing `main` `TAG_NAME_OPTIONS` gap are UNTOUCHED — still exactly as described in that prompt.
+⛔ Detail is single-sourced to **D830-D845** — do not restate the mechanisms here.
+
+**Three more fixes merged this session (D843-D845), each `/qc-council`-validated before dispatch:**
+6. **D843** — the stranded-CSS census's "announcement-bar container gap" was a misdiagnosis; the
+   walker already gave it a container. Real bug: `content_band.py`'s padding layer-priority chain
+   tried `GRID` before `OUTER`, universal across the whole composite-mirror family. One-line
+   reorder — also fixed an identical, previously-unreported instance on social-proof's Trustpilot
+   bar. **Live canary render still owed** (draft-mode verified only).
+7. **D844** — `styling_content.py` was the 5th unpatched sibling of the D802/D830 tier-object bug
+   class (`sgs/product-card`'s 4 font-size attrs + `sgs/trust-bar.labelFontSize`). First fix-shape
+   was REJECTED by council (would have silently kept dropping Tablet/Mobile); corrected design
+   ships with a permanent regression test proving all 3 tiers survive.
+8. **D845** — `sgs/quote`'s attribution panel rebuilt onto shared `TypographyControls`, closing the
+   D803 residual. Bundled a missing `"overline"` enum fix + fixed a ratchet-ceiling regression the
+   refactor itself introduced. Verified live on both editor and frontend surfaces (canary page 1602).
 
 **Five fixes merged this session, each root-caused and reviewed before merge:**
 1. **D830** — grid/layout resolvers (`grid.py`/`outer_box.py`/`content_band.py`/`arrangement.py`)
@@ -66,18 +82,30 @@ deliberately deferred tail — `attrs_for_css_property_state` carries the same u
 `OR css_layer='OUTER'` shape D832 fixed on its sibling, left alone pending its own failing test.
 
 ### ▶ OPEN — carried into the next prompt
-1. **Re-clone Mama's to a NEW page id with the fixed converter, then re-measure against the
+1. **Task 1 — twelve-template live review, UNTOUCHED, first in queue (deferred 5×).** Full detail:
+   `.claude/prompts/2026-08-27-finish-the-template-review.md` Task 1. 5 defects + the missing
+   `main` `TAG_NAME_OPTIONS` gap, none fixed yet.
+2. **Re-clone Mama's to a NEW page id with the fixed converter, then re-measure against the
    2026-08-26 mobile baseline** (73%@375 · 77%@768 · 80% desktop,
-   `reports/mamas-parity-mobile-postdeploy-2026-08-26.json`) — D830-D834 change what a NEW clone
-   emits; no page has run through the fixed pipeline yet. ⛔ Never write `post_content` to a page
-   Bean has open (D788).
-2. **Stranded CSS**: 90 in-scope, ~84 stranded (A 43 · B 36 · C 5) — unchanged this session. ⚠
-   Verify B against cv2 — the census reads `css_router`, a DIAGNOSTIC pass, already wrong twice.
-   Two Bean decisions still open: `grid-template-areas` on hero (reopens D639), and how a
-   converted section's CSS reaches its container.
-3. **Carried:** `/sgs-update` owed (cross-track) · twelve-template assessment (deferred 3×) ·
-   archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable ·
-   `sgs/quote`'s attribution panel still bespoke.
+   `reports/mamas-parity-mobile-postdeploy-2026-08-26.json`) — D830-D845 change what a NEW clone
+   emits; no page has run through the fully-fixed pipeline yet. ⛔ Never write `post_content` to a
+   page Bean has open (D788).
+3. **Stranded CSS census re-verified this session (D843): the "36 sections" scope had already
+   collapsed to one real defect, now fixed.** The two Bean decisions once open here
+   (`grid-template-areas` on hero, general-mechanism-vs-narrow-fix) are resolved — Bean chose the
+   narrow fix, shipped as D843. Nothing left open on this item unless a fresh census finds new
+   stranded CSS.
+4. **Carried:** `/sgs-update` DB refresh still owed (cross-track — confirm no session mid-build
+   first) · G3 template-ownership audit (done this session, see below) · archive residue ·
+   `sgs/button::fontFamily` genuinely dead and now maybe wireable · D843's live canary render check
+   still owed (draft-mode verified only).
+
+### ▶ G3 answered this session (2026-08-27)
+All 12 templates under `theme/sgs-theme/templates/` are framework-authored (real `sgs/*` block
+usage + real commit history) — no stock WooCommerce/core default hiding among them. Order
+Confirmation and Coming soon templates named in Task 1's "never opened" list **do not exist** as
+files in that directory — confirm with Bean whether they live elsewhere or are still unbuilt before
+Task 1 tries to open them next session.
 
 ### ⛔ The visual-diff bypasses CANNOT be retired — not a queue
 `source_sha` comes from STAGED bytes, so a report only certifies the commit it accompanies;
