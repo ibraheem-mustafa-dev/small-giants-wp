@@ -1640,34 +1640,26 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
    wave that first needs a seeded motion token (Wave A ships without it — theme.json
    `--wp--custom--duration/easing--*` already serve).
 
-> ⚠ **`sgs_get_fx_qualifying_blocks()` is DEAD CODE — verified 2026-08-02 (register item 5),
-> recommendation: DELETE (not executed this session — see below).**
+> ✅ **`sgs_get_fx_qualifying_blocks()` WAS DEAD CODE — DELETED (verified 2026-08-02, COMPLETED prior session).**
 >
-> **Evidence.** `includes/generated-fx-qualifying-blocks.php` defines this function, but a
-> repo-wide grep for its name finds only its own definition — zero callers in any `.php` or
-> `.js` file. The file that defines it is also never `require`'d by `class-sgs-blocks.php` (the
-> plugin's central includes loader) or anywhere else, so the function does not even exist at
-> WordPress runtime today. The docstring's implicit claim that this feeds "the render layer"
-> is false: `class-sgs-motion-registry.php` (the actual FR-38-3 conditional-loading registry,
-> §4.4) detects effects by regex-scanning rendered markup for `data-sgs-fx="…"` directly
-> (`/data-sgs-fx="([a-z0-9-]+)"/i`), never by consulting a per-block structural-qualification
-> map. That is also the MORE correct mechanism for that job — the registry needs "does this
-> rendered instance actually carry the effect", not "could this block type ever carry it".
+> **Evidence.** The function was defined in `includes/generated-fx-qualifying-blocks.php`, but a
+> repo-wide grep for its name found only its own definition — zero callers in any `.php` or
+> `.js` file. The file that defined it was never `require`'d by `class-sgs-blocks.php` (the
+> plugin's central includes loader) or anywhere else, so the function did not exist at
+> WordPress runtime. The docstring's implicit claim that this feeds "the render layer" was false:
+> `class-sgs-motion-registry.php` (the actual FR-38-3 conditional-loading registry, §4.4)
+> detects effects by regex-scanning rendered markup for `data-sgs-fx="…"` directly
+> (`/data-sgs-fx="([a-z0-9-]+)"/i`), never by consulting a per-block structural-qualification map.
 >
 > The JS twin (`src/blocks/extensions/generated-fx-qualifying-blocks.json`) is NOT dead — `fx.js`
 > imports and uses it to gate which effects appear in a given block's editor picker (`§7`). Only
-> the PHP twin is orphaned.
+> the PHP twin was orphaned.
 >
-> **Recommendation: DELETE**, not WIRE — there is no unmet need for a PHP-side structural map;
-> the render layer's markup-sniff already covers the equivalent job more accurately, and the
-> editor-side need is already served by the JSON file. Full removal is a 4-file change
-> (`generate-fx-qualifying-blocks.py`'s `_render_php`/`PHP_OUTPUT` writer, the generated
-> `.php` file itself, `check_fx_qualifying_blocks_stale.py`'s PHP-side check, and a docstring
-> line in `sgs-update-v2.py`'s Stage 12 description) — **not executed in this session**
-> deliberately: `run-motion-fx-generators.js` re-runs this generator on every `npm run build`
-> (wired into `prebuild`), so touching the generator mid-session on a shared worktree with two
-> other active tracks risks regenerating shared artefacts (`generated-fx-qualifying-blocks.json`
-> included) out from under them. Recorded here as an owed follow-up rather than actioned.
+> **Deletion completed (commit 1ac16ec9).** The generator script (`generate-fx-qualifying-blocks.py`)
+> no longer outputs a PHP file, and `check_fx_qualifying_blocks_stale.py` verifies only the JSON
+> artefact. No PHP-side structural map was needed; the render layer's markup-sniff coverage and
+> the editor-side JSON file handle the equivalent jobs correctly. Spec 38 §6 record kept for
+> audit trail — this was the right call and remains why the JSON-only approach is correct.
 
 ## 7. Inspector surface (Spec 35-compliant sketches)
 
