@@ -1,3 +1,180 @@
+## D835 [ROUTINE] — session close-out: two stored-content migrations unblocked deploy, one false-positive consistency finding baselined; one OUTER-guard tail deliberately deferred
+
+**2026-08-27.** En route to D830-D834. Two pre-existing stored-content type mismatches on the
+canary were blocking deploy, migrated via the project's own `migrate-stored-tier-scalars.py`:
+`sgs/physics-canvas.minHeight` on page 2862, and 47 flat-scalar attrs + 4 string-typed
+line-heights on page 2849. Neither is new debt — both predate this session's converter fixes and
+were caught only because this session's deploys touched those pages.
+
+**A false-positive `audit-block-file-consistency` finding on `sgs/hero` baselined with real
+evidence, not blind.** `mediaBackgroundGradient`/`mediaOverlayGradient` looked orphaned (no literal
+name in `edit.js`) but are genuinely live at `render.php:700,716` and written by `edit.js` via
+`gradientOverlayAttrKeys()`, which builds the key at runtime — so no literal name will ever appear
+for a grep-shaped consistency check to find. Confirmed by reading the runtime key-builder, not by
+trusting the audit tool's own explanation.
+
+⛔ **Deliberately deferred, not fixed: the OUTER root-vs-child guard has a sibling with the same
+unguarded shape.** D832 fixed `_base_domain_attrs_for_css_property`'s `OR css_layer = 'OUTER'` union
+arm, which carried no `css_element` restriction. Its sibling `attrs_for_css_property_state`
+(~`db_lookup.py:3451-3462`) still carries the identical unguarded `OR css_layer = 'OUTER'`. Left
+alone on purpose — it has its own ≥2-candidate fallback and its own risk profile, and per this
+project's rule (prove the cause before the fix), extending today's fix onto it without its own
+failing test would be reasoning by resemblance, not proof. Next session's converter work should
+write that test before touching it.
+
+---
+
+## D834 [ROUTINE] — G2 fail-closed attribute-schema gate built; the OUTER root-vs-child guard made schema-driven, replacing a hardcoded 4-value list
+
+**2026-08-27.** `orchestrator/check_attr_schema_conformance.py` (new), `db_lookup.py` (OUTER guard).
+Merged `01aaac181` (the gate) and `a92446226` (the schema-driven guard).
+
+**Built the fail-closed gate Bean ruled for after D833's enum-coercion bug.** Validates every
+emitted attribute in a clone's `extract.json` against the target block's own block.json schema:
+TYPE (is the attribute declared at all, allowing for SGS extension attrs parsed from
+`includes/extension-attributes.generated.php` and WP-core supports-injected attrs) and ENUM (value
+membership). Wired into `pipeline-stage-gate.py` with an explicit opt-out,
+`--skip-attr-schema-gate`. Self-test carries positive-TYPE, positive-ENUM, negative,
+comment-safety, and a real-clone-run inject/revert control on a checked-in 77-instance fixture —
+not just a synthetic case.
+
+**Then made the OUTER root-vs-child guard schema-driven, closing a real blind spot the hardcoded
+list created.** The guard previously compared `css_element` against a hardcoded 4-value list
+(`''`/`root`/`self`/`wrapper`), so the 30 blocks that declare their own custom wrapper name via
+`supports.sgs.elements.<name>.isWrapper:true` (before-after's `frame`, info-box's `box`,
+card-grid's `grid`, …) were invisible to it. Now reads the block's own declaration, gated on
+selector IDENTITY (does the attr's `derived_selector` equal the block's real root selector) rather
+than a string-shape heuristic.
+
+⛔ **Near-miss recorded, not shipped: a Haiku-authored first attempt at this same fix used a
+`derived_selector NOT LIKE '%.%__%'` filter to detect BEM child selectors, and it was wrong two
+ways at once.** In SQL `LIKE`, a bare `_` is a single-character WILDCARD — not a literal underscore
+— so the pattern matched almost everything, not the BEM shape it was written to catch. Separately,
+a literal `__` in `derived_selector` does not even imply a child: root-scoped attrs legitimately
+carry synthetic BEM-shaped selectors (`sgs/container.padding` → `.sgs-container__padding`).
+Measured before it could ship: it would have silently broken **109 (block, property)
+resolutions** across `sgs/container`'s padding/margin/max-width/border/box-shadow and ~20 more
+blocks. **It passed the full test suite** because a fallback path masked the breakage — the same
+shape of danger D802/D803 already logged for a different mechanism. Caught by cross-model review
+before merge, escalated, and reworked into the selector-identity version above.
+
+**Post-merge QC swept all 7,553 real (block, property) pairs: zero exceptions, zero new
+ambiguous-match errors, all 30 custom-wrapper blocks correctly recognised** — the sweep a
+hand-picked test sample could not have given the same confidence on.
+
+## D833 [ROUTINE] — converter bug (d): an out-of-enum layout value was silently coerced instead of failing
+
+**2026-08-27.** `services/assembly.py` step 3b.
+
+**Root cause:** the derived `layout`/`flexDirection` values from `arrangement.layout_attrs` were
+written gated only on the attribute *existing* on the target block — never on `validate()` for
+enum membership. So `layout:"grid"` reached `sgs/testimonial-slider` (enum `["full","split"]`),
+WordPress silently coerced it to `"full"`, and the slider rendered at width 0. Same failure family
+as the block.json/object-attr coercion gotchas already in memory
+(`feedback_blockjson_enum_coerces_invalid_to_default`,
+`feedback_object_typed_attr_coerces_flat_to_default`) — this is the converter writing the
+coercion-triggering value itself, not a stored-content drift.
+
+**Fix:** gate the write through `validate()`. An enum-failing derived value now becomes an honest
+gap rather than a silently-wrong render.
+
+**Seeded `enum_values` for 13 of 18 `layout`-declaring blocks that had NULL.**
+
+⛔ **`sgs/cta-section` was deliberately EXCLUDED from that seed and must stay excluded.** Its
+`layout` attr carries a second, legacy vocabulary (`centred`/`left`/`split`) still read by
+`cta-section/edit.js:85`'s `contentLayout || layout || 'centred'` bridge, with real client content
+depending on it — `sites/indus-foods/pages/homepage-current.html:227` and `homepage-v2.html:233`
+both use `"layout":"split"`, plus 8 more files use `"centred"`. Seeding the flex/stack/grid enum
+there would have made WordPress coerce those values to `""` on save, silently losing split layouts
+in the editor. Unifying that legacy vocabulary is separate, bigger work — not this fix's scope.
+
+## D832 [INCIDENT] — converter bug (b): root-domain OUTER-layer guard ignored css_element, letting a child-scoped attr leak into the block's root
+
+**2026-08-27.** `_base_domain_attrs_for_css_property` (`db_lookup.py`). Merged `e84d7f172`.
+
+**Root cause:** the function's `OR css_layer = 'OUTER'` union arm carried no `css_element`
+restriction, unlike its sibling `declared_attrs_for_css_property` — so any attribute merely tagged
+`css_layer='OUTER'`, even one explicitly scoped to a named CHILD element, entered the block's ROOT
+domain.
+
+⚠ **The brief's literal reproduction case could not be reproduced against the current DB
+seed.** `sgs/product-card`/`ctaBorder*` no longer exhibits the bug against today's seeded data.
+Rather than close the ticket on "can't repro", the implementer enumerated every (block, property)
+pair in the schema and found a live equivalent: `sgs/hero` + `background-image` wrongly resolving
+to `overlayGradient`. Fixed against the real, currently-reproducible case instead of the stale one.
+
+**Took four review rounds, each finding something real — not rubber-stamped after the first
+pass:**
+1. A genuine regression on `sgs/before-after`, fixed via a dedicated migration
+   (`2026-08-27-before-after-boxshadowcolour-css-element-fix.py`).
+2. A durability gap where that migration disagreed with its own version-controlled source
+   (`attr-classification-overrides.json`) — fixed so the migration and its source file agree.
+3. A test that silently wrote to the shared LIVE `block_attributes` table as a self-healing
+   fallback, making the test unfalsifiable (a pass could mean "fixed" or "just wrote over the
+   evidence"). Removed the self-heal.
+4. A test justification that the session's own later finding falsified. Corrected rather than left
+   standing.
+
+**Verified post-fix** against the sweep in D834 (7,553 pairs, zero exceptions) rather than the
+original narrow repro case alone.
+
+## D831 [INCIDENT] — sgs/button: container's shrink-to-fit rule silently zeroed the WCAG min-height; a phantom border also removed
+
+**2026-08-27.** `sgs/container`/`sgs/button` `style.css`. Merged `a2e233f7b`. Two live defects
+found on the Mama's clone.
+
+**(a) The min-height zeroing.** `sgs/container`'s shrink-to-fit backstop
+(`.{uid}>.sgs-container__inner>*{min-height:0}`, specificity two classes) always beat
+`sgs/button`'s own min-height rule, silently zeroing the WCAG 44px touch-target floor on any button
+used as a direct flex/grid child — the common case, not an edge case.
+
+⛔ **The first fix attempt was wrong, and the wrongness is the valuable part of this entry.** It
+emitted a same-specificity selector (`.{uid}.sgs-button`, also two classes) on the assumption that
+"a block's own `<style>` always renders after its parent container's" — a plausible-sounding
+ordering claim that was never actually measured. Measured live via the browser's own CSSOM: min-
+height still computed to 0px, because in this instance the container's rule appeared LATER in
+source order. **Corrected to repeat the uid class** (`.{uid}.{uid}.sgs-button`, three classes) so
+it wins on specificity unconditionally, never depending on source order. Re-verified live: 44px on
+both flagged buttons, winning rule confirmed at specificity (0,3,0) vs the container's (0,2,0).
+
+⚠ **Both buttons *looked* fine throughout** (48.7px/44.7px actual rendered height) because their
+own padding already exceeded 44px — the visible defect was absent while the underlying mechanism
+stayed broken. The CSSOM check, not the rendered height, was the thing that caught it — a rendered-
+height-only QC pass would have closed this as fine.
+
+**(b) A phantom border.** `style.css` hardcoded `border-width:2px;border-style:solid`
+unconditionally on the base rule, painting a visible border with no preset selected and no operator-
+set border colour. Moved onto the three preset modifier rules, where it belongs.
+
+Visual-diff report: `reports/visual-diff/button-2026-08-27.md` (intent_capture_passed).
+
+## D830 [INCIDENT] — grid/layout resolvers never wrapped migrated properties as tier objects; same bug class as D802, unapplied to a whole sibling family
+
+**2026-08-27.** `resolvers/grid.py`, `outer_box.py`, `content_band.py`, `services/arrangement.py`.
+Merged `6fceb8198`.
+
+**Root cause:** `gap`, `gridTemplateColumns`, `columns`, `contentWidth`, `minHeight`, `maxWidth`,
+`height`, `maxHeight`, `order`, `flexDirection` were all migrated to the `{desktop,tablet,mobile}`
+tier-object shape months ago, but these four resolver modules still called
+`tier_state_suffix()`/`tier_suffix()` unconditionally and wrote flat scalars — the exact bug D802
+fixed in the typography resolver, never propagated to the grid/layout family.
+
+**Confirmed, not assumed:** ran `check_flat_tier_regression.py --report` against a real clone run —
+39 of that run's 47 violations were exactly this shape, and zero were the Tablet/Mobile-sibling
+variant, meaning these resolvers never even attempted the tier-object shape.
+
+**Fix:** extracted the D802 mechanism into a shared `services/tier_object.py` so every resolver
+uses one implementation, closing off the "same bug, different file" recurrence pattern rather than
+patching each call site independently.
+
+**A second bug the fix itself surfaced, also fixed:** the orchestrator's fold/merge step only
+recognised `box_family_for` when checking for a destination collision, so a folded tier-object write
+raised a false COLLISION and silently discarded a whole section.
+
+**12 failing-first tests written before the fix; suite 697→continued green.**
+
+---
+
 ## D829 [ROUTINE] — two small Control Programme follow-ups closed: fx-list-drift gate taught the motion registry, dead-function deletion doc corrected
 
 **2026-08-27.** `check-fx-list-drift.py`, `.claude/specs/38-SGS-MOTION-SYSTEM.md` §6. Delegated to

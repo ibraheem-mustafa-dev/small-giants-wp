@@ -30,51 +30,59 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — 2026-08-26 (mobile MEASURED; converter fixed but not yet live)
+## ▶ MAMA'S CLONE TRACK — 2026-08-27 (5 fixes merged; converter bugs (b)/(d) + G2 gate CLOSED)
 
-⭐ **START HERE: `.claude/prompts/2026-08-27-mobile-parity-and-converter-residue.md`.**
-⛔ Read **D802 / D803 / D804** first. Detail is single-sourced there — not restated here.
+⭐ **START HERE: `.claude/prompts/2026-08-27-finish-the-template-review.md`** (another track is
+writing this prompt concurrently — read it before acting).
+⛔ Detail is single-sourced to **D830-D835** — do not restate the mechanisms here.
 
-**Governing rule (Bean's):** never assess a page by reading code, the DB or REST. Open it and
-LOOK. THREE root-cause diagnoses died in a row, each killed by a different gate — Bean's
-pushback, `/qc-council`, then the real parity tool. Every reading was consistent with the code
-and wrong about the product. Enumerated in D802.
+**Five fixes merged this session, each root-caused and reviewed before merge:**
+1. **D830** — grid/layout resolvers (`grid.py`/`outer_box.py`/`content_band.py`/`arrangement.py`)
+   never wrapped migrated properties as tier objects; same bug class as D802, unapplied to a whole
+   sibling family. Fixed via a shared `services/tier_object.py`; a second orchestrator
+   fold/merge bug the fix surfaced was also fixed.
+2. **D831** — `sgs/button`'s WCAG 44px min-height was being silently zeroed by the container's
+   shrink-to-fit rule on any direct flex/grid child. ⛔ First fix attempt assumed source-order
+   always favoured the block's own `<style>` — measured false live; corrected to a specificity-
+   repeat selector that wins unconditionally. Also removed a phantom hardcoded 2px border.
+3. **D832** — converter bug (b): the OUTER-layer root-domain guard ignored `css_element`, leaking
+   child-scoped attrs into a block's root. Took 4 review rounds, each catching something real.
+4. **D833** — converter bug (d): an out-of-enum `layout` value was silently coerced by WordPress
+   instead of failing; fixed by gating the write through `validate()`. `sgs/cta-section`
+   deliberately excluded from the enum seed — it carries live client content on a legacy
+   vocabulary (indus-foods homepages).
+5. **D834** — Bean's G2 fail-closed attribute-schema gate BUILT
+   (`check_attr_schema_conformance.py`) + the OUTER guard made schema-driven. ⛔ Near-miss: a
+   Haiku-authored first attempt used a `NOT LIKE '%.%__%'` filter that was wrong two ways (SQL
+   `_` is a wildcard; a literal `__` doesn't imply a child anyway) and would have silently broken
+   109 (block, property) resolutions — caught before merge by cross-model review, not by the test
+   suite (which it passed via a masking fallback). Post-merge sweep: 7,553 pairs, zero exceptions.
 
-### ✅ MOBILE MEASURED FOR THE FIRST TIME
-**73% @375 · 77% @768 · vs 80% desktop** — behind, not broken.
-`reports/mamas-parity-mobile-postdeploy-2026-08-26.json`: 456 prop diffs, **typography 38%**
-(line-height 90, font-size 82). ⚠ `grid-template-columns` is not in the top 20, and
-computed-parity matches by TEXT so it is blind to container layout — both instruments needed.
+**D835** closes the session: two stored-content migrations that were blocking deploy (page 2862
+`minHeight`, page 2849's 47 flat scalars + 4 line-heights), one false-positive
+`audit-block-file-consistency` finding on `sgs/hero` baselined with real evidence, and one
+deliberately deferred tail — `attrs_for_css_property_state` carries the same unguarded
+`OR css_layer='OUTER'` shape D832 fixed on its sibling, left alone pending its own failing test.
 
-### ✅ SHIPPED + DEPLOYED (blocks-only, EXIT 0, motion QA 3/3)
-`14707b01e` tier objects · `559cc6d97` font-family renderer + border-no-width + detector ·
-`75ca71be9` three gates called a live attr dead · `1a4e45b6a` live border evidence.
-**Effect on page 2742: 0 fixed, 0 newly broken** — correct, the tier fix only changes NEW clones.
-
-### ▶ OPEN — all in the next prompt
-1. **Re-clone Mama's to a NEW page id, then re-measure.** Converter half PROVEN
-   (`convert_section` emits `heading fontSize {desktop:52, mobile:34}`); no live page has run
-   through it. ⛔ Never write `post_content` to a page Bean has open (D788).
-2. **Converter (b) root-modifier→child and (d) `layout` enum** — located, not started. Plus
-   Bean's G2 ruling: make the pipeline FAIL CLOSED on an undeclared shape.
-3. **Two live defects** — `min-height 44px→0px` on two links (a WCAG AA regression), and a 2px
-   border the draft does not have (⚠ NOT the G5 defect; a block default painting where the
-   draft asked for nothing).
-4. **Stranded CSS**: 90 in-scope, ~84 stranded (A 43 · B 36 · C 5). ⚠ Verify B against cv2 —
-   the census reads `css_router`, a DIAGNOSTIC pass, which already made two counts wrong. Two
-   Bean decisions: `grid-template-areas` on hero (reopens D639), and how a converted section's
-   CSS reaches its container.
-5. **Border rule — PARKED by Bean, deliberately.** An empty width falls back to the BLOCK'S OWN
-   default, so `sgs/button` was never an exception; the shipped gate is wrong for ~18 blocks that
-   declare one (confirmed on product-card). Narrow, undeployed, hero bug fixed. See D803.
-6. **Carried:** `/sgs-update` owed (cross-track) · twelve-template assessment (deferred 3×) ·
+### ▶ OPEN — carried into the next prompt
+1. **Re-clone Mama's to a NEW page id with the fixed converter, then re-measure against the
+   2026-08-26 mobile baseline** (73%@375 · 77%@768 · 80% desktop,
+   `reports/mamas-parity-mobile-postdeploy-2026-08-26.json`) — D830-D834 change what a NEW clone
+   emits; no page has run through the fixed pipeline yet. ⛔ Never write `post_content` to a page
+   Bean has open (D788).
+2. **Stranded CSS**: 90 in-scope, ~84 stranded (A 43 · B 36 · C 5) — unchanged this session. ⚠
+   Verify B against cv2 — the census reads `css_router`, a DIAGNOSTIC pass, already wrong twice.
+   Two Bean decisions still open: `grid-template-areas` on hero (reopens D639), and how a
+   converted section's CSS reaches its container.
+3. **Carried:** `/sgs-update` owed (cross-track) · twelve-template assessment (deferred 3×) ·
    archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable ·
    `sgs/quote`'s attribution panel still bespoke.
 
 ### ⛔ The visual-diff bypasses CANNOT be retired — not a queue
 `source_sha` comes from STAGED bytes, so a report only certifies the commit it accompanies;
 `manual-skips.log` is a permanent audit record. The NEXT commit touching each block owes a real
-report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reasoning: D804.
+report. D831 shipped its own (`reports/visual-diff/button-2026-08-27.md`); everything else in
+D830-D834 still owes one. Reasoning: D804.
 
 ### ⚠ Hazards (full list in the next-session prompt)
 - **`main` is shared:** `git add <paths>` then a BARE commit flushes the whole index — four of
@@ -140,8 +148,10 @@ rules). Enforcement: `npm run check:vacuous-guards`, wired into `prebuild`.
 1. `.claude/plans/phase-shop-container-remediation.md` — **Phase 1 AND Phase 2 are BOTH
    COMPLETE (2026-08-22, D742).** P2-2/P2-4/P2-5/P2-7 (the four steps still open at the end
    of the fourth session) shipped, deployed to sandybrown, live-verified, and reseeded.
-   Phase 3 (the per-template pass, P3-1 through P3-9) is the only work left in this plan
-   and has not been started.
+   Phase 3 (the per-template pass, P3-1 through P3-9) is the only work left in this plan.
+   ⛔ **OWNERSHIP MOVED 2026-08-27 (Bean's call) to
+   `.claude/prompts/2026-08-27-finish-the-template-review.md` — do NOT start it here.**
+   Split ownership (queued here, a loose scrap in the Mama's track) is why it deferred 4×.
 2. `.claude/decisions.md` D725 + D726 (width model) and **D742** (P2-2/P2-4/P2-5/P2-7
    close-out) — read before any further container work.
 3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — IN FULL if touching converter/walker.
@@ -215,10 +225,11 @@ corrected 7.0 → 7.1.
    carried its own `⛔ EXECUTED` banner the whole time. Bean deleted the prompt on that
    basis and was right to; the deletion is committed. **Read the register's four
    corrections before trusting any of its findings** — Bean caught all four by eye.
-2. **Wave C** — checks 5 and 7 live per surface (375/768/1440 + canvas-moves).
-3. **Three small correctness items:** `main` missing from `edit.js` `TAG_NAME_OPTIONS`
-   (declared in the enum, so a client cannot select or recover it); h1→h3 heading skip on
-   `archive.html:21` + `search.html:16`; redundant nested `contentWidth` in 5 files.
+2. ⛔ **Wave C + the three correctness items — BOTH MOVED 2026-08-27 to
+   `.claude/prompts/2026-08-27-finish-the-template-review.md`. Do not start here.** Items:
+   `main` missing from `edit.js` `TAG_NAME_OPTIONS`; h1→h3 skip on `archive.html:21` +
+   `search.html:16`; redundant nested `contentWidth` in 5 files. ⚠ The heading-skip was
+   re-checked live 2026-08-27 and came back CLEAN on both — verify before acting.
 
 ⚠ **Canary content constrains Wave C:** 9 posts, 135 pages, 5 products, 1 category,
 **0 approved comments** (so `single.html`'s 14 comment blocks cannot be demonstrated
