@@ -146,6 +146,13 @@
     },
     {
       "type": "undeclared_render_ref",
+      "block": "sgs/decorative-image",
+      "attr": "fx",
+      "file": "render.php",
+      "reason": "render.php gates the surface-treatment wrapper on 'fx', which is REGISTERED AT RUNTIME by src/blocks/extensions/fx.js for every qualifying block, not declared in any block.json. The read is LIVE, not dead: PHP does not drop undeclared attrs (only the editor/JS surface does), and the effect is verified working on canary page 2900. Declaring it was tried and reverted - no other block declares 'fx' (before-after/image-sequence declare only fx-family attrs they OWN and control in their own edit.js), so declaring made decorative-image the sole outlier and additionally tripped inspector-scan rule 21, whose SYSTEM_ATTR_RE already excludes extension-injected attrs by design but matches on the name shape ^sgs[A-Z_] and so misses the fx family. Accepted as an extension-ownership gap in this gate, not as dead code."
+    },
+    {
+      "type": "undeclared_render_ref",
       "block": "sgs/quote",
       "attr": "backgroundColourHoverGradient",
       "file": "render.php",

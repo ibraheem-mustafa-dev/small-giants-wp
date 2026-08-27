@@ -47,11 +47,6 @@
         }
     },
     "attributes": {
-        "_comment_fx": "Declared 2026-08-28 so render.php's read is an honest contract rather than an undeclared runtime dependency (audit-block-file-consistency `undeclared_render_ref`). render.php gates the surface-treatment wrapper on this value: fx-attributes.php maps fx -> data-sgs-fx and fx-surface-treatment.php activates on that attribute, so a naked <img> root must become a <span> host or the effect's querySelector('img') can never match. Shape is IDENTICAL to the runtime registration in extensions/fx.js (string, default empty) so the two can never disagree on a default. This matches the precedent, not a new convention: every other block that reads an fx-family attr in render.php declares it here too — sgs/image-sequence (fxStart/fxEnd/fxScrub/fxPin) and sgs/before-after (fxDraggable).",
-        "fx": {
-            "type": "string",
-            "default": ""
-        },
         "_comment_decorMedia": "Migrated 2026-05-05 — legacy imageId/imageUrl/imageAlt retained for deprecation. New instances should use decorMedia (unified image-or-video slot).",
         "decorMedia": {
             "type": "object",

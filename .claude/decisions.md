@@ -145,18 +145,43 @@ byte-identical** (plain 416B, both-tiers 1264B, tablet-only 900B, parallax+fade+
 fxTreatment-key-absent 402B, video 565B). Its own negative control asserts treated output DIFFERS
 from untreated — without which a fully inert gate would have passed the parity half perfectly.
 
-**FOLLOW-UP, same day: `fx` is now DECLARED in the block's `block.json`.** The first commit read
-`$attributes['fx']` without declaring it, which `audit-block-file-consistency` correctly flagged as
-`undeclared_render_ref` — caught by a peer session whose full-tier gate run it was blocking. The
-read was genuinely live (PHP does not drop undeclared attrs), so this was a governance defect, not a
-broken feature — but "works anyway" is not a contract. Declared with the shape `extensions/fx.js`
-itself registers (`string`, default empty) so the two cannot disagree on a default, and matching the
-precedent rather than inventing one: **every** other block reading an fx-family attr in `render.php`
-declares it too (`sgs/image-sequence`, `sgs/before-after`). Gate now 0 net-new, exit 0.
-⚠ Worth knowing for any future edit of this file: `decorative-image/block.json` has MIXED
-indentation (4-space, with tab-indented tier attrs from a past migration) and inline arrays. Three
-attempts to add the key via `json.dumps` produced a 174/156-line whole-file reformat; a surgical
-text insert produced 5/0. **Do not round-trip this file through a JSON serialiser.**
+**FOLLOW-UP, same day — and the first answer was WRONG, which is the part worth reading.**
+`render.php` reads `$attributes['fx']` without `block.json` declaring it, which
+`audit-block-file-consistency` flags as `undeclared_render_ref` (caught by a peer session whose
+full-tier run it blocked). The read is genuinely LIVE — PHP does not drop undeclared attrs, only the
+editor/JS surface does — so this is a governance question, not a broken feature.
+
+**I first DECLARED it (`1cc0bc48c`), on a precedent that does not cover this case.** The reasoning
+was: the only other two blocks reading fx-family attrs in `render.php` (`sgs/image-sequence`,
+`sgs/before-after`) both declare them, so declaring restores the convention. That is **narrow-true
+and broad-false** — the same failure shape D864 records one entry below. Those blocks declare attrs
+they OWN and control in their own `edit.js` (3 and 7 local references respectively). **`fx` is the
+shared extension's effect SELECTOR, registered at runtime by `extensions/fx.js` for every qualifying
+block, and NO block declares it.** Declaring made `sgs/decorative-image` the sole outlier.
+
+**It also tripped a second gate, and the two could not both be satisfied.** `inspector-scan` rule 21
+(`render-without-control`) then reported the attribute as controlled by nothing, because the rule
+reads only the block's own `edit.js` and structurally cannot see `src/blocks/extensions/`. ⭐ **The
+rule already excludes this exact class** — its `SYSTEM_ATTR_RE` skips extension-injected attrs with
+the comment "inspector-scan structurally CANNOT see src/blocks/extensions/" — but it matches on NAME
+SHAPE (`^sgs[A-Z_]`), so the whole `fx` family falls outside an exclusion that was written for it.
+Undeclared failed gate A; declared failed gate B.
+
+**RESOLVED by reverting the declaration and baselining gate A** with the extension-ownership reason.
+That keeps one coherent story (`fx` is extension-owned, no block declares it) and touches no shared
+detector. **The baseline entry is proven load-bearing, not decorative:** removed, the gate FAILS with
+exactly the `fx` finding and exits 1; restored, 0 net-new and exit 0. An earlier version of this
+entry WAS vacuous — passing identically with and without — because `git checkout --` had reverted to
+a HEAD that already carried the declaration. The negative control is what caught that.
+
+⚠ **A gate-design gap remains, and it will hit the next person who declares an extension attr:**
+rule 21's exclusion should key on extension OWNERSHIP rather than the `sgs*` name shape. Not fixed
+here — it is a shared detector and belongs to whoever owns `inspector-scan`.
+⚠ Worth knowing for any future edit of these files: `decorative-image/block.json` has MIXED
+indentation (4-space, with tab-indented tier attrs from a past migration) and inline arrays, and
+`block-file-consistency-baseline.json` is **cp1252-encoded with CRLF**. Three attempts to add a key
+via `json.dumps` produced a 174/156-line whole-file reformat. **Do not round-trip either file
+through a JSON serialiser** — surgical text inserts gave 5/0 and 7/0.
 
 ⚠ **NAMED LIMITATION, recorded in the code rather than left to be rediscovered: treatment +
 art-direction tiers samples the DESKTOP image at every width.** The JS takes the FIRST `<img>`, and
