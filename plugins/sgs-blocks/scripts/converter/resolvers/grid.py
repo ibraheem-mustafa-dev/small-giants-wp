@@ -107,6 +107,31 @@ def _parse_repeat_columns(cols_str: str) -> int | None:
     return None
 
 
+def _parse_grid_template_areas_order(raw: str) -> list[str] | None:
+    """Flatten a ``grid-template-areas`` shorthand into its area tokens in
+    reading order (row-major, first occurrence wins), e.g.::
+
+        '"media" "content"'   -> ["media", "content"]   (2 rows, 1 column)
+        '"content media"'     -> ["content", "media"]    (1 row, 2 columns)
+
+    Any run of ``.`` (the CSS null-cell token, e.g. ``.``/``..``/``...``) is
+    dropped. Returns None for a value with no quoted rows (unparseable)."""
+    rows = re.findall(r'"([^"]*)"', raw)
+    if not rows:
+        return None
+    order: list[str] = []
+    seen: set[str] = set()
+    for row in rows:
+        for token in row.split():
+            if token and set(token) == {"."}:
+                continue
+            if token in seen:
+                continue
+            seen.add(token)
+            order.append(token)
+    return order or None
+
+
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     prop = decl.property
 
@@ -128,6 +153,55 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     state_write = resolve_state_property(decl, ctx)
     if state_write is not None:
         return state_write
+
+    # --- grid-template-areas → splitContentOrder* (media/content order swap) ---
+    # A 2-region split composite (hero-shaped) reorders its grid-template-areas
+    # between device tiers (mobile: media above content; desktop: content
+    # beside media). This is NOT a track-template concern (that's the
+    # grid-template-columns branch below) — it stores WHICH region reads
+    # first. Destination + eligibility are both DB-derived
+    # (db_lookup.content_order_attr_for, R-31-1): no per-block name literal.
+    if prop == "grid-template-areas":
+        base_attr = db_lookup.content_order_attr_for(ctx.block_slug)
+        if base_attr is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} has no media/content order attr for {prop}",
+            )
+        raw = strip_important(decl.value).strip()
+        order = _parse_grid_template_areas_order(raw)
+        if order is None or "media" not in order or "content" not in order:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} grid-template-areas value {raw!r} does not "
+                "resolve a media/content order",
+            )
+        # The literal enum member, NEVER '' — '' means INHERIT on this attr
+        # (render.php: tablet '' inherits desktop; mobile '' is never equal to
+        # 'content-first' so a blank mobile override silently fails to fire
+        # and mobile stays media-first). A content-first draft tier must
+        # write the explicit 'content-first' string or the render collapses
+        # it back to inherit/media-first depending on tier.
+        order_value = (
+            "media-first" if order.index("media") < order.index("content")
+            else "content-first"
+        )
+        if tier_object_base(ctx.block_slug, base_attr):
+            # validate_raw is the derived enum member, NOT the raw CSS
+            # shorthand — validate() enum-checks whatever is passed here
+            # against the attr's enum_values (currently NULL for
+            # splitContentOrder, so this is a no-op today, but the raw CSS
+            # string would fail that check the moment an enum is seeded).
+            return tier_object_write(
+                ctx, decl, prop, base_attr, order_value, validate_raw=order_value
+            )
+        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        if not validate(ctx, attr, order_value):
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
+            )
+        return Write(attr=attr, value=order_value, property=prop, tier=decl.tier)
 
     # --- grid-template-columns → gridTemplateColumns* (+ columns* count) ---------
     if prop == "grid-template-columns":
