@@ -419,3 +419,33 @@ def test_custom_wrapper_element_guard_is_not_vacuous(synthetic_db_with_custom_wr
     )
 
 
+def test_get_block_root_element_reads_real_block_json_not_monkeypatched():
+    """Direct, non-monkeypatched proof that _get_block_root_element reads the
+    ACTUAL repo block.json files correctly — every other test in this file
+    monkeypatches this function out entirely, so the block.json path
+    arithmetic, the supports.sgs.elements traversal, and the isWrapper
+    predicate (the real R-31-1-compliance mechanism this task adds) were
+    previously proven only by manual inspection, never by a running test.
+    Reads real files on disk, not the shared DB — this does not reintroduce
+    the live-DB-dependency problem those other tests were fixed to avoid."""
+    assert db_lookup._get_block_root_element("sgs/before-after") == "frame", (
+        "sgs/before-after's block.json declares its wrapper element as "
+        "'frame' via supports.sgs.elements.frame.isWrapper — if this ever "
+        "returns something else, the block.json schema changed or the "
+        "reader's traversal broke"
+    )
+    assert db_lookup._get_block_root_element("sgs/media") == "media", (
+        "sgs/media's own isWrapper element name is 'media' — confirms the "
+        "reader is not just matching a single hardcoded case"
+    )
+    assert db_lookup._get_block_root_element("sgs/container") == "wrapper", (
+        "sgs/container uses the generic convention name 'wrapper' itself — "
+        "confirms the reader also handles the common case, not just custom "
+        "names"
+    )
+    assert db_lookup._get_block_root_element("sgs/does-not-exist") is None, (
+        "a block with no block.json must return None (defensive default), "
+        "not raise"
+    )
+
+
