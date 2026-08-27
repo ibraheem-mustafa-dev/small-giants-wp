@@ -21,11 +21,25 @@
 	/* The paint colour, resolved by the JS from the CANVAS's computed `color`
 	   (see grid-dots.js — a custom property read via getPropertyValue() returns
 	   the `var(...)` TEXT unresolved, and a canvas cannot paint with a string).
-	   Defaults to the theme's accent so the field is never invisible on a
-	   default install. D846 is why a default is stated here at all: the particle
-	   trail shipped taking colour from an inherited value and painted at 1.44:1
-	   against its own background — firing perfectly, and invisible. */
-	--sgs-fx-grid-dot-colour: var( --wp--preset--color--accent, #8a8f98 );
+
+	   ⛔ PRIMARY, NEVER ACCENT — and this default was WRONG on first ship.
+	   It read `--wp--preset--color--accent`, which measured **1.35:1** against
+	   the client's cream section background on the canary (accent #F59E0B on
+	   #FBF3DC), at 34% rest opacity. Bean's words: "very hard to even see them".
+	   That is WORSE than D846's 1.44:1 particle trail — the incident this very
+	   comment block cited as its reason for stating a default at all.
+
+	   The rule it broke is already written down: a brand ACCENT is a ground,
+	   never an indicator. Accents are chosen to sit behind content, so they are
+	   mid-luminance by construction and fail against both light and dark
+	   surfaces. Primary is chosen to be READ against the surface (#1F7A7A on
+	   the same cream measures ~7:1), which is what a decorative mark needs.
+
+	   Per-instance override: `fxGridDotColour` -> `data-sgs-fx-grid-colour` ->
+	   `includes/fx-grid-dots.php` emits this custom property scoped to the
+	   instance. A client who wants a different colour sets one; nobody has to
+	   accept this default. */
+	--sgs-fx-grid-dot-colour: var( --wp--preset--color--primary, #1F7A7A );
 }
 
 .sgs-grid-dots__canvas {

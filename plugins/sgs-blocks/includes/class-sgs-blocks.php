@@ -118,6 +118,15 @@ final class SGS_Blocks {
 		// early and the trail keeps its original inherited-text-colour default.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-particles.php';
 
+		// Grid-dot field per-instance colour (FR-38-33). Same p11 slot and the
+		// same shape as the trail above, for the same reason and then some: the
+		// field shipped with an ACCENT default that measured 1.35:1 against the
+		// client's cream background — worse than the 1.44:1 that produced the
+		// particle-colour control. Default moved to `primary`; this filter is
+		// the per-instance override. Opt-in: with no colour set it returns early
+		// and the stylesheet's default stands.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-grid-dots.php';
+
 		// Flip on WooCommerce Product Collection re-filtering (Spec 38
 		// FR-38-12, redirected 2026-08-20 — see the design gate this file's
 		// docblock points to). A `render_block_woocommerce/product-collection`

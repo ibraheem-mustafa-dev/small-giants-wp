@@ -20,6 +20,7 @@ return array(
 	'fxFieldShape' => array( 'type' => 'string' ),
 	'fxFieldTrail' => array( 'type' => 'number' ),
 	'fxFieldType' => array( 'type' => 'string' ),
+	'fxGridDotColour' => array( 'type' => 'string' ),
 	'fxHold' => array( 'type' => 'string' ),
 	'fxMagnetAxis' => array( 'type' => 'string' ),
 	'fxMagnetRadius' => array( 'type' => 'number' ),

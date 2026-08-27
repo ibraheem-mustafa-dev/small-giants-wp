@@ -153,6 +153,8 @@ const FX_ATTR_MAP = array(
 	'fxParticleDensity'    => 'data-sgs-fx-particle-density',
 	'fxParticleSize'       => 'data-sgs-fx-particle-size',
 	'fxParticleColour'     => 'data-sgs-fx-particle-colour',
+	// FR-38-33 grid-dot field. Same shape as the particle colour above.
+	'fxGridDotColour'      => 'data-sgs-fx-grid-colour',
 );
 
 /**
@@ -414,6 +416,20 @@ function sgs_fx_effect_param_scope(): array {
 		 */
 		'cursor-field'      => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius', 'fxFieldShape', 'fxFieldTrail', 'fxFieldBlend' ),
 		'magnet'            => array( 'fxMagnetAxis', 'fxMagnetRadius', 'fxMagnetStrength' ),
+
+		/*
+		 * FR-38-33 grid-dot field. This row was OMITTED at first ship because the
+		 * effect had no params, and `check-fx-list-drift.py` correctly refuses an
+		 * EMPTY row as a vacuous parse (it cannot tell empty-by-design from a
+		 * failed parse). It is legitimate now that there is a real param to scope.
+		 *
+		 * ⛔ LOAD-BEARING, not bookkeeping — the same trap the cursor-field and
+		 * surface-treatment comments above record: `sgs_fx_clear_stale_params()`
+		 * NULLs every scoped key not in `$allowed`, so omitting this row now would
+		 * wipe the client's chosen colour on EVERY render while the editor still
+		 * showed it set.
+		 */
+		'grid-dots'         => array( 'fxGridDotColour' ),
 		'wave-gradient'     => array( 'fxWaveVariant', 'fxWaveBase', 'fxWave1', 'fxWave2', 'fxWave3', 'fxWaveSpeed', 'fxWaveAmplitude' ),
 
 		/*

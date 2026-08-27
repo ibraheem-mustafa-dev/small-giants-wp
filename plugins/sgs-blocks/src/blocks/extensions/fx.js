@@ -1101,6 +1101,19 @@ function addFxAttributes( settings, name ) {
 			 * trail, resolved to `var(--wp--preset--color--<slug>)` in PHP.
 			 */
 			fxParticleColour: { type: 'string', default: '' },
+			/*
+			 * FR-38-33 grid-dot colour. Same shape and same reason as
+			 * `fxParticleColour` directly above: stores a palette SLUG (or a hex
+			 * for a custom pick) so re-theming re-colours the field, resolved to
+			 * `var(--wp--preset--color--<slug>)` in PHP.
+			 *
+			 * Added 2026-08-28 because the effect shipped with no control and an
+			 * ACCENT default that measured 1.35:1 against the client's cream
+			 * background — worse than the D846 trail this whole pattern exists to
+			 * prevent. The default moved to `primary`; this is the escape hatch
+			 * so a client on a palette where primary also fails is not stuck.
+			 */
+			fxGridDotColour: { type: 'string', default: '' },
 			fxFieldBlend: { type: 'number' },
 			/* Stored as `fxFieldTrail`, shown to the client as "Drag weight".
 			   The names differ DELIBERATELY. This is a lerp follower and has no
@@ -1349,6 +1362,7 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-particle-density': attributes.fxParticleDensity,
 		'data-sgs-fx-particle-size': attributes.fxParticleSize,
 		'data-sgs-fx-particle-colour': attributes.fxParticleColour,
+		'data-sgs-fx-grid-colour': attributes.fxGridDotColour,
 	};
 	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
 	// discarded a deliberate 0 — see the attribute declarations above.
@@ -2579,93 +2593,86 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										/>
 									</ToolsPanelItem>
 
-								<ToolsPanelItem
-										hasValue={ () => !! attributes.fxWaveBase }
-										label={ __( 'Base colour', 'sgs-blocks' ) }
-										onDeselect={ () =>
-											setParam( { fxWaveBase: '' } )
-										}
-										isShownByDefault
-									>
-										<DesignTokenPicker
-											label={ __( 'Base colour', 'sgs-blocks' ) }
-											value={ attributes.fxWaveBase }
-											linked
-											onChange={ ( value ) =>
-												setParam( { fxWaveBase: value } )
-											}
-											help={ __(
-												'The colour underneath everything. The other three blend on top of it.',
-												'sgs-blocks'
-											) }
-										/>
-									</ToolsPanelItem>
+								{ /*
+								  * A colour is never an optional ToolsPanelItem
+								  * (golden-controls.json rule 9c) — these four
+								  * rows always render, always visible. Each uses
+								  * the single-entry `states` shape (rule 9a) so
+								  * it matches every other colour row in the
+								  * framework: a thin swatch row with a popover
+								  * picker, no tabs (one state = no tabs).
+								  */ }
+								<DesignTokenPicker
+									label={ __( 'Base colour', 'sgs-blocks' ) }
+									help={ __(
+										'The colour underneath everything. The other three blend on top of it.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxWaveBase,
+											onChange: ( val ) =>
+												setParam( { fxWaveBase: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
 
-								<ToolsPanelItem
-										hasValue={ () => !! attributes.fxWave1 }
-										label={ __( 'Wave colour 1', 'sgs-blocks' ) }
-										onDeselect={ () =>
-											setParam( { fxWave1: '' } )
-										}
-										isShownByDefault
-									>
-										<DesignTokenPicker
-											label={ __( 'Wave colour 1', 'sgs-blocks' ) }
-											value={ attributes.fxWave1 }
-											linked
-											onChange={ ( value ) =>
-												setParam( { fxWave1: value } )
-											}
-											help={ __(
-												'One of three colours that flow across the base. Each moves independently.',
-												'sgs-blocks'
-											) }
-										/>
-									</ToolsPanelItem>
+								<DesignTokenPicker
+									label={ ( 'aurora' === attributes.fxWaveVariant || 'ink' === attributes.fxWaveVariant ) ? __( 'Ramp colour — low', 'sgs-blocks' ) : __( 'Wave colour 1', 'sgs-blocks' ) }
+									help={ __(
+										'One of three colours that flow across the base. Each moves independently.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxWave1,
+											onChange: ( val ) =>
+												setParam( { fxWave1: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
 
-								<ToolsPanelItem
-										hasValue={ () => !! attributes.fxWave2 }
-										label={ __( 'Wave colour 2', 'sgs-blocks' ) }
-										onDeselect={ () =>
-											setParam( { fxWave2: '' } )
-										}
-										isShownByDefault
-									>
-										<DesignTokenPicker
-											label={ __( 'Wave colour 2', 'sgs-blocks' ) }
-											value={ attributes.fxWave2 }
-											linked
-											onChange={ ( value ) =>
-												setParam( { fxWave2: value } )
-											}
-											help={ __(
-												'The second flowing colour.',
-												'sgs-blocks'
-											) }
-										/>
-									</ToolsPanelItem>
+								<DesignTokenPicker
+									label={ ( 'aurora' === attributes.fxWaveVariant || 'ink' === attributes.fxWaveVariant ) ? __( 'Ramp colour — mid', 'sgs-blocks' ) : __( 'Wave colour 2', 'sgs-blocks' ) }
+									help={ __(
+										'The second flowing colour.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxWave2,
+											onChange: ( val ) =>
+												setParam( { fxWave2: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
 
-								<ToolsPanelItem
-										hasValue={ () => !! attributes.fxWave3 }
-										label={ __( 'Wave colour 3', 'sgs-blocks' ) }
-										onDeselect={ () =>
-											setParam( { fxWave3: '' } )
-										}
-										isShownByDefault
-									>
-										<DesignTokenPicker
-											label={ __( 'Wave colour 3', 'sgs-blocks' ) }
-											value={ attributes.fxWave3 }
-											linked
-											onChange={ ( value ) =>
-												setParam( { fxWave3: value } )
-											}
-											help={ __(
-												'The third flowing colour.',
-												'sgs-blocks'
-											) }
-										/>
-									</ToolsPanelItem>
+								<DesignTokenPicker
+									label={ ( 'aurora' === attributes.fxWaveVariant || 'ink' === attributes.fxWaveVariant ) ? __( 'Ramp colour — high', 'sgs-blocks' ) : __( 'Wave colour 3', 'sgs-blocks' ) }
+									help={ __(
+										'The third flowing colour.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxWave3,
+											onChange: ( val ) =>
+												setParam( { fxWave3: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
 
 								<ToolsPanelItem
 										hasValue={ () =>
