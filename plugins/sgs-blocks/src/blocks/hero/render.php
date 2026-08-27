@@ -552,15 +552,15 @@ if ( $is_split ) {
 if ( $is_split ) {
 	$img_pad_base = sgs_box_object_shorthand( $image_padding_obj );
 	if ( null !== $img_pad_base ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{padding:' . $img_pad_base . '}';
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{padding:' . $img_pad_base . '}';
 	}
 	$img_pad_tab = sgs_box_object_shorthand( $image_padding_tablet_obj );
 	if ( null !== $img_pad_tab ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{padding:' . $img_pad_tab . '}}';
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{padding:' . $img_pad_tab . '}}';
 	}
 	$img_pad_mob = sgs_box_object_shorthand( $image_padding_mobile_obj );
 	if ( null !== $img_pad_mob ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{padding:' . $img_pad_mob . '}}';
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{padding:' . $img_pad_mob . '}}';
 	}
 }
 
@@ -570,15 +570,15 @@ if ( $is_split ) {
 if ( $is_split ) {
 	$img_radius_base = sgs_corner_object_shorthand( $image_border_radius_obj );
 	if ( null !== $img_radius_base ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{border-radius:' . $img_radius_base . '}';
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{border-radius:' . $img_radius_base . '}';
 	}
 	$img_radius_tab = sgs_corner_object_shorthand( $image_border_radius_tablet_obj );
 	if ( null !== $img_radius_tab ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $img_radius_tab . '}}';
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{border-radius:' . $img_radius_tab . '}}';
 	}
 	$img_radius_mob = sgs_corner_object_shorthand( $image_border_radius_mobile_obj );
 	if ( null !== $img_radius_mob ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $img_radius_mob . '}}';
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{border-radius:' . $img_radius_mob . '}}';
 	}
 
 	// ── splitMediaBorderWidth / style / colour — box-object family (base only, no
@@ -607,7 +607,7 @@ if ( $is_split ) {
 			$img_border_decls[] = 'border-color:' . sgs_colour_value( $image_border_colour );
 		}
 		if ( $img_border_decls ) {
-			$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{' . implode( ';', $img_border_decls ) . '}';
+			$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{' . implode( ';', $img_border_decls ) . '}';
 		}
 	}
 
@@ -615,7 +615,7 @@ if ( $is_split ) {
 	// decl above (emitted after it so the cascade favours the mask).
 	if ( '' !== $image_border_colour_gradient ) {
 		$responsive_css .= sgs_border_gradient_css(
-			'.' . $uid . ' .sgs-hero__split-image',
+			'.' . $uid . ' .sgs-hero__split-media',
 			$image_border_colour_gradient,
 			null,
 			$img_border_has_width ? $img_border_width_val : '1px'
@@ -623,20 +623,25 @@ if ( $is_split ) {
 	}
 
 	// ── object-fit / object-position — moved from inline style="" (contract §A).
+	// Scoped to `--image, --video` ONLY (not the shared `.sgs-hero__split-media`
+	// base): these are replaced-element properties and do nothing on the SVG
+	// tier's `<span>` wrapper, so emitting them there would be a lie about what
+	// the property actually affects.
+	$sgs_hero_split_media_fit_selector = '.' . $uid . ' .sgs-hero__split-media--image,.' . $uid . ' .sgs-hero__split-media--video';
 	if ( 'custom' !== $image_object_fit ) {
 		$allowed_fits    = array( 'fill', 'contain', 'cover', 'none' );
 		$safe_fit        = in_array( $image_object_fit, $allowed_fits, true ) ? $image_object_fit : 'cover';
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{object-fit:' . $safe_fit . '}';
+		$responsive_css .= $sgs_hero_split_media_fit_selector . '{object-fit:' . $safe_fit . '}';
 	}
 	$safe_object_position = $sgs_css_object_position( $image_object_position );
 	if ( '' !== $safe_object_position ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{object-position:' . $safe_object_position . '}';
+		$responsive_css .= $sgs_hero_split_media_fit_selector . '{object-position:' . $safe_object_position . '}';
 	}
 	// Tablet tier override. Blank = inherit the desktop rule above.
 	if ( $image_object_position_tablet ) {
 		$safe_object_position_tablet = $sgs_css_object_position( $image_object_position_tablet );
 		if ( '' !== $safe_object_position_tablet ) {
-			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{object-position:' . $safe_object_position_tablet . '}}';
+			$responsive_css .= '@media (max-width:1023px){' . $sgs_hero_split_media_fit_selector . '{object-position:' . $safe_object_position_tablet . '}}';
 		}
 	}
 }
@@ -645,13 +650,13 @@ if ( $is_split ) {
 // Base moved here from the inline style="" on the split <img> (Pattern A).
 if ( 'custom' === $image_object_fit ) {
 	if ( null !== $image_width ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width ) . esc_attr( $image_width_unit ) . '}';
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{width:' . absint( $image_width ) . esc_attr( $image_width_unit ) . '}';
 	}
 	if ( null !== $image_width_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width_tablet ) . esc_attr( $image_width_unit ) . '}}';
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{width:' . absint( $image_width_tablet ) . esc_attr( $image_width_unit ) . '}}';
 	}
 	if ( null !== $image_width_mobile ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width_mobile ) . esc_attr( $image_width_unit ) . '}}';
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{width:' . absint( $image_width_mobile ) . esc_attr( $image_width_unit ) . '}}';
 	}
 }
 
@@ -665,13 +670,13 @@ if ( 'custom' === $image_object_fit ) {
 // Emitted base -> tablet -> mobile so the later, narrower @media rule wins at
 // its own width (same cascade convention as gap/grid-template-columns above).
 if ( null !== $image_height ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height ) . esc_attr( $image_height_unit ) . '}';
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height ) . esc_attr( $image_height_unit ) . '}';
 }
 if ( null !== $image_height_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_tablet ) . esc_attr( $image_height_unit ) . '}}';
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height_tablet ) . esc_attr( $image_height_unit ) . '}}';
 }
 if ( null !== $image_height_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_mobile ) . esc_attr( $image_height_unit ) . '}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height_mobile ) . esc_attr( $image_height_unit ) . '}}';
 }
 
 // ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).
@@ -1215,14 +1220,17 @@ foreach (
 
 $media_html = '';
 if ( $is_split && ! empty( $split_tiers ) ) {
-	// `sgs-hero__split-image` is kept as the IMAGE type's extra class (bleed
-	// variant folded in) so the pre-existing object-fit/position/border-radius/
-	// border/padding/width/height CSS above — all scoped to `.sgs-hero__split-image`,
-	// none of it tier-specific — keeps applying unchanged. Split-image mobile
-	// object-position (below) targets the compound `.split-image.split-media--mobile`
-	// selector, since the mobile-tier element no longer carries a bare `--mobile`
-	// suffix directly on `sgs-hero__split-image` (that suffix now lands on the
-	// shared base class per sgs_tier_media_render()'s contract).
+	// `sgs-hero__split-image` is kept as the IMAGE type's extra class — but ONLY
+	// for style.css's structural rules (base 100%/100% sizing + the hover-zoom
+	// transform, both scoped to `.sgs-hero__split-image`; see style.css ~292 and
+	// ~305-318). It is NOT what the editor-controlled splitMedia* CSS below
+	// targets any more (fixed 2026-08-27): padding/border-radius/border/width/
+	// height now target the shared `.sgs-hero__split-media` base so they reach
+	// video and SVG tiers too, and object-fit/object-position target the
+	// `--image, --video` compound (replaced-element properties only — a lie on
+	// the SVG `<span>`). Previously ALL of that CSS was scoped to
+	// `.sgs-hero__split-image`, so video/SVG tiers silently ignored every one of
+	// those controls despite the inspector offering them.
 	$sgs_hero_split_image_class = 'sgs-hero__split-image';
 	$sgs_hero_tier_result = sgs_tier_media_render(
 		$split_tiers,
@@ -1276,7 +1284,12 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 		if ( isset( $split_tiers['mobile'] ) && 'image' === $split_tiers['mobile']['type'] ) {
 			$safe_mobile_object_position = $sgs_css_object_position( $split_image_mobile_object_position );
 			if ( '' !== $safe_mobile_object_position ) {
-				$responsive_css .= '.' . $uid . ' .sgs-hero__split-image.sgs-hero__split-media--mobile{object-position:' . $safe_mobile_object_position . '}';
+				// Converted from the compound `.split-image.split-media--mobile`
+				// selector to the type-modifier form, matching the base/tablet
+				// object-position rules above (now scoped to `--image, --video`
+				// generically) — this one stays image-only by its own `isset()`
+				// guard above, so `--image` alone is correct here.
+				$responsive_css .= '.' . $uid . ' .sgs-hero__split-media--image.sgs-hero__split-media--mobile{object-position:' . $safe_mobile_object_position . '}';
 			}
 		}
 	}
