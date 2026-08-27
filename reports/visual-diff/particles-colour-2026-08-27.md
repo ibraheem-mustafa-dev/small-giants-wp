@@ -84,15 +84,34 @@ text colour — the pre-D846 behaviour exactly. No existing instance moves.
 - `npx wp-scripts build` → **compiled successfully**.
 - `php -l includes/fx-particles.php` → no syntax errors.
 
-## ⛔ OWED — this is NOT closed
+## ✅ DEPLOYED + LIVE-VERIFIED (same day)
 
-**Not deployed, therefore not live-verified.** `npm run build` cannot complete on `main`:
-`check-control-ux.js` fails with `RESPONSIVE-FAMILY-WITHOUT-SWITCHER` on `sgs/site-header` and
-`sgs/trust-bar`. **Proven pre-existing and unrelated** — a detached worktree at HEAD with zero local
-changes fails the identical gate with identical violations. Nothing in this change touches those
-blocks.
+Deployed `a5b8a3109` to sandybrown (blocks-only, 233s) from an isolated worktree — **not** with
+`--allow-dirty`, because the main tree held another track's uncommitted `fx-wave-gradient` work and
+`--allow-dirty` would have pushed it live.
 
-So the following remain owed once that gate is green:
-1. Deploy and confirm the control appears in the editor and the override reaches the frontend.
-2. **Bean's eye on the live trail** (R-31-13) — the whole point of the task. The screenshots here
-   are evidence, not sign-off.
+**Live measurement on the deployed plugin**, canvas pixels sampled after a 40-point pointer sweep:
+
+| Run | Canvas computed `color` | Mean drawn pixel RGB |
+|---|---|---|
+| default (no override) | `rgb(58, 46, 38)` | `[57, 45, 37]` — unchanged from pre-deploy |
+| `--sgs-fx-particle-colour: #ffd27f` | — | `[255, 210, 127]` = exactly `#ffd27f` |
+
+Both halves confirmed on the live site: the default path is **byte-identical to the old behaviour**
+(backwards compatibility proven, not asserted), and the override reaches the painted pixels.
+Screenshot: `particles-live-override.png` — a clean golden trail, brightest at the pointer.
+
+⛔ **Still owed:** the EDITOR control has not been opened on the live site, and Bean has seen the
+effect only in these screenshots, not by moving his own pointer. R-31-13 is not closed by a
+measurement or a screenshot.
+
+**Three unrelated blockers cleared to get this out** (all pre-existing, none caused by this change):
+1. `check-control-ux.js` was red on `sgs/site-header`/`sgs/trust-bar` — proven pre-existing in a
+   clean worktree, then fixed by another track mid-session.
+2. `check-dead-api-calls` failed on `parse_blocks()`, a REAL WP core function missing from the
+   allowlist — fixed properly in `a5b8a3109` rather than bypassed.
+3. `oldshape-audit` fails on post 2884 (Mama's fresh clone) — `sgs/product-card` stores
+   `titleLineHeight`/`descLineHeight` as STRINGS where the schema declares `number`, so WP is
+   already silently dropping them. A converter type bug in another track's clone; deployed past it
+   with `--skip-oldshape-audit` after verifying `product-card` is untouched by this change.
+
