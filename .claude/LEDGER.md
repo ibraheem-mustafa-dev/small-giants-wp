@@ -95,12 +95,41 @@ D830-D834 still owes one. Reasoning: D804.
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (background engine SHIPPED; two control upgrades queued)
+## ▶ MOTION TRACK — 2026-08-27 (section A CLOSED + live-verified; B = the POC rebuild, next)
 
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
 session (D838). No phase number is shared.
 
-### ▶ A. `fx-wave-gradient` — SIX-STYLE ENGINE, shipped (D852)
+### ▶ A. `fx-wave-gradient` — SIX-STYLE ENGINE: ✅ CLOSED 2026-08-27 (D852 built, D871 closed)
+
+**DEPLOYED and LIVE-VERIFIED — nothing open on this section.** Full detail → **D871**, do not
+restate. Headlines only:
+- All six styles live on the canary. Canvas split measured on probe page **3037**
+  (`[GATE — DO NOT DELETE] wave-gradient six-variant canvas split probe`, all six on one page):
+  `pastel`/`horizon`/`ribbon`/`veil` = **0** canvases, `aurora`/`ink` = **1** each with
+  `data-sgs-wave-active="1"`, 0 console errors. ⭐ The probe asserts `webgl capable: true` FIRST —
+  without that, 0-canvases-everywhere is indistinguishable from a browser declining WebGL.
+- ⛔ **"Gradient controls for the four CSS styles" is CANCELLED, not deferred** — the premise was
+  false. Every `color-mix()` already references `var(--sgs-wave-*)`, so the pickers were never dead;
+  D852 had already fixed that. Three of the 13 are structurally impossible anyway (a blend AT a
+  gradient's 0% stop, and a `background-color`). Do not revive without evidence a picker is dead.
+- The 3-state ramp control was **reshaped**: tabs imply mutually-exclusive states, but low/mid/high
+  render simultaneously. Shipped as variant-aware labels (`Ramp colour — low/mid/high` for
+  aurora/ink only). Same four attrs, no schema change.
+- Same pass fixed two real defects rule 31 CANNOT see (`extensions/` has no `block.json`, so it is
+  unscanned, not baselined): the legacy no-`states` picker shape, and colour rows wrapped in
+  `ToolsPanelItem` (golden-controls rule 9c — `isShownByDefault` is not sufficient).
+
+⚠ **Two deploy hazards earned here, both now fixed in-tree — read D871 before deploying:** a
+dev-included Composer autoloader 500'd the canary through 68 green gates (gate-green and deploy-safe
+are INVERTED states of `vendor/`), and the guard against it had **never been committed** — it lived
+in one working copy while every clone, worktree and CI deployed without it (`4494e6e1d`). The
+follow-on gitignored-phar gap is closed at `62809c801`.
+
+**Fixture pages for this surface: 2740** (single pastel, FR-38-31) and **3037** (all six variants).
+Both `[GATE — DO NOT DELETE]`.
+
+### ▶ A-legacy — the built engine's design facts (STABLE, still true)
 
 One `fxWaveVariant` attribute, six styles: `pastel | horizon | ribbon | veil` (pure CSS, no canvas
 booted) and `aurora | ink` (WebGL). ⛔ **No new `fx_effects` rows** — the variant rides the existing
@@ -114,8 +143,8 @@ haze). Filaments need per-pixel noise + domain warping; CSS has neither. Detail:
 client's pick always wins — the render layer's `(0,1,0)` rule would otherwise LOSE to the `(0,2,0)`
 variant selectors. Aurora's violet is curated per style, never added to the site palette.
 
-⚠ **NOT YET DEPLOYED.** Committed + pushed through `715f10078`; the deploy gate is correctly
-blocking on another track's dirty `media`/`post-grid` files. Deploy is task 1 next session.
+*(Deployed + verified 2026-08-27 — see section A above. The old "NOT YET DEPLOYED" note here was
+stale and is removed.)*
 
 ### ▶ B. GENERATIVE BACKGROUND ENGINE — the POC rebuild (NOT started)
 
@@ -126,18 +155,22 @@ variant work above (Bean, 2026-08-27 — the second track-conflation in one sess
 ⛔ Phase 1 = pick a reference BEFORE any code. Licence: nimitz = NON-COMMERCIAL; paper-design
 (Apache-2.0) ships no aurora — an aurora must be WRITTEN.
 
-### ▶ NEXT, in order
+### ▶ NEXT — section A is closed; the only motion work left is B
 
-1. **Deploy the six styles** once the tree clears, then verify all six live on real GPU.
-2. **Gradient controls for the four CSS styles.** The three row helpers (`fillRow`/`textRow`/
-   `borderRow`) are already gradient-capable and `SgsColourPanel` takes a per-row `gradientCapable`
-   flag. Storage is a sibling `{attr}Gradient` attribute; the gradient wins when set. Removes the
-   `color-mix()` derivation and hands the client every stop.
-3. **A 3-state colour control for aurora/ink's low/mid/high ramp** (Bean's shape — the states row
-   already renders multiple swatches in one popover). ⚠ Check it against rule 31's STATIC state-count
-   resolution first: D738 records a computed states array rendering fine while the detector went
-   blind.
-4. `.claude/prompts/2026-08-27-background-styles-controls.md` carries the full orchestration.
+**Everything previously listed here (deploy, gradient controls, 3-state ramp) is DONE or
+CANCELLED — see section A. Do not re-open those.**
+
+The next work on this track is **B, the POC rebuild**, and its Phase 1 is a decision, not code:
+⛔ **pick a reference BEFORE writing any code.** Licence constraint already established: nimitz's
+Shadertoy "Auroras" is CC BY-NC-SA (**NON-COMMERCIAL** — must not be used or derived from), and
+paper-design (Apache-2.0) ships no aurora. **An aurora must be WRITTEN.**
+
+⭐ **NEXT PROMPT: `.claude/prompts/2026-08-28-poc-pick-the-reference.md`** — carries Phase 1 in
+full. Its predecessor `2026-08-27-background-styles-controls.md` was executed and DELETED
+2026-08-27; a reference to it anywhere is stale.
+⚠ **Phase 1 has NEVER been done, and the six shipped styles do NOT satisfy it** — that shortlist
+chose the shipped styles, not this rebuild's reference. Phase 2 (finish the technique spec, 13
+must-fix items, still **NO-GO** per D794) is blocked until Bean names one.
 
 ### ▶ PARTICLE + GATES SUB-TRACK — 2026-08-27, all shipped (D839-D842, D846, D853)
 
@@ -324,7 +357,9 @@ naming it, and finishing more of the tier migration INCREASES the blocked surfac
 Full open list + the 37-family scope + the `check-box-flat` exit-code caveat live in Task 6 of the
 prompt and in `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`. ⛔ This block was dropped
 in the 2026-08-27 LEDGER rewrite and restored after QC caught it — a D101 subtraction. Move it to
-`parking.md` with Bean's say-so if it must shrink; do not delete it.
+`parking.md` with Bean's say-so if it must shrink; do not delete it. Note: Task 6's own "Step 0 —
+fix the instruments first" is CLOSED — `807ef4611` (D777) added `_base_attr_spec()` to
+`migrate-tier-object.py`, fixing the `<prop>Desktop`-base blind spot; Steps 2-5 remain open.
 
 ### ⚠ Carried
 Hero still owes a visual-diff report (bypassed when a deploy was impossible) · `sgs/media`'s

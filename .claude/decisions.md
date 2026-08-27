@@ -1,3 +1,84 @@
+## D871 [INCIDENT] — the six-style engine is LIVE and verified; a dev Composer autoloader 500'd the canary, and the guard against it existed only in one working copy
+
+**2026-08-27.** Closes MOTION TRACK section A. Three of the four queued items resolved; one was
+cancelled on evidence.
+
+**All six styles are DEPLOYED and live-verified**, not asserted. Probe page **3037**
+(`[GATE — DO NOT DELETE] wave-gradient six-variant canvas split probe`) carries all six variants on
+one page; measured with GPU-enabled Chromium: `pastel`/`horizon`/`ribbon`/`veil` boot **0** canvases,
+`aurora`/`ink` boot **1** each with `data-sgs-wave-active="1"`, 0 console errors. ⭐ The probe asserts
+`webgl capable: true` FIRST — without that, "0 canvases everywhere" is indistinguishable from a
+browser that declined WebGL, and the gate would pass vacuously.
+
+⛔ **The "gradient controls for the four CSS styles" task is CANCELLED, not deferred — its premise
+was false.** The `color-mix()` calls were never hardcoded: every one references `var(--sgs-wave-*)`,
+so every mixed stop already recomputes when the client changes a colour. D852 had ALREADY fixed the
+dead-control bug. Removing `color-mix()` would therefore grant the client no control they lack, and
+would visibly degrade the look — a stop reading as a faint tint (`base 80% + wave-1 20%`) becomes a
+full-strength patch. **Three of the 13 calls are structurally impossible anyway:** ribbon `:333` and
+veil `:385` put the mix at a gradient's **0% stop**, where the blend IS the effect — a gradient
+interpolates BETWEEN stops and cannot produce a blend AT one; pastel `:244` is a `background-color`,
+a single-value property with no stops. Do not revive this without new evidence that a picker is
+actually dead.
+
+**The 3-state ramp control was reshaped, not built.** The states-tab component exists for
+Normal/Hover — mutually exclusive states, one visually active at a time. Aurora's low/mid/high render
+SIMULTANEOUSLY, composited into one ramp; tabs would imply "pick one to view". Shipped instead as
+variant-aware labels: the three wave rows read `Ramp colour — low/mid/high` when the variant is
+`aurora`/`ink`, and keep `Wave colour 1/2/3` otherwise. Same four attributes, no schema change.
+⚠ Nearly "fixed" the help string `Each moves independently` as contradicting a ramp — checked the
+shader first: `anchor = 0.22 + fi * 0.28` and `sin(t*0.37 + fi*2.1)` give each curtain its own third
+and its own sway phase. They move independently AND sit low/mid/high. The text was right.
+
+**Same pass fixed two real defects in those four rows** (found by checking against
+`golden-controls.json`, not reported): they used the LEGACY no-`states` `DesignTokenPicker` shape
+(rule 9a wants one row shape everywhere), and each sat inside a `ToolsPanelItem` — rule 9c verbatim:
+*"A COLOUR IS NEVER AN OPTIONAL ToolsPanelItem."* `isShownByDefault` is NOT sufficient; the row stays
+per-instance hideable and `onDeselect` wipes the value. Both invisible to rule 31, which scans only
+directories carrying a `block.json` — `extensions/` has none, so these were never baselined, merely
+unscanned.
+
+⚠ **A dev-included Composer autoloader took the canary down (HTTP 500, every page).** Ran
+`composer install` in a fresh worktree to satisfy the PHPStan gate; that rewrites
+`autoload_files.php` to `require` dev packages, and `TAR_EXCLUDES` deliberately excludes
+`vendor/{myclabs,phpstan,phpunit,…}`. Fatal before WordPress loads. Rolled back via `.bak`, reset
+OPcache, confirmed 200, then root-caused by diff: my worktree's autoloader carried 28 dev references,
+main's carried 0. **The two states are INVERTED** — dev autoloader = gate GREEN + deploy FATAL;
+`--no-dev` = gate RED (`SzepeViktor\PHPStan\WordPress\HookCallbackRule` not found) + deploy safe.
+Neither is both, so **a green gate run is not evidence the tree is safe to deploy.**
+
+⛔ **The guard against this had NEVER been committed.** A peer cited `build-deploy.py` lines
+640/641/731 as proof it was "already handled, unconditionally" — real code, correct logic, accurate
+line numbers, sitting in ONE uncommitted working copy. Measured: `origin/main` 0 references,
+`git log --all -S "no_dev=True"` no commits ever, working copy 6. So every fresh clone, every
+worktree and CI deployed without it; my outage was the proof. Now committed (`4494e6e1d`).
+**The distinction that found it: they asked whether the protection existed; the useful question was
+whether it existed anywhere anyone else could reach.**
+
+**Follow-on gap closed (`62809c801`):** the guard resolves `COMPOSER_PHAR = REPO_ROOT/composer.phar`,
+and `composer.phar` is gitignored (`.gitignore:103`) — absent in every worktree, fresh clone and CI,
+where the guard then fails CLOSED and blocks the deploy outright. `resolve_composer()` now tries the
+repo root, then the MAIN worktree root via `git rev-parse --git-common-dir` (whose parent is the
+primary clone that holds the phar — the case that actually bit), then `composer` on PATH. Fails
+closed as before, but names all three locations tried. Candidate 3 is implemented but NOT
+smoke-tested (Composer is not on PATH here) — stated rather than claimed.
+
+**Cross-track friction, recorded because it is now the dominant cost on this repo:** six separate
+blockers, none from this track's code — a shared-DB reseed, another session's staged file in deploy
+scope, a fixture page storing flat scalars on object-typed attrs, a missing PHPStan, two gates
+contradicting each other on one attribute (undeclared → fails A; declared → fails B's ratchet), and
+`git stash -u` on the shared tree destroying an hour of a peer's uncommitted work (recovered — the
+stash was found and its contents enumerated). Sessions working in isolated worktrees hit none of it.
+
+**Disk:** 4.69 GB free (1.01%) was failing builds on "database or disk is full". Cleared caches with
+Bean's approval → **31.57 GB**. ⚠ The circulating theory blamed 13 worktrees; measured, they total
+**2.06 GB** — 0.4% of 459 GB used. The real consumers are `UnrealEngine` 41 GB, `npm-cache` 20 GB,
+`Android` 11 GB, `CapCut` 11 GB. A wrong diagnosis would have deleted a colleague's worktree for
+nothing.
+
+Fixture pages for this surface: **2740** (single pastel instance, FR-38-31) and **3037** (all six
+variants). Both `[GATE — DO NOT DELETE]`.
+
 ## D870 [INCIDENT] — the grid-dot default was 1.35:1 (worse than D846); and `git commit -- <path>` silently discarded a partial stage, sweeping another track's work
 
 **2026-08-28. Two failures, one commit (`03b96af22`). The second is the more serious.**

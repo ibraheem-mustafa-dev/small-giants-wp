@@ -132,6 +132,8 @@ means giving it a fixture and a negative control first.
 | 2109 | motion-path repeat-trigger (D451) |
 | 2113 | fx-morph geometry (D452) |
 | 2603 | pin-scrub pin + good-by-default |
+| 2740 | FR-38-31 flowing gradient, single `pastel` instance (D852/D871) |
+| 3037 | wave-gradient SIX-variant canvas split — the 0/0/0/0/1/1 proof (D871) |
 
 All four are titled `[GATE — DO NOT DELETE] …` on the canary so they survive a tidy-up.
 ⛔ Deleting or emptying any of them **breaks every blocks deploy** until the fixture is
