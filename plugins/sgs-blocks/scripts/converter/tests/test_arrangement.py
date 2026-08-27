@@ -239,6 +239,74 @@ def test_uniform_grid_item_fold_does_not_overwrite_css_pass_value():
     assert '"quote":"hi"' in markup               # content lift still applied
 
 
+# -- Bug (d): an out-of-enum `layout` value gaps instead of silently coercing ----
+#
+# `layout_attrs` derives its value from CSS SIGNATURE alone (display:grid/flex) — it
+# has no idea what enum the RESOLVED block declares for that attr name. sgs/gallery
+# reuses the `layout` attr name for a display-MODE enum
+# (["grid", "masonry", "carousel"], seeded live in the DB — verified via sgs-db.py
+# 2026-08-27) that does not include "flex". Without a validate() gate, a gallery
+# section whose OWN CSS is display:flex would have "layout":"flex" written straight
+# through — WP's schema validation then coerces the out-of-enum value to the enum's
+# first member ("grid") at render time, SILENTLY (the exact testimonial-slider
+# collapse-to-width-0 shape the brief names). sgs/hero is the positive control: its
+# `layout` enum is the wrapper-mirror shape (["", "flex", "stack", "grid"], seeded
+# this task from its own block.json `enum` declaration), so the SAME CSS signature
+# on sgs/hero must still write "layout":"flex" — the gate must not become a
+# blanket-reject.
+
+
+def test_layout_attr_out_of_enum_value_gaps_not_coerced():
+    """sgs/gallery's `layout` enum (["grid","masonry","carousel"]) does not contain
+    "flex" — a display:flex signature must GAP (assembly.py step 3b's validate()
+    call), never write the invalid value for WP to silently coerce."""
+    from converter.context import Recognition
+    import converter.services.extraction as _ext
+
+    rec = Recognition(kind="named", slug="sgs/gallery", container_kind="layout",
+                       delegates_content=1)
+    node = _node('<section style="display:flex"></section>')
+
+    _orig_css = _ext._build_css_attrs
+    _orig_extract = _ext.extract_content
+    try:
+        _ext._build_css_attrs = lambda *a, **k: {}
+        _ext.extract_content = lambda *a, **k: []
+        markup = _ext.build_block_markup(rec, node, media_map={}, css_rules={}, is_root=True)
+    finally:
+        _ext._build_css_attrs = _orig_css
+        _ext.extract_content = _orig_extract
+
+    assert '"layout"' not in markup           # gapped — never written
+    assert '"layout":"flex"' not in markup     # never the invalid value
+    assert '"layout":"grid"' not in markup     # never silently coerced either
+
+
+def test_layout_attr_valid_enum_value_still_writes_positive_control():
+    """Positive control: sgs/hero's `layout` enum DOES contain "flex" — the SAME
+    display:flex signature must still write "layout":"flex" through the validate()
+    gate (proves the gate isn't a blanket-reject that would break every container-
+    mirroring composite)."""
+    from converter.context import Recognition
+    import converter.services.extraction as _ext
+
+    rec = Recognition(kind="named", slug="sgs/hero", container_kind="section",
+                       delegates_content=1)
+    node = _node('<section style="display:flex"></section>')
+
+    _orig_css = _ext._build_css_attrs
+    _orig_extract = _ext.extract_content
+    try:
+        _ext._build_css_attrs = lambda *a, **k: {}
+        _ext.extract_content = lambda *a, **k: []
+        markup = _ext.build_block_markup(rec, node, media_map={}, css_rules={}, is_root=True)
+    finally:
+        _ext._build_css_attrs = _orig_css
+        _ext.extract_content = _orig_extract
+
+    assert '"layout":"flex"' in markup
+
+
 def test_uniform_grid_item_fold_skips_box_family_attrs():
     """A1 migration (2026-07-26): `lift_uniform_grid_item_css` must SKIP any property
     whose destination attr is box-family-gated (gridItemPadding/gridItemBorderRadius

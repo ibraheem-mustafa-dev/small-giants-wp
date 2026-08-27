@@ -219,6 +219,7 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": ["", "flex", "stack", "grid"],
 			"default": "stack",
 			"description": "Composite-mirror review (P2-2, container's layout-default fix): sgs/form routes through SGS_Container_Wrapper::render() the same way sgs/container does, so an untouched form would otherwise inherit container's new 'flex'/row default and lay its fields out side-by-side. Form fields are unambiguously vertical, so this block declares its own explicit 'stack' default rather than sharing the primitive's."
 		},
