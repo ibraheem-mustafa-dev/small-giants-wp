@@ -1452,10 +1452,19 @@ class AmbiguousCssPropAttrError(RuntimeError):
 _BASE_ELEMENTS = ("", "root", "self")
 
 # The WIDER root-domain set used specifically for a css_layer='OUTER' row: adds
-# 'wrapper' (the universal isWrapper-root marker extract-signatures.py writes for
-# ANY block's own root element — see declared_attrs_for_css_property's identical
-# _outer_element_clause a few hundred lines up, which this constant now shares
-# instead of re-typing the same 4 literals a third time in this module).
+# 'wrapper' — a COMMON convention label for a block's own root/wrapper element,
+# NOT a universal one. Many blocks name their own isWrapper root element
+# something else entirely in their block.json (e.g. sgs/before-after's is
+# 'frame', sgs/media's is 'media') — this list does NOT recognise those, and a
+# 2026-08-27 roster survey found 32 blocks whose declared isWrapper element
+# name is invisible to this check. Those blocks' own attrs must be manually
+# relabelled 'wrapper' in attr-classification-overrides.json (see
+# sgs/before-after.boxShadowColour for a worked example) until this becomes a
+# genuine DB/block.json-driven "is this the block's own isWrapper element"
+# check instead of a closed literal list — see declared_attrs_for_css_
+# property's identical _outer_element_clause a few hundred lines up, which
+# this constant shares (same literals, same limitation) instead of re-typing
+# them a third time in this module.
 _OUTER_ROOT_ELEMENTS = ("", "root", "self", "wrapper")
 
 

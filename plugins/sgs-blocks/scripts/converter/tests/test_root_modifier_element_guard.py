@@ -94,11 +94,23 @@ def test_hero_background_image_does_not_misroute_to_overlay_child_attr():
 
 
 def test_media_box_shadow_colour_correctly_gaps_to_named_child():
-    """sgs/media + 'box-shadow-color': a GENUINE child-scoped attr
-    (css_element='media', derived_selector='.sgs-media__img, .sgs-media__video')
-    that happens to also carry css_layer='OUTER'. Must stay excluded from the
-    root domain both before and after this fix — locking this in as a
-    regression guard (the reviewer's own "correct, unaffected" control case).
+    """sgs/media + 'box-shadow-color' must stay excluded from the root
+    domain — a regression guard on the reviewer's "correct, unaffected"
+    control case.
+
+    NOT because css_element='media' is "a named child, not root/self/
+    wrapper": 'media' is sgs/media's OWN declared isWrapper root-element
+    name in block.json (supports.sgs.elements.media.isWrapper=true) — the
+    identical shape that turned out to be semantically CORRECT for
+    sgs/before-after's 'frame' (see that test below). The real discriminator
+    is the attr's own derived_selector: this one is
+    '.sgs-media__img, .sgs-media__video' — two SPECIFIC NESTED child nodes
+    (the img/video the shadow visually paints on), not the block's own root
+    selector ('.wp-block-sgs-media'). before-after's boxShadowColour, by
+    contrast, carries derived_selector='.wp-block-sgs-before-after' — the
+    block's own root selector, verbatim. That is what makes this one a
+    genuine child-scoped paint target and before-after's a genuine root one,
+    regardless of either attr's css_element label.
 
     'box-shadow-color' has NO property_suffixes row at all, so
     attr_for_property short-circuits to None before ever reaching its
@@ -110,12 +122,14 @@ def test_media_box_shadow_colour_correctly_gaps_to_named_child():
     declared = db_lookup._base_domain_attrs_for_css_property("sgs/media", "box-shadow-color")
     assert "boxShadowColour" not in declared, (
         f"_base_domain_attrs_for_css_property('sgs/media', 'box-shadow-color') "
-        f"returned {declared!r} — sgs/media.boxShadowColour is css_element='media' "
-        "(a named child, not root/self/wrapper) and must never enter the root domain."
+        f"returned {declared!r} — sgs/media.boxShadowColour paints "
+        "'.sgs-media__img, .sgs-media__video' (nested child nodes, not the "
+        "block's own root selector) and must never enter the root domain."
     )
     assert db_lookup.attr_for_layer_property("sgs/media", "OUTER", "box-shadow-color") is None, (
-        "sgs/media box-shadow-color must gap at the OUTER layer — it is a "
-        "genuine child ('media') attr, not the block's own root box-shadow colour."
+        "sgs/media box-shadow-color must gap at the OUTER layer — its "
+        "derived_selector targets nested img/video children, not the "
+        "block's own root box-shadow colour."
     )
 
 
