@@ -71,7 +71,27 @@ const DEFAULTS = {
  * @return {{setPointer: Function, clearPointer: Function, destroy: Function, stats: Function}} Handle.
  */
 export function createGridDots( el, opts = {} ) {
-	const cfg = { ...DEFAULTS, ...opts };
+	/*
+	 * ⛔ NOT `{ ...DEFAULTS, ...opts }`. Object spread COPIES an explicit
+	 * `undefined` over the default rather than skipping it, and `fx-grid-dots.js`
+	 * deliberately returns `undefined` for every attribute the emitter does not
+	 * carry — precisely so this table stays the single source of the defaults.
+	 * The two conventions cancelled each other out: `cfg.cell` became
+	 * `undefined`, `Math.floor( width / undefined )` is `NaN`, the row/column
+	 * loops never executed, and the field built ZERO dots.
+	 *
+	 * Caught by live verification on canary page 3038, not by any gate — the
+	 * canvas was created at the right size, the stylesheet resolved, the colour
+	 * resolved, `data-sgs-fx` was stamped, both assets were enqueued, and every
+	 * one of the ten registration points was correct. The effect simply painted
+	 * nothing. A green build cannot see an empty loop.
+	 */
+	const cfg = { ...DEFAULTS };
+	for ( const [ key, value ] of Object.entries( opts ) ) {
+		if ( undefined !== value ) {
+			cfg[ key ] = value;
+		}
+	}
 
 	const canvas = document.createElement( 'canvas' );
 	canvas.className = 'sgs-grid-dots__canvas';
@@ -146,6 +166,25 @@ export function createGridDots( el, opts = {} ) {
 			}
 		}
 		readColour();
+
+		/*
+		 * A field with a real box but ZERO dots is always a defect, and it is
+		 * SILENT: the canvas still exists at the right size, the stylesheet
+		 * still resolves, and every gate still passes. That is exactly how the
+		 * spread-over-undefined bug above reached the canary. Saying so out
+		 * loud in dev costs nothing and turns a blank background into a
+		 * one-line diagnosis.
+		 */
+		if ( 'production' !== process.env.NODE_ENV && ! dots.length ) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				`sgs grid-dots: built 0 dots for a ${ Math.round( width ) }x${ Math.round(
+					height
+				) } box (cell=${ cellPx }). The field will paint nothing. Check that ` +
+					'every option resolved to a number — an undefined cell size ' +
+					'makes the row/column loops no-ops.'
+			);
+		}
 	}
 
 	/** @return {number} The effective displacement ceiling in px. */
