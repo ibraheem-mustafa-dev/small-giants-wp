@@ -53,6 +53,25 @@
 
 			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
 			<ul class="is-style-no-bullets has-small-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
+			<!-- wp:list-item -->
+			<li><a href="#">Home</a></li>
+			<!-- /wp:list-item -->
+
+			<!-- wp:list-item -->
+			<li><a href="#">Shop</a></li>
+			<!-- /wp:list-item -->
+
+			<!-- wp:list-item -->
+			<li><a href="#">About</a></li>
+			<!-- /wp:list-item -->
+
+			<!-- wp:list-item -->
+			<li><a href="#">Contact</a></li>
+			<!-- /wp:list-item -->
+
+			<!-- wp:list-item -->
+			<li><a href="#">Privacy Policy</a></li>
+			<!-- /wp:list-item -->
 			</ul>
 			<!-- /wp:list -->
 
