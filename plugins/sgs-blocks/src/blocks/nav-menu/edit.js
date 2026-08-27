@@ -38,8 +38,9 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveControl,
 	SgsColourPanel,
+	SgsLengthControl,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * Burger Menu scope presets (Bean 2026-07-28 — no bare px values in the UI).
@@ -858,7 +859,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					{ ( showCustomCollapse ||
 						burgerScopeOf( collapsePoint ) === 'custom' ) && (
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Switch to burger below', 'sgs-blocks' ) }
 							value={ `${ collapsePoint }px` }
 							units={ [ { value: 'px', label: 'px', default: 768 } ] }
@@ -868,7 +869,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { collapsePoint: n } );
 								}
 							} }
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					) }
 
@@ -1091,13 +1092,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onDeselect={ () => setAttributes( { gap: '8px' } ) }
 						isShownByDefault
 					>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Item gap', 'sgs-blocks' ) }
 							value={ gap }
 							onChange={ ( val ) =>
 								setAttributes( { gap: val || '8px' } )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					</ToolsPanelItem>
 					{ /*
@@ -1190,7 +1191,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { submenuMinWidth: '' } )
 						}
 					>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Minimum width', 'sgs-blocks' ) }
 							value={ submenuMinWidth }
 							onChange={ ( val ) =>
@@ -1200,7 +1201,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'Stops a dropdown shrinking to the width of its shortest link.',
 								'sgs-blocks'
 							) }
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -1210,13 +1211,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { submenuRadius: '' } )
 						}
 					>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Corner radius', 'sgs-blocks' ) }
 							value={ submenuRadius }
 							onChange={ ( val ) =>
 								setAttributes( { submenuRadius: val || '' } )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -1300,16 +1301,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ /* Colours (text/background, Normal + Hover) moved to the
 					   top-level SgsColourPanel (D618/D609). Radius is not a
 					   colour, so it stays here as a plain Normal/Hover pair. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ `${ itemRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
 						onChange={ ( val ) =>
 							setAttributes( { itemRadius: parseFloat( val ) || 0 } )
 						}
-						__next40pxDefaultSize
+						presets={ false }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius on hover', 'sgs-blocks' ) }
 						value={ `${ itemRadiusHover ?? itemRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
@@ -1320,7 +1321,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'Leave matching Normal for a pill that keeps its shape on hover.',
 							'sgs-blocks'
 						) }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 
 					<TypographyControls
@@ -1384,7 +1385,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						   SgsColourPanel (D618/D609) — only shown there when
 						   Hover style is 'underline', mirroring this panel's
 						   own visibility gate. */ }
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Thickness', 'sgs-blocks' ) }
 							value={ `${ underlineThickness }px` }
 							units={ [
@@ -1396,9 +1397,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										parseFloat( val ) || 2,
 								} )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Distance below text', 'sgs-blocks' ) }
 							value={ `${ underlineOffset }px` }
 							units={ [
@@ -1409,7 +1410,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									underlineOffset: parseFloat( val ) || 6,
 								} )
 							}
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 						<p className="sgs-nav-menu__inspector-note">
 							{ __(
@@ -1425,23 +1426,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   top-level SgsColourPanel (D618/D609). Radius and font
 					   weight are not colours, so they stay here as plain
 					   Normal/Hover pairs. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ `${ featuredRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
 						onChange={ ( val ) =>
 							setAttributes( { featuredRadius: parseFloat( val ) || 0 } )
 						}
-						__next40pxDefaultSize
+						presets={ false }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius on hover', 'sgs-blocks' ) }
 						value={ `${ featuredRadiusHover ?? featuredRadius }px` }
 						units={ [ { value: 'px', label: 'px', default: 8 } ] }
 						onChange={ ( val ) =>
 							setAttributes( { featuredRadiusHover: parseFloat( val ) || 0 } )
 						}
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					<SelectControl
 						label={ __( 'Font weight', 'sgs-blocks' ) }
@@ -1482,7 +1483,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<PanelBody title={ __( 'Burger', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* Icon colour + background (Normal + Hover) moved to
 					   the top-level SgsColourPanel (D618/D609). */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Button size', 'sgs-blocks' ) }
 						value={ burgerSize }
 						units={ [ { value: 'px', label: 'px', default: 44 } ] }
@@ -1493,7 +1494,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'44px minimum for a comfortable touch target (WCAG 2.2 AA).',
 							'sgs-blocks'
 						) }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 			</InspectorControls>

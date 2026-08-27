@@ -32,9 +32,10 @@ import {
 	TypographyControls,
 	fillRow,
 	textRow,
+	SgsLengthControl,
 } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
 // composite using only box+width, so it migrates BLOCK-PRIVATE — dropped
@@ -1242,14 +1243,13 @@ export default function Edit( { attributes, setAttributes, context } ) {
 							}
 						} }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length applied as max-width (e.g. 800px). Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -10,7 +10,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl } from '../../components';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
@@ -19,7 +19,7 @@ import {
 	sgsLengthPreview,
 	resolveTextColourPreviewStyle,
 } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
@@ -380,7 +380,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { lineHeight: 1.2, lineHeightUnit: 'em' } )
 							}
 						>
-							<UnitControl
+							{ /* SgsLengthControl adoption (Gate B, presets={false}) — split-scalar
+							   case (composeUnit builds a display string from two separate
+							   attrs, lineHeight+lineHeightUnit; parseUnit splits the raw
+							   string back on change). Safe: SgsLengthControl's presets=false
+							   branch forwards the raw UnitControl string unchanged to
+							   onChange, so this caller's own split-and-setAttributes logic
+							   is untouched — see Branch 2 report. */ }
+							<SgsLengthControl
 								label={ __( 'Line height', 'sgs-blocks' ) }
 								value={ composeUnit( lineHeight, lineHeightUnit ) }
 								units={ LINE_HEIGHT_UNITS }
@@ -388,8 +395,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									const { num, unit } = parseUnit( raw, lineHeightUnit !== undefined ? lineHeightUnit : '' );
 									setAttributes( { lineHeight: num, lineHeightUnit: unit } );
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						</ToolsPanelItem>
 
@@ -403,7 +409,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { letterSpacing: 0.08, letterSpacingUnit: 'em' } )
 							}
 						>
-							<UnitControl
+							{ /* SgsLengthControl adoption (Gate B, presets={false}) — same
+							   split-scalar shape as Line height above (composeUnit/parseUnit),
+							   safe passthrough, see Branch 2 report. */ }
+							<SgsLengthControl
 								label={ __( 'Letter spacing', 'sgs-blocks' ) }
 								value={ composeUnit( letterSpacing, letterSpacingUnit ) }
 								units={ LETTER_SPACING_UNITS }
@@ -411,8 +420,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
 									setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						</ToolsPanelItem>
 
@@ -487,7 +495,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					     the operator picks the unit. Stored as a CSS-length
 					     STRING; a legacy bare number is treated as px by both
 					     render.php and the canvas preview. */ }
-					<UnitControl
+					{ /* SgsLengthControl adoption (Gate B, presets={false}). */ }
+					<SgsLengthControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						value={ borderRadius ?? '' }
 						units={ SGS_LENGTH_UNITS }
@@ -496,8 +505,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								borderRadius: sgsNormaliseLength( val ),
 							} )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
 					     (Spec 35 box-tier migration) — ONE attr; each tier holds the

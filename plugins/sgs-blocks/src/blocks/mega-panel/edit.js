@@ -50,9 +50,10 @@ import {
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	SgsColourPanel,
+	SgsLengthControl,
 } from '../../components';
 import { colourVar } from '../../utils';
-import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /** Default general-variant template: 2 mega-groups (CF-10 pin) — a starting
  *  point only; the panel is NOT locked to this shape (FIX 1). */
@@ -368,7 +369,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /* Layout */ }
 					<ResponsiveControl label={ __( 'Panel max width', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ maxWidth?.[ breakpoint ] || '' }
@@ -377,7 +378,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										maxWidth: { ...maxWidth, [ breakpoint ]: value || undefined },
 									} )
 								}
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						) }
 					</ResponsiveControl>
@@ -399,7 +400,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ResponsiveControl label={ __( 'Group gap', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Gap', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ groupGap?.[ breakpoint ] || '' }
@@ -408,14 +409,14 @@ export default function Edit( { attributes, setAttributes } ) {
 										groupGap: { ...groupGap, [ breakpoint ]: value || undefined },
 									} )
 								}
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						) }
 					</ResponsiveControl>
 
 					{ /* units array REQUIRED by contract §14 field 2 — added
 					     2026-08-11 (P-SPEC35-BORDER-RESIDUALS item 3). */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						value={ borderRadius || '' }
 						onChange={ ( value ) => setAttributes( { borderRadius: value || '20px' } ) }
@@ -425,7 +426,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ value: 'rem', label: 'rem', default: 1.25 },
 							{ value: 'em', label: 'em', default: 1.25 },
 						] }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 
@@ -542,11 +543,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Aside width', 'sgs-blocks' ) }
 						value={ asideWidth || '' }
 						onChange={ ( value ) => setAttributes( { asideWidth: value || '340px' } ) }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					<ToggleGroupControl
 						label={ __( 'Divider', 'sgs-blocks' ) }
@@ -576,7 +577,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked
 								clearable
 							/>
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Divider width', 'sgs-blocks' ) }
 								value={ asideSeparator?.width || '' }
 								onChange={ ( value ) =>
@@ -584,7 +585,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										asideSeparator: { ...asideSeparator, width: value || '' },
 									} )
 								}
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						</>
 					) }

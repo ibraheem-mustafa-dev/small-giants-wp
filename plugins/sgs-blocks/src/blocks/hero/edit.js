@@ -30,6 +30,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	SgsColourPanel,
+	SgsLengthControl,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import {
@@ -50,7 +51,7 @@ import {
 	BackgroundPanel,
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 
@@ -1311,7 +1312,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								<>
 									<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>
 									<RRangeControl label={ __( 'Width', 'sgs-blocks' ) } attrDesktop="splitMediaWidth" attrTablet="splitMediaWidthTablet" attrMobile="splitMediaWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
-									<UnitControl
+									<SgsLengthControl
 										label={ __( 'Width unit', 'sgs-blocks' ) }
 										value={ `${ splitMediaWidth || 0 }${ splitMediaWidthUnit || 'px' }` }
 										units={ [
@@ -1322,8 +1323,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
 											setAttributes( { splitMediaWidthUnit: unit } );
 										} }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
+										presets={ false }
 									/>
 									{ /* splitMediaHeight is the OBJECT model (Spec 35 / FR-37-16): one attr
 									     holding all three tiers, so this uses ResponsiveOverride rather
@@ -1351,7 +1351,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											/>
 										) }
 									</ResponsiveOverride>
-									<UnitControl
+									<SgsLengthControl
 										label={ __( 'Height unit', 'sgs-blocks' ) }
 										value={ `${ splitMediaHeight?.desktop || 0 }${ splitMediaHeightUnit || 'px' }` }
 										units={ [
@@ -1362,8 +1362,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											const unit = val?.replace( /[\d.]+/, '' ) || 'px';
 											setAttributes( { splitMediaHeightUnit: unit } );
 										} }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
+										presets={ false }
 									/>
 								</>
 							) }

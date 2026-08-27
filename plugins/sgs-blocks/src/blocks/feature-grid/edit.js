@@ -10,8 +10,7 @@ import {
 	SelectControl,
 	RangeControl,
 } from '@wordpress/components';
-import { ResponsiveOverride, SgsColourPanel, fillRow } from '../../components';
-import { UnitControl } from '../../components/primitives';
+import { ResponsiveOverride, SgsColourPanel, fillRow, SgsLengthControl } from '../../components';
 import { resolveResponsiveTier } from '../../utils';
 
 const LAYOUT_MODE_OPTIONS = [
@@ -207,8 +206,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 
+					{ /* SgsLengthControl adoption (Gate B, presets={false}) — split-scalar
+					   case: minItemWidth (number) + minItemWidthUnit (string) are two
+					   separate stored attrs composed into one display string, same
+					   shape as label/edit.js's composeUnit pattern. Safe: SgsLengthControl's
+					   presets=false branch forwards the raw UnitControl string unchanged
+					   to onChange, so the split-and-setAttributes logic below is
+					   untouched — see Branch 2 report. */ }
 					{ 'auto-flex' === layoutMode && (
-						<UnitControl
+						<SgsLengthControl
 							label={ __( 'Min item width', 'sgs-blocks' ) }
 							value={ `${ minItemWidth }${ minItemWidthUnit || 'px' }` }
 							units={ [
@@ -221,8 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								const num  = parseFloat( val ) || 120;
 								setAttributes( { minItemWidth: num, minItemWidthUnit: unit } );
 							} }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							presets={ false }
 						/>
 					) }
 

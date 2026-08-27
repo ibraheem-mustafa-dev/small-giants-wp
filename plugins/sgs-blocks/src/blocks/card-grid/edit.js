@@ -18,11 +18,10 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsColourPanel } from '../../components';
+import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsColourPanel, SgsLengthControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
 import { colourVar, spacingVar, resolveResponsiveTier } from '../../utils';
-import { UnitControl } from '../../components/primitives';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -788,11 +787,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ /* Contract §14.3 forbids a raw TextControl taking free CSS here —
 					     it accepted invalid values and offered no unit affordance.
-					     UnitControl per §14.1/§14.2 with an explicit units array
+					     SgsLengthControl per §14.1/§14.2 with an explicit units array
 					     (D561). The attribute stays `type: string` and render.php:72
 					     still reads a plain string, so the value domain is unchanged;
 					     the canary carried 0 stored values at migration. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ cardRadius || '' }
 						onChange={ ( val ) =>
@@ -808,7 +807,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Leave empty to use the theme default.',
 							'sgs-blocks'
 						) }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }

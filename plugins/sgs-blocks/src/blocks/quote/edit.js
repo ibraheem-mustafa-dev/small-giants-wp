@@ -51,9 +51,10 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 	ShadowControl,
+	SgsLengthControl,
 } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -632,7 +633,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									{ ( { ownValue, setOwnValue } ) => {
 										const unitVal = attributionFontSizeUnit || 'px';
 										return (
-											<UnitControl
+											<SgsLengthControl
 												label={ __( 'Font size', 'sgs-blocks' ) }
 												hideLabelFromVision
 												value={ composeUnit( ownValue, unitVal ) }
@@ -642,8 +643,7 @@ export default function Edit( { attributes, setAttributes } ) {
 													setOwnValue( num );
 													setAttributes( { attributionFontSizeUnit: unit } );
 												} }
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
+												presets={ false }
 											/>
 										);
 									} }
@@ -707,7 +707,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { attributionLineHeight: undefined } )
 								}
 							>
-								<UnitControl
+								<SgsLengthControl
 									label={ __( 'Line height', 'sgs-blocks' ) }
 									value={ composeUnit( attributionLineHeight, attributionLineHeightUnit ) }
 									units={ LINE_HEIGHT_UNITS }
@@ -715,8 +715,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										const { num, unit } = parseUnit( raw, attributionLineHeightUnit || 'em' );
 										setAttributes( { attributionLineHeight: num, attributionLineHeightUnit: unit } );
 									} }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
+									presets={ false }
 								/>
 							</ToolsPanelItem>
 
@@ -744,7 +743,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										const unitVal = attributionMarginUnit || 'px';
 										if ( tier === 'desktop' ) {
 											return (
-												<UnitControl
+												<SgsLengthControl
 													label={ __( 'Margin-top', 'sgs-blocks' ) }
 													hideLabelFromVision
 													value={ composeUnit( ownValue, unitVal ) }
@@ -754,8 +753,7 @@ export default function Edit( { attributes, setAttributes } ) {
 														setOwnValue( num );
 														setAttributes( { attributionMarginUnit: unit } );
 													} }
-													__nextHasNoMarginBottom
-													__next40pxDefaultSize
+													presets={ false }
 												/>
 											);
 										}
@@ -917,7 +915,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 								>
 									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-										<UnitControl
+										<SgsLengthControl
 											label={ __( 'Max-width', 'sgs-blocks' ) }
 											hideLabelFromVision
 											value={ ownValue || '' }
@@ -925,8 +923,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											units={ LENGTH_UNITS }
 											onChange={ ( val ) => setOwnValue( val ?? '' ) }
 											help={ __( 'Leave blank for no cap — on tablet or mobile, blank inherits the tier above.', 'sgs-blocks' ) }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
+											presets={ false }
 										/>
 									) }
 								</ResponsiveOverride>

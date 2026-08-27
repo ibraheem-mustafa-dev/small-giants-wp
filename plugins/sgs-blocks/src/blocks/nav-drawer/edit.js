@@ -71,8 +71,8 @@ const BG_ATTACHMENT_OPTIONS = [
 	{ label: __( 'Fixed', 'sgs-blocks' ), value: 'fixed' },
 ];
 import { close } from '@wordpress/icons';
-import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -330,7 +330,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						anchor?.mobile === 'trigger' || anchor?.mobile === 'centred' ) && (
 						<ResponsiveControl label={ __( 'Panel size', 'sgs-blocks' ) }>
 							{ ( breakpoint ) => (
-								<UnitControl
+								<SgsLengthControl
 									label={ __( 'Panel size', 'sgs-blocks' ) }
 									hideLabelFromVision
 									help={ __( 'Maximum width of a corner or centred panel at this device.', 'sgs-blocks' ) }
@@ -340,8 +340,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											panelSize: { ...panelSize, [ breakpoint ]: value || undefined },
 										} )
 									}
-									__next40pxDefaultSize
-									__nextHasNoMarginBottom
+									presets={ false }
 								/>
 							) }
 						</ResponsiveControl>
@@ -417,7 +416,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					     the panel's own fill/blur IS the occlusion (8/8 reference sites
 					     skip a dedicated backdrop div). Defaults (opaque, no blur) are
 					     unchanged from before this control existed. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Panel opacity', 'sgs-blocks' ) }
 						help={ __( '100 = solid (default). Lower it to let the page show through. Needs a background colour set.', 'sgs-blocks' ) }
 						value={ `${ Math.round( ( surfaceOpacity ?? 1 ) * 100 ) }%` }
@@ -428,17 +427,15 @@ export default function Edit( { attributes, setAttributes } ) {
 							} );
 						} }
 						units={ [ { value: '%', label: '%' } ] }
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
+						presets={ false }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Background blur', 'sgs-blocks' ) }
 						help={ __( 'Blurs whatever sits behind the drawer. Leave empty for none (default).', 'sgs-blocks' ) }
 						value={ surfaceBlur || '' }
 						onChange={ ( value ) => setAttributes( { surfaceBlur: value || '' } ) }
 						units={ [ { value: 'px', label: 'px' } ] }
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
+						presets={ false }
 					/>
 
 					{ /* Layout */ }
@@ -457,7 +454,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ResponsiveControl label={ __( 'Inner element spacing', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Gap', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ drawerGap?.[ breakpoint ] || '' }
@@ -466,8 +463,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										drawerGap: { ...drawerGap, [ breakpoint ]: value || undefined },
 									} )
 								}
-								__next40pxDefaultSize
-								__nextHasNoMarginBottom
+								presets={ false }
 							/>
 						) }
 					</ResponsiveControl>

@@ -46,8 +46,40 @@ const CUSTOM_VALUE = '__custom__';
  *                                        slug string alongside a length — same
  *                                        undeclared-attr silent-discard guard
  *                                        (D338) fontSizePresets already carries.
+ * @param {string}   [props.help]         Passthrough to UnitControl's `help`.
+ * @param {string}   [props.placeholder]  Passthrough to UnitControl's `placeholder`
+ *                                        (e.g. showing an inherited tier value).
+ * @param {boolean}  [props.hideLabelFromVision] Passthrough — visually hide the
+ *                                        label while keeping it for a11y, for a
+ *                                        control already labelled by its wrapper
+ *                                        (e.g. a `ResponsiveOverride`/`ResponsiveControl`
+ *                                        render-prop child).
+ * @param {Object}   [props.style]        Passthrough inline style (e.g. spacing
+ *                                        adjustments a caller applies around the
+ *                                        control).
+ *
+ * Added 2026-08-27 (Branch 2, Gate B adoption) — three concurrent adoption
+ * passes independently found the same gap: this component had no rest-prop
+ * spread, so `help`/`placeholder`/`hideLabelFromVision` silently vanished on
+ * any mount that used them. `hideLabelFromVision` loss is not just lost hint
+ * text — it is a visible regression (the inner label renders, duplicating the
+ * wrapper's own label). Named params, not a `...rest` spread: SgsLengthControl
+ * is deliberately a thin wrapper with a known, documented prop surface, not an
+ * arbitrary passthrough — the presets=true branch has its own dedicated
+ * SelectControl + Custom-value UnitControl and each needs an explicit decision
+ * about which of these apply to which, not silent forwarding.
  */
-export default function SgsLengthControl( { label, value, onChange, units, presets = false } ) {
+export default function SgsLengthControl( {
+	label,
+	value,
+	onChange,
+	units,
+	presets = false,
+	help,
+	placeholder,
+	hideLabelFromVision,
+	style,
+} ) {
 	// useSettings() may hand back an origin-keyed OBJECT rather than an array
 	// (measured on the canary 2026-08-19 for typography.fontFamilies/fontSizes).
 	// Here that failed QUIETLY rather than loudly: `( obj || [] ).length` is
@@ -61,6 +93,10 @@ export default function SgsLengthControl( { label, value, onChange, units, prese
 		return (
 			<UnitControl
 				label={ label }
+				hideLabelFromVision={ hideLabelFromVision }
+				help={ help }
+				placeholder={ placeholder }
+				style={ style }
 				value={ value ?? '' }
 				onChange={ ( raw ) => onChange( raw ?? '' ) }
 				units={ units }
@@ -83,6 +119,9 @@ export default function SgsLengthControl( { label, value, onChange, units, prese
 		<>
 			<SelectControl
 				label={ label }
+				hideLabelFromVision={ hideLabelFromVision }
+				help={ help }
+				style={ style }
 				value={ selectValue }
 				options={ options }
 				onChange={ ( next ) => {

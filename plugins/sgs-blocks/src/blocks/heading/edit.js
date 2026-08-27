@@ -16,9 +16,9 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 	DesignTokenPicker,
+	SgsLengthControl,
 } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
-import { UnitControl } from '../../components/primitives';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -432,8 +432,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 
-					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
-					<UnitControl
+					{ /* Letter spacing — SgsLengthControl (number + unit in one input) */ }
+					<SgsLengthControl
 						label={ __( 'Letter spacing', 'sgs-blocks' ) }
 						value={ composeUnit( letterSpacing, letterSpacingUnit ) }
 						units={ LETTER_SPACING_UNITS }
@@ -441,8 +441,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
 							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
 						} }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 

@@ -30,8 +30,8 @@ import {
 import {
 	PanelBody,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, resolveColourToken, SgsColourPanel } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+import { ResponsiveBoxControl, resolveColourToken, SgsColourPanel, SgsLengthControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
  * Build a CSS box shorthand ("top right bottom left") from a
@@ -234,7 +234,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					     the operator gets whatever unit set core happens to
 					     default to, and '%' (a pill/circle radius) may not be
 					     reachable at all. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ asideRadius || '' }
 						onChange={ ( value ) =>
@@ -246,7 +246,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ value: 'rem', label: 'rem', default: 0.5 },
 							{ value: 'em', label: 'em', default: 0.5 },
 						] }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 
 					<ResponsiveBoxControl

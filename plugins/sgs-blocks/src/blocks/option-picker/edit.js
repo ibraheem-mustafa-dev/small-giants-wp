@@ -32,9 +32,10 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
+	SgsLengthControl,
 } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /* ── Options ─────────────────────────────────────────────────────────────── */
 
@@ -724,7 +725,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /* Border-radius is a CSS-length STRING (number+unit), so the
 					   styling-lift's generic string value lands directly and an
 					   explicit "0"/"0px" is distinct from empty (= CSS default). */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Pill border radius', 'sgs-blocks' ) }
 						value={ pillBorderRadius || '' }
 						units={ LENGTH_UNITS }
@@ -732,8 +733,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { pillBorderRadius: val ?? '' } )
 						}
 						help={ __( 'Leave blank for the default. Set 0 for square corners.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 					{ /* Pill padding — SGS custom TIER-OF-BOXES object family
 					   {desktop,tablet,mobile} (Spec 35 box-tier migration) — the
@@ -784,7 +784,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							hasValue={ () => !! pillSelectedBorderRadius }
 							onDeselect={ () => setAttributes( { pillSelectedBorderRadius: '' } ) }
 						>
-							<UnitControl
+							<SgsLengthControl
 								label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
 								help={ __( 'Leave blank to match the resting pill radius above. Set 0 for square corners.', 'sgs-blocks' ) }
 								value={ pillSelectedBorderRadius || '' }
@@ -792,8 +792,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val ) =>
 									setAttributes( { pillSelectedBorderRadius: val ?? '' } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -854,23 +853,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						} }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ width || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 400px. Leave blank for natural width.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 

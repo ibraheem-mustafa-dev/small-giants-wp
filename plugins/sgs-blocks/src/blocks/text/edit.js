@@ -29,9 +29,9 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
+	SgsLengthControl,
 } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
-import { UnitControl } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -607,8 +607,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ /* Max width — UnitControl (number + unit in one input) */ }
-					<UnitControl
+					{ /* Max width — SgsLengthControl (number + unit in one input) */ }
+					<SgsLengthControl
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ composeUnit( maxWidth, maxWidthUnit ) }
 						units={ MAX_WIDTH_UNITS }
@@ -616,8 +616,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							const { num, unit } = parseUnit( raw, maxWidthUnit || 'px' );
 							setAttributes( { maxWidth: num, maxWidthUnit: unit } );
 						} }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 				</PanelBody>
 
@@ -713,8 +712,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ dropCap && (
 						<>
-							{ /* First-letter size — UnitControl (number + unit in one input) */ }
-							<UnitControl
+							{ /* First-letter size — SgsLengthControl (number + unit in one input) */ }
+							<SgsLengthControl
 								label={ __( 'First-letter size', 'sgs-blocks' ) }
 								value={ composeUnit( firstLetterFontSize, firstLetterFontSizeUnit ) }
 								units={ FIRST_LETTER_SIZE_UNITS }
@@ -725,8 +724,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										firstLetterFontSizeUnit: unit,
 									} );
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								presets={ false }
 							/>
 							<SelectControl
 								label={ __( 'First-letter weight', 'sgs-blocks' ) }

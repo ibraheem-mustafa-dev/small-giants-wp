@@ -14,6 +14,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
 	SgsColourPanel,
+	SgsLengthControl,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -1723,18 +1724,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								     bare number is treated as px by render.php.
 								     Mirrors sgs/label — both feed the SAME shared
 								     sgs_label_box_css_rule() emitter. */ }
-								<UnitControl
+								<SgsLengthControl
 									label={ __( 'Tag border radius', 'sgs-blocks' ) }
 									value={ attributes.tagBorderRadius ?? '' }
 									units={ SGS_LENGTH_UNITS }
+									presets={ false }
 									onChange={ ( v ) =>
 										setAttributes( {
 											tagBorderRadius:
 												sgsNormaliseLength( v ),
 										} )
 									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 								<BoxControl
 									label={ __( 'Tag padding', 'sgs-blocks' ) }
