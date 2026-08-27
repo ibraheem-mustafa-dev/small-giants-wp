@@ -93,8 +93,10 @@ under a new name). Steps 1-6 + Gates A+B+C CLOSED (D822/D823), LIVE via isolated
 shared-tree collisions, D816 — hit twice more this session). Payload-verify PASSED both deploys.
 ⭐ **Real differentiator identified, NOT built (parked):** effect recolours itself via the same
 per-client theme tokens the whole site uses — no forked-shader competitor can match that.
-⛔ **Still open (D822):** Pause toggle stays visible+clickable when the effect never boots at
-all (CSS specificity tie with `[hidden]`). One-line fix available, not applied.
+✅ **CLOSED (D826):** Pause toggle's `[hidden]` specificity tie fixed (`:not([hidden])`, (0,2,0)
+   beats the UA rule's (0,1,0)), deployed, live-verified on canary page 2740 — `display:none`
+   confirmed when hidden. A second real gap fixed at the source along the way: `lucide-static`
+   missing from the MAIN tree's `node_modules` (not just a worktree issue), `npm install` run.
 ✅ 3 live bugs FIXED (D814/D815), attribution gate BUILT (D813), POC/Q6/Gate E CLOSED
 (D790/D791/D794). Framebuffer still needs its own design gate.
 

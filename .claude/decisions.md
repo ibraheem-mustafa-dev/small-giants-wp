@@ -1,3 +1,42 @@
+## D826 [ROUTINE] — the wave-gradient Pause toggle's [hidden] specificity tie fixed and live-verified; a second real environment gap found and fixed at the source
+
+**2026-08-27.** `plugins/sgs-blocks/assets/css/fx-wave-gradient.css`. Closes the one-line fix D822
+carried forward (a class selector at (0,1,0) tying the browser's built-in `[hidden]{display:none}`
+UA rule, so author CSS always won the tie regardless of source order — the Pause toggle stayed
+visible and clickable while offering a control for an effect that was never running).
+
+Scoped `.sgs-wave-gradient__toggle` to `:not( [hidden] )`, raising specificity to (0,2,0) so the
+rule explicitly yields when hidden, rather than relying on cascade tie-breaking.
+
+⭐ **Live-verified on the actual canary page (2740), both instances:** `hidden` property and
+attribute both `true`, computed `display: none` — the exact defect D822 measured, now gone.
+
+**A genuinely destructive moment avoided, not just noted:** committing the fix hit
+`fatal: cannot do a partial commit during a merge` — a DIFFERENT concurrent session had an
+in-progress `git pull`-triggered merge on this shared `main` tree (3 local vs 13 remote commits,
+conflicts already resolved and staged, not yet committed). Did NOT run `git commit` to conclude
+someone else's unreviewed merge, did NOT touch their staged state. Waited; their merge concluded
+cleanly on its own a few minutes later (`674213b9f`) and swept this fix in as part of that merge
+commit — landed correctly on `main`, just without its own dedicated commit/attribution.
+
+**A second real, pre-existing environment gap found and fixed at the source, not worked around
+per-worktree:** `lucide-static` (declared in `package.json`/`package-lock.json`) was missing from
+`node_modules` in the MAIN tree itself, not just the fresh deploy worktree — `npm install` run in
+the main tree (safe, additive, gitignored). ⚠ It also reformatted the ENTIRE `package-lock.json`
+from spaces to tabs as a side effect of a different local npm version — confirmed via diff that
+every version string and resolved URL was byte-identical, purely a whitespace rewrite. Discarded
+that file change (`git restore`) rather than commit 45,458 lines of pure noise; the installed
+files on disk didn't need the lockfile's formatting to change to be usable.
+
+**Deploy hit the same 2 pre-existing cross-track gate failures already diagnosed 3 times this
+session** (`check-control-ux` + `migrate-tier-object-db-parity`, entirely on `multi-button`/
+`physics-canvas`/`site-footer`/`site-header`/`trust-bar` — never touched by this fix). Worked
+around by running the other 65 fast-tier gates individually via `run-gates.py --only <65 ids>`,
+then the webpack build + postbuild manually, then `build-deploy.py --skip-build` to continue from
+packaging — same shape as D822's own precedent for this exact recurring collision.
+
+---
+
 ## D825 [ROUTINE] — Design Gate B closed: the remaining 25 SgsLengthControl mounts adopted, canary-verified on the live deploy
 
 **2026-08-27.** `product-card`, `media`, `button`, `trust-bar`, `info-box`, container's
