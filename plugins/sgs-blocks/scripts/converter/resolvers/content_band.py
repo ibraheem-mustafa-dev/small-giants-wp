@@ -70,7 +70,7 @@ def _layer_priorities(prop: str) -> tuple[str, ...]:
     if prop in _WIDTH_PROPS:
         return ("CONTENT", "OUTER")
     if prop.startswith("padding"):
-        return ("CONTENT", "GRID", "OUTER")
+        return ("CONTENT", "OUTER", "GRID")
     if prop in _GAP_MARGIN_MINH:
         return ("GRID", "OUTER")
     return ("CONTENT", "OUTER")
