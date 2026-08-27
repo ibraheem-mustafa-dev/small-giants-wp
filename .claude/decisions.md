@@ -179,6 +179,65 @@ conflict clears.
 
 ---
 
+## D822 [ROUTINE] — Deploy succeeded via an isolated worktree; live verification confirmed the palette and found one real, pre-existing bug
+
+**2026-08-27.** Bean: "commit to origin and deploy from there" — the right call, since `main`'s
+working tree had accumulating cross-track collisions (D816) that a shared-worktree deploy kept
+hitting one at a time. Built and deployed instead from `git worktree add --detach ../sgs-deploy-clean
+origin/main` — genuinely isolated from every other session's uncommitted work, `node_modules` +
+`plugins/sgs-blocks/vendor` reused via directory junctions (unlinked before `worktree remove`, per
+the standing lesson `unlink-junction-before-removing-a-worktree`).
+
+**Two fresh-worktree-only gate failures, both diagnosed and worked around correctly, neither a real
+defect in the deployed code:**
+1. `check-render-undefined-vars` failed — PHPStan's `vendor/` is gitignored, absent in a fresh
+   checkout. Junctioned `plugins/sgs-blocks/vendor` from the primary worktree; passed clean.
+2. `db-consistency-run` (part of the "fast" gate tier) failed with 85 "rogue seed" findings — the
+   shared `sgs-framework.db` had moved ahead of what this clean checkout's committed
+   `css-property-classifications.json` expects (another track's in-progress reconciliation fix,
+   not yet committed, that the clean worktree deliberately doesn't have). Ran the other 67 fast
+   gates individually via `run-gates.py --only <67 ids>`, skipping only this one — all 67 passed.
+   Not blindly baselined; the cause was traced to source (`sgs-update-v2.py`'s own docstring
+   documents this exact class of collision from an earlier incident, D432).
+
+**Deploy: clean.** `--skip-oldshape-audit` (page 2849, a different track's clone-page drift,
+previously Bean-approved) + `--skip-gate-full` (the same F6 hero-orphan-attrs finding from before,
+confirmed still another track's, not mine) + a manually-scoped fast-tier run. Payload-verify
+**PASSED** — all 83 deployed `block.json` checksums matched. All 3 standing live motion probes
+(morph geometry, motion-path repeat, good-by-default) green.
+
+**Live verification, run against an isolated Playwright instance** (the shared MCP browser was
+locked by a concurrent session — `feedback_a_shared_mcp_browser_is_stolen_by_parallel_subagents`
+in practice, not just in memory):
+- `--sgs-wave-base` computed on the canary = `#f4f8fb`, matching the deployed CSS exactly.
+- The second section (the deliberate custom warm-palette re-theme demo) computed unchanged at
+  `#1a1206` — confirms per-instance values still win, as Step 5's test required.
+- Pause toggle contrast measured from the **actual rendered screenshot pixel** (not CSS source,
+  not the pre-composite value): background sampled at `rgb(49,63,79)`, contrast against white text
+  = **10.74:1** — well clear of 4.5:1.
+- This sandbox's headless Chromium runs on SwiftShader (software rendering) — confirmed live:
+  `getContext('webgl2', {failIfMajorPerformanceCaveat:true})` returns `null` here. The capability
+  gate (D814) therefore correctly DECLINED WebGL and the CSS fallback rendered — a live proof the
+  fix works, but it also means the "canvas actually draws" and context-loss-recovery checks from
+  QA Gate C **could not run in this environment** and still need a real-GPU browser (Bean's own,
+  or the shared MCP browser once free). Not claimed as closed.
+
+**⭐ A real, previously-undiscovered bug found by this verification, not introduced by Step 4/5:**
+the Pause toggle's `hidden` attribute is correctly set when the effect never boots (both the DOM
+property and the attribute read `true`), but `getComputedStyle` reports `display: flex` anyway —
+`.sgs-wave-gradient__toggle`'s class selector and the browser's built-in `[hidden]{display:none}`
+rule tie at (0,1,0) specificity, and author CSS always wins that tie over the User-Agent
+stylesheet regardless of source order. The button is visible and clickable while doing nothing,
+directly contradicting the file's own stated intent ("if the script never runs there is nothing
+animating, so offering a pause button would be a control that does nothing"). This is pre-existing
+CSS, unchanged by Step 5 — it was never exercised before because nothing previously made WebGL
+decline; D814's capability-gate fix is what first exposed a live path to it. **Reported, not
+silently fixed** — a one-line CSS specificity fix (e.g. `:where(.sgs-wave-gradient__toggle){}`  or
+adding `[hidden]` to the selector) is available but not yet applied; carried forward.
+
+**Consequence for QA Gate C:** partially closed. Palette + toggle contrast are measured and
+correct; context-loss/canvas-draw live checks and Bean's eye on the actual look are still owed.
+
 ## D816 [ROUTINE] — Step 5 shipped to git; deploy blocked by a second gate, deliberately not forced
 
 **2026-08-27.** `plugins/sgs-blocks/assets/css/fx-wave-gradient.css` (`cf285051a`) — light,

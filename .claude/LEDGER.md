@@ -82,33 +82,26 @@ report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reason
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (Steps 1-5 done; DEPLOY BLOCKED, Bean said move on for now)
+## ▶ MOTION TRACK — 2026-08-27 (DEPLOYED + partly live-verified; QA Gate C not yet closed)
 
-⭐ **START HERE: `.claude/plans/phase-1-fr3831-hygiene-and-look.md` Step 6.** Steps 1-5 + Gates A+B
-done, code on `main`. **Blocked at deploy (D816) — do NOT retry with `--allow-dirty`.**
-⛔ **9 files have OTHER sessions' genuinely uncommitted work** (`hero/edit.js`,
-`button/render.php`, `hover-effects.php`/`.js`, `cta-section/style.css`, `button/style.css`, 3
-`block.json`s) — the exact post-D336 gate. Bean: wait, don't force. Re-run `build-deploy.py
---target sandybrown --blocks-only --skip-oldshape-audit` once those tracks commit (skip already
-Bean-approved — page 2849's drift is a different track's clone work; re-check still needed).
-⭐ **The rejected look is FIXED** — palette landed (`cf285051a`): light base + 3 hue-adjacent
-blue-cyan colours replace navy/blue/purple/pink; toggle contrast ~10:1 (was 3.36:1). Canary 2740's
-default-palette section updated; its custom-re-theme section deliberately untouched. **Not LIVE yet.**
-✅ **3 live bugs FIXED + reviewed (D814/D815):** context-loss dead rectangle, `hexToRgb` silent
-kill switch (oklch/wide-gamut via canvas fallback), capability gate wired (shared effect on
-`surface-treatment` disclosed, traced safe). 2 review rounds + 4-seat QC council; caught a real
-self-test bug using a live file as its own fixture (fixed, `b9d03ff8e`).
-⚠ **QA Gate C (live Playwright + Bean's eye) cannot run until deploy lands** — verified so far by
-static-trace/jsdom only, not live.
-✅ **Attribution gate BUILT (D813), 0 live refs.**
-✅ **POC + Q6 + Gate E CLOSED (D790/D791/D794).** Framebuffer pass needs a DESIGN GATE. Gate E deferred.
+⭐ **START HERE: `.claude/plans/phase-1-fr3831-hygiene-and-look.md` QA Gate C.** Steps 1-6 + Gates
+A+B done and LIVE on the canary (D822) — deployed from an isolated worktree to dodge cross-track
+collisions (D816). Payload-verify PASSED, 83/83 checksums.
+⭐ **Palette CONFIRMED LIVE** — `--sgs-wave-base` computed = `#f4f8fb` on the canary; toggle
+contrast measured from an actual rendered pixel = **10.74:1** (was 3.36:1). Second section (custom
+re-theme demo) confirmed UNCHANGED at `#1a1206` — per-instance values still win.
+⛔ **NEW bug (D822), NOT fixed:** Pause toggle's `hidden` attribute sets correctly but its class
+rule ties CSS specificity with the browser's `[hidden]` default and wins — visible+clickable doing
+nothing when WebGL declines. Pre-existing CSS, only now exercised (D814 is the first thing that
+ever made WebGL decline). One-line fix available, not applied.
+⚠ **QA Gate C still open:** sandbox has no real GPU (SwiftShader) so WebGL correctly declines here
+— proves the fix works, but canvas-draws + context-loss checks need a real GPU browser. Bean's eye
+on the look also still owed.
+✅ **3 live bugs FIXED (D814/D815), attribution gate BUILT (D813), POC/Q6/Gate E CLOSED
+(D790/D791/D794).** Framebuffer pass needs a DESIGN GATE.
 
 **Prior history (D766/D767, D778-D781, 2026-08-24/25):** cursor field (2721) + magnetic pull
-(2737) shipped; 3 gate-passed defects fixed on eye-review; FR-38-30/FR-38-31 shipped. Do not
-restate — read the D-numbers if detail is needed.
-
-⭐ **The gradient's rejected LOOK is diagnosed** — see the top of this track. Its cause stated
-here ("4 interpolated stops can't reproduce that variation") was measured FALSE on 2026-08-25.
+(2737) shipped; 3 gate-passed defects fixed on eye-review. Do not restate — read the D-numbers.
 
 ### ▶ NEXT, in order
 
