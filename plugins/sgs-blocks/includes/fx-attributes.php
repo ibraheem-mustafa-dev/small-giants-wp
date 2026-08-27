@@ -155,6 +155,14 @@ const FX_ATTR_MAP = array(
 	'fxParticleColour'     => 'data-sgs-fx-particle-colour',
 	// FR-38-33 grid-dot field. Same shape as the particle colour above.
 	'fxGridDotColour'      => 'data-sgs-fx-grid-colour',
+	// Geometry. These attribute names are the ones `fx-grid-dots.js`'s
+	// readOptions() already reads and clamps; the engine's own DEFAULTS table
+	// supplies any value a client leaves unset.
+	'fxGridCell'           => 'data-sgs-fx-grid-cell',
+	'fxGridDotSize'        => 'data-sgs-fx-grid-dot',
+	'fxGridRadius'         => 'data-sgs-fx-grid-radius',
+	'fxGridLean'           => 'data-sgs-fx-grid-lean',
+	'fxGridEase'           => 'data-sgs-fx-grid-ease',
 );
 
 /**
@@ -429,7 +437,14 @@ function sgs_fx_effect_param_scope(): array {
 		 * wipe the client's chosen colour on EVERY render while the editor still
 		 * showed it set.
 		 */
-		'grid-dots'         => array( 'fxGridDotColour' ),
+		'grid-dots'         => array(
+			'fxGridDotColour',
+			'fxGridCell',
+			'fxGridDotSize',
+			'fxGridRadius',
+			'fxGridLean',
+			'fxGridEase',
+		),
 		'wave-gradient'     => array( 'fxWaveVariant', 'fxWaveBase', 'fxWave1', 'fxWave2', 'fxWave3', 'fxWaveSpeed', 'fxWaveAmplitude' ),
 
 		/*

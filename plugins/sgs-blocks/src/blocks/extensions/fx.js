@@ -1114,6 +1114,32 @@ function addFxAttributes( settings, name ) {
 			 * so a client on a palette where primary also fails is not stuck.
 			 */
 			fxGridDotColour: { type: 'string', default: '' },
+			/*
+			 * FR-38-33 grid-dot geometry. The five values Bean tuned in the
+			 * 2026-08-28 prototype, exposed after he saw the shipped panel with
+			 * nothing under the effect picker: "the controls for the grid dots
+			 * effect don't show up". They did not exist — the effect shipped
+			 * param-less on the reasoning that the design gate had settled one
+			 * configuration. That was too thin next to every sibling effect
+			 * (cursor-field 6 params, wave-gradient 7, particles 4).
+			 *
+			 * ⛔ EVERY DEFAULT IS `undefined`, NOT A NUMBER. `grid-dots.js`'s own
+			 * DEFAULTS table is the single source of the Preset B values, and the
+			 * boot module passes `undefined` for an absent attribute so that table
+			 * wins. Repeating 40/2/150/12/260 here would create a second source
+			 * that silently drifts. (This is also the bug that shipped: object
+			 * spread COPIES an explicit undefined over a default, which is why the
+			 * engine now filters undefined keys rather than spreading them.)
+			 *
+			 * The `data-sgs-fx-grid-*` names these map to are the ones
+			 * `fx-grid-dots.js:readOptions()` already reads, and each is clamped
+			 * there to the same bounds the controls advertise.
+			 */
+			fxGridCell: { type: 'number' },
+			fxGridDotSize: { type: 'number' },
+			fxGridRadius: { type: 'number' },
+			fxGridLean: { type: 'number' },
+			fxGridEase: { type: 'number' },
 			fxFieldBlend: { type: 'number' },
 			/* Stored as `fxFieldTrail`, shown to the client as "Drag weight".
 			   The names differ DELIBERATELY. This is a lerp follower and has no
@@ -1363,6 +1389,11 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-particle-size': attributes.fxParticleSize,
 		'data-sgs-fx-particle-colour': attributes.fxParticleColour,
 		'data-sgs-fx-grid-colour': attributes.fxGridDotColour,
+		'data-sgs-fx-grid-cell': attributes.fxGridCell,
+		'data-sgs-fx-grid-dot': attributes.fxGridDotSize,
+		'data-sgs-fx-grid-radius': attributes.fxGridRadius,
+		'data-sgs-fx-grid-lean': attributes.fxGridLean,
+		'data-sgs-fx-grid-ease': attributes.fxGridEase,
 	};
 	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
 	// discarded a deliberate 0 — see the attribute declarations above.
@@ -2857,6 +2888,195 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</>
 						) }
 
+						{ /*
+						  * FR-38-33 grid-dot field. Six controls, added
+						  * 2026-08-28 after Bean saw the shipped panel with
+						  * nothing under the effect picker. It had shipped
+						  * param-less on the reasoning that the design gate
+						  * settled one configuration — true, but a settled
+						  * DEFAULT is not the same as no CONTROL, and every
+						  * sibling effect offers a panel of them.
+						  *
+						  * These are exactly the five values Bean tuned in the
+						  * prototype that ran the design gate, plus the colour
+						  * whose accent default measured 1.35:1 on his own site.
+						  *
+						  * ⛔ Every `value` is passed RAW (possibly undefined)
+						  * rather than defaulted to a number here. The engine's
+						  * DEFAULTS table is the single source of Preset B;
+						  * repeating 40/2/150/12/260 in this file would create a
+						  * second source to drift. An undefined value renders
+						  * the RangeControl at its own start position and sends
+						  * nothing, which is the intended "unset" state.
+						  */ }
+						{ 'grid-dots' === fx && (
+							<>
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxGridDotColour
+									}
+									label={ __( 'Dot colour', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxGridDotColour: '' } )
+									}
+									isShownByDefault
+								>
+									<DesignTokenPicker
+										label={ __(
+											'Dot colour',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxGridDotColour }
+										onChange={ ( value ) =>
+											setParam( {
+												fxGridDotColour: value,
+											} )
+										}
+										linked
+										help={ __(
+											'Defaults to your primary colour. Pick something that reads against this section’s background — a brand accent is usually too close to it.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !== attributes.fxGridCell
+									}
+									label={ __( 'Spacing', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxGridCell: undefined } )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Spacing', 'sgs-blocks' ) }
+										value={ attributes.fxGridCell }
+										onChange={ ( value ) =>
+											setParam( { fxGridCell: value } )
+										}
+										min={ 12 }
+										max={ 200 }
+										step={ 2 }
+										help={ __(
+											'Gap between dots, in pixels. Smaller reads as texture; larger reads as a pattern.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !== attributes.fxGridDotSize
+									}
+									label={ __( 'Dot size', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxGridDotSize: undefined } )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Dot size', 'sgs-blocks' ) }
+										value={ attributes.fxGridDotSize }
+										onChange={ ( value ) =>
+											setParam( { fxGridDotSize: value } )
+										}
+										min={ 0.5 }
+										max={ 12 }
+										step={ 0.5 }
+										help={ __(
+											'Radius of each dot, in pixels.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !== attributes.fxGridRadius
+									}
+									label={ __( 'Reach', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxGridRadius: undefined } )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Reach', 'sgs-blocks' ) }
+										value={ attributes.fxGridRadius }
+										onChange={ ( value ) =>
+											setParam( { fxGridRadius: value } )
+										}
+										min={ 20 }
+										max={ 600 }
+										step={ 10 }
+										help={ __(
+											'How far from the pointer dots start to react, in pixels.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !== attributes.fxGridLean
+									}
+									label={ __( 'Lean', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxGridLean: undefined } )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Lean', 'sgs-blocks' ) }
+										value={ attributes.fxGridLean }
+										onChange={ ( value ) =>
+											setParam( { fxGridLean: value } )
+										}
+										min={ 1 }
+										max={ 60 }
+										step={ 1 }
+										help={ __(
+											'How far a dot leans toward the pointer. Each dot stays locked inside its own cell, so very large values stop having an effect.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !== attributes.fxGridEase
+									}
+									label={ __( 'Settle', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxGridEase: undefined } )
+									}
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __( 'Settle', 'sgs-blocks' ) }
+										value={ attributes.fxGridEase }
+										onChange={ ( value ) =>
+											setParam( { fxGridEase: value } )
+										}
+										min={ 60 }
+										max={ 1200 }
+										step={ 20 }
+										help={ __(
+											'How long dots take to drift back to centre after the pointer leaves, in milliseconds.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+							</>
+						) }
+
 						{ 'particles' === fx && (
 							<>
 								<ToolsPanelItem
@@ -3746,3 +3966,79 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 }, 'withFxControls' );
 
 addFilter( 'editor.BlockEdit', 'sgs/fx-controls', withFxControls );
+
+/**
+ * Static grid-dot preview in the EDITOR CANVAS (FR-38-33).
+ *
+ * Bean, seeing the shipped effect: "the dots aren't visible in the canvas too".
+ * They were not, and by design — `data-sgs-fx` is stamped by a PHP `render_block`
+ * filter that the editor canvas never runs, so no fx effect previews there. The
+ * panel says so ("Scroll effects preview on the live site, not in the editor").
+ *
+ * ── WHAT THIS DOES AND DELIBERATELY DOES NOT DO ───────────────────────────
+ * It paints the RESTING LATTICE only: dot placement, spacing, size and colour,
+ * exactly as they sit before the pointer arrives. It does NOT run the effect —
+ * no canvas, no rAF, no pointer tracking, no module import into the editor
+ * bundle. The interaction remains a live-site thing.
+ *
+ * That is the whole point rather than a shortcut. The resting lattice is the
+ * half a client must JUDGE while designing — is it too dense, too sparse, can I
+ * see the dots against this background — and it is precisely what could not be
+ * judged before: the 1.35:1 colour shipped because nobody could see the dots
+ * until the page was live.
+ *
+ * ── WHY A GRADIENT AND NOT A CANVAS ───────────────────────────────────────
+ * `radial-gradient` + `background-size` IS a dot lattice, natively, at any
+ * pitch. A canvas in the editor would mean importing the engine into the editor
+ * bundle, mounting per block, and tearing down on deselect — real work, real
+ * lifecycle bugs, for a picture CSS already draws.
+ *
+ * ⛔ CUSTOM PROPERTIES ONLY on `wrapperProps.style`. Spec 32 forbids inline
+ * style PROPERTY declarations; a `--var: value` is a VALUE, not a property
+ * declaration (the same distinction `view.js` relies on for `--sgs-di-py`), and
+ * this is editor chrome rather than rendered block output either way. The actual
+ * `background-image` lives in `fx-panel.scss`.
+ */
+const withGridDotsEditorPreview = createHigherOrderComponent(
+	( BlockListBlock ) => {
+		return ( props ) => {
+			const { attributes } = props;
+
+			if ( ! attributes || 'grid-dots' !== attributes.fx ) {
+				return <BlockListBlock { ...props } />;
+			}
+
+			/*
+			 * Fall back to the ENGINE's Preset B values, not to invented ones.
+			 * These three literals are the one place this file repeats them, and
+			 * they exist because CSS cannot read `grid-dots.js`'s DEFAULTS table.
+			 * If Preset B ever changes, it changes in grid-dots.js and here.
+			 */
+			const cell = attributes.fxGridCell || 40;
+			const dot = attributes.fxGridDotSize || 2;
+
+			const wrapperProps = {
+				...( props.wrapperProps || {} ),
+				className: [ props.wrapperProps?.className, 'sgs-grid-dots-preview' ]
+					.filter( Boolean )
+					.join( ' ' ),
+				style: {
+					...( props.wrapperProps?.style || {} ),
+					'--sgs-gd-cell': `${ cell }px`,
+					'--sgs-gd-dot': `${ dot }px`,
+				},
+			};
+
+			return (
+				<BlockListBlock { ...props } wrapperProps={ wrapperProps } />
+			);
+		};
+	},
+	'withGridDotsEditorPreview'
+);
+
+addFilter(
+	'editor.BlockListBlock',
+	'sgs/fx-grid-dots-preview',
+	withGridDotsEditorPreview
+);

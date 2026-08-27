@@ -39,3 +39,49 @@
 	margin-left: 0;
 	margin-right: 0;
 }
+
+/**
+ * FR-38-33 — the STATIC grid-dot lattice, editor canvas only.
+ *
+ * Paints where the dots sit at rest, at the client's chosen spacing, size and
+ * colour. It does NOT run the effect: no canvas, no pointer tracking, no engine
+ * in the editor bundle. `fx.js`'s `withGridDotsEditorPreview` sets the two
+ * custom properties and the class.
+ *
+ * The point is judgement, not fidelity. A client designing a section needs to
+ * see whether the dots are too dense, too sparse, or invisible against this
+ * background — and that last one is not hypothetical: the effect shipped with a
+ * 1.35:1 accent default precisely because nobody could see the dots until the
+ * page was live.
+ *
+ * `currentColor` resolves against the block's own inherited text colour here
+ * rather than the frontend's `--sgs-fx-grid-dot-colour`, because the render
+ * filter that emits that property never runs in the editor. It is a placement
+ * and density preview; the live colour is authoritative.
+ */
+.sgs-grid-dots-preview {
+	background-image: radial-gradient(
+		currentColor var(--sgs-gd-dot, 2px),
+		transparent var(--sgs-gd-dot, 2px)
+	);
+	background-size: var(--sgs-gd-cell, 40px) var(--sgs-gd-cell, 40px);
+	background-position: center center;
+
+	/*
+	 * The lattice is decoration behind the block's own content, and the editor
+	 * shows it at the resting opacity the engine uses when the pointer is far
+	 * away — so what the client sees here matches the quietest state the live
+	 * effect ever reaches, never a flattering brightest one.
+	 */
+	background-blend-mode: normal;
+	opacity: 1;
+}
+
+.sgs-grid-dots-preview::before {
+	/*
+	 * Nothing. Declared so a future author does not reach for ::before to add a
+	 * second layer here — the gradient IS the lattice, and a pseudo-element
+	 * would sit above the block's content rather than behind it.
+	 */
+	content: none;
+}
