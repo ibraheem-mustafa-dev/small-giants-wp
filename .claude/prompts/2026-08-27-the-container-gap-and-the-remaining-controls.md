@@ -1,7 +1,8 @@
-# Next session — the container gap, then the remaining client controls
+# Next session — the remaining client controls
 
 **Written 2026-08-27.** Supersedes `2026-08-27-check-a-blind-spot-and-the-first-controls.md`,
-whose TASK 1b/1c/1d and Gate C changes all shipped. Everything still open is below.
+whose TASK 1b/1c/1d and Gate C changes all shipped. The section-gap work closed the same day.
+Everything still open is below; nothing here is blocked on Bean.
 
 Invoke `/autopilot` first. Bean is QC-only: batch every open question into one message at the
 start, then work without interrupting him until something needs his eye.
@@ -28,27 +29,29 @@ times.
 
 ---
 
-## ⛔ Blocked on Bean — ask this first
+## ✅ CLOSED 2026-08-27 — the section gaps are gone
 
-### The `sgs/container` section gap
+`sgs/container` and `sgs/site-footer` joined the section-gap reset
+(`e592eae78`, `a68ed7fdf`, deployed 1.5.83). The homepage now has **zero** gapped
+sections: five adjacent containers of different colours sit flush, and the 24px band above
+the footer is gone. Verified live on the real homepage, not a probe.
 
-`sgs/container` appears in NO arm of the section-gap reset, on either surface. Adjacent containers
-with different background colours therefore show a **24px white band on the live page**. That is
-the exact symptom the rule exists to prevent, on the dominant section block.
+⚠ **The reasoning that nearly stopped this was wrong, and Bean caught it.** I claimed a
+container becomes full-width by having no maximum width set, so we would need to DETECT
+full-bleed and mark it with a class — a change to the wrapper 48 blocks share. The width
+model is the other way round:
 
-The canvas now shows those bands too, because `9b3f4d97c` stopped the editor concealing them. The
-editor is finally truthful; it will still look like a regression.
+    maxWidth     (OUTER)  default {}                   -> unlimited, FULL-BLEED
+    contentWidth (INNER)  default {"desktop":"normal"}  -> content constrained
 
-**The question is not mechanical.** Should the reset key on BLOCK TYPE at all, or on whether a
-section is genuinely full-bleed? `sgs/hero` sits in the list because it is always full-bleed.
-`sgs/container` is a general layout block — sometimes a section, sometimes not. Adding it to both
-lists restores flush sections and keeps the surfaces in agreement, but removes gaps everywhere
-containers are used.
+Every container is ALREADY a full-bleed section with constrained content, so there was no
+subset to detect and no shared-code change. I also wrongly warned it would remove gaps
+"everywhere containers are used" — every selector uses `>`, direct child only, so nested
+containers keep their spacing. Both corrections are recorded in the CSS.
 
-Rule + evidence: `theme/sgs-theme/assets/css/core-blocks-critical.css`, the "REMOVE INTER-SECTION
-GAPS" block. Full history: `.claude/plans/2026-08-26-margin-reset-residual-defects.md`.
-
----
+⚠ `sgs/site-header` and `sgs/nav-drawer` are deliberately NOT listed: both measure 0px, so
+there is no defect to fix. The header reads 0px only because it is the FIRST child, which
+WordPress zeroes. Put a block above it and it gains the gap — measure then.
 
 ## 1. Migrate off native `supports.spacing`
 
