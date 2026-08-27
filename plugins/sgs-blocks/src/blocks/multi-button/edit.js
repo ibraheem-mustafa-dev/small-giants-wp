@@ -280,13 +280,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							mobile: attributes.paddingMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( { padding: next } );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
+							// Breakpoint -> attr map, not a computed ternary key. This is
+							// the canonical idiom (mirrors sgs/container's edit.js) that
+							// check-control-ux.js recognises as delegated-to-shared-
+							// component; a ternary inside a computed property key reads
+							// to the gate as an unwrapped direct write.
+							const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
+							setAttributes( { [ attrFor[ tier ] ]: next } );
 						} }
 					/>
 					<hr style={ { margin: '16px 0' } } />
@@ -298,13 +298,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							mobile: attributes.marginMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( { margin: next } );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
+							// Same canonical breakpoint -> attr map as Padding above.
+							const attrFor = { base: 'margin', tablet: 'marginTablet', mobile: 'marginMobile' };
+							setAttributes( { [ attrFor[ tier ] ]: next } );
 						} }
 					/>
 				</PanelBody>
