@@ -209,11 +209,62 @@ def build_block_markup(
     # equivalents only — no dead attr on a non-container block); universal (R-31-9),
     # CSS-signature detected (R-31-2), no slug literal. setdefault: never override an
     # explicit layout already set.
+    #
+    # Bug (d): `layout_attrs` derives its value from CSS SIGNATURE alone
+    # (display:grid/flex) — it has no idea what enum the RESOLVED block
+    # actually declares for that attr name. A block that reuses the `layout`
+    # attr NAME for a different closed vocabulary (e.g. a display-mode enum
+    # unrelated to the arrangement trigger) would otherwise get an
+    # out-of-enum value written straight through, which WP's schema
+    # validation then SILENTLY COERCES to the enum's first member at render
+    # time (the testimonial-slider `layout:"grid"` collapse-to-width-0 defect
+    # — never a loud failure). Every candidate write is now gated through the
+    # SAME `services.validate.validate()` every other resolver already uses
+    # (content_band/grid/typography/outer_box/state_value_lift/tier_object/
+    # tier_suffix) — attr-existence AND enum-membership — before it lands in
+    # `attrs`. A value that fails either check is an honest NO_DESTINATION
+    # gap (recorded via `_fold_trace`, the same observability channel every
+    # other gap in this function already uses), never a coerced/invalid
+    # write. No hardcoded per-attr branch (R-31-9): the SAME gate runs for
+    # every key `layout_attrs` returns (`layout` and, for a flex container,
+    # `flexDirection`).
     if rec.slug is not None and "layout" not in attrs:
         from converter.services import arrangement as _arr
         if "layout" in db_lookup.block_attrs(rec.slug):
-            for _lk, _lv in _arr.layout_attrs(section_root, _css_rules, rec.slug).items():
-                attrs.setdefault(_lk, _lv)
+            _layout_candidates = _arr.layout_attrs(section_root, _css_rules, rec.slug)
+            if _layout_candidates:
+                from converter.context import Ctx as _Ctx
+                from converter.services.recognise_helpers import get_container_kind as _gck
+                from converter.services.has_inner import derive_delegates_content as _ddc
+                from converter.services.validate import validate as _validate
+
+                _lconn = db_lookup.get_connection()
+                try:
+                    _lctx = _Ctx(
+                        block_slug=rec.slug,
+                        container_kind=_gck(rec.slug) or "",
+                        delegates_content=_ddc(rec.slug) or 0,
+                        variant_value=None,
+                        variant_attr=None,
+                        node=section_root,
+                        is_root=is_root,
+                        base_layer="ARRANGEMENT",
+                        conn=_lconn,
+                    )
+                    for _lk, _lv in _layout_candidates.items():
+                        if not _validate(_lctx, _lk, str(_lv)):
+                            _fold_trace(
+                                "layout_attr_invalid_enum",
+                                block_slug=rec.slug, attr=_lk, value=_lv,
+                                reason="NO_DESTINATION: value is not a member of the "
+                                       "block's declared enum for this attr (or the "
+                                       "attr is not declared at all) — gapped, not "
+                                       "coerced/written",
+                            )
+                            continue
+                        attrs.setdefault(_lk, _lv)
+                finally:
+                    _lconn.close()
 
     # step 3c: §2.4 / FR-31-5.3 COMPOSITE band-fold. A composite (NOT the default
     # container) whose section root has a SOLE pass-through inner wrapper (trust-bar's
