@@ -79,6 +79,32 @@ layered **CSS gradients** at 60fps, not WebGL. Weigh that path in Phase 2 rather
 
 ---
 
+## ⚠ What the SIX-STYLE VARIANT work established (2026-08-27, D852) — read before Phase 1
+
+A separate, nearer-term piece of work shipped six background styles on the existing
+`fx-wave-gradient` effect. It is NOT this rebuild, but it settled several questions this plan would
+otherwise have to answer from scratch:
+
+- **Bean's aesthetic target is now known.** He rejected dark saturated aurora attempts and approved a
+  mid-luminance pastel field measured from a live reference (mean luminance 157, hue-adjacent
+  lavender -> blue-grey -> mint -> violet). That is §5 (hue adjacency) and §6 (bright ground) of the
+  technique spec — the two mechanisms the council ranked FREE and HIGHEST-YIELD and which had been
+  sitting at the bottom of the list. They are now empirically confirmed rather than argued.
+- **CSS has a hard ceiling for filamentary work.** Three CSS aurora attempts failed three different
+  ways. Anything needing per-pixel noise or domain warping is WebGL, full stop. This plan should not
+  re-litigate that.
+- **One shader can carry two looks.** Measuring the base colour and crossfading between additive and
+  darkening compositing turns the same shader into an aurora on dark and drifting pigment on light.
+  Ground is genuinely a CONTROL, which is what §6 already said — now demonstrated.
+- **The palette has no violet.** Measured across all 21 presets. A token-only aurora cannot reach its
+  signature colour; curated per-style defaults are how that was solved without touching the palette.
+- ⛔ **The theme-token differentiator is THIS plan's, not the variant work's** (Bean, 2026-08-27).
+  The shipped variants use curated per-style defaults with client override; the token-following
+  behaviour is what this rebuild is for.
+
+**Phase 1 below is still OPEN.** The shortlist Bean picked from chose the six shipped STYLES; it did
+not choose this rebuild's reference. Do not treat it as satisfied.
+
 ## Phase 1 — Pick the reference, before any code
 
 ⛔ **This step has never been done, and skipping it is what wasted every prior round.** D781 recorded

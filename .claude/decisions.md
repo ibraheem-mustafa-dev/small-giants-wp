@@ -1,3 +1,136 @@
+## D853 [ROUTINE] — FR-38-6's keyboard-focus flag CLOSED by observation; the fixture markup now lives in the repo
+
+**2026-08-27.** Spec 38 carried an open honesty flag on FR-38-6/FR-38-8: no canary fixture had a
+focusable element INSIDE a pin, so "keyboard users get normal sequential focus" was proven by
+mechanism, never watched. It is now watched.
+
+**Fixture authored fresh as canary page 2893** (`[GATE - DO NOT DELETE] Pin keyboard focus
+FR-38-6`) — a link, a text field and buttons inside a genuine `data-sgs-fx="pin-scrub"` container,
+with post-migration tier objects.
+
+⛔ **The old fixture was NOT restored, deliberately.** Pages 2023 and 2114 are both trashed and
+D730 records why restoring either is unsafe: they carry PRE-migration authoring, and `minHeight`
+became a TIER OBJECT on 2026-08-11, so their flat string coerces to `{}` and every spacer
+collapses. That yields a page which still LOOKS like a fixture while the pin never pins — worse
+than no fixture, because the probe would then report against a pin that isn't pinning.
+
+**Result, from `probe-step13-pin-focus.mjs` re-pointed at the new page:**
+`focusablesInPin=4`, `engaged=True`, `tabSteps=5`, **zero focus issues** — nothing focused out of
+viewport, nothing focused while invisible. The `reduce` arm reports the pin as **never engaging**,
+which is §10's SIMPLIFY contract observed rather than reasoned. (The two INCONCLUSIVE results in
+that run are the legacy `motion-canary-pin-scrub` / `-horizontal-panel` URLs, 404 since
+2026-08-01 — pre-existing, unrelated.)
+
+⭐ **The markup is now COMMITTED** at
+`plugins/sgs-blocks/scripts/motion-qa/fixtures/pin-keyboard-focus-fr-38-6.html`. **This is the
+THIRD fixture for this probe lost to a canary tidy-up**, and each time the evidence became
+unreproducible because the source lived only on the server. A fixture that exists only as a remote
+post is one tidy-up away from un-proving whatever it proved.
+
+⚠ **A `--check`-style gate cannot protect it** — the page is remote state, not a file. The
+protection is the committed markup plus the `[GATE - DO NOT DELETE]` title convention, both of
+which are conventions, not enforcement. Recorded honestly rather than claimed as gated.
+
+**Also this session, recorded briefly (own entries carry the detail):** the three motion design
+gates closed (D839-D842); the particle trail's invisibility root-caused and fixed (D846), deployed
+and live-verified with the colour now driven by the `accent` brand token; and `parse_blocks()` —
+a real WP core function absent from the dead-API allowlist — fixed, which had been blocking
+**every** track's deploys, not just this one.
+
+⚠ **Task 9 (reduced-motion header row-collapse) remains BLOCKED and is parked**
+(`P-ROW-COLLAPSE-FIXTURE`). The canary has zero `.sgs-row-behaviour` elements, an in-page fixture
+cannot work because `view.js:67` resolves the header with `document.querySelector` (first match
+wins), and an attempt to enable the behaviour on the live header part was made and **reverted**
+when the class did not render despite the attribute being declared, stored, present in the
+deployed `render.php`, and both caches purged. Unexplained; do not assume a bug from a
+hand-authored attribute (D338) — set it through the real editor control first.
+
+⛔ **`wp_update_post()` STRIPS BACKSLASHES — pass `wp_slash()` or lose escape sequences.** Writing
+page 2744's content back without it turned the stored `—` into literal `u2014`, and the
+rendered heading changed from "PARTICLES ON — sparks" to "PARTICLES ON u2014 sparks". Caught only
+because a screenshot was taken and read; every automated check would have passed, since the content
+was still valid, the blocks still parsed and the page still rendered 200. Restored from the backup
+taken before the write. **Take the backup BEFORE the write, and read the rendered result, not just
+the exit code.**
+
+## D852 [ROUTINE] — the background effect became a six-style engine, and the colour pickers turned out to be dead controls on four of them
+
+**2026-08-27.** Bean picked the directions from a live side-by-side shortlist, then set the
+product rule: **every style ships colours chosen to suit it**, so switching one on looks good
+immediately and gives the client something to customise from. His reasoning, recorded because it
+is the design principle and not just a preference: *"if it used their global colours to start and
+looked awful they may not want to try it."*
+
+**Six styles on one `fxWaveVariant` attribute.** `pastel | horizon | ribbon | veil` paint in pure
+CSS and boot no canvas at all; `aurora | ink` run the WebGL shader. ⛔ **No new `fx_effects` rows**
+— a variant attribute rides the existing effect, so there is no write to the shared
+`sgs-framework.db` and no registry regeneration. A reseed there has broken two tracks' builds
+before; a peer session ran `/sgs-update` mid-session and nothing collided.
+
+⭐ **Ink and Aurora are the SAME shader.** The shader measures the base colour's luminance and
+crossfades its compositing: on a dark ground the curtains ADD (emissive light), on a light ground
+they DARKEN toward their own colour (pigment). Adding light to a near-white base only pushes it to
+white — the exact failure reverted at D828 on the sibling. So one shader yields two products,
+separated only by their curated colours. That is Bean's preset argument demonstrating itself.
+
+⛔ **CSS CANNOT DO AN AURORA, and three attempts prove it rather than assert it.** Discrete blurred
+columns read as bars ("4 punching bags swaying" — Bean); soft-masked lozenges read as ovals; broad
+connected bands read as horizontal haze. Filamentary curtains need per-pixel noise and DOMAIN
+WARPING — warping one noise field by another. CSS has gradients, blur, masks and transforms; it has
+no noise primitive and no way to warp one shape by another. Three different walls is a ceiling, not
+bad tuning. The other four styles stay CSS precisely because they are soft-light looks CSS renders
+honestly.
+
+**Three real defects, all found by checking the fx panel against the colour-row convention after
+Bean asked whether a picker helper fitted:**
+1. ⛔ **The four CSS styles had 33 hardcoded colours and referenced the colour custom properties
+   ZERO times** — all four client colour pickers were DEAD CONTROLS on those styles. Every colour
+   now resolves through `var(--sgs-wave-*)`, with intermediate gradient stops derived via
+   `color-mix()`.
+2. **"Wave colour 2" and "Wave colour 3" sat behind the ToolsPanel "+" menu**, against the rule
+   that a colour row is never hidden. A client rebranding would have found two of four and assumed
+   that was all of them.
+3. **No picker passed `linked`**, so picking a palette swatch stored a resolved HEX while
+   `sgs_colour_value()` expects a SLUG. The colour worked but was frozen — rebranding the site left
+   the effect on the old value. **This is the D717/D740 defect class in a fourth place.**
+
+⛔ **`SgsColourPanel` is deliberately NOT mounted from the fx extension.** 29 of the 32 fx-capable
+blocks already mount one; a second would give them two "Colour" panels — the confusion D609's
+amendment exists to remove. What applies to an extension panel is the row CONVENTION
+(`DesignTokenPicker`, `linked`, never hidden behind "+"), not the panel component.
+
+**Curated defaults live in `:where()` at ZERO specificity.** The render layer emits a client's picks
+as a single-class rule `(0,1,0)`; the variant selectors are `(0,2,0)` and would have BEATEN the
+client's own choice had the defaults been written normally. This is the mechanism that makes "great
+by default, client always wins" actually hold rather than merely be intended.
+
+⛔ **Aurora's violet is curated per style, NOT added to the site palette.** A real aurora runs oxygen
+green low to nitrogen violet high, and the theme's 21 presets contain no violet or magenta at all
+(measured). Bean: *"doesn't make sense to just add a random purple to everyone's palette for one
+effect they may never use."* Curating it per style gives the effect its signature colour and imposes
+nothing on anyone.
+
+**⚠ A live 500 on the canary, caused and fixed here.** The variant-class edit was written through a
+Python heredoc where `	rim` carried a single backslash, so Python expanded `	` to a literal TAB
+and the deployed PHP read `<TAB>rim( ... )`. `php -l` PASSED it, because `rim(...)` is valid SYNTAX
+— it is an undefined-function fatal at RUNTIME. **Linting a generated edit proves it parses, not
+that every symbol in it exists.** ~10 minutes of canary downtime, no client site involved.
+
+**⚠ Aurora faded to black, found by measuring rather than by looking.** All three curtains shared
+one centre line that could reach 1.14 while `band = exp(-d*d*26)`, so they drifted off-frame
+together and left nothing lit. Each curtain is now anchored to its own third of the frame with a
+bounded sway.
+
+**Scope correction from Bean, recorded so it stops recurring:** the parked "recolours itself from
+per-client theme tokens" differentiator belongs to the **POC rebuild**, which comes after this — not
+to this variant work. This is the second time in one session two tracks were conflated; D838 split
+the plans for exactly this reason.
+
+**Deferred to next session by Bean, with the shapes already chosen:** gradient controls for the four
+CSS styles (the three row helpers are already gradient-capable and `SgsColourPanel` has a per-row
+`gradientCapable` flag), and a 3-state colour control for aurora/ink's low/mid/high ramp. Both
+remove the `color-mix()` derivation and hand the client every stop.
+
 ## D851 [ROUTINE] — a real converter bug found on page 2884 (this session's own fresh clone), not fixed yet
 
 **2026-08-27.** A peer session (`small-giants-wp-5c`) found this while deploying past an unrelated

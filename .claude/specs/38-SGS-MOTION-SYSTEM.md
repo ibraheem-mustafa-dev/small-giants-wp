@@ -253,10 +253,25 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 > focus is inside; `fx-split-reveal.js` uses a one-shot. The horizontal panel is the only one where
 > native reachability suffices, and only by accident (see D458).
 >
-> **Owed:** the canary fixtures contain no focusable element INSIDE a pin, so the case the
-> accessibility audit actually worried about — Tab landing on a control within an active pin — is
-> proven by mechanism rather than by observation. Re-verify once a pinned composite with real
-> interactive content exists.
+> ✅ **CLOSED BY OBSERVATION 2026-08-27 (D853).** This previously read *"the canary fixtures
+> contain no focusable element INSIDE a pin, so the case the accessibility audit actually worried
+> about is proven by mechanism rather than by observation."* That is no longer true.
+>
+> A fresh fixture was authored (canary page **2893**, `[GATE - DO NOT DELETE] Pin keyboard focus
+> FR-38-6`) carrying a link, a text field and buttons inside a genuine `data-sgs-fx="pin-scrub"`
+> pin. `probe-step13-pin-focus.mjs` run against it: **4 real focusables inside a pin reported
+> `engaged=True`, the Tab walk covered all of them, and ZERO focus issues were raised** — no
+> out-of-viewport focus, no invisible-while-focused control. The `reduce` arm reports the pin as
+> never engaging at all, which is the §10 SIMPLIFY contract observed rather than reasoned.
+>
+> ⛔ **Do NOT restore the OLD fixture if this one is ever lost.** Pages 2023 and 2114 are both
+> trashed and `decisions.md` D730 records why restoring either is unsafe: they carry PRE-migration
+> authoring, and `minHeight` became a TIER OBJECT on 2026-08-11, so their flat string coerces to
+> `{}` and every spacer collapses — giving a page that still LOOKS like a fixture while the pin
+> never pins. **The markup is now COMMITTED** at
+> `plugins/sgs-blocks/scripts/motion-qa/fixtures/pin-keyboard-focus-fr-38-6.html`; re-create from
+> that file. This is the third fixture for this probe to be lost to a canary tidy-up, which is why
+> the source no longer lives only on the server.
 
 - **FR-38-9 Scroll-scrubbed image sequence — NET-NEW block `sgs/image-sequence`.** Canvas-drawn
   frame sequence scrubbed by scroll. **Explicit sub-scope with its own tooling task:** the
@@ -1007,6 +1022,17 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   unlocked neighbour moved `y=-19.25` under identical pointer input.
 
 - **FR-38-31 Flowing gradient — the SECOND Tier W entry. BUILT + LIVE.**
+  ⭐ **SIX STYLES since 2026-08-27 (D852).** One `fxWaveVariant` attribute:
+  `pastel | horizon | ribbon | veil` paint in pure CSS and boot no canvas at all;
+  `aurora | ink` run the WebGL shader (`src/shared/effects/webgl/aurora.js`) and are the
+  SAME shader — it measures the base colour's luminance and crossfades compositing, so a
+  dark ground gives emissive curtains and a light one gives drifting pigment.
+  Curated per-style colours are declared in `:where()` at ZERO specificity so a client's
+  own pick always beats them. ⛔ No new `fx_effects` rows were added — the variant rides
+  this effect, avoiding a shared-DB reseed.
+  ⛔ **CSS cannot render an aurora** — three attempts failed three distinct ways; filaments
+  need per-pixel noise and domain warping, which CSS has no primitive for.
+
   ⛔ **SCOPE (D838, 2026-08-27): FR-38-31 is a FINISHED, SELF-CONTAINED effect.** The
   configurable **generative background engine** — one engine remappable for colours, shapes,
   sizes and positions — is SEPARATE, unbuilt work with its own plan
@@ -1207,6 +1233,28 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
     ceiling `maxRadius` encodes — its painted area is circumference x lineWidth. The clamp is removed
     and that reasoning is now stated at the site. **Recorded because a guard that clamps nothing is
     worse than no guard: it invites reliance.**
+
+⭐ **COLOUR CONTROL ADDED 2026-08-27 (D846) — and the reason matters.** The trail shipped with no
+  colour control and took its colour from the emitter's inherited TEXT colour. Measured on canary
+  2744: that resolved to `rgb(58,46,38)` inherited from `<body>` while the emitter set its own
+  near-black `rgb(16,16,24)` background — **contrast 1.44:1**. The effect fired perfectly (~7,400
+  lit canvas pixels) and was invisible. A lit-pixel count cannot tell "painting correctly" from
+  "painting invisibly". `fxParticleColour` now offers a `DesignTokenPicker`, defaulting to the old
+  inherited behaviour so nothing existing moved. ⛔ The JS reads the CANVAS's computed `color`, not
+  the emitter's, because a custom property read via `getPropertyValue()` returns the `var(...)` text
+  UNRESOLVED and a canvas cannot paint with a string.
+
+ **REQUESTED VARIATIONS — owner-specified 2026-08-27, POST-LAUNCH, do not build now.** Bean asked
+  for two further looks after seeing the trail working live. Recorded here so they cannot drift the
+  way `floating-objects` did (see §3.3's corrected entry), and parked in `parking.md`:
+  1. **Sparkler** — sparks throwing off a burning point rather than trailing behind the pointer.
+     Distinct from `sparks`: emission is radial/scattered, not path-following.
+  2. **Continuous connected trail** — a snail-like ribbon that still FADES like the current trail
+     but stays visually CONNECTED to the pointer at all times, rather than resolving into discrete
+     dying particles. This is a different primitive from the existing pool: a continuous stroke,
+     not a sprite pool, so it likely cannot be a fourth preset of the current engine.
+  ⛔ **Timing is explicit: feature extension AFTER the theme launches.** Not a current task.
+
 
  **Reduced motion: SUPPRESS** (§10 row). **SC 2.2.2 does NOT engage** — pointer-initiated, and every
   preset life (0.55s / 1.3s / 0.85s) is far under the five-second threshold, so no Pause control is owed.

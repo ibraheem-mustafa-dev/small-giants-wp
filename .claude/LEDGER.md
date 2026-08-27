@@ -80,53 +80,61 @@ D830-D834 still owes one. Reasoning: D804.
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (TWO SEPARATE TRACKS — do not merge them again)
+## ▶ MOTION TRACK — 2026-08-27 (background engine SHIPPED; two control upgrades queued)
 
-⛔ **These were ONE plan file and that cost a full session (D838).** FR-38-31 is a SHIPPED effect;
-the engine is an UNBUILT rebuild. No phase number is shared between them. Never re-merge.
+⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
+session (D838). No phase number is shared.
 
-### ▶ A. FR-38-31 `flowing-gradient` — ✅ CLOSED 2026-08-27 (shipped, verified live)
+### ▶ A. `fx-wave-gradient` — SIX-STYLE ENGINE, shipped (D852)
 
-Bean's verdict on the D828 re-fix: *"insanely slow… nothing like an aurora, just blurry random
-shapes."* ⭐ **Aurora was never this effect's target** — it was built as a Stripe-hero clone, and
-D781 already found that reference was the wrong thing. **Not reopened for look work.**
-⚠ **A working `fxWaveSpeed` control EXISTS** (`fx.js:2598` → `fx-wave-gradient.js:250,271`) — an
-earlier claim that there was none was wrong. The DEFAULT is the defect: ~115s to cross one screen.
-**Derive it as `drift/(2·freq·aspect)`, never from the raw constant** — eyeballing it was wrong 4×.
-✅ **SHIPPED + LIVE-VERIFIED (`edc7fed9f`):** LAYER_DRIFT x3.5 (default ~115s -> ~33s per screen,
-max ~11s), morph raised only 1.5x so flow leads over shape-change, Speed + Wave depth now
-`isShownByDefault`, help text reworded, docblock records this is NOT an aurora.
-Both palettes measured drifting on real GPU (negative control 0.0%); editor rows visible without
-the "+" menu; payload-verify 83/83; motion QA 3/3. Figures in **D838**.
-⚠ Measure with a FIXED integer clip, never an element screenshot (D838).
-Plan CLOSED: `plans/archive/2026-08-26-fr3831-look-gate.md`. ✅ D813/D814/D815/D826 closed;
-D827 technique change + D828 regression fix — read the D-numbers, do not restate.
+One `fxWaveVariant` attribute, six styles: `pastel | horizon | ribbon | veil` (pure CSS, no canvas
+booted) and `aurora | ink` (WebGL). ⛔ **No new `fx_effects` rows** — the variant rides the existing
+effect, so no shared-DB write and no registry regeneration.
+⭐ **Ink and Aurora are the SAME shader.** It measures the base colour and crossfades compositing:
+dark ground = curtains ADD, light ground = curtains DARKEN. One shader, two products, separated only
+by curated colours.
+⛔ **CSS cannot do an aurora** — proven by three attempts failing three different ways (bars, ovals,
+haze). Filaments need per-pixel noise + domain warping; CSS has neither. Detail: D852.
+**Curated defaults sit in `:where()` at ZERO specificity** so the look is good on switch-on and the
+client's pick always wins — the render layer's `(0,1,0)` rule would otherwise LOSE to the `(0,2,0)`
+variant selectors. Aurora's violet is curated per style, never added to the site palette.
+
+⚠ **NOT YET DEPLOYED.** Committed + pushed through `715f10078`; the deploy gate is correctly
+blocking on another track's dirty `media`/`post-grid` files. Deploy is task 1 next session.
 
 ### ▶ B. GENERATIVE BACKGROUND ENGINE — the POC rebuild (NOT started)
 
-⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`.** ONE configurable engine —
-colours / shapes / sizes / positions / speed as client controls, not one fixed hero look.
-The technique spec **IS its build spec** (renamed
-`reports/2026-08-25-generative-background-engine-technique-spec.md`); **D794's NO-GO was
-COMPLETENESS, not purpose** — stop calling it a document rewrite.
-⛔ **Phase 1 = pick a reference BEFORE any code.** Never once done; skipping it wasted every prior
-round (D781's rule, in capitals). Licence: nimitz = NON-COMMERCIAL; paper-design (Apache-2.0) ships
-no aurora — **an aurora must be WRITTEN, not borrowed**. Differentiator (parked): recolours itself
-from the per-client theme tokens.
+⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`.** Its technique spec IS a
+build spec; D794's NO-GO was COMPLETENESS, not purpose.
+⭐ **The "recolours itself from per-client theme tokens" differentiator belongs HERE**, not to the
+variant work above (Bean, 2026-08-27 — the second track-conflation in one session).
+⛔ Phase 1 = pick a reference BEFORE any code. Licence: nimitz = NON-COMMERCIAL; paper-design
+(Apache-2.0) ships no aurora — an aurora must be WRITTEN.
 
-### ▶ NEXT
+### ▶ NEXT, in order
 
-✅ **THE THREE DESIGN GATES ARE DECIDED (2026-08-27).** Single-sourced to **D839-D842** — do not
-restate. `floating-objects` was the WRONG effect → now FR-38-33/34, gate gone ·
-`decorative-image` wraps only when treated · generative covers → **Spec 40** (scope only,
-build-gated on a reference Bean has seen).
+1. **Deploy the six styles** once the tree clears, then verify all six live on real GPU.
+2. **Gradient controls for the four CSS styles.** The three row helpers (`fillRow`/`textRow`/
+   `borderRow`) are already gradient-capable and `SgsColourPanel` takes a per-row `gradientCapable`
+   flag. Storage is a sibling `{attr}Gradient` attribute; the gradient wins when set. Removes the
+   `color-mix()` derivation and hands the client every stop.
+3. **A 3-state colour control for aurora/ink's low/mid/high ramp** (Bean's shape — the states row
+   already renders multiple swatches in one popover). ⚠ Check it against rule 31's STATIC state-count
+   resolution first: D738 records a computed states array rendering fine while the detector went
+   blind.
+4. `.claude/prompts/2026-08-27-background-styles-controls.md` carries the full orchestration.
 
-**OPEN:** tasks 7/8/9 (trail demo · pin keyboard focus · reduced-motion row-collapse) + 3
-fx-registry gaps needing Bean's call (D842).
-⛔ **Page 2114 is TRASHED (D730)**; restoring it = silently-broken page. Build a FRESH pin fixture,
-COMMIT its markup (3rd lost). Reuse `probe-step13-pin-focus.mjs` — do not hand-roll.
-⛔ **Carried:** Sparks (FR-38-32) is the real fading trail, NOT "Drag weight" — and **Bean has
-still never seen it** (canary 2744 only, very faint). Show him before calling it done.
+### ▶ PARTICLE + GATES SUB-TRACK — 2026-08-27, all shipped (D839-D842, D846, D853)
+
+✅ **Sparks SEEN + approved by Bean.** Was invisible at **1.44:1** (inherited body TEXT colour on a
+near-black panel); `fxParticleColour` shipped, deployed, set to `accent` on 2744. ✅ **3 gates
+CLOSED** — `floating-objects` was the WRONG effect for 7 weeks → FR-38-33/34; decorative-image =
+wrap-only-when-treated (unbuilt); covers → **Spec 40**. ✅ **FR-38-6 CLOSED by observation** (page
+2893, markup committed). Detail = the D-numbers; do not restate.
+
+⭐ **NEXT: `.claude/prompts/2026-08-28-motion-build-and-research.md`** (6 owner-set tasks).
+⛔ **Parked:** `P-ROW-COLLAPSE-FIXTURE` (no fixture possible) · `P-PARTICLE-TRAIL-VARIATIONS`
+(post-launch).
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 

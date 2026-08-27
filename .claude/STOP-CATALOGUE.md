@@ -2070,6 +2070,19 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   visual verification. That is the gate being correct, not obstructive. Extending it to accept a
   "provably safe" class is a legitimate change — but doing it in the same breath as needing it to
   pass is not. Do the verification instead.
+- **STOP-78 — A LINTER PROVES A FILE PARSES, NOT THAT ITS SYMBOLS EXIST.** A generated PHP edit
+  emitted `<TAB>rim( ... )` because a Python heredoc wrote `	rim` with ONE backslash and Python
+  expanded `	` to a literal tab. `php -l` PASSED — `rim(...)` is valid SYNTAX; an undefined
+  function is a RUNTIME fatal. The canary served HTTP 500 for ~10 minutes. After ANY generated or
+  scripted edit to PHP, run `check-dead-api-calls.py --check`; after one to JS, build. ⚠ The same
+  pass warned about `\i` in `\in_array` and stayed silent on `	`, because `	` is a VALID escape
+  — the dangerous mangles are the ones the interpreter thinks are legitimate. (D852.)
+- **STOP-79 — A CONTROL THAT WRITES NOTHING THE RENDERER READS IS A DEAD CONTROL, AND IT LOOKS
+  FINE.** Four client colour pickers were shipped against four CSS styles whose 33 colours were all
+  hardcoded; the pickers referenced the colour custom properties ZERO times. Nothing errored,
+  nothing failed a gate — the client would simply change a colour and see no change. Before
+  shipping any control, grep the RENDERER for the property it writes. (D852; same family as
+  `a-read-with-no-writer-fails-silently`, inverted.)
 - **A BUILT MECHANISM IS NOT A REACHED ONE.** Two mechanisms this session were fully built,
   self-tested and COMPLETELY INERT: the `link-content` chain (nothing assigned the role, and the
   writer ran only under `--task-b-only`), and D6's two new rules (fed only `d4_review` while both
