@@ -781,6 +781,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
 						showResponsive={ false }
+						presets={ [ 'XXS', 'XS', 'S' ] }
 						values={ { base: cardBorderWidth || {} } }
 						onChange={ ( _tier, next ) =>
 							setAttributes( { cardBorderWidth: next } )
