@@ -654,13 +654,17 @@ another acting on the item.
 |---|---|
 | `cta-section` · `team-member` · `info-box` · `pricing-table` · `google-reviews` · `whatsapp-cta` | `card-grid` → `__item` · `post-grid` → `__card` · `gallery` → `__item` · `process-steps` → `__step` · `icon` → `__link` |
 
-**Which effects the panel actually owns.** Scale and shadow it owns outright. Its **zoom and
-grayscale toggles are inert on most blocks** — the PHP emits `sgs-has-img-zoom` /
-`sgs-has-grayscale`, but only **card-grid and team-member** style the first and only those two
-plus **gallery and info-box** style the second. Everywhere else the client flips a switch and
-nothing happens. ⛔ **Reviving them with a root-level rule is REFUSED and D796 records why:** a
-root rule cascades to every descendant image, manufacturing a second copy of the double-fire
-that decision just fixed. Universal reach needs per-block scoping, not a bigger selector.
+**Which effects the panel actually owns.** Scale and shadow it owns outright.
+
+⚠ **The zoom/grayscale gap this paragraph used to describe is CLOSED (D817/D821, 2026-08-27) —
+per-block scoping, not a root-level rule (D796 refused that).** Of the 6 root-hover blocks: only
+`cta-section` had a real image to zoom/desaturate — fixed with a scoped `::before` rule on
+`cta-section/style.css`. `pricing-table` / `google-reviews` / `whatsapp-cta` have no image
+element at all (icons or none) — their zoom/grayscale toggles are now **withdrawn**, not left
+inert, via a new `supports.sgs.hoverExcludeControls` block.json declaration (read by both
+`hover-effects.php` and its JS twin), gated at both the class-injection point and the inspector
+UI. `team-member` and `info-box` already worked before this fix. **Net: every root-hover block
+either has a working zoom/grayscale toggle or doesn't offer one at all — no more silent no-ops.**
 
 **Its shadow vocabulary is four slugs** (`subtle` / `raised` / `floating` / `glow`) **with no
 colour input anywhere.** That is why a block-owned `shadowHover` + `shadowHoverColour` pair is

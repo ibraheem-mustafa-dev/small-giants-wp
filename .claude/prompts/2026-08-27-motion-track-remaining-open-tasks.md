@@ -80,8 +80,13 @@ treatment is applied? Either changes the markup shape of every naked-mode instan
 
 ### 4. Timeline connector visuals
 
-Client (MIC) wants a textured, themed connector — pulse, vine, tree, falling bricks — plus
-per-entry progressive fill on scroll for `sgs/timeline`.
+Client (MIC — Muslims in Construction) wants a textured, themed connector — pulse, vine, tree,
+falling bricks (their specific ask, for their journey/process page) — plus per-entry progressive
+fill on scroll for `sgs/timeline`. Moved out of parking 2026-08-27: the trigger condition (a
+named client asking for it) was already met, sitting there stale.
+
+**A full attribute + `view.js` implementation sketch already exists — read it before building,
+don't sketch from scratch.** `.claude/plans/2026-08-24-spec38-motion-register.md`.
 
 - **Estimate:** build the base progressive-fill mechanism first (~20 min), then 20–30 min per
   connector style — the styles can build in parallel once that base exists.

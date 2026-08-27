@@ -549,16 +549,6 @@ The framework carries no client data any more (the client-named pattern file was
 
 **Trigger:** next session Task 1; blocks full FR-37-6 closure and the Indus deploy.
 
-### P-TIMELINE-ADVANCED-VISUAL-EFFECTS — Textured connector + progressive fill for sgs/timeline
-**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-05-20
-
-`sgs/timeline` needs a textured/themed connector line (pulse, vine, tree, bricks-falling-into-place,
-gradient fill) plus per-entry progressive background fill on scroll. MIC (Muslims in Construction)
-specifically wants the bricks variant for their journey/process page. A full attribute +
-`view.js` implementation sketch already exists — do not build speculatively.
-
-**Trigger:** MIC or another client specifically requests the textured-timeline effect.
-
 ### P-UIMAX-DRAWER-LOGO-AUTODERIVE — auto-derive drawer-head logo colours from the header row
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-15
 
