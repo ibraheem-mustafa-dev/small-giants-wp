@@ -237,3 +237,25 @@ Task 2 (blockGap editor/frontend divergence): COMPLETE (commit 9b3f4d97c, opus r
   resolution is a THIRD task: add sgs/container to BOTH arm lists, so both surfaces are flush
   AND in agreement.
 BOTH TASKS COMPLETE. Base 346861ed9 -> 9b3f4d97c.
+
+# SDD progress — converter bugs b/d + G2 fail-closed gate, 2026-08-27
+
+Base commit: 9a27f195a (main)
+Branch: fix/converter-bugs-b-d (merged in 3 stages, then deleted)
+
+Task 1: complete (root-domain OUTER guard css_element fix, commits c6ecb9f40..85f22a13c
+  after 4 review rounds — found+fixed a real sgs/before-after regression via DB migration,
+  a durability gap in the migration's source-of-truth, a destructive self-healing test
+  fallback, and a falsified test justification along the way). Merged to main as e84d7f172.
+Task 2: complete (assembly.py layout-enum validation, commits 4aee732d4/6e5170762 after
+  2 review rounds — found+fixed a real sgs/cta-section data-loss risk from a legacy dual-
+  meaning attribute, and de-fragilized 2 tests that depended on live shared DB state).
+  Merged to main as 94a3ab684.
+Task 3: complete (check_attr_schema_conformance.py — the general G2 fail-closed gate,
+  commit d06c66163 + a follow-up fix 85f22a13c for 2 missing WP-core supports entries).
+  Merged to main as 01aaac181.
+
+All three merged via isolated worktrees from origin/main (never the shared main working
+tree — hit a genuine "could not write index" race the one time a merge was attempted
+directly on shared main). Full converter suite green throughout (705-712 passed depending
+on task, 0 regressions at any point).
