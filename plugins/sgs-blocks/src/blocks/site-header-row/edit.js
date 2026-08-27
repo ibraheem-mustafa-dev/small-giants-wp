@@ -14,6 +14,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import {
+	ColumnShapePicker,
 	ResponsiveOverride,
 	SpacingControl,
 	ResponsiveBoxControls,
@@ -474,9 +475,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							{ /* FR-37-42 — optional SECOND step after the count,
+							     same as site-footer-row's mount. Writes the
+							     existing `gridTemplateColumns` object attribute;
+							     the active shape is DERIVED from the stored
+							     value, never separately stored, so a hand-edited
+							     value shows no selection rather than lying
+							     (FR-37-28). No raw TextControl alongside it —
+							     two controls writing the same attr is the
+							     silent-data-loss trap LayoutPanel's own
+							     `showLayout` docblock warns about, so the
+							     picker REPLACES the advanced text override
+							     rather than sitting next to it. */ }
 							<ResponsiveOverride
 								label={ __(
-									'Custom column template',
+									'Column shape',
 									'sgs-blocks'
 								) }
 								value={ gridTemplateColumnsValue }
@@ -487,19 +500,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									effectiveValue,
 									inherited,
 									setOwnValue,
+									tier,
 								} ) => (
-									<TextControl
-										value={ ownValue }
-										onChange={ setOwnValue }
-										placeholder={
-											inherited ? effectiveValue : ''
+									<ColumnShapePicker
+										// The shape list depends on how many
+										// columns this tier actually shows, so
+										// read the count for the SAME tier
+										// rather than the desktop one — a
+										// 4-column desktop and a 2-column
+										// tablet offer different shapes.
+										count={
+											( columns && columns[ tier ] ) ||
+											( columns && columns.desktop ) ||
+											3
 										}
-										help={ __(
-											"Advanced override — CSS grid-template-columns, e.g. '5fr 3fr'. Leave blank to use the Columns count above.",
-											'sgs-blocks'
-										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
+										value={
+											( inherited
+												? effectiveValue
+												: ownValue ) || ''
+										}
+										onChange={ ( track ) =>
+											setOwnValue( track || undefined )
+										}
+										// No `label` here on purpose: the
+										// wrapping <ResponsiveOverride> already
+										// renders the visible one, and two
+										// copies is a real defect
+										// (inspector-scan rule 29). Same
+										// reasoning as site-footer-row's mount.
 									/>
 								) }
 							</ResponsiveOverride>
