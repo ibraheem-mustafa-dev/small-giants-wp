@@ -1,3 +1,54 @@
+## D870 [INCIDENT] — the grid-dot default was 1.35:1 (worse than D846); and `git commit -- <path>` silently discarded a partial stage, sweeping another track's work
+
+**2026-08-28. Two failures, one commit (`03b96af22`). The second is the more serious.**
+
+### 1. The colour default repeated D846, having quoted D846
+
+Bean, on the live effect: *"your choice of colour for them was awful. Was very hard to even see
+them on the background."* **Measured, not argued:** accent `#F59E0B` on the client's cream section
+background `#FBF3DC` = **1.35:1**, at 34% rest opacity, against WCAG's 3:1 non-text floor.
+
+⭐ **That is WORSE than the 1.44:1 particle trail of D846** — and `fx-grid-dots.css`'s own comment
+cited D846 by name as its reason for stating a default at all. The rule was already written down
+(`brand-accent-is-a-ground-never-an-indicator`: accents are chosen to sit BEHIND content, so they
+are mid-luminance by construction and fail on light AND dark grounds). I wrote the warning, quoted
+the precedent, and picked the one token the precedent forbids.
+
+**Fixed both ways, because a default cannot suit every palette:** default → `primary` (~7:1 on the
+same cream), plus a per-instance `fxGridDotColour` → `data-sgs-fx-grid-colour` →
+`includes/fx-grid-dots.php`, mirroring `fx-particles.php` (D846's own fix) and reusing
+`sgs_fx_cursor_field_colour()` so a palette slug stays live through a re-theme.
+⚠ The inspector control is NOT built — its home is `withFxControls`, see below.
+
+### 2. ⛔ `git apply --cached` + `git commit -- <path>` DO NOT COMPOSE. The pathspec wins.
+
+Another session had in-flight work in `fx.js` (four wave-gradient colour rows). I split the diff by
+hunk, staged only my two, and **verified 14 insertions with zero `withFxControls` lines in the
+index.** The pre-commit gate then blocked the commit for an unrelated reason. On the retry I used
+`git commit -- <paths>` again — **which commits the WORKING TREE state of those paths and ignores
+the index entirely.** The split was discarded by the very next command, and their unfinished work
+shipped inside my commit.
+
+⛔ **After a partial stage, use a BARE `git commit` with no pathspec.** A pathspec overrides the
+index every time. This is the same family as the recorded `git commit --amend` trap (amend flushes
+the whole index) — I knew that sibling, applied the correct fix, then threw it away one command later.
+
+⭐ **THE COMMIT MESSAGE ASSERTS THE OPPOSITE AND IS THEREFORE FALSE.** `03b96af22` reads
+*"Committed by hunk (git apply --cached) so only my two fx.js hunks land and theirs stay in the
+working tree."* Anyone grepping the log would conclude that work was still uncommitted. **A commit
+message that misdescribes its own contents is worse than the mistake it describes** — the mistake is
+recoverable from `git show`, the false claim is believed. Recorded here because the message itself
+is on `origin` and cannot be rewritten on a shared branch. Nothing was lost; the other track was
+told immediately and owns the decision on whether to keep, revert or amend it.
+
+### 3. An ELEVENTH registration point
+
+`includes/extension-attributes.generated.php`, with its own pre-commit gate, which is what blocked
+the first attempt. **D784 counts ten; it is eleven.** Regenerate with
+`node plugins/sgs-blocks/scripts/generate-extension-attributes.js`.
+
+---
+
 ## D869 [ROUTINE] — FR-38-33 grid-dot field BUILT to Preset B; no reference existed, so the prototype became the design gate
 
 **2026-08-28.** The cursor grid-dot field Bean specified on 2026-08-27 is built: a background grid
