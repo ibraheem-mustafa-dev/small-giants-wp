@@ -1451,6 +1451,13 @@ class AmbiguousCssPropAttrError(RuntimeError):
 # elements are served by styling_content.py's derived_selector path, NOT this one).
 _BASE_ELEMENTS = ("", "root", "self")
 
+# The WIDER root-domain set used specifically for a css_layer='OUTER' row: adds
+# 'wrapper' (the universal isWrapper-root marker extract-signatures.py writes for
+# ANY block's own root element — see declared_attrs_for_css_property's identical
+# _outer_element_clause a few hundred lines up, which this constant now shares
+# instead of re-typing the same 4 literals a third time in this module).
+_OUTER_ROOT_ELEMENTS = ("", "root", "self", "wrapper")
+
 
 @functools.lru_cache(maxsize=4096)
 def _base_domain_attrs_for_css_property(
@@ -1492,29 +1499,35 @@ def _base_domain_attrs_for_css_property(
     conn = sqlite3.connect(SGS_DB)
     try:
         placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
+        outer_placeholders = ",".join("?" for _ in _OUTER_ROOT_ELEMENTS)
         # OUTER-layer element guard (2026-08-27, Task 1 / converter bug (b) fix):
         # a css_layer='OUTER' row is admitted into the root/self domain ONLY when
-        # its OWN css_element is ALSO root-domain (NULL/''/root/self/'wrapper' —
-        # 'wrapper' is the universal isWrapper-root marker, same list
-        # attr_for_layer_property's sibling OUTER query already uses, db_lookup.py
-        # ~line 1414). Before this fix the OR'd `css_layer = 'OUTER'` arm carried
-        # NO css_element restriction at all, so a NAMED CHILD attr merely tagged
-        # css_layer='OUTER' (e.g. sgs/hero.overlayGradient, css_element='overlay')
-        # was WRONGLY treated as a root-domain match — confirmed live as a
-        # block-root BEM modifier's declaration (e.g. a border on
-        # `.sgs-product-card--trial`) landing on a CHILD element's attr
-        # (`ctaBorder*`) instead of the block's own root attr. See
-        # test_root_modifier_element_guard.py for the failing-test-first proof.
+        # its OWN css_element is ALSO root-domain (_OUTER_ROOT_ELEMENTS — the same
+        # set declared_attrs_for_css_property's sibling OUTER query already uses
+        # for its own _outer_element_clause). Before this fix the OR'd
+        # `css_layer = 'OUTER'` arm carried NO css_element restriction at all, so
+        # a NAMED CHILD attr merely tagged css_layer='OUTER' was wrongly treated
+        # as a root-domain match. Verified live against the seeded DB (this
+        # module's connected instance, not a synthetic fixture — see
+        # test_root_modifier_element_guard.py for both the DB-dependent proof and
+        # a schema-independent synthetic proof of the predicate itself):
+        # sgs/hero.overlayGradient (css_element='overlay', background-image) was
+        # wrongly admitted before this fix, correctly excluded after. The brief's
+        # original example (a product-card BEM-root modifier's border landing on
+        # ctaBorder*) did NOT reproduce against the CURRENT DB seed — product-
+        # card's own border-color/-width/-style attrs are already correctly
+        # css_element='wrapper' — so that exact pairing is illustrative of the
+        # bug class, not a live repro; sgs/hero/background-image is the live one.
         rows = conn.execute(
             "SELECT attr_name FROM block_attributes "
             "WHERE block_slug = ? AND css_property = ? "
             f"AND ((css_element IS NULL OR css_element IN ({placeholders})) "
             "OR (css_layer = 'OUTER' "
-            "AND (css_element IS NULL OR css_element IN ('', 'root', 'self', 'wrapper')))) "
+            f"AND (css_element IS NULL OR css_element IN ({outer_placeholders})))) "
             "AND (css_tier IS NULL OR css_tier = 'desktop') "
             "AND css_state IS NULL "
             "ORDER BY rowid",
-            (block_slug, css_property, *_BASE_ELEMENTS),
+            (block_slug, css_property, *_BASE_ELEMENTS, *_OUTER_ROOT_ELEMENTS),
         ).fetchall()
     except sqlite3.OperationalError:
         # css_element/css_state/css_tier columns absent (pre-seed DB) → no declaration.
