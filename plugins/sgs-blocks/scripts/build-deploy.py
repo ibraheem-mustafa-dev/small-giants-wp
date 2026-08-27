@@ -80,6 +80,7 @@ SSH_USER_HOST = "u945238940@141.136.39.73"
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLUGIN_DIR = REPO_ROOT / "plugins" / "sgs-blocks"
 BUILD_DIR = PLUGIN_DIR / "build"
+COMPOSER_PHAR = REPO_ROOT / "composer.phar"
 TARBALL_NAME = "sgs-deploy.tar"
 # Ceiling for the packaged tarball. MEASURED, not guessed. A blocks-only deploy on
 # 2026-08-27 was 114.4MB pre-exclusion (scripts/ 43MB dev tooling, vendor/ ~40MB of
@@ -270,6 +271,39 @@ def run(cmd: list[str], *, dry_run: bool, cwd: Path | None = None) -> int:
         return 0
     result = subprocess.run(cmd, cwd=cwd, check=False)
     return result.returncode
+
+
+def composer_dump_autoload(dry_run: bool, *, no_dev: bool) -> int:
+    """Regenerate plugins/sgs-blocks's Composer autoloader, dev-included or not.
+
+    Two DIFFERENT autoloaders are needed by two DIFFERENT consumers, and
+    conflating them is the exact bug this function exists to stop happening a
+    third time:
+
+    - The DEPLOYED tarball must ship an autoloader with ZERO references to
+      dev-only packages (PHPStan/PHPUnit/etc — see TAR_EXCLUDES's `vendor/`
+      block). Those packages' directories are excluded from the tarball, but
+      a dev-included `vendor/composer/autoload_files.php` still `require`s
+      files inside them unconditionally — proven live: it fatal'd the site
+      with a 500 on every page load until root-caused.
+    - The LOCAL working tree needs a dev-included autoloader so
+      `check-render-undefined-vars.py`/PHPStan (which needs
+      `szepeviktor/phpstan-wordpress`'s rule classes in the classmap) keeps
+      working for `npm run build`'s local gates. A prior session "fixed" the
+      first bug by regenerating dev-included ON DISK — which silently undid
+      the safe autoloader and reopened the fatal.
+
+    `--no-dev` is for packaging ONLY, always followed by a dev-included
+    regenerate to restore the working tree (see step_tar()'s finally block).
+    Never call this with `no_dev=True` and leave it there.
+    """
+    php = resolve_exe("php")
+    cmd = [php, str(COMPOSER_PHAR), "dump-autoload", "--optimize"]
+    if no_dev:
+        cmd.insert(3, "--no-dev")
+    label = "--no-dev (safe for deploy)" if no_dev else "dev-included (safe for local gates)"
+    log(f"  [composer] regenerating autoloader — {label}")
+    return run(cmd, dry_run=dry_run, cwd=PLUGIN_DIR)
 
 
 def ssh_has_alias(alias: str) -> bool:
@@ -587,80 +621,123 @@ def step_gate_full(dry_run: bool) -> int:
 
 def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
     log("[2/5] Packaging tarball")
-    cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
-    for ex in TAR_EXCLUDES:
-        cmd.append(f"--exclude={ex}")
-    if theme:
-        cmd.append("theme/sgs-theme")
-    if blocks:
-        cmd.append("plugins/sgs-blocks")
-    rc = run(cmd, dry_run=dry_run, cwd=REPO_ROOT)
-    if rc != 0:
-        err(f"tar failed (exit {rc})")
-        return rc
-    if not dry_run and not (REPO_ROOT / TARBALL_NAME).exists():
-        err(f"tarball not produced: {REPO_ROOT / TARBALL_NAME}")
-        return 2
 
-    # STRUCTURAL SIZE GUARD (2026-08-27). The named excludes fix the two strays we
-    # found; this catches the NEXT one. Any untracked tree dropped inside
-    # plugins/sgs-blocks or theme/sgs-theme is invisible to the dirty gate and ships
-    # silently -- the only symptom is a suddenly huge tarball, and "the deploy is a
-    # bit slow" is exactly how that goes unnoticed. Fail closed and NAME the biggest
-    # members, so the next person is not left guessing what got in.
-    if not dry_run:
-        size_mb = (REPO_ROOT / TARBALL_NAME).stat().st_size / (1024 * 1024)
-        if size_mb > TARBALL_MAX_MB:
+    # PRE-TAR: regenerate a dev-free autoloader before packaging, and ALWAYS
+    # restore the dev-included one afterwards — even if packaging fails
+    # partway. Only relevant for a blocks deploy (vendor/ lives inside
+    # plugins/sgs-blocks); a --theme-only deploy never touches vendor/ at
+    # all, and dry-run never writes to disk in the first place.
+    #
+    # Why this exists (D849, 2026-08-27): the deployed tarball must ship an
+    # autoloader with zero references to PHPStan/PHPUnit/etc (see
+    # TAR_EXCLUDES's `vendor/` block, and composer_dump_autoload()'s
+    # docstring for the two-consumer split). A prior session regenerated the
+    # working tree's autoloader dev-included to fix a LOCAL gate, which
+    # silently undid the deploy-safe one and reopened the exact live-site
+    # fatal this function exists to prevent. See:
+    # `python plugins/sgs-blocks/scripts/check-render-undefined-vars.py --check`
+    regen_composer = blocks and not dry_run
+    if regen_composer:
+        rc = composer_dump_autoload(dry_run, no_dev=True)
+        if rc != 0:
             err(
-                f"tarball is {size_mb:.0f}MB, over the {TARBALL_MAX_MB}MB ceiling. "
-                "Something that is not part of the plugin/theme is being packaged."
+                f"composer dump-autoload --no-dev failed (exit {rc}) — refusing to "
+                "package a tarball with a dev-included autoloader (that is the exact "
+                "bug that fatal'd the live site, D849). Nothing was packaged."
             )
-            try:
-                import subprocess as _sp
-                out = _sp.run(
-                    ["tar", "-tvf", TARBALL_NAME],
-                    cwd=str(REPO_ROOT), capture_output=True, text=True, timeout=180,
-                ).stdout.splitlines()
-                tops: dict[str, int] = {}
-                # `tar -tvf` prints: perms owner group SIZE date time path.
-                # Do NOT index a fixed column: the first two cuts of this guard did
-                # (parts[2], then "first digit in parts[1:5]") and both silently read
-                # the OWNER id 0, accumulating zeros and printing an alphabetical list
-                # of 0.0MB rows that named nothing. Anchor on the DATE instead and take
-                # the integer immediately before it. Verified against the real 113MB
-                # tarball: totals 108.6MB and names scripts/vendor/build, matching an
-                # independent awk pass. A diagnostic that fails quietly is worse than
-                # no diagnostic, because it reads as an answer.
-                import re as _re
-                _MONTH = _re.compile(r"^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$")
-                _DATE = _re.compile(r"^\d{4}-\d{2}-\d{2}$")
-                for line in out:
-                    parts = line.split()
-                    if not parts:
-                        continue
-                    nbytes = None
-                    for idx, tok in enumerate(parts):
-                        if _MONTH.match(tok) or _DATE.match(tok):
-                            for j in range(idx - 1, -1, -1):
-                                if parts[j].isdigit():
-                                    nbytes = int(parts[j])
-                                    break
-                            break
-                    if nbytes is None:
-                        continue
-                    key = "/".join(parts[-1].rstrip("/").split("/")[:3])
-                    tops[key] = tops.get(key, 0) + nbytes
-                for path, nbytes in sorted(tops.items(), key=lambda kv: -kv[1])[:8]:
-                    err(f"    {nbytes / (1024 * 1024):8.1f}MB  {path}")
-            except Exception as exc:  # noqa: BLE001 - diagnostics only
-                err(f"    (could not enumerate tar members: {exc})")
-            err(
-                "Fix: add it to TAR_EXCLUDES + .gitignore, or move it out of the "
-                "plugin/theme directory. Do NOT raise the ceiling to get past this."
-            )
+            return rc
+
+    try:
+        cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
+        for ex in TAR_EXCLUDES:
+            cmd.append(f"--exclude={ex}")
+        if theme:
+            cmd.append("theme/sgs-theme")
+        if blocks:
+            cmd.append("plugins/sgs-blocks")
+        rc = run(cmd, dry_run=dry_run, cwd=REPO_ROOT)
+        if rc != 0:
+            err(f"tar failed (exit {rc})")
+            return rc
+        if not dry_run and not (REPO_ROOT / TARBALL_NAME).exists():
+            err(f"tarball not produced: {REPO_ROOT / TARBALL_NAME}")
             return 2
-    log(f"[2/5] Packaging tarball: OK ({TARBALL_NAME})")
-    return 0
+
+        # STRUCTURAL SIZE GUARD (2026-08-27). The named excludes fix the two strays we
+        # found; this catches the NEXT one. Any untracked tree dropped inside
+        # plugins/sgs-blocks or theme/sgs-theme is invisible to the dirty gate and ships
+        # silently -- the only symptom is a suddenly huge tarball, and "the deploy is a
+        # bit slow" is exactly how that goes unnoticed. Fail closed and NAME the biggest
+        # members, so the next person is not left guessing what got in.
+        if not dry_run:
+            size_mb = (REPO_ROOT / TARBALL_NAME).stat().st_size / (1024 * 1024)
+            if size_mb > TARBALL_MAX_MB:
+                err(
+                    f"tarball is {size_mb:.0f}MB, over the {TARBALL_MAX_MB}MB ceiling. "
+                    "Something that is not part of the plugin/theme is being packaged."
+                )
+                try:
+                    import subprocess as _sp
+                    out = _sp.run(
+                        ["tar", "-tvf", TARBALL_NAME],
+                        cwd=str(REPO_ROOT), capture_output=True, text=True, timeout=180,
+                    ).stdout.splitlines()
+                    tops: dict[str, int] = {}
+                    # `tar -tvf` prints: perms owner group SIZE date time path.
+                    # Do NOT index a fixed column: the first two cuts of this guard did
+                    # (parts[2], then "first digit in parts[1:5]") and both silently read
+                    # the OWNER id 0, accumulating zeros and printing an alphabetical list
+                    # of 0.0MB rows that named nothing. Anchor on the DATE instead and take
+                    # the integer immediately before it. Verified against the real 113MB
+                    # tarball: totals 108.6MB and names scripts/vendor/build, matching an
+                    # independent awk pass. A diagnostic that fails quietly is worse than
+                    # no diagnostic, because it reads as an answer.
+                    import re as _re
+                    _MONTH = _re.compile(r"^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$")
+                    _DATE = _re.compile(r"^\d{4}-\d{2}-\d{2}$")
+                    for line in out:
+                        parts = line.split()
+                        if not parts:
+                            continue
+                        nbytes = None
+                        for idx, tok in enumerate(parts):
+                            if _MONTH.match(tok) or _DATE.match(tok):
+                                for j in range(idx - 1, -1, -1):
+                                    if parts[j].isdigit():
+                                        nbytes = int(parts[j])
+                                        break
+                                break
+                        if nbytes is None:
+                            continue
+                        key = "/".join(parts[-1].rstrip("/").split("/")[:3])
+                        tops[key] = tops.get(key, 0) + nbytes
+                    for path, nbytes in sorted(tops.items(), key=lambda kv: -kv[1])[:8]:
+                        err(f"    {nbytes / (1024 * 1024):8.1f}MB  {path}")
+                except Exception as exc:  # noqa: BLE001 - diagnostics only
+                    err(f"    (could not enumerate tar members: {exc})")
+                err(
+                    "Fix: add it to TAR_EXCLUDES + .gitignore, or move it out of the "
+                    "plugin/theme directory. Do NOT raise the ceiling to get past this."
+                )
+                return 2
+        log(f"[2/5] Packaging tarball: OK ({TARBALL_NAME})")
+        return 0
+    finally:
+        # POST-TAR restore — runs on every exit path (success, tar failure, size
+        # guard). NEVER leave the working tree in the --no-dev state: the next
+        # developer's `npm run build` needs PHPStan's classmap present for
+        # check-render-undefined-vars.py to run at all.
+        if regen_composer:
+            restore_rc = composer_dump_autoload(dry_run, no_dev=False)
+            if restore_rc != 0:
+                err(
+                    f"composer dump-autoload --optimize (dev-included) restore FAILED "
+                    f"(exit {restore_rc}) — the working tree's vendor/composer/"
+                    "autoload_*.php are left in the --no-dev state. Local PHPStan gates "
+                    "will fail until this is re-run by hand: "
+                    "php composer.phar dump-autoload --optimize (from plugins/sgs-blocks/, "
+                    "composer.phar is at the repo root)."
+                )
 
 
 def step_scp(dry_run: bool, use_alias: bool, host_label: str) -> int:
