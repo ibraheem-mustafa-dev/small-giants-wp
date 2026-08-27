@@ -1,3 +1,43 @@
+## D821 [INCIDENT] — Design Gate B's mechanical swap wasn't mechanical: SgsLengthControl had no prop-spread, and 2 of 5 parallel groups shipped a live regression before the pattern was caught
+
+**2026-08-27.** `SgsLengthControl.js`, `quote/edit.js`, `mega-panel/edit.js`, `option-picker/edit.js`,
+`nav-drawer/edit.js`, `testimonial/edit.js`, `nav-menu/edit.js`. Branch 2 (Gate B) of the
+two-design-gates session plan, dispatched as 5 parallel groups across ~67 mounts / 28 files.
+
+⭐ **Four independent groups found the same gap; two handled it correctly, two shipped a
+regression.** `SgsLengthControl.js` destructured only `{ label, value, onChange, units, presets }`
+— no rest-prop spread — so `help`, `placeholder`, `hideLabelFromVision` and `style` were silently
+dropped on any mount that used them. Groups 4 and 5 correctly declined: 25 of their 30 mounts left
+as raw `UnitControl`, each named with the exact blocking prop. Groups 2 and 3 swapped anyway and
+flagged the fallout afterward — **6 mounts across `quote`/`mega-panel`/`nav-drawer` had a REAL
+client-visible regression already sitting in the working tree**: the inner control's label
+rendered visibly, duplicating the label the wrapper (`ResponsiveOverride`/`ResponsiveControl`)
+already shows above it. A further 6 mounts across `option-picker`/`testimonial`/`nav-menu` lost
+`help` text silently (React drops unknown props with no error, no warning).
+
+**Fixed at the root, not per-mount.** `SgsLengthControl` now accepts and forwards `help`,
+`placeholder`, `hideLabelFromVision`, `style` — named params, not a bare `...rest` spread
+(deliberately: it stays a thin wrapper with a documented prop surface, not an arbitrary
+passthrough; the `presets={true}` branch's own `SelectControl` + Custom-value `UnitControl` need
+an explicit per-prop decision, not silent forwarding). Then every stripped prop was restored at
+its original call site, using the exact removed text (recovered via `git diff HEAD` against each
+file's pre-swap state, not reconstructed from memory) — 12 sites across 6 files. Full `npm run
+build` (68-gate chain) re-run clean after the restoration.
+
+⚠ **Scope note, not closed:** the fix unblocks roughly 25 previously-correctly-skipped mounts
+(Groups 4/5) that could now safely adopt `SgsLengthControl` too — held as a deliberate follow-up
+rather than ground through blind under session-sprawl pressure. One mount
+(`GridItemDefaultsPanel.js`'s `gridItemBorder`) is a permanent skip — a shorthand-string value,
+not `SgsLengthControl`'s single value/onChange shape.
+
+⭐ **Reusable shape:** a "zero risk, behaviourally identical" premise for a mechanical multi-agent
+swap needs the SAME verification a single-agent change gets — the premise held for the majority of
+mounts and was wrong for a real, non-trivial minority, and only showed up because independent
+parallel groups cross-checked the same shared dependency rather than each trusting the plan's own
+framing.
+
+---
+
 ## D820 [INCIDENT] — the gallery drag-scroll defect brief was wrong about which block; the real cause was physics-canvas's script-module registration racing WordPress core's own
 
 **2026-08-27.** `class-sgs-motion-registry.php`, `physics-canvas/render.php`,

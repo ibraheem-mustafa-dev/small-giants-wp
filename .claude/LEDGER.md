@@ -143,8 +143,14 @@ decide. Detail single-sourced to **D805-D812** — do not restate.
 ✅ **CLOSED (D818):** taught `inspector-scan` rule 21 to expand `*AttrKeys()` — 3 rules, each
    with a watched-failing overmatch fixture. Rule 21 holds at 82 (unchanged before/after), hero's
    3 gradient mounts re-adopted for real. Control-programme roll-out now unblocked.
-⛔ **OPEN = DESIGN GATE B:** adopt `SgsLengthControl` — 62 raw `UnitControl` mounts, 24 blocks,
-   0 adopted. Client-visible; check each attr's slug-vs-length typing (D338). Bean ruled adopt
+🔶 **PARTIAL = DESIGN GATE B (D821):** ~42 of ~67 mounts adopted `SgsLengthControl` (5 parallel
+   groups). Component had NO prop-spread — dropped `help`/`placeholder`/`hideLabelFromVision`
+   silently; 2 groups shipped a live regression (visible duplicate labels) before catching it.
+   FIXED at the component + all 12 affected call sites restored, verified via full build. **STILL
+   OPEN:** ~25 mounts Groups 4/5 correctly left as raw `UnitControl` (now unblocked by the fix,
+   not yet swapped — deliberate stopping point, not forgotten) + 1 permanent skip
+   (`gridItemBorder`, shorthand-string). Next: sweep the remaining ~25, then check each attr's
+   slug-vs-length typing (D338) before turning `presets={true}` on anywhere. Bean ruled adopt
    everywhere (shape-aware: plain-scalar / tier-wrapped / shorthand-string need different
    handling) — implementation (Wave 2 of the two-design-gates plan) not yet started.
 ✅ **CLOSED (D819):** the enum gate now measures RENDERED LABELS, not slugs — the slug proxy was
