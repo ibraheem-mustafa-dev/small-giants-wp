@@ -75,8 +75,23 @@ const HP_URL =
  * inside a genuine `sgs/container` `data-sgs-fx="pin-scrub"` pin, so a Tab
  * press can land on something real while the section is fixed.
  */
+/*
+ * ⛔ FIXTURE REBUILT 2026-08-27 — page 2114 is GONE, and restoring it was unsafe.
+ * `decisions.md` D730 records both trashed fixtures (2023 and 2114) as carrying
+ * PRE-migration authoring: `minHeight` became a TIER OBJECT on 2026-08-11, so a
+ * flat string is silently coerced to `{}` and every spacer collapses. Restoring
+ * one yields a silently-broken page that still LOOKS like a fixture — which is
+ * worse than no fixture, because the probe would report against a pin that never
+ * pins. Authored fresh instead, as page 2893, with post-migration tier objects.
+ *
+ * ⭐ The fixture's block markup is now COMMITTED at
+ * `scripts/motion-qa/fixtures/pin-keyboard-focus-fr-38-6.html`. This is the THIRD
+ * fixture for this probe to be lost to a canary tidy-up (2023, 2114, and the two
+ * 404s below), and each time the evidence became unreproducible because the source
+ * lived only on the server. Re-create from that file rather than re-inventing it.
+ */
 const REAL_FOCUS_URL =
-	'https://sandybrown-nightingale-600381.hostingersite.com/motion-canary-step22-pin-focus/';
+	'https://sandybrown-nightingale-600381.hostingersite.com/gate-do-not-delete-pin-keyboard-focus-fr-38-6/';
 
 const bust = ( u ) => u + ( u.includes( '?' ) ? '&' : '?' ) + 'sgsprobe13=' + Date.now();
 
