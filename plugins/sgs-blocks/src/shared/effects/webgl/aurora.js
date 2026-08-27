@@ -116,6 +116,16 @@ void main() {
 
 	vec3 col = u_base;
 
+	// GROUND-ADAPTIVE COMPOSITING.
+	// Emissive light only reads on a dark ground: adding to a near-white base
+	// just pushes it to white, which is exactly how the sibling effect died at
+	// D828. Rather than forbid light palettes - the client picks every colour
+	// from theme tokens, so we must not trap them - the curtains ADD on a dark
+	// ground and DARKEN on a light one. Smoothstep, not a branch, so a mid
+	// ground crossfades instead of snapping.
+	float baseLum = dot( u_base, vec3( 0.2126, 0.7152, 0.0722 ) );
+	float onLight = smoothstep( 0.18, 0.45, baseLum );
+
 	for ( int i = 0; i < 3; i++ ) {
 		float fi = float( i );
 		float scale = 1.4 + fi * 0.7;
@@ -156,13 +166,22 @@ void main() {
 		vec3 c = mix( u_low, u_mid, smoothstep( 0.0, 0.55, g ) );
 		c = mix( c, u_high, smoothstep( 0.45, 1.0, g ) );
 
-		col += c * band * rays * hmask * u_intensity * ( 0.9 - fi * 0.18 );
+		float weight = band * rays * hmask * u_intensity * ( 0.9 - fi * 0.18 );
+
+		// Dark ground: light adds into the headroom below white.
+		vec3 emissive = col + c * weight;
+		// Light ground: the curtain reads as pigment settling into the page, so
+		// it composites TOWARDS its own colour, darkening rather than blowing out.
+		vec3 pigment = mix( col, c * 0.72, clamp( weight, 0.0, 1.0 ) );
+
+		col = mix( emissive, pigment, onLight );
 	}
 
-	// Soft Reinhard roll-off. Without it three overlapping curtains clip to
-	// white and the hue information in the overlap is destroyed - the failure
-	// mode recorded next door when additive blending met a bright ground.
-	col = col / ( 1.0 + col * 0.55 );
+	// Soft Reinhard roll-off, applied only to the emissive case. Overlapping
+	// curtains would otherwise clip to white and lose the hue information in
+	// the overlap. On a light ground nothing is being added, so tone-mapping
+	// there would only wash the page out.
+	col = mix( col / ( 1.0 + col * 0.55 ), col, onLight );
 
 	outColour = vec4( col, 1.0 );
 }
