@@ -30,6 +30,7 @@ from converter.services.styling_helpers import (
     strip_important,
 )
 from converter.services.state_value_lift import _STATE_VALUE_PARSERS
+from converter.services.tier_object import tier_object_key
 from converter.db import db_lookup
 
 
@@ -217,8 +218,16 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
 
         # Normalise and emit the BASE attr value.
         attr_type = info.get("attr_type", "string")
+        # TIER-SHAPED object attr (Spec 35 Phase 1.4) — accumulate per-tier
+        # writes into ONE {desktop,tablet,mobile} object rather than the flat
+        # scalar path, since the flat-suffix siblings no longer exist on a
+        # migrated block (D802/tier_object.py; gated on the DB predicate,
+        # never on attr_type alone — box-shaped object attrs also report
+        # attr_type=='object').
+        is_tier_obj = attr_type == "object" and db_lookup.tier_object_base(slug, attr_name)
         if base_raw:
-            _emit_value(lifted, attr_name, css_property, attr_type, base_raw, catalogue, role)
+            _emit_tier_value(lifted, attr_name, css_property, attr_type, base_raw,
+                              catalogue, role, tier="Base", is_tier_obj=is_tier_obj)
 
         # B2 FIX — consume bp_decls → emit {attr}{bp_suffix} companions.
         # Mirrors _lift_typography_to_block_attrs (convert.py:1718-1748):
@@ -246,11 +255,21 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
                 # Per-device attr exists → emit to companion.
                 _emit_value(lifted, companion_attr, css_property, attr_type, bp_raw_val, catalogue, role)
             else:
-                # A-collapse: no per-device attr (e.g. quoteColourDesktop absent).
-                # Write to base attr via setdefault so the Desktop-bp value is not
-                # overwritten by a later base-decl write (matching convert.py:1744-1748).
-                lifted.setdefault(attr_name,
-                                  _compute_value(css_property, attr_type, bp_raw_val, attr_name, catalogue, role))
+                if is_tier_obj:
+                    # TIER-SHAPED base attr with no per-device companion in the
+                    # catalogue (companion_attr check above only matches the
+                    # legacy flat-sibling shape) — accumulate this bp's value
+                    # into the {desktop,tablet,mobile} object instead of the
+                    # setdefault A-collapse (which would only ever land the
+                    # FIRST tier and silently drop Tablet/Mobile).
+                    _emit_tier_value(lifted, attr_name, css_property, attr_type, bp_raw_val,
+                                      catalogue, role, tier=bp_key, is_tier_obj=True)
+                else:
+                    # A-collapse: no per-device attr (e.g. quoteColourDesktop absent).
+                    # Write to base attr via setdefault so the Desktop-bp value is not
+                    # overwritten by a later base-decl write (matching convert.py:1744-1748).
+                    lifted.setdefault(attr_name,
+                                      _compute_value(css_property, attr_type, bp_raw_val, attr_name, catalogue, role))
 
         # State (hover/focus/active) companions (D309, universal hover).
         # The SAME matched element's :hover/:focus/:active declarations →
@@ -446,7 +465,11 @@ def _compute_value(
         return None
 
     if css_property == "font-size":
-        if attr_type == "number":
+        if attr_type in ("number", "object"):
+            # attr_type=='object' here is a TIER-SHAPED font-size attr (Spec 35
+            # Phase 1.4) — same numeric split as the flat 'number' case; the
+            # caller (_emit_tier_value) is responsible for placing the result
+            # under the correct {desktop,tablet,mobile} key.
             num, _unit = split_value_unit(raw)
             if num is None:
                 return None
@@ -456,6 +479,53 @@ def _compute_value(
     # Remaining typography properties (line-height, letter-spacing,
     # text-align, etc.) — store raw CSS value as string.
     return raw
+
+
+def _emit_tier_value(
+    lifted: dict,
+    attr_name: str,
+    css_property: str,
+    attr_type: str,
+    raw: str,
+    catalogue: dict,
+    role: "str | None",
+    tier: str,
+    is_tier_obj: bool,
+) -> None:
+    """Compute + write a value into ``lifted``, honouring the TIER-SHAPED
+    object attr contract (Spec 35 Phase 1.4) when ``is_tier_obj`` is True.
+
+    Sibling of ``_emit_value`` for the case where ``attr_name`` is a tier-
+    shaped object attr (``{desktop,tablet,mobile}``) rather than a flat
+    scalar with suffixed siblings. When ``is_tier_obj`` is False this is
+    behaviour-identical to ``_emit_value`` (flat scalar write).
+
+    D-fix: an earlier attempt used ``lifted.setdefault(attr_name, {})[key] =
+    value`` here, which is a permanent no-op on Tablet/Mobile because the
+    BASE pass (tier='Base') already sets ``lifted[attr_name]`` to a FLAT
+    value before this loop runs on later tiers — ``setdefault`` never fires
+    again once the key exists. Writing directly into the dict (creating it
+    via ``lifted.setdefault(attr_name, {})`` as a plain mutable container,
+    THEN keying into it) avoids that trap.
+    """
+    value = _compute_value(css_property, attr_type, raw, attr_name, catalogue, role)
+    if value is None:
+        return
+    if is_tier_obj:
+        tier_key = tier_object_key(tier)
+        if tier_key is None:
+            return
+        lifted.setdefault(attr_name, {})
+        lifted[attr_name][tier_key] = value
+    else:
+        lifted[attr_name] = value
+
+    if css_property == "font-size" and attr_type in ("number", "object"):
+        _, unit = split_value_unit(raw)
+        if unit:
+            unit_attr = attr_name + "Unit"
+            if unit_attr in catalogue:
+                lifted[unit_attr] = unit
 
 
 def _emit_value(

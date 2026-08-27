@@ -99,3 +99,52 @@ def test_styling_lift_empty_css_rules_is_safe_noop():
     assert results == [], (
         f"styling lift with empty css_rules should emit no keys, got: {results}"
     )
+
+
+# ---------------------------------------------------------------------------
+# test_tier_object_font_size_lifts_all_three_breakpoints
+#
+# Regression for the bug fixed alongside this test: 5 attrs
+# (sgs/product-card.descFontSize/priceFontSize/titleFontSize/priceNoteFontSize,
+# sgs/trust-bar.labelFontSize) are attr_type='object' (tier-shaped
+# {desktop,tablet,mobile}) but were written FLAT by this resolver — so only
+# the Desktop tier ever landed and Tablet/Mobile were silently dropped.
+# Before the fix this asserted {"desktop": 28} only; the fix accumulates all
+# three tiers into ONE object via _emit_tier_value + tier_object_key
+# (Spec 35 Phase 1.4 / D802's tier_object.py mechanism).
+# ---------------------------------------------------------------------------
+
+
+def test_tier_object_font_size_lifts_all_three_breakpoints():
+    """priceFontSize (sgs/product-card, confirmed tier_object_base=True) must
+    land as {"desktop": 28, "tablet": 24, "mobile": 20} when the draft CSS
+    genuinely diverges per breakpoint — not desktop-only."""
+    html = (
+        '<div class="sgs-product-card">'
+        '<span class="sgs-product-card__price">£4.99</span>'
+        "</div>"
+    )
+    node = _node(html)
+    rec = recognise(node)
+    assert rec.slug == "sgs/product-card"
+
+    css_rules = {
+        ".sgs-product-card__price": {"font-size": "28px"},
+        "@media (max-width: 1023px) :: .sgs-product-card__price": {"font-size": "24px"},
+        "@media (max-width: 767px) :: .sgs-product-card__price": {"font-size": "20px"},
+    }
+    results = extract_content(rec, node, css_rules=css_rules)
+    styling = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+
+    assert styling.get("priceFontSize") == {
+        "desktop": 28,
+        "tablet": 24,
+        "mobile": 20,
+    }, (
+        "priceFontSize must accumulate all three tiers into one object — "
+        f"got: {styling.get('priceFontSize')!r} (full styling dict: {styling})"
+    )
+    assert styling.get("priceFontSizeUnit") == "px", (
+        f"priceFontSizeUnit companion must still emit as a flat string — got: "
+        f"{styling.get('priceFontSizeUnit')!r}"
+    )
