@@ -50,7 +50,7 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — ✅ CLOSED 2026-08-28 (D854) — Task 1 (twelve-template review) SHIPPED, nothing left open
+## ▶ MAMA'S CLONE TRACK — ✅ CLOSED 2026-08-28 (D854) — nothing left open, four small items queued
 
 **Task 1 DONE after five deferrals.** All twelve templates opened live; all five defects +
 `main` tag-dropdown gap fixed + live-verified. Full detail → **D854**, do not restate. Two of
@@ -58,17 +58,23 @@ five "defects" were WordPress/WooCommerce CONFIG not code (attribute archives of
 footer pointed at a test-fixture CPT via `sgs_active_footer_cpt_id`) — fixed live, not a commit.
 The two real code fixes ship in `b50ce3d8c` on `main`, deployed + payload-verified.
 
-⚠ **Carried, small — ask Bean before parking:** the now-active footer's "Quick Links" list is
-empty (content gap). `sgs/hero`/`sgs/trust-bar`/`sgs/cta-section` have NO tag-picker UI at all
-(only `sgs/container` does) — same bug class, unconfirmed if block.json even has the enum.
+**Also fixed same day (`9fcf4f4e5`):** the footer's "Quick Links" list — was genuinely empty
+(no `<li>`s), now carries 5 generic placeholder links. The real bug was one layer deeper than
+expected: the fix required editing AND DEPLOYING the theme pattern file
+(`framework-footer-default.php`) — editing the database template part alone changed nothing live,
+because the render path resolves through the pattern file, not the DB copy. Caught only by
+re-verifying live after the first (DB-only) attempt looked done.
 
-**Prior session (2026-08-27) shipped + closed, all historical now — full detail D830-D851,
-do not restate:** 8 converter/block fixes, typography re-measured (74/75/79% parity), DB refresh
-clean, flexWrap migration tool (dry-run only, needs Bean's sign-off). Carried, still open: the
-375px readable-card floor (design question for Bean) · archive residue ·
-`sgs/button::fontFamily` dead, maybe wireable · **page 2884's product-card
-titleLineHeight/descLineHeight stored as strings not numbers (D851), same bug class as
-D802/D833, not root-caused** — live bug, treat as real next session.
+`sgs/hero`/`sgs/trust-bar`/`sgs/cta-section` having no tag-picker UI is **NOT this track's
+concern** — it's planned POC scope for C16/C19 on the client-controls track.
+
+⭐ **NEXT: `.claude/prompts/2026-08-28-four-carried-clone-track-items.md`** — page 2884's
+product-card `titleLineHeight`/`descLineHeight` stored as strings not numbers (D851, live bug,
+not root-caused) · flexWrap migration tool sign-off (127 candidates, dry-run only, needs Bean's
+screenshot review) · the 375px readable-card floor (design question for Bean) ·
+`sgs/button`'s font-family control — confirmed 2026-08-28 as a one-line fix
+(`showFontFamily={ true }` on its existing `<TypographyControls>` call; the render side was
+already complete and waiting).
 
 ### ▶ G3 answered this session (2026-08-27)
 All 12 templates under `theme/sgs-theme/templates/` are framework-authored (real `sgs/*` block
