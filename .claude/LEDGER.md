@@ -82,21 +82,21 @@ report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reason
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (colour-pipeline bugs FIXED + deployed; only Bean's eye left)
+## ▶ MOTION TRACK — 2026-08-27 (TECHNIQUE CHANGED to translucent layers; only Bean's eye left)
 
-⭐ **START HERE: Bean's verdict on the recoloured + re-shaded effect.** New screenshots sent.
-4-seat council root-caused "still reads as cheap 3D" to 3 shader colour bugs — NOT mesh
-resolution, NOT antialiasing (both disproven with maths). Fixed + deployed + live-verified (D824):
-sharpening moved post-interpolation, blending moved to linear light, displacement fold-over fixed.
-~2hr, +1.6KB gzip, zero rewrite, excludes any blur/texture/FBO pass (that's D794's rejected spec
-under a new name). Steps 1-6 + Gates A+B+C CLOSED (D822/D823), LIVE via isolated worktree (dodges
-shared-tree collisions, D816 — hit twice more this session). Payload-verify PASSED both deploys.
+⭐ **START HERE: Bean's verdict on the NEW technique (D827).** Bean's fuller critique after
+D824's colour fixes — "sharp edges", "one continuous sheet", fingers poking, colours read as
+light/shadow not overlap, motion "globby like pudding" — pointed at the TECHNIQUE, not more
+tuning: an opaque displaced mesh has zero transparency. Agreed as ONE bounded experiment: fullscreen
+triangle (no mesh/displacement, fixes pudding), colour per-pixel from 3 DRIFTING noise fields, soft
+spatial alpha (fixes sharp edges), ADDITIVE linear-light compositing replacing opaque paint (fixes
+light/shadow-not-overlap). Still 1 draw call, no FBO/texture. Bundle -7%. Deployed + live-verified
+(real GPU, animates, context-loss clean) via isolated worktree; also fixed a genuine `@babel/parser`
+gap in shared `node_modules` mid-session (root-caused, not assumed).
 ⭐ **Real differentiator identified, NOT built (parked):** effect recolours itself via the same
 per-client theme tokens the whole site uses — no forked-shader competitor can match that.
-✅ **CLOSED (D826):** Pause toggle's `[hidden]` specificity tie fixed (`:not([hidden])`, (0,2,0)
-   beats the UA rule's (0,1,0)), deployed, live-verified on canary page 2740 — `display:none`
-   confirmed when hidden. A second real gap fixed at the source along the way: `lucide-static`
-   missing from the MAIN tree's `node_modules` (not just a worktree issue), `npm install` run.
+✅ **CLOSED (D826, prior round):** Pause toggle's `[hidden]` specificity tie fixed
+   (`:not([hidden])`), live-verified — `display:none` confirmed when hidden.
 ✅ 3 live bugs FIXED (D814/D815), attribution gate BUILT (D813), POC/Q6/Gate E CLOSED
 (D790/D791/D794). Framebuffer still needs its own design gate.
 

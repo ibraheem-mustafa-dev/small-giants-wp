@@ -1,3 +1,71 @@
+## D827 [ROUTINE] — wave-gradient technique changed from displaced mesh to additive translucent layers, per Bean's specific art-direction critique
+
+**2026-08-27.** `plugins/sgs-blocks/src/shared/effects/webgl/wave-gradient.js`. Bean's fuller
+verdict after D824's colour-maths fixes: "still has sharp edges", reads as "one connected and
+continuous sheet" with waves that "look like someone is randomly pressing their finger into it",
+colour variation reads "like light reflecting" or "shadows" rather than the name's implication, and
+motion "feels very globby and physical like moving a pudding or custard".
+
+**Diagnosis: not more bugs in the same technique — that critique IS the technique.** D824's
+colour-pipeline fixes (interpolation order, linear-light blending, fold-over frequency) were real
+and correctly diagnosed for what they fixed, but they were all internal to an OPAQUE
+vertex-displaced mesh: one continuous surface, geometrically pushed up and down, colours painted
+over each other. No amount of tuning that mechanism reaches translucent overlapping light — it had
+zero transparency anywhere. Bean's specific language ("aurora", "different opacity", "overlap each
+other with different colours", "not globby/physical") pointed at a different technique, not a
+different parameter set.
+
+**Agreed as "one bounded experiment"** (Bean's explicit choice from a 3-way menu: try a scoped
+technique swap on the same effect / ship as-is and park it / go straight to the bigger rebuild) —
+NOT the deferred Phase 3 rebuild, and NOT a return to the rejected technique-spec document.
+
+**What changed:**
+1. **No vertex displacement, no custom mesh.** Replaced the 64×64 subdivided plane + index buffer
+   with a fullscreen triangle via `gl_VertexID` (zero vertex/index buffers) — the same shape
+   `renderer.js` uses, reproduced here rather than shared, so this effect's own risk never touches
+   the live `surface-treatment` effect that depends on that file. This is what makes the "why this
+   is a sibling of renderer.js" reasoning obsolete: it existed specifically because displacement
+   needed a custom vertex stage, and displacement is gone.
+2. **Colour computed entirely per-pixel**, not per-vertex: three independent noise fields, each
+   sampled at its own scale and DRIFTING (a slow constant-velocity translation of the sample
+   coordinate — not a displacement of geometry, so nothing is being pushed or squished; this is the
+   direct fix for "globby/pudding").
+3. **Each layer's alpha varies softly and spatially** (wide `smoothstep` band, softness exponent
+   dropped from the mesh version's tuned value to 1.6 default) instead of a hard, per-vertex-
+   interpolated edge — the direct fix for "sharp edges".
+4. **Layers composite ADDITIVELY, in linear light**, replacing the opaque `blendNormal` paint-over-
+   paint. Additive is the physically-correct model for overlapping translucent light: two colours
+   crossing brighten and shift hue toward each other rather than one occluding the other — the
+   direct, mechanical fix for "reads like light/shadow, not overlapping colour" and "one continuous
+   sheet". Per-layer opacity ceilings (0.85/0.65/0.55) stop three layers overlapping from washing
+   to white.
+
+**Still within every existing constraint** — one draw call, one pass, no framebuffer, no texture.
+D794's NO-GO on the rejected technique spec and D791's bar on a blur/grain post-pass (70% of frame
+cost) are untouched; this experiment doesn't request either.
+
+`opts.amplitude` kept as the public/inspector option name (client-facing control still says
+"Amplitude") — its meaning changed from displacement scale to layer-intensity scale, since there is
+no more geometry to displace. Documented inline and in the JSDoc.
+
+**Bundle: 5232 → 4864 gzip (−7%).** Removing the mesh-builder + index-buffer code outweighed the
+fragment shader growing — still ~4% of the 120KB Tier W allowance, no re-baseline needed (within
+the existing gate's 20% tolerance either direction from the still-current 5232 baseline).
+
+**Deployed and live-verified** via the same isolated-worktree method as D822-D824 (main was dirty
+from other tracks again, plus a genuine environment hiccup this round: `@babel/parser` vanished
+from the shared `node_modules` mid-session — root-caused live via `require.resolve` rather than
+assumed, fixed with `npm install --no-save`, confirmed the same gate that failed closed on the
+missing module reports 0 findings once it resolves). Payload-verify PASSED (83/83 checksums); all 3
+standing motion probes green; effect confirmed still booting on real GPU, still animating
+(frame-to-frame byte-size delta), context-loss fallback unaffected (opacity 0 + attribute cleared
+within 700ms, same as D823/D824).
+
+**Not yet given: Bean's verdict on the new look.** Screenshots sent (full page + a close crop of
+the warm section, where additive overlap is most visible). Carried forward as the one open item —
+this experiment is deliberately scoped as ONE round; if it doesn't land, the next decision is
+Bean's, per the original 3-way menu (ship as-is and park it, or escalate to the full rebuild).
+
 ## D826 [ROUTINE] — the wave-gradient Pause toggle's [hidden] specificity tie fixed and live-verified; a second real environment gap found and fixed at the source
 
 **2026-08-27.** `plugins/sgs-blocks/assets/css/fx-wave-gradient.css`. Closes the one-line fix D822
