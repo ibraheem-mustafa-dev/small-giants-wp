@@ -231,8 +231,15 @@ function attach( el ) {
 	 * boot() already expects; it is NOT a failure path, and it deliberately
 	 * leaves data-sgs-wave-active unset so the CSS keeps painting.
 	 */
+	/*
+	 * Aurora and Ink are the SAME shader. They differ only in the colours the
+	 * stylesheet hands it: on a dark ground the curtains add light and read as
+	 * an aurora; on a light ground they darken and read as pigment settling
+	 * into paper. The shader measures the base colour and picks the
+	 * compositing itself, so there is one code path and no mode flag.
+	 */
 	const variant = ( el.getAttribute( 'data-sgs-fx-wave-variant' ) || 'pastel' ).trim();
-	if ( variant !== 'aurora' ) {
+	if ( variant !== 'aurora' && variant !== 'ink' ) {
 		return null;
 	}
 

@@ -117,7 +117,7 @@ function sgs_apply_fx_wave_gradient( string $block_content ): string {
 	if ( '' === $variant || null === $processor->get_attribute( 'data-sgs-fx-wave-variant' ) ) {
 		$variant = 'pastel';
 	}
-	$allowed = array( 'pastel', 'aurora', 'horizon', 'ribbon', 'veil' );
+	$allowed = array( 'pastel', 'aurora', 'ink', 'horizon', 'ribbon', 'veil' );
 	if ( ! \in_array( $variant, $allowed, true ) ) {
 		$variant = 'pastel';
 	}

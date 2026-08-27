@@ -2542,6 +2542,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											options={ [
 												{ label: __( 'Pastel — soft daylight wash', 'sgs-blocks' ), value: 'pastel' },
 												{ label: __( 'Aurora — northern lights', 'sgs-blocks' ), value: 'aurora' },
+												{ label: __( 'Ink — swirling pigment', 'sgs-blocks' ), value: 'ink' },
 												{ label: __( 'Horizon — glow along the base', 'sgs-blocks' ), value: 'horizon' },
 												{ label: __( 'Ribbon — one band crossing', 'sgs-blocks' ), value: 'ribbon' },
 												{ label: __( 'Veil — broad drifting sheets', 'sgs-blocks' ), value: 'veil' },
@@ -2550,7 +2551,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 												setParam( { fxWaveVariant: value } )
 											}
 											help={ __(
-												'Aurora is drawn on the graphics card; the rest are pure CSS and cost nothing extra.',
+												'Each style ships with colours chosen to suit it — change any of them below to match your brand. Aurora and Ink are drawn on the graphics card; the rest are pure CSS and cost nothing extra.',
 												'sgs-blocks'
 											) }
 										/>
@@ -2567,6 +2568,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										<DesignTokenPicker
 											label={ __( 'Base colour', 'sgs-blocks' ) }
 											value={ attributes.fxWaveBase }
+											linked
 											onChange={ ( value ) =>
 												setParam( { fxWaveBase: value } )
 											}
@@ -2588,6 +2590,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										<DesignTokenPicker
 											label={ __( 'Wave colour 1', 'sgs-blocks' ) }
 											value={ attributes.fxWave1 }
+											linked
 											onChange={ ( value ) =>
 												setParam( { fxWave1: value } )
 											}
@@ -2604,10 +2607,12 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										onDeselect={ () =>
 											setParam( { fxWave2: '' } )
 										}
+										isShownByDefault
 									>
 										<DesignTokenPicker
 											label={ __( 'Wave colour 2', 'sgs-blocks' ) }
 											value={ attributes.fxWave2 }
+											linked
 											onChange={ ( value ) =>
 												setParam( { fxWave2: value } )
 											}
@@ -2624,10 +2629,12 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										onDeselect={ () =>
 											setParam( { fxWave3: '' } )
 										}
+										isShownByDefault
 									>
 										<DesignTokenPicker
 											label={ __( 'Wave colour 3', 'sgs-blocks' ) }
 											value={ attributes.fxWave3 }
+											linked
 											onChange={ ( value ) =>
 												setParam( { fxWave3: value } )
 											}
