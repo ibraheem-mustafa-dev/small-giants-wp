@@ -179,6 +179,37 @@ conflict clears.
 
 ---
 
+## D823 [ROUTINE] — D822's "no real GPU in this sandbox" claim was wrong; QA Gate C's mechanical checks now closed for real
+
+**2026-08-27.** D822 stated the agent sandbox has no real GPU (SwiftShader/software rendering
+observed on a default headless Chromium launch) and that canvas-draws + context-loss-recovery
+could not be live-verified here. **Wrong — fact-checked and corrected same session, per this
+project's own rule.** A real GPU (RTX 2060) IS present; default headless Chromium just disables
+GPU access unless launched with `--use-gl=angle --use-angle=default --ignore-gpu-blocklist
+--enable-gpu`. Confirmed via `WEBGL_debug_renderer_info` before trusting the retry.
+
+**With real GPU access, all of QA Gate C's mechanical checks now pass, live, on the deployed
+canary:**
+- Effect boots: `data-sgs-wave-active="1"` confirmed within the wait window.
+- Canvas draws: two frames captured 1s apart differ by **77.1% of pixels at >20/255** (PD-9's
+  threshold was ≥10%) — the mesh is genuinely animating, not a static image.
+- **The context-loss fix (D814) verified live, not just by static trace (D815 seat 1) or jsdom.**
+  Forced `WEBGL_lose_context` on the live canary; before: `data-sgs-wave-active="1"`, canvas
+  `opacity:1`. 700ms after: attribute removed (`null`), canvas `opacity:0`. No dead rectangle —
+  the CSS fallback is what's left showing. This is the exact procedure PD-8 specified.
+- Pause toggle correctly VISIBLE while the effect is genuinely running (the D822 visibility bug
+  only manifests when the effect never boots at all — unaffected by this correction).
+
+**QA Gate C mechanical checks: CLOSED.** Only remaining open item is Bean's eye on the look itself
+(screenshots sent) — a judgement call, not a measurement, so it stays open until he gives a verdict.
+
+⭐ **The method point, again:** the first attempt's "no GPU" conclusion was itself unverified — I
+inferred sandbox capability from one launch configuration's result rather than testing whether a
+different configuration changed the answer. Caught before it became load-bearing for a "still
+open" claim that would have sat in the record indefinitely. Same class of error this project's
+prove-the-cause rule exists to catch, just applied to infrastructure capability rather than a code
+diagnosis.
+
 ## D822 [ROUTINE] — Deploy succeeded via an isolated worktree; live verification confirmed the palette and found one real, pre-existing bug
 
 **2026-08-27.** Bean: "commit to origin and deploy from there" — the right call, since `main`'s

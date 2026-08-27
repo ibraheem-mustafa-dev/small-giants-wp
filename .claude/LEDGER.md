@@ -82,23 +82,23 @@ report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reason
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (DEPLOYED + partly live-verified; QA Gate C not yet closed)
+## ▶ MOTION TRACK — 2026-08-27 (DEPLOYED + LIVE-VERIFIED; only Bean's eye left)
 
-⭐ **START HERE: `.claude/plans/phase-1-fr3831-hygiene-and-look.md` QA Gate C.** Steps 1-6 + Gates
-A+B done and LIVE on the canary (D822) — deployed from an isolated worktree to dodge cross-track
-collisions (D816). Payload-verify PASSED, 83/83 checksums.
-⭐ **Palette CONFIRMED LIVE** — `--sgs-wave-base` computed = `#f4f8fb` on the canary; toggle
-contrast measured from an actual rendered pixel = **10.74:1** (was 3.36:1). Second section (custom
-re-theme demo) confirmed UNCHANGED at `#1a1206` — per-instance values still win.
+⭐ **START HERE: Bean's verdict on the look.** Screenshots sent (1440/768/375). Steps 1-6 + Gates
+A+B+C's mechanical checks ALL CLOSED (D822/D823) — LIVE on the canary, deployed from an isolated
+worktree to dodge cross-track collisions (D816). Payload-verify PASSED, 83/83 checksums.
+⭐ **Palette + toggle + context-loss ALL CONFIRMED LIVE on real GPU (D823, corrects D822's "no
+GPU" claim — it just needed launch flags):** `--sgs-wave-base` = `#f4f8fb`; toggle contrast from a
+rendered pixel = **10.74:1** (was 3.36:1); canvas genuinely animates (77% pixel diff/frame, PD-9
+threshold was 10%); forced `WEBGL_lose_context` → attribute cleared + canvas faded to 0 opacity
+within 700ms, no dead rectangle. Second section (custom re-theme demo) confirmed UNCHANGED —
+per-instance values still win.
 ⛔ **NEW bug (D822), NOT fixed:** Pause toggle's `hidden` attribute sets correctly but its class
 rule ties CSS specificity with the browser's `[hidden]` default and wins — visible+clickable doing
-nothing when WebGL declines. Pre-existing CSS, only now exercised (D814 is the first thing that
-ever made WebGL decline). One-line fix available, not applied.
-⚠ **QA Gate C still open:** sandbox has no real GPU (SwiftShader) so WebGL correctly declines here
-— proves the fix works, but canvas-draws + context-loss checks need a real GPU browser. Bean's eye
-on the look also still owed.
-✅ **3 live bugs FIXED (D814/D815), attribution gate BUILT (D813), POC/Q6/Gate E CLOSED
-(D790/D791/D794).** Framebuffer pass needs a DESIGN GATE.
+nothing when the effect never boots at all (unrelated to the context-loss path above, which
+correctly hides it). One-line fix available, not applied.
+✅ 3 live bugs FIXED (D814/D815), attribution gate BUILT (D813), POC/Q6/Gate E CLOSED
+(D790/D791/D794). Framebuffer needs a gate
 
 **Prior history (D766/D767, D778-D781, 2026-08-24/25):** cursor field (2721) + magnetic pull
 (2737) shipped; 3 gate-passed defects fixed on eye-review. Do not restate — read the D-numbers.
