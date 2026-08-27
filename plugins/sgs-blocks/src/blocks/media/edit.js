@@ -25,6 +25,7 @@ import {
 	SgsColourPanel,
 	ShadowControl,
 	SgsLengthControl,
+	MediaSizingPanel,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -134,6 +135,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isImage = 'image' === mediaType || ! mediaType;
 	const isVideo = 'video' === mediaType;
 	const isSvg = 'svg' === mediaType;
+
+	// Media size & crop (C19, 2026-08-27) — `mediaSizing` has no block.json
+	// `default` (see block.json's `_comment_mediaSizing`), so an absent value
+	// is DERIVED here — ratio set -> ratio; else height set -> height; else
+	// auto — the SAME derivation `media/render.php` performs at render time,
+	// so old/existing content (none exists live for this attribute — see the
+	// dispatch return) renders identically with zero edit required.
+	const nativeAspectRatio = attributes.style?.dimensions?.aspectRatio || '';
+	const heightHasValue = !! (
+		attributes.height && Object.values( attributes.height ).some( ( v ) => v !== undefined && v !== null && v !== '' )
+	);
+	const resolvedMediaSizing =
+		attributes.mediaSizing || ( nativeAspectRatio ? 'ratio' : heightHasValue ? 'height' : 'auto' );
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {
@@ -395,6 +409,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( {
 							objectFit: 'cover',
 							objectPosition: 'center center',
+							mediaSizing: 'auto',
 							// maxWidth + maxHeight + height are TIER OBJECTS —
 							// reset to an empty object, NOT resetResponsiveLength()'s
 							// `null` + flat siblings. A null on an object-typed attr
@@ -405,6 +420,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							height: {},
 							style: {
 								...style,
+								dimensions: { ...style?.dimensions, aspectRatio: undefined },
 								border: { ...style?.border, radius: {} },
 							},
 							borderRadiusTablet: {},
@@ -416,85 +432,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						} );
 					} }
 				>
-					<ToolsPanelItem
-						label={ __( 'Object fit', 'sgs-blocks' ) }
-						hasValue={ () =>
-							( attributes.objectFit || 'cover' ) !== 'cover'
-						}
-						onDeselect={ () =>
-							setAttributes( { objectFit: 'cover' } )
-						}
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Object fit', 'sgs-blocks' ) }
-							help={ __(
-								'How the media fills its box when a fixed height / aspect ratio is set.',
-								'sgs-blocks'
-							) }
-							value={ attributes.objectFit || 'cover' }
-							options={ [
-								{
-									label: __(
-										'Cover (fill, crop)',
-										'sgs-blocks'
-									),
-									value: 'cover',
-								},
-								{
-									label: __(
-										'Contain (fit, letterbox)',
-										'sgs-blocks'
-									),
-									value: 'contain',
-								},
-								{
-									label: __( 'Fill (stretch)', 'sgs-blocks' ),
-									value: 'fill',
-								},
-								{
-									label: __( 'None', 'sgs-blocks' ),
-									value: 'none',
-								},
-								{
-									label: __( 'Scale down', 'sgs-blocks' ),
-									value: 'scale-down',
-								},
-							] }
-							onChange={ ( value ) =>
-								setAttributes( { objectFit: value } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Object position', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! attributes.objectPosition &&
-							'center center' !== attributes.objectPosition
-						}
-						onDeselect={ () =>
-							setAttributes( { objectPosition: 'center center' } )
-						}
-					>
-						<TextControl
-							label={ __( 'Object position', 'sgs-blocks' ) }
-							help={ __(
-								'Which part stays visible when cropped, e.g. "center center", "top right", "center 20%".',
-								'sgs-blocks'
-							) }
-							value={ attributes.objectPosition || '' }
-							placeholder="center center"
-							onChange={ ( value ) =>
-								setAttributes( { objectPosition: value } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
 					{ /*
 					  `maxWidth` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
 					  {desktop,tablet,mobile}, so it uses ResponsiveOverride. `maxHeight`
@@ -564,39 +501,43 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanelItem>
 
 					{ /*
-					  `height` is now ALSO a TIER OBJECT (Spec 35 pass) — ONE attr
-					  holding {desktop,tablet,mobile}, same shape as `maxHeight`
-					  above. `heightTablet`/`heightMobile` are no longer declared
-					  by block.json, so the flat-sibling <RUnitControl> this
-					  control used is retired in favour of <ResponsiveOverride>.
+					  Media size & crop (C19, 2026-08-27) — the mode picker below
+					  REPLACES the old standalone "Height (fill)" + "Object fit" +
+					  "Object position" ToolsPanelItems (removed above/below this
+					  point) with the shared MediaSizingPanel: `height` (unchanged
+					  attribute shape/name — a TIER OBJECT, no rename) and the
+					  NATIVE `style.dimensions.aspectRatio` (block.json
+					  `supports.dimensions.aspectRatio`) become mutually exclusive
+					  modes of ONE `mediaSizing` picker instead of two controls
+					  that could both be set at once. `mediaSizing` derives from
+					  existing data when absent (see `resolvedMediaSizing` above) —
+					  no stored content needs migrating.
+
+					  `imageInset` is deliberately OMITTED here — sgs/media has no
+					  padding/inset attribute today (a gap, not a bug in this
+					  panel); the component supports the row only when a future
+					  adopter passes insetValue/onInsetChange.
 					*/ }
-					<ToolsPanelItem
-						label={ __( 'Height (fill)', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! (
-								attributes.height &&
-								Object.values( attributes.height ).some(
-									( v ) => v !== undefined && v !== null && v !== ''
-								)
-							)
+					<MediaSizingPanel
+						mode={ resolvedMediaSizing }
+						onModeChange={ ( next ) => setAttributes( { mediaSizing: next } ) }
+						heightValue={ attributes.height }
+						onHeightChange={ ( obj ) => setAttributes( { height: obj } ) }
+						ratioValue={ nativeAspectRatio }
+						onRatioChange={ ( value ) =>
+							setAttributes( {
+								style: {
+									...style,
+									dimensions: { ...style?.dimensions, aspectRatio: value || undefined },
+								},
+							} )
 						}
-						onDeselect={ () => setAttributes( { height: {} } ) }
-					>
-						<ResponsiveOverride
-							label={ __( 'Height (fill)', 'sgs-blocks' ) }
-							value={ attributes.height }
-							onChange={ ( obj ) => setAttributes( { height: obj } ) }
-						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<SgsLengthControl
-									presets={ false }
-									value={ ownValue || '' }
-									placeholder={ inherited ? effectiveValue || '' : '' }
-									onChange={ ( v ) => setOwnValue( v || '' ) }
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
+						objectFit={ attributes.objectFit || 'cover' }
+						onObjectFitChange={ ( value ) => setAttributes( { objectFit: value } ) }
+						focalPoint={ attributes.objectPosition || 'center center' }
+						onFocalPointChange={ ( value ) => setAttributes( { objectPosition: value } ) }
+						focalPreviewUrl={ isImage ? imageUrl : '' }
+					/>
 
 					<ToolsPanelItem
 						label={ __( 'Border radius', 'sgs-blocks' ) }

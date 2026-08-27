@@ -118,6 +118,9 @@
 					"label": "Post image",
 					"order": 3,
 					"clusters": [],
+					"attrMap": {
+						"css:aspect-ratio": "aspectRatio"
+					},
 					"_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling for imageZoomHover (transform) - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage/imageZoomHover govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it."
 				},
 				"title": {

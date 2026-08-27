@@ -41,7 +41,8 @@
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:box-shadow": "boxShadow",
-						"css:object-fit": "objectFit"
+						"css:object-fit": "objectFit",
+						"css:object-position": "objectPosition"
 					}
 				},
 				"caption": {
@@ -330,6 +331,11 @@
 		"objectPosition": {
 			"type": "string",
 			"default": "center center"
+		},
+		"_comment_mediaSizing": "C19 shared media-sizing panel (2026-08-27). Three-way mode picker (auto/height/ratio) that makes `height` (above) and `style.dimensions.aspectRatio` (native support) mutually exclusive instead of letting both be set at once. NO `default` key deliberately — a `\"default\": null` on a typed attribute 400s every SSR preview (memory `a-null-default-is-worse-than-no-default`); render.php + edit.js both derive an absent value the same way (ratio set -> ratio; else height set -> height; else auto), so existing/old content renders identically with no edit needed.",
+		"mediaSizing": {
+			"type": "string",
+			"enum": [ "auto", "height", "ratio" ]
 		},
 		"borderRadiusTablet": {
 			"type": "object",

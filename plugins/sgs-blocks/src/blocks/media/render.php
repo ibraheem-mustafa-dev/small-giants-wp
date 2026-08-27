@@ -75,6 +75,21 @@ $height_mobile = (string) ( $height_tiers['mobile'] ?? '' );
 // ignores `selectors`).
 $native_aspect_ratio = isset( $attributes['style']['dimensions']['aspectRatio'] ) ? (string) $attributes['style']['dimensions']['aspectRatio'] : '';
 
+// Media size & crop mode (C19, 2026-08-27). `mediaSizing` has no block.json
+// `default` (a `"default": null` on a typed attr 400s every SSR preview —
+// memory `a-null-default-is-worse-than-no-default`), so an absent value is
+// DERIVED here — ratio set -> ratio; else height set -> height; else auto —
+// the SAME derivation `media/edit.js` performs, so old/existing content
+// (nothing live uses this attribute yet) renders identically with no edit.
+// This is also the mutual-exclusivity ENFORCEMENT point: `height` and
+// `native_aspect_ratio` may both be populated on a hand-authored/legacy
+// instance, but only the resolved mode's CSS is emitted below (§5/§7) —
+// they can no longer both paint at once.
+$media_sizing = isset( $attributes['mediaSizing'] ) ? (string) $attributes['mediaSizing'] : '';
+if ( ! in_array( $media_sizing, array( 'auto', 'height', 'ratio' ), true ) ) {
+	$media_sizing = '' !== $native_aspect_ratio ? 'ratio' : ( '' !== $height ? 'height' : 'auto' );
+}
+
 $allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
 $object_fit_raw      = $attributes['objectFit'] ?? 'cover';
 $object_fit          = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : 'cover';
@@ -344,7 +359,8 @@ if ( ! empty( $native_border ) ) {
 // (wp_style_engine_get_styles() sanitises internally, but this mirrors the
 // validation discipline already used elsewhere in this file).
 $aspect_ratio_css = '';
-if ( '' !== $native_aspect_ratio
+if ( 'ratio' === $media_sizing
+	&& '' !== $native_aspect_ratio
 	&& preg_match( '/^[\d\s\/]+$/', $native_aspect_ratio )
 ) {
 	$aspect_ratio_out = wp_style_engine_get_styles(
@@ -378,10 +394,17 @@ if ( $wrap_base_decls ) {
 
 // max-width / max-height / height — base + tablet + mobile on the SAME
 // selector (Pattern A). Values are validated through sgs_media_css_length().
+// `height` (fixed-height fill) only emits when the resolved mode is
+// 'height' — mutual exclusivity with `aspect_ratio_css` above (C19). This is
+// belt-and-braces: the editor panel already keeps the two from being set at
+// once via the mode picker, but a hand-authored/legacy instance could carry
+// both, and the mode is the single source of truth for which one paints.
+$media_sizing_is_height = 'height' === $media_sizing;
+
 $base_rules = array();
 $mw_base    = sgs_media_css_length( $max_width, $max_width_unit );
 $mh_base    = sgs_media_css_length( $max_height, $max_height_unit );
-$h_base     = sgs_media_css_length( $height, $height_unit );
+$h_base     = $media_sizing_is_height ? sgs_media_css_length( $height, $height_unit ) : '';
 if ( '' !== $mw_base ) {
 	$base_rules[] = 'max-width:' . $mw_base;
 }
@@ -395,7 +418,7 @@ if ( '' !== $h_base ) {
 $tablet_rules = array();
 $mw_tablet    = sgs_media_css_length( $max_width_tablet, $max_width_unit );
 $mh_tablet    = sgs_media_css_length( $max_height_tablet, $max_height_unit );
-$h_tablet     = sgs_media_css_length( $height_tablet, $height_unit );
+$h_tablet     = $media_sizing_is_height ? sgs_media_css_length( $height_tablet, $height_unit ) : '';
 if ( '' !== $mw_tablet ) {
 	$tablet_rules[] = 'max-width:' . $mw_tablet;
 }
@@ -409,7 +432,7 @@ if ( '' !== $h_tablet ) {
 $mobile_rules = array();
 $mw_mobile    = sgs_media_css_length( $max_width_mobile, $max_width_unit );
 $mh_mobile    = sgs_media_css_length( $max_height_mobile, $max_height_unit );
-$h_mobile     = sgs_media_css_length( $height_mobile, $height_unit );
+$h_mobile     = $media_sizing_is_height ? sgs_media_css_length( $height_mobile, $height_unit ) : '';
 if ( '' !== $mw_mobile ) {
 	$mobile_rules[] = 'max-width:' . $mw_mobile;
 }

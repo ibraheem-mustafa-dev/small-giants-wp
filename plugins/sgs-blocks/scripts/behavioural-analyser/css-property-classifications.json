@@ -2062,7 +2062,8 @@
       "slug": "sgs/media",
       "attr": "objectPosition",
       "fields": {
-        "css_property": "object-position"
+        "css_property": "object-position",
+        "css_element": "wrapper"
       }
     },
     {
@@ -7222,6 +7223,14 @@
         "css_property": "align-content",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "aspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "image"
       }
     },
     {
