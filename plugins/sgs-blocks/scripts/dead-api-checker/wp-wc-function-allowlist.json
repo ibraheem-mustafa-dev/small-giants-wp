@@ -35,6 +35,7 @@
     "wp_localize_script", "wp_add_inline_style", "wp_add_inline_script",
     "wp_script_is", "wp_style_is", "wp_set_script_translations",
     "register_block_type", "register_block_type_from_metadata",
+    "parse_blocks",
     "register_block_pattern", "register_block_pattern_category",
     "register_block_style", "unregister_block_style", "register_post_type",
     "register_taxonomy", "register_rest_route", "register_rest_field",
