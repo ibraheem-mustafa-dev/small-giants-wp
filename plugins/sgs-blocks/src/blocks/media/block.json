@@ -31,6 +31,7 @@
 					"order": 1,
 					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
+					"_note_css_element_resolves_to_wrapper": "objectFit/objectPosition/opacity/boxShadow resolve css_element to wrapper in the DB, not media, despite this element being named media \u2014 CONFIRMED INTENTIONAL 2026-08-27. isWrapper:true routes them through check-element-manifest-conformance.js's native-fallback path (nativeSupportsPath, around line 225), which only ever resolves against the wrapper element. Do not change this to media.",
 					"attrMap": {
 						"css:opacity": "opacity",
 						"css:height": "height",
