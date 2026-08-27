@@ -1,3 +1,44 @@
+## D820 [INCIDENT] — the gallery drag-scroll defect brief was wrong about which block; the real cause was physics-canvas's script-module registration racing WordPress core's own
+
+**2026-08-27.** `class-sgs-motion-registry.php`, `physics-canvas/render.php`,
+`check-fx-registration.py`. Branch 4 of the two-design-gates session plan.
+
+⭐ **The premise was disproven, not patched around.** The brief named `sgs/gallery`. A live repro
+(`layout:"carousel", dragToScroll:true`, test page 2861) loaded with a clean console — gallery's
+`data-sgs-fx="draggable"` path was already correct. The actual broken page
+(`/tier-fixture-maxwidth/`, post 2242) carries an `sgs/physics-canvas` block instead.
+
+**Mechanism, each link verified live via SSH, not inferred:**
+1. `physics-canvas/view.js` statically imports 4 bare `@sgs/*` specifiers
+   (`motion-provider`/`gsap-draggable`/`gsap-inertia`/`gsap-physics2d`).
+2. WP core's `register_block_script_module_id()` auto-registers the block's `viewScriptModule`
+   handle with deps taken straight from `view.asset.php`'s `'dependencies'` key — which is always
+   `array()`, because `@wordpress/dependency-extraction-webpack-plugin` never recognises `@sgs/*`
+   externals.
+3. `WP_Script_Modules::get_import_map()` excludes queue members from the printed import map by
+   design and includes only their registered deps — with empty deps, none of the 4 specifiers ever
+   reach the browser.
+
+⚠ **A first fix attempt deployed clean and changed nothing — and THAT told the real story.**
+Re-registering from `render.php` at render time did nothing live, because
+`WP_Script_Modules::register()` is a silent no-op once an id is already registered. Real fix: a new
+`preregister_physics_canvas_deps()` hooked at `init` priority 5 — BEFORE WP core's own registration
+at priority 10 — re-registering the same id with the correct `deps`.
+
+**Live verification, before/after:** console error gone, all 4 modules resolve `200`, no regression
+on gallery's own draggable path or the load-bearing motion-QA canary pages (2103, 2109). ⚠ The
+physics-ball drag INTERACTION itself was not independently confirmed (needs config not fully
+reconstructed) — the module-resolution defect, the actual reported bug, is conclusively fixed.
+
+**Gate-miss answered explicitly: outside the checkpoint set, not a blind gate.** Added R6 to
+`check-fx-registration.py` — every static `@sgs/*` import in a `view.js` (including
+webpack-aliased `gsap/Xyz` paths) must have a matching `wp_register_script_module()` call.
+Deliberately reads source, not `build/`, after an initial build-dependent design failed a real
+`npm run build` run (`clean-build` runs before `check-fx-registration` in `scripts/gates.json`) —
+caught by running it, not by assuming the ordering. Self-test observed failing then passing.
+
+---
+
 ## D819 [ROUTINE] — the enum-shape gate reads rendered labels; the slug proxy was overcounting violations by nearly 2x
 
 **2026-08-27.** `plugins/sgs-blocks/scripts/check-enum-control-shape.py` (new),

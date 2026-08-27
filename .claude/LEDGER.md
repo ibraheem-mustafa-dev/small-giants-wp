@@ -128,11 +128,11 @@ decide. Detail single-sourced to **D805-D812** — do not restate.
    `supports.sgs.hoverExcludeControls` (block.json, not a shared-file name array). ⚠ Not yet
    canary-verified live — deploy blocked by another session's dirty files; verified against real
    compiled code via standalone harnesses instead. Re-check on canary once that clears.
-5. 🔶 **Three ungated registration points — CLOSED (D789).** ⚠ STILL OPEN: gallery's carousel
-   drag-scroll fails to resolve `@sgs/gsap-draggable` — registers, does nothing (D452 shape).
-   Specifier IS registered and the 34KB module EXISTS, so suspect conditional registration —
-   prove it. Also answer why `check-fx-registration.py` passes. In progress this session
-   (Branch 4 of the two-design-gates plan).
+5. ✅ **Three ungated registration points — CLOSED (D789).** ✅ **CLOSED (D820):** the brief's
+   premise was WRONG — the defect wasn't `sgs/gallery` (its draggable path was already clean),
+   it was `sgs/physics-canvas`'s view-module deps losing to WP core's own registration timing.
+   Fixed via `init` priority-5 pre-registration; `check-fx-registration.py` gained R6 (every
+   static `@sgs/*` view.js import needs a matching `wp_register_script_module()` call).
 
 ### ▶ CONTROL PROGRAMME — 2026-08-26 (D810-D812)
 ✅ Helper pairs COMPLETE: 3 of 3 name-keyed controls, **empty baseline, no accepted debt**.
