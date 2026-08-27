@@ -1527,8 +1527,20 @@ def declared_attrs_for_css_property(
         overloaded with OUTER/self.
       * ``css_layer=None`` → layer-agnostic (any layer), for ``attr_for_property`` /
         ``_css_prop_maps_to_typed_attr`` (their contract is first-by-rowid).
-      * ``css_layer='OUTER'|'CONTENT'|'GRID'|'GRID_AREA'`` → that layer OR a NULL
-        (self/OUTER-default) layer, for ``attr_for_layer_property``.
+      * ``css_layer='OUTER'`` → an explicit OUTER tag OR a NULL (self/OUTER-
+        default) layer, BOTH restricted to a root-domain css_element (the
+        layer name itself means "the block's own root/outer box" — an
+        explicit OUTER tag on a named child element is a data error, not a
+        legitimate case).
+      * ``css_layer='CONTENT'|'GRID'|'GRID_AREA'`` → an explicit tag for
+        that layer (ANY css_element — these layers legitimately own
+        non-root child elements when explicitly declared) OR a NULL
+        (self/OUTER-default) layer RESTRICTED to a root-domain css_element
+        (D873, 2026-08-27 — the NULL-fallback guard was OUTER-only before
+        this fix, so a NULL-layer child-scoped attr like sgs/product-card's
+        ctaBorderWidth [css_element='cta'] leaked into a CONTENT-layer
+        probe for the same css_property ahead of the block's genuine
+        OUTER-tagged root border). Used by ``attr_for_layer_property``.
       * ``ORDER BY rowid`` preserves determinism, matching the suffix fallback.
       * Callers decide the ambiguity policy on a ≥2 result (the layer resolver
         raises ``AmbiguousLayerAttrError``; the first-wins resolvers take [0]).
@@ -1578,45 +1590,82 @@ def declared_attrs_for_css_property(
                 (block_slug, css_property),
             ).fetchall()
         else:
-            # OUTER-layer element guard (2026-07-24, FR-31-22 cardPadding fix;
+            # NULL-layer element guard (2026-07-24, FR-31-22 cardPadding fix;
             # 2026-08-27 Task 1, re-fixed same day per the reviewed v1 attempt
-            # in commit ca99f6aee): a NULL css_layer row is treated as
-            # "self/OUTER-default" (docstring above) so an attr the classifier
-            # never explicitly tagged OUTER can still be found by this query —
-            # but ONLY when its css_element is ALSO root-domain, per
-            # ``_root_domain_element_clause`` (shared verbatim with
-            # ``_base_domain_attrs_for_css_property``'s identical OUTER arm —
-            # do NOT hand-roll a second copy of this predicate here). Without
-            # this, a genuine LEAF sub-element attr sharing the same
-            # css_property with its css_layer left NULL (the leaf guard's
-            # documented, intentional value — e.g. sgs/product-card's
-            # css_element='cta' ctaPadding, routed entirely by the separate
+            # in commit ca99f6aee; 2026-08-27 Task D873, generalised from
+            # OUTER-only to EVERY layer). A NULL css_layer row is treated as
+            # "self/OUTER-default" (docstring above) — an attr the classifier
+            # never explicitly tagged a layer for. That is only a safe
+            # fallback match when the attr's OWN css_element is ALSO
+            # root-domain, per ``_root_domain_element_clause`` (shared
+            # verbatim with ``_base_domain_attrs_for_css_property``'s
+            # identical OUTER arm — do NOT hand-roll a second copy of this
+            # predicate here). Without this, a genuine LEAF sub-element attr
+            # sharing the same css_property with its css_layer left NULL
+            # (the leaf guard's documented, intentional value — e.g.
+            # sgs/product-card's css_element='cta' ctaPadding/ctaBorderWidth/
+            # ctaBorderStyle/ctaColourBorder, routed entirely by the separate
             # attr_for_area_property cross-node fold, which matches on
             # css_element alone and never reads css_layer) is WRONGLY ALSO
-            # visible to an 'OUTER' query for the SAME css_property on the
-            # block's real root attr (cardPadding, css_element='wrapper'),
-            # raising a false AmbiguousLayerAttrError between two attrs that
-            # never actually compete in real dispatch (one resolved via this
-            # OUTER-layer resolver, the other via the unrelated AREA resolver).
-            # CONTENT/GRID/GRID_AREA queries are UNCHANGED (no element filter) —
-            # per the pre-existing design note above, those layers legitimately
-            # own non-root elements and this guard only applies structurally to
-            # OUTER (the block's own root/outer box).
-            _outer_element_clause = ""
-            _element_params: list = []
-            if css_layer == "OUTER":
-                _element_clause, _element_params = _root_domain_element_clause(block_slug)
-                _outer_element_clause = f" AND ({_element_clause}) "
+            # visible to a query for the SAME css_property on the block's
+            # real root attr.
+            #
+            # D873 (2026-08-27): this restriction previously applied ONLY to
+            # OUTER, so a CONTENT/GRID query's NULL-fallback branch matched
+            # ANY css_element unconditionally. sgs/product-card's
+            # ctaBorderWidth/ctaBorderStyle/ctaColourBorder (css_element=
+            # 'cta', css_layer=NULL) leaked into a CONTENT-layer
+            # border-width/style/color probe ahead of the correctly
+            # OUTER-tagged card border (borderWidth/borderStyle/borderColour,
+            # css_element='wrapper'), because content_band.py's
+            # ``_layer_priorities()`` tries CONTENT before OUTER for
+            # non-width/padding/gap-margin properties (border included) —
+            # the leaked child attr won the race and the card's own border
+            # never painted.
+            #
+            # The restriction's SHAPE differs by layer, and this split is
+            # LOAD-BEARING (proven by test_root_modifier_element_guard.py's
+            # synthetic fixtures, which fabricate a css_layer='OUTER' row on
+            # a NAMED-CHILD css_element specifically to prove OUTER excludes
+            # it even when EXPLICITLY tagged — an earlier version of this
+            # fix applied the guard to the NULL branch only for every layer,
+            # unifying the SQL shape, and that regressed those three tests):
+            #
+            #   * OUTER — root-domain is what the LAYER NAME MEANS: the
+            #     block's own root/outer box. The restriction applies to
+            #     BOTH branches of the OR (explicit ``css_layer='OUTER'``
+            #     AND the NULL fallback) — an explicit OUTER tag on a named
+            #     child element is a data error, not a legitimate case, and
+            #     must still be excluded.
+            #   * CONTENT / GRID — these layers legitimately own non-root
+            #     child elements WHEN EXPLICITLY TAGGED (e.g. sgs/hero's
+            #     contentWidth on css_element='content-band',
+            #     sgs/mega-aside's asidePadding on css_element='wrapper'
+            #     meaning ITS OWN wrapper not the block root,
+            #     sgs/nav-drawer's drawerPadding on css_element='body') —
+            #     the restriction applies ONLY to the NULL-fallback branch,
+            #     per "NULL = self/OUTER-default" (docstring above): an
+            #     UNTAGGED attr defaults toward being a root/self attr, so
+            #     it should only surface via the fallback when it actually
+            #     is root-domain. This is what closes the D873 leak without
+            #     touching CONTENT/GRID's already-working explicit-tag path.
+            _element_clause, _element_params = _root_domain_element_clause(block_slug)
 
-            # Build query parameters: (block_slug, css_property, css_layer)
-            # plus the element-clause's own params (only non-empty for OUTER).
-            query_params = [block_slug, css_property, css_layer, *_element_params]
+            if css_layer == "OUTER":
+                query_params = [block_slug, css_property, css_layer, *_element_params]
+                _layer_or_clause = (
+                    "(css_layer = ? OR css_layer IS NULL) AND (" + _element_clause + ")"
+                )
+            else:
+                query_params = [block_slug, css_property, css_layer, *_element_params]
+                _layer_or_clause = (
+                    "(css_layer = ? OR (css_layer IS NULL AND (" + _element_clause + ")))"
+                )
 
             rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? "
-                "AND (css_layer = ? OR css_layer IS NULL) "
-                + _outer_element_clause
+                "AND " + _layer_or_clause + " "
                 + _base_clause +
                 " ORDER BY rowid",
                 query_params,
