@@ -164,11 +164,10 @@ token-following is what this rebuild is for. ⚠ Measured constraint: **the pale
 across all 21 presets, so a token-only aurora cannot reach its signature colour — the shipped
 engine curated around it; a token-following engine must answer it differently.
 
-✅ **Phase 2 prompt `.claude/prompts/2026-08-28-poc-phase2-technique-spec.md` is DONE — see section B
-above (D874).** Its predecessor `2026-08-27-background-styles-controls.md` was executed and
-DELETED; a reference to it anywhere is stale.
-⭐ **NEXT: Phase 3 (the build)** — deliberately unplanned (planning it before Phase 1-2 landed would
-invent requirements). No prompt file yet; write one from the GO'd spec when Phase 3 starts.
+✅ **Phase 2 prompt DONE and DELETED — see section B above (D874).** Its predecessor
+`2026-08-27-background-styles-controls.md` is also gone; either path is stale if cited.
+⭐ **NEXT PROMPT: `.claude/prompts/2026-08-28-generative-background-engine-phase3-build.md`** —
+Phase 3, the build. First action: the static OKLCH gradient (Assembly & priority order step 1).
 
 ### ▶ PARTICLE + GATES SUB-TRACK — 2026-08-27, all shipped (D839-D842, D846, D853)
 
