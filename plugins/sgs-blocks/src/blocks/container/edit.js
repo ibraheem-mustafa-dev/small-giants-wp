@@ -560,6 +560,7 @@ export default function Edit({ attributes, setAttributes, name }) {
             attributes={ attributes }
             setAttributes={ setAttributes }
             enableIntrinsicColumns
+            enableColumnShapePicker
           />
           <hr style={ { margin: "16px 0" } } />
           <WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
