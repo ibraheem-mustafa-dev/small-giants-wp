@@ -25,11 +25,20 @@
  *     custom vertex-stage displacement) no longer applies.
  *   - Colour is computed ENTIRELY per pixel, in the fragment shader: three
  *     independent, slowly DRIFTING (not displaced) soft noise fields, each
- *     with its own spatially-varying ALPHA, composited ADDITIVELY in linear
- *     light. Additive is what light genuinely does when it overlaps — two
- *     translucent colours brighten and shift hue where they cross, they never
- *     occlude each other the way opaque paint does. That is the mechanical
- *     difference between "aurora" and "one coloured sheet".
+ *     with its own spatially-varying ALPHA, composited via standard alpha-OVER
+ *     `mix()`, sequentially. ⛔ The first cut of this file used ADDITIVE
+ *     (`colour += ...`) and, after live measurement, SCREEN (`1-(1-a)(1-b)`)
+ *     blending instead — both are wrong here and were replaced same-day. This
+ *     effect's ground is deliberately LIGHT (Phase 1 Step 5), and any
+ *     additive-family blend needs headroom below white to show anything: near
+ *     white there is almost none, so additive clipped straight to solid WHITE
+ *     within a second (verified live) and screen was bounded but nearly
+ *     invisible for the identical reason. `mix()` has neither failure mode —
+ *     it is bounded to [current colour, layer colour] by construction, and a
+ *     high-alpha region reads as the layer's own saturated hue regardless of
+ *     how light or dark the base is. Layers still visibly overlap wherever
+ *     their soft alpha masks cross, because each is mixed in over whatever
+ *     the earlier layers already contributed there.
  *   - Still ONE draw call, ONE pass, no framebuffer, no texture. The
  *     already-rejected technique spec (D794 NO-GO) and the barred blur/grain
  *     post-pass (D791, 70% of frame cost) are UNCHANGED prohibitions — this
@@ -159,12 +168,14 @@ void main() {
  * 2. Each field's ALPHA varies spatially and softly (`smoothstep` over a WIDE
  *    band, not a sharp threshold) — this is what makes a layer read as
  *    genuinely translucent rather than a hard-edged blob.
- * 3. Layers composite ADDITIVELY, in linear light: `colour += layerColour *
- *    alpha * layerOpacity`. Additive is the physically-correct model for
- *    overlapping translucent LIGHT — two colours crossing brighten and shift
- *    hue toward each other, they never occlude, which is the mechanical
- *    difference between "aurora" and "one opaque coloured sheet". The old
- *    `blendNormal` (paint-over-paint, opaque) is gone entirely.
+ * 3. Layers composite via `mix( colour, layerColour, alpha * layerOpacity *
+ *    intensity )`, sequentially — NOT additive, NOT screen. Both were tried
+ *    and both failed against this effect's deliberately LIGHT ground (see the
+ *    top-of-file note): additive clipped to solid white within a second
+ *    (verified live), screen was bounded but nearly invisible for the same
+ *    "no headroom near white" reason. `mix()` is bounded by construction
+ *    regardless of how light or dark the base is, and still reads as genuine
+ *    translucent overlap wherever two layers' soft alpha masks cross.
  *
  * `highp` is required: `pow` and the noise field run per-pixel now, and
  * `mediump` visibly quantises them. GLSL ES 3.00 guarantees `highp` in the
@@ -223,12 +234,34 @@ void main() {
 		float alpha = smoothstep( -0.35, 0.55, n );
 		alpha = pow( alpha, u_sharpness );
 
-		// ADDITIVE. The old version's blendNormal() painted OVER the base,
-		// opaque, one surface. This adds LIGHT to light — where two layers'
-		// alpha both rise, the colours brighten and mix toward each other
-		// instead of one occluding the other. u_layerOpacity gives each layer
-		// its own ceiling so three layers overlapping doesn't wash to white.
-		colour += u_layerColour[ i ] * alpha * u_layerOpacity[ i ] * u_intensity;
+		// SECOND FIX, SAME DAY (2026-08-27) — the first version of this loop
+		// used additive compositing: colour += layerColour * alpha * opacity *
+		// intensity ("light on light"). Verified live and in isolation:
+		// against a LIGHT base (this framework's default ground since Phase 1
+		// Step 5, roughly 0.9-0.97 in linear light already) there is almost
+		// no headroom before 1.0, so the sum clipped to solid WHITE within
+		// the first second — exactly the "turns white while loading" defect
+		// Bean reported. SCREEN blend (1-(1-a)*(1-b)) was tried next: it
+		// cannot clip past white by construction, but against the SAME light
+		// base it is nearly invisible for the identical reason — there is no
+		// meaningful "more light" to add near white either way. Both failure
+		// modes share one root cause: additive-family blending needs a dark
+		// background to show anything, and this effect's ground is
+		// deliberately light.
+		//
+		// Standard alpha-OVER compositing (GLSL mix()) has neither failure
+		// mode: it is bounded to the range between colour and layerColour by
+		// construction (no clipping possible), and it reads as genuine
+		// colour regardless of how light or dark the base is, because a
+		// high-alpha region REPLACES toward the layer's own saturated hue
+		// rather than trying to brighten past it. Multiple layers still
+		// visibly overlap wherever their soft alpha masks cross, because each
+		// is mixed in sequentially over whatever the previous layers already
+		// contributed there — verified via a sampled grid across both the
+		// light and warm palettes: real spatial variation, real motion
+		// between timestamps, nothing pinned at either clamp boundary.
+		float weight = clamp( alpha * u_layerOpacity[ i ] * u_intensity, 0.0, 1.0 );
+		colour = mix( colour, u_layerColour[ i ], weight );
 	}
 
 	// Linear light -> sRGB for the framebuffer. Additive mixing above happens
