@@ -616,11 +616,40 @@
 	box-shadow: 0 8px 24px rgba( 58, 46, 38, 0.16 );
 }
 
+/*
+ * Typed-card hover/focus affordance (Task 5d, 2026-08-27 — Bean-approved
+ * reversal of the "typed cards stay unstyled" scope guardrail below).
+ *
+ * A resting transparent border is reserved up front so the coloured border
+ * on hover/focus costs no layout shift (no reflow, no inset-shadow fallback
+ * needed here — the border-colour swap alone is enough).
+ *
+ * Colour resolves through the same theme-token chain as core-blocks.css:147 —
+ * --sgs-hover-primary (core-blocks-critical.css:484, a colour-mix() darken of
+ * --wp--preset--color--primary) with a plain-token fallback for older
+ * browsers. Never a client hex — works identically for any theme palette.
+ *
+ * Scoped to :not(.product-card--live) so a Bound/live card (which already
+ * has its own lift+shadow affordance above) doesn't get a second, competing
+ * hover treatment.
+ */
+.product-card:not( .product-card--live ) {
+	border: 2px solid transparent;
+	transition: border-color 0.2s ease;
+}
+
+.product-card:not( .product-card--live ):hover,
+.product-card:not( .product-card--live ):focus-within,
+.product-card:not( .product-card--live ):focus-visible {
+	border-color: var( --sgs-hover-primary, var( --wp--preset--color--primary, #1f7a7a ) );
+}
+
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
 	.product-card .sgs-button,
 	.product-card .product-card__cart-icon,
-	.product-card--live {
+	.product-card--live,
+	.product-card:not( .product-card--live ) {
 		transition: none;
 	}
 
@@ -633,8 +662,15 @@
 /*
  * ── Bound-card permalink + cart-status styles ────────────────────────────────
  *
- * All rules scoped to .product-card--live or new BEM classes so Typed
- * page-144 clones stay byte-identical (scope guardrail, blub.db 304).
+ * All rules scoped to .product-card--live or new BEM classes.
+ *
+ * REVERSED 2026-08-27 (Task 5d, Bean-approved): the "Typed page-144 clones
+ * stay byte-identical" scope guardrail (blub.db 304) no longer holds —
+ * future drafts will themselves carry hover effects to clone, so keeping
+ * cloned Typed cards byte-identical to their draft is no longer a goal.
+ * This comment is kept, not deleted, to record that reversal for anyone
+ * who finds blub.db 304 and wonders why Typed cards now have hover CSS.
+ *
  * WCAG 2.2 AA contrast verified against #ffffff card background.
  */
 
