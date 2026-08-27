@@ -50,51 +50,49 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — ✅ CLOSED 2026-08-28 (D854) — nothing left open, four small items queued
+## ▶ MAMA'S CLONE TRACK — 2026-08-27: four carried items closed, three lift bugs opened
 
-**Task 1 DONE after five deferrals.** All twelve templates opened live; all five defects +
-`main` tag-dropdown gap fixed + live-verified. Full detail → **D854**, do not restate. Two of
-five "defects" were WordPress/WooCommerce CONFIG not code (attribute archives off by WC default;
-footer pointed at a test-fixture CPT via `sgs_active_footer_cpt_id`) — fixed live, not a commit.
-The two real code fixes ship in `b50ce3d8c` on `main`, deployed + payload-verified.
+⭐ **NEXT: `.claude/prompts/2026-08-29-clone-track-selector-lifts-and-doc-sweep.md`.** Its
+predecessor (`...-four-carried-clone-track-items.md`) is EXECUTED and DELETED — a reference to it
+is stale.
 
-**Also fixed same day (`9fcf4f4e5`):** the footer's "Quick Links" list — was genuinely empty
-(no `<li>`s), now carries 5 generic placeholder links. The real bug was one layer deeper than
-expected: the fix required editing AND DEPLOYING the theme pattern file
-(`framework-footer-default.php`) — editing the database template part alone changed nothing live,
-because the render path resolves through the pattern file, not the DB copy. Caught only by
-re-verifying live after the first (DB-only) attempt looked done.
+**Closed:** button font-family (live-verified) · 375px card floor (D866, decision not bug —
+carousel stays 2-up, do not re-litigate) · converter numeric-type fix, 5 attrs, 724 tests
+(Bean-closed) · flexWrap tidy-up 100/100 verified · product-card font families + typed-card hover
+(deployed, captured).
 
-`sgs/hero`/`sgs/trust-bar`/`sgs/cta-section` having no tag-picker UI is **NOT this track's
-concern** — it's planned POC scope for C16/C19 on the client-controls track.
+⛔ **D851 DID NOT REPRODUCE.** Page 2884 stores line-heights as NUMBERS. The bug was real and is
+fixed; that page never showed it. Do not cite 2884 as evidence.
 
-⭐ **NEXT: `.claude/prompts/2026-08-28-four-carried-clone-track-items.md`** — page 2884's
-product-card `titleLineHeight`/`descLineHeight` stored as strings not numbers (D851, live bug,
-not root-caused) · flexWrap migration tool sign-off (127 candidates, dry-run only, needs Bean's
-screenshot review) · the 375px readable-card floor (design question for Bean) ·
-`sgs/button`'s font-family control — confirmed 2026-08-28 as a one-line fix
-(`showFontFamily={ true }` on its existing `<TypographyControls>` call; the render side was
-already complete and waiting).
+**Open — three lift bugs sharing ONE shape:** a value exists in the draft, an attribute exists in
+the block, they never meet because the lift looks at a selector the draft doesn't use.
+(a) card-root border lands on the CTA button — a REGRESSION from `cfc12751f` (2026-08-22), which
+moved the border off WP's native path onto attrs seeded with `derived_selector`
+`.sgs-product-card__border`, an element in neither draft nor block; the controlled comparison is
+`backgroundColour` (no selector → lifted) vs the three border attrs (selector → nothing).
+(b) trial-card gradient dropped — never worked, not a regression. (c) trial tag's font-size
+doesn't lift though its colours do (modifier selector). **Build the detector, not three patches;
+design-gate first (shared converter).**
 
-### ▶ G3 answered this session (2026-08-27)
-All 12 templates under `theme/sgs-theme/templates/` are framework-authored (real `sgs/*` block
-usage + real commit history) — no stock WooCommerce/core default hiding among them. Order
-Confirmation and Coming soon templates named in Task 1's "never opened" list **do not exist** as
-files in that directory — confirm with Bean whether they live elsewhere or are still unbuilt before
-Task 1 tries to open them next session.
+**Also open:** 5 stack-conversion candidates need Bean's screenshots (NOT 127 — that figure
+conflated 127 total rows / 85 non-no-op / 5 card-shaped) · the attr-schema gate is wired and
+ENFORCING in `scripts/orchestrator/pipeline-stage-gate.py` and should stay so · Bean's eye on the
+hover (R-31-13 unmet — CSS delivery proven, appearance not).
 
 ### ⛔ The visual-diff bypasses CANNOT be retired — not a queue
 `source_sha` comes from STAGED bytes, so a report only certifies the commit it accompanies;
 `manual-skips.log` is a permanent audit record. The NEXT commit touching each block owes a real
-report. D831 shipped its own (`reports/visual-diff/button-2026-08-27.md`); everything else in
+report. Shipped so far: `button-2026-08-27.md`, `product-card-2026-08-27.md`. Everything else in
 D830-D834 still owes one. Reasoning: D804.
 
-### ⚠ Hazards (full list in the next-session prompt)
-- **`main` is shared:** `git add <paths>` then a BARE commit flushes the whole index — four of
-  another track's staged files were in it. Use `git commit -- <paths>`.
-- **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
-  `git diff --stat` catches all four ways a subagent destroys work.
-
+### ⚠ Hazards (full list — 10 — in the next-session prompt)
+- **`main` is shared:** a bare commit flushes the whole index. Use `git commit -- <paths>` — and
+  name FILES, not a directory: a `.claude/prompts/` pathspec swept another track's prompt swap
+  into this track's commit on 2026-08-27.
+- **`wp post update` with no `--user` strips CSS from block attrs** (KSES). Post 2145 lost its
+  style attr, then emptied. `--user=1` round-trips. Applies to ANY tool writing post_content.
+- **A deploy can report `[ABORTED]` while its payload landed** — check the server, not the exit
+  code; the post-deploy cache purge is skipped when it does.
 ## ▶ MOTION TRACK — 2026-08-27 (section A CLOSED + live-verified; B = the POC rebuild, next)
 
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
@@ -102,23 +100,15 @@ session (D838). No phase number is shared.
 
 ### ▶ A. `fx-wave-gradient` — SIX-STYLE ENGINE: ✅ CLOSED 2026-08-27 (D852 built, D871 closed)
 
-**DEPLOYED and LIVE-VERIFIED — nothing open on this section.** Full detail → **D871**, do not
-restate. Headlines only:
-- All six styles live on the canary. Canvas split measured on probe page **3037**
-  (`[GATE — DO NOT DELETE] wave-gradient six-variant canvas split probe`, all six on one page):
-  `pastel`/`horizon`/`ribbon`/`veil` = **0** canvases, `aurora`/`ink` = **1** each with
-  `data-sgs-wave-active="1"`, 0 console errors. ⭐ The probe asserts `webgl capable: true` FIRST —
-  without that, 0-canvases-everywhere is indistinguishable from a browser declining WebGL.
+**DEPLOYED and LIVE-VERIFIED — nothing open.** Full detail → **D871**, do not restate. Only what a
+future session could get wrong:
 - ⛔ **"Gradient controls for the four CSS styles" is CANCELLED, not deferred** — the premise was
-  false. Every `color-mix()` already references `var(--sgs-wave-*)`, so the pickers were never dead;
-  D852 had already fixed that. Three of the 13 are structurally impossible anyway (a blend AT a
-  gradient's 0% stop, and a `background-color`). Do not revive without evidence a picker is dead.
-- The 3-state ramp control was **reshaped**: tabs imply mutually-exclusive states, but low/mid/high
-  render simultaneously. Shipped as variant-aware labels (`Ramp colour — low/mid/high` for
-  aurora/ink only). Same four attrs, no schema change.
-- Same pass fixed two real defects rule 31 CANNOT see (`extensions/` has no `block.json`, so it is
-  unscanned, not baselined): the legacy no-`states` picker shape, and colour rows wrapped in
-  `ToolsPanelItem` (golden-controls rule 9c — `isShownByDefault` is not sufficient).
+  false (every `color-mix()` already references `var(--sgs-wave-*)`; D852 had fixed that, and 3 of
+  13 are structurally impossible). Do not revive without evidence a picker is dead.
+- The 3-state ramp was **reshaped**, not built — variant-aware labels, since low/mid/high render
+  simultaneously and tabs imply exclusivity. Same four attrs, no schema change.
+- ⭐ Probe **3037** asserts `webgl capable: true` FIRST — without that, 0-canvases-everywhere is
+  indistinguishable from a browser declining WebGL.
 
 ⚠ **Two deploy hazards earned here, both now fixed in-tree — read D871 before deploying:** a
 dev-included Composer autoloader 500'd the canary through 68 green gates (gate-green and deploy-safe
@@ -152,25 +142,34 @@ stale and is removed.)*
 build spec; D794's NO-GO was COMPLETENESS, not purpose.
 ⭐ **The "recolours itself from per-client theme tokens" differentiator belongs HERE**, not to the
 variant work above (Bean, 2026-08-27 — the second track-conflation in one session).
-⛔ Phase 1 = pick a reference BEFORE any code. Licence: nimitz = NON-COMMERCIAL; paper-design
-(Apache-2.0) ships no aurora — an aurora must be WRITTEN.
+✅ **Phase 1 (pick a reference) SATISFIED 2026-08-28** and ✅ **the licence question SETTLED** — both
+by Bean. Do not re-open either; detail in the plan.
 
-### ▶ NEXT — section A is closed; the only motion work left is B
+### ▶ NEXT — section A is closed; the only motion work left is B, now at Phase 2
 
 **Everything previously listed here (deploy, gradient controls, 3-state ramp) is DONE or
 CANCELLED — see section A. Do not re-open those.**
 
-The next work on this track is **B, the POC rebuild**, and its Phase 1 is a decision, not code:
-⛔ **pick a reference BEFORE writing any code.** Licence constraint already established: nimitz's
-Shadertoy "Auroras" is CC BY-NC-SA (**NON-COMMERCIAL** — must not be used or derived from), and
-paper-design (Apache-2.0) ships no aurora. **An aurora must be WRITTEN.**
+⛔ **Phase 1 is SATISFIED, not skipped (Bean, 2026-08-28).** It existed because we kept building
+against a look nobody had chosen; that condition is gone — Bean picked from a live side-by-side,
+six styles shipped, he approved them. **The reference is our own live output** (pages 2740/3037):
+looked-at, approved, running, measurable. Re-running it as a look-comparison is ceremony.
+⛔ **Licence SETTLED (Bean, 2026-08-28):** clear provided none of their source files ship. Two
+rules, and they are the whole of it — **ship none of their files** (no shader source, no palette
+PNG) and **keep no copies in this repo**. Write the aurora from scratch. Not a blocker, not an
+escalation; D794's three legal overstatements are a wording fix inside Phase 2 item 7.
 
-⭐ **NEXT PROMPT: `.claude/prompts/2026-08-28-poc-pick-the-reference.md`** — carries Phase 1 in
-full. Its predecessor `2026-08-27-background-styles-controls.md` was executed and DELETED
-2026-08-27; a reference to it anywhere is stale.
-⚠ **Phase 1 has NEVER been done, and the six shipped styles do NOT satisfy it** — that shortlist
-chose the shipped styles, not this rebuild's reference. Phase 2 (finish the technique spec, 13
-must-fix items, still **NO-GO** per D794) is blocked until Bean names one.
+⭐ **The unbuilt thing is a MECHANISM, not a look:** *the background recolours itself from
+per-client theme tokens.* The shipped engine uses curated defaults with client override; automatic
+token-following is what this rebuild is for. ⚠ Measured constraint: **the palette has no violet**
+across all 21 presets, so a token-only aurora cannot reach its signature colour — the shipped
+engine curated around it; a token-following engine must answer it differently.
+
+⭐ **NEXT PROMPT: `.claude/prompts/2026-08-28-poc-phase2-technique-spec.md`** — Phase 2, absorbing
+D794's 13 must-fix items (items 4 and 13 — acceptance criteria, and the configurability axes — are
+the two that decide whether Phase 3 can start). Exit gate is an `/adversarial-council` **GO**; the
+thin version got a NO-GO. Its predecessor `2026-08-27-background-styles-controls.md` was executed
+and DELETED; a reference to it anywhere is stale.
 
 ### ▶ PARTICLE + GATES SUB-TRACK — 2026-08-27, all shipped (D839-D842, D846, D853)
 

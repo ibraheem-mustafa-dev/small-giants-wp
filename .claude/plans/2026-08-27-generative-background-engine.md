@@ -102,36 +102,37 @@ otherwise have to answer from scratch:
   The shipped variants use curated per-style defaults with client override; the token-following
   behaviour is what this rebuild is for.
 
-**Phase 1 below is still OPEN.** The shortlist Bean picked from chose the six shipped STYLES; it did
-not choose this rebuild's reference. Do not treat it as satisfied.
+## Phase 1 — Pick the reference: ✅ SATISFIED 2026-08-28 (Bean's call)
 
-## Phase 1 — Pick the reference, before any code
+**Its CONDITION is met — it was not skipped, and it must not be re-run as ceremony.**
 
-⛔ **This step has never been done, and skipping it is what wasted every prior round.** D781 recorded
-the rule in capitals after three Aurora attempts and a full Tier W build were made against a
-reference nobody had looked at: **"VERIFY THE REFERENCE, NOT JUST THE IMPLEMENTATION."**
+The step existed for one reason: three Aurora attempts and a full Tier W build were made against a
+reference nobody had looked at, so every round steered *away from what Bean rejected* without ever
+steering *toward* a defined target. D781 recorded the rule in capitals: **"VERIFY THE REFERENCE,
+NOT JUST THE IMPLEMENTATION."**
 
-Every round since has steered *away from what Bean rejected* without ever steering *toward* a defined
-target. "Blurry random shapes" is the honest description of what that process produces.
+That failure condition no longer exists. Bean picked from a live side-by-side shortlist (D852), six
+styles shipped, and he approved them. **The reference is now our own live output** — canary pages
+**2740** (single `pastel`) and **3037** (all six variants). It is looked-at, approved, running, and
+measurable. D781's rule is satisfied by construction: you cannot build against an unexamined
+reference when the reference is the thing you shipped and verified.
 
-**Deliverable:** one Artifact page placing candidate treatments side by side with the current
-FR-38-31 on canary page 2740, so Bean compares like-for-like and points at one. Not a wall of links.
+⛔ **Do NOT reopen this as "pick a look".** Bean, 2026-08-28: the step was there because we were
+failing to reach the goal; the goal is reached. Re-running it would be ceremony, and ceremony is
+what this plan exists to end.
 
-Candidates gathered 2026-08-27:
+⭐ **What this rebuild is actually for is a MECHANISM, not a look.** The shipped engine uses curated
+per-style defaults with client override. This rebuild's differentiator — *the background recolours
+itself from per-client theme tokens* — is the genuinely unbuilt part. The look is settled; the
+question is how a generative field derives its palette from a site's own tokens and still stays
+legible.
 
-- [Aceternity aurora](https://ui.aceternity.com/components/aurora-background) — CSS gradients, dark ground
-- [shadcn aurora](https://www.shadcn.io/background/aurora) — CSS, emerald/teal
-- [Lightswind aurora shader](https://lightswind.com/components/aurora-shader) — WebGL, pointer-reactive
-- [21st.dev aurora-blur](https://21st.dev/@unlumen/components/aurora-blur) — WebGL drift
-- [Superdesign Aurora UI](https://superdesign.dev/styles/aurora) — the style definition + canonical palette
-
-**Canonical aurora recipe** (from the style reference, for whatever gets built): near-black base
-(~`#05010f`); soft flowing bands from layered radial/conic gradients blurred together; **3–4 hues
-maximum** (indigo / teal / pink / violet — beyond four it muddies to brown); slow cycle (~18s in the
-CSS form). Known failure modes: body text over the raw gradient can drop below 4.5:1 as colours
-move; it fails behind tables, forms and long-form reading; needs a reduced-motion fallback.
-
-⛔ **GATE: Bean names a reference. Nothing below starts until he has.**
+**Carried forward from the candidate gathering, still useful as technique input** (not as a choice
+to make): the canonical aurora recipe — near-black base (~`#05010f`); soft flowing bands from
+layered radial/conic gradients blurred together; **3–4 hues maximum** (indigo / teal / pink /
+violet — beyond four it muddies to brown); slow cycle (~18s in the CSS form). Known failure modes
+the engine must still answer: body text over the raw gradient can drop below 4.5:1 as colours move;
+it fails behind tables, forms and long-form reading; it needs a reduced-motion fallback.
 
 ## Phase 2 — Complete the technique spec so it is buildable
 
@@ -162,7 +163,28 @@ would be inventing requirements — the exact failure this whole track exists to
 
 ---
 
-## Carried decision — KJC-4: legal framing in the technique spec
+## ✅ SETTLED 2026-08-28 — KJC-4 legal position (Bean)
+
+**Bean's ruling, research already done: we are clear provided none of their source files ship in
+the final product.** That is the operative constraint, and it is the right one — the licence risk
+(nimitz's "Auroras" is CC BY-NC-SA, NON-COMMERCIAL) attaches to using or deriving from their CODE.
+A shader we write ourselves does not inherit it.
+
+**The two operational rules that follow, and they are the whole of it:**
+1. ⛔ **Ship none of their files** — no shader source, no palette PNG, no asset, in the plugin, the
+   theme, or any client build.
+2. ⛔ **Keep no copies in this repo.** The narrow point the spec raised that survives Bean's ruling
+   is that s.50BA permits *studying*, not *retaining copies*, and the palette PNG is an artistic
+   work rather than a computer program, so the software exception does not reach it at all. Study
+   it, write our own, keep nothing.
+
+Write the aurora from scratch. That was already the conclusion; this settles the paperwork.
+
+*(Superseded detail below, kept for the reasoning only — do NOT re-open it as an action. The three
+overstatements it names should be corrected in the technique spec during Phase 2 as a
+doc-accuracy fix, not treated as a blocker or escalated for advice.)*
+
+## Carried decision (SUPERSEDED — reasoning only) — KJC-4: legal framing in the technique spec
 
 **Decision:** correct three overstatements before that document is relied on. Carried from the
 archived plan because it belongs to this spec, not to FR-38-31.
