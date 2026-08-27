@@ -15,6 +15,7 @@ import {
 	LinkPopoverField,
 	SgsColourPanel,
 	SgsLengthControl,
+	SgsBorderControl,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -1042,25 +1043,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				},
 			],
 		},
-		{
-			key: 'cardBorder',
-			label: __( 'Card border colour', 'sgs-blocks' ),
-			// No hover pair declared for borderColour (block.json has no
-			// borderColourHover attr on this block) — single-state row.
-			borderStyle,
-			onBorderStyleChange: ( val ) => setAttributes( { borderStyle: val } ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: borderColour,
-					onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-					linked: true,
-					gradientValue: borderColourGradient,
-					onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ),
-				},
-			],
-		}
 	);
 	if ( isBuiltIn ) {
 		colourRows.push( {
@@ -1370,21 +1352,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</PanelBody>
 
-				{ /* ── Card border panel — R2c (B-3/B-8): borderWidth is an SGS
-				     custom object attr (base only, no tiers); border colour +
-				     style live on the "Card border colour" row in the SgsColourPanel
-				     above (borderStyle/onBorderStyleChange are wired to the SAME
-				     attribute here, one source of truth); border-radius stays
-				     WP-native (style.border.radius) — the block declares
+				{ /* ── Card border panel — R2c (B-3/B-8): width/style/colour are
+				     SGS custom attrs (borderWidth is an object, base only, no
+				     tiers; borderStyle + borderColour/Gradient are flat) — now
+				     ONE composite row (Task 0, 2026-08-27) mirroring native's
+				     BorderBoxControl layout (width, style, colour side by
+				     side) instead of style hiding inside the colour popover
+				     and width living in a separate panel. borderColour has no
+				     hover pair on this block (block.json declares none), so
+				     the colour slot uses the single-state form. Border-radius
+				     stays WP-native (style.border.radius) — the block declares
 				     __experimentalBorder.__experimentalSkipSerialization so it
 				     serialises scoped, not inline (mirrors sgs/heading + sgs/quote). ── */ }
 				<PanelBody title={ __( 'Card border', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						presets={ [ '10', '20', '30' ] }
-						values={ { base: borderWidth ?? {} } }
-						showResponsive={ false }
-						onChange={ ( _tier, next ) => setAttributes( { borderWidth: next } ) }
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Card border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 					/>
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }

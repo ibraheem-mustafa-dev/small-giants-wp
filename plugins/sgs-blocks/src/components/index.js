@@ -66,6 +66,7 @@ export {
 // length-unit rebuild — see each file's own docblock for the evidence).
 export { default as SgsBoxControl } from './SgsBoxControl';
 export { default as BorderStyleControl } from './BorderStyleControl';
+export { default as SgsBorderControl } from './SgsBorderControl';
 export { default as SgsLengthControl } from './SgsLengthControl';
 // Shared media size & crop panel (C19, 2026-08-27) — piloted on sgs/media only.
 // See the component's own docblock for the mode picker + grey-out contract.
