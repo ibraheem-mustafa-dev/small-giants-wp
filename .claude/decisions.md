@@ -1,3 +1,37 @@
+## D847 [ROUTINE] — Mama's re-cloned fresh post-D843/D844/D845; flexWrap migration tool built
+
+**2026-08-27.** Closes Tasks 2 and the flexWrap half of Task 7 from
+`.claude/prompts/2026-08-27-finish-the-template-review.md`.
+
+**Typography re-measurement (Task 2).** Cloned Mama's Munches homepage fresh to page **2884**
+(never touched 2742/2849). Computed-parity CSS%: **74@375, 75@768, 79@1440**
+(`reports/mamas-parity-fresh-clone-2026-08-27.json`). ⚠ **The 80%@1440 figure quoted in the prior
+brief does not trace to the file it was cited from** — that file (`...postdeploy-2026-08-26.json`)
+has no 1440 entry at all. Against the fuller 3-viewport prior report that DOES exist
+(`...postfix-clone-2849-2026-08-26.json`, 70/71/75): **+4pt at every viewport**. Real, modest
+improvement — not dramatic, but genuine.
+
+**The font-size split reversed.** Old figure: ~50 authored / ~9 inherited (implying mostly
+converter bugs). Fresh count (75 total diffs, freshly counted from this run, not reused): **68/75
+(91%) inherited** — the theme applies a responsive body-base font-size scale-down the static draft
+never had (Spec 33 territory, not a converter bug). Only **7/75 (9%) are genuinely authored**, both
+named precisely: `option-picker/style.css:171-174` and `testimonial/style.css:52-54` hardcode the
+`small` preset token (14px) where the draft used 13px — a minor preset-scale off-by-one, not yet
+fixed.
+
+**flexWrap migration tool (Task 7).** Built
+`plugins/sgs-blocks/scripts/migrate-container-flexwrap-and-stack-candidates.py` — dry-run only, no
+live `--apply` run. Investigated a real discrepancy rather than assuming: the "131 across 38 posts"
+figure undercounted because `wp post list` excludes trash by default; 29 trashed posts carry 64
+more instances. True figure sits between the live-only scope (100/28) and the with-trash scope
+(164/41) depending which is wanted. Stack-candidate count (Population B) drifted 125→127 in the 3
+days since D774's count — explainable, not a new bug. 17 self-tests pass, no network required.
+**No container was converted** — per-candidate Bean screenshot review is still required before
+any `layout:"stack"` conversion (a visible layout change).
+
+Commits: `9cdd3bb91` was docs-only; typography re-measurement made no code changes (findings only,
+per instruction); flexWrap script commit `5b72d3c48`.
+
 ## D846 [INCIDENT] — the particle trail was invisible for two days, and the lit-pixel count called it healthy
 
 **2026-08-27.** Bean flagged that he had never seen FR-38-32's particle trail. Spec 38 §9 said

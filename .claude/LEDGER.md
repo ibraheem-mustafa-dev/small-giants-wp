@@ -85,20 +85,26 @@ deliberately deferred tail — `attrs_for_css_property_state` carries the same u
 1. **Task 1 — twelve-template live review, UNTOUCHED, first in queue (deferred 5×).** Full detail:
    `.claude/prompts/2026-08-27-finish-the-template-review.md` Task 1. 5 defects + the missing
    `main` `TAG_NAME_OPTIONS` gap, none fixed yet.
-2. **Re-clone Mama's to a NEW page id with the fixed converter, then re-measure against the
-   2026-08-26 mobile baseline** (73%@375 · 77%@768 · 80% desktop,
-   `reports/mamas-parity-mobile-postdeploy-2026-08-26.json`) — D830-D845 change what a NEW clone
-   emits; no page has run through the fully-fixed pipeline yet. ⛔ Never write `post_content` to a
-   page Bean has open (D788).
+2. **Typography re-measured (D847): 74/75/79% CSS parity on a fresh clone (page 2884), +4pt vs the
+   fuller 70/71/75 prior baseline.** Font-size split reversed — was ~50 authored/~9 inherited, now
+   91% inherited (a Spec 33 theme-base issue, not a converter bug) and only 2 genuinely authored
+   bugs remain, both named: `option-picker/style.css:171-174` and `testimonial/style.css:52-54`
+   (small-preset off-by-one, 13px vs 14px). Small, cheap, not yet fixed.
 3. **Stranded CSS census re-verified this session (D843): the "36 sections" scope had already
    collapsed to one real defect, now fixed.** The two Bean decisions once open here
    (`grid-template-areas` on hero, general-mechanism-vs-narrow-fix) are resolved — Bean chose the
    narrow fix, shipped as D843. Nothing left open on this item unless a fresh census finds new
    stranded CSS.
-4. **Carried:** `/sgs-update` DB refresh still owed (cross-track — confirm no session mid-build
-   first) · G3 template-ownership audit (done this session, see below) · archive residue ·
-   `sgs/button::fontFamily` genuinely dead and now maybe wireable · D843's live canary render check
-   still owed (draft-mode verified only).
+4. **flexWrap migration tool BUILT this session (D847), not run.** 131-across-38 figure undercounted
+   (trash excluded by default) — true scope 100/28 live-only to 164/41 with trash. 127 file-authored
+   stack candidates found, still needs Bean's per-candidate screenshot sign-off before any
+   `layout:"stack"` conversion — do not batch-convert.
+5. **375px readable-card floor — still a design question for Bean, not decided this session** (shop
+   archive 312px, PDP carousel 140px/card — mechanism changed from grid to carousel, may change
+   whether the floor still applies).
+6. **Carried:** `/sgs-update` DB refresh still owed (cross-track — confirm no session mid-build
+   first) · archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable ·
+   D843's live canary render check still owed (draft-mode verified only).
 
 ### ▶ G3 answered this session (2026-08-27)
 All 12 templates under `theme/sgs-theme/templates/` are framework-authored (real `sgs/*` block
