@@ -1,3 +1,37 @@
+## D829 [ROUTINE] — two small Control Programme follow-ups closed: fx-list-drift gate taught the motion registry, dead-function deletion doc corrected
+
+**2026-08-27.** `check-fx-list-drift.py`, `.claude/specs/38-SGS-MOTION-SYSTEM.md` §6. Delegated to
+Haiku via `/delegate` (both routed to the cheap tier, code_gen shape, well-scoped).
+
+**Fx-list-drift gate gained invariant I9** — the motion registry (`class-sgs-motion-registry.php`
+MODULES) now cross-checks against `SHIPPED_EFFECTS` (fx.js, the editor's picker source). Confirmed
+via `check-fx-list-drift.py` genuinely not referencing that file before this fix — a real gap:
+neither "registered but unreachable from the editor" nor "offered in the editor but nothing loads"
+was ever caught.
+
+⚠ **The Haiku dispatch's first pass found 4 "violations" and reported all 4 as real drift — 3 of
+4 were false positives, caught by verifying against each block's actual source rather than
+trusting the dispatch's own explanation.** `draggable`/`flip`/`image-sequence` each have a real,
+already-shipped, dedicated per-block control (`fxDraggable` on `sgs/before-after`, a toggle on
+`sgs/countdown-timer`, `fxStart`/`fxEnd`/`fxScrub`/`fxPin` on `sgs/image-sequence` itself) —
+`SHIPPED_EFFECTS` was never the right roster for them. A 4th, `carousel-loop`, had a docstring
+already claiming the exclusion existed; the code never actually wired it into the comparison —
+fixed so the claim and the code agree. All four folded into one `BLOCK_DEDICATED_EFFECTS`
+exclusion set with the verification evidence in a comment, not a bare list.
+
+**Gate passes clean on the real codebase; self-test (12 cases, all 10 invariants) passes,
+including proof the new exclusion doesn't overmatch** — a genuinely unshipped effect still
+correctly fires.
+
+**`sgs_get_fx_qualifying_blocks()` — already deleted in a prior session (`1ac16ec9`), only
+Spec 38 §6 was stale.** The Haiku dispatch verified zero live callers (PHP and JS), confirmed the
+generated PHP mirror doesn't exist on disk, and found the generator script + the stale-check gate
+already documented the deletion correctly in their own docstrings — only the spec's own §6 record
+still said "recommendation: DELETE, not executed." Corrected to reflect the completed state
+instead of redoing already-done work.
+
+---
+
 ## D828 [INCIDENT] — D827's additive/screen blending shipped a real regression; root-caused live and fixed same day
 
 **2026-08-27.** Bean, immediately after D827 deployed: "Doesn't work. The light version is visible
