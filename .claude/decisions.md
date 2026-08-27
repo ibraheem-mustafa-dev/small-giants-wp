@@ -1,3 +1,30 @@
+## D866 [ROUTINE] — the 375px readable-card floor is CLOSED as an accepted difference, not an open bug
+
+**2026-08-27.** Bean's call, made with the live page open. Two earlier entries left this framed as
+"a design call for Bean" and it was carried forward twice as unresolved. It is now decided, so no
+future session re-opens it.
+
+**The observation.** At 375px the shop archive renders product cards 1-up at 327px, while the
+related-products carousel on a PDP renders 2-up at ~155px each — under the 167–195px width this
+project had adopted as the floor for a readable card.
+
+**The decision: keep the carousel 2-up.** Reasoning, recorded so it isn't re-litigated:
+
+- **Font sizes do not shrink with the card.** A 16px title is 16px at 155px wide. What is cramped
+  is the photo and the title's wrapping, not the legibility of the text.
+- **The 167–195px floor is a benchmark for cards you shop FROM**, not an accessibility
+  requirement. WCAG has nothing to say about card width; touch targets already clear 2.2's 24px.
+- **A carousel's job is different from a grid's.** It signals "there is more over here" and hands
+  off to the real page. 2-up shows more of that choice per screen.
+- **Bean checked live and the rail actually shows ~2.5 cards**, not a clean 2 — the partial third
+  card already communicates scrollability, which was one of the arguments for a 1.5-up peek.
+
+**Accepted cost, named rather than hidden:** the shop archive and the PDP rail render visibly
+different card sizes on the same phone. That inconsistency is deliberate and is not a defect.
+
+⛔ **Do not "fix" this by dropping the carousel to 1-up or widening it to hit the floor.** Both were
+offered and both were declined. Re-open only if Bean raises it.
+
 ## D865 [ROUTINE] — `sgs/decorative-image` surface treatments were a silent no-op; a gated wrapper fixes it, and treated+tiers is a NAMED limitation, not a mystery
 
 **2026-08-28.** A client could pick grain / halftone / duotone on `sgs/decorative-image`, save, and
