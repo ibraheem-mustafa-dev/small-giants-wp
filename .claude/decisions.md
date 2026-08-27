@@ -1,3 +1,16 @@
+## D851 [ROUTINE] — a real converter bug found on page 2884 (this session's own fresh clone), not fixed yet
+
+**2026-08-27.** A peer session (`small-giants-wp-5c`) found this while deploying past an unrelated
+gate: page **2884** — the fresh Mama's Munches clone made this session for D847's typography
+re-measurement — has `sgs/product-card.titleLineHeight`/`descLineHeight` stored as STRING values
+(`"1.2"`, `"1.55"`) where `block.json` declares `type:"number"`. WordPress is already silently
+substituting the block's default for both, so these line-heights are being lost on render — same
+bug class as D802/D833 (a type mismatch between what the converter emits and what the block schema
+declares), just not yet root-caused to a specific resolver/line. **Not fixed this session** — found
+too late in the session to investigate properly; NEXT SESSION should treat this as a live
+converter bug, not stale content (product-card was untouched by the peer's own commits, confirmed,
+so this predates their deploy).
+
 ## D850 [ROUTINE] — D847's two "authored font-size bugs" were the framework's genuinely correct value; D843 live-verified
 
 **2026-08-27.** Closes the last two open items from `.claude/prompts/2026-08-27-finish-the-template-review.md`.

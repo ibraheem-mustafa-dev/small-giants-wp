@@ -31,86 +31,35 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — 2026-08-27 (8 fixes merged; Task 1 template review still owed, first in queue)
+## ▶ MAMA'S CLONE TRACK — 2026-08-27 SESSION CLOSED (D830-D851); Task 1 is the ONLY thing left, first in queue
 
-⭐ **NEXT SESSION: the twelve-template live review (Task 1 of
-`.claude/prompts/2026-08-27-finish-the-template-review.md`) — deferred a fifth time this session,
-by Bean's explicit choice, to close Tasks 2-7 first. Do not defer it again.** Its 5 defects + the
-missing `main` `TAG_NAME_OPTIONS` gap are UNTOUCHED — still exactly as described in that prompt.
-⛔ Detail is single-sourced to **D830-D845** — do not restate the mechanisms here.
+⭐ **NEXT SESSION: the twelve-template live review — see `.claude/prompts/2026-08-28-finish-the-template-review.md` (fresh prompt; the 2026-08-27 predecessor was executed and DELETED).**
+Its 5 defects + the missing `main` `TAG_NAME_OPTIONS` gap are UNTOUCHED. This is now the ONLY open
+item on this track — everything else (D830-D850) shipped and closed this session.
+⛔ Full mechanism detail is single-sourced to **D830-D850** in `decisions.md` — do not restate here.
 
-**Three more fixes merged this session (D843-D845), each `/qc-council`-validated before dispatch:**
-6. **D843** — the stranded-CSS census's "announcement-bar container gap" was a misdiagnosis; the
-   walker already gave it a container. Real bug: `content_band.py`'s padding layer-priority chain
-   tried `GRID` before `OUTER`, universal across the whole composite-mirror family. One-line
-   reorder — also fixed an identical, previously-unreported instance on social-proof's Trustpilot
-   bar. **Live canary render still owed** (draft-mode verified only).
-7. **D844** — `styling_content.py` was the 5th unpatched sibling of the D802/D830 tier-object bug
-   class (`sgs/product-card`'s 4 font-size attrs + `sgs/trust-bar.labelFontSize`). First fix-shape
-   was REJECTED by council (would have silently kept dropping Tablet/Mobile); corrected design
-   ships with a permanent regression test proving all 3 tiers survive.
-8. **D845** — `sgs/quote`'s attribution panel rebuilt onto shared `TypographyControls`, closing the
-   D803 residual. Bundled a missing `"overline"` enum fix + fixed a ratchet-ceiling regression the
-   refactor itself introduced. Verified live on both editor and frontend surfaces (canary page 1602).
+**Shipped + closed this session, nothing left open on any of these:**
+- 8 converter/block fixes merged (D830-D834 baseline + D843/D844/D845 this session), each
+  root-caused and `/qc-council`-validated before dispatch — padding-routing bug (universal across
+  the composite-mirror family), a 5th-sibling tier-object bug, `sgs/quote`'s attribution panel
+  rebuilt onto shared `TypographyControls`.
+- Typography re-measured fresh (D847): 74/75/79% CSS parity (page 2884), +4pt vs prior baseline.
+  Font-size split reversed from ~50 authored/~9 inherited to 91% inherited (Spec 33 theme-base
+  issue, not a converter bug) — the 2 remaining "authored" cases (`option-picker`, `testimonial`)
+  turned out to be the framework's correct designed value, not bugs (D850). No code change needed.
+- D843's fix confirmed live on production, page 2742 (D850) — both paddings exact match.
+- `/sgs-update` DB refresh ran clean (D849) — genuine no-op, F6 green before/after.
+- flexWrap migration tool built (D847), dry-run only — 127 stack-conversion candidates found, none
+  applied. Needs Bean's per-candidate screenshot sign-off before any live conversion.
 
-**Five fixes merged this session, each root-caused and reviewed before merge:**
-1. **D830** — grid/layout resolvers (`grid.py`/`outer_box.py`/`content_band.py`/`arrangement.py`)
-   never wrapped migrated properties as tier objects; same bug class as D802, unapplied to a whole
-   sibling family. Fixed via a shared `services/tier_object.py`; a second orchestrator
-   fold/merge bug the fix surfaced was also fixed.
-2. **D831** — `sgs/button`'s WCAG 44px min-height was being silently zeroed by the container's
-   shrink-to-fit rule on any direct flex/grid child. ⛔ First fix attempt assumed source-order
-   always favoured the block's own `<style>` — measured false live; corrected to a specificity-
-   repeat selector that wins unconditionally. Also removed a phantom hardcoded 2px border.
-3. **D832** — converter bug (b): the OUTER-layer root-domain guard ignored `css_element`, leaking
-   child-scoped attrs into a block's root. Took 4 review rounds, each catching something real.
-4. **D833** — converter bug (d): an out-of-enum `layout` value was silently coerced by WordPress
-   instead of failing; fixed by gating the write through `validate()`. `sgs/cta-section`
-   deliberately excluded from the enum seed — it carries live client content on a legacy
-   vocabulary (indus-foods homepages).
-5. **D834** — Bean's G2 fail-closed attribute-schema gate BUILT
-   (`check_attr_schema_conformance.py`) + the OUTER guard made schema-driven. ⛔ Near-miss: a
-   Haiku-authored first attempt used a `NOT LIKE '%.%__%'` filter that was wrong two ways (SQL
-   `_` is a wildcard; a literal `__` doesn't imply a child anyway) and would have silently broken
-   109 (block, property) resolutions — caught before merge by cross-model review, not by the test
-   suite (which it passed via a masking fallback). Post-merge sweep: 7,553 pairs, zero exceptions.
+**Carried, not this session's scope:** the 375px readable-card floor (design question for Bean —
+shop archive 312px, PDP carousel 140px/card, mechanism changed grid→carousel) · archive residue ·
+`sgs/button::fontFamily` genuinely dead, maybe wireable.
 
-**D835** closes the session: two stored-content migrations that were blocking deploy (page 2862
-`minHeight`, page 2849's 47 flat scalars + 4 line-heights), one false-positive
-`audit-block-file-consistency` finding on `sgs/hero` baselined with real evidence, and one
-deliberately deferred tail — `attrs_for_css_property_state` carries the same unguarded
-`OR css_layer='OUTER'` shape D832 fixed on its sibling, left alone pending its own failing test.
-
-### ▶ OPEN — carried into the next prompt
-1. **Task 1 — twelve-template live review, UNTOUCHED, first in queue (deferred 5×).** Full detail:
-   `.claude/prompts/2026-08-27-finish-the-template-review.md` Task 1. 5 defects + the missing
-   `main` `TAG_NAME_OPTIONS` gap, none fixed yet.
-2. **Typography re-measured (D847): 74/75/79% CSS parity on a fresh clone (page 2884), +4pt vs the
-   fuller 70/71/75 prior baseline.** Font-size split reversed — was ~50 authored/~9 inherited, now
-   91% inherited (a Spec 33 theme-base issue, not a converter bug) and only 2 genuinely authored
-   bugs remain, both named: `option-picker/style.css:171-174` and `testimonial/style.css:52-54`
-   (small-preset off-by-one, 13px vs 14px). Small, cheap, not yet fixed.
-3. **Stranded CSS census re-verified this session (D843): the "36 sections" scope had already
-   collapsed to one real defect, now fixed.** The two Bean decisions once open here
-   (`grid-template-areas` on hero, general-mechanism-vs-narrow-fix) are resolved — Bean chose the
-   narrow fix, shipped as D843. Nothing left open on this item unless a fresh census finds new
-   stranded CSS.
-4. **flexWrap migration tool BUILT this session (D847), not run.** 131-across-38 figure undercounted
-   (trash excluded by default) — true scope 100/28 live-only to 164/41 with trash. 127 file-authored
-   stack candidates found, still needs Bean's per-candidate screenshot sign-off before any
-   `layout:"stack"` conversion — do not batch-convert.
-5. **375px readable-card floor — still a design question for Bean, not decided this session** (shop
-   archive 312px, PDP carousel 140px/card — mechanism changed from grid to carousel, may change
-   whether the floor still applies).
-6. **`/sgs-update` DB refresh — DONE, clean (D849).** D848's blocker had already resolved by the
-   time it was written (a peer had already committed the file in question a minute earlier). F6
-   green before and after (1 pre-existing baselined finding, 0 new), reseed was a genuine no-op
-   (0 new blocks/attrs/orphans), `boxShadowColour` held. Nothing left open on this item.
-7. **D843 live-verified on production (page 2742) — CLOSED (D850).** Both paddings confirmed via
-   `getComputedStyle()`, exact match. **The two "font-size bugs" from D847 were NOT bugs (D850)** —
-   14px is the framework's genuinely correct fluid-token value at 1440px, consistent with ~12 other
-   blocks; the draft's 13px was the outlier. No code change made.
-8. **Carried:** archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable.
+⚠ **NEW, found late by a peer session (D851): page 2884 (this session's own fresh clone) has a real
+converter bug** — `sgs/product-card.titleLineHeight`/`descLineHeight` stored as STRINGS, block.json
+declares `number`, WordPress silently drops both to default. Same bug class as D802/D833. Not
+root-caused or fixed — treat as a live bug next session, not stale content.
 
 ### ▶ G3 answered this session (2026-08-27)
 All 12 templates under `theme/sgs-theme/templates/` are framework-authored (real `sgs/*` block
@@ -194,7 +143,7 @@ rules). Enforcement: `npm run check:vacuous-guards`, wired into `prebuild`.
    of the fourth session) shipped, deployed to sandybrown, live-verified, and reseeded.
    Phase 3 (the per-template pass, P3-1 through P3-9) is the only work left in this plan.
    ⛔ **OWNERSHIP MOVED 2026-08-27 (Bean's call) to
-   `.claude/prompts/2026-08-27-finish-the-template-review.md` — do NOT start it here.**
+   `.claude/prompts/2026-08-28-finish-the-template-review.md` — do NOT start it here.**
    Split ownership (queued here, a loose scrap in the Mama's track) is why it deferred 4×.
 2. `.claude/decisions.md` D725 + D726 (width model) and **D742** (P2-2/P2-4/P2-5/P2-7
    close-out) — read before any further container work.
@@ -269,11 +218,16 @@ corrected 7.0 → 7.1.
    carried its own `⛔ EXECUTED` banner the whole time. Bean deleted the prompt on that
    basis and was right to; the deletion is committed. **Read the register's four
    corrections before trusting any of its findings** — Bean caught all four by eye.
-2. ⛔ **Wave C + the three correctness items — BOTH MOVED 2026-08-27 to
-   `.claude/prompts/2026-08-27-finish-the-template-review.md`. Do not start here.** Items:
-   `main` missing from `edit.js` `TAG_NAME_OPTIONS`; h1→h3 skip on `archive.html:21` +
-   `search.html:16`; redundant nested `contentWidth` in 5 files. ⚠ The heading-skip was
-   re-checked live 2026-08-27 and came back CLEAN on both — verify before acting.
+2. ⛔ **Wave C + the three correctness items — MOVED 2026-08-27 to
+   `.claude/prompts/2026-08-28-finish-the-template-review.md`. Do not start here.** Of the
+   three: `main` missing from `edit.js` `TAG_NAME_OPTIONS` IS carried forward in that prompt.
+   The h1→h3 skip was re-checked live 2026-08-27 and came back CLEAN on both `archive.html:21`
+   and `search.html:16` — resolved, nothing to do. **The third item — redundant nested
+   `contentWidth` in 5 files — is NOT in the new prompt** (found missing during the 2026-08-27
+   handoff QC pass; it never made it into an earlier prompt rewrite). File names for the 5
+   instances were not recorded anywhere still readable — next session needs to re-derive them
+   (likely via `grep -rn 'contentWidth' plugins/sgs-blocks/src/blocks/*/render.php` cross-checked
+   against nesting depth) before fixing.
 
 ⚠ **Canary content constrains Wave C:** 9 posts, 135 pages, 5 products, 1 category,
 **0 approved comments** (so `single.html`'s 14 comment blocks cannot be demonstrated
