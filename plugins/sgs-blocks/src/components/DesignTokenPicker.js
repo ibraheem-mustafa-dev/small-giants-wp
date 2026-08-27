@@ -227,9 +227,20 @@ function SgsColourStateControl( {
 	colours,
 	borderStyle,
 	onBorderStyleChange,
+	help,
 } ) {
 	const descId = `${ id }-desc`;
+	// This shape returns an <ItemGroup>, not a <BaseControl>, so there is no
+	// native `help` slot to inherit — it is rendered explicitly below using
+	// WP's own `components-base-control__help` class so it matches the hint
+	// text under every other control in the panel, and is wired into
+	// aria-describedby rather than being visual-only.
+	const helpId = `${ id }-help`;
 	const hasStates = states.length > 1;
+	const describedBy =
+		[ help ? helpId : null, hasStates ? descId : null ]
+			.filter( Boolean )
+			.join( ' ' ) || undefined;
 
 	// D636 border-gradient rollout — ADDITIVE opt-in. A state entry may carry
 	// `gradientValue`/`onGradientChange` (the sibling `{attr}Gradient` string
@@ -398,7 +409,7 @@ function SgsColourStateControl( {
 							__next40pxDefaultSize
 							onClick={ onToggle }
 							aria-expanded={ isOpen }
-							aria-describedby={ hasStates ? descId : undefined }
+							aria-describedby={ describedBy }
 							className="sgs-colour-control__toggle"
 							style={ {
 								display: 'block',
@@ -457,6 +468,14 @@ function SgsColourStateControl( {
 					) }
 				/>
 			</Item>
+			{ help && (
+				<p
+					id={ helpId }
+					className="components-base-control__help sgs-colour-control__help"
+				>
+					{ help }
+				</p>
+			) }
 			{ hasStates && (
 				<span id={ descId } className="screen-reader-text">
 					{ sprintf(
@@ -494,7 +513,38 @@ export default function DesignTokenPicker( {
 	// onBorderStyleChange as a function, inner props had no such key.
 	borderStyle,
 	onBorderStyleChange,
+	// Hint text under the control. Added 2026-08-28 after a survey found FIVE
+	// callers passing `help` to this component and all five silently rendering
+	// nothing — four wave-gradient colour rows in `fx.js` and
+	// `hover-effects.js`'s `sgsClickRippleColour`. Same explicit-prop-list trap
+	// the borderStyle comment above records, second occurrence, six days apart.
+	help,
+	// ⛔ CAPTURED FOR THE WARNING BELOW, NEVER FORWARDED. This is deliberately
+	// NOT a `{...rest}` passthrough — see the borderStyle comment above for why
+	// this component forwards an explicit list. It serves TWO different render
+	// shapes, so blanket-spreading a caller's props would land them on whichever
+	// control happens to be rendering, or onto a DOM node as an invalid
+	// attribute. Collecting the leftovers lets an unknown prop FAIL LOUDLY
+	// instead of vanishing, which is the actual defect: both incidents were
+	// silent, and both were found by a human noticing missing UI rather than by
+	// anything in the toolchain.
+	...unrecognisedProps
 } ) {
+	if ( 'production' !== process.env.NODE_ENV ) {
+		const strayProps = Object.keys( unrecognisedProps );
+		if ( strayProps.length > 0 ) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				`DesignTokenPicker: ignoring unrecognised prop(s) [${ strayProps.join(
+					', '
+				) }]${ label ? ` on "${ label }"` : '' }. This component forwards an ` +
+					'explicit prop list, so anything not in its signature is dropped. ' +
+					'Add the prop to the signature AND forward it to the shape that ' +
+					'renders it — passing it here alone does nothing.'
+			);
+		}
+	}
+
 	const [ colours ] = useSettings( 'color.palette' );
 	// Hook order must stay unconditional (both branches below return from the
 	// same component), so this is computed once regardless of which shape
@@ -518,6 +568,7 @@ export default function DesignTokenPicker( {
 				colours={ colours }
 				borderStyle={ borderStyle }
 				onBorderStyleChange={ onBorderStyleChange }
+				help={ help }
 			/>
 		);
 	}
@@ -529,7 +580,12 @@ export default function DesignTokenPicker( {
 	const handleChange = makeChangeHandler( { linked, colours, onChange } );
 
 	return (
-		<BaseControl id={ id } label={ label } __nextHasNoMarginBottom>
+		<BaseControl
+			id={ id }
+			label={ label }
+			help={ help }
+			__nextHasNoMarginBottom
+		>
 			<ColorPalette
 				colors={ colours }
 				value={ displayValue }

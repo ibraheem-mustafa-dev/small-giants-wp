@@ -1,3 +1,78 @@
+## D868 [ROUTINE] — Spec 40's cover-image reference is CHOSEN: ArtCenter-style modular geometry on a light ground, one brand hue per cover
+
+**2026-08-28. Bean picked, from verified images.** Spec 40's build gate was blocked on a reference
+nobody had approved. Ten candidates were researched and — per D781, the whole reason the gate
+exists — **every one was verified by loading the actual image**, not by reading a description.
+
+**The choice: the ArtCenter College viewbook model** (2019, 40,500 unique covers) — a modular grid of
+circles, arcs, quarter-discs and halftone fills, on a warm off-white LIGHT ground, **one brand hue
+per cover**. Runner-up recorded: the Hovestadt single-ink hairline geometry on white.
+
+**Why this one, in the terms that decide it:**
+- **Its quality is STRUCTURAL, not tuned.** The look comes from primitives that cannot be got wrong.
+  That is the property D781 should have been selecting for all along.
+- **One hue per cover makes FR-40-6 trivial** — read one colour from `theme-snapshot.json`. No
+  palette interpolation, no artist asset.
+- It survives the framework rule: a restaurant, a wedding planner AND a law firm all read well in
+  modular geometry in their own colour. Neon glitch and ink-bleed do not.
+
+⛔ **DO NOT SCOPE A FLOW FIELD ON THE STRENGTH OF THE FIDENZA REFERENCES.** Two Tyler Hobbs
+flow-field covers were verified and are genuinely beautiful. A deterministic flow-field generator was
+then actually BUILT to test the idea — plain JS → SVG → `sharp`, 3 covers in 2.6s, hash-identical
+across runs. **The pipeline worked perfectly and the output looked like scribble.** The difference is
+noise-field smoothness and years of compositional tuning. The technique is free; the quality is not.
+This is D781's exact shape, caught this time by building the cheap version first.
+
+⚠ **Two of the source repo's own README descriptions are INVERTED** — it calls Field Notes "light"
+(it is navy) and Hovestadt "dark" (it is white). Both were corrected by looking. A curated list is
+not ground truth about its own images.
+
+**Library verdict: write it, don't import it.** `trianglify` is GPL-3.0 and its hard `node-canvas`
+dependency will not compile on this machine; `geopattern` is deterministic and clean but produces a
+tiled identicon with no focal point (it was built for identicons); `canvas-sketch` drags in the same
+native-canvas problem. **`sharp` is the only dependency worth taking** — prebuilt binary, installs
+clean, SVG → 1200×630 PNG in under a second, ~300KB before WebP.
+
+⚠ Spec 40 is a **static offline image generator**. The motion track's "generative background engine"
+is a different thing sharing an adjective. Do not merge the two.
+
+---
+
+## D867 [ROUTINE] — `DesignTokenPicker` silently ate `help` on five callers; the fix makes unknown props LOUD rather than adding a rest-spread
+
+**2026-08-28, Bean-approved as a shared-component change (43 call sites, Rule 7 design gate).**
+Five callers passed `help` to `DesignTokenPicker` and all five rendered nothing: four wave-gradient
+colour rows in `fx.js` and `hover-effects.js:524`'s `sgsClickRippleColour`. Found by a peer session
+while working in `fx.js`; count independently verified here (a sixth grep hit in
+`multi-button/edit.js` is a `TextControl`, which accepts `help` natively — not a finding).
+
+**Cause: the component forwards an EXPLICIT prop list, not `{...rest}`.** Anything absent from its
+signature is dropped silently. **Its own docblock already warned about this** — the identical trap
+ate `borderStyle`/`onBorderStyleChange` on 2026-08-19. Second occurrence, nine days later. A written
+warning is not a defence.
+
+⛔ **The fix is deliberately NOT a rest-spread, and that is the interesting part.** The explicit list
+is a RECORDED DESIGN DECISION, not an oversight: this component serves TWO different render shapes
+(legacy `BaseControl` + `ColorPalette`, and the D609 `SgsColourStateControl` row), so blanket-
+spreading a caller's props would land them on whichever shape happens to render, or onto a DOM node
+as an invalid attribute. `SgsLengthControl`'s docblock rejects a rest-spread for the same reason.
+
+**So: `help` is added explicitly and forwarded to BOTH shapes** — natively via `BaseControl` in the
+legacy shape; in the row shape (an `ItemGroup`, which has no `help` slot) as an explicit
+`components-base-control__help` paragraph wired into `aria-describedby` alongside the existing
+states description, rather than being visual-only.
+
+⭐ **And the leftovers are captured solely to WARN.** `...unrecognisedProps` is collected and never
+forwarded; in non-production builds an unknown prop logs a console warning naming the prop and the
+control's label. That converts the actual defect — a SILENT drop — into a loud one, while keeping
+the explicit forwarding the two-shape design requires. Both incidents were found by a human noticing
+missing UI; nothing in the toolchain could see them. Structural fix over a promise to remember.
+
+Verified: full `npm run build` exit 0, all prebuild gates pass. (ESLint could not run — a
+pre-existing `@typescript-eslint` load failure in this checkout, unrelated to this change.)
+
+---
+
 ## D866 [ROUTINE] — the 375px readable-card floor is CLOSED as an accepted difference, not an open bug
 
 **2026-08-27.** Bean's call, made with the live page open. Two earlier entries left this framed as
