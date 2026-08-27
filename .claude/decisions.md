@@ -1,3 +1,61 @@
+## D828 [INCIDENT] — D827's additive/screen blending shipped a real regression; root-caused live and fixed same day
+
+**2026-08-27.** Bean, immediately after D827 deployed: "Doesn't work. The light version is visible
+while loading and then just turns white. The warmer version is completely static." A real bug,
+shipped without the empirical verification this project's own rules require — D827's design was
+reasoned qualitatively (additive light-on-light "should" work) but never measured before deploy.
+
+**Root-caused with a WebGL2 bisection harness, not guessed.** Built an isolated context, extracted
+the exact live-deployed uniform values via `gl.getUniform()`, and reproduced the defect precisely:
+the additive formula summed the light palette's base (already ~0.9-0.97 in linear light, per Phase
+1 Step 5's deliberately light ground) plus three layer contributions to `readPixels` = (251,255,255)
+— clipped to solid white. Tried SCREEN blend next (`1-(1-a)(1-b)`, mathematically bounded, cannot
+clip past white): reproduced as (245,252,254) — technically un-clipped, but visually indistinguishable
+from the base, i.e. "static" for a different reason. **Both are the same root cause**: additive-family
+blending needs headroom below white to show anything, and this effect's ground is deliberately light.
+This is a real structural conflict between two of Bean's own requirements (light/calm ground from
+the earlier "B-movie 3D VFX" fix, vs visible overlapping colour from the "reads like light/shadow"
+critique) that pure light-adding blend modes cannot resolve.
+
+**Fixed:** standard alpha-OVER `mix(colour, layerColour, weight)`, sequential per layer. Bounded to
+the range between the two colours by construction — no clipping possible regardless of how light or
+dark the ground is — and a high-alpha region reads as the layer's own saturated hue rather than
+needing room to brighten past white. Verified via a sampled grid across BOTH palettes at two time
+points before touching the real file: real spatial variation, real motion, nothing pinned at either
+clamp boundary.
+
+**A second, unrelated real bug caught by the build, not shipped:** while writing the fix's inline
+comment, a backtick inside the FRAGMENT_SHADER template-literal string terminated the JS string
+early — the exact same class of incident this file was already fixed for once (self-referential:
+the earlier implementer's own report on the prior round noted fixing this same bug class). Caught
+by `npm run build` failing outright, fixed before commit.
+
+**Verification method itself needed a second pass.** The first live re-check (`gl.readPixels` via a
+separate, delayed script call against the already-running page) STILL reported solid black at every
+timestamp — nearly triggered a false "still broken" conclusion. Root-caused: `preserveDrawingBuffer`
+is not set, so an out-of-band read racing against the browser's own buffer-clear-between-frames
+behaviour is not a reliable way to inspect a continuously-animating canvas from outside — it can read
+a cleared buffer between draws rather than the currently-presented frame. Screenshot-based capture
+(what the browser actually composited) is reliable; `readPixels()` from a delayed external call on a
+live RAF loop is not. Re-verified via actual screenshot pixel sampling (PIL) and frame-to-frame diff:
+real, varied, non-clipped colour on both palettes; 63.5% of the warm section's pixels genuinely
+changed across a 2.5s window — confirmed animating, not static.
+
+**Deployed via the same isolated-worktree method as D822-D827.** Payload-verify PASSED; all 3
+standing motion probes green.
+
+**Not yet given: Bean's verdict on the corrected version.** Screenshots sent (full page +
+warm-section close-up). This is now the SECOND round on this specific technique — per the original
+council's "one bounded experiment" framing and Bean's repeated "we need to move on", a further
+failure here should escalate to Bean's decision (ship-as-is-and-park vs full rebuild) rather than a
+third silent iteration.
+
+⭐ **The method lesson, stated plainly because it's the second time a fix shipped on reasoning
+instead of measurement this session (Q6-style discipline applies to graphics too, not just
+performance):** a design that sounds physically correct ("light adding to light is what real light
+does") is still a hypothesis until it's actually rendered and read back. The fix this time was
+proven with the exact bisection-and-measure discipline that should have gated the first version.
+
 ## D827 [ROUTINE] — wave-gradient technique changed from displaced mesh to additive translucent layers, per Bean's specific art-direction critique
 
 **2026-08-27.** `plugins/sgs-blocks/src/shared/effects/webgl/wave-gradient.js`. Bean's fuller

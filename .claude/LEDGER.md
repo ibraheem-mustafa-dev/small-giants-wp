@@ -82,17 +82,20 @@ report. Evidence: `reports/2026-08-26-border-width-live-verification.md`. Reason
 - **A subagent ran `git stash` beside a concurrent agent**, against instruction. Nothing lost;
   `git diff --stat` catches all four ways a subagent destroys work.
 
-## ▶ MOTION TRACK — 2026-08-27 (TECHNIQUE CHANGED to translucent layers; only Bean's eye left)
+## ▶ MOTION TRACK — 2026-08-27 (D827 regression FIXED same-day; Bean's verdict pending again)
 
-⭐ **START HERE: Bean's verdict on the NEW technique (D827).** Bean's fuller critique after
-D824's colour fixes — "sharp edges", "one continuous sheet", fingers poking, colours read as
-light/shadow not overlap, motion "globby like pudding" — pointed at the TECHNIQUE, not more
-tuning: an opaque displaced mesh has zero transparency. Agreed as ONE bounded experiment: fullscreen
-triangle (no mesh/displacement, fixes pudding), colour per-pixel from 3 DRIFTING noise fields, soft
-spatial alpha (fixes sharp edges), ADDITIVE linear-light compositing replacing opaque paint (fixes
-light/shadow-not-overlap). Still 1 draw call, no FBO/texture. Bundle -7%. Deployed + live-verified
-(real GPU, animates, context-loss clean) via isolated worktree; also fixed a genuine `@babel/parser`
-gap in shared `node_modules` mid-session (root-caused, not assumed).
+⭐ **START HERE: Bean's verdict on the RE-FIXED translucent technique (D828).** D827 (mesh ->
+translucent layers) shipped a real bug: additive blending clipped the light palette to solid white
+and read as static (invisible) on the warm one — same root cause, additive needs headroom below
+white and this ground is deliberately light. Root-caused via a WebGL2 bisection harness using the
+exact live uniform values, fixed with standard alpha-OVER `mix()` (bounded, no clipping possible).
+⚠ First re-check via `readPixels` STILL showed black — that was the verification method racing the
+browser's buffer-clear between frames, not the fix. Re-verified via actual screenshot pixel
+sampling: real varied colour, 63.5% of warm-section pixels changed across 2.5s. Deployed +
+payload-verified via isolated worktree.
+⛔ **This is round 2 on this exact technique.** Per the original "one bounded experiment" framing
+and Bean's repeated "we need to move on" — a further failure here should go to Bean's call (ship
+current version and park vs full rebuild), not a third silent iteration.
 ⭐ **Real differentiator identified, NOT built (parked):** effect recolours itself via the same
 per-client theme tokens the whole site uses — no forked-shader competitor can match that.
 ✅ **CLOSED (D826, prior round):** Pause toggle's `[hidden]` specificity tie fixed
