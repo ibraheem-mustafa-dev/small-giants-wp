@@ -1,3 +1,29 @@
+## D848 [ROUTINE] — `/sgs-update` DB reseed deliberately NOT run this session — would have deleted ~122 legitimate rows
+
+**2026-08-27.** Task 5's DB refresh was scoped for this session but deliberately skipped after a
+live cross-track check with the two other sessions sharing this worktree. A peer first flagged 112
+`block_attributes` rows with no committed source as likely "rogue seed" debris a reseed would
+clean up — then **self-corrected**: its own check was broken (grepped for a flat key against a
+`{"entries":[...]}` list structure, so it could never have matched). Redone properly, those rows —
+plus ~10 more, ~122 total — are backed by a real, uncommitted change to
+`plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json` (1037→1139
+entries; `sgs/post-grid.titleColour` and 4 `sgs/buybox` colour attrs among the additions) from a
+track that hadn't committed yet. Reseeding from committed source right now would have silently
+deleted that in-flight work.
+
+**Snapshot taken before any decision either way** (cheap insurance, per the peer's own
+suggestion): `.claude/scratch/pre-reseed-block-attributes-snapshot-2026-08-27.tsv` — 1,173 current
+`block_attributes` rows with `css_property IS NOT NULL`.
+
+**Not run this session.** Chasing down ownership of an unrelated track's uncommitted file under
+time pressure, to unblock a task that was already explicitly "cross-track, check first," wasn't
+worth the risk of destroying someone else's work. Left open for whoever picks up `/sgs-update`
+next — that owner should commit `css-property-classifications.json` FIRST (or confirm who owns it
+and get their sign-off), then the reseed becomes safe and boring. Full DB-consistency mechanism
+note from the same peer: the F6 gate fails inside a clean worktree at committed HEAD but passes in
+the main tree, precisely because a worktree can't see this uncommitted file — a known, already-
+understood cross-track artefact, not a new bug to chase.
+
 ## D847 [ROUTINE] — Mama's re-cloned fresh post-D843/D844/D845; flexWrap migration tool built
 
 **2026-08-27.** Closes Tasks 2 and the flexWrap half of Task 7 from

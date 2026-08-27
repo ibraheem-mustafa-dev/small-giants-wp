@@ -102,8 +102,14 @@ deliberately deferred tail — `attrs_for_css_property_state` carries the same u
 5. **375px readable-card floor — still a design question for Bean, not decided this session** (shop
    archive 312px, PDP carousel 140px/card — mechanism changed from grid to carousel, may change
    whether the floor still applies).
-6. **Carried:** `/sgs-update` DB refresh still owed (cross-track — confirm no session mid-build
-   first) · archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable ·
+6. **`/sgs-update` DB refresh — deliberately NOT run this session (D848).** Live cross-track check
+   with two peer sessions found reseeding right now would delete ~122 legitimate rows backed by an
+   uncommitted `css-property-classifications.json` change (another track's in-flight work, not
+   committed yet). Snapshot taken first regardless:
+   `.claude/scratch/pre-reseed-block-attributes-snapshot-2026-08-27.tsv`. **Before running this
+   next time:** find who owns that uncommitted file and get it committed first, or confirm the DB
+   and committed source agree, THEN reseed.
+7. **Carried:** archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable ·
    D843's live canary render check still owed (draft-mode verified only).
 
 ### ▶ G3 answered this session (2026-08-27)
