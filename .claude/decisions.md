@@ -1,3 +1,59 @@
+## D865 [ROUTINE] — `sgs/decorative-image` surface treatments were a silent no-op; a gated wrapper fixes it, and treated+tiers is a NAMED limitation, not a mystery
+
+**2026-08-28.** A client could pick grain / halftone / duotone on `sgs/decorative-image`, save, and
+get **nothing at all**, with no error anywhere. Fixed by giving the effect the host element it
+needs, gated so untreated instances are untouched.
+
+**The cause, both halves.** `fx-surface-treatment.js`'s `initTreatment()` does
+`el.querySelector( 'img' )` and returns a silent no-op closure on no match. This block is naked by
+design — `sgs_responsive_image()` returns the `<img>` AS the block root — and `querySelector`
+searches DESCENDANTS only, so it never matches `el` itself. The second half fails independently:
+`webgl/renderer.js` appends its `<canvas>` INSIDE that element, and an `<img>` is a void element
+that cannot hold children. ⭐ **The PHP half was never broken** — `fx-surface-treatment.php` stamps
+`data-sgs-fx-treatment` onto the naked `<img>` correctly, which is part of why this looked fine.
+
+**The fix mirrors the video branch already in the same file** (`render.php:230-268`), which had
+solved this exact problem for a different media type: wrapper takes the root role wholesale (class,
+uid, a11y, every `data-*`), inner media goes plain.
+
+⭐ **The gate keys on `fx`, not `fxTreatment` — and the first cut got that wrong.** A live capture
+caught it before deploy. `fx-attributes.php`'s `FX_ATTR_MAP` maps `fx` => `data-sgs-fx`, and
+`fx-surface-treatment.php` activates on `'surface-treatment' === get_attribute( 'data-sgs-fx' )`;
+`fxTreatment` only picks WHICH preset, and an empty one falls back to `SGS_FX_TREATMENT_DEFAULT`
+('grain'). So a client who selects the effect and never touches the preset has a LIVE treatment with
+an EMPTY `fxTreatment` — and the original preset-keyed gate would have left precisely that client
+with the silent no-op this change exists to remove. **Measured, not reasoned:** the probe page
+carries a second instance with no `fxTreatment` at all, and the live BEFORE capture shows it stamped
+`data-sgs-fx-treatment="grain"` regardless. Reading the two PHP files would have shown this; only
+rendering it made it unmissable.
+
+⛔ **Unconditional wrapping would have broken three things**, which is why the gate is not
+optional: `$root_sel`/`$sgs_tier_sel` are COMPOUND selectors that assume no ancestor;
+`style.css` binds `data-hide-tablet`/`data-hide-mobile` to whatever carries the class; and
+`view.js` selects `.sgs-decorative-image[data-parallax]` — had both wrapper and `<img>` kept the
+class and `data-*`, parallax would have applied TWICE and the inner `<img>` would have taken its
+own `position:absolute`. In treated mode the tier toggles therefore switch from compound to
+DESCENDANT selectors, and the inner media carries no uid, no base class, no `data-*`.
+
+**Proved by differential render, not by reading the diff.** A harness
+(`.claude/scratch/2026-08-28-decorative-image-treated-parity-harness.py`, gitignored — local only)
+runs HEAD's `render.php` and the working copy through identical stubbed WP core, loading the REAL
+`render-helpers.php` rather than a hand-copied stub that could diverge. **All six untreated cases
+byte-identical** (plain 416B, both-tiers 1264B, tablet-only 900B, parallax+fade+hide 496B,
+fxTreatment-key-absent 402B, video 565B). Its own negative control asserts treated output DIFFERS
+from untreated — without which a fully inert gate would have passed the parity half perfectly.
+
+⚠ **NAMED LIMITATION, recorded in the code rather than left to be rediscovered: treatment +
+art-direction tiers samples the DESKTOP image at every width.** The JS takes the FIRST `<img>`, and
+hidden tiers are `display:none`, not removed — so on a phone the visible image is the mobile tier
+while the canvas over it was sampled from the desktop tier. **Not fixed here deliberately:** the fix
+belongs in the shared JS module (pick the visible tier, repaint on tier change), which every
+treatment-qualifying block uses — a Rule 7 design-gate change, not a side effect of one block's
+wrapper fix. It is the dangerous shape of bug where every automated signal is green: markup correct,
+canvas paints, only the source pixels wrong. Treatment with no tiers is unaffected.
+
+---
+
 ## D864 [ROUTINE] — three motion-fx registry gaps closed; the obvious `fx:` name was already taken, and the "already covered elsewhere" claim was false
 
 **2026-08-28.** Three defects in the motion-fx registry, each one letting a real defect pass a

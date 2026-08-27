@@ -283,6 +283,50 @@ if ( $is_video ) {
 // never from $root_sel or any multi-member selector list: a descendant or
 // modifier appended to a LIST binds to the last member only, which on
 // sgs/media hid every image at every width before it was caught live.
+// SURFACE-TREATMENT WRAPPER GATE (2026-08-28).
+//
+// THE BUG: `fx-surface-treatment.js`'s `initTreatment()` does
+// `el.querySelector( 'img' )` and returns a silent no-op closure when it finds
+// nothing. In naked mode `el` IS the <img>, and querySelector only searches
+// DESCENDANTS — so it never matches, and a client who picks grain/halftone/
+// duotone in the inspector gets absolutely nothing, with no error anywhere.
+// The second half fails too: `webgl/renderer.js` appends its
+// <canvas class="sgs-webgl-surface"> INSIDE that element, and an <img> is a
+// void element that cannot hold children.
+//
+// The PHP half was never broken — `includes/fx-surface-treatment.php` stamps
+// `data-sgs-fx-treatment` onto the naked <img> correctly. Only the JS half needs
+// a host, so this gate gives it one and changes nothing else.
+
+/*
+ * ⛔ GATED, never unconditional. The untreated path must stay byte-identical,
+ * because three separate things assume the <img> is the root:
+ *   · $root_sel / $sgs_tier_sel are COMPOUND (`.{uid}.sgs-decorative-image`) —
+ *     see the tier note above; a wrapper changes which element they must hit.
+ *   · style.css binds `data-hide-tablet` / `data-hide-mobile` to whatever
+ *     carries the class; splitting the pair across two elements breaks both.
+ *   · view.js selects `.sgs-decorative-image[data-parallax]` and writes
+ *     --sgs-di-py / --sgs-di-op onto the match. If BOTH wrapper and <img> kept
+ *     the class + data-*, parallax would apply twice and the inner <img> would
+ *     take its own position:absolute from $root_sel.
+ */
+// So in treated mode the WRAPPER takes over the root role wholesale (class,
+// uid, a11y, every data-*) and the inner <img> becomes plain fill-the-host
+// media — exactly the division the video branch above already uses.
+
+/*
+ * ⛔ GATE ON `fx`, NOT ON `fxTreatment`. This was wrong in the first cut and a
+ * live capture caught it. `includes/fx-attributes.php`'s FX_ATTR_MAP maps
+ * `fx` => `data-sgs-fx`, and `fx-surface-treatment.php` activates on
+ * `'surface-treatment' === get_attribute( 'data-sgs-fx' )` — `fxTreatment` only
+ * chooses WHICH preset, and an empty one falls back to
+ * SGS_FX_TREATMENT_DEFAULT ('grain'). So a client who picks the effect and
+ * never touches the preset has a LIVE treatment with an empty `fxTreatment`,
+ * and a gate keyed on the preset would have left exactly that client with the
+ * original silent no-op — the precise bug this change exists to fix.
+ */
+$has_treatment = 'surface-treatment' === ( $attributes['fx'] ?? '' );
+
 $tier_imgs = array();
 foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 	$tier_id  = isset( $attributes[ 'imageId' . $sgs_tier ] ) ? absint( $attributes[ 'imageId' . $sgs_tier ] ) : 0;
@@ -297,10 +341,21 @@ foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
 }
 
 $base_class = $img_attrs['class'];
-if ( ! empty( $tier_imgs ) ) {
-	$img_attrs['class'] = $base_class . ' sgs-decorative-image--desktop';
 
-	$sgs_tier_sel  = static function ( $tier ) use ( $uid ) {
+// In treated mode the tier <img>s live INSIDE the wrapper and carry neither the
+// uid nor the base class (see the gate note above), so their toggle selectors
+// must be DESCENDANT rather than compound. Naked mode keeps the compound form
+// verbatim — there is still no ancestor to descend from there.
+$sgs_media_class = 'sgs-decorative-image__media';
+if ( ! empty( $tier_imgs ) ) {
+	$img_attrs['class'] = $has_treatment
+		? $sgs_media_class . ' ' . $sgs_media_class . '--desktop'
+		: $base_class . ' sgs-decorative-image--desktop';
+
+	$sgs_tier_sel = static function ( $tier ) use ( $uid, $has_treatment, $sgs_media_class ) {
+		if ( $has_treatment ) {
+			return '.' . $uid . ' .' . $sgs_media_class . '--' . $tier;
+		}
 		return '.' . $uid . '.sgs-decorative-image--' . $tier;
 	};
 	$tier_css = '';
@@ -317,6 +372,91 @@ if ( ! empty( $tier_imgs ) ) {
 	// wp_strip_all_tags </style>-breakout guard the base rule uses (contract §D).
 	$scoped_css[]   = $tier_css;
 	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
+}
+
+// TREATED BRANCH — emit the wrapper the WebGL host needs. Mirrors the video
+// branch above exactly: <style> printed BEFORE the wrapper, wrapper carries no
+// 'style' key (Spec 32), data-* lifted off $img_attrs and nothing else.
+if ( $has_treatment ) {
+	// The inner media carries neither uid nor base class, so $root_sel's
+	// position:absolute never reaches it — it only needs to fill the host.
+	// `[data-sgs-fx="surface-treatment"]{position:relative}` (0,1,0) loses to
+	// $root_sel's (0,2,0) position:absolute on the wrapper, which is fine:
+	// absolute is equally a containing block, so the canvas's inset:0 still
+	// resolves against the wrapper.
+	$scoped_css[]   = '.' . $uid . '.sgs-decorative-image--treated>.' . $sgs_media_class
+		. '{display:block;width:100%;height:auto}';
+	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
+
+	$wrapper_attrs = array(
+		'class'       => 'sgs-decorative-image sgs-decorative-image--treated ' . $uid,
+		'aria-hidden' => 'true',
+		'role'        => 'presentation',
+	);
+	foreach ( $img_attrs as $sgs_key => $sgs_val ) {
+		if ( 0 === strpos( $sgs_key, 'data-' ) ) {
+			$wrapper_attrs[ $sgs_key ] = $sgs_val;
+		}
+	}
+
+	$wrapper_attr_strs = array();
+	foreach ( $wrapper_attrs as $sgs_key => $sgs_val ) {
+		$wrapper_attr_strs[] = sprintf( '%s="%s"', esc_attr( $sgs_key ), esc_attr( $sgs_val ) );
+	}
+
+	// Plain fill-the-host media: no uid, no base class, no data-*. Without that
+	// stripping, view.js would match the inner <img> too and apply parallax
+	// twice, and $root_sel would absolutely-position it inside its own wrapper.
+	$media_attrs = array(
+		'class'    => empty( $tier_imgs ) ? $sgs_media_class : $img_attrs['class'],
+		'alt'      => '',
+		'loading'  => 'lazy',
+		'decoding' => 'async',
+	);
+
+	/*
+	 * ⚠ KNOWN LIMITATION — treatment + art-direction tiers samples the DESKTOP
+	 * image at every width. `fx-surface-treatment.js` takes
+	 * `el.querySelector( 'img' )`, i.e. the FIRST <img> in the wrapper, which is
+	 * always the desktop tier. The narrower tiers are hidden by `display:none`,
+	 * not removed, so on a phone the visible <img> is the mobile one while the
+	 * canvas painted over it was sampled from the desktop one.
+	 *
+	 * NOT fixed here, deliberately: the fix belongs in the shared JS module
+	 * (pick the tier that is actually visible, and repaint on the tier change),
+	 * and `fx-surface-treatment.js` is a shared mechanism used by every
+	 * treatment-qualifying block — a Rule 7 design-gate change, not a
+	 * side-effect of this block's wrapper fix. Recorded rather than left to be
+	 * rediscovered as a mystery, because every automated signal here is green:
+	 * the markup is correct, the canvas paints, and only the SOURCE PIXELS are
+	 * wrong. A block using a treatment with no tiers is unaffected.
+	 */
+	$media_html = sgs_responsive_image(
+		$image_id ? absint( $image_id ) : 0,
+		$image_url,
+		'',
+		'large',
+		$media_attrs
+	);
+	foreach ( $tier_imgs as $tier_key => $tier_media ) {
+		$tier_attrs          = $media_attrs;
+		$tier_attrs['class'] = $sgs_media_class . ' ' . $sgs_media_class . '--' . $tier_key;
+		$media_html         .= sgs_responsive_image(
+			$tier_media['id'],
+			$tier_media['url'],
+			'',
+			'large',
+			$tier_attrs
+		);
+	}
+
+	printf(
+		'%1$s<span %2$s>%3$s</span>',
+		$style_tag_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
+		implode( ' ', $wrapper_attr_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attr already escaped above.
+		$media_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
+	);
+	return;
 }
 
 // Image branch: render using sgs_responsive_image helper — all attributes
