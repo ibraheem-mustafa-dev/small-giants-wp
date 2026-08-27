@@ -159,6 +159,24 @@ Report them; fix only if the owner agrees.
   needs the deploy first, use the SCOPED `SGS_VISUAL_GATE_SKIP` with a reason — never
   `--no-verify`, which disables six unrelated working gates — and write the report next commit.
 
+- ⛔ **Deploy from an ISOLATED `git worktree`, not the shared tree** (junction `node_modules` and
+  `vendor` from main). Task 1 is a deploy, so this binds today. On 2026-08-27 the dirty-tree gate
+  correctly refused a deploy because another track's uncommitted `fx-wave-gradient` work sat in the
+  same files — `--allow-dirty` would have pushed their unfinished code live. A clean worktree at the
+  committed HEAD carries your work and none of theirs. **`--allow-dirty` is not the way past that
+  gate; a worktree is.** (Restored 2026-08-27 — dropped in a prompt rewrite while Task 1 was a
+  deploy.)
+- ⛔ **The ownership gate refusing your deploy is it WORKING.** If it says the live target carries a
+  commit that is not an ancestor of your HEAD, merge that work and rebuild. **Never `--takeover`** —
+  that discards whatever is live and not in your checkout.
+- ⛔ **Re-run the D-ceiling grep IMMEDIATELY before writing a decision, never once at session
+  start.** It moved FOUR times inside one session on 2026-08-27 (835 → 838 → 845 → 852 → 862), and
+  D-numbers already written into code comments had to be renumbered mid-flight.
+- ⛔ **`wp_update_post()` strips backslashes — pass `wp_slash()`.** Writing `post_content` back
+  without it turned a stored em dash into literal `u2014` on a live page. Every automated signal
+  stayed green: valid content, blocks parsed, HTTP 200. Back up BEFORE the write, and read the
+  RENDERED result, not the exit code.
+
 ## Live canary facts
 
 - Canary: `sandybrown-nightingale-600381.hostingersite.com`, currently on `4494e6e1d`.
