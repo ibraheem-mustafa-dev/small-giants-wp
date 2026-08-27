@@ -1425,6 +1425,87 @@ def _get_block_root_element(block_slug: str) -> "str | None":
     return None
 
 
+def _get_block_root_selector(block_slug: str) -> str:
+    """The block's own root/wrapper CSS selector, per the standard WordPress
+    block class-name convention (mirrors core's ``get_block_default_classname``):
+    ``.wp-block-`` + the slug with ``/`` replaced by ``-``. E.g.
+    ``sgs/before-after`` -> ``.wp-block-sgs-before-after``.
+
+    Pure string derivation — no block.json read, no DB query. Used ONLY to
+    disambiguate a block's CUSTOM ``isWrapper`` element name (e.g.
+    before-after's 'frame', media's 'media') from a same-named CHILD attr that
+    merely shares that string as its own ``css_element`` label (see
+    ``_root_domain_element_clause``).
+    """
+    return ".wp-block-" + block_slug.replace("/", "-")
+
+
+# The GENERIC root-domain element names — conventions any block's own root/
+# wrapper attr may carry REGARDLESS of what its block.json calls its isWrapper
+# element. No selector restriction applies to this route: a genuine root attr
+# may legitimately carry its OWN scoped BEM-shaped derived_selector (e.g.
+# sgs/container.maxWidth -> '.sgs-container__max') without that making it a
+# child attr — see _root_domain_element_clause's docstring.
+_OUTER_ROOT_ELEMENTS = ("", "root", "self", "wrapper")
+
+
+def _root_domain_element_clause(
+    block_slug: str, column: str = "css_element",
+) -> "tuple[str, list]":
+    """Build the SQL clause + ordered params for "is this attribute's
+    css_element within the block's root/self domain" — the guard shared by
+    ``declared_attrs_for_css_property``'s OUTER branch and
+    ``_base_domain_attrs_for_css_property``'s OUTER arm (Task 1, 2026-08-27
+    re-fix, replacing the broken v1 attempt in commit ca99f6aee).
+
+    Root-domain membership has two independent routes, and it is critical
+    they are NOT conflated (v1's bug was applying route 2's selector
+    restriction to route 1's rows too):
+
+      1. GENERIC — ``css_element`` is NULL/''/root/self/wrapper (the common
+         convention). NO selector restriction: e.g. sgs/container.maxWidth
+         (css_element='wrapper') carries derived_selector='.sgs-container__max'
+         — a BEM-shaped selector, but still root, because it's the block's OWN
+         scoped modifier selector, not a reference to a child DOM node.
+
+      2. CUSTOM ISWRAPPER NAME — the block declares some OTHER name as its
+         isWrapper element in block.json (e.g. before-after's 'frame', media's
+         'media') and THIS row's css_element equals that name. Because the
+         same custom name can ALSO be used for a genuinely CHILD-scoped attr
+         that merely happens to share the block's isWrapper string
+         (sgs/media.boxShadowColour's css_element is 'media' but its
+         derived_selector is '.sgs-media__img, .sgs-media__video' — two actual
+         child nodes, not the block's root), this route additionally requires
+         the row's derived_selector to be empty/NULL (no override -> defaults
+         to root) OR to equal the block's own root CSS selector VERBATIM
+         (``_get_block_root_selector`` — e.g. '.wp-block-sgs-before-after').
+
+    v1's bug: it tried to tell these apart with
+    ``derived_selector NOT LIKE '%.%__%'``. Two independent defects: (a) SQL
+    LIKE's bare ``_`` is a single-character WILDCARD, not a literal
+    underscore, so the pattern doesn't mean what it looks like it means; (b)
+    even correctly escaped, "contains a literal __" is not a reliable
+    root-vs-child discriminator at all — route 1 above is full of genuinely
+    root attrs whose OWN scoped selector contains '__'. Selector IDENTITY with
+    the block's real root selector is the only reliable signal, and it only
+    ever needs to gate route 2 (route 1 rows are already root by construction
+    of their generic css_element value).
+    """
+    params: list = [*_OUTER_ROOT_ELEMENTS]
+    generic_placeholders = ",".join("?" for _ in _OUTER_ROOT_ELEMENTS)
+    clause = f"({column} IS NULL OR {column} IN ({generic_placeholders}))"
+
+    block_root = _get_block_root_element(block_slug)
+    if block_root and block_root not in _OUTER_ROOT_ELEMENTS:
+        root_selector = _get_block_root_selector(block_slug)
+        clause += (
+            f" OR ({column} = ? AND (derived_selector IS NULL OR derived_selector = '' "
+            "OR derived_selector = ?))"
+        )
+        params.extend([block_root, root_selector])
+    return clause, params
+
+
 @functools.lru_cache(maxsize=4096)
 def declared_attrs_for_css_property(
     block_slug: str,
@@ -1498,19 +1579,21 @@ def declared_attrs_for_css_property(
             ).fetchall()
         else:
             # OUTER-layer element guard (2026-07-24, FR-31-22 cardPadding fix;
-            # 2026-08-27 Task 1: now reads block's declared isWrapper element):
-            # a NULL css_layer row is treated as "self/OUTER-default" (docstring
-            # above) so an attr the classifier never explicitly tagged OUTER can
-            # still be found by this query — but ONLY when its css_element is
-            # ALSO root-domain (NULL/''/root/self/'wrapper' — 'wrapper' is the
-            # universal, block-agnostic marker extract-signatures.py writes for
-            # ANY block's own isWrapper root element). Without this, a genuine LEAF
-            # sub-element attr sharing the same css_property with its css_layer
-            # left NULL (the leaf guard's documented, intentional value — e.g.
-            # sgs/product-card's css_element='cta' ctaPadding, routed entirely
-            # by the separate attr_for_area_property cross-node fold, which
-            # matches on css_element alone and never reads css_layer) is WRONGLY
-            # ALSO visible to an 'OUTER' query for the SAME css_property on the
+            # 2026-08-27 Task 1, re-fixed same day per the reviewed v1 attempt
+            # in commit ca99f6aee): a NULL css_layer row is treated as
+            # "self/OUTER-default" (docstring above) so an attr the classifier
+            # never explicitly tagged OUTER can still be found by this query —
+            # but ONLY when its css_element is ALSO root-domain, per
+            # ``_root_domain_element_clause`` (shared verbatim with
+            # ``_base_domain_attrs_for_css_property``'s identical OUTER arm —
+            # do NOT hand-roll a second copy of this predicate here). Without
+            # this, a genuine LEAF sub-element attr sharing the same
+            # css_property with its css_layer left NULL (the leaf guard's
+            # documented, intentional value — e.g. sgs/product-card's
+            # css_element='cta' ctaPadding, routed entirely by the separate
+            # attr_for_area_property cross-node fold, which matches on
+            # css_element alone and never reads css_layer) is WRONGLY ALSO
+            # visible to an 'OUTER' query for the SAME css_property on the
             # block's real root attr (cardPadding, css_element='wrapper'),
             # raising a false AmbiguousLayerAttrError between two attrs that
             # never actually compete in real dispatch (one resolved via this
@@ -1520,31 +1603,14 @@ def declared_attrs_for_css_property(
             # own non-root elements and this guard only applies structurally to
             # OUTER (the block's own root/outer box).
             _outer_element_clause = ""
+            _element_params: list = []
             if css_layer == "OUTER":
-                # Build the root-domain element list: hardcoded common names PLUS
-                # the block's own declared isWrapper element (if any).
-                root_elements = ["", "root", "self", "wrapper"]
-                block_root = _get_block_root_element(block_slug)
-                if block_root and block_root not in root_elements:
-                    root_elements.append(block_root)
-                placeholders = ",".join("?" * len(root_elements))
-                # Also filter by derived_selector to exclude attrs targeting child elements
-                # (contains '__' in the selector like '.sgs-media__img') unless it's clearly
-                # a root selector (starts with '.wp-block-')
-                _outer_element_clause = (
-                    f" AND (css_element IS NULL OR css_element IN ({placeholders})) "
-                    "AND (derived_selector IS NULL OR derived_selector NOT LIKE '%.%__%' OR derived_selector LIKE '.wp-block-%') "
-                )
-                # We need to pass these as query parameters, but this is inside
-                # the outer_element_clause construction. We'll handle this below.
-            else:
-                root_elements = None
+                _element_clause, _element_params = _root_domain_element_clause(block_slug)
+                _outer_element_clause = f" AND ({_element_clause}) "
 
-            # Build query parameters: always start with (block_slug, css_property, css_layer)
-            query_params = [block_slug, css_property, css_layer]
-            # If OUTER layer, append the root_elements list as query parameters
-            if root_elements:
-                query_params.extend(root_elements)
+            # Build query parameters: (block_slug, css_property, css_layer)
+            # plus the element-clause's own params (only non-empty for OUTER).
+            query_params = [block_slug, css_property, css_layer, *_element_params]
 
             rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
@@ -1583,26 +1649,13 @@ class AmbiguousCssPropAttrError(RuntimeError):
 # elements are served by styling_content.py's derived_selector path, NOT this one).
 _BASE_ELEMENTS = ("", "root", "self")
 
-# The WIDER root-domain set used specifically for a css_layer='OUTER' row: adds
-# 'wrapper' — a COMMON convention label for a block's own root/wrapper element,
-# NOT a universal one. Many blocks name their own isWrapper root element
-# something else entirely in their block.json (e.g. sgs/before-after's is
-# 'frame', sgs/media's is 'media') — this list does NOT recognise those, and a
-# 2026-08-27 roster survey found 32 blocks whose declared isWrapper element
-# name is invisible to this check. Those blocks' own attrs may be manually
-# relabelled 'wrapper' in attr-classification-overrides.json (see
-# sgs/before-after.boxShadowColour for a worked example) ONLY when the attr's
-# own derived_selector is the block's root selector verbatim — sgs/media's
-# 'media' element is the same isWrapper shape but its derived_selector
-# resolves to two actual child nodes, so relabelling it 'wrapper' would be
-# wrong (see test_media_box_shadow_colour_correctly_gaps_to_named_child).
-# This is a stopgap until this becomes a
-# genuine DB/block.json-driven "is this the block's own isWrapper element"
-# check instead of a closed literal list — see declared_attrs_for_css_
-# property's identical _outer_element_clause a few hundred lines up, which
-# this constant shares (same literals, same limitation) instead of re-typing
-# them a third time in this module.
-_OUTER_ROOT_ELEMENTS = ("", "root", "self", "wrapper")
+# NOTE: the wider OUTER-layer root-domain set (_OUTER_ROOT_ELEMENTS) and the
+# custom-isWrapper-name recognition it feeds into are defined once, earlier in
+# this module, alongside _get_block_root_element/_get_block_root_selector and
+# the shared ``_root_domain_element_clause`` helper both OUTER-layer guards in
+# this file now call — see that helper's docstring for the full mechanism
+# (Task 1, 2026-08-27, re-fixed same day per the reviewed v1 attempt in commit
+# ca99f6aee). Do not re-declare a second copy of this constant here.
 
 
 @functools.lru_cache(maxsize=4096)
@@ -1646,47 +1699,32 @@ def _base_domain_attrs_for_css_property(
     try:
         placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
 
-        # Build the OUTER_ROOT_ELEMENTS list dynamically: hardcoded common names
-        # PLUS the block's own declared isWrapper element (if any).
-        # This replaces the hardcoded _OUTER_ROOT_ELEMENTS constant to recognise
-        # blocks with custom-named wrappers (e.g. before-after's 'frame', media's 'media').
-        outer_root_elements = list(_OUTER_ROOT_ELEMENTS)  # ["", "root", "self", "wrapper"]
-        block_root = _get_block_root_element(block_slug)
-        if block_root and block_root not in outer_root_elements:
-            outer_root_elements.append(block_root)
-        outer_placeholders = ",".join("?" for _ in outer_root_elements)
-
-        # OUTER-layer element guard (2026-08-27, Task 1 / converter bug (b) fix):
+        # OUTER-layer element guard (2026-08-27, Task 1 / converter bug (b) fix,
+        # re-fixed same day per the reviewed v1 attempt in commit ca99f6aee):
         # a css_layer='OUTER' row is admitted into the root/self domain ONLY when
-        # its OWN css_element is ALSO root-domain (the block's own isWrapper element
-        # or one of the standard conventions: NULL/''/root/self/wrapper). Before this
-        # fix the OR'd `css_layer = 'OUTER'` arm carried NO css_element restriction
-        # at all, so a NAMED CHILD attr merely tagged css_layer='OUTER' was wrongly
-        # treated as a root-domain match. Verified live against the seeded DB (this
-        # module's connected instance, not a synthetic fixture — see
-        # test_root_modifier_element_guard.py for both the DB-dependent proof and
-        # a schema-independent synthetic proof of the predicate itself):
-        # sgs/hero.overlayGradient (css_element='overlay', background-image) was
-        # wrongly admitted before this fix, correctly excluded after. The brief's
-        # original example (a product-card BEM-root modifier's border landing on
-        # ctaBorder*) did NOT reproduce against the CURRENT DB seed — product-
-        # card's own border-color/-width/-style attrs are already correctly
-        # css_element='wrapper' — so that exact pairing is illustrative of the
-        # bug class, not a live repro; sgs/hero/background-image is the live one.
-        # Select attrs that match the root-domain elements, with an additional
-        # filter: if derived_selector is present and targets child elements
-        # (contains __), exclude it unless it's a standard root selector pattern.
+        # its OWN css_element is ALSO root-domain, per
+        # ``_root_domain_element_clause`` — shared verbatim with
+        # ``declared_attrs_for_css_property``'s identical OUTER branch (do NOT
+        # hand-roll a second copy of this predicate here). Before the original
+        # 2026-08-27 fix the OR'd `css_layer = 'OUTER'` arm carried NO
+        # css_element restriction at all, so a NAMED CHILD attr merely tagged
+        # css_layer='OUTER' was wrongly treated as a root-domain match.
+        # Verified live against the seeded DB (this module's connected
+        # instance, not a synthetic fixture — see
+        # test_root_modifier_element_guard.py for both the DB-dependent proof
+        # and a schema-independent synthetic proof of the predicate itself):
+        # sgs/hero.overlayGradient (css_element='overlay', background-image)
+        # is wrongly admitted without this guard, correctly excluded with it.
+        _element_clause, _element_params = _root_domain_element_clause(block_slug)
         rows = conn.execute(
             "SELECT attr_name FROM block_attributes "
             "WHERE block_slug = ? AND css_property = ? "
             f"AND ((css_element IS NULL OR css_element IN ({placeholders})) "
-            "OR (css_layer = 'OUTER' "
-            f"AND (css_element IS NULL OR css_element IN ({outer_placeholders})) "
-            "AND (derived_selector IS NULL OR derived_selector NOT LIKE '%.%__%' OR derived_selector LIKE '.wp-block-%'))) "
+            f"OR (css_layer = 'OUTER' AND ({_element_clause}))) "
             "AND (css_tier IS NULL OR css_tier = 'desktop') "
             "AND css_state IS NULL "
             "ORDER BY rowid",
-            (block_slug, css_property, *_BASE_ELEMENTS, *outer_root_elements),
+            (block_slug, css_property, *_BASE_ELEMENTS, *_element_params),
         ).fetchall()
     except sqlite3.OperationalError:
         # css_element/css_state/css_tier columns absent (pre-seed DB) → no declaration.
