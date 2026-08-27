@@ -129,9 +129,15 @@ void main() {
 		);
 		float w = fbm( p * scale + q * 1.6 + vec2( t * 0.5, 0.0 ) );
 
-		// The curtain's centre line drifts across the frame and is bent by the
-		// warp, so it never reads as a straight bar.
-		float centre = 0.5 + 0.34 * sin( t * 0.5 + fi * 2.1 ) + 0.30 * w;
+		// The curtain's centre line sways and is bent by the warp, so it never
+		// reads as a straight bar.
+		// ⛔ EACH CURTAIN IS ANCHORED TO ITS OWN THIRD OF THE FRAME, and the
+		// sway plus warp are bounded to keep it there. An earlier version used
+		// one shared centre with a +-0.34 swing plus 0.30*warp, which let the
+		// centre reach 1.14: every curtain drifted off-frame together and the
+		// whole effect faded to black a couple of seconds after load.
+		float anchor = 0.22 + fi * 0.28;
+		float centre = anchor + 0.11 * sin( t * 0.37 + fi * 2.1 ) + 0.09 * w;
 		float d = uv.x - centre;
 		float band = exp( -d * d * ( 26.0 - fi * 6.0 ) );
 
