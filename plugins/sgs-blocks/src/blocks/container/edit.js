@@ -81,6 +81,7 @@ const TAG_NAME_OPTIONS = [
   { label: __( "Header", "sgs-blocks" ), value: "header" },
   { label: __( "Footer", "sgs-blocks" ), value: "footer" },
   { label: __( "Figure", "sgs-blocks" ), value: "figure" },
+  { label: __( "Main (page landmark)", "sgs-blocks" ), value: "main" },
 ];
 
 /**
