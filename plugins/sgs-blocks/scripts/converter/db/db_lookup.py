@@ -1377,6 +1377,54 @@ def tag_identity_match(node_tag: str, allowed: "frozenset[str] | None") -> "str 
     return None
 
 
+@functools.lru_cache(maxsize=512)
+def _get_block_root_element(block_slug: str) -> "str | None":
+    """Read the element marked `isWrapper: true` from a block's block.json.
+
+    Returns the element key (e.g. 'frame' for sgs/before-after, 'media' for
+    sgs/media) if the block declares an isWrapper element, or None if not
+    found or if the block.json is inaccessible.
+
+    Used by the root-domain element guard in declared_attrs_for_css_property
+    and _base_domain_attrs_for_css_property to recognise each block's own
+    declared root element name (Task 1 2026-08-27), rather than checking
+    against a hardcoded list ('', 'root', 'self', 'wrapper'). This allows
+    blocks with custom-named wrappers (e.g. before-after's 'frame') to be
+    correctly gated as root-domain elements.
+
+    Defensive: if block.json is missing or unparseable, returns None (the
+    block's root element is not discoverable locally; the hardcoded list
+    fallback in the guard will still apply, ensuring no silent regressions).
+    Cached for performance (up to 512 blocks per session).
+    """
+    # Locate the block's block.json by block_slug (e.g. 'sgs/before-after'
+    # → 'before-after'). The block.json files are at:
+    # plugins/sgs-blocks/src/blocks/<block-name>/block.json
+    # This file is at: plugins/sgs-blocks/scripts/converter/db/db_lookup.py
+    # So we need to go up 4 levels to plugins/sgs-blocks, then into src/blocks.
+    if not block_slug or "/" not in block_slug:
+        return None
+    block_name = block_slug.split("/", 1)[1]  # 'sgs/before-after' → 'before-after'
+    # Navigate: db_lookup.py -> db -> converter -> scripts -> sgs-blocks -> src/blocks
+    block_json_path = (
+        Path(__file__).parent.parent.parent.parent / "src" / "blocks" / block_name / "block.json"
+    )
+    if not block_json_path.exists():
+        return None
+    try:
+        data = json.loads(block_json_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, json.JSONDecodeError):
+        return None
+    elements = ((data.get("supports") or {}).get("sgs") or {}).get("elements")
+    if not isinstance(elements, dict):
+        return None
+    # Return the first element marked with isWrapper: true.
+    for elem_name, elem_data in elements.items():
+        if isinstance(elem_data, dict) and elem_data.get("isWrapper") is True:
+            return elem_name
+    return None
+
+
 @functools.lru_cache(maxsize=4096)
 def declared_attrs_for_css_property(
     block_slug: str,
@@ -1449,14 +1497,14 @@ def declared_attrs_for_css_property(
                 (block_slug, css_property),
             ).fetchall()
         else:
-            # OUTER-layer element guard (2026-07-24, FR-31-22 cardPadding fix):
+            # OUTER-layer element guard (2026-07-24, FR-31-22 cardPadding fix;
+            # 2026-08-27 Task 1: now reads block's declared isWrapper element):
             # a NULL css_layer row is treated as "self/OUTER-default" (docstring
             # above) so an attr the classifier never explicitly tagged OUTER can
             # still be found by this query — but ONLY when its css_element is
             # ALSO root-domain (NULL/''/root/self/'wrapper' — 'wrapper' is the
             # universal, block-agnostic marker extract-signatures.py writes for
-            # ANY block's own isWrapper root element, see _load_root_element +
-            # its "wrapper" normalisation note). Without this, a genuine LEAF
+            # ANY block's own isWrapper root element). Without this, a genuine LEAF
             # sub-element attr sharing the same css_property with its css_layer
             # left NULL (the leaf guard's documented, intentional value — e.g.
             # sgs/product-card's css_element='cta' ctaPadding, routed entirely
@@ -1471,10 +1519,33 @@ def declared_attrs_for_css_property(
             # per the pre-existing design note above, those layers legitimately
             # own non-root elements and this guard only applies structurally to
             # OUTER (the block's own root/outer box).
-            _outer_element_clause = (
-                " AND (css_element IS NULL OR css_element IN ('', 'root', 'self', 'wrapper')) "
-                if css_layer == "OUTER" else ""
-            )
+            _outer_element_clause = ""
+            if css_layer == "OUTER":
+                # Build the root-domain element list: hardcoded common names PLUS
+                # the block's own declared isWrapper element (if any).
+                root_elements = ["", "root", "self", "wrapper"]
+                block_root = _get_block_root_element(block_slug)
+                if block_root and block_root not in root_elements:
+                    root_elements.append(block_root)
+                placeholders = ",".join("?" * len(root_elements))
+                # Also filter by derived_selector to exclude attrs targeting child elements
+                # (contains '__' in the selector like '.sgs-media__img') unless it's clearly
+                # a root selector (starts with '.wp-block-')
+                _outer_element_clause = (
+                    f" AND (css_element IS NULL OR css_element IN ({placeholders})) "
+                    "AND (derived_selector IS NULL OR derived_selector NOT LIKE '%.%__%' OR derived_selector LIKE '.wp-block-%') "
+                )
+                # We need to pass these as query parameters, but this is inside
+                # the outer_element_clause construction. We'll handle this below.
+            else:
+                root_elements = None
+
+            # Build query parameters: always start with (block_slug, css_property, css_layer)
+            query_params = [block_slug, css_property, css_layer]
+            # If OUTER layer, append the root_elements list as query parameters
+            if root_elements:
+                query_params.extend(root_elements)
+
             rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? "
@@ -1482,7 +1553,7 @@ def declared_attrs_for_css_property(
                 + _outer_element_clause
                 + _base_clause +
                 " ORDER BY rowid",
-                (block_slug, css_property, css_layer),
+                query_params,
             ).fetchall()
     except sqlite3.OperationalError:
         # css_property/css_layer column absent (pre-seed DB) → no declaration.
@@ -1574,15 +1645,24 @@ def _base_domain_attrs_for_css_property(
     conn = sqlite3.connect(SGS_DB)
     try:
         placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
-        outer_placeholders = ",".join("?" for _ in _OUTER_ROOT_ELEMENTS)
+
+        # Build the OUTER_ROOT_ELEMENTS list dynamically: hardcoded common names
+        # PLUS the block's own declared isWrapper element (if any).
+        # This replaces the hardcoded _OUTER_ROOT_ELEMENTS constant to recognise
+        # blocks with custom-named wrappers (e.g. before-after's 'frame', media's 'media').
+        outer_root_elements = list(_OUTER_ROOT_ELEMENTS)  # ["", "root", "self", "wrapper"]
+        block_root = _get_block_root_element(block_slug)
+        if block_root and block_root not in outer_root_elements:
+            outer_root_elements.append(block_root)
+        outer_placeholders = ",".join("?" for _ in outer_root_elements)
+
         # OUTER-layer element guard (2026-08-27, Task 1 / converter bug (b) fix):
         # a css_layer='OUTER' row is admitted into the root/self domain ONLY when
-        # its OWN css_element is ALSO root-domain (_OUTER_ROOT_ELEMENTS — the same
-        # set declared_attrs_for_css_property's sibling OUTER query already uses
-        # for its own _outer_element_clause). Before this fix the OR'd
-        # `css_layer = 'OUTER'` arm carried NO css_element restriction at all, so
-        # a NAMED CHILD attr merely tagged css_layer='OUTER' was wrongly treated
-        # as a root-domain match. Verified live against the seeded DB (this
+        # its OWN css_element is ALSO root-domain (the block's own isWrapper element
+        # or one of the standard conventions: NULL/''/root/self/wrapper). Before this
+        # fix the OR'd `css_layer = 'OUTER'` arm carried NO css_element restriction
+        # at all, so a NAMED CHILD attr merely tagged css_layer='OUTER' was wrongly
+        # treated as a root-domain match. Verified live against the seeded DB (this
         # module's connected instance, not a synthetic fixture — see
         # test_root_modifier_element_guard.py for both the DB-dependent proof and
         # a schema-independent synthetic proof of the predicate itself):
@@ -1593,16 +1673,20 @@ def _base_domain_attrs_for_css_property(
         # card's own border-color/-width/-style attrs are already correctly
         # css_element='wrapper' — so that exact pairing is illustrative of the
         # bug class, not a live repro; sgs/hero/background-image is the live one.
+        # Select attrs that match the root-domain elements, with an additional
+        # filter: if derived_selector is present and targets child elements
+        # (contains __), exclude it unless it's a standard root selector pattern.
         rows = conn.execute(
             "SELECT attr_name FROM block_attributes "
             "WHERE block_slug = ? AND css_property = ? "
             f"AND ((css_element IS NULL OR css_element IN ({placeholders})) "
             "OR (css_layer = 'OUTER' "
-            f"AND (css_element IS NULL OR css_element IN ({outer_placeholders})))) "
+            f"AND (css_element IS NULL OR css_element IN ({outer_placeholders})) "
+            "AND (derived_selector IS NULL OR derived_selector NOT LIKE '%.%__%' OR derived_selector LIKE '.wp-block-%'))) "
             "AND (css_tier IS NULL OR css_tier = 'desktop') "
             "AND css_state IS NULL "
             "ORDER BY rowid",
-            (block_slug, css_property, *_BASE_ELEMENTS, *_OUTER_ROOT_ELEMENTS),
+            (block_slug, css_property, *_BASE_ELEMENTS, *outer_root_elements),
         ).fetchall()
     except sqlite3.OperationalError:
         # css_element/css_state/css_tier columns absent (pre-seed DB) → no declaration.

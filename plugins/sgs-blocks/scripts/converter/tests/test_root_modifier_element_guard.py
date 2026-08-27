@@ -208,24 +208,26 @@ def synthetic_db(tmp_path, monkeypatch):
             css_property TEXT,
             css_element TEXT,
             css_state TEXT,
-            css_tier TEXT
+            css_tier TEXT,
+            derived_selector TEXT
         )
         """
     )
     rows = [
         # A genuine root/wrapper attr, css_layer='OUTER' — must be admitted.
-        ("sgs/__synthetic__", "rootBorderColour", "string", "OUTER", "border-color", "wrapper", None, None),
+        # derived_selector=NULL means it targets the block's root.
+        ("sgs/__synthetic__", "rootBorderColour", "string", "OUTER", "border-color", "wrapper", None, None, None),
         # A NAMED-CHILD attr that ALSO carries css_layer='OUTER' — the exact
         # shape that used to slip through unguarded. Must be EXCLUDED.
-        ("sgs/__synthetic__", "childBorderColour", "string", "OUTER", "border-color", "cta", None, None),
+        ("sgs/__synthetic__", "childBorderColour", "string", "OUTER", "border-color", "cta", None, None, None),
         # A named-child attr with NO css_layer at all — must stay excluded
         # (unaffected control; this was never the buggy path).
-        ("sgs/__synthetic__", "otherChildColour", "string", None, "border-color", "cta", None, None),
+        ("sgs/__synthetic__", "otherChildColour", "string", None, "border-color", "cta", None, None, None),
     ]
     conn.executemany(
         "INSERT INTO block_attributes "
-        "(block_slug, attr_name, attr_type, css_layer, css_property, css_element, css_state, css_tier) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "(block_slug, attr_name, attr_type, css_layer, css_property, css_element, css_state, css_tier, derived_selector) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         rows,
     )
     conn.commit()
@@ -251,3 +253,55 @@ def test_synthetic_outer_layer_child_element_is_excluded_from_root_domain(synthe
         "css_layer, and a child attr with no css_layer at all must never enter "
         "either."
     )
+
+
+# ---------------------------------------------------------------------------
+# Task 1 follow-up: the guard now reads block.json's declared isWrapper
+# element rather than checking against the hardcoded list.
+# ---------------------------------------------------------------------------
+
+def test_custom_wrapper_element_name_recognised_as_root_domain():
+    """A block with a custom-named isWrapper element (e.g. before-after's
+    'frame', media's 'media') must have that element treated as root-domain
+    by the outer_element guard.
+
+    This test demonstrates that when a block declares `supports.sgs.elements.
+    <custom-name>.isWrapper: true`, that custom element name now resolves as
+    a root-domain element in the guard, not excluded by the hardcoded list.
+
+    Before the fix, before-after's boxShadowColour (css_element='frame')
+    would be invisible to the OUTER-layer resolver because 'frame' was not
+    in the hardcoded list ('', 'root', 'self', 'wrapper').
+    """
+    # sgs/before-after declares 'frame' as its isWrapper element.
+    # Its boxShadowColour attr should resolve to itself at OUTER layer,
+    # not gap (and not resolve to a child attr).
+    resolved = db_lookup.attr_for_layer_property("sgs/before-after", "OUTER", "box-shadow-color")
+    assert resolved is not None, (
+        "sgs/before-after box-shadow-color should resolve at OUTER layer "
+        "now that 'frame' (the block's declared isWrapper element) is "
+        "recognised by the root-domain guard"
+    )
+    assert resolved == "boxShadowColour", (
+        f"sgs/before-after box-shadow-color resolved to {resolved!r}, "
+        "expected 'boxShadowColour'"
+    )
+
+
+def test_named_child_element_still_excluded_from_root_domain():
+    """Regression guard: a genuinely-named child element (not the block's
+    isWrapper element) must still be excluded from the root domain.
+
+    This proves the guard is not over-broad and only includes the actual
+    isWrapper element, not every named element with css_layer='OUTER'.
+    """
+    # sgs/hero.overlayGradient is a child-scoped attr (css_element='overlay'),
+    # even though it might be tagged css_layer='OUTER'. It should not enter
+    # the root domain because 'overlay' is not the block's isWrapper element.
+    declared = db_lookup._base_domain_attrs_for_css_property("sgs/hero", "background-image")
+    assert "overlayGradient" not in declared, (
+        "sgs/hero.overlayGradient should not enter the root-domain attrs — "
+        "overlay is a child element, not the block's isWrapper element"
+    )
+
+
