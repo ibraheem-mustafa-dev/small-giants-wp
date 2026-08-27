@@ -48,7 +48,8 @@ GATE SHAPE (matches check-motion-bundle-budget.py / audit-feature-parity.py)
 ----------------------------------------------------------------------------------------
 - Default (no flag): observational report, exit 0 regardless of findings.
 - --check:     gating mode. Exit 1 on any invariant breach or any vacuous parse.
-- --self-test: proves the gate can fail — ten cases against a temp copy of the sources.
+- --self-test: proves the gate can fail — one case per invariant (I0-I9, with I7 across
+  three independent legs) plus baseline and vacuity gate, against a temp copy of the sources.
 
 Run: python plugins/sgs-blocks/scripts/check-fx-list-drift.py --check
 """
@@ -94,7 +95,7 @@ _I4_UNIVERSAL_ATTRS = frozenset(
 
 @dataclass(frozen=True)
 class Sources:
-    """The nine committed files/directories this gate reads.
+    """The ten committed files/directories this gate reads.
 
     Parameterised (rather than module constants) purely so `--self-test` can point the
     whole gate at a temp copy and perturb it without ever touching the real tree.
@@ -114,6 +115,12 @@ class Sources:
     surface_treatment_php: Path
     surface_treatment_presets_js: Path
     surface_treatment_frag_dir: Path
+    # I9 — the motion registry (class-sgs-motion-registry.php).
+    # An effect registered as a script module but missing from SHIPPED_EFFECTS would
+    # never initialize on the page, yet look complete in every other layer. Conversely,
+    # an effect in SHIPPED_EFFECTS but not registered here would leave the editor
+    # offering an effect that has nowhere to load from.
+    motion_registry_php: Path
 
     @staticmethod
     def default(root: Path = _PLUGIN_ROOT) -> "Sources":
@@ -127,6 +134,7 @@ class Sources:
             surface_treatment_php=root / "includes" / "fx-surface-treatment.php",
             surface_treatment_presets_js=root / "src" / "shared" / "effects" / "surface-treatments" / "presets.js",
             surface_treatment_frag_dir=root / "src" / "shared" / "effects" / "surface-treatments",
+            motion_registry_php=root / "includes" / "class-sgs-motion-registry.php",
         )
 
     def all_paths(self) -> list[Path]:
@@ -140,6 +148,7 @@ class Sources:
             self.surface_treatment_php,
             self.surface_treatment_presets_js,
             self.surface_treatment_frag_dir,
+            self.motion_registry_php,
         ]
 
 
@@ -470,6 +479,60 @@ def parse_treatment_frag_files(src: Sources) -> list[str]:
     return ids
 
 
+def parse_motion_registry_effects(src: Sources) -> list[str]:
+    """class-sgs-motion-registry.php MODULES constant — the `@sgs/fx-*` effect IDs.
+
+    The runtime source of truth for which effect modules exist and can load. An effect
+    ID matching the pattern '@sgs/fx-<effect-name>' is stripped to <effect-name> for
+    comparison against SHIPPED_EFFECTS (which uses bare effect names like 'scrub', not
+    '@sgs/fx-scrub'). Non-effect module IDs (@sgs/gsap-*, @sgs/motion-provider,
+    @sgs/smooth-scroll, @sgs/fx-carousel-loop) are filtered out — they are
+    infrastructure, not effects in the fx_effects sense.
+    """
+    path = src.motion_registry_php
+    body = _block_after(
+        _read(path),
+        r"private const MODULES\s*=\s*array\s*\(",
+        "(", ")", path, "MODULES",
+    )
+    body = _strip_php_comments(body)
+    # Match '@sgs/fx-<name>' entries in the array keys.
+    matches = re.findall(r"'@sgs/fx-([a-z0-9-]+)'", body)
+    _floor(matches, 3, path, "the @sgs/fx-* effect module IDs in MODULES")
+    return sorted(matches)
+
+
+def parse_non_effect_modules(src: Sources) -> list[str]:
+    """class-sgs-motion-registry.php MODULES constant — non-effect module IDs.
+
+    These are infrastructure modules that are not effects: @sgs/gsap-* plugins,
+    @sgs/motion-provider, @sgs/smooth-scroll, @sgs/fx-carousel-loop. This parser
+    identifies them so I9 can ignore them when cross-checking against SHIPPED_EFFECTS
+    (which only lists actual fx effects, not infrastructure).
+
+    Carousel-loop is special: it is a data-sgs-loop attribute effect, not a data-sgs-fx
+    grammar effect, so it is infrastructure-adjacent and deliberately outside the
+    SHIPPED_EFFECTS roster.
+    """
+    path = src.motion_registry_php
+    body = _block_after(
+        _read(path),
+        r"private const MODULES\s*=\s*array\s*\(",
+        "(", ")", path, "MODULES",
+    )
+    body = _strip_php_comments(body)
+    # Match infrastructure module IDs — everything EXCEPT '@sgs/fx-<name>'.
+    gsap_modules = re.findall(r"'(@sgs/gsap-[a-z0-9-]+)'", body)
+    other_modules = re.findall(
+        r"'(@sgs/(?:motion-provider|smooth-scroll|fx-carousel-loop))'", body
+    )
+    # These are not gated (vacuity floor = 0) because an empty infrastructure set
+    # would only occur if the whole MODULES array was reshaped, in which case
+    # parse_motion_registry_effects would catch it first. The gate here is purely
+    # informational — listing what we're filtering out.
+    return sorted(gsap_modules + other_modules)
+
+
 # ---------------------------------------------------------------------------
 # The invariants. THE COUNT IS DERIVED, never spelled out — the word
 # "eight" survived I8 being added and told every reader there were eight.
@@ -506,6 +569,9 @@ def evaluate(src: Sources) -> list[Violation]:
     treatment_allowlist = parse_treatment_allowlist(src)
     treatment_presets = parse_treatment_presets(src)
     treatment_frag_files = parse_treatment_frag_files(src)
+    registry_effects = parse_motion_registry_effects(src)
+    # Non-effect modules are parsed but not gated (no vacuity floor).
+    parse_non_effect_modules(src)
 
     violations: list[Violation] = []
 
@@ -692,6 +758,52 @@ def evaluate(src: Sources) -> list[Violation]:
                 "participant coverage.",
             ))
 
+    # ---- I9: the motion registry agrees with SHIPPED_EFFECTS -----------
+    # An effect registered as a script module but missing from SHIPPED_EFFECTS would
+    # never initialize on the page, yet look complete in every other layer. Conversely,
+    # an effect in SHIPPED_EFFECTS but not registered here would leave the editor
+    # offering an effect that has nowhere to load from. The motion registry is THE
+    # runtime source of truth; SHIPPED_EFFECTS is the editor's picker source.
+    #
+    # Four registered effects are deliberately absent from SHIPPED_EFFECTS, verified by
+    # reading each block's own edit.js, not assumed: `draggable` is a dedicated
+    # `fxDraggable` toggle on sgs/before-after (not the generic fx picker); `flip` is a
+    # dedicated toggle on sgs/countdown-timer; `image-sequence` is its own block with
+    # dedicated fxStart/fxEnd/fxScrub/fxPin attrs and controls. Each has a real,
+    # already-shipped per-block control surface — SHIPPED_EFFECTS is the wrong roster
+    # for them, not a gap to fill. `carousel-loop` is infrastructure-adjacent, per
+    # parse_non_effect_modules()'s own docstring above — it uses a data-sgs-loop
+    # attribute, not the data-sgs-fx grammar SHIPPED_EFFECTS governs. That docstring
+    # claimed I9 already ignored it; the diff below never actually subtracted it —
+    # fixed here so the claim and the code agree.
+    BLOCK_DEDICATED_EFFECTS = frozenset(
+        { "draggable", "flip", "image-sequence", "carousel-loop" }
+    )
+    for effect in sorted(set(registry_effects) - set(shipped) - BLOCK_DEDICATED_EFFECTS):
+        violations.append(Violation(
+            "I9",
+            f"`{effect}` is registered as a runtime module (@sgs/fx-{effect} in "
+            f"class-sgs-motion-registry.php MODULES) but is ABSENT from `SHIPPED_EFFECTS` "
+            "(fx.js). The module exists and can load, but the editor never offers it — "
+            "the effect is unreachable from the UI.",
+            f"Add '{effect}' to SHIPPED_EFFECTS in src/blocks/extensions/fx.js, or "
+            f"remove the '@sgs/fx-{effect}' entry from the MODULES constant in "
+            "includes/class-sgs-motion-registry.php if this effect is not meant to ship.",
+        ))
+    for effect in sorted(set(shipped) - set(registry_effects)):
+        violations.append(Violation(
+            "I9",
+            f"`{effect}` is in `SHIPPED_EFFECTS` (fx.js) but is NOT registered as a "
+            f"runtime module in class-sgs-motion-registry.php MODULES — the editor offers "
+            "an effect the runtime cannot load. When the client applies this effect, "
+            "nothing happens: the page renders correctly, the effect looks applied, and "
+            "silently does nothing.",
+            f"Add '@sgs/fx-{effect}' to the MODULES constant in "
+            "includes/class-sgs-motion-registry.php (with 'path' and 'deps' entries "
+            "matching the webpack build), or remove it from SHIPPED_EFFECTS if it is not "
+            "meant to load.",
+        ))
+
     return violations
 
 
@@ -714,6 +826,11 @@ _INVARIANTS = {
     # simply never rendered, and a coverage audit reading this map would
     # conclude I8 did not exist.
     "I8": "masked cursor-field types read the LOCAL pointer pair and opt out of participants",
+    # ADDED 2026-08-27. The motion registry (class-sgs-motion-registry.php) is the runtime
+    # source of truth for which effect modules exist. An effect in the registry but absent
+    # from SHIPPED_EFFECTS is unreachable from the editor; an effect in SHIPPED_EFFECTS
+    # but not in the registry cannot load at runtime.
+    "I9": "the motion registry (@sgs/fx-* modules) agrees with SHIPPED_EFFECTS (editor)",
 }
 
 
@@ -882,6 +999,25 @@ _CASES = (
         "		transparent 70%\n"
         "	);",
     ),
+    _Case(
+        # I9 leg 1: register an effect in the motion registry that is NOT in SHIPPED_EFFECTS.
+        # The module exists and can load, but the editor never offers it — the effect is
+        # configured, enqueued and unreachable, matching the shape of I1 cursor-field.
+        "I9", "register an effect in the motion registry not in SHIPPED_EFFECTS",
+        "motion_registry_php",
+        pattern=r"('@sgs/fx-image-sequence'\s*=>\s*array\([^)]*\),)",
+        replacement=r"\g<1>\n\t\t\t'@sgs/fx-selftest-unshipped' => array(\n\t\t\t\t'path' => 'build/shared/effects/gsap/fx-selftest-unshipped.js',\n\t\t\t\t'deps' => array( '@sgs/motion-provider' ),\n\t\t\t),",
+    ),
+    _Case(
+        # I9 leg 2: have an effect in SHIPPED_EFFECTS that is NOT in the motion registry.
+        # The editor offers it, but the runtime has no module to load — when the client
+        # applies it, nothing happens. The page looks correct (the block renders) and
+        # the effect looks applied (the inspector shows the fx attribute), but does nothing.
+        "I9", "have an effect in SHIPPED_EFFECTS not registered in motion registry",
+        "fx_js",
+        "\t'wave-gradient',\n",
+        "\t'wave-gradient',\n\t'selftest-unregistered',\n",
+    ),
 )
 
 
@@ -904,6 +1040,7 @@ def _self_test() -> int:
             # copyfile. Its own subdir name so copytree doesn't collide with the
             # other flat-copied files sharing `root`.
             surface_treatment_frag_dir=root / "surface-treatments",
+            motion_registry_php=root / "class-sgs-motion-registry.php",
         )
         pristine: dict[str, str] = {}
         for field in temp.__dataclass_fields__:
