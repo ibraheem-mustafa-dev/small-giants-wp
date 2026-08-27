@@ -61,6 +61,26 @@ constructs. The first emits 13 `vendor-modules/${name}` GSAP PLUGIN entries, whi
 effects. A parser keying on `Object.fromEntries` alone swallows the wrong 13. Everything
 here anchors on the `shared/effects/` entry-name prefix instead.
 
+A FOURTH REGISTRATION SURFACE, ADDED 2026-08-26 (R5) - found investigating a stale "editor
+console error" note in decisions.md D427 that turned out to already be fixed in source, but
+which the three rules above could never have caught either way, before or after the fix.
+----------------------------------------------------------------------------------------
+R1-R4 cover the SHARED registry (`class-sgs-motion-registry.php` + `webpack.config.js`).
+Two blocks - `before-after` and `testimonial-slider` - ALSO perform their OWN dynamic
+`import( '@sgs/...' )` inside `view.js`, independent of the registry, to lazy-load an
+externalised GSAP module. Webpack's `externalsType: 'module'` marks every externalised
+specifier `buildMeta.async = false` regardless of whether the call site is a dynamic
+`import()` or a static `import`, so an unmarked dynamic import silently COLLAPSES at build
+time into an eagerly-resolved import - module linking happens before any runtime guard
+(`isEditorSurface()`, a feature flag, anything) can run, and the specifier fails to resolve
+in any context lacking that module in its import map (e.g. wp-admin, where
+`SGS_Motion_Registry` deliberately never registers Tier G modules). The ONE documented fix
+is the `/* webpackIgnore: true */` pragma immediately before the string literal, which
+keeps the import genuinely dynamic and lets the guard around the call site actually work.
+R1-R4 have no visibility into per-block `view.js` files at all, so a THIRD block copying
+this dynamic-import pattern without the pragma would ship a guard that never worked and
+nothing here would say so.
+
 Run: python plugins/sgs-blocks/scripts/check-fx-registration.py
      python plugins/sgs-blocks/scripts/check-fx-registration.py --self-test
 """
@@ -164,6 +184,9 @@ class Tree:
     root: Path
     registry_php: str
     webpack_js: str
+    # R5's self-test override: {view.js Path -> perturbed text}, read INSTEAD of disk
+    # when a path is a key here. None everywhere else, so real runs never consult it.
+    view_js_overrides: "dict[Path, str] | None" = None
 
     @property
     def registry_path(self) -> Path:
@@ -172,6 +195,22 @@ class Tree:
     @property
     def webpack_path(self) -> Path:
         return self.root / "webpack.config.js"
+
+    @property
+    def view_js_paths(self) -> list[Path]:
+        """Every block `view.js` on disk - R5's corpus. Not cached as text like the
+        other two files because R5 needs to name the OFFENDING FILE per violation, not
+        just fail one shared blob; a self-test perturbing "the" view.js text would have
+        no single file to perturb."""
+        blocks_dir = self.root / "src" / "blocks"
+        if not blocks_dir.is_dir():
+            return []
+        return sorted(blocks_dir.glob("*/view.js"))
+
+    def read_view_js(self, path: Path) -> str:
+        if self.view_js_overrides and path in self.view_js_overrides:
+            return self.view_js_overrides[path]
+        return path.read_text(encoding="utf-8")
 
     @staticmethod
     def load(root: Path = _PLUGIN_ROOT) -> "Tree":
@@ -357,6 +396,167 @@ def parse_effect_styles(tree: Tree) -> dict[str, str]:
     return rows
 
 
+# ---------------------------------------------------------------------------
+# Target 4 (R5) - per-block view.js dynamic imports of an externalised @sgs/ module.
+# ---------------------------------------------------------------------------
+
+# A dynamic `import(...)` whose sole string-literal argument is an `@sgs/`-prefixed
+# specifier. Captures the leading comment slot (group 1) separately from the specifier
+# (group 2) so a present-but-wrong pragma (typo, `webpackIgnore: false`) is distinguishable
+# from an absent one.
+_SGS_DYNAMIC_IMPORT_RE = re.compile(
+    r"import\(\s*(/\*.*?\*/\s*)?['\"](@sgs/[a-z0-9-]+)['\"]\s*\)", re.DOTALL
+)
+_WEBPACK_IGNORE_RE = re.compile(r"/\*\s*webpackIgnore\s*:\s*true\s*\*/")
+
+
+@dataclass(frozen=True)
+class DynamicImportSite:
+    file: Path
+    specifier: str
+    has_ignore_pragma: bool
+
+
+def parse_view_js_dynamic_imports(tree: Tree) -> list[DynamicImportSite]:
+    """Every `import( '@sgs/...' )` call site across `src/blocks/*/view.js`.
+
+    Reads each file fresh rather than relying on a cached blob (unlike registry_php/
+    webpack_js) because a violation must name the OFFENDING FILE, and because new blocks
+    are added to this corpus over time - caching it in the dataclass would go stale the
+    moment a block gains its own view.js.
+
+    Matched against the RAW file text - deliberately NOT comment-stripped first. A
+    generic `/\\*.*?\\*/` stripper is unsound on THIS EXACT CORPUS: `before-after/view.js`
+    documents this very bug in a `//` line comment that quotes the code path as
+    `` `gsap/*` `` -\\> \\`@sgs/gsap-*\\` `` - those two backtick-quoted characters are a
+    literal `/*`, so a naive stripper opens a false comment there and silently swallows
+    everything up to the next real `*/`, which turned out to be the ACTUAL pragma this
+    rule exists to find. Anchoring tightly on `import(` immediately before the optional
+    comment and `)` immediately after the specifier avoids the whole hazard: nothing
+    elsewhere in the file can match this shape by accident.
+    """
+    sites: list[DynamicImportSite] = []
+    for path in tree.view_js_paths:
+        text = tree.read_view_js(path)
+        for match in _SGS_DYNAMIC_IMPORT_RE.finditer(text):
+            pragma_slot, specifier = match.group(1), match.group(2)
+            sites.append(
+                DynamicImportSite(
+                    file=path,
+                    specifier=specifier,
+                    has_ignore_pragma=bool(
+                        pragma_slot and _WEBPACK_IGNORE_RE.search(pragma_slot)
+                    ),
+                )
+            )
+    return sites
+
+
+# ---------------------------------------------------------------------------
+# Target 5 (R6) - a block's own view.js statically importing a bare `@sgs/`
+# specifier, added 2026-08-27 (D-branch4).
+#
+# Distinct from R5 above: R5 covers a DYNAMIC `import('@sgs/...')` written directly in
+# SOURCE. This is a STATIC `import ... from '...'` - possibly a `gsap/Xyz` alias, not
+# necessarily an `@sgs/` literal in source - that webpack's `GSAP_MODULE_IDS` map
+# (webpack.config.js) resolves to a bare `@sgs/...` specifier at build time. Reading
+# BUILT view.js was tried first and rejected: `check-fx-registration` runs in the
+# PRE-webpack gate chain (`scripts/gates.json`, tier "fast"), after the `clean-build`
+# generator step deletes `build/` and before webpack ever repopulates it - so any rule
+# that requires `build/` to exist would raise VacuousParse on every fresh checkout and
+# on the very build that is supposed to prove this rule right. `GSAP_MODULE_IDS` is a
+# small, flat object literal in webpack.config.js and is parseable from source with the
+# same confidence R1-R4 already place in that file, so translating the alias here
+# (rather than reading the compiled output) keeps this rule genuinely pre-build.
+#
+# WHY THIS IS A DISTINCT FAILURE FROM R1-R5: a static bare-specifier import needs an
+# IMPORT MAP entry to resolve (unlike a `<script src>` tag, which fetches by URL and
+# needs no map entry for itself). WP core's `WP_Script_Modules::get_import_map()`
+# deliberately excludes QUEUE members from the map ("they get printed as scripts") and
+# includes only their registered DEPENDENCIES - so a block's OWN viewScriptModule
+# (auto-registered by WP core from `view.asset.php`'s 'dependencies' key) must declare
+# every bare `@sgs/*` specifier it imports, or those entries never reach the map at all,
+# regardless of whether the underlying module is separately enqueued elsewhere. There is
+# no need to read `view.asset.php` itself to know this: `view.asset.php` is generated by
+# @wordpress/dependency-extraction-webpack-plugin, which only ever recognises
+# `@wordpress/*` externals - it is a tooling limitation, not a per-block fact, so its
+# 'dependencies' key is ALWAYS `array()` for every block regardless of what that block's
+# view.js imports. The only working fix shape is a compensating
+# `wp_register_script_module()` call for that exact view module id, registered BEFORE WP
+# core's own auto-registration (`init` priority below 10; core's own runs at the default
+# priority 10 from `SGS_Blocks::register_blocks()`) - core's registration is a NO-OP once
+# the id already exists, so anything correcting the deps AFTER core's own call (e.g. from
+# render.php, at render time) can never take effect. Proven live on the canary
+# 2026-08-27: an attempt to do exactly that shipped, deployed, purged both cache layers,
+# and changed nothing; moving the same call to
+# `SGS_Motion_Registry::preregister_physics_canvas_deps()` on `init` priority 5 is what
+# actually fixed it.
+#
+# Floor of 1 driver, not the usual higher floor: today only ONE block (physics-canvas)
+# has this pattern. A floor of 1 still catches the parse going vacuous (0 found) without
+# demanding a count this corpus does not have yet.
+# ---------------------------------------------------------------------------
+
+# `gsap: '@sgs/gsap',` (bare identifier key) plus every `'gsap/Xyz': '@sgs/...'` /
+# `'@sgs/motion-provider': '@sgs/motion-provider'` quoted-key row.
+_GSAP_MODULE_IDS_RE = re.compile(
+    r"^\s*(?:'([^']+)'|([A-Za-z_$][A-Za-z0-9_$]*))\s*:\s*'(@sgs/[a-z0-9-]+)'\s*,",
+    re.MULTILINE,
+)
+_STATIC_IMPORT_RE = re.compile(r"import\s+[^;'\"]*?\s+from\s+['\"]([^'\"]+)['\"]")
+_REGISTER_SCRIPT_MODULE_CALL_RE = re.compile(
+    r"wp_register_script_module\(\s*'([^']+)'\s*,[^,]*,\s*array\(([^)]*)\)",
+    re.DOTALL,
+)
+
+
+def parse_gsap_module_ids(tree: Tree) -> dict[str, str]:
+    """source specifier (e.g. `gsap/Draggable`, bare `gsap`) -> the bare `@sgs/...`
+    specifier webpack's externals resolver rewrites it to, from `GSAP_MODULE_IDS` in
+    webpack.config.js."""
+    path = tree.webpack_path
+    body = _block_after(
+        tree.webpack_js,
+        r"const\s+GSAP_MODULE_IDS\s*=\s*\{",
+        "{", "}", path, "GSAP_MODULE_IDS",
+    )
+    mapping: dict[str, str] = {}
+    for quoted_key, bare_key, target in _GSAP_MODULE_IDS_RE.findall(body):
+        mapping[quoted_key or bare_key] = target
+    _floor(mapping, 8, path, "the GSAP_MODULE_IDS source -> @sgs/* specifier map")
+    return mapping
+
+
+def parse_view_js_static_bare_imports(tree: Tree) -> dict[str, set[str]]:
+    """block-relative view.js SOURCE path -> the bare `@sgs/*` specifiers it statically
+    imports, resolved through GSAP_MODULE_IDS where the import is an aliased `gsap/Xyz`
+    path rather than an `@sgs/...` literal already."""
+    module_ids = parse_gsap_module_ids(tree)
+    result: dict[str, set[str]] = {}
+    for view_js in tree.view_js_paths:
+        text = tree.read_view_js(view_js)
+        specifiers: set[str] = set()
+        for spec in _STATIC_IMPORT_RE.findall(text):
+            if spec.startswith("@sgs/"):
+                specifiers.add(spec)
+            elif spec in module_ids:
+                specifiers.add(module_ids[spec])
+        if specifiers:
+            result[view_js.relative_to(tree.root).as_posix()] = specifiers
+    _floor(result, 1, tree.root / "src" / "blocks", "view.js files with a static bare @sgs/* import")
+    return result
+
+
+def parse_preregistered_deps(tree: Tree) -> dict[str, set[str]]:
+    """module id -> declared deps, for every `wp_register_script_module()` CALL SITE
+    in `class-sgs-motion-registry.php` (not the MODULES const array R1/R2/R4 already
+    cover - a genuine PHP function call, e.g. `preregister_physics_canvas_deps()`)."""
+    return {
+        module_id: set(re.findall(r"'([^']+)'", deps_body))
+        for module_id, deps_body in _REGISTER_SCRIPT_MODULE_CALL_RE.findall(tree.registry_php)
+    }
+
+
 def css_files_on_disk(tree: Tree) -> set[str]:
     """The `assets/css/fx-*.css` files that exist, as plugin-root-relative paths."""
     directory = tree.root / "assets" / "css"
@@ -384,6 +584,8 @@ _RULES = {
     "R2": "every fx module has a webpack entry named for its source tier",
     "R3": "EFFECT_STYLES rows name real effects and real files, and no fx-*.css is orphaned",
     "R4": "no MODULES row or shared/effects webpack entry points at a missing source file",
+    "R5": "every view.js dynamic import( '@sgs/...' ) carries the webpackIgnore pragma",
+    "R6": "every built view.js static bare @sgs/* import is a declared dependency somewhere",
 }
 
 
@@ -393,6 +595,16 @@ def evaluate(tree: Tree) -> list[Violation]:
     entries = parse_webpack_entries(tree)
     styles = parse_effect_styles(tree)
     css_on_disk = css_files_on_disk(tree)
+    dynamic_import_sites = parse_view_js_dynamic_imports(tree)
+    # Floor of 2, not 1: today's two known call sites (before-after, testimonial-slider).
+    # A parse that suddenly finds 0 or 1 has lost the construct, not proven the tree
+    # clean - same "the parser must not pass vacuously" discipline R1-R4 already apply.
+    _floor(
+        dynamic_import_sites, 2,
+        tree.root / "src" / "blocks", "view.js dynamic import('@sgs/...') call sites",
+    )
+    static_bare_imports = parse_view_js_static_bare_imports(tree)
+    preregistered_deps = parse_preregistered_deps(tree)
 
     violations: list[Violation] = []
 
@@ -520,6 +732,60 @@ def evaluate(tree: Tree) -> list[Violation]:
                 "webpack.config.js.",
             ))
 
+    # ---- R5: view.js dynamic imports of an externalised @sgs/ module --------
+    for site in dynamic_import_sites:
+        if site.has_ignore_pragma:
+            continue
+        rel = site.file.relative_to(tree.root).as_posix()
+        violations.append(Violation(
+            "R5",
+            f"`{rel}` calls `import( '{site.specifier}' )` with no `/* webpackIgnore: "
+            "true */` pragma. webpack's `externalsType: 'module'` marks EVERY "
+            "externalised specifier non-async regardless of call site, so this "
+            "dynamic import silently collapses into an eagerly-resolved one at build "
+            "time - module linking happens before any runtime guard around the call "
+            "site (an editor check, a feature flag, a try/catch) can run. In any "
+            "context where the registry does not register this module (wp-admin, "
+            "chiefly - SGS_Motion_Registry only ever registers on the frontend), the "
+            "browser throws an uncaught 'Failed to resolve module specifier "
+            f"\"{site.specifier}\"' the moment this file is evaluated, whether or not "
+            "the guarded code path is ever reached.",
+            f"Add `/* webpackIgnore: true */` immediately before the "
+            f"'{site.specifier}' string literal in `{rel}` (see "
+            "`before-after/view.js`'s `bootDraggableLayer` or "
+            "`testimonial-slider/view.js`'s momentum loader for the pattern).",
+        ))
+
+    # ---- R6: view.js static bare @sgs/* imports must resolve ----------------
+    for view_js_rel, specifiers in sorted(static_bare_imports.items()):
+        block_dir = view_js_rel.split("/")[2]  # src/blocks/<dir>/view.js
+        module_id = f"sgs-{block_dir}-view-script-module"
+        covering_deps = preregistered_deps.get(module_id, set())
+        missing = sorted(specifiers - covering_deps)
+        for specifier in missing:
+            violations.append(Violation(
+                "R6",
+                f"`{view_js_rel}` statically imports `{specifier}` (directly, or via a "
+                "webpack-aliased `gsap/Xyz` path resolved through GSAP_MODULE_IDS), but "
+                f"no `wp_register_script_module( '{module_id}', ... )` call in "
+                "`class-sgs-motion-registry.php` declares it as a dependency. Its "
+                "auto-registered `view.asset.php` 'dependencies' key is ALWAYS empty "
+                "for this specifier - @wordpress/dependency-extraction-webpack-plugin "
+                "never recognises `@sgs/*` externals - so `WP_Script_Modules::"
+                "get_import_map()` (which excludes QUEUE members from the import map "
+                "and includes only their registered DEPENDENCIES) has no import-map "
+                "entry to resolve this specifier against, and the browser throws "
+                f"'Failed to resolve module specifier \"{specifier}\"' the moment "
+                "this module evaluates - even if the underlying module is separately "
+                "enqueued elsewhere on the same page.",
+                f"Add a `wp_register_script_module( '{module_id}', ..., array( "
+                f"'{specifier}', ... ) )` call hooked to `init` at a priority BELOW 10 "
+                "in `class-sgs-motion-registry.php::register()` (core's own "
+                "auto-registration runs at the default priority 10 and is a no-op "
+                "once the id already exists, so this must register FIRST) - see "
+                "`preregister_physics_canvas_deps()` for the pattern.",
+            ))
+
     return violations
 
 
@@ -629,6 +895,25 @@ _CASES = (
         r"\1 'deps' => array(), ),\n\t\t'@sgs/fx-ghost' => array( 'path' => "
         r"'build/shared/effects/fx-ghost.js',",
     ),
+    _Case(
+        # field="view_js:<relative path>" - a third field shape only R5 recognises,
+        # perturbing Tree.view_js_overrides instead of a registry_php/webpack_js blob.
+        "R5", "strip the webpackIgnore pragma from before-after's gsap-draggable import",
+        "view_js:before-after/view.js",
+        r"/\*\s*webpackIgnore:\s*true\s*\*/\s*(['\"]@sgs/gsap-draggable['\"])",
+        r"\1",
+    ),
+    _Case(
+        # Drops '@sgs/gsap-inertia' from preregister_physics_canvas_deps()'s deps
+        # array - the exact live regression this rule exists to catch (D-branch4,
+        # 2026-08-27). physics-canvas/view.js's BUILT file still imports it; nothing
+        # else declares it as a dependency of the view module once this row is gone.
+        "R6", "drop @sgs/gsap-inertia from preregister_physics_canvas_deps()'s deps",
+        "registry_php",
+        r"array\( '@sgs/motion-provider', '@sgs/gsap-draggable', '@sgs/gsap-inertia', "
+        r"'@sgs/gsap-physics2d' \)",
+        "array( '@sgs/motion-provider', '@sgs/gsap-draggable', '@sgs/gsap-physics2d' )",
+    ),
     # ---- blindness: each construct blanked in turn ----------------------------
     _Case(
         "VACUOUS", "rename MODULES so its parse matches nothing",
@@ -689,7 +974,16 @@ def _self_test() -> int:
           f"{len(entries)} shared/effects entries, {len(styles)} EFFECT_STYLES rows)")
 
     for index, case in enumerate(_CASES, start=1):
-        before = getattr(clean, case.field)
+        # "view_js:<relative path>" is a synthetic field only R5 uses: it perturbs ONE
+        # named file inside Tree.view_js_overrides rather than one of the two cached
+        # text blobs, because R5's corpus is "every view.js on disk", not a single file.
+        is_view_js_case = case.field.startswith("view_js:")
+        if is_view_js_case:
+            rel = case.field[len("view_js:"):]
+            target_path = clean.root / "src" / "blocks" / rel
+            before = target_path.read_text(encoding="utf-8")
+        else:
+            before = getattr(clean, case.field)
         after = case.apply(before)
         if after is None:
             failures.append(f"{case.rule}/{case.label}")
@@ -699,7 +993,10 @@ def _self_test() -> int:
                   "Update the anchor in _CASES.")
             continue
 
-        broken = replace(clean, **{case.field: after})
+        if is_view_js_case:
+            broken = replace(clean, view_js_overrides={target_path: after})
+        else:
+            broken = replace(clean, **{case.field: after})
         if case.rule == "VACUOUS":
             try:
                 evaluate(broken)

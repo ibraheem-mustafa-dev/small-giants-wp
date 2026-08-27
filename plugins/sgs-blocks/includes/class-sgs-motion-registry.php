@@ -515,6 +515,26 @@ class SGS_Motion_Registry {
 	 * @return void
 	 */
 	public static function register(): void {
+		/*
+		 * Priority 5 — MUST run before `SGS_Blocks::register_blocks()` (`init`,
+		 * default priority 10, `includes/class-sgs-blocks.php:24`), which is
+		 * where WP core's `register_block_script_module_id()`
+		 * (wp-includes/blocks.php) auto-registers `sgs-physics-canvas-view-
+		 * script-module` from `view.asset.php`. That file's 'dependencies' key
+		 * is always `array()` — @wordpress/dependency-extraction-webpack-plugin
+		 * only recognises `@wordpress/*` externals, never this project's
+		 * `@sgs/*` ones — so the auto-registration always carries empty deps,
+		 * even though `view.js` statically imports four bare `@sgs/*`
+		 * specifiers. `WP_Script_Modules::register()` is a NO-OP once an id is
+		 * already registered (`if ( ! isset( $this->registered[$id] ) )`,
+		 * wp-includes/class-wp-script-modules.php:139) — so correcting the
+		 * deps AFTER core's own registration (e.g. from
+		 * `physics-canvas/render.php` at render time, tried and proven dead
+		 * live 2026-08-27) can never take effect. Registering FIRST, at a
+		 * lower priority number, is the only point where this is fixable: core
+		 * then finds the id already registered and silently keeps these deps.
+		 */
+		\add_action( 'init', array( __CLASS__, 'preregister_physics_canvas_deps' ), 5 );
 		\add_action( 'init', array( __CLASS__, 'register_modules' ) );
 		\add_filter( 'render_block', array( __CLASS__, 'sniff_block' ), 99, 2 );
 
@@ -895,6 +915,62 @@ class SGS_Motion_Registry {
 				self::asset_version( $module['path'] )
 			);
 		}
+	}
+
+	/**
+	 * Correct the auto-registered physics-canvas view module's dependency
+	 * graph, before WP core auto-registers it with none.
+	 *
+	 * `sgs/physics-canvas`'s built `view.js` statically imports four bare
+	 * `@sgs/*` specifiers (`@sgs/motion-provider`, `@sgs/gsap-draggable`,
+	 * `@sgs/gsap-inertia`, `@sgs/gsap-physics2d` — verified against the built
+	 * file). WP core auto-registers this block's `viewScriptModule` handle
+	 * (id `sgs-physics-canvas-view-script-module`, per
+	 * `generate_block_asset_handle()`) from `view.asset.php`'s
+	 * `'dependencies'` key — always `array()` here, because
+	 * `@wordpress/dependency-extraction-webpack-plugin` only recognises
+	 * `@wordpress/*` externals, never this project's `@sgs/*` ones.
+	 *
+	 * `WP_Script_Modules::get_import_map()` deliberately excludes QUEUE
+	 * members from the printed import map ("they get printed as scripts") and
+	 * includes only their registered DEPENDENCIES. So with an empty deps
+	 * array, none of the four specifiers `view.js` imports ever reach the
+	 * browser's import map — even though `physics-canvas/render.php`
+	 * explicitly enqueues all four as separate top-level modules (a
+	 * `<script type="module" src="…">` tag is printed for each, but that does
+	 * not help resolve a BARE-specifier `import` statement inside another
+	 * module). The browser throws "Failed to resolve module specifier" on the
+	 * first one `view.js` imports — confirmed live on the canary,
+	 * `/tier-fixture-maxwidth/`, 2026-08-27.
+	 *
+	 * This must run BEFORE WP core's own auto-registration
+	 * (`register_block_script_module_id()`, called from
+	 * `SGS_Blocks::register_blocks()`, `init` priority 10):
+	 * `WP_Script_Modules::register()` is a no-op once an id is already
+	 * registered, so correcting these deps AFTER core's registration can
+	 * never take effect — proven live: an earlier attempt to call
+	 * `wp_register_script_module()` again from `render.php` at render time
+	 * shipped, deployed, purged both cache layers, and changed nothing.
+	 *
+	 * @return void
+	 */
+	public static function preregister_physics_canvas_deps(): void {
+		$view_path = 'build/blocks/physics-canvas/view.js';
+		$file      = SGS_BLOCKS_PATH . $view_path;
+		if ( ! \file_exists( $file ) ) {
+			// The build did not produce this file — nothing to pre-register.
+			// WP core's own registration will run next and find no file
+			// either, so this mirrors register_modules()'s own skip-quietly
+			// behaviour rather than introducing a new failure mode.
+			return;
+		}
+
+		\wp_register_script_module(
+			'sgs-physics-canvas-view-script-module',
+			SGS_BLOCKS_URL . $view_path,
+			array( '@sgs/motion-provider', '@sgs/gsap-draggable', '@sgs/gsap-inertia', '@sgs/gsap-physics2d' ),
+			self::asset_version( $view_path )
+		);
 	}
 
 	/**

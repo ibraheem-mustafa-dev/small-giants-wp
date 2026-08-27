@@ -183,6 +183,13 @@ if ( '' !== $sgs_ps_supports_css ) {
 $sgs_ps_is_frontend = ! function_exists( 'SGS\\Blocks\\sgs_is_frontend_render' ) || \SGS\Blocks\sgs_is_frontend_render();
 
 if ( $sgs_ps_is_frontend && trim( $content ) !== '' ) {
+	// The view module's dependency graph (needed so its bare `@sgs/*`
+	// imports resolve via the browser's import map) is corrected in
+	// SGS_Motion_Registry::preregister_physics_canvas_deps() — it MUST run
+	// before WP core auto-registers this block's viewScriptModule handle
+	// (init priority 10), so it cannot live here: render.php only runs at
+	// render time, long after every `init` hook has already fired, and
+	// WP_Script_Modules::register() is a no-op once an id is registered.
 	wp_enqueue_script_module( '@sgs/gsap' );
 	wp_enqueue_script_module( '@sgs/motion-provider' );
 	wp_enqueue_script_module( '@sgs/gsap-draggable' );
