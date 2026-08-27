@@ -1147,6 +1147,67 @@ def tier_object_base(block_slug: str, attr_name: str) -> bool:
 
 
 @functools.lru_cache(maxsize=1024)
+def content_order_attr_for(block_slug: str) -> "str | None":
+    """The block's MEDIA/CONTENT area-order tier-object attr, or None.
+
+    A 2-region split composite (hero-shaped) declares ``grid-template-areas``
+    on its own root — a PRE-LAYER GRID concern (dispatch_table.py
+    ``_GRID_LAYOUT_PROPS``) — that swaps row/column order between device
+    tiers (e.g. mobile: media above content; desktop: content beside media).
+    That swap is a semantically DIFFERENT destination from
+    ``grid-template-columns``/``grid-template-rows``: it stores which region
+    reads first, not a track template.
+
+    DB-driven (R-31-1 — no per-block name literal): a block is eligible ONLY
+    when BOTH hold —
+      1. it declares GRID_AREA-layer attrs for BOTH a ``media`` and a
+         ``content`` ``css_element`` (the area-name vocabulary this block's
+         own schema already uses for its two split regions, e.g.
+         ``mediaBackground``/``contentBackground``); AND
+      2. it declares exactly one ``object``-typed attr whose
+         ``default_value`` JSON contains the literal enum member
+         ``"media-first"`` — the destination the order swap writes into.
+    Two or more candidate attrs → treated as none (ambiguous, honest gap
+    upstream) rather than a silent rowid pick, matching
+    ``attr_for_area_property``'s ambiguity discipline.
+
+    ⚠ Condition 2 keys on ``default_value`` (a schema DEFAULT), not a
+    declared enum column — there is no ``enum_values`` row for
+    ``splitContentOrder`` to key on instead (verified: NULL in
+    ``block_attributes`` at the time this was written). This is fragile if
+    a block's default ever changes shape (e.g. normalises to ``{}``) —
+    if this stops matching, re-point to the block's declared enum
+    (``enum_values`` on the attr, or its block.json ``enum``) rather than
+    silently deleting the eligibility check or the premise test that
+    pins it (``test_premise_hero_resolves_to_split_content_order``).
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        area_rows = conn.execute(
+            "SELECT DISTINCT css_element FROM block_attributes "
+            "WHERE block_slug = ? AND css_layer = 'GRID_AREA' "
+            "AND css_element IN ('media', 'content')",
+            (block_slug,),
+        ).fetchall()
+        area_tokens = {r[0] for r in area_rows}
+        if not {"media", "content"} <= area_tokens:
+            return None
+
+        candidates = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND attr_type = 'object' "
+            "AND default_value LIKE '%\"media-first\"%'",
+            (block_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+
+    if len(candidates) != 1:
+        return None
+    return candidates[0][0]
+
+
+@functools.lru_cache(maxsize=1024)
 def attr_is_boolean(block_slug: str, attr_name: str) -> bool:
     """True iff the block declares ``attr_name`` with ``attr_type='boolean'``.
 
