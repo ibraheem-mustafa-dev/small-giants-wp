@@ -134,16 +134,16 @@ decide. Detail single-sourced to **D805-D812** — do not restate.
 ✅ **CLOSED (D818):** taught `inspector-scan` rule 21 to expand `*AttrKeys()` — 3 rules, each
    with a watched-failing overmatch fixture. Rule 21 holds at 82 (unchanged before/after), hero's
    3 gradient mounts re-adopted for real. Control-programme roll-out now unblocked.
-🔶 **PARTIAL = DESIGN GATE B (D821):** ~42 of ~67 mounts adopted `SgsLengthControl` (5 parallel
-   groups). Component had NO prop-spread — dropped `help`/`placeholder`/`hideLabelFromVision`
-   silently; 2 groups shipped a live regression (visible duplicate labels) before catching it.
-   FIXED at the component + all 12 affected call sites restored, verified via full build. **STILL
-   OPEN:** ~25 mounts Groups 4/5 correctly left as raw `UnitControl` (now unblocked by the fix,
-   not yet swapped — deliberate stopping point, not forgotten) + 1 permanent skip
-   (`gridItemBorder`, shorthand-string). Next: sweep the remaining ~25, then check each attr's
-   slug-vs-length typing (D338) before turning `presets={true}` on anywhere. Bean ruled adopt
-   everywhere (shape-aware: plain-scalar / tier-wrapped / shorthand-string need different
-   handling) — implementation (Wave 2 of the two-design-gates plan) not yet started.
+✅ **CLOSED = DESIGN GATE B (D821/D825).** All ~67 mounts adopted `SgsLengthControl` except 1
+   deliberate permanent skip (`gridItemBorder`, shorthand-string, not the component's shape).
+   Component had NO prop-spread — dropped `help`/`placeholder`/`hideLabelFromVision` silently; 2
+   of 5 parallel groups shipped a live regression before catching it; fixed at the component, all
+   affected call sites restored verbatim. Live-verified on the canary: `cta-section`'s hover
+   zoom+grayscale (real transform/filter change, headline text untouched) and the toggle
+   withdrawal on `pricing-table`/`google-reviews` (class never emits even with stray attrs=true).
+   Editor-UI prop restoration verified at code+build level, not a live screenshot — standard
+   WP-native prop forwarding, judged not to need it. `presets={true}` typing check (D338) is
+   DEFERRED, not urgent — confirmed zero mounts anywhere currently use it, so no live risk exists.
 ✅ **CLOSED (D819):** the enum gate now measures RENDERED LABELS, not slugs — the slug proxy was
    overcounting violations nearly 2x (85 → 45 real). 156 unresolvable cases explicitly skipped
    with a reason, never silently compliant. Spec 35 §3 updated.

@@ -1,3 +1,54 @@
+## D825 [ROUTINE] — Design Gate B closed: the remaining 25 SgsLengthControl mounts adopted, canary-verified on the live deploy
+
+**2026-08-27.** `product-card`, `media`, `button`, `trust-bar`, `info-box`, container's
+`WidthPanel`/`LayoutPanel`/`BackgroundPanel`, `before-after`, `responsive-logo`, `separator`,
+`product-faq`, `notice-banner`, `team-member`. Follow-up to D821, dispatched as 2 parallel groups
+now that the component fix was verified.
+
+**All 25 mounts swapped, every original `help`/`placeholder`/`hideLabelFromVision`/`style` prop
+preserved verbatim** — each group read the exact JSX before editing rather than trusting the
+dispatch brief's line-number estimates (both groups independently caught the brief's line numbers
+had drifted and re-located each mount by reading the file). `GridItemDefaultsPanel.js`'s
+`gridItemBorder` mount confirmed still raw `UnitControl` — the one permanent skip (shorthand-string
+value, not `SgsLengthControl`'s single value/onChange shape). **Gate B is now complete: 0 raw
+`UnitControl` mounts remain across the ~67-mount population except that one deliberate skip.**
+
+**Deployed to the canary via an isolated worktree**, separate from the shared main tree (which had
+other concurrent sessions' dirty files all session). Two worktree-setup gaps fixed along the way,
+neither a real code defect: `vendor/` (PHPStan stubs, gitignored) missing in a fresh worktree —
+`composer install` run via a hardlinked `composer.phar`; and `css-property-classifications.json`
+(tracked, but another session had 85 new classifications sitting uncommitted in the main tree) —
+bridged by copying the current file in before building.
+
+**One genuine cross-tool gap found and fixed during deploy, not baselined blind:**
+`audit-block-file-consistency.py` flagged `hero`'s `mediaOverlayGradient`/`mediaBackgroundGradient`
+as orphaned — it was never taught the `gradientOverlayAttrKeys()` derivation rule that
+`inspector-scan` rule 21 already learned at D810/D818. Confirmed both are genuinely controlled
+(rule 21 holds at 82, unchanged) before baselining with the real reason, not the generic template
+text.
+
+**Live-verified on the canary, not just build-time:** `cta-section`'s hover zoom+grayscale, tested
+against a purpose-built page with a real `backgroundMedia` object (first attempt used wrong
+attribute names — `backgroundMediaId`/`backgroundMediaUrl` — caught before trusting the result by
+reading `block.json`/`render.php` first; corrected to the real `backgroundMedia:{url,type,id,alt,
+mime}` shape). Confirmed live: `::before` transform and filter genuinely change on hover, headline
+text `filter:none` unaffected in both states. Toggle withdrawal confirmed live on `pricing-table`/
+`google-reviews` (stray `sgsHoverImageZoom`/`sgsHoverGrayscale` attrs set true, class never
+emitted) — `whatsapp-cta` confirmed only at the function level (Branch 1's own harness), its test
+markup didn't render standalone and wasn't chased further. Test pages deleted after verification.
+
+⚠ **Gate B's editor-UI prop-restoration (the D821 fix) was verified at the code + full-build
+level, not via a live editor screenshot** — distinguished honestly from the CSS mechanism above,
+which needed and got live proof. `hideLabelFromVision`/`help` forwarding is a standard WP-native
+prop pattern, not novel code; the tradeoff was judged reasonable given the session's scope.
+
+**Still open, deliberately not addressed this session:** slug-vs-length typing check before turning
+`presets={true}` on anywhere (D338 risk) — moot for now, confirmed **zero** mounts anywhere use
+`presets={true}`, so no live risk exists; this is readiness work for whenever that gets turned on,
+not active debt.
+
+---
+
 ## D821 [INCIDENT] — Design Gate B's mechanical swap wasn't mechanical: SgsLengthControl had no prop-spread, and 2 of 5 parallel groups shipped a live regression before the pattern was caught
 
 **2026-08-27.** `SgsLengthControl.js`, `quote/edit.js`, `mega-panel/edit.js`, `option-picker/edit.js`,
