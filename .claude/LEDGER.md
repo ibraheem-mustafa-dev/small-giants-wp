@@ -287,7 +287,7 @@ with a plain-English reason. Frontend byte-identical before/after with a positiv
 (`media_sizing` ×8 in the DEPLOYED render.php) — so "unchanged" is not a failed deploy.
 
 ### ⛔ TWO THINGS THAT BLOCK ANY ROLLOUT
-1. **No migration script exists** for C16 (51 blocks) or C19 (5). The house pattern is
+1. **No migration script exists** for C16 (48 blocks) or C19 (5). The house pattern is
    `scripts/migrate-*.py`; neither has one.
 2. **`detector-first-commit-gate.py` DENIES** 4+ files with substantially the same change and
    no detector. Both rollouts cross that line on their first wave. Detector first, then sweep.
@@ -295,7 +295,7 @@ with a plain-English reason. Frontend byte-identical before/after with a positiv
    `presets` flows through `ResponsiveBoxControl` — so the sweep is a one-line flip per block.
 
 ### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
-Root-caused: **three causes, not one bug** (`reports/2026-08-27-null-css-element-root-cause.md`).
+Root-caused: **three causes, not one bug** (`.claude/reports/2026-08-27-null-css-element-root-cause.md`).
 (A) `sgs_emit_state_colour_css()` — 21 files — is unregistered in the classifier's helper
 allowlist. (B) a selector held in a PHP variable and used later is untraced. (C) genuinely
 root-scoped declarations find no element and nothing turns that into a positive `wrapper`.
@@ -311,6 +311,14 @@ visible to tar, and `--exclude=…/src` is path-anchored so it never matched `st
 Now gitignored + excluded, with a tarball size ceiling that fails closed and names the biggest
 members. Separately the deploy went **114MB → 29MB** (dev tooling + dev-only vendor packages
 carved out, each with evidence). Ceiling 150 → 45MB.
+
+### ⚠ STANDING BACKLOG — carried, do not compress away
+Spec 39 still does not exist and PACES everything: 37 conformance goldens sit `xfail(strict=True)`
+naming it, and finishing more of the tier migration INCREASES the blocked surface until it ships.
+Full open list + the 37-family scope + the `check-box-flat` exit-code caveat live in Task 6 of the
+prompt and in `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md`. ⛔ This block was dropped
+in the 2026-08-27 LEDGER rewrite and restored after QC caught it — a D101 subtraction. Move it to
+`parking.md` with Bean's say-so if it must shrink; do not delete it.
 
 ### ⚠ Carried
 Hero still owes a visual-diff report (bypassed when a deploy was impossible) · `sgs/media`'s

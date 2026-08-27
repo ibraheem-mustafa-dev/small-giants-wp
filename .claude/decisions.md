@@ -82,7 +82,7 @@ variables. (C) genuinely root-scoped declarations find no element token and noth
 into a positive `wrapper`. ~18 further rows are `fx:*` markers, by design. ⛔ NOT bulk-scriptable:
 only 6 of ~67 non-fx rows are individually confirmed, and a WRONG element is worse than a NULL —
 NULL reads as unknown, a wrong value reads as authoritative and misroutes cloned CSS silently.
-Report: `reports/2026-08-27-null-css-element-root-cause.md`.
+Report: `.claude/reports/2026-08-27-null-css-element-root-cause.md`.
 
 ## D860 — [ROUTINE] 2026-08-27 — Five client spacing ladders were named "2".."9"; renamed by script
 
