@@ -97,7 +97,10 @@ def test_container_gap_reaches_destination_attr():
     css_rules = {".sgs-container": {"display": "grid", "gap": "24px"}}
     markup = build_block_markup(rec, node, css_rules=css_rules, is_root=False)
 
-    assert '"gap":"24px"' in markup, (
+    # sgs/container.gap is a MIGRATED tier-object attr (Spec 35 / D802-class
+    # fix extended to GRID, this fix) — the Base value lands in the object's
+    # 'desktop' key, not a bare scalar.
+    assert '"gap":{"desktop":"24px"}' in markup, (
         f"gap must land in the `gap` attr (the wrapper-rendered destination) for a "
         f"container with no blockGap support, got: {markup}"
     )

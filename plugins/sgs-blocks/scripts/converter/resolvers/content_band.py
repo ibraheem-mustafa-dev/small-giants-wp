@@ -40,6 +40,7 @@ from converter.services.styling_helpers import (
     strip_important,
 )
 from converter.services.state_value_lift import resolve_state_property
+from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
@@ -182,6 +183,20 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"(proposed_action: add attr or seed property_suffixes)",
         )
 
+    # --- TIER-OBJECT destination (Spec 35 tier shape, D802-class fix extended
+    # from typography to CONTENT — mirrors outer_box.py/grid.py's identical
+    # gate). ``contentWidth`` is the worked example: sgs/container, sgs/hero,
+    # sgs/trust-bar, sgs/feature-grid and sgs/testimonial-slider all migrated
+    # it to ``{desktop,tablet,mobile}``; re-appending a tier suffix here (the
+    # flat path below) produced a bare scalar — measured live via
+    # check_flat_tier_regression.py: sgs/trust-bar.contentWidth emitted
+    # "1100px" instead of {"desktop": ...}, discarded SILENTLY by `validate`
+    # gapping the now-nonexistent suffixed sibling. Gated on
+    # ``tier_object_base`` (R-31-1) and skipped when a STATE is present
+    # (its own attr, resolved independently), mirroring typography.py.
+    if not decl.state and db_lookup.tier_object_base(ctx.block_slug, base_attr):
+        return _content_band_tier_object_write(decl, ctx, prop, base_attr)
+
     # Step 4 + 4a: tier suffix THEN interaction-state suffix (universal shared helper,
     # §3.A). A :hover/:focus/:active decl routes to `{base}{Tier}{State}` (validated
     # below) else an honest gap.
@@ -307,3 +322,55 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # token-or-literal; token-snap is identity for a length literal, §3.A.6).
     value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
     return Write(attr=attr, value=value, property=prop, tier=decl.tier)
+
+
+# ---------------------------------------------------------------------------
+# TIER-OBJECT emission (Spec 35 tier shape) — the CONTENT-resolver counterpart
+# to typography.py's `_tier_object_writes` (D802) and outer_box.py's
+# `_outer_tier_object_write` (this fix). Mirrors resolve()'s own
+# value-normalisation branches (colour-role / numeric+unit / string verbatim)
+# EXACTLY — only the destination differs. Box-family self-merge is
+# deliberately NOT mirrored here: BOX and TIER are independent, mutually
+# exclusive axes (a box_family-carrying attr always fails tier_object_base by
+# construction), so a tier-object CONTENT attr can never also be a box family.
+# ---------------------------------------------------------------------------
+
+def _content_band_tier_object_write(
+    decl: Any, ctx: Any, prop: str, base_attr: str
+) -> "Write | list[Write] | GAP":
+    resolved = _resolve_co_declared_var(strip_important(decl.value).strip(), {})
+
+    if db_lookup.attr_is_colour_role(ctx.block_slug, base_attr):
+        v = extract_token_or_hex(resolved)
+        if v is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is neither a token slug, hex, "
+                f"nor rgb/hsl colour literal",
+            )
+        return tier_object_write(ctx, decl, prop, base_attr, v, validate_raw=v)
+
+    if attr_is_number(ctx, base_attr):
+        num, unit = split_value_unit(resolved)
+        if num is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is not a parseable number for "
+                f"numeric attr {base_attr!r}",
+            )
+        num_out: int | float = int(num) if float(num).is_integer() else num
+        write = tier_object_write(ctx, decl, prop, base_attr, num_out, validate_raw=str(num_out))
+        if isinstance(write, GAP):
+            return write
+        if unit and decl.tier == "Base":
+            base_unit_attr = f"{base_attr}Unit"
+            if validate(ctx, base_unit_attr, unit):
+                return [
+                    write,
+                    Write(attr=base_unit_attr, value=unit, property=prop, tier=decl.tier),
+                ]
+        return write
+
+    # String/length-literal attr (D230 — contentWidth is token-or-literal).
+    value = token_snap(prop, value_serialise("string", None, resolved), ctx.conn)
+    return tier_object_write(ctx, decl, prop, base_attr, value, validate_raw=str(value))

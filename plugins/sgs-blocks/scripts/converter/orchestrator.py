@@ -284,23 +284,41 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
             # contract §3) — never bare ``isinstance(dict)``. dest.block_slug
             # == ctx.block_slug is already enforced above (DESTINATION
             # MISMATCH guard), so it is the correct owning slug to look up.
-            is_box = write_is_dict and (
+            #
+            # TIER-OBJECT widening (Spec 35 tier shape, D802-class fix extended
+            # to the fold/DESTINATION path, this fix): a migrated tier-object
+            # attr (gap/gridTemplateColumns/contentWidth/…) accumulates the
+            # SAME way a box-object attr does — per-key setdefault, collision
+            # only on a genuinely conflicting key — just merging tier keys
+            # (desktop/tablet/mobile) instead of side keys. Without this,
+            # a composite whose band folds e.g. `display:grid` (→ `layout`,
+            # scalar) alongside `grid-template-columns` (→ the tier-object
+            # `gridTemplateColumns`, a SECOND dict-valued write reaching this
+            # SAME destination-fold path once grid.py started emitting the
+            # tier-object shape) raised a false DESTINATION COLLISION and the
+            # whole section's markup was discarded — measured live on
+            # sgs/trust-bar (test_metamorphic_section_order_permutation_
+            # real_draft). BOX and TIER are independent, mutually exclusive
+            # axes (Spec 35 Phase 1.4), so this is a straight widening of the
+            # SAME merge/collision logic below, not a new mechanism.
+            is_mergeable_dict = write_is_dict and (
                 db_lookup.box_family_for(dest.block_slug, w.attr) is not None
+                or db_lookup.tier_object_base(dest.block_slug, w.attr)
             )
-            if write_is_dict and not is_box:
-                # NON-box dict-valued attr: a single write across the fold is
-                # fine (stored verbatim). A SECOND write to the same attr —
-                # from this or an earlier folded call — is an unresolvable
-                # ambiguity (two nodes both claiming the whole attr), not a
-                # legitimate per-key accumulation; raise rather than silently
-                # per-key merge.
+            if write_is_dict and not is_mergeable_dict:
+                # NON-box, NON-tier dict-valued attr: a single write across the
+                # fold is fine (stored verbatim). A SECOND write to the same
+                # attr — from this or an earlier folded call — is an
+                # unresolvable ambiguity (two nodes both claiming the whole
+                # attr), not a legitimate per-key accumulation; raise rather
+                # than silently per-key merge.
                 if w.attr in dest.attrs:
                     raise ConservationError(
-                        f"DESTINATION COLLISION: non-box-family attr "
-                        f"{w.attr!r} for {dest.block_slug!r} received ≥2 "
-                        f"dict-valued writes across the fold — "
-                        f"box_family_for() returned None, so this is NOT a "
-                        f"box-object merge candidate; a second write would "
+                        f"DESTINATION COLLISION: non-box-family, non-tier-object "
+                        f"attr {w.attr!r} for {dest.block_slug!r} received ≥2 "
+                        f"dict-valued writes across the fold — neither "
+                        f"box_family_for() nor tier_object_base() claims it, so "
+                        f"this is NOT a merge candidate; a second write would "
                         f"silently lose the first."
                     )
                 dest.attrs[w.attr] = dict(w.value)
@@ -317,11 +335,11 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
                 # collision must be caught here.
                 raise ConservationError(
                     f"DESTINATION SHAPE MISMATCH: attr {w.attr!r} for "
-                    f"{dest.block_slug!r} received both a box-object partial "
-                    f"(dict) and a scalar value from different folded nodes — "
-                    f"ambiguous shape, one would be silently lost."
+                    f"{dest.block_slug!r} received both a box-object/tier-object "
+                    f"partial (dict) and a scalar value from different folded "
+                    f"nodes — ambiguous shape, one would be silently lost."
                 )
-            if write_is_dict:  # is_box True here (non-box handled + continued above)
+            if write_is_dict:  # is_mergeable_dict True here (non-mergeable handled + continued above)
                 if existing_is_dict:
                     target = existing
                 else:
@@ -334,15 +352,15 @@ def process_element(ctx: Any, decls: list[Any]) -> ElementResult:
                     dest.attrs[w.attr] = target
                 for k, v in w.value.items():
                     if k in target and target[k] != v:
-                        # Cross-node per-side COLLISION: two folded calls both
-                        # claim the SAME side key with DIFFERENT values — a
-                        # real collision `_check_conservation` cannot see
+                        # Cross-node per-side/per-tier COLLISION: two folded
+                        # calls both claim the SAME key with DIFFERENT values —
+                        # a real collision `_check_conservation` cannot see
                         # (each call only sees its own writes).
                         raise ConservationError(
-                            f"DESTINATION COLLISION: box-object attr {w.attr!r} "
-                            f"for {dest.block_slug!r} received two DIFFERENT "
-                            f"values for side {k!r} ({target[k]!r} vs {v!r}) "
-                            f"from different folded nodes — one would be "
+                            f"DESTINATION COLLISION: box-object/tier-object attr "
+                            f"{w.attr!r} for {dest.block_slug!r} received two "
+                            f"DIFFERENT values for key {k!r} ({target[k]!r} vs "
+                            f"{v!r}) from different folded nodes — one would be "
                             f"silently lost."
                         )
                     target.setdefault(k, v)

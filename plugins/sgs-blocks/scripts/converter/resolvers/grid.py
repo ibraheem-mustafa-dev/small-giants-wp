@@ -33,12 +33,13 @@ from converter.services.attr_resolve import attr_resolve
 from converter.services.gap_writer import gap_writer
 from converter.services.state_value_lift import resolve_state_property
 from converter.services.styling_helpers import strip_important
+from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
 from converter.db import db_lookup
-from converter.db.db_lookup import attr_for_property
+from converter.db.db_lookup import attr_for_property, tier_object_base
 
 # CSS gap properties → the single grid gap attr family.
 _GAP_PROPS = frozenset({"gap", "column-gap"})
@@ -137,27 +138,56 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"{ctx.block_slug} has no attr for {prop}",
             )
         _wp, base_template_attr, _kind = resolved
-        template_attr = tier_state_suffix(base_template_attr, decl, ctx.conn)
-        if not validate(ctx, template_attr, decl.value):
-            return gap_writer(
-                ctx, decl, GapOrigin.NO_DESTINATION,
-                f"{ctx.block_slug} does not declare {template_attr!r} (tier {decl.tier})",
-            )
         raw = strip_important(decl.value).strip()
         template_value = value_serialise("string", None, raw)
-        writes: list[Write] = [
-            Write(attr=template_attr, value=template_value, property=prop, tier=decl.tier)
-        ]
+
+        # Spec 35 tier shape (D802-class fix, extended from typography to GRID):
+        # a migrated tier-object attr stores its per-device values INSIDE one
+        # object ({desktop,tablet,mobile}); the flat gridTemplateColumnsTablet/
+        # Mobile siblings this resolver would otherwise target no longer exist
+        # on a migrated block. Re-appending a tier suffix there makes
+        # `validate` gap the write as NO_DESTINATION and the tier value is
+        # discarded SILENTLY — measured live: sgs/container/hero/trust-bar/
+        # feature-grid/testimonial-slider all emitted a bare scalar
+        # ('1fr 1fr' / 'repeat(4, 1fr)') instead of {"desktop": ...}. Gated on
+        # `tier_object_base` (a DB predicate, never a name test — R-31-1).
+        if tier_object_base(ctx.block_slug, base_template_attr):
+            template_write = tier_object_write(
+                ctx, decl, prop, base_template_attr, template_value, validate_raw=raw
+            )
+            if isinstance(template_write, GAP):
+                return template_write
+            writes: list[Write] = [template_write]
+        else:
+            template_attr = tier_state_suffix(base_template_attr, decl, ctx.conn)
+            if not validate(ctx, template_attr, decl.value):
+                return gap_writer(
+                    ctx, decl, GapOrigin.NO_DESTINATION,
+                    f"{ctx.block_slug} does not declare {template_attr!r} (tier {decl.tier})",
+                )
+            writes = [
+                Write(attr=template_attr, value=template_value, property=prop, tier=decl.tier)
+            ]
+
         # Second Write of the list: the integer column count from repeat(N, …),
-        # when the block declares the matching columns* attr.
+        # when the block declares the matching columns* attr. `columns` is a
+        # SEPARATE attr from gridTemplateColumns and is checked independently
+        # against tier_object_base — same mechanism, same reasoning.
         n = _parse_repeat_columns(raw)
         if n is not None:
             base_count_attr = "columns"
-            count_attr = tier_state_suffix(base_count_attr, decl, ctx.conn)
-            if validate(ctx, count_attr, str(n)):
-                writes.append(
-                    Write(attr=count_attr, value=n, property=prop, tier=decl.tier)
+            if tier_object_base(ctx.block_slug, base_count_attr):
+                count_write = tier_object_write(
+                    ctx, decl, prop, base_count_attr, n, validate_raw=str(n)
                 )
+                if not isinstance(count_write, GAP):
+                    writes.append(count_write)
+            else:
+                count_attr = tier_state_suffix(base_count_attr, decl, ctx.conn)
+                if validate(ctx, count_attr, str(n)):
+                    writes.append(
+                        Write(attr=count_attr, value=n, property=prop, tier=decl.tier)
+                    )
         return writes
 
     # --- gap / column-gap → gap* -------------------------------------------------
@@ -171,16 +201,21 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"{ctx.block_slug} has no gap attr for {prop}",
             )
         _wp, base_gap_attr, _kind = resolved
+        value = token_snap(
+            "gap", value_serialise("string", None, strip_important(decl.value).strip()),
+            ctx.conn,
+        )
+        # Spec 35 tier shape (D802-class fix): the migrated gap attr stores its
+        # per-device values INSIDE one object — see the grid-template-columns
+        # branch above for the full rationale (identical mechanism).
+        if tier_object_base(ctx.block_slug, base_gap_attr):
+            return tier_object_write(ctx, decl, prop, base_gap_attr, value, validate_raw=decl.value)
         gap_attr = tier_state_suffix(base_gap_attr, decl, ctx.conn)
         if not validate(ctx, gap_attr, decl.value):
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{ctx.block_slug} does not declare {gap_attr!r} (tier {decl.tier})",
             )
-        value = token_snap(
-            "gap", value_serialise("string", None, strip_important(decl.value).strip()),
-            ctx.conn,
-        )
         return Write(attr=gap_attr, value=value, property=prop, tier=decl.tier)
 
     # --- padding/border-radius FORK by box_family (A1 migration, 2026-07-26) ----

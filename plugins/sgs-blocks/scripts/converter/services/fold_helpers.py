@@ -538,7 +538,7 @@ def _fold_band_arrangement(
 
     # ---- display → the layout trigger (+ flexDirection) ----------------------
     owner_attrs = db_lookup.block_attrs(owning_slug) or {}
-    for _lk, _lv in arrangement.layout_attrs(band_node, css_rules).items():
+    for _lk, _lv in arrangement.layout_attrs(band_node, css_rules, owning_slug).items():
         if _lk not in owner_attrs:
             continue
         band_attrs.setdefault(_lk, _lv)

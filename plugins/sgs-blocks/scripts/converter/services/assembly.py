@@ -212,7 +212,7 @@ def build_block_markup(
     if rec.slug is not None and "layout" not in attrs:
         from converter.services import arrangement as _arr
         if "layout" in db_lookup.block_attrs(rec.slug):
-            for _lk, _lv in _arr.layout_attrs(section_root, _css_rules).items():
+            for _lk, _lv in _arr.layout_attrs(section_root, _css_rules, rec.slug).items():
                 attrs.setdefault(_lk, _lv)
 
     # step 3c: §2.4 / FR-31-5.3 COMPOSITE band-fold. A composite (NOT the default

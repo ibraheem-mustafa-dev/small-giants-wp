@@ -57,9 +57,12 @@ def _rt_decls() -> list[Decl]:
 # ---------------------------------------------------------------------------
 
 def test_max_width_is_written_to_maxWidth(conn):
+    # sgs/container.maxWidth is a MIGRATED tier-object attr (Spec 35 / D802-class
+    # fix extended to OUTER, this fix) — the Base-tier value lands in the
+    # object's 'desktop' key, exact literal (D230, no snap).
     result = process_element(_ctx(conn), _rt_decls())
     writes = {w.attr: w.value for w in result.writes}
-    assert writes.get("maxWidth") == "1200px"   # exact literal (D230, no snap)
+    assert writes.get("maxWidth") == {"desktop": "1200px"}
 
 
 def test_conservation_total_and_no_unrouted(conn):
@@ -100,7 +103,7 @@ def test_emit_produces_maxwidth_block_markup(conn):
     # test_conservation_total_and_no_unrouted for why this expectation moved.
     assert markup == (
         '<!-- wp:sgs/container '
-        '{"backgroundColour":"#f5f0eb","maxWidth":"1200px"} /-->'
+        '{"backgroundColour":"#f5f0eb","maxWidth":{"desktop":"1200px"}} /-->'
     )
 
 
@@ -147,7 +150,7 @@ def test_align_finalise_suppressed_when_max_width_present(conn):
     # When a base max-width IS present (and writes maxWidth), no synthetic align.
     result = process_element(_ctx(conn), _rt_decls())
     assert "align" not in result.attrs()
-    assert result.attrs().get("maxWidth") == "1200px"
+    assert result.attrs().get("maxWidth") == {"desktop": "1200px"}
 
 
 def test_align_finalise_suppressed_by_tablet_only_max_width(conn):
@@ -196,11 +199,13 @@ def test_metamorphic_bem_rename_identical(conn):
     # dict is only the current transfer set, which gained backgroundColour at
     # 1905257e (2026-08-20). Both halves kept: the invariant AND the exact set.
     assert a.attrs() == b.attrs()
-    assert a.attrs() == {"backgroundColour": "#f5f0eb", "maxWidth": "1200px"}
+    assert a.attrs() == {"backgroundColour": "#f5f0eb", "maxWidth": {"desktop": "1200px"}}
 
 
 def test_metamorphic_px_scale_by_k(conn):
     k = 2
     base = process_element(_ctx(conn), [Decl("max-width", "600px", "Base")])
     scaled = process_element(_ctx(conn), [Decl("max-width", "1200px", "Base")])
-    assert int(base.attrs()["maxWidth"].rstrip("px")) * k == int(scaled.attrs()["maxWidth"].rstrip("px"))
+    base_px = base.attrs()["maxWidth"]["desktop"]
+    scaled_px = scaled.attrs()["maxWidth"]["desktop"]
+    assert int(base_px.rstrip("px")) * k == int(scaled_px.rstrip("px"))

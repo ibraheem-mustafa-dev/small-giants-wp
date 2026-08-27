@@ -106,6 +106,7 @@ from converter.services.styling_helpers import (
     strip_important,
 )
 from converter.services.state_value_lift import resolve_state_property
+from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
@@ -286,6 +287,30 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"{ctx.block_slug} has no OUTER attr for {prop}",
         )
 
+    # --- TIER-OBJECT destination (Spec 35 tier shape, D802-class fix extended
+    # from typography to OUTER, this fix). A migrated tier-object attr
+    # (maxWidth/minHeight on container-family blocks; height/maxHeight/
+    # maxWidth/order on sgs/media) stores its per-device values INSIDE one
+    # object as {desktop,tablet,mobile} — the flat maxWidthTablet/Mobile
+    # siblings this resolver would otherwise target no longer exist on a
+    # migrated block. Re-appending a tier suffix there produces an attr the
+    # block does not declare, so `validate` gaps it NO_DESTINATION and the
+    # tier value is discarded SILENTLY.
+    #
+    # Measured via check_flat_tier_regression.py against a real clone run:
+    # sgs/container.maxWidth, sgs/hero.minHeight and sgs/media.{height,
+    # maxHeight,maxWidth,order} all emitted a bare scalar instead of
+    # {"desktop": ...} — the OUTER-resolver half of the same defect class
+    # D802 fixed for typography's fontSize.
+    #
+    # Gated on `tier_object_base` (a DB predicate, never a name test — R-31-1)
+    # and skipped when an interaction STATE is present, mirroring
+    # typography.py's identical gate: a state destination is its own attr
+    # (`maxWidthHover`) resolved independently, and v1 hover is base-tier
+    # only, so the flat path below remains correct for it.
+    if not decl.state and db_lookup.tier_object_base(ctx.block_slug, base_attr):
+        return _outer_tier_object_write(decl, ctx, prop, base_attr)
+
     # Step 4 + 4a: re-append the tier suffix THEN the interaction-state suffix
     # (universal shared helper — §3.A). A :hover/:focus/:active decl routes to the
     # block's `{base}{Tier}{State}` companion (validated below) else an honest gap.
@@ -456,6 +481,72 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # validate and would have gapped, so we never reach here with an illegal value).
     value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
     return Write(attr=attr, value=value, property=prop, tier=decl.tier)
+
+
+# ---------------------------------------------------------------------------
+# TIER-OBJECT emission (Spec 35 tier shape) — the OUTER-resolver counterpart
+# to typography.py's `_tier_object_writes` (D802). Mirrors that function's
+# value-normalisation branches (box-shadow preset snap / colour-role token-or
+# -hex / numeric+unit / string verbatim) EXACTLY as `resolve()` itself uses
+# them below — only the DESTINATION differs (the base attr's tier-object key,
+# not a suffixed sibling).
+# ---------------------------------------------------------------------------
+
+def _outer_tier_object_write(
+    decl: Any, ctx: Any, prop: str, base_attr: str
+) -> "Write | list[Write] | GAP":
+    """Emit ONE partial tier-object Write (or Write+Unit-companion pair) for a
+    migrated OUTER attr. See the call site's comment for the full rationale.
+    """
+    if prop == "box-shadow":
+        slug = _shadow_token_snap(decl.value, ctx.conn)
+        if slug is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"box-shadow value {decl.value!r} does not match any shadow preset in "
+                f"design_tokens (token_type='shadow', slug LIKE 'shadow-%'); the shadow "
+                f"attr expects a preset slug, not a raw CSS value",
+            )
+        return tier_object_write(ctx, decl, prop, base_attr, slug, validate_raw=slug)
+
+    if db_lookup.attr_is_colour_role(ctx.block_slug, base_attr):
+        v = extract_token_or_hex(strip_important(decl.value))
+        if v is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is neither a token slug, hex, "
+                f"nor rgb/hsl colour literal",
+            )
+        return tier_object_write(ctx, decl, prop, base_attr, v, validate_raw=v)
+
+    if _attr_is_number(ctx, base_attr):
+        num, unit = split_value_unit(decl.value)
+        if num is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is not a parseable number for "
+                f"numeric attr {base_attr!r}",
+            )
+        num_out: int | float = int(num) if float(num).is_integer() else num
+        write = tier_object_write(ctx, decl, prop, base_attr, num_out, validate_raw=str(num_out))
+        if isinstance(write, GAP):
+            return write
+        # Unit companion: still a FLAT scalar attr, still written only
+        # alongside the BASE tier (convert.py:1699) — shared by all three
+        # tiers by design, mirroring typography's tier-object unit companion.
+        if unit and decl.tier == "Base":
+            base_unit_attr = f"{base_attr}Unit"
+            if validate(ctx, base_unit_attr, unit):
+                return [
+                    write,
+                    Write(attr=base_unit_attr, value=unit, property=prop, tier=decl.tier),
+                ]
+        return write
+
+    # String/length-literal attr (D230 — max-width/min-height/height/maxHeight
+    # etc. are exact literals; token_snap is identity for a length literal).
+    value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
+    return tier_object_write(ctx, decl, prop, base_attr, value, validate_raw=str(value))
 
 
 def _block_supports_full_align(ctx: Any) -> bool:

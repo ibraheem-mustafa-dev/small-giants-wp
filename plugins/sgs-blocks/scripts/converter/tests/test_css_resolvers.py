@@ -38,9 +38,13 @@ def _ctx(conn, *, slug="sgs/container", kind="section", hib=1, root=False,
 # ---------------------------------------------------------------------------
 
 def test_content_band_max_width_to_contentWidth(conn):
+    # sgs/container.contentWidth is a MIGRATED tier-object attr (Spec 35 /
+    # D802-class fix extended to CONTENT, this fix) — the Base-tier value
+    # lands in the object's 'desktop' key, not as a bare scalar. See
+    # test_tier_object_grid_layout.py for the dedicated slice proofs.
     out = content_band.resolve(Decl("max-width", "780px", "Base"), _ctx(conn))
     assert isinstance(out, Write)
-    assert (out.attr, out.value) == ("contentWidth", "780px")
+    assert (out.attr, out.value) == ("contentWidth", {"desktop": "780px"})
 
 
 @pytest.mark.xfail(strict=True, reason=(
@@ -69,7 +73,8 @@ def test_content_band_padding_transfers_to_content_band_padding_attr(conn):
 def test_content_band_metamorphic_value_scale(conn):
     a = content_band.resolve(Decl("max-width", "600px", "Base"), _ctx(conn))
     b = content_band.resolve(Decl("max-width", "1200px", "Base"), _ctx(conn))
-    assert int(a.value.rstrip("px")) * 2 == int(b.value.rstrip("px"))
+    # contentWidth is a tier-object attr; the Base value lands in ['desktop'].
+    assert int(a.value["desktop"].rstrip("px")) * 2 == int(b.value["desktop"].rstrip("px"))
 
 
 # ---------------------------------------------------------------------------
@@ -77,18 +82,21 @@ def test_content_band_metamorphic_value_scale(conn):
 # ---------------------------------------------------------------------------
 
 def test_grid_template_plus_columns_count(conn):
+    # sgs/container.gridTemplateColumns/.columns are MIGRATED tier-object
+    # attrs (Spec 35 — see test_tier_object_grid_layout.py for the dedicated
+    # slice proofs); the Base-tier value lands in each object's 'desktop' key.
     out = grid.resolve(Decl("grid-template-columns", "repeat(3, 1fr)", "Base"), _ctx(conn))
     assert isinstance(out, list)
-    pairs = {(w.attr, w.value) for w in out}
-    assert ("gridTemplateColumns", "repeat(3, 1fr)") in pairs
-    assert ("columns", 3) in pairs          # integer column COUNT (number attr)
+    by_attr = {w.attr: w.value for w in out}
+    assert by_attr["gridTemplateColumns"] == {"desktop": "repeat(3, 1fr)"}
+    assert by_attr["columns"] == {"desktop": 3}          # integer column COUNT
 
 
 def test_grid_explicit_tracks_no_count(conn):
     # A non-repeat template has no derivable integer count → template Write only.
     out = grid.resolve(Decl("grid-template-columns", "1fr 2fr", "Base"), _ctx(conn))
     assert isinstance(out, list)
-    assert [(w.attr, w.value) for w in out] == [("gridTemplateColumns", "1fr 2fr")]
+    assert [(w.attr, w.value) for w in out] == [("gridTemplateColumns", {"desktop": "1fr 2fr"})]
 
 
 @pytest.mark.xfail(strict=True, reason=(
@@ -102,16 +110,17 @@ def test_grid_tier_suffix_on_both(conn):
 
 
 def test_grid_gap(conn):
+    # sgs/container.gap is a MIGRATED tier-object attr.
     out = grid.resolve(Decl("gap", "24px", "Base"), _ctx(conn))
     assert isinstance(out, Write)
-    assert (out.attr, out.value) == ("gap", "24px")
+    assert (out.attr, out.value) == ("gap", {"desktop": "24px"})
 
 
 def test_grid_metamorphic_count_scales_with_repeat_n(conn):
     a = grid.resolve(Decl("grid-template-columns", "repeat(2, 1fr)", "Base"), _ctx(conn))
     b = grid.resolve(Decl("grid-template-columns", "repeat(4, 1fr)", "Base"), _ctx(conn))
-    na = next(w.value for w in a if w.attr == "columns")
-    nb = next(w.value for w in b if w.attr == "columns")
+    na = next(w.value for w in a if w.attr == "columns")["desktop"]
+    nb = next(w.value for w in b if w.attr == "columns")["desktop"]
     assert na * 2 == nb
 
 

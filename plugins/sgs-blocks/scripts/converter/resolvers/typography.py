@@ -43,10 +43,11 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
+from converter.services.tier_object import tier_object_key as _shared_tier_object_key
+from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_suffix
 from converter.services.validate import attr_is_number, validate
 from converter.db.db_lookup import (
-    modifier_suffixes,
     tier_object_base,
     typography_css_to_attrs,
 )
@@ -204,33 +205,17 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
 # TIER-OBJECT emission (Spec 35 tier shape)
 # ---------------------------------------------------------------------------
 
-# "Base" is the UNSUFFIXED device tier and IS desktop. This single named constant
-# is the same permitted R-31-1 exception `tier_suffix._BASE_TIER` already carries:
-# an empty BASE suffix has no DB row to source, because it is a structural
-# pipeline convention rather than a member of the suffix vocabulary.
-_BASE_TIER = "Base"
-_BASE_TIER_KEY_SOURCE = "Desktop"
-
-
 def _tier_object_key(tier: str) -> "str | None":
     """Map a device tier to its key inside a {desktop,tablet,mobile} object.
 
-    ⛔ The breakpoint suffix grammar is DB-OWNED (R-31-1 / Spec 31 §7a.4) — the
-    vocabulary comes from ``modifier_suffixes('breakpoint')``, never a literal
-    dict. An earlier revision of this helper hardcoded
-    ``{"Base": "desktop", "Tablet": "tablet", "Mobile": "mobile"}`` and the
-    anti-cheat gate (check #9, suffix-vocab dict) correctly refused the commit.
-
-    The object key IS the suffix lower-cased — that is the contract
-    ``sgs_responsive_normalise_object()`` reads on the PHP side — so the mapping
-    is derived, not enumerated. A tier outside the DB vocabulary returns None and
-    the caller gaps it honestly rather than inventing a key.
+    Delegates to the shared ``converter.services.tier_object.tier_object_key``
+    (extracted 2026-08-27 so grid.py/outer_box.py/content_band.py share ONE
+    tier-key mechanism with this, the original D802 implementation — R-31-9).
+    Kept as a thin same-signature wrapper so this module's own call sites
+    below are unchanged and any external caller resolving
+    ``typography._tier_object_key`` still works.
     """
-    vocab = modifier_suffixes("breakpoint")
-    resolved = _BASE_TIER_KEY_SOURCE if tier == _BASE_TIER else tier
-    if resolved not in vocab:
-        return None
-    return resolved.lower()
+    return _shared_tier_object_key(tier)
 
 
 def _tier_object_writes(
