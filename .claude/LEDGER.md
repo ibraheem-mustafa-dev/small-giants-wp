@@ -312,7 +312,7 @@ detector bug) · rule 34 **319→2** · scanner **945→499**. `reports/2026-08-
 joined the reset, homepage has ZERO gapped sections (1.5.83). ⚠ Two of my claims were wrong, Bean
 caught both: it was our theme not WordPress, and `maxWidth`(OUTER)=full-bleed vs
 `contentWidth`(INNER)=normal, so no detect-and-mark was needed.
-⭐ **NEXT + all detail: `.claude/prompts/2026-08-27-the-container-gap-and-the-remaining-controls.md`**
+⭐ **NEXT + all detail: `.claude/prompts/2026-08-27-the-remaining-client-controls.md`**
 ⛔ **Bean ruled: MIGRATE OFF NATIVE `supports.spacing`**; multi-button gets BOTH padding + margin.
 Plan UNSTARTED: `.claude/plans/2026-08-26-migrate-off-native-spacing.md` (Q1/Q3/Q4 open).
 ⚠ `gate:full` FAILS on `sgs/hero` orphan attrs — NOT orphans; another track's refactor builds the
@@ -321,7 +321,7 @@ names via `gradientOverlayAttrKeys()`. Deleting them deletes working features. U
 ✅ 2849 TRASHED — stored-content audit passes again (had blocked 5 deploys).
 ✅ Gate C picker deployed; roll-out to `site-header-row` + `container` owed.
 ⛔ **TASK 2 WAS BUILT BY ANOTHER TRACK (D805) — do not duplicate.**
-⭐ **NEXT: `.claude/prompts/2026-08-27-the-container-gap-and-the-remaining-controls.md`.**
+⭐ **NEXT: `.claude/prompts/2026-08-27-the-remaining-client-controls.md`.**
 
 ⚠ **Five tracks on `main`:** 3 deploys aborted, 2 commits blocked by others' staged work.
 
