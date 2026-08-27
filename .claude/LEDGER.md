@@ -325,13 +325,14 @@ Custom/none; C19's grey-out chain disables Height in auto/ratio and Fill style i
 with a plain-English reason. Frontend byte-identical before/after with a positive control
 (`media_sizing` ×8 in the DEPLOYED render.php) — so "unchanged" is not a failed deploy.
 
-### ⛔ TWO THINGS THAT BLOCK ANY ROLLOUT
-1. **No migration script exists** for C16 (48 blocks) or C19 (5). The house pattern is
-   `scripts/migrate-*.py`; neither has one.
-2. **`detector-first-commit-gate.py` DENIES** 4+ files with substantially the same change and
-   no detector. Both rollouts cross that line on their first wave. Detector first, then sweep.
-   The controls themselves ARE shared helpers already — `MediaSizingPanel` is barrel-exported,
-   `presets` flows through `ResponsiveBoxControl` — so the sweep is a one-line flip per block.
+### ✅ BOTH ROLLOUTS LANDED (other sessions, same day) — do NOT rebuild
+C16 is COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
+`inspector-scan/rules/36-box-control-presets-missing.js` and `scripts/migrate-box-control-presets.py`.
+C19 is rolled out to the full `aspectRatio` surface — `card-grid`, `gallery`, `image-sequence`,
+`media`, `post-grid`. ⚠ C19 shipped across 5 blocks with NO detector and no migrate script, and
+`detector-first-commit-gate.py` did not stop it: establish whether that is a hole in the gate or a
+change shape that legitimately does not qualify, before relying on that gate again. Residual: the
+one block `18806e6b0` deliberately skipped, and flipping rule 36 from advisory to blocking.
 
 ### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
 Root-caused: **three causes, not one bug** (`.claude/reports/2026-08-27-null-css-element-root-cause.md`).
