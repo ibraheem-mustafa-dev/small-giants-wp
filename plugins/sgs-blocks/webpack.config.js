@@ -421,6 +421,20 @@ if ( ! scriptConfig ) {
 					'header-behaviours',
 					'view.js'
 				),
+				// Block Bindings editor-side source registration (C15-2/C15-3).
+				// NOT auto-discovered: same reason as extensions/index and
+				// header-behaviours/view above — wp-scripts only walks src/blocks/*,
+				// and this is a plugin-level editor extension, not a block. Without
+				// this entry build/bindings/index.js never exists and the JS half of
+				// the sgs/site-info source registration (registerBlockBindingsSource
+				// + getFieldsList) never loads, leaving core's binding picker unable
+				// to list its fields even though the PHP half works.
+				'bindings/index': path.resolve(
+					process.cwd(),
+					'src',
+					'bindings',
+					'index.js'
+				),
 			} ) );
 		}
 
@@ -451,6 +465,14 @@ if ( ! scriptConfig ) {
 				'src',
 				'header-behaviours',
 				'view.js'
+			),
+			// Block Bindings editor-side source registration (C15-2/C15-3) — see
+			// the identical entry in the promise branch above for why this exists.
+			'bindings/index': path.resolve(
+				process.cwd(),
+				'src',
+				'bindings',
+				'index.js'
 			),
 		};
 	};

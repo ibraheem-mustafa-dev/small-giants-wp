@@ -8,7 +8,7 @@
  * Author URI:  https://smallgiants.studio
  * Text Domain: sgs-blocks
  * Domain Path: /languages
- * Requires at least: 6.7
+ * Requires at least: 6.9
  * Requires PHP: 8.0
  * License:     GPL-2.0-or-later
  *
