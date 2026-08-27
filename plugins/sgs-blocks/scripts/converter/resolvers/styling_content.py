@@ -464,8 +464,41 @@ def _compute_value(
         # Unrecognised keyword — skip (matches convert.py:4053-4058 _trace path)
         return None
 
+    # NUMBER/INTEGER attrs — branch on the DECLARED TYPE, not on a property
+    # allow-list. WP's schema validation DISCARDS a string written into a
+    # `type:"number"` attr and silently substitutes the block's default
+    # (`WP_Block_Type::prepare_attributes_for_render()`), so the authored value
+    # vanishes with no error anywhere. This used to be gated on
+    # `css_property == "font-size"`, which left `line-height` falling through to
+    # the string tail below on five real attrs (sgs/counter.labelLineHeight,
+    # sgs/product-card.titleLineHeight + .descLineHeight,
+    # sgs/quote.attributionLineHeight, sgs/trust-bar.titleLineHeight).
+    # `resolvers/typography.py` (the CSS-pass sibling) has always branched on
+    # type alone; this is the same rule, so the two paths agree (R-31-9 — one
+    # rule for every block; R-31-1 — no hardcoded property dict).
+    #
+    # Deliberately placed AFTER the `font-weight` branch above so its keyword→
+    # number mapping ('bold' → 700) is untouched.
+    #
+    # ⚠ Read the scope before "correcting" this: an adversarial review flagged
+    # `sgs/nav-menu.featuredFontWeight` (declared `number`) as a counter-example.
+    # It is not one — `sgs/nav-menu` does NOT hold the `scalar-styling-lift`
+    # capability, so it never reaches this function at all (see the gate at the
+    # top of `lift_styling_content`). Across the NINE blocks that DO hold it
+    # (card-grid, counter, media, option-picker, product-card, quote,
+    # testimonial, trust-bar, whatsapp-cta) no `font-weight` attr is
+    # number-typed, so the ordering is moot for them either way.
+    #
+    # `nav-menu`'s number-typed font-weight attrs ARE a real latent defect, just
+    # on a different path — they are `typography.py`'s to answer, not this one's.
+    if attr_type in ("number", "integer"):
+        num, _unit = split_value_unit(raw)
+        if num is None:
+            return None
+        return int(num) if num == int(num) else num
+
     if css_property == "font-size":
-        if attr_type in ("number", "object"):
+        if attr_type == "object":
             # attr_type=='object' here is a TIER-SHAPED font-size attr (Spec 35
             # Phase 1.4) — same numeric split as the flat 'number' case; the
             # caller (_emit_tier_value) is responsible for placing the result
@@ -476,9 +509,67 @@ def _compute_value(
             return int(num) if num == int(num) else num
         return raw  # string-typed font-size: store raw CSS value
 
-    # Remaining typography properties (line-height, letter-spacing,
-    # text-align, etc.) — store raw CSS value as string.
+    # Remaining STRING-typed typography properties (text-align, text-transform,
+    # font-style …) — store the raw CSS value verbatim.
     return raw
+
+
+def _write_unit_companion(
+    lifted: dict,
+    attr_name: str,
+    css_property: str,
+    attr_type: str,
+    raw: str,
+    catalogue: dict,
+) -> None:
+    """Write the ``{attr}Unit`` companion when the block declares one.
+
+    ONE implementation shared by ``_emit_tier_value`` and ``_emit_value``
+    (R-31-9) — it was previously duplicated in both, each gated on
+    ``css_property == "font-size"``.
+
+    Two distinct contracts, because the consumers differ:
+
+    * ``font-size`` — write the unit only when the draft supplied one. A bare
+      number keeps the block's own unit default (``"px"`` throughout), which is
+      the long-standing behaviour and is correct.
+    * every other numeric property (today: ``line-height``) — a MISSING unit is
+      itself meaningful, so write the EMPTY STRING rather than nothing.
+      ``sgs/quote.attributionLineHeightUnit`` declares ``"default": "em"``, so
+      staying silent there renders a unitless ``line-height:1.5`` as ``1.5em`` —
+      a different inheritance model (em resolves against the element's own
+      font-size and passes that COMPUTED length down; unitless passes the RATIO
+      down), not a cosmetic difference. Writing ``""`` explicitly beats the
+      block default, because WP only substitutes a default for an ABSENT attr.
+
+    ⚠ ``""`` and NOT ``resolvers/typography.py``'s ``"unitless"`` sentinel, on
+    purpose. Both are correct server-side — ``helpers-typography.php`` decodes
+    the sentinel on its flat path (``'unitless_sentinel' => 'unitless'``) and
+    normalises it on its tiered path — but only ``""`` is correct in the EDITOR.
+    ``TypographyControls`` passes the stored unit STRAIGHT to a ``UnitControl``
+    whose vocabulary is ``['', 'em', 'rem', 'px']``, so a stored ``"unitless"``
+    matches no option: the client sees the wrong unit and writes it back if they
+    touch the control. That is reachable — ``sgs/counter`` and ``sgs/quote`` both
+    render this control (``showLineHeight`` true); ``sgs/product-card`` and
+    ``sgs/trust-bar`` do not. ``""`` is the vocabulary's own unitless member
+    (label ``—``) and round-trips through both surfaces unchanged.
+    """
+    unit_attr = attr_name + "Unit"
+    if unit_attr not in catalogue:
+        return
+    if attr_type not in ("number", "integer", "object"):
+        return
+    if css_property == "font-size":
+        # `split_value_unit` defaults to "px", so a bare number still yields the
+        # block's px unit here — the long-standing font-size behaviour, kept.
+        _, unit = split_value_unit(raw)
+        if unit:
+            lifted[unit_attr] = unit
+        return
+    # default_unit="" so a genuinely unitless value reports NO unit rather than
+    # silently acquiring "px" — the same call `resolvers/typography.py` makes.
+    _, unit = split_value_unit(raw, default_unit="")
+    lifted[unit_attr] = unit if unit else ""
 
 
 def _emit_tier_value(
@@ -520,12 +611,7 @@ def _emit_tier_value(
     else:
         lifted[attr_name] = value
 
-    if css_property == "font-size" and attr_type in ("number", "object"):
-        _, unit = split_value_unit(raw)
-        if unit:
-            unit_attr = attr_name + "Unit"
-            if unit_attr in catalogue:
-                lifted[unit_attr] = unit
+    _write_unit_companion(lifted, attr_name, css_property, attr_type, raw, catalogue)
 
 
 def _emit_value(
@@ -548,14 +634,8 @@ def _emit_value(
         return
     lifted[target_attr] = value
 
-    # Unit companion attr (e.g. quoteFontSizeUnit / quoteFontSizeTabletUnit) —
-    # mirroring convert.py:4065-4068.
-    if css_property == "font-size" and attr_type == "number":
-        _, unit = split_value_unit(raw)
-        if unit:
-            unit_attr = target_attr + "Unit"
-            if unit_attr in catalogue:
-                lifted[unit_attr] = unit
+    # Unit companion attr (e.g. quoteFontSizeUnit / titleLineHeightUnit).
+    _write_unit_companion(lifted, target_attr, css_property, attr_type, raw, catalogue)
 
 # ---------------------------------------------------------------------------
 # EXECUTION Step 12 (2026-07-04): the module-level `resolve(decl, ctx) -> GAP`
