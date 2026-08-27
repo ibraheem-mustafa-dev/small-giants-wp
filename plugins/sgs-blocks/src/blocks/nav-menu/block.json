@@ -70,6 +70,15 @@
 						"layout"
 					],
 					"prefix": "item",
+					"attrMap": {
+						"css:color": "itemColour",
+						"css:background-color": "itemBg",
+						"css:border-radius": "itemRadius",
+						"css:font-size": "itemFontSize",
+						"css:font-weight": "itemFontWeight",
+						"css:font-style": "itemFontStyle",
+						"css:line-height": "itemLineHeight"
+					},
 					"states": {
 						"hover": {
 							"attrMap": {
