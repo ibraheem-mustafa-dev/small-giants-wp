@@ -117,12 +117,25 @@ Meanwhile the draft's card-root values reached `ctaBorderStyle` / `ctaBorderWidt
 button no border at all. So the button wears a border it was never given, and the card lost the
 one it was.
 
-**Fix:** clear the `derived_selector` on those three attributes so they route through the
-root-domain lift, as `backgroundColour` already does. A data correction, not code.
+**Fix — NOT a data edit. Corrected 2026-08-27 after a peer session announced a reseed.**
 
-⚠ Trace how that value reached the CTA attributes before you fix it. The correlation is exact —
-1px/solid on the featured card, 2px/dashed on the trial card, matching the two draft rules — but
-the mechanism was never proven. Clearing the selector may leave the CTA leak in place.
+The obvious move is to clear the `derived_selector` on those three attrs so they route through the
+root-domain lift, as `backgroundColour` already does. **That would be undone by the next
+`/sgs-update`.** `.sgs-product-card__border` appears nowhere in the block, nowhere in the draft,
+and — checked — nowhere in `attr-classification-overrides.json` or the scripts tree. It is
+DERIVED by rule (an attr named `border*` gets a `__border` element), so a reseed regenerates it.
+
+So the fix belongs in **the deriving rule, or a deliberate entry in
+`attr-classification-overrides.json`** — never in the DB rows alone. Anything written straight to
+the table is temporary by construction.
+
+⚠ Trace how the value reached the CTA attributes before you fix anything. The correlation is exact
+— 1px/solid on the featured card, 2px/dashed on the trial card, matching the two draft rules — but
+the mechanism was never proven. Fixing the selector may leave the CTA leak in place.
+
+⚠ **The deriving rule is shared, so this is not product-card-only.** Any attr named `border*` on
+any block gets the same phantom element. That is what the detector below must measure — the
+blast radius was never counted.
 
 ### 1b — The trial card's gradient background is dropped
 
