@@ -155,11 +155,20 @@ function parseLength( raw ) {
  *                                   use the per-unit range in UNIT_RANGES.
  * @param {number}   [props.max]     RangeControl maximum override. Omit to
  *                                   use the per-unit range in UNIT_RANGES.
- * @param {boolean}  [props.presets=false] Offer the theme.json spacing-scale
- *                                   dropdown per side. OPT-IN, default OFF —
- *                                   see file header. Falls back to the plain
- *                                   control when the active theme declares no
- *                                   spacing scale, same as SgsLengthControl.
+ * @param {boolean|ReadonlyArray<string>} [props.presets=false] Offer the
+ *                                   theme.json spacing-scale dropdown per
+ *                                   side. OPT-IN, default OFF — see file
+ *                                   header. `true` offers the FULL scale;
+ *                                   an array of spacing slugs (e.g.
+ *                                   `[ 'XXS', 'XS', 'S' ]`, D-2026-08-27
+ *                                   box-control-presets-rollout) restricts
+ *                                   the dropdown to that subset — for a
+ *                                   property like border-width where the
+ *                                   full XXS-XXXL ladder is nonsensical.
+ *                                   Falls back to the plain control when the
+ *                                   active theme declares no spacing scale
+ *                                   (or the array resolves to zero matching
+ *                                   sizes), same as SgsLengthControl.
  * @return {JSX.Element} Controls fragment.
  */
 export default function SgsBoxControl( {
@@ -175,7 +184,17 @@ export default function SgsBoxControl( {
 	// Hook must run unconditionally regardless of the `presets` prop.
 	const [ spacingSizesRaw ] = useSettings( 'spacing.spacingSizes' );
 	const spacingSizes = flattenPresetSetting( spacingSizesRaw );
-	const hasPresets = presets && spacingSizes.length > 0;
+	// `presets` is EITHER `true` (full scale, unchanged pre-2026-08-27
+	// behaviour) OR an array of slugs (a filtered subset — e.g. border-width's
+	// restricted `[ 'XXS', 'XS', 'S' ]`, since offering the full spacing ladder
+	// for a border stroke width is nonsensical). Every other existing caller
+	// still passes `presets={ false }`, which `Array.isArray` safely treats as
+	// falsy, so this is zero-ripple for the pre-existing single-boolean callers.
+	const allowedSlugs = Array.isArray( presets ) ? presets : null;
+	const filteredSizes = allowedSlugs
+		? spacingSizes.filter( ( s ) => allowedSlugs.includes( s.slug ) )
+		: spacingSizes;
+	const hasPresets = ( presets === true || Array.isArray( presets ) ) && filteredSizes.length > 0;
 
 	const [ isLinked, setIsLinked ] = useState( () => {
 		const raw = sides.map( ( s ) => values[ s ] ?? '' );
@@ -232,14 +251,14 @@ export default function SgsBoxControl( {
 	 */
 	const presetRow = ( sideKey, value, onSideChange, rowLabel ) => {
 		const slug = presetSlugFromValue( value );
-		const knownPreset = slug ? spacingSizes.find( ( s ) => s.slug === slug ) : undefined;
+		const knownPreset = slug ? filteredSizes.find( ( s ) => s.slug === slug ) : undefined;
 		const isUnknownPreset = !! slug && ! knownPreset; // design doc row H
 
 		const selectValue = knownPreset ? slug : isUnknownPreset ? UNKNOWN_VALUE : value ? CUSTOM_VALUE : '';
 
 		const options = [
 			{ label: __( '— none —', 'sgs-blocks' ), value: '' },
-			...spacingSizes.map( ( s ) => ( { label: `${ s.name || s.slug } (${ s.size })`, value: s.slug } ) ),
+			...filteredSizes.map( ( s ) => ( { label: `${ s.name || s.slug } (${ s.size })`, value: s.slug } ) ),
 			{ label: __( 'Custom…', 'sgs-blocks' ), value: CUSTOM_VALUE },
 		];
 		if ( isUnknownPreset ) {

@@ -711,9 +711,13 @@ export default function Edit({ attributes, setAttributes, name }) {
           __experimentalBorder.__experimentalSkipSerialization so it
           serialises scoped, not inline. */}
         <PanelBody title={ __( "Wrapper border", "sgs-blocks" ) } initialOpen={ false }>
+          {/* presets={ [ 'XXS', 'XS', 'S' ] } — restricted to a small end-of-scale
+              subset (Bean's explicit call, 2026-08-27 rollout): the full
+              XXS-XXXL spacing ladder is nonsensical for a border stroke width,
+              unlike Padding/Margin above which offer the unrestricted scale. */}
           <ResponsiveBoxControl
             label={ __( "Border width", "sgs-blocks" ) }
-            presets
+            presets={ [ 'XXS', 'XS', 'S' ] }
             values={ { base: borderWidth ?? {} } }
             showResponsive={ false }
             onChange={ ( _tier, next ) => setAttributes( { borderWidth: next } ) }

@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/presets-array",
+	"title": "Fixture: ResponsiveBoxControl already carrying a restricted presets array (must not flag)",
+	"category": "sgs",
+	"attributes": {
+		"borderWidth": { "type": "object", "default": {} }
+	}
+}

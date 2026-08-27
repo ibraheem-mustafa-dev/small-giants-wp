@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-presets-prop",
+	"title": "Fixture: ResponsiveBoxControl with no presets prop at all (must flag)",
+	"category": "sgs",
+	"attributes": {
+		"padding": { "type": "object", "default": {} },
+		"paddingTablet": { "type": "object", "default": {} },
+		"paddingMobile": { "type": "object", "default": {} }
+	}
+}
