@@ -423,7 +423,42 @@ const BABEL_PARSE_OPTS = {
 // difference). Kept tiny and structural, same discipline as check-dead-
 // controls.js's EDITOR_ONLY_ATTRS — the primary escape hatch for a specific
 // finding is the baseline file below; this is for a genuinely universal name.
-const EDITOR_INVISIBLE_BY_DESIGN = new Set();
+//
+// Populated 2026-08-27 (11 attrs, 32 findings) from the triage register:
+// `reports/2026-08-26-check-a-triage-group-a.md` ("ARTEFACT — motion attrs
+// on a static canvas") + `reports/2026-08-26-check-a-triage-group-b.md`
+// ("Artefacts (10 findings)"). Every name here is EXACT-MATCH — deliberately
+// NOT a pattern/prefix test, so a real static property (e.g.
+// `backgroundRepeat`, this file's own worked example of a property the
+// canvas SHOULD show) can never be swept in by a loose match:
+//
+//   · bgSvgAnimation / bgSvgAnimationSpeed — motion: animation + its timing,
+//     nothing a static canvas can render.
+//   · bgParallax — motion: scroll-driven, no resting frame to show.
+//   · bgKenBurns / bgAnimationDuration — motion: animated pan/zoom + timing.
+//   · rowTransparent / rowHideOnScroll / rowShrink / rowShrinkHideTarget —
+//     scroll-gated two-state behaviour (site-header-row/site-footer-row);
+//     `rowShrink` already ships an opt-in "Show me the shrunk size" toggle —
+//     the house pattern for this class — and the other three have no single
+//     resting-state snapshot to preview (transparent-vs-solid and
+//     hidden-vs-visible ARE the whole two-state behaviour).
+//   · headerTransparentDirection — sequences which of two SCROLL-TRIGGERED
+//     states applies before/after scroll; no resting appearance of its own.
+//   · ariaLabel — screen-reader-only accessible name, correctly invisible to
+//     sighted users.
+const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
+	'bgSvgAnimation',
+	'bgSvgAnimationSpeed',
+	'bgParallax',
+	'bgKenBurns',
+	'bgAnimationDuration',
+	'rowTransparent',
+	'rowHideOnScroll',
+	'rowShrink',
+	'rowShrinkHideTarget',
+	'headerTransparentDirection',
+	'ariaLabel',
+] );
 
 // WP-native block-supports attribute names, consumed automatically by
 // useBlockProps()/WP's own serialization machinery — NOT by literal code in
@@ -3179,6 +3214,88 @@ function runSelfTest() {
 		failuresA
 	);
 
+	// Documented-exemption negative control (2026-08-27) — proves
+	// EDITOR_INVISIBLE_BY_DESIGN actually suppresses a finding that would
+	// otherwise fire. Same shape as the posADir positive control above
+	// (destructured + written by a control + never referenced outside its
+	// own InspectorControls binding — the exact shape that flagged
+	// `splitContentOrder`), but using `ariaLabel`, one of the 11 names in the
+	// exemption Set. If this ever starts failing, the exemption stopped
+	// suppressing and the 32 ARTEFACT findings it was built to silence would
+	// come back as noise.
+	const exemptDir = writeBlock( 'check-a-exempt-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-exempt-negative',
+			attributes: { ariaLabel: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, TextControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { ariaLabel } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<TextControl value={ ariaLabel } onChange={ ( v ) => setAttributes( { ariaLabel: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const exemptMeta = readDeclaredAttrs( exemptDir );
+	const exemptFindings = checkEditorCanvasDesync( exemptMeta.name, exemptDir, exemptMeta.attrs );
+	assertTrue(
+		! exemptFindings.some( ( f ) => f.attr === 'ariaLabel' ),
+		'documented-exemption fixture: ariaLabel is in EDITOR_INVISIBLE_BY_DESIGN and should NOT be ' +
+			'flagged (same otherwise-flaggable shape as the splitContentOrder positive control), but was',
+		failuresA
+	);
+
+	// Documented-exemption OVER-MATCH control (2026-08-27) — proves the
+	// exemption is an EXACT-NAME set, not a pattern, so a genuine static
+	// property the canvas SHOULD show is never swept in. `backgroundRepeat`
+	// is this file's own brief-cited worked example of a property the canvas
+	// should render (see reports/2026-08-26-check-a-triage-group-b.md, line
+	// 88's "canvas should show" case). Identical fixture shape to the
+	// ariaLabel exemption fixture above, differing only in the attribute
+	// name, so the ONLY thing under test is whether that name is in the
+	// exempt Set.
+	const overmatchDir = writeBlock( 'check-a-exempt-overmatch', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-exempt-overmatch',
+			attributes: { backgroundRepeat: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { backgroundRepeat } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ backgroundRepeat } onChange={ ( v ) => setAttributes( { backgroundRepeat: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const overmatchMeta = readDeclaredAttrs( overmatchDir );
+	const overmatchFindings = checkEditorCanvasDesync( overmatchMeta.name, overmatchDir, overmatchMeta.attrs );
+	assertTrue(
+		overmatchFindings.some( ( f ) => f.attr === 'backgroundRepeat' ),
+		'over-match fixture: backgroundRepeat is NOT in EDITOR_INVISIBLE_BY_DESIGN and should still be ' +
+			'flagged (proves the exemption is an exact-name set, not a pattern), but it was suppressed',
+		failuresA
+	);
+
 	if ( failuresA.length ) {
 		pass = false;
 		log( 'CHECK A — FAIL' );
@@ -3822,7 +3939,19 @@ function main() {
 	// ⛔ From here the rule reverts: DOWN only. Re-measure and lower after every
 	// drop. The next raise needs its own recorded justification, and "the number
 	// went up" is not one.
-	const CHECK_A_OPEN_BACKLOG = 238;
+	//
+	// 238 -> 206 (2026-08-27): the documented-exemption class above,
+	// `EDITOR_INVISIBLE_BY_DESIGN`, was populated with the 11 attribute names
+	// (32 findings) the triage register classified ARTEFACT — motion on a
+	// static canvas, scroll-gated two-state row behaviour, and pure a11y text
+	// with no sighted-editor equivalent (full reasoning + citations on the
+	// Set's own declaration above). These are canvas-legitimately-invisible,
+	// not newly fixed defects — a REAL finding this drop would fix stays a
+	// REAL finding; this drop only removes noise. Measured, not inferred:
+	// `node scripts/check-editor-render-parity.js --json` reported
+	// `editorCanvasDesync.netNew.length === 206` (30 accepted/baselined,
+	// unchanged) immediately after the exemption landed.
+	const CHECK_A_OPEN_BACKLOG = 206;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
