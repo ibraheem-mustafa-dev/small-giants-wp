@@ -1078,6 +1078,35 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     "fxTreatmentIntensity": "fx:treatment-intensity",
     "fxTreatmentShadow": "fx:treatment-shadow",
     "fxTreatmentHighlight": "fx:treatment-highlight",
+    #
+    # `fxPin` -> fx:pin (2026-08-28, registry-completeness gap). A real BLOCK
+    # attribute on sgs/image-sequence, read by `shared/effects/gsap/
+    # fx-image-sequence.js` as `data-sgs-fx-pin` to decide whether the canvas
+    # pins for the duration of its scrub. It had NO fx:* marker at all, so it
+    # sat at css_property=NULL with nothing marking it — the same
+    # registry-completeness gap `dragToScroll` had above, and the same fix.
+    # `attr-classification-overrides.json` already recorded the diagnosis in
+    # its own `_reason` field ("not yet seeded into the fx:* namespace ...
+    # unlike its siblings fxStart/fxEnd/fxScrub") without anyone acting on it.
+    "fxPin": "fx:pin",
+    #
+    # `fxDraggable` -> fx:drag-handle, NOT fx:draggable.
+    #
+    # ⛔ THE OBVIOUS NAME IS ALREADY TAKEN. `dragToScroll` claims `fx:draggable`
+    # ~70 lines above. These are two genuinely different mechanisms that both
+    # reasonably answer to the word "draggable", and collapsing them would lose
+    # which one a cloned draft's value belongs to (the same argument the
+    # fxTreatment* rows make for staying four rows rather than one):
+    #   · `dragToScroll` (sgs/gallery, sgs/buybox, sgs/google-reviews) — drag a
+    #     carousel horizontally to SCROLL it. Gates `data-sgs-fx="draggable"`.
+    #   · `fxDraggable`  (sgs/before-after) — GSAP Draggable free-drag on the
+    #     comparison DIVIDER (`before-after/view.js:20`, read as
+    #     `data-sgs-fx-draggable`). Nothing scrolls; it moves a handle.
+    # Hence `fx:drag-handle` — named for what it actually drags. This is a
+    # judgement call on a DB-namespace name, made deliberately and reversible:
+    # if a later spec amendment prefers a different value, change it here and
+    # reseed; nothing downstream hardcodes it.
+    "fxDraggable": "fx:drag-handle",
 }
 
 FX_EFFECTS_COLUMNS = (

@@ -1,3 +1,62 @@
+## D864 [ROUTINE] — three motion-fx registry gaps closed; the obvious `fx:` name was already taken, and the "already covered elsewhere" claim was false
+
+**2026-08-28.** Three defects in the motion-fx registry, each one letting a real defect pass a
+green gate. All three fixed in `seed-motion-fx-registry.py` + `db-consistency/check_motion_fx_reseed.py`.
+
+**1. Two attrs had no `fx:*` marker at all.** `sgs/image-sequence.fxPin` and
+`sgs/before-after.fxDraggable` both sat at `css_property = NULL` — the same
+registry-completeness gap `dragToScroll` had. `attr-classification-overrides.json` had already
+*recorded the diagnosis* in its own `_reason` field ("not yet seeded into the fx:* namespace …
+unlike its siblings") without anyone acting on it. Now `fx:pin` and `fx:drag-handle`, applied via
+`sgs-update-v2.py --stage 1`'s layer-2.5 channel, never a bare UPDATE (STOP-24).
+
+⛔ **`fxDraggable` deliberately does NOT take `fx:draggable` — that marker was already claimed.**
+`dragToScroll` holds it across six blocks. Two genuinely different mechanisms both answer to the
+word "draggable": `dragToScroll` drags a carousel to SCROLL it; `fxDraggable` is GSAP Draggable
+free-drag on the before/after DIVIDER, where nothing scrolls. Collapsing them would lose which one
+a cloned draft's value belongs to. Hence `fx:drag-handle` — named for what it actually drags.
+⚠ Anything pattern-matching `fx:draggable` expecting to catch before-after will not. Intentional.
+This is a judgement call on a DB-namespace name, reversible: change the map and reseed.
+
+**2. `in_picker` was written but never compared — and the reason given for that was wrong.**
+The seeder declares it and writes it; the guard never read it back. The seeder's own comment says
+`check-fx-list-drift.py` "compares it against SHIPPED_EFFECTS in BOTH directions", which reads like
+adding the comparison would duplicate it. **That claim is narrow-true and broad-false.** The drift
+gate explicitly does NOT read the DB — its docstring says it "stands ALONE" and takes the fact from
+the committed `generated-fx-effect-meta.json`. The real chain is
+`DB.in_picker → generate-fx-effects-php.py → meta.json → drift gate vs fx.js`, so it guards the
+DOWNSTREAM ARTEFACT, never the DB against the seeder. Hand-edit the column — failure mode (a) in
+the guard's own docstring — and **both** gates stay green until someone happens to regenerate the
+JSON, at which point drift fires and blames `SHIPPED_EFFECTS` for a corruption living in the DB.
+That gap is precisely this guard's remit. Comparison added.
+
+**3. `--self-test` proved 5 of the 10 columns it guarded.** `tier`, `plugin_set`,
+`reduced_motion`, `editor_story` and `creates_panel` were guarded-but-unproven — a regression in
+any of their branches read green forever. This is the *same failure the file's own comment records
+happening once already* with `pins`/`triggers` at D416; it had simply recurred, five columns wider,
+because nothing counts SELECT-width against tuple-length. Now 11 of 11, with the two
+migration-gated columns skipped rather than crashing on a pre-migration DB.
+
+**Proven by negative control, not by the suite going green.** Disabling the new `in_picker`
+comparison made the self-test report `in_picker: 1 -> 0 — NOT CAUGHT` and exit 1; restoring it
+returned 11/11 and exit 0. A passing self-test is not evidence until you have watched it fail.
+
+**Also fixed:** the summary line read `len(caught)`, a leaked loop variable holding the LAST
+column's result while claiming to summarise all of them — harmless while the tuple held five
+identical-shaped columns, actively misleading once the list is gated and varies per DB.
+
+⭐ **The cross-track announcement was not ceremony — it found two blocked tracks.** Announcing the
+`--stage 1` run to six live sessions before running it (D432 precedent) surfaced that these exact
+two NULL rows were *already failing other people's gates*: one session's `--blocks-only` deploy had
+aborted on them as 2 NEW F6 violations, and another had bypassed a pre-commit gate for them. The
+reseed unblocked both. A seventh reply flagged the rows as "already populated" — that was a read
+landing after my write, resolved by the before/after queries, and was the right instinct to raise.
+
+Post-run verified: both rows set, `dragToScroll` still `fx:draggable`, zero NULL `css_property` in
+the `fx%` family, `db-consistency/run.py --report` 0 NEW / 1 baselined (unrelated nav-drawer), exit 0.
+
+---
+
 ## D863 [INCIDENT] — "untestable" was wrong: the header row-collapse reduced-motion arm is now measured, and the reason it looked untestable is a doc-shaped trap
 
 **2026-08-27.** I reported the reduced-motion arm of the Spec 37 per-row header collapse as
