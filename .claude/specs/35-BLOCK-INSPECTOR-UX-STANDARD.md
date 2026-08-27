@@ -2621,6 +2621,52 @@ visibility belongs with step 1, not after it.
 **23 blocks violate** (`decorative-image` opens 5 of 7). Same findability harm as order, same files,
 same pass — doing it separately means touching all of them twice.
 
+##### THE ORDER CONVENTION — Bean-decided 2026-08-27 (answers CO-28 prerequisite (a) — RECORDED, not built)
+
+> **This is a separate question from THE PLACEMENT RULE above.** THE PLACEMENT RULE decides
+> *which panel a control belongs to* (TIER 1 element, TIER 2 property-family). This convention
+> decides *what order the panels/controls that placement produces appear in*. Neither implies the
+> other, and this section does not restate the placement rule — read it above if you need it.
+
+CO-28 named panel/cluster/control order as a binding obligation but explicitly refused to let
+anyone build a rule for it: *"Do NOT build a rule from this entry yet... (a) Bean picks the
+canonical panel order — a Rule 7 design gate."* Bean has now done exactly that. The convention:
+
+1. **Controls and panels follow the DOM order of the elements they configure** — top to bottom;
+   where two elements sit at the same level, left to right.
+2. **At the root level, follow WordPress-native ordering** — Styles, then Colour, then Typography.
+3. **Two pinned positions, independent of everything else on the page:** *Advanced* is ALWAYS last
+   in Settings. *Visibility conditions* is ALWAYS second-from-last.
+
+**This satisfies CO-28's prerequisite (a). Prerequisite (b) is untouched and still blocks a full
+order rule.** CO-28's hard dependency stands exactly as written above: *"CO-28 does not start until
+Cross-cutting A's placement backlog is worked"* — 65 (measured 2026-08-09: 58) of 83 blocks still
+have 2+ inspector panels with no `group` prop, i.e. most blocks have not even split into tabs yet.
+Sorting an unrouted pile into rule 1 or rule 2's sequence is not decidable until that backlog closes,
+and building a rule against it now would be enforcing an order most blocks cannot yet express.
+
+**Rules 1 and 2 are therefore recorded here but deliberately UNENFORCED** — the same "recorded,
+not gated" state every other part of CO-28 is already in, for the same stated reason. Do not build a
+detector for DOM-order or the root Styles→Colour→Typography sequence before the placement backlog
+closes; full JSX DOM-order inference is not reliably static-analysable in any case (see the README's
+own warning under "Adding a rule" — two regexes for one earlier ordering question returned 0 and 471
+in opposite directions from the same file).
+
+**Rule 3 is different: it does NOT depend on the placement backlog**, because it is not about
+sorting an unsorted pile — it is a guarantee two specific names already hold, structurally, for
+every block, via one shared mechanism (`src/blocks/extensions/conditional-visibility.js`, registered
+last in `extensions/index.js`, so its "Visibility conditions" panel lands immediately above core's
+own structurally-last `InspectorAdvancedControls` — "Advanced" — slot). That guarantee cannot be
+broken by the placement backlog; it can only be broken by a per-block `edit.js` authoring its own
+panel that steals one of the two pinned names. **Enforced by**
+`inspector-scan/rules/35-pinned-panel-position.js`, ADVISORY, `openBacklog: 1` — the one block that
+does this today is `sgs/heading` (`edit.js:542`, a bare `<PanelBody title="Advanced">` inside the
+default Settings group, holding an inherit-style toggle, nowhere near
+`InspectorAdvancedControls`). The rule is deliberately narrow: it asserts only that no block-authored
+panel carries the literal title "Advanced" or "Visibility conditions" outside the shared mechanism
+that owns those positions — it does not attempt DOM-order or root-sequence inference (that is
+rule 1/2's job, above, and stays unenforced until the placement backlog closes).
+
 #### CO-3. ToolsPanel on dense panels *(was condition 3 — downgraded to a bare remediation count)*
 Any panel with ~6+ controls uses `ToolsPanel`/`ToolsPanelItem` progressive disclosure (1–3
 `isShownByDefault`, `resetAll`). **Enforced by** `inspector-scan/rules/03-dense-panel-candidate.js`,
