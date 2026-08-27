@@ -329,10 +329,9 @@ with a plain-English reason. Frontend byte-identical before/after with a positiv
 C16 is COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`), with detector
 `inspector-scan/rules/36-box-control-presets-missing.js` and `scripts/migrate-box-control-presets.py`.
 C19 is rolled out to the full `aspectRatio` surface — `card-grid`, `gallery`, `image-sequence`,
-`media`, `post-grid`. ⚠ C19 shipped across 5 blocks with NO detector and no migrate script, and
-`detector-first-commit-gate.py` did not stop it: establish whether that is a hole in the gate or a
-change shape that legitimately does not qualify, before relying on that gate again. Residual: the
-one block `18806e6b0` deliberately skipped, and flipping rule 36 from advisory to blocking.
+`media`, `post-grid`. ⚠ C19 shipped across 5 blocks with NO detector and `detector-first-commit-gate.py` did not stop
+it — establish whether that is a gate hole before relying on it again. Residual: the one block
+`18806e6b0` skipped, and flipping rule 36 advisory -> blocking.
 
 ### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
 Root-caused: **three causes, not one bug** (`.claude/reports/2026-08-27-null-css-element-root-cause.md`).
