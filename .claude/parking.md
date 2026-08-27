@@ -358,8 +358,9 @@ roster and the inspector surface is stable.
 
 `sgs/button` grouping shipped (`270cd995`/D146). `sgs/testimonial-slider` is also already shipped
 (strike it from the original gap-candidate table). Genuinely open: `sgs/empty-state` block,
-`sgs/toggle` block (neither directory exists), plus the `sgs/timeline` rework — tracked separately
-as `P-TIMELINE-ADVANCED-VISUAL-EFFECTS`.
+`sgs/toggle` block (neither directory exists), plus the `sgs/timeline` rework — UNPARKED
+2026-08-27 (`19c52bc7c`, "unpark the timeline connector"); it is no longer a parking entry, so
+this line no longer cites one.
 
 **Trigger:** After cloning pipeline Method-2 lands.
 

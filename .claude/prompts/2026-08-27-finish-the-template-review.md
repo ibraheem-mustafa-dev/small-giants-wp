@@ -219,6 +219,74 @@ panel parity is separate design-gated work — get Bean's approval before buildi
 
 ---
 
+## Task 7 — folded from the retired 2026-08-25 container/archive prompt (verified 2026-08-27)
+
+✅ **VERIFIED CLOSED — solid option-picker contrast (source doc's item 1).** D774
+(2026-08-24) already verified this: canary page 2736 `[GATE - DO NOT DELETE]` is the
+fixture, `sgs/card-grid` `source:"cpt-collection"` `contentType:"product"`. Measured
+resting border 13.14:1 vs the white card. Nothing left to do.
+
+✅ **VERIFIED CLOSED — `woocommerce/catalog-sorting` unstyled (C1).** Re-confirmed
+2026-08-27: `theme/sgs-theme/assets/css/woocommerce.css:2401,2425` has real
+`select.orderby` rules (incl. `:focus-visible`). Matches this doc's own note above — do
+not re-flag.
+
+⚠ **CHANGED — flexWrap default flip (source doc's item 3).** The 94/4 figure was stale.
+Live canary count 2026-08-27 (`wp db query` against all 38 posts/pages carrying
+`wp:sgs/container`, regex-parsed): **131 stored instances, 127 with no `flexWrap` key, 4
+with no attributes object at all.** Growth from 94→127 tracks new pages built since. ⛔
+Several are `[GATE - DO NOT DELETE]` fixtures — do not hand-edit; still needs a migration
+script with its own verification pass, not a manual sweep.
+
+⚠ **CHANGED — "~59 accidental columns" (source doc's item 4).** That split is RETIRED,
+confirmed unreproducible (D-log, 2026-08-25): `survey-flex-row-shape.py` skips any
+container with an explicit `flexWrap`, and a same-day commit authored `flexWrap:"wrap"`
+on 80 containers, silently removing them from the count. Classifier re-run with that
+filter removed: **125 file-authored flex rows, 83 non-NO-OP** — that is the real current
+number, not 59. Handed to the migration track alongside item above. `layout:"stack"` is
+the correct destination for a row that's really a stack, but converting one changes its
+children from content-sized to full-width — a VISIBLE change. Bring Bean screenshots per
+candidate; do not batch-convert.
+
+⚠ **CHANGED, still open — the 375px readable-card floor (source doc's item 5).**
+Re-measured live 2026-08-27: shop archive is still 1-up, now **312px** (was 327px).
+PDP related-products rail is **no longer the wrapping 2-up grid** the source doc
+described — commit `460b0d28d` turned it into a horizontal peek-scroll carousel; live
+width is now **140px/card** (was 155px), still under the 167-195px floor, but the
+mechanism changed from "grid too narrow" to "carousel peek width" — that may change
+whether the floor even applies. **Ask Bean, do not decide the design question yourself.**
+
+✅ **VERIFIED CLOSED, non-issue — G1 (`index.html` vs `archive.html` "near-duplicate").**
+Diffed live 2026-08-27: they are NOT duplicates. `index.html` is a plain post list
+(`query-title` + flat `post-template`); `archive.html` is a full card grid with
+`term-description`, 3-col `post-template` grid, styled cards, its own no-results copy.
+Structurally different templates. (`index.html` is also unreachable —
+`show_on_front=page` — so this was always low-stakes.)
+
+**OPEN — G3, which templates are genuinely ours.** Not resolved this pass; still needs a
+manual walk of the template list against what WooCommerce/core ship by default vs what
+this project authored. (G2 stays answered per the source doc: Products by Attribute has
+no reachable URL, both product attributes `attribute_public=0`.)
+
+**ANSWERED — F, the "infinite scroll that used to exist".** Full `git log` archaeology
+found **no evidence archive templates ever had infinite scroll.** Every archive-family
+template (`archive.html`, `archive-product.html`, `search.html`) has used numbered
+`core/query-pagination` since its first commit (`3d536f114`/`e4fe5383f`). The only
+infinite-scroll code in the repo is a pagination TYPE option on `sgs/post-grid`
+(`c46966fe7`) — a block never used in any template file. There is nothing to restore;
+the premise behind item F was false.
+
+**UNCHANGED — D1-D4 archive inconsistency.** Reconfirmed live 2026-08-27:
+`archive-product.html` uses `sgs/product-search`, `search.html` uses core `wp:search` —
+genuinely different blocks, not a styling slip. Still a design decision for Bean, not an
+implementation task.
+
+**Coverage gap — two templates never opened in the editor.** This review's twelve-URL
+table above covers Search Results, Single Product and Products by Attribute, but not
+**Order Confirmation** or **Coming soon** — neither has been opened in the Site Editor
+this track. Add them to the "never opened" list; they are outside the twelve already
+verified.
+
 ## Carried open item — not this session's scope
 
 The OUTER root-element vocabulary fix has a deferred tail: `db_lookup.py`'s

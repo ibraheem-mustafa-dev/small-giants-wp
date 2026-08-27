@@ -1,3 +1,109 @@
+## D838 [INCIDENT] — two products shared one phase sequence; the ambiguity cost a session, and three factual claims about it were wrong
+
+**2026-08-27.** Bean, after a full session of cross-purposes: *"What are the 3 phases for if we're
+not rebuilding the Stripe POC into a useful configurable effect?"* — asked twice, because the first
+answer did not address it.
+
+⭐ **Root cause: ONE plan file held phases belonging to TWO different products.**
+`plans/phase-1-fr3831-hygiene-and-look.md` numbered Phase 1 (FR-38-31, the shipped
+`flowing-gradient` fx effect) alongside Phases 2 and 3 (the POC rebuild — our own configurable
+generative-background engine). A single numbered sequence spanning two products means "Phase 3"
+reads as *"more FR-38-31 work"* to one reader and *"the spec for building our own tool"* to
+another. **Both readings were defensible from the text**, so neither party could converge by
+re-reading it. The same conflation sat in `LEDGER.md` (one "MOTION TRACK" section) and in the
+technique spec's own frontmatter (*"reference spec for the FR-38-31 rework"*).
+
+**Fix — the two tracks are now separated and cannot share a phase number:**
+- `plans/archive/2026-08-26-fr3831-look-gate.md` — FR-38-31 only, CLOSED, with its central bet
+  recorded as **wrong** (*"the rejected look turns out to be four CSS values, not a shader
+  problem"* — it was not; a palette change, a full technique change and a regression fix later,
+  the verdict was still negative).
+- `plans/2026-08-27-generative-background-engine.md` — the rebuild, old Phases 2+3 renumbered from 1.
+- The technique spec `git mv`d to `reports/2026-08-25-generative-background-engine-technique-spec.md`
+  with a re-head block. ⛔ **No pointer left at the old path** — `handoff-preflight.py`'s
+  `check_no_tombstones` fails on exactly that; the five inbound references were updated instead.
+
+⭐ **The characterisation that caused the argument was mine and it was wrong.** I described Phase 3
+as *"a rewrite of a specification document, not a rebuild"*. Word-accurate, meaning-false: the
+document is titled *"technique — **implementation reference**"*, carries a licence position, seven
+named build mechanisms, calibration values, "Notes for a Tier W implementation" and cost
+expectations, and the anatomy report's Q7 is *"What could we reproduce with our own assets?"*
+**It is the build spec for our own tool.** And **D794's NO-GO was about COMPLETENESS, not
+purpose** — no animation section, no camera/coordinate space, no acceptance criteria, no target
+file. Exactly one finding was directional and it was a re-ranking. Nothing said the goal was wrong.
+Bean's reading was right throughout; the document was mischaracterised to him twice.
+
+⛔ **Three factual claims made this session were wrong. All three came from stopping the trace too
+early.**
+1. **"There is no speed control at all."** FALSE. `fxWaveSpeed` is wired end to end: `RangeControl`
+   (`fx.js:2598-2613`) -> attribute (`:1054`) -> `data-sgs-fx-wave-speed` (`:1306`,
+   `fx-attributes.php:110`) -> read (`fx-wave-gradient.js:227`) -> `rate` (`:250`) -> applied at
+   `elapsed += (now-last)*0.001*rate` (`:271`). I grepped the SHADER file for "speed", found only a
+   comment, and concluded absence without following the chain into the boot module.
+2. **"At max it moves ~10% of screen width per second."** Wrong by ~4x, in the direction that
+   understates the defect. `v_uv` runs 0..2 and `uv = v_uv - 1.0`, so **uv spans 2 units, not 1**,
+   and `uv.x` is further multiplied by aspect (`wave-gradient.js:214-219`). With
+   `sampleUv = uv*freq + drift*t`, the true fraction is **`drift/(2*freq*aspect)`** = 0.87%/sec at
+   1393x761 — **~115 seconds to cross one screen** at the default. Caught by `/qc` on the plan,
+   not by me.
+3. **Spec 38's FR-38-31 description was stale** — still described the vertex-displaced mesh D827
+   replaced with a fullscreen triangle + per-pixel noise. Corrected in the same pass.
+
+⛔ **A near-miss worth its own line: an ambiguous string match clobbered another track's LEDGER
+section.** `s.index('## ▶ MOTION TRACK')` matched line 17, where that string appears **inside
+backticks** in the header prose, not the real heading at line 93 — so a replace-to-next-heading
+wiped the entire Mama's-clone track (D830-D835) and the shared header guidance. Caught immediately
+by `git diff --stat` reading 115 deletions for a scoped edit, and reverted with `git checkout` (the
+file was clean, so nothing was lost). **Re-done with a newline+em-dash anchor plus assertions that
+the match is unique and the captured range contains neither "MAMA" nor "CONSOLIDATION".** This is
+the recorded `resolve-every-match-back-to-its-owner` failure, on a SHARED file, and the byte-count
+discrepancy (3,358 measured vs 8,796 replaced) was the tell. ⚠ A second concurrent write landed
+mid-session too: `decisions.md` gained D837 from another track between deriving the ceiling and
+writing this entry — the assertion caught it. **Derive the D-ceiling immediately before the write,
+not at the start of the work.**
+
+**Bean's decision, recorded:** finish and close FR-38-31 as the modest effect it is (speed default
+and range, help-text reword, controls made default-visible, name honesty), THEN start the engine
+track properly — with its reference picked up front, which has never once been done and is what
+D781's rule demands in capitals.
+
+## D837 [ROUTINE] — D833's `layout` enum seed vs D774's refusal: reconciled, not a live bug — and D774's doctrine claim was overstated
+
+**2026-08-27.** Spot-checking a folded task surfaced what looked like a direct contradiction:
+D774 (2026-08-24) says ⛔ *"Do NOT add `enum`/allowlist `['', 'flex', 'stack', 'grid']` to
+`layout`"*, and D833 did exactly that on 12 blocks (`94a3ab684`). Ran down rather than assumed.
+**Verdict: not a live bug, but D774 stays partly right and its doctrine claim is now corrected.**
+
+⭐ **D774's concrete breakage warning was correctly avoided.** It named three blocks passing
+legitimate non-flex values straight through the shared wrapper — `sgs/gallery`
+(`masonry`/`carousel`), `sgs/post-grid` (`list`/`masonry`/`carousel`) and
+`sgs/testimonial-slider` (`full`/`split`, with `full` as its DEFAULT, so an allowlist would have
+broken every slider out of the box). **None of the three is among D833's 12.** They already
+carried their own `enum_values`, so they fell outside the "13 blocks with NULL" scope by
+construction, not by luck — but the exclusion is real and holds.
+
+⛔ **D774's second objection does NOT hold as stated and should not be cited again.** It claims
+*"A JSON enum is also project-banned doctrine (Spec 36:820, 'No JSON `enum` — validate in PHP')"*.
+Read at source, Spec 36:820 is a **per-attribute note on `headingLevel`**, not a project-wide ban:
+`| headingLevel | string | 'h3' | h2–h6 or p. **No JSON enum** — validate in PHP |`. D774
+generalised one row of an attribute table into blanket doctrine. The *reason* in that row is real
+and general (`blockjson-enum-coerces-invalid-to-default` — an out-of-enum stored value is silently
+coerced to the default); the *prohibition* is not.
+
+**The residual risk that reason implies was measured, not reasoned.** Adding an enum creates
+silent-coercion exposure for any already-stored out-of-enum value. Checked both authoring surfaces:
+theme `patterns`/`templates`/`parts` set `layout` on none of the 12; and 236KB of live canary
+`post_content` (all `publish`+`draft` posts carrying `wp:sgs/`) parsed for a `layout` value outside
+`['', 'flex', 'stack', 'grid']` on those 12 → **zero**. ⚠ The first attempt at that query used a
+PCRE negative lookahead in MySQL `REGEXP`, which its ICU engine does not support — it returned
+empty and would have read as a clean bill of health. Re-run as a parse in Python. A regex engine
+that silently accepts an unsupported construct and matches nothing is the same false-absence shape
+as D834's SQL `LIKE` wildcard.
+
+**Standing:** the enum stays. `sgs/cta-section` remains excluded (D833's legacy
+`centred`/`left`/`split` vocabulary). Anyone adding `layout` to a 13th block must first check it
+does not pass a value outside the four — the D774 list is the precedent, not an exhaustive roster.
+
 ## D835 [ROUTINE] — session close-out: two stored-content migrations unblocked deploy, one false-positive consistency finding baselined; one OUTER-guard tail deliberately deferred
 
 **2026-08-27.** En route to D830-D834. Two pre-existing stored-content type mismatches on the
@@ -1931,7 +2037,7 @@ file drifting into tracked git, a snippet pasted into shipped code, an agent rep
 doc. Gate E manages that, not legality.
 
 **The durable asset was extracted FIRST**, which is what makes the originals disposable rather than
-quietly load-bearing: `.claude/reports/2026-08-25-flowing-gradient-technique-spec.md` describes
+quietly load-bearing: `.claude/reports/2026-08-25-generative-background-engine-technique-spec.md` describes
 every mechanism in our own words, with no third-party source (gate: zero code fences, zero GLSL
 syntax). Combined with the Q7 finding that four hue-adjacent stops beat a painted palette, **the
 FR-38-31 rework needs nothing from the originals.**
