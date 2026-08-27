@@ -111,6 +111,13 @@ final class SGS_Blocks {
 		// attribute — no bespoke sniff needed.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-surface-treatment.php';
 
+		// Particle trail per-instance colour (FR-38-32, D846). Same p11 slot:
+		// resolves the stored palette slug and emits a uid-scoped <style>
+		// setting --sgs-fx-particle-colour, which particles.js prefers over the
+		// inherited `color`. Opt-in — with no colour set this filter returns
+		// early and the trail keeps its original inherited-text-colour default.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-particles.php';
+
 		// Flip on WooCommerce Product Collection re-filtering (Spec 38
 		// FR-38-12, redirected 2026-08-20 — see the design gate this file's
 		// docblock points to). A `render_block_woocommerce/product-collection`

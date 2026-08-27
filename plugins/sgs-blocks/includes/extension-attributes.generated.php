@@ -25,6 +25,7 @@ return array(
 	'fxMagnetRadius' => array( 'type' => 'number' ),
 	'fxMagnetStrength' => array( 'type' => 'number' ),
 	'fxMask' => array( 'type' => 'string' ),
+	'fxParticleColour' => array( 'type' => 'string' ),
 	'fxParticleDensity' => array( 'type' => 'number' ),
 	'fxParticlePreset' => array( 'type' => 'string' ),
 	'fxParticleSize' => array( 'type' => 'number' ),

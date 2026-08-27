@@ -238,7 +238,14 @@ export function createParticles( el, opts = {} ) {
 		// r <= sqrt( 0.10 * A / ( pi * CAP ) ) — see the docblock derivation.
 		maxRadius = Math.sqrt( ( 0.1 * area ) / ( Math.PI * MAX_PARTICLES ) );
 
-		colour = getComputedStyle( el ).color || colour;
+		// Read from the CANVAS, not the emitter (D846). The canvas declares
+		// `color: var( --sgs-fx-particle-colour, inherit )` in fx-particles.css,
+		// so this single read covers both cases and always returns a resolved
+		// `rgb()`: the client's override when one is set, and the emitter's
+		// inherited text colour (the pre-D846 behaviour) when one is not.
+		// Reading the custom property directly would return the literal
+		// `var(--wp--preset--color--x)` text, which canvas cannot paint with.
+		colour = getComputedStyle( canvas ).color || colour;
 	}
 
 	/**

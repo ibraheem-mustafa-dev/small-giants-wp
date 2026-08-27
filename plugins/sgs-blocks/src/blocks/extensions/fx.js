@@ -1070,6 +1070,14 @@ function addFxAttributes( settings, name ) {
 			fxParticlePreset: { type: 'string', default: '' },
 			fxParticleDensity: { type: 'number' },
 			fxParticleSize: { type: 'number' },
+			/*
+			 * Optional colour OVERRIDE (D846). Empty by default, and empty means
+			 * the shipped behaviour is unchanged: `particles.js` falls back to the
+			 * emitter's inherited `color`. Stores a palette SLUG (DesignTokenPicker's
+			 * own value shape, same as `fxFieldColour`) so re-theming re-colours the
+			 * trail, resolved to `var(--wp--preset--color--<slug>)` in PHP.
+			 */
+			fxParticleColour: { type: 'string', default: '' },
 			fxFieldBlend: { type: 'number' },
 			/* Stored as `fxFieldTrail`, shown to the client as "Drag weight".
 			   The names differ DELIBERATELY. This is a lerp follower and has no
@@ -1316,6 +1324,7 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-treatment-intensity': attributes.fxTreatmentIntensity,
 		'data-sgs-fx-particle-density': attributes.fxParticleDensity,
 		'data-sgs-fx-particle-size': attributes.fxParticleSize,
+		'data-sgs-fx-particle-colour': attributes.fxParticleColour,
 	};
 	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
 	// discarded a deliberate 0 — see the attribute declarations above.
@@ -2851,6 +2860,30 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											'A ceiling derived from this block\'s own size still caps how large any single particle can get, so this never overwhelms a small button.',
 											'sgs-blocks'
 										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxParticleColour
+									}
+									label={ __( 'Trail colour', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxParticleColour: '' } )
+									}
+									isShownByDefault
+								>
+									<DesignTokenPicker
+										label={ __(
+											'Trail colour',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxParticleColour }
+										onChange={ ( value ) =>
+											setParam( {
+												fxParticleColour: value,
+											} )
+										}
 									/>
 								</ToolsPanelItem>
 

@@ -31,7 +31,23 @@
 	display: inline-block;
 }
 
+/*
+ * ── WHERE THE TRAIL'S COLOUR COMES FROM (D846) ────────────────────────────
+ * `particles.js` reads the canvas's own computed `color`, NOT the emitter's,
+ * and this one line is why. The override custom property is set by
+ * `includes/fx-particles.php` as `var(--wp--preset--color--<slug>)` so the
+ * client's palette token stays LIVE — but a custom property read back with
+ * `getPropertyValue()` returns that `var(...)` text UNRESOLVED, and a canvas
+ * cannot paint with a string. Declaring it on a REAL property here forces the
+ * cascade to resolve it, so `getComputedStyle( canvas ).color` is always a
+ * concrete `rgb()`.
+ *
+ * The `inherit` fallback is the shipped default: with no override set the
+ * canvas inherits the emitter's text colour, exactly as before D846. That is
+ * what keeps this change opt-in and every existing instance byte-identical.
+ */
 .sgs-particles__canvas {
+	color: var( --sgs-fx-particle-colour, inherit );
 	position: absolute;
 	inset: 0;
 	z-index: 1;

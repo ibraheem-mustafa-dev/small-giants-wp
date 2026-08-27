@@ -151,6 +151,7 @@ const FX_ATTR_MAP = array(
 	'fxParticlePreset'     => 'data-sgs-fx-particle-preset',
 	'fxParticleDensity'    => 'data-sgs-fx-particle-density',
 	'fxParticleSize'       => 'data-sgs-fx-particle-size',
+	'fxParticleColour'     => 'data-sgs-fx-particle-colour',
 );
 
 /**
@@ -449,7 +450,7 @@ function sgs_fx_effect_param_scope(): array {
 		 * omitting this row would wipe the client's chosen preset/density/
 		 * size on every render regardless of which effect is selected.
 		 */
-		'particles'         => array( 'fxParticlePreset', 'fxParticleDensity', 'fxParticleSize' ),
+		'particles'         => array( 'fxParticlePreset', 'fxParticleDensity', 'fxParticleSize', 'fxParticleColour' ),
 	);
 }
 
