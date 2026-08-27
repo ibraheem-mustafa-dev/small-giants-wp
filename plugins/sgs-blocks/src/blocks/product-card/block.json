@@ -679,6 +679,11 @@
 			"default": "",
 			"description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
 		},
+		"priceFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the price element, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
+		},
 		"descFontSize": {
 			"type": "object",
 			"default": {}
@@ -698,6 +703,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour for the product description text. Theme token slug or raw hex. Empty = theme default."
+		},
+		"descFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the product description text, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
 		},
 		"pillFontSize": {
 			"type": "object",
@@ -719,6 +729,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour for the price-note text. Theme token slug or raw hex. Empty = theme default (muted)."
+		},
+		"priceNoteFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family for the price-note text, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font."
 		},
 		"priceFromLabelFontSize": {
 			"type": "object",

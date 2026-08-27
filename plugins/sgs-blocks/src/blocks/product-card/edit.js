@@ -1693,6 +1693,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="desc"
+							showFontFamily
 							showWeight={ false }
 							showStyle={ false }
 						/>
@@ -1761,6 +1762,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="price"
+							showFontFamily
 							showStyle={ false }
 							showLineHeight={ false }
 						/>
@@ -1768,6 +1770,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="priceNote"
+							showFontFamily
 							showWeight={ false }
 							showStyle={ false }
 							showLineHeight={ false }
