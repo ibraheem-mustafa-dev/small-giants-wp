@@ -144,3 +144,13 @@ sites/*.zip
 .superpowers/
 plugins/sgs-blocks/scripts/.coverage
 plugins/sgs-blocks/scripts/parity/__fluid_selftest_fixtures__/
+
+# Third-party reference checkouts and scratch output that live inside the plugin
+# dir but are NOT part of it. Untracked files are INVISIBLE to build-deploy.py's
+# dirty gate (it reads `git status` tracked files) yet VISIBLE to tar, so without
+# this they ship to the canary. Proven 2026-08-27 with a controlled tar test:
+# `--exclude=plugins/sgs-blocks/src` is path-anchored and does NOT match
+# `plugins/sgs-blocks/stackable/src`, so 278MB of a competitor's GPL tree would
+# have been uploaded into the live plugin directory, web-accessible.
+plugins/sgs-blocks/stackable/
+plugins/sgs-blocks/now.tmp.json

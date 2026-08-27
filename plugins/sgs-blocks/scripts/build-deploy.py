@@ -81,6 +81,14 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 PLUGIN_DIR = REPO_ROOT / "plugins" / "sgs-blocks"
 BUILD_DIR = PLUGIN_DIR / "build"
 TARBALL_NAME = "sgs-deploy.tar"
+# Ceiling for the packaged tarball. MEASURED, not guessed: a blocks-only deploy on
+# 2026-08-27 was 113MB -- scripts/ 43MB, vendor/ 40MB, build/ 14MB. The first version
+# of this guard used 60MB from intuition and fired on the legitimate baseline, which
+# is exactly the 'gate that cries wolf' failure. 150MB sits above the real baseline
+# and still catches the case this exists for (278MB of vendored third-party source).
+# ⚠ Raise this ONLY after measuring, and say what grew. Whether scripts/ (dev tooling,
+# 43MB) belongs on a production server at all is a separate, unasked question.
+TARBALL_MAX_MB = 150
 
 # WP-internal post types whose post_content structurally cannot carry SGS block
 # markup. Everything else on the site — pages, posts, reusable blocks, templates,
@@ -99,6 +107,16 @@ TAR_EXCLUDES = [
     "plugins/sgs-blocks/_retired",
     "*.pyc",
     "__pycache__",
+    # Third-party reference checkouts + scratch output that sit INSIDE the plugin
+    # dir without being part of it (2026-08-27). Both were UNTRACKED, and an
+    # untracked file is invisible to deployed_dirty_files() -- which reads tracked
+    # files from `git status` -- while being perfectly visible to tar. 278MB of a
+    # competitor's GPL source would have landed web-accessible inside the live
+    # plugin directory. Proven with a controlled tar test, not inferred: the
+    # existing "plugins/sgs-blocks/src" pattern is PATH-ANCHORED and so does NOT
+    # match "plugins/sgs-blocks/stackable/src".
+    "plugins/sgs-blocks/stackable",
+    "plugins/sgs-blocks/now.tmp.json",
 ]
 
 # Mirror of the tarball scope, used by deployed_dirty_files(). Keep in step with
@@ -533,6 +551,64 @@ def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
     if not dry_run and not (REPO_ROOT / TARBALL_NAME).exists():
         err(f"tarball not produced: {REPO_ROOT / TARBALL_NAME}")
         return 2
+
+    # STRUCTURAL SIZE GUARD (2026-08-27). The named excludes fix the two strays we
+    # found; this catches the NEXT one. Any untracked tree dropped inside
+    # plugins/sgs-blocks or theme/sgs-theme is invisible to the dirty gate and ships
+    # silently -- the only symptom is a suddenly huge tarball, and "the deploy is a
+    # bit slow" is exactly how that goes unnoticed. Fail closed and NAME the biggest
+    # members, so the next person is not left guessing what got in.
+    if not dry_run:
+        size_mb = (REPO_ROOT / TARBALL_NAME).stat().st_size / (1024 * 1024)
+        if size_mb > TARBALL_MAX_MB:
+            err(
+                f"tarball is {size_mb:.0f}MB, over the {TARBALL_MAX_MB}MB ceiling. "
+                "Something that is not part of the plugin/theme is being packaged."
+            )
+            try:
+                import subprocess as _sp
+                out = _sp.run(
+                    ["tar", "-tvf", TARBALL_NAME],
+                    cwd=str(REPO_ROOT), capture_output=True, text=True, timeout=180,
+                ).stdout.splitlines()
+                tops: dict[str, int] = {}
+                # `tar -tvf` prints: perms owner group SIZE date time path.
+                # Do NOT index a fixed column: the first two cuts of this guard did
+                # (parts[2], then "first digit in parts[1:5]") and both silently read
+                # the OWNER id 0, accumulating zeros and printing an alphabetical list
+                # of 0.0MB rows that named nothing. Anchor on the DATE instead and take
+                # the integer immediately before it. Verified against the real 113MB
+                # tarball: totals 108.6MB and names scripts/vendor/build, matching an
+                # independent awk pass. A diagnostic that fails quietly is worse than
+                # no diagnostic, because it reads as an answer.
+                import re as _re
+                _MONTH = _re.compile(r"^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$")
+                _DATE = _re.compile(r"^\d{4}-\d{2}-\d{2}$")
+                for line in out:
+                    parts = line.split()
+                    if not parts:
+                        continue
+                    nbytes = None
+                    for idx, tok in enumerate(parts):
+                        if _MONTH.match(tok) or _DATE.match(tok):
+                            for j in range(idx - 1, -1, -1):
+                                if parts[j].isdigit():
+                                    nbytes = int(parts[j])
+                                    break
+                            break
+                    if nbytes is None:
+                        continue
+                    key = "/".join(parts[-1].rstrip("/").split("/")[:3])
+                    tops[key] = tops.get(key, 0) + nbytes
+                for path, nbytes in sorted(tops.items(), key=lambda kv: -kv[1])[:8]:
+                    err(f"    {nbytes / (1024 * 1024):8.1f}MB  {path}")
+            except Exception as exc:  # noqa: BLE001 - diagnostics only
+                err(f"    (could not enumerate tar members: {exc})")
+            err(
+                "Fix: add it to TAR_EXCLUDES + .gitignore, or move it out of the "
+                "plugin/theme directory. Do NOT raise the ceiling to get past this."
+            )
+            return 2
     log(f"[2/5] Packaging tarball: OK ({TARBALL_NAME})")
     return 0
 
