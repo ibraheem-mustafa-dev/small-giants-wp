@@ -1,0 +1,4 @@
+{
+	"_comment": "Accepted destructive-only-control findings (check-destructive-only-controls.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails --check ONLY on findings NOT listed here. Key shape: { check, block, attr, reason }. To accept a finding add it here with a reason; to fix one, add the missing replace/set control to the same branch and delete the entry. Empty `accepted` = zero tolerance.",
+	"accepted": []
+}
