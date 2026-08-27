@@ -1,3 +1,79 @@
+## D854 [INCIDENT] — the twelve-template review closed: all 5 defects fixed, 2 were WordPress/WooCommerce config, not code
+
+**2026-08-28.** Task 1 (the twelve-template live review, deferred five times) is CLOSED. Every
+one of the twelve confirmed URLs was opened live this session; all five defects + the tag-enum
+gap are fixed and live-verified — not re-read in code.
+
+**1. Taxonomy pages never rendered — root cause was NOT a template naming mismatch.** The
+predecessor prompt's hypothesis ("`taxonomy-product_attribute.html` should be `taxonomy-pa_flavour.html`")
+was WRONG — verified by reading WooCommerce's own `ProductAttributeTemplate.php`: WooCommerce
+genuinely maps every `pa_*` archive to the `taxonomy-product_attribute` slug for block themes,
+and the theme's template was correctly named. The REAL cause, proven via `wp eval` reproducing
+`WP::parse_request()` line-by-line: WordPress core explicitly strips `taxonomy`/`term` from the
+query when the named taxonomy is not `publicly_queryable` (`wp-includes/class-wp.php`) — and
+both WooCommerce attributes (`flavour`, `size`) had `attribute_public = 0` in
+`wp_woocommerce_attribute_taxonomies` (WooCommerce's "Enable Archives?" setting, off by default).
+With query_vars empty, the main query fell through to the front page — a 200 that looked like a
+template bug but was a store-configuration gap. **Fix: `UPDATE wp_woocommerce_attribute_taxonomies
+SET attribute_public = 1` for both attributes** + clear the `wc_attribute_taxonomies` transient +
+`wp rewrite flush --hard`. No code or template change. Live-verified: `/?taxonomy=pa_flavour&term=banana`
+now 301s to `/flavour/banana/` with a real breadcrumb, title and 3 scoped products.
+
+**2. `page.html`'s lifted CSS 404 — already resolved, no code change needed.** Re-tested live
+(Playwright screenshot of page 2849): the enqueued CSS file returns 200, header/nav render with
+full flex layout. Must have self-healed via one of the D830-D851 fixes or a later save. The
+brief's cited filename (`sgs-2506-693c…`) didn't match the live one (`sgs-2543-7a1f7f…`) —
+another sign the state had already moved on.
+
+**3. `core/query-pagination` had zero CSS anywhere — confirmed and fixed.** Added a real
+stylesheet contribution to `theme/sgs-theme/assets/css/core-blocks.css` (teal-outline buttons
+matching the existing "SGS Secondary" pattern's tokens, 44px touch targets, solid-fill current
+page, focus-visible glow). Selectors verified against the LIVE rendered DOM (not assumed) before
+commit — `.wp-block-query-pagination`, `.page-numbers`, `.page-numbers.current`,
+`.wp-block-query-pagination-next` all matched exactly. `style.css` Version bumped 1.5.83→1.5.84
+so the CDN cache busts. Live-verified on `/?s=test`: real button-styled pagination.
+
+**4/5. Empty footer headings + "T1TOP A"/"T1TOP B" placeholder — same root cause, fixed by a
+one-option config change, not content editing.** Investigation traced both defects to the SAME
+source: `sgs_active_footer_cpt_id` (a `Sgs_Active_Layout` option, `class-sgs-active-layout.php`)
+pointed at post 1654, a `sgs_footer` CPT literally titled **"T1 Footer Columns"** — a test
+fixture with unfilled `sgs/heading` blocks and "T1TOP A"/"T1TOP B" placeholder text baked into
+its own stored content, sitting live as the active footer. A second CPT post (1571, "Proof
+Footer") was the only other option, equally not real. Neither the theme's `parts/footer.html`
+file nor the `wp_template_part` "Footer" post (2673, `framework-footer-default` — real "Quick
+Links"/"Contact"/"Opening Hours" content) was ever reached, because the CPT active-pointer takes
+priority in `Sgs_Active_Layout::render_active()`. **Fix: `wp option update sgs_active_footer_cpt_id 0`**
+— per the class's own documented fallback contract, an invalid/missing active id falls through
+to the immutable framework default. Reversible (`wp option update sgs_active_footer_cpt_id 1654`
+restores the prior state). Live-verified sitewide (front page + a `single.html` post): zero
+"T1TOP" text, zero empty headings, real content everywhere. **Named but NOT fixed this session
+(surfaced by the config fix, minor, not one of the five defects):** the real footer's "Quick
+Links" `<ul>` is genuinely empty (no list items authored) — a content gap, not a code bug.
+
+**6. `main` missing from the container tag-dropdown — confirmed as a UI-only gap, fixed.**
+`block.json`'s `tagName` enum already had `"main"` (D710 shipped this on the schema). But
+`container/edit.js`'s `TAG_NAME_OPTIONS` array — the array the dropdown actually renders from —
+never got the matching entry. One-line fix. Live-verified via `wp.data` block-editor inspection
+(selected a container block, read the rendered `HTML TAG` combobox options) — "Main (page
+landmark)" now appears. `plugins/sgs-blocks/CLAUDE.md`'s stale claim corrected in the same commit.
+
+**Also found, NOT fixed (flagged for triage, bigger than tonight's scope):** `sgs/hero`,
+`sgs/trust-bar` and `sgs/cta-section` reference `attributes.tagName` only inside their
+`nav`/`aside` `ariaLabel` conditional — none of the three has an actual tag-picker UI control at
+all, unlike `sgs/container`. `plugins/sgs-blocks/CLAUDE.md`'s per-block D710 notes for those
+three blocks are therefore also unverified for the UI half (schema-only, same shape as the
+container bug, never checked).
+
+**Commit `b50ce3d8c`** (edit.js + CLAUDE.md + core-blocks.css + style.css) on `main`, deployed via
+`build-deploy.py --target sandybrown` (payload-verify 83/83, motion QA 3/3 green). Taxonomy fix
++ footer fix are live-only DB/option changes, not in git.
+
+⚠ **Process note:** a 30s Bash timeout killed a `git commit` mid-pre-commit-hook-chain
+(gitleaks/visual-diff/wp-hooks/inspector-scan), leaving a stale `.git/index.lock`. Verified no
+live git process was running (`tasklist`) before removing it; retried the commit in the
+background with a much longer timeout, which succeeded. The commit hook chain on this repo
+genuinely needs >30s.
+
 ## D853 [ROUTINE] — FR-38-6's keyboard-focus flag CLOSED by observation; the fixture markup now lives in the repo
 
 **2026-08-27.** Spec 38 carried an open honesty flag on FR-38-6/FR-38-8: no canary fixture had a

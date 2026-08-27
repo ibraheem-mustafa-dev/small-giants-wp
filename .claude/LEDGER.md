@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-22
+last_updated: 2026-08-28
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
@@ -31,35 +31,25 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — 2026-08-27 SESSION CLOSED (D830-D851); Task 1 is the ONLY thing left, first in queue
+## ▶ MAMA'S CLONE TRACK — ✅ CLOSED 2026-08-28 (D854) — Task 1 (twelve-template review) SHIPPED, nothing left open
 
-⭐ **NEXT SESSION: the twelve-template live review — see `.claude/prompts/2026-08-28-finish-the-template-review.md` (fresh prompt; the 2026-08-27 predecessor was executed and DELETED).**
-Its 5 defects + the missing `main` `TAG_NAME_OPTIONS` gap are UNTOUCHED. This is now the ONLY open
-item on this track — everything else (D830-D850) shipped and closed this session.
-⛔ Full mechanism detail is single-sourced to **D830-D850** in `decisions.md` — do not restate here.
+**Task 1 DONE after five deferrals.** All twelve templates opened live; all five defects +
+`main` tag-dropdown gap fixed + live-verified. Full detail → **D854**, do not restate. Two of
+five "defects" were WordPress/WooCommerce CONFIG not code (attribute archives off by WC default;
+footer pointed at a test-fixture CPT via `sgs_active_footer_cpt_id`) — fixed live, not a commit.
+The two real code fixes ship in `b50ce3d8c` on `main`, deployed + payload-verified.
 
-**Shipped + closed this session, nothing left open on any of these:**
-- 8 converter/block fixes merged (D830-D834 baseline + D843/D844/D845 this session), each
-  root-caused and `/qc-council`-validated before dispatch — padding-routing bug (universal across
-  the composite-mirror family), a 5th-sibling tier-object bug, `sgs/quote`'s attribution panel
-  rebuilt onto shared `TypographyControls`.
-- Typography re-measured fresh (D847): 74/75/79% CSS parity (page 2884), +4pt vs prior baseline.
-  Font-size split reversed from ~50 authored/~9 inherited to 91% inherited (Spec 33 theme-base
-  issue, not a converter bug) — the 2 remaining "authored" cases (`option-picker`, `testimonial`)
-  turned out to be the framework's correct designed value, not bugs (D850). No code change needed.
-- D843's fix confirmed live on production, page 2742 (D850) — both paddings exact match.
-- `/sgs-update` DB refresh ran clean (D849) — genuine no-op, F6 green before/after.
-- flexWrap migration tool built (D847), dry-run only — 127 stack-conversion candidates found, none
-  applied. Needs Bean's per-candidate screenshot sign-off before any live conversion.
+⚠ **Carried, small — ask Bean before parking:** the now-active footer's "Quick Links" list is
+empty (content gap). `sgs/hero`/`sgs/trust-bar`/`sgs/cta-section` have NO tag-picker UI at all
+(only `sgs/container` does) — same bug class, unconfirmed if block.json even has the enum.
 
-**Carried, not this session's scope:** the 375px readable-card floor (design question for Bean —
-shop archive 312px, PDP carousel 140px/card, mechanism changed grid→carousel) · archive residue ·
-`sgs/button::fontFamily` genuinely dead, maybe wireable.
-
-⚠ **NEW, found late by a peer session (D851): page 2884 (this session's own fresh clone) has a real
-converter bug** — `sgs/product-card.titleLineHeight`/`descLineHeight` stored as STRINGS, block.json
-declares `number`, WordPress silently drops both to default. Same bug class as D802/D833. Not
-root-caused or fixed — treat as a live bug next session, not stale content.
+**Prior session (2026-08-27) shipped + closed, all historical now — full detail D830-D851,
+do not restate:** 8 converter/block fixes, typography re-measured (74/75/79% parity), DB refresh
+clean, flexWrap migration tool (dry-run only, needs Bean's sign-off). Carried, still open: the
+375px readable-card floor (design question for Bean) · archive residue ·
+`sgs/button::fontFamily` dead, maybe wireable · **page 2884's product-card
+titleLineHeight/descLineHeight stored as strings not numbers (D851), same bug class as
+D802/D833, not root-caused** — live bug, treat as real next session.
 
 ### ▶ G3 answered this session (2026-08-27)
 All 12 templates under `theme/sgs-theme/templates/` are framework-authored (real `sgs/*` block
