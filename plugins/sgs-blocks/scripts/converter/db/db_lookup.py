@@ -1457,9 +1457,14 @@ _BASE_ELEMENTS = ("", "root", "self")
 # something else entirely in their block.json (e.g. sgs/before-after's is
 # 'frame', sgs/media's is 'media') — this list does NOT recognise those, and a
 # 2026-08-27 roster survey found 32 blocks whose declared isWrapper element
-# name is invisible to this check. Those blocks' own attrs must be manually
+# name is invisible to this check. Those blocks' own attrs may be manually
 # relabelled 'wrapper' in attr-classification-overrides.json (see
-# sgs/before-after.boxShadowColour for a worked example) until this becomes a
+# sgs/before-after.boxShadowColour for a worked example) ONLY when the attr's
+# own derived_selector is the block's root selector verbatim — sgs/media's
+# 'media' element is the same isWrapper shape but its derived_selector
+# resolves to two actual child nodes, so relabelling it 'wrapper' would be
+# wrong (see test_media_box_shadow_colour_correctly_gaps_to_named_child).
+# This is a stopgap until this becomes a
 # genuine DB/block.json-driven "is this the block's own isWrapper element"
 # check instead of a closed literal list — see declared_attrs_for_css_
 # property's identical _outer_element_clause a few hundred lines up, which
