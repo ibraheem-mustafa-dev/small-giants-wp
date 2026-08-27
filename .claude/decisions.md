@@ -179,6 +179,67 @@ conflict clears.
 
 ---
 
+## D824 [ROUTINE] — 4-persona council root-caused "reads as cheap 3D"; 3 colour-pipeline fixes shipped and live-verified; effect closed
+
+**2026-08-27.** Bean's verdict after D823's palette/toggle/context-loss verification: "Still reads
+as cheap 3D imo" — explicit instruction: "run /adversarial-council on it, do the valid
+fixes/upgrades and then we absolutely need to move on!" A 4-persona council ran (Cynic/veteran
+WebGL engineer, Ship-PM, Competitor, Spec-Lawyer), each grounded in the actual shader source (and
+Spec 38 + D790/D791/D794 for the doctrine seat), dispatched in parallel, blind to each other.
+
+**Strongest convergent finding (3 of 4 seats independently):** do NOT add a blur/grain pass,
+texture sampling, or any multi-pass technique — that is the already-rejected technique-spec
+mechanism (D794's NO-GO) reappearing under friendlier wording. Barred outright.
+
+**Strategic convergence (Ship-PM + Competitor, unprompted, from opposite angles):** stop
+investing in this decorative effect after one bounded fix; ship the 5 client builds. The
+Competitor's sharpest point: the shader is built on public MIT code (`sa3dany/wave-gradient`), so
+it is not a defensible moat — a rival forks it in a weekend. The real differentiator already
+exists and needs no shader work: the effect reads its colours from the same per-client theme
+tokens the whole site uses, so it recolours itself automatically when a client changes their
+brand palette — no competitor's static-image or forked-shader background can do that. Parked as a
+future marketing/preset idea, NOT built now (would violate "then stop").
+
+**Root cause, from the veteran-engineer seat, with the maths — three specific, cheap bugs, not a
+mesh-resolution or antialiasing problem (both proposed and disproven with numbers):**
+1. Colour sharpening (`smoothstep` + `pow(n,4.0)`) was applied to the FINAL colour in the vertex
+   shader, so the rasteriser linearly interpolated the OUTPUT of a steep nonlinear function across
+   each triangle — a gradient discontinuity at every triangle edge, i.e. the visible polygons.
+2. Colours were blended in gamma-encoded (sRGB) space. Linearly mixing sRGB values manufactures a
+   false darkening at every colour crossing — with zero lighting model in this effect, that dark
+   band IS the "shadow edges" Bean described. The lighter palette (D816) helped only because
+   shorter interpolation paths have less midpoint darkening — it shortened the symptom, not the cause.
+3. Displacement noise frequency (`a_position.y * 4.0`) exceeded row spacing at 64 segments/default
+   amplitude, so adjacent mesh rows could fold over each other; with `depth:false`, a folded
+   triangle paints a hard, un-interpolated seam over its neighbour.
+
+Explicitly disproven/excluded, with maths: raising mesh resolution (raw noise field already
+comfortably over-sampled — the bug was in the colour math, not sampling rate); `antialias: true`
+(MSAA resolves boundary coverage, not full-coverage interior edges — fixes nothing here, costs
+fillrate). Both would have been the wrong lever if tried first.
+
+**Fixed (commit `274d4bf32`):** sharpening + blend moved to the fragment stage (interpolating raw
+per-vertex noise instead of final colour — zero extra noise evaluations, ~25 ALU/px added);
+blending converted to linear light (`pow(c,2.2)` on upload, `pow(1/2.2)` on output) with a small
+triangular dither against 8-bit banding on the lighter palette; sharpening exponent exposed as
+`u_sharpness` (default 2.5, down from a hardcoded 4.0); displacement Y-frequency 4.0→1.5
+(amplitude untouched, so motion sweep is unchanged). Bundle: 3648→5232 gzip (+43.4%, ~4% of the
+120KB Tier W allowance) — re-baselined deliberately (`c1bafe53c`), not silently absorbed.
+
+**Deployed and live-verified** via the same isolated-worktree method as D822/D823 (main was dirty
+again from other tracks mid-session — twice, once with an active concurrent `git commit` holding
+`.git/index.lock`). Payload-verify PASSED (83/83 checksums); all 3 standing motion probes green;
+effect confirmed still booting on real GPU, still animating (frame-to-frame diff), context-loss
+fallback still clean (fixes are additive to D814, did not touch that code path). Screenshots of
+both the light section and a close-up of the previously-worst warm/dark section sent to Bean for
+final verdict — **not yet given**, carried forward as the one open item.
+
+**Method note:** this is a textbook adversarial-council win — a non-technical owner's vague "still
+looks cheap" complaint became three specific, numbered, falsifiable bugs with a combined ~2-hour
+fix, entirely inside the existing byte/perf budget, with zero rewrite. The council also correctly
+refused to let "one more small thing" (a blur pass, texture sampling) back in under a friendlier
+name — the exact failure mode D794 and D791 exist to prevent.
+
 ## D823 [ROUTINE] — D822's "no real GPU in this sandbox" claim was wrong; QA Gate C's mechanical checks now closed for real
 
 **2026-08-27.** D822 stated the agent sandbox has no real GPU (SwiftShader/software rendering
