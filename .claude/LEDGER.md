@@ -102,15 +102,15 @@ deliberately deferred tail — `attrs_for_css_property_state` carries the same u
 5. **375px readable-card floor — still a design question for Bean, not decided this session** (shop
    archive 312px, PDP carousel 140px/card — mechanism changed from grid to carousel, may change
    whether the floor still applies).
-6. **`/sgs-update` DB refresh — deliberately NOT run this session (D848).** Live cross-track check
-   with two peer sessions found reseeding right now would delete ~122 legitimate rows backed by an
-   uncommitted `css-property-classifications.json` change (another track's in-flight work, not
-   committed yet). Snapshot taken first regardless:
-   `.claude/scratch/pre-reseed-block-attributes-snapshot-2026-08-27.tsv`. **Before running this
-   next time:** find who owns that uncommitted file and get it committed first, or confirm the DB
-   and committed source agree, THEN reseed.
-7. **Carried:** archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable ·
-   D843's live canary render check still owed (draft-mode verified only).
+6. **`/sgs-update` DB refresh — DONE, clean (D849).** D848's blocker had already resolved by the
+   time it was written (a peer had already committed the file in question a minute earlier). F6
+   green before and after (1 pre-existing baselined finding, 0 new), reseed was a genuine no-op
+   (0 new blocks/attrs/orphans), `boxShadowColour` held. Nothing left open on this item.
+7. **D843 live-verified on production (page 2742) — CLOSED (D850).** Both paddings confirmed via
+   `getComputedStyle()`, exact match. **The two "font-size bugs" from D847 were NOT bugs (D850)** —
+   14px is the framework's genuinely correct fluid-token value at 1440px, consistent with ~12 other
+   blocks; the draft's 13px was the outlier. No code change made.
+8. **Carried:** archive residue · `sgs/button::fontFamily` genuinely dead and now maybe wireable.
 
 ### ▶ G3 answered this session (2026-08-27)
 All 12 templates under `theme/sgs-theme/templates/` are framework-authored (real `sgs/*` block

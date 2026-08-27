@@ -1,3 +1,51 @@
+## D850 [ROUTINE] — D847's two "authored font-size bugs" were the framework's genuinely correct value; D843 live-verified
+
+**2026-08-27.** Closes the last two open items from `.claude/prompts/2026-08-27-finish-the-template-review.md`.
+
+**D847's `option-picker`/`testimonial` "14px vs 13px" finding was not a code bug — investigated
+properly before touching anything, per this project's own rule.** `theme.json`'s `small` fontSize
+preset is a fluid token (13px@375 → 14px@1200, clamped above 1200px), so 14px at the 1440px
+viewport is the DESIGNED value, not a stray hardcode. It's the consistent value used by ~12 other
+blocks for the same token, including three other rules in `testimonial/style.css` itself — changing
+only the flagged rule would have made that block internally inconsistent with its own typography.
+The Mama's Munches draft's 13px was the outlier, not the framework. Both blocks already have the
+correct mechanism for a genuine per-instance override (`nameFontSize`/`pillFontSize`, declared
+attrs default `{}` = inherit) — if pixel-fidelity to this one draft is wanted, that's a per-instance
+attribute edit on the live content, not a framework change, and wasn't done unrequested. **No code
+change. No commit.**
+
+**D843's padding fix (announcement-bar + social-proof) confirmed live on the actual production
+homepage (page 2742)**, not just in pipeline data: `getComputedStyle()` on both elements —
+announcement bar `14px 18px`, social-proof Trustpilot bar `18px 24px` — both match exactly.
+Screenshots sent to Bean, not committed to the repo (verification artefacts, not deliverables).
+
+## D849 [ROUTINE] — `/sgs-update` DB reseed run, clean; D848's blocker was already resolved by the time it was recorded
+
+**2026-08-27.** Bean confirmed the three peer sessions had committed, unblocking the hold from
+D848. Re-checked from scratch rather than trusting D848's own text: `0ebb1216b` (the peer's
+`css-property-classifications.json` commit) landed **one minute before** D848 was written — its
+own commit message already says *"a concurrent session is holding its `/sgs-update` reseed for
+this commit so it runs against a clean boundary."* So the risk D848 documented had already been
+closed by the time it was recorded; the "112/122 rogue rows" figure traced to a peer's own ad-hoc
+check that it had already self-corrected as broken (wrong key-match against a nested JSON
+structure), not a real F6 finding.
+
+F6 (`db-consistency/run.py --report`) before AND after the reseed: **1 violation, 0 new** (a
+pre-existing, already-baselined `sgs/nav-drawer` finding) — both runs identical. Dry-run first: 0
+new_blocks/attrs/supports, 0 orphan deletions. Real reseed: same zeros — genuinely a no-op this
+time, seed history confirms "no unexpected changes vs the previous run." `boxShadowColour`'s
+`css_element='wrapper'` held before and after. The 16 hero `splitMedia*` rows correctly show
+`css_element='split-media'` — the peer's fix landing as intended, not drift.
+
+**`specs/02-SGS-BLOCKS-REFERENCE.md` had zero diff to regenerate.** The 12-block `layout` enum
+work this doc's "owed" framing referred to (D833) was already an ancestor of HEAD, reconciled at
+D837 — the task brief's premise was stale. Nothing to commit.
+
+**Flagged, not acted on:** `plugins/sgs-blocks/includes/fx-wave-gradient.php` went dirty mid-run —
+a concurrent peer edit landing in this shared worktree, not this session's. Left untouched.
+
+Task 5 from `.claude/prompts/2026-08-27-finish-the-template-review.md` is now CLOSED.
+
 ## D848 [ROUTINE] — `/sgs-update` DB reseed deliberately NOT run this session — would have deleted ~122 legitimate rows
 
 **2026-08-27.** Task 5's DB refresh was scoped for this session but deliberately skipped after a
