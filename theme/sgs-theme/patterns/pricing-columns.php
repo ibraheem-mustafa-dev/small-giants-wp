@@ -32,7 +32,7 @@
 				<li>Basic SEO setup</li>
 				<!-- /wp:list-item --></ul>
 				<!-- /wp:list -->
-				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 					<!-- wp:sgs/button {"label":"Choose Starter","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"style":{"border":{"radius":"8px"}}} /-->
 				<!-- /wp:sgs/multi-button -->
 			<!-- /wp:sgs/container -->
@@ -58,7 +58,7 @@
 				<li>Priority support</li>
 				<!-- /wp:list-item --></ul>
 				<!-- /wp:list -->
-				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 					<!-- wp:sgs/button {"label":"Choose Professional","inheritStyle":"primary","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"style":{"border":{"radius":"8px"}}} /-->
 				<!-- /wp:sgs/multi-button -->
 			<!-- /wp:sgs/container -->
@@ -83,7 +83,7 @@
 				<li>Dedicated account manager</li>
 				<!-- /wp:list-item --></ul>
 				<!-- /wp:list -->
-				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 					<!-- wp:sgs/button {"label":"Contact Us","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"style":{"border":{"radius":"8px"}}} /-->
 				<!-- /wp:sgs/multi-button -->
 			<!-- /wp:sgs/container -->

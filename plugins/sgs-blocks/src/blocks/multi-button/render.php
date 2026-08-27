@@ -178,22 +178,20 @@ if ( '' !== $mb_fill_css ) {
 if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
 	$mb_color_border['border'] = $attributes['style']['border'];
 }
-// A1 (D638) — spacing.padding support is TRUE (still
-// __experimentalSkipSerialization, like margin) so WP never auto-inlines it;
-// base padding routes through the style engine to the SAME scoped selector,
-// tablet/mobile tiers are handled separately by SGS_Container_Wrapper
-// (paddingTablet/paddingMobile, universal across all `kind` values — see
-// its "Responsive padding — all kinds" block).
-$mb_spacing = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	$mb_spacing['margin'] = $attributes['style']['spacing']['margin'];
-}
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	$mb_spacing['padding'] = $attributes['style']['spacing']['padding'];
-}
-if ( ! empty( $mb_spacing ) ) {
-	$mb_color_border['spacing'] = $mb_spacing;
-}
+// Base padding/margin are NOT read here (2026-08-27). They were, and that was a
+// genuine DOUBLE EMISSION: this block calls SGS_Container_Wrapper::render() below
+// with kind='content' and no `container_queries` opt, so the wrapper's own base
+// spacing branch (class-sgs-container-wrapper.php:1904-1937) already read the very
+// same values and painted them on ITS scoped selector — while the block re-painted
+// them on `.{uid}.sgs-multi-button`. One value, two selectors.
+//
+// Now that base spacing lives in the block-OWNED `padding`/`margin` attrs, the
+// wrapper's owned-attr-first branch picks them up automatically (it is ungated by
+// slug, container_kind or any roster), so the wrapper is the SINGLE emitter and the
+// fold that stood here is deleted rather than redirected.
+// ⛔ Do NOT pass `container_queries => true` for this block to "fix" anything: that
+// flag DISABLES the owned-attr read and silently falls it back to native spacing,
+// which no longer exists here.
 if ( ! empty( $mb_color_border ) ) {
 	$mb_style_engine_css = wp_style_engine_get_styles(
 		$mb_color_border,

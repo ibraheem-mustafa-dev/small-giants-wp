@@ -28,11 +28,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
@@ -75,8 +70,8 @@
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
 						"css:background-color-gradient": "backgroundColourGradient",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
@@ -145,6 +140,14 @@
 		"sgs/site-footer-row"
 	],
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"backgroundColour": {
 			"type": "string",
 			"default": ""

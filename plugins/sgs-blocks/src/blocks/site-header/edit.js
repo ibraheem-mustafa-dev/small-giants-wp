@@ -112,10 +112,19 @@ function paddingMatches( padding, target ) {
  * @return {string} 'centred' | 'split' | 'minimal' | ''
  */
 function getActiveLayoutPreset( attributes, rowJustify = '' ) {
-	const { contentWidth = 'full', style } = attributes;
-	const padding = style?.spacing?.padding;
+	const { contentWidth = 'full', padding } = attributes;
 
-	if ( contentWidth === 'full' && ! padding && rowJustify === 'space-between' ) {
+	// ⚠ EMPTINESS, not falsiness. Base padding moved off WP-native
+	// `style.spacing.padding` onto a block-OWNED `padding` object attr whose
+	// declared default is `{}` (2026-08-27, matching sgs/container's D555 shape).
+	// The old test here was `! padding`, which worked only because the native
+	// value was `undefined` when unset. An empty object is TRUTHY, so keeping
+	// `! padding` would make Split and Centred undetectable forever and the
+	// preset toggle would permanently show nothing selected — a silent break
+	// with no error and a green build.
+	const noPadding = ! padding || Object.keys( padding ).length === 0;
+
+	if ( contentWidth === 'full' && noPadding && rowJustify === 'space-between' ) {
 		return 'split';
 	}
 	if ( contentWidth === 'normal' ) {
@@ -125,7 +134,7 @@ function getActiveLayoutPreset( attributes, rowJustify = '' ) {
 		) {
 			return 'minimal';
 		}
-		if ( ! padding && rowJustify === 'center' ) {
+		if ( noPadding && rowJustify === 'center' ) {
 			return 'centred';
 		}
 	}
@@ -151,40 +160,21 @@ function applyLayoutPreset(
 	middleRowClientId,
 	updateBlockAttributes
 ) {
-	const { style = {} } = attributes;
-	const { spacing = {}, ...restStyle } = style;
-	const { padding, ...restSpacing } = spacing;
-	const hasRestSpacing = Object.keys( restSpacing ).length > 0;
-
+	// The old `restStyle`/`restSpacing`/`hasRestSpacing` destructure that stood here
+	// was DELETED, not redirected (2026-08-27). It existed for exactly one reason:
+	// padding and margin shared the single WP-native `style.spacing` container, so
+	// removing padding meant rebuilding that container without clobbering margin, and
+	// omitting the `spacing` key entirely when nothing was left. Now that `padding`
+	// and `margin` are separate top-level attrs, a preset writes its own attr and
+	// cannot touch the other — so the whole dance is gone.
 	if ( value === 'split' ) {
 		// Split has no padding override — clear one if present so the
 		// preset detector reads back 'split' cleanly.
-		setAttributes( {
-			contentWidth: 'full',
-			style: {
-				...restStyle,
-				...( hasRestSpacing ? { spacing: restSpacing } : {} ),
-			},
-		} );
+		setAttributes( { contentWidth: 'full', padding: {} } );
 	} else if ( value === 'centred' ) {
-		setAttributes( {
-			contentWidth: 'normal',
-			style: {
-				...restStyle,
-				...( hasRestSpacing ? { spacing: restSpacing } : {} ),
-			},
-		} );
+		setAttributes( { contentWidth: 'normal', padding: {} } );
 	} else if ( value === 'minimal' ) {
-		setAttributes( {
-			contentWidth: 'normal',
-			style: {
-				...restStyle,
-				spacing: {
-					...restSpacing,
-					padding: MINIMAL_PADDING,
-				},
-			},
-		} );
+		setAttributes( { contentWidth: 'normal', padding: MINIMAL_PADDING } );
 	} else {
 		return;
 	}
@@ -401,15 +391,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	// Padding/margin canvas preview (measured live 2026-08-26: sibling blocks
 	// showed 0px padding/margin on canvas against a real 120px/80px page).
-	// Base padding + margin live in the WP-native `style.spacing` object;
+	// Base padding + margin are block-OWNED `padding`/`margin` object attrs
+	// (migrated off WP-native supports.spacing 2026-08-27, matching sgs/container);
 	// tablet/mobile overrides are the block-private paddingTablet/
 	// paddingMobile/marginTablet/marginMobile object attrs (this block
 	// declares all four — verified in block.json).
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.style?.spacing?.padding,
+		basePadding: attributes.padding,
 		paddingTablet: attributes.paddingTablet,
 		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.style?.spacing?.margin,
+		baseMargin: attributes.margin,
 		marginTablet: attributes.marginTablet,
 		marginMobile: attributes.marginMobile,
 	}, previewTier );
@@ -739,14 +730,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					label={ __( 'Advanced layout', 'sgs-blocks' ) }
 					resetAll={ () => {
 						setAttributes( {
-							style: {
-								...attributes.style,
-								spacing: {
-									...attributes.style?.spacing,
-									padding: undefined,
-									margin: undefined,
-								},
-							},
+							// `{}`, not `undefined` — these attrs declare a `{}`
+							// default, hasValue counts their keys, and the PHP
+							// wrapper guards with is_array(). The two are not
+							// interchangeable here.
+							padding: {},
+							margin: {},
 							paddingTablet: {},
 							paddingMobile: {},
 							marginTablet: {},
@@ -781,15 +770,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				>
 					{ /* Responsive spacing (padding + margin) — box-object interface
 					     contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-					     §5). Base tier writes to the WP-native style.spacing object (also
-					     visible in the Styles > Dimensions panel); tablet/mobile write to
+					     §5). Base tier writes the block's OWN padding/margin object attrs
+					     (this block no longer declares supports.spacing, so there is no
+					     duplicate Styles > Dimensions panel); tablet/mobile write to
 					     the paddingTablet/paddingMobile and marginTablet/marginMobile
 					     object attrs read by the wrapper's @media tiers. */ }
 					<ToolsPanelItem
 						label={ __( 'Padding & margin', 'sgs-blocks' ) }
 						hasValue={ () =>
-							Object.keys( attributes.style?.spacing?.padding ?? {} ).length > 0 ||
-							Object.keys( attributes.style?.spacing?.margin ?? {} ).length > 0 ||
+							Object.keys( attributes.padding ?? {} ).length > 0 ||
+							Object.keys( attributes.margin ?? {} ).length > 0 ||
 							Object.keys( attributes.paddingTablet ?? {} ).length > 0 ||
 							Object.keys( attributes.paddingMobile ?? {} ).length > 0 ||
 							Object.keys( attributes.marginTablet ?? {} ).length > 0 ||
@@ -797,14 +787,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						}
 						onDeselect={ () =>
 							setAttributes( {
-								style: {
-									...attributes.style,
-									spacing: {
-										...attributes.style?.spacing,
-										padding: undefined,
-										margin: undefined,
-									},
-								},
+								padding: {},
+								margin: {},
 								paddingTablet: {},
 								paddingMobile: {},
 								marginTablet: {},
@@ -815,18 +799,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						<ResponsiveBoxControl
 							label={ __( 'Padding', 'sgs-blocks' ) }
 							values={ {
-								base: attributes.style?.spacing?.padding ?? {},
+								base: attributes.padding ?? {},
 								tablet: attributes.paddingTablet ?? {},
 								mobile: attributes.paddingMobile ?? {},
 							} }
 							onChange={ ( tier, next ) => {
 								if ( tier === 'base' ) {
-									setAttributes( {
-										style: {
-											...attributes.style,
-											spacing: { ...attributes.style?.spacing, padding: next },
-										},
-									} );
+									setAttributes( { padding: next } );
 								} else {
 									setAttributes( {
 										[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
@@ -838,18 +817,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						<ResponsiveBoxControl
 							label={ __( 'Margin', 'sgs-blocks' ) }
 							values={ {
-								base: attributes.style?.spacing?.margin ?? {},
+								base: attributes.margin ?? {},
 								tablet: attributes.marginTablet ?? {},
 								mobile: attributes.marginMobile ?? {},
 							} }
 							onChange={ ( tier, next ) => {
 								if ( tier === 'base' ) {
-									setAttributes( {
-										style: {
-											...attributes.style,
-											spacing: { ...attributes.style?.spacing, margin: next },
-										},
-									} );
+									setAttributes( { margin: next } );
 								} else {
 									setAttributes( {
 										[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
@@ -1200,8 +1174,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			</InspectorControls>
 
 			{ /* Styles tab — FR-37-28 layout preset. Simple (default-visible)
-			     control: writes contentWidth + style.spacing.padding, the
-			     block's own existing attrs, never a new stored shape. */ }
+			     control: writes contentWidth + the block's own `padding` attr,
+			     both existing attrs, never a new stored shape. */ }
 			<InspectorControls group="styles">
 				<ToolsPanel
 					label={ __( 'Layout', 'sgs-blocks' ) }

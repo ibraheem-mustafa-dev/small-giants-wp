@@ -162,17 +162,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Padding/margin canvas preview (measured live 2026-08-26: this block
 	// showed 0px on canvas against a real 120px/80px page). Base padding AND
-	// margin both live in the WP-native `style.spacing` object (this block's
-	// spacing.padding/spacing.margin supports); only padding has its own
-	// paddingTablet/paddingMobile override attrs — margin has no tier
-	// attributes declared in block.json, so marginTablet/marginMobile
-	// resolve to `undefined` here and the base/native margin is all that
-	// previews (still a correct, faithful mirror of what render.php emits).
+	// margin are now block-OWNED `padding`/`margin` object attrs, migrated off
+	// WP-native supports.spacing on 2026-08-27 to match sgs/container (D555).
+	// Bean ruled FULL parity for this block in that pass, so margin gained its
+	// own marginTablet/marginMobile tier attrs too — the previous note here that
+	// they "resolve to undefined" is no longer true.
 	const spacePreview = spacingPreview( {
-		basePadding: attributes.style?.spacing?.padding,
+		basePadding: attributes.padding,
 		paddingTablet: attributes.paddingTablet,
 		paddingMobile: attributes.paddingMobile,
-		baseMargin: attributes.style?.spacing?.margin,
+		baseMargin: attributes.margin,
 		marginTablet: attributes.marginTablet,
 		marginMobile: attributes.marginMobile,
 	}, previewTier );
@@ -255,38 +254,55 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					kind="content"
 				/>
 
-				{ /* ── Padding (A1, D638 — sgs/container parity) ──
+				{ /* ── Padding & margin (A1, D638 — sgs/container parity) ──
 				    kind="content" only mounts WidthPanel (see the aggregator's
-				    KIND_PANELS.content registry) — base padding/margin are meant
-				    to come from WP-native supports.spacing, but tablet/mobile
-				    overrides have no panel of their own at that kind, same gap
-				    cta-section/hero solve locally. Base writes the WP-native
-				    style.spacing.padding object (spacing.padding support is now
-				    true, still skip-serialised — render.php emits it via the
-				    style engine, no auto-inline); tablet/mobile write the
-				    paddingTablet/paddingMobile object attrs the shared wrapper
-				    already reads at every kind (all-kinds "Responsive padding"
-				    block in class-sgs-container-wrapper.php). Mirrors hero's
-				    "Padding & margin" panel exactly (hero/edit.js ~1415-1444). */ }
-				<PanelBody title={ __( 'Padding', 'sgs-blocks' ) } initialOpen={ false }>
+				    KIND_PANELS.content registry), so this block owns its own
+				    spacing panel, the same gap cta-section/hero solve locally.
+				    Base tier writes the block's OWN `padding`/`margin` object
+				    attrs — this block no longer declares supports.spacing, so
+				    there is no duplicate Styles > Dimensions panel for the
+				    client to confuse with this one. Tablet/mobile write the
+				    paddingTablet/paddingMobile and marginTablet/marginMobile
+				    attrs the shared wrapper already reads at every kind
+				    (all-kinds "Responsive padding" block in
+				    class-sgs-container-wrapper.php).
+				    ⚠ The margin half is NEW (2026-08-27). This block previously
+				    had NO margin control at all — margin was reachable only
+				    through WordPress's native Dimensions panel, which the
+				    migration removes. Bean ruled full parity rather than a
+				    padding-only carve-out (Rule 3), so it is built here. */ }
+				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
+							base: attributes.padding ?? {},
 							tablet: attributes.paddingTablet ?? {},
 							mobile: attributes.paddingMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
+								setAttributes( { padding: next } );
 							} else {
 								setAttributes( {
 									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+					<hr style={ { margin: '16px 0' } } />
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.margin ?? {},
+							tablet: attributes.marginTablet ?? {},
+							mobile: attributes.marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( { margin: next } );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
 								} );
 							}
 						} }

@@ -20,7 +20,7 @@
 			<!-- wp:sgs/heading {"content":"We've Been Building Exceptional Experiences Since 2010","fontSize":{"desktop":"xx-large"}} /-->
 			<!-- wp:sgs/text {"text":"Our team of dedicated professionals brings together decades of experience to deliver outstanding results for every client. We believe in quality, transparency, and building lasting relationships.","textColour":"text-muted"} /-->
 			<!-- wp:sgs/text {"text":"From small businesses to enterprise organisations, we tailor our approach to meet your unique needs and goals.","textColour":"text-muted"} /-->
-			<!-- wp:sgs/multi-button {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
+			<!-- wp:sgs/multi-button {"margin":{"top":"var:preset|spacing|30"}} -->
 				<!-- wp:sgs/button {"label":"Our Story","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
 			<!-- /wp:sgs/multi-button -->
 		<!-- /wp:sgs/container -->
