@@ -116,7 +116,9 @@ apply, never completely walled off from areas of potential.
      was still closed and still one item long. The reasons, each verified in source before the swap:
      (i) a genuine fluid simulation is MULTI-PASS (advection → divergence → Jacobi pressure →
      gradient subtract, over ping-pong framebuffers) and the single-pass Tier W interface
-     structurally cannot express it; (ii) `fx-cursor-field.css:150-167` removes the cursor field
+     structurally cannot express it; (ii) `fx-cursor-field.css:495-499` (line drifted from the
+     originally-cited `150-167` as later field types grew the file — corrected 2026-08-27; the rule
+     itself is unchanged) removes the cursor field
      entirely on a coarse pointer, so on the majority of SME/charity traffic the fluid effect would
      have been nothing at all; (iii) a dissipating dye field keeps moving after the pointer stops
      and so owes an **SC 2.2.2** Pause/Stop/Hide answer that `prefers-reduced-motion` does not
@@ -486,7 +488,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   effect to either be covered behind a button or just completely turn off when I hover on a
   button so it should be able to go over any surface seamlessly."* Investigation established
   that the second half does not occur — `mousemove` bubbles from descendants, and `mouseleave`
-  does not fire on entering a child, so tracking never stops (`spotlight.js:101-107`). **The
+  does not fire on entering a child, so tracking never stops (⚠ **citation corrected 2026-08-27:**
+  the logic lives in `cursor-field.js:547,581` — `spotlight.js` was reduced to a 73-line thin
+  wrapper on 2026-08-01 per its own docblock, and has no lines 101-107 at all). **The
   first half does occur**: the field paints on a `::before` while every direct child is forced
   to `z-index: 1` (`mega-panel/style.css:193-211`), so an opaque child occludes its slice. A
   participant role fixes the occlusion without a blend layer over the client's own colours.
@@ -732,7 +736,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
     of 0.155 — inside the 0.1-0.2 band that recurs across implementations of this pattern.
     Reduced motion needs no branch: `init` returns before any listener is attached, so the loop
     can never start. **Note the REAL fading trail this control's old name implied is not this
-    effect at all** — it is the unbuilt particle engine's Sparks preset; do not conflate the two
+    effect at all** — it is the particle engine's `sparks` preset (FR-38-32, BUILT 2026-08-25 —
+    ⚠ **stale-corrected 2026-08-27: this line called it "the unbuilt particle engine" after the
+    build had already shipped**; see `particles.js` `PRESETS.sparks`); do not conflate the two
     when a client asks for "a trail".
   - **SHAPE (`fxFieldShape`)** — circle / wide ellipse / tall ellipse, via a single
     `--sgs-cursor-field-geometry` property that replaced four hardcoded circles. Empty is the
@@ -1457,10 +1463,12 @@ modules; per-plugin webpack chunks with `gsap`/`gsap/*` as shared externals.**
   self-serve via `viewScriptModule`) and **extension attributes on any block** (which have no
   per-block view module, so `viewScriptModule`-per-block cannot see them). `has_block()` has
   the known template-part blind spot. The `render_block` p99 chokepoint is the proven house
-  pattern (`class-sgs-css-registry.php:134` — reuse its editor-parity predicate
+  pattern (`class-sgs-css-registry.php:62` — ⚠ line corrected 2026-08-27, was cited as `:134`;
+  reuse its editor-parity predicate
   `sgs_is_frontend_render()`, which covers `is_admin()` + `wp_is_serving_rest_request()` +
   the `REST_REQUEST` fallback). Mid-render `wp_enqueue_script_module()` is proven live by the
-  buybox proxy-enqueue (`buybox/render.php:328-346`).
+  buybox proxy-enqueue (`buybox/render.php:378-382` — ⚠ line corrected 2026-08-27, was cited as
+  `:328-346`; the actual `wp_enqueue_script_module()` call).
 - **Mechanism:** `SGS_Motion_Registry` inspects each rendered block (attrs + `data-sgs-fx`
   presence in markup), maps effect → plugin set (from the DB effect registry, §6), and calls
   `wp_enqueue_script_module()` for exactly the needed bundles (the buybox
@@ -1787,7 +1795,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Magnetic pull (FR-38-30) | **Static — no displacement.** The element renders undisplaced, exactly the no-JS/reduce state; a document-level listener drives the effect, and the editor canvas is an iframe the mega-menu's own `magnet.js` precedent already never runs pointer tracking inside. Notice: "Magnetic pull previews on the live site." ⚠ *Reasoned by mechanism, not observed in-editor.* |
 | Flowing gradient (FR-38-31, Tier W) | **The CSS fallback layer**, exactly what a no-WebGL visitor sees on the frontend — the render layer's editor-parity guard does not boot a canvas WebGL context in a ServerSideRender/REST render (same reasoning as the surface-treatment row above), so the canvas shows the honest degraded state rather than a blank. A panel Notice names this: *"The flowing gradient previews on the live site. Visitors without WebGL, and the editor canvas, see the static fallback."* |
 
-| Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* ✅ **OBSERVED 2026-08-25**, not reasoned. Editor opened on page 2744: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** are reachable behind the ToolsPanel menu alongside Reset all; the Notice ships; a bundle notice reads "about 8 KB of scroll-effect code (budget: 50 KB)"; 0 schema-invalid blocks, 0 console errors. ⚠ Finding the panel took three attempts — it is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. An absence verdict is only as wide as its search. |
+| Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* ✅ **EDITOR CONTROLS OBSERVED 2026-08-25**, not reasoned. Editor opened on page 2744: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** are reachable behind the ToolsPanel menu alongside Reset all; the Notice ships; a bundle notice reads "about 8 KB of scroll-effect code (budget: 50 KB)"; 0 schema-invalid blocks, 0 console errors. ⚠ Finding the panel took three attempts — it is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. An absence verdict is only as wide as its search. ⛔ **Scope correction, 2026-08-27 (Bean flagged, verified true): the label above is narrower than it reads.** "OBSERVED" covered the EDITOR SURFACE only — the picker, presets, and Notice existing and rendering without error. Nobody has watched the actual frontend trail animate, and Bean has never seen it — confirmed live: a screenshot of page 2744 mid-hover shows the sparks preset firing (a faint dark cluster of specks on a near-black debug panel), but it is only visible on a debug/test canary page, not any client build, and the visual quality/legibility has never had Bean's eye per R-31-13. This is still an OPEN verification item, not a closed one. |
 
 ## 10. Reduced-motion contract (per effect)
 
@@ -1818,7 +1826,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Magnetic pull (FR-38-30) | **SUPPRESS — no listener attaches at all.** Under `reduce`, `fx-magnet.js` never attaches its document-level listener, so the element simply never displaces — this is also the exact no-JS state, so there is one code path, not two that could drift apart. Deliberately differs from cursor-field's SIMPLIFY (§3.3 FR-38-30 body has the full reasoning): a resting cursor-field is a legitimate finished PAINT, but a magnet's "resting" position is just the undisplaced layout position, which is what suppression already produces — there is no separate "simplified but still present" state to build. |
 | Flowing gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
 
-| Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js:114` returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
+| Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js:136` (⚠ line corrected 2026-08-27, was cited as `:114`; the `if ( prefersReducedMotion() ) { return; }` gate inside `boot()`) returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
 

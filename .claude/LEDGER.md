@@ -120,8 +120,12 @@ helper pairs + `add-control.js` + rule 21 (D818) + Design Gate B (D821/D825, can
 the enum gate (D819) + the fx-list-drift registry check (D829). Detail single-sourced to
 **D805-D829** — do not restate.
 
-⛔ **Carried:** the real fading trail is `particles`/Sparks. "Drag weight" is momentum and is NOT
-it — never report it as satisfying that ask.
+⛔ **Carried:** `particles`/Sparks (FR-38-32) is the real fading trail — "Drag weight" is momentum
+and is NOT it, never report it as satisfying that ask. ⚠ **But `particles`/Sparks itself has NEVER
+been shown to Bean** (flagged by him 2026-08-27, verified true) — it only exists on debug canary
+page 2744, and the effect is visually very faint even when it fires. "OBSERVED 2026-08-25" in
+Spec 38 §9 covered the editor's inspector controls only, never the frontend visual. Show Bean the
+actual trail live before calling this effect done in any client-facing sense.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
 
