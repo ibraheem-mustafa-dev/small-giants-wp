@@ -306,8 +306,37 @@ joined the reset, homepage has ZERO gapped sections (1.5.83). ⚠ Two of my clai
 caught both: it was our theme not WordPress, and `maxWidth`(OUTER)=full-bleed vs
 `contentWidth`(INNER)=normal, so no detect-and-mark was needed.
 ⭐ **NEXT + all detail: `.claude/prompts/2026-08-27-the-remaining-client-controls.md`**
-⛔ **Bean ruled: MIGRATE OFF NATIVE `supports.spacing`**; multi-button gets BOTH padding + margin.
-Plan UNSTARTED: `.claude/plans/2026-08-26-migrate-off-native-spacing.md` (Q1/Q3/Q4 open).
+
+### ✅ SPACING MIGRATION — 4 of 5 blocks SHIPPED 2026-08-27 (`fa11f794c`, pushed)
+Q1/Q3/Q4 are **ANSWERED from source, do not re-derive** (plan §6 + `~/.claude/plans/next-session-ethereal-lightning.md`):
+**Q4** wrapper needs NO change (owned-attr branch ungated by slug/kind) → no design gate.
+**Q1** `check-dead-pattern-attrs.py` is ADVISORY — `compute_exit_code()` excludes its
+`native-style-undeclared` class, exit stays 0. ⛔ It CANNOT gate this; a partial removal is
+invisible to it. The gate is `scripts/migrate-off-native-spacing.py --check` (verified RED
+pre-migration, PASS now; 16 self-test controls).
+**Q3** site-header was NOT mechanical: `getActiveLayoutPreset`'s `! padding` is now an
+EMPTINESS test (a `{}` default is truthy — left alone the Split/Centred toggle breaks
+silently), and `hasRestSpacing` was DELETED, not redirected.
+Also fixed: multi-button's real **double-emission** (its render.php folded style.spacing while
+the wrapper read the same values) + full margin parity built (Bean's Rule-3 ruling); `attrMap`
+corrected on all blocks, not one.
+🔶 **`sgs/trust-bar` is the ONLY block left** — migration COMPLETE in the working tree but
+UNCOMMITTED: another track has concurrent `SgsLengthControl` edits in its `edit.js` (6 foreign
+hunks). Commit it the moment they land. ⛔ Do not revert or sweep their hunks.
+⚠ **4 visual-diff MANUAL SKIPs logged** (deploy impossible — shared tree dirty). Renders
+identically BY DESIGN, but that is **unverified visually**. The next commit touching each of
+multi-button/physics-canvas/site-footer/site-header owes a real report.
+
+### ✅ Gate C picker — header-row SHIPPED (`71a5d4d42`); container HELD
+`sgs/container`'s picker is complete in the tree but uncommitted: its control lives in
+`container/components/LayoutPanel.js`, which **~20 blocks render** via ContainerWrapperControls,
+so Bean ruled an **additive opt-in prop defaulting OFF** — never an unconditional mount. Another
+track's import-hunk overlaps mine there. Lands when they commit.
+
+### 🔶 product-card reachable replace — BUILT, uncommitted
+Fix + new `check-destructive-only-controls.js` (0 repo-wide findings, empty baseline, proven
+able to fail) are done; `product-card/edit.js` carries 5 foreign hunks. ⛔ Land the detector and
+the fix TOGETHER — the detector alone goes red for everyone else.
 ⚠ `gate:full` FAILS on `sgs/hero` orphan attrs — NOT orphans; another track's refactor builds the
 names via `gradientOverlayAttrKeys()`. Deleting them deletes working features. Use
 `--skip-gate-full` until they fix it.
