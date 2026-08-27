@@ -330,8 +330,8 @@ C16 COMPLETE: all 48 `ResponsiveBoxControl` mounts pass `presets` (`18806e6b0`),
 `inspector-scan/rules/36-box-control-presets-missing.js` + `scripts/migrate-box-control-presets.py`.
 C19 rolled out to the full `aspectRatio` surface (card-grid, gallery, image-sequence, media,
 post-grid). ⛔ **`detector-first-commit-gate.py` HAS A NAMED HOLE** (proven): contract says ">3 files",
-mechanism needs 4+ files sharing a normalised SHAPE. An adaptive rollout has no shared shape, so
-it is invisible — catches copy-paste, misses adaptation. Detail + evidence: prompt Task 7.
+mechanism needs 4+ files sharing a normalised SHAPE. An adaptive rollout has none, so it is
+invisible — catches copy-paste, misses adaptation. Evidence: prompt Task 7.
 
 ### ⚠ THE 85 NULL `css_element` TAIL — do NOT bulk-script it
 Root-caused: **three causes, not one bug** (`.claude/reports/2026-08-27-null-css-element-root-cause.md`).
