@@ -13,7 +13,7 @@ import {
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import MediaPicker from '../../components/MediaPicker';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveControl, MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -27,14 +27,14 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  */
 const MAX_FRAME_COUNT = 200;
 
-const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'Widescreen (16:9)', 'sgs-blocks' ), value: '16 / 9' },
-	{ label: __( 'Ultra-wide (21:9)', 'sgs-blocks' ), value: '21 / 9' },
-	{ label: __( 'Standard (4:3)', 'sgs-blocks' ), value: '4 / 3' },
-	{ label: __( 'Square (1:1)', 'sgs-blocks' ), value: '1 / 1' },
-	{ label: __( 'Portrait (3:4)', 'sgs-blocks' ), value: '3 / 4' },
-	{ label: __( 'Tall (9:16)', 'sgs-blocks' ), value: '9 / 16' },
-];
+// C19 ratio-mode adoption (2026-08-27) — this list used to be a hand-rolled
+// duplicate of the exact six values render.php:54-57 whitelists (same
+// values, different labels). It is now imported from MediaSizingPanel's
+// exported RATIO_OPTIONS — the JS-side single source of truth — leaving
+// only ONE remaining copy of the value set in the codebase: render.php's
+// PHP whitelist (PHP cannot import a JS constant, so it stays a
+// byte-identical array there; see render.php's own comment on that array).
+const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 // Must stay in sync with `$allowed_ext` in render.php AND the `enum` on the three
 // *FrameExt attrs in block.json — all three now list the same five values. They did

@@ -32,6 +32,7 @@ import SgsMultiSelectField from '../../components/SgsMultiSelectField';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // -------------------------------------------------------------------------
@@ -72,14 +73,15 @@ const ORDER_OPTIONS = [
 	{ label: __( 'Ascending (oldest first)', 'sgs-blocks' ), value: 'asc' },
 ];
 
-const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( '16:9', 'sgs-blocks' ), value: '16/9' },
-	{ label: __( '16:10', 'sgs-blocks' ), value: '16/10' },
-	{ label: __( '4:3', 'sgs-blocks' ), value: '4/3' },
-	{ label: __( '1:1 (square)', 'sgs-blocks' ), value: '1/1' },
-	{ label: __( '3:2', 'sgs-blocks' ), value: '3/2' },
-];
+// C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
+// six-value ratio list (spaced format, "16 / 9" etc.) rather than this
+// block's own hand-rolled set (which included a "Default" empty-string
+// option and unspaced ratios not shared with any other block). render.php
+// now whitelists against this exact six-value set, falling back to this
+// block's own existing default ('16/10') for anything outside it — so an
+// existing ''/`16/10`/`3/2` stored value keeps rendering exactly as before
+// rather than breaking.
+const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 const IMAGE_SIZE_OPTIONS = [
 	{ label: __( 'Thumbnail (150×150)', 'sgs-blocks' ), value: 'thumbnail' },

@@ -57,6 +57,16 @@ $columns_mobile = $columns_obj['mobile'] ?? 1;
 $gap_obj      = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
 $gap          = ( '' !== (string) ( $gap_obj['desktop'] ?? '' ) ) ? $gap_obj['desktop'] : '30';
 $aspect_ratio = $attributes['aspectRatio'] ?? '16/10';
+// Whitelist — mirrors image-sequence/render.php's six-value ratio list (the
+// shared source of truth is MediaSizingPanel.js's RATIO_OPTIONS, JS-side;
+// this array is byte-identical to that list's values). Falls back to this
+// block's OWN existing default ('16/10', unspaced) rather than
+// image-sequence's '16 / 9', so a legacy stored value ('16/10', authored
+// before this validation existed) renders exactly as it did before.
+$allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '3 / 4', '9 / 16' );
+if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
+	$aspect_ratio = '16/10';
+}
 $hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 
 $title_colour        = $attributes['titleColour'] ?? '';

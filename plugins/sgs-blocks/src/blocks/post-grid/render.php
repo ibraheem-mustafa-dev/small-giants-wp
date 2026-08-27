@@ -55,6 +55,19 @@ $tags       = array_map( 'absint', (array) ( $attributes['tags'] ?? array() ) );
 
 $layout         = sanitize_key( $attributes['layout'] ?? 'grid' );
 $card_style     = sanitize_key( $attributes['cardStyle'] ?? 'card' );
+
+// Whitelist — mirrors image-sequence/render.php's six-value ratio list (the
+// shared source of truth is MediaSizingPanel.js's RATIO_OPTIONS, JS-side;
+// this array is byte-identical to that list's values). Falls back to this
+// block's OWN existing default ('16/10', unspaced) rather than
+// image-sequence's '16 / 9', so a legacy stored value ('16/10', authored
+// before this validation existed) renders exactly as it did before.
+$aspect_ratio         = sanitize_text_field( $attributes['aspectRatio'] ?? '16/10' );
+$aspect_ratio_allowed = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '3 / 4', '9 / 16' );
+if ( ! in_array( $aspect_ratio, $aspect_ratio_allowed, true ) ) {
+	$aspect_ratio = '16/10';
+}
+
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (absint() on an unresolved array
 // throws "Array to int conversion", the D569/D570 bug class this normaliser
@@ -166,7 +179,7 @@ $card_params = array(
 	'readMoreText'          => sanitize_text_field( $attributes['readMoreText'] ?? __( 'Read more', 'sgs-blocks' ) ),
 	'excerptLength'         => absint( $attributes['excerptLength'] ?? 20 ),
 	'imageSize'             => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
-	'aspectRatio'           => sanitize_text_field( $attributes['aspectRatio'] ?? '16/10' ),
+	'aspectRatio'           => $aspect_ratio,
 	'titleColour'           => $attributes['titleColour'] ?? 'primary',
 	'excerptColour'         => $attributes['excerptColour'] ?? 'text',
 	'metaColour'            => $attributes['metaColour'] ?? 'text-muted',

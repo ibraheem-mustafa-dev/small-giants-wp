@@ -28,7 +28,7 @@ import {
 } from '../container/components/ContainerWrapperControls';
 // Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
 // WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
-import { ResponsiveBoxControls } from '../../components';
+import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -53,14 +53,15 @@ const LAYOUT_OPTIONS = [
 	{ label: __( 'Carousel', 'sgs-blocks' ), value: 'carousel' },
 ];
 
-const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'Square (1:1)', 'sgs-blocks' ), value: '1/1' },
-	{ label: __( '4:3', 'sgs-blocks' ), value: '4/3' },
-	{ label: __( '3:2', 'sgs-blocks' ), value: '3/2' },
-	{ label: __( '16:9', 'sgs-blocks' ), value: '16/9' },
-	{ label: __( '16:10', 'sgs-blocks' ), value: '16/10' },
-	{ label: __( 'Natural (no crop)', 'sgs-blocks' ), value: '' },
-];
+// C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
+// six-value ratio list (spaced format, "16 / 9" etc.) rather than this
+// block's own hand-rolled set. render.php's char-filter sanitiser
+// ($sgs_css_ratio) is untouched — it already accepts both spaced and
+// unspaced values safely, so no PHP change is needed here. The dropped
+// "Natural (no crop)" (value: '') option is no longer offered in the UI;
+// any post already storing '' keeps rendering with no forced ratio exactly
+// as before, since render.php's `if ( $aspect_ratio )` check is unchanged.
+const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 const IMAGE_SIZE_OPTIONS = [
 	{ label: __( 'Thumbnail (150×150)', 'sgs-blocks' ), value: 'thumbnail' },
