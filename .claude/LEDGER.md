@@ -93,7 +93,7 @@ D830-D834 still owes one. Reasoning: D804.
   style attr, then emptied. `--user=1` round-trips. Applies to ANY tool writing post_content.
 - **A deploy can report `[ABORTED]` while its payload landed** — check the server, not the exit
   code; the post-deploy cache purge is skipped when it does.
-## ▶ MOTION TRACK — 2026-08-27 (section A CLOSED + live-verified; B = the POC rebuild, next)
+## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
 session (D838). No phase number is shared.
@@ -136,28 +136,27 @@ variant selectors. Aurora's violet is curated per style, never added to the site
 *(Deployed + verified 2026-08-27 — see section A above. The old "NOT YET DEPLOYED" note here was
 stale and is removed.)*
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE — the POC rebuild (NOT started)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 2 CLOSED 2026-08-28, D874; Phase 3 next)
 
 ⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`.** Its technique spec IS a
 build spec; D794's NO-GO was COMPLETENESS, not purpose.
-⭐ **The "recolours itself from per-client theme tokens" differentiator belongs HERE**, not to the
-variant work above (Bean, 2026-08-27 — the second track-conflation in one session).
+⭐ **The token-recolouring differentiator belongs HERE**, not the variant work above (2026-08-27).
 ✅ **Phase 1 (pick a reference) SATISFIED 2026-08-28** and ✅ **the licence question SETTLED** — both
 by Bean. Do not re-open either; detail in the plan.
+✅ **Phase 2 CLOSED 2026-08-28 (D874) — spec passed `/adversarial-council` GO after THREE rounds, not
+one.** Round 1 (six seats, NO-GO avg C) caught a wrong colour-space fix (OKLab where OKLCH was
+needed), a double-rotation bug, an unbuildable Animation section, a wrong-court legal citation. Round
+2's targeted fix-check found the fix itself planted a NEW v1/v1.1 table contradiction. Round 3: GO,
+A-. Full register + why 3 rounds: **D874 — read before touching the spec again.**
+⛔ **Modelled on the Stripe-hero POC (mesh-plane/CPU-fold), NOT FR-38-31's technique** — Bean's
+direct instruction 2026-08-28; the aurora/six-style work above is irrelevant to this track.
+⛔ **Gate E stays held** for this engine (this doc's own inference extending D790, not a fresh Bean
+ruling) — don't delete `.claude/scratch/stripe-hero-poc/` before Phase 3 ships.
 
-### ▶ NEXT — section A is closed; the only motion work left is B, now at Phase 2
+### ▶ NEXT — A and Phase 2 of B are closed; only Phase 3 of B remains
 
-**Everything previously listed here (deploy, gradient controls, 3-state ramp) is DONE or
-CANCELLED — see section A. Do not re-open those.**
-
-⛔ **Phase 1 is SATISFIED, not skipped (Bean, 2026-08-28).** It existed because we kept building
-against a look nobody had chosen; that condition is gone — Bean picked from a live side-by-side,
-six styles shipped, he approved them. **The reference is our own live output** (pages 2740/3037):
-looked-at, approved, running, measurable. Re-running it as a look-comparison is ceremony.
-⛔ **Licence SETTLED (Bean, 2026-08-28):** clear provided none of their source files ship. Two
-rules, and they are the whole of it — **ship none of their files** (no shader source, no palette
-PNG) and **keep no copies in this repo**. Write the aurora from scratch. Not a blocker, not an
-escalation; D794's three legal overstatements are a wording fix inside Phase 2 item 7.
+**Deploy/gradient-controls/3-state-ramp all DONE/CANCELLED, see section A. Phase 1/licence/Phase 2
+detail lives in section B above only — not restated here.**
 
 ⭐ **The unbuilt thing is a MECHANISM, not a look:** *the background recolours itself from
 per-client theme tokens.* The shipped engine uses curated defaults with client override; automatic
@@ -165,11 +164,11 @@ token-following is what this rebuild is for. ⚠ Measured constraint: **the pale
 across all 21 presets, so a token-only aurora cannot reach its signature colour — the shipped
 engine curated around it; a token-following engine must answer it differently.
 
-⭐ **NEXT PROMPT: `.claude/prompts/2026-08-28-poc-phase2-technique-spec.md`** — Phase 2, absorbing
-D794's 13 must-fix items (items 4 and 13 — acceptance criteria, and the configurability axes — are
-the two that decide whether Phase 3 can start). Exit gate is an `/adversarial-council` **GO**; the
-thin version got a NO-GO. Its predecessor `2026-08-27-background-styles-controls.md` was executed
-and DELETED; a reference to it anywhere is stale.
+✅ **Phase 2 prompt `.claude/prompts/2026-08-28-poc-phase2-technique-spec.md` is DONE — see section B
+above (D874).** Its predecessor `2026-08-27-background-styles-controls.md` was executed and
+DELETED; a reference to it anywhere is stale.
+⭐ **NEXT: Phase 3 (the build)** — deliberately unplanned (planning it before Phase 1-2 landed would
+invent requirements). No prompt file yet; write one from the GO'd spec when Phase 3 starts.
 
 ### ▶ PARTICLE + GATES SUB-TRACK — 2026-08-27, all shipped (D839-D842, D846, D853)
 

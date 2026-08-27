@@ -1,3 +1,67 @@
+## D874 [ROUTINE] — the generative-background-engine technique spec closed the D794 NO-GO, and two more council rounds caught what the fix itself got wrong
+
+**2026-08-28.** Closes Phase 2 of `.claude/plans/2026-08-27-generative-background-engine.md`.
+`.claude/reports/2026-08-25-generative-background-engine-technique-spec.md` absorbed all 13
+must-fix items from D794's register (animation section, camera/projection, acceptance criteria,
+target file, OKLab/licence/evidence-pointer corrections, configurability axes) in one pass, then
+went through **three adversarial-council rounds**, not one — because the completion pass introduced
+its own new defects, twice.
+
+**Round 1 (six seats: spec-lawyer, veteran-WebGL cynic, ship-PM, code-grounded fact-checker,
+graphics-math specialist, legal-accuracy seat) — NO-GO, average grade C.** Convergent and
+single-voice-fatal findings: the flagship colour fix named **OKLab**, which is Cartesian and
+provably does NOT stop complementary hues crossing grey (same chord-through-centre failure as sRGB)
+— the real fix needs **OKLCH** (polar, hue-angle interpolation); the new Camera section
+double-applied the two 90° rotations from the CPU fold (once baked into vertex data, once again in
+the view matrix — would misorient the scene 180°+180°); the Animation subsection never stated
+Displacement's axis, the Twist/Displacement combination order, or how the GPU shader would know
+which of three CPU-fold bands a vertex belongs to after folding; the Configurability-axes table had
+inverted Control/Mechanism columns for 3 of 5 rows; the licence correction named the **wrong court**
+as the one that referred *SAS v WPL* to the CJEU (High Court, not Court of Appeal) and still lacked
+the *Infopaq* "own intellectual creation" caveat a prior round had already flagged as missing; the
+"corrected" MIT-attribution pointer (this session's own fix) pointed at code that doesn't carry that
+attribution — verified false by direct repo grep, zero `sa3dany` matches anywhere in `plugins/` or
+`theme/`.
+
+⭐ **A wrong turn corrected before any of this, on Bean's direct instruction, not inference.** The
+parent plan's Phase 1 pointed at the shipped six-style `flowing-gradient` effect (D852) as "the
+reference," which would have meant rebasing the whole technique on FR-38-31's simpler
+fullscreen-triangle/noise-field approach. Bean, asked directly: *"We've literally got final build of
+the Stripe POC... that POC and its code and architecture, as well as our SGS standards, should be
+all that you should base things on... the aurora stuff is completely irrelevant here."* The original
+mesh-plane/CPU-fold technique spec stood; FR-38-31's technique was never the target.
+
+**Round 2 (3 targeted re-checks: render-math, spec-lawyer, legal, on the round-1 fixes) — legal A-,
+render-math A-, spec-lawyer B-.** Legal and render-math confirmed every fix technically correct.
+Spec-lawyer found a NEW defect the fix itself introduced: the Configurability-axes table's new
+`v1`/`v1.1` split (added to resolve the earlier column-inversion finding) tagged Speed and Size as
+`v1`, contradicting their own Mechanism text (`u_time`, the folded plane, the camera transform — all
+§1/v1.1 machinery) and Assembly & priority order's own definition of v1 as geometry-free. Also
+flagged: ambiguity over whether the "v1 static gradient" and the "CSS fallback contract" were the
+same artefact or two different ones (they're two — the v1 image is OKLCH-built via Canvas 2D, no
+WebGL required; the CSS fallback is a separate, weaker, sRGB-only artefact that only matters once
+v1.1's WebGL path exists).
+
+**Round 3 (spec-lawyer, full re-sweep) — GO, grade A-.** Both round-2 findings closed with the
+specific reasoning demanded, not just re-tagged. Four cosmetic should-fix items (Camera subsection's
+heading level implying it's a §1 sibling rather than child; a "zero per frame" cost line readable as
+covering all of §1 rather than just the one-time fold; §6 Ground missing a row in the Configurability
+table despite being a mandatory v1 control; an illustrative "text beside it" phrase read as a named
+preset) applied same-session, not deferred.
+
+**The reusable lesson: a completion pass that introduces new defects at the same rate it fixes old
+ones is not unusual — budget for it.** Three rounds, not one, and two of the three surfaced
+genuinely fatal or NO-GO-worthy problems the previous round's fix had itself created. A single-pass
+"absorb the must-fix register, done" approach would have shipped the OKLab error, the double
+rotation, and the wrong court citation as a "complete" spec.
+
+`Where the evidence lives`'s Gate E hold is explicitly stated as this document's own inference (not
+a re-confirmed Bean ruling) — extends D790's "hold until the rework ships" from FR-38-31 (which has
+since shipped) to this engine, since D838 already establishes "the rework" was an ambiguous label at
+the time D790 was written. Flagged, not asserted as settled.
+
+Phase 3 (build) remains explicitly out of scope for this session, per the parent plan.
+
 ## D872 [INCIDENT] — a "zero-risk tidy-up" exposed four content-destroying bugs, and the flexWrap tool now has the guards
 
 **2026-08-27.** Bean asked for the flexWrap stored-content tidy-up, described (correctly, on the
