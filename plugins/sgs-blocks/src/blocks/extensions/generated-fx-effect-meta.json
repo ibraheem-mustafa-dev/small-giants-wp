@@ -41,6 +41,14 @@
 			"scroll"
 		]
 	},
+	"generative-background": {
+		"in_picker": true,
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"load"
+		]
+	},
 	"grid-dots": {
 		"in_picker": true,
 		"owns_scroll_transform": false,

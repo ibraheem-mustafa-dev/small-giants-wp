@@ -201,6 +201,24 @@ const SHIPPED_EFFECTS = [
 	// for the fade specifically to become controllable "later", and adding
 	// knobs nobody has asked to turn is how a panel grows dead controls.
 	'grid-dots',
+	// `generative-background` ADDED (Spec 38, D874 technique spec — the
+	// generative-background-engine build, Step 1 / v1 only). Tier W's THIRD
+	// entry, but v1 ships NO WebGL, NO shader, NO per-frame animation: a
+	// single OKLCH-interpolated gradient image built once on a <canvas> 2D
+	// context and painted as a static background. Every leg verified rather
+	// than assumed: the runtime module exists
+	// (`shared/effects/fx-generative-background.js`), the registry enqueues
+	// both the module AND its stylesheet (the CSS fallback contract — see
+	// that file's own docblock), `includes/fx-generative-background.php`
+	// resolves the four palette slugs plus the ground preset into the custom
+	// properties both the CSS fallback and the JS-built image read, and the
+	// panel below carries five real controls (four colours + ground).
+	//
+	// v1.1 (motion — a folded, twisted 3D geometry) is a SEPARATE, later,
+	// design-gated build per the technique spec's own kill criterion — not an
+	// assumed continuation of this array entry. Speed/Size/Shape/Position are
+	// deliberately NOT offered here yet; see the panel below for why.
+	'generative-background',
 ];
 
 const FX_OPTION_LABELS = {
@@ -221,6 +239,7 @@ const FX_OPTION_LABELS = {
 	// mechanism. "Grid dots" says what is on the screen; "cursor grid-dot
 	// field" is the spec's name for it and would be the longest label here.
 	'grid-dots': __( 'Grid dots (follow cursor)', 'sgs-blocks' ),
+	'generative-background': __( 'Generative gradient', 'sgs-blocks' ),
 };
 
 /**
@@ -1076,6 +1095,26 @@ function addFxAttributes( settings, name ) {
 			fxWaveVariant: { type: 'string' },
 			fxWaveSpeed: { type: 'number' },
 			fxWaveAmplitude: { type: 'number' },
+			/*
+			 * Generative background (Spec 38, D874 — v1 static build only).
+			 * Four colour SLOTS, matching `fxWaveBase`/`fxWave1-3`'s shape
+			 * (empty string default, so an unset colour resolves to nothing
+			 * rather than to a stray `background-color:` declaration).
+			 * `includes/fx-generative-background.php` resolves each through
+			 * `sgs_colour_value()` and interpolates them in OKLCH — never fed
+			 * to the style engine raw (D684).
+			 */
+			fxGenColour1: { type: 'string', default: '' },
+			fxGenColour2: { type: 'string', default: '' },
+			fxGenColour3: { type: 'string', default: '' },
+			fxGenColour4: { type: 'string', default: '' },
+			/*
+			 * Ground preset (§6 of the technique spec — a MANDATORY control,
+			 * not a fixed default). 'light' | 'dark'; empty resolves to
+			 * 'light' at render time. Resolved from the client's own base
+			 * colour tokens ('surface' / 'footer-bg'), never a hardcoded hex.
+			 */
+			fxGenGround: { type: 'string', default: '' },
 			fxMagnetAxis: { type: 'string', default: '' },
 			fxMagnetRadius: { type: 'number' },
 			fxMagnetStrength: { type: 'number' },
@@ -1376,6 +1415,17 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// below, matching the render layer's "presence means off" contract.
 		'data-sgs-fx-treatment-reveal': attributes.fxTreatmentReveal,
 		'data-sgs-fx-particle-preset': attributes.fxParticlePreset,
+		/*
+		 * Generative background (Spec 38, D874). String colour slugs and a
+		 * string ground preset — grouped with the other truthy-filtered
+		 * strings (fxFieldColour/fxTreatment* above), NOT the numeric group
+		 * below, which only emits `typeof value === 'number'`.
+		 */
+		'data-sgs-fx-gen-colour-1': attributes.fxGenColour1,
+		'data-sgs-fx-gen-colour-2': attributes.fxGenColour2,
+		'data-sgs-fx-gen-colour-3': attributes.fxGenColour3,
+		'data-sgs-fx-gen-colour-4': attributes.fxGenColour4,
+		'data-sgs-fx-gen-ground': attributes.fxGenGround,
 	};
 	Object.entries( optional ).forEach( ( [ key, value ] ) => {
 		if ( value ) {
@@ -2801,6 +2851,129 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 								<Notice status="info" isDismissible={ false }>
 									{ __(
 										'This animates on the live site only — the editor canvas shows the still fallback in your chosen colours. Visitors get a Pause control, and it stops on its own when off-screen or under reduced-motion settings.',
+										'sgs-blocks'
+									) }
+								</Notice>
+							</>
+						) }
+
+						{ /*
+						  * Generative background (Spec 38, D874 — v1 static
+						  * build only). Four colours + one ground preset.
+						  * Speed/Size/Shape/Position are DELIBERATELY absent —
+						  * the technique spec's Configurability-axes table
+						  * scopes them to v1.1 (they need the folded-plane
+						  * geometry this v1 does not build), and a control
+						  * that visibly does nothing is a defect, not a
+						  * convenience.
+						  */ }
+						{ 'generative-background' === fx && (
+							<>
+								<DesignTokenPicker
+									label={ __( 'Colour 1', 'sgs-blocks' ) }
+									help={ __(
+										'The first of four colours the gradient blends between.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxGenColour1,
+											onChange: ( val ) =>
+												setParam( { fxGenColour1: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
+
+								<DesignTokenPicker
+									label={ __( 'Colour 2', 'sgs-blocks' ) }
+									help={ __(
+										'For a premium result pick colours that sit NEXT TO each other on the colour wheel — opposite colours (e.g. blue and orange) blend through a muddy grey band.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxGenColour2,
+											onChange: ( val ) =>
+												setParam( { fxGenColour2: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
+
+								<DesignTokenPicker
+									label={ __( 'Colour 3', 'sgs-blocks' ) }
+									help={ __(
+										'The third gradient colour.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxGenColour3,
+											onChange: ( val ) =>
+												setParam( { fxGenColour3: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
+
+								<DesignTokenPicker
+									label={ __( 'Colour 4', 'sgs-blocks' ) }
+									help={ __(
+										'The fourth gradient colour.',
+										'sgs-blocks'
+									) }
+									states={ [
+										{
+											key: 'normal',
+											label: __( 'Normal', 'sgs-blocks' ),
+											value: attributes.fxGenColour4,
+											onChange: ( val ) =>
+												setParam( { fxGenColour4: val ?? '' } ),
+											linked: true,
+										},
+									] }
+								/>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenGround &&
+											'' !== attributes.fxGenGround
+										}
+										label={ __( 'Ground', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenGround: '' } )
+										}
+										isShownByDefault
+									>
+										<SelectControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Ground', 'sgs-blocks' ) }
+											value={ attributes.fxGenGround || 'light' }
+											options={ [
+												{ label: __( 'Light — bright colour on a light background', 'sgs-blocks' ), value: 'light' },
+												{ label: __( 'Dark — saturated colour on a near-black background', 'sgs-blocks' ), value: 'dark' },
+											] }
+											onChange={ ( value ) =>
+												setParam( { fxGenGround: value } )
+											}
+											help={ __(
+												'Resolved from your theme colours — light reads as a bounded shape with text placed beside it; dark reads as a richer, moodier field.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'This is a static gradient — no animation yet. Built from your four colours through a colour-accurate blend that avoids the muddy grey band a plain gradient can show between unrelated colours.',
 										'sgs-blocks'
 									) }
 								</Notice>

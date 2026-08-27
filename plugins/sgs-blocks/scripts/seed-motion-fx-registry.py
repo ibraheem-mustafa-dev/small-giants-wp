@@ -984,6 +984,51 @@ FX_EFFECTS: list[dict] = [
         # choice cursor-field made — not re-derived from scratch here.
         "creates_panel": 0,
     },
+    {
+        # Generative background (Spec 38, D874 technique spec — the
+        # generative-background-engine build). Tier W's THIRD entry.
+        #
+        # ⛔ v1 IS STATIC — this row describes the SHIPPED v1 build, not the
+        # technique spec's later folded-plane/animation sections (v1.1, a
+        # separate, later, design-gated build per the spec's own kill
+        # criterion). A single OKLCH-interpolated gradient image, built once
+        # on a <canvas> 2D context (`fx-generative-background.js`) and
+        # painted as a static background. No shader, no WebGL context, no
+        # per-frame draw loop.
+        "effect": "generative-background",
+        "in_picker": 1,
+        # Nothing to pin (it never spans a scroll range) and nothing for a
+        # trigger enum to arm beyond the initial paint — 'load' matches
+        # `surface-treatment`'s own draw-once-on-mount row above.
+        "pins": 0,
+        "triggers": "load",
+        "tier": "W",
+        # No GSAP plugin — v1 is Canvas 2D colour maths, not a GSAP-driven
+        # tween and not a shader. Same shape as `surface-treatment`'s `[]`.
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # 'simplify', same reasoning as `surface-treatment`'s own row: v1
+        # draws its image once on load and never animates again — there is
+        # no ongoing motion for `prefers-reduced-motion` to gate off, and
+        # output is byte-identical whether reduced-motion is set or not.
+        "reduced_motion": "simplify",
+        # 'end-state', NOT 'no-preview' — unlike `surface-treatment`, v1
+        # needs no GPU-backed WebGL context (Canvas 2D is cheap and already
+        # used throughout wp-admin), so the editor canvas CAN honestly show
+        # the real built image. It currently shows the CSS fallback instead
+        # (the editor never boots frontend script modules, same as
+        # wave-gradient) — which is still an honest "end state" preview in
+        # the client's own colours, not a broken one.
+        "editor_story": "end-state",
+        "scope": "block",
+        # 'surface' — a paintable background, the same token
+        # wave-gradient/cursor-field use. Not 'image': this generates its
+        # own pixels rather than treating one.
+        "requires": "surface",
+        # Offered where a panel exists; never creates one. Same containment
+        # measurement D459 forced for cursor-field/wave-gradient.
+        "creates_panel": 0,
+    },
 ]
 
 # ---------------------------------------------------------------------------

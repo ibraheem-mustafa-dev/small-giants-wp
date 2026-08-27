@@ -102,6 +102,12 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
 		require_once SGS_BLOCKS_PATH . 'includes/fx-wave-gradient.php';
 
+		// Generative background (Tier W, Spec 38, D874 — v1 static build
+		// only). Same p11 slot as the sibling above: resolves the four
+		// colour slots + ground preset into custom properties both the CSS
+		// fallback and the JS-built OKLCH image read.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-generative-background.php';
+
 		// Surface treatment (Tier W / WebGL, Spec 38 s1.2b, D479). Same p11
 		// slot as the three siblings above: marks the emitter with its
 		// treatment id and, for duotone, a uid-scoped <style> setting

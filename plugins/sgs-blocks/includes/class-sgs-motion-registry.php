@@ -346,6 +346,21 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/fx-surface-treatment.js',
 			'deps' => array(),
 		),
+
+		/*
+		 * Generative background (Tier W, Spec 38, D874 technique spec — v1
+		 * static build only). NO deps — v1 is Canvas 2D colour maths, no
+		 * shader, no WebGL context, no GSAP import at all: a page using this
+		 * and no Tier G effect still ships zero GSAP bytes, the same
+		 * guarantee `@sgs/fx-wave-gradient`/`@sgs/fx-surface-treatment`
+		 * keep above. The module ID still follows
+		 * '@sgs/fx-' . <fx_effects.effect> so the generic enqueue_effect()
+		 * lookup finds it with no special case.
+		 */
+		'@sgs/fx-generative-background' => array(
+			'path' => 'build/shared/effects/fx-generative-background.js',
+			'deps' => array(),
+		),
 	);
 
 	/**
@@ -431,6 +446,16 @@ class SGS_Motion_Registry {
 		 * failure Tier W's invariant existed to make impossible.
 		 */
 		'wave-gradient'    => 'assets/css/fx-wave-gradient.css',
+
+		/*
+		 * Generative background (Tier W, Spec 38, D874 technique spec — v1
+		 * static build only). Same reason as the wave gradient's own row
+		 * immediately above: this is a GENERATIVE effect with no untouched
+		 * source image to fall back to, so this stylesheet paints the static
+		 * gradient from the same custom properties the JS-built OKLCH image
+		 * reads. Without this enqueue a no-JS visitor gets a blank box.
+		 */
+		'generative-background' => 'assets/css/fx-generative-background.css',
 
 		/*
 		 * Surface treatment (Tier W / WebGL, Spec 38 §1.2b, D479). The

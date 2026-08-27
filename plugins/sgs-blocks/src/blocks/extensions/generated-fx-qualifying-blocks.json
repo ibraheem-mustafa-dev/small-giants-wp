@@ -38,6 +38,7 @@
 	"sgs/container": [
 		"cursor-field",
 		"draw",
+		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
 		"magnet",
@@ -60,6 +61,7 @@
 	"sgs/cta-section": [
 		"cursor-field",
 		"draw",
+		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
 		"magnet",
@@ -109,6 +111,7 @@
 	"sgs/hero": [
 		"cursor-field",
 		"draw",
+		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
 		"magnet",
@@ -139,6 +142,7 @@
 	],
 	"sgs/info-box": [
 		"cursor-field",
+		"generative-background",
 		"grid-dots",
 		"magnet",
 		"morph",
@@ -161,6 +165,7 @@
 	"sgs/multi-button": [
 		"cursor-field",
 		"draw",
+		"generative-background",
 		"grid-dots",
 		"magnet",
 		"morph",
@@ -172,6 +177,7 @@
 	"sgs/physics-canvas": [
 		"cursor-field",
 		"draw",
+		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
 		"magnet",
@@ -212,6 +218,7 @@
 	],
 	"sgs/product-faq": [
 		"cursor-field",
+		"generative-background",
 		"grid-dots",
 		"magnet",
 		"morph",
@@ -259,6 +266,7 @@
 	],
 	"sgs/testimonial": [
 		"cursor-field",
+		"generative-background",
 		"grid-dots",
 		"magnet",
 		"morph",
@@ -294,6 +302,7 @@
 	"sgs/trust-bar": [
 		"cursor-field",
 		"draw",
+		"generative-background",
 		"grid-dots",
 		"horizontal-panel",
 		"magnet",

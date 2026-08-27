@@ -107,6 +107,9 @@ const GLOBALS = new Set( [
 	'atob', 'btoa', 'CSS', 'DOMParser', 'XMLSerializer', 'SVGElement',
 	'AudioContext', 'webkitAudioContext', 'DOMRect', 'DataTransfer',
 	'HTMLCanvasElement', 'HTMLImageElement', 'HTMLVideoElement', 'HTMLInputElement',
+	// Canvas 2D pixel-buffer constructor — used by fx-generative-background.js
+	// to build a putImageData()-ready OKLCH gradient. Genuine browser global.
+	'ImageData',
 ] );
 
 /**

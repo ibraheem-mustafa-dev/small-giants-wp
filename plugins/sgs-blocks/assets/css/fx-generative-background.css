@@ -1,0 +1,63 @@
+/**
+ * SGS motion — generative background CSS fallback (Spec 38, D874 technique
+ * spec). Tier W, THIRD entry — v1 STATIC BUILD ONLY.
+ *
+ * ⚠ THIS IS A DIFFERENT, WEAKER ARTEFACT FROM THE JS-BUILT OKLCH IMAGE.
+ * `src/shared/effects/fx-generative-background.js` builds the real gradient
+ * on a <canvas> 2D context by interpolating the four client colours in OKLCH
+ * (Björn Ottosson's polar Lab space) — the shorter hue arc, avoiding the grey
+ * band a straight sRGB/OKLab blend produces between non-adjacent hues.
+ *
+ * A plain CSS `linear-gradient()` has NO OKLCH-hue-angle interpolation mode
+ * to reach for — it interpolates in sRGB, same as this effect's own OKLCH fix
+ * exists to correct — so this rule relies on hue-adjacency (§5 of the
+ * technique spec) alone, picked by the client, not on any colour maths this
+ * stylesheet can perform. It is what a no-JS visitor sees permanently, and
+ * what every visitor sees for the moment before the canvas paints over it.
+ *
+ * No animation: a finished static image, matching the effect's own
+ * reduced-motion SIMPLIFY contract — a visitor without JS and a visitor with
+ * reduced-motion enabled see visually consistent, equally "finished" results.
+ */
+
+[data-sgs-fx="generative-background"] {
+	position: relative;
+	overflow: hidden;
+	background-color: var( --sgs-genbg-ground, var( --wp--preset--color--surface ) );
+	background-image: linear-gradient(
+		120deg,
+		var( --sgs-genbg-1, var( --wp--preset--color--primary ) ) 0%,
+		var( --sgs-genbg-2, var( --wp--preset--color--accent ) ) 33%,
+		var( --sgs-genbg-3, var( --wp--preset--color--accent-light ) ) 66%,
+		var( --sgs-genbg-4, var( --wp--preset--color--primary-dark ) ) 100%
+	);
+	background-size: cover;
+	background-position: center;
+}
+
+/*
+ * The canvas the JS module paints once, over the top of the CSS fallback
+ * above. Positioned here (Spec 32 — no inline styling) rather than by the JS
+ * setting an inline style. Hidden until the JS module's first draw actually
+ * succeeds (`data-sgs-genbg-active="1"`) — a shader/canvas that never runs
+ * leaves the CSS gradient visible, never a blank box.
+ */
+.sgs-generative-background__canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0;
+	transition: opacity 400ms ease-out;
+}
+
+[data-sgs-genbg-active="1"] .sgs-generative-background__canvas {
+	opacity: 1;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-generative-background__canvas {
+		transition: none;
+	}
+}

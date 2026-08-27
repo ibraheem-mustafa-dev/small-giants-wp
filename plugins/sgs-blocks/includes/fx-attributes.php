@@ -165,6 +165,22 @@ const FX_ATTR_MAP = array(
 	'fxGridRadius'         => 'data-sgs-fx-grid-radius',
 	'fxGridLean'           => 'data-sgs-fx-grid-lean',
 	'fxGridEase'           => 'data-sgs-fx-grid-ease',
+
+	/*
+	 * Generative background (Spec 38, D874 technique spec — v1 static build
+	 * only). Same reasoning as wave-gradient/surface-treatment above: most
+	 * qualifying hosts (`sgs/container`, `sgs/hero`, `sgs/cta-section`,
+	 * `sgs/trust-bar`) are DYNAMIC blocks, so these MUST be injected here,
+	 * not just baked in by `fx.js`'s save filter for static blocks — without
+	 * this row a dynamic block's chosen colours/ground never reach the
+	 * rendered root and `includes/fx-generative-background.php` (which reads
+	 * these back off the markup at p11) has nothing to act on.
+	 */
+	'fxGenColour1'         => 'data-sgs-fx-gen-colour-1',
+	'fxGenColour2'         => 'data-sgs-fx-gen-colour-2',
+	'fxGenColour3'         => 'data-sgs-fx-gen-colour-3',
+	'fxGenColour4'         => 'data-sgs-fx-gen-colour-4',
+	'fxGenGround'          => 'data-sgs-fx-gen-ground',
 );
 
 /**
@@ -487,6 +503,17 @@ function sgs_fx_effect_param_scope(): array {
 		 * size on every render regardless of which effect is selected.
 		 */
 		'particles'         => array( 'fxParticlePreset', 'fxParticleDensity', 'fxParticleSize', 'fxParticleColour' ),
+
+		/*
+		 * Generative background (Spec 38, D874 technique spec — v1 static
+		 * build only). LOAD-BEARING, not bookkeeping — the same
+		 * cursor-field/surface-treatment/particles trap documented above,
+		 * repeated for this effect: `sgs_fx_clear_stale_params()` below nulls
+		 * every scoped key not in this effect's own allowlist, so omitting
+		 * this row would wipe the client's chosen colours/ground on every
+		 * render regardless of which effect is selected.
+		 */
+		'generative-background' => array( 'fxGenColour1', 'fxGenColour2', 'fxGenColour3', 'fxGenColour4', 'fxGenGround' ),
 	);
 }
 

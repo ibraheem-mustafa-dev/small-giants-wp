@@ -317,6 +317,25 @@ if ( moduleConfig ) {
 				'effects',
 				'fx-surface-treatment.js'
 			),
+			/*
+			 * Generative background (Tier W, Spec 38, D874 technique spec —
+			 * v1 static build only). No GSAP, no WebGL for v1 — plain
+			 * Canvas 2D colour maths, so a page using this and no Tier G
+			 * effect still ships zero GSAP bytes.
+			 *
+			 * FILENAME is load-bearing exactly as it is for the sibling
+			 * entries: the PHP registry derives its module ID as
+			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `generative-background` — so this must stay
+			 * `fx-generative-background.js`.
+			 */
+			'shared/effects/fx-generative-background': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-generative-background.js'
+			),
 			...Object.fromEntries(
 				[
 					'fx-scrub',
