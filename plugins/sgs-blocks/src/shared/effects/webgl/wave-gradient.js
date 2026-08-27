@@ -2,8 +2,11 @@
  * SGS motion — wave gradient (Spec 38 FR-38-31). Tier W, second entry.
  *
  * A flowing mesh gradient: a subdivided plane whose VERTICES are displaced by
- * simplex noise, with each colour layer blended per-vertex and interpolated
- * across the mesh by the rasteriser.
+ * simplex noise. Each colour layer's noise is EVALUATED per-vertex, interpolated
+ * across the mesh by the rasteriser, and only then sharpened and blended, in
+ * linear light, per pixel. (Until 2026-08-27 the sharpening and the blend also
+ * happened per-vertex; interpolating that steep function's OUTPUT is what put
+ * visible triangle edges in the result.)
  *
  * ⛔ THIS IS NOT A MODEL OF ANY LIVE COMMERCIAL SITE'S CURRENT TECHNIQUE.
  * Corrected 2026-08-25 — an earlier version of this docblock claimed it matched
@@ -124,27 +127,29 @@ float snoise(vec3 v){
 export const WAVE_LAYERS = 3;
 
 /**
- * Vertex stage. The displacement AND the colour both happen here — that is the
- * whole technique. Colour is computed per VERTEX and the rasteriser interpolates
- * it across each triangle, which is why the result reads as flowing fabric
- * rather than as shapes moving over one another.
+ * Vertex stage. The displacement happens here, and so does every noise
+ * EVALUATION — but not the colour. The stage emits the RAW per-layer noise
+ * values and lets the rasteriser interpolate those; the sharpening and the
+ * blend happen per-pixel in the fragment stage.
+ *
+ * ⛔ Do NOT move the sharpening back here. Interpolating the OUTPUT of a steep
+ * nonlinear function (`smoothstep` then `pow`) across a triangle is not the same
+ * as applying that function to the interpolated INPUT: the first manufactures a
+ * visible crease at every triangle boundary, which is exactly the "visible
+ * polygons" defect this shape was written to remove. Interpolating raw noise —
+ * smooth by construction — and sharpening afterwards costs ZERO extra noise
+ * evaluations; only a handful of cheap smoothstep/pow/mix calls move to
+ * per-pixel.
  */
 const VERTEX_SHADER = `#version 300 es
 in vec2 a_position;
 uniform float u_time;
 uniform float u_amplitude;
-uniform vec3 u_baseColour;
-uniform vec3 u_layerColour[ ${ WAVE_LAYERS } ];
 uniform vec2 u_layerFreq[ ${ WAVE_LAYERS } ];
 uniform float u_layerFlow[ ${ WAVE_LAYERS } ];
 uniform float u_layerSeed[ ${ WAVE_LAYERS } ];
-out vec3 v_colour;
+out float v_layerNoise[ ${ WAVE_LAYERS } ];
 ${ SIMPLEX_3D }
-
-/** Normal alpha blend, matching the reference implementation's blendNormal. */
-vec3 blendNormal( vec3 base, vec3 blend, float opacity ) {
-	return blend * opacity + base * ( 1.0 - opacity );
-}
 
 void main() {
 	float time = u_time * 0.3;
@@ -152,9 +157,19 @@ void main() {
 	// VERTEX DISPLACEMENT. Faded to zero at the top and bottom edges so the
 	// plane still covers its box exactly — without this the mesh tears away
 	// from the edge and shows the page behind it.
+	//
+	// ⛔ The Y multiplier is 1.5, NOT 4.0, and it is not a taste setting. At 64
+	// segments a mesh row is 2/64 ≈ 0.03125 clip units from its neighbour; at
+	// 4.0 the noise gradient between adjacent rows could exceed that spacing, so
+	// rows crossed over one another. The context is created with depth:false, so
+	// there is no depth buffer to sort them and a folded triangle painted a
+	// hard, un-interpolated seam over its neighbour — hard creases, not
+	// waviness. The FREQUENCY is
+	// what fixes that: do not "restore" 4.0, and do not compensate by cutting
+	// u_amplitude, which only shrinks the motion.
 	float noise = snoise( vec3(
 		a_position.x * 3.0 + time * 0.3,
-		a_position.y * 4.0,
+		a_position.y * 1.5,
 		time
 	) );
 	noise *= 1.0 - pow( abs( a_position.y ), 2.0 );
@@ -166,27 +181,83 @@ void main() {
 		1.0
 	);
 
-	// PER-VERTEX COLOUR. Each layer gets its own noise field, sharpened with
-	// pow(n, 4.0) so the layers read as distinct bands of colour rather than a
-	// uniform wash — that exponent is what stops it looking like mud.
-	v_colour = u_baseColour;
+	// RAW per-layer noise — one evaluation per layer per vertex, the same count
+	// as before. Each layer keeps its own frequency, flow and seed so the layers
+	// are genuinely different fields rather than one field in three colours.
+	// ⚠ These are the COLOUR frequencies (u_layerFreq) and are unrelated to the
+	// displacement frequency above; changing one never implies changing the other.
 	for ( int i = 0; i < ${ WAVE_LAYERS }; i++ ) {
-		float n = snoise( vec3(
+		v_layerNoise[ i ] = snoise( vec3(
 			a_position.x * u_layerFreq[ i ].x + time * u_layerFlow[ i ],
 			a_position.y * u_layerFreq[ i ].y,
 			time * 0.6 + u_layerSeed[ i ]
 		) );
-		n = smoothstep( 0.1, 0.9, n * 0.5 + 0.5 );
-		v_colour = blendNormal( v_colour, u_layerColour[ i ], pow( n, 4.0 ) );
 	}
 }`;
 
-/** Fragment stage does nothing but emit the interpolated vertex colour. */
+/**
+ * Fragment stage. Sharpens the interpolated raw noise, blends the layers IN
+ * LINEAR LIGHT, converts the result back to sRGB, and dithers.
+ *
+ * ⛔ The blend is linear-light on purpose. Mixing gamma-encoded (sRGB) channel
+ * values directly darkens every colour crossing by an amount nobody authored.
+ * There is no lighting model anywhere in this effect, so any shadow-like edge
+ * between two colours WAS that bug. The four colours arrive already converted to
+ * linear by the JS upload (`pow(c, 2.2)`); this stage converts back with
+ * `pow(c, 1.0/2.2)`. Convert in both places or in neither — one alone is worse
+ * than the original.
+ *
+ * `highp` is required here, not merely preferred: `pow(n, u_sharpness)` now runs
+ * per-pixel, and `mediump` quantises it into visible steps. GLSL ES 3.00
+ * guarantees `highp` in the fragment stage (unlike ES 1.00), so there is no
+ * compatibility cost.
+ */
 const FRAGMENT_SHADER = `#version 300 es
-precision mediump float;
-in vec3 v_colour;
+precision highp float;
+uniform vec3 u_baseColour;
+uniform vec3 u_layerColour[ ${ WAVE_LAYERS } ];
+uniform float u_sharpness;
+in float v_layerNoise[ ${ WAVE_LAYERS } ];
 out vec4 outColour;
-void main() { outColour = vec4( v_colour, 1.0 ); }`;
+
+/** Normal alpha blend, matching the reference implementation's blendNormal. */
+vec3 blendNormal( vec3 base, vec3 blend, float opacity ) {
+	return blend * opacity + base * ( 1.0 - opacity );
+}
+
+/**
+ * Cheap 2D hash. Feeds the output dither only — it is not a noise field and
+ * nothing about the look depends on its exact constants.
+ */
+float hash12( vec2 p ) {
+	vec3 p3 = fract( vec3( p.xyx ) * 0.1031 );
+	p3 += dot( p3, p3.yzx + 33.33 );
+	return fract( ( p3.x + p3.y ) * p3.z );
+}
+
+void main() {
+	// Sharpening lives HERE, applied to the interpolated raw noise. The exponent
+	// is a uniform rather than a literal so it can be tuned without a shader
+	// edit; the old hardcoded 4.0 was over-cranked and contributed to the harsh
+	// look this pass removed.
+	vec3 colour = u_baseColour;
+	for ( int i = 0; i < ${ WAVE_LAYERS }; i++ ) {
+		float n = smoothstep( 0.1, 0.9, v_layerNoise[ i ] * 0.5 + 0.5 );
+		colour = blendNormal( colour, u_layerColour[ i ], pow( n, u_sharpness ) );
+	}
+
+	// Linear light -> sRGB for the framebuffer.
+	colour = pow( max( colour, 0.0 ), vec3( 1.0 / 2.2 ) );
+
+	// Triangular-noise dither, roughly ±half an 8-bit code. The palette is light
+	// and its hues sit close together, so the gradient crosses very few distinct
+	// 8-bit values across a wide screen and banding shows. Two hashes subtracted
+	// give a triangular distribution, which dithers far more evenly than one
+	// uniform sample. This is a few lines inside the SAME fragment invocation —
+	// not a second pass, not a framebuffer, not a grain texture.
+	float dither = ( hash12( gl_FragCoord.xy ) - hash12( gl_FragCoord.yx + 17.0 ) ) / 255.0;
+	outColour = vec4( clamp( colour + dither, 0.0, 1.0 ), 1.0 );
+}`;
 
 /**
  * Build an indexed subdivided plane in clip space (-1..1 on both axes).
@@ -218,6 +289,31 @@ function buildPlane( segments ) {
 		positions: new Float32Array( positions ),
 		indices: new Uint16Array( indices ),
 	};
+}
+
+/**
+ * Convert one sRGB (gamma-encoded) colour to linear light.
+ *
+ * The client's colours arrive as sRGB — that is what a hex swatch is. Blending
+ * them AS sRGB is the bug this removes: linear interpolation between two
+ * gamma-encoded values lands darker than the colour a human reads as halfway,
+ * which is why crossings looked like shadows in an effect that has no lights in
+ * it at all. Converted once here on upload rather than per-fragment; the shader
+ * converts the blended result back.
+ *
+ * `pow(c, 2.2)` is the cheap gamma approximation, not the piecewise sRGB
+ * transfer function. For a decorative gradient the difference is well under one
+ * 8-bit code and it keeps the shader's inverse a single `pow`.
+ *
+ * @param {number[]} colour RGB, each channel 0-1.
+ * @return {number[]} The same colour in linear light.
+ */
+function toLinear( colour ) {
+	return [
+		Math.pow( colour[ 0 ], 2.2 ),
+		Math.pow( colour[ 1 ], 2.2 ),
+		Math.pow( colour[ 2 ], 2.2 ),
+	];
 }
 
 /**
@@ -254,6 +350,7 @@ function compile( gl, type, source ) {
  * @param {number[][]}        opts.colours [base, layer1, layer2, layer3] as 0-1 RGB.
  * @param {number}            [opts.amplitude] Displacement, clip-space units.
  * @param {number}            [opts.segments]  Plane subdivisions per axis.
+ * @param {number}            [opts.sharpness] Layer-sharpening exponent, default 2.5.
  * @param {Function}          [opts.onLost]    Called when the GPU context is lost.
  * @return {{draw: Function, resize: Function, destroy: Function}|null} Handle.
  */
@@ -339,10 +436,14 @@ export function createWaveGradient( canvas, opts = {} ) {
 
 	gl.useProgram( program );
 	const u = ( name ) => gl.getUniformLocation( program, name );
-	gl.uniform3fv( u( 'u_baseColour' ), colours[ 0 ] );
+	gl.uniform3fv( u( 'u_baseColour' ), toLinear( colours[ 0 ] ) );
 	gl.uniform1f( u( 'u_amplitude' ), amplitude );
+	// Sharpening exponent for pow(n, x) in the fragment stage. 2.5 still gives
+	// distinct colour bands; the 4.0 this replaced was over-cranked and read as
+	// harsh once the sharpening moved to per-pixel.
+	gl.uniform1f( u( 'u_sharpness' ), opts.sharpness === undefined ? 2.5 : opts.sharpness );
 	for ( let i = 0; i < WAVE_LAYERS; i++ ) {
-		gl.uniform3fv( u( `u_layerColour[${ i }]` ), colours[ i + 1 ] );
+		gl.uniform3fv( u( `u_layerColour[${ i }]` ), toLinear( colours[ i + 1 ] ) );
 		// Each layer gets a DIFFERENT frequency, flow and seed. Identical
 		// values would make every layer the same field in a different colour,
 		// which is the "three shapes moving together" failure this replaces.
