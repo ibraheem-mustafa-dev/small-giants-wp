@@ -145,6 +145,19 @@ byte-identical** (plain 416B, both-tiers 1264B, tablet-only 900B, parallax+fade+
 fxTreatment-key-absent 402B, video 565B). Its own negative control asserts treated output DIFFERS
 from untreated — without which a fully inert gate would have passed the parity half perfectly.
 
+**FOLLOW-UP, same day: `fx` is now DECLARED in the block's `block.json`.** The first commit read
+`$attributes['fx']` without declaring it, which `audit-block-file-consistency` correctly flagged as
+`undeclared_render_ref` — caught by a peer session whose full-tier gate run it was blocking. The
+read was genuinely live (PHP does not drop undeclared attrs), so this was a governance defect, not a
+broken feature — but "works anyway" is not a contract. Declared with the shape `extensions/fx.js`
+itself registers (`string`, default empty) so the two cannot disagree on a default, and matching the
+precedent rather than inventing one: **every** other block reading an fx-family attr in `render.php`
+declares it too (`sgs/image-sequence`, `sgs/before-after`). Gate now 0 net-new, exit 0.
+⚠ Worth knowing for any future edit of this file: `decorative-image/block.json` has MIXED
+indentation (4-space, with tab-indented tier attrs from a past migration) and inline arrays. Three
+attempts to add the key via `json.dumps` produced a 174/156-line whole-file reformat; a surgical
+text insert produced 5/0. **Do not round-trip this file through a JSON serialiser.**
+
 ⚠ **NAMED LIMITATION, recorded in the code rather than left to be rediscovered: treatment +
 art-direction tiers samples the DESKTOP image at every width.** The JS takes the FIRST `<img>`, and
 hidden tiers are `display:none`, not removed — so on a phone the visible image is the mobile tier
