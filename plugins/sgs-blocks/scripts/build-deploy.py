@@ -81,14 +81,19 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 PLUGIN_DIR = REPO_ROOT / "plugins" / "sgs-blocks"
 BUILD_DIR = PLUGIN_DIR / "build"
 TARBALL_NAME = "sgs-deploy.tar"
-# Ceiling for the packaged tarball. MEASURED, not guessed: a blocks-only deploy on
-# 2026-08-27 was 113MB -- scripts/ 43MB, vendor/ 40MB, build/ 14MB. The first version
-# of this guard used 60MB from intuition and fired on the legitimate baseline, which
-# is exactly the 'gate that cries wolf' failure. 150MB sits above the real baseline
-# and still catches the case this exists for (278MB of vendored third-party source).
-# ⚠ Raise this ONLY after measuring, and say what grew. Whether scripts/ (dev tooling,
-# 43MB) belongs on a production server at all is a separate, unasked question.
-TARBALL_MAX_MB = 150
+# Ceiling for the packaged tarball. MEASURED, not guessed. A blocks-only deploy on
+# 2026-08-27 was 114.4MB pre-exclusion (scripts/ 43MB dev tooling, vendor/ ~40MB of
+# which ~34MB was PHPStan/PHPUnit-only Composer dev packages, pipeline-state/tests/
+# caches ~3MB). scripts/, the dev-only vendor packages (proven via composer's own
+# `dev-package-names` list -- see TAR_EXCLUDES) and the test/pipeline residue were
+# excluded the same day once each was proven unreferenced by any runtime PHP path
+# (see the TAR_EXCLUDES comments for the grep evidence). Re-measured after: the SAME
+# blocks-only tarball is now 28.6MB; theme/sgs-theme/ adds ~2.1MB on a full deploy.
+# 45MB sits above the ~31MB combined real baseline (same ~1.4x margin the previous
+# 150MB ceiling held over its own 113MB baseline) and still catches the case this
+# guard exists for -- a stray untracked tree landing inside the plugin/theme dir.
+# ⚠ Raise this ONLY after measuring, and say what grew.
+TARBALL_MAX_MB = 45
 
 # WP-internal post types whose post_content structurally cannot carry SGS block
 # markup. Everything else on the site — pages, posts, reusable blocks, templates,
@@ -117,6 +122,51 @@ TAR_EXCLUDES = [
     # match "plugins/sgs-blocks/stackable/src".
     "plugins/sgs-blocks/stackable",
     "plugins/sgs-blocks/now.tmp.json",
+    # --- dev-tooling / build-residue exclusions (2026-08-27) ---------------
+    # PROVEN unused at runtime before adding, not assumed: grepped includes/,
+    # src/ and sgs-blocks.php for any require/include/plugin_dir_path reach
+    # into these paths -- zero hits (only human-facing comments/error-message
+    # strings MENTION "scripts/generate-*.py" as instructions for a developer
+    # to re-run by hand; none of them execute it). The `wp sgs` CLI command
+    # tree (`WP_CLI::add_command`) is registered from includes/class-sgs-cli-
+    # commands.php and includes/class-sgs-header-footer-cli-commands.php --
+    # i.e. INSIDE includes/, never scripts/ -- so excluding scripts/ does not
+    # remove any WP-CLI command the site exposes.
+    "plugins/sgs-blocks/scripts",
+    # Pipeline run artefacts, Python/PHP test residue -- none read by
+    # render.php/includes/src at runtime (grepped, zero hits). tests/ was
+    # already exempted from the DIRTY-file gate below as "ships but never
+    # executes"; now it does not ship at all.
+    "plugins/sgs-blocks/pipeline-state",
+    "plugins/sgs-blocks/tests",
+    "plugins/sgs-blocks/.pytest_cache",
+    "plugins/sgs-blocks/.ruff_cache",
+    "plugins/sgs-blocks/.phpunit.cache",
+    # --- vendor/: dev-only Composer packages (2026-08-27) -------------------
+    # `vendor/autoload.php` IS required unconditionally at plugin bootstrap
+    # (sgs-blocks.php lines 23-24/49-50) -- vendor/ as a whole is NOT excluded,
+    # that would break the live site. But `composer.json`'s `require-dev` (PHPStan
+    # + PHPUnit + the WordPress stub/test toolchain) pulls ~40MB of packages that
+    # exist only to support local static analysis and tests, never loaded by any
+    # PHP that runs on a request. PROVEN, not inferred: composer itself computed
+    # the full transitive dependency graph and recorded it in
+    # `vendor/composer/installed.json`'s `dev-package-names` array -- these 11
+    # vendor NAMESPACES (not individual packages -- verified every package under
+    # each namespace is dev-only, so excluding the whole namespace dir is safe)
+    # are the packages composer itself marked dev-only, matched 1:1 against that
+    # list. `symfony/*`, `psr/*`, `carbonphp/*` are runtime deps of nesbot/carbon
+    # and are NOT in the dev list, so they stay.
+    "plugins/sgs-blocks/vendor/bin",
+    "plugins/sgs-blocks/vendor/myclabs",
+    "plugins/sgs-blocks/vendor/nikic",
+    "plugins/sgs-blocks/vendor/phar-io",
+    "plugins/sgs-blocks/vendor/php-stubs",
+    "plugins/sgs-blocks/vendor/phpstan",
+    "plugins/sgs-blocks/vendor/phpunit",
+    "plugins/sgs-blocks/vendor/sebastian",
+    "plugins/sgs-blocks/vendor/staabm",
+    "plugins/sgs-blocks/vendor/szepeviktor",
+    "plugins/sgs-blocks/vendor/theseer",
 ]
 
 # Mirror of the tarball scope, used by deployed_dirty_files(). Keep in step with
@@ -134,8 +184,8 @@ DEPLOY_SKIP_PREFIXES = (
     # src/ is the only place that churn is visible.
     "plugins/sgs-blocks/_retired/",   # excluded from the tar
     "theme/sgs-theme/styles/",        # per-client snapshots, pushed separately
-    "plugins/sgs-blocks/scripts/",    # tooling — ships but never executes in WP
-    "plugins/sgs-blocks/tests/",      # tests — ship but never execute in WP
+    "plugins/sgs-blocks/scripts/",    # excluded from the tar (2026-08-27) — dev tooling, never executes in WP
+    "plugins/sgs-blocks/tests/",      # excluded from the tar (2026-08-27) — tests, never execute in WP
 )
 DEPLOY_SKIP_BASENAMES = {
     "package-lock.json",
