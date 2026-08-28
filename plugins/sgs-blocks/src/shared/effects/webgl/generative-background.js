@@ -1,21 +1,44 @@
 /**
  * SGS motion — generative background WebGL renderer (Spec 38, D874 technique
  * spec, §1/§2/§3/§4 + Animation + Camera subsections). Tier W, THIRD entry —
- * v1.2 GEOMETRY REBUILD (2026-08-28).
+ * v1.3 DIRECT VERTEX-SHADER PORT + CAMERA CROP (2026-08-28).
  *
- * This is a FRESH REIMPLEMENTATION of the geometry/vertex mechanism, not a
- * retune of the v1.1 build. The v1.1 build (CPU-baked Worker fold, three
- * discrete bands, per-band pivot rotation, along-normal displacement) was
- * reviewed live and rejected as flat, symmetric and jagged — and a fresh
- * investigation against the real reference vertex shader found the v1.1
- * docblock's own DESCRIPTION of the mechanism was itself wrong, not just
- * badly tuned. This file replaces that mechanism outright. See
- * `.claude/reports/2026-08-25-generative-background-engine-technique-spec.md`
- * for the licence position (method/functionality free to implement; measured
- * parameter values are observed facts, not expression) — nothing here reads
- * from or reproduces the licensed reference shader source.
+ * ── PROVENANCE (read before touching the geometry section below) ───────────
  *
- * ── WHAT CHANGED, MECHANISM-LEVEL ───────────────────────────────────────────
+ * The fold mechanism in this file's vertex shader is PORTED DIRECTLY from
+ * Stripe's hero reference implementation
+ * (`.claude/scratch/stripe-hero-poc/shaders/68467.glsl`), per Bean's explicit
+ * authorisation recorded at `.claude/decisions.md` D880 (2026-08-28). D880
+ * REVERSES this project's previous "describe the mechanism in plain English
+ * and reimplement, never copy the reference's literal code" rule — but only
+ * for this one file's geometry/vertex-shader mechanism. This is NOT
+ * open-source or MIT-licensed code and carries no standard open-source
+ * attribution licence to cite here; it is a direct, considered, twice-
+ * confirmed BUSINESS decision to accept the associated legal risk, recorded
+ * in D880 alongside the outstanding solicitor's-hour flag. Do not read this
+ * comment as a citation of permission from Stripe — there is none. The
+ * colour/fragment pipeline below (grading, striations, glow-gate, depth
+ * fade, grain) is UNCHANGED by D880 and was NOT ported from any reference
+ * fragment shader — see the FRAGMENT_SHADER section's own docblock.
+ *
+ * The previous (v1.2) build independently reverse-engineered the same axes,
+ * rotation order and angle formulas from a plain-English description and
+ * arrived at an algebraically equivalent mechanism (verified this session:
+ * the reference's `position * rotationMatrix(axis, angle)` row-vector
+ * convention, its axis vectors `(0.5,0,0.5)`/`(0,0.5,0.5)` (normalize-
+ * equivalent to `(1,0,1)`/`(0,1,1)`), and its A→B→A chain order all reduce
+ * to the same forward rotation this file's `sgsAxisAngle()` mat3*vector
+ * convention already computed). What v1.2 did NOT get right was the
+ * CAMERA — the reference's shape is framed tightly enough to run off the
+ * top and right edges of its viewport; v1.2's provably-safe bounding-sphere
+ * frustum sizing showed the whole folded shape centred with margin on every
+ * side, which is why it read as "a small piece of cloth floating in the
+ * wind" rather than a bold, self-overlapping sculptural object. This build
+ * keeps the same rotation/displacement mechanism (now stated as a direct
+ * port rather than an independent derivation) and rebuilds ONLY the camera
+ * framing plus the fold intensity defaults — see the CAMERA section below.
+ *
+ * ── WHAT CHANGED, MECHANISM-LEVEL (unchanged from v1.2, restated) ──────────
  *
  * There is NO CPU pre-fold any more. The mesh geometry is a plain flat/rest-
  * pose grid, built once, trivially (no fold, no bands, no per-vertex
@@ -65,13 +88,25 @@
  * One combined projection×view matrix, computed once and on resize, uploaded
  * as a single uniform. Orthographic, translation-only view (rotation lives
  * ONLY in the vertex shader now — never a second rotation in the matrix).
- * Frustum sizing exploits a property of the new mechanism that the old
- * CPU-fold build did not have: an axis-angle rotation is length-preserving,
- * so the furthest ANY vertex can ever land from the origin, after all three
- * rotations, is exactly its REST-POSE distance from the origin plus the
- * displacement magnitude — a provable bounding sphere, not a guessed one.
- * The frustum is sized from that radius, aspect-matched to the canvas, with
- * a fixed margin.
+ *
+ * v1.2 sized the frustum from the mechanism's provable bounding sphere (an
+ * axis-angle rotation is length-preserving, so the furthest ANY vertex can
+ * ever land from the origin is exactly its rest-pose distance plus the
+ * displacement magnitude) with a small safety margin — a frustum that
+ * NEVER clips the shape. That was the wrong target. Bean's own reference
+ * screenshot (`.claude/scratch/stripe-hero-poc/FINAL-rig.png`) shows the
+ * opposite: the shape runs off the top and right edges of the viewport, and
+ * that off-edge crop is a major part of why it reads as a bold sculptural
+ * object rather than a small complete shape floating in empty space.
+ *
+ * v1.3 deliberately UNDER-sizes the frustum relative to the bounding sphere
+ * (`CROP_ZOOM` below is well under 1.0) so the folded surface intentionally
+ * overflows the canvas, and OFFSETS the frustum's centre toward the
+ * bottom-left (`CROP_OFFSET_X/Y`) so the overflow happens specifically off
+ * the top and right — matching the reference framing rather than a
+ * symmetric zoom. This trades the old "never clips" guarantee for the
+ * dramatic, cropped look the brief asks for; nothing downstream depended on
+ * the guarantee (the mesh itself is never read back on the CPU).
  *
  * ── VERTEX ADDENDUM (2026-08-28) — a fourth reference file, checked this
  *    session, showed one of the three chained rotation angles carrying a
@@ -124,17 +159,24 @@ const PLANE_WIDTH = 320;
 const PLANE_HEIGHT = 320;
 
 /*
- * ── Animation defaults — the "Reference calibration values" table's Twist
- *    power/frequency and Displacement amount/frequency rows, independently
- *    verified correct against the real reference file this session (only
- *    the mechanism connecting them was wrong — see module docblock). Used
- *    here as starting-point defaults, overridable per instance via `opts`. ──
+ * ── Animation defaults — pushed PAST the reference's own "Reference
+ *    calibration values" table (Twist power 3.63/0.7/3.95, frequency
+ *    -0.65/0.41/-0.58, displacement amount -7.821) per the brief: those
+ *    numbers are the reference's OWN defaults, not a target to match, and
+ *    the brief explicitly asks for MORE dramatic self-overlap than the
+ *    reference produces at its own settings. Frequencies scaled up ~45%,
+ *    powers raised for sharper, more concentrated fold transitions (higher
+ *    power = the shaping curve stays near 1 longer then drops off harder,
+ *    producing tighter creases rather than a smooth gradient of bend).
+ *    Retuned live against the sandybrown canary (2026-08-28) — see D880's
+ *    session for the verification screenshots. Starting-point defaults,
+ *    overridable per instance via `opts` (client inspector controls). ──
  */
-const DEFAULT_DISPLACEMENT_AMOUNT = 7.821;
+const DEFAULT_DISPLACEMENT_AMOUNT = 11.5;
 const DEFAULT_DISPLACEMENT_FREQ_X = 0.005831;
 const DEFAULT_DISPLACEMENT_FREQ_Z = 0.016001;
-const DEFAULT_FOLD_FREQ = [ -0.65, 0.41, -0.58 ];
-const DEFAULT_FOLD_POWER = [ 3.63, 0.7, 3.95 ];
+const DEFAULT_FOLD_FREQ = [ -0.94, 0.6, -0.84 ];
+const DEFAULT_FOLD_POWER = [ 4.6, 1.0, 5.1 ];
 
 /** Near-identity grading defaults (technique spec §2 — "near-identity" is the point). */
 const GRADE_CONTRAST = 1.05;
@@ -746,36 +788,55 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	canvas.addEventListener( 'webglcontextlost', onContextLost );
 
 	/*
-	 * ── Frustum sizing ──────────────────────────────────────────────────────
-	 * An axis-angle rotation is length-preserving, so the furthest any vertex
-	 * can ever land from the origin, after all three rotations, is exactly
-	 * its REST-POSE distance from the origin plus the displacement magnitude
-	 * — a provable bounding sphere (module docblock's Camera section), not a
-	 * guessed one. Aspect-matched, generous fixed margin.
+	 * ── Frustum sizing — deliberate CROP, not the old "never clips" bound ───
+	 * `restRadius`/`contentRadius` are still the provable bounding sphere (an
+	 * axis-angle rotation is length-preserving, so this IS the furthest any
+	 * vertex can ever land from the origin) — kept as the reference scale the
+	 * crop is measured against, not as a "must fit inside" constraint any
+	 * more. `CROP_ZOOM` deliberately sizes the visible half-extent to well
+	 * under that radius so the folded surface overflows the canvas on every
+	 * side; `CROP_OFFSET_X/Y` then shift the visible window's centre toward
+	 * the bottom-left so the overflow happens specifically off the TOP and
+	 * RIGHT (matching `.claude/scratch/stripe-hero-poc/FINAL-rig.png`,
+	 * D880's authorised reference) rather than symmetrically on all four
+	 * edges. Retuned live against the sandybrown canary (2026-08-28).
 	 */
 	const restRadius = Math.sqrt(
 		( PLANE_WIDTH / 2 ) * ( PLANE_WIDTH / 2 ) + ( PLANE_HEIGHT / 2 ) * ( PLANE_HEIGHT / 2 )
 	);
 	const contentRadius = restRadius + Math.abs( dispAmount );
-	const FRUSTUM_MARGIN = 1.15;
-	const halfExtentMin = contentRadius * FRUSTUM_MARGIN;
+	const CROP_ZOOM = 0.46;
+	const CROP_OFFSET_X = 0.34;
+	const CROP_OFFSET_Y = 0.3;
+	const halfExtentMin = contentRadius * CROP_ZOOM;
 	const depthExtent = contentRadius * 2;
 
-	const computeHalfExtents = ( aspect ) => {
+	const computeFrustumBounds = ( aspect ) => {
 		// Guarantees BOTH halfW and halfH are at least `halfExtentMin`,
 		// regardless of the canvas's aspect ratio — a portrait canvas
 		// wouldn't otherwise get enough horizontal room, and vice versa.
 		const halfH = Math.max( halfExtentMin, halfExtentMin / aspect );
 		const halfW = halfH * aspect;
-		return { halfW, halfH };
+		// Shift the whole window toward the bottom-left: content to the
+		// right/above the shifted centre falls outside [left,right]/
+		// [bottom,top] and is cropped off — the top/right overflow the
+		// reference shows.
+		const offsetX = halfW * CROP_OFFSET_X;
+		const offsetY = halfH * CROP_OFFSET_Y;
+		return {
+			left: -halfW - offsetX,
+			right: halfW - offsetX,
+			bottom: -halfH - offsetY,
+			top: halfH - offsetY,
+		};
 	};
 
-	let { halfW: initHalfW, halfH: initHalfH } = computeHalfExtents( 1 );
+	let initBounds = computeFrustumBounds( 1 );
 	let projection = buildOrthographicMatrix(
-		-initHalfW,
-		initHalfW,
-		-initHalfH,
-		initHalfH,
+		initBounds.left,
+		initBounds.right,
+		initBounds.bottom,
+		initBounds.top,
 		0.01,
 		depthExtent * 2,
 		depthExtent
@@ -793,12 +854,12 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 			gl.viewport( 0, 0, w, h );
 		}
 		const aspect = w / Math.max( 1, h );
-		const { halfW, halfH } = computeHalfExtents( aspect );
+		const bounds = computeFrustumBounds( aspect );
 		projection = buildOrthographicMatrix(
-			-halfW,
-			halfW,
-			-halfH,
-			halfH,
+			bounds.left,
+			bounds.right,
+			bounds.bottom,
+			bounds.top,
 			0.01,
 			depthExtent * 2,
 			depthExtent
