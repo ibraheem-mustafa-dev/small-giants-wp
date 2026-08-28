@@ -21,22 +21,29 @@
  * fade, grain) is UNCHANGED by D880 and was NOT ported from any reference
  * fragment shader — see the FRAGMENT_SHADER section's own docblock.
  *
- * The previous (v1.2) build independently reverse-engineered the same axes,
- * rotation order and angle formulas from a plain-English description and
- * arrived at an algebraically equivalent mechanism (verified this session:
- * the reference's `position * rotationMatrix(axis, angle)` row-vector
- * convention, its axis vectors `(0.5,0,0.5)`/`(0,0.5,0.5)` (normalize-
- * equivalent to `(1,0,1)`/`(0,1,1)`), and its A→B→A chain order all reduce
- * to the same forward rotation this file's `sgsAxisAngle()` mat3*vector
- * convention already computed). What v1.2 did NOT get right was the
- * CAMERA — the reference's shape is framed tightly enough to run off the
- * top and right edges of its viewport; v1.2's provably-safe bounding-sphere
- * frustum sizing showed the whole folded shape centred with margin on every
- * side, which is why it read as "a small piece of cloth floating in the
- * wind" rather than a bold, self-overlapping sculptural object. This build
- * keeps the same rotation/displacement mechanism (now stated as a direct
- * port rather than an independent derivation) and rebuilds ONLY the camera
- * framing plus the fold intensity defaults — see the CAMERA section below.
+ * ⛔ CORRECTED (2026-08-28, second pass) — the FIRST v1.3 attempt claimed a
+ * "direct port" while actually keeping v1.2's own axis vectors and its
+ * `M * v` (matrix-times-column-vector) multiplication convention, on the
+ * reasoning that this was "algebraically equivalent" to the reference. That
+ * reasoning was wrong: the reference computes `(vec4(position,1.0) *
+ * rotationA).xyz` — a ROW-vector-times-matrix product. For an orthogonal
+ * rotation matrix, `v * M` is NOT the same operation as `M * v`; it equals
+ * `transpose(M) * v`, i.e. the SAME rotation matrix built from the OPPOSITE
+ * angle. So the first "port" was silently rotating the wrong way on all
+ * three chained rotations — same axis directions, wrong rotation sense. This
+ * pass fixes BOTH: the exact literal axis vectors `(0.5,0,0.5)`/`(0,0.5,0.5)`
+ * (not the `(1,0,1)`/`(0,1,1)` stand-ins) AND the multiplication order
+ * (`displaced * sgsAxisAngle(...)`, matching GLSL's `vec * mat` row-vector
+ * semantics to the reference's own convention exactly). Caught because Bean
+ * looked at the live result and correctly said it still looked like the same
+ * shape, just bigger — that observation was right; the code had not actually
+ * changed in the way the previous commit's docblock claimed it had.
+ *
+ * What genuinely WAS already correct in the v1.2→v1.3 first pass: the
+ * rotation ORDER (axis A, then B, then A again) and which UV coordinate and
+ * frequency/power slot drives which rotation. Only the axis literals and the
+ * multiplication convention needed this second fix. The CAMERA section below
+ * (crop/frustum) was correct from the first v1.3 pass and is unchanged here.
  *
  * ── WHAT CHANGED, MECHANISM-LEVEL (unchanged from v1.2, restated) ──────────
  *
@@ -381,10 +388,9 @@ float sgsShapingCurve( float x, float n ) {
 void main() {
 	v_uv = a_uv;
 
-	// OUR OWN rotation axes — two distinct, non-parallel diagonals, not the
-	// reference's literal axis vectors (module docblock).
-	vec3 axisA = vec3( 1.0, 0.0, 1.0 );
-	vec3 axisB = vec3( 0.0, 1.0, 1.0 );
+	// The reference's literal axis vectors — ported directly, D880.
+	vec3 axisA = vec3( 0.5, 0.0, 0.5 );
+	vec3 axisB = vec3( 0.0, 0.5, 0.5 );
 
 	// 1. DISPLACEMENT ("breathing"), applied to the REST position, along the
 	// plane's own local UP axis (Y) — before any rotation. Single noise
@@ -408,9 +414,18 @@ void main() {
 	float angle2 = ( u_foldFreq[ 1 ] - noiseWobble * 0.1 ) * sgsShapingCurve( v_uv.y, u_foldPower[ 1 ] );
 	float angle3 = u_foldFreq[ 2 ] * sgsShapingCurve( v_uv.y, u_foldPower[ 2 ] );
 
-	vec3 folded = sgsAxisAngle( axisA, angle1 ) * displaced;
-	folded = sgsAxisAngle( axisB, angle2 ) * folded;
-	folded = sgsAxisAngle( axisA, angle3 ) * folded;
+	// ROW-VECTOR convention (`v * M`), matching the reference exactly — NOT
+	// `M * v`. For an orthogonal rotation matrix these are NOT the same
+	// operation: `v * M` = `transpose(M) * v`, which for a rotation matrix
+	// built from (axis, angle) equals `M` built from (axis, -angle). The
+	// previous build used `M * v` with the same axes/angles and so was
+	// silently rotating the OPPOSITE way on every one of the three chained
+	// rotations — a real structural bug, not a style difference, found by
+	// comparing directly against the reference file's own multiplication
+	// order (D880 literal-port pass, 2026-08-28).
+	vec3 folded = displaced * sgsAxisAngle( axisA, angle1 );
+	folded = folded * sgsAxisAngle( axisB, angle2 );
+	folded = folded * sgsAxisAngle( axisA, angle3 );
 
 	gl_Position = u_projection * vec4( folded, 1.0 );
 	// Clip-space Z, passed through for the fragment shader's depth fade (§2) —
