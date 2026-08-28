@@ -1502,12 +1502,30 @@ def _attrs_from_helper_calls(
     `_attr_to_raw_props_php`] never had this gap, which is why
     sgs/breadcrumbs.linkColour already correctly resolves to 'item' via direct
     PHP-string concatenation. A selector arg that is a bare `$variable` (most
-    other call sites — counter/icon-list/nav-menu/option-picker/trust-bar/
-    whatsapp-cta) contains no `sgs-{slug}__{el}` substring and correctly yields
-    no element evidence — an honest gap, not a guess).
+    other call sites — counter/icon-list/option-picker/trust-bar/whatsapp-cta) is
+    now resolved via `_build_php_selector_var_map` (Cause B, root-cause report
+    2026-08-27) WHEN that variable was assigned a literal BEM-bearing selector
+    in an earlier statement — e.g. sgs/nav-menu/render.php:829/833:
+      `$link_sel = $uid_sel . ' .sgs-nav-menu__link';`
+      `$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );`
+    This is the SAME general "trace any selector variable" mechanism Cause B
+    built for the Shapes A/B/C path (`_attr_to_raw_props_php`) — it was never
+    wired into THIS path, so an already-allowlisted helper call
+    (`sgs_typography_css_rule`, in `_HELPER_SUFFIX_PROPS` since before Cause
+    A/B) using a selector variable still fell through to no element evidence —
+    the exact gap this fix closes: sgs/nav-menu's `itemFontSize`, applied via
+    the same `$link_sel` as `itemBg`/`itemColour`/`itemRadius`, kept resolving
+    to `css_element='item'` after those three flipped to `'link'`. A selector
+    variable with no BEM substring in its own assignment (Cause C, root-scoped)
+    still correctly yields no element evidence — an honest gap, not a guess.
     """
     props: dict[str, set[str]] = defaultdict(set)
     elements: dict[str, set[str]] = defaultdict(set)
+    selector_var_element: "dict[str, str]" = (
+        _build_php_selector_var_map(php_src, block_short_slug)[0]
+        if block_short_slug
+        else {}
+    )
     for helper, suffix_map in _HELPER_SUFFIX_PROPS.items():
         for m in _HELPER_CALL_RE[helper].finditer(php_src):
             call_args = _split_balanced_call_args(php_src, m.end())
@@ -1524,6 +1542,10 @@ def _attrs_from_helper_calls(
                 if block_short_slug
                 else None
             )
+            if not bem_element:
+                var_m = re.match(r"^\s*\$(\w+)\s*$", selector_arg)
+                if var_m:
+                    bem_element = selector_var_element.get(var_m.group(1))
             for suffix, prop in suffix_map.items():
                 attr = prefix + suffix if prefix else (suffix[0].lower() + suffix[1:])
                 if attr in attr_names:
@@ -1531,6 +1553,96 @@ def _attrs_from_helper_calls(
                     if bem_element:
                         elements[attr].add(bem_element)
     return props, elements
+
+
+# ── Shape D2: the state-colour helper (Cause A, root-cause report 2026-08-27) ──
+# `sgs_emit_state_colour_css( $selector, $decls_normal, $decls_hover )`
+# (includes/helpers-tokens.php:1275) is used by ~21 files but was never
+# registered in `_HELPER_SUFFIX_PROPS` above — its signature has no attribute-
+# suffix map at all, so it needed its own parsing shape rather than a dict entry.
+_STATE_COLOUR_HELPER_CALL_RE = re.compile(r"sgs_emit_state_colour_css\s*\(")
+
+
+def _attrs_from_state_colour_helper_calls(
+    php_src: str,
+    attr_names: "set[str]",
+    block_short_slug: str,
+    var_attr: "dict[str, str]",
+) -> "dict[str, set[str]]":
+    """Shape D2 (Cause A): `sgs_emit_state_colour_css($selector, $decls_normal,
+    $decls_hover)` paints its declarations on a real BEM selector (its 1st arg),
+    but that selector never reaches the attribute whose value feeds the decls
+    array — the array is BUILT in one statement (e.g. card-grid/render.php:270-271
+    `$card_grid_hover_decls[] = 'color:' . sgs_colour_value( $hover_text );`) and
+    CONSUMED by the helper call in a separate, later statement (render.php:277-281).
+    css_property for that attr is already resolved elsewhere (Shapes B/C, on the
+    array-building statement itself); this fills in the missing css_element.
+
+    Two-pass, evidence-only (mirrors Shape D's "only literal prefixes resolved,
+    never guessed" discipline):
+
+    1. Walk every `$arrVar[] = ...;` push statement, and resolve every attribute
+       feeding it — either a direct `$attributes['x']` read, or a local variable
+       already resolved by `_build_php_var_attr_map` (the SAME `var_attr` map the
+       rest of this module uses) — giving {array-var-name -> set of attrs}.
+    2. Walk every `sgs_emit_state_colour_css(...)` call site, derive the BEM
+       element from the LITERAL selector text of its 1st arg (reusing
+       `_derive_bem_element_from_selector`, the same evidence Shape D already
+       reads off a helper's selector argument), and apply that element to every
+       attr feeding the 2nd/3rd-arg decls array — ONLY when that arg is a bare
+       `$variable` reference (a literal `array()` with no element evidence, or
+       any other expression shape, is refused rather than guessed).
+
+    A call whose selector reduces to a bare root variable (`$root_sel`, no
+    `sgs-{slug}__` substring — e.g. sgs/testimonial's `quoteColourHover` call)
+    correctly yields NO element here: that is Cause C (root-scoped, no BEM
+    element), explicitly out of scope for this fix. `_derive_bem_element_from_
+    selector` already returns None for it — Causes A and C are told apart by
+    this evidence, never by helper name or attr name pattern (the root-cause
+    report's Q3 explicitly warns the helper's use does not predict A vs C; each
+    call site must be read on its own selector text).
+    """
+    elements: "dict[str, set[str]]" = defaultdict(set)
+    if not block_short_slug:
+        return elements
+
+    # Module-wide `finditer`, NOT per-`_split_php_statements`-chunk-anchored — this
+    # codebase's real push shape is routinely `if ( $x ) { $arr[] = ...; }`
+    # (card-grid/render.php:263-274), and `_split_php_statements` splits ONLY on
+    # top-level `;`, so an unterminated `if ( ... ) {` merges into the SAME
+    # statement chunk as the push that follows it — an anchor at that chunk's
+    # start would land on "if (" text, not "$arr[]", and never match. Mirrors
+    # `_build_php_var_attr_map`'s own `assign_re` precedent (finditer over the
+    # whole file, non-greedy up to the first `;`) for the identical reason.
+    array_push_attrs: "dict[str, set[str]]" = defaultdict(set)
+    push_re = re.compile(r"\$(\w+)\[\]\s*=\s*(.+?);", re.DOTALL)
+    for m in push_re.finditer(php_src):
+        arr_var, rhs = m.group(1), m.group(2)
+        for a in re.findall(r"\$(?:attributes|attrs)\[['\"](\w+)['\"]\]", rhs):
+            array_push_attrs[arr_var].add(a)
+        for v in re.findall(r"\$(\w+)", rhs):
+            if v == arr_var:
+                continue
+            mapped = var_attr.get(v)
+            if mapped:
+                array_push_attrs[arr_var].add(mapped)
+
+    for m in _STATE_COLOUR_HELPER_CALL_RE.finditer(php_src):
+        call_args = _split_balanced_call_args(php_src, m.end())
+        if not call_args or len(call_args) != 3:
+            continue
+        selector_arg, normal_arg, hover_arg = call_args
+        bem_element = _derive_bem_element_from_selector(selector_arg, block_short_slug)
+        if not bem_element:
+            continue  # Cause C shape (root-scoped selector) — out of scope, no guess
+        for decls_arg in (normal_arg, hover_arg):
+            arg_var_m = re.match(r"^\s*\$(\w+)\s*$", decls_arg)
+            if not arg_var_m:
+                continue  # non-bare-variable decls arg — documented gap, never guessed
+            for attr in array_push_attrs.get(arg_var_m.group(1), ()):
+                if attr in attr_names:
+                    elements[attr].add(bem_element)
+    return elements
 
 
 # ── Shape E: the text-colour-or-gradient resolver pair ─────────────────────────
@@ -1593,6 +1705,72 @@ def _attrs_from_text_colour_resolver_calls(
     return props
 
 
+_SELECTOR_VAR_STRING_LITERAL_RE = re.compile(
+    r"'([^'\\]*(?:\\.[^'\\]*)*)'|\"([^\"\\]*(?:\\.[^\"\\]*)*)\""
+)
+
+
+def _build_php_selector_var_map(
+    php_src: str, block_short_slug: str
+) -> "tuple[dict[str, str], dict[str, str]]":
+    """Cause B (root-cause report 2026-08-27): cross-statement SELECTOR variables.
+
+    The existing shapes B/C tracer below already does the "most recently declared
+    X, consumed later" hop for a CSS PROPERTY held in a chain of PHP variables
+    (`$v = $attributes['x']; ... 'prop:' . $v`). It never does the mirror hop for a
+    SELECTOR held in a variable assigned once in an EARLIER statement and consumed
+    by NAME in a later one — e.g. sgs/hero/render.php:630:
+
+        $sgs_hero_split_media_fit_selector = '.' . $uid . ' .sgs-hero__split-media--image,.' . $uid . ' .sgs-hero__split-media--video';
+        ...
+        $responsive_css .= '@media (max-width:1023px){' . $sgs_hero_split_media_fit_selector . '{object-position:' . $safe_object_position_tablet . '}}';
+
+    The BEM element text (`sgs-hero__split-media--image`) lives entirely in the
+    FIRST statement; the per-statement tracer resets its fragment scan at every
+    top-level `;`, so a bare `$sgs_hero_split_media_fit_selector` reference in the
+    second statement carries no literal text of its own to scan.
+
+    This function pre-computes {selector-var-name -> BEM element} and
+    {selector-var-name -> state} from every PLAIN `$name = <rhs>;` assignment
+    (never `[]=`/`.=`/`+=` — those are accumulators/augmentations, not a fresh
+    selector declaration, the same reason `_build_php_var_attr_map` skips
+    `array(`-constructed RHS) whose RHS's STRING-LITERAL portions (ignoring any
+    interpolated `$uid`/`$root_sel` variable — a literal fragment like
+    `' .sgs-hero__split-media--image,.'` still contains the real BEM substring
+    regardless of what surrounds it, exactly how Shape D's helper-call selector
+    parsing already treats a literal concatenation) contain a `sgs-{slug}__`
+    element token or a mapped state selector. The caller then treats a matching
+    bare `$var` reference exactly like a literal selector string fragment: sticky
+    within the statement, evidence-only (never a guess) — a selector variable
+    with no BEM substring correctly yields nothing here (Cause C, out of scope).
+    """
+    element_map: "dict[str, str]" = {}
+    state_map: "dict[str, str]" = {}
+    if not block_short_slug:
+        return element_map, state_map
+    assign_re = re.compile(r"^\$(\w+)\s*=(?!=)\s*(.+);\s*$", re.DOTALL)
+    for stmt in _split_php_statements(php_src):
+        m = assign_re.match(stmt.strip())
+        if not m:
+            continue
+        var_name, rhs = m.group(1), m.group(2)
+        if re.match(r"^\s*array\s*\(", rhs, re.IGNORECASE):
+            continue  # accumulator, not a fresh selector declaration
+        literal_text = "".join(
+            (g1 if g1 else g2) or ""
+            for g1, g2 in _SELECTOR_VAR_STRING_LITERAL_RE.findall(rhs)
+        )
+        if "sgs-" not in literal_text:
+            continue
+        element = _derive_bem_element_from_selector(literal_text, block_short_slug)
+        if element:
+            element_map[var_name] = element
+        state = _derive_state_from_selector(literal_text)
+        if state:
+            state_map[var_name] = state
+    return element_map, state_map
+
+
 def _attr_to_raw_props_php(
     php_src: str,
     known_css_props: "frozenset[str]",
@@ -1633,6 +1811,11 @@ def _attr_to_raw_props_php(
     attr_props: dict[str, set[str]] = defaultdict(set)
     attr_state: dict[str, str] = {}
     attr_element: dict[str, str] = {}
+    # Cause B (2026-08-27): cross-statement selector variables — see
+    # `_build_php_selector_var_map`'s docstring. Computed once per render.php.
+    selector_var_element, selector_var_state = _build_php_selector_var_map(
+        php_src, block_short_slug
+    )
 
     # ---- shape A: 'attrName' => '--sgs-foo'
     for m in re.finditer(
@@ -1746,6 +1929,10 @@ def _attr_to_raw_props_php(
         queue_index = 0
         current_state: "str | None" = None
         current_element: "str | None" = None
+        # Cause B robustness guard (2026-08-27) — see the invalidation check below,
+        # by the selector-var branch, for why this is tracked separately from
+        # `current_element` rather than folded into the same sticky value.
+        element_from_selector_var = False
         for m in fragment_re.finditer(stmt):
             str_single, str_double, direct_attr, var_ref = m.groups()
             content = str_single if str_single is not None else str_double
@@ -1780,6 +1967,45 @@ def _attr_to_raw_props_php(
                     prop_queue = candidates
                     queue_index = 0
                 continue
+            # Cause B (2026-08-27): a bare reference to a variable that was
+            # assigned a selector STRING in an earlier statement. Treated exactly
+            # like a literal selector-string fragment above — sticky within the
+            # statement, evidence-only — and checked BEFORE the prop_queue gate
+            # below because this codebase's concatenation style puts the selector
+            # variable ahead of the property literal (`$selector_var . '{prop:' .
+            # $value . '}'`), so `prop_queue` may still be empty at this point.
+            if var_ref and (var_ref in selector_var_element or var_ref in selector_var_state):
+                found_element = selector_var_element.get(var_ref)
+                if found_element:
+                    current_element = found_element
+                    element_from_selector_var = True
+                found_state = selector_var_state.get(var_ref)
+                if found_state:
+                    current_state = found_state
+                continue
+            # Cause B robustness guard (2026-08-27, found + fixed via live
+            # verification against sgs/post-grid's real render.php, NOT invented):
+            # a selector variable used as an ANCESTOR-HOVER TRIGGER, followed by a
+            # SEPARATE unresolved variable naming the actual (descendant) paint
+            # target, must NOT hand its own element to that later declaration.
+            # sgs/post-grid's textColourHover shape: `$post_grid_card_sel . ':hover'
+            # . $post_grid_hover_text_target . '{color:' . $hover_text . '}'` — the
+            # real target is one of 4 descendant elements named inside a PHP array
+            # this tracer cannot see (`$post_grid_hover_text_targets`), NOT the
+            # card itself; before this guard, the sticky element from
+            # `$post_grid_card_sel` (Cause B's own new evidence) survived past the
+            # unrelated `$post_grid_hover_text_target` reference and wrongly
+            # attributed 'card' — a wrong element is worse than the honest NULL
+            # this attr correctly had before. An unresolved variable reference
+            # (present, but neither a known selector var NOR a known attr var) is
+            # exactly the "something else might be the real target" signal:
+            # refuse a selector-var-derived element rather than let it survive
+            # past evidence we cannot read. Literal-string-derived elements are
+            # UNCHANGED by this guard (their own sticky rule predates this fix and
+            # is not implicated by the bug found).
+            if var_ref and var_ref not in var_attr and element_from_selector_var:
+                current_element = None
+                element_from_selector_var = False
             if not prop_queue:
                 continue
             current_prop = prop_queue[min(queue_index, len(prop_queue) - 1)]
@@ -2341,6 +2567,14 @@ def extract_css_property_and_layer() -> dict:
         helper_props, helper_elements = _attrs_from_helper_calls(php_src, block_attr_names, short_slug)
         for attr, props in helper_props.items():
             raw[attr] = raw.get(attr, set()) | props
+        # Cause A (2026-08-27): sgs_emit_state_colour_css() call sites — see
+        # `_attrs_from_state_colour_helper_calls` docstring. css_property for
+        # these attrs is already resolved above (Shapes B/C on the decls-array
+        # build statement); this contributes only css_element evidence, merged
+        # alongside `helper_elements` at the `attr_bem_elements` union below.
+        state_colour_elements = _attrs_from_state_colour_helper_calls(
+            php_src, block_attr_names, short_slug, var_attr
+        )
         text_colour_resolver_props = _attrs_from_text_colour_resolver_calls(php_src, var_attr)
         for attr, props in text_colour_resolver_props.items():
             raw[attr] = raw.get(attr, set()) | props
@@ -2375,6 +2609,8 @@ def extract_css_property_and_layer() -> dict:
             # "unanimous or unassigned" merge as every other evidence source here
             # (2026-08-15, Class 2 fix; see `_attrs_from_helper_calls` docstring).
             attr_bem_elements |= helper_elements.get(attr, set())
+            # Cause A (2026-08-27) — same unanimous-or-unassigned merge.
+            attr_bem_elements |= state_colour_elements.get(attr, set())
             php_state = php_attr_state.get(attr)
             if php_state:
                 attr_states.add(php_state)
@@ -3395,6 +3631,316 @@ def _self_test_bem_current_modifier_is_state_aware() -> bool:
     return ok
 
 
+def _self_test_state_colour_helper_selector_yields_bem_element() -> bool:
+    """`--self-test` fixture proving `_attrs_from_state_colour_helper_calls`
+    (Shape D2, Cause A, root-cause report 2026-08-27) extracts BEM-element
+    evidence from `sgs_emit_state_colour_css()`'s 1st-arg selector, mirroring
+    sgs/card-grid's real `textColourHover` shape (card-grid/render.php:64-282):
+    a `$hover_text = $attributes['textColourHover'] ?? '';` local, pushed into a
+    decls array as `'color:' . sgs_colour_value($hover_text)` inside an
+    `if ( $hover_text ) { ... }` guard, consumed by the helper call on a real
+    `__item` sub-element selector in a LATER statement.
+
+    POSITIVE CONTROL: the item-scoped call must yield css_element='item' for the
+    attribute feeding its decls array.
+    NEGATIVE CONTROL: the SAME helper called on a bare root selector (sgs/
+    testimonial's real `quoteColourHover` shape, `render.php:524`) must yield NO
+    element evidence — that is Cause C (root-scoped, no BEM element), explicitly
+    out of scope for this fix. The root-cause report's Q3 explicitly warns "the
+    helper's use does not predict Cause A vs Cause C" — this proves the two are
+    told apart by the selector's own text, never by helper name or attr name.
+    """
+    ok = True
+    fixture_php = (
+        "<?php\n"
+        "$hover_text = $attributes['textColourHover'] ?? '';\n"
+        "$item_decls = array();\n"
+        "if ( $hover_text ) {\n"
+        "\t$item_decls[] = 'color:' . sgs_colour_value( $hover_text );\n"
+        "}\n"
+        "$out .= sgs_emit_state_colour_css( $root_sel . ' .sgs-selftest__item', array(), $item_decls );\n"
+        "\n"
+        "$quote_hover = $attributes['quoteColourHover'] ?? '';\n"
+        "$quote_decls = array();\n"
+        "if ( $quote_hover ) {\n"
+        "\t$quote_decls[] = 'color:' . sgs_colour_value( $quote_hover );\n"
+        "}\n"
+        "$out .= sgs_emit_state_colour_css( $root_sel, array(), $quote_decls );\n"
+    )
+    attr_names = {"textColourHover", "quoteColourHover"}
+    var_attr = _build_php_var_attr_map(fixture_php)
+    elements = _attrs_from_state_colour_helper_calls(fixture_php, attr_names, "selftest", var_attr)
+
+    if elements.get("textColourHover") != {"item"}:
+        print(
+            f"[self-test] FAIL: state-colour-helper elements['textColourHover'] = "
+            f"{elements.get('textColourHover')!r}, expected {{'item'}} (POSITIVE "
+            "control — the helper's selector arg names a real BEM sub-element)",
+            file=sys.stderr,
+        )
+        ok = False
+    if elements.get("quoteColourHover"):
+        print(
+            f"[self-test] FAIL: state-colour-helper elements['quoteColourHover'] = "
+            f"{elements.get('quoteColourHover')!r}, expected no evidence (NEGATIVE "
+            "control — a bare root selector carries no BEM element; this is "
+            "Cause C, out of scope, and must never be guessed)",
+            file=sys.stderr,
+        )
+        ok = False
+
+    if ok:
+        print(
+            "[self-test] PASS: sgs_emit_state_colour_css() call sites now feed "
+            "BEM element evidence for an item-scoped selector, and correctly "
+            "feed none for a bare root selector."
+        )
+    return ok
+
+
+def _self_test_cross_statement_selector_var_yields_bem_element() -> bool:
+    """`--self-test` fixture proving `_build_php_selector_var_map` (Cause B,
+    root-cause report 2026-08-27) traces a CSS SELECTOR held in a local variable
+    assigned in one statement and consumed by NAME in a LATER statement,
+    mirroring sgs/hero's real shape (`render.php:630,644`):
+    `$sgs_hero_split_media_fit_selector` is assigned once from a literal
+    concatenation containing `sgs-hero__split-media--image/--video`, then
+    referenced by name inside a later `object-position` declaration wrapped in a
+    Tablet `@media` block.
+
+    POSITIVE CONTROL: the attr fed via the selector variable must resolve
+    css_property='object-position' (already worked, via the existing
+    shapes-B/C property tracer) AND the NEW css_element='split-media' evidence.
+    NEGATIVE CONTROL: a property fed via a genuinely root-scoped selector
+    (`$root_sel`, never assigned any BEM-bearing literal) must yield NO element
+    evidence — proving this doesn't over-match every bare variable reference,
+    only ones actually traced back to a BEM-bearing selector assignment.
+    """
+    ok = True
+    fixture_php = (
+        "<?php\n"
+        "$position_tablet = $attributes['splitMediaObjectPositionTablet'] ?? '';\n"
+        "$root_only_position = $attributes['positionX'] ?? '';\n"
+        "$sgs_selftest_split_media_fit_selector = '.' . $uid . "
+        "' .sgs-selftest__split-media--image,.' . $uid . ' .sgs-selftest__split-media--video';\n"
+        "$out .= '@media (max-width:1023px){' . $sgs_selftest_split_media_fit_selector . "
+        "'{object-position:' . $position_tablet . '}}';\n"
+        "$out .= $root_sel . '{left:' . $root_only_position . '}';\n"
+    )
+    var_attr = _build_php_var_attr_map(fixture_php)
+    known_css_props = frozenset({"object-position", "left"})
+    raw_props, _raw_state, raw_element = _attr_to_raw_props_php(
+        fixture_php, known_css_props, var_attr, "selftest"
+    )
+
+    if raw_props.get("splitMediaObjectPositionTablet") != {"object-position"}:
+        print(
+            f"[self-test] FAIL: cross-statement selector-var raw_props"
+            f"['splitMediaObjectPositionTablet'] = "
+            f"{raw_props.get('splitMediaObjectPositionTablet')!r}, expected "
+            "{'object-position'} — css_property resolution must survive "
+            "unchanged alongside the new css_element evidence",
+            file=sys.stderr,
+        )
+        ok = False
+    if raw_element.get("splitMediaObjectPositionTablet") != "split-media":
+        print(
+            f"[self-test] FAIL: cross-statement selector-var raw_element"
+            f"['splitMediaObjectPositionTablet'] = "
+            f"{raw_element.get('splitMediaObjectPositionTablet')!r}, expected "
+            "'split-media' (POSITIVE control — the selector variable was "
+            "assigned a literal containing the real BEM element)",
+            file=sys.stderr,
+        )
+        ok = False
+    if raw_element.get("positionX"):
+        print(
+            f"[self-test] FAIL: cross-statement selector-var raw_element"
+            f"['positionX'] = {raw_element.get('positionX')!r}, expected no "
+            "evidence (NEGATIVE control — fed via a bare $root_sel that was "
+            "never assigned any BEM-bearing literal; must not be guessed)",
+            file=sys.stderr,
+        )
+        ok = False
+
+    if ok:
+        print(
+            "[self-test] PASS: a CSS selector held in a variable assigned in an "
+            "earlier statement and consumed by name in a later one now feeds "
+            "BEM element evidence, and a genuinely root-scoped variable "
+            "correctly feeds none."
+        )
+    return ok
+
+
+def _self_test_ancestor_hover_selector_var_does_not_leak_element() -> bool:
+    """`--self-test` fixture proving the Cause B robustness guard: a selector
+    variable used as an ANCESTOR-HOVER TRIGGER must NOT hand its own element to a
+    LATER declaration whose real target is named by a separate, unresolved
+    variable — mirroring sgs/post-grid's real `textColourHover` shape
+    (render.php:531,564-575): `$post_grid_card_sel . ':hover' .
+    $post_grid_hover_text_target . '{color:' . $hover_text . '}'`, where
+    `$post_grid_hover_text_target` iterates a PHP array naming 4 real descendant
+    elements (title link/excerpt/meta/read-more) this tracer cannot see.
+
+    Found live during this fix's own verification pass (2026-08-27): the FIRST
+    version of the cross-statement selector-var tracer (Cause B) let
+    `$post_grid_card_sel`'s element ('card') survive past the unresolved
+    `$post_grid_hover_text_target` reference and wrongly attributed
+    `css_element='card'` to `textColourHover` — a WRONG value where the
+    attribute previously, correctly, had NO element evidence at all. Per the
+    root-cause report: "a wrong element is worse than NULL." This is the
+    regression control for that exact bug.
+
+    NEGATIVE CONTROL (the bug this proves is fixed): `textColourHover` must
+    resolve NO css_element (honest gap — the real target is unrecoverable from
+    this source shape), while still correctly resolving css_property='color'
+    and css_state='hover' (unaffected — pre-existing, correct behaviour this fix
+    must not disturb).
+    POSITIVE CONTROL (proves the guard is scoped, not a blanket regression):
+    `backgroundColourHover`, fed via the SAME `$post_grid_card_sel` selector
+    variable with NO intervening unresolved variable, must still resolve
+    css_element='card' — proving the guard only fires on a genuine intervening
+    unknown, not on every use of a selector variable.
+    """
+    ok = True
+    fixture_php = (
+        "<?php\n"
+        "$hover_bg = $attributes['backgroundColourHover'] ?? '';\n"
+        "$hover_text = $attributes['textColourHover'] ?? '';\n"
+        "$post_grid_card_sel = $root_sel . ' .sgs-selftest__card';\n"
+        "$out .= sgs_emit_state_colour_css( $post_grid_card_sel, array(), "
+        "array( 'background-color:' . $hover_bg ) );\n"
+        "$post_grid_hover_text_targets = array( ' .sgs-selftest__title a', "
+        "' .sgs-selftest__excerpt' );\n"
+        "foreach ( $post_grid_hover_text_targets as $post_grid_hover_text_target ) {\n"
+        "\t$out .= $post_grid_card_sel . ':hover' . $post_grid_hover_text_target . "
+        "'{color:' . $hover_text . '}';\n"
+        "}\n"
+    )
+    var_attr = _build_php_var_attr_map(fixture_php)
+    known_css_props = frozenset({"background-color", "color"})
+    raw_props, raw_state, raw_element = _attr_to_raw_props_php(
+        fixture_php, known_css_props, var_attr, "selftest"
+    )
+
+    if raw_element.get("textColourHover"):
+        print(
+            f"[self-test] FAIL: ancestor-hover raw_element['textColourHover'] = "
+            f"{raw_element.get('textColourHover')!r}, expected no evidence "
+            "(NEGATIVE control — the real target is one of several descendants "
+            "named inside a PHP array this tracer cannot see; the trigger "
+            "selector's own element must not leak onto it)",
+            file=sys.stderr,
+        )
+        ok = False
+    if raw_props.get("textColourHover") != {"color"} or raw_state.get("textColourHover") != "hover":
+        print(
+            f"[self-test] FAIL: ancestor-hover textColourHover css_property/"
+            f"css_state = {raw_props.get('textColourHover')!r}/"
+            f"{raw_state.get('textColourHover')!r}, expected 'color'/'hover' "
+            "(pre-existing correct behaviour must survive the guard)",
+            file=sys.stderr,
+        )
+        ok = False
+    if raw_element.get("backgroundColourHover") != "card":
+        print(
+            f"[self-test] FAIL: ancestor-hover raw_element"
+            f"['backgroundColourHover'] = "
+            f"{raw_element.get('backgroundColourHover')!r}, expected 'card' "
+            "(POSITIVE control — no intervening unresolved variable here, so "
+            "the guard must not fire and the selector-var element must survive)",
+            file=sys.stderr,
+        )
+        ok = False
+
+    if ok:
+        print(
+            "[self-test] PASS: an ancestor-hover-trigger selector variable no "
+            "longer leaks its own element onto a later declaration whose real "
+            "target is named by an unresolved variable, while a genuine "
+            "direct use of the same selector variable is unaffected."
+        )
+    return ok
+
+
+def _self_test_helper_call_selector_var_yields_bem_element() -> bool:
+    """`--self-test` fixture proving `_attrs_from_helper_calls` (Shape D) now
+    wires the Cause B selector-variable resolver (`_build_php_selector_var_map`)
+    into its OWN selector-argument handling — closing the gap found live on
+    sgs/nav-menu: `itemBg`/`itemColour`/`itemRadius` (Cause A,
+    `_attrs_from_state_colour_helper_calls`) flipped to `css_element='link'`,
+    but the fourth "item"-prefixed attribute, `itemFontSize`, is applied via
+    the SAME `$link_sel` variable through the ALREADY-allowlisted
+    `sgs_typography_css_rule` helper (render.php:829,833):
+      `$link_sel = $uid_sel . ' .sgs-nav-menu__link';`
+      `$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );`
+    Before this fix, `_attrs_from_helper_calls` only ever tried
+    `_derive_bem_element_from_selector` directly on the raw argument text — a
+    bare `$link_sel` reference carries no literal BEM substring of its own, so
+    it always fell through to no element evidence, regardless of what Cause B
+    could otherwise resolve.
+
+    POSITIVE CONTROL: `itemFontSize`, fed via `$link_sel` (assigned a literal
+    containing `sgs-selftest__link` in an earlier statement), must resolve
+    css_element='link' AND keep its pre-existing css_property='font-size'
+    evidence unchanged.
+    NEGATIVE CONTROL: `labelFontSize`, fed via `$unassigned_sel` (never
+    assigned any literal selector anywhere in the fixture — the Cause C /
+    "genuinely unresolvable" shape), must still yield NO element evidence —
+    proving the wiring only resolves a variable Cause B can actually trace,
+    never guesses at an unknown one.
+    """
+    ok = True
+    fixture_php = (
+        "<?php\n"
+        "$css = '';\n"
+        "$link_sel = $uid_sel . ' .sgs-selftest__link';\n"
+        "$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );\n"
+        "$css .= sgs_typography_css_rule( $attributes, 'label', $unassigned_sel );\n"
+    )
+    attr_names = {"itemFontSize", "labelFontSize"}
+    props, elements = _attrs_from_helper_calls(fixture_php, attr_names, "selftest")
+
+    if props.get("itemFontSize") != {"font-size"}:
+        print(
+            f"[self-test] FAIL: helper-call-selector-var props['itemFontSize'] = "
+            f"{props.get('itemFontSize')!r}, expected {{'font-size'}} — "
+            "css_property resolution must survive unchanged alongside the new "
+            "css_element evidence",
+            file=sys.stderr,
+        )
+        ok = False
+    if elements.get("itemFontSize") != {"link"}:
+        print(
+            f"[self-test] FAIL: helper-call-selector-var elements['itemFontSize'] "
+            f"= {elements.get('itemFontSize')!r}, expected {{'link'}} (POSITIVE "
+            "control — a selector variable assigned a literal BEM-bearing "
+            "selector in an earlier statement must now resolve, mirroring "
+            "sgs/nav-menu's real $link_sel shape)",
+            file=sys.stderr,
+        )
+        ok = False
+    if elements.get("labelFontSize"):
+        print(
+            f"[self-test] FAIL: helper-call-selector-var elements['labelFontSize'] "
+            f"= {elements.get('labelFontSize')!r}, expected no evidence (NEGATIVE "
+            "control — a selector variable never assigned any literal selector "
+            "must not be guessed at)",
+            file=sys.stderr,
+        )
+        ok = False
+
+    if ok:
+        print(
+            "[self-test] PASS: Shape D helper-call selector args now resolve a "
+            "bare selector VARIABLE through Cause B's cross-statement tracer "
+            "when that variable was assigned a literal BEM-bearing selector, "
+            "and correctly feed no evidence for one that was never assigned."
+        )
+    return ok
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -3404,6 +3950,10 @@ if __name__ == "__main__":
             _self_test_helper_call_selector_yields_bem_element(),
             _self_test_bem_modifier_is_not_an_element(),
             _self_test_bem_current_modifier_is_state_aware(),
+            _self_test_state_colour_helper_selector_yields_bem_element(),
+            _self_test_cross_statement_selector_var_yields_bem_element(),
+            _self_test_ancestor_hover_selector_var_does_not_leak_element(),
+            _self_test_helper_call_selector_var_yields_bem_element(),
         ]
         sys.exit(0 if all(results) else 1)
 
