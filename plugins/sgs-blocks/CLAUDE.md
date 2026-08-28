@@ -627,6 +627,42 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 5. Use Block Selectors API in `block.json` to target native typography to primary text element
 6. **Variant-bearing blocks MUST declare `supports.sgs.variants`** in `block.json` — a map of `variant_value → [attr/slot names that variant uses]` — so the cloning converter can detect the correct variant from what the draft extracted, without per-block code. The variant-selector attr name (e.g. `variant`, `variantStyle`, `layout`) MUST also be registerable to the `blocks.variant_attr` DB column via `/sgs-update`. (FR-22-20, DESIGN/build-pending — see Spec 22 §FR-22-20 + D133. Build = next session opening task.)
 
+### Border controls — `SgsBorderControl` is the one shape (D876/D881)
+
+**Ten blocks are migrated and this is the standard**: button, container, heading,
+icon-list, option-picker, process-steps, product-card, quote, text, timeline.
+Census + ratcheted gate: `scripts/survey-border-control-migration.py`
+(`PRIVATE_NEEDS_SWAP` must stay 0). Codemod for the edit.js swap:
+`scripts/migrate-border-control.js` (`--survey`/`--fix`/`--check`/`--self-test`).
+
+The control is a PAIR: border width (box object) + colour, with **border STYLE
+inside the colour popover** (native `BorderBoxControl` opens both from one
+swatch), plus the SGS-wrapped native radius as the second control when the
+caller wires `onRadiusChange`.
+
+⛔ **`linked` is load-bearing — never drop it when wiring a colour row.**
+`GradientCapableColourControl` reads it to decide whether a picked colour is
+stored as the palette token SLUG or a baked hex. Without it the client's colour
+is frozen against every future re-skin. Multi-state carries `linked` per state;
+single-state uses `SgsBorderControl`'s `colourLinked` prop. Both hand migrations
+AND the codemod dropped it initially and 14 green assertions missed it (D881).
+
+⛔ **Per-device border WIDTH is CANCELLED, not deferred** (Bean, 2026-08-29). No
+use case, and it would cost `borderWidthTablet`/`Mobile` attrs plus `@media`
+emission in every block. Do not rebuild it.
+
+⚠ **A palette SLUG is not a paintable value.** `sgs_border_states_css()` feeds
+its result into `background:` inside a masked `::before` ring that also sets
+`border-color:transparent` — so an unresolved slug paints NOTHING rather than
+degrading visibly. It resolves through `sgs_colour_value()` since D881. Any new
+border path handing a raw slug to CSS has this defect; a raw hex hides it.
+
+**Live check:** `node scripts/qa/check-border-roundtrip.js --blocks sgs/x,sgs/y`
+— positive instance + a `borderStyle:"none"` negative control, frontend computed
+styles, fail-closed (a missing browser exits non-zero, never green). ⚠ It measures
+the OUTERMOST `.wp-block-sgs-<name>`, so it cannot target `sgs/container` on a
+page with a header, and NOT RUN is not a pass.
+
 ### Hover Controls Spec (Phase 2)
 
 Blocks with interactive hover states MUST expose these controls in the editor inspector:

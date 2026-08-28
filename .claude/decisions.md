@@ -1,3 +1,99 @@
+## D881 [ROUTINE] — Shape A closed (10 blocks); the codemod dropped `linked` and never imported the component; a palette-token border colour painted nothing on container/product-card; the button rename had never migrated its stored content
+
+**2026-08-29.** Task 0's Shape-A rollout finished — `PRIVATE_NEEDS_SWAP 8 → 0`,
+`PRIVATE_DONE 2 → 10`. Four defects surfaced on the way, three of them live.
+
+**1. The codemod dropped `linked: true`.** `GradientCapableColourControl` reads
+`state.linked` to decide whether a picked colour is stored as the palette token
+SLUG or as a baked hex (`:126`), and whether a stored slug resolves for display
+(`:88`/`:201`). 5 of the 6 Shape-A blocks carry it. **Both hand migrations had
+dropped it too** — product-card 25 → 24 occurrences, quote 9 → 7 — so the
+codemod's PROOF assertions passed while asserting equivalence to defective
+output. They now strip `linked`/`colourLinked` from our side before comparing,
+keeping full strength on everything else with the one divergence recorded.
+The single-value form could not express `linked` at all, so `SgsBorderControl`
+gained `colourLinked` and `GradientCapableColourControl`'s fallback state
+carries `linked` (both additive, undefined default). ⚠ **The fixture already
+contained `linked: true` while nothing asserted on it** — the drop sailed
+through 14 green assertions. Self-test 14 → 18, each addition with a negative
+control. Restored on product-card + quote (`0a1c22c35`).
+
+**2. The codemod mounted the component without importing it.** A ReferenceError
+the moment any of the six blocks loaded in the editor. Neither reference commit
+exposed it, because a human added the import by hand while migrating.
+`check-undefined-references` in the prebuild chain caught it on all six — the
+gate did its job; the PROOF assertions could not, since they compare only the
+`SgsBorderControl` attribute map.
+
+**3. A palette-token border colour painted NOTHING on `sgs/container` and
+`sgs/product-card` (live).** `sgs_resolve_text_colour_or_gradient()` returns the
+flat value VERBATIM — its docblock says so, because its other callers resolve
+tokens themselves. `sgs_border_states_css()` did not: it fed the value straight
+into `background:` inside the masked `::before` ring, where a slug is invalid
+CSS the browser drops, while the same ring sets `border-color:transparent` — so
+the border vanished rather than degrading to something visible. Measured on the
+canary: `background:primary` → nothing painted, width and style correct.
+**A raw hex worked throughout, which is exactly why this survived the 2026-08-28
+`sgs/quote` sign-off — that report used a custom red swatch, not a token.** Same
+class as D684. Fixed (`82a1c630d`) by resolving the flat value through
+`sgs_colour_value()`; gradients pass through untouched. Scope is exactly two
+blocks — the only callers of that helper; every other block emits `border-color`
+directly, which is why 6 of 8 probed blocks passed with a token.
+
+**4. D876's `colourBorder*` → `borderColour*` rename had never migrated stored
+content (live).** The deploy's own oldshape audit refused to ship, correctly:
+pages 2742 (the homepage), 2849 and 2884 each held 5 `sgs/button` blocks with
+the pre-rename keys, which the live render.php no longer reads — so those
+borders had been painting `currentColor` instead of their designed token since
+the rename shipped. Renamed in place over wp-cli with `--user=1`, scoped
+textually to each `wp:sgs/button` attribute object's exact decoded span. **Both
+renames are length-preserving, so a correct transform changes ZERO bytes** —
+asserted on disk, which is what caught two real bugs in the transform itself: a
+`json.dumps` round-trip was reformatting every button's attributes as a side
+effect, and `read_text` silently normalised post 2849's 55 CRLF endings to LF
+(a 55-byte loss an in-memory length check could not see). Final: 80 differing
+bytes each = 10 renames × 8 differing character positions.
+
+**Control reshaped to the native pair (Bean).** Border style moved INSIDE the
+colour popover (native `BorderBoxControl` opens colour and style from one swatch;
+a separate toggle was an SGS divergence) — it sits outside the Normal/Hover tabs
+because a border has one style across both states. The SGS-wrapped native radius
+became the second control of the pair. Per-device border WIDTH was specified,
+built, then **dropped by Bean the same session** — no real use case, and it would
+have cost `borderWidthTablet`/`Mobile` attrs plus `@media` emission in every
+block for a control nobody would reach for; the speculative plumbing was removed
+rather than left inert (`f5c9b66ae`).
+
+**New instrument: `scripts/qa/check-border-roundtrip.js`** — one live probe over
+N blocks (positive instance + a `borderStyle:"none"` negative control, frontend
+computed styles), modelled on `check-colour-editor-roundtrip.js` but **fail-closed**:
+a missing browser or an unmeasurable assertion reports NOT RUN and exits non-zero
+in every mode. 16/16 offline self-test. It found defect 3 on its first real run.
+⚠ Two limitations recorded, not hidden: it measures the OUTERMOST
+`.wp-block-sgs-<name>`, so on `sgs/container` it matches the header's container
+before the probe's own instance and its verdict there is untrustworthy; and
+`sgs/option-picker` returns NOT RUN (0 measurable instances), which is not a pass.
+
+⚠ **A page-HTML grep cannot prove CSS absence on this framework** — block CSS is
+lifted into `uploads/sgs-css/`. An early "no border rule emitted" reading was an
+instrument error; the defect was only visible in the lifted stylesheet.
+
+⚠ **`.claude/secrets/sandybrown.env` was missing for most of the session** —
+recovered from `.claude/worktrees/product-archive-p2/`. The directory's
+LastWriteTime (15:49) predates the session, so it was not this session's agents.
+CLAUDE.md claims these credentials are "ALWAYS available"; that was false.
+
+**Pre-existing problems surfaced, NOT caused here, none fixed:** D875's
+framework-wide gradient fix is substantially reverted in the shared DB (its own
+gate reports 74 unfixed rows, counts now HIGHER than the pre-fix figures);
+two converter tests (`grayscaleHover`) fail identically at the pre-session commit,
+proven by checking out `c38607940~1` and re-running them; and the motion track
+committed `fx` sources without their regenerated
+`extension-attributes.generated.php`, so deploying the committed artefact would
+have left 17 new `fxGen*` attributes unregistered.
+
+See also: D876 (opened Task 0), D875 (the gradient fix now reverted), D684.
+
 ## D880 [INCIDENT] — KJC-4 reversed: Bean explicitly authorised porting Stripe's actual reference shader code as the generative-background geometry's foundation, superseding the "ship none of their files" ruling
 
 **2026-08-28.** Three geometry rebuild attempts, each reimplementing the fold mechanism from a

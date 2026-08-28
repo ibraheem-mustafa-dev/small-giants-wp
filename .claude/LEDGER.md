@@ -50,40 +50,40 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK + TASK 0 — 2026-08-28: D873 CLOSED, border-control migration underway
+## ▶ MAMA'S CLONE TRACK + TASK 0 — 2026-08-29: SHAPE A CLOSED (10 blocks), 4 defects fixed
 
-**Full detail: D875 (D873's three lift bugs, all closed) and D876 (Task 0 border-control
-migration). Do not restate here — read those two entries.** Summary only:
+**Full detail: D881. Do not restate it here.** Headline: `PRIVATE_NEEDS_SWAP 8 → 0`,
+`PRIVATE_DONE 2 → 10`. All committed, pushed, deployed, live-verified.
 
-⭐ **NEXT SESSION, in order:** (1) `--fix --apply` `plugins/sgs-blocks/scripts/migrate-border-
-control.js`'s 6 confident Shape-A blocks (button, container, option-picker, process-steps, text,
-timeline), verify each live; (2) get Bean's call on `heading`'s duplicate border mount and
-`icon-list`'s colour-row shape (both correctly refused by the codemod, not forced); (3) decide
-Shape B's approach fresh for the 38 native-full blocks — **no codemod exists for this, D876
-explains why**; (4) triage the 7 ANOMALY blocks (filter-search, label, mega-aside, mega-panel,
-product-search, social-icons, whatsapp-cta).
+⭐ **NEXT:** (1) pair the native RADIUS into `SgsBorderControl` per block (the
+component supports it; blocks still mount their own); (2) Task 4 adopters
+`label` / `mega-aside` (smallest — only `borderStyle` missing) / `whatsapp-cta`,
+with `filter-search` + `social-icons` LEAVE-AS-IS (child-element borders);
+(3) `sgs/accordion`'s `style` collision — Bean approved renaming the preset attr
+to free the native `style` object, migrating 31 live instances.
 
-D873's three lift bugs are ALL CLOSED (not just DB-corrected — 1a/1b needed real converter fixes,
-D875 has the mechanism). A related editor crash was traced to a pre-existing WP-core race, not a
-regression from this session's work — do not re-investigate as new.
+⛔ **Per-device border WIDTH is CANCELLED, not deferred** (Bean, 2026-08-29) — no
+use case; the speculative plumbing was removed at `f5c9b66ae`. Do not rebuild it.
 
-**Closed this session (D878):** hover confirmed working live · 5 stack-conversion candidates
-closed, 0 need converting · visual-diff sign-off paid for `product-card`/`button`/`quote`
-(`reports/visual-diff/{block}-2026-08-28.md`) · attr-schema gate confirmed ENFORCING, leave it so.
+⛔ **`sgs/container` and `sgs/option-picker` are NOT live-proven** — the probe
+measures the OUTERMOST `.wp-block-sgs-<name>`, so on container it matches the
+header's; option-picker returned NOT RUN. Neither is a pass. Report:
+`reports/visual-diff/border-control-rollout-2026-08-29.md`.
 
-### ⛔ The visual-diff bypasses CANNOT be retired — not a queue
-`source_sha` comes from STAGED bytes; a report only certifies the commit it accompanies. The NEXT
-commit touching any block owes a real report. Shipped: `{button,product-card}-2026-08-27.md`,
-`{product-card,button,quote}-2026-08-28.md`. Reasoning: D804.
+### ⚠ Three problems NOT from this track — do not treat as new
+- **D875's gradient fix is largely REVERTED in the shared DB** — its own gate
+  reports 74 unfixed rows, HIGHER than pre-fix. Effect proven, cause NOT.
+- **Two converter `grayscaleHover` tests fail at the PRE-SESSION commit**, proven
+  at `c38607940~1`; `--skip-gate-full` was used on that basis.
+- **Motion committed `fx` sources without regenerating
+  `extension-attributes.generated.php`** (17 `fxGen*`), so deploys need
+  `--payload …/extension-attributes.generated.php` until they do.
 
-### ⚠ Hazards (full list — 10 — in the next-session prompt)
-- **`main` is shared:** a bare commit flushes the whole index. Use `git commit -- <paths>` — and
-  name FILES, not a directory: a `.claude/prompts/` pathspec swept another track's prompt swap
-  into this track's commit on 2026-08-27.
-- **`wp post update` with no `--user` strips CSS from block attrs** (KSES). Post 2145 lost its
-  style attr, then emptied. `--user=1` round-trips. Applies to ANY tool writing post_content.
-- **A deploy can report `[ABORTED]` while its payload landed** — check the server, not the exit
-  code; the post-deploy cache purge is skipped when it does.
+### ⚠ Hazards
+- `.claude/secrets/sandybrown.env` went missing (recovered from
+  `.claude/worktrees/product-archive-p2/`); CLAUDE.md's "ALWAYS available" is false.
+- Deploy worktree left at `C:/tmp/sgs-deploy-wt` (built) — reuse, saves an `npm ci`.
+- `main` had two `index.lock` collisions. Retry; never delete the lock.
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
