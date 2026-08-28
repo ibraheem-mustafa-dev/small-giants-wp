@@ -382,24 +382,6 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <ol <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<?php if ( $progress_fill ) : ?>
-		<?php
-		/*
-		 * FR-38-35 scroll-driven progress connector. Decorative only.
-		 *
-		 * `pathLength="1"` normalises the geometry to unit length so the dash
-		 * maths is an authored constant — there is no CSS equivalent of
-		 * getTotalLength(), and measuring it would drag JS into the zero-JS
-		 * driver. Two paths (vertical + horizontal) are emitted and the
-		 * stylesheet shows one; a straight line in a unit viewBox with
-		 * preserveAspectRatio="none" scales to any content-driven height.
-		 */
-		?>
-		<svg class="sgs-timeline__progress" aria-hidden="true" focusable="false" viewBox="0 0 1 1" preserveAspectRatio="none">
-			<path class="sgs-timeline__progress-path sgs-timeline__progress-path--vertical" d="M 0.5 0 L 0.5 1" pathLength="1" vector-effect="non-scaling-stroke" />
-			<path class="sgs-timeline__progress-path sgs-timeline__progress-path--horizontal" d="M 0 0.5 L 1 0.5" pathLength="1" vector-effect="non-scaling-stroke" />
-		</svg>
-	<?php endif; ?>
 	<?php foreach ( $entries as $index => $entry ) : ?>
 		<?php
 		$entry       = is_array( $entry ) ? $entry : array();
@@ -458,4 +440,26 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 			</div>
 		</li>
 	<?php endforeach; ?>
+	<?php if ( $progress_fill ) : ?>
+		<?php
+		/*
+		 * FR-38-35 scroll-driven progress connector. Decorative only.
+		 *
+		 * Emitted LAST and as an <li>, both deliberately:
+		 *   - <ol> may only contain <li>/<script>/<template>, so a bare <svg>
+		 *     or <div> here is invalid markup.
+		 *   - `:nth-child(odd|even)` drives the alternating layout and counts
+		 *     ALL children, so an element emitted FIRST shifts every entry's
+		 *     index by one and inverts the alternation. Last is index-neutral.
+		 *
+		 * Three layers, one number: a blurred glow and a crisp fill, both
+		 * masked to `--sgs-timeline-fill-progress`, plus a head dot at that
+		 * same position. Sparks are appended here by view.js while scrolling.
+		 */
+		?>
+		<li class="sgs-timeline__progress" aria-hidden="true">
+			<span class="sgs-timeline__progress-glow"></span>
+			<span class="sgs-timeline__progress-fill"></span>
+		</li>
+	<?php endif; ?>
 </ol>

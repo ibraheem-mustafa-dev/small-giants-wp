@@ -44,40 +44,73 @@
 }
 
 .sgs-timeline__progress {
+	// Positioning container ONLY — deliberately unmasked. The mask lives on the
+	// child layers because a mask applies to an element's pseudo-elements and
+	// children too: masking here would clip the head dot in half exactly at the
+	// progress boundary, which is the one place it must be whole.
 	position: absolute;
-	overflow: visible;
+	list-style: none;
+	margin: 0;
+	padding: 0;
 	pointer-events: none;
-	// ⛔ BOTH axes must be stated EXPLICITLY on every orientation rule below.
-	// An <svg> carrying a viewBox has an INTRINSIC ASPECT RATIO, so it sizes
-	// like a replaced element: given an explicit width and `height: auto`, the
-	// height resolves from the RATIO and `top: 0; bottom: 0` does NOT stretch
-	// it. Measured live: a 1:1 viewBox with `width: 2px` rendered the SVG
-	// 2px x 2px inside a 383px-tall timeline, so the connector painted
-	// NOTHING -- while getComputedStyle still reported display:block, the
-	// right stroke, dasharray 1px and a correctly-animating dashoffset.
-	// Every computed-style assertion passed against an element with no area.
-	// `preserveAspectRatio="none"` does NOT rescue this: it governs how the
-	// CONTENT scales inside the viewport, not how the element itself is sized.
 }
 
-.sgs-timeline__progress-path {
-	fill: none;
-	stroke: var(--sgs-timeline-fill-colour);
-	stroke-width: var(--sgs-connector-width);
-	// ⛔ LOAD-BEARING. `stroke-dasharray` defaults to `none`, and
-	// `stroke-dashoffset` has NO EFFECT on a line with no dash pattern — the
-	// connector would render permanently 100% filled while the property still
-	// animated correctly. With pathLength="1" one dash spans the whole path:
-	// offset 1 = empty, offset 0 = full.
-	stroke-dasharray: 1;
-	stroke-dashoffset: calc(1 - var(--sgs-timeline-fill-progress));
-	display: none;
+// The two masked layers share ONE mask declaration via this placeholder, so the
+// glow and the crisp fill can never drift out of sync with each other.
+%sgs-progress-masked {
+	position: absolute;
+	inset: 0;
+	-webkit-mask-image: var(--sgs-timeline-fill-mask);
+	mask-image: var(--sgs-timeline-fill-mask);
 }
 
-// Orientation — one path is shown, the other stays hidden. A straight line in a
-// unit viewBox with preserveAspectRatio="none" scales to any content-driven
-// height, so no JS resize rebuild is needed.
+.sgs-timeline__progress-fill {
+	@extend %sgs-progress-masked;
+	background-color: var(--sgs-timeline-fill-colour);
+}
+
+.sgs-timeline__progress-glow {
+	@extend %sgs-progress-masked;
+	// ⛔ The blur radius is set ONCE and never animated. Animating `filter` or a
+	// `box-shadow` blur per frame is a documented jank source across engines
+	// (WebKit #22102 "box-shadow causes awful scroll/resize/redraw performance";
+	// Mozilla #1514384, where an animated drop-shadow is CLIPPED mid-animation
+	// on off-main-thread animations; Safari drop-shadow flicker, mdn/browser-
+	// compat-data #17726). Only the MASK moves, which is cheap.
+	filter: blur(5px);
+	opacity: 0.75;
+}
+
+// The head — a bright point at the current progress position. Its halo is a
+// STATIC box-shadow on a small fixed-size dot, which is the cheap shape: repaint
+// cost scales with blur radius x area, so a halo belongs on a 12px dot, never
+// smeared down a full-height trail.
+.sgs-timeline__progress::after {
+	content: '';
+	position: absolute;
+	width: var(--sgs-timeline-head-size, 12px);
+	height: var(--sgs-timeline-head-size, 12px);
+	border-radius: 50%;
+	background: radial-gradient(
+		circle,
+		#fff 0%,
+		var(--sgs-timeline-fill-colour) 55%,
+		transparent 72%
+	);
+	box-shadow: 0 0 10px 3px var(--sgs-timeline-fill-colour);
+}
+
+// ── Orientation ───────────────────────────────────────────────────────────────
+//
+// Each orientation sets the mask AXIS and the head's travel axis. Everything
+// else is shared. Both axes are stated explicitly on every rule.
+
 .sgs-timeline--vertical .sgs-timeline__progress {
+	--sgs-timeline-fill-mask: linear-gradient(
+		to bottom,
+		#000 0 calc(var(--sgs-timeline-fill-progress) * 100%),
+		transparent calc(var(--sgs-timeline-fill-progress) * 100%)
+	);
 	top: 0;
 	bottom: 0;
 	left: 50%;
@@ -85,8 +118,21 @@
 	width: var(--sgs-connector-width);
 	height: 100%;
 
-	.sgs-timeline__progress-path--vertical {
-		display: block;
+	.sgs-timeline__progress-glow {
+		// Widen the BOX rather than the blur radius — see the note above.
+		inset: 0 -6px;
+		background: linear-gradient(
+			to right,
+			transparent,
+			var(--sgs-timeline-fill-colour),
+			transparent
+		);
+	}
+
+	&::after {
+		left: 50%;
+		top: calc(var(--sgs-timeline-fill-progress) * 100%);
+		transform: translate(-50%, -50%);
 	}
 }
 
@@ -99,14 +145,61 @@
 }
 
 .sgs-timeline--horizontal .sgs-timeline__progress {
+	--sgs-timeline-fill-mask: linear-gradient(
+		to right,
+		#000 0 calc(var(--sgs-timeline-fill-progress) * 100%),
+		transparent calc(var(--sgs-timeline-fill-progress) * 100%)
+	);
 	top: calc(var(--sgs-node-size) / 2 + var(--wp--preset--spacing--30, 1.5rem));
 	left: 0;
 	right: 0;
 	width: 100%;
 	height: var(--sgs-connector-width);
 
-	.sgs-timeline__progress-path--horizontal {
-		display: block;
+	.sgs-timeline__progress-glow {
+		inset: -6px 0;
+		background: linear-gradient(
+			to bottom,
+			transparent,
+			var(--sgs-timeline-fill-colour),
+			transparent
+		);
+	}
+
+	&::after {
+		top: 50%;
+		left: calc(var(--sgs-timeline-fill-progress) * 100%);
+		transform: translate(-50%, -50%);
+	}
+}
+
+// ── Sparks (FR-38-35) ─────────────────────────────────────────────────────────
+//
+// Short-lived elements appended by view.js at the head, ONLY while progress is
+// actually changing. Deliberately not a particle library: tsparticles is
+// 20-100KB against a 50KB page budget, and canvas-confetti is built for one-shot
+// bursts rather than a continuous trail. Transform + opacity only, so each spark
+// is compositor-work, and each removes itself on `animationend`.
+.sgs-timeline__spark {
+	position: absolute;
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: #fff;
+	pointer-events: none;
+	animation: sgs-timeline-spark 600ms ease-out forwards;
+}
+
+@keyframes sgs-timeline-spark {
+	from {
+		transform: translate(-50%, -50%) scale(1);
+		opacity: 1;
+	}
+
+	to {
+		transform: translate(calc(-50% + var(--sgs-spark-dx)), calc(-50% + var(--sgs-spark-dy)))
+			scale(0);
+		opacity: 0;
 	}
 }
 
@@ -117,11 +210,22 @@
 // because an animation outranks a plain declaration in the cascade.
 @media (prefers-reduced-motion: reduce) {
 	.sgs-timeline--connector-progress,
-	.sgs-timeline--connector-progress .sgs-timeline__progress-path {
+	.sgs-timeline--connector-progress .sgs-timeline__progress,
+	.sgs-timeline--connector-progress .sgs-timeline__progress-fill,
+	.sgs-timeline--connector-progress .sgs-timeline__progress-glow {
 		--sgs-timeline-fill-progress: 1;
 		animation: none !important;
 	}
+
+	// Sparks are pure decoration with no informational content, so they are the
+	// one layer that switches OFF entirely rather than simplifying. The glow and
+	// head stay: they carry the journey's state, and removing them would be
+	// `degrade-to-more-content-never-less` in reverse.
+	.sgs-timeline__spark {
+		display: none;
+	}
 }
+
 
 // Driver 1 of 2 — native CSS scroll-driven animation. Scoped entirely to
 // `.sgs-timeline--connector-progress` so a timeline with the feature off is
@@ -634,20 +738,31 @@
 			height: 100%;
 		}
 
-		// ⛔ These MUST stay nested inside `.sgs-timeline__progress` so they
-		// compile to (0,3,0) and match the base orientation rule's own depth.
-		// Written one level shallower they are (0,3,0) vs (0,2,0) LOSERS, and
-		// the base `--horizontal { display: block }` keeps winning while the
-		// vertical path also switches on — MEASURED live at 375px: TWO paths
-		// rendered, i.e. the doubled line this whole feature suppresses the
-		// ::before to avoid, reintroduced at mobile by specificity alone.
+		// The horizontal timeline re-lays out VERTICALLY here, so the mask axis
+		// and the head's travel axis must both flip with it. Re-declared rather
+		// than inherited: the base horizontal rule sets these on the same element,
+		// and a media-query rule at equal specificity wins on source order.
 		.sgs-timeline__progress {
-			.sgs-timeline__progress-path--horizontal {
-				display: none;
+			--sgs-timeline-fill-mask: linear-gradient(
+				to bottom,
+				#000 0 calc(var(--sgs-timeline-fill-progress) * 100%),
+				transparent calc(var(--sgs-timeline-fill-progress) * 100%)
+			);
+
+			.sgs-timeline__progress-glow {
+				inset: 0 -6px;
+				background: linear-gradient(
+					to right,
+					transparent,
+					var(--sgs-timeline-fill-colour),
+					transparent
+				);
 			}
 
-			.sgs-timeline__progress-path--vertical {
-				display: block;
+			&::after {
+				left: 50%;
+				top: calc(var(--sgs-timeline-fill-progress) * 100%);
+				transform: translate(-50%, -50%);
 			}
 		}
 	}

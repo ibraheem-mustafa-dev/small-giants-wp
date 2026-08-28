@@ -142,6 +142,11 @@ import {
 		 *
 		 * @return {number} Progress clamped to 0..1.
 		 */
+		const horizontal = root.classList.contains(
+			'sgs-timeline--horizontal'
+		);
+		let lastProgress = 0;
+
 		function computeProgress() {
 			const rect = root.getBoundingClientRect();
 			const viewportHeight = window.innerHeight;
@@ -151,11 +156,65 @@ import {
 			return Math.min( 1, Math.max( 0, progress ) );
 		}
 
-		function writeProgress() {
-			root.style.setProperty(
-				'--sgs-timeline-fill-progress',
-				String( computeProgress() )
+		// ── Sparks (FR-38-35) ──────────────────────────────────────────
+		//
+		// Spawned ONLY while progress is actually CHANGING. That gate is not a
+		// performance nicety, it is what keeps the effect scroll-linked: motion
+		// that continues while the user sits still is AUTONOMOUS, and autonomous
+		// motion running past five seconds owes a WCAG SC 2.2.2 pause control.
+		// No scroll, no sparks, no pause control owed.
+		//
+		// Deliberately not a particle library — tsparticles is 20-100KB against
+		// a 50KB page budget, and canvas-confetti is built for one-shot bursts,
+		// not a continuous trail. Each spark is a 3px element animated on
+		// transform + opacity (compositor-only) that removes itself.
+		const progressEl = root.querySelector( '.sgs-timeline__progress' );
+		let lastSparkAt = 0;
+
+		function maybeSpark( delta ) {
+			if ( ! progressEl || delta < 0.004 ) {
+				return;
+			}
+			// Rate-limit independently of scroll frequency so a fast flick does
+			// not dump dozens of nodes in one frame.
+			const now = performance.now();
+			if ( now - lastSparkAt < 60 ) {
+				return;
+			}
+			lastSparkAt = now;
+
+			const spark = document.createElement( 'span' );
+			spark.className = 'sgs-timeline__spark';
+			// The head sits at the progress position on the travel axis; place
+			// the spark there and let CSS scatter it outward.
+			const pct = `${ lastProgress * 100 }%`;
+			if ( horizontal ) {
+				spark.style.left = pct;
+				spark.style.top = '50%';
+			} else {
+				spark.style.left = '50%';
+				spark.style.top = pct;
+			}
+			spark.style.setProperty(
+				'--sgs-spark-dx',
+				`${ ( Math.random() - 0.5 ) * 22 }px`
 			);
+			spark.style.setProperty(
+				'--sgs-spark-dy',
+				`${ ( Math.random() - 0.5 ) * 22 }px`
+			);
+			spark.addEventListener( 'animationend', () => spark.remove(), {
+				once: true,
+			} );
+			progressEl.appendChild( spark );
+		}
+
+		function writeProgress() {
+			const next = computeProgress();
+			const delta = Math.abs( next - lastProgress );
+			lastProgress = next;
+			root.style.setProperty( '--sgs-timeline-fill-progress', String( next ) );
+			maybeSpark( delta );
 		}
 
 		// 3. Share the ONE page-wide rAF loop rather than running our own.
@@ -171,6 +230,13 @@ import {
 			window.removeEventListener( 'scroll', throttledWrite );
 			window.removeEventListener( 'resize', throttledWrite );
 			throttledWrite.cancel();
+			// Sparks self-remove on `animationend`, but a teardown mid-flight
+			// would otherwise strand however many are alive at that instant.
+			if ( progressEl ) {
+				progressEl
+					.querySelectorAll( '.sgs-timeline__spark' )
+					.forEach( ( el ) => el.remove() );
+			}
 		};
 	}
 
