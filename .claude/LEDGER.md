@@ -57,8 +57,9 @@ token, element, parity), never the verb — the same idea is spelled `census-*`,
 this shape). All committed, pushed and deployed; 6 of 8 probed blocks live-verified — see the
 NOT-live-proven note below before treating this as fully closed.
 
-⭐ **NEXT — full list + 8 items missed on the first pass are in the prompt:**
-`.claude/prompts/2026-08-30-border-radius-pairing-anomaly-adopters-accordion-rename.md`.
+⭐ **NEXT:** `.claude/prompts/2026-08-30-shape-b-reference-then-rollout.md`. **FIRST action:
+convert `sgs/accordion` as the Shape-B reference** (Bean) — the migration script for the other 37
+is built FROM it. It also lists 4 claims from other docs verified FALSE.
 
 ⛔ **Per-device border WIDTH is CANCELLED, not deferred** (Bean, 2026-08-29) — no
 use case; the speculative plumbing was removed at `f5c9b66ae`. Do not rebuild it.
