@@ -1378,6 +1378,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onColourGradientChange={ ( val ) =>
 							setAttributes( { borderColourGradient: val ?? '' } )
 						}
+						colourLinked={ true }
 					/>
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }

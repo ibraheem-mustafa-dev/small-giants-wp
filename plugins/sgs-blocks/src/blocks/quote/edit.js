@@ -789,6 +789,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: borderColour,
 									onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+									linked: true,
 									gradientValue: borderColourGradient,
 									onGradientChange: ( val ) =>
 										setAttributes( { borderColourGradient: val ?? '' } ),
@@ -798,6 +799,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: borderColourHover,
 									onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+									linked: true,
 								},
 							] }
 						/>
