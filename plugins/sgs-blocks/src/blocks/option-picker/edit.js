@@ -33,6 +33,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 	SgsLengthControl,
+	SgsBorderControl,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -55,18 +56,6 @@ const COLOUR_PRESET_OPTIONS = [
 	{ label: __( '— Framework default —', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Soft (pale-tint fill, outline, no tick)', 'sgs-blocks' ), value: 'soft' },
 	{ label: __( 'Solid (filled selected, tick)', 'sgs-blocks' ), value: 'solid' },
-];
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
-	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
-	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
-	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
-	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
 ];
 
 const LENGTH_UNITS = [
@@ -413,22 +402,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: pillSelectedBorderColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { pillSelectedBorderColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'border',
-						label: __( 'Wrapper border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -878,20 +851,23 @@ export default function Edit( { attributes, setAttributes } ) {
 				   SGS custom object attr (base only); border-radius routes to
 				   WP-native style.border.radius (skip-serialised → scoped). */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Border style', 'sgs-blocks' ) }
-						value={ borderStyle }
-						options={ BORDER_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						presets={ [ '10', '20', '30' ] }
-						values={ { base: borderWidth ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+					   (width/style/colour) mirroring native's BorderBoxControl layout,
+					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
+					   (stays WP-native). */ }
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Wrapper border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
 					/>
 					{ /* borderRadiusTablet/Mobile were DECLARED and RENDERED
 					     (render.php:250-251) with no control — the fourth

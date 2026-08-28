@@ -28,7 +28,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, fillRow } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, fillRow, SgsBorderControl } from '../../components';
 import { colourVar } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -41,18 +41,6 @@ const NUMBER_STYLE_OPTIONS = [
 	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-];
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
-	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
-	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
-	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
-	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
 ];
 
 // Box-object interface contract §1/§5: build an editor-preview shorthand from
@@ -356,32 +344,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					{
-						key: 'border',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
 				] }
 			/>
 			<InspectorControls>
@@ -494,20 +456,39 @@ export default function Edit( { attributes, setAttributes } ) {
 				   routes to WP-native style.border.radius (skip-serialised → scoped,
 				   matches sgs/heading + sgs/quote). */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Border style', 'sgs-blocks' ) }
-						value={ borderStyle }
-						options={ BORDER_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						presets={ [ '10', '20', '30' ] }
-						values={ { base: borderWidth ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+					   (width/style/colour) mirroring native's BorderBoxControl layout,
+					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
+					   (stays WP-native). */ }
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+							},
+						] }
 					/>
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
