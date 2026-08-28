@@ -59,6 +59,8 @@ $alignment        = $attributes['alignment'] ?? 'alternating';
 $connector_style  = $attributes['connectorStyle'] ?? 'line';
 $connector_colour = $attributes['connectorColour'] ?? 'border-subtle';
 $date_colour      = $attributes['dateColour'] ?? 'accent';
+$progress_fill    = ! empty( $attributes['connectorProgressFill'] );
+$fill_colour      = $attributes['connectorFillColour'] ?? 'accent';
 $reveal_on_scroll = isset( $attributes['revealOnScroll'] ) ? (bool) $attributes['revealOnScroll'] : true;
 $reveal_stagger   = isset( $attributes['revealStagger'] ) ? absint( $attributes['revealStagger'] ) : 100;
 
@@ -323,6 +325,12 @@ if ( 'vertical' === $orientation ) {
 	$wrapper_classes[] = 'sgs-timeline--align-' . $alignment;
 }
 $wrapper_classes[] = 'sgs-timeline--connector-' . $connector_style;
+if ( $progress_fill ) {
+	// FR-38-35 — suppression of the always-drawn ::before is keyed on THIS
+	// class, never on @supports: an @supports-keyed hide would leave a doubled
+	// line for every visitor on the JS driver, which today is all of Firefox.
+	$wrapper_classes[] = 'sgs-timeline--connector-progress';
+}
 
 if ( '' !== $preset_text_slug ) {
 	$wrapper_classes[] = 'has-text-color';
@@ -340,6 +348,9 @@ if ( $connector_colour ) {
 }
 if ( $date_colour ) {
 	$wrapper_style_parts[] = '--sgs-date-colour:' . sgs_colour_value( $date_colour );
+}
+if ( $progress_fill && $fill_colour ) {
+	$wrapper_style_parts[] = '--sgs-timeline-fill-colour:' . sgs_colour_value( $fill_colour );
 }
 if ( $reveal_stagger > 0 ) {
 	$wrapper_style_parts[] = '--sgs-reveal-stagger:' . $reveal_stagger . 'ms';
@@ -371,6 +382,24 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <ol <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php if ( $progress_fill ) : ?>
+		<?php
+		/*
+		 * FR-38-35 scroll-driven progress connector. Decorative only.
+		 *
+		 * `pathLength="1"` normalises the geometry to unit length so the dash
+		 * maths is an authored constant — there is no CSS equivalent of
+		 * getTotalLength(), and measuring it would drag JS into the zero-JS
+		 * driver. Two paths (vertical + horizontal) are emitted and the
+		 * stylesheet shows one; a straight line in a unit viewBox with
+		 * preserveAspectRatio="none" scales to any content-driven height.
+		 */
+		?>
+		<svg class="sgs-timeline__progress" aria-hidden="true" focusable="false" viewBox="0 0 1 1" preserveAspectRatio="none">
+			<path class="sgs-timeline__progress-path sgs-timeline__progress-path--vertical" d="M 0.5 0 L 0.5 1" pathLength="1" vector-effect="non-scaling-stroke" />
+			<path class="sgs-timeline__progress-path sgs-timeline__progress-path--horizontal" d="M 0 0.5 L 1 0.5" pathLength="1" vector-effect="non-scaling-stroke" />
+		</svg>
+	<?php endif; ?>
 	<?php foreach ( $entries as $index => $entry ) : ?>
 		<?php
 		$entry       = is_array( $entry ) ? $entry : array();

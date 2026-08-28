@@ -1,5 +1,5 @@
 /**
- * SGS Timeline — view.js (frontend scroll-reveal)
+ * SGS Timeline — view.js (frontend scroll-reveal + progress-line driver)
  *
  * Uses IntersectionObserver to add .is-revealed to each .sgs-timeline__entry
  * as it enters the viewport. Stagger delay is read from the
@@ -10,7 +10,17 @@
  * stagger or transition delay.
  *
  * Each observer is disconnected per-entry after it fires (one-shot).
+ *
+ * Also drives the connector progress-line fill (--sgs-timeline-fill-progress)
+ * on browsers with no native `animation-timeline: view()` support (today:
+ * every Firefox — stable is 153, and it lands in 157), so this is a PRIMARY
+ * rendering path, not a fallback — see initProgressDriver() below.
  */
+
+import {
+	prefersReducedMotion as isReducedMotionNow,
+	rafThrottle,
+} from '../../shared/effects/motion-utils.js';
 
 ( function () {
 	'use strict';
@@ -81,6 +91,128 @@
 	}
 
 	/**
+	 * Vanilla rAF driver for the connector progress-line.
+	 *
+	 * This is the PRIMARY path for any browser without native
+	 * `animation-timeline: view()` support (Firefox stable has none at
+	 * all as of this writing — it lands in a later release). On a browser
+	 * that DOES support the native timeline, style.scss's own CSS
+	 * animation already owns --sgs-timeline-fill-progress and outranks a
+	 * JS inline style write in the cascade, so this driver returns
+	 * immediately and never attaches a single listener.
+	 *
+	 * @param {HTMLElement} root - The .sgs-timeline--connector-progress <ol>.
+	 * @return {Function|void} A cleanup function, or nothing if the driver
+	 *                         never attached (native support / reduced motion).
+	 */
+	function initProgressDriver( root ) {
+		// 1. Feature-detect FIRST, before attaching anything. A CSS
+		// animation outranks a JS inline style write, so on a browser with
+		// native support this driver would burn frames producing nothing
+		// visible — and this early return is what makes the negative
+		// branch testable (a test can stub CSS.supports).
+		// The feature tested here MUST be the one style.scss gates its
+		// native driver on (`view()`), not merely a related one. Testing
+		// `scroll()` instead would leave a hole on any engine that shipped
+		// one without the other: the CSS driver would not apply and this
+		// one would have already exited, so nothing would fill the line.
+		if ( window.CSS?.supports?.( 'animation-timeline', 'view()' ) ) {
+			return;
+		}
+
+		// 2. Reduced motion: use the LIVE check (re-evaluates every call),
+		// not the module-load-cached const above. The stylesheet already
+		// forces the line fully filled under prefers-reduced-motion, so
+		// doing nothing here is correct — do not write 1 ourselves.
+		if ( isReducedMotionNow() ) {
+			return;
+		}
+
+		/**
+		 * Compute fill progress (0..1) from the root's position in the
+		 * viewport.
+		 *
+		 * Range chosen for a comfortable "fills while the timeline is on
+		 * screen" feel rather than an edge-to-edge scrollIntoView range:
+		 * progress reaches 0 once the root's top edge crosses the bottom
+		 * of the viewport, and reaches 1 once the root's bottom edge
+		 * crosses the top of the viewport — i.e. the fill tracks exactly
+		 * how much of the timeline has scrolled past the top of the
+		 * screen while it's in view.
+		 *
+		 * @return {number} Progress clamped to 0..1.
+		 */
+		function computeProgress() {
+			const rect = root.getBoundingClientRect();
+			const viewportHeight = window.innerHeight;
+			const total = rect.height + viewportHeight;
+			const scrolled = viewportHeight - rect.top;
+			const progress = total > 0 ? scrolled / total : 0;
+			return Math.min( 1, Math.max( 0, progress ) );
+		}
+
+		function writeProgress() {
+			root.style.setProperty(
+				'--sgs-timeline-fill-progress',
+				String( computeProgress() )
+			);
+		}
+
+		// 3. Share the ONE page-wide rAF loop rather than running our own.
+		const throttledWrite = rafThrottle( writeProgress );
+
+		writeProgress();
+		window.addEventListener( 'scroll', throttledWrite, { passive: true } );
+		// 7. Recompute on resize — the element's height changes with
+		// content/breakpoint, which shifts the progress curve.
+		window.addEventListener( 'resize', throttledWrite, { passive: true } );
+
+		return function cleanup() {
+			window.removeEventListener( 'scroll', throttledWrite );
+			window.removeEventListener( 'resize', throttledWrite );
+			throttledWrite.cancel();
+		};
+	}
+
+	/**
+	 * init/cleanup wrapper for the progress driver across every
+	 * .sgs-timeline--connector-progress root on the page, with bfcache
+	 * teardown-and-reinit on pageshow.
+	 */
+	function bootProgressDriver() {
+		let cleanups = [];
+
+		function init() {
+			const roots = document.querySelectorAll(
+				'.sgs-timeline--connector-progress'
+			);
+			roots.forEach( ( root ) => {
+				const cleanup = initProgressDriver( root );
+				if ( cleanup ) {
+					cleanups.push( cleanup );
+				}
+			} );
+		}
+
+		function teardown() {
+			cleanups.forEach( ( cleanup ) => cleanup() );
+			cleanups = [];
+		}
+
+		init();
+
+		// 5. bfcache: a page restored from the back/forward cache keeps
+		// its old listeners attached to a DOM that may since have
+		// changed size/position — tear down and re-init cleanly.
+		window.addEventListener( 'pageshow', ( event ) => {
+			if ( event.persisted ) {
+				teardown();
+				init();
+			}
+		} );
+	}
+
+	/**
 	 * Boot on DOMContentLoaded.
 	 */
 	function boot() {
@@ -88,6 +220,8 @@
 			'.sgs-timeline[data-reveal-on-scroll]'
 		);
 		timelines.forEach( initTimeline );
+
+		bootProgressDriver();
 	}
 
 	if ( document.readyState === 'loading' ) {

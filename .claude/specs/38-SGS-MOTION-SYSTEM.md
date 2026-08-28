@@ -187,7 +187,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Effect | Tier — why not lower | Level | Exposure surface | Conditions + conflicts | Default | Recommended → permitted |
 |---|---|---|---|---|---|---|
 | Pin + scrub section timeline | **G** — CSS cannot pin; a sticky-based pin substitute is exactly the short-parent trap Spec 37 FR-37-40 rejected; multi-tween sequencing needs a timeline | container/section | Inspector panel on `sgs/container` + section-KIND composites | Excludes Tier V entrance on same block (§4.3); needs ScrollTrigger; editor = static end-state (§9) | off | Section-level containers → any container-equivalent (documented choice) |
-| Scroll-scrubbed element timeline (multi-keyframe/staggered) | **G** — cross-browser scrub consistency; Safari stable still lacks CSS scroll-driven animations (assumption stated §3.1) | block/element | Inspector panel (fx ToolsPanel) | §4.3 exclusivity; single-property scrub stays Tier V (parallax/`--sgs-scroll-progress` pattern) | off | Any block → any element with the fx panel exposed |
+| Scroll-scrubbed element timeline (multi-keyframe/staggered) | **G** — cross-browser scrub consistency; **FIREFOX** stable lacks CSS scroll-driven animations entirely (corrected 2026-08-28 — this cell previously named Safari; see §3.1) | block/element | Inspector panel (fx ToolsPanel) | §4.3 exclusivity; single-property scrub stays Tier V (parallax/`--sgs-scroll-progress` pattern) | off | Any block → any element with the fx panel exposed |
 | Horizontal scroll panel | **G** — needs pinning + vertical→horizontal progress mapping; no CSS mechanism | section | Block variation of `sgs/container` (+ inspector tuning) | Pins (ScrollTrigger); keyboard/a11y scroll fallback mandatory; mobile falls back to native horizontal scroll-snap | off | Top-level section → nested container (permitted, documented) |
 | Scroll-scrubbed image sequence | **G** — canvas frame scrubbing; CSS cannot drive canvas | block (dedicated, NET-NEW) | New block `sgs/image-sequence` inspector | Asset-pipeline sub-scope (frame export/compression tooling — §3.1); heavy-asset warning in UI; editor = poster frame | n/a (new block) | Hero/feature sections → anywhere the block is inserted |
 | SplitText reveal (char/word/line, masked) | **G** — DOM splitting with the 2025 a11y rewrite (aria-preserving); hand-rolled splitting breaks screen readers/kerning | block (text-bearing) | Inspector panel on heading/text/quote (+ hero headline) | a11y baked in (plugin rewrite); §4.3 exclusivity vs entrance; reduced-motion = plain fade or nothing (§10) | off | Headings first → any text-bearing block |
@@ -206,6 +206,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Magnetic pull (FR-38-30) | **V** — the shipped mega-menu `magnet.js` already does proximity-based pull in vanilla; the 2026-08-02 motion-ecosystem survey independently concluded a magnetic button is "~20-30 lines of vanilla JS — write it, don't dependency it"; GSAP adds nothing §1.3's ratchet would accept | block | fx panel — Pull distance + Reach (shown by default), Direction (behind "+") | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only via `hover`; measured 1054 bytes gzip; distance measured to the element's BOX, not its centre | off | Any of the 32 fx-panel blocks (incl. `sgs/button`, `sgs/multi-button`, `sgs/icon`) → any block with the fx panel exposed |
 | Flowing gradient (FR-38-31, SECOND Tier W entry) | **W** — a mesh gradient needs per-vertex colour interpolated across a subdivided, noise-displaced plane, which CSS cannot generate and GSAP cannot rasterise (§1.2b tests i + ii); GENERATIVE rather than image-wrapping, which widens Tier W's founding fallback premise (see §1.2b) | block (surface) | fx panel-equivalent surface control — 4 client colours (`DesignTokenPicker`) + a mandatory keyboard-reachable Pause control (SC 2.2.2, autonomous motion) | `requires='surface'`; AUTONOMOUS (`triggers='load'`), not cursor-driven — engages SC 2.2.2 so ships a real Pause control, `hidden` until JS confirms it is running; DPR capped at 1.5; IntersectionObserver + `visibilitychange` + context-loss give-up; real CSS fallback required (ships alongside, kept in sync forever — the tier-widening cost) | off | Section/hero surfaces → any block declaring the `surface` capability |
 | Particle trail (FR-38-32) | **V** — a canvas 2D pool of short-lived sprites; vanilla reaches it with no library, so §1.3's ratchet refuses anything dearer. ⛔ NOT Tier W: it needs no GPU shader and that list stays closed at two | block | fx panel — Style (sparks/gravity-dots/ripple) shown by default, Density + Size behind "+" | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only; roster measured 32 before, 32 after; cap 150/emitter (MEASURED 2026-08-26 D807: clamps at exactly 150 under saturation, but ordinary pointer input peaks at 106 — LIFETIME binds first, not the cap), DPR<=1.5; self-terminating loop (MEASURED: 0 frames drawn across 2500ms at rest; positive control confirms the counter rises on movement) | off | Any of the 32 fx-panel blocks → any block with the fx panel exposed |
+| Progress connector on `sgs/timeline` (FR-38-35) | **V** — a SINGLE-property scrub (one number, 0→1), which FR-38-7 already places in V; multi-keyframe/staggered is the G boundary and Stage B's variants must be re-tiered against it | block (`sgs/timeline` only) | Block-private inspector — `ToggleControl` in the Connector PanelBody + an `SgsColourPanel` row. **NOT the fx panel** (FR-38-26 precedent: fx injectors stamp the block ROOT, the connector is a descendant), so zero `check-fx-list-drift.py` registrations | Two drivers writing one `@property`-registered custom property; the JS driver MUST feature-detect `animation-timeline` and exit, or both run and the rAF loop burns frames for nothing. Firefox has NO native support, so the JS path is primary | off | `sgs/timeline` → nothing else (the geometry is this block's own connector) |
 | *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
 
 ## 3. The capability roster (nothing cut; curated defaults)
@@ -219,10 +220,27 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 - **FR-38-7 Scroll-scrubbed element timelines.** Opacity/transform keyframes along the
   element's own viewport progress. **Boundary with Tier V:** a SINGLE-property fade/translate
   scrub remains Tier V (the existing CSS scroll-driven parallax pattern + `--sgs-scroll-progress`);
-  Tier G owns multi-keyframe, staggered, or sequenced scrubs. **Stated assumption (verify at
-  Wave A build):** Safari stable still lacks CSS Scroll-Driven Animations (Chromium 115+ and
-  Firefox have them), so cross-browser-critical scrубs are G; if Safari ships them, the boundary
-  moves in V's favour (doctrine §1.3).
+  Tier G owns multi-keyframe, staggered, or sequenced scrubs.
+
+ ⛔ **THE SUPPORT CLAIM HERE WAS WRONG IN BOTH DIRECTIONS AND IS CORRECTED (2026-08-28,
+  measured — not recalled).** This paragraph read: *"Stated assumption (verify at Wave A build):
+  Safari stable still lacks CSS Scroll-Driven Animations (Chromium 115+ and Firefox have them)."*
+  Both halves were false, and they were false in OPPOSITE directions — so anyone building a
+  fallback from this sentence would have built it for the wrong browser.
+
+  | Engine | `animation-timeline` | Status |
+  |---|---|---|
+  | Chrome / Edge | 115+ | ✅ since 2023 |
+  | **Safari** | **26.0+** | ✅ since **Sept 2025** — had it for eleven months while this line denied it |
+  | **Firefox** | **157** | ❌ stable is **153.0.4** (11 Aug 2026) |
+
+  Global support **85.43%**. MDN: *"This feature is not Baseline because it does not work in some
+  of the most widely-used browsers."* **The blocker is FIREFOX, not Safari.** The V/G boundary
+  itself is unmoved — cross-browser-critical multi-keyframe scrubs are still G — but the reason is
+  Firefox, and a JS driver written for this gap is the PRIMARY path for Firefox users, not a
+  fallback for a rare browser. A prior research pass claiming *"Firefox 132+, Safari 18+"* was also
+  wrong on both numbers; re-measure rather than citing either. (`@property`, by contrast, is safe
+  at **94.21%** — Chrome/Edge 85+, Firefox 128+, Safari 16.4+.)
 - **FR-38-8 Horizontal scroll panel.** A `sgs/container` **block variation** ("Horizontal scroll
   section"): vertical scroll maps to horizontal travel of a pinned row. Mobile (<768) falls back
   to native horizontal scroll-snap (the Tier V carousel pattern); keyboard users get normal
@@ -272,6 +290,69 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 > `plugins/sgs-blocks/scripts/motion-qa/fixtures/pin-keyboard-focus-fr-38-6.html`; re-create from
 > that file. This is the third fixture for this probe to be lost to a canary tidy-up, which is why
 > the source no longer lives only on the server.
+
+- **FR-38-35 Scroll-driven progress connector on `sgs/timeline` — Tier V, BLOCK-PRIVATE.**
+  Added 2026-08-28 (D879). The timeline's connecting line fills progressively 0→1 as the block
+  scrolls through the viewport, so a journey visibly builds as the reader descends. Requested by
+  MIC for their journey page; Stage A (this FR) is the contract only, and four themed variants
+  (pulse / vine / tree / falling bricks) are Stage B, deliberately not built here.
+
+ **Tier V, and the boundary is the one FR-38-7 above already draws:** this is a SINGLE-property
+  scrub (`--sgs-timeline-fill-progress`, one number), not a multi-keyframe or staggered timeline.
+  ⚠ Stage B's staggered bricks and multi-keyframe vine/tree read as **Tier G** under that same
+  boundary — settle their tier before fanning out; Tier V does not carry over by inheritance.
+
+ **BLOCK-PRIVATE, not an fx-panel effect — the FR-38-26 precedent, for the identical reason.**
+  Both `fx.js`'s save filter and `fx-attributes.php`'s injector only ever stamp the block ROOT,
+  and the connector is a DESCENDANT (a pseudo-element before this FR, an SVG child after it). That
+  is exactly why `loopCarousel` went per-block with `fx_effects.creates_panel = 0`. Consequence:
+  **zero `check-fx-list-drift.py` registrations are owed** — this effect joins none of the four
+  hand-maintained fx lists, because it is not an fx effect. It also answers §3.3's standing note
+  that *"`sgs/timeline` is a genuine horizontal scroller with no fx declaration — an unclaimed
+  candidate needing a new control surface"*: this is that surface.
+
+ **The contract — ONE number, TWO drivers, and the drivers must exclude each other.**
+  `--sgs-timeline-fill-progress` is `@property`-registered (`syntax: '<number>'`, `inherits: true`,
+  `initial-value: 0`) and consumed once, as
+  `stroke-dashoffset: calc(1 - var(--sgs-timeline-fill-progress))` on an `aria-hidden` SVG `<path>`
+  carrying `pathLength="1"` (which normalises any geometry to unit length, so the dash maths is an
+  authored constant and no one reaches for the JS-only `getTotalLength()`).
+
+  - **Native driver** — `@supports (animation-timeline: scroll())` binds a `@keyframes` to the
+    scroll timeline. Serves Chrome/Edge 115+ and Safari 26+.
+  - **JS driver** — an rAF loop in the block's `view.js` writing the same property. **This is the
+    PRIMARY path for every Firefox user, not a fallback** (see the corrected support table above).
+  - ⛔ **The JS driver MUST feature-detect and return before attaching anything**
+    (`CSS.supports('animation-timeline','scroll()')`). A CSS animation outranks a JS inline write
+    in the cascade, so without this gate the loop runs on ~85% of traffic producing nothing
+    visible — correct output masking wasted work, the hardest defect class to notice.
+
+ ⛔ **THREE SILENT-FAILURE MODES, each of which renders plausible-looking output while being
+  wrong. All three are load-bearing; none is polish.**
+  1. **An unregistered custom property cannot be animated.** Its computed type is "token stream",
+     which has no midpoint, so CSS legally swaps it discretely at 50%. The fill would not be
+     progressive, the property would still resolve, and every gate would pass. `@property` is what
+     makes it a real number. (Same reasoning as `assets/css/fx-motion-path.css`.)
+  2. **`stroke-dasharray` MUST be set.** It defaults to `none`, and `stroke-dashoffset` has NO
+     effect on a line with no dash pattern — the connector renders permanently 100% filled while
+     the property animates perfectly. With `pathLength="1"`, `stroke-dasharray: 1` makes one dash
+     span the path: offset 1 = empty, offset 0 = full. *(Found by a QC pass on the build plan,
+     after the effect had already survived one review that specified the dashoffset without it.)*
+  3. **The old `::before` must be suppressed on the CLASS, never on `@supports`.** An
+     `@supports`-keyed hide leaves a DOUBLED line for every visitor on the JS driver — today, all
+     of Firefox.
+
+ **Client controls (block-private, beside the existing connector controls):**
+  `connectorProgressFill` (boolean, default off) as a `ToggleControl` in the Connector `PanelBody`;
+  `connectorFillColour` (string, default `accent`) as an `SgsColourPanel` row with `linked: true`,
+  so it stores a palette SLUG and re-themes with the site rather than freezing a hex.
+  Seeded to `block_attributes`: `connectorFillColour` carries `css_property = stroke` on the
+  EXISTING `connector` element — a different property from `connectorColour`'s `background-color`
+  claim, so there is no routing-determinism collision and no new element was needed.
+
+ **Accessibility.** The SVG is `aria-hidden="true" focusable="false"` — decorative, adding no
+  content. **SC 2.2.2 does NOT engage:** the motion is scroll-linked and user-driven with no
+  autonomous component, so no Pause control is owed — unlike FR-38-31, which genuinely owed one.
 
 - **FR-38-9 Scroll-scrubbed image sequence — NET-NEW block `sgs/image-sequence`.** Canvas-drawn
   frame sequence scrubbed by scroll. **Explicit sub-scope with its own tooling task:** the
@@ -1947,6 +2028,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Magnetic pull (FR-38-30) | **Static — no displacement.** The element renders undisplaced, exactly the no-JS/reduce state; a document-level listener drives the effect, and the editor canvas is an iframe the mega-menu's own `magnet.js` precedent already never runs pointer tracking inside. Notice: "Magnetic pull previews on the live site." ⚠ *Reasoned by mechanism, not observed in-editor.* |
 | Flowing gradient (FR-38-31, Tier W) | **The CSS fallback layer**, exactly what a no-WebGL visitor sees on the frontend — the render layer's editor-parity guard does not boot a canvas WebGL context in a ServerSideRender/REST render (same reasoning as the surface-treatment row above), so the canvas shows the honest degraded state rather than a blank. A panel Notice names this: *"The flowing gradient previews on the live site. Visitors without WebGL, and the editor canvas, see the static fallback."* |
 
+| Progress connector (FR-38-35) | **The connector at rest — drawn, but not filling.** The canvas shows the SVG in place with progress at its `initial-value: 0`; neither driver runs in-canvas (the native one needs a real scroll timeline the editor iframe does not provide, and `view.js` is frontend-only — the magnet/trail precedent). The `ToggleControl`'s own help text names the limit: *“Previews on the live site only.”* ⚠ *Reasoned by mechanism; at the time of writing the editor has been observed for CONTROL PRESENCE only — the resting-state appearance in-canvas has not yet had Bean's eye (R-31-13).* |
 | Cursor grid-dot field (FR-38-33) | **A static resting lattice** — the CSS radial-gradient preview shows the dots at rest in their grid, not a live effect. **NOT a live preview:** the render filter that produces the live tracking canvas never runs in the editor (the magnet/trail precedent), so the pointer-lean/ease-back behaviour is invisible in-canvas; only the resting grid is honest to show. |
 | Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* ✅ **EDITOR CONTROLS OBSERVED 2026-08-25**, not reasoned. Editor opened on page 2744: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** are reachable behind the ToolsPanel menu alongside Reset all; the Notice ships; a bundle notice reads "about 8 KB of scroll-effect code (budget: 50 KB)"; 0 schema-invalid blocks, 0 console errors. ⚠ Finding the panel took three attempts — it is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. An absence verdict is only as wide as its search. ⛔ **Scope correction, 2026-08-27 (Bean flagged, verified true): the label above is narrower than it reads.** "OBSERVED" covered the EDITOR SURFACE only — the picker, presets, and Notice existing and rendering without error. Nobody has watched the actual frontend trail animate, and Bean has never seen it — confirmed live: a screenshot of page 2744 mid-hover shows the sparks preset firing (a faint dark cluster of specks on a near-black debug panel), but it is only visible on a debug/test canary page, not any client build, and the visual quality/legibility has never had Bean's eye per R-31-13. This is still an OPEN verification item, not a closed one. |
 
@@ -1979,6 +2061,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Magnetic pull (FR-38-30) | **SUPPRESS — no listener attaches at all.** Under `reduce`, `fx-magnet.js` never attaches its document-level listener, so the element simply never displaces — this is also the exact no-JS state, so there is one code path, not two that could drift apart. Deliberately differs from cursor-field's SIMPLIFY (§3.3 FR-38-30 body has the full reasoning): a resting cursor-field is a legitimate finished PAINT, but a magnet's "resting" position is just the undisplaced layout position, which is what suppression already produces — there is no separate "simplified but still present" state to build. |
 | Flowing gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
 
+| Progress connector (FR-38-35) | **SIMPLIFY — the line renders FULLY FILLED, never empty.** Under `reduce` the block's stylesheet forces `--sgs-timeline-fill-progress: 1` plus `animation: none` (required — an animation outranks a plain declaration in the cascade), and `view.js` returns before attaching a listener. Stated ONCE in the stylesheet rather than in either driver, so it holds identically on both and there is no second code path to drift. ⛔ **Note the direction:** an EMPTY line would misrepresent a journey as not yet begun, and the block's own existing convention is “show the end state, skip the animation” (`view.js` reveals all entries under reduce). This is `degrade-to-more-content-never-less` applied to a progress indicator. Deliberately unlike FR-38-32/33's SUPPRESS: a connector has a legitimate finished state to rest AS, whereas a pointer trail does not. |
 | Cursor grid-dot field (FR-38-33) | **SUPPRESS — no instance, no canvas, no listener.** No JS is created under `reduce`; dots resting at cell centres is the same no-JS/reduce state, one code path (the FR-38-32 pattern this row's predecessor only predicted — now measured). |
 | Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js:136` (⚠ line corrected 2026-08-27, was cited as `:114`; the `if ( prefersReducedMotion() ) { return; }` gate inside `boot()`) returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
 

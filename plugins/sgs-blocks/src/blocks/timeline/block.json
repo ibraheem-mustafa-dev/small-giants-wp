@@ -110,9 +110,10 @@
 					"order": 3,
 					"clusters": [ "fill" ],
 					"attrMap": {
-						"css:background-color": "connectorColour"
+						"css:background-color": "connectorColour",
+						"css:stroke": "connectorFillColour"
 					},
-					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only."
+					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only. FR-38-35: connectorFillColour drives `--sgs-timeline-fill-colour`, painted as `stroke` on the progress-connector SVG path — a DIFFERENT css property on the same element, so no routing-determinism collision with connectorColour's background-color claim."
 				},
 				"date": {
 					"label": "Entry date",
@@ -184,6 +185,14 @@
 		"connectorColour": {
 			"type": "string",
 			"default": "border-subtle"
+		},
+		"connectorProgressFill": {
+			"type": "boolean",
+			"default": false
+		},
+		"connectorFillColour": {
+			"type": "string",
+			"default": "accent"
 		},
 		"dateColour": {
 			"type": "string",

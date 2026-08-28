@@ -1,3 +1,73 @@
+## D879 [ROUTINE] — `sgs/timeline` scroll-driven progress connector (Spec 38 FR-38-35, Stage A): one number, two drivers, and the Firefox/Safari support claim corrected in both directions
+
+**2026-08-28.** MIC asked for a journey page whose connector line fills as you scroll. Stage A ships
+the CONTRACT only — one `@property`-registered number, `--sgs-timeline-fill-progress` (0→1), driving
+an `aria-hidden` SVG path's `stroke-dashoffset`. The four themed variants (pulse / vine / tree /
+falling bricks) are Stage B and were deliberately not started.
+
+**Block-private, NOT an fx-panel effect — the FR-38-26 precedent.** Both `fx.js`'s save filter and
+`fx-attributes.php`'s injector only ever stamp the block ROOT, and the connector is a DESCENDANT.
+That is the same constraint that forced `loopCarousel` per-block with `creates_panel = 0`.
+Consequence: **zero `check-fx-list-drift.py` registrations are owed** — it joins none of the four
+hand-maintained fx lists, because it is not an fx effect. It also answers Spec 38 §3.3's standing
+note that "`sgs/timeline` is a genuine horizontal scroller with no fx declaration — an unclaimed
+candidate needing a new control surface".
+
+**⛔ SPEC 38 NAMED THE WRONG BROWSER, IN BOTH DIRECTIONS, IN TWO PLACES.** §3.1 and the §2 taxonomy
+table both said *"Safari stable still lacks CSS Scroll-Driven Animations (Chromium 115+ and Firefox
+have them)"*. Measured 2026-08-28: **Safari has had it since 26.0 (Sept 2025)** — eleven months
+while the spec denied it — and **Firefox has it in NO stable build** (lands in 157; stable is
+153.0.4). Global 85.43%. The blocker is FIREFOX, not Safari, exactly inverted. A prior research pass
+claiming "Firefox 132+, Safari 18+" was also wrong on both numbers. Both spec sites corrected.
+**The consequence is architectural, not cosmetic:** the JS driver is the PRIMARY rendering path for
+every Firefox visitor, not a fallback — anyone building from the old sentence would have built the
+fallback for the wrong browser.
+
+**THREE SILENT-FAILURE MODES, each rendering plausible output while being wrong.** All three would
+have passed every gate:
+1. **An unregistered custom property cannot be animated** — computed type "token stream" has no
+   midpoint, so CSS swaps it discretely at 50%. `@property` is what makes it a real number.
+2. **`stroke-dasharray` MUST be set.** It defaults to `none`, and `stroke-dashoffset` has NO effect
+   on a line with no dash pattern — the connector renders permanently 100% filled while the property
+   animates perfectly. **Caught by a QC pass on the build plan, after the design had already
+   survived one review that specified the dashoffset without it.** Same silent shape as (1), reached
+   by a different route.
+3. **The `::before` suppression must key on the CLASS, never `@supports`** — an `@supports`-keyed
+   hide leaves a DOUBLED line for every visitor on the JS driver, i.e. all of Firefox.
+
+**A fourth defect, found only because the two drivers were built separately and then read together:
+they gated on DIFFERENT features.** The CSS shipped behind `@supports (animation-timeline: view())`
+while the JS feature-detected `scroll()`. On any engine shipping one without the other, the CSS
+would not apply *and* the JS would have already returned — nothing would fill the line. Unified on
+`view()`. **Generalisable: when two implementations guard the same capability, the guards must test
+the identical predicate, not merely related ones.**
+
+The JS driver must feature-detect and exit at all, because a CSS animation outranks a JS inline
+write in the cascade — without the gate the rAF loop runs on ~85% of traffic producing nothing
+visible. Correct output masking wasted work is the hardest defect class to notice.
+
+**Reduced motion SIMPLIFIES to a FULLY FILLED line, never empty** — stated once in the block's
+stylesheet (with `animation: none !important`, since an animation outranks a plain declaration) so
+it holds identically on both drivers with no second code path. An empty line would misrepresent a
+journey as not yet begun; the block's own convention already is "show the end state, skip the
+animation".
+
+**SC 2.2.2 does not engage** — scroll-linked, user-driven, no autonomous component, so no Pause
+control is owed (unlike FR-38-31, which genuinely owed one).
+
+**⚠ NOT LIVE-VERIFIED, and the report says so.** `build-deploy.py`'s dirty-tree gate correctly
+refused the deploy: the shared tree carried 43 modified + 51 untracked files across four-plus
+concurrent tracks, including another track's in-progress WebGL work, and deploying would have
+shipped it. `--allow-dirty` is the D336 flag and was NOT used; `--payload` covers only declared
+prefixes and leaves the rest uncovered by design. Static verification is complete (69/69 gates,
+compiled-output confirmation of every contract surface, DB seeded); the live acceptance list is
+recorded as OWED in `reports/visual-diff/timeline-2026-08-28.md` rather than fabricated as a PASS.
+
+**Open for Stage B, not settled here:** the tier (staggered bricks and multi-keyframe vine/tree read
+as **Tier G** under Spec 38's own single-property-vs-multi-keyframe boundary — Tier V does not carry
+over), and the `entry 0% → exit 100%` range, which currently means the line completes only once the
+block has fully left the viewport — measure and look before changing it.
+
 ## D878 [ROUTINE] — Mama's clone track session close-out: product-card hover confirmed working, stack-conversion item closed, visual-diff sign-off owed for D830-D834's block-level touches now paid
 
 **2026-08-28.** Three small closes, following on from D875/D876.

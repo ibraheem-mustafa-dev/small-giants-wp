@@ -249,6 +249,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		headingLevel,
 		connectorStyle,
 		connectorColour,
+		connectorProgressFill,
+		connectorFillColour,
 		dateColour,
 		revealOnScroll,
 		revealStagger,
@@ -270,6 +272,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-timeline--${ orientation }`,
 		orientation === 'vertical' ? `sgs-timeline--align-${ alignment }` : '',
 		`sgs-timeline--connector-${ connectorStyle }`,
+		connectorProgressFill ? 'sgs-timeline--connector-progress' : '',
 	].filter( Boolean ).join( ' ' );
 
 	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
@@ -285,6 +288,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 			'--sgs-date-colour': dateColour
 				? `var(--wp--preset--color--${ dateColour })`
+				: undefined,
+			'--sgs-timeline-fill-colour': connectorFillColour
+				? `var(--wp--preset--color--${ connectorFillColour })`
 				: undefined,
 			...buildRootPreviewStyle( attributes ),
 		},
@@ -372,6 +378,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
+						key: 'connectorFill',
+						label: __( 'Connector fill colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorFillColour,
+								onChange: ( val ) =>
+									setAttributes( { connectorFillColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
 						key: 'date',
 						label: __( 'Date colour', 'sgs-blocks' ),
 						states: [
@@ -449,6 +469,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { connectorStyle: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __( 'Fill connector on scroll', 'sgs-blocks' ) }
+						help={ __(
+							'The connector line fills in progressively as the timeline scrolls into view. Previews on the live site only.',
+							'sgs-blocks'
+						) }
+						checked={ !! connectorProgressFill }
+						onChange={ ( val ) =>
+							setAttributes( { connectorProgressFill: !! val } )
+						}
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
