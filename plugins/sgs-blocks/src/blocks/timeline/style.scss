@@ -47,6 +47,17 @@
 	position: absolute;
 	overflow: visible;
 	pointer-events: none;
+	// ⛔ BOTH axes must be stated EXPLICITLY on every orientation rule below.
+	// An <svg> carrying a viewBox has an INTRINSIC ASPECT RATIO, so it sizes
+	// like a replaced element: given an explicit width and `height: auto`, the
+	// height resolves from the RATIO and `top: 0; bottom: 0` does NOT stretch
+	// it. Measured live: a 1:1 viewBox with `width: 2px` rendered the SVG
+	// 2px x 2px inside a 383px-tall timeline, so the connector painted
+	// NOTHING -- while getComputedStyle still reported display:block, the
+	// right stroke, dasharray 1px and a correctly-animating dashoffset.
+	// Every computed-style assertion passed against an element with no area.
+	// `preserveAspectRatio="none"` does NOT rescue this: it governs how the
+	// CONTENT scales inside the viewport, not how the element itself is sized.
 }
 
 .sgs-timeline__progress-path {
@@ -72,6 +83,7 @@
 	left: 50%;
 	transform: translateX(-50%);
 	width: var(--sgs-connector-width);
+	height: 100%;
 
 	.sgs-timeline__progress-path--vertical {
 		display: block;
@@ -90,6 +102,7 @@
 	top: calc(var(--sgs-node-size) / 2 + var(--wp--preset--spacing--30, 1.5rem));
 	left: 0;
 	right: 0;
+	width: 100%;
 	height: var(--sgs-connector-width);
 
 	.sgs-timeline__progress-path--horizontal {
@@ -617,7 +630,8 @@
 			left: calc(var(--sgs-node-size) / 2);
 			right: auto;
 			width: var(--sgs-connector-width);
-			height: auto;
+			// NOT `auto` — see the intrinsic-ratio note on the base rule.
+			height: 100%;
 		}
 
 		// ⛔ These MUST stay nested inside `.sgs-timeline__progress` so they

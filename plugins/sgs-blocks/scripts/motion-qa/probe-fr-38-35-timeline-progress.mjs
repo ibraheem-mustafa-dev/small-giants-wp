@@ -38,9 +38,35 @@ function readAll() {
 				( p ) => p && getComputedStyle( p ).display !== 'none'
 			);
 			const active = shown[ 0 ] || null;
+			// PAINTED GEOMETRY, not just computed style. Every computed-style
+			// assertion in this probe passed on 2026-08-28 against an SVG that
+			// was 2px x 2px inside a 383px timeline and therefore painted
+			// NOTHING: display was block, stroke was right, dasharray was 1px
+			// and dashoffset animated correctly. An <svg> with a viewBox has an
+			// intrinsic aspect ratio, so an explicit width alone sized it from
+			// the RATIO. A style check cannot see that; a box check can.
+			const svgEl = root.querySelector( '.sgs-timeline__progress' );
+			const svgBox = svgEl ? svgEl.getBoundingClientRect() : null;
+			const rootBox = root.getBoundingClientRect();
+			const isH = root.classList.contains( 'sgs-timeline--horizontal' );
+			// 60% is a deliberately loose floor: the real defect was 0.5%.
+			const spanOk = ! isProgress
+				? null
+				: isH
+					? !! svgBox && svgBox.width >= rootBox.width * 0.6
+					: !! svgBox && svgBox.height >= rootBox.height * 0.6;
+
 			out.push( {
 				uid,
 				isProgress,
+				svgBox: svgBox
+					? [ Math.round( svgBox.width ), Math.round( svgBox.height ) ]
+					: null,
+				rootBox: [
+					Math.round( rootBox.width ),
+					Math.round( rootBox.height ),
+				],
+				spanOk,
 				horizontal: root.classList.contains( 'sgs-timeline--horizontal' ),
 				beforeDisplay,
 				visiblePaths: shown.length,
@@ -187,6 +213,15 @@ for ( const r of results.nativeStatic ) {
 		: r.beforeDisplay !== 'none' && r.visiblePaths === 0;
 	console.log(
 		` ${ ok ? 'OK  ' : 'FAIL' } ${ r.uid } progress=${ r.isProgress } ::before=${ r.beforeDisplay } visiblePaths=${ r.visiblePaths } dasharray=${ r.dasharray } stroke=${ r.stroke }`
+	);
+}
+
+console.log( '
+=== GEOMETRY (svg must SPAN the block — the zero-area check) ===' );
+for ( const r of results.nativeStatic ) {
+	if ( ! r.isProgress ) continue;
+	console.log(
+		` ${ r.spanOk ? 'OK  ' : 'FAIL' } ${ r.uid } svg=${ r.svgBox } root=${ r.rootBox }`
 	);
 }
 
