@@ -57,9 +57,16 @@
  *              `<SgsColourPanel rows={...}>` / `colourRows`) with a `states`
  *              array of 1 (no hover) or 2 ('normal'+'hover') state objects,
  *              each `{key,label,value,onChange,[gradientValue,onGradientChange]}`
- *              -- optionally a `linked: true` sibling, which the target shape
- *              DROPS (proven: quote's colourStates in the AFTER commit has no
- *              `linked` key at all).
+ *              -- optionally a `linked: true` sibling, which is CARRIED THROUGH
+ *              (multi-state: `linked` on each state object; single-state: the
+ *              `colourLinked` prop). ⚠ Both hand migrations DROPPED it
+ *              (product-card 25 -> 24 occurrences, quote 9 -> 7) and this script
+ *              copied that drop until 2026-08-29. It is a defect, not the target
+ *              shape: `linked` decides whether the picker stores the palette
+ *              token SLUG or a baked hex, so losing it freezes a client's colour
+ *              against every future re-skin (D684). 5 of the 6 real Shape-A
+ *              blocks carry it, and the single-value form could not express it
+ *              at all until `colourLinked` was added to SgsBorderControl.
  *
  * ⛔ REFUSAL, NOT A THIRD CASE: `sgs/heading` mounts border colour+style
  * TWICE -- once via COLOURROWS_EMBEDDED, once more via a standalone
@@ -550,6 +557,14 @@ function buildSgsBorderControlJsx( src, style, baseIndent, ctx ) {
 	const labelSrc = colourMatch.labelProp ? sliceSrc( src, colourMatch.labelProp.value ) : `__( ${ tr( style, 'Colour' ) }, ${ tr( style, 'sgs-blocks' ) } )`;
 
 	const states = colourMatch.states;
+	// `linked: true` is NOT cosmetic -- GradientCapableColourControl reads it to
+	// decide whether a picked colour is stored as the palette token SLUG or as a
+	// baked hex (:126), and whether a stored slug resolves for display (:88/:201).
+	// Dropping it would silently freeze a client's colour against every future
+	// re-skin -- the D684 failure. Both output forms carry it: the multi-state
+	// form passes `linked` through on each state object, and the single-state
+	// form uses SgsBorderControl's `colourLinked` prop (added 2026-08-29 for
+	// exactly this -- before that the single-value shape could not express it).
 	let colourPropsLines;
 	if ( states.length === 1 && states[ 0 ].key && states[ 0 ].key.value.value === 'normal' ) {
 		const st = states[ 0 ];
@@ -566,6 +581,10 @@ function buildSgsBorderControlJsx( src, style, baseIndent, ctx ) {
 		if ( st.onGradientChange ) {
 			lines.push( `${ i1 }onColourGradientChange={${ sp }${ sliceSrc( src, st.onGradientChange.value ) }${ sp }}` );
 		}
+		// Carried VERBATIM, not synthesised -- see the `linked` note above.
+		if ( st.linked ) {
+			lines.push( `${ i1 }colourLinked={${ sp }${ sliceSrc( src, st.linked.value ) }${ sp }}` );
+		}
 		colourPropsLines = lines;
 	} else {
 		const itemLines = [];
@@ -576,6 +595,8 @@ function buildSgsBorderControlJsx( src, style, baseIndent, ctx ) {
 			rows.push( `${ i3 }label: ${ sliceSrc( src, st.label.value ) },` );
 			rows.push( `${ i3 }value: ${ sliceSrc( src, st.value.value ) },` );
 			rows.push( `${ i3 }onChange: ${ sliceSrc( src, st.onChange.value ) },` );
+			// Carried VERBATIM, not synthesised -- see the `anyLinked` note above.
+			if ( st.linked ) rows.push( `${ i3 }linked: ${ sliceSrc( src, st.linked.value ) },` );
 			if ( st.gradientValue ) rows.push( `${ i3 }gradientValue: ${ sliceSrc( src, st.gradientValue.value ) },` );
 			if ( st.onGradientChange ) rows.push( `${ i3 }onGradientChange: ${ sliceSrc( src, st.onGradientChange.value ) },` );
 			rows.push( `${ i2 }},` );
@@ -622,6 +643,51 @@ function removeWholeLines( src, node ) {
 
 // ── transform() ──────────────────────────────────────────────────────────────
 
+/**
+ * Add `SgsBorderControl` to the block's existing named import from
+ * `../../components`. Returns null when the binding already exists (so a
+ * re-run cannot double-add) or when there is no such import to extend --
+ * in which case the caller has nothing safe to splice into and the block
+ * would be REFUSED rather than silently left broken.
+ *
+ * Both real import shapes are handled: single-line (`import { A, B } from
+ * '../../components';`) and multi-line, distinguished by whether the
+ * declaration's own source text spans a newline. The insertion is anchored on
+ * the LAST specifier so a trailing comma style is preserved either way, and
+ * the first matching declaration wins (`sgs/button` has two).
+ */
+function componentImportEdit( ctx ) {
+	const { src, ast } = ctx;
+	let decl = null;
+	traverse( ast, {
+		ImportDeclaration( p ) {
+			if ( decl ) return;
+			const source = p.node.source.value;
+			if ( source !== '../../components' ) return;
+			if ( ! p.node.specifiers.some( ( s ) => s.type === 'ImportSpecifier' ) ) return;
+			decl = p.node;
+		},
+	} );
+	if ( ! decl ) return null;
+
+	const already = decl.specifiers.some(
+		( s ) => s.type === 'ImportSpecifier' && s.local && s.local.name === 'SgsBorderControl'
+	);
+	if ( already ) return null;
+
+	const specifiers = decl.specifiers.filter( ( s ) => s.type === 'ImportSpecifier' );
+	const last = specifiers[ specifiers.length - 1 ];
+	const declText = src.slice( decl.start, decl.end );
+	const multiline = declText.includes( '\n' );
+
+	if ( ! multiline ) {
+		return { kind: 'import', start: last.end, end: last.end, replacement: ', SgsBorderControl' };
+	}
+	// Multi-line: match the indentation of the last specifier's own line.
+	const indent = lineIndentOf( src, last.start );
+	return { kind: 'import', start: last.end, end: last.end, replacement: `,\n${ indent }SgsBorderControl` };
+}
+
 function computeEdits( ctx ) {
 	const { src, style } = ctx;
 	const baseIndent = lineIndentOf( src, ctx.widthMatch.replaceStart );
@@ -629,6 +695,13 @@ function computeEdits( ctx ) {
 
 	const edits = [ { kind: 'width', start: ctx.widthMatch.replaceStart, end: ctx.widthMatch.replaceEnd, replacement: newTag } ];
 	edits.push( { kind: 'colour-row', ...removeWholeLines( src, ctx.colourMatch.node ) } );
+
+	// Import the component we just mounted. Emitting the JSX without this is a
+	// ReferenceError the moment the block loads in the editor -- neither
+	// reference commit exposed it, because a human added the import by hand
+	// while migrating. `check-undefined-references` caught it on all six blocks.
+	const importEdit = componentImportEdit( ctx );
+	if ( importEdit ) edits.push( importEdit );
 
 	if ( ctx.variant === 'SELECTCONTROL' && ctx.selectNode ) {
 		edits.push( { kind: 'style-select', ...removeWholeLines( src, ctx.selectNode ) } );
@@ -825,10 +898,25 @@ function cmdCheck() {
 	// by a human (a brand-new PRIVATE_NEEDS_SWAP block landing with an
 	// unrecognised shape is fine; one landing with the OLD recognised shape
 	// and never being migrated is the thing worth flagging).
-	const FIXABLE_FLOOR = 6; // button, container, option-picker, process-steps, text, timeline
+	// 2026-08-29: was 6 (button, container, option-picker, process-steps, text,
+	// timeline) while those six were still UNMIGRATED. All six have now been
+	// applied, so they classify `already-done` and `fixable` is legitimately 0.
+	// A floor of 6 would therefore fail BECAUSE the migration succeeded -- a
+	// guard that goes red on success trains people to ignore it. The floor is
+	// now 0 and the guard's remaining job is the one stated above: catch an OLD
+	// recognised shape being reintroduced (which shows up as fixable > 0 on a
+	// population that should be fully migrated), and catch the classifier
+	// silently ceasing to recognise anything.
+	const FIXABLE_FLOOR = 0;
 	if ( fixableCount < FIXABLE_FLOOR ) {
 		console.log( 'CHECK FAILED -- fixable count dropped to %d (floor %d). Classifier regressed?', fixableCount, FIXABLE_FLOOR );
 		return 1;
+	}
+	if ( fixableCount > 0 ) {
+		console.log(
+			'CHECK: %d block(s) still carry the OLD pre-composite border shape -- either a new block landed with it, or a migrated block regressed.',
+			fixableCount
+		);
 	}
 	console.log( 'CHECK OK -- fixable=%d, refusals=%s', fixableCount, JSON.stringify( refusalCounts ) );
 	return 0;
@@ -870,6 +958,15 @@ function hasLogicalGuardOnJsx( ast, jsxName ) {
 }
 
 const FIXTURES_DIR = path.join( __dirname, 'border-control-codemod', 'fixtures' );
+
+/** Remove the `linked:` passthrough lines the codemod now emits, so the PROOF
+ * assertions can compare against reference commits that predate that fix. */
+function stripLinked( src ) {
+	return src
+		.split( '\n' )
+		.filter( ( line ) => ! /^\s*linked:/.test( line ) && ! /^\s*colourLinked=/.test( line ) )
+		.join( '\n' );
+}
 
 function loadFixture( name ) {
 	return fs.readFileSync( path.join( FIXTURES_DIR, name ), 'utf8' );
@@ -1076,7 +1173,14 @@ function runSelfTest() {
 			[ 'show', 'fc2796340:plugins/sgs-blocks/src/blocks/product-card/edit.js' ],
 			{ cwd: ROOT, encoding: 'utf8' }
 		);
-		return structurallyEquivalentSgsBorderControl( out, after );
+		// DELIBERATE DIVERGENCE: `linked` is stripped from OUR output before the
+		// comparison because the real AFTER commit DROPPED it (product-card
+		// 25 -> 24 occurrences, quote 9 -> 7). That drop is a defect in the two
+		// hand migrations, not the target shape -- it silently switches the
+		// picker from storing a palette SLUG to a baked hex. The proof still
+		// holds everything else byte-for-byte; this one key is the only thing
+		// the codemod now does BETTER than its references.
+		return structurallyEquivalentSgsBorderControl( stripLinked( out ), after );
 	} );
 
 	check( 'PROOF: quote BEFORE (22943618b~1) classifies fixable/selectcontrol', () => {
@@ -1096,7 +1200,77 @@ function runSelfTest() {
 		const out = transform( { ...r, style } );
 		parseJs( out );
 		const after = execFileSync( 'git', [ 'show', '22943618b:plugins/sgs-blocks/src/blocks/quote/edit.js' ], { cwd: ROOT, encoding: 'utf8' } );
-		return structurallyEquivalentSgsBorderControl( out, after );
+		// See the divergence note on the product-card proof above.
+		return structurallyEquivalentSgsBorderControl( stripLinked( out ), after );
+	} );
+
+	// `linked: true` survives the transform. It decides whether the picker stores
+	// a palette token SLUG or a baked hex (GradientCapableColourControl.js:126),
+	// so dropping it silently freezes a client's colour against future re-skins
+	// -- the D684 failure. 5 of the 6 real Shape-A blocks carry it. The
+	// positive-selectcontrol fixture already contained `linked: true` while
+	// NOTHING asserted on it, so the transform dropped it through 14 green
+	// assertions; these two close that hole.
+	check( 'linked: a linked colour row emits colourStates carrying linked, not the single-value form', () => {
+		const src = loadFixture( 'positive-selectcontrol.js' );
+		if ( ! /linked:\s*true/.test( src ) ) return false; // fixture must still carry the trigger
+		const r = classifySource( src, STD_ATTR_NAMES );
+		const style = detectFileStyle( src );
+		const out = transform( { ...r, style } );
+		parseJs( out );
+		// Either output form is acceptable; what must NOT happen is the value
+		// vanishing. Multi-state carries `linked:` inside colourStates;
+		// single-state carries the `colourLinked` prop.
+		return /linked:\s*true/.test( out ) || /colourLinked=\{\s*true\s*\}/.test( out );
+	} );
+
+	check( 'linked NEGATIVE CONTROL: an unlinked row keeps the single-value form and gains no linked key', () => {
+		const src = loadFixture( 'positive-selectcontrol.js' ).replace( /^.*linked:\s*true.*\n/m, '' );
+		if ( /linked:/.test( src ) ) return false; // the strip must actually have landed
+		const r = classifySource( src, STD_ATTR_NAMES );
+		const style = detectFileStyle( src );
+		const out = transform( { ...r, style } );
+		parseJs( out );
+		return ! /linked:/.test( out ) && ! /colourLinked/.test( out ) && /colourValue=/.test( out );
+	} );
+
+	// The mounted component must also be IMPORTED. Emitting the JSX alone is a
+	// ReferenceError as soon as the block loads in the editor. Neither PROOF
+	// assertion covers this (they compare only the SgsBorderControl attribute
+	// map), and neither reference commit exposed it because a human added the
+	// import by hand -- so the codemod shipped without one until 2026-08-29 and
+	// broke all six blocks. `check-undefined-references` in the prebuild chain
+	// is what caught it.
+	check( 'import: transform adds SgsBorderControl to the existing components import', () => {
+		const src = loadFixture( 'positive-selectcontrol.js' );
+		if ( /SgsBorderControl/.test( src ) ) return false; // fixture must not pre-import it
+		const r = classifySource( src, STD_ATTR_NAMES );
+		const style = detectFileStyle( src );
+		const out = transform( { ...r, style } );
+		const ast = parseJs( out );
+		let imported = false;
+		traverse( ast, {
+			ImportDeclaration( p ) {
+				if ( p.node.source.value !== '../../components' ) return;
+				if ( p.node.specifiers.some( ( sp ) => sp.local && sp.local.name === 'SgsBorderControl' ) ) imported = true;
+			},
+		} );
+		return imported && hasJsxElement( ast, 'SgsBorderControl' );
+	} );
+
+	check( 'import NEGATIVE CONTROL: a file with no components import is not silently mounted', () => {
+		// Strip the import; the transform must NOT invent one out of thin air,
+		// so the mount would be undefined -- proving the assertion above is
+		// actually detecting the edit rather than always passing.
+		const src = loadFixture( 'positive-selectcontrol.js' ).replace(
+			/^import \{[^}]*\} from '\.\.\/\.\.\/components';\n/m,
+			''
+		);
+		if ( /from '\.\.\/\.\.\/components'/.test( src ) ) return false; // strip must have landed
+		const r = classifySource( src, STD_ATTR_NAMES );
+		const style = detectFileStyle( src );
+		const out = transform( { ...r, style } );
+		return ! /import \{[^}]*SgsBorderControl/.test( out );
 	} );
 
 	if ( failures.length ) {
@@ -1104,7 +1278,7 @@ function runSelfTest() {
 		for ( const f of failures ) console.log( '  ! %s', f );
 		return 1;
 	}
-	console.log( 'SELF-TEST OK -- %d assertions passed.', 14 );
+	console.log( 'SELF-TEST OK -- %d assertions passed.', 18 );
 	return 0;
 }
 

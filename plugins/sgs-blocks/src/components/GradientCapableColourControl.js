@@ -168,6 +168,7 @@ export default function GradientCapableColourControl( {
 	onChange,
 	gradientValue,
 	onGradientChange,
+	linked,
 	clearable = true,
 	enableAlpha = true,
 } ) {
@@ -189,6 +190,12 @@ export default function GradientCapableColourControl( {
 						onChange,
 						gradientValue,
 						onGradientChange,
+						// `linked` decides whether a picked colour is stored as
+						// the palette token SLUG or a baked hex (see the onChange
+						// handler above). The single-value form could not express
+						// it until 2026-08-29, so a caller with a linked row had
+						// to use the `states` array purely to reach this key.
+						linked,
 					},
 			  ];
 

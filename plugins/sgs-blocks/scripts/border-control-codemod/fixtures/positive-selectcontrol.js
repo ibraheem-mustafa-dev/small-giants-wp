@@ -3,6 +3,7 @@
  * <SelectControl> for border style + local BORDER_STYLE_OPTIONS, unconditional
  * width control, single-state (no hover) colour row.
  */
+import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
 const BORDER_STYLE_OPTIONS = [
 	{ label: 'None', value: 'none' },
 	{ label: 'Solid', value: 'solid' },

@@ -62,6 +62,11 @@ import GradientCapableColourControl from './GradientCapableColourControl';
  * @param {string}   [props.colourGradientValue] Single-state form — the sibling gradient.
  * @param {Function} [props.onColourGradientChange] Paired with `colourGradientValue`.
  * @param {string}   [props.colourLabel]         Swatch button label (default "Colour").
+ * @param {boolean}  [props.colourLinked]        Single-state form — when true the picker
+ *                                               stores the palette token SLUG rather than a
+ *                                               baked hex, so a later re-skin still moves the
+ *                                               colour. Ignored when `colourStates` is used
+ *                                               (carry `linked` on each state object there).
  * @param {boolean}  [props.clearable=true]      Forwarded to `GradientCapableColourControl`.
  * @param {boolean}  [props.enableAlpha=true]    Forwarded to `GradientCapableColourControl`.
  * @return {JSX.Element} The composed one-row control.
@@ -78,6 +83,7 @@ export default function SgsBorderControl( {
 	onColourChange,
 	colourGradientValue,
 	onColourGradientChange,
+	colourLinked,
 	colourLabel = __( 'Colour', 'sgs-blocks' ),
 	clearable = true,
 	enableAlpha = true,
@@ -108,6 +114,7 @@ export default function SgsBorderControl( {
 					onChange={ onColourChange }
 					gradientValue={ colourGradientValue }
 					onGradientChange={ onColourGradientChange }
+					linked={ colourLinked }
 					clearable={ clearable }
 					enableAlpha={ enableAlpha }
 				/>
