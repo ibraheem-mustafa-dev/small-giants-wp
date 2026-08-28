@@ -149,6 +149,81 @@ removed, STOP against repairing, zero usage across 194 canary pages. But it is *
 - **Hero owes a visual-diff report.** **Spec 39 still does not exist** and paces the migration.
 - **Rule 36** is advisory with backlog 0 — flip it blocking to ratchet.
 
+## Task 5 — `detector-first-commit-gate.py` has a NAMED HOLE (design gate, needs Bean)
+
+⛔ **Do not trust this gate to catch a component rollout.** Carried unchanged from the previous
+prompt — still open, still deliberately unfixed. The gate is wired, not bypassed, and its own
+`--self-test` passes including its negative control. It simply cannot see the case.
+
+`find_repeat()` on C19's real rollout commit `1612c7b1e`: gate 1 (code files with added lines
+= 6 vs `MIN_FILES` 4) PASS → gate 2 (lines shared by >=4 files = 1 vs `MIN_SHARED_LINES` 3)
+STOP → gate 3 never reached. **`MIN_SHARED_LINES = 3` is what let it through**, and the single
+shared line was an import alias, not a component mount. ⭐ **A rollout could share ZERO lines
+and be equally invisible** — so the mechanism does not measure the thing the rule is about, and
+tuning the threshold treats the symptom.
+
+Why it is NOT fixed: it is a shared PreToolUse hook, nobody has priced the false-positive cost,
+and a gate firing on every multi-file commit gets bypassed reflexively and then protects
+nothing. **Needs its own design gate with Bean.** Candidate to price, not build blind: one
+shared line across >=4 files is enough WHEN that line is a component mount or an import of a
+shared component. Whoever fixes it: add a fixture from `1612c7b1e` to `--self-test` — the
+current self-test proves the gate can fail, not that it can see this.
+
+## Task 6 — Carried residuals from the NULL-css_element investigation
+
+Each was found by the 2026-08-27/28 branches and never closed. None is in the held commit.
+
+- **`google-reviews.starColour`** — the classifier traced a SECONDARY consumer, so its recorded
+  `css_property` is itself wrong. A new `star` element is in the held tree (with a `layer` key
+  added to clear an `[ORPHAN:STYLE-DEFECT]`); the **palette-coverage bug is flagged unfixed**.
+- **`decorative-image.positionX/positionY`** — render.php emits `left`/`top`; the manifest's own
+  note claims `top`/`bottom` were deliberately unmapped. Code and documented reasoning disagree.
+  **Needs a decision, not a mechanical fix.**
+- **`team-member.photoMobile/photoTablet`** — traced fully: there is NO CSS declaration behind
+  these rows. The DB's `max-width` expectation looks like a mislabelled seed, not a classifier gap.
+- **`nav-menu` navColour/navBgHover** — the `navmenu-residual` branch recommended consolidating
+  them into the wrapper `attrMap` and RETIRING the override-file entry (single source of truth).
+  The tree instead EXTENDED the override (adding `css_layer: OUTER`). **The tree diverges from
+  the validated proposal** — reconcile or record why.
+- **mega-panel `accent*` rename** (in the held commit, Bean-ruled) — underneath it sits a real
+  **cross-block blind spot**: mega-panel styles `sgs/icon-list` and `sgs/mega-group` BEM classes
+  reused as its own markup. Two new manifest elements, not a one-liner.
+- **Ken Burns possible live bug** — without parallax the background may render as a real `<img>`
+  rather than CSS `background-image`, leaving the animation nothing to animate. Flagged by the
+  `bgKenBurns` branch, never investigated.
+
+## Task 7 — The standing uniformity backlog (CARRIED — do not compress away)
+
+⛔ This section was dropped once from the LEDGER on 2026-08-27 and restored only after an
+independent QC caught it — the D101 failure mode. If it must shrink, move it to `parking.md`
+with Bean's say-so rather than deleting it.
+
+Scope register: `.claude/plans/2026-08-25-road-to-uniform-then-spec-39.md` — 24 open items
+(Spec 32: 5 · Spec 35: 19) plus the tier migration, ordered by **D552: standard leads,
+pipeline follows**.
+
+- **Step 0 CLOSED** (`807ef4611`, D777) — `migrate-tier-object.py`'s 3-family blind spot fixed.
+  **True remaining scope is 37 families, not 34.** Still open: check whether
+  `audit-inline-styling.js`'s 11 "tier-without-base" blocks share that cause before scoping Step 2.
+- **Step 2** — the mechanical sweep behind detectors: 37 families · Spec 32 B1/B3/B5 · Spec 35
+  C1-C11 (colour R2-R6, ToolsPanel 0/15, decorative-image 1/14, imageControls 2/15,
+  border-builder 1-of-48). `THE-MIGRATION-METHOD.md` applies to every one.
+- **Steps 3-4** — the two live passes (a11y + element-first panel order) and hex-literal triage.
+- **Step 5 — WRITE SPEC 39**, then the converter rework. ⛔ **Spec 39 STILL DOES NOT EXIST as a
+  file** and D554-C names it THE PACING ITEM: `orchestrator/check_flat_tier_regression.py`
+  blocks cloning for every migrated property until it lands, and **37 conformance goldens sit
+  `xfail(strict=True)`** naming it. **Finishing more of the migration INCREASES the blocked
+  surface until Spec 39 ships.** Check first whether its scope is already settled across
+  D276/D552/D554 — it may be transcription plus a design gate, not open design.
+
+✅ Already closed, do not redo: Step 1 (the six Bean decisions C14-C19 are ANSWERED — do not
+re-ask) and Step 6 (whole-file-diff detection shipped as `truncation-commit-gate.py`, `0fdfc7ea9`).
+
+⚠ **`check-box-flat` was wired into `prebuild` with its exit code NOT propagated** — findings sat
+behind a passing suite. It is now `check:box-family` with `check-box-family-guard` in
+`gates.json`. **Re-verify the exit code actually propagates** — the original defect was precisely
+a gate that ran and could not fail.
+
 ---
 
 ## Known instrument faults — do not rediscover
