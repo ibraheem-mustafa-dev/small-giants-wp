@@ -12,7 +12,7 @@ import {
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ResponsiveBorderRadiusControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ResponsiveBorderRadiusControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken, SgsBorderControl } from "../../components";
 import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, boxShorthand, resolveBoxTierPreview } from "../../utils";
 import {
   LayoutPanel,
@@ -491,41 +491,6 @@ export default function Edit({ attributes, setAttributes, name }) {
                 },
               ],
             },
-            {
-              /* Wrapper border colour — R2c pattern (mirrors sgs/product-card's
-                 "Card border colour" row): block-private borderColour/
-                 borderColourGradient/borderStyle, NOT the native
-                 __experimentalBorder.color/style path. Carries the normal+hover
-                 pair golden-controls.json rule 31 requires, rendered via
-                 sgs_border_states_css()'s own hover/hover_gradient keys. Border
-                 WIDTH + border-radius live in their own
-                 "Wrapper border" panel below (a box-size decision, not a colour
-                 one), matching product-card's split. */
-              key: 'wrapperBorder',
-              label: __( 'Wrapper border colour', 'sgs-blocks' ),
-              borderStyle,
-              onBorderStyleChange: ( val ) => setAttributes( { borderStyle: val } ),
-              states: [
-                {
-                  key: 'normal',
-                  label: __( 'Normal', 'sgs-blocks' ),
-                  value: borderColour,
-                  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-                  linked: true,
-                  gradientValue: borderColourGradient,
-                  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ),
-                },
-                {
-                  key: 'hover',
-                  label: __( 'Hover', 'sgs-blocks' ),
-                  value: borderColourHover,
-                  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-                  linked: true,
-                  gradientValue: borderColourHoverGradient,
-                  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ),
-                },
-              ],
-            },
           ] }
         />
         <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
@@ -715,12 +680,37 @@ export default function Edit({ attributes, setAttributes, name }) {
               subset (Bean's explicit call, 2026-08-27 rollout): the full
               XXS-XXXL spacing ladder is nonsensical for a border stroke width,
               unlike Padding/Margin above which offer the unrestricted scale. */}
-          <ResponsiveBoxControl
-            label={ __( "Border width", "sgs-blocks" ) }
-            presets={ [ '10', '20', '30' ] }
-            values={ { base: borderWidth ?? {} } }
-            showResponsive={ false }
-            onChange={ ( _tier, next ) => setAttributes( { borderWidth: next } ) }
+                    { /* Task 0 codemod (migrate-border-control.js) -- one composite row
+             (width/style/colour) mirroring native's BorderBoxControl layout,
+             matching sgs/product-card + sgs/quote. Border-radius is unchanged
+             (stays WP-native). */ }
+          <SgsBorderControl
+          	widthValues={ borderWidth ?? {} }
+          	onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+          	widthPresets={ [ '10', '20', '30' ] }
+          	styleValue={ borderStyle }
+          	onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+          	colourLabel={ __( 'Wrapper border colour', 'sgs-blocks' ) }
+          	colourStates={ [
+          		{
+          			key: "normal",
+          			label: __( 'Normal', 'sgs-blocks' ),
+          			value: borderColour,
+          			onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+          			linked: true,
+          			gradientValue: borderColourGradient,
+          			onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ),
+          		},
+          		{
+          			key: "hover",
+          			label: __( 'Hover', 'sgs-blocks' ),
+          			value: borderColourHover,
+          			onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+          			linked: true,
+          			gradientValue: borderColourHoverGradient,
+          			onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ),
+          		},
+          	] }
           />
           <ResponsiveBorderRadiusControl
             label={ __( "Border radius", "sgs-blocks" ) }
