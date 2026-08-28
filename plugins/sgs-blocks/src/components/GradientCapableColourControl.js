@@ -55,6 +55,7 @@ import { HStack, Item, ItemGroup, ZStack, ToggleGroupControl, ToggleGroupControl
 import { ColorPalette } from './colour-picker';
 import SgsGradientPicker from './gradient-picker';
 import { resolveColourToken } from './DesignTokenPicker';
+import BorderStyleControl from './BorderStyleControl';
 
 /**
  * A stored value is treated as a gradient when it parses as one of the three
@@ -169,6 +170,14 @@ export default function GradientCapableColourControl( {
 	gradientValue,
 	onGradientChange,
 	linked,
+	// Border style lives INSIDE this popover, below the colour content, when the
+	// caller supplies a handler — matching WP core's own BorderBoxControl, where
+	// the swatch button opens colour AND style together, and matching
+	// DesignTokenPicker's existing borderStyle/onBorderStyleChange pair. It sits
+	// outside the state tabs deliberately: a border has ONE style across normal
+	// and hover, unlike the colour, which is per-state.
+	borderStyle,
+	onBorderStyleChange,
 	clearable = true,
 	enableAlpha = true,
 } ) {
@@ -262,8 +271,9 @@ export default function GradientCapableColourControl( {
 							</HStack>
 						</Button>
 					) }
-					renderContent={ () =>
-						hasStates ? (
+					renderContent={ () => (
+						<>
+						{ hasStates ? (
 							<TabPanel
 								className="sgs-colour-control__tabs"
 								tabs={ resolvedStates.map( ( s ) => ( {
@@ -304,8 +314,17 @@ export default function GradientCapableColourControl( {
 									ariaLabel={ label }
 								/>
 							</div>
-						)
-					}
+						) }
+						{ typeof onBorderStyleChange === 'function' && (
+							<div className="sgs-colour-control__border-style">
+								<BorderStyleControl
+									value={ borderStyle }
+									onChange={ onBorderStyleChange }
+								/>
+							</div>
+						) }
+						</>
+					) }
 				/>
 			</Item>
 			{ hasStates && (
