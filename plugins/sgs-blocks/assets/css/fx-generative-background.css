@@ -78,6 +78,18 @@
 }
 
 /*
+ * Same reasoning as the background-image rule above, one layer up: the
+ * static OKLCH canvas is the pre-WebGL base state, painted opaquely across
+ * the whole element. Once the WebGL layer is genuinely drawing (its own,
+ * higher, z-index-1 layer), the static canvas underneath it has nothing left
+ * to contribute and — being opaque — was hiding the ground colour exactly
+ * like the background-image did. Fades it out the same way it faded in.
+ */
+[data-sgs-genbg-webgl-active="1"] .sgs-generative-background__canvas {
+	opacity: 0;
+}
+
+/*
  * The WebGL folded-ribbon layer — sits ABOVE the static OKLCH canvas
  * (z-index 1 > 0), revealed only once its OWN first draw succeeds
  * (`data-sgs-genbg-webgl-active="1"`). Until then the static canvas beneath
