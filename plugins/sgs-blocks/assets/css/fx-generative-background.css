@@ -41,6 +41,20 @@
 }
 
 /*
+ * Once the WebGL layer is genuinely painting, its own transparent-everywhere-
+ * except-the-shape canvas is meant to let the GROUND colour (background-color
+ * above, the client's light/dark preset) show through around the folded
+ * shape. The flat CSS fallback gradient (background-image above) is opaque
+ * and covers the whole element, so left in place it permanently hides the
+ * ground colour no matter what the client picks — the fallback's job ends
+ * once the real layer is drawing. background-color stays untouched, so the
+ * ground preset is finally visible in the space around the shape.
+ */
+[data-sgs-genbg-webgl-active="1"] {
+	background-image: none;
+}
+
+/*
  * The canvas the JS module paints once, over the top of the CSS fallback
  * above. Positioned here (Spec 32 — no inline styling) rather than by the JS
  * setting an inline style. Hidden until the JS module's first draw actually
