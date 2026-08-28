@@ -18,6 +18,7 @@ import {
   SgsColourPanel,
   fillRow,
   textRow,
+  SgsBorderControl,
 } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
@@ -61,18 +62,6 @@ const GAP_OPTIONS = [
   { label: __("Normal", "sgs-blocks"), value: "20" },
   { label: __("Relaxed", "sgs-blocks"), value: "30" },
   { label: __("Spacious", "sgs-blocks"), value: "40" },
-];
-
-const BORDER_STYLE_OPTIONS = [
-  { label: __("None", "sgs-blocks"), value: "none" },
-  { label: __("Solid", "sgs-blocks"), value: "solid" },
-  { label: __("Dashed", "sgs-blocks"), value: "dashed" },
-  { label: __("Dotted", "sgs-blocks"), value: "dotted" },
-  { label: __("Double", "sgs-blocks"), value: "double" },
-  { label: __("Groove", "sgs-blocks"), value: "groove" },
-  { label: __("Ridge", "sgs-blocks"), value: "ridge" },
-  { label: __("Inset", "sgs-blocks"), value: "inset" },
-  { label: __("Outset", "sgs-blocks"), value: "outset" },
 ];
 
 // Legacy per-item slug → Lucide name (for items authored before the visual picker).
@@ -332,7 +321,6 @@ export default function Edit({ attributes, setAttributes }) {
   }
 
   const showIconColourRow = ["icon", "emoji"].includes(resolvedMarkerType);
-  const showBorderColourRow = borderStyle !== "none";
 
   return (
     <>
@@ -385,22 +373,6 @@ export default function Edit({ attributes, setAttributes }) {
             attributes,
             setAttributes,
           }),
-          showBorderColourRow && {
-            key: "border",
-            label: __("Border colour", "sgs-blocks"),
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: borderColour,
-                onChange: (val) => setAttributes({ borderColour: val ?? "" }),
-                linked: true,
-                gradientValue: borderColourGradient,
-                onGradientChange: (val) =>
-                  setAttributes({ borderColourGradient: val ?? "" }),
-              },
-            ],
-          },
         ]}
       />
       <InspectorControls>
@@ -636,23 +608,31 @@ export default function Edit({ attributes, setAttributes }) {
            base-only contract); border-radius routes to WP-native
            style.border.radius + SGS tier objects (skip-serialised → scoped). */}
         <PanelBody title={__("Border", "sgs-blocks")} initialOpen={false}>
-          <SelectControl
-            label={__("Border style", "sgs-blocks")}
-            value={borderStyle}
-            options={BORDER_STYLE_OPTIONS}
-            onChange={(val) => setAttributes({ borderStyle: val })}
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
+          {/* One composite Width/Style/Colour row, mirroring native's
+              BorderBoxControl layout (Task 0). Style, width and colour used to
+              be split three ways here: a standalone style dropdown, a width
+              control hidden unless a style was picked, and a colour row in the
+              panel above that vanished on style "none". Bean's call
+              (2026-08-29): mount the composite unconditionally. Picking "none"
+              still paints nothing — CSS suppresses a border with no style — so
+              nothing is lost by keeping every control reachable, and a client
+              can no longer switch a border off and be unable to find it again.
+              Border radius stays WP-native, below. */}
+          <SgsBorderControl
+            widthValues={borderWidth ?? {}}
+            onWidthChange={(next) => setAttributes({ borderWidth: next })}
+            widthPresets={ [ '10', '20', '30' ] }
+            styleValue={borderStyle}
+            onStyleChange={(val) => setAttributes({ borderStyle: val })}
+            colourLabel={__("Border colour", "sgs-blocks")}
+            colourValue={borderColour}
+            onColourChange={(val) => setAttributes({ borderColour: val ?? "" })}
+            colourGradientValue={borderColourGradient}
+            onColourGradientChange={(val) =>
+              setAttributes({ borderColourGradient: val ?? "" })
+            }
+            colourLinked={true}
           />
-          {borderStyle !== "none" && (
-            <ResponsiveBoxControl
-              label={__("Border width", "sgs-blocks")}
-              presets={ [ '10', '20', '30' ] }
-              values={{ base: borderWidth ?? {} }}
-              showResponsive={false}
-              onChange={(tier, next) => setAttributes({ borderWidth: next })}
-            />
-          )}
           <ResponsiveBorderRadiusControl
             label={__("Border radius", "sgs-blocks")}
             values={{

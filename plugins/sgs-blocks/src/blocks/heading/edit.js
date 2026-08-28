@@ -15,7 +15,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
-	DesignTokenPicker,
+	SgsBorderControl,
 	SgsLengthControl,
 } from '../../components';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
@@ -336,29 +336,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					{
-						key: 'border',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						// No hover pair declared for borderColour (block.json has no
-						// borderColourHover attr) — single-state row.
-						// Border-style icons (Bean-directed, 2026-08-19) — same popover
-						// as the compact Border panel's own swatch below, wired to the
-						// same borderStyle attribute so either entry point works.
-						borderStyle,
-						onBorderStyleChange: ( val ) => setAttributes( { borderStyle: val } ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
-							},
-						],
-					},
 				] }
 			/>
 			<InspectorControls>
@@ -464,34 +441,27 @@ export default function Edit( { attributes, setAttributes } ) {
 				   serialises scoped, not inline, matching the spacing pattern already
 				   proven on sgs/container + sgs/button). */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* Border colour + style — one swatch, native's icon-picker inside
-					     the same popover as SGS's flat/gradient + state UI (Bean-
-					     directed, 2026-08-19). Wired to the SAME borderColour/borderStyle
-					     attributes as the SgsColourPanel "Border colour" row above —
-					     two mounts, one source of truth, pick whichever grouping suits. */ }
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						borderStyle={ borderStyle }
-						onBorderStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
-							},
-						] }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						presets={ [ '10', '20', '30' ] }
-						values={ { base: borderWidth ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+					{ /* One composite Width/Style/Colour row, mirroring native's
+					     BorderBoxControl layout (Task 0). This block used to mount border
+					     colour+style TWICE — here, and again as a "Border colour" row in
+					     the SgsColourPanel above — both wired to the same attributes. Bean's
+					     call (2026-08-29): keep this mount, drop the colour-panel row, so
+					     width sits with its own style and colour instead of being split from
+					     them. Border radius stays WP-native, below. */ }
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
+						colourLinked={ true }
 					/>
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
