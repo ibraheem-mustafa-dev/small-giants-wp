@@ -1,17 +1,28 @@
 /**
  * SGS motion — generative background boot module (Spec 38, D874 technique
- * spec). Tier W, THIRD entry — v1 STATIC BUILD ONLY.
+ * spec). Tier W, THIRD entry — v1.1 GEOMETRY BUILD.
  *
  * The `@sgs/fx-generative-background` script module the PHP motion registry
  * enqueues when a page renders a block carrying
  * `data-sgs-fx="generative-background"`.
  *
- * ⛔ NO WEBGL, NO SHADER, NO PER-FRAME ANIMATION. Per the technique spec's
- * Assembly & priority order §1 (build order step 1): a single OKLCH-
- * interpolated gradient IMAGE, built once on a `<canvas>` 2D context and
- * painted as a static background. This is colour maths, not rendering — it
- * needs no GPU context at all. §1's folded-plane geometry and its Animation
- * subsection are v1.1, a separate, later, design-gated build.
+ * ── LAYER STACK (fail-open, weakest artefact first) ─────────────────────────
+ *
+ *   1. CSS static gradient (`fx-generative-background.css`) — the true no-JS
+ *      state, and what every visitor sees before JS runs at all.
+ *   2. The OKLCH-built `<canvas>` 2D image (below) — painted FIRST, always,
+ *      unconditionally, the instant the four colours parse. This is colour
+ *      maths, not rendering — no GPU context needed — so it never fails for
+ *      a reason the WebGL layer would also fail for.
+ *   3. The WebGL2 folded-ribbon shape (`webgl/generative-background.js`) —
+ *      attempted ON TOP, using layer 2's own canvas as its colour texture
+ *      (§2 — "reuse Step 1's OKLCH build code, don't reimplement"). Revealed
+ *      only after its OWN first successful draw; on any failure, layer 2
+ *      stays exactly as it was already painted.
+ *
+ * This is the ONLY WebGL context this effect ever opens; it owns the
+ * lifecycle (IntersectionObserver / visibilitychange / context-loss / SC
+ * 2.2.2 pause / bfcache), mirroring `fx-wave-gradient.js`'s contract.
  *
  * ── WHY OKLCH, NOT A PLAIN CSS/CANVAS GRADIENT ─────────────────────────────
  *
@@ -33,14 +44,18 @@
  *
  * ── FAIL-OPEN ─────────────────────────────────────────────────────────────
  *
- * The canvas is added and revealed ONLY after a successful first draw. If
- * canvas 2D is unavailable or the colours cannot be parsed, the stylesheet's
- * static CSS gradient stays visible — built from the SAME custom properties
- * (a weaker, sRGB-only artefact — see `fx-generative-background.css`'s own
- * docblock), so it carries the client's own colours regardless.
+ * Both canvases are added and revealed only after their OWN successful first
+ * draw. If canvas 2D is unavailable or the colours cannot be parsed, the
+ * stylesheet's static CSS gradient stays visible. If WebGL2 is unsupported,
+ * a shader fails to compile/link, the capability gate declines, or the
+ * context is lost and never recovers, the OKLCH 2D-canvas image stays
+ * visible — never a blank rectangle.
  *
  * @package
  */
+
+import { createGenerativeBackground } from './webgl/generative-background';
+import { prefersReducedMotion } from './motion-utils';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx="generative-background"]';
@@ -298,9 +313,9 @@ const IMAGE_HEIGHT = 320;
  *
  * Deliberately read from COMPUTED STYLE rather than data attributes: the
  * client may pick a palette SLUG, which resolves to a
- * `var(--wp--preset--...)` the stylesheet knows and JS does not. Reading the
- * computed value means re-theming a site re-colours the gradient with no JS
- * change.
+ * `var(--wp--preset--color--...)` the stylesheet knows and JS does not. Reading
+ * the computed value means re-theming a site re-colours the gradient with no
+ * JS change.
  *
  * @param {HTMLElement} el The marked element.
  * @return {number[][]|null} Four sRGB 0-1 colours, or null if unusable.
@@ -325,7 +340,272 @@ function readColours( el ) {
 }
 
 /**
- * Attach one instance.
+ * Attach the layer-2 OKLCH 2D-canvas image — always attempted first,
+ * unconditionally, and used as the WebGL layer's own colour texture.
+ *
+ * @param {HTMLElement}  el      The marked element.
+ * @param {number[][]}   colours Four sRGB 0-1 colours.
+ * @return {HTMLCanvasElement|null} The painted canvas, or null on failure.
+ */
+function attachStaticCanvas( el, colours ) {
+	const canvas = document.createElement( 'canvas' );
+	canvas.className = 'sgs-generative-background__canvas';
+	canvas.width = IMAGE_WIDTH;
+	canvas.height = IMAGE_HEIGHT;
+	canvas.setAttribute( 'aria-hidden', 'true' );
+
+	const ctx = canvas.getContext( '2d' );
+	if ( ! ctx ) {
+		return null;
+	}
+
+	const imageData = buildGradientImageData( colours, IMAGE_WIDTH, IMAGE_HEIGHT );
+	ctx.putImageData( imageData, 0, 0 );
+
+	el.appendChild( canvas );
+	el.setAttribute( 'data-sgs-genbg-active', '1' );
+
+	return canvas;
+}
+
+/**
+ * Attach the layer-3 WebGL folded-ribbon shape, on top of an already-painted
+ * static canvas. Fully async (geometry build is a Worker round-trip) — the
+ * static canvas is the visible state for the whole time this is settling.
+ *
+ * Mirrors `fx-wave-gradient.js`'s lifecycle contract: IntersectionObserver +
+ * visibilitychange pausing, context-loss recovery (falls back to the static
+ * canvas, never a dead rectangle), reduced-motion draws one frame and stops,
+ * a real SC 2.2.2 pause control, full `destroy()` teardown.
+ *
+ * @param {HTMLElement}       el           The marked element.
+ * @param {HTMLCanvasElement} staticCanvas The already-painted layer-2 canvas.
+ * @return {Object|null} A teardown record, or null if WebGL never started.
+ */
+function attachWebglLayer( el, staticCanvas ) {
+	const canvas = document.createElement( 'canvas' );
+	canvas.className = 'sgs-generative-background__webgl-canvas';
+	canvas.setAttribute( 'aria-hidden', 'true' );
+
+	const speedRaw = parseFloat( el.getAttribute( 'data-sgs-fx-gen-speed' ) );
+	const speed = isNaN( speedRaw ) ? 1 : Math.max( 0.1, Math.min( 3, speedRaw / 50 ) );
+
+	/*
+	 * The eight geometry-mechanism attributes (v1.2 rewrite) — read as plain
+	 * numbers off the marked element, `undefined` when absent/unparseable so
+	 * `createGenerativeBackground()`'s own calibrated defaults stand rather
+	 * than being overridden by `NaN`.
+	 */
+	const readNumberAttr = ( name ) => {
+		const raw = parseFloat( el.getAttribute( name ) );
+		return isNaN( raw ) ? undefined : raw;
+	};
+	const dispAmount = readNumberAttr( 'data-sgs-fx-gen-disp-amount' );
+	const dispFreqX = readNumberAttr( 'data-sgs-fx-gen-disp-freq-x' );
+	const dispFreqZ = readNumberAttr( 'data-sgs-fx-gen-disp-freq-z' );
+	const foldFreq1 = readNumberAttr( 'data-sgs-fx-gen-fold-freq-1' );
+	const foldFreq2 = readNumberAttr( 'data-sgs-fx-gen-fold-freq-2' );
+	const foldFreq3 = readNumberAttr( 'data-sgs-fx-gen-fold-freq-3' );
+	const foldPower1 = readNumberAttr( 'data-sgs-fx-gen-fold-power-1' );
+	const foldPower2 = readNumberAttr( 'data-sgs-fx-gen-fold-power-2' );
+	const foldPower3 = readNumberAttr( 'data-sgs-fx-gen-fold-power-3' );
+
+	/*
+	 * Striation / glow-gate + depth-fade params (§3, 2026-08-28 build).
+	 */
+	const glowAmount = readNumberAttr( 'data-sgs-fx-gen-glow-amount' );
+	const glowPower = readNumberAttr( 'data-sgs-fx-gen-glow-power' );
+	const glowRamp = readNumberAttr( 'data-sgs-fx-gen-glow-ramp' );
+	const striationStrength = readNumberAttr( 'data-sgs-fx-gen-striation-strength' );
+	const striationFreq = readNumberAttr( 'data-sgs-fx-gen-striation-freq' );
+	const colourAttenuation = readNumberAttr( 'data-sgs-fx-gen-colour-attenuation' );
+	const parabolaPower = readNumberAttr( 'data-sgs-fx-gen-parabola-power' );
+
+	// Depth fade mixes toward this — the SAME `--sgs-genbg-ground` custom
+	// property the CSS fallback and `sgs_apply_fx_generative_background()`
+	// already resolve (module docblock), read via the same colour-probe
+	// parser `readColours()` above uses so any valid CSS colour syntax works.
+	const groundColour = parseCssColour(
+		getComputedStyle( el ).getPropertyValue( '--sgs-genbg-ground' )
+	);
+
+	let handle = null;
+	let cancelled = false;
+	let frame = null;
+	let visible = false;
+	let paused = el.getAttribute( 'data-sgs-genbg-paused' ) === '1';
+	let started = false;
+	let elapsed = 0;
+	let last = 0;
+
+	const sizeToElement = () => {
+		if ( ! handle ) {
+			return;
+		}
+		const rect = el.getBoundingClientRect();
+		handle.resize( rect.width, rect.height, window.devicePixelRatio );
+	};
+
+	const tick = ( now ) => {
+		if ( ! last ) {
+			last = now;
+		}
+		elapsed += ( now - last ) * 0.001;
+		last = now;
+		if ( ! handle.draw( elapsed ) ) {
+			stop();
+			return;
+		}
+		if ( ! started ) {
+			started = true;
+			el.setAttribute( 'data-sgs-genbg-webgl-active', '1' );
+		}
+		frame = requestAnimationFrame( tick );
+	};
+
+	function start() {
+		if ( ! handle || frame !== null || paused || ! visible || document.hidden ) {
+			return;
+		}
+		if ( prefersReducedMotion() ) {
+			// Draw ONE frame and stop — the folded shape is a legitimate still
+			// image (§10 SIMPLIFY, never suppress).
+			sizeToElement();
+			if ( handle.draw( 0 ) ) {
+				el.setAttribute( 'data-sgs-genbg-webgl-active', '1' );
+			}
+			return;
+		}
+		last = 0;
+		frame = requestAnimationFrame( tick );
+	}
+
+	function stop() {
+		if ( frame !== null ) {
+			cancelAnimationFrame( frame );
+			frame = null;
+		}
+	}
+
+	let observer = null;
+	let onVisibility = null;
+	let resizeObserver = null;
+	let toggle = null;
+	let onToggle = null;
+
+	const teardownRecord = {
+		destroy: () => {
+			cancelled = true;
+			stop();
+			if ( observer ) {
+				observer.disconnect();
+			}
+			if ( onVisibility ) {
+				document.removeEventListener( 'visibilitychange', onVisibility );
+			}
+			if ( resizeObserver ) {
+				resizeObserver.disconnect();
+			}
+			if ( toggle && onToggle ) {
+				toggle.removeEventListener( 'click', onToggle );
+			}
+			if ( handle ) {
+				handle.destroy();
+			}
+			canvas.remove();
+			el.removeAttribute( 'data-sgs-genbg-webgl-active' );
+		},
+	};
+
+	createGenerativeBackground( canvas, {
+		textureSource: staticCanvas,
+		speed,
+		dispAmount,
+		dispFreqX,
+		dispFreqZ,
+		foldFreq1,
+		foldFreq2,
+		foldFreq3,
+		foldPower1,
+		foldPower2,
+		foldPower3,
+		groundColour,
+		glowAmount,
+		glowPower,
+		glowRamp,
+		striationStrength,
+		striationFreq,
+		colourAttenuation,
+		parabolaPower,
+		// Context loss is the one stop() caller that must also drop the active
+		// flag — every other stop() is temporary and must not flash the static
+		// canvas back into view (it never left; the WebGL layer just sits on
+		// top of it, so "falling back" here is simply not revealing/hiding
+		// this layer, not swapping anything).
+		onLost: () => {
+			stop();
+			el.removeAttribute( 'data-sgs-genbg-webgl-active' );
+		},
+	} ).then( ( created ) => {
+		if ( cancelled || ! created ) {
+			return;
+		}
+		handle = created;
+
+		el.appendChild( canvas );
+		sizeToElement();
+
+		observer = new IntersectionObserver(
+			( entries ) => {
+				visible = entries.some( ( e ) => e.isIntersecting );
+				if ( visible ) {
+					sizeToElement();
+					start();
+				} else {
+					stop();
+				}
+			},
+			{ rootMargin: '100px' }
+		);
+		observer.observe( el );
+
+		onVisibility = () => ( document.hidden ? stop() : start() );
+		document.addEventListener( 'visibilitychange', onVisibility );
+
+		resizeObserver = new ResizeObserver( () => {
+			sizeToElement();
+			if ( frame === null ) {
+				handle.draw( elapsed );
+			}
+		} );
+		resizeObserver.observe( el );
+
+		// The SC 2.2.2 pause control the render layer emitted.
+		toggle = el.querySelector( '[data-sgs-genbg-toggle]' );
+		onToggle = () => {
+			paused = ! paused;
+			el.setAttribute( 'data-sgs-genbg-paused', paused ? '1' : '0' );
+			toggle.setAttribute( 'aria-pressed', paused ? 'true' : 'false' );
+			if ( paused ) {
+				stop();
+			} else {
+				start();
+			}
+		};
+		if ( toggle ) {
+			toggle.hidden = false;
+			toggle.addEventListener( 'click', onToggle );
+		}
+
+		start();
+	} );
+
+	return teardownRecord;
+}
+
+/**
+ * Attach one instance: the static OKLCH canvas first (unconditional), then
+ * attempt the WebGL folded-ribbon layer on top of it.
  *
  * @param {HTMLElement} el The marked element.
  * @return {Object|null} A teardown record, or null if nothing was drawn.
@@ -336,42 +616,26 @@ function attach( el ) {
 		return null;
 	}
 
-	const canvas = document.createElement( 'canvas' );
-	canvas.className = 'sgs-generative-background__canvas';
-	canvas.width = IMAGE_WIDTH;
-	canvas.height = IMAGE_HEIGHT;
-	// aria-hidden: it is decoration with no informational content.
-	canvas.setAttribute( 'aria-hidden', 'true' );
-
-	const ctx = canvas.getContext( '2d' );
-	if ( ! ctx ) {
+	const staticCanvas = attachStaticCanvas( el, colours );
+	if ( ! staticCanvas ) {
 		return null;
 	}
 
-	const imageData = buildGradientImageData(
-		colours,
-		IMAGE_WIDTH,
-		IMAGE_HEIGHT
-	);
-	ctx.putImageData( imageData, 0, 0 );
-
-	el.appendChild( canvas );
-	el.setAttribute( 'data-sgs-genbg-active', '1' );
+	const webglRecord = attachWebglLayer( el, staticCanvas );
 
 	return {
 		destroy: () => {
-			canvas.remove();
+			if ( webglRecord ) {
+				webglRecord.destroy();
+			}
+			staticCanvas.remove();
 			el.removeAttribute( 'data-sgs-genbg-active' );
 		},
 	};
 }
 
 /**
- * Attach every marked element on the page. Static build, so reduced motion
- * changes nothing here — there is no motion to simplify or suppress; this
- * is the finished state either way (Spec 38 §10 SIMPLIFY contract, honoured
- * by construction rather than by a branch). v1.1's own boot module will need
- * `prefersReducedMotion` once real per-frame motion exists; v1 has none.
+ * Attach every marked element on the page.
  *
  * @return {void}
  */

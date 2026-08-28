@@ -13,7 +13,7 @@
   "modules": {
     "shared/effects/fx-carousel-loop.js": 1012,
     "shared/effects/fx-cursor-field.js": 1673,
-    "shared/effects/fx-generative-background.js": 1730,
+    "shared/effects/fx-generative-background.js": 8745,
     "shared/effects/fx-grid-dots.js": 2562,
     "shared/effects/fx-magnet.js": 1054,
     "shared/effects/fx-particles.js": 2244,

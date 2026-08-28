@@ -181,6 +181,40 @@ const FX_ATTR_MAP = array(
 	'fxGenColour3'         => 'data-sgs-fx-gen-colour-3',
 	'fxGenColour4'         => 'data-sgs-fx-gen-colour-4',
 	'fxGenGround'          => 'data-sgs-fx-gen-ground',
+
+	/*
+	 * Generative background — geometry mechanism (v1.2 rewrite, 2026-08-28).
+	 * Ten real params: overall speed + the nine tunables the vertex shader
+	 * reads directly (3 rotation frequencies, 3 rotation powers, 2
+	 * displacement frequencies, 1 displacement amount). Same reasoning as the
+	 * colour/ground rows above — most qualifying hosts are DYNAMIC blocks, so
+	 * these MUST be injected here for `sgs_fx_data_attr_string()`'s generic
+	 * loop to pick them up, not just baked in by `fx.js`'s save filter.
+	 */
+	'fxGenSpeed'           => 'data-sgs-fx-gen-speed',
+	'fxGenFoldFreq1'       => 'data-sgs-fx-gen-fold-freq-1',
+	'fxGenFoldFreq2'       => 'data-sgs-fx-gen-fold-freq-2',
+	'fxGenFoldFreq3'       => 'data-sgs-fx-gen-fold-freq-3',
+	'fxGenFoldPower1'      => 'data-sgs-fx-gen-fold-power-1',
+	'fxGenFoldPower2'      => 'data-sgs-fx-gen-fold-power-2',
+	'fxGenFoldPower3'      => 'data-sgs-fx-gen-fold-power-3',
+	'fxGenDisplaceFreqX'   => 'data-sgs-fx-gen-disp-freq-x',
+	'fxGenDisplaceFreqZ'   => 'data-sgs-fx-gen-disp-freq-z',
+	'fxGenDisplaceAmount'  => 'data-sgs-fx-gen-disp-amount',
+
+	/*
+	 * Generative background — striation / glow-gate + depth-fade params
+	 * (§3, 2026-08-28 build). Same reasoning as the geometry row above —
+	 * most qualifying hosts are DYNAMIC blocks, so these MUST be injected
+	 * here for `sgs_fx_data_attr_string()`'s generic loop to pick them up.
+	 */
+	'fxGenGlowAmount'      => 'data-sgs-fx-gen-glow-amount',
+	'fxGenGlowPower'       => 'data-sgs-fx-gen-glow-power',
+	'fxGenGlowRamp'        => 'data-sgs-fx-gen-glow-ramp',
+	'fxGenStriationStrength' => 'data-sgs-fx-gen-striation-strength',
+	'fxGenStriationFreq'   => 'data-sgs-fx-gen-striation-freq',
+	'fxGenColourAttenuation' => 'data-sgs-fx-gen-colour-attenuation',
+	'fxGenParabolaPower'   => 'data-sgs-fx-gen-parabola-power',
 );
 
 /**
@@ -513,7 +547,30 @@ function sgs_fx_effect_param_scope(): array {
 		 * this row would wipe the client's chosen colours/ground on every
 		 * render regardless of which effect is selected.
 		 */
-		'generative-background' => array( 'fxGenColour1', 'fxGenColour2', 'fxGenColour3', 'fxGenColour4', 'fxGenGround' ),
+		'generative-background' => array(
+			'fxGenColour1',
+			'fxGenColour2',
+			'fxGenColour3',
+			'fxGenColour4',
+			'fxGenGround',
+			'fxGenSpeed',
+			'fxGenFoldFreq1',
+			'fxGenFoldFreq2',
+			'fxGenFoldFreq3',
+			'fxGenFoldPower1',
+			'fxGenFoldPower2',
+			'fxGenFoldPower3',
+			'fxGenDisplaceFreqX',
+			'fxGenDisplaceFreqZ',
+			'fxGenDisplaceAmount',
+			'fxGenGlowAmount',
+			'fxGenGlowPower',
+			'fxGenGlowRamp',
+			'fxGenStriationStrength',
+			'fxGenStriationFreq',
+			'fxGenColourAttenuation',
+			'fxGenParabolaPower',
+		),
 	);
 }
 

@@ -1115,6 +1115,42 @@ function addFxAttributes( settings, name ) {
 			 * colour tokens ('surface' / 'footer-bg'), never a hardcoded hex.
 			 */
 			fxGenGround: { type: 'string', default: '' },
+			/*
+			 * Generative background — geometry mechanism (v1.2 rewrite,
+			 * 2026-08-28). `fxGenSpeed` mirrors `fxWaveSpeed`'s own shape
+			 * (undefined-when-untouched, engine reads it 5-150 -> ×1/50 —
+			 * `fx-generative-background.js` already had this reader before
+			 * this rewrite). The other nine are the vertex shader's own
+			 * tunables — also undefined-when-untouched so the shader's
+			 * calibrated defaults (`webgl/generative-background.js`) stand
+			 * until a client changes them. NO `default: null` on any of
+			 * these — a null on a number attr 400s every ServerSideRender
+			 * preview (D755).
+			 */
+			fxGenSpeed: { type: 'number' },
+			fxGenFoldFreq1: { type: 'number' },
+			fxGenFoldFreq2: { type: 'number' },
+			fxGenFoldFreq3: { type: 'number' },
+			fxGenFoldPower1: { type: 'number' },
+			fxGenFoldPower2: { type: 'number' },
+			fxGenFoldPower3: { type: 'number' },
+			fxGenDisplaceFreqX: { type: 'number' },
+			fxGenDisplaceFreqZ: { type: 'number' },
+			fxGenDisplaceAmount: { type: 'number' },
+			/*
+			 * Generative background — striation / glow-gate + depth-fade
+			 * params (§3, 2026-08-28 build). Same undefined-when-untouched
+			 * shape as the geometry tunables above — the shader's own
+			 * calibrated defaults stand until a client changes them. NO
+			 * `default: null` on any of these (D755).
+			 */
+			fxGenGlowAmount: { type: 'number' },
+			fxGenGlowPower: { type: 'number' },
+			fxGenGlowRamp: { type: 'number' },
+			fxGenStriationStrength: { type: 'number' },
+			fxGenStriationFreq: { type: 'number' },
+			fxGenColourAttenuation: { type: 'number' },
+			fxGenParabolaPower: { type: 'number' },
 			fxMagnetAxis: { type: 'string', default: '' },
 			fxMagnetRadius: { type: 'number' },
 			fxMagnetStrength: { type: 'number' },
@@ -1451,6 +1487,24 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-wave-variant': attributes.fxWaveVariant,
 		'data-sgs-fx-wave-speed': attributes.fxWaveSpeed,
 		'data-sgs-fx-wave-amplitude': attributes.fxWaveAmplitude,
+		// Generative background — geometry mechanism (v1.2 rewrite).
+		'data-sgs-fx-gen-speed': attributes.fxGenSpeed,
+		'data-sgs-fx-gen-fold-freq-1': attributes.fxGenFoldFreq1,
+		'data-sgs-fx-gen-fold-freq-2': attributes.fxGenFoldFreq2,
+		'data-sgs-fx-gen-fold-freq-3': attributes.fxGenFoldFreq3,
+		'data-sgs-fx-gen-fold-power-1': attributes.fxGenFoldPower1,
+		'data-sgs-fx-gen-fold-power-2': attributes.fxGenFoldPower2,
+		'data-sgs-fx-gen-fold-power-3': attributes.fxGenFoldPower3,
+		'data-sgs-fx-gen-disp-freq-x': attributes.fxGenDisplaceFreqX,
+		'data-sgs-fx-gen-disp-freq-z': attributes.fxGenDisplaceFreqZ,
+		'data-sgs-fx-gen-disp-amount': attributes.fxGenDisplaceAmount,
+		'data-sgs-fx-gen-glow-amount': attributes.fxGenGlowAmount,
+		'data-sgs-fx-gen-glow-power': attributes.fxGenGlowPower,
+		'data-sgs-fx-gen-glow-ramp': attributes.fxGenGlowRamp,
+		'data-sgs-fx-gen-striation-strength': attributes.fxGenStriationStrength,
+		'data-sgs-fx-gen-striation-freq': attributes.fxGenStriationFreq,
+		'data-sgs-fx-gen-colour-attenuation': attributes.fxGenColourAttenuation,
+		'data-sgs-fx-gen-parabola-power': attributes.fxGenParabolaPower,
 		'data-sgs-fx-magnet-axis': attributes.fxMagnetAxis,
 		'data-sgs-fx-magnet-radius': attributes.fxMagnetRadius,
 		'data-sgs-fx-magnet-strength': attributes.fxMagnetStrength,
@@ -1618,6 +1672,15 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		 * on the page.
 		 */
 		const motionBudget = useMotionBudget( qualifies && isSelected );
+
+		/*
+		 * Generative background — geometry mechanism (v1.2 rewrite). Same
+		 * unconditional-hook reasoning as `motionBudget` immediately above:
+		 * called before both early returns so the hook count never changes
+		 * between renders. Gates the 8 fold/displacement RangeControls
+		 * behind a "Show more" disclosure in the panel below.
+		 */
+		const [ showGenAdvanced, setShowGenAdvanced ] = useState( false );
 
 		if ( ! qualifies ) {
 			return <BlockEdit { ...props } />;
@@ -2971,9 +3034,498 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										/>
 									</ToolsPanelItem>
 
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenSpeed
+										}
+										label={ __( 'Speed', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenSpeed: undefined } )
+										}
+										isShownByDefault
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Speed', 'sgs-blocks' ) }
+											value={ attributes.fxGenSpeed }
+											onChange={ ( value ) =>
+												setParam( { fxGenSpeed: value } )
+											}
+											min={ 5 }
+											max={ 150 }
+											step={ 5 }
+											help={ __(
+												'How quickly the shape breathes and drifts.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenDisplaceAmount
+										}
+										label={ __( 'Intensity', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenDisplaceAmount: undefined } )
+										}
+										isShownByDefault
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Intensity', 'sgs-blocks' ) }
+											value={ attributes.fxGenDisplaceAmount }
+											onChange={ ( value ) =>
+												setParam( { fxGenDisplaceAmount: value } )
+											}
+											min={ 0 }
+											max={ 40 }
+											step={ 1 }
+											help={ __(
+												'How much the surface breathes in and out. Zero is a still folded shape.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								{ /*
+								  * Advanced geometry controls (v1.2 geometry
+								  * rebuild) — behind the ToolsPanel's own "+"
+								  * disclosure (isShownByDefault={ false }, the
+								  * same mechanism already used elsewhere in
+								  * this panel, e.g. line ~4100 below) rather
+								  * than inventing a new "Show more" widget.
+								  */ }
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenFoldFreq1
+										}
+										label={ __( 'Fold angle 1 frequency', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenFoldFreq1: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fold angle 1 frequency', 'sgs-blocks' ) }
+											value={ attributes.fxGenFoldFreq1 }
+											onChange={ ( value ) =>
+												setParam( { fxGenFoldFreq1: value } )
+											}
+											min={ -2 }
+											max={ 2 }
+											step={ 0.05 }
+											help={ __(
+												'How far the first fold rotates the shape.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenFoldFreq2
+										}
+										label={ __( 'Fold angle 2 frequency', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenFoldFreq2: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fold angle 2 frequency', 'sgs-blocks' ) }
+											value={ attributes.fxGenFoldFreq2 }
+											onChange={ ( value ) =>
+												setParam( { fxGenFoldFreq2: value } )
+											}
+											min={ -2 }
+											max={ 2 }
+											step={ 0.05 }
+											help={ __(
+												'How far the second fold rotates the shape.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenFoldFreq3
+										}
+										label={ __( 'Fold angle 3 frequency', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenFoldFreq3: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fold angle 3 frequency', 'sgs-blocks' ) }
+											value={ attributes.fxGenFoldFreq3 }
+											onChange={ ( value ) =>
+												setParam( { fxGenFoldFreq3: value } )
+											}
+											min={ -2 }
+											max={ 2 }
+											step={ 0.05 }
+											help={ __(
+												'How far the third fold rotates the shape.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenFoldPower1
+										}
+										label={ __( 'Fold 1 shaping', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenFoldPower1: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fold 1 shaping', 'sgs-blocks' ) }
+											value={ attributes.fxGenFoldPower1 }
+											onChange={ ( value ) =>
+												setParam( { fxGenFoldPower1: value } )
+											}
+											min={ 0.1 }
+											max={ 8 }
+											step={ 0.1 }
+											help={ __(
+												'How sharply the first fold curves — higher is a tighter bend.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenFoldPower2
+										}
+										label={ __( 'Fold 2 shaping', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenFoldPower2: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fold 2 shaping', 'sgs-blocks' ) }
+											value={ attributes.fxGenFoldPower2 }
+											onChange={ ( value ) =>
+												setParam( { fxGenFoldPower2: value } )
+											}
+											min={ 0.1 }
+											max={ 8 }
+											step={ 0.1 }
+											help={ __(
+												'How sharply the second fold curves — higher is a tighter bend.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenFoldPower3
+										}
+										label={ __( 'Fold 3 shaping', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenFoldPower3: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fold 3 shaping', 'sgs-blocks' ) }
+											value={ attributes.fxGenFoldPower3 }
+											onChange={ ( value ) =>
+												setParam( { fxGenFoldPower3: value } )
+											}
+											min={ 0.1 }
+											max={ 8 }
+											step={ 0.1 }
+											help={ __(
+												'How sharply the third fold curves — higher is a tighter bend.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenDisplaceFreqX
+										}
+										label={ __( 'Breathing frequency — X', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenDisplaceFreqX: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Breathing frequency — X', 'sgs-blocks' ) }
+											value={ attributes.fxGenDisplaceFreqX }
+											onChange={ ( value ) =>
+												setParam( { fxGenDisplaceFreqX: value } )
+											}
+											min={ 0 }
+											max={ 0.05 }
+											step={ 0.001 }
+											help={ __(
+												'How tightly the breathing pattern repeats across the shape, left to right.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenDisplaceFreqZ
+										}
+										label={ __( 'Breathing frequency — Z', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenDisplaceFreqZ: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Breathing frequency — Z', 'sgs-blocks' ) }
+											value={ attributes.fxGenDisplaceFreqZ }
+											onChange={ ( value ) =>
+												setParam( { fxGenDisplaceFreqZ: value } )
+											}
+											min={ 0 }
+											max={ 0.05 }
+											step={ 0.001 }
+											help={ __(
+												'How tightly the breathing pattern repeats across the shape, front to back.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								{ /*
+								  * Striation / glow-gate + depth-fade advanced
+								  * controls (§3, 2026-08-28 build) — same "+"
+								  * disclosure as the geometry controls above.
+								  */ }
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenGlowAmount
+										}
+										label={ __( 'Fine-texture visibility', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenGlowAmount: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fine-texture visibility', 'sgs-blocks' ) }
+											value={ attributes.fxGenGlowAmount }
+											onChange={ ( value ) =>
+												setParam( { fxGenGlowAmount: value } )
+											}
+											min={ 0 }
+											max={ 100 }
+											step={ 1 }
+											help={ __(
+												'How strongly the fine texture appears where the surface turns away from view.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenGlowPower
+										}
+										label={ __( 'Fine-texture contrast', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenGlowPower: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fine-texture contrast', 'sgs-blocks' ) }
+											value={ attributes.fxGenGlowPower }
+											onChange={ ( value ) =>
+												setParam( { fxGenGlowPower: value } )
+											}
+											min={ 0.1 }
+											max={ 8 }
+											step={ 0.1 }
+											help={ __(
+												'How sharply the fine texture fades between visible and hidden areas.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenGlowRamp
+										}
+										label={ __( 'Fine-texture spread', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenGlowRamp: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fine-texture spread', 'sgs-blocks' ) }
+											value={ attributes.fxGenGlowRamp }
+											onChange={ ( value ) =>
+												setParam( { fxGenGlowRamp: value } )
+											}
+											min={ 0.05 }
+											max={ 2 }
+											step={ 0.05 }
+											help={ __(
+												'How much of the surface the fine texture spreads across.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenStriationStrength
+										}
+										label={ __( 'Fine-texture strength', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenStriationStrength: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fine-texture strength', 'sgs-blocks' ) }
+											value={ attributes.fxGenStriationStrength }
+											onChange={ ( value ) =>
+												setParam( { fxGenStriationStrength: value } )
+											}
+											min={ 0 }
+											max={ 0.6 }
+											step={ 0.01 }
+											help={ __(
+												'How much the fine texture lightens the surface. Zero removes it entirely.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenStriationFreq
+										}
+										label={ __( 'Fine-texture detail', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenStriationFreq: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fine-texture detail', 'sgs-blocks' ) }
+											value={ attributes.fxGenStriationFreq }
+											onChange={ ( value ) =>
+												setParam( { fxGenStriationFreq: value } )
+											}
+											min={ 5 }
+											max={ 120 }
+											step={ 1 }
+											help={ __(
+												'How fine-grained the texture pattern is.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenColourAttenuation
+										}
+										label={ __( 'Fine-texture colour blend', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenColourAttenuation: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fine-texture colour blend', 'sgs-blocks' ) }
+											value={ attributes.fxGenColourAttenuation }
+											onChange={ ( value ) =>
+												setParam( { fxGenColourAttenuation: value } )
+											}
+											min={ 0 }
+											max={ 2 }
+											step={ 0.05 }
+											help={ __(
+												'How much the fine texture backs off over the bluer parts of the gradient.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenParabolaPower
+										}
+										label={ __( 'Fine-texture edge fade', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenParabolaPower: undefined } )
+										}
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Fine-texture edge fade', 'sgs-blocks' ) }
+											value={ attributes.fxGenParabolaPower }
+											onChange={ ( value ) =>
+												setParam( { fxGenParabolaPower: value } )
+											}
+											min={ 0.2 }
+											max={ 6 }
+											step={ 0.1 }
+											help={ __(
+												'How much the fine texture fades out at the left and right edges of the shape.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
 								<Notice status="info" isDismissible={ false }>
 									{ __(
-										'This is a static gradient — no animation yet. Built from your four colours through a colour-accurate blend that avoids the muddy grey band a plain gradient can show between unrelated colours.',
+										'This animates on the live site only — the editor canvas shows the still fallback in your chosen colours. Visitors get a Pause control, and it stops on its own when off-screen or under reduced-motion settings.',
 										'sgs-blocks'
 									) }
 								</Notice>
