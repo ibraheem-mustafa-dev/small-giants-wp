@@ -192,10 +192,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourBackgroundGradient,
 		colourBackgroundHover,
 		colourBackgroundHoverGradient,
-		colourBorder,
-		colourBorderGradient,
-		colourBorderHover,
-		colourBorderHoverGradient,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
@@ -280,7 +280,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewStyle = {};
 	if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
 	if ( colourBackground ) previewStyle.backgroundColor = resolveColourToken( colourBackground, palette );
-	if ( colourBorder ) previewStyle.borderColor = resolveColourToken( colourBorder, palette );
+	if ( borderColour ) previewStyle.borderColor = resolveColourToken( borderColour, palette );
 	if ( borderStyle ) previewStyle.borderStyle = borderStyle;
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;
@@ -429,20 +429,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: colourBorder,
-								onChange: ( val ) => setAttributes( { colourBorder: val ?? '' } ),
-								gradientValue: colourBorderGradient,
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								gradientValue: borderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { colourBorderGradient: val ?? '' } ),
+									setAttributes( { borderColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: colourBorderHover,
-								onChange: ( val ) => setAttributes( { colourBorderHover: val ?? '' } ),
-								gradientValue: colourBorderHoverGradient,
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								gradientValue: borderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { colourBorderHoverGradient: val ?? '' } ),
+									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

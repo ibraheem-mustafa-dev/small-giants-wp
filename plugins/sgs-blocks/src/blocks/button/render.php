@@ -262,14 +262,14 @@ $colour_bg                = isset( $attributes['colourBackground'] ) ? $attribut
 $colour_bg_gradient       = isset( $attributes['colourBackgroundGradient'] ) ? $attributes['colourBackgroundGradient'] : '';
 $colour_bg_hover          = isset( $attributes['colourBackgroundHover'] ) ? $attributes['colourBackgroundHover'] : '';
 $colour_bg_hover_gradient = isset( $attributes['colourBackgroundHoverGradient'] ) ? $attributes['colourBackgroundHoverGradient'] : '';
-$colour_border            = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
-$colour_border_hover      = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
+$colour_border            = isset( $attributes['borderColour'] ) ? $attributes['borderColour'] : '';
+$colour_border_hover      = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
 // D636 border-colour gradient siblings — resolved here, emitted as a masked
 // ::before border (sgs_border_gradient_css) further down; border-color cannot
 // legally hold a gradient itself, so these do NOT feed the --sgs-btn-border*
 // custom properties above.
-$colour_border_gradient       = isset( $attributes['colourBorderGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderGradient'] ) : '';
-$colour_border_hover_gradient = isset( $attributes['colourBorderHoverGradient'] ) ? sgs_css_gradient_value( $attributes['colourBorderHoverGradient'] ) : '';
+$colour_border_gradient       = isset( $attributes['borderColourGradient'] ) ? sgs_css_gradient_value( $attributes['borderColourGradient'] ) : '';
+$colour_border_hover_gradient = isset( $attributes['borderColourHoverGradient'] ) ? sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ) : '';
 
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.

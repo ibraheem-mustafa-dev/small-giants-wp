@@ -71,8 +71,8 @@
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
-						"css:border-color": "colourBorder",
-						"css:border-color-gradient": "colourBorderGradient",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:box-shadow": "boxShadow",
 						"css:font-family": "fontFamily"
@@ -83,8 +83,8 @@
 								"css:color": "colourTextHover",
 								"css:background-color": "colourBackgroundHover",
 								"css:background-image": "colourBackgroundHoverGradient",
-								"css:border-color": "colourBorderHover",
-								"css:border-color-gradient": "colourBorderHoverGradient",
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:box-shadow": "boxShadowHover"
 							}
 						}
@@ -281,23 +281,23 @@
 			"type": "string",
 			"default": ""
 		},
-		"colourBorder": {
+		"borderColour": {
 			"type": "string",
 			"default": ""
 		},
-		"colourBorderGradient": {
+		"borderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the button border instead of a flat colour. Non-empty wins over colourBorder at render time (D636)."
+			"description": "CSS gradient string painting the button border instead of a flat colour. Non-empty wins over borderColour at render time (D636)."
 		},
-		"colourBorderHover": {
+		"borderColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"colourBorderHoverGradient": {
+		"borderColourHoverGradient": {
 			"type": "string",
 			"default": "",
-			"description": "Hover-state sibling of colourBorderGradient. Non-empty wins over colourBorderHover on :hover/:focus-visible."
+			"description": "Hover-state sibling of borderColourGradient. Non-empty wins over borderColourHover on :hover/:focus-visible."
 		},
 		"borderStyle": {
 			"type": "string",

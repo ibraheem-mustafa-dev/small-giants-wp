@@ -1833,10 +1833,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									? {
 											ctaColourBackground: preset.colourBackground,
 											ctaColourText: preset.colourText,
-											ctaColourBorder: preset.colourBorder,
+											ctaColourBorder: preset.borderColour,
 											ctaColourBackgroundHover: preset.colourBackgroundHover,
 											ctaColourTextHover: preset.colourTextHover,
-											ctaColourBorderHover: preset.colourBorderHover,
+											ctaColourBorderHover: preset.borderColourHover,
 											ctaBorderStyle: preset.borderStyle,
 											// A2 box-object migration: presets are uniform
 											// (all sides/corners equal), so a uniform-object
@@ -1914,13 +1914,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									ctaColourBackground:
 										preset.colourBackground,
 									ctaColourText: preset.colourText,
-									ctaColourBorder: preset.colourBorder,
+									ctaColourBorder: preset.borderColour,
 									ctaColourBackgroundHover:
 										preset.colourBackgroundHover,
 									ctaColourTextHover:
 										preset.colourTextHover,
 									ctaColourBorderHover:
-										preset.colourBorderHover,
+										preset.borderColourHover,
 									ctaBorderStyle: preset.borderStyle,
 									ctaBorderWidth: {
 										top: `${ preset.borderWidthTop }px`,
