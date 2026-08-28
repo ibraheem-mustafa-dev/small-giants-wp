@@ -1,3 +1,59 @@
+## D877 [ROUTINE] — grid-dot field: opacity moves from a hardcoded constant into the client's colour; inspector-scan rule 21 excludes extension attrs by ownership, not name shape
+
+**2026-08-28.** Two mechanism changes, both from Bean rejecting a shipped surface twice ("very hard
+to even see them", then "the controls are an absolute travesty"). Both complaints were correct and
+each had a distinct cause worth recording.
+
+**1. Opacity belonged to the engine; it now belongs to the colour.** `grid-dots.js`'s `step()`
+forced `ctx.globalAlpha = 0.34 + prox * 0.66`. Canvas MULTIPLIES `globalAlpha` by the fill colour's
+own alpha, so that constant silently overrode whatever the client picked — a translucent pick got a
+third of it, and an opaque pick also got a third. Measured live: max painted alpha 87/255.
+`globalAlpha` is now pinned at 1 and both RGB and alpha are interpolated into the `fillStyle` string
+per dot, between a resting colour and a new pointer colour, by proximity. Max painted alpha is now
+255/255 and effective contrast on the canary went **1.30:1 → 4.23:1**. **The general rule: a
+per-frame constant that composites against a client-settable value is an override, not a default.**
+
+**2. Hidden-by-default is not built.** Five of six controls (`fxGridCell` / `fxGridDotSize` /
+`fxGridRadius` / `fxGridLean` / `fxGridEase`) existed but omitted `isShownByDefault`, so WP hid them
+behind the ToolsPanel `+`. `cursor-field` states the governing rule in its own panel ("none of them
+is an optional refinement") and sets it on all six. For a client who will never open that menu,
+hidden and absent are the same thing.
+
+**3. The colour control was the right component called the wrong way.** It already used
+`DesignTokenPicker`, but with no `states` prop, which silently selects the legacy single-swatch
+shape. Passing `states` produces D609's in-popover tab toggle; it now carries Normal + Pointer, so
+the second colour and the correct control shape landed together. ⚠ This gap is FRAMEWORK-WIDE, not
+grid-dots-specific: no `fx` colour row carries `states`.
+
+**4. Rule 21's extension exclusion was a name-shape test and was wrong in BOTH directions.**
+`/^sgs[A-Z_]/` was BLIND to the entire `fx` family (no `fx*` name matches it) and OVER-BROAD for
+anything merely named `sgs`+Capital that no extension owns. The blind half produced a catch-22 with
+no passing state: declare an extension attr and rule 21 fires (it structurally cannot read
+`src/blocks/extensions/`), leave it undeclared and `check-undeclared-attrs.py` fires. The only
+escape was the suppression at `block-file-consistency-baseline.json:147-153`. The predicate is now
+OWNERSHIP, reusing `collectAttributes()` from `generate-extension-attributes.js` so ONE definition
+of "extension-owned" exists rather than two to drift. That generator's `main()` was also guarded
+behind `require.main === module` — it had been regenerating a PHP file as an import side effect, the
+same shape CLAUDE.md already warns about for `db_lookup.py`. Live findings **93 before, 93 after**
+(no block currently declares an extension attr, so this is a LATENT fix); the new fixture was
+falsification-tested by reverting the predicate to a prefix test and confirming it failed.
+
+**Two false claims corrected.** (a) Three comments stated `primary` measures "~7:1" against the
+client cream; that figure was measured on the stylesheet's FALLBACK teal `#1F7A7A` and written as
+though it described the token. `primary` is `#e68a95` here = **2.25:1**. A token's contrast is a
+per-client fact, never a fixed property of the token. (b) The editor preview painted with
+`currentColor` — the block's TEXT colour — so it showed crisp dark dots over a field that rendered
+faint pink, answering the one question it exists to answer with a colour that never ships.
+
+**Gate blind spot found, recorded not fixed.** The visual-diff gate declined this change on its own
+("extensions: not a block (no block.json) — visual gate N/A") because it resolves scope by block
+directory. That is structurally the SAME hole fixed here for rule 21, from the same cause
+(`core/roster.js` admits only directories containing a `block.json`). Two independent gates, one
+shared blind spot, and the `fx` surface now sits inside it. Widening it is a shared pre-commit gate
+change and wants its own design gate.
+
+Commits: `a49a1b52c` (grid-dots), `13115e5b3` (rule 21), `3976e85cb` (STOP-67 report).
+
 ## D876 [ROUTINE] — Task 0 (SgsBorderControl) started: component proven on 2 blocks, real 47-block census corrects the 52/11 plan estimate, deterministic Shape-A codemod built and proven; Shape B has no derivable target
 
 **2026-08-28.** Bean-directed: match WordPress core's native one-row border UI (Width/Style/

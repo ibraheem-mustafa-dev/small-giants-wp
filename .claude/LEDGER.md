@@ -169,8 +169,14 @@ CLOSED** — `floating-objects` was the WRONG effect for 7 weeks → FR-38-33/34
 wrap-only-when-treated (BUILT+live D865); covers → **Spec 40**. ✅ **FR-38-6 CLOSED by observation** (page
 2893, markup committed). Detail = the D-numbers; do not restate.
 
-✅ **FR-38-33 grid-dots BUILT+live (D864-D870)**; 3 commits await deploy.
-⭐ **NEXT: `prompts/2026-08-29-motion-deploy-verify-and-timeline.md`**.
+✅ **FR-38-33 grid-dots CLOSED 2026-08-28** (D864-D870, `a49a1b52c`, report `3976e85cb`) — live on
+3038, contrast 1.30:1 → **4.23:1**, 7 controls, Normal/Pointer colour states, 5 shapes. Mechanisms
+in the commit body; the two traps it caught are carried in the next-session prompt's guardrails.
+
+⭐ **NEXT: `prompts/2026-08-29-timeline-connector-stage-a.md`** — connector Stage A; plan + 10 QC
+corrections at `~/.claude/plans/motion-track-happy-lamport.md`. **C1 is fatal: an UNREGISTERED
+custom property cannot be animated — it jump-cuts silently past every gate.** ⛔ **Firefox has ZERO
+`animation-timeline` support** (arrives 157); Spec 38 ~line 222 blames Safari and is STALE.
 ✅ **Row-collapse reduced-motion CLOSED too (D863)** — "untestable" was wrong; Bean pushed back and
 it measured clean in both arms. `probe-row-collapse-reduced-motion.mjs`. ⛔ Editing template part
 2671 does NOTHING: `parts/header.html` is a `wp:pattern` ref, so
