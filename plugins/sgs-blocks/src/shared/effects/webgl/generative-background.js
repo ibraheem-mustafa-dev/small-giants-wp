@@ -414,15 +414,15 @@ void main() {
 	float angle2 = ( u_foldFreq[ 1 ] - noiseWobble * 0.1 ) * sgsShapingCurve( v_uv.y, u_foldPower[ 1 ] );
 	float angle3 = u_foldFreq[ 2 ] * sgsShapingCurve( v_uv.y, u_foldPower[ 2 ] );
 
-	// ROW-VECTOR convention (`v * M`), matching the reference exactly — NOT
-	// `M * v`. For an orthogonal rotation matrix these are NOT the same
-	// operation: `v * M` = `transpose(M) * v`, which for a rotation matrix
-	// built from (axis, angle) equals `M` built from (axis, -angle). The
-	// previous build used `M * v` with the same axes/angles and so was
-	// silently rotating the OPPOSITE way on every one of the three chained
-	// rotations — a real structural bug, not a style difference, found by
-	// comparing directly against the reference file's own multiplication
-	// order (D880 literal-port pass, 2026-08-28).
+	// ROW-VECTOR convention (v times M), matching the reference exactly —
+	// NOT M times v. For an orthogonal rotation matrix these are NOT the
+	// same operation: v times M equals transpose(M) times v, which for a
+	// rotation matrix built from (axis, angle) equals M built from
+	// (axis, -angle). The previous build used M times v with the same
+	// axes/angles and so was silently rotating the OPPOSITE way on every
+	// one of the three chained rotations — a real structural bug, not a
+	// style difference, found by comparing directly against the reference
+	// file's own multiplication order (D880 literal-port pass, 2026-08-28).
 	vec3 folded = displaced * sgsAxisAngle( axisA, angle1 );
 	folded = folded * sgsAxisAngle( axisB, angle2 );
 	folded = folded * sgsAxisAngle( axisA, angle3 );
