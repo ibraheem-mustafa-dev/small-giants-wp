@@ -72,14 +72,58 @@ const { resolveComponentFiles } = require( '../core/components' );
 // as real schema fields with no consumer — 11 such keys exist library-wide).
 const DOC_ATTR_RE = /^(_comment|_note)/;
 
-// Extension-injected attributes. `inspector-scan` structurally CANNOT see
-// src/blocks/extensions/ (no extensionsDir in run.js buildCtx; core/roster.js:58-70
-// admits only directories containing a block.json), so an extension's controls
-// are invisible to this rule and every `sgs*` attr would false-positive. This is
-// the documented BLOCKED extension surface, not a judgement about these attrs —
-// they are excluded until that plumbing lands, and the exclusion is reported in
-// the run summary rather than being silent.
-const SYSTEM_ATTR_RE = /^sgs[A-Z_]/;
+// ── EXTENSION-OWNED attributes ──────────────────────────────────────────────
+// `inspector-scan` structurally CANNOT see src/blocks/extensions/ (no
+// extensionsDir in run.js buildCtx; core/roster.js:58-70 admits only
+// directories containing a block.json), so an extension's controls are
+// invisible to this rule and any extension attr would false-positive. This is
+// the documented BLOCKED extension surface, not a judgement about these attrs.
+//
+// ⛔ THIS WAS A NAME-SHAPE TEST AND THAT WAS A BUG (fixed 2026-08-28).
+// It read `/^sgs[A-Z_]/` — "does the NAME look system-ish?" — which is exactly
+// the failure mode this rule's own header warns against ("Detect by what a
+// control DOES, not what it is called... every gate keyed to a component name
+// has a blind spot by construction"). The exclusion had that blind spot too:
+//
+//   The whole `fx` motion family is extension-owned, and NOT ONE of those
+//   names matches `^sgs[A-Z_]` — the family is `fx`, `fxTrigger`,
+//   `fxGridDotColour`, … So the escape hatch missed, twice over, the very
+//   surface it was written to cover.
+//
+// The consequence was a CATCH-22 with no passing state. Declare an extension
+// attr on a block and THIS rule fires (no control visible). Leave it
+// undeclared and `check-undeclared-attrs.py` fires (`undeclared_render_ref`,
+// "render.php reads an attribute block.json does not declare"). Neither state
+// satisfies both gates, so the only way out was a permanent suppression —
+// `scripts/block-file-consistency-baseline.json:147-153` carries exactly that
+// for `sgs/decorative-image`'s `fx`, and its own reasoning text names this
+// regex as the cause.
+//
+// THE PREDICATE IS NOW OWNERSHIP, READ FROM SOURCE. `collectAttributes()` is
+// the parser `generate-extension-attributes.js` already uses to build
+// `includes/extension-attributes.generated.php` — the server-side mirror of
+// every attribute the extensions register. Reusing it (rather than copying its
+// regex here) means there is ONE definition of "extension-owned" in the tree;
+// a second copy would drift the first time the convention changed, which is
+// the same single-source discipline `coreSupportedAttrs()` above follows by
+// reading each block's own `supports`.
+//
+// FAILS TOWARD A FALSE POSITIVE, never a false negative — this rule's stated
+// doctrine. If the extensions directory cannot be read, the set is EMPTY, so
+// nothing is excluded and genuine extension attrs merely become noisy. The
+// alternative (excluding on failure) would silently hide real dead controls.
+let EXTENSION_ATTR_CACHE = null;
+function extensionOwnedAttrs() {
+	if ( EXTENSION_ATTR_CACHE ) return EXTENSION_ATTR_CACHE;
+	try {
+		// eslint-disable-next-line global-require
+		const { collectAttributes } = require( '../../generate-extension-attributes' );
+		EXTENSION_ATTR_CACHE = new Set( collectAttributes().keys() );
+	} catch ( e ) {
+		EXTENSION_ATTR_CACHE = new Set();
+	}
+	return EXTENSION_ATTR_CACHE;
+}
 
 // ── The WORDPRESS-CORE control surface ──────────────────────────────────────
 // A SECOND structurally-invisible control surface, sibling to the extension
@@ -751,10 +795,14 @@ module.exports = {
 		// opt-in discipline, see the block comment above helperDerivedAttrs().
 		const helperControlled = helperDerivedAttrs( control.text );
 
+		// Read from the extensions' OWN source, via the same parser that builds
+		// the server-side mirror — an ownership fact, not a name-shape guess.
+		const extensionOwned = extensionOwnedAttrs();
+
 		const findings = [];
 		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
 			if ( DOC_ATTR_RE.test( attr ) ) continue;
-			if ( SYSTEM_ATTR_RE.test( attr ) ) continue; // extension surface — structurally invisible here
+			if ( extensionOwned.has( attr ) ) continue; // extension surface — structurally invisible here
 			if ( coreControlled.has( attr ) ) continue; // WordPress core surface — likewise invisible here
 			if ( helperControlled.has( attr ) ) continue; // resolved via a name-derivation helper call site
 			if ( resolves( attr, control.text, controlParts ) ) continue; // reachable by the client
@@ -817,6 +865,13 @@ module.exports = {
 			'shadow-helper-dynamic-base-still-flags',
 			'gradient-helper-solid-colour-still-flags',
 			'typography-helper-dynamic-prefix-still-flags',
+			// OVERMATCH GUARD for the extension-ownership exclusion. Both attrs
+			// are shaped like extension attrs and registered by NO extension, so
+			// both must still flag. `sgsNotARegisteredAttr` additionally matches
+			// the OLD `/^sgs[A-Z_]/` regex — it was silently excluded before, so
+			// this fixture also proves the over-broad half of that bug is closed.
+			// If the ownership lookup ever reverts to a prefix test, this fails.
+			'extension-lookalike-still-flags',
 		],
 		mustNotFlag: [
 			'rendered-with-control',
@@ -847,6 +902,13 @@ module.exports = {
 			'shadow-helper-derived',
 			'gradient-helper-derived',
 			'typography-helper-derived',
+			// The extension surface, excluded by OWNERSHIP rather than by name
+			// shape. `fx` and `fxGridDotColour` match no `sgs*` pattern at all,
+			// which is exactly why the old regex missed the whole motion family
+			// and put every declaring block in a catch-22 with
+			// check-undeclared-attrs.py. Paired with
+			// `extension-lookalike-still-flags` above.
+			'extension-owned-attr',
 		],
 	},
 };
