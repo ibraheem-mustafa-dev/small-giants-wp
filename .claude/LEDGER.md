@@ -297,7 +297,7 @@ Narrative swept VERBATIM to `memory/session-2026-08-22-shop-archive-phase2.md` o
 
 ## ▶ CLIENT-CONTROLS TRACK — 2026-08-27 (nine commits, deployed + live-verified)
 
-⭐ **NEXT: `.claude/prompts/2026-08-28-rollout-detectors-and-the-null-element-tail.md`** — it
+⭐ **NEXT: `.claude/prompts/2026-08-29-recovery-residuals-and-the-root-filter-nogo.md`** — it
 carries every open task. Its predecessor was executed and DELETED 2026-08-27.
 
 ⛔ Detail is single-sourced to **D855-D862**. Do not restate mechanisms here.
