@@ -67,15 +67,14 @@ D873's three lift bugs are ALL CLOSED (not just DB-corrected — 1a/1b needed re
 D875 has the mechanism). A related editor crash was traced to a pre-existing WP-core race, not a
 regression from this session's work — do not re-investigate as new.
 
-**Also open:** 5 stack-conversion candidates surveyed — **0 need converting**, close this item.
-Attr-schema gate confirmed wired and ENFORCING (D834's correction) — leave it so. Bean's eye on
-the product-card hover still R-31-13 unmet — retry next session with a free browser.
+**Closed this session (D878):** hover confirmed working live · 5 stack-conversion candidates
+closed, 0 need converting · visual-diff sign-off paid for `product-card`/`button`/`quote`
+(`reports/visual-diff/{block}-2026-08-28.md`) · attr-schema gate confirmed ENFORCING, leave it so.
 
 ### ⛔ The visual-diff bypasses CANNOT be retired — not a queue
-`source_sha` comes from STAGED bytes, so a report only certifies the commit it accompanies;
-`manual-skips.log` is a permanent audit record. The NEXT commit touching each block owes a real
-report. Shipped so far: `button-2026-08-27.md`, `product-card-2026-08-27.md`. Everything else in
-D830-D834 still owes one. Reasoning: D804.
+`source_sha` comes from STAGED bytes; a report only certifies the commit it accompanies. The NEXT
+commit touching any block owes a real report. Shipped: `{button,product-card}-2026-08-27.md`,
+`{product-card,button,quote}-2026-08-28.md`. Reasoning: D804.
 
 ### ⚠ Hazards (full list — 10 — in the next-session prompt)
 - **`main` is shared:** a bare commit flushes the whole index. Use `git commit -- <paths>` — and

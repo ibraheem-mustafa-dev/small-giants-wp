@@ -1,4 +1,24 @@
-## D877 [ROUTINE] — grid-dot field: opacity moves from a hardcoded constant into the client's colour; inspector-scan rule 21 excludes extension attrs by ownership, not name shape
+## D878 [ROUTINE] — Mama's clone track session close-out: product-card hover confirmed working, stack-conversion item closed, visual-diff sign-off owed for D830-D834's block-level touches now paid
+
+**2026-08-28.** Three small closes, following on from D875/D876.
+
+**Product-card typed-card hover (D873) — confirmed working live by Bean.** No further action.
+
+**5 stack-conversion candidates — closed, 0 need converting.** Already surveyed this session
+(4 dead patterns never inserted on any live page, the 5th already stacks correctly at every
+breakpoint). Formally closing the item — nothing further to check.
+
+**Visual-diff sign-off owed for D830-D834 — paid for the three blocks this session actually
+touched.** `reports/visual-diff/{product-card,button,quote}-2026-08-28.md`, each live-verified
+(editor computed styles, stored attribute values via the block-editor data store, frontend
+computed styles) against the actual commit that changed that block
+(`fc2796340`/`89997c91f`/`22943618b`). `source_sha` computed retroactively using
+`visual-report-sha.py`'s exact hashing algorithm against each commit's changed files, since the
+changes were already committed (no longer literally staged) by the time this was done — a real
+gap in the tool's workflow assumption worth noting: it expects the report to be written AT
+commit time while files are staged, and has no supported path for writing one after the fact.
+Any block from the wider D830-D834 set NOT touched this session (grid/layout resolver blocks,
+etc.) still owes its own report — this closes only the three blocks in scope tonight.
 
 **2026-08-28.** Two mechanism changes, both from Bean rejecting a shipped surface twice ("very hard
 to even see them", then "the controls are an absolute travesty"). Both complaints were correct and
