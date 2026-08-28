@@ -38,9 +38,22 @@ def test_per_element_state_attrs_transform_filter_subset_is_the_five_stranded():
     """``per_element_state_attrs`` is intentionally property-AGNOSTIC (it also
     returns per-child COLOUR/box-shadow hover attrs, which the caller's parser
     gate skips — those are lift_styling_content's job). The transform/filter
-    subset — the attrs THIS mechanism actually routes — must be EXACTLY the 5
-    stranded per-child attrs, with post-grid.scaleHover now clean
-    (transform/card/hover, NOT the old 'background-color,transform'/NULL smell)."""
+    subset — the attrs THIS mechanism actually routes — must be EXACTLY the set
+    below, with post-grid.scaleHover clean (transform/card/hover, NOT the old
+    'background-color,transform'/NULL smell).
+
+    NAME IS HISTORICAL: it was 5 (all ``transform``) when written. 2026-08-29 —
+    now 8. The three ``filter``/``grayscaleHover`` rows are a deliberate ADDITION,
+    not a regression: card-grid/gallery/team-member each declare
+    ``states.hover.attrMap {"css:filter": "grayscaleHover"}`` on their ``image``
+    element, which is TRUE — `card-grid/style.css:274` paints
+    ``filter: grayscale()`` on ``.sgs-card-grid__image``, never the root. Before
+    that declaration those attrs had no derived-layer entry at all, so this set
+    could not see them. An exact-set assertion is the right shape here; it just
+    has to move when a real routing lands.
+
+    ⚠ Do NOT "fix" a future failure here by deleting rows. If a row disappears,
+    a declaration was lost — check the manifest before touching this set."""
     from converter.services.state_value_lift import _STATE_VALUE_PARSERS
 
     routed = set()
@@ -56,6 +69,10 @@ def test_per_element_state_attrs_transform_filter_subset_is_the_five_stranded():
         ("sgs/card-grid", "imageZoomHover", "transform", "image", "hover"),
         ("sgs/gallery", "imageZoomHover", "transform", "image", "hover"),
         ("sgs/team-member", "imageZoomHover", "transform", "image", "hover"),
+        # filter/grayscaleHover — added 2026-08-29 with the css_element work.
+        ("sgs/card-grid", "grayscaleHover", "filter", "image", "hover"),
+        ("sgs/gallery", "grayscaleHover", "filter", "image", "hover"),
+        ("sgs/team-member", "grayscaleHover", "filter", "image", "hover"),
     }, routed
 
 

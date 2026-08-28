@@ -41,7 +41,9 @@
 						"css:background-color": "backgroundColour",
 						"css:background-image": "backgroundColourGradient",
 						"css:color": "textColour",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:width": "fadeWidth",
+						"css:min-height": "maxHeight"
 					},
 					"states": {
 						"hover": {

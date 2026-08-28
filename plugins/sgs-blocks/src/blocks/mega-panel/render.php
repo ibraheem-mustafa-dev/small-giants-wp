@@ -81,10 +81,32 @@ $bg_blur     = ! empty( $attributes['bgBlur'] );
 // (D643, Bean-ruled): one colour attribute cannot secretly paint 4 unrelated
 // CSS properties (background-colour, border-colour, text-colour, background-
 // image) — each has its own control, each defaulting to "accent".
-$accent_bg_slug     = isset( $attributes['accentBackground'] ) ? sanitize_html_class( (string) $attributes['accentBackground'] ) : 'accent';
-$accent_border_slug = isset( $attributes['accentBorderColour'] ) ? sanitize_html_class( (string) $attributes['accentBorderColour'] ) : 'accent';
-$accent_border_gradient = sgs_css_gradient_value( $attributes['accentBorderColourGradient'] ?? '' );
-$accent_text_slug   = isset( $attributes['accentTextColour'] ) ? sanitize_html_class( (string) $attributes['accentTextColour'] ) : 'accent';
+// Renamed 2026-08-28 (NULL css_element fix proposal §5): accentBackground ->
+// iconBackground, accentBorderColour -> groupBorderColour,
+// accentBorderColourGradient -> groupBorderColourGradient, accentTextColour
+// -> iconColour. accentBackgroundImage is NOT part of this rename.
+//
+// SAME DAY, second rename: Bean ruled a genuine RESTING-state group-tile
+// border should exist alongside the hover-only one this code already had
+// (there was never a resting border on `.sgs-mega-group` at all — see
+// block.json's `group` element note for the full chain). groupBorderColour /
+// groupBorderColourGradient were re-renamed to groupBorderColourHover /
+// groupBorderColourGradientHover, freeing the base names for a NEW resting
+// pair (default empty string — no colour override at rest until an operator
+// sets one).
+$accent_bg_slug     = isset( $attributes['iconBackground'] ) ? sanitize_html_class( (string) $attributes['iconBackground'] ) : 'accent';
+$accent_border_slug = isset( $attributes['groupBorderColourHover'] ) ? sanitize_html_class( (string) $attributes['groupBorderColourHover'] ) : 'accent';
+$accent_border_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradientHover'] ?? '' );
+$accent_text_slug   = isset( $attributes['iconColour'] ) ? sanitize_html_class( (string) $attributes['iconColour'] ) : 'accent';
+
+// NEW resting-state group-tile border (2026-08-28) — independent of the
+// hover pair above. Empty raw value = no override (the `cards` tile keeps
+// its existing --sgs-mm-panel-border-derived border, unchanged). Resolved
+// to a concrete colour only when set, never defaulted to 'accent' — an
+// unset resting attr must render NOTHING, not a silently-applied accent.
+$group_border_resting_raw      = isset( $attributes['groupBorderColour'] ) ? (string) $attributes['groupBorderColour'] : '';
+$group_border_resting_value    = '' !== $group_border_resting_raw ? sgs_colour_value( $group_border_resting_raw ) : '';
+$group_border_resting_gradient = sgs_css_gradient_value( $attributes['groupBorderColourGradient'] ?? '' );
 $accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
@@ -165,7 +187,7 @@ $panel_border_value = '' !== $border_colour_raw
 
 // The "soft" role (§4) is always DERIVED from the resolved accent-background
 // colour (never an independent attribute) — so the marker chip background
-// stays in lockstep with whichever accentBackground the operator picks.
+// stays in lockstep with whichever iconBackground the operator picks.
 // "soft-image" is the SAME derivation but sourced from accentBackgroundImage,
 // feeding only the aside spotlight glow's background-image (kept separate from
 // $soft_value so the two properties are genuinely independently overridable —
@@ -205,6 +227,15 @@ $css .= $root_sel . '{'
 	. 'color:var(--sgs-mm-text);'
 	. 'background-color:var(--sgs-mm-panel-bg);'
 	. '}';
+
+// NEW resting-state group-tile border custom property (2026-08-28) — only
+// declared when the operator has set one, so the fallback chain consuming
+// it (§4 below, and the mirrored rule in style.css for the editor canvas)
+// resolves to the existing --sgs-mm-panel-border value when absent, i.e.
+// behaviour-neutral by construction.
+if ( '' !== $group_border_resting_value ) {
+	$css .= $root_sel . '{--sgs-mm-group-border-resting:' . $group_border_resting_value . ';}';
+}
 
 // Dark scheme cascade (§4). None of the 4 split accent attributes are
 // redeclared in the dark props — §4 says the picked accent colours are "reuse
@@ -333,9 +364,17 @@ $css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;bac
 
 // -- cards -----------------------------------------------------------------
 $css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
-$css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);background-color:var(--sgs-mm-card);}';
+$css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);border-color:var(--sgs-mm-group-border-resting, var(--sgs-mm-panel-border));background-color:var(--sgs-mm-card);}';
 $css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
 $css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
+
+// Resting-state border GRADIENT (2026-08-28) — masked ::before ring, scoped
+// to the resting (non-hover) `.sgs-mega-group` tile, independent of the
+// hover pair's own accent-border-gradient rule below. Non-empty wins over
+// the resting groupBorderColour on this SAME resting selector.
+if ( '' !== $group_border_resting_gradient ) {
+	$css .= sgs_border_gradient_css( $style_crd . $rel_group, $group_border_resting_gradient, null, '1px' );
+}
 
 // -- card hover-lift (§6 last row). Scoped to THIS style's `.sgs-mega-group`
 // tile only — `sgs/card-grid` (used by media-cards/brands) already owns a
@@ -358,7 +397,7 @@ $css .= '@media (prefers-reduced-motion: reduce){'
 	. '}';
 
 // Accent border gradient (D636 border builder) — masked ::before ring, scoped
-// to ONLY the hover/focus-within state (mirrors accentBorderColour above,
+// to ONLY the hover/focus-within state (mirrors groupBorderColour above,
 // which likewise has no resting-state border of its own to override —
 // accent-border-color is exclusively a hover/focus-within paint on this
 // `cards`-style tile).

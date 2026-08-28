@@ -70,6 +70,7 @@
             "css:text-decoration": "textDecoration",
             "css:color": "textColour",
             "css:text-align": "textAlign",
+            "css:text-wrap": "textWrap",
             "css:font-family": "fontFamily",
             "css:padding": "native:spacing.padding",
             "css:margin": "native:spacing.margin",

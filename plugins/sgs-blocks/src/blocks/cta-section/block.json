@@ -80,6 +80,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:border-color": "borderColourHover",
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient"
 							}

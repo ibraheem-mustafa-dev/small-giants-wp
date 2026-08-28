@@ -24,6 +24,12 @@
 		"customClassName": true,
 		"html": false,
 		"reusable": false,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
 		"sgs": {
 			"containerKind": "layout",
 			"collection": true,
@@ -44,9 +50,18 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:margin": "native:spacing.margin",
+						"css:background-color": "navBg",
+						"css:color": "navColour"
 					},
-					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "navBgHover"
+							}
+						}
+					},
+					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. navBg/navColour/navBgHover all write to the same bare $uid_sel wrapper selector (2026-08-28 fix — navBg previously only resolved via a hand-seeded attr-classification-overrides.json entry, not derivation; that override entry is now redundant, kept for now as a separate cleanup). The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed)."
 				},
 				"bar": {
 					"label": "Item bar (flex row)",

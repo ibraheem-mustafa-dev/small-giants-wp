@@ -51,11 +51,19 @@
 	/* Custom-property fallbacks consumed by the preset rules below. render.php
 	   overrides --sgs-mm-soft / --sgs-mm-soft-image / --sgs-mm-card (and the
 	   full colour set) per instance on the frontend; edit.js sets the
-	   accentBackground / accentBorderColour / accentTextColour /
+	   iconBackground / groupBorderColourHover / iconColour /
 	   accentBackgroundImage / gap / aside props in the editor (D643 — split
-	   from the old single `--sgs-mm-accent`). These defaults keep the marker
-	   chips + card fills + spotlight glow painted in the canvas, where
-	   render.php never runs. */
+	   from the old single `--sgs-mm-accent`; the four attributes were renamed
+	   from accentBackground/accentBorderColour/accentTextColour/
+	   accentBorderColourGradient 2026-08-28, NULL css_element fix proposal
+	   §5 — the CSS custom-property names below are unchanged, cosmetic-only
+	   and out of scope for that rename). Same day, groupBorderColour was
+	   renamed a second time to groupBorderColourHover once a genuine NEW
+	   resting-state pair (groupBorderColour / groupBorderColourGradient)
+	   was added — see the `--sgs-mm-group-border-resting` custom property
+	   consumed further down in the `cards` group rule. These defaults keep
+	   the marker chips + card fills + spotlight glow painted in the canvas,
+	   where render.php never runs. */
 	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent-bg, var( --wp--preset--color--accent ) ) 10%, transparent );
 	--sgs-mm-soft-image: color-mix( in srgb, var( --sgs-mm-accent-image, var( --wp--preset--color--accent ) ) 10%, transparent );
 	--sgs-mm-card: rgba( 255, 255, 255, 0.6 );
@@ -262,6 +270,13 @@
 	padding: 17px;
 	border-radius: 15px;
 	border: 1px solid var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) );
+	/* NEW resting-state border-colour override (2026-08-28, Bean-ruled) —
+	   `--sgs-mm-group-border-resting` is only set inline by edit.js when an
+	   operator has picked a resting colour; unset falls back to the SAME
+	   --sgs-mm-panel-border value the `border:` shorthand above already
+	   uses, so this declaration is behaviour-neutral by default. Longhand
+	   after the shorthand wins at equal specificity (source order). */
+	border-color: var( --sgs-mm-group-border-resting, var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) ) );
 	background-color: var( --sgs-mm-card );
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item {

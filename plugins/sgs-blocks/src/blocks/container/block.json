@@ -89,7 +89,7 @@
 						"css:letter-spacing": "native:typography.letterSpacing",
 						"css:font-style": "native:typography.fontStyle",
 						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
+						"css:text-align": "textAlign",
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-width": "borderWidth",

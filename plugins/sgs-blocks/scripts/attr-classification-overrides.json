@@ -255,7 +255,8 @@
       "slug": "sgs/quote",
       "attr": "attributionFontFamily",
       "fields": {
-        "derived_selector": ".sgs-quote__attribution"
+        "derived_selector": ".sgs-quote__attribution",
+        "css_element": "attribution"
       }
     },
     {
@@ -1266,6 +1267,7 @@
       "attr": "navBg",
       "fields": {
         "css_property": "background-color",
+        "css_layer": "OUTER",
         "role": "color",
         "css_element": "wrapper"
       }
@@ -1739,7 +1741,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1747,7 +1750,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1755,7 +1759,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1763,7 +1768,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1771,7 +1777,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1779,7 +1786,8 @@
       "attr": "bgKenBurns",
       "fields": {
         "role": "css-gate",
-        "css_property": "animation"
+        "css_property": "animation",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2860,6 +2868,55 @@
         "css_element": "title"
       },
       "_why": "Declares the DB row db-consistency check #8 flagged as a rogue seed. It was neither rogue nor stray: until 2026-08-26 sgs_typography_css_rule() had no font-family branch, so sgs/product-card emitted the title font-family block-privately and the derived classifier had no standard route to declare. G4 gave the shared helper that branch and deleted the block-private emission in the same commit, which makes titleFontFamily -> font-family a true standard-route mapping. css_element is \"title\" to match its five siblings (titleColour / titleFontSize / titleFontStyle / titleFontWeight / titleLineHeight), every one of which already resolves to that element — titleFontFamily was the lone NULL among them, which is the footprint of the removed workaround rather than a seeding error."
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "columns",
+      "fields": {
+        "css_property": "--sgs-card-grid-columns",
+        "css_layer": "GRID"
+      },
+      "_why": "2026-08-28 routing-collision fix. `columns` does NOT paint grid-template-columns: render.php:477 emits the CUSTOM PROPERTY `--sgs-card-grid-columns` (plus -tablet/-mobile), which style.css:5-7 then feeds into `grid-template-columns: repeat(var(--sgs-card-grid-columns,3),1fr)`. The standard derivation assigned `grid-template-columns` from the property_suffixes row `Columns -> grid-template-columns`, which is correct for a track-list attr and wrong for a COUNT. That mis-derivation made `columns` contend with `gridTemplateColumns` (declared in the `grid` element's own attrMap) for the SAME routing slot: db-consistency Check #1 reported amb:sgs/card-grid:grid-template-columns:wrapper_css:wrapper:None:None, where the resolver silently picks by rowid. css_element cannot separate them here -- unlike sgs/post-grid (columns=inner, gridTemplateColumns=wrapper, two real nodes), card-grid puts `sgs-card-grid` AND the uid class on ONE element (render.php:456-462), so both genuinely resolve to the same node. Naming the custom property is the truthful disambiguation, and it is what this file's _doc calls a code-DOES vs code-MEANS record (cf. sgs/tabs tabIndicatorColour). Safe for the converter, which already models custom properties: services/l2_qualify.py:198 and services/fold_helpers.py:358 both branch on startswith('--'). Effect: gridTemplateColumns becomes the sole owner of grid-template-columns -- correct, because it is also the one that WINS in the browser (equal specificity, wrapper's inline <style id=uid> emitted after the lifted style.css) and the only one able to express asymmetric tracks a clone may carry."
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "order",
+      "fields": {
+        "css_element": "wrapper"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Genuine Cause C — order is scoped via a non-standard per-instance MD5-hash scope class (sgs-media-{hash}) rather than the usual .{uid} pattern, but the classification shape is identical: bare root selector, no BEM element token. css_property is already correctly derived as 'order' (verified against block_attributes before writing this entry) — only css_element was missing. 'wrapper' per the isWrapper:true convention documented on this same block's own 'media' element (block.json _note_css_element_resolves_to_wrapper)."
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "surfaceOpacity",
+      "fields": {
+        "css_element": "dialog"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — modifies a sibling attr's value via color-mix() rather than owning its own attrMap key, so the classifier never resolved an element. css_property is already correctly derived as 'background-color' (verified against block_attributes before writing this entry) — only css_element was missing. 'dialog' is the block's own declared root element (block.json supports.sgs.elements.dialog, also named in its top-level elements array)."
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "anchor",
+      "fields": {
+        "css_element": "dialog"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — an enum driving a multi-property geometry function, not a clean 1:1 attrMap shape. css_property is already correctly derived as 'max-width' (verified against block_attributes before writing this entry) — only css_element was missing. 'dialog' is the block's own declared root element (block.json supports.sgs.elements.dialog)."
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "backgroundMedia",
+      "fields": {
+        "css_element": "decorative"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). The proposal doc flagged this row as needing the element key CONFIRMED before writing, not assumed as 'wrapper'. Read cta-section/block.json directly: its 'decorative' element (order 9) is explicitly documented as covering 'Background image/video (backgroundImage*/backgroundMedia/bgVideo*)... governed by dedicated controls outside the Text/Fill/Layout style clusters' — NOT the 'wrapper' element, which is a separate manifest entry scoped to fill/layout/animation clusters (background-color, padding, margin, border, max-width, min-height, box-shadow, parallax/duration, text colour). css_property is already correctly derived as 'background-image' (verified against block_attributes before writing this entry) — only css_element was missing."
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaObjectPositionTablet",
+      "fields": {
+        "css_element": "split-media"
+      },
+      "_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — the desktop sibling (splitMediaObjectPosition) already claims the attrMap key on this element, so the tablet tier falls through the classifier unresolved (narrow resolver gap, worked around here rather than debugged further). css_property is already correctly derived as 'object-position' (verified against block_attributes before writing this entry) — only css_element was missing. 'split-media' is the element declared 2026-08-15 for this same block (see sgs/hero splitImageMobileObjectPosition history in this file's header comment / CLAUDE.md) to close an earlier css_element drift orphan on the same family."
     }
   ]
 }

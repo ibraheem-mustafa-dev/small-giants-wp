@@ -753,7 +753,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 23,
+        "paintDeclarations": 24,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -907,7 +907,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
       },
@@ -1012,7 +1012,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 13,
+        "paintDeclarations": 14,
         "replacedCoreSupports": []
       }
     },
@@ -1240,7 +1240,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 42,
+        "paintDeclarations": 43,
         "replacedCoreSupports": []
       }
     },
@@ -1596,7 +1596,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
       },
@@ -1616,7 +1616,7 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": true,
+        "media": false,
         "animation": false
       },
       "qualifies": {

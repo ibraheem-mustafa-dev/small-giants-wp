@@ -156,10 +156,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		headings,
 		colourScheme,
-		accentBackground,
-		accentBorderColour,
-		accentBorderColourGradient,
-		accentTextColour,
+		iconBackground,
+		groupBorderColour,
+		groupBorderColourGradient,
+		groupBorderColourHover,
+		groupBorderColourGradientHover,
+		iconColour,
 		accentBackgroundImage,
 		maxWidth,
 		panelPadding,
@@ -187,21 +189,29 @@ export default function Edit( { attributes, setAttributes } ) {
 	// down through the DOM from this root to every descendant regardless of
 	// display type, so editor.css can consume them on `.sgs-mega-panel__content`
 	// / `.sgs-mega-aside` even though those are separate elements.
-	const accentBackgroundValue = colourVar( accentBackground ) || 'var(--wp--preset--color--accent)';
-	const accentBorderValue = colourVar( accentBorderColour ) || 'var(--wp--preset--color--accent)';
-	const accentTextValue = colourVar( accentTextColour ) || 'var(--wp--preset--color--accent)';
+	const iconBackgroundValue = colourVar( iconBackground ) || 'var(--wp--preset--color--accent)';
+	const groupBorderValue = colourVar( groupBorderColourHover ) || 'var(--wp--preset--color--accent)';
+	const iconColourValue = colourVar( iconColour ) || 'var(--wp--preset--color--accent)';
 	const accentImageValue = colourVar( accentBackgroundImage ) || 'var(--wp--preset--color--accent)';
 	const shellStyle = {
 		// Per-role accent custom properties (D643) — style.css derives
 		// --sgs-mm-soft / --sgs-mm-soft-image from -bg / -image via color-mix();
 		// -text / -border are consumed directly.
-		'--sgs-mm-accent-bg': accentBackgroundValue,
-		'--sgs-mm-accent-border': accentBorderValue,
-		'--sgs-mm-accent-text': accentTextValue,
+		'--sgs-mm-accent-bg': iconBackgroundValue,
+		'--sgs-mm-accent-border': groupBorderValue,
+		'--sgs-mm-accent-text': iconColourValue,
 		'--sgs-mm-accent-image': accentImageValue,
 		'--sgs-mm-panel-bg': panelBg ? colourVar( panelBg ) || panelBg : undefined,
 		'--sgs-mm-panel-border': borderColour
 			? colourVar( borderColour ) || borderColour
+			: undefined,
+		// NEW resting-state group-tile border override (2026-08-28, Bean-ruled) —
+		// only set when the operator has picked a resting colour; unset means
+		// "inherit the cards tile's existing --sgs-mm-panel-border-derived
+		// border", matched in style.css via a `var(..., var(--sgs-mm-panel-border))`
+		// fallback chain (see that file's `.sgs-mega-group` cards rule).
+		'--sgs-mm-group-border-resting': groupBorderColour
+			? colourVar( groupBorderColour ) || groupBorderColour
 			: undefined,
 		'--sgs-mm-group-gap': groupGap?.desktop || undefined,
 		'--sgs-mm-aside-w': asideWidth || undefined,
@@ -247,17 +257,27 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			{ /* GROUND-TRUTH: block.json attributes.panelBg / borderColour /
-			   accentBackground / accentBorderColour / accentTextColour /
-			   accentBackgroundImage (plain string colour attrs) +
-			   render.php:80-360 (each accent* attribute resolves to its OWN
+			   iconBackground / groupBorderColour / groupBorderColourHover /
+			   iconColour / accentBackgroundImage (plain string colour attrs) +
+			   render.php:80-360 (each attribute resolves to its OWN
 			   --sgs-mm-accent-bg / -border / -text / -image custom property,
 			   consumed by exactly ONE real CSS property each — background-color
 			   via the derived --sgs-mm-soft, border-color, color, and the aside
 			   spotlight's background-image via the derived --sgs-mm-soft-image
 			   — split 2026-08-16 (D643) from the single `accent` attribute that
-			   previously drove all four at once) + style.css (panelBg ->
-			   background-color, borderColour -> border-color). Confirmed
-			   2026-08-16 against the live source before wiring these rows. All
+			   previously drove all four at once, then renamed 2026-08-28 [NULL
+			   css_element fix proposal §5] from accentBackground/
+			   accentBorderColour/accentTextColour to iconBackground/
+			   groupBorderColour/iconColour, and — same day, once Bean ruled a
+			   genuine resting-state border should exist alongside the hover —
+			   groupBorderColour/groupBorderColourGradient renamed a second time
+			   to groupBorderColourHover/groupBorderColourGradientHover, freeing
+			   the base names for the NEW resting pair) + style.css (panelBg ->
+			   background-color, borderColour -> border-color, the new
+			   --sgs-mm-group-border-resting -> the cards tile's resting
+			   border-color). Confirmed 2026-08-16 against the live source
+			   before wiring these rows; resting pair confirmed 2026-08-28
+			   against the same render.php/style.css/block.json triad. All
 			   single-state, `linked: true` per D619 (all previously used
 			   `linked` on their DesignTokenPicker already). */ }
 			<SgsColourPanel
@@ -292,46 +312,57 @@ export default function Edit( { attributes, setAttributes } ) {
 						],
 					},
 					{
-						key: 'accentBackground',
+						key: 'iconBackground',
 						label: __( 'Accent background', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: accentBackground,
+								value: iconBackground,
 								onChange: ( val ) =>
-									setAttributes( { accentBackground: val ?? 'accent' } ),
+									setAttributes( { iconBackground: val ?? 'accent' } ),
 								linked: true,
 							},
 						],
 					},
 					{
-						key: 'accentBorderColour',
-						label: __( 'Accent border colour', 'sgs-blocks' ),
+						key: 'groupBorderColour',
+						label: __( 'Group border colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: accentBorderColour,
+								value: groupBorderColour,
 								onChange: ( val ) =>
-									setAttributes( { accentBorderColour: val ?? 'accent' } ),
+									setAttributes( { groupBorderColour: val ?? '' } ),
 								linked: true,
-								gradientValue: accentBorderColourGradient,
+								gradientValue: groupBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { accentBorderColourGradient: val ?? '' } ),
+									setAttributes( { groupBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: groupBorderColourHover,
+								onChange: ( val ) =>
+									setAttributes( { groupBorderColourHover: val ?? 'accent' } ),
+								linked: true,
+								gradientValue: groupBorderColourGradientHover,
+								onGradientChange: ( val ) =>
+									setAttributes( { groupBorderColourGradientHover: val ?? '' } ),
 							},
 						],
 					},
 					{
-						key: 'accentTextColour',
+						key: 'iconColour',
 						label: __( 'Accent text colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: accentTextColour,
+								value: iconColour,
 								onChange: ( val ) =>
-									setAttributes( { accentTextColour: val ?? 'accent' } ),
+									setAttributes( { iconColour: val ?? 'accent' } ),
 								linked: true,
 							},
 						],

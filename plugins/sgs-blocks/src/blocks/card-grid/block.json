@@ -127,7 +127,14 @@
 					"label": "Card image",
 					"order": 3,
 					"clusters": [],
-					"_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.)"
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:filter": "grayscaleHover"
+							}
+						}
+					},
+					"_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"image-wrap": {
 					"label": "Image wrapper",

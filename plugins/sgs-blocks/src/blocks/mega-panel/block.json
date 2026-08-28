@@ -58,6 +58,41 @@
 						"css:width": "asideWidth"
 					},
 					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key)."
+				},
+				"icon": {
+					"label": "Icon chip",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "iconBackground",
+						"css:color": "iconColour"
+					},
+					"_note": "CROSS-BLOCK REUSE (2026-08-28, NULL css_element fix proposal §5): the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (CF-10, see the `panel` element's own note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal, render.php §4) classify to a real owning element instead of drifting to NULL css_element, matching the same cross-block-reuse documentation pattern already used elsewhere in this codebase (e.g. how a composite documents a child-owned selector it paints but does not declare controls for)."
+				},
+				"group": {
+					"label": "Group tile",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-color": "groupBorderColour",
+						"css:border-color-gradient": "groupBorderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "groupBorderColourHover",
+								"css:border-color-gradient": "groupBorderColourGradientHover"
+							}
+						}
+					},
+					"_note": "Targets `.sgs-mega-group` (resting) and `.sgs-mega-group:hover, .sgs-mega-group:focus-within` (hover) — both scoped to the `cards` style's tile only (render.php §4 card hover-lift); `columns`/`minimal` styles render no group-tile border at all. RENAMED 2026-08-28 (NULL css_element fix proposal §5): accentBorderColour -> groupBorderColour, accentBorderColourGradient -> groupBorderColourGradient. Bean then ruled, same day, that a genuine RESTING-state border control should exist alongside the hover — the original code only ever had a hover/focus-within border with no resting equivalent (the resting border on `cards` came solely from the `panel` element's shared --sgs-mm-panel-border token). groupBorderColour/groupBorderColourGradient (this element's BASE attrMap) are the new resting pair, default empty string so a fresh instance renders no colour override at rest — the `cards` tile keeps its existing --sgs-mm-panel-border-derived border unchanged until an operator sets one. The just-renamed groupBorderColour/groupBorderColourGradient were immediately re-renamed a second time, same day, to groupBorderColourHover/groupBorderColourGradientHover (base name = resting, base+Hover = hover — this codebase's own convention, e.g. backgroundColourHover) to make room for the new resting pair without a naming clash. Both pairs keep the same paired css:border-color + css:border-color-gradient shape in a single attrMap entry, per this codebase's established gradient-override convention."
 				}
 			},
 			"hideExtensions": [
@@ -86,25 +121,35 @@
 			"default": "light",
 			"enum": [ "light", "dark", "auto" ]
 		},
-		"accentBackground": {
+		"iconBackground": {
 			"type": "string",
 			"default": "accent",
-			"_note": "Split from the old single `accent` attribute (D643, Bean-ruled: one colour attribute secretly painting 4 unrelated CSS properties blocks the gradient rollout — each property needs its own control). Feeds the icon-chip `background-color` (via the derived `--sgs-mm-soft` 10% tint) across all 3 group styles. Default unchanged from the retired `accent` attribute so existing rendering is preserved exactly."
+			"_note": "Renamed from `accentBackground` (2026-08-28, NULL css_element fix proposal §5) — split from the old single `accent` attribute (D643, Bean-ruled: one colour attribute secretly painting 4 unrelated CSS properties blocks the gradient rollout — each property needs its own control). Feeds the icon-chip `background-color` (via the derived `--sgs-mm-soft` 10% tint) across all 3 group styles. Default unchanged from the retired `accent` attribute so existing rendering is preserved exactly. The generic name matches the established codebase convention (attribute name = generic `<element><Property>Colour`, default = bare token slug) and closes a NULL css_element classification gap via the new `icon` manifest element below."
 		},
-		"accentBorderColour": {
-			"type": "string",
-			"default": "accent",
-			"_note": "Split from the old single `accent` attribute (D643). Feeds `border-color` on the `cards` style's hover/focus-within state, and is the DEFAULT source colour for the aside separator's border-left (asideSeparator.colour still overrides). Default unchanged from the retired `accent` attribute."
-		},
-		"accentBorderColourGradient": {
+		"groupBorderColour": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the `cards` style's hover/focus-within border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over accentBorderColour on that hover/focus-within state only — accentBorderColour has no resting-state border of its own to override (render.php)."
+			"_note": "NEW resting-state border-colour control (2026-08-28, Bean-ruled) — added alongside the pre-existing hover-only pair, which is now renamed groupBorderColourHover/groupBorderColourGradientHover (see below and the `group` manifest element's own note for the full rename chain: accentBorderColour -> groupBorderColour -> groupBorderColourHover). Default empty string: renders NO colour override at rest, so a fresh instance keeps its existing --sgs-mm-panel-border-derived `cards`-style tile border (render.php §4) exactly as before this attribute existed. Feeds `border-color` on `.sgs-mega-group` (cards style only) via the `--sgs-mm-group-border-resting` custom property, with a `var(..., var(--sgs-mm-panel-border))` fallback chain so an unset value is behaviour-neutral."
 		},
-		"accentTextColour": {
+		"groupBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "NEW resting-state gradient override (2026-08-28), paired with groupBorderColour above. Non-empty wins over groupBorderColour on the SAME resting `.sgs-mega-group` (cards style) border via a masked ::before ring (D636 border-gradient rollout) — independent of the hover pair's own groupBorderColourGradientHover."
+		},
+		"groupBorderColourHover": {
 			"type": "string",
 			"default": "accent",
-			"_note": "Split from the old single `accent` attribute (D643). Feeds the icon-chip `color` (icon glyph colour) across all 3 group styles. Default unchanged from the retired `accent` attribute."
+			"_note": "Renamed from `groupBorderColour` (2026-08-28) — itself renamed from `accentBorderColour` earlier the same day (NULL css_element fix proposal §5), then renamed again to make room for the new resting groupBorderColour pair above once Bean ruled a genuine resting-state border should exist too. Split from the old single `accent` attribute (D643). Feeds `border-color` on the `cards` style's hover/focus-within state, and is STILL the default source colour for the aside separator's border-left (asideSeparator.colour still overrides) — that dependency reads the resolved `--sgs-mm-accent-border` custom property, unchanged by this rename. Default unchanged ('accent') across every name in the chain."
+		},
+		"groupBorderColourGradientHover": {
+			"type": "string",
+			"default": "",
+			"description": "Renamed from `groupBorderColourGradient` (2026-08-28) — itself renamed from `accentBorderColourGradient` earlier the same day. CSS gradient string painting the `cards` style's hover/focus-within border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over groupBorderColourHover on that hover/focus-within state only."
+		},
+		"iconColour": {
+			"type": "string",
+			"default": "accent",
+			"_note": "Renamed from `accentTextColour` (2026-08-28, NULL css_element fix proposal §5) — split from the old single `accent` attribute (D643). Feeds the icon-chip `color` (icon glyph colour) across all 3 group styles. Default unchanged from the retired `accent` attribute. The generic name matches the established codebase convention and closes a NULL css_element classification gap via the new `icon` manifest element below."
 		},
 		"accentBackgroundImage": {
 			"type": "string",

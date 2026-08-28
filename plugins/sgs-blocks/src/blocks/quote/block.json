@@ -49,7 +49,8 @@
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:box-shadow": "boxShadowHover",
 								"css:box-shadow-color": "boxShadowHoverColour",
-								"css:border-color": "borderColourHover"
+								"css:border-color": "borderColourHover",
+								"css:color": "textColourHover"
 							}
 						}
 					}

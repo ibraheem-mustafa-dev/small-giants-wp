@@ -44,7 +44,8 @@
 					"isWrapper": true,
 					"prefix": "",
 					"attrMap": {
-						"css:background-color": "drawerBg"
+						"css:background-color": "drawerBg",
+						"css:background-image": "drawerBgGradient"
 					},
 					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix); border-width/style/color/radius resolve via the skip-serialised native __experimentalBorder support (nativeSupportsPath), not a flat attr. Geometry (position/inset/width/height) is now driven by `anchor` (per-device enum) + `panelSize` (per-device length, trigger/centred only) rather than the retired `edge`/`width` scalars — see render.php's geometry_css_for closure. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
 				},
@@ -68,6 +69,16 @@
 					"clusters": [ "text" ],
 					"prefix": "toggleClose",
 					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColour resolves css:color via the default {prefix}{suffix} convention (toggleClose + Colour). The button's :hover opacity fade and its :focus-visible outline have NO per-block attribute behind them — an uncontrollable-styling finding, not a manifest gap (no state is declared for this element for that reason). The outline is NOT hardcoded, though: since D467 it resolves var(--sgs-focus-color, currentColor), so it follows the site-wide focus token. Line numbers deliberately omitted — the earlier ones had drifted."
+				},
+				"decorative": {
+					"label": "Decorative background",
+					"layer": "OUTER",
+					"order": 4,
+					"clusters": [],
+					"attrMap": {
+						"css:background-image": "backgroundImage"
+					},
+					"_note": "The `.{uid}::before` pseudo-element background-media layer. Declared 2026-08-28 to resolve a routing collision: `backgroundImage` and `drawerBgGradient` BOTH resolved to css_property=background-image on css_element=wrapper, identical on every routing axis, so db-consistency reported AmbiguousLayerAttrError (cssprop:ambiguous:sgs/nav-drawer:background-image:OUTER:wrapper::) and the clone-time resolver picked by rowid. They are NOT the same target: render.php:201-210 states the image paints on `.{uid}::before` and NEVER on the dialog root, precisely because the root already carries drawerBg/drawerBgGradient and a background-image there would overwrite the gradient rather than layer with it. Mirrors sgs/container's media-LAYER pattern and reuses the `decorative` element token sgs/cta-section already declares for its identical background-media layer (cta-section.backgroundMedia -> background-image -> decorative). Only backgroundImage is claimed here; the size/position/repeat/attachment companions keep their existing routing."
 				}
 			}
 		},

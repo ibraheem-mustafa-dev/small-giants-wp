@@ -96,7 +96,14 @@
 					"label": "Image",
 					"order": 2,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover/imageZoomHover, not the Text/Fill/Layout style clusters."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:filter": "grayscaleHover"
+							}
+						}
+					},
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover/imageZoomHover, not the Text/Fill/Layout style clusters. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"caption": {
 					"label": "Caption",
