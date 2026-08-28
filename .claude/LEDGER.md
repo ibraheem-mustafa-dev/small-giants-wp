@@ -40,7 +40,7 @@ The **consolidation** track is summarised in the next block and is CLOSED bar on
 The fifth is the **editor-errors / nav-drawer** track (D742) — CLOSED, section at the bottom.
 
 ⭐ **If you are the client-controls track:** read
-`.claude/prompts/2026-08-28-rollout-detectors-and-the-null-element-tail.md` — it carries EVERY
+`.claude/prompts/2026-08-29-recovery-residuals-and-the-root-filter-nogo.md` — it carries EVERY
 remaining task on this track. Every predecessor was executed and DELETED; a reference to
 `check-a-backlog-and-the-settled-designs` or its four forerunners is stale.
 
@@ -204,7 +204,7 @@ it measured clean in both arms. `probe-row-collapse-reduced-motion.mjs`. ⛔ Edi
 `patterns/framework-header-default.php` is what renders.
 ⛔ **Parked:** `P-PARTICLE-TRAIL-VARIATIONS` (post-launch, Bean's timing).
 
-## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped). Detail: D731/D732/D733,
+## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4). Detail: D731/D732/D733,
 Spec 32 §6.1(a1)/(a2), Spec 35 Part K. shop-archive: Phase 3 ownership moved 2026-08-27 to
 `.claude/prompts/2026-08-28-finish-the-template-review.md` — do not restart it here.
 

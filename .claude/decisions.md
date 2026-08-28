@@ -1,3 +1,51 @@
+## D883 [INCIDENT] — 553 lines lost to a false completion claim, not to the stash that took them; card-grid and nav-drawer routing collisions root-caused; root-filter capability returns council NO-GO
+
+**Date:** 2026-08-29
+
+**Recovery.** A 2026-08-27 session reported the Cause A/B `css_element` classifier as "fixed and
+committed" while `git log -1` on that path still showed `f10f52dac` (2026-08-23). Nothing protected
+it, so a peer's `git stash` (ref later dropped) took all 553 lines. Recovered INTACT from dangling
+commit `d3997a7a3` via `git checkout <sha> -- <path>` — not rebuilt — committed as `297e98855` and
+preserved as tag `recovered-cause-ab`. **The stash was proximate; the false completion claim was
+root.** Measured: `--self-test` 8/8, task-a `resolved` 503 -> 509, and the three reverted rows
+(`card-grid.textColourHover`->item, `nav-drawer.toggleCloseColourHover`->close,
+`post-grid.backgroundColourHover`->card) resolve again while `post-grid.textColourHover` correctly
+stays NULL. ⛔ `--self-test` PASSES on the reverted file too, so it could not gate the recovery.
+
+**Two routing collisions closed; F6 12 findings -> 0 NEW.** `sgs/card-grid`: `columns` and
+`gridTemplateColumns` both claimed `grid-template-columns` on one node (card-grid's grid IS the
+wrapper root, unlike post-grid whose grid is a separate `inner` node — which is why post-grid never
+collided). Fixed by naming what `columns` actually emits: `css_property: --sgs-card-grid-columns`
++ `css_layer: GRID`. First precedent for a custom-property `css_property` (0 existed before).
+`sgs/nav-drawer`: `backgroundImage` paints `.{uid}::before` and NEVER the root (render.php:201-210)
+while `drawerBgGradient` paints the root; declared a `decorative` element mirroring `sgs/cta-section`.
+Plus 8 attr-level ghost rows pruned (button x4 from the committed rename, mega-panel x4).
+
+**`gridTemplateColumns` is NOT dead — retraction.** A census reading 0 non-comment reads in
+render.php/edit.js was the WRONG INSTRUMENT: the shared wrapper is the reader. `check-dead-controls`
+reports all 10 blocks `renderConsumed:true, controlPresent:true`; clients reach it via the Layout
+dropdown's Grid option. A deletion plan for 9 blocks was retracted before any block was edited.
+
+**Root-filter capability: NO-GO (adversarial council, 5 of 6 reported; grades D/D+/D+/D+/C+).**
+Do not build Shapes A/B/C. Convergent: (1) `grayscaleHover` is grey-at-rest/colour-on-hover — the
+INVERSE of the draft, plus wrong element, trigger, amount and no reduced-motion; `css_state='hover'`
+is a false declaration. (2) A live Rule 4 silent drop exists today — `state_value_lift.py:139`
+`return parsed > 0` renders `grayscale(0.4)` as 100% with no gap row; fix independent of any shape.
+(3) Demand is ZERO across all five client mockups. (4) CSS passthrough already carries this and was
+omitted from the brief. (5) Shape C is disqualified — `filter` creates a containing block and would
+break container/hero's `position:fixed` parallax. (6) Shape A is inert: `_BASE_ELEMENTS` is
+`("",root,self)`; `wrapper`/`grid` ship a dead attribute.
+
+**Also shipped:** `sgs/form` six-track grid (`repeat(6,1fr)`, half=span 3, third=span 2) — twelve
+blocks offered a "Third width" that rendered as a half; live-verified thirds 434px x3 one row,
+halves 658px x2 one row. `node_modules` restored 0 -> 972 (no track could build). TIER 3.20 given
+the schema guard its unguarded `css_element` query needed.
+
+**Method note.** FOUR too-narrow greps produced confident FALSE answers in one day (shared-helper
+reader; flat key vs nested JSON; multi-line imports; `style.css` vs webpack's `style-index.css`).
+Each was caught only by adding a positive control. STOPs added: false-completion-claim,
+grep-needs-positive-control, self-test-without-the-feature. Floor 265 -> 268.
+
 ## D881 [ROUTINE] — Shape A closed (10 blocks); the codemod dropped `linked` and never imported the component; a palette-token border colour painted nothing on container/product-card; the button rename had never migrated its stored content
 
 **2026-08-29.** Task 0's Shape-A rollout finished — `PRIVATE_NEEDS_SWAP 8 → 0`,

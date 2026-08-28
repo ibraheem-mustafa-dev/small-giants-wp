@@ -23,6 +23,64 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-A-DISPATCH-REPORT-DESCRIBING-A-PLAN-IS-NOT-COMPLETION** — NEW 2026-08-28. A dispatched
+  agent returned after ~70 seconds (vs 30-50+ minutes for comparable tasks) with a report that
+  DESCRIBED a plan to dispatch further work, rather than doing the work itself. No file, no commit,
+  no diff existed. Caught only by checking `git status`/`git log` directly rather than trusting the
+  report's prose. **A short duration + a report phrased as "I will now..." rather than "I did..." is
+  a red flag on its own — verify a real artefact (commit hash, file mtime, self-test output) exists
+  before accepting any completion claim, especially a fast one.**
+
+- **STOP-A-TWO-AGENTS-DISPATCHED-ON-THE-SAME-FILE-PATH-COLLIDE** — NEW 2026-08-28. A confused first
+  dispatch attempt (see the entry above) apparently spawned a genuine child agent internally before
+  returning early — leaving an UNEXPECTED second agent running on the exact same task, writing to
+  the exact same file path as a deliberately-dispatched retry. Neither agent knew about the other.
+  One detected the clobber mid-write and crashed restoring its own version; the survivor's work was
+  the one that landed. **Before re-dispatching a retry for a task whose first attempt behaved oddly
+  (fast, evasive, or exit-without-artefact), check `ListAgents` for an unexpected still-running
+  agent on the same topic — a "failed" or "returned early" dispatch may have left live children.**
+
+- **STOP-A-FALSE-COMPLETION-CLAIM-IS-HOW-WORK-IS-LOST** — NEW 2026-08-29. On 2026-08-28 a session
+  reported the css_element classifier as "fixed and **committed**" at 20:29Z while `git log -1` on
+  that path still showed a commit from five days earlier. Because everyone believed it was safe,
+  nothing protected it, and a peer's `git stash` (ref later dropped) took all 553 lines; it survived
+  only as a dangling commit recovered via `git fsck --unreachable`. The stash was the PROXIMATE
+  cause; the false claim was the ROOT cause. **Before writing "committed" in any status, report or
+  handoff, run `git log -1 -- <path>` and read the DATE back.** Corollary: on a five-track shared
+  worktree, uncommitted work is not "saved" — a dangling commit can be preserved with `git tag`.
+
+- **STOP-A-GREP-RETURNING-ZERO-NEEDS-A-POSITIVE-CONTROL** — NEW 2026-08-29. Four separate times on
+  2026-08-28 a too-narrow grep returned 0 and produced a CONFIDENT FALSE conclusion, each of which
+  would have caused a wrong action: (a) `gridTemplateColumns` absent from render.php/edit.js read as
+  "dead attribute on 10 blocks" when the SHARED WRAPPER is the reader — nearly deleted a live,
+  client-reachable feature from 9 blocks; (b) a flat key grepped against nested JSON returned `None`
+  for every row AND made the negative control pass; (c) `import.*X` missed multi-line import lists,
+  reading as "peer shipped undefined references"; (d) `find -name style.css` on the server missed
+  webpack's `style-index.css`, reading as "not deployed". **A grep returning 0 is a HYPOTHESIS.**
+  Before acting on absence, grep something you KNOW exists in the same file the same way; if the
+  control also returns 0, the pattern is wrong, not the world.
+
+- **STOP-A-A-SELF-TEST-THAT-PASSES-WITHOUT-THE-FEATURE-IS-NOT-A-GATE** — NEW 2026-08-29.
+  `extract-signatures.py --self-test` returned 8/8 PASS on the file with the Cause A/B
+  implementation REMOVED, so it could not gate that work's recovery even though it looked like the
+  obvious gate. Separately the same day, a fidelity probe "passed" its negative control only because
+  a broken lookup returned `None` for everything, positive cases included. **A negative control that
+  passes while every positive control fails is not a control — it is the same bug twice.** Gate a
+  recovery on a signal that DIFFERS between present and absent (symbol count, row values), and
+  always pair a negative control with a positive one that must pass.
+
+- **STOP-A-TWO-BYPASS-LAYERS-NOT-ONE** — NEW 2026-08-28. This repo has TWO independent commit-gate
+  layers that look identical in their printed output (same F5/F6/cheat-gate report format) but have
+  DIFFERENT bypass mechanisms: the session-scoped Claude Code PreToolUse hook (`f5-commit-gate.py`,
+  bypassed via a `[gates-ok:<reason>]` token in the commit message) and git's own native
+  `.githooks/pre-commit` (no token support, only `--no-verify`). A commit can clear the first and
+  still be blocked by the second. **When a commit is blocked with this report shape, check which
+  layer is actually blocking (the exact wording differs — "PreToolUse...permissionDecision" vs
+  "pre-commit BLOCKED by F5 gate") before assuming your `[gates-ok:]` token was ignored or
+  malformed** — it may simply not apply to the layer that's currently blocking. Never use
+  `--no-verify` without checking every reported violation is genuinely pre-existing and
+  disclosed first, and never without the user's explicit go-ahead per this project's hook policy.
+
 - **STOP-A-CENSUS-IS-ONLY-AS-WIDE-AS-ITS-CORPUS** — NEW 2026-08-22 (D740). D717 measured that the
   overlay row was "the ONLY colour row missing `linked`", against ~40 rows that had it, and shipped
   that claim into a decision entry. It was true of the corpus examined — `SgsColourPanel` ROWS — and
