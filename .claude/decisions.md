@@ -1,4 +1,4 @@
-## D876 [ROUTINE] — Task 0 (SgsBorderControl) started: component proven on 2 blocks, real 47-block census corrects the 52/11 plan estimate, deterministic codemod build handed to next session
+## D876 [ROUTINE] — Task 0 (SgsBorderControl) started: component proven on 2 blocks, real 47-block census corrects the 52/11 plan estimate, deterministic Shape-A codemod built and proven; Shape B has no derivable target
 
 **2026-08-28.** Bean-directed: match WordPress core's native one-row border UI (Width/Style/
 Colour) while keeping SGS's own data ownership. Built `plugins/sgs-blocks/src/components/
@@ -32,11 +32,27 @@ now unified into the one-row composite).
 **Bean then asked for a deterministic codemod** built FROM the two proven migrations, rather than
 continuing to hand-edit blocks via dispatched agents. First dispatch attempt returned after ~70
 seconds with a description of a plan rather than actual work (no commit, no new file) — caught by
-checking `git status`/`git log` directly rather than trusting the report, and re-dispatched with
-an explicit correction. Check the script tree for `migrate-border-control.py` (or a `--fix` mode
-on the survey script) before assuming it doesn't exist. **Do not apply it to the remaining 45
-blocks without reading its own proof-against-the-2-references output first** — it was built to be
-independently verified, not assumed correct on the strength of any dispatch report alone.
+checking `git status`/`git log` directly rather than trusting the report. The retry collided with
+an unexpected duplicate agent (apparently spawned by the confused first attempt) writing to the
+same file path — one crashed mid-restore after detecting the clobber, the survivor finished
+cleanly. **Built and committed** (`3c1625e64`):
+`plugins/sgs-blocks/scripts/migrate-border-control.js`, proven via structural-equivalence
+self-test against both real commits (14/14 assertions, independently re-verified twice — once via
+the agent, once directly by re-running `--self-test` after the commit).
+
+Dry-run against the real 8-block Shape-A population: **6 fixable** (button, container,
+option-picker, process-steps, text, timeline) — `heading` and `icon-list` correctly REFUSED
+rather than forced (`heading` mounts border colour+style TWICE, once embedded once via a
+standalone `DesignTokenPicker` — needs Bean's call on which to keep; `icon-list`'s colour row is
+a conditional-spread array element, a genuinely different AST shape from both references).
+
+⛔ **Shape B (the 38 NATIVE_FULL blocks' render.php conversion) has NO codemod, and cannot be
+derived from the two references.** Neither `product-card` nor `quote` touched `render.php` when
+migrated — both were already `PRIVATE_NEEDS_SWAP` (full border attrs existed, only the edit.js UI
+needed composing), not `NATIVE_FULL` conversions. There is no proven render.php CSS-emission
+shape to build a Shape B codemod from; inventing one would be exactly the "guessing" `THE-
+MIGRATION-METHOD.md` forbids. **Next session must find or build a genuinely NEW reference example
+before attempting Shape B tooling** — do not assume this is solved.
 
 ⛔ **A false alarm along the way, worth recording so it isn't repeated:** a hard editor crash
 appeared to implicate `SgsBorderControl` (three investigation rounds, two clean non-repros in

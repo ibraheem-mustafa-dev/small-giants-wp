@@ -50,34 +50,79 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK — 2026-08-27: four carried items closed, three lift bugs opened
+## ▶ MAMA'S CLONE TRACK — 2026-08-28: D873's three lift bugs CLOSED; border-control migration
+## (Task 0) started, codemod build in flight
 
-⭐ **NEXT: `.claude/prompts/2026-08-29-clone-track-selector-lifts-and-doc-sweep.md`.** Its
-predecessor (`...-four-carried-clone-track-items.md`) is EXECUTED and DELETED — a reference to it
-is stale.
+⭐ **NEXT session: run the border-control migration's `--fix --apply`** once tonight's codemod
+build lands (agent in flight at session close — check `plugins/sgs-blocks/scripts/` for
+`migrate-border-control.py` or the `--fix` mode added to `survey-border-control-migration.py`).
+Read that script's own self-test/dry-run output before trusting it against real blocks — it was
+built and proven against 2 reference examples tonight but NOT yet applied to the other 45.
 
-**Closed:** button font-family (live-verified) · 375px card floor (D866, decision not bug —
-carousel stays 2-up, do not re-litigate) · converter numeric-type fix, 5 attrs, 724 tests
-(Bean-closed) · flexWrap tidy-up 100/100 verified · product-card font families + typed-card hover
-(deployed, captured).
+**D873's three lift bugs: ALL THREE CLOSED, not just DB-corrected — full detail in D875.**
+The three-bug framing was WRONG (it wasn't one shared shape); closing 1a and 1b surfaced two
+further genuine defects, both fixed and independently re-verified this session:
+- **1a** — DB fix (clear `derived_selector`) was NECESSARY BUT NOT SUFFICIENT. Real cause was a
+  converter dispatch-order bug (`db_lookup.py`'s CONTENT/GRID NULL-layer fallback had no
+  root-domain guard, letting `sgs/product-card`'s `ctaBorderWidth`/etc leak ahead of the correctly
+  OUTER-tagged card border). Fixed `acc9e7060`.
+- **1b** — a real converter bug (dropped gradient shorthand), not a data bug as first framed.
+  Fixing it surfaced a framework-wide defect: **78 `*Gradient` attrs** across every block family
+  carried a synthetic, unreachable `css_property` value. 72 fixed + a follow-on 13-row collision
+  fix (85 total), migration script self-tests + `--check` gate green, full converter suite
+  724/724 passed, live-verified across 2 cross-family blocks.
+- **1c** — DB fix confirmed correct (tag typography now varies per card variant, matching colour).
 
-⛔ **D851 DID NOT REPRODUCE.** Page 2884 stores line-heights as NUMBERS. The bug was real and is
-fixed; that page never showed it. Do not cite 2884 as evidence.
+⛔ **A related editor crash tonight was a WP-core issue, NOT a regression from this work** —
+`useBlockProps()`'s native block-visibility check racing the canvas iframe on `<ServerSideRender>`
+bound-mode cards. Full trace in D875. Do not re-investigate as if it were new; it's logged so a
+future recurrence isn't mistaken for one.
 
-**Open — three lift bugs sharing ONE shape:** a value exists in the draft, an attribute exists in
-the block, they never meet because the lift looks at a selector the draft doesn't use.
-(a) card-root border lands on the CTA button — a REGRESSION from `cfc12751f` (2026-08-22), which
-moved the border off WP's native path onto attrs seeded with `derived_selector`
-`.sgs-product-card__border`, an element in neither draft nor block; the controlled comparison is
-`backgroundColour` (no selector → lifted) vs the three border attrs (selector → nothing).
-(b) trial-card gradient dropped — never worked, not a regression. (c) trial tag's font-size
-doesn't lift though its colours do (modifier selector). **Build the detector, not three patches;
-design-gate first (shared converter).**
+## ▶ TASK 0 — SgsBorderControl (Bean-directed border-UI migration): 2/47 blocks migrated,
+## codemod build in flight at session close
 
-**Also open:** 5 stack-conversion candidates need Bean's screenshots (NOT 127 — that figure
-conflated 127 total rows / 85 non-no-op / 5 card-shaped) · the attr-schema gate is wired and
-ENFORCING in `scripts/orchestrator/pipeline-stage-gate.py` and should stay so · Bean's eye on the
-hover (R-31-13 unmet — CSS delivery proven, appearance not).
+**The component itself is proven** — composes 3 existing controls (`SgsBoxControl` border-width
+mode / `BorderStyleControl` / `GradientCapableColourControl`) into native's one-row layout.
+Live-verified on `sgs/product-card`: renders, values persist across save/reload, frontend
+correct. `sgs/quote` migrated identically tonight (`22943618b`).
+
+⚠ **The plan's 52-native/11-block-private split was WRONG — real counts (enumerated, not
+assumed): 38 NATIVE_FULL, 8 PRIVATE_NEEDS_SWAP, 7 ANOMALY (partial border support, needs human
+triage — filter-search, label, mega-aside, mega-panel, product-search, social-icons,
+whatsapp-cta), 2 PRIVATE_DONE, 28 no border support.** Census + ratcheted-ceiling gate (order 77,
+fast tier) in `plugins/sgs-blocks/scripts/survey-border-control-migration.py` — self-test passes,
+independently re-verified.
+
+**`button`'s naming normalised** (`colourBorder*` → `borderColour*`, Bean-approved, `89997c91f`)
+— matches every other block-private block's convention now. ⚠ `sgs-framework.db`'s classifier
+cache still has stale rows keyed on the OLD names (flagged `[gates-ok:...]` on the census commit)
+— a concurrent peer session's `/sgs-update --stage 1` run tonight should clear these; re-verify
+next session rather than assuming it landed.
+
+**Bean asked for a deterministic codemod** (built from the 2 proven examples) — DONE, committed
+`3c1625e64`. `plugins/sgs-blocks/scripts/migrate-border-control.js`, proven via structural-
+equivalence self-test against both real commits (14/14 assertions, independently re-verified).
+Dry-run against the real 8-block Shape-A population: **6 fixable** (button, container,
+option-picker, process-steps, text, timeline), **2 correctly refused** — `heading` (duplicate
+border-colour+style mount, needs Bean's call on which to keep) and `icon-list` (a
+conditional-spread colour row, genuinely different AST shape). ⛔ **Shape B has NO proven
+codemod target** — neither reference example touched `render.php` (both were already
+block-private before Task 0), so the 38 native-full blocks' render.php conversion has nothing to
+derive a codemod from. Do not assume Shape B tooling exists; it would need its own from-scratch
+proof against a genuinely-new-shape example.
+
+⭐ **NEXT SESSION, in order:** (1) `--fix --apply` the 6 confident Shape-A blocks, verify each
+live; (2) get Bean's call on `heading`'s duplicate mount and `icon-list`'s colour-row shape; (3)
+decide Shape B's approach fresh (no shortcut exists) for the 38 native blocks; (4) triage the 7
+ANOMALY blocks.
+
+**Also open:** 5 stack-conversion candidates surveyed — **0 need converting** (4 are dead
+patterns never inserted on any live page; the 5th, `single-product.html`, already stacks
+correctly at every breakpoint — optional cosmetic `flexDirection` tidy only). Close this item, no
+further action needed. Attr-schema gate confirmed wired and ENFORCING in
+`scripts/orchestrator/pipeline-stage-gate.py` (not the unrelated same-named hooks file — see
+D834's correction) — leave it so. Bean's eye on the product-card hover still R-31-13 unmet —
+Playwright was contended all night by concurrent sessions; retry next session.
 
 ### ⛔ The visual-diff bypasses CANNOT be retired — not a queue
 `source_sha` comes from STAGED bytes, so a report only certifies the commit it accompanies;
