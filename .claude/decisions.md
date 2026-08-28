@@ -258,9 +258,14 @@ not itself a deliverable.
 **Files:** `plugins/sgs-blocks/src/shared/effects/webgl/generative-background.js` (main target),
 `plugins/sgs-blocks/assets/css/fx-generative-background.css` (ground-colour layering fix, done),
 `plugins/sgs-blocks/includes/fx-generative-background.php`, `plugins/sgs-blocks/includes/fx-attributes.php`.
-Commits this session: `ebb014eea` `698f7267d` `82a1c630d`(unrelated) `a849e2899` `48c69b30f`
-`e9ad935bc` `e08140869` `05eaf14b3`. Test page: sandybrown canary,
+Commits this session: `ebb014eea` `698f7267d` `0e7650ec8` `82a1c630d`(unrelated) `f0c78123e`
+`a849e2899` `48c69b30f` `e9ad935bc` `e08140869` `05eaf14b3`. Test page: sandybrown canary,
 `gate-test-generative-background-v1-probe` (post 3052).
+
+**QC (2026-08-29):** independent `/qc` subagent verified this entry against the real diffs of
+every cited commit — all 8 claims (three-layer absence, the row-vector fix, the self-contradicting
+"direct port" commit, the deploy-gap incident, the two CSS masking layers, D880's scope, LEDGER
+consistency, hash/path accuracy) CONFIRMED. Verdict: CLEAN.
 
 ## D880 [INCIDENT] — KJC-4 reversed: Bean explicitly authorised porting Stripe's actual reference shader code as the generative-background geometry's foundation, superseding the "ship none of their files" ruling
 
