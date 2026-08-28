@@ -728,7 +728,7 @@
     },
     "quote": {
       "block": "quote",
-      "category": "PRIVATE_NEEDS_SWAP",
+      "category": "PRIVATE_DONE",
       "native_border_keys": [
         "radius"
       ],
@@ -739,7 +739,7 @@
         "borderStyle",
         "borderWidth"
       ],
-      "uses_sgs_border_control": false
+      "uses_sgs_border_control": true
     },
     "responsive-logo": {
       "block": "responsive-logo",
@@ -985,8 +985,8 @@
     "ANOMALY": 7,
     "NATIVE_FULL": 38,
     "NO_BORDER_SUPPORT": 28,
-    "PRIVATE_DONE": 1,
-    "PRIVATE_NEEDS_SWAP": 9
+    "PRIVATE_DONE": 2,
+    "PRIVATE_NEEDS_SWAP": 8
   },
   "crosscheck_failures": []
 }

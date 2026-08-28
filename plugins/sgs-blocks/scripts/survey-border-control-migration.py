@@ -80,7 +80,7 @@ BORDER_ATTR_RE = re.compile(r'border', re.IGNORECASE)
 # in one pass. Lower this only with a stated reason when a block is genuinely migrated.
 CEILING = {
     'NATIVE_FULL': 38,
-    'PRIVATE_NEEDS_SWAP': 9,   # 10 already-private blocks minus product-card (DONE)
+    'PRIVATE_NEEDS_SWAP': 8,   # 10 already-private minus product-card + quote (DONE)
     # Measured 2026-08-28, first real run of this classifier: filter-search, label,
     # mega-aside, mega-panel, product-search, social-icons, whatsapp-cta -- each has
     # SOME border-shaped attr (usually radius-only, sometimes radius+colour with no

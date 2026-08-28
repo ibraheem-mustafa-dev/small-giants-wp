@@ -53,6 +53,7 @@ import {
 	ShadowControl,
 	SgsLengthControl,
 	TypographyControls,
+	SgsBorderControl,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -79,18 +80,6 @@ const MARGIN_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'em', label: 'em', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
-];
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
-	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
-	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
-	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
-	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
 ];
 
 const LENGTH_UNITS = [
@@ -403,29 +392,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: attributionColour,
 								onChange: ( val ) => setAttributes( { attributionColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'borderColour',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -802,22 +768,38 @@ export default function Edit( { attributes, setAttributes } ) {
 				   serialises scoped, not inline). */ }
 				{ ! inheritStyle && (
 					<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl
-							label={ __( 'Border style', 'sgs-blocks' ) }
-							value={ borderStyle }
-							options={ BORDER_STYLE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						{ /* Border colour moved to the top-level SgsColourPanel
-						   (D618/D621) — "Border colour" row. */ }
-						<ResponsiveBoxControl
-							label={ __( 'Border width', 'sgs-blocks' ) }
-							presets={ [ '10', '20', '30' ] }
-							values={ { base: borderWidth ?? {} } }
-							showResponsive={ false }
-							onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+						{ /* Task 0 (2026-08-27) — one composite row (width/style/colour)
+						   mirroring native's BorderBoxControl layout, matching
+						   sgs/product-card. borderColour has a Hover pair on this
+						   block (no hover-gradient attr), so the colour slot uses the
+						   multi-state form. Border-radius stays WP-native (below,
+						   unchanged) — the block declares
+						   __experimentalBorder.__experimentalSkipSerialization so it
+						   serialises scoped, not inline. */ }
+						<SgsBorderControl
+							widthValues={ borderWidth ?? {} }
+							onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+							widthPresets={ [ '10', '20', '30' ] }
+							styleValue={ borderStyle }
+							onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+							colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+							colourStates={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: borderColour,
+									onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+									gradientValue: borderColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { borderColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: borderColourHover,
+									onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								},
+							] }
 						/>
 						<ResponsiveBorderRadiusControl
 							label={ __( 'Border radius', 'sgs-blocks' ) }
