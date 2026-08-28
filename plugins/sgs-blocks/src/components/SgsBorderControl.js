@@ -19,20 +19,15 @@
  *     colour and style together; a separate style toggle beside the swatch
  *     was an SGS divergence. Style is one value for the whole border, so it
  *     sits OUTSIDE the Normal/Hover tabs — unlike colour, which is per-state.
- *  2. WIDTH IS RESPONSIVE. It is a box object per device tier, not base-only.
- *     ⚠ The device switcher appears ONLY when the caller passes
- *     `onWidthTierChange` — i.e. only when the block actually declares
- *     `borderWidthTablet`/`borderWidthMobile` to store the result. Offering a
- *     tier a block cannot save is a dead control, and the client would set a
- *     mobile width that silently vanished on save.
+ *  2. WIDTH IS A BOX OBJECT, BASE ONLY. Per-device widths were considered and
+ *     dropped (Bean, 2026-08-29): a border that changes thickness by
+ *     breakpoint has no real use case, and supporting it would have meant
+ *     `borderWidthTablet`/`borderWidthMobile` attrs plus `@media` emission in
+ *     every block for a control nobody would reach for.
  *  3. RADIUS IS PART OF THE PAIR. The SGS-wrapped native border radius
  *     belongs with the border, not in a separate panel. Rendered only when
  *     the caller wires `onRadiusChange`, so an unmigrated block shows no
  *     empty control.
- *
- * `widthValues` accepts BOTH the legacy FLAT box and the TIERED
- * `{base,tablet,mobile}` object, so blocks can migrate one at a time rather
- * than in a single flag-day change.
  *
  * ── Prop contract ────────────────────────────────────────────────────────
  * Deliberately NOT hardcoded to one block's attribute names — every value/
@@ -90,7 +85,6 @@ export default function SgsBorderControl( {
 	colourGradientValue,
 	onColourGradientChange,
 	colourLinked,
-	onWidthTierChange,
 	radiusValues,
 	onRadiusChange,
 	radiusLabel,
@@ -99,21 +93,14 @@ export default function SgsBorderControl( {
 	clearable = true,
 	enableAlpha = true,
 } ) {
-	// widthValues accepts BOTH shapes so the two populations can coexist during
-	// the tier rollout: a FLAT box ({top,right,bottom,left}, what every block
-	// passed before responsive width existed) or a TIERED
-	// ({base,tablet,mobile}) object. A flat value is lifted into `base`.
-	const tiered =
-		widthValues &&
-		( 'base' in widthValues || 'tablet' in widthValues || 'mobile' in widthValues );
-	const widthTiers = tiered ? widthValues : { base: widthValues || {} };
-
-	// The device switcher is shown ONLY when the caller can actually STORE a
-	// tier — i.e. it passed onWidthTierChange. A block whose block.json has no
-	// borderWidthTablet/Mobile attrs gets base-only, because offering tiers it
-	// cannot save is a dead control (check-dead-controls.js exists for exactly
-	// this), and a client would set a mobile width that silently vanished.
-	const canStoreTiers = typeof onWidthTierChange === 'function';
+	// Width is a BOX object, base only. Per-device border widths were considered
+	// and dropped (Bean, 2026-08-29) -- there is no real use case for a border
+	// that changes thickness by breakpoint, and adding the tiers would have meant
+	// borderWidthTablet/Mobile attrs plus @media emission in every block for a
+	// control nobody would reach for. `showResponsive={false}` keeps the device
+	// switcher off, which is exactly what every block did before this composite
+	// existed.
+	const widthTiers = { base: widthValues || {} };
 
 	return (
 		<div className="sgs-border-control">
@@ -122,19 +109,8 @@ export default function SgsBorderControl( {
 					<ResponsiveBoxControl
 						label={ label || __( 'Width', 'sgs-blocks' ) }
 						values={ widthTiers }
-						showResponsive={ canStoreTiers }
-						onChange={ ( tier, next ) => {
-							if ( canStoreTiers ) {
-								onWidthTierChange( tier, next );
-								return;
-							}
-							// Legacy single-attr caller: only `base` exists, and
-							// showResponsive={false} means no other tier can be
-							// reached from the UI.
-							if ( typeof onWidthChange === 'function' ) {
-								onWidthChange( next );
-							}
-						} }
+						showResponsive={ false }
+						onChange={ ( _tier, next ) => onWidthChange( next ) }
 						presets={ widthPresets }
 					/>
 				</FlexItem>
