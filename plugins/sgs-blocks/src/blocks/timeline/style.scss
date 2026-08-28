@@ -620,12 +620,21 @@
 			height: auto;
 		}
 
-		.sgs-timeline__progress-path--horizontal {
-			display: none;
-		}
+		// ⛔ These MUST stay nested inside `.sgs-timeline__progress` so they
+		// compile to (0,3,0) and match the base orientation rule's own depth.
+		// Written one level shallower they are (0,3,0) vs (0,2,0) LOSERS, and
+		// the base `--horizontal { display: block }` keeps winning while the
+		// vertical path also switches on — MEASURED live at 375px: TWO paths
+		// rendered, i.e. the doubled line this whole feature suppresses the
+		// ::before to avoid, reintroduced at mobile by specificity alone.
+		.sgs-timeline__progress {
+			.sgs-timeline__progress-path--horizontal {
+				display: none;
+			}
 
-		.sgs-timeline__progress-path--vertical {
-			display: block;
+			.sgs-timeline__progress-path--vertical {
+				display: block;
+			}
 		}
 	}
 
