@@ -5867,3 +5867,532 @@ Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-C
 
 **2026-08-14.** D609's amendment left one open question: Bean's originally-requested count badge vs core's `ZStack`-overlapping-swatches shape (`global-styles/color-panel.js:163-176`, WP 7.0.4 SHA `28c0dedc4eaf…`). **Bean's ruling: use core's overlapping swatches — match native.** Closes D609 clause 9a's row-shape question in full; no open items remain under D609. Feeds T4 in `~/.claude/plans/go-track-1b-playful-hamster.md`.
 
+## 2026-08-28 — Sweep: uncited D-numbers in the D662-D701 span
+
+Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), per-project/client CLAUDE.md files, and scripts/*.py. 23 entries moved verbatim. Cross-referenced-by-a-kept-entry list (informational, not excluded from sweep): D696<-['D695'], D741<-['D698', 'D699']
+
+---
+
+## D662 [ROUTINE] — device-tier breakpoint 599→767 on 4 stylesheets, NOT 9 (2026-08-18)
+
+`SGS_Breakpoints::MOBILE_MAX = 767`, but `info-box`, `tabs` (×2), `gallery` and `post-grid` still
+stacked at 599px — so at 600–767px they kept their wider layout while the shared wrapper had already
+switched to the mobile tier. Fixed, deployed, live-verified on the canary.
+
+Three scoping decisions, each of which a blanket sweep would have got wrong:
+- **`form/style.css:120` deliberately untouched.** Its 599px sits inside
+  `@supports not (container-type: inline-size)` — a container-query fallback, not a device tier.
+- **`post-grid` needed a companion edit.** Its tablet block is an explicit RANGE
+  (`600px <= width <= 1023px`), not a cascading max-width, so raising the mobile ceiling alone would
+  have left 600–767px matching both blocks — tablet wins on source order and silently cancels the fix.
+- **`countdown-timer`, `google-reviews`, `process-steps`, `trust-bar` excluded** — cosmetic rules
+  (font-size/gap/padding/touch-target); two already carry correct 767px tiers elsewhere.
+
+⚠ CLAUDE.md cites "D228, unified 2026-06-16" for the 599 retirement. **That D-number does not
+resolve to that content.** The 767/1023 standard is real and verified in code; the citation is not.
+Commit `efe5c2a3`; evidence `reports/2026-08-18-breakpoint-599-to-767-live-evidence.md`.
+
+## D663 [ROUTINE] — Stage 8 runtime audit: ONE Lighthouse run, not three bespoke scripts (2026-08-18)
+
+`plans/strategy/chrome-devtools-stage-8-integration.md` specified three scripts, each "calling" a
+Chrome DevTools **MCP** tool. Two corrections, both load-bearing:
+
+1. **A Node script cannot invoke an MCP tool** — MCP is an agent-session channel. As specified these
+   would only ever run with Claude driving. Built as real scripts (Playwright/`lighthouse`) so they
+   run in CI unattended.
+2. **Lighthouse already ships two of the three audits** (`errors-in-console`, `network-requests`), so
+   two scripts would have re-implemented Google's own work. One browser run now yields Core Web
+   Vitals + console + network. Found by GitHub research BEFORE building, at Bean's prompting.
+
+Cross-tier review then proved the first cut **reported OVERALL PASS on a page that never loaded** —
+seven scenarios incl. main-document 404/500 — because Lighthouse returns an `lhr` carrying
+`runtimeError` rather than throwing, and nothing read it. Also proved the self-test could not detect
+**8 of 10** injected mutations, including `>` → `>=` on all four CWV thresholds. Fixed: new `error`
+severity ranked worse than `critical` (distinguishing *this page is bad* from *we could not measure
+it*); self-test 24 → 68 assertions with exact-boundary and per-field value checks. A missing
+`favicon.ico` no longer fails the gate — Lighthouse reports network 404s as console errors, and
+console-`critical` now counts genuine JS exceptions only. **Deliberately NOT wired into `prebuild`:
+it needs a live URL, and a gate that silently passes when the target is unreachable is worse than
+none.** PR #31, not merged.
+
+## D664 [ROUTINE] — plans-folder audit: 14 archived, verified against source not status lines (2026-08-18)
+
+38 plan docs audited by checking **code**, not the docs' own `status:` lines — which were wrong in
+both directions. 14 archived (plans root 29→20, strategy 9→4), **58 citations repointed first**.
+
+The load-bearing finding is where the citations were: four `mega-aside` source files carry
+`GROUND-TRUTH: verified against …` headers, eleven strict-`xfail` test decorators name a plan as the
+record for the Spec 39 residual they carry, and `goals.md` — an ACTIVE doc — cites three "dead"
+April docs across four live goal rows. A docs-only sweep would have broken all of it.
+
+⚠ **`handoff-preflight.py`'s dangling-link check does not cover this.** It scans three files and only
+`[text](path.md)` markdown syntax — structurally blind to code comments, spec body text and
+`goals.md`. The repo-wide `git grep` was the real gate; preflight is secondary. Do not cite it as
+proof that a doc move is safe.
+
+Bean's rulings recorded: Spec 31 is superseded by **Spec 39** (archive-and-salvage the current
+converter scripts, do not delete); Snooza remains live; the leftover `scroll-smoother` registry row
+stays (inert, and unrelated to the Lenis desktop smooth-scrolling that is actually shipped).
+Reference docs fold into specs as **Parts** (`Spec 35 Part O` precedent) — decimal `spec_id`s were
+rejected because the spec template mandates `spec_id: <N>  # integer`.
+
+## D666 [ROUTINE] — inspector detectors are RULES, never standalone scripts (2026-08-18)
+
+Three `/adversarial-council` personas converged independently. Verified: `run.js:99-105` throws if a
+rule has no `selfTest`; `run.js:172` hard-fails the build on a rule file absent from `rules.json` —
+so **D493's "built a detector, never wired it" is structurally impossible inside**
+`scripts/inspector-scan/`. Six standalone scripts would re-open it, add six segments to a
+3,491-character single-line `prebuild`, and cost ~4-6s of redundant re-parsing versus under 1s as
+rules sharing the AST cache. Shipped as slots 28/29/30/33. ⛔ Never widen a live gate's corpus in
+place (rule 24's house ruling at `:26-33`) — open a new advisory slot. ⚠ Known consequence: the
+build goes RED between "agent delivers a rule file" and "main registers it". Transient; register
+promptly.
+
+## D667 [ROUTINE] — the advisory ratchet: openBacklog was read by nothing (2026-08-18)
+
+`rules.json` carried `openBacklog` on 19 rule entries and **no code read it**. `computeExit` now
+fails an advisory rule whose flagged count exceeds its declared backlog, so debt may only fall; an
+advisory rule with no numeric backlog also fails, closing the silent opt-out. **Re-baselined FIRST —
+enabling it naively would have red-lined the build on three rules.** What that exposed:
+`21-render-without-control` had grown **129 → 259 unnoticed**; `23` 0 → 1; `22` had no backlog key at
+all; and five others (`18`, `03`, `07`, `26`) had debt that was CLEARED and never recorded. Both
+directions were invisible because nothing compared the two numbers. ⛔ NOT done via
+`core/baseline.js` seeding — that path deliberately refuses to let seeded entries suppress.
+
+## D668 [INCIDENT] — rule 30 flagged 4 false positives: a THIRD box storage shape exists (2026-08-18)
+
+Caught before any of the four were "fixed"; acting on them would have replaced correct controls with
+ones that silently drop the client's value. Spec 35 §12 field 3 names two storage shapes. A third is
+legitimate: a **flat box object** `{top,right,bottom,left}`, deliberately non-tiered, rendered via
+`sgs_box_object_shorthand( array $box )`, for which a plain `BoxControl` is CORRECT —
+`ResponsiveBoxControl` would store a tier object and drop the value. Both read `"type":"object"`
+with an empty default, so the schema cannot separate them; the discriminator is whether
+`Tablet`/`Mobile` SIBLINGS exist. Evidence at source: `nav-menu/edit.js`'s own comment and
+`product-card/render.php:294-295`. The rule classified on "is there a `ResponsiveOverride`
+ancestor?" and never opened `block.json` — **despite its own docblock saying classification must be
+by storage shape.** A second bug surfaced fixing it: **`ctx.cache.json()` returns an
+`{ok, error, data}` WRAPPER**, so reading `.attributes` yields undefined and silently disables the
+rule. Its self-test caught that by reporting the mustFlag fixture as no longer flagging.
+
+## D669 [ROUTINE] — the Simple-surface cap stays at 3; the COUNTER was wrong (2026-08-18)
+
+Bean asked why a cap of 3 exists. It is FR-37-27, Bean-confirmed, with a stated reason (a
+tech-illiterate client can unpin a control they rely on and get a missing setting with no trail).
+**The cap is sound; `check-simple-surface-cap.js` was over-counting.** Two bugs: ZERO occurrences of
+`initialOpen`, so a `<PanelBody initialOpen={false}>` — closed on load, the oldest
+progressive-disclosure mechanism in the editor — had its contents counted as default-visible; and it
+counted a `<Notice>`, a conditional contrast WARNING, as a control. Fixing the counter alone:
+**site-footer 7 → 3, WITHIN cap**; site-header 6 → 5. Two regression fixtures added. site-header's
+remaining 5 is DRIFT, not a cap problem — Bean's 2026-08-13 F2 ruling kept exactly two
+default-visible; `BackgroundPanel`, `minHeight` and `Layout preset` arrived later because nothing
+enforced it. Raising the cap would bless the drift. Which three move behind disclosure is Bean's.
+## D680 [INCIDENT] — the no-prune rule was violated within hours of being written; it needs a gate (2026-08-19)
+
+D678 established the rule: after deleting an attribute from a `block.json`, Stage 1 alone leaves
+the DB inconsistent, so run Stage 9. **The same session then deleted 6 attributes from
+`sgs/site-header` and did not run Stage 9.** Caught during handoff verification, not by any gate —
+6 orphan rows, all six of the just-deleted attributes.
+
+**Why no gate caught it.** The db-consistency suite exits 0 with orphans present: its "rogue seed"
+check only fires for a row carrying a `css_property`, and these six were never classified, so they
+were invisible to it. `check-element-manifest-conformance.js` gates on `orphan_unclassified` and
+`orphan_role_map_stale`, which are different metrics. **Nothing in the chain fails on a plain
+orphan.**
+
+**The conclusion is structural, not behavioural.** A rule that its own author violates within hours
+is not a defence — it is a note. The fix is a gate that fails when a `block_attributes` row has no
+matching attribute in any `block.json`. Recorded as a candidate for the C4 library-wide audit stage.
+
+Fixed for now by running Stage 9: 6 pruned, 0 orphans, 2,409 sgs attrs, db-consistency and
+inspector-scan both exit 0.
+
+## D685 [ROUTINE] — one shared hover-colour emitter; sgs/button exempt (2026-08-19)
+
+`sgs_emit_state_colour_css( $selector, $decls_normal, $decls_hover )` in `helpers-tokens.php`, modelled
+on `sgs_border_gradient_css()`, is the canonical emitter for hover colour (Spec 32 FR-32-3). Eight blocks
+converted and live-verified on the canary. It emits real declarations on the block's own scoped selector
+and pairs `:focus-visible` with `:hover` — two of the converted blocks had `:hover` alone, so a keyboard
+user could not reach the state at all. ⛔ `sgs/button` is EXEMPT: its `--sgs-btn-*-hover` vars feed a
+static `style.css` rule AND three preset classes with `theme.json` fallback chains, i.e. the very
+mechanism FR-32-3 describes; the exemption is recorded in the helper's own docblock so a later reader
+does not "finish the job" and break the preset cascade. The hardcoded `var(…, <fallback>)` defaults on
+`cta-section` (`primary-dark`) and `post-grid` (`--sgs-card-bg`) were DELETED rather than preserved
+(Bean-ruled): pre-production, an injected default that overrides the operator's own setting is a cheat to
+remove. One shape the helper does not cover — descendant-hover, where hovering a parent recolours
+children carrying their own explicit resting colour — stays hand-built and pairs `:focus-within`, because
+the element receiving focus is a descendant.
+
+## D686 [INCIDENT] — one shared component resolver; rule 21's 50 findings were false positives (2026-08-19)
+
+The 2026-08-17 wrapper-panel split (D655) left `ContainerWrapperControls.js` a 268-line facade
+re-exporting six panels. Rule 21's private resolver indexed exported names + filename and took
+FIRST-WINS in readdir order, so the facade — alphabetically ahead of `LayoutPanel.js` et al — claimed
+their names while the attribute vocabulary had MOVED OUT of it (facade vs LayoutPanel.js: gapTablet 0
+vs 2, flexDirection 0 vs 2, gridTemplateRows 0 vs 6). It therefore resolved `<LayoutPanel` to a file
+containing none of the controls it asked about: 250 -> 200, and the 50 were false positives, which are a
+detector bug and never baseline fodder. Fixed by PRECEDENCE — a file that DECLARES a name beats one that
+only RE-EXPORTS it — and the resolver was promoted to `core/components.js resolveComponentFiles()` so
+the tree has one mechanism rather than two that can disagree. `discover()`/`exportsMap` deliberately
+untouched: rules 01 and 18 carry committed backlogs and widening it would silently restage both;
+verified unmoved at 58 and 13. The same visibility gap was closed on rule 27, a GATE sitting at
+openBacklog 0 that could not see shared files — the most dangerous shape a detector can have, because
+zero reads as finished rather than never-looked.
+
+## D687 [INCIDENT] — a derived field used as a scope predicate is self-fulfilling (2026-08-19)
+
+The colour census scoped itself on `roster.json` `surfaces.colour`, which `build-roster.py:106` computes
+as `"color" in supports or attr_hit("colour","color")` — true exactly when the block ALREADY has colour.
+As a scope rule that is CIRCULAR: a block with none is excluded from the contract and can never be
+reported as MISSING a panel. The census could report non-conformance but was structurally incapable of
+reporting absence. Bean caught it from the output alone. Fixed by giving each control type its own
+`qualifiesWhen` predicate keyed on INDEPENDENT evidence — what the block renders or paints — and by
+splitting the verdict into MISSING (qualifies, hasn't got it) vs NOT-APPLICABLE (cannot apply); a single
+"not eligible" bucket hid both. ⚠ Qualifying does not always mean the control belongs on THAT block:
+every `sgs/form-field-*` declares elements and paints none while `sgs/form` paints all 52, so they
+qualify collectively and the control's home is the ancestor — the verdict carries `home: 'ancestor'`.
+Corrected figures: the canonical backlog was reported as 22, then 3, and is 2; native-UI retirement is
+58 DISTINCT blocks, not 150 findings, because length-unit and box-4value are the same 50 blocks both
+reading `supports.spacing`.
+
+## D688 [ROUTINE] — the goldens are finalised in 3 parallel sessions, each owning its own file (2026-08-19)
+
+`golden-controls.json` is a single merge point; three sessions editing it conflicts on every run. Each
+session instead writes its own `scripts/consistency/goldens/<name>.json` and Session A ships a composer
+in `core/golden.js` that merges base + the three, TOLERATING absent peers so nobody blocks on anybody.
+That also makes the 15th control type free. Split 7/7/7 across Bean's ~24-type roster with zero overlap,
+verified by extracting type numbers per file: A styling primitives (gradient, typography, length-unit,
+4-value box, border, shadow, alignment), B input controls (enum+segmented MERGED, boolean, free-text,
+link, icon, multi-select, date), C media/state/structure (media, state, responsive wrapper, repeater,
+animation, angle, preset picker). #1 colour is done; #24 rich text excluded — it happens in the canvas.
+Sequencing is finalise -> measure -> fix: fixing first would repair colour, declare the axes done, and
+meet the other 13 types later, which is the repeat-13-times trap the generic engine exists to prevent.
+
+## D689 [ROUTINE] — the golden census reports what it CANNOT measure, and names capability a merge deleted (2026-08-20)
+
+Two silences removed from `survey-golden-conformance.js`. (1) `nativeUiSupportKey()` matched the
+support family with `[A-Za-z][A-Za-z0-9]*`, which cannot match a leading underscore, so `border`'s
+declared `supports.__experimentalBorder` resolved to null and reported N/A across all 83 blocks.
+Widened; the axis now reports 49 VIOLATION / 34 CONFORMANT, reconciled exactly against an
+independent block.json pass (Session A's handover figure of 52 is wrong by 3). (2) N/A was hiding
+"axis does not apply" and "row declares no field, so nothing measured it" under one label. The
+report now prints a MEASURABILITY table — 21 types x 3 axes = 63 cells, **45 UNMEASURED** — and
+`loadMergedSchema()` records on `_meta.capabilityLoss` any axis a peer row drops that its base row
+declared. Three found: typography / box-4value / length-unit each lost `nativeUi.detectVia` in the
+styling.json merge. Recorded, not thrown: a genuine finalisation may drop an axis, but it must be a
+decision rather than an accident.
+
+
+## D690 [INCIDENT] — `useSettings()` preset shape varies BY FEATURE, and `?? []` does not guard it (2026-08-20)
+
+`sgs/heading`'s inspector crashed on the canary (`(S ?? []).map is not a function`) the moment the
+Typography panel opened. Measured live: `typography.fontFamilies` and `typography.fontSizes` return
+origin-keyed OBJECTS (`{theme, custom}` / `{default, theme, custom}`) while `color.palette` returns
+a flat ARRAY — on ONE site, so it is not a WP-version question. Nullish coalescing only fires on
+null/undefined; a truthy object sails through and `.map` throws, unmounting the inspector.
+
+THIRD recurrence of one class: `ShadowControl.js` hit it live 2026-07-20 and `StateToggleControl.js`
+documented it again, each with a local fix, so the next component written from scratch met it again.
+Fixed by adding the shared `src/utils/presetSettings.js` `flattenPresetSetting()` (custom -> theme ->
+default, deduped by slug, always returns an array) and routing the three broken call sites through
+it. The third site, `SgsLengthControl.js`, failed QUIETLY rather than loudly: `( obj || [] ).length`
+is undefined, so its guard took the early return and the preset dropdown simply never rendered.
+
+## D691 [INCIDENT] — a prop wired at both ends is still dead if the middle layer forwards an explicit list (2026-08-20)
+
+Session A's border-style icon picker never rendered. `heading/edit.js` passed
+`borderStyle`/`onBorderStyleChange`, `SgsColourPanel` forwarded them, and `SgsColourStateControl`
+destructured them and gated `<BorderStyleControl>` on them — but `DesignTokenPicker`'s default
+export destructures an EXPLICIT prop list and forwards that list, so both keys were dropped in
+transit. Proven by walking the live React fiber on the canary: outer props carried
+`onBorderStyleChange: function`, the inner rendering component had no such key. Three prior guesses
+(wrong component, wrong popover, wrong tab) were discarded once the fiber gave the actual answer.
+A component that forwards an explicit list must name every new prop or it eats it silently.
+
+## D692 [INCIDENT] — a detector's own false positive is fixed in the detector, never baselined (2026-08-20)
+
+`survey-control-parity.py` failed the build on `BorderStyleControl.js:14` — a sentence in a docblock
+reading "the previous hand-rolled `<SelectControl>` this replaces". `_find_opening_tags()` ran its
+regex over the RAW file text; the comment-skipping it already had only applied INSIDE a tag span.
+Added `_mask_comments()`, which blanks comments IN PLACE preserving length and newlines, because
+`scan_axis_a` derives line numbers from offsets into that text and `cmd_fix` rewrites spans against
+the ORIGINAL bytes — deleting comment text would shift every later span and the codemod would
+rewrite the wrong region. Paired fixtures: docblock-only must not flag; prose beside a real mount
+must still flag the mount and only the mount.
+
+## D693 [ROUTINE] — colour scopes on evidence, not on a self-fulfilling derived field (2026-08-20)
+
+Decision B. The canonical axis skipped `qualifiesFor()` when `type === 'colour'`, pinning colour to
+roster.json's `surfaces.colour` — the derived field this repo already records as self-fulfilling
+(computed from what a block ALREADY has, so it can never find one that is missing a panel). The
+distinction the carve-out protected is real and is now made universally from the predicate's own
+evidence: `qualifiesFor()` returns a `basis`, and own-paint (styling exists, no client control)
+reads VIOLATION while ancestor/core-painted reads MISSING.
+
+The change exposed a MISSING BRANCH: `sgs/site-footer` first read NOT-APPLICABLE — "no colour
+surface" — though its 473-byte style.css paints almost nothing while it declares `supports.color`
+with live sub-flags and is one of the 25 blocks the nativeUi axis already flags. Added branch (1b),
+schema-driven off the same `detectVia`. `colourEligibility()` DELETED; nothing reads
+`surfaces.colour`. NOT-APPLICABLE fell across types (length-unit 35->24, border 24->17) — the
+circular predicate no longer excluding blocks from a contract for not already satisfying it.
+
+
+## D694 [INCIDENT] — the canonical axis read 2 keys of many, hiding 249 rows (2026-08-20)
+
+`axisCanonical()` read only `canonical.panel.component` and `canonical.row.component` — the shape
+from when `colour` was the only encoded type. Three finalised rows name their components elsewhere
+(`media`: single/bulk; `responsive-wrapper`: tierPrimitive/objectPrimitive; `border`: widthSlot/
+radiusSlot/styleSlot/colourSlot) and all three reported N/A across all 83 blocks. Same defect class
+as the `__experimental` family regex (D689), one axis over: a declared predicate the engine cannot
+read is indistinguishable from a clean result.
+
+⛔ PROSE IS NOT AN IDENTIFIER. Six rows describe a PATTERN under `component`
+("ResponsiveOverride + SelectControl (tier-object attribute)"). Collecting those would score six
+types against names that can never match — a library-wide false sweep. Only `/^[A-Z][A-Za-z0-9]*$/`
+counts; those six correctly remain N/A. Decision A (Bean) restored `nativeUi.detectVia` for
+`length-unit` and `box-4value`, which lost it in the styling.json merge; `typography` stays off, its
+reasoning (0 raw core typography mounts) holding.
+
+## D695 [ROUTINE] — a canonical slot declares whether it can independently prove conformance (2026-08-20)
+
+Widening the canonical axis to read every declared component (D694) flipped `sgs/site-footer` from
+VIOLATION to CONFORMANT for colour: it reaches `GradientOverlayControl` via `BackgroundPanel` while
+having no `SgsColourPanel` at all. A widening that turns a real violation into a pass is a loosened
+detector, not a fixed one. `golden-controls.json` now marks such slots
+`independentlySufficient: false` — a universal, additive contract field, not a per-type carve-out —
+and `canonicalComponentNames()` skips them. Two slots carry it, both justified by their own existing
+prose: `textGradientRow` ("never mounted directly", reached THROUGH the panel) and
+`wholeBlockOverlay` ("single-state by construction"). Caught by diffing per-BLOCK, not per-count.
+
+## D698 [ROUTINE] — FR-38-12 Flip-on-WooCommerce built + deployed; live-triggered verification INCONCLUSIVE, left OFF pending it (2026-08-20)
+
+Built per the Bean-approved design gate (`.claude/plans/2026-08-20-flip-woocommerce-product-collection-design-gate.md`):
+`fx-flip.js` (MutationObserver + debounced `Flip.from`), `fx-flip-woocommerce.php`
+(`render_block_woocommerce/product-collection` injector), a new site-level "Animate WooCommerce
+product re-filtering" setting (default OFF). Clean build (webpack + all prebuild gates), deployed
+to sandybrown.
+
+**Verified live:**
+- The PHP injector correctly stamps `data-sgs-fx="flip"` on the block's root wrapper ONLY when
+  the setting is ON and only on a real frontend render (confirmed via raw HTML fetch).
+- Both `gsap-flip.js` and `fx-flip.js` are correctly conditionally-enqueued by the registry's
+  `render_block` sniff, load with zero console errors, and `reducedMotion` is correctly read as
+  `false` in a normal browser context.
+- `fx-flip.js`'s `:scope li` selector correctly matches WooCommerce's real product `<li>` markup.
+
+**NOT verified — genuinely inconclusive, not a fabricated pass:** could not get a REAL WooCommerce
+client-side re-filter/re-paginate to fire against this specific hand-authored canary within
+reasonable time, so the actual `Flip.from()` animation was never observed running. Two attempts,
+both blocked by WooCommerce configuration/version questions unrelated to the SGS code:
+1. `woocommerce/catalog-sorting` rendered nothing at all when placed standalone (likely requires
+   a `woocommerce/product-filters` ancestor or archive-page context this hand-built page lacked).
+2. Pagination caused a full page reload rather than a client-side Interactivity API navigation —
+   traced into WC 11.0.0's `ProductCollection/Renderer.php`: `data-wp-router-region` is gated on
+   `$is_enhanced_pagination_enabled` (`! forcePageReload`, true by default) AND `isset( $this->parsed_block )`,
+   but the attribute never appeared live — the exact WC-side condition under which it fires
+   (possibly only during an already-in-progress client-side navigation request, not the initial
+   page load) was not fully traced before time was called on this thread.
+3. A hand-simulated DOM mutation (moving `<li>` elements via JS) was silently reverted, suggesting
+   WooCommerce's own Interactivity-managed region reconciles unexpected DOM edits — informative,
+   but not proof of our own mechanism either way.
+
+**Decision:** left the site-level setting OFF (code shipped, capability inert until proven).
+
+**Follow-up attempt, same day — real progress, still not closed.** Bean asked whether hand-authoring
+the canary via `wp_update_post` (bypassing the editor/REST publish path) was the actual cause.
+Rebuilt through the REAL editor — `wp.data.dispatch('core/block-editor')` + `core/editor.savePost()`,
+same reducer/REST path a real client build uses — with an actual `woocommerce/product-filters` block
+present (not just pagination). Result: **`data-wp-router-region="wc-product-collection-0"` DID
+appear** — WC 11.0.0's actual client-side-navigation marker (not `data-wc-navigation-id`, which is
+the OLDER attribute name; that's what earlier web research surfaced and it no longer matches this
+WC version — traced to `ProductCollection/Renderer.php`). This is a genuine, confirmed improvement
+over the first attempt.
+
+**Where it stalled: the filter controls themselves never populate options on this canary**, for
+reasons that are now WooCommerce catalog/cache questions, not SGS code questions — out of scope for
+this thread, called here rather than continuing indefinitely (session-sprawl discipline):
+- `woocommerce/product-filter-price` renders empty/hidden (`minRange:0,maxRange:0` server-side)
+  despite the Store API confirming a real price range (`£4.99–£59.99`) — the filter block isn't
+  reading it.
+- `woocommerce/product-filter-status` (stock) showed `items:[]` server-side even AFTER marking one
+  of the 6 test products out-of-stock and confirming via `GET /wp-json/wc/store/v1/products/collection-data`
+  that the Store API itself sees the real 4-in-stock/1-out-of-stock split. Ruled out page/object
+  cache (fresh `X-Litespeed-Cache: miss` + cache-busting query param, same empty result) — the gap
+  is somewhere between the Store API's live count and whatever this block reads at render time.
+
+**Same-day second follow-up — root cause narrowed decisively, filtering itself CONFIRMED working.**
+Bean pushed back correctly: a small catalogue was never the real blocker — it was the earlier
+hand-built canary's `inherit:false` custom query never being linked to a Product Filters block.
+Tested on the SITE'S OWN real Shop archive (`/shop/`, WC/theme-provided `archive-product.html`,
+`inherit:true`) with the actual 6-product catalogue, no custom canary needed:
+
+- Price slider and stock-status checkbox render correctly with REAL data (2 slider handles, "In
+  stock" option) — the earlier empty/hidden filters were specific to the hand-built page's broken
+  query link, not a catalogue-size or Store API problem.
+- **Filtering itself works end-to-end and is CONFIRMED CORRECT**: clicking the "In stock" checkbox
+  produces the right URL (`?filter_stock_status=instock`) and the right filtered result set.
+- **But it's a HARD page reload, not the client-side navigation Flip depends on** — confirmed via
+  network log (`list_network_requests --includePreservedRequests`): zero `fetch`/`xhr` request was
+  attempted before the `document`-type navigation. The checkbox's `data-wp-on--change="actions.toggle"`
+  and the collection's `data-wp-router-region="wc-product-collection-0"` are both correctly present
+  — WordPress's own Interactivity Router simply never attempts a soft navigation for this
+  interaction on this environment. No relevant WC feature flag found in `woocommerce_feature_*`
+  options. Root cause not yet isolated further (candidates: a WC/WP core version interaction, a
+  security/cache layer intercepting fetch differently than document requests, or a genuine
+  requirement this investigation didn't reach) — this is now a WELL-SCOPED, separate WooCommerce/
+  WordPress-core investigation, not an SGS code question and not a data/catalogue question.
+
+**Status: filtering/sorting mechanism CONFIRMED WORKING. Client-side navigation (the one thing Flip
+needs) CONFIRMED NOT FIRING, root cause narrowed to "Interactivity Router never attempts a fetch for
+this interaction" — needs its own dedicated session to resolve before Flip can be live-tested.
+Setting reverted OFF. FR-38-12 remains open.**
+
+## D699 [ROUTINE] — client-side-nav root cause: WP core's own kill switch, narrowed to product-collection-no-results in full context (2026-08-20)
+
+Follow-up to D698. A 4-rater `/qc-council` diagnostic (GH-research, live code-path trace, infra rater,
+docs rater) converged on a TRUSTED root cause with direct live evidence: WordPress core writes
+`"core/router":{"clientNavigationDisabled":true}` into the page's own Interactivity config JSON.
+The code-path tracer read the live `interactivity-router` JS and confirmed `navigate()` checks this
+flag FIRST and falls to a hard `window.location` navigation before any fetch — exactly matching the
+symptom (zero network request, no console error). WooCommerce's own filter code (`actions.toggle` →
+`navigate()`) is behaving correctly; something on the page tells WP core to disable client-side nav
+site-wide for this page load.
+
+**Bean then did a live 20-round bisection** (DB-level `wp_template`/`wp_template_part` overrides on
+the sandybrown canary Shop page, each round: deploy variant → curl the live interactivity-config
+JSON → check the flag → revert) to find WHICH element sets it, since the council named 3 candidate
+WC/WP-core call sites but couldn't pin the exact trigger without adding debug tracing.
+
+**Ruled out with reliable evidence** (regex-edited copies of the REAL template content — the
+trustworthy method; hand-reconstructed minimal variants proved unreliable, see below):
+- The legacy "Products (Beta)" `core/query` block — not present anywhere in this template.
+- `query-pagination`, `query-title`, `woocommerce/breadcrumbs`, `sgs/product-search` — removed
+  individually and in combination from the real page, flag persisted every time.
+- The entire toolbar template part, header, footer (each tested alone and together) — flag persisted
+  with them removed, and stayed clean when added back to a minimal reconstruction alone.
+- `sgs/container` wrapper blocks, `sgs/collapsible-text`, the two hand-authored `wp:html` blocks
+  (mobile filter toggle, filters panel header) — removed from the real page, flag persisted.
+- `sgs/product-card` (swapped for plain `wp:post-title` in the real page) — flag persisted. SGS's
+  own product-card block is NOT the cause, despite carrying its own `loadOnClientNavigation:true`
+  script-module flag (a real, separate, non-blocking finding from the council).
+- Our own SGS PHP/JS codebase does not call `wp_interactivity_config()` or reference
+  `clientNavigationDisabled` anywhere (`grep -r` across `plugins/sgs-blocks`) — this is not SGS code
+  setting the flag directly.
+
+**Narrowed to, with the single most reliable A/B pair in the investigation:** removing
+`woocommerce/product-collection-no-results` (with its `sgs/text` child, exact real attributes) from
+the REAL page content via regex — same technique that reliably reproduced every ruled-out result
+above — flipped the flag from `true` to absent. Re-adding it (same method) restored `true`.
+
+**Caveat, stated plainly:** hand-reconstructed MINIMAL variants (filters + no-results built fresh,
+not edited from the real page) could NOT reproduce the dirty state — suggesting the trigger needs
+either the full real filter set (all 6: active/price/attribute×2/status/rating, with their real
+`heading`/`headingLevel`/`queryType`/`showCounts` attributes) or something about attribute richness
+that simplified reconstructions kept dropping. **Do not treat "product-collection-no-results is the
+fix target" as validated** — per this project's `prove-the-cause-before-fix` rule, this is the
+narrowest, best-evidenced remaining suspect, not a proven single-cause diagnosis. A fix-shape based
+on this needs its own Stage 5 empirical validation (the qc-council hard gate) before anyone builds
+against it — e.g. try removing/restructuring `product-collection-no-results` on the REAL page (not
+a reconstruction) and confirm client-side filtering starts working end-to-end, not just that the
+config flag flips.
+
+**Site fully restored** — every DB template/template-part override created during the bisection was
+deleted (confirmed via `wp post list --post_type=wp_template[_part]` returning empty); the live Shop
+page is back to its theme-file-default state, verified dirty (as before) and rendering real filters.
+
+**Status: root MECHANISM confirmed (WP core's own client-nav kill switch). Trigger narrowed from
+"somewhere on the page" to one specific block, with real but incomplete confidence. Next step:
+retest against the real page (not reconstructions) with the no-results block restructured, before
+treating this as a validated fix.**
+
+## D700 [ROUTINE] — banned-lookalike depth+exclusion fix applied + colour's 409-vs-120 gap given a real block-level number (2026-08-20)
+
+First draft of this session's task was a new standalone script merging 8 colour scanners'
+JSON. Run through `/adversarial-council` (6 personas) before building — 5 of 6 independently
+converged NO-GO: it would have contradicted the C1-C4 programme's own explicit instruction
+for this layer of work ("do NOT write a standalone `check-*.js`"), landed in the directory
+that programme is actively retiring scripts out of, and reproduced C4's own named failure
+condition ("we have built the colour audit again, just later"). Revised scope: apply the
+one fix that was already diagnosed, compute the one number that was actually missing, no
+new script.
+
+**1. `bannedLookalikes` axis depth fix.** `reachedComponents()` in
+`survey-golden-conformance.js` walked one hop only; the exclusion logic (don't flag a banned
+primitive reached THROUGH a canonical component) was already correct at the unit-test level
+but was never exercised on real reach, because the scan couldn't see far enough to find most
+of the population. Extended to a bounded 4-hop walk (cycle-guarded, not unbounded). Measured
+before/after with `compare-reach-depth.py`'s reference: `ColorPalette` reach 3→34,
+`DesignTokenPicker` 18→34, `SgsGradientPicker` 4→35, `ShadowControl` 15→30 (30 = full depth
+exactly, out of 83 blocks). Axis verdict unchanged (83 CONFORMANT / 0 VIOLATION) — but now a
+meaningfully clean result over the real population it actually inspected, not an
+accidentally-clean one over a population it couldn't see past. Pinned by a real-file
+self-test (`accordion/edit.js` → `ContainerWrapperControls` → `BackgroundPanel` →
+`GradientOverlayControl` → `DesignTokenPicker` → `ColorPalette`), not only synthetic maps.
+
+**Residual gap named, not hidden:** reach plateaus at 4 hops = 6 hops (measured both), still
+short of full depth (34 vs 64). Root cause checked, not assumed — `SgsColourPanel.js:115`
+picks its row control at RUNTIME (`const Control = row.gradientCapable ? A : B`), so any
+block that only reaches `SgsColourPanel` dead-ends there regardless of depth. This is the
+same already-documented blind spot that makes `GradientCapableColourControl` read as dead
+code while live in 6 blocks — not fixed this session, not folded into this fix.
+
+**2. Block-level overlap between rule 31 (409 findings) and `survey-colour-coverage.py` (120
+findings), computed for the first time.** Of colour-coverage's 34 flagged blocks, 33 (97%)
+are ALSO flagged by rule 31 — the two scanners overwhelmingly describe the same block
+population, not disjoint ones. The one exception, `sgs/container`, is consistent with rule
+31's known Track A/B blindness (it never opens shared wrapper panels). This is
+population-level overlap ONLY — whether specific findings in each are the same underlying
+defect (defect-level matching) remains genuinely open, stated as such, not silently assumed
+solved.
+
+**Explicitly deferred, not silently dropped:** switching rule 31 itself to the wider
+resolver (`resolveComponentFiles()`) to close its Track A/B blindness — a load-bearing
+advisory-gate count change (`openBacklog: 409`) needing its own predicted-vs-measured pass;
+defect-level 409-vs-120 matching; gradient mechanism-awareness (three mechanisms vs a binary
+path-exists check); generalising any of this to the other 20 control types (explicitly the
+programme's own C4 stage's job).
+
+Full detail + the status block: `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
+Council transcript context: 6-persona `/adversarial-council` run this session on the
+rejected standalone-script draft.
+
+## D701 [ROUTINE] — colour master table QC-council-verified against ground truth; 2 real bugs found, root-caused, fixed (2026-08-20)
+
+Follow-up to D700. Bean's own correction mid-session: "re-running a tool and getting the
+same result twice is not verification of accuracy." A 4-rater `/qc-council` was dispatched
+to fact-check random samples from D700's master traceability table against REAL ground
+truth (source code, live Playwright on the sandybrown canary, `sgs-framework.db`, and an
+independent re-trace with no access to the original code) — not by re-deriving from the
+same instruments. 21 of 24 table rows confirmed directly. Two needed real work:
+
+1. **`sgs/feature-grid`'s "Layout type" editor control was genuinely misleading, root-caused
+   via `/systematic-debugging` (commit `f805a400`).** It offered a live Stack/Flex/Grid
+   choice via `ContainerWrapperControls`'s `LayoutPanel` (default `showLayout=true`), but
+   every one of `feature-grid`'s three render branches always emits `display:grid`, and
+   `render.php:156` silently overwrote the attribute whenever an explicit grid template was
+   present. Fix: `showLayout={false}` — the block owns its own real selector (`layoutMode`)
+   and never needed the generic one. **Deployed to sandybrown and live-verified** (editor:
+   dropdown gone, `layoutMode` still works; frontend: correct render at 1440px, zero
+   console errors).
+2. **`compare-reach-depth.py` (the reference tool D700's depth-fix section leans on) had its
+   own bug, root-caused via `/systematic-debugging` (commit `78120ed2`).** `reach()` used a
+   LIFO stack, not a breadth-first queue — a component reachable via two paths of different
+   depth (e.g. `DesignTokenPicker`, both a direct mount and a one-hop alias-resolved child of
+   `SgsColourPanel`'s runtime dispatch) could have its deeper duplicate processed first,
+   permanently capping its depth and silently blocking its own children from ever being
+   found within a tight `max_depth`. Also explains the run-to-run inconsistency Bean's
+   correction was aimed at: Python randomises string-hash order per process, which shuffled
+   which duplicate won the race. **Fix:** LIFO → FIFO (`collections.deque`), giving BFS's
+   shortest-path guarantee. **Verified:** 3 fresh process runs now byte-identical; a
+   negative control (the same self-test against the pre-fix code) genuinely fails 3 of 5
+   runs, proving the bug was real and non-deterministic, not imagined. A permanent
+   `--self-test` mode ships with the fix.
+
+Also: a stale, self-contradicting comment in `sgs/site-footer/edit.js` (claimed "no control
+mounted" directly above code that mounts exactly that control 120 lines earlier) was found
+by a QC rater and removed — no functional change.
+
+Every number this session's report cites is now either directly ground-truth-verified or
+explicitly named as still-open (rule 31's Track A/B blindness; defect-level 409-vs-120
+matching; gradient mechanism-awareness; colour's own undeclared `cssProperties`) — none
+silently assumed solved. Full detail: `.claude/reports/2026-08-20-colour-golden-scan-set.md`.
+
