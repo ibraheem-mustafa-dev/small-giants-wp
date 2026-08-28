@@ -253,5 +253,3 @@ Verified against the tree 2026-08-29. Each was in a doc or an audit report and w
 
 1. The client-controls track has TWO prompts; `2026-08-29-recovery-residuals-and-the-root-filter-nogo.md:3`
    declares `2026-08-28-rollout-detectors-and-the-null-element-tail.md` superseded, but both are on disk.
-2. `.claude/plans/2026-08-24-stack-layout-rebuild.md` is archivable — `status: COMPLETE`, commit SHAs,
-   QC 7/7, zero references anywhere.

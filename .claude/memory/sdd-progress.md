@@ -58,7 +58,7 @@ Bean asks 1-5 (post-handover):
 # SDD progress — Stack layout rebuild 2026-08-24
 
 Base commit: 55f797e85 (main)
-Plan: .claude/plans/2026-08-24-stack-layout-rebuild.md
+Plan: .claude/plans/archive/2026-08-24-stack-layout-rebuild.md (archived 2026-08-29, status COMPLETE)
 Task 1: complete (commit 0d3f2353b, reviewer-verified live: flex/column, row-gap 44px with
   MEASURED child gaps 43/44px, flexDirection ignored, wrap coerced, min-width:0, on __inner).
   6 gates joined, 5 grid-only gates correctly excluded.
