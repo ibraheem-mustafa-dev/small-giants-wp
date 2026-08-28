@@ -19,6 +19,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
+	SgsBorderControl,
 } from '../../components';
 import { colourVar } from '../../utils';
 
@@ -50,18 +51,6 @@ const CONNECTOR_OPTIONS = [
 	{ label: __( 'Solid line', 'sgs-blocks' ), value: 'line' },
 	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
 	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-];
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
-	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
-	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
-	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
-	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
 ];
 
 // Box-object interface contract §1: build an editor-preview shorthand from a
@@ -395,22 +384,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					{
-						key: 'border',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
-							},
-						],
-					},
 				] }
 			/>
 			<InspectorControls>
@@ -523,23 +496,24 @@ export default function Edit( { attributes, setAttributes } ) {
 				   per-side width support); border-radius routes to WP-native
 				   style.border.radius (base) + borderRadiusTablet/Mobile tiers. */}
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Border style', 'sgs-blocks' ) }
-						value={ borderStyle }
-						options={ BORDER_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+					   (width/style/colour) mirroring native's BorderBoxControl layout,
+					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
+					   (stays WP-native). */ }
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
 					/>
-					{ borderStyle !== 'none' && (
-						<ResponsiveBoxControl
-							label={ __( 'Border width', 'sgs-blocks' ) }
-							presets={ [ '10', '20', '30' ] }
-							values={ { base: borderWidth ?? {} } }
-							showResponsive={ false }
-							onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
-						/>
-					) }
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						values={ {
