@@ -108,7 +108,10 @@
 		"check:tier-object-cast": "python scripts/check-tier-object-cast.py --check",
 		"selftest:tier-object-cast": "python scripts/check-tier-object-cast.py --self-test",
 		"check:single-instance-invariants": "python scripts/check-single-instance-invariants.py --check",
-		"selftest:single-instance-invariants": "python scripts/check-single-instance-invariants.py --self-test"
+		"selftest:single-instance-invariants": "python scripts/check-single-instance-invariants.py --self-test",
+		"check:border-control-migration": "python scripts/survey-border-control-migration.py --check",
+		"survey:border-control-migration": "python scripts/survey-border-control-migration.py --survey",
+		"selftest:border-control-migration": "python scripts/survey-border-control-migration.py --self-test"
 	},
 	"devDependencies": {
 		"@wordpress/icons": "^11.6.0",

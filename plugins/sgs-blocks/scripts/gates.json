@@ -695,5 +695,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 76
+  },
+  {
+    "id": "survey-border-control-migration",
+    "cmd": "python scripts/survey-border-control-migration.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 77
   }
 ]
