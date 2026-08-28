@@ -1,3 +1,113 @@
+## D876 [ROUTINE] — Task 0 (SgsBorderControl) started: component proven on 2 blocks, real 47-block census corrects the 52/11 plan estimate, deterministic codemod build handed to next session
+
+**2026-08-28.** Bean-directed: match WordPress core's native one-row border UI (Width/Style/
+Colour) while keeping SGS's own data ownership. Built `plugins/sgs-blocks/src/components/
+SgsBorderControl.js` — composes three EXISTING, unmodified components (`SgsBoxControl` in
+border-width mode for the linked/unlinked 4-side width; `BorderStyleControl` for the native-exact
+3-option style picker; `GradientCapableColourControl` for Normal/Hover + Solid/Gradient colour)
+into one row, not a fourth new control.
+
+**The plan's assumed 52-native/11-block-private split was wrong.** Direct enumeration of all 83
+`block.json` files found: **38 NATIVE_FULL** (genuine native→private conversion targets), **8
+PRIVATE_NEEDS_SWAP** (already block-private, just need the UI composed — button, container,
+heading, icon-list, option-picker, process-steps, text, timeline), **2 PRIVATE_DONE**
+(product-card, quote), **7 ANOMALY** (partial border capability needing human triage before any
+auto-migration: filter-search, label, mega-aside, mega-panel, product-search, social-icons,
+whatsapp-cta — the plan named only mega-panel), **28 no border support** (out of scope). Census +
+ratcheted-ceiling gate: `plugins/sgs-blocks/scripts/survey-border-control-migration.py` (order 77,
+fast tier), self-test passes, independently re-verified.
+
+**`button`'s naming normalised to match every other block-private block** (`colourBorder*` →
+`borderColour*`, `89997c91f`) — the one block using a different convention. Grepped clean against
+theme patterns first (nothing authored the old names). Left a disclosed gap: `sgs-framework.db`'s
+classifier cache still carries rows keyed on the pre-rename names (`[gates-ok:...]`-bypassed on
+the census commit, real fix needs `extract-signatures.py` reseeding the shared DB, deferred while
+a peer session had concurrent uncommitted work on the tree; a peer session's `/sgs-update --stage
+1` run tonight should clear it — re-verify next session rather than assuming it landed).
+
+**`sgs/quote` fully migrated** (`22943618b`) — second proof of the composite working, different
+block shape from product-card's (colour previously split into a separate `SgsColourPanel` row;
+now unified into the one-row composite).
+
+**Bean then asked for a deterministic codemod** built FROM the two proven migrations, rather than
+continuing to hand-edit blocks via dispatched agents. First dispatch attempt returned after ~70
+seconds with a description of a plan rather than actual work (no commit, no new file) — caught by
+checking `git status`/`git log` directly rather than trusting the report, and re-dispatched with
+an explicit correction. Check the script tree for `migrate-border-control.py` (or a `--fix` mode
+on the survey script) before assuming it doesn't exist. **Do not apply it to the remaining 45
+blocks without reading its own proof-against-the-2-references output first** — it was built to be
+independently verified, not assumed correct on the strength of any dispatch report alone.
+
+⛔ **A false alarm along the way, worth recording so it isn't repeated:** a hard editor crash
+appeared to implicate `SgsBorderControl` (three investigation rounds, two clean non-repros in
+fresh browser contexts, one precise trusted-CDP repro). Root cause: a pre-existing WordPress-core
+race in `useBlockProps()`'s native block-visibility check, correlated with `<ServerSideRender>`
+bound-mode cards under heavy concurrent session load (several tracks live on `main` at once
+tonight) — not caused by this component. See D875 for the full trace.
+
+## D875 [ROUTINE] — D873's three product-card lift bugs are closed; the "one shared shape" framing was wrong, and closing it surfaced a framework-wide gradient defect and a converter dispatch-order bug
+
+**2026-08-28.** Closes D873's three bugs. The handoff framed them as one shared shape (a
+`derived_selector` naming an absent element); investigation found TWO real shapes, and closing
+the second one surfaced two more genuine defects beyond product-card.
+
+**1a (card border landing on the CTA) — the DB fix was necessary but NOT sufficient.**
+`borderColour`/`borderColourGradient`/`borderStyle`/`borderWidth` had `derived_selector` cleared
+to route through the OUTER root-domain lift, matching `backgroundColour`'s working shape. Live
+verification then found the card's border STILL leaked onto the CTA — the DB correction alone
+didn't close it. Root cause (`plugins/sgs-blocks/scripts/converter/db/db_lookup.py`,
+`declared_attrs_for_css_property`): the root-domain element guard was applied to OUTER-layer
+queries only. `content_band.py`'s `_layer_priorities()` tries CONTENT before OUTER for border
+properties, and CONTENT's NULL-layer fallback matched ANY `css_element` unconditionally — so
+`sgs/product-card`'s `ctaBorderWidth`/`ctaBorderStyle`/`ctaColourBorder` (`css_layer=NULL`,
+`css_element='cta'`) won the race ahead of the correctly OUTER-tagged card border. Fixed
+(`acc9e7060`) by restricting the NULL-fallback to root-domain on every layer, not just OUTER,
+while preserving OUTER's stricter both-branches restriction (load-bearing per
+`test_root_modifier_element_guard.py`). Full converter suite green (723→724 passed after the
+follow-up below).
+
+**1b (trial gradient dropped) — a converter bug, not a data bug, and it was framework-wide.**
+`expand_background_border_shorthand()` (`root_supports.py`) dropped a `background:
+linear-gradient(...)` shorthand outright instead of expanding it to `background-image` (unlike
+the solid-colour case two lines above). Fixed to mirror the existing normalisation. Investigating
+it surfaced that `backgroundColourGradient`'s `css_property` in `block_attributes` carried the
+synthetic, unreachable value `'background-color-gradient'` (no `property_suffixes` row) instead
+of the real `'background-image'` longhand — and the SAME pattern existed on **78 rows across the
+framework** (`background-color-gradient`: 17, `color-gradient`: 28, `border-color-gradient`: 33),
+all mapping to the single real property `background-image` except one named exception
+(`sgs/separator.lineGradient` → `border-image`) and one named non-target (`icon*ColourGradient`'s
+`stroke` mechanism, already correct). 72 fixed this session (6 product-card rows excluded,
+handled separately). **Correcting these 72 rows exposed a SECOND defect**: several blocks had a
+text- or border-family gradient attr sharing the exact same `(css_layer, css_element, ...)` slot
+as their background sibling — a genuine `AmbiguousLayerAttrError` once all three families shared
+one property. 30 rows disambiguated (background stays, text→`text`, border→`border`, preserving
+any `item`-scope prefix). **A first pass of this fix still missed 14 rows** (e.g.
+`sgs/hero.borderColourGradient` sitting at root-domain `wrapper` with no LITERAL sibling at the
+same tuple, because its sibling routes through an unrelated mechanism) — caught by re-running the
+full converter suite and finding `test_hero_background_image_does_not_misroute_to_overlay_child_attr`
+newly failing. The detector's collision rule was broadened from exact-tuple matching to "any
+text/border-family Gradient attr at a root-domain element is a target, independent of a literal
+sibling" — 13 more rows fixed. Migration: `scripts/migrations/2026-08-27-gradient-family-synthetic-css-property-census-fix.py`
+(full survey/fix/check/self-test triad, idempotent). Full suite: 724 passed, 0 failures.
+
+**1c (tag typography not lifting on the trial modifier) — DB fix, confirmed correct shape.**
+`tagFontSize`/`tagFontSizeUnit` moved from `.sgs-product-card__tag` to
+`.sgs-product-card__tag--trial`, matching the sibling colour attrs. Bean's call: typography
+varies per card variant, same as colour, rather than applying uniformly.
+
+⛔ **A related editor crash investigated tonight was a dead end, not a bug in this work.**
+`SgsBorderControl` (Task 0's border-control composite, see below) appeared to crash the block
+editor on `sgs/product-card`. Three rounds of investigation (two clean non-reproductions in fresh
+browser contexts, one precise trusted-CDP reproduction) converged on: it is a pre-existing
+WordPress-core race condition in `useBlockProps()`'s native block-visibility check
+(`useMediaQuery` racing the canvas iframe's readiness), correlated with `<ServerSideRender>`
+bound-mode cards under heavy concurrent session load — not caused by tonight's component. Logged
+here so it isn't mistaken for a regression next time it's seen; not fixed (WP-core mechanism, out
+of this project's scope tonight).
+
+See also: D873 (opened these three bugs), D876 (the border-control migration these
+investigations fed into).
+
 ## D874 [ROUTINE] — the generative-background-engine technique spec closed the D794 NO-GO, and two more council rounds caught what the fix itself got wrong
 
 **2026-08-28.** Closes Phase 2 of `.claude/plans/2026-08-27-generative-background-engine.md`.
