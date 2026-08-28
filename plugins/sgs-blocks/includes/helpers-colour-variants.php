@@ -209,14 +209,38 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 		return isset( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';
 	};
 
+	// ⚠ `sgs_resolve_text_colour_or_gradient()` returns the FLAT value VERBATIM
+	// when no gradient is set -- its docblock says so, because its other callers
+	// (`sgs_text_colour_decl()`) resolve tokens themselves. This helper does not:
+	// it feeds the value straight into `background:` inside the masked ::before
+	// ring, where a palette SLUG is invalid CSS the browser silently drops --
+	// and the ring also sets `border-color:transparent`, so the border vanishes
+	// entirely. Measured live 2026-08-29 on sgs/container: `borderColour:
+	// "primary"` emitted `background:primary` and painted nothing. A raw hex
+	// worked, which is why this survived the sgs/quote sign-off (that used a
+	// custom hex swatch, not a token). Same class as D684.
+	//
+	// So: when the resolver fell through to the flat value, run it through
+	// `sgs_colour_value()` (slug -> var(--wp--preset--color--…), raw colour
+	// passes through unchanged). A gradient is already a paintable value and is
+	// left untouched.
+	$normal_flat  = $read( $map['base'] );
 	$normal_paint = sgs_resolve_text_colour_or_gradient(
-		$read( $map['base'] ),
+		$normal_flat,
 		$read( $map['gradient'] ?? null )
 	);
-	$hover_paint  = sgs_resolve_text_colour_or_gradient(
-		$read( $map['hover'] ?? null ),
+	if ( '' !== $normal_paint && $normal_paint === $normal_flat ) {
+		$normal_paint = sgs_colour_value( $normal_paint );
+	}
+
+	$hover_flat  = $read( $map['hover'] ?? null );
+	$hover_paint = sgs_resolve_text_colour_or_gradient(
+		$hover_flat,
 		$read( $map['hover_gradient'] ?? null )
 	);
+	if ( '' !== $hover_paint && $hover_paint === $hover_flat ) {
+		$hover_paint = sgs_colour_value( $hover_paint );
+	}
 
 	if ( '' === $normal_paint && '' === $hover_paint ) {
 		return '';
