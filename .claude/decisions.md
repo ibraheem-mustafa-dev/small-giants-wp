@@ -1,3 +1,34 @@
+## D880 [INCIDENT] — KJC-4 reversed: Bean explicitly authorised porting Stripe's actual reference shader code as the generative-background geometry's foundation, superseding the "ship none of their files" ruling
+
+**2026-08-28.** Three geometry rebuild attempts, each reimplementing the fold mechanism from a
+plain-English description (never copying the reference's literal code), still didn't reproduce
+the reference's dramatic, self-overlapping folded look — the description-then-reimplement
+discipline preserved the mechanism but not the specific creative execution (exact axis choices,
+fold aggressiveness, camera crop) that produces that particular shape. Bean, after being told
+plainly what "copy it" means and that the mitigant named in the original KJC-4 research (a UK IP
+solicitor's hour on the client-indemnity question) still hasn't happened: **"Let's copy it and
+then we can use that as a foundation and make it our own."** Explicit, considered, second
+confirmation after the first flag — not proceeding on an ambiguous or heat-of-the-moment reading.
+
+**What this changes:** the "ship none of their files, keep no copies in this repo" rule
+(`.claude/plans/2026-08-27-generative-background-engine.md` KJC-4, and the technique spec's
+licence position section) no longer binds the geometry/vertex-shader mechanism specifically.
+Stripe's actual reference vertex shader (`.claude/scratch/stripe-hero-poc/shaders/68467.glsl`,
+previously study-only) may now be ported directly into the shipped product as the starting point
+for the folded-plane geometry, then adapted to this project's own attribute/control system.
+
+**What this does NOT change, absent a further explicit reversal:** the colour/palette pipeline
+(already independently built and verified, OKLCH-based, not derived from Stripe's palette asset)
+is untouched — no reason to revisit a working, already-legally-clean mechanism. The palette PNG
+itself remains off-limits regardless (it's an artistic work, not a computer program — a different
+asset class from the shader source code this decision concerns). §7's post-processing pass remains
+out of scope for unrelated reasons (cost, D479 gate). Any decision to also port fragment-shader
+source (colour/striation files) would need its own explicit authorisation, same as this one.
+
+**Open flag, not a blocker:** the solicitor's-hour recommendation from the original KJC-4 research
+is still outstanding. Bean was told this before confirming. Not re-raised here as a condition —
+recorded so a future session doesn't assume it happened.
+
 ## D879 [ROUTINE] — `sgs/timeline` scroll-driven progress connector (Spec 38 FR-38-35, Stage A): one number, two drivers, and the Firefox/Safari support claim corrected in both directions
 
 **2026-08-28.** MIC asked for a journey page whose connector line fills as you scroll. Stage A ships
