@@ -43,11 +43,17 @@
 	gap: var(--wp--preset--spacing--30, 1rem);
 }
 
-/* 2-column layout kicks in at 560px container width (not viewport) */
+/* Multi-column layout kicks in at 560px container width (not viewport).
+   SIX tracks, not two: 6 is the LCM of 2 and 3, so `half` (span 3) and
+   `third` (span 2) both tile the row exactly. Before 2026-08-28 this was
+   `1fr 1fr`, which made `--third` resolve to the same `span 1` as `--half`
+   — twelve field blocks offered a "Third width" option that rendered
+   identically to Half. The track count is an implementation detail; the
+   client-facing vocabulary (full / half / third) is unchanged. */
 @container sgs-form (min-width: 560px) {
 	.sgs-form__inner,
 	.sgs-form-step {
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(6, 1fr);
 	}
 }
 
@@ -58,14 +64,14 @@
 	grid-column: 1 / -1;
 }
 
-/* Half/third only apply inside 2-col layout */
+/* Half/third only apply inside the multi-column layout */
 @container sgs-form (min-width: 560px) {
 	.sgs-form-field--half {
-		grid-column: span 1;
+		grid-column: span 3;
 	}
 
 	.sgs-form-field--third {
-		grid-column: span 1;
+		grid-column: span 2;
 	}
 }
 
