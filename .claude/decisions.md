@@ -51,6 +51,20 @@ grep-needs-positive-control, self-test-without-the-feature. Floor 265 -> 268.
 **2026-08-29.** Task 0's Shape-A rollout finished — `PRIVATE_NEEDS_SWAP 8 → 0`,
 `PRIVATE_DONE 2 → 10`. Four defects surfaced on the way, three of them live.
 
+**The 10 blocks** (this roster exists nowhere else post-rollout — D876's is the PRE-rollout
+census and splits them across two now-dead buckets): `button`, `container`, `heading`,
+`icon-list`, `option-picker`, `process-steps`, `product-card`, `quote`, `text`, `timeline`.
+**`NATIVE_FULL` (38) and `ANOMALY` (7) are UNCHANGED** — 45 blocks remain outside this shape,
+so "Shape A closed" is NOT "borders done".
+
+**`heading` and `icon-list` were hand-edited, not codemod-fixed.** D876 records them as
+correctly REFUSED and that refusal stands; Bean's calls resolved them (keep heading's
+Border-panel mount, drop its duplicate colour-panel row; drop icon-list's conditional and
+mount unconditionally). The codemod's floor moved **`FIXABLE_FLOOR` 6 → 0** in the same
+commit as the apply: applying all six makes them `already-done`, so a floor of 6 would have
+gone red BECAUSE the migration succeeded. A guard that fails on success trains people to
+ignore it.
+
 **1. The codemod dropped `linked: true`.** `GradientCapableColourControl` reads
 `state.linked` to decide whether a picked colour is stored as the palette token
 SLUG or as a baked hex (`:126`), and whether a stored slug resolves for display
@@ -106,13 +120,15 @@ bytes each = 10 renames × 8 differing character positions.
 colour popover (native `BorderBoxControl` opens colour and style from one swatch;
 a separate toggle was an SGS divergence) — it sits outside the Normal/Hover tabs
 because a border has one style across both states. The SGS-wrapped native radius
-became the second control of the pair. Per-device border WIDTH was specified,
+became the second control of the pair, and the width leg moved from `SgsBoxControl` to
+`ResponsiveBoxControl` with the device switcher OFF (⚠ D876 still describes the width leg
+as `SgsBoxControl`). Per-device border WIDTH was specified,
 built, then **dropped by Bean the same session** — no real use case, and it would
 have cost `borderWidthTablet`/`Mobile` attrs plus `@media` emission in every
 block for a control nobody would reach for; the speculative plumbing was removed
 rather than left inert (`f5c9b66ae`).
 
-**New instrument: `scripts/qa/check-border-roundtrip.js`** — one live probe over
+**New instrument: `plugins/sgs-blocks/scripts/qa/check-border-roundtrip.js`** — one live probe over
 N blocks (positive instance + a `borderStyle:"none"` negative control, frontend
 computed styles), modelled on `check-colour-editor-roundtrip.js` but **fail-closed**:
 a missing browser or an unmeasurable assertion reports NOT RUN and exits non-zero
@@ -357,6 +373,10 @@ block has fully left the viewport — measure and look before changing it.
 (4 dead patterns never inserted on any live page, the 5th already stacks correctly at every
 breakpoint). Formally closing the item — nothing further to check.
 
+⚠ **SUPERSEDED BY D881:** all three sign-offs below passed while a live defect stood — each used
+a RAW HEX border colour, and only a palette TOKEN triggers the bug. Treat them as evidence of
+rendering, not of colour resolution.
+
 **Visual-diff sign-off owed for D830-D834 — paid for the three blocks this session actually
 touched.** `reports/visual-diff/{product-card,button,quote}-2026-08-28.md`, each live-verified
 (editor computed styles, stored attribute values via the block-editor data store, frontend
@@ -450,7 +470,11 @@ the census commit, real fix needs `extract-signatures.py` reseeding the shared D
 a peer session had concurrent uncommitted work on the tree; a peer session's `/sgs-update --stage
 1` run tonight should clear it — re-verify next session rather than assuming it landed).
 
-**`sgs/quote` fully migrated** (`22943618b`) — second proof of the composite working, different
+**`sgs/quote` fully migrated** (`22943618b`) — second proof of the composite working
+⚠ **SUPERSEDED BY D881 (2026-08-29):** this migration AND product-card's both dropped the `linked`
+flag, so each was a proof of defective output. This entry's census (8 PRIVATE_NEEDS_SWAP /
+2 PRIVATE_DONE) and its "6 fixable, heading + icon-list refused" queue are the PRE-rollout
+state: now 0 / 10 with the queue empty., different
 block shape from product-card's (colour previously split into a separate `SgsColourPanel` row;
 now unified into the one-row composite).
 

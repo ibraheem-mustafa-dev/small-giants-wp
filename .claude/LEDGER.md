@@ -53,14 +53,12 @@ token, element, parity), never the verb — the same idea is spelled `census-*`,
 ## ▶ MAMA'S CLONE TRACK + TASK 0 — 2026-08-29: SHAPE A CLOSED (10 blocks), 4 defects fixed
 
 **Full detail: D881. Do not restate it here.** Headline: `PRIVATE_NEEDS_SWAP 8 → 0`,
-`PRIVATE_DONE 2 → 10`. All committed, pushed, deployed, live-verified.
+`PRIVATE_DONE 2 → 10` (`NATIVE_FULL` 38 + `ANOMALY` 7 UNCHANGED — 45 blocks are still outside
+this shape). All committed, pushed and deployed; 6 of 8 probed blocks live-verified — see the
+NOT-live-proven note below before treating this as fully closed.
 
-⭐ **NEXT:** (1) pair the native RADIUS into `SgsBorderControl` per block (the
-component supports it; blocks still mount their own); (2) Task 4 adopters
-`label` / `mega-aside` (smallest — only `borderStyle` missing) / `whatsapp-cta`,
-with `filter-search` + `social-icons` LEAVE-AS-IS (child-element borders);
-(3) `sgs/accordion`'s `style` collision — Bean approved renaming the preset attr
-to free the native `style` object, migrating 31 live instances.
+⭐ **NEXT — full list + 8 items missed on the first pass are in the prompt:**
+`.claude/prompts/2026-08-30-border-radius-pairing-anomaly-adopters-accordion-rename.md`.
 
 ⛔ **Per-device border WIDTH is CANCELLED, not deferred** (Bean, 2026-08-29) — no
 use case; the speculative plumbing was removed at `f5c9b66ae`. Do not rebuild it.

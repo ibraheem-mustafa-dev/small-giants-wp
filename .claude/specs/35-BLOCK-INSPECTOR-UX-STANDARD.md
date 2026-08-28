@@ -2352,6 +2352,47 @@ cross-check — do not treat this guard as complete.
 
 ### 14. BORDER (restores condition 7's dropped half)
 
+> ⚠ **AMENDED 2026-08-29 (D881) — fields 1, 3 and the tier ruling below are SUPERSEDED. Read this
+> box before acting on anything in §14.**
+>
+> The border UI shipped as a shared composite, `SgsBorderControl`
+> (`plugins/sgs-blocks/src/components/SgsBorderControl.js`), now mounted on **10 blocks**: button,
+> container, heading, icon-list, option-picker, process-steps, product-card, quote, text, timeline.
+> Census + ratcheted gate: `plugins/sgs-blocks/scripts/survey-border-control-migration.py`
+> (`PRIVATE_NEEDS_SWAP` must stay 0). Three of §14's statements are now false:
+>
+> 1. **Radius is NO LONGER separate — it is the second control of a pair** inside
+>    `SgsBorderControl`, rendered when the caller wires `onRadiusChange`. Field 1 calls that
+>    separation "the condition, not an implementation detail"; Bean reversed it on 2026-08-29. §14.3
+>    correspondingly still bans "radius folded into the width control" as a lookalike — that ban no
+>    longer describes a defect here.
+> 2. **Style is no longer a sibling `SelectControl`.** It renders INSIDE the colour popover, so one
+>    swatch opens colour and style together — deliberately matching core's grouped border-box
+>    layout, which field 1's D566 rationale had rejected on stored-shape grounds. That rationale
+>    still holds for the STORAGE (SGS keeps its own typed attrs); only the visual grouping changed.
+>    §14.3's ban on a preset style `SelectControl` now has no live subject.
+> 3. **Width IS a 4-side box object**, on `ResponsiveBoxControl` with the device switcher OFF.
+>    Field 1's "per-side border width has no demand at all" and the D560 line beneath it are
+>    superseded by 10 shipped blocks.
+>
+> ⛔ **THE PROMOTION TRIGGER AT THE END OF THIS SECTION IS CANCELLED, NOT PENDING.** It says a
+> per-device border width appearing anywhere fires a build. One DID appear on 2026-08-29 — it was
+> specified, built, and then **dropped by Bean the same day** as having no real use case. Supporting
+> it would cost `borderWidth{Tablet,Mobile}` attrs plus `@media` emission in every block for a
+> control nobody would reach for. **Do not rebuild it, and do not cite that trigger as authority to.**
+> The switcher is off precisely so no block offers a tier it cannot store (a dead control).
+>
+> ⚠ **`linked` is load-bearing on any border colour row** — see §"linked" note elsewhere in this
+> spec. `GradientCapableColourControl` reads it to choose between storing the palette token SLUG and
+> a baked hex. Both 2026-08-28 hand migrations AND the codemod dropped it, through 14 green
+> assertions. Single-state callers use the `colourLinked` prop.
+>
+> ⚠ **A palette SLUG is not a paintable value.** `sgs_border_states_css()` fed one into `background:`
+> inside a masked `::before` ring that also sets `border-color:transparent`, so a token-coloured
+> border painted NOTHING while width and style were correct. **A raw hex works, which is why a
+> hex-valued sign-off certified the broken path as working.** Where a path resolves tokens, the TEST
+> VALUE must be a token.
+
 1. **Canonical** — `ResponsiveBorderRadiusControl` for the 4 corners, and for style + width +
    colour a **composed builder** (width `UnitControl` with a real units array + style
    `SelectControl` + token-aware colour picker). Radius is a **separate** control from width and
