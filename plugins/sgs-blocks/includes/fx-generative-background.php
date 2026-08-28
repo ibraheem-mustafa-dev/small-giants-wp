@@ -1,22 +1,19 @@
 <?php
 /**
  * SGS motion — generative background render layer (Spec 38, D874 technique
- * spec). Tier W, THIRD entry — v1 STATIC BUILD ONLY.
- *
- * ⛔ THIS IS NOT WEBGL. Per the technique spec's Assembly & priority order
- * §1 (build order step 1), v1 ships zero shader, zero WebGL context and zero
- * per-frame animation: a single OKLCH-interpolated gradient image, built
- * once client-side on a `<canvas>` 2D context
- * (`src/shared/effects/fx-generative-background.js`), painted as a static
- * background. The folded-plane geometry / animation / camera sections of the
- * technique spec are v1.1 — a separate, later, design-gated build.
+ * spec). Tier W, THIRD entry — v1.1 GEOMETRY BUILD.
  *
  * Turns the fx panel's four colour slots + ground preset into the custom
- * properties BOTH the CSS fallback (`assets/css/fx-generative-background.css`)
- * and the JS-built OKLCH image read, and applies the ground preset as a
- * root-level modifier class. Mirrors `fx-wave-gradient.php` almost exactly,
- * including the leading-`<style>` offset — see that file's own docblock for
- * why the colours become custom properties rather than resolved values.
+ * properties the CSS fallback (`assets/css/fx-generative-background.css`),
+ * the JS-built OKLCH image AND the WebGL folded-ribbon layer
+ * (`src/shared/effects/fx-generative-background.js` +
+ * `webgl/generative-background.js`) all read, applies the ground preset as a
+ * root-level modifier class, and emits the SC 2.2.2 pause control — the
+ * WebGL layer animates autonomously (the folded shape breathes/twists), so
+ * it owes SC 2.2.2 the same answer `fx-wave-gradient.php` already gives.
+ * Mirrors that file almost exactly, including the leading-`<style>` offset —
+ * see its own docblock for why the colours become custom properties rather
+ * than resolved values.
  *
  * @package SGS\Blocks
  */
@@ -113,6 +110,25 @@ function sgs_apply_fx_generative_background( string $block_content ): string {
 		$gexisting = (string) $gtag->get_attribute( 'class' );
 		$gtag->set_attribute( 'class', \trim( $gexisting . ' ' . $gclass ) );
 		$html = $gtag->get_updated_html();
+	}
+
+	/*
+	 * THE SC 2.2.2 PAUSE CONTROL — the WebGL folded-ribbon layer animates
+	 * autonomously (breathing displacement + per-band twist), behind other
+	 * content, so a mechanism to pause it is required, not a nicety. Emitted
+	 * `hidden`; the boot module unhides it ONLY once the WebGL layer actually
+	 * starts drawing — a static-only fallback (no WebGL) has nothing to pause,
+	 * so the control never appears for it (mirrors `fx-wave-gradient.php`).
+	 */
+	$toggle = \sprintf(
+		'<button type="button" class="sgs-generative-background__toggle" '
+			. 'data-sgs-genbg-toggle aria-pressed="false" hidden>%s</button>',
+		\esc_html__( 'Pause background', 'sgs-blocks' )
+	);
+
+	$last = \strrpos( $html, '</' );
+	if ( false !== $last ) {
+		$html = \substr( $html, 0, $last ) . $toggle . \substr( $html, $last );
 	}
 
 	if ( empty( $declarations ) ) {
