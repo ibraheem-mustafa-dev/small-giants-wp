@@ -127,38 +127,60 @@ variant selectors. Aurora's violet is curated per style, never added to the site
 *(Deployed + verified 2026-08-27 — see section A above. The old "NOT YET DEPLOYED" note here was
 stale and is removed.)*
 
-### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 2 CLOSED 2026-08-28, D874; Phase 3 next)
+### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 2 CLOSED D874; Phase 3 IN PROGRESS — D882)
 
-⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`.** Its technique spec IS a
-build spec; D794's NO-GO was COMPLETENESS, not purpose.
-⭐ **The token-recolouring differentiator belongs HERE**, not the variant work above (2026-08-27).
-✅ **Phase 1 (pick a reference) SATISFIED 2026-08-28** and ✅ **the licence question SETTLED** — both
-by Bean. Do not re-open either; detail in the plan.
-✅ **Phase 2 CLOSED 2026-08-28 (D874) — spec passed `/adversarial-council` GO after THREE rounds, not
-one.** Round 1 (six seats, NO-GO avg C) caught a wrong colour-space fix (OKLab where OKLCH was
-needed), a double-rotation bug, an unbuildable Animation section, a wrong-court legal citation. Round
-2's targeted fix-check found the fix itself planted a NEW v1/v1.1 table contradiction. Round 3: GO,
-A-. Full register + why 3 rounds: **D874 — read before touching the spec again.**
-⛔ **Modelled on the Stripe-hero POC (mesh-plane/CPU-fold), NOT FR-38-31's technique** — Bean's
-direct instruction 2026-08-28; the aurora/six-style work above is irrelevant to this track.
-⛔ **Gate E stays held** for this engine (this doc's own inference extending D790, not a fresh Bean
-ruling) — don't delete `.claude/scratch/stripe-hero-poc/` before Phase 3 ships.
+⭐ **Plan: `.claude/plans/2026-08-27-generative-background-engine.md`.** Technique spec IS a build
+spec; read **D882 before touching `generative-background.js` again** — it supersedes the technique
+spec's Animation section (which describes only ONE of the mechanism's three real layers).
+✅ Phase 1 + licence SETTLED by Bean (D874). ✅ Phase 2 CLOSED (D874, spec GO after 3 council rounds).
 
-### ▶ NEXT — A and Phase 2 of B are closed; only Phase 3 of B remains
+⛔ **D880: Bean explicitly authorised porting Stripe's reference VERTEX SHADER SOURCE directly**
+(reversing "describe and reimplement, never copy" for that one file only). Palette PNG stays
+off-limits regardless (different asset class). Three.js can never ship regardless (page-weight
+budget, not a legal question).
 
-**Deploy/gradient-controls/3-state-ramp all DONE/CANCELLED, see section A. Phase 1/licence/Phase 2
-detail lives in section B above only — not restated here.**
+⛔ **D882 — THE MECHANISM HAS THREE LAYERS, and only layer 3 is built:**
+1. **CPU fold** (3 bands by local X, cosine warp, translate+two -90° rotations) — currently
+   ABSENT from production code (an earlier session deleted it, wrongly concluding it didn't exist).
+2. **Static object-level transform** (position/rotation/scale, e.g. a ~107° Z rotation +
+   non-uniform scale in the reference) — currently ABSENT; this is what actually produces the
+   dramatic diagonal composition, and no build before this session ever attempted it.
+3. **Per-frame GPU twist** (three chained UV-driven rotations + noise displacement) — ALREADY
+   CORRECTLY BUILT this session (commits `e08140869`/`05eaf14b3`) after finding and fixing a real
+   maths bug: the reference multiplies `position * rotationMatrix` (row-vector), every earlier
+   build used `rotationMatrix * position` (column-vector) — NOT the same operation for a rotation
+   matrix, it silently rotated the opposite way on all three chained rotations.
 
-⭐ **The unbuilt thing is a MECHANISM, not a look:** *the background recolours itself from
-per-client theme tokens.* The shipped engine uses curated defaults with client override; automatic
-token-following is what this rebuild is for. ⚠ Measured constraint: **the palette has no violet**
-across all 21 presets, so a token-only aurora cannot reach its signature colour — the shipped
-engine curated around it; a token-following engine must answer it differently.
+⭐ **Verification method proven this session, use it for layers 1+2 too:** the reference rig
+(`.claude/scratch/stripe-hero-poc/index.html`) exposes `window.__matrices()` — extract the REAL
+`modelViewMatrix`/`projectionMatrix` three.js computes, then check a from-scratch WebGL2
+reimplementation reproduces those exact numbers (a Node script with no three.js dependency is
+enough — matched to `9e-13` once the Euler composition order was fixed to `Rx·Ry·Rz`, three.js's
+default `'XYZ'`). This is far more reliable than eyeballing screenshots.
 
-✅ **Phase 2 prompt DONE and DELETED — see section B above (D874).** Its predecessor
-`2026-08-27-background-styles-controls.md` is also gone; either path is stale if cited.
-⭐ **NEXT PROMPT: `.claude/prompts/2026-08-28-generative-background-engine-phase3-build.md`** —
-Phase 3, the build. First action: the static OKLCH gradient (Assembly & priority order step 1).
+⛔ **Two real process failures this session, guard against repeats:**
+- **Committed-but-never-deployed fixes, twice.** Deploys build from `git worktree add --detach
+  origin/main` — a real fix sitting only in the working tree silently never ships, and
+  `payload-verify` doesn't catch it (checks `block.json` only, not CSS/JS content). One incident
+  shipped a live runaway-layout bug (a canvas losing `position:absolute`) before being caught.
+  **After any dispatched build reports "done", verify with `git log`/`git diff` yourself — a
+  claimed commit hash is not evidence until checked.**
+- **A "direct port" that wasn't.** A commit's own docblock claimed fidelity while its diff shows
+  the old axis vectors and old multiplication convention kept. Bean caught it by eye ("same shape,
+  just bigger") — that observation was correct. When a port claims fidelity, diff the actual
+  maths against the source, don't trust the commit message.
+
+⭐ **Gate E stays held** — don't delete `.claude/scratch/stripe-hero-poc/`.
+
+### ▶ NEXT — Phase 3 of B: port layers 1+2 into production, verify numerically, get Bean's sign-off
+
+**Full task detail, file paths, and commit list: D882 — read it in full before starting, it is the
+single most important entry in this file for this track.** One-line summary: rebuild the CPU fold
++ object-level transform in `plugins/sgs-blocks/src/shared/effects/webgl/generative-background.js`
+(layer 3 already correct, do not re-touch without new evidence), verify the combined transform
+numerically against rig-extracted matrices (method proven, not yet re-run against production code),
+then re-verify colour/striations/depth-fade and get Bean's NAMED visual sign-off against the
+"B-movie 3D VFX" risk before calling this done — do not self-declare success from a screenshot.
 
 ### ▶ PARTICLE + GATES SUB-TRACK — 2026-08-27, all shipped (D839-D842, D846, D853)
 
@@ -182,40 +204,13 @@ it measured clean in both arms. `probe-row-collapse-reduced-motion.mjs`. ⛔ Edi
 `patterns/framework-header-default.php` is what renders.
 ⛔ **Parked:** `P-PARTICLE-TRAIL-VARIATIONS` (post-launch, Bean's timing).
 
-## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped)
+## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4 shipped). Detail: D731/D732/D733,
+Spec 32 §6.1(a1)/(a2), Spec 35 Part K. shop-archive: Phase 3 ownership moved 2026-08-27 to
+`.claude/prompts/2026-08-28-finish-the-template-review.md` — do not restart it here.
 
-Shipped, deployed, canary-verified. **Nothing remains on this track; Prompt B is deleted.**
-Detail is single-sourced — do not restate it here: **D731/D732/D733 + Phase 4** in
-`decisions.md` (commits `a2f6d5df`, `bbf13cc2`), **Spec 32 §6.1 (a1)/(a2)** (shared
-shorthand builders; sanitiser contract) and **Spec 35 Part K** (the gate + two method
-rules). Enforcement: `npm run check:vacuous-guards`, wired into `prebuild`.
-
-**If you are the shop-archive track**, read, in this order:
-
-1. `.claude/plans/phase-shop-container-remediation.md` — **Phase 1 AND Phase 2 are BOTH
-   COMPLETE (2026-08-22, D742).** P2-2/P2-4/P2-5/P2-7 (the four steps still open at the end
-   of the fourth session) shipped, deployed to sandybrown, live-verified, and reseeded.
-   Phase 3 (the per-template pass, P3-1 through P3-9) is the only work left in this plan.
-   ⛔ **OWNERSHIP MOVED 2026-08-27 (Bean's call) to
-   `.claude/prompts/2026-08-28-finish-the-template-review.md` — do NOT start it here.**
-   Split ownership (queued here, a loose scrap in the Mama's track) is why it deferred 4×.
-2. `.claude/decisions.md` D725 + D726 (width model) and **D742** (P2-2/P2-4/P2-5/P2-7
-   close-out) — read before any further container work.
-3. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — IN FULL if touching converter/walker.
-
-## Task 1 — container width model: ✅ CLOSED 2026-08-21 (D725 / D726)
-
-**Settled the OPPOSITE way to how the task was written — read D725 before acting on any older
-note about it.** Our `contentWidth` already caps content, so core's duplicate
-`layout:{"type":"constrained"}` was DELETED (`c984a676`). One cap per page, and it is ours.
-Measured 1440/768/390: stacked caps 3 → 0; `<main>` 1425px unbanded; 26 sections full-bleed
-outer + 1280px inner.
-
-⛔ **Three instructions that used to live here are now WRONG** — full text in D725. In short:
-the inspector-scan rule-23 widening is NOT needed; a full-bleed section is a SIBLING not a
-child, so nothing needs `alignfull`; and `<main>` at `contentWidth:full` is CANONICAL, not a
-workaround. **Accepted consequence:** a block placed straight into a page is intentionally
-full-width. Do not "fix" it.
+## Task 1 — container width model: ✅ CLOSED (D725/D726). `contentWidth` caps content, core's
+duplicate constrained-layout DELETED. One cap per page, ours. A block placed straight into a
+page is intentionally full-width — do not "fix" it.
 
 ## Task 2 — Two decisions the colour-golden track is waiting on
 

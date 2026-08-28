@@ -94,6 +94,110 @@ have left 17 new `fxGen*` attributes unregistered.
 
 See also: D876 (opened Task 0), D875 (the gradient fix now reverted), D684.
 
+## D882 [INCIDENT] — generative-background Phase 3: the real fold mechanism has THREE layers, not one; two build attempts shipped a genuine maths bug (row-vector vs column-vector rotation); two builds silently missed a live deploy because real fixes sat uncommitted
+
+**2026-08-28/29.** Phase 3 build session. Sequence of what shipped, what broke, and what was found —
+read this before touching `generative-background.js` again, and read it BEFORE the technique spec,
+which describes only layer 3 below and is the reason every earlier attempt undershot.
+
+**Shipped, verified live, working:** Step 1 static OKLCH gradient (colour pipeline — sRGB→linear→
+OKLCH→interpolate→gamma round-trip→clamp), confirmed correct with no grey-band. Ground preset
+(light/dark) now genuinely works after two CSS layering bugs were found and fixed (see below).
+
+**THE CENTRAL FINDING — three layers, not one.** Reading `.claude/scratch/stripe-hero-poc/index.html`
+(the actual working replica rig, not just the isolated `.glsl` shader files) revealed the real
+mechanism has THREE separate transforms, composed in this order:
+1. **A one-time CPU fold** (`foldedPlane()` in the rig) — splits the flat plane into 3 bands by
+   local X (`< -16` / `-16..16` / `> 16`), warps each with a cosine profile, translates by
+   `width/4`, then two **-90° rotations** about X then Y. This is exactly what the ORIGINAL
+   technique-spec §1 described — and exactly what an early build attempt implemented, before a
+   later session (reading only `68467.glsl` in isolation, not the whole rig) concluded there was
+   "no CPU fold at all" and had it **deleted**. That conclusion was wrong. The vertex shader
+   (`68467.glsl`) only contains layer 3 below — it was never the whole picture.
+2. **A static object-level transform** (mesh `position`/`rotation`/`scale` in the rig) — e.g. the
+   light-theme preset applies `rotation ≈ (-25.8°, -6.7°, 107.4°)` and a **non-uniform scale**
+   `(9, 8, 5)`. This is what actually produces the dramatic diagonal, off-frame composition — no
+   build attempt before this session ever applied ANY object-level transform; every attempt only
+   built layer 3 (below) and wondered why the result looked centred, small, and gentle regardless
+   of camera/frustum tuning.
+3. **Per-frame GPU twist** (`68467.glsl`'s vertex shader, applied on top of the already-folded,
+   already-transformed geometry) — three chained axis-angle rotations whose angles are a fixed
+   function of UV (not time), plus a noise-driven vertical "breathing" displacement. This is the
+   ONLY layer the technique spec's Animation subsection describes, and the only layer any build
+   attempt before this session implemented.
+
+**A genuine maths bug, not a style choice, cost two build cycles.** The reference composes the
+per-frame rotation as `(position * rotationMatrix).xyz` — a ROW-vector-times-matrix product. Every
+build attempt used `rotationMatrix * position` — column-vector convention. For an orthogonal
+rotation matrix these are NOT the same operation: `v * M = transpose(M) * v`, which for a matrix
+built from `(axis, angle)` equals the SAME matrix built from `(axis, -angle)`. So the fold was
+rotating the opposite way on all three chained rotations despite using the (eventually) correct
+axis vectors. Caught only because Bean looked at the live result and said "this is the same shape,
+just bigger" — that observation was exactly right; a commit had claimed "direct port" while
+actually keeping the old axes and the old (wrong) multiplication convention. **Lesson: when a
+"port" claims fidelity, verify the actual multiplication/composition convention matches the source
+line-for-line, not just the axis values.**
+
+**Numerically verified, not just visually.** The rig has a debug hook (`window.__matrices()`) that
+returns the EXACT `modelViewMatrix`/`projectionMatrix` three.js computed. Extracted these as ground
+truth and wrote a standalone Node script (no three.js) reproducing the same numbers to
+floating-point precision (`9.1e-13` max element diff) — found the object-level rotation must compose
+as `Rx · Ry · Rz` (three.js's default Euler `'XYZ'` order), not `Rz · Ry · Rx`. **This numeric
+verification method — extract real matrices from the working rig, check a from-scratch
+reimplementation reproduces them exactly — is far more reliable than eyeballing screenshots, and
+should be the standard method for porting the remaining pieces (still not done: baking this into
+the actual production WebGL2 file; the verification so far is in a scratch Node script, not yet
+wired into `generative-background.js`).**
+
+**A real deploy-process defect, twice.** Two separate build sessions wrote genuinely correct fixes
+to `generative-background.js`/`.php`/`.css` but never committed them — every subsequent deploy was
+built from `git worktree add --detach origin/main` (committed state only), so the fixes silently
+never reached the live site while the deploy tooling reported PASS (payload-verify only checks
+`block.json` checksums, not CSS/asset content). One incident produced a literal runaway layout bug
+live on the shared canary (a WebGL canvas element not kept `position:absolute` because its CSS
+rule was never actually deployed — grew to 242,000+px tall via a resize-observer feedback loop)
+before being caught and fixed. **Lesson: after any subagent reports "done", independently check
+`git log`/`git diff` for a REAL commit before trusting the report — a commit hash without git
+verification is not evidence.** Same session, TWO separate CSS layers were found silently masking
+the ground colour (a static fallback `background-image`, then a static-canvas layer underneath the
+WebGL canvas) — neither had a rule to step aside once the real WebGL layer activated; both needed
+`[data-sgs-genbg-webgl-active="1"] { ... }` override rules, fixed as two separate small commits.
+
+**Legal position — D880 reversed the no-copying rule for the VERTEX SHADER MECHANISM specifically,
+after Bean's explicit, twice-confirmed authorisation.** Still holds: the palette PNG asset remains
+off-limits regardless (different asset class — artistic work, not a computer program); the
+fragment-shader/colour pipeline was NOT re-authorised for direct copying (our own OKLCH build stays
+as-is, already verified working); three.js itself can never ship in production regardless of the
+copying question (a separate, page-weight-budget constraint — ~180KB gzip against a 120KB Tier W
+allowance for this whole effect class). The reference rig (`index-ours.html`, a copy with our own
+OKLCH palette swapped in place of Stripe's PNG) is a LOCAL, gitignored, never-shipped workbench for
+verifying the mechanism visually and numerically before porting into the real WebGL2 file — it is
+not itself a deliverable.
+
+**What Phase 3 still needs, concretely (next session's actual work):**
+1. Port the CPU fold (layer 1) into `generative-background.js` — currently deleted, needs
+   rebuilding from the rig's `foldedPlane()` logic (own axis/band choice is fine per D880's scope,
+   the STRUCTURE — 3 bands, cosine warp, translate+rotate — is what matters).
+2. Add the object-level transform (layer 2) — currently entirely absent from the production file.
+   Own position/rotation/scale values (not required to copy the reference's literal numbers), but
+   the MECHANISM (a static transform applied once, composed as `T · R(XYZ order) · S`) must exist.
+3. Layer 3 (per-frame twist) is already correctly ported as of this session (axes + row-vector
+   convention both fixed, commit `e08140869`/`05eaf14b3`) — do not re-touch without new evidence.
+4. Verify the combined 3-layer transform numerically against extracted rig matrices (method proven
+   this session, scratch script at
+   `%TEMP%/claude/.../scratchpad/verify-transform.mjs` — not committed, was local-only; re-derive
+   the same check against the production code once layers 1+2 are added).
+5. Only THEN re-verify colour/striations/depth-fade still look right and get Bean's visual sign-off
+   — do not declare success from code review or a single screenshot; get an explicit, named
+   sign-off against the "B-movie 3D VFX" risk the technique spec itself flags.
+
+**Files:** `plugins/sgs-blocks/src/shared/effects/webgl/generative-background.js` (main target),
+`plugins/sgs-blocks/assets/css/fx-generative-background.css` (ground-colour layering fix, done),
+`plugins/sgs-blocks/includes/fx-generative-background.php`, `plugins/sgs-blocks/includes/fx-attributes.php`.
+Commits this session: `ebb014eea` `698f7267d` `82a1c630d`(unrelated) `a849e2899` `48c69b30f`
+`e9ad935bc` `e08140869` `05eaf14b3`. Test page: sandybrown canary,
+`gate-test-generative-background-v1-probe` (post 3052).
+
 ## D880 [INCIDENT] — KJC-4 reversed: Bean explicitly authorised porting Stripe's actual reference shader code as the generative-background geometry's foundation, superseding the "ship none of their files" ruling
 
 **2026-08-28.** Three geometry rebuild attempts, each reimplementing the fold mechanism from a
