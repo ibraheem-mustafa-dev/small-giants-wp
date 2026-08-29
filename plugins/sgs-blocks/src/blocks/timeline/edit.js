@@ -421,6 +421,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		milestoneMediaPlacement,
 		milestoneMediaWidth,
 		milestoneMediaDecorative,
+		showDateColumn,
 		rowStripes,
 		rowStripeColourA,
 		rowStripeColourB,
@@ -447,6 +448,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			'date-over-media' === milestoneMediaPlacement ? 'overlay' : 'under'
 		}`,
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
+		orientation === 'vertical' && alignment === 'left' && showDateColumn
+			? 'sgs-timeline--date-gutter'
+			: '',
 		// ⛔ `--reveal-connector` is mirrored but `is-js` is NOT. The hidden
 		// state is gated on both, so omitting `is-js` here keeps every entry
 		// VISIBLE on the canvas — an editor that hides milestones until a
@@ -706,6 +710,44 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
+					{ /* Date gutter is an AXIS OF ITS OWN, not an alignment value.
+					     MUI, Ant Design, PrimeReact and Vuetify all model it as a
+					     separate slot/prop — none forces a gutter when you pick
+					     "left". Shown only for Left, because Alternating is
+					     inherently two-sided and Centre is a single column. */ }
+					{ orientation === 'vertical' && alignment === 'left' && (
+						<ToggleControl
+							label={ __( 'Date in its own column', 'sgs-blocks' ) }
+							checked={ showDateColumn }
+							onChange={ ( val ) => setAttributes( { showDateColumn: val } ) }
+							help={ __(
+								'Off: the line sits at the far left and everything reads down one column. On: dates get their own column so they can be scanned on their own.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					) }
+					<ToggleControl
+						label={ __( 'Alternating row colours', 'sgs-blocks' ) }
+						checked={ rowStripes }
+						onChange={ ( val ) => setAttributes( { rowStripes: val } ) }
+						help={ __(
+							'Bands each milestone row in one of two colours, so the rows read as distinct blocks.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ── Milestone media ──
+				     Its own panel rather than three more rows in Layout. Beyond
+				     ~6 always-visible controls a PanelBody reads as a wall
+				     (inspector-scan rule 03, Spec 35) — and grouping the media
+				     settings together is what a client would look for anyway. */ }
+				<PanelBody
+					title={ __( 'Milestone media', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ /* Placement is ONE decision for the whole timeline, not one
 					     per milestone: a client should not have to make the same
 					     choice N times, and mixed placements down one timeline
@@ -745,16 +787,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						help={ __(
 							'Turn on when the pictures are decoration rather than information — screen readers will skip them instead of reading the image description.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Alternating row colours', 'sgs-blocks' ) }
-						checked={ rowStripes }
-						onChange={ ( val ) => setAttributes( { rowStripes: val } ) }
-						help={ __(
-							'Bands each milestone row in one of two colours, so the rows read as distinct blocks.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

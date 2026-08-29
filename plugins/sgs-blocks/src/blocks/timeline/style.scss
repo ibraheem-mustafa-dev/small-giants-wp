@@ -531,26 +531,95 @@
 }
 
 // Left-aligned: date | node | content all on left side.
+// ── align-left ────────────────────────────────────────────────────────────────
+//
+// TWO SHAPES, chosen by an axis of its own rather than by the alignment value.
+// Researched 2026-08-29 against MUI (`TimelineOppositeContent`), Ant Design
+// (`label`), PrimeReact (`opposite`) and Vuetify (`opposite` slot): 4 of 4 model
+// "which side the content sits on" and "does the date get its own gutter" as
+// SEPARATE controls, and NONE forces a gutter when you pick `left`.
+//
+// This block used to weld them together — `left` always drew a date column — so
+// a single row of `left` was the same shape as a row of `alternating`, and the
+// variant earned nothing. Measured before the split: alternating row 1 had
+// date 0->689 / content 737->1425; align-left had date 0->180 / content
+// 228->1425. Same idea, different column widths.
+//
+// DEFAULT (no gutter) — the rail is hard left and EVERYTHING sits to its right,
+// date stacked above the title. This is Flowbite's and Preline's default
+// timeline, it is what every variant collapses to on mobile anyway, and it keeps
+// DOM order identical to visual order on every row (WCAG 1.3.2), which the
+// side-flipping gutter is exactly the thing that tempts you to break.
 .sgs-timeline--vertical.sgs-timeline--align-left .sgs-timeline__entry {
-	grid-template-columns: auto auto 1fr;
-
-	.sgs-timeline__date {
-		grid-column: 1;
-		grid-row: 1;
-		text-align: right;
-		padding-right: var(--wp--preset--spacing--20, 1rem);
-		min-width: 100px;
-	}
+	grid-template-columns: auto 1fr;
 
 	.sgs-timeline__node {
-		grid-column: 2;
-		grid-row: 1;
+		grid-column: 1;
+		grid-row: 1 / -1;
+		align-self: start;
 	}
 
+	// Date, media and content flow down column 2 in DOM order. Left to
+	// auto-placement deliberately: the media slot is only present on some
+	// entries, so pinning explicit row numbers here would leave a gap on the
+	// entries without it.
+	.sgs-timeline__date,
+	.sgs-timeline__media-slot,
 	.sgs-timeline__content {
-		grid-column: 3;
-		grid-row: 1;
+		grid-column: 2;
 		text-align: left;
+	}
+
+	.sgs-timeline__date {
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.sgs-timeline__content,
+	.sgs-timeline__media-slot {
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+	}
+}
+
+// The rail sits on the NODE, which is now column 1.
+.sgs-timeline--vertical.sgs-timeline--align-left {
+	--sgs-timeline-rail-offset: calc(var(--sgs-node-size) / 2);
+}
+
+// OPT-IN (`showDateColumn`) — the "opposite content" pattern: the date in its own
+// fixed column on every row, content in another, rail between. Named
+// `oppositeContent` by MUI and shipped as a separate variant ("Side timestamps")
+// by Preline. Use it when the dates must be scannable on their own — a
+// changelog, an audit log, a project history.
+.sgs-timeline--vertical.sgs-timeline--align-left.sgs-timeline--date-gutter {
+	// Back to the node column's centre, since the date column is in front of it.
+	--sgs-timeline-rail-offset: calc(
+		var(--sgs-timeline-gutter-width, 100px) +
+		var(--wp--preset--spacing--30, 1.5rem) +
+		var(--sgs-node-size) / 2
+	);
+
+	.sgs-timeline__entry {
+		grid-template-columns: minmax(0, var(--sgs-timeline-gutter-width, 100px)) auto 1fr;
+
+		.sgs-timeline__date {
+			grid-column: 1;
+			grid-row: 1;
+			text-align: right;
+			padding-left: 0;
+			padding-right: var(--wp--preset--spacing--20, 1rem);
+		}
+
+		.sgs-timeline__node {
+			grid-column: 2;
+			grid-row: 1 / -1;
+		}
+
+		.sgs-timeline__content {
+			grid-column: 3;
+			grid-row: 1;
+			text-align: left;
+			padding-left: 0;
+		}
 	}
 }
 
@@ -1086,10 +1155,10 @@
 // into it would be squeezed to the width of "2019". Widen column 1 to the media
 // width — and ONLY when the timeline actually has media, so a plain align-left
 // timeline keeps its tight date column.
-.sgs-timeline--vertical.sgs-timeline--align-left:has(.sgs-timeline__entry--has-media) {
-	.sgs-timeline__entry {
-		grid-template-columns: minmax(0, var(--sgs-timeline-media-width, 180px)) auto 1fr;
-	}
+.sgs-timeline--vertical.sgs-timeline--align-left.sgs-timeline--date-gutter:has(.sgs-timeline__entry--has-media) {
+	// In GUTTER mode the media shares the date's column, so that column has to be
+	// wide enough for a picture rather than for the word "2019".
+	--sgs-timeline-gutter-width: var(--sgs-timeline-media-width, 180px);
 
 	// ⛔ THE RAIL MUST MOVE WITH THE COLUMN, or the picture is drawn straight
 	// across the connector. Measured on the canary before this rule: the line sat
@@ -1112,7 +1181,11 @@
 	);
 }
 
-.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-left {
+// Gutter mode only: the media joins the DATE in column 1, under it. Without the
+// gutter there is no second column to be opposite, and the media simply flows
+// down the single content column in DOM order — which the base align-left rule
+// already does, with no placement needed here.
+.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-left.sgs-timeline--date-gutter {
 	.sgs-timeline__entry--has-media {
 		grid-template-rows: auto auto;
 

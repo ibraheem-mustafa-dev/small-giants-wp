@@ -220,6 +220,10 @@
 			"type": "string",
 			"default": "180px"
 		},
+		"showDateColumn": {
+			"type": "boolean",
+			"default": false
+		},
 		"milestoneMediaDecorative": {
 			"type": "boolean",
 			"default": false

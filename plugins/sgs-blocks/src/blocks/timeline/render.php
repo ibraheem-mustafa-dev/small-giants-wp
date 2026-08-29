@@ -109,6 +109,30 @@ $orientation     = in_array( $orientation, array( 'vertical', 'horizontal' ), tr
 $alignment       = in_array( $alignment, array( 'left', 'centre', 'alternating' ), true ) ? $alignment : 'alternating';
 $connector_style = in_array( $connector_style, array( 'line', 'dashed', 'dotted' ), true ) ? $connector_style : 'line';
 
+// Date gutter — the date in its OWN column, opposite the content, on every row.
+//
+// ⛔ THIS IS AN AXIS OF ITS OWN, not an alignment value, and that distinction is
+// the whole point. Researched 2026-08-29 against MUI (`TimelineOppositeContent`),
+// Ant Design (`label`), PrimeReact (`opposite`) and Vuetify (`opposite` slot):
+// 4 of 4 model "which side the content sits on" and "does the date get a gutter"
+// as SEPARATE controls, and none of them forces a gutter when you pick `left`.
+// This block used to weld the two together, which is why `left` read as
+// "alternating without the flip" instead of as a layout of its own.
+//
+// `alternating` is inherently two-sided — there is nothing to alternate without a
+// second column — so the toggle is ignored there rather than fighting it.
+// ⛔ NAMED `showDateColumn`, NOT `dateGutter`, and the name is load-bearing.
+// The manifest's `date` element declares `prefix: "date"`, so ANY attribute
+// spelled `date{Something}` is auto-resolved as a CSS property OF that element.
+// `dateGutter` therefore got scanned as if it were a style value for the date
+// text and came back ORPHAN:UNCLASSIFIED, failing check-element-manifest-
+// conformance (gated at zero, no baseline permitted). It is a boolean LAYOUT
+// switch, not a CSS value — exactly the "prefix-string accident" that file's own
+// baseline notes describe for sgs/before-after's dividerColour. Renaming is the
+// principled fix; do not rename it back.
+$date_gutter = ! empty( $attributes['showDateColumn'] ) && 'left' === $alignment;
+
+
 // WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
 $style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
 $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
@@ -382,6 +406,9 @@ if ( $row_stripes ) {
 }
 if ( 'connector' === $reveal_trigger ) {
 	$wrapper_classes[] = 'sgs-timeline--reveal-connector';
+}
+if ( $date_gutter ) {
+	$wrapper_classes[] = 'sgs-timeline--date-gutter';
 }
 
 if ( '' !== $preset_text_slug ) {
