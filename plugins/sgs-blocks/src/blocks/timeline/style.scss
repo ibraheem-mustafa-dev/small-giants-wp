@@ -1324,34 +1324,48 @@
 // Both boxes take the SAME column and the SAME justification, which is what
 // makes them coincide. Stated per side because the alternating layout puts the
 // date-and-media pair on the left for odd entries and the right for even ones.
-.sgs-timeline--media-overlay.sgs-timeline--align-alternating {
-	.sgs-timeline__entry--has-media:nth-child(odd) {
-		.sgs-timeline__media-slot,
-		.sgs-timeline__date {
-			grid-column: 1;
-			justify-self: end;
+//
+// ⛔ Scoped to `min-width: 768px` (2026-08-30 follow-up to the `--media-under`
+// fix in f6188b027). This block was originally left UNSCOPED on the claim that
+// the overlay "reads correctly at any width" — that claim was false. At
+// (0,5,0) it beat the mobile re-placement rule below (`max-width: 767px`,
+// (0,4,0)) on specificity alone, so the mobile block at :1461-1477 was DEAD
+// CODE for alternating overlay timelines: measured live at 375px, `dateArea`
+// was "2 / 1" with columns "180px 164px" instead of collapsing to a single
+// content column. Only the PLACEMENT properties move inside the media query —
+// `grid-column` / `justify-self` here. The appearance declarations at
+// :1306-1320 (`background-color`, `box-shadow`, `padding`, `border-radius`,
+// `z-index`, `text-align` base) stay outside because they are width-independent.
+@media (min-width: 768px) {
+	.sgs-timeline--media-overlay.sgs-timeline--align-alternating {
+		.sgs-timeline__entry--has-media:nth-child(odd) {
+			.sgs-timeline__media-slot,
+			.sgs-timeline__date {
+				grid-column: 1;
+				justify-self: end;
+			}
+
+			// ⛔ Restated per side ON PURPOSE. The base alternation rules set
+			// `text-align: right` on an odd date and `left` on an even one at (0,4,0);
+			// the generic overlay rule's `center` is only (0,3,0) and LOSES, which put
+			// the year hard against one end of its own scrim band. Measured on the
+			// canary: 2019/2023 right-aligned, 2021/2025 left-aligned, in a band the
+			// full width of the picture.
+			.sgs-timeline__date {
+				text-align: center;
+			}
 		}
 
-		// ⛔ Restated per side ON PURPOSE. The base alternation rules set
-		// `text-align: right` on an odd date and `left` on an even one at (0,4,0);
-		// the generic overlay rule's `center` is only (0,3,0) and LOSES, which put
-		// the year hard against one end of its own scrim band. Measured on the
-		// canary: 2019/2023 right-aligned, 2021/2025 left-aligned, in a band the
-		// full width of the picture.
-		.sgs-timeline__date {
-			text-align: center;
-		}
-	}
+		.sgs-timeline__entry--has-media:nth-child(even) {
+			.sgs-timeline__media-slot,
+			.sgs-timeline__date {
+				grid-column: 3;
+				justify-self: start;
+			}
 
-	.sgs-timeline__entry--has-media:nth-child(even) {
-		.sgs-timeline__media-slot,
-		.sgs-timeline__date {
-			grid-column: 3;
-			justify-self: start;
-		}
-
-		.sgs-timeline__date {
-			text-align: center;
+			.sgs-timeline__date {
+				text-align: center;
+			}
 		}
 	}
 }
@@ -1440,8 +1454,14 @@
 // here. The media therefore takes its own row at the bottom of the stack and
 // spans the full content column.
 //
-// The OVERLAY placement is deliberately NOT re-placed: the date sits on its own
-// media, which is self-contained and reads correctly at any width.
+// The OVERLAY placement here (`.sgs-timeline__date` -> `grid-column:2; grid-row:2`)
+// re-places the date onto the mobile media, same as the node above it. This
+// re-placement WAS being beaten by the desktop alternating rule at :1327-1367,
+// which used to be unscoped — fixed 2026-08-30, see the comment above that
+// block. The claim that once stood here ("deliberately NOT re-placed, reads
+// correctly at any width") was false: measured live at 375px pre-fix, the
+// desktop rule's higher specificity won and the date sat off to one side of
+// a narrow media column instead of stacking under it.
 @media (max-width: 767px) {
 	.sgs-timeline--media-under.sgs-timeline--vertical .sgs-timeline__entry--has-media {
 		grid-template-rows: auto auto auto;
