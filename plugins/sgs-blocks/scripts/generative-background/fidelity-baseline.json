@@ -1,0 +1,650 @@
+{
+  "generatedAt": "2026-08-29T15:45:31.620Z",
+  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608",
+  "sampleTimes": [
+    2,
+    5,
+    9
+  ],
+  "perturbControl": {
+    "channel": "G",
+    "delta": 3
+  },
+  "canvasBox": {
+    "x": 330,
+    "y": 0,
+    "width": 1110,
+    "height": 761
+  },
+  "fidelityCeilingPct": 5,
+  "fidelityCeilingNote": "Inherited from compare.py's own printed convention. Its docstring states this is a local convention with no derivation and no precedent elsewhere in this project — repeated here rather than presented as an official standard.",
+  "environment": {
+    "gpuRenderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "gpuVendor": "Google Inc. (NVIDIA)",
+    "chromiumVersion": "145.0.7632.6",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "dpr": 1
+  },
+  "rungs": {
+    "0a_determinism": {
+      "uTime": 2,
+      "measuredWith": {
+        "blendOff": true,
+        "nopost": true
+      },
+      "refSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
+      "candSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
+      "stats": {
+        "label": "0a determinism floor",
+        "reference": "derive-rig.png",
+        "candidate": "0a-rig-2.png",
+        "crop": [
+          483,
+          0,
+          1440,
+          761
+        ],
+        "pixels": 728277,
+        "mean_abs_255": 0,
+        "mean_abs_pct": 0,
+        "signed_mean": {
+          "R": 0,
+          "G": 0,
+          "B": 0
+        },
+        "bias_over_abs": 0,
+        "within_pct": {
+          "4": 100,
+          "8": 100,
+          "16": 100,
+          "32": 100
+        },
+        "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+        "worst_single_channel_255": 0,
+        "ceiling_pct": 5,
+        "under_ceiling": true,
+        "crop_scale": 1
+      },
+      "ceiling255": 0.5,
+      "passed": true
+    },
+    "0b_positive_control": {
+      "uTime": 2,
+      "measuredWith": {
+        "blendOff": true,
+        "nopost": true
+      },
+      "refSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
+      "candSha256": "1e93bd38521f24c8423e9cc7c7b3c051d2df830ee68badb53d68b83d988f3c45",
+      "predicted": {
+        "predicted_signed_mean_channel": 1.4351613465755475,
+        "predicted_abs_mean_over_all_channels": 0.4783871155251825
+      },
+      "measured": {
+        "label": "0b positive control (+3/255 on G)",
+        "reference": "derive-rig.png",
+        "candidate": "0b-rig-perturbed.png",
+        "crop": [
+          483,
+          0,
+          1440,
+          761
+        ],
+        "pixels": 728277,
+        "mean_abs_255": 0.4783871155251825,
+        "mean_abs_pct": 0.18760279040203234,
+        "signed_mean": {
+          "R": 0,
+          "G": 1.4351613465755475,
+          "B": 0
+        },
+        "bias_over_abs": 1,
+        "within_pct": {
+          "4": 100,
+          "8": 100,
+          "16": 100,
+          "32": 100
+        },
+        "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+        "worst_single_channel_255": 3,
+        "ceiling_pct": 5,
+        "under_ceiling": true,
+        "crop_scale": 1
+      },
+      "tolerance": 0.05,
+      "passed": true
+    },
+    "0c_discrimination": {
+      "uTimeLow": 2,
+      "uTimeHigh": 9,
+      "measuredWith": {
+        "blendOff": true,
+        "nopost": true
+      },
+      "refSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
+      "candSha256": "44f854cd68213c436bf98e1016dfea543e5673a7c55eaca425061b2d802fdcf9",
+      "stats": {
+        "label": "0c discrimination (u_time=2 vs u_time=9)",
+        "reference": "derive-rig.png",
+        "candidate": "0c-rig-hi.png",
+        "crop": [
+          483,
+          0,
+          1440,
+          761
+        ],
+        "pixels": 728277,
+        "mean_abs_255": 0.05480011955158088,
+        "mean_abs_pct": 0.021490242961404265,
+        "signed_mean": {
+          "R": 0.0011808693670128261,
+          "G": 0.004477691867242821,
+          "B": 0.0058301992236470465
+        },
+        "bias_over_abs": 0.069882818698895,
+        "within_pct": {
+          "4": 99.93972073812574,
+          "8": 99.95976805528666,
+          "16": 99.9750095087446,
+          "32": 99.98352275301842
+        },
+        "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+        "worst_single_channel_255": 96,
+        "ceiling_pct": 5,
+        "under_ceiling": true,
+        "crop_scale": 1
+      },
+      "floor255": 0.01,
+      "minWorstChannel255": 8,
+      "passed": true
+    },
+    "1_geometry_shading": {
+      "perTime": {
+        "2": {
+          "oursSha256": "715db0d5c2da9162ac9d1de7505b47e05d6f2ecee0cc12e8d08d48e98eaac523",
+          "rigSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
+          "glstate": {
+            "ours": {
+              "blend": false,
+              "blendSrcRGB": 1,
+              "blendDstRGB": 0,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "low-power",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "rig": {
+              "blend": true,
+              "blendSrcRGB": 770,
+              "blendDstRGB": 771,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "high-performance",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "declaredDivergences": [
+              {
+                "field": "blend",
+                "ours": false,
+                "rig": true,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendSrcRGB",
+                "ours": 1,
+                "rig": 770,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendDstRGB",
+                "ours": 0,
+                "rig": 771,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              }
+            ]
+          },
+          "utime": {
+            "ours": 2,
+            "rig": 2
+          },
+          "frustum": {
+            "ours": {
+              "width": 1393,
+              "height": 761,
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            },
+            "rig": {
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            }
+          },
+          "painted": {
+            "ours": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 280721,
+              "coverage": 0.3323282546672823,
+              "unique": 155
+            },
+            "rig": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 348400,
+              "coverage": 0.4124492429354453,
+              "unique": 420
+            }
+          },
+          "stats": {
+            "label": "rung 1 (t=2)",
+            "reference": "1-rig-t2.png",
+            "candidate": "1-ours-t2.png",
+            "crop": [
+              483,
+              0,
+              1440,
+              761
+            ],
+            "pixels": 728277,
+            "mean_abs_255": 11.759080679466742,
+            "mean_abs_pct": 4.611404188026174,
+            "signed_mean": {
+              "R": 5.270972445923735,
+              "G": 18.469777296276003,
+              "B": 8.206113882492513
+            },
+            "bias_over_abs": 0.9055941388478508,
+            "within_pct": {
+              "4": 50.44138425351892,
+              "8": 50.726715247083185,
+              "16": 51.54481055971835,
+              "32": 56.73404487578215
+            },
+            "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+            "worst_single_channel_255": 108,
+            "ceiling_pct": 5,
+            "under_ceiling": true,
+            "crop_scale": 1
+          },
+          "underCeiling": true,
+          "systematicBias": true
+        },
+        "5": {
+          "oursSha256": "f487059819fa5cd8acc73433f55670455c0d06dfd5b3a5573ebae7b5d163375c",
+          "rigSha256": "66d622b122a5bbd08544bcbc5c3dc078396f707a7c8dcb4771e0ab48e6827791",
+          "glstate": {
+            "ours": {
+              "blend": false,
+              "blendSrcRGB": 1,
+              "blendDstRGB": 0,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "low-power",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "rig": {
+              "blend": true,
+              "blendSrcRGB": 770,
+              "blendDstRGB": 771,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "high-performance",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "declaredDivergences": [
+              {
+                "field": "blend",
+                "ours": false,
+                "rig": true,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendSrcRGB",
+                "ours": 1,
+                "rig": 770,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendDstRGB",
+                "ours": 0,
+                "rig": 771,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              }
+            ]
+          },
+          "utime": {
+            "ours": 5,
+            "rig": 5
+          },
+          "frustum": {
+            "ours": {
+              "width": 1393,
+              "height": 761,
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            },
+            "rig": {
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            }
+          },
+          "painted": {
+            "ours": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 288489,
+              "coverage": 0.34152431011826545,
+              "unique": 150
+            },
+            "rig": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 348372,
+              "coverage": 0.4124160954647157,
+              "unique": 422
+            }
+          },
+          "stats": {
+            "label": "rung 1 (t=5)",
+            "reference": "1-rig-t5.png",
+            "candidate": "1-ours-t5.png",
+            "crop": [
+              483,
+              0,
+              1440,
+              761
+            ],
+            "pixels": 728277,
+            "mean_abs_255": 13.770691646173091,
+            "mean_abs_pct": 5.400271233793369,
+            "signed_mean": {
+              "R": 5.142366160128632,
+              "G": 18.46851815998583,
+              "B": 13.688829936960799
+            },
+            "bias_over_abs": 0.9028768056938505,
+            "within_pct": {
+              "4": 50.08959503046231,
+              "8": 50.36600084857822,
+              "16": 51.054200530841975,
+              "32": 57.15256694911414
+            },
+            "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+            "worst_single_channel_255": 185,
+            "ceiling_pct": 5,
+            "under_ceiling": false,
+            "crop_scale": 1
+          },
+          "underCeiling": false,
+          "systematicBias": true
+        },
+        "9": {
+          "oursSha256": "18e3be28da9cfedbba9ee4910e1b50fa1a22dcafc58ee3c04879da2f3c43719f",
+          "rigSha256": "44f854cd68213c436bf98e1016dfea543e5673a7c55eaca425061b2d802fdcf9",
+          "glstate": {
+            "ours": {
+              "blend": false,
+              "blendSrcRGB": 1,
+              "blendDstRGB": 0,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "low-power",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "rig": {
+              "blend": true,
+              "blendSrcRGB": 770,
+              "blendDstRGB": 771,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "high-performance",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "declaredDivergences": [
+              {
+                "field": "blend",
+                "ours": false,
+                "rig": true,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendSrcRGB",
+                "ours": 1,
+                "rig": 770,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendDstRGB",
+                "ours": 0,
+                "rig": 771,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              }
+            ]
+          },
+          "utime": {
+            "ours": 9,
+            "rig": 9
+          },
+          "frustum": {
+            "ours": {
+              "width": 1393,
+              "height": 761,
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            },
+            "rig": {
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            }
+          },
+          "painted": {
+            "ours": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 259181,
+              "coverage": 0.3068283789702975,
+              "unique": 140
+            },
+            "rig": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 348341,
+              "coverage": 0.4123793964792651,
+              "unique": 421
+            }
+          },
+          "stats": {
+            "label": "rung 1 (t=9)",
+            "reference": "1-rig-t9.png",
+            "candidate": "1-ours-t9.png",
+            "crop": [
+              483,
+              0,
+              1440,
+              761
+            ],
+            "pixels": 728277,
+            "mean_abs_255": 13.29170219573047,
+            "mean_abs_pct": 5.212432233619793,
+            "signed_mean": {
+              "R": 5.1245103168162665,
+              "G": 19.91126178638073,
+              "B": 12.035340948567647
+            },
+            "bias_over_abs": 0.9296806008707331,
+            "within_pct": {
+              "4": 51.857603631585235,
+              "8": 51.9252976546012,
+              "16": 52.10901895844576,
+              "32": 56.33625667156865
+            },
+            "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+            "worst_single_channel_255": 168,
+            "ceiling_pct": 5,
+            "under_ceiling": false,
+            "crop_scale": 1
+          },
+          "underCeiling": false,
+          "systematicBias": true
+        }
+      },
+      "crop": [
+        483,
+        0,
+        1440,
+        761
+      ],
+      "cropDerivation": "Union of the painted-pixel bounding boxes (both sides, background = the modal 5-bit-quantised colour within the shared canvas box) at the FIRST sampled u_time, both sides captured under rung 1's exact settings, padded 24px outward on every side and clipped back to the canvas box. Padding outward — rather than the tight bbox — is deliberate: our known defect class is edges, and DEFAULT_CROP's own documented flaw is that it avoids exactly those. This SAME box is reused for 0a/0b/0c and rung 1 — never a per-rung crop.",
+      "measuredWith": {
+        "blendOff": true,
+        "nopost": true,
+        "dpr": 1
+      },
+      "paletteSha256": "8124d14ca383a1f830ff18f65b554a0c9677a8bda33f9ad6471c835d69bf62f1"
+    },
+    "2_side_by_side": {
+      "uTime": 2,
+      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608/2-side-by-side-ours.png",
+      "rigMatched": {
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608/2-side-by-side-rig-matched.png",
+        "settings": {
+          "blendOff": true,
+          "nopost": true
+        },
+        "note": "The exact settings that produced the rung-1 percentages — pair this with `ours`."
+      },
+      "rigDefault": {
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608/2-side-by-side-rig-default.png",
+        "settings": {
+          "blendOff": false,
+          "nopost": false
+        },
+        "note": "The rig's own default render (post-process + squaring blend on) — NOT the pair rung 1 measured. For reference only."
+      },
+      "note": "No number by design — the blink comparator's two inputs, for Bean's own eye."
+    }
+  },
+  "acceptedDeltas": [
+    {
+      "rung": "1_geometry_shading",
+      "field": "gl BLEND / BLEND_SRC_RGB / BLEND_DST_RGB",
+      "threshold": "not gated — printed alongside every rung-1 result",
+      "date": "2026-08-29",
+      "reason": "PROVEN INERT, not merely accepted (verified against shaders/39798.glsl, the light-theme fragment shader): color.a is clamped to exactly 1.0 for every possible input (see the full derivation in compareGlstate()'s own comment). SRC_ALPHA/ONE_MINUS_SRC_ALPHA with alpha≡1 is a mathematical no-op, so the rig retaining standard alpha blending even at ?blend=off cannot be a source of the rung-1 divergence."
+    },
+    {
+      "rung": "0a_determinism / 0b_positive_control / 0c_discrimination / 1_geometry_shading",
+      "field": "rig query flag: nopost",
+      "threshold": "not gated — printed via measuredWith on every rung",
+      "date": "2026-08-29",
+      "reason": "The brief specified only ?blend=off for rung 1; this driver also drives ?nopost so the measured path skips the rig's angular-blur+grain post-process pass entirely (our engine has no equivalent pass). Declared here per review finding I6, applied consistently to every rung (I7) rather than only the headline."
+    }
+  ],
+  "nonCanvasSymmetry": {
+    "ours": {
+      "total": 451290,
+      "painted": 0,
+      "coverage": 0
+    },
+    "rig": {
+      "total": 451290,
+      "painted": 0,
+      "coverage": 0
+    },
+    "maxCoverage": 0.005
+  },
+  "crop": [
+    483,
+    0,
+    1440,
+    761
+  ],
+  "cropDerivation": "Union of the painted-pixel bounding boxes (both sides, background = the modal 5-bit-quantised colour within the shared canvas box) at the FIRST sampled u_time, both sides captured under rung 1's exact settings, padded 24px outward on every side and clipped back to the canvas box. Padding outward — rather than the tight bbox — is deliberate: our known defect class is edges, and DEFAULT_CROP's own documented flaw is that it avoids exactly those. This SAME box is reused for 0a/0b/0c and rung 1 — never a per-rung crop."
+}
