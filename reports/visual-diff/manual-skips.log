@@ -667,3 +667,51 @@
 2026-08-29 11:15:59 | accordion | MANUAL SKIP | Border-colour mechanism fix found BY a live capture; the re-capture proving it needs this commit deployed first. intent_capture report filed immediately after re-deploy.
 2026-08-29 14:50:21 | product-card | MANUAL SKIP | Border defect found and fixed BY the live border-roundtrip probe; its pre/post output is the evidence trail and the deploy+re-probe follows this commit. intent_capture report filed after.
 2026-08-29 15:23:30 | pricing-table | MANUAL SKIP | Border/colour/typography were DEAD on this block (reserved-style shadow), so there is no meaningful before-state to diff against. The border-roundtrip probe is the right instrument and runs after the batch deploy; intent_capture report follows.
+2026-08-29 16:18:04 | accordion | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:05 | button | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:07 | container | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:08 | heading | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:09 | icon-list | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:11 | option-picker | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:12 | process-steps | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:14 | product-card | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:16 | quote | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:18 | text | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 16:18:21 | timeline | MANUAL SKIP | Radius migration across 12 blocks; the border-roundtrip probe is the right instrument and needs the code deployed, which needs this commit. Probe run + report follow the batch deploy.
+2026-08-29 17:42:09 | accordion-item | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:10 | counter | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:11 | cta-section | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:12 | feature-grid | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:14 | form | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:15 | gallery | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:16 | google-reviews | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:17 | hero | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:18 | post-grid | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:19 | pricing-table | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:20 | site-footer | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:20 | site-footer-row | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:22 | site-header | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:23 | site-header-row | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:24 | tab | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:25 | tabs | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:26 | testimonial-slider | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:42:28 | trustpilot-reviews | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:37 | accordion-item | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:38 | counter | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:39 | cta-section | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:40 | feature-grid | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:41 | form | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:42 | gallery | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:43 | google-reviews | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:44 | hero | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:45 | post-grid | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:46 | pricing-table | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:47 | site-footer | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:48 | site-footer-row | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:49 | site-header | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:50 | site-header-row | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:52 | tab | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:53 | tabs | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:54 | testimonial-slider | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:55 | timeline | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
+2026-08-29 17:43:56 | trustpilot-reviews | MANUAL SKIP | Restoring render fixes lost uncommitted; the border-roundtrip probe is the evidence and runs after the pending batch deploy.
