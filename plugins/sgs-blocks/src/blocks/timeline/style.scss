@@ -195,25 +195,107 @@
 // 20-100KB against a 50KB page budget, and canvas-confetti is built for one-shot
 // bursts rather than a continuous trail. Transform + opacity only, so each spark
 // is compositor-work, and each removes itself on `animationend`.
+// ⛔ TWICE-WRONG BEFORE THIS, both recorded so neither recurs:
+//   1. These were 3px dots of pure `#fff` on a cream page — measured
+//      rgb(255,255,255) on rgb(251,243,220), about 1.06:1. Spawning perfectly,
+//      invisible by construction. A decorative mote keyed to a hardcoded white
+//      disappears on ANY light ground; key it to the CLIENT's own colour.
+//   2. They drifted outward in random directions over 600ms and read as
+//      BUBBLES rather than sparks. A spark is a fast, bright, RADIAL flick with
+//      a hot core — not a slow floating circle.
 .sgs-timeline__spark {
 	position: absolute;
-	width: 3px;
-	height: 3px;
+	width: var(--sgs-timeline-spark-size, 11px);
+	height: var(--sgs-timeline-spark-size, 11px);
 	border-radius: 50%;
-	background: #fff;
+	// Hot white core reading against the client's colour, which in turn reads
+	// against the page. Neither alone is enough on a light ground.
+	// ⛔ NO WHITE CORE. This was `#fff 0% / #fff 25%` and measured
+	// rgb(254,252,249) against a cream ground of rgb(251,243,220) — a contrast
+	// of 1.04:1, i.e. invisible, which is the SAME failure as the original 3px
+	// white dot re-introduced inside a gradient stop. On a LIGHT page a light
+	// spark can never read; it has to go DARKER than the ground, not brighter.
+	// The core is therefore a darkened mix of the client's own colour, which
+	// also keeps it on-brand rather than an arbitrary dark.
+	//
+	// This is the owner's own standing rule applied literally: a mid-luminance
+	// brand accent is a GROUND, not an indicator.
+	background: radial-gradient(
+		circle,
+		color-mix(in oklch, var(--sgs-timeline-fill-colour) 62%, #000) 0%,
+		var(--sgs-timeline-fill-colour) 48%,
+		color-mix(in oklch, var(--sgs-timeline-fill-colour) 70%, transparent) 72%,
+		transparent 82%
+	);
+	box-shadow: 0 0 12px 3px var(--sgs-timeline-fill-colour);
 	pointer-events: none;
-	animation: sgs-timeline-spark 600ms ease-out forwards;
+	// Above the dot and the connector, or a burst can be hidden by its own
+	// anchor — the node paints a filled circle at z-index 1.
+	z-index: 3;
+	// Travel is set per-spark in JS as a distance along a RADIAL angle, so the
+	// burst reads as thrown outward from the dot rather than drifting.
+	// ⛔ EASING MATTERS AS MUCH AS SIZE HERE. A front-loaded curve
+	// (cubic-bezier(.15,.9,.3,1)) spent ~85% of the travel in the first
+	// quarter of the life, so by the time a spark was anywhere visible it was
+	// already scaled down and fading — 21 live sparks measured in the DOM and
+	// none legible on screen. `ease-out` keeps them large and opaque through
+	// the readable part of the flight.
+	animation: sgs-timeline-spark var(--sgs-timeline-spark-life, 1100ms) ease-out
+		forwards;
 }
 
 @keyframes sgs-timeline-spark {
 	from {
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(0.4);
+		opacity: 0;
+	}
+
+	12% {
+		transform: translate(-50%, -50%) scale(1.2);
 		opacity: 1;
 	}
 
+	// Hold it bright and big through the middle of the flight — this is the
+	// only part a human actually sees.
+	62% {
+		transform: translate(
+				calc(-50% + var(--sgs-spark-dx) * 0.72),
+				calc(-50% + var(--sgs-spark-dy) * 0.72)
+			)
+			scale(0.85);
+		opacity: 0.85;
+	}
+
 	to {
-		transform: translate(calc(-50% + var(--sgs-spark-dx)), calc(-50% + var(--sgs-spark-dy)))
-			scale(0);
+		transform: translate(
+				calc(-50% + var(--sgs-spark-dx)),
+				calc(-50% + var(--sgs-spark-dy))
+			)
+			scale(0.3);
+		opacity: 0;
+	}
+}
+
+// The dot itself flashes as the fill reaches it — the burst's anchor, so the
+// sparks read as coming OFF the milestone rather than appearing near it.
+.sgs-timeline__node.is-lit::after {
+	content: '';
+	position: absolute;
+	inset: -4px;
+	border-radius: 50%;
+	border: 2px solid var(--sgs-timeline-fill-colour);
+	pointer-events: none;
+	animation: sgs-timeline-node-pulse 620ms ease-out forwards;
+}
+
+@keyframes sgs-timeline-node-pulse {
+	from {
+		transform: scale(0.6);
+		opacity: 0.9;
+	}
+
+	to {
+		transform: scale(2.1);
 		opacity: 0;
 	}
 }
@@ -236,7 +318,8 @@
 	// one layer that switches OFF entirely rather than simplifying. The glow and
 	// head stay: they carry the journey's state, and removing them would be
 	// `degrade-to-more-content-never-less` in reverse.
-	.sgs-timeline__spark {
+	.sgs-timeline__spark,
+	.sgs-timeline__node.is-lit::after {
 		display: none;
 	}
 }

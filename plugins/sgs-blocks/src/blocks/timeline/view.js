@@ -197,19 +197,100 @@ import {
 		if ( isReducedMotionNow() ) {
 			return;
 		}
-		const host = root.querySelector( '.sgs-timeline__progress' );
-		if ( ! host ) {
+		// Presence of the progress element is the feature gate — sparks belong
+		// to the progress connector even though they now attach to the dots.
+		if ( ! root.querySelector( '.sgs-timeline__progress' ) ) {
 			return;
 		}
 		const horizontal = root.classList.contains( 'sgs-timeline--horizontal' );
+
+		/**
+		 * Where each milestone dot sits as a FRACTION along the connector.
+		 *
+		 * ⛔ This is the difference between a spark and a bubble. The first
+		 * build dripped particles from the moving head at a fixed interval,
+		 * which reads as drifting bubbles because nothing anchors them to
+		 * anything. A spark is an EVENT: the fill reaches a milestone, and
+		 * that milestone throws off light. Re-measured on resize because the
+		 * fractions move with the layout.
+		 *
+		 * @return {Array<{frac:number,el:HTMLElement}>} Nodes by position.
+		 */
+		function measureNodes() {
+			const rootBox = root.getBoundingClientRect();
+			const span = horizontal ? rootBox.width : rootBox.height;
+			if ( ! span ) {
+				return [];
+			}
+			return [ ...root.querySelectorAll( '.sgs-timeline__node' ) ]
+				.map( ( el ) => {
+					const b = el.getBoundingClientRect();
+					const centre = horizontal
+						? b.left + b.width / 2 - rootBox.left
+						: b.top + b.height / 2 - rootBox.top;
+					return { frac: centre / span, el };
+				} )
+				.sort( ( a, b ) => a.frac - b.frac );
+		}
+
+		let nodes = measureNodes();
 		let last = null;
-		let lastSparkAt = 0;
+
+		/**
+		 * Throw a burst of sparks off one milestone dot.
+		 *
+		 * @param {{frac:number,el:HTMLElement}} node The milestone crossed.
+		 */
+		function burst( node ) {
+			node.el.classList.add( 'is-lit' );
+			// One-shot: the class is what drives the CSS ring, so it has to
+			// come off or the animation can never replay on the way back.
+			setTimeout( () => node.el.classList.remove( 'is-lit' ), 640 );
+
+			const count = 7;
+			for ( let i = 0; i < count; i++ ) {
+				const spark = document.createElement( 'span' );
+				spark.className = 'sgs-timeline__spark';
+				// ⛔ APPENDED TO THE DOT, not to the connector.
+				//
+				// The first attempt placed each spark at a FRACTION along the
+				// progress element, which is the 2px connector line. That is
+				// only the same place as the dot in the centred layout: in the
+				// left-aligned variant the nodes sit ~100px to the side of the
+				// line, so the ring pulsed on the dot while the sparks fired
+				// on the line, visibly disconnected. Anchoring to the node
+				// itself is correct in EVERY alignment and orientation, and
+				// needs no fraction maths at all.
+				spark.style.left = '50%';
+				spark.style.top = '50%';
+				// RADIAL throw: an even fan with a little jitter, so it reads as
+				// a burst off the dot rather than random drift.
+				const angle =
+					( i / count ) * Math.PI * 2 + ( Math.random() - 0.5 ) * 0.7;
+				// Far enough to clearly leave the 16px dot behind.
+				const dist = 34 + Math.random() * 26;
+				spark.style.setProperty(
+					'--sgs-spark-dx',
+					`${ Math.cos( angle ) * dist }px`
+				);
+				spark.style.setProperty(
+					'--sgs-spark-dy',
+					`${ Math.sin( angle ) * dist }px`
+				);
+				spark.style.animationDelay = `${ i * 18 }ms`;
+				spark.addEventListener( 'animationend', () => spark.remove(), {
+					once: true,
+				} );
+				node.el.appendChild( spark );
+			}
+		}
 
 		function tick() {
-			const raw = getComputedStyle( root )
-				.getPropertyValue( '--sgs-timeline-fill-progress' )
-				.trim();
-			const now = parseFloat( raw );
+			const now = parseFloat(
+				getComputedStyle( root )
+					.getPropertyValue( '--sgs-timeline-fill-progress' )
+					.trim()
+			);
 			if ( ! Number.isFinite( now ) ) {
 				return;
 			}
@@ -217,53 +298,37 @@ import {
 				last = now;
 				return;
 			}
-			const delta = Math.abs( now - last );
+			const from = last;
 			last = now;
-
-			// The gate that keeps this scroll-linked rather than autonomous:
-			// no movement, no sparks. Autonomous motion running past five
-			// seconds would owe a WCAG SC 2.2.2 pause control; this owes none.
-			if ( delta < 0.002 ) {
+			// Only ever forward — scrolling back up re-arms the milestones
+			// rather than firing them again on the way past.
+			if ( now <= from ) {
 				return;
 			}
-			const t = performance.now();
-			if ( t - lastSparkAt < 55 ) {
-				return;
-			}
-			lastSparkAt = t;
-
-			const spark = document.createElement( 'span' );
-			spark.className = 'sgs-timeline__spark';
-			const pct = `${ Math.min( 1, Math.max( 0, now ) ) * 100 }%`;
-			if ( horizontal ) {
-				spark.style.left = pct;
-				spark.style.top = '50%';
-			} else {
-				spark.style.left = '50%';
-				spark.style.top = pct;
-			}
-			spark.style.setProperty(
-				'--sgs-spark-dx',
-				`${ ( Math.random() - 0.5 ) * 26 }px`
-			);
-			spark.style.setProperty(
-				'--sgs-spark-dy',
-				`${ ( Math.random() - 0.5 ) * 26 }px`
-			);
-			spark.addEventListener( 'animationend', () => spark.remove(), {
-				once: true,
+			nodes.forEach( ( node ) => {
+				if ( node.frac > from && node.frac <= now ) {
+					burst( node );
+				}
 			} );
-			host.appendChild( spark );
 		}
 
 		const throttledTick = rafThrottle( tick );
+		const remeasure = rafThrottle( () => {
+			nodes = measureNodes();
+		} );
 		window.addEventListener( 'scroll', throttledTick, { passive: true } );
+		window.addEventListener( 'resize', remeasure, { passive: true } );
 
 		return function cleanup() {
 			window.removeEventListener( 'scroll', throttledTick );
+			window.removeEventListener( 'resize', remeasure );
 			throttledTick.cancel();
-			host.querySelectorAll( '.sgs-timeline__spark' ).forEach( ( el ) =>
+			remeasure.cancel();
+			root.querySelectorAll( '.sgs-timeline__spark' ).forEach( ( el ) =>
 				el.remove()
+			);
+			root.querySelectorAll( '.sgs-timeline__node.is-lit' ).forEach( ( el ) =>
+				el.classList.remove( 'is-lit' )
 			);
 		};
 	}
