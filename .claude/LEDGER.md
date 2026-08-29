@@ -50,39 +50,41 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ MAMA'S CLONE TRACK + TASK 0 — 2026-08-29: SHAPE A CLOSED (10 blocks), 4 defects fixed
+## ▶ BORDER / SHAPE-B TRACK — 2026-08-30: ALL 44 BLOCKS MIGRATED, NOT YET DEPLOYED
 
-**Full detail: D881. Do not restate it here.** Headline: `PRIVATE_NEEDS_SWAP 8 → 0`,
-`PRIVATE_DONE 2 → 10` (`NATIVE_FULL` 38 + `ANOMALY` 7 UNCHANGED — 45 blocks are still outside
-this shape). All committed, pushed and deployed; 6 of 8 probed blocks live-verified — see the
-NOT-live-proven note below before treating this as fully closed.
+**Detail: D881 + this session's commits. Do not restate them here.**
 
-⭐ **NEXT:** `.claude/prompts/2026-08-30-shape-b-reference-then-rollout.md`. **FIRST action:
-convert `sgs/accordion` as the Shape-B reference** (Bean) — the migration script for the other 37
-is built FROM it. It also lists 4 claims from other docs verified FALSE.
+Shape B is **built and applied to every block**; `--survey` reports **READY 0**. Nothing is
+deployed, so nothing is proven — a green build is not a painted border.
 
-⛔ **Per-device border WIDTH is CANCELLED, not deferred** (Bean, 2026-08-29) — no
-use case; the speculative plumbing was removed at `f5c9b66ae`. Do not rebuild it.
+| | |
+|---|---|
+| Blocks fully Shape-B | 44 (private width/style/colour/radius, `__experimentalBorder` gone) |
+| Codemod self-test | 175 assertions, 67 negative controls |
+| `--check` / `db-consistency --check` | green / exit 0 |
+| Stored content carried across | 74 instances; **522 still to migrate** |
+| Live-probe verified | container, product-card, accordion — before the 32 landed |
 
-⛔ **`sgs/container` and `sgs/option-picker` are NOT live-proven** — the probe
-measures the OUTERMOST `.wp-block-sgs-<name>`, so on container it matches the
-header's; option-picker returned NOT RUN. Neither is a pass. Report:
-`reports/visual-diff/border-control-rollout-2026-08-29.md`.
+⭐ **NEXT:** `.claude/prompts/2026-08-31-shape-b-close-out.md`. Two red gates first
+(`check-editor-render-parity` 178 vs 177; `check-undeclared-attrs` 4), then ONE deploy, then
+probe all 44, then the 522 stored instances.
 
-### ⚠ Three problems NOT from this track — do not treat as new
-- **D875's gradient fix is largely REVERTED in the shared DB** — its own gate
-  reports 74 unfixed rows, HIGHER than pre-fix. Effect proven, cause NOT.
-- **Two converter `grayscaleHover` tests fail at the PRE-SESSION commit**, proven
-  at `c38607940~1`; `--skip-gate-full` was used on that basis.
-- **Motion committed `fx` sources without regenerating
-  `extension-attributes.generated.php`** (17 `fxGen*`), so deploys need
-  `--payload …/extension-attributes.generated.php` until they do.
+**Bean's two design corrections this session, both load-bearing:**
+- **Radius is not native.** The SGS pattern is to wrap the core control as a shared helper. So
+  `__experimentalBorder` is gone entirely — this exposed 11 blocks previously called "done" as
+  half-migrated.
+- **`borderStyle` defaults to `solid`.** "None isn't a style; that is set by putting thickness
+  at 0." `none` stays in the enum — WP coerces an out-of-enum stored value to the default, so
+  removing it would switch borders on across live content.
 
-### ⚠ Hazards
-- `.claude/secrets/sandybrown.env` went missing (recovered from
-  `.claude/worktrees/product-archive-p2/`); CLAUDE.md's "ALWAYS available" is false.
-- Deploy worktree left at `C:/tmp/sgs-deploy-wt` (built) — reuse, saves an `npm ci`.
-- `main` had two `index.lock` collisions. Retry; never delete the lock.
+⛔ **Per-device border WIDTH stays CANCELLED** (Bean, 2026-08-29).
+
+⛔ **`sgs-framework.db` is ONE shared file across all worktrees.** A track running
+`sgs-update-v2.py --stage 1` writes its uncommitted view into shared state and reds
+`db-consistency` for every other session. Cost three rounds of contention in one session.
+**Run DB-touching work sequentially.** Parallel agents can be disjoint in files and still
+collide in DB state.
+
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 
 ⛔ **TWO SEPARATE TRACKS. Never re-merge them.** They shared one plan file once and it cost a full
