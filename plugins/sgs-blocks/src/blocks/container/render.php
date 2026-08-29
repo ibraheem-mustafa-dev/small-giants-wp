@@ -95,8 +95,8 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 // more. Only border-RADIUS stays on the native style.border path (a
 // corner-shape control, not a colour/paint decision), resolved here exactly
 // as sgs/product-card's own radius-only extraction (render.php ~L352-375).
-if ( isset( $sgs_container_style_group['border']['radius'] ) ) {
-	$sgs_container_radius_raw = $sgs_container_style_group['border']['radius'];
+if ( isset( $attributes['borderRadius'] ) ) {
+	$sgs_container_radius_raw = $attributes['borderRadius'];
 	if ( is_string( $sgs_container_radius_raw ) && '' !== $sgs_container_radius_raw ) {
 		$sgs_container_style_engine_input['border']['radius'] = sgs_css_length_value( $sgs_container_radius_raw );
 	} elseif ( is_array( $sgs_container_radius_raw ) ) {
@@ -126,6 +126,39 @@ if ( ! empty( $sgs_container_style_engine_input ) ) {
 	if ( ! empty( $sgs_container_engine_styles['css'] ) ) {
 		$sgs_container_supports_css       = $sgs_container_engine_styles['css'];
 		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
+	}
+}
+
+// Border-radius tablet/mobile tiers — block-private object attrs (2026-08-30
+// radius target-shape correction), same uid/selector idiom as the border-width
+// block below (mint the uid only if nothing above already needed one; APPEND
+// to $sgs_container_supports_css, never overwrite it — the block above may
+// already have written the base colour/radius/typography CSS into it).
+$sgs_container_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$sgs_container_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$sgs_container_radius_tab_val    = sgs_corner_object_shorthand( $sgs_container_radius_tablet_obj );
+$sgs_container_radius_mob_val    = sgs_corner_object_shorthand( $sgs_container_radius_mobile_obj );
+if ( null !== $sgs_container_radius_tab_val || null !== $sgs_container_radius_mob_val ) {
+	if ( empty( $sgs_container_supports_uid ) ) {
+		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
+	}
+	$sgs_container_radius_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
+
+	$sgs_container_radius_tablet_decls = array();
+	if ( null !== $sgs_container_radius_tab_val ) {
+		$sgs_container_radius_tablet_decls[] = "border-radius:{$sgs_container_radius_tab_val}";
+	}
+	if ( $sgs_container_radius_tablet_decls ) {
+		$sgs_container_supports_css .= '@media(max-width:1023px){' . $sgs_container_radius_sel . '{' . implode( ';', $sgs_container_radius_tablet_decls ) . ';}}';
+	}
+
+	$sgs_container_radius_mobile_decls = array();
+	if ( null !== $sgs_container_radius_mob_val ) {
+		$sgs_container_radius_mobile_decls[] = "border-radius:{$sgs_container_radius_mob_val}";
+	}
+	if ( $sgs_container_radius_mobile_decls ) {
+		$sgs_container_supports_css .= '@media(max-width:767px){' . $sgs_container_radius_sel . '{' . implode( ';', $sgs_container_radius_mobile_decls ) . ';}}';
 	}
 }
 

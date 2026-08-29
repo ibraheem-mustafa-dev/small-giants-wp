@@ -33,10 +33,6 @@
 			"fontStyle": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"intrinsicColumns": true,
 			"enabledExtensions": [
@@ -66,6 +62,10 @@
 				],
 				"borderWidth": [
 					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -96,7 +96,7 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
@@ -635,6 +635,18 @@
 			"type": "object",
 			"default": {},
 			"description": "Wrapper root border width {top,right,bottom,left}, base-only (no Tablet/Mobile siblings — matches sgs/product-card's own borderWidth). NO DEFAULT (unset = no border), same no-hardcoded-default discipline as the padding attribute above."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"borderStyle": {
 			"type": "string",

@@ -99,12 +99,11 @@ $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 // declarations (border-style / font-style / text-transform / text-decoration).
 // Strips everything except letters + hyphen, so ;{}():digits can never break
 // out of the declaration into a new CSS rule.
-// Border-radius — WP-native style.border.radius (string = uniform, or an
-// object with topLeft/topRight/bottomLeft/bottomRight keys). No tiers on this
-// block (contract confirmed — text has no borderRadiusTablet/Mobile attrs).
+// Border-radius — block-private corner object (2026-08-30 radius target-shape
+// correction), base + tablet + mobile tiers.
 $base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
+if ( isset( $attributes['borderRadius'] ) ) {
+	$radius_raw = $attributes['borderRadius'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
 		$base_border_radius = $radius_raw;
 	} elseif ( is_array( $radius_raw ) ) {
@@ -121,6 +120,8 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		}
 	}
 }
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
 // Border-width — Box-object interface contract §1/§2: `borderWidth` is an SGS
 // custom OBJECT attr { top, right, bottom, left } — no WP-native border-width
@@ -458,6 +459,8 @@ $margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
 $margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 $padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
 $padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $margin_tab_val ) {
@@ -465,6 +468,9 @@ if ( null !== $margin_tab_val ) {
 }
 if ( null !== $padding_tab_val ) {
 	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $radius_tab_val ) {
+	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
 }
 $css_tablet_box = $tablet_box_decls
 	? '@media (max-width:1023px){' . $scope . '{' . implode( ';', $tablet_box_decls ) . ';}}'
@@ -476,6 +482,9 @@ if ( null !== $margin_mob_val ) {
 }
 if ( null !== $padding_mob_val ) {
 	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $radius_mob_val ) {
+	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
 }
 $css_mobile_box = $mobile_box_decls
 	? '@media (max-width:767px){' . $scope . '{' . implode( ';', $mobile_box_decls ) . ';}}'

@@ -248,8 +248,8 @@ $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null 
 // object with topLeft/topRight/bottomLeft/bottomRight keys). Skip-serialised
 // → emitted scoped via the style engine below.
 $base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
+if ( isset( $attributes['borderRadius'] ) ) {
+	$radius_raw = $attributes['borderRadius'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
 		$base_border_radius = $radius_raw;
 	} elseif ( is_array( $radius_raw ) ) {

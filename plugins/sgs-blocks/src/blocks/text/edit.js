@@ -27,7 +27,6 @@ import {
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 	SgsLengthControl,
 	SgsBorderControl,
@@ -671,14 +670,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 							},
 						] }
-					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ { base: style?.border?.radius ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) =>
-							setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } )
-						}
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
 					/>
 				</PanelBody>
 

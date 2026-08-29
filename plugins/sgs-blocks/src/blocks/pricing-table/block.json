@@ -40,6 +40,12 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
+				]
+			},
 			"enabledExtensions": [
 				"hover"
 			],

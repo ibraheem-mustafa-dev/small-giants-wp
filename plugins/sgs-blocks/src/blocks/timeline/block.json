@@ -46,10 +46,6 @@
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"iconPicker": true,
 			"boxFamilies": {
@@ -80,7 +76,7 @@
 						"css:background-color": "native:color.background",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
@@ -256,6 +252,10 @@
 			"type": "object",
 			"default": {}
 		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
 		"borderRadiusTablet": {
 			"type": "object",
 			"default": {}
@@ -290,7 +290,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "none"
+			"default": "solid"
 		}
 	},
 	"render": "file:./render.php",

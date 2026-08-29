@@ -1232,6 +1232,25 @@ function transformBlockJson( text, adopt, radiusPlan ) {
 		bj.attributes[ name ] = JSON.parse( JSON.stringify( RADIUS_ATTRS[ name ] ) );
 	}
 
+	// boxFamilies.borderRadius — REQUIRED, not cosmetic. Without it the three
+	// radius attrs are indistinguishable to the DB seeder: all three map to
+	// css_property 'border-radius' with element/state/tier NULL, so the resolver
+	// reports them as "3 competing attrs ... genuinely contend for the same slot"
+	// and raises AmbiguousLayerAttrError at clone time. This entry is what lets
+	// the seeder derive css_tier=tablet/mobile from the tier attrs.
+	//
+	// Measured 2026-08-30: sgs/pricing-table was migrated by this codemod WITHOUT
+	// it and produced 4 db-consistency findings; the 11 blocks migrated alongside
+	// it had the entry added by hand and produced none. Emitting it here stops
+	// the next 32 migrations reproducing the same four findings each.
+	const sgsSupports = ( bj.supports || {} ).sgs;
+	if ( sgsSupports ) {
+		sgsSupports.boxFamilies = sgsSupports.boxFamilies || {};
+		if ( ! sgsSupports.boxFamilies.borderRadius ) {
+			sgsSupports.boxFamilies.borderRadius = [ 'borderRadiusTablet', 'borderRadiusMobile' ];
+		}
+	}
+
 	// attrMap: repoint the FOUR legs (width/style/colour/radius) off `native:`
 	// and add the gradient key. This is the R-31-1 declarative source that
 	// seeds the DB and is gated by check-element-manifest-conformance.js --
@@ -2322,10 +2341,14 @@ function fix( apply, only ) {
 // Follow-up: a radius-only migration for these 11. They sit OUTSIDE this
 // codemod's NATIVE_FULL census bucket (they are already past it), so --fix does
 // not reach them and they need their own pass.
-const RADIUS_DEBT_BASELINE = new Set( [
-	'accordion', 'button', 'container', 'heading', 'icon-list', 'option-picker',
-	'process-steps', 'product-card', 'quote', 'text', 'timeline',
-] );
+//
+// 2026-08-30: all 11 migrated (radius joined the other three legs as a
+// block-private corner-object attr, base + tablet + mobile, painted via
+// wp_style_engine_get_styles()/sgs_corner_object_shorthand() same as every
+// other private radius tier in the tree). The set is empty, not deleted --
+// a correctly-empty baseline is the proof the debt is paid, and a future
+// regression re-adds a name here rather than silently reappearing.
+const RADIUS_DEBT_BASELINE = new Set( [] );
 
 function check() {
 	const problems = [];
@@ -2467,6 +2490,25 @@ function runSelfTest() {
 	ok( m[ 'css:border-color' ] === 'borderColour', 'attrMap: colour leg must repoint off native:' );
 	ok( m[ 'css:border-color-gradient' ] === 'borderColourGradient',
 		'attrMap: gradient key must be ADDED' );
+	// boxFamilies.borderRadius is what lets the DB seeder derive css_tier for the
+	// tier attrs. Without it all three radius attrs collide on one routing slot.
+	ok(
+		JSON.stringify( outBj.supports.sgs.boxFamilies.borderRadius )
+			=== JSON.stringify( [ 'borderRadiusTablet', 'borderRadiusMobile' ] ),
+		'boxFamilies.borderRadius must be emitted — without it the 3 radius attrs collide on ' +
+			'(border-radius, element=NULL, tier=NULL) and the resolver raises AmbiguousLayerAttrError'
+	);
+	// NEGATIVE CONTROL — an EXISTING boxFamilies.borderRadius must be preserved,
+	// not overwritten: a block may legitimately list different tier attr names.
+	const bfKeep = JSON.parse( transformBlockJson(
+		JSON.stringify( { ...JSON.parse( srcBj ), supports: { ...JSON.parse( srcBj ).supports,
+			sgs: { ...JSON.parse( srcBj ).supports.sgs, boxFamilies: { borderRadius: [ 'customTablet' ] } } } }, null, '	' ),
+		[], { adopt: [], add: Object.keys( RADIUS_ATTRS ) }
+	) );
+	ok(
+		JSON.stringify( bfKeep.supports.sgs.boxFamilies.borderRadius ) === JSON.stringify( [ 'customTablet' ] ),
+		'boxFamilies NEGATIVE CONTROL: an existing borderRadius family must be PRESERVED, not overwritten'
+	);
 	ok( m[ 'css:border-radius' ] === 'borderRadius',
 		'attrMap: radius leg must NOW ALSO repoint off native: (target-shape correction — radius is no ' +
 			'longer permanently native)' );
