@@ -46,6 +46,7 @@
 		"selftest:text-gradient-companion": "node scripts/check-text-gradient-companion.js --self-test",
 		"check:no-inline": "python scripts/no-inline/check-no-inline.py --live-default",
 		"check:box-family": "python scripts/check-box-family-guard.py --check",
+		"check:hover-state-classification": "python scripts/check-hover-state-classification.py --check",
 		"check:dead-api-calls": "python scripts/check-dead-api-calls.py --check",
 		"check:stranded-guards": "python scripts/no-inline/check-stranded-guards.py",
 		"check:jsonld-flags": "python scripts/check-jsonld-flags.py --check",

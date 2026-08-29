@@ -704,5 +704,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 77
+  },
+  {
+    "id": "check-hover-state-classification",
+    "cmd": "python scripts/check-hover-state-classification.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "c45b4f5dc",
+    "budget_ms": 150,
+    "order": 78
   }
 ]
