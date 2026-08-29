@@ -50,40 +50,37 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ BORDER / SHAPE-B TRACK — 2026-08-30: ALL 44 BLOCKS MIGRATED, NOT YET DEPLOYED
+## ▶ BORDER / SHAPE-B TRACK — 2026-08-30 (evening): CLOSE-OUT DONE, ONE BUG OPEN
 
-**Detail: D881 + this session's commits. Do not restate them here.**
+**Detail: D881 + `.claude/prompts/2026-08-31-shape-b-close-out.md` (5 tasks ALL DONE, do not
+re-dispatch). Do not restate history here.**
 
-Shape B is **built and applied to every block**; `--survey` reports **READY 0**. Nothing is
-deployed, so nothing is proven — a green build is not a painted border.
+Both red gates fixed (`check-editor-render-parity` 177→162, a real false positive fixed with a
+regression test, not baselined; `check-undeclared-attrs` 4→0), deployed, all 46
+boxFamilies.borderRadius blocks live-probed (not 44, stale even at close-out), remaining stored
+content migrated (558: info-box 351, testimonial 186, site-footer-row 18, form-step 3 — the
+close-out's 522/345/174 were already stale), worktrees tidied.
 
-| | |
-|---|---|
-| Blocks fully Shape-B | 44 (private width/style/colour/radius, `__experimentalBorder` gone) |
-| Codemod self-test | 175 assertions, 67 negative controls |
-| `--check` / `db-consistency --check` | green / exit 0 |
-| Stored content carried across | 74 instances; **522 still to migrate** |
-| Live-probe verified | container, product-card, accordion — before the 32 landed |
+Commits `76a3ef734`..`1ca11337a` (5, `git log` for the range). Reports:
+`reports/visual-diff/shape-b-batch-2026-08-30.md` (canonical) + `-full-sweep.md` (other 14).
 
-⭐ **NEXT:** `.claude/prompts/2026-08-31-shape-b-close-out.md`. Two red gates first
-(`check-editor-render-parity` 178 vs 177; `check-undeclared-attrs` 4), then ONE deploy, then
-probe all 44, then the 522 stored instances.
+⭐ **OPEN:** `sgs/form-field-tiles` fails the probe differently to form-step —
+`field_open()` (shared by ~10 field-block types) never calls `get_block_wrapper_attributes()`,
+so WP's identity class lands on an inner child div, not the outer element carrying the uid +
+border CSS. Check `.claude/memory/sdd-progress.md` first.
 
-**Bean's two design corrections this session, both load-bearing:**
-- **Radius is not native.** The SGS pattern is to wrap the core control as a shared helper. So
-  `__experimentalBorder` is gone entirely — this exposed 11 blocks previously called "done" as
-  half-migrated.
-- **`borderStyle` defaults to `solid`.** "None isn't a style; that is set by putting thickness
-  at 0." `none` stays in the enum — WP coerces an out-of-enum stored value to the default, so
-  removing it would switch borders on across live content.
+**Named so nobody re-derives as new:** 10 blocks return probe NOT RUN, unmeasured not failing —
+`before-after`, `buybox`, `option-picker`, `product-faq-item`, `quote`, `site-footer-row`,
+`site-header-row`, `table-of-contents`, `tabs`, `testimonial` — most need a nested-in-parent
+fixture. `nav-drawer`'s variant-discriminator finding needs its own `detect_variant` converter
+session — not a border-track item.
 
-⛔ **Per-device border WIDTH stays CANCELLED** (Bean, 2026-08-29).
+**Bean's corrections:** radius is not native (shared-helper wrap, not `__experimentalBorder`);
+`borderStyle` default `solid`, `none` stays in enum. Per-device border WIDTH CANCELLED.
 
-⛔ **`sgs-framework.db` is ONE shared file across all worktrees.** A track running
-`sgs-update-v2.py --stage 1` writes its uncommitted view into shared state and reds
-`db-consistency` for every other session. Cost three rounds of contention in one session.
-**Run DB-touching work sequentially.** Parallel agents can be disjoint in files and still
-collide in DB state.
+⛔ `sgs-framework.db` is ONE shared file — DB work sequentially, not parallel.
+⛔ `inspector-scan` "01-tab-group" ratchet red (58 vs 57), pre-existing + unrelated — reconfirm
+on a clean stash first. `--no-verify` was Bean-authorised only for that ratchet.
 
 ## ▶ MOTION TRACK (A closed+live; B Phase 2 closed, Phase 3 next)
 
