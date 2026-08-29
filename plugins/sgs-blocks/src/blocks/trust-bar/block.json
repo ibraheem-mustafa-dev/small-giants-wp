@@ -28,8 +28,7 @@
 				"width",
 				"layout",
 				"background",
-				"shapeDividers",
-				"gridItems"
+				"shapeDividers"
 			],
 			"arrayContentLift": true,
 			"scalarStylingLift": true,
@@ -61,12 +60,6 @@
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
-				],
-				"gridItemPadding": [
-					"gridItemPadding"
-				],
-				"gridItemBorderRadius": [
-					"gridItemBorderRadius"
 				]
 			},
 			"elements": {
@@ -720,70 +713,6 @@
 		"bgSvgTextShadow": {
 			"type": "boolean",
 			"default": false
-		},
-		"gridItemPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
-		},
-		"gridItemBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackgroundHover": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackgroundGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackgroundHoverGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
-		},
-		"gridItemBorderGradientHover": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
-		},
-		"gridItemBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemShadowColour": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColour": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColourHover": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColourHoverGradient": {
-			"type": "string",
-			"default": ""
 		},
 		"gridTemplateRows": {
 			"type": "object",

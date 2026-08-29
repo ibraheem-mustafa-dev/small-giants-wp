@@ -25,7 +25,6 @@
 				"layout",
 				"background",
 				"shapeDividers",
-				"gridItems",
 				"hover"
 			],
 			"arrayContentLift": true,
@@ -40,12 +39,6 @@
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
-				],
-				"gridItemPadding": [
-					"gridItemPadding"
-				],
-				"gridItemBorderRadius": [
-					"gridItemBorderRadius"
 				],
 				"borderRadius": [
 					"borderRadiusTablet",
@@ -160,38 +153,6 @@
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:width": "contentWidth"
-					}
-				},
-				"grid-item": {
-					"label": "Grid item (stats)",
-					"layer": "GRID_AREA",
-					"order": 8,
-					"clusters": [
-						"text",
-						"fill",
-						"layout"
-					],
-					"prefix": "gridItem",
-					"attrMap": {
-						"css:background-color": "gridItemBackground",
-						"css:padding": "gridItemPadding",
-						"css:border-radius": "gridItemBorderRadius",
-						"css:border-width": "gridItemBorder",
-						"css:border-style": "gridItemBorder",
-						"css:border-color": "gridItemBorder",
-						"css:border-color-gradient": "gridItemBorderGradient",
-						"css:box-shadow": "gridItemShadow",
-						"css:color": "gridItemTextColour",
-						"css:background-image": "gridItemBackgroundGradient"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:border-color-gradient": "gridItemBorderGradientHover",
-								"css:background-image": "gridItemBackgroundHoverGradient",
-								"css:color-gradient": "gridItemTextColourHoverGradient"
-							}
-						}
 					}
 				},
 				"decorative": {
@@ -581,70 +542,6 @@
 		"bgSvgTextShadow": {
 			"type": "boolean",
 			"default": false
-		},
-		"gridItemPadding": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
-		},
-		"gridItemBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackgroundHover": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackgroundGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackgroundHoverGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
-		},
-		"gridItemBorderGradientHover": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
-		},
-		"gridItemShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemShadowColour": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColour": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColourHover": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColourHoverGradient": {
-			"type": "string",
-			"default": ""
 		},
 		"gridTemplateRows": {
 			"type": "object",

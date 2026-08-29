@@ -32,9 +32,12 @@ import {
 	LayoutPanel,
 	BackgroundPanel,
 	ShapeDividersPanel,
-	GridItemDefaultsPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
+// GridItemDefaultsPanel deliberately NOT imported — see the withdrawal note
+// beside its former mount point below (D-pending, 2026-08-30). This block
+// never renders a direct-child `.sgs-container` element, so the panel's
+// `--sgs-gi-*` custom properties have no CSS consumer here.
 
 // FR-22-6: the content column is now InnerBlocks — heading + body text + buttons.
 // Headline/body are no longer scalar attrs read by render.php; they are authored
@@ -483,7 +486,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 
-				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /* GridItemDefaultsPanel WITHDRAWN (2026-08-30) — verified defect: the
+				     ONLY CSS consumer of --sgs-gi-* is `.sgs-container--grid >
+				     .sgs-container` (container/style.css:8-15), a DIRECT-CHILD
+				     selector requiring the child to itself carry class
+				     `.sgs-container`. This block wraps its InnerBlocks content in
+				     `<div class="sgs-cta-section__content">` (render.php:550), never
+				     `.sgs-container`, so the selector can never match here. The panel
+				     rendered ~15 client-facing controls that painted nothing. The 15
+				     gridItem* attrs stay DECLARED in block.json (removing them is a
+				     stored-content migration risk, out of scope for this fix) — this
+				     only withdraws the dead UI. See sibling withdrawal in
+				     trust-bar/edit.js for the same defect + fix shape. */ }
 
 				{ /* Shadow — SHAPE-only string token attr (sm/md/lg/glow preset slug OR
 					a raw box-shadow shape string, no colour — colour lives in the

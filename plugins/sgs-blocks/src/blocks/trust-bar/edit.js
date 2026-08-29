@@ -28,9 +28,12 @@ import {
 	LayoutPanel,
 	BackgroundPanel,
 	ShapeDividersPanel,
-	GridItemDefaultsPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
+// GridItemDefaultsPanel deliberately NOT imported — see the withdrawal note
+// beside its former mount point below (D-pending, 2026-08-30). This block
+// never renders a direct-child `.sgs-container` element, so the panel's
+// `--sgs-gi-*` custom properties have no CSS consumer here.
 
 /**
  * Resolve a gap attribute value to a valid CSS string for editor preview.
@@ -724,8 +727,19 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 
-				{ /* ── Grid item defaults ─────────────────────────────────────── */ }
-				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /* ── Grid item defaults — WITHDRAWN (2026-08-30) ────────────────
+				     Verified defect: the ONLY CSS consumer of --sgs-gi-* is
+				     `.sgs-container--grid > .sgs-container`
+				     (container/style.css:8-15), a DIRECT-CHILD selector requiring
+				     the child to itself carry class `.sgs-container`. This block's
+				     typed items[] repeater renders `<div class="sgs-trust-bar__badge">`
+				     (render.php), never `.sgs-container`, so the selector can never
+				     match here. The panel rendered ~15 client-facing controls that
+				     painted nothing. The 15 gridItem* attrs stay DECLARED in
+				     block.json (removing them is a stored-content migration risk,
+				     out of scope for this fix) — this only withdraws the dead UI.
+				     See sibling withdrawal in cta-section/edit.js for the same
+				     defect + fix shape. ─────────────────────────────────────── */ }
 
 				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
 					box-shadow CSS string built by ShadowControl), resolved by
