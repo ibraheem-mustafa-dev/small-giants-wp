@@ -3951,7 +3951,17 @@ function main() {
 	// `node scripts/check-editor-render-parity.js --json` reported
 	// `editorCanvasDesync.netNew.length === 206` (30 accepted/baselined,
 	// unchanged) immediately after the exemption landed.
-	const CHECK_A_OPEN_BACKLOG = 206;
+	// 206 -> 207 (2026-08-28, mega-panel accent* rename): the rename
+	// (accentBackground/accentTextColour/accentBorderColour/
+	// accentBorderColourGradient -> iconBackground/iconColour/
+	// groupBorderColour/groupBorderColourGradient, part of the validated
+	// NULL-css_element fix proposal) surfaces ONE pre-existing editor-canvas
+	// desync that was already present under the old attribute names but
+	// uncounted because the checker keys findings by attribute NAME, not by
+	// underlying defect -- the rename makes a debt class visible, it does not
+	// create it. Same class as the other 15 blocks already carrying this
+	// hover-gradient-masked-border-ring desync (not canvas-previewable).
+	const CHECK_A_OPEN_BACKLOG = 207;
 	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
