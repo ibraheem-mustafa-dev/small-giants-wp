@@ -141,18 +141,21 @@ function sgs_border_content_map( array $border ): array {
 		// NOT the default. Carrying the value across losslessly is a no-op for
 		// the client; inventing a style they never had is a design change and
 		// belongs to a person. Pass the `infer-solid` token to opt in.
-		if ( ! defined( 'SGS_BORDER_INFER_SOLID' ) || ! SGS_BORDER_INFER_SOLID ) {
+		// Bean, 2026-08-30: "It's not a design change if something that should be
+		// visible is now fixed and becomes visible." A width and a colour were
+		// authored deliberately; the only reason nothing painted is a missing
+		// third property. Restoring the intent IS the fix, so this is the DEFAULT.
+		// `no-infer` opts out for a case where the absence is genuinely intended.
+		if ( defined( 'SGS_BORDER_NO_INFER' ) && SGS_BORDER_NO_INFER ) {
 			return array(
 				'attrs'  => array(),
 				'note'   => null,
-				'refuse' => 'width/colour stored with NO border-style, so it has never painted. ' .
-					'Migrating as-is is lossless but still invisible; writing "solid" would make it ' .
-					'appear for the first time. Re-run with the `infer-solid` token to choose that.',
+				'refuse' => 'no border-style stored and `no-infer` was passed — held for review',
 			);
 		}
 		$attrs['borderStyle'] = 'solid';
-		$note                 = 'INFERENCE APPLIED: wrote "solid" — this border will now paint for ' .
-			'the first time. Visible change; confirm on the live page.';
+		$note                 = 'INFERRED "solid": a width + colour were stored with no style, so ' .
+			'nothing painted. This border now renders as authored.';
 	}
 
 	return array( 'attrs' => $attrs, 'note' => $note, 'refuse' => null );
@@ -272,8 +275,9 @@ function sgs_border_content_self_test(): int {
 	// NEGATIVE CONTROL — by default a width with NO stored style must REFUSE,
 	// not silently invent one. Inventing `solid` makes a border appear that has
 	// never painted; that is a design change, not a migration.
-	$ok( null !== $side_nostyle['refuse'], 'NEGATIVE CONTROL: width with no stored style must REFUSE by default, not infer solid' );
-	$ok( ! $side_nostyle['attrs'], 'NEGATIVE CONTROL: a refusal must not also emit attrs' );
+	$ok( 'solid' === $side_nostyle['attrs']['borderStyle'], 'a width with no stored style must infer solid by default so the authored border paints' );
+	$ok( null !== $side_nostyle['note'], 'the inference must be REPORTED on every run, never silent' );
+	$ok( null === $side_nostyle['refuse'], 'inferring must not also refuse' );
 
 	// NEGATIVE CONTROL — differing per-side colours must REFUSE, never flatten.
 	$multi = sgs_border_content_map(
@@ -318,7 +322,7 @@ function sgs_border_content_self_test(): int {
 		}
 		return 1;
 	}
-	echo "SELF-TEST OK — 21 assertions passed (5 of them negative controls).\n";
+	echo "SELF-TEST OK — 22 assertions passed (4 of them negative controls).\n";
 	return 0;
 }
 
@@ -327,8 +331,8 @@ $sgs_argv  = isset( $args ) && is_array( $args ) ? $args : array();
 // POSITIONAL tokens, not --flags: `wp eval-file` parses --flags itself and
 // rejects unknown ones, so they never reach $args.
 $sgs_apply = in_array( 'apply', $sgs_argv, true );
-if ( in_array( 'infer-solid', $sgs_argv, true ) ) {
-	define( 'SGS_BORDER_INFER_SOLID', true );
+if ( in_array( 'no-infer', $sgs_argv, true ) ) {
+	define( 'SGS_BORDER_NO_INFER', true );
 }
 $sgs_slugs = array_values( array_filter( $sgs_argv, static fn( $a ) => 0 === strpos( $a, 'sgs/' ) ) );
 
