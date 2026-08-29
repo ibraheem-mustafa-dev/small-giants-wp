@@ -316,7 +316,16 @@ matters if the previous one made it relevant. ⚠ `imageHeight` is already insid
 - Width attrs: `widthMode`/`widthModeMobile`/`Tablet`/`Desktop`, `customWidth`/`customWidthUnit`, `contentWidth`, `maxWidth`
 - Animation attrs: `sgsAnimation`/`sgsAnimationDuration`/`sgsAnimationEasing`, `staggerDelay`
 
-> NOTE: There is no `iconColour`/`iconBackgroundColour`/`iconSize`/`link` attribute — icon colour/size come from native `color` + `__experimentalBorder` supports and the universal image-controls extension (`supports.sgs.imageControls`).
+> NOTE: There is no `iconColour`/`iconBackgroundColour`/`iconSize`/`link` attribute on
+> `sgs/info-box`. **Corrected 2026-08-30 — the previous claim that icon colour/size "come from
+> native `color` + `__experimentalBorder` supports" was false, verified against block.json**:
+> `supports.__experimentalBorder` is not declared at all, and `supports.color`'s sub-flags
+> (background/text/link/gradients) are all `false` with `__experimentalSkipSerialization: true`
+> — neither can be driving the icon's colour. `render.php`/`style.css` confirm there is genuinely
+> no icon-colour mechanism on this block at all (no attr, no CSS variable, no native support
+> wired to it) — the icon inherits whatever default paint applies, with no client-facing control.
+> This is an honest gap, not a routed-elsewhere control; not investigated further here, this is a
+> doc correction only.
 
 **Render:** **Dynamic** — `render: file:./render.php`. Server-side render handles icon SVG injection from the icon library, conditional link wrapper, and per-element colour token resolution. `save.js` returns `null`.
 
