@@ -46,7 +46,16 @@ function boxShorthand( box, keys ) {
 // them in the editor canvas either — reproduce a desktop-only preview here
 // (matches sgs/quote + sgs/brand-strip's editor preview pattern).
 function buildWrapperStyle( attributes ) {
-	const { style, backgroundColour, textColour } = attributes;
+	const {
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderColourGradient,
+		borderRadius,
+	} = attributes;
 	const wrapperStyle = {};
 
 	// D635-pattern migration: background/text preview now reads the flat
@@ -63,20 +72,32 @@ function buildWrapperStyle( attributes ) {
 			? backgroundColour
 			: colourVar( backgroundColour );
 	}
-	if ( style?.color?.gradient ) {
-		wrapperStyle.backgroundImage = style.color.gradient;
+	if ( backgroundColourGradient ) {
+		wrapperStyle.backgroundImage = backgroundColourGradient;
 	}
 
-	if ( style?.border?.width ) {
-		wrapperStyle.borderWidth = style.border.width;
+	// border* are block-private attrs (SgsBorderControl, D876/D881 standard) —
+	// not WP-native style.border.* (undeclared in block.json, silently
+	// discarded by WordPress — check-undeclared-attrs finding).
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderStyle && 'none' !== borderStyle ) {
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
+				? borderColour
+				: colourVar( borderColour );
+		}
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+		}
 	}
-	if ( style?.border?.style ) {
-		wrapperStyle.borderStyle = style.border.style;
-	}
-	if ( style?.border?.color ) {
-		wrapperStyle.borderColor = style.border.color;
-	}
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const radiusPreview = boxShorthand( borderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		wrapperStyle.borderRadius = radiusPreview;
 	}

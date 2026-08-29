@@ -39,7 +39,7 @@ import {
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveOverride,
-	ResponsiveBorderRadiusControl, shadowAttrKeys,
+	shadowAttrKeys,
 	SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
@@ -401,9 +401,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		heightUnit,
 		boxShadow,
 		boxShadowColour,
-		style,
-		borderRadiusTablet,
-		borderRadiusMobile,
 	} = attributes;
 
 	const hasBothImages =
@@ -765,20 +762,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ /*
+			  Border radius previously had TWO controls writing different storage:
+			  this panel wrote WP-native style.border.radius (undeclared in
+			  block.json, silently discarded by WordPress — check-undeclared-attrs
+			  finding), while the "Border" panel's SgsBorderControl above (D876/D881
+			  standard) already writes the real private borderRadius/Tablet/Mobile
+			  attrs render.php actually reads. Removed the duplicate rather than
+			  redirecting it to the same attrs a second control already owns.
+			*/ }
 			<InspectorControls group="styles">
 				<ToolsPanel
 					label={ __( 'Frame styling', 'sgs-blocks' ) }
 					resetAll={ () =>
-						setAttributes( {
-							boxShadow: '',
-							boxShadowColour: '',
-							style: {
-								...style,
-								border: { ...style?.border, radius: {} },
-							},
-							borderRadiusTablet: {},
-							borderRadiusMobile: {},
-						} )
+						setAttributes( { boxShadow: '', boxShadowColour: '' } )
 					}
 				>
 					<ToolsPanelItem
@@ -794,57 +791,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							attrNames={ shadowAttrKeys( 'boxShadow', { hoverColour: true } ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						hasValue={ () =>
-							Object.keys( style?.border?.radius ?? {} ).length >
-								0 ||
-							Object.keys( borderRadiusTablet ?? {} ).length >
-								0 ||
-							Object.keys( borderRadiusMobile ?? {} ).length > 0
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								style: {
-									...style,
-									border: { ...style?.border, radius: {} },
-								},
-								borderRadiusTablet: {},
-								borderRadiusMobile: {},
-							} )
-						}
-						isShownByDefault
-					>
-						<ResponsiveBorderRadiusControl
-							label={ __( 'Border radius', 'sgs-blocks' ) }
-							values={ {
-								base: style?.border?.radius ?? {},
-								tablet: borderRadiusTablet ?? {},
-								mobile: borderRadiusMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( {
-										style: {
-											...style,
-											border: {
-												...style?.border,
-												radius: next,
-											},
-										},
-									} );
-								} else {
-									setAttributes( {
-										[ `borderRadius${
-											'tablet' === tier
-												? 'Tablet'
-												: 'Mobile'
-										}` ]: next,
-									} );
-								}
-							} }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

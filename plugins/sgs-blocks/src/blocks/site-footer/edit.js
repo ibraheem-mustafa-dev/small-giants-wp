@@ -328,23 +328,28 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		orientation: 'vertical',
 	} );
 
-	const { style } = attributes;
-
 	// Check contrast ratio on attribute changes
 	const [ contrastNotice, setContrastNotice ] = useState( null );
 
+	// Reads block-private backgroundColour/textColour (SgsColourPanel, D294/
+	// D684 pattern) — not WP-native style.color.background/.text, which this
+	// block's supports.color sub-flags are all false for, so WordPress never
+	// populates it and this check has never fired (check-undeclared-attrs
+	// finding: `style` destructured but undeclared in block.json). Resolved
+	// via resolveColourToken() the same way the paint itself is, since a
+	// stored value can be a theme-token slug, not a literal colour.
 	useEffect( () => {
-		if ( ! style?.color?.background || ! style?.color?.text ) {
+		if ( ! backgroundColour || ! textColour ) {
 			setContrastNotice( null );
 			return;
 		}
 
 		const bgLuminance = calculateRelativeLuminance(
-			style.color.background,
+			resolveColourToken( backgroundColour, colourPalette ) || backgroundColour,
 			refEl.current
 		);
 		const textLuminance = calculateRelativeLuminance(
-			style.color.text,
+			resolveColourToken( textColour, colourPalette ) || textColour,
 			refEl.current
 		);
 
@@ -358,7 +363,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		} else {
 			setContrastNotice( null );
 		}
-	}, [ style?.color?.background, style?.color?.text ] );
+	}, [ backgroundColour, textColour, colourPalette ] );
 
 	return (
 		<>
