@@ -156,14 +156,23 @@
 		#000 0 calc(var(--sgs-timeline-fill-progress) * 100%),
 		transparent calc(var(--sgs-timeline-fill-progress) * 100%)
 	);
-	top: calc(var(--sgs-node-size) / 2 + var(--wp--preset--spacing--30, 1.5rem));
+	// The SAME offset as the base track — a second literal is how the two
+	// silently drift apart.
+	top: var(--sgs-timeline-h-line-top);
 	left: 0;
 	right: 0;
 	width: 100%;
 	height: var(--sgs-connector-width);
 
 	.sgs-timeline__progress-glow {
-		inset: calc(-1 * var(--sgs-timeline-glow-spread, 14px)) 0;
+		// Symmetric, on BOTH sides of the bar. With the bar back on the node
+		// row there is roughly 24px of clear space above (to the date) and
+		// below (to the heading), so it fits without touching either. Kept
+		// tighter than vertical, which has the whole column height to breathe.
+		--sgs-timeline-glow-spread: 10px;
+		--sgs-timeline-glow-blur: 6px;
+
+		inset: calc(-1 * var(--sgs-timeline-glow-spread, 10px)) 0;
 		background: linear-gradient(
 			to bottom,
 			transparent,
@@ -499,11 +508,28 @@
 	scroll-snap-type: x mandatory;
 	-webkit-overflow-scrolling: touch;
 
+	// ⛔ THE CONNECTOR SITS ON THE NODE ROW, and the offset must be derived from
+	// the ACTUAL stacking order. The horizontal entry is a flex COLUMN ordered
+	// date(1) -> node(2) -> content(3), but this offset used to read
+	// `calc(node-size/2 + spacing-30)` — i.e. it assumed the NODE came first,
+	// which is only true in the vertical/mobile layout. The line therefore
+	// landed on the date text and ran straight through it (owner-reported
+	// 2026-08-29). PRE-EXISTING: the progress bar merely inherited it.
+	//
+	// Derived from the same tokens the entry rules use, with the one value CSS
+	// cannot read — the date's own line box — exposed so a client build with a
+	// larger date type can correct it without a rebuild.
+	--sgs-timeline-h-line-top: calc(
+		var(--wp--preset--spacing--30, 1.5rem) +
+			var(--sgs-timeline-date-line, 1.25rem) +
+			var(--wp--preset--spacing--20, 1rem) + var(--sgs-node-size) / 2
+	);
+
 	// Horizontal connecting line.
 	&::before {
 		content: '';
 		position: absolute;
-		top: calc(var(--sgs-node-size) / 2 + var(--wp--preset--spacing--30, 1.5rem));
+		top: var(--sgs-timeline-h-line-top);
 		left: 0;
 		right: 0;
 		height: var(--sgs-connector-width);
