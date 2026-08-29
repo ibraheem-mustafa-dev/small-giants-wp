@@ -263,10 +263,29 @@ if ( ! gl ) {
 	} else {
 	// speed:1 is load-bearing, not a stylistic default. draw( seconds ) sets
 	// u_time = seconds * speed (generative-background.js draw()); pinning
-	// speed to 1 makes u_time === the raw value __drawAtRawTime() is given,
-	// which is exactly what the rig's own absolute ?t= does
-	// (index.html:471: `waveUniforms.u_time.value = T_ABS ...`, no further
-	// scaling once T_ABS is set).
+	// speed to 1 makes u_time === the raw value __drawAtRawTime() is given.
+	//
+	// ⚠ M5 CORRECTION (2026-08-29, whole-branch review — this comment's
+	// PREVIOUS wording was the proximate cause of a Critical finding,
+	// C1: it claimed __drawAtRawTime's argument "is exactly what the rig's
+	// own absolute ?t= does… no further scaling once T_ABS is set", citing
+	// index.html:471. That is true of index.html's own JS assignment
+	// (`waveUniforms.u_time.value = T_ABS`) — and FALSE of the shader that
+	// then consumes it. The rig's live vertex shader
+	// (.claude/scratch/stripe-hero-poc/shaders/68467.glsl:230) computes
+	// `u_time * u_speed` INSIDE the GLSL, with u_speed = 4e-5 (index.html's
+	// light-theme preset). So the EFFECTIVE phase reaching the noise
+	// function is `T_ABS * 4e-5` on the rig, not `T_ABS` itself. Our own
+	// shader (generative-background.js's VERTEX_SHADER) has NO such internal
+	// multiplier — it consumes u_time raw — so the value this page is
+	// driven with via __drawAtRawTime() IS the effective phase on THIS side.
+	// A caller wanting the SAME effective phase as a given rig ?t= value
+	// must therefore pass `rigValue * 4e-5` here, NOT `rigValue` directly.
+	// fidelity-compare.mjs's `RIG_SPEED` constant + `oursTimeFor()` helper
+	// now do exactly that; before this fix they didn't, and precondition 3
+	// (a raw-uniform equality check) passed while the two engines were
+	// ~25,000x apart in actual phase — reproduced inside the very
+	// instrument meant to catch it.
 	const handle = await createGenerativeBackground( canvas, {
 		textureSource: img,
 		speed: 1,

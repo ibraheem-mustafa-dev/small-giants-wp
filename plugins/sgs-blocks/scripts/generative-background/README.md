@@ -38,42 +38,84 @@ correct — it means you've reached the point this README describes.
 ## What the committed `fidelity-baseline.json` numbers mean
 
 `fidelity-baseline.json` is the output of the last `fidelity-compare.mjs` run. It compares our
-engine's rendered frame against the rig's, at three sampled `u_time` values (2, 5, 9), and
-records the result as a JSON tree with several **rungs**:
+engine's rendered frame against the rig's, at three sampled `u_time` values, and records the
+result as a JSON tree with several **rungs**:
 
 | Rung | What it checks | Why it exists |
 |---|---|---|
 | `0a_determinism` | rig vs itself, same settings | If this isn't ~0, nothing else below can be trusted — the capture apparatus itself is noisy. |
 | `0b_positive_control` | rig vs a deliberately corrupted copy (+3/255 on green) | Proves the comparator (`compare.py`) actually detects a known injected difference. If this fails, `compare.py` is broken and every other rung is meaningless. |
-| `0c_discrimination` | rig at `t=2` vs `t=9` | Proves `?t=` genuinely reaches the shader uniform and this isn't silently comparing one cached frame to itself. |
-| `1_geometry_shading` | **ours vs rig, per sampled `u_time`** | The actual fidelity result. This is the headline number. |
+| `0c_discrimination` | rig at two different **effective phases** | Proves `?t=` genuinely reaches the shader uniform and this isn't silently comparing one cached (or near-identical) frame to itself. |
+| `1_geometry_shading` | **ours vs rig, per sampled `u_time`, at the SAME effective phase** | The actual fidelity result. This is the headline number. |
 | `2_side_by_side` | full-page captures, no scoring | Feeds `blink.html` — for a human eye, not a threshold. |
 
-**The headline figures, as of the last committed run (2026-08-29):**
+**⚠ `u_time` is a raw uniform value, not the shader's effective phase — read this before
+quoting any number.** The rig scales time INSIDE its shader (`u_time * u_speed`, with
+`u_speed = 4e-5`); ours doesn't. `fidelity-compare.mjs`'s `SAMPLE_TIMES` are the RIG's raw
+`?t=` values (chosen inside its real operating range — `timeOffset(17500) + seconds*1000`);
+the driver converts them to the matching replica time via `oursTimeFor(t) = t * 4e-5` so both
+engines land on the same effective phase. **A previous version of this driver skipped that
+conversion and drove both sides with the same raw value — 25,000x apart in actual phase — while
+its own precondition check compared the raw uniforms and passed.** That bug is fixed; the
+numbers below are from the corrected run.
 
-| `u_time` | `mean_abs_pct` | `bias_over_abs` |
-|---|---|---|
-| 2 | 4.61% | 0.906 |
-| 5 | 5.40% | 0.903 |
-| 9 | 5.21% | 0.930 |
+**The headline figures, as of the last committed run (2026-08-29, corrected phase mapping):**
+
+| `u_time` (rig raw) | effective phase | `mean_abs_pct` (crop-wide) | masked mean_abs_pct (painted-only) | `bias_over_abs` |
+|---|---|---|---|---|
+| 17,500 | 0.70 | 5.29% ⚠ OVER | 10.71% | 0.943 |
+| 27,500 | 1.10 | 4.71% | 9.90% | 0.916 |
+| 47,500 | 1.90 | 5.63% ⚠ OVER | 10.64% | 0.871 |
+
+**Verdict: FIDELITY FAILURE — 2 of 3 sampled times over the 5% ceiling** (`verdict.overCeilingTimes`
+in the JSON). Fixing the phase-mapping bug did **not** collapse or meaningfully narrow the gap —
+the numbers before and after the fix are within a point of each other (4.61–5.40% before, at the
+wrong phases entirely, vs 4.71–5.63% now, at correct phases). That consistency is itself informative:
+whatever is causing this divergence is not sensitive to which moment of the animation gets sampled.
 
 - `mean_abs_pct` — the average per-pixel colour difference, as a percentage of the 0–255
   range, measured over the shared crop box (`fidelity-baseline.json`'s top-level `crop`
   field). The project's working ceiling is **5%** (`fidelityCeilingPct` — inherited from
   `compare.py`'s own printed convention, which is itself a local convention with no external
   precedent — see `fidelityCeilingNote` in the JSON).
-- **`bias_over_abs`** — the standing finding of this whole exercise. It is the ratio of the
-  *signed* mean difference to the *absolute* mean difference, per channel:
-  - **1.0** means the divergence is **pure systematic error** — every pixel is off in the
-    same direction (e.g. everything is 15% too green). This is what a colour-space, blend
-    mode, or texture-decoding bug looks like.
-  - **0.0** means the divergence is **pure noise** — as much too light as too dark, evenly
-    scattered. This is what genuine per-pixel randomness or dithering looks like.
-  - **The measured ~0.90–0.93 here is close to 1.0**, i.e. this is almost entirely a
-    directional colour cast, not noise. That means the ~5% gap is very likely a single fixable
-    systematic cause (most plausibly the accepted blend/post-processing divergences logged in
-    `acceptedDeltas` in the JSON), not death-by-a-thousand-small-differences. Anyone picking
-    this back up should chase the systematic cause, not tighten tolerances.
+- **masked mean_abs_pct** — the SAME comparison restricted to the union of painted (non-
+  background) pixels on either side (`rung.perTime[t].maskedStats`). This exists because the
+  crop-wide mean is diluted roughly 2x by agreeing, near-saturated background: 0b's own
+  arithmetic shows only ~48% of crop pixels moved under a full +3/255 injection (the rest were
+  already clipped near white), and that ~48–53% "background fraction" tracks `within_pct['4']`
+  closely at every sampled time. The masked figure (~10%) is closer to the true divergence
+  where the effect actually paints.
+- **`bias_over_abs`** — the ratio of the *signed* mean difference to the *absolute* mean
+  difference, per channel. 1.0 = pure systematic (directional) error; 0.0 = pure noise
+  (compare.py's own docstring). **What this does and does not license:** a high ratio proves
+  the divergence has a consistent SIGN — every affected pixel skews the same way. It does
+  **not**, on its own, distinguish a global colour/tone shift from a spatially LOCALISED
+  one-signed divergence (a shape or geometry difference that happens to always push colour the
+  same direction wherever it occurs would also score high on this ratio). Per this project's
+  binding rule, "not noise" is exculpatory for noise only — it is never inculpatory for a
+  specific cause like colour transfer.
+  - **Evidence that argues AGAINST a pure tone/colour-transfer cause, all already in the
+    committed JSON:** painted coverage differs by 8 points (`painted.ours.coverage` ≈0.32 vs
+    `painted.rig.coverage` ≈0.40) — a uniform tone/gamma shift cannot change how much of the
+    frame reads as "painted"; distinct hue count differs 2.3x (`painted.ours.unique` ≈162 vs
+    `painted.rig.unique` ≈371); and the error distribution is bimodal, not smooth
+    (`within_pct['4']` ≈50%, meaning roughly half the crop is near-identical while the rest
+    sits well beyond `within_pct['32']`) — a genuine gamma/transfer-function difference would
+    be smooth and present everywhere, not concentrated in half the frame.
+  - **The leading UNTESTED hypothesis, not yet investigated by this harness:** geometry/shape
+    divergence between the two engines' displacement or fold maths at these phases, which would
+    naturally produce exactly this signature — a one-signed error (whichever engine's ribbon
+    extends further into a region reads as "more/less painted" there, always in the same
+    direction) concentrated in a spatially distinct subset of the crop, not smeared everywhere.
+    This has NOT been confirmed — it is the most consistent explanation for the coverage/hue/
+    distribution evidence above, offered as the next thing to check, not a diagnosis.
+  - What this rules out with reasonable confidence: the accepted `acceptedDeltas` divergences.
+    `acceptedDeltas[0]` (blend) is **proven inert** in the JSON — SRC_ALPHA/ONE_MINUS_SRC_ALPHA
+    with alpha≡1 is a mathematical no-op, verified against the live shader source — and
+    `acceptedDeltas[1]` (`nopost`) records that the rig's post-process pass is fully REMOVED
+    from the measured path on both sides. Neither can be the cause; a previous version of this
+    README named them as the "most plausible" cause, which was wrong given data already in the
+    same JSON — corrected here.
 
 Every number in the JSON also carries its own provenance (GPU renderer/vendor, Chromium
 version, viewport, DPR, crop box, SHA-256 of both compared PNGs) — see `environment` and each

@@ -104,9 +104,51 @@ const RIG_PATH = '/.claude/scratch/stripe-hero-poc/index.html';
 const REPLICA_PATH = '/plugins/sgs-blocks/scripts/generative-background/poc-replica.html';
 const PALETTE = 'palette-a';
 
-// Named, absolute, reused every run — NOT "~3 moments". Written into the
-// tracked baseline so a future run compares against the SAME sampled times.
-const SAMPLE_TIMES = Object.freeze( [ 2.0, 5.0, 9.0 ] );
+// ⛔ C1 FIX (2026-08-29, whole-branch review). The rig SCALES u_time INSIDE
+// its shader — shaders/68467.glsl:230, `displace(..., u_time * u_speed, ...)`
+// — with u_speed = 4e-5 (index.html:222, the live light-theme preset `P`).
+// Ours uses u_time RAW in its own shader (generative-background.js's
+// VERTEX_SHADER, no internal speed multiplier at all — the JS-side `speed`
+// option only scales what gets UPLOADED, at draw() call time). So the
+// EFFECTIVE phase fed to the noise function is `raw_u_time * RIG_SPEED` on
+// the rig, but just `raw_u_time` on ours. Driving both sides with the SAME
+// raw ?t= value (the original bug) put them 1/RIG_SPEED = 25,000x apart in
+// phase — far beyond simplex noise's ~1-unit decorrelation length — while
+// precondition 3 asserted the RAW uniforms matched and passed, because they
+// did; the EFFECTIVE phases never matched at all. An assertion that passes
+// while meaning nothing is exactly the failure this instrument exists to
+// catch — reproduced inside the instrument itself.
+//
+// Fix: SAMPLE_TIMES are the RIG's raw ?t= values (unchanged meaning — this
+// is what gets passed straight to the rig's own ?t= parameter). To reach
+// the SAME effective phase, the replica must be driven with
+// `oursTimeFor(t) = t * RIG_SPEED` instead of `t` directly (see
+// oursTimeFor() below and its use at every captureReplica() call site).
+//
+// Values chosen to sit inside the rig's REAL operating range, not an
+// arbitrary small number: its runtime (non-?t=) path computes
+// `u_time = ACTIVE.timeOffset(17500) + seconds*1000` (index.html P preset +
+// the `drawAt()` closure), i.e. effective phase `0.7 + 0.04*seconds` — a
+// moment this animation actually occupies. 17500/27500/47500 correspond to
+// seconds = 0/10/30 into the loop, giving effective phases 0.70/1.10/1.90 —
+// a low-to-high spread of 1.2 units between the first and last sample,
+// safely past simplex noise's ~1-unit decorrelation length (deliberate: 0c
+// below needs a REAL, unambiguous discrimination signal, not a hair's-
+// breadth one).
+const RIG_SPEED = 4e-5; // shaders/68467.glsl:230 * index.html:222 (P preset).
+const SAMPLE_TIMES = Object.freeze( [ 17500, 27500, 47500 ] ); // Rig's raw ?t= values.
+
+/**
+ * The u_time value to drive the REPLICA with for a given RIG raw ?t= value,
+ * so both sides land on the SAME effective shader phase. See the C1 fix
+ * comment above SAMPLE_TIMES for the full derivation.
+ *
+ * @param {number} rigRawTime The rig's raw ?t= value.
+ * @return {number} The value to pass to poc-replica.html's ?t=.
+ */
+function oursTimeFor( rigRawTime ) {
+	return rigRawTime * RIG_SPEED;
+}
 
 // 0b's positive-control perturbation: +3/255 on the green channel.
 const PERTURB_CHANNEL = 1; // R=0, G=1, B=2 in a decoded RGB array.
@@ -144,21 +186,35 @@ const NONCANVAS_MAX_COVERAGE = 0.005;
 // frame", not to approve a real divergence.
 const DETERMINISM_CEILING_255 = 0.5;
 
-// 0c's discrimination floor: two rig captures at DIFFERENT u_time values
-// must differ by more than 0a's proven noise floor, AND (I5) the two PNGs
-// must not be byte-identical, AND the worst single channel must clear a
-// real per-pixel floor — a single stray pixel must not be able to pass this
-// on the mean alone.
+// 0c's discrimination floor — ⛔ C2 FIX (2026-08-29, whole-branch review).
+// The PREVIOUS floor (0.01) was derived FROM the value it then approved —
+// the review's own words: "a floor derived FROM the observed value" — which
+// proves nothing; it was fitted post-hoc to a run that (per C1 above) was
+// comparing two frames barely 0.06 phase-units apart, near-static by
+// construction. A floor that only has to clear whatever the apparatus
+// happens to already produce is not a test.
 //
-// ⚠ CALIBRATED, NOT INVENTED (see full derivation in git history / the
-// task-2 report). The measured mean at u_time=2 vs 9 is small because these
-// three SAMPLE_TIMES are tiny absolute values against this shader's normal
-// operating range (the non-?t= path runs at ACTUAL.timeOffset(~17500) +
-// seconds*1000) — u_time=2..9 sits near the very start of that scale, where
-// the displacement terms (frequencies ~0.001-0.06) have barely accumulated
-// phase. The floor is grounded in 0a's own proven exact-zero noise floor,
-// not a guessed percentage.
-const DISCRIMINATION_FLOOR_255 = 0.01;
+// This floor is PRE-REGISTERED instead — decided from a general, citable
+// property of simplex/Perlin-family noise (that it decorrelates over an
+// input delta of roughly one grid unit), NOT from anything this specific
+// run measures. Unlike 0b (a scalar pixel edit — exactly predictable in
+// closed form), an exact point-prediction of the mean_abs two decorrelated
+// noise frames produce is NOT tractable without literally re-implementing
+// the shader, which would be simulating the system under test rather than
+// testing it — stated plainly rather than faked. What IS principled and
+// fixed in advance is a floor built from TWO independent, non-fitted
+// components, both of which must hold:
+//   (a) RELATIVE — at least this many times 0a's OWN measured determinism
+//       floor from the SAME run (the ratio is fixed here, before either
+//       number exists for a given run);
+//   (b) ABSOLUTE — a backstop floor, chosen for being far above PNG's 8-bit
+//       encoding granularity and far below any plausible "these still look
+//       the same" reading.
+// See its use in rung 0c below: `dynamicFloor = max(ABSOLUTE, 0a.mean_abs *
+// RATIO)`, computed from 0a's already-measured value, then compared against
+// 0c's — never the reverse.
+const DISCRIMINATION_FLOOR_RATIO_OVER_0A = 20;
+const DISCRIMINATION_FLOOR_ABSOLUTE_255 = 1.0;
 const DISCRIMINATION_MIN_WORST_CHANNEL = 8;
 
 // Rung 1's fidelity ceiling. compare.py's own docstring is explicit that its
@@ -373,6 +429,43 @@ elif cmd == 'crop':
     x0f = max(x, x + x0 - pad); y0f = max(y, y + y0 - pad)
     x1f = min(x + w, x + x1 + pad); y1f = min(y + h, y + y1 + pad)
     print(json.dumps({'crop': [x0f, y0f, x1f, y1f]}))
+
+elif cmd == 'maskedmean':
+    # maskedmean <ref> <cand> <x> <y> <w> <h>  -- I1 review finding: the
+    # crop-wide mean can be diluted by a large chunk of near-saturated
+    # background that both sides trivially agree on. This computes a SECOND
+    # mean restricted to the UNION of "painted" pixels (pixels that differ
+    # from THEIR OWN image's background on either side), plus the background
+    # (clip) fraction that gets excluded -- so a diluted headline number is
+    # visible instead of silently averaged away.
+    ref_path, cand_path = sys.argv[2], sys.argv[3]
+    x, y, w, h = (int(v) for v in sys.argv[4:8])
+
+    def painted_mask(path):
+        region = np.asarray(Image.open(path).convert('RGB').crop((x, y, x + w, y + h)), dtype=np.int16)
+        keys = quantised_keys(region)
+        vals, counts = np.unique(keys, return_counts=True)
+        bg_key = vals[np.argmax(counts)]
+        return keys != bg_key
+
+    ref_im = np.asarray(Image.open(ref_path).convert('RGB').crop((x, y, x + w, y + h)), dtype=np.int16)
+    cand_im = np.asarray(Image.open(cand_path).convert('RGB').crop((x, y, x + w, y + h)), dtype=np.int16)
+    mask = painted_mask(ref_path) | painted_mask(cand_path)
+
+    total_px = int(mask.size)
+    painted_px = int(mask.sum())
+    diff = cand_im - ref_im
+    if painted_px:
+        masked_abs_mean = float(np.abs(diff[mask]).mean())
+    else:
+        masked_abs_mean = 0.0
+    print(json.dumps({
+        'total_pixels': total_px,
+        'painted_pixels': painted_px,
+        'background_fraction': 1.0 - (painted_px / total_px if total_px else 0.0),
+        'masked_mean_abs_255': masked_abs_mean,
+        'masked_mean_abs_pct': 100.0 * masked_abs_mean / 255.0,
+    }))
 
 elif cmd == 'gen_solid':
     # gen_solid <path> <w> <h> <r> <g> <b>
@@ -935,12 +1028,23 @@ async function selfTest() {
 		process.exit( 2 );
 	}
 
+	// I5 FIX (2026-08-29, whole-branch review): this used to exit 1 on
+	// SUCCESS, on the theory that "1" mirrors what a real rung-1 FIDELITY
+	// FAILURE would report. In practice that means no caller can assert
+	// "the self-test passed" by checking the exit code — 1 is indistinguish-
+	// able from a broken comparator by every normal convention (`echo $?`,
+	// CI step success, `&&` chaining). The classification the self-test
+	// exists to prove ("this WOULD read as a FIDELITY FAILURE under real
+	// rung-1 logic") is still asserted above via `wouldFailRung1` — it is
+	// now recorded in the assertion, not encoded in the process exit code.
+	// Exit 0 = self-test passed. Exit 2 = the comparator itself is broken
+	// (same HARNESS ERROR code used everywhere else in this file).
 	console.log(
-		'SELF-TEST PASSED: the comparator correctly reports a large, over-ceiling difference. ' +
-			'Under real rung-1 logic this measured result would be a FIDELITY FAILURE (exit 1) — ' +
-			'reproducing that verdict here is the proof the machinery works. Exiting 1 by design.'
+		'SELF-TEST PASSED: the comparator correctly reports a large, over-ceiling difference, and ' +
+			'internally classifies it as a FIDELITY FAILURE under real rung-1 logic (wouldFailRung1=' +
+			`${ wouldFailRung1 }). Exiting 0 — the self-test itself succeeded.`
 	);
-	process.exit( 1 );
+	process.exit( 0 );
 }
 
 async function main() {
@@ -1036,7 +1140,8 @@ async function main() {
 		console.log( '\n── Deriving the shared crop + running the C1 symmetry check ──' );
 		const deriveOursPng = join( RUN_DIR, 'derive-ours.png' );
 		const deriveRigPng = join( RUN_DIR, 'derive-rig.png' ); // Reused as 0a/0b/0c's t0 rig capture.
-		await captureReplica( browser, site.origin, t0, deriveOursPng );
+		// oursTimeFor(t0), not t0 — see the C1 fix comment above SAMPLE_TIMES.
+		await captureReplica( browser, site.origin, oursTimeFor( t0 ), deriveOursPng );
 		await captureRig( browser, site.origin, t0, { ...MATCHED, outPng: deriveRigPng } );
 
 		const symmetry = assertNonCanvasSymmetry( deriveOursPng, deriveRigPng );
@@ -1162,9 +1267,21 @@ async function main() {
 			label: `0c discrimination (u_time=${ t0 } vs u_time=${ tHi })`,
 			jsonOut: join( RUN_DIR, '0c-compare.json' ),
 		} );
-		console.log(
-			`  mean_abs_255 = ${ cmp0c.mean_abs_255.toFixed( 3 ) } (floor ${ DISCRIMINATION_FLOOR_255 })`
+
+		// Pre-registered floor, computed from 0a's ALREADY-MEASURED value
+		// (never the reverse) — see the DISCRIMINATION_FLOOR_* comment above
+		// for the full derivation. Printed BEFORE the measured comparison
+		// below, in the same "predict, then compare" order 0b uses.
+		const dynamicFloor255 = Math.max(
+			DISCRIMINATION_FLOOR_ABSOLUTE_255,
+			cmp0a.mean_abs_255 * DISCRIMINATION_FLOOR_RATIO_OVER_0A
 		);
+		console.log(
+			`  PRE-REGISTERED FLOOR (from 0a=${ cmp0a.mean_abs_255.toFixed( 3 ) }, before this rung's own ` +
+				`number is looked at): max(${ DISCRIMINATION_FLOOR_ABSOLUTE_255 }, 0a×${ DISCRIMINATION_FLOOR_RATIO_OVER_0A }) ` +
+				`= ${ dynamicFloor255.toFixed( 3 ) }`
+		);
+		console.log( `  mean_abs_255 = ${ cmp0c.mean_abs_255.toFixed( 3 ) }` );
 		printStatBlock( cmp0c );
 
 		// I5: the two strongest signals 0c already had access to and ignored.
@@ -1181,12 +1298,13 @@ async function main() {
 					'single stray pixel; this checks a real per-pixel divergence exists.'
 			);
 		}
-		if ( cmp0c.mean_abs_255 < DISCRIMINATION_FLOOR_255 ) {
+		if ( cmp0c.mean_abs_255 < dynamicFloor255 ) {
 			throw new HarnessError(
 				`Rung 0c FAILED: rig captures at u_time=${ t0 } and u_time=${ tHi } differ by only ` +
-					`${ cmp0c.mean_abs_255.toFixed( 3 ) }/255, under the ${ DISCRIMINATION_FLOOR_255 } floor. ` +
-					`?t= may not be reaching the uniform, or captures are being cached/compared against ` +
-					`the same frame.`
+					`${ cmp0c.mean_abs_255.toFixed( 3 ) }/255, under the pre-registered floor ` +
+					`${ dynamicFloor255.toFixed( 3 ) }. ?t= may not be reaching the uniform, the sampled ` +
+					`effective phases may not be far enough apart to decorrelate, or captures are being ` +
+					`cached/compared against the same frame.`
 			);
 		}
 		baseline.rungs[ '0c_discrimination' ] = {
@@ -1196,7 +1314,14 @@ async function main() {
 			refSha256: rigC1Sha,
 			candSha256: rigC2Sha,
 			stats: cmp0c,
-			floor255: DISCRIMINATION_FLOOR_255,
+			floorDerivation: {
+				ratioOver0a: DISCRIMINATION_FLOOR_RATIO_OVER_0A,
+				absolute255: DISCRIMINATION_FLOOR_ABSOLUTE_255,
+				zeroADeterminism255: cmp0a.mean_abs_255,
+				dynamicFloor255,
+				note: 'Pre-registered from 0a\'s own measured value and simplex noise\'s known ' +
+					'~1-unit decorrelation length — NOT fitted to this rung\'s own measured mean_abs_255.',
+			},
 			minWorstChannel255: DISCRIMINATION_MIN_WORST_CHANNEL,
 			passed: true,
 		};
@@ -1210,7 +1335,7 @@ async function main() {
 			const oursPng = join( RUN_DIR, `1-ours-t${ t }.png` );
 			const rigPng = join( RUN_DIR, `1-rig-t${ t }.png` );
 
-			const ours = await captureReplica( browser, site.origin, t, oursPng );
+			const ours = await captureReplica( browser, site.origin, oursTimeFor( t ), oursPng );
 			const rig = await captureRig( browser, site.origin, t, { ...MATCHED, outPng: rigPng } );
 
 			// Precondition 2 — glstate, allowlisted divergences only.
@@ -1222,13 +1347,23 @@ async function main() {
 				);
 			}
 
-			// Precondition 3 — __utime() matches (both should read exactly t,
-			// since our draw() does seconds*speed with speed pinned to 1, and
-			// the rig's ?t= sets u_time to the raw value with no ms conversion).
-			if ( Math.abs( ours.utime - rig.utime ) > 1e-6 ) {
+			// ⛔ C1 FIX — precondition 3 used to compare the RAW uniforms
+			// (`ours.utime === rig.utime`), which passed even when the two
+			// engines were 25,000x apart in EFFECTIVE phase, because ours has
+			// no internal speed multiplier and the rig's shader does
+			// (u_time * u_speed, RIG_SPEED=4e-5 — see the SAMPLE_TIMES
+			// comment). The comparison now converts both to the phase that
+			// actually reaches the noise function: ours.utime is already the
+			// effective phase (we drove it with oursTimeFor(t) = t*RIG_SPEED,
+			// and our shader uses u_time raw); rig.utime is the RIG's raw
+			// uniform, so it must be multiplied by RIG_SPEED here to reach
+			// the same footing.
+			const oursEffectivePhase = ours.utime;
+			const rigEffectivePhase = rig.utime * RIG_SPEED;
+			if ( Math.abs( oursEffectivePhase - rigEffectivePhase ) > 1e-6 ) {
 				throw new HarnessError(
-					`Rung 1 (t=${ t }) FAILED precondition 3: __utime() mismatch — ours=${ ours.utime }, ` +
-						`rig=${ rig.utime }.`
+					`Rung 1 (t=${ t }) FAILED precondition 3 (EFFECTIVE PHASE, not raw uniform): ` +
+						`ours=${ oursEffectivePhase }, rig=${ rig.utime }×${ RIG_SPEED }=${ rigEffectivePhase }.`
 				);
 			}
 
@@ -1252,6 +1387,19 @@ async function main() {
 			);
 			const systematic = printStatBlock( cmp1 );
 
+			// I1: the crop-wide mean can be diluted by a large agreeing
+			// (near-saturated) background block. Report a SECOND,
+			// background-excluded mean alongside it.
+			const masked = py( [
+				'maskedmean', rigPng, oursPng,
+				String( cropBox[ 0 ] ), String( cropBox[ 1 ] ),
+				String( cropBox[ 2 ] - cropBox[ 0 ] ), String( cropBox[ 3 ] - cropBox[ 1 ] ),
+			] );
+			console.log(
+				`    masked (painted-only) mean_abs_pct=${ masked.masked_mean_abs_pct.toFixed( 2 ) }% ` +
+					`(background/clip fraction: ${ ( masked.background_fraction * 100 ).toFixed( 1 ) }%)`
+			);
+
 			const underCeiling = cmp1.mean_abs_pct < FIDELITY_CEILING_PCT;
 			if ( ! underCeiling ) {
 				fidelityFailed = true;
@@ -1261,10 +1409,11 @@ async function main() {
 				oursSha256: await sha256( oursPng ),
 				rigSha256: await sha256( rigPng ),
 				glstate: { ours: ours.glstate, rig: rig.glstate, declaredDivergences: glCmp.declaredDivergences },
-				utime: { ours: ours.utime, rig: rig.utime },
+				utime: { ours: ours.utime, rig: rig.utime, oursEffectivePhase, rigEffectivePhase },
 				frustum: { ours: ours.frustum, rig: rig.frustum },
 				painted: { ours: ours.painted, rig: rig.painted },
 				stats: cmp1,
+				maskedStats: masked,
 				underCeiling,
 				systematicBias: systematic,
 			};
@@ -1307,7 +1456,7 @@ async function main() {
 		const sideOursPng = join( RUN_DIR, '2-side-by-side-ours.png' );
 		const sideRigMatchedPng = join( RUN_DIR, '2-side-by-side-rig-matched.png' );
 		const sideRigDefaultPng = join( RUN_DIR, '2-side-by-side-rig-default.png' );
-		await captureReplica( browser, site.origin, t0, sideOursPng );
+		await captureReplica( browser, site.origin, oursTimeFor( t0 ), sideOursPng );
 		await captureRig( browser, site.origin, t0, { ...MATCHED, outPng: sideRigMatchedPng } );
 		// requireUtime:false — the post shader is bound last under default
 		// settings, which has no u_time uniform; nothing compares against
@@ -1330,6 +1479,25 @@ async function main() {
 			},
 			note: 'No number by design — the blink comparator\'s two inputs, for Bean\'s own eye.',
 		};
+
+		// ⛔ C5 FIX (2026-08-29, whole-branch review): "the run FAILED and
+		// nothing says so" — underCeiling being false per-time inside
+		// rung1.perTime was true but easy to miss; there was no single,
+		// top-level field a reader (or a future script) could check without
+		// walking the whole tree. This is that field.
+		const overCeilingTimes = SAMPLE_TIMES.filter(
+			( t ) => rung1.perTime[ String( t ) ] && ! rung1.perTime[ String( t ) ].underCeiling
+		);
+		baseline.verdict = {
+			fidelityFailed,
+			overCeilingTimes,
+			exitCode: fidelityFailed ? 1 : 0,
+			summary: fidelityFailed
+				? `FIDELITY FAILURE — ${ overCeilingTimes.length } of ${ SAMPLE_TIMES.length } sampled ` +
+					`u_time values exceeded the ${ FIDELITY_CEILING_PCT }% ceiling: [${ overCeilingTimes.join( ', ' ) }].`
+				: `All ${ SAMPLE_TIMES.length } sampled u_time values passed the ${ FIDELITY_CEILING_PCT }% ceiling.`,
+		};
+		console.log( `\n${ baseline.verdict.summary }` );
 
 		await writeFile( BASELINE_PATH, JSON.stringify( baseline, null, 2 ) + '\n' );
 		console.log( `\nWrote baseline: ${ BASELINE_PATH }` );

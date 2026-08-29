@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-29T15:45:31.620Z",
-  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608",
+  "generatedAt": "2026-08-29T17:22:05.749Z",
+  "runDir": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236",
   "sampleTimes": [
-    2,
-    5,
-    9
+    17500,
+    27500,
+    47500
   ],
   "perturbControl": {
     "channel": "G",
@@ -30,24 +30,24 @@
   },
   "rungs": {
     "0a_determinism": {
-      "uTime": 2,
+      "uTime": 17500,
       "measuredWith": {
         "blendOff": true,
         "nopost": true
       },
-      "refSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
-      "candSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
+      "refSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
+      "candSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
       "stats": {
         "label": "0a determinism floor",
         "reference": "derive-rig.png",
         "candidate": "0a-rig-2.png",
         "crop": [
-          483,
+          531,
           0,
           1440,
           761
         ],
-        "pixels": 728277,
+        "pixels": 691749,
         "mean_abs_255": 0,
         "mean_abs_pct": 0,
         "signed_mean": {
@@ -72,33 +72,33 @@
       "passed": true
     },
     "0b_positive_control": {
-      "uTime": 2,
+      "uTime": 17500,
       "measuredWith": {
         "blendOff": true,
         "nopost": true
       },
-      "refSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
-      "candSha256": "1e93bd38521f24c8423e9cc7c7b3c051d2df830ee68badb53d68b83d988f3c45",
+      "refSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
+      "candSha256": "d3c4c8863cb4cccb515617adfbf98a13ec438e03941ae99588f3129c17c3ebff",
       "predicted": {
-        "predicted_signed_mean_channel": 1.4351613465755475,
-        "predicted_abs_mean_over_all_channels": 0.4783871155251825
+        "predicted_signed_mean_channel": 1.4509410205146664,
+        "predicted_abs_mean_over_all_channels": 0.48364700683822215
       },
       "measured": {
         "label": "0b positive control (+3/255 on G)",
         "reference": "derive-rig.png",
         "candidate": "0b-rig-perturbed.png",
         "crop": [
-          483,
+          531,
           0,
           1440,
           761
         ],
-        "pixels": 728277,
-        "mean_abs_255": 0.4783871155251825,
-        "mean_abs_pct": 0.18760279040203234,
+        "pixels": 691749,
+        "mean_abs_255": 0.48364700683822215,
+        "mean_abs_pct": 0.18966549287773418,
         "signed_mean": {
           "R": 0,
-          "G": 1.4351613465755475,
+          "G": 1.4509410205146664,
           "B": 0
         },
         "bias_over_abs": 1,
@@ -118,54 +118,60 @@
       "passed": true
     },
     "0c_discrimination": {
-      "uTimeLow": 2,
-      "uTimeHigh": 9,
+      "uTimeLow": 17500,
+      "uTimeHigh": 47500,
       "measuredWith": {
         "blendOff": true,
         "nopost": true
       },
-      "refSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
-      "candSha256": "44f854cd68213c436bf98e1016dfea543e5673a7c55eaca425061b2d802fdcf9",
+      "refSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
+      "candSha256": "21b6d8f18370ead8b765f0ceb77278bb38502a493ec8bc581b87ceb0db650a1f",
       "stats": {
-        "label": "0c discrimination (u_time=2 vs u_time=9)",
+        "label": "0c discrimination (u_time=17500 vs u_time=47500)",
         "reference": "derive-rig.png",
         "candidate": "0c-rig-hi.png",
         "crop": [
-          483,
+          531,
           0,
           1440,
           761
         ],
-        "pixels": 728277,
-        "mean_abs_255": 0.05480011955158088,
-        "mean_abs_pct": 0.021490242961404265,
+        "pixels": 691749,
+        "mean_abs_255": 5.591239018777042,
+        "mean_abs_pct": 2.192642752461585,
         "signed_mean": {
-          "R": 0.0011808693670128261,
-          "G": 0.004477691867242821,
-          "B": 0.0058301992236470465
+          "R": -1.2255456820320665,
+          "G": -2.9826757971460744,
+          "B": 1.5581012766191205
         },
-        "bias_over_abs": 0.069882818698895,
+        "bias_over_abs": 0.3437713141596604,
         "within_pct": {
-          "4": 99.93972073812574,
-          "8": 99.95976805528666,
-          "16": 99.9750095087446,
-          "32": 99.98352275301842
+          "4": 63.704465058858055,
+          "8": 71.2274249764004,
+          "16": 79.367371691177,
+          "32": 86.5566845777876
         },
         "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
-        "worst_single_channel_255": 96,
+        "worst_single_channel_255": 147,
         "ceiling_pct": 5,
         "under_ceiling": true,
         "crop_scale": 1
       },
-      "floor255": 0.01,
+      "floorDerivation": {
+        "ratioOver0a": 20,
+        "absolute255": 1,
+        "zeroADeterminism255": 0,
+        "dynamicFloor255": 1,
+        "note": "Pre-registered from 0a's own measured value and simplex noise's known ~1-unit decorrelation length — NOT fitted to this rung's own measured mean_abs_255."
+      },
       "minWorstChannel255": 8,
       "passed": true
     },
     "1_geometry_shading": {
       "perTime": {
-        "2": {
-          "oursSha256": "715db0d5c2da9162ac9d1de7505b47e05d6f2ecee0cc12e8d08d48e98eaac523",
-          "rigSha256": "818aff2fe4f7a30ff417ad372ae430139f18ca75946e3f4ada0631ccce97d6d5",
+        "17500": {
+          "oursSha256": "ae0acd32ef4cb5925e2f6c668e65ee49bdcdcc74580b713b5a5c40c19a044ae6",
+          "rigSha256": "ff78f100d689eefe9982a94ab8c45b93820696e41cb1b31478101c43cab9592c",
           "glstate": {
             "ours": {
               "blend": false,
@@ -229,8 +235,10 @@
             ]
           },
           "utime": {
-            "ours": 2,
-            "rig": 2
+            "ours": 0.699999988079071,
+            "rig": 17500,
+            "oursEffectivePhase": 0.699999988079071,
+            "rigEffectivePhase": 0.7000000000000001
           },
           "frustum": {
             "ours": {
@@ -253,330 +261,355 @@
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 280721,
-              "coverage": 0.3323282546672823,
+              "opaque": 269563,
+              "coverage": 0.31911898758153684,
+              "unique": 162
+            },
+            "rig": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 334534,
+              "coverage": 0.3960341418948515,
+              "unique": 371
+            }
+          },
+          "stats": {
+            "label": "rung 1 (t=17500)",
+            "reference": "1-rig-t17500.png",
+            "candidate": "1-ours-t17500.png",
+            "crop": [
+              531,
+              0,
+              1440,
+              761
+            ],
+            "pixels": 691749,
+            "mean_abs_255": 13.483296687093151,
+            "mean_abs_pct": 5.287567328271824,
+            "signed_mean": {
+              "R": 4.439765001467295,
+              "G": 17.859472149580267,
+              "B": 15.846863529979805
+            },
+            "bias_over_abs": 0.9430458432207857,
+            "within_pct": {
+              "4": 50.465125356162424,
+              "8": 50.795013798357495,
+              "16": 51.62624015358172,
+              "32": 54.89202008242874
+            },
+            "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+            "worst_single_channel_255": 130,
+            "ceiling_pct": 5,
+            "under_ceiling": false,
+            "crop_scale": 1
+          },
+          "maskedStats": {
+            "total_pixels": 691749,
+            "painted_pixels": 341217,
+            "background_fraction": 0.5067329334773162,
+            "masked_mean_abs_255": 27.3189641782209,
+            "masked_mean_abs_pct": 10.713319285576823
+          },
+          "underCeiling": false,
+          "systematicBias": true
+        },
+        "27500": {
+          "oursSha256": "e60b081ed30fb2b602159e9720db1fa14d7028636e7a4bffc851fc5461aa77a8",
+          "rigSha256": "5ac68bb0502a5410c1f2e6da3e5161371808e449f082fb00fb664250d4a0440b",
+          "glstate": {
+            "ours": {
+              "blend": false,
+              "blendSrcRGB": 1,
+              "blendDstRGB": 0,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "low-power",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "rig": {
+              "blend": true,
+              "blendSrcRGB": 770,
+              "blendDstRGB": 771,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "high-performance",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "declaredDivergences": [
+              {
+                "field": "blend",
+                "ours": false,
+                "rig": true,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendSrcRGB",
+                "ours": 1,
+                "rig": 770,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendDstRGB",
+                "ours": 0,
+                "rig": 771,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              }
+            ]
+          },
+          "utime": {
+            "ours": 1.100000023841858,
+            "rig": 27500,
+            "oursEffectivePhase": 1.100000023841858,
+            "rigEffectivePhase": 1.1
+          },
+          "frustum": {
+            "ours": {
+              "width": 1393,
+              "height": 761,
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            },
+            "rig": {
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            }
+          },
+          "painted": {
+            "ours": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 271420,
+              "coverage": 0.3213173751938535,
+              "unique": 146
+            },
+            "rig": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 320247,
+              "coverage": 0.37912064495507336,
+              "unique": 444
+            }
+          },
+          "stats": {
+            "label": "rung 1 (t=27500)",
+            "reference": "1-rig-t27500.png",
+            "candidate": "1-ours-t27500.png",
+            "crop": [
+              531,
+              0,
+              1440,
+              761
+            ],
+            "pixels": 691749,
+            "mean_abs_255": 12.012173490673641,
+            "mean_abs_pct": 4.710656270852408,
+            "signed_mean": {
+              "R": 3.640430271673685,
+              "G": 17.675208782376266,
+              "B": 11.685864381444715
+            },
+            "bias_over_abs": 0.9157794094220981,
+            "within_pct": {
+              "4": 52.37969263417801,
+              "8": 52.5017022070144,
+              "16": 52.831735210314726,
+              "32": 56.838101681390214
+            },
+            "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+            "worst_single_channel_255": 154,
+            "ceiling_pct": 5,
+            "under_ceiling": true,
+            "crop_scale": 1
+          },
+          "maskedStats": {
+            "total_pixels": 691749,
+            "painted_pixels": 329193,
+            "background_fraction": 0.5241149607733441,
+            "masked_mean_abs_255": 25.237384553539513,
+            "masked_mean_abs_pct": 9.897013550407653
+          },
+          "underCeiling": true,
+          "systematicBias": true
+        },
+        "47500": {
+          "oursSha256": "c23798e4b485eb9397cfe8bb845a1759abebf24106cb3ef44973a823cb2c1afe",
+          "rigSha256": "21b6d8f18370ead8b765f0ceb77278bb38502a493ec8bc581b87ceb0db650a1f",
+          "glstate": {
+            "ours": {
+              "blend": false,
+              "blendSrcRGB": 1,
+              "blendDstRGB": 0,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "low-power",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "rig": {
+              "blend": true,
+              "blendSrcRGB": 770,
+              "blendDstRGB": 771,
+              "depthTest": true,
+              "cullFace": false,
+              "unpackFlipY": true,
+              "contextAttributes": {
+                "alpha": true,
+                "antialias": false,
+                "depth": true,
+                "desynchronized": false,
+                "failIfMajorPerformanceCaveat": true,
+                "powerPreference": "high-performance",
+                "premultipliedAlpha": true,
+                "preserveDrawingBuffer": false,
+                "stencil": false,
+                "xrCompatible": false
+              }
+            },
+            "declaredDivergences": [
+              {
+                "field": "blend",
+                "ours": false,
+                "rig": true,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendSrcRGB",
+                "ours": 1,
+                "rig": 770,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              },
+              {
+                "field": "blendDstRGB",
+                "ours": 0,
+                "rig": 771,
+                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
+              }
+            ]
+          },
+          "utime": {
+            "ours": 1.899999976158142,
+            "rig": 47500,
+            "oursEffectivePhase": 1.899999976158142,
+            "rigEffectivePhase": 1.9000000000000001
+          },
+          "frustum": {
+            "ours": {
+              "width": 1393,
+              "height": 761,
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            },
+            "rig": {
+              "cssWidth": 1393,
+              "cssHeight": 761,
+              "backingWidth": 1393,
+              "backingHeight": 761
+            }
+          },
+          "painted": {
+            "ours": {
+              "width": 1110,
+              "height": 761,
+              "total": 844710,
+              "opaque": 282740,
+              "coverage": 0.33471842407453445,
               "unique": 155
             },
             "rig": {
               "width": 1110,
               "height": 761,
               "total": 844710,
-              "opaque": 348400,
-              "coverage": 0.4124492429354453,
-              "unique": 420
+              "opaque": 359087,
+              "coverage": 0.42510092220998924,
+              "unique": 396
             }
           },
           "stats": {
-            "label": "rung 1 (t=2)",
-            "reference": "1-rig-t2.png",
-            "candidate": "1-ours-t2.png",
+            "label": "rung 1 (t=47500)",
+            "reference": "1-rig-t47500.png",
+            "candidate": "1-ours-t47500.png",
             "crop": [
-              483,
+              531,
               0,
               1440,
               761
             ],
-            "pixels": 728277,
-            "mean_abs_255": 11.759080679466742,
-            "mean_abs_pct": 4.611404188026174,
+            "pixels": 691749,
+            "mean_abs_255": 14.3501453080043,
+            "mean_abs_pct": 5.6275079639232555,
             "signed_mean": {
-              "R": 5.270972445923735,
-              "G": 18.469777296276003,
-              "B": 8.206113882492513
+              "R": 5.8377503979044425,
+              "G": 20.505615476133684,
+              "B": 11.163784841033381
             },
-            "bias_over_abs": 0.9055941388478508,
+            "bias_over_abs": 0.8712374197853493,
             "within_pct": {
-              "4": 50.44138425351892,
-              "8": 50.726715247083185,
-              "16": 51.54481055971835,
-              "32": 56.73404487578215
+              "4": 47.053194149901195,
+              "8": 47.20975382689386,
+              "16": 47.66382025850417,
+              "32": 50.962849241560164
             },
             "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
-            "worst_single_channel_255": 108,
-            "ceiling_pct": 5,
-            "under_ceiling": true,
-            "crop_scale": 1
-          },
-          "underCeiling": true,
-          "systematicBias": true
-        },
-        "5": {
-          "oursSha256": "f487059819fa5cd8acc73433f55670455c0d06dfd5b3a5573ebae7b5d163375c",
-          "rigSha256": "66d622b122a5bbd08544bcbc5c3dc078396f707a7c8dcb4771e0ab48e6827791",
-          "glstate": {
-            "ours": {
-              "blend": false,
-              "blendSrcRGB": 1,
-              "blendDstRGB": 0,
-              "depthTest": true,
-              "cullFace": false,
-              "unpackFlipY": true,
-              "contextAttributes": {
-                "alpha": true,
-                "antialias": false,
-                "depth": true,
-                "desynchronized": false,
-                "failIfMajorPerformanceCaveat": true,
-                "powerPreference": "low-power",
-                "premultipliedAlpha": true,
-                "preserveDrawingBuffer": false,
-                "stencil": false,
-                "xrCompatible": false
-              }
-            },
-            "rig": {
-              "blend": true,
-              "blendSrcRGB": 770,
-              "blendDstRGB": 771,
-              "depthTest": true,
-              "cullFace": false,
-              "unpackFlipY": true,
-              "contextAttributes": {
-                "alpha": true,
-                "antialias": false,
-                "depth": true,
-                "desynchronized": false,
-                "failIfMajorPerformanceCaveat": true,
-                "powerPreference": "high-performance",
-                "premultipliedAlpha": true,
-                "preserveDrawingBuffer": false,
-                "stencil": false,
-                "xrCompatible": false
-              }
-            },
-            "declaredDivergences": [
-              {
-                "field": "blend",
-                "ours": false,
-                "rig": true,
-                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
-              },
-              {
-                "field": "blendSrcRGB",
-                "ours": 1,
-                "rig": 770,
-                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
-              },
-              {
-                "field": "blendDstRGB",
-                "ours": 0,
-                "rig": 771,
-                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
-              }
-            ]
-          },
-          "utime": {
-            "ours": 5,
-            "rig": 5
-          },
-          "frustum": {
-            "ours": {
-              "width": 1393,
-              "height": 761,
-              "cssWidth": 1393,
-              "cssHeight": 761,
-              "backingWidth": 1393,
-              "backingHeight": 761
-            },
-            "rig": {
-              "cssWidth": 1393,
-              "cssHeight": 761,
-              "backingWidth": 1393,
-              "backingHeight": 761
-            }
-          },
-          "painted": {
-            "ours": {
-              "width": 1110,
-              "height": 761,
-              "total": 844710,
-              "opaque": 288489,
-              "coverage": 0.34152431011826545,
-              "unique": 150
-            },
-            "rig": {
-              "width": 1110,
-              "height": 761,
-              "total": 844710,
-              "opaque": 348372,
-              "coverage": 0.4124160954647157,
-              "unique": 422
-            }
-          },
-          "stats": {
-            "label": "rung 1 (t=5)",
-            "reference": "1-rig-t5.png",
-            "candidate": "1-ours-t5.png",
-            "crop": [
-              483,
-              0,
-              1440,
-              761
-            ],
-            "pixels": 728277,
-            "mean_abs_255": 13.770691646173091,
-            "mean_abs_pct": 5.400271233793369,
-            "signed_mean": {
-              "R": 5.142366160128632,
-              "G": 18.46851815998583,
-              "B": 13.688829936960799
-            },
-            "bias_over_abs": 0.9028768056938505,
-            "within_pct": {
-              "4": 50.08959503046231,
-              "8": 50.36600084857822,
-              "16": 51.054200530841975,
-              "32": 57.15256694911414
-            },
-            "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
-            "worst_single_channel_255": 185,
+            "worst_single_channel_255": 182,
             "ceiling_pct": 5,
             "under_ceiling": false,
             "crop_scale": 1
           },
-          "underCeiling": false,
-          "systematicBias": true
-        },
-        "9": {
-          "oursSha256": "18e3be28da9cfedbba9ee4910e1b50fa1a22dcafc58ee3c04879da2f3c43719f",
-          "rigSha256": "44f854cd68213c436bf98e1016dfea543e5673a7c55eaca425061b2d802fdcf9",
-          "glstate": {
-            "ours": {
-              "blend": false,
-              "blendSrcRGB": 1,
-              "blendDstRGB": 0,
-              "depthTest": true,
-              "cullFace": false,
-              "unpackFlipY": true,
-              "contextAttributes": {
-                "alpha": true,
-                "antialias": false,
-                "depth": true,
-                "desynchronized": false,
-                "failIfMajorPerformanceCaveat": true,
-                "powerPreference": "low-power",
-                "premultipliedAlpha": true,
-                "preserveDrawingBuffer": false,
-                "stencil": false,
-                "xrCompatible": false
-              }
-            },
-            "rig": {
-              "blend": true,
-              "blendSrcRGB": 770,
-              "blendDstRGB": 771,
-              "depthTest": true,
-              "cullFace": false,
-              "unpackFlipY": true,
-              "contextAttributes": {
-                "alpha": true,
-                "antialias": false,
-                "depth": true,
-                "desynchronized": false,
-                "failIfMajorPerformanceCaveat": true,
-                "powerPreference": "high-performance",
-                "premultipliedAlpha": true,
-                "preserveDrawingBuffer": false,
-                "stencil": false,
-                "xrCompatible": false
-              }
-            },
-            "declaredDivergences": [
-              {
-                "field": "blend",
-                "ours": false,
-                "rig": true,
-                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
-              },
-              {
-                "field": "blendSrcRGB",
-                "ours": 1,
-                "rig": 770,
-                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
-              },
-              {
-                "field": "blendDstRGB",
-                "ours": 0,
-                "rig": 771,
-                "reason": "PROVEN INERT, not merely accepted (shaders/39798.glsl, the live light-theme fragment shader, lines 313/319/320): color.a is clamped to exactly 1.0 for every possible pdy value, so SRC_ALPHA/ONE_MINUS_SRC_ALPHA reduces to result=src*1+dst*0=src — a mathematical no-op. Ours never enabling gl.BLEND at all therefore produces the identical pixel result."
-              }
-            ]
-          },
-          "utime": {
-            "ours": 9,
-            "rig": 9
-          },
-          "frustum": {
-            "ours": {
-              "width": 1393,
-              "height": 761,
-              "cssWidth": 1393,
-              "cssHeight": 761,
-              "backingWidth": 1393,
-              "backingHeight": 761
-            },
-            "rig": {
-              "cssWidth": 1393,
-              "cssHeight": 761,
-              "backingWidth": 1393,
-              "backingHeight": 761
-            }
-          },
-          "painted": {
-            "ours": {
-              "width": 1110,
-              "height": 761,
-              "total": 844710,
-              "opaque": 259181,
-              "coverage": 0.3068283789702975,
-              "unique": 140
-            },
-            "rig": {
-              "width": 1110,
-              "height": 761,
-              "total": 844710,
-              "opaque": 348341,
-              "coverage": 0.4123793964792651,
-              "unique": 421
-            }
-          },
-          "stats": {
-            "label": "rung 1 (t=9)",
-            "reference": "1-rig-t9.png",
-            "candidate": "1-ours-t9.png",
-            "crop": [
-              483,
-              0,
-              1440,
-              761
-            ],
-            "pixels": 728277,
-            "mean_abs_255": 13.29170219573047,
-            "mean_abs_pct": 5.212432233619793,
-            "signed_mean": {
-              "R": 5.1245103168162665,
-              "G": 19.91126178638073,
-              "B": 12.035340948567647
-            },
-            "bias_over_abs": 0.9296806008707331,
-            "within_pct": {
-              "4": 51.857603631585235,
-              "8": 51.9252976546012,
-              "16": 52.10901895844576,
-              "32": 56.33625667156865
-            },
-            "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
-            "worst_single_channel_255": 168,
-            "ceiling_pct": 5,
-            "under_ceiling": false,
-            "crop_scale": 1
+          "maskedStats": {
+            "total_pixels": 691749,
+            "painted_pixels": 365918,
+            "background_fraction": 0.4710248948679362,
+            "masked_mean_abs_255": 27.123748125718514,
+            "masked_mean_abs_pct": 10.636763970870005
           },
           "underCeiling": false,
           "systematicBias": true
         }
       },
       "crop": [
-        483,
+        531,
         0,
         1440,
         761
@@ -590,10 +623,10 @@
       "paletteSha256": "8124d14ca383a1f830ff18f65b554a0c9677a8bda33f9ad6471c835d69bf62f1"
     },
     "2_side_by_side": {
-      "uTime": 2,
-      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608/2-side-by-side-ours.png",
+      "uTime": 17500,
+      "ours": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236/2-side-by-side-ours.png",
       "rigMatched": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608/2-side-by-side-rig-matched.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236/2-side-by-side-rig-matched.png",
         "settings": {
           "blendOff": true,
           "nopost": true
@@ -601,7 +634,7 @@
         "note": "The exact settings that produced the rung-1 percentages — pair this with `ours`."
       },
       "rigDefault": {
-        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T15-45-31-619Z-5608/2-side-by-side-rig-default.png",
+        "path": "plugins/sgs-blocks/scripts/generative-background/runs/2026-08-29T17-22-05-748Z-61236/2-side-by-side-rig-default.png",
         "settings": {
           "blendOff": false,
           "nopost": false
@@ -641,10 +674,19 @@
     "maxCoverage": 0.005
   },
   "crop": [
-    483,
+    531,
     0,
     1440,
     761
   ],
-  "cropDerivation": "Union of the painted-pixel bounding boxes (both sides, background = the modal 5-bit-quantised colour within the shared canvas box) at the FIRST sampled u_time, both sides captured under rung 1's exact settings, padded 24px outward on every side and clipped back to the canvas box. Padding outward — rather than the tight bbox — is deliberate: our known defect class is edges, and DEFAULT_CROP's own documented flaw is that it avoids exactly those. This SAME box is reused for 0a/0b/0c and rung 1 — never a per-rung crop."
+  "cropDerivation": "Union of the painted-pixel bounding boxes (both sides, background = the modal 5-bit-quantised colour within the shared canvas box) at the FIRST sampled u_time, both sides captured under rung 1's exact settings, padded 24px outward on every side and clipped back to the canvas box. Padding outward — rather than the tight bbox — is deliberate: our known defect class is edges, and DEFAULT_CROP's own documented flaw is that it avoids exactly those. This SAME box is reused for 0a/0b/0c and rung 1 — never a per-rung crop.",
+  "verdict": {
+    "fidelityFailed": true,
+    "overCeilingTimes": [
+      17500,
+      47500
+    ],
+    "exitCode": 1,
+    "summary": "FIDELITY FAILURE — 2 of 3 sampled u_time values exceeded the 5% ceiling: [17500, 47500]."
+  }
 }
