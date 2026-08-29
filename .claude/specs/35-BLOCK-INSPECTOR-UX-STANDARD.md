@@ -808,8 +808,10 @@ triad mechanism and the same enforcement stack.
 - [~] every CSS-length uses UnitControl or the token scale — `UnitControl`/`BoxControl` dominate 465
       instances, but a `RangeControl` raw-px residue and 117 statically-unresolved attrs remain
 - [~] every 4-value prop per-side via box_family — **184/203** canonical
-- [~] compound values use real builders — shadow confirmed (`ShadowControl`, 16–20 mounts); **border
-      builder coverage unverified** (1 file against 48 blocks declaring `__experimentalBorder`)
+- [~] compound values use real builders — shadow confirmed (`ShadowControl`, 16–20 mounts); border
+      builder now VERIFIED — `SgsBorderControl` mounted on 44/83 blocks (2026-08-30 grep; §14's
+      box has the correction), against only 4 blocks left with an active native
+      `__experimentalBorder`, not the 48 this line originally measured
 - [~] images have size + aspect-ratio + object-fit + focal point — **6/11** upload blocks; 22 opt into
       the shared `imageControls` extension
 
@@ -1339,10 +1341,14 @@ the Settings tab is simply the `default` group, i.e. everything else. There is n
 which is exactly why every attempt to apply one produced a different answer.
 
 ⛔ **SEQUENCING — the tab bar lands AFTER native-supports retirement (design §5), not before.** While
-27 blocks still declare native `color` and 48 declare `__experimentalBorder`, core renders its own
-Styles tab regardless of what we do. Shipping our tab bar first gives the client THREE SGS tabs plus
-core's Styles tab — strictly worse than today. Native retirement is itself blocked on the background
-capability (design §3 / Phase 1). **Phase 1 remains the first build.**
+27 blocks still declare native `color` (unverified this pass — re-check before relying on it) and,
+as of 2026-08-30, only **4** declare an ACTIVE `__experimentalBorder` (down from the 48 this line
+originally measured — the Shape-B border migration retired it from the other 44; see §14's
+correction box), core renders its own Styles tab regardless of what we do. Shipping our tab bar
+first gives the client THREE SGS tabs plus core's Styles tab — strictly worse than today. Native
+retirement is itself blocked on the background capability (design §3 / Phase 1), and the border
+half of that retirement is now nearly done — **re-assess whether Phase 1's border-blocking
+premise still holds before treating "Phase 1 remains the first build" as settled.**
 
 **Until the tab bar ships**, element panels stay in Settings and native supports stay in core's Styles
 tab. That is the interim state, not the target, and it is not a rule anyone should extend.
@@ -2356,8 +2362,13 @@ cross-check — do not treat this guard as complete.
 > box before acting on anything in §14.**
 >
 > The border UI shipped as a shared composite, `SgsBorderControl`
-> (`plugins/sgs-blocks/src/components/SgsBorderControl.js`), now mounted on **10 blocks**: button,
-> container, heading, icon-list, option-picker, process-steps, product-card, quote, text, timeline.
+> (`plugins/sgs-blocks/src/components/SgsBorderControl.js`). **CORRECTED 2026-08-30 — "10
+> blocks" drifted 4.4x; re-verified by grep, not cache: 44 blocks now mount it**, the Shape-B
+> rollout's full extent. Two blocks (`sgs/media`, `sgs/whatsapp-cta`) are radius-private-only and
+> correctly don't mount it. Four (`card-grid`, `media`, `multi-button`, `trust-bar`) still carry an
+> active native `__experimentalBorder` (width/colour/style) — codemod `--survey` refuses them
+> `ambiguous-anchor`, open not regressed. `plugins/sgs-blocks/CLAUDE.md`'s "Border controls"
+> section carries the same correction — don't let the two drift apart again.
 > Census + ratcheted gate: `plugins/sgs-blocks/scripts/survey-border-control-migration.py`
 > (`PRIVATE_NEEDS_SWAP` must stay 0). Three of §14's statements are now false:
 >

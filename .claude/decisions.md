@@ -1,3 +1,64 @@
+## D889 [ROUTINE] — border/shape-b close-out: a gate false positive and a shared-helper bug, both root-caused not guessed at
+
+**2026-08-30.** Commits `76a3ef734`/`2a749c0b2`/`76ddf7614`/`e48450bce`/`1ca11337a` (main
+close-out), then `81036c832`/`ca1f14789`/`76d4ba365` (form-field-tiles, built via
+`/subagent-driven-development` — implementer + cross-model reviewer + fix pass, single task).
+
+**Fix 1 — `check-editor-render-parity.js` had a real blind spot, not a real defect.**
+`sgs/pricing-table` destructures `pricingTableStyle: style` (a RENAMED local binding) and
+genuinely reads it back via `style` in the wrapper className — but the gate's finding loop only
+ever tested `usedOutsideControls.has('pricingTableStyle')` (the schema key), never the renamed
+local name, so it reported a false "never read back outside its own control" for an attribute
+that plainly is. The gate's own header had flagged this exact shape as an unconfirmed risk since
+2026-08-13. Fixed by adding `collectDestructuredAliases()` (maps schema key → renamed local name)
+and checking both when deciding a finding; two new self-test fixtures (a renamed binding that IS
+read elsewhere, one that is NEVER read elsewhere) pin both directions so it can't regress
+silently a second time. netNew 178 → 177 confirmed live in the editor canvas (Playwright:
+`sgs-pricing-table--card`/`--list` classes genuinely present on their respective instances).
+
+**Fix 2 — `sgs/form-field-tiles` never carried WordPress's own identity class.** Its outer
+wrapper comes from a hand-rolled helper, `field_open()` (shared by ~10 form-field block types),
+which built its `<div class="...">` manually and never called `get_block_wrapper_attributes()`.
+WordPress's `wp-block-sgs-form-field-tiles` class landed instead on the block's INNER tile-grid
+div (rendered via `SGS_Container_Wrapper::render()`, which does call that function) — so the
+block's WP-identity class and its border-scoped CSS class sat on two different DOM nodes. Any
+selector querying the identity class (including `check-border-roundtrip.js`) measured the wrong
+element. Fixed at the shared helper — `field_open()` now calls
+`get_block_wrapper_attributes()` — after confirming against all 10 sibling field-block `block.json`
+files that none declares a WP styling support without `__experimentalSkipSerialization` (so the
+change adds only the identity class, nothing else auto-inlines). A first-pass fix for a sibling
+block, `sgs/form-step`, looked identical in symptom (probe FAIL, `0px none` where `4px solid` was
+expected) but had a different root cause — a missing unconditional push of its own uid class,
+unrelated to `field_open()` — and was fixed separately. **Same symptom, two distinct causes; do
+not assume a repeat finding is the same bug.**
+
+⚠ **Two doc-accuracy defects caught by cross-model review, not by the implementer's own
+self-check:** a docblock left describing the pre-fix broken behaviour as still-current, and a new
+comment/commit message claiming `get_block_wrapper_attributes()` now emits a live
+`data-wp-interactive` attribute on `sgs/form-field-file` — which the implementer's own live
+measurement had actually found ABSENT. Both corrected in `76d4ba365`; the reviewer's independent
+re-verification (re-proving the pre-existing `inspector-scan` ratchet bypass itself, tracing
+every `field_open()` caller for re-entrancy risk, reading the probe's own outermost-element
+scoping logic) is what surfaced both — a same-model or diff-only review would likely have missed
+the interactivity claim, since it read as a plausible, specific, technically-worded fact.
+
+**Also found, deliberately not fixed this session (named so they aren't re-discovered as new):**
+10 blocks return `check-border-roundtrip.js` NOT RUN (unmeasured, not failing — most need a
+nested-in-parent fixture: `before-after`, `buybox`, `option-picker`, `product-faq-item`, `quote`,
+`site-footer-row`, `site-header-row`, `table-of-contents`, `tabs`, `testimonial`). A probe-scoping
+improvement (page-frame `sgs/container` instances being mismeasured as a test's own positive/
+negative pair) exists uncommitted in another session's worktree — real, unmerged, not claimed
+here.
+
+**Doc drift caught and corrected in the same pass:** `plugins/sgs-blocks/CLAUDE.md`'s border
+standard and Spec 35 §14 both still said "10 blocks" mount `SgsBorderControl" — re-measured by
+grep, not cache: **44**. Spec 35's two `__experimentalBorder` population claims ("48 blocks
+declare it") were similarly stale — **4** blocks now carry an active declaration
+(`card-grid`/`media`/`multi-button`/`trust-bar`, the codemod's own `ambiguous-anchor` REFUSE
+list). Spec 32's border-routing note describing `sgs/container` as still on "WP-native border
+support" was corrected — it moved to the same private-attr path as `button`/`heading`/`quote`/
+`text` at Shape-B.
+
 ## D888 [INCIDENT] — the fidelity comparator's own precondition passed while comparing two moments 25,000x apart
 
 **2026-08-29.** Commits `efb695202` (comparator) - `388141071` (phase fix). Built via

@@ -629,11 +629,21 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 
 ### Border controls — `SgsBorderControl` is the one shape (D876/D881)
 
-**Ten blocks are migrated and this is the standard**: button, container, heading,
-icon-list, option-picker, process-steps, product-card, quote, text, timeline.
+⚠ **This line said "ten blocks" for weeks and drifted 4.4x — verified 2026-08-30 by grepping
+`<SgsBorderControl` across every `edit.js` rather than trusting the cached figure.** **44 blocks
+mount it** (the Shape-B border migration's full rollout — everything from the original 10 through
+`before-after`/`product-faq-item`/`form-step`/`form-field-tiles` and the rest). Two more
+(`sgs/media`, `sgs/whatsapp-cta`) are radius-private-only and correctly do NOT mount it — they
+declare no `borderWidth`/`borderStyle`/`borderColour` at all, radius rides `__experimentalBorder`
+instead. Four blocks (`card-grid`, `media`, `multi-button`, `trust-bar`) still carry an ACTIVE
+native `__experimentalBorder` support (radius+width+colour+style) — the codemod's own
+`--survey` refuses them as `ambiguous-anchor`; not yet migrated, not a regression. **Never cache
+this count again — run `grep -l '<SgsBorderControl' src/blocks/*/edit.js | wc -l` yourself.**
+
 Census + ratcheted gate: `scripts/survey-border-control-migration.py`
 (`PRIVATE_NEEDS_SWAP` must stay 0). Codemod for the edit.js swap:
-`scripts/migrate-border-control.js` (`--survey`/`--fix`/`--check`/`--self-test`).
+`scripts/migrate-border-control.js` (`--survey`/`--fix`/`--check`/`--self-test`). Codemod for the
+broader Shape-B storage migration (radius+width+colour off WP-native, per-block): `scripts/migrate-border-shape-b.js`.
 
 The control is a PAIR: border width (box object) + colour, with **border STYLE
 inside the colour popover** (native `BorderBoxControl` opens both from one
