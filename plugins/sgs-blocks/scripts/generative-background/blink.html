@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Fidelity blink comparator — generative background</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #14161a;
+    --panel: #1d2026;
+    --ink: #e8eaee;
+    --dim: #9aa1ab;
+    --accent: #5fb0ff;
+    --warn: #ffb454;
+    --bad: #ff6b6b;
+    --good: #6bdc8f;
+    --border: #2c313a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 14px/1.45 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  body { padding: 18px; }
+  h1 {
+    font-size: 17px;
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+  .subtitle { color: var(--dim); margin: 0 0 16px; font-size: 13px; }
+
+  #error-banner {
+    display: none;
+    background: #3a1d1d;
+    border: 1px solid var(--bad);
+    color: #ffd7d7;
+    padding: 16px 18px;
+    border-radius: 8px;
+    max-width: 760px;
+    white-space: pre-wrap;
+  }
+  #error-banner.show { display: block; }
+
+  #app { display: none; }
+  #app.show { display: block; }
+
+  .layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  #stage-wrap {
+    position: relative;
+  }
+
+  #stage {
+    position: relative;
+    background:
+      linear-gradient(45deg, #23262c 25%, transparent 25%),
+      linear-gradient(-45deg, #23262c 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #23262c 75%),
+      linear-gradient(-45deg, transparent 75%, #23262c 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    /* The stage has no in-flow content (both images are position:absolute), so
+       it needs an explicit size or it collapses to 0×0 and nothing is visible.
+       Captures are always 1440×900 (viewport, DPR 1) — fix that aspect ratio
+       and let width respond to the viewport. */
+    width: min(1000px, 90vw);
+    aspect-ratio: 1440 / 900;
+    max-height: 78vh;
+  }
+
+  #stage img {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* No transition, ever — a smeared fade defeats the purpose of a blink test. */
+    transition: none !important;
+  }
+
+  #img-ref { z-index: 1; }
+  #img-ours { z-index: 2; }
+
+  #stage.loading::after {
+    content: "loading captures…";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dim);
+  }
+
+  #missing-note {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: rgba(20, 22, 26, 0.92);
+    color: var(--warn);
+    padding: 24px;
+    font-size: 13px;
+    white-space: pre-wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #missing-note.show { display: flex; }
+
+  #sidebar {
+    width: 340px;
+    flex-shrink: 0;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .panel h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+    margin: 0 0 10px;
+  }
+
+  .caption-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-size: 13px;
+  }
+  .caption-line .k { color: var(--dim); }
+  .caption-line .v { font-weight: 600; text-align: right; }
+  .caption-line .v.top { color: var(--accent); }
+  .caption-line .v.warn { color: var(--warn); }
+  .caption-line .v.bad { color: var(--bad); }
+
+  .toggle-state {
+    margin-top: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .toggle-state.showing-ours { background: #142b1c; color: var(--good); border-color: #235c37; }
+  .toggle-state.showing-ref { background: #2b2414; color: var(--warn); border-color: #6b551f; }
+
+  kbd {
+    display: inline-block;
+    min-width: 20px;
+    text-align: center;
+    padding: 2px 6px;
+    background: #0f1114;
+    border: 1px solid #3a4048;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .hint-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 13px;
+  }
+  .hint-row .desc { color: var(--dim); }
+
+  .note {
+    font-size: 12px;
+    color: var(--dim);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  .times-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .time-pill {
+    flex: 1;
+    text-align: center;
+    padding: 6px 4px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .time-pill.active {
+    border-color: var(--accent);
+    color: var(--ink);
+    background: #1a2733;
+  }
+
+  .provenance {
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.6;
+    word-break: break-word;
+  }
+  .provenance b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<h1>Fidelity blink comparator</h1>
+<p class="subtitle">Ours vs the reference rig — same frame, same box, toggled instantly. Reads the committed <code>fidelity-baseline.json</code>.</p>
+
+<div id="error-banner"></div>
+
+<div id="app">
+  <div class="layout">
+    <div id="stage-wrap">
+      <div id="stage" class="loading">
+        <img id="img-ref" alt="reference capture" />
+        <img id="img-ours" alt="ours capture" style="opacity: 1;" />
+        <div id="missing-note"></div>
+      </div>
+    </div>
+
+    <div id="sidebar">
+      <div class="panel">
+        <h2>Caption</h2>
+        <div class="caption-line"><span class="k">u_time</span><span class="v top" id="cap-utime">—</span></div>
+        <div class="caption-line"><span class="k">reference variant</span><span class="v" id="cap-variant">—</span></div>
+        <div class="caption-line"><span class="k">rung-1 mean_abs_pct</span><span class="v" id="cap-pct">—</span></div>
+        <div class="caption-line"><span class="k">bias_over_abs</span><span class="v" id="cap-bias">—</span></div>
+        <div id="toggle-state" class="toggle-state showing-ours">showing: OURS (top layer)</div>
+        <div class="times-row" id="times-row"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Reference variant, explained</h2>
+        <p class="note" id="variant-note">—</p>
+      </div>
+
+      <div class="panel">
+        <h2>Keys</h2>
+        <div class="hint-row"><kbd>space</kbd><span class="desc">— blink: toggle ours on/off (instant, no fade)</span></div>
+        <div class="hint-row"><kbd>← / →</kbd><span class="desc">— step u_time (wraps)</span></div>
+        <div class="hint-row"><kbd>A</kbd><span class="desc">— switch reference: rigMatched ↔ rigDefault</span></div>
+        <p class="note">Any other key also blinks — the toggle is deliberately forgiving, since the whole point is rapid on/off, not precision.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Provenance</h2>
+        <div class="provenance" id="provenance">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var BASELINE_URL = "./fidelity-baseline.json";
+
+  var els = {
+    errorBanner: document.getElementById("error-banner"),
+    app: document.getElementById("app"),
+    stage: document.getElementById("stage"),
+    imgRef: document.getElementById("img-ref"),
+    imgOurs: document.getElementById("img-ours"),
+    missingNote: document.getElementById("missing-note"),
+    capUtime: document.getElementById("cap-utime"),
+    capVariant: document.getElementById("cap-variant"),
+    capPct: document.getElementById("cap-pct"),
+    capBias: document.getElementById("cap-bias"),
+    toggleState: document.getElementById("toggle-state"),
+    timesRow: document.getElementById("times-row"),
+    variantNote: document.getElementById("variant-note"),
+    provenance: document.getElementById("provenance"),
+  };
+
+  function showFatal(message) {
+    els.errorBanner.textContent = message;
+    els.errorBanner.classList.add("show");
+    els.app.classList.remove("show");
+  }
+
+  // ── State ────────────────────────────────────────────────────────────────
+  var state = {
+    frames: [],       // one entry per sampled u_time
+    timeIndex: 0,
+    variant: "rigMatched", // "rigMatched" | "rigDefault"
+    ourVisible: true,
+  };
+
+  function stripToRunRelative(repoRelativePath) {
+    // Paths in the JSON are repo-relative, e.g.
+    //   "plugins/sgs-blocks/scripts/generative-background/runs/<ts>/foo.png"
+    // blink.html lives directly inside .../generative-background/, so the
+    // browser-relative path is everything after that directory name.
+    var marker = "generative-background/";
+    var idx = repoRelativePath.lastIndexOf(marker);
+    if (idx === -1) return repoRelativePath; // best effort — not expected
+    return repoRelativePath.slice(idx + marker.length);
+  }
+
+  function buildFrames(baseline) {
+    var rung1 = baseline.rungs && baseline.rungs["1_geometry_shading"];
+    var rung2 = baseline.rungs && baseline.rungs["2_side_by_side"];
+    if (!rung1 || !rung1.perTime) {
+      throw new Error(
+        "fidelity-baseline.json has no rungs['1_geometry_shading'].perTime — " +
+        "nothing to blink. Re-run `node fidelity-compare.mjs`."
+      );
+    }
+    var runDirRel = baseline.runDir ? stripToRunRelative(baseline.runDir) : null;
+    if (!runDirRel) {
+      throw new Error("fidelity-baseline.json has no runDir — cannot locate the captured PNGs.");
+    }
+
+    var rigDefaultByTime = {};
+    if (rung2 && typeof rung2.uTime !== "undefined" && rung2.rigDefault) {
+      rigDefaultByTime[String(rung2.uTime)] = {
+        path: stripToRunRelative(rung2.rigDefault.path),
+        note: rung2.rigDefault.note,
+        settings: rung2.rigDefault.settings,
+      };
+    }
+    var rigMatchedNoteFromRung2 = rung2 && rung2.rigMatched ? rung2.rigMatched.note : null;
+
+    var sampleTimes = baseline.sampleTimes || Object.keys(rung1.perTime).map(Number);
+
+    return sampleTimes.map(function (t) {
+      var key = String(t);
+      var per = rung1.perTime[key];
+      if (!per || !per.stats) {
+        return {
+          uTime: t,
+          missing: true,
+          missingReason: "No rung-1 capture recorded for u_time=" + t + " in the baseline JSON.",
+        };
+      }
+      var ours = runDirRel + "/" + per.stats.candidate;
+      var rigMatched = runDirRel + "/" + per.stats.reference;
+      var rigDefault = rigDefaultByTime[key] || null;
+
+      return {
+        uTime: t,
+        missing: false,
+        oursPath: ours,
+        rigMatchedPath: rigMatched,
+        rigMatchedNote: rigMatchedNoteFromRung2 ||
+          "The exact settings that produced the rung-1 percentages (blendOff + nopost) — this is the pair the numbers below describe.",
+        rigDefault: rigDefault, // null if not captured at this u_time
+        meanAbsPct: per.stats.mean_abs_pct,
+        biasOverAbs: per.stats.bias_over_abs,
+        underCeiling: per.underCeiling,
+        ceilingPct: per.stats.ceiling_pct,
+      };
+    });
+  }
+
+  function currentFrame() {
+    return state.frames[state.timeIndex];
+  }
+
+  function setImgSrcSafe(imgEl, path, onOk) {
+    imgEl.onerror = function () {
+      imgEl.onerror = null;
+      onOk(false);
+    };
+    imgEl.onload = function () {
+      onOk(true);
+    };
+    imgEl.src = path;
+  }
+
+  function render() {
+    var frame = currentFrame();
+    els.missingNote.classList.remove("show");
+    els.stage.classList.add("loading");
+
+    // Times row
+    els.timesRow.innerHTML = "";
+    state.frames.forEach(function (f, i) {
+      var pill = document.createElement("div");
+      pill.className = "time-pill" + (i === state.timeIndex ? " active" : "");
+      pill.textContent = "t=" + f.uTime;
+      els.timesRow.appendChild(pill);
+    });
+
+    if (frame.missing) {
+      els.missingNote.classList.add("show");
+      els.missingNote.textContent =
+        "No captures for u_time=" + frame.uTime + ".\n" + frame.missingReason;
+      els.capUtime.textContent = String(frame.uTime);
+      els.capVariant.textContent = "—";
+      els.capPct.textContent = "—";
+      els.capBias.textContent = "—";
+      els.variantNote.textContent = "—";
+      els.stage.classList.remove("loading");
+      return;
+    }
+
+    // Resolve which reference image is active.
+    var useDefault = state.variant === "rigDefault";
+    var refPath = frame.rigMatchedPath;
+    var refNote = frame.rigMatchedNote;
+    var refUnavailable = false;
+
+    if (useDefault) {
+      if (frame.rigDefault) {
+        refPath = frame.rigDefault.path;
+        refNote = frame.rigDefault.note;
+      } else {
+        refUnavailable = true;
+        refPath = frame.rigMatchedPath;
+        refNote =
+          "rigDefault was NOT captured at u_time=" + frame.uTime + " — the baseline JSON only " +
+          "recorded a rigDefault image for one sampled u_time. Falling back to rigMatched below " +
+          "so the stage never shows a broken pair.";
+      }
+    }
+
+    var pending = 2;
+    var anyFailed = false;
+    function done(ok) {
+      if (!ok) anyFailed = true;
+      pending -= 1;
+      if (pending === 0) {
+        els.stage.classList.remove("loading");
+        if (anyFailed) {
+          els.missingNote.classList.add("show");
+          els.missingNote.textContent =
+            "One or both capture images failed to load for u_time=" + frame.uTime + ".\n" +
+            "The runs/ directory is gitignored and ephemeral — it is likely missing on this " +
+            "machine.\n\nRe-run:  node scripts/generative-background/fidelity-compare.mjs\n" +
+            "(from plugins/sgs-blocks) to regenerate a fresh run and its PNGs.\n\n" +
+            "The numeric baseline in fidelity-baseline.json remains valid without the images.";
+        }
+      }
+    }
+
+    setImgSrcSafe(els.imgOurs, frame.oursPath, done);
+    setImgSrcSafe(els.imgRef, refPath, done);
+
+    // Caption
+    els.capUtime.textContent = String(frame.uTime);
+    els.capVariant.textContent = (useDefault && !refUnavailable) ? "rigDefault" : "rigMatched" + (useDefault && refUnavailable ? " (fallback)" : "");
+    var pctClass = frame.underCeiling ? "v" : "v bad";
+    els.capPct.className = pctClass;
+    els.capPct.textContent = frame.meanAbsPct.toFixed(2) + "% (ceiling " + frame.ceilingPct + "%)";
+    els.capBias.textContent = frame.biasOverAbs.toFixed(3) +
+      (frame.biasOverAbs > 0.5 ? " — systematic cast" : " — mostly noise");
+    els.capBias.className = frame.biasOverAbs > 0.5 ? "v warn" : "v";
+
+    els.variantNote.textContent = refNote;
+
+    updateToggleLabel();
+  }
+
+  function updateToggleLabel() {
+    if (state.ourVisible) {
+      els.toggleState.textContent = "showing: OURS (top layer)";
+      els.toggleState.className = "toggle-state showing-ours";
+      els.imgOurs.style.opacity = "1";
+    } else {
+      els.toggleState.textContent = "showing: reference (ours hidden)";
+      els.toggleState.className = "toggle-state showing-ref";
+      els.imgOurs.style.opacity = "0";
+    }
+  }
+
+  function blink() {
+    state.ourVisible = !state.ourVisible;
+    updateToggleLabel();
+  }
+
+  function stepTime(delta) {
+    var n = state.frames.length;
+    state.timeIndex = ((state.timeIndex + delta) % n + n) % n;
+    render();
+  }
+
+  function switchVariant() {
+    state.variant = state.variant === "rigMatched" ? "rigDefault" : "rigMatched";
+    render();
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (els.app.classList.contains("show") === false) return;
+    if (e.key === "ArrowLeft") {
+      stepTime(-1);
+      return;
+    }
+    if (e.key === "ArrowRight") {
+      stepTime(1);
+      return;
+    }
+    if (e.key === "a" || e.key === "A") {
+      switchVariant();
+      return;
+    }
+    // Any other key (space included) blinks. This is the whole point of the tool.
+    e.preventDefault();
+    blink();
+  });
+
+  // Clicking the stage also blinks, for anyone testing with a mouse only.
+  els.stage.addEventListener("click", blink);
+
+  function renderProvenance(baseline) {
+    var env = baseline.environment || {};
+    els.provenance.innerHTML =
+      "<b>generated</b> " + (baseline.generatedAt || "—") + "<br>" +
+      "<b>GPU</b> " + (env.gpuRenderer || "—") + "<br>" +
+      "<b>Chromium</b> " + (env.chromiumVersion || "—") + " · DPR " + (env.dpr || "—") + "<br>" +
+      "<b>viewport</b> " + (env.viewport ? (env.viewport.width + "×" + env.viewport.height) : "—") + "<br>" +
+      "<b>crop box used for the numbers</b> [" + (baseline.crop || []).join(", ") + "]<br>" +
+      "<b>run</b> " + (baseline.runDir || "—");
+  }
+
+  fetch(BASELINE_URL)
+    .then(function (res) {
+      if (!res.ok) {
+        throw new Error(
+          "fidelity-baseline.json returned HTTP " + res.status + " for " + BASELINE_URL
+        );
+      }
+      return res.json();
+    })
+    .then(function (baseline) {
+      state.frames = buildFrames(baseline);
+      if (!state.frames.length) {
+        throw new Error("fidelity-baseline.json parsed, but sampleTimes is empty — nothing to show.");
+      }
+      renderProvenance(baseline);
+      els.app.classList.add("show");
+      render();
+    })
+    .catch(function (err) {
+      showFatal(
+        "Could not load a working comparison.\n\n" +
+        String(err && err.message ? err.message : err) + "\n\n" +
+        "This page never renders an empty frame that looks like a working comparison — " +
+        "if you are seeing this, either:\n" +
+        "  1. fidelity-baseline.json is missing next to blink.html, or\n" +
+        "  2. you opened this file directly (file://) instead of via a local server — " +
+        "browsers block fetch() of local JSON under file://.\n\n" +
+        "Fix: from plugins/sgs-blocks/scripts/generative-background, run e.g.\n" +
+        "  python -m http.server 8787\n" +
+        "then open http://localhost:8787/blink.html\n\n" +
+        "See README.md in this directory for the full picture."
+      );
+    });
+})();
+</script>
+
+</body>
+</html>

@@ -277,3 +277,21 @@ Task 1: complete (poc-replica.html + flip-probe.mjs). Implementer sonnet, review
   a separate Python/PIL decode giving the identical 29.73 mismatch figure. 4 Important closed
   in a third pass (residual ?t= hang, missing probe separation gate, missing provenance,
   preserveDrawingBuffer capture trap).
+Task 2: complete (fidelity-compare.mjs + tracked fidelity-baseline.json, commit efb695202).
+  2 review rounds, opus reviewer. Round 1 SPEC ❌, 2 Critical: the rung-1 crop contained the
+  rig's hero copy (4,632 near-black px of unequal non-canvas DOM), and harness failures on
+  several paths exited 1 instead of 2. THE HEADLINE RESULT: rung 1 = 4.61/5.40/5.21% with
+  bias_over_abs ~0.90-0.93 and signed green +18..+20 — the divergence is ~90% SYSTEMATIC, a
+  colour/tone-transfer mismatch, not geometry. That statistic was being captured from
+  compare.py and discarded until the review forced it to be surfaced and gated.
+  ⭐ The review predicted hiding the hero copy would LOWER the numbers; it raised them
+  (1-of-3 failing became 2-of-3), because the excluded strip's own mean sat below the
+  overall. Implementer reported against expectation; arithmetic re-derived independently.
+Task 3: complete (blink.html + README.md + gates.json/package.json wiring by the controller,
+  not delegated — shared files). check-transform-parity wired to the FAST tier (0.07s, no rig
+  dependency, so it survives Gate E) and verified reachable via gate:list + an actual tier run.
+  fidelity:compare deliberately NOT a gate: no manual tier exists, so registering it would
+  make it RUN, and it needs the rig plus a GPU.
+  ⭐ The implementer REFUSED a fix the controller asked for (a mojibake in the JSON), checked
+  at byte level, found correct UTF-8, and cited prove-the-cause-before-fix. It was right —
+  the artefact was a cp1252 console rendering UTF-8, not a defect in the file.

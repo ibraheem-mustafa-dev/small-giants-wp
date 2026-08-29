@@ -731,5 +731,14 @@
     "added_commit": "c50066bff",
     "budget_ms": 150,
     "order": 80
+  },
+  {
+    "id": "check-transform-parity",
+    "cmd": "node scripts/generative-background/verify-transform.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 81
   }
 ]

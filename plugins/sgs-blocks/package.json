@@ -4,6 +4,8 @@
 	"private": true,
 	"description": "Custom Gutenberg block library for Small Giants Studio",
 	"scripts": {
+		"check:transform-parity": "node scripts/generative-background/verify-transform.mjs",
+		"fidelity:compare": "node scripts/generative-background/fidelity-compare.mjs",
 		"prebuild": "python scripts/consistency/build-roster.py && npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/run-motion-fx-generators.js && python scripts/run-gates.py --tier fast",
 		"check:tier-db-parity": "python scripts/migrate-tier-object.py --check-db-parity",
 		"check:personal-data": "python ../../scripts/lint-patterns-for-personal-data.py",
