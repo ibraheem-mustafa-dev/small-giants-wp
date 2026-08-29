@@ -146,7 +146,7 @@
 // variants this replaces.
 .sgs-timeline--vertical.sgs-timeline--align-left .sgs-timeline__progress,
 .sgs-timeline--vertical.sgs-timeline--align-centre .sgs-timeline__progress {
-	left: var(--sgs-node-size);
+	left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
 	transform: none;
 }
 
@@ -437,7 +437,7 @@
 
 	// Left-aligned: line sits on the left edge.
 	&.sgs-timeline--align-left::before {
-		left: var(--sgs-node-size);
+		left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
 		transform: none;
 	}
 
@@ -1090,6 +1090,26 @@
 	.sgs-timeline__entry {
 		grid-template-columns: minmax(0, var(--sgs-timeline-media-width, 180px)) auto 1fr;
 	}
+
+	// ⛔ THE RAIL MUST MOVE WITH THE COLUMN, or the picture is drawn straight
+	// across the connector. Measured on the canary before this rule: the line sat
+	// at x=16 while the media spanned x=0-180 and the dots sat at x=196 — the
+	// owner's report was "the picture has been placed in a really weird place on
+	// the left so it overlaps the progress line", and he was exactly right.
+	//
+	// The offset is the NODE COLUMN'S CENTRE, derived from the same three values
+	// that define the grid — column 1's width, the column gap, and half the node —
+	// so it cannot drift from the layout the way a magic number would.
+	//
+	// ⚠ Scoped to the has-media case ON PURPOSE. Without media, column 1 is `auto`
+	// and there is no expression for its width, so the rail keeps its existing
+	// position and its existing (pre-existing, separately reported) misalignment
+	// rather than being moved on a guess.
+	--sgs-timeline-rail-offset: calc(
+		var(--sgs-timeline-media-width, 180px) +
+		var(--wp--preset--spacing--30, 1.5rem) +
+		var(--sgs-node-size) / 2
+	);
 }
 
 .sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--align-left {

@@ -35,6 +35,43 @@ import {
 	).matches;
 
 	/**
+	 * Fill progress (0..1) for one timeline, computed from GEOMETRY.
+	 *
+	 * ⛔ THIS EXISTS BECAUSE READING THE CUSTOM PROPERTY BACK IS NOT RELIABLE.
+	 * The obvious implementation is
+	 * `getComputedStyle( root ).getPropertyValue( '--sgs-timeline-fill-progress' )`,
+	 * and that is what the milestone observer used until 2026-08-29. Measured on
+	 * the live canary, sampling every 50px of scroll, it returns a STAIRCASE:
+	 *
+	 *   elTop  900..700 -> 0        elTop  350..150 -> 0.635
+	 *   elTop  650..400 -> 0.223    elTop  100..-100 -> 0.836
+	 *
+	 * — flat for 200-250px at a time, and it reports 1 while the block is still
+	 * BELOW the viewport. The painted fill is smooth; the value handed back to JS
+	 * is quantised. Anything keyed off that read therefore fires in clumps, which
+	 * is exactly how the connector-triggered reveal failed: milestones appeared
+	 * three at once instead of one at a time, and the owner reported the effect as
+	 * simply not working.
+	 *
+	 * The geometry below is deliberately the SAME window the CSS uses
+	 * (`animation-range: entry 0% exit 100%`): 0 when the element's top edge is at
+	 * the viewport bottom, 1 when its bottom edge reaches the viewport top. So the
+	 * dots and the reveal stay in step with the painted line by construction,
+	 * on BOTH drivers, without either reading the other's output.
+	 *
+	 * @param {HTMLElement} root The .sgs-timeline root.
+	 * @return {number} Progress clamped to 0..1.
+	 */
+	function computeViewProgress( root ) {
+		const rect = root.getBoundingClientRect();
+		const viewportHeight = window.innerHeight;
+		const total = rect.height + viewportHeight;
+		const scrolled = viewportHeight - rect.top;
+		const progress = total > 0 ? scrolled / total : 0;
+		return Math.min( 1, Math.max( 0, progress ) );
+	}
+
+	/**
 	 * Initialise scroll-reveal for a single timeline root element.
 	 *
 	 * @param {HTMLElement} root - The .sgs-timeline <ol> element.
@@ -163,14 +200,7 @@ import {
 		 *
 		 * @return {number} Progress clamped to 0..1.
 		 */
-		function computeProgress() {
-			const rect = root.getBoundingClientRect();
-			const viewportHeight = window.innerHeight;
-			const total = rect.height + viewportHeight;
-			const scrolled = viewportHeight - rect.top;
-			const progress = total > 0 ? scrolled / total : 0;
-			return Math.min( 1, Math.max( 0, progress ) );
-		}
+		const computeProgress = () => computeViewProgress( root );
 
 		function writeProgress() {
 			root.style.setProperty(
@@ -359,11 +389,7 @@ import {
 		 * @return {number} Progress 0-1, or NaN.
 		 */
 		function readProgress() {
-			return parseFloat(
-				getComputedStyle( root )
-					.getPropertyValue( '--sgs-timeline-fill-progress' )
-					.trim()
-			);
+			return computeViewProgress( root );
 		}
 
 		/**
