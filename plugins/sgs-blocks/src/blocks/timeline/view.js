@@ -253,52 +253,73 @@ import {
 		let last = null;
 
 		/**
-		 * Throw a burst of sparks off one milestone dot.
+		 * Flash the halo ring on one milestone dot as the fill reaches it.
+		 *
+		 * ⛔ RING ONLY — no particles. This used to also throw a 7-spark burst
+		 * from the dot, and the owner's verdict was that the burst COVERED the
+		 * ring, which is the effect worth keeping. Sparks moved to the fill
+		 * head (see emitHeadSpark), leaving every ring unobstructed.
 		 *
 		 * @param {{frac:number,el:HTMLElement}} node The milestone crossed.
 		 */
-		function burst( node ) {
+		function flashRing( node ) {
 			node.el.classList.add( 'is-lit' );
 			// One-shot: the class is what drives the CSS ring, so it has to
 			// come off or the animation can never replay on the way back.
 			setTimeout( () => node.el.classList.remove( 'is-lit' ), 640 );
+		}
 
-			const count = 7;
-			for ( let i = 0; i < count; i++ ) {
-				const spark = document.createElement( 'span' );
-				spark.className = 'sgs-timeline__spark';
-				// ⛔ APPENDED TO THE DOT, not to the connector.
-				//
-				// The first attempt placed each spark at a FRACTION along the
-				// progress element, which is the 2px connector line. That is
-				// only the same place as the dot in the centred layout: in the
-				// left-aligned variant the nodes sit ~100px to the side of the
-				// line, so the ring pulsed on the dot while the sparks fired
-				// on the line, visibly disconnected. Anchoring to the node
-				// itself is correct in EVERY alignment and orientation, and
-				// needs no fraction maths at all.
-				spark.style.left = '50%';
+		/**
+		 * Emit ONE sparkler spark from the travelling fill head.
+		 *
+		 * The brief is a sparkler — the little firework stick — so the lit tip
+		 * is the emitter and it throws fine, fast, short-lived sparks the whole
+		 * time it burns down the line. That is why this is a continuous emitter
+		 * rather than an event fired at each milestone.
+		 *
+		 * ⛔ ANCHORED TO THE LINE, and this is the exact OPPOSITE of the rule
+		 * that governs the milestone ring — so read both before moving either.
+		 * A burst belonging to a DOT must anchor to the dot, because in the
+		 * left-aligned variant the dots sit ~100px off the line. A sparkler
+		 * belonging to the HEAD must anchor to the line, because the head IS on
+		 * the line. `.sgs-timeline__progress` is the right parent for it in
+		 * every alignment: it is the positioning container the head's own
+		 * `::after` uses, it moves with the connector, and it is deliberately
+		 * UNMASKED (the mask lives on its two child layers precisely so the
+		 * head is not clipped in half at the progress boundary) — so a spark
+		 * thrown past the head is not cut off.
+		 *
+		 * @param {HTMLElement} progressEl The .sgs-timeline__progress element.
+		 * @param {number}      frac       Head position, 0-1.
+		 */
+		function emitHeadSpark( progressEl, frac ) {
+			const spark = document.createElement( 'span' );
+			spark.className = 'sgs-timeline__spark';
+			const along = `${ frac * 100 }%`;
+			if ( horizontal ) {
+				spark.style.left = along;
 				spark.style.top = '50%';
-				// RADIAL throw: an even fan with a little jitter, so it reads as
-				// a burst off the dot rather than random drift.
-				const angle =
-					( i / count ) * Math.PI * 2 + ( Math.random() - 0.5 ) * 0.7;
-				// Far enough to clearly leave the 16px dot behind.
-				const dist = 34 + Math.random() * 26;
-				spark.style.setProperty(
-					'--sgs-spark-dx',
-					`${ Math.cos( angle ) * dist }px`
-				);
-				spark.style.setProperty(
-					'--sgs-spark-dy',
-					`${ Math.sin( angle ) * dist }px`
-				);
-				spark.style.animationDelay = `${ i * 18 }ms`;
-				spark.addEventListener( 'animationend', () => spark.remove(), {
-					once: true,
-				} );
-				node.el.appendChild( spark );
+			} else {
+				spark.style.left = '50%';
+				spark.style.top = along;
 			}
+			// Full radial throw with a downward bias, so it reads as a spark
+			// under gravity rather than a symmetrical firework. Short distance
+			// and short life: a sparkler's sparks wink out close to the tip.
+			const angle = Math.random() * Math.PI * 2;
+			const dist = 12 + Math.random() * 26;
+			spark.style.setProperty(
+				'--sgs-spark-dx',
+				`${ Math.cos( angle ) * dist }px`
+			);
+			spark.style.setProperty(
+				'--sgs-spark-dy',
+				`${ Math.sin( angle ) * dist + 10 }px`
+			);
+			spark.addEventListener( 'animationend', () => spark.remove(), {
+				once: true,
+			} );
+			progressEl.appendChild( spark );
 		}
 
 		/**
@@ -350,14 +371,69 @@ import {
 			last = now;
 			// Only ever forward — scrolling back up re-arms the milestones
 			// rather than firing them again on the way past.
-			if ( now <= from || ! sparksAllowed() ) {
+			if ( now <= from ) {
 				return;
 			}
 			nodes.forEach( ( node ) => {
 				if ( node.frac > from && node.frac <= now ) {
-					burst( node );
+					flashRing( node );
 				}
 			} );
+		}
+
+		// ── The sparkler ──────────────────────────────────────────────────
+		//
+		// A real sparkler burns continuously, so this is a self-driving rAF
+		// loop rather than something hung off the scroll event: the tip keeps
+		// throwing sparks whether or not the reader is moving. Three gates keep
+		// that honest rather than wasteful — it does no work when the block is
+		// off screen, when the burn has not started or has finished, or under
+		// reduced motion.
+		const progressEl = root.querySelector( '.sgs-timeline__progress' );
+		let sparklerFrame = 0;
+		let lastEmit = 0;
+		let onScreen = false;
+
+		// One spark per interval, and a hard ceiling on live sparks. The
+		// ceiling is the backstop that stops a slow machine — where each
+		// spark's animationend arrives later than the next emission — from
+		// accumulating nodes without limit.
+		const EMIT_EVERY_MS = 45;
+		const MAX_LIVE_SPARKS = 26;
+
+		function sparklerLoop( ts ) {
+			sparklerFrame = window.requestAnimationFrame( sparklerLoop );
+			if ( ! onScreen || ! sparksAllowed() ) {
+				return;
+			}
+			const frac = readProgress();
+			// Strictly between: an unstarted line has no lit tip, and a finished
+			// one has burnt out. Both should be silent.
+			if ( ! Number.isFinite( frac ) || frac <= 0 || frac >= 1 ) {
+				return;
+			}
+			if ( ts - lastEmit < EMIT_EVERY_MS ) {
+				return;
+			}
+			lastEmit = ts;
+			if (
+				progressEl.querySelectorAll( '.sgs-timeline__spark' ).length >=
+				MAX_LIVE_SPARKS
+			) {
+				return;
+			}
+			emitHeadSpark( progressEl, frac );
+		}
+
+		const visibility = new window.IntersectionObserver(
+			( entries ) => {
+				onScreen = entries.some( ( e ) => e.isIntersecting );
+			},
+			{ threshold: 0 }
+		);
+		if ( progressEl ) {
+			visibility.observe( root );
+			sparklerFrame = window.requestAnimationFrame( sparklerLoop );
 		}
 
 		const throttledTick = rafThrottle( tick );
@@ -390,6 +466,15 @@ import {
 			window.removeEventListener( 'resize', remeasure );
 			throttledTick.cancel();
 			remeasure.cancel();
+			// The sparkler drives its own frame loop, so it does NOT stop when
+			// the scroll listeners come off — it has to be cancelled by hand or
+			// it keeps burning after teardown (and a bfcache restore would then
+			// leave two loops running).
+			if ( sparklerFrame ) {
+				window.cancelAnimationFrame( sparklerFrame );
+				sparklerFrame = 0;
+			}
+			visibility.disconnect();
 			root.querySelectorAll( '.sgs-timeline__spark' ).forEach( ( el ) =>
 				el.remove()
 			);

@@ -205,8 +205,13 @@
 //      a hot core — not a slow floating circle.
 .sgs-timeline__spark {
 	position: absolute;
-	width: var(--sgs-timeline-spark-size, 11px);
-	height: var(--sgs-timeline-spark-size, 11px);
+	// SPARKLER, not firework. 11px/1100ms was tuned for a 7-spark burst thrown
+	// off a milestone dot; the owner's verdict was that it read as too much and
+	// covered the halo ring it was meant to celebrate. A sparkler throws MANY
+	// small, fast, short-lived motes from a burning tip, so the size and life
+	// both come down and the emitter is continuous instead of per-milestone.
+	width: var(--sgs-timeline-spark-size, 6px);
+	height: var(--sgs-timeline-spark-size, 6px);
 	border-radius: 50%;
 	// Hot white core reading against the client's colour, which in turn reads
 	// against the page. Neither alone is enough on a light ground.
@@ -240,7 +245,7 @@
 	// already scaled down and fading — 21 live sparks measured in the DOM and
 	// none legible on screen. `ease-out` keeps them large and opaque through
 	// the readable part of the flight.
-	animation: sgs-timeline-spark var(--sgs-timeline-spark-life, 1100ms) ease-out
+	animation: sgs-timeline-spark var(--sgs-timeline-spark-life, 520ms) ease-out
 		forwards;
 }
 
