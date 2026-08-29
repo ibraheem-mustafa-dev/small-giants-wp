@@ -706,6 +706,24 @@
     "order": 77
   },
   {
+    "id": "border-shape-b-selftest",
+    "cmd": "node scripts/migrate-border-shape-b.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 78
+  },
+  {
+    "id": "border-shape-b-check",
+    "cmd": "node scripts/migrate-border-shape-b.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 79
+  },
+  {
     "id": "check-hover-state-classification",
     "cmd": "python scripts/check-hover-state-classification.py --check",
     "tier": "fast",

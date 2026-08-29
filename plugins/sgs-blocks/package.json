@@ -112,7 +112,10 @@
 		"selftest:single-instance-invariants": "python scripts/check-single-instance-invariants.py --self-test",
 		"check:border-control-migration": "python scripts/survey-border-control-migration.py --check",
 		"survey:border-control-migration": "python scripts/survey-border-control-migration.py --survey",
-		"selftest:border-control-migration": "python scripts/survey-border-control-migration.py --self-test"
+		"selftest:border-control-migration": "python scripts/survey-border-control-migration.py --self-test",
+		"selftest:border-shape-b": "node scripts/migrate-border-shape-b.js --self-test",
+		"check:border-shape-b": "node scripts/migrate-border-shape-b.js --check",
+		"survey:border-shape-b": "node scripts/migrate-border-shape-b.js --survey"
 	},
 	"devDependencies": {
 		"@wordpress/icons": "^11.6.0",
