@@ -1,3 +1,65 @@
+## D884 [INCIDENT] — FR-38-35 completed on a CSS mask, not an SVG path; five instruments passed while the feature was visibly broken
+
+**2026-08-29.** Follow-on to D879. Stage A is deployed and live on canary 3072; commits `72825d07c`
+→ `0a5b4dd2f`.
+
+**THE SVG-PATH ROUTE WAS ABANDONED ON EVIDENCE, and Spec 31's own escape hatch is closed with it.**
+Bean's original decision was an SVG `<path>` filled by `stroke-dashoffset`, and QC correction C9
+prescribed a unit `viewBox` + `preserveAspectRatio="none"` specifically to avoid a JS resize
+rebuild. Measured, that combination fails three separate ways from one cause — a unit viewBox
+stretched non-uniformly:
+1. `vector-effect="non-scaling-stroke"` resolves dash lengths in **SCREEN space**, defeating
+   `pathLength="1"` normalisation entirely — it painted a **1px dotted line** (460 alternating runs)
+   with no relationship to progress.
+2. Removing `vector-effect` fixes the maths but the non-uniform transform then **doubles the stroke
+   to 4px** and leaves a 20px wraparound stub.
+3. The same viewBox sized the SVG **2px × 2px** inside a 383px block, painting nothing.
+
+A CSS mask measured exact on the first attempt — 25/50/75/100% at correct 2px thickness on both
+orientations. **C9's no-JS SVG option does not exist**; the real fork was always "mask, no JS,
+exact" vs "SVG plus a JS `ResizeObserver`". Stage B's curves must budget for the latter. The
+CONTRACT is unchanged, which is the point: one number, two drivers — exactly what QC correction C4
+already said ("one progress number driving THREE rendering primitives, not one shared path").
+
+**⛔ FIVE INSTRUMENTS PASSED WHILE THE FEATURE WAS VISIBLY BROKEN. Full detail: STOP-CATALOGUE E17
+/ `STOP-INSTRUMENT-SHAPE`.** Every one produced confident, self-consistent numbers describing
+something untrue; every one was caught by opening a screenshot or by Bean looking, never by a gate:
+a zero-area element passing every computed-style check; a harness measuring the wrong axis because
+its viewport sat below the 767px breakpoint; a colour detector excluding its own target by two units
+of green; a spark check with **no positive control** (it asserted 0 under reduced motion and never
+that sparks fire when they should, so it passed against a feature doing nothing for two deploys);
+and two bounding-box reads claiming "10px clear" while the line visibly crossed the date glyphs.
+
+**Three further defects, each generalisable:**
+- **A decorative layer must never live inside a FALLBACK driver.** The spark spawner sat inside the
+  JS driver, which returns early when the browser has native `animation-timeline` — so sparks
+  existed **only on Firefox**, the inverse of what was wanted. It must observe the progress VALUE,
+  whoever wrote it.
+- **A hardcoded `#fff` decoration vanishes on any light ground, and it comes back.** Shipped three
+  times: 3px white dots (1.06:1 on cream), then re-introduced as the white *core* of the replacement
+  gradient (1.04:1), both masked by an easing that shrank them before they travelled. Fixed by
+  darkening the core via `color-mix` against the client's own token → **2.13:1**. This is Bean's own
+  standing rule applied literally: a mid-luminance brand accent is a GROUND, not an indicator.
+- **The horizontal connector ran through the date text, and it is PRE-EXISTING.** The horizontal
+  entry is a flex COLUMN ordered date(1) → node(2) → content(3), but the offset read
+  `calc(node-size/2 + spacing-30)` — assuming the NODE came first, which is only true in the
+  vertical/mobile layout. Now one shared `--sgs-timeline-h-line-top` consumed by both the base
+  `::before` and the progress element; a second literal is how those drift apart.
+
+**Also fixed here:** the progress element was an `<svg>` emitted FIRST inside an `<ol>` — invalid
+markup, and it shifted every entry's `:nth-child` index by one, which drives the alternating layout.
+Now an `<li>` emitted LAST. ⚠ The direct test for visible inversion was **vacuous** (instance and
+control both measured `RRRR` — no alternation on that page at all), so this shipped as a
+cause-agnostic fix rather than on a green test.
+
+**⛔ STILL OPEN, carried to `.claude/prompts/2026-08-30-timeline-connector-stage-b.md`:** milestone
+media (Bean-specified, not started — `entries[]` already carries `image` and
+`sgs_tier_media_render()` is reusable, but hero's 32 per-device attrs must NOT be replicated per
+entry); branching connectors + per-branch sparks (deferred by agreement, needs a design gate);
+spark density sign-off (R-31-13); and one PRE-EXISTING bug NOT fixed — the milestone **node dots are
+invisible**, because `render.php` emits the scoped colour with no fallback against a token this
+theme lacks, and that rule outranks the base rule which does carry one. Framework-wide; Bean's call.
+
 ## D883 [INCIDENT] — 553 lines lost to a false completion claim, not to the stash that took them; card-grid and nav-drawer routing collisions root-caused; root-filter capability returns council NO-GO
 
 **Date:** 2026-08-29

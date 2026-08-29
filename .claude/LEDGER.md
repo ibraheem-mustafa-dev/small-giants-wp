@@ -90,41 +90,29 @@ session (D838). No phase number is shared.
 
 ### ▶ A. `fx-wave-gradient` — SIX-STYLE ENGINE: ✅ CLOSED 2026-08-27 (D852 built, D871 closed)
 
-**DEPLOYED and LIVE-VERIFIED — nothing open.** Full detail → **D871**, do not restate. Only what a
-future session could get wrong:
+**DEPLOYED, LIVE-VERIFIED, nothing open. Full detail → D871; do not restate.** Only the three things
+a future session could get wrong:
 - ⛔ **"Gradient controls for the four CSS styles" is CANCELLED, not deferred** — the premise was
-  false (every `color-mix()` already references `var(--sgs-wave-*)`; D852 had fixed that, and 3 of
-  13 are structurally impossible). Do not revive without evidence a picker is dead.
-- The 3-state ramp was **reshaped**, not built — variant-aware labels, since low/mid/high render
-  simultaneously and tabs imply exclusivity. Same four attrs, no schema change.
-- ⭐ Probe **3037** asserts `webgl capable: true` FIRST — without that, 0-canvases-everywhere is
-  indistinguishable from a browser declining WebGL.
+  false. Do not revive without evidence a picker is dead.
+- ⚠ **Two deploy hazards earned here, both fixed in-tree — read D871 BEFORE deploying:** a
+  dev-included Composer autoloader 500'd the canary through 68 green gates (gate-green and
+  deploy-safe are INVERTED states of `vendor/`), and its guard had **never been committed**
+  (`4494e6e1d`; phar gap closed at `62809c801`).
+- **Fixtures: 2740** (single pastel) and **3037** (all six variants), both `[GATE — DO NOT DELETE]`.
+  Probe 3037 asserts `webgl capable: true` FIRST, or 0-canvases is indistinguishable from a browser
+  declining WebGL.
 
-⚠ **Two deploy hazards earned here, both now fixed in-tree — read D871 before deploying:** a
-dev-included Composer autoloader 500'd the canary through 68 green gates (gate-green and deploy-safe
-are INVERTED states of `vendor/`), and the guard against it had **never been committed** — it lived
-in one working copy while every clone, worktree and CI deployed without it (`4494e6e1d`). The
-follow-on gitignored-phar gap is closed at `62809c801`.
+### ▶ A-legacy — the built engine's design facts (STABLE, still true). Detail: D852.
 
-**Fixture pages for this surface: 2740** (single pastel, FR-38-31) and **3037** (all six variants).
-Both `[GATE — DO NOT DELETE]`.
-
-### ▶ A-legacy — the built engine's design facts (STABLE, still true)
-
-One `fxWaveVariant` attribute, six styles: `pastel | horizon | ribbon | veil` (pure CSS, no canvas
-booted) and `aurora | ink` (WebGL). ⛔ **No new `fx_effects` rows** — the variant rides the existing
-effect, so no shared-DB write and no registry regeneration.
-⭐ **Ink and Aurora are the SAME shader.** It measures the base colour and crossfades compositing:
-dark ground = curtains ADD, light ground = curtains DARKEN. One shader, two products, separated only
-by curated colours.
-⛔ **CSS cannot do an aurora** — proven by three attempts failing three different ways (bars, ovals,
-haze). Filaments need per-pixel noise + domain warping; CSS has neither. Detail: D852.
-**Curated defaults sit in `:where()` at ZERO specificity** so the look is good on switch-on and the
-client's pick always wins — the render layer's `(0,1,0)` rule would otherwise LOSE to the `(0,2,0)`
-variant selectors. Aurora's violet is curated per style, never added to the site palette.
-
-*(Deployed + verified 2026-08-27 — see section A above. The old "NOT YET DEPLOYED" note here was
-stale and is removed.)*
+One `fxWaveVariant`, six styles: `pastel | horizon | ribbon | veil` (pure CSS, no canvas) and
+`aurora | ink` (WebGL). ⛔ **No new `fx_effects` rows** — the variant rides the existing effect, so
+no shared-DB write, no registry regeneration. ⭐ **Ink and Aurora are the SAME shader**: it measures
+the base colour and crossfades compositing (dark ground = curtains ADD, light = DARKEN) — one
+shader, two products, separated only by curated colours. ⛔ **CSS cannot do an aurora** — three
+attempts failed three different ways; filaments need per-pixel noise + domain warping, and CSS has
+neither. **Curated defaults sit in `:where()` at ZERO specificity** so the look is good on
+switch-on and the client's pick always wins (a render-layer `(0,1,0)` rule would LOSE to the
+`(0,2,0)` variant selectors). Aurora's violet is curated per style, never added to the palette.
 
 ### ▶ B. GENERATIVE BACKGROUND ENGINE (Phase 2 CLOSED D874; Phase 3 IN PROGRESS — D882)
 
@@ -181,27 +169,42 @@ numerically against rig-extracted matrices (method proven, not yet re-run agains
 then re-verify colour/striations/depth-fade and get Bean's NAMED visual sign-off against the
 "B-movie 3D VFX" risk before calling this done — do not self-declare success from a screenshot.
 
-### ▶ PARTICLE + GATES SUB-TRACK — 2026-08-27, all shipped (D839-D842, D846, D853)
+### ▶ PARTICLE + GATES SUB-TRACK — CLOSED 2026-08-27/28. Detail = D839-D842, D846, D853, D863-D870.
 
-✅ **Sparks SEEN + approved by Bean.** Was invisible at **1.44:1** (inherited body TEXT colour on a
-near-black panel); `fxParticleColour` shipped, deployed, set to `accent` on 2744. ✅ **3 gates
-CLOSED** — `floating-objects` was the WRONG effect for 7 weeks → FR-38-33/34; decorative-image =
-wrap-only-when-treated (BUILT+live D865); covers → **Spec 40**. ✅ **FR-38-6 CLOSED by observation** (page
-2893, markup committed). Detail = the D-numbers; do not restate.
-
-✅ **FR-38-33 grid-dots CLOSED 2026-08-28** (D864-D870, `a49a1b52c`, report `3976e85cb`) — live on
-3038, contrast 1.30:1 → **4.23:1**, 7 controls, Normal/Pointer colour states, 5 shapes. Mechanisms
-in the commit body; the two traps it caught are carried in the next-session prompt's guardrails.
-
-⭐ **NEXT: `prompts/2026-08-29-timeline-connector-stage-a.md`** — connector Stage A; plan + 10 QC
-corrections at `~/.claude/plans/motion-track-happy-lamport.md`. **C1 is fatal: an UNREGISTERED
-custom property cannot be animated — it jump-cuts silently past every gate.** ⛔ **Firefox has ZERO
-`animation-timeline` support** (arrives 157); Spec 38 ~line 222 blames Safari and is STALE.
-✅ **Row-collapse reduced-motion CLOSED too (D863)** — "untestable" was wrong; Bean pushed back and
-it measured clean in both arms. `probe-row-collapse-reduced-motion.mjs`. ⛔ Editing template part
-2671 does NOTHING: `parts/header.html` is a `wp:pattern` ref, so
-`patterns/framework-header-default.php` is what renders.
+Sparks approved by Bean (`fxParticleColour`, live on 2744). FR-38-33 grid-dots closed (live on
+3038, contrast 1.30 → **4.23:1**). FR-38-6 closed by observation (page 2893). Row-collapse
+reduced-motion closed (D863). ⛔ Editing template part 2671 does NOTHING — `parts/header.html` is a
+`wp:pattern` ref, so `patterns/framework-header-default.php` renders.
 ⛔ **Parked:** `P-PARTICLE-TRAIL-VARIATIONS` (post-launch, Bean's timing).
+
+### ▶ C. TIMELINE CONNECTOR (FR-38-35) — Stage A SHIPPED + LIVE 2026-08-29. D879.
+
+Scroll-driven connector for MIC's journey page. **Live, canary 3072.** Commits `72825d07c` →
+`0a5b4dd2f`. One `@property` number `--sgs-timeline-fill-progress` (0→1) drives a CSS-mask fill +
+trail glow + head dot + per-milestone spark bursts, via two drivers: native
+`@supports (animation-timeline: view())` and a vanilla rAF path in `view.js`.
+
+⛔ **Spec 38 named the WRONG BROWSER in two places; corrected.** Safari has had `animation-timeline`
+since **26.0 (Sept 2025)**; **Firefox has it in NO stable build** (lands 157). **The JS driver is the
+PRIMARY path for Firefox, not a fallback.**
+
+⛔ **The SVG-path route is DEAD for a straight connector — 3 defects, one cause** (a unit `viewBox`
+stretched non-uniformly): dashes resolve in SCREEN space so `pathLength="1"` is defeated; the stroke
+doubles; the SVG sizes 2px × 2px. **Spec 31 QC correction C9's no-JS escape hatch is CLOSED** —
+Stage B's curves need a JS `ResizeObserver` for path `d`. Budget for it. Detail: D879.
+
+⚠ **FIVE instrument failures, one shape** — STOP-CATALOGUE `STOP-INSTRUMENT-SHAPE`. Each gave
+confident, self-consistent numbers describing something untrue; each was caught by a screenshot or
+by Bean, never by a gate.
+
+### ▶ NEXT for the timeline connector
+
+⭐ **`.claude/prompts/2026-08-30-timeline-connector-stage-b.md` carries every remaining task** —
+milestone media (Bean-specified, not started), branching connectors + per-branch sparks (deferred
+by agreement, needs the SVG route), spark density sign-off (R-31-13), and one PRE-EXISTING bug that
+is NOT this track's: the milestone **node dots are invisible** (`render.php` emits the scoped colour
+with no fallback against a token this theme lacks, and that rule outranks the base rule that does
+carry one). Read it in full; it is the single source for this track's open work.
 
 ## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (Phase 4). Detail: D731/D732/D733,
 Spec 32 §6.1(a1)/(a2), Spec 35 Part K. shop-archive: Phase 3 ownership moved 2026-08-27 to

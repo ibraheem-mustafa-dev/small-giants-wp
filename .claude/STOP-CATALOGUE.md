@@ -2707,3 +2707,48 @@ does not fit this catalogue's scope (anti-patterns THIS project's structural def
 **D101 carry-forward receipt for E15.** `python .claude/hooks/handoff-preflight.py --check` run
 pre-edit reported 221 STOPs; three added here, zero removed, zero reworded. 221 → 224. 224 >= 221.
 PASS.
+
+### E17. Earned 2026-08-29 — timeline connector FR-38-35 (D879): five instruments, five confident wrong answers
+
+⛔ **STOP-INSTRUMENT-SHAPE — a measurement can be correct, self-consistent, and describe nothing.**
+Five separate instruments passed in one session while the feature was visibly broken. Every single
+one was caught by opening a screenshot or by Bean looking, never by a gate. They are listed in full
+because the SHAPE recurs, not the specifics:
+
+1. **Zero-area element.** `getComputedStyle` reported `display:block`, the correct `stroke`,
+   `stroke-dasharray:1px` and a `stroke-dashoffset` animating smoothly `0.992→0.753→0.345→0.108`.
+   Every number true. The element was **2px × 2px inside a 383px block** and painted nothing.
+   **A style check cannot see a zero-area box.** Assert PAINTED GEOMETRY — a bounding rect against
+   its parent, or a pixel sample.
+2. **Harness on the wrong axis.** The horizontal arm reported vertical geometry and cried DRIFT.
+   The viewport was 700px — *below* the 767px breakpoint — so the block correctly re-laid out and
+   the harness walked the wrong axis. **The code was right; the test was wrong.**
+3. **A colour detector that excluded its own target.** The predicate demanded `g > 140`; the token
+   under test was `rgb(230,138,149)`. It missed by **two units of green** and reported the fill
+   SHRINKING as progress grew.
+4. **A check with no positive control.** The spark probe asserted `sparks === 0` under reduced
+   motion and read that as the gating working. It **never asserted sparks were non-zero when they
+   should be** — so it passed just as happily against a feature that did nothing at all, which is
+   exactly what it was passing against for two deploys.
+5. **A box read at the wrong moment.** Two bounding-box checks reported the connector "10px clear"
+   of the date text while the rendered page plainly showed the line through the glyphs. Both were
+   taken before `scrollIntoView` had settled. **A box read at the wrong moment is not evidence.**
+
+⛔ **STOP-DECOR-IN-FALLBACK — never put a decorative layer inside a fallback driver.** The spark
+spawner lived inside the JS driver, which returns early when the browser has native
+`animation-timeline`. Sparks therefore existed **only on Firefox** — the inverse of what was wanted,
+and invisible to everyone who looked. A decorative layer must observe the progress VALUE, whoever
+wrote it.
+
+⛔ **STOP-WHITE-ON-LIGHT — a hardcoded `#fff` decoration vanishes on any light ground, and it comes
+back.** Shipped three times: as 3px white dots (measured 1.06:1 on cream), then re-introduced as the
+white *core* of the replacement gradient (1.04:1), and masked both times by an easing that shrank
+them before they travelled. On a light page a light mote can never read — go DARKER, keyed to the
+client's own token. This is the owner's own standing rule applied literally: **a mid-luminance brand
+accent is a GROUND, not an indicator.**
+
+⛔ **STOP-SELF-CHECKOUT — `git checkout -- <your own file>` destroys your own uncommitted work.**
+Used to undo a bad edit mid-session; it reverted to the last commit and silently took an
+unrelated, uncommitted fix with it. The shared-tree stash ban exists for peers — this is the
+same hazard turned inward. Commit first, or copy to scratch, then revert.
+
