@@ -1068,7 +1068,7 @@
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
+        "styling": false,
         "colour": true,
         "link": false,
         "media": true,
