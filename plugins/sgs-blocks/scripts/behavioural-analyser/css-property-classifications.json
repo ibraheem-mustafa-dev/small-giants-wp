@@ -2984,6 +2984,25 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "ctaBackground",
       "fields": {
         "css_property": "background-color",
@@ -7557,6 +7576,33 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -10007,6 +10053,26 @@
       "attr": "paddingTablet",
       "fields": {
         "css_property": "padding",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "borderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "borderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
         "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
