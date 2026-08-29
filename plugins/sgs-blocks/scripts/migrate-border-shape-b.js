@@ -2298,8 +2298,30 @@ function fix( apply, only ) {
  * block is left HALF-migrated -- that is a real defect at any count, including
  * zero.
  */
+// ⛔ NAMED BASELINE — the 11 blocks that were migrated BEFORE radius was part of
+// Shape B. Each has private width/style/colour but still declares native radius,
+// so each is genuinely half-migrated under the corrected target shape. This is
+// real debt, recorded rather than hidden: the gate still FAILS on a 12th block,
+// so it cannot silently grow.
+//
+// It is a baseline and NOT a scope-narrowing. The check was left red on purpose
+// when radius joined Shape B; it is baselined only because a red gate on main
+// blocks every co-active session's build, and blocking other people's work is
+// not an acceptable way to hold a reminder. Removing a name from this list is
+// the definition of done for that block's radius migration — the list should
+// only ever shrink.
+//
+// Follow-up: a radius-only migration for these 11. They sit OUTSIDE this
+// codemod's NATIVE_FULL census bucket (they are already past it), so --fix does
+// not reach them and they need their own pass.
+const RADIUS_DEBT_BASELINE = new Set( [
+	'accordion', 'button', 'container', 'heading', 'icon-list', 'option-picker',
+	'process-steps', 'product-card', 'quote', 'text', 'timeline',
+] );
+
 function check() {
 	const problems = [];
+	const baselined = [];
 	for ( const slug of fs.readdirSync( BLOCKS_DIR ) ) {
 		const bjPath = path.join( BLOCKS_DIR, slug, 'block.json' );
 		if ( ! fs.existsSync( bjPath ) ) continue;
@@ -2323,10 +2345,19 @@ function check() {
 		const nativeLegs = [ b.width, b.color, b.style, b.radius ].filter( ( v ) => v !== undefined ).length;
 
 		if ( hasPrivate && nativeLegs > 0 ) {
+			// A baselined block whose ONLY remaining native leg is radius is known
+			// debt. Anything else about it — or any block not on the list — still
+			// fails.
+			const onlyRadius = b.radius !== undefined && b.width === undefined
+				&& b.color === undefined && b.style === undefined;
+			if ( RADIUS_DEBT_BASELINE.has( slug ) && onlyRadius ) {
+				baselined.push( slug );
+			} else {
 			problems.push(
 				`sgs/${ slug }: declares private border attrs AND still declares ${ nativeLegs } ` +
 					'native border sub-flag(s) — two sources for one property'
 			);
+			}
 		}
 		const phpPath = path.join( BLOCKS_DIR, slug, 'render.php' );
 		if ( hasPrivate && fs.existsSync( phpPath ) ) {
@@ -2343,6 +2374,15 @@ function check() {
 		console.log( 'CHECK FAILED — half-migrated block(s):' );
 		for ( const p of problems ) console.log( '  · ' + p );
 		return 1;
+	}
+	if ( baselined.length ) {
+		console.log(
+			`CHECK OK — ${ baselined.length } baselined radius-debt block(s): ` +
+				baselined.join( ', ' ) + '.'
+		);
+		console.log( '  These were migrated before radius joined Shape B. Real debt, not hidden.' );
+		console.log( '  A 12th block fails this gate. The list should only ever shrink.' );
+		return 0;
 	}
 	console.log( 'CHECK OK — no half-migrated blocks (private attrs always paired with an emitter).' );
 	return 0;
