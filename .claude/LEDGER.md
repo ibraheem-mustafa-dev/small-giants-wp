@@ -50,24 +50,26 @@ recorded failure mode is rebuilding one that already exists. Search the SUBJECT 
 token, element, parity), never the verb — the same idea is spelled `census-*`, `survey-*`,
 `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`.
 
-## ▶ BORDER / SHAPE-B TRACK — 2026-08-30 (evening): CLOSE-OUT DONE, ONE BUG OPEN
+## ▶ BORDER / SHAPE-B TRACK — 2026-08-30 (evening): CLOSED
 
-**Detail: D881 + `.claude/prompts/2026-08-31-shape-b-close-out.md` (5 tasks ALL DONE, do not
-re-dispatch). Do not restate history here.**
+**Detail: D881 + `.claude/prompts/2026-08-31-shape-b-close-out.md` (5 tasks ALL DONE) +
+`.claude/memory/sdd-progress.md` (the form-field-tiles fix). Do not restate history here.**
 
 Both red gates fixed (`check-editor-render-parity` 177→162, a real false positive fixed with a
 regression test, not baselined; `check-undeclared-attrs` 4→0), deployed, all 46
 boxFamilies.borderRadius blocks live-probed (not 44, stale even at close-out), remaining stored
 content migrated (558: info-box 351, testimonial 186, site-footer-row 18, form-step 3 — the
-close-out's 522/345/174 were already stale), worktrees tidied.
+close-out's 522/345/174 were already stale), worktrees tidied. `sgs/form-field-tiles`'s
+distinct FAIL (its outer `field_open()` wrapper, shared by ~10 field-block types, never called
+`get_block_wrapper_attributes()`, so WP's identity class landed on an inner child div instead of
+the one carrying the uid + border CSS) fixed via `field_open()` itself — the universal fix,
+confirmed safe against all 10 sibling field types. Live probe re-confirmed PASS for both
+form-field-tiles and form-step in the same run, post every commit below.
 
-Commits `76a3ef734`..`1ca11337a` (5, `git log` for the range). Reports:
-`reports/visual-diff/shape-b-batch-2026-08-30.md` (canonical) + `-full-sweep.md` (other 14).
-
-⭐ **OPEN:** `sgs/form-field-tiles` fails the probe differently to form-step —
-`field_open()` (shared by ~10 field-block types) never calls `get_block_wrapper_attributes()`,
-so WP's identity class lands on an inner child div, not the outer element carrying the uid +
-border CSS. Check `.claude/memory/sdd-progress.md` first.
+Commits `76a3ef734`..`81ed169ec` (`git log` for the range — border-track + SDD-ledger commits
+only; other tracks landed work in between on the same shared `main`).
+Reports: `reports/visual-diff/shape-b-batch-2026-08-30.md` (canonical) + `-full-sweep.md`
+(other 14 blocks).
 
 **Named so nobody re-derives as new:** 10 blocks return probe NOT RUN, unmeasured not failing —
 `before-after`, `buybox`, `option-picker`, `product-faq-item`, `quote`, `site-footer-row`,
