@@ -86,8 +86,21 @@ if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['
 // uid/selector are computed UNCONDITIONALLY — the fill emitter below needs a
 // scoped selector regardless of whether the style-engine branch has anything
 // to emit (background is no longer part of $sgs_fs_style_engine_input).
-$sgs_fs_uid = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sgs_fs_sel = '.' . $sgs_fs_uid . '.sgs-form-step';
+//
+// The uid class itself is pushed onto $sgs_fs_supports_classes HERE,
+// unconditionally, mirroring sgs/counter's `$wrapper_classes = array(
+// 'sgs-counter', $uid )` — the reference pattern for this migration wave.
+// Before this fix it was only pushed inside the colour/fill branches below,
+// and this block's wrapper is rendered via SGS_Container_Wrapper::render()
+// BEFORE the border section even runs (further down this file) — so a
+// border-only instance (no text/background colour set) rendered a scoped
+// <style> rule targeting `.{uid}.sgs-form-step` on a DOM element that never
+// carried the uid class at all, regardless of ordering. Root-caused live via
+// check-border-roundtrip.js (2026-08-30): observed 0px none where 4px solid
+// was expected.
+$sgs_fs_uid                = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_fs_sel                = '.' . $sgs_fs_uid . '.sgs-form-step';
+$sgs_fs_supports_classes[] = $sgs_fs_uid;
 
 if ( ! empty( $sgs_fs_style_engine_input ) ) {
 	$sgs_fs_engine_styles = wp_style_engine_get_styles(

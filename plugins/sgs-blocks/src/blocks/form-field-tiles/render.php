@@ -96,8 +96,19 @@ if ( ! empty( $sgs_ft_style_group['border'] ) && is_array( $sgs_ft_style_group['
 // uid/selector are computed UNCONDITIONALLY — the fill emitter below needs a
 // scoped selector regardless of whether the style-engine branch has anything
 // to emit (background is no longer part of $sgs_ft_style_engine_input).
-$sgs_ft_uid = 'sgs-ft-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sgs_ft_sel = '.' . $sgs_ft_uid . '.sgs-form-field--tiles';
+//
+// The uid class itself is pushed onto $sgs_ft_supports_classes HERE,
+// unconditionally, mirroring sgs/counter's `$wrapper_classes = array(
+// 'sgs-counter', $uid )` — the reference pattern for this migration wave.
+// Before this fix it was only pushed inside the colour/fill branches below,
+// so a border-only instance (no text/background colour set) rendered a
+// scoped <style> rule targeting `.{uid}.sgs-form-field--tiles` on a DOM
+// element that never carried the uid class — the border CSS existed but
+// matched nothing. Root-caused live via check-border-roundtrip.js
+// (2026-08-30): observed 0px none where 4px solid was expected.
+$sgs_ft_uid                = 'sgs-ft-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_ft_sel                = '.' . $sgs_ft_uid . '.sgs-form-field--tiles';
+$sgs_ft_supports_classes[] = $sgs_ft_uid;
 
 if ( ! empty( $sgs_ft_style_engine_input ) ) {
 	$sgs_ft_engine_styles = wp_style_engine_get_styles(
