@@ -11,30 +11,38 @@
  * "describe the mechanism and reimplement, never copy" rule for this
  * mechanism specifically.
  *
- * ⚠ WHAT IS ACTUALLY REPRODUCED HERE, stated precisely — an earlier revision
- * of this docblock described the file as carrying legal risk it does not
- * carry, which is its own kind of inaccuracy. Checked directly, this file
- * contains:
- *   - The reference's MEASURED CONSTANTS: rotation axis vectors, Euler
- *     angles, scale factors, twist frequencies and powers.
- *   - The reference's COMPOSITION ORDER and multiplication convention.
- *   - NONE of its source text. The reference's own distinctive hash function
- *     (`xxhash`) appears nowhere in this file — verified by grep, zero
- *     matches. Function names, variable names and structure are ours.
+ * ⚠ WHAT IS ACTUALLY REPRODUCED HERE, stated precisely. This paragraph has
+ * been wrong TWICE in opposite directions and is now stated as checkable
+ * facts only — a legal CONCLUSION does not belong in a tracked source file,
+ * and the previous revision's blanket claim was falsified by a nine-line
+ * diff during an adversarial-council fact-check (2026-08-29).
  *
- * The technique spec's own licence table classifies measured parameter values
- * as "observed facts, not expression" and mechanisms as "method and
- * functionality, free to implement". On that split — the project's own stated
- * test — this file sits on the permitted side. That is a more accurate
- * description than the previous "accept the associated legal risk" framing,
- * which read as though verbatim source had been copied, and none was.
+ * Reproduced from the reference:
+ *   - Its MEASURED CONSTANTS: rotation axis vectors, Euler angles, scale
+ *     factors, twist frequencies and powers.
+ *   - Its COMPOSITION ORDER and multiplication convention.
  *
- * This is not legal advice and does not discharge KJC-4's outstanding
- * recommendation of a UK IP solicitor's hour on the client-indemnity
- * question. Two constraints still bind absolutely: the palette PNG stays
- * off-limits (an artistic work, a different asset class from a computer
- * program, and unused here — colour comes from the client's own theme tokens
- * through the OKLCH pipeline), and no reference file ships in the product.
+ * NOT reproduced: the reference's own distinctive hash function (`xxhash`)
+ * and its noise implementation appear nowhere here — zero matches by grep;
+ * this file uses Ashima/Gustavson 3D simplex (MIT) instead.
+ *
+ * ⚠ Shared text that is NOT the reference's original expression, named
+ * explicitly rather than glossed over: `sgsAxisAngle` below shares its three
+ * local identifiers (`s`, `c`, `oc`) and term ordering with the reference's
+ * equivalent, and `sgsShapingCurve` shares its body. Both are cases of two
+ * parties independently copying the SAME PUBLIC SOURCE — the standard
+ * axis-angle rotation matrix, and Iñigo Quilez's `expStep`, which the
+ * reference file itself attributes to him. A previous revision of this
+ * docblock claimed "function names, variable names and structure are ours",
+ * which is not true of those two helpers.
+ *
+ * ⛔ No legal conclusion is drawn here, deliberately. KJC-4's recommended
+ * UK IP solicitor's hour on the client-indemnity question has NOT happened,
+ * and a tracked file asserting its own favourable verdict while noting that
+ * gap is a liability rather than a defence. The operative constraints remain:
+ * the palette PNG stays off-limits and unused (colour comes from the client's
+ * own theme tokens through the OKLCH pipeline), and no reference file ships
+ * in the product.
  *
  * ── THE MECHANISM HAS THREE LAYERS (D882) ─────────────────────────────────
  *
@@ -153,13 +161,26 @@ import {
  * ── Animation defaults — the reference preset, NOT a retune of it ───────────
  *
  * ⚠ These were previously "pushed past" the reference's own calibration values
- * (frequencies scaled ~45%, powers raised) on the reasoning that the brief
- * wanted more dramatic self-overlap than the reference produces. That reasoning
- * was sound but aimed at the wrong layer: the drama comes from the object-level
- * transform (layer 2 — a ~107 degree Z rotation and a non-uniform 9/8/5 scale),
- * which was entirely absent from the build at the time. Over-driving the twist
- * to compensate for a missing transform produced a busier fold, not a bolder
- * composition, which is exactly what "same shape, just bigger" described.
+ * on the reasoning that the brief wanted more dramatic self-overlap than the
+ * reference produces. That reasoning was sound but aimed at the wrong layer:
+ * the drama comes from the object-level transform (layer 2 — a ~107 degree Z
+ * rotation and a non-uniform 9/8/5 scale), which was entirely absent from the
+ * build at the time. Over-driving the twist to compensate for a missing
+ * transform produced a busier fold, not a bolder composition, which is exactly
+ * what "same shape, just bigger" described.
+ *
+ * ⛔ WHAT ACTUALLY CHANGED, corrected 2026-08-29. An earlier note here (and
+ * commit b4ce49771's message) said the old values were "inflated ~45%", which
+ * narrates a tidy scalar correction over what was really a SIGN and
+ * ASSIGNMENT correction — the same class of error as the row-vector bug this
+ * file elsewhere congratulates itself for catching. Measured against
+ * `PRESETS.light`:
+ *   - displacement amount  11.5  ->  -7.821   (1.47x AND sign-inverted)
+ *   - twist frequencies    [-0.94, 0.6, -0.84] -> [0.41, -0.65, -0.58]
+ *                          (two of three SIGN-INVERTED, not scaled)
+ *   - shaping powers       [4.6, 1.0, 5.1]  ->  [0.7, 3.63, 3.95]
+ *                          (wholly RE-ASSIGNED between slots, not scaled)
+ * Only the displacement magnitude was ever a percentage change.
  *
  * With layer 2 present these go back to the reference's measured values so the
  * three layers compose as they were tuned to. They remain per-instance
@@ -566,7 +587,27 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 		// ground token). Keeping this canvas transparent means the ground is
 		// never duplicated/desynced between CSS and a gl.clearColor() call.
 		alpha: true,
-		depth: false,
+		/*
+		 * ⛔ DEPTH IS REQUIRED — this was `false` and that was a real rendering
+		 * bug, not an optimisation (found by adversarial council, 2026-08-29).
+		 *
+		 * The fold makes the sheet pass back over ITSELF: §1's third band
+		 * mirrors in X (`x = -x`) specifically so one flank folds back across
+		 * the others. Without a depth buffer, which surface is visible where
+		 * they overlap is decided by TRIANGLE DRAW ORDER, not by which is
+		 * nearer the camera. Along the overlap boundary — which runs diagonally
+		 * across a regular triangle grid — that produces a jagged, triangle-
+		 * aligned staircase rather than a clean silhouette edge.
+		 *
+		 * The reference does the same thing the same way: `depthWrite: true,
+		 * depthTest: true` with `side: DoubleSide` (rig `index.html:377-378`).
+		 *
+		 * ⚠ This defect is INVISIBLE to the matrix verifier — the transforms
+		 * are perfectly correct, and every vertex lands exactly where it
+		 * should. Only the resolution between overlapping surfaces was wrong.
+		 * A numeric transform check cannot see it; that is why it survived.
+		 */
+		depth: true,
 		powerPreference: 'low-power',
 		failIfMajorPerformanceCaveat: true,
 	} );
@@ -608,6 +649,24 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 
 	const vao = gl.createVertexArray();
 	gl.bindVertexArray( vao );
+
+	/*
+	 * Depth testing ON, face culling deliberately OFF.
+	 *
+	 * DEPTH_TEST is what makes the self-overlapping fold resolve by distance
+	 * rather than by draw order — see the `depth: true` note at context
+	 * creation for why this is a correctness requirement, not a nicety.
+	 *
+	 * ⛔ Do NOT add `gl.enable( gl.CULL_FACE )` as a "free" optimisation. The
+	 * folded sheet is a single open surface that turns back on itself, so the
+	 * camera sees BOTH of its faces — the reference renders it as
+	 * `side: DoubleSide` for exactly this reason (rig `index.html:377`).
+	 * Culling back faces would silently delete roughly half the ribbon, and it
+	 * would do so in a way that looks like a geometry bug in the fold rather
+	 * than a rasteriser setting.
+	 */
+	gl.enable( gl.DEPTH_TEST );
+	gl.depthFunc( gl.LEQUAL );
 
 	const posBuf = gl.createBuffer();
 	gl.bindBuffer( gl.ARRAY_BUFFER, posBuf );
@@ -781,7 +840,14 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 		gl.bindTexture( gl.TEXTURE_2D, texture );
 		gl.bindVertexArray( vao );
 		gl.clearColor( 0, 0, 0, 0 );
-		gl.clear( gl.COLOR_BUFFER_BIT );
+		/*
+		 * The DEPTH bit must be cleared alongside COLOR every frame. Clearing
+		 * only colour leaves last frame's depth values in place, so as the
+		 * surface breathes, fragments get tested against a stale buffer and
+		 * whole regions drop out intermittently — a flicker that looks like a
+		 * shader bug and is not one.
+		 */
+		gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 		gl.drawElements( gl.TRIANGLES, indexCount, indexType, 0 );
 		gl.bindVertexArray( null );
 		return true;

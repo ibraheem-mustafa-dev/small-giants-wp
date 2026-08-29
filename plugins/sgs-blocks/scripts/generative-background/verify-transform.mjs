@@ -302,7 +302,28 @@ function correctModelForScaleControl() {
 }
 
 // ── Result ─────────────────────────────────────────────────────────────────
+/*
+ * ⛔ REPORT WHAT EACH CHECK IS WORTH — do not print a bare "7/7".
+ *
+ * Commit b4ce49771's message said "7/7 checks against matrices extracted from
+ * the running rig". That was an overstatement caught by an adversarial-council
+ * fact-check: only TWO of these compare against the rig. Three are
+ * self-consistency checks on our own fold code, and two are negative controls
+ * comparing a function against itself — which proves the tolerance can
+ * discriminate, not that our maths matches the reference.
+ *
+ * A bare count invites exactly that misreading, and a count that gets cited as
+ * "seven independent confirmations" is how a weak result travels as a strong
+ * one. So the breakdown prints alongside the total, always.
+ */
 console.log( `\n${ checks - failures }/${ checks } checks passed.` );
+console.log(
+	'  of which: 2 are GROUND-TRUTH comparisons against rig-extracted matrices\n' +
+		'            3 are self-consistency checks on our own fold code\n' +
+		'            2 are negative controls (tolerance discrimination only)\n' +
+		'  ⚠ Layer 3 (the per-frame GPU twist) is verified by NONE of these — it\n' +
+		'    lives in a shader string this module cannot import. Not covered here.'
+);
 
 if ( failures > 0 ) {
 	console.error(
