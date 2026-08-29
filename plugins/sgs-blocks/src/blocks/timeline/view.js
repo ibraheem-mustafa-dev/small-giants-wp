@@ -142,11 +142,6 @@ import {
 		 *
 		 * @return {number} Progress clamped to 0..1.
 		 */
-		const horizontal = root.classList.contains(
-			'sgs-timeline--horizontal'
-		);
-		let lastProgress = 0;
-
 		function computeProgress() {
 			const rect = root.getBoundingClientRect();
 			const viewportHeight = window.innerHeight;
@@ -156,65 +151,11 @@ import {
 			return Math.min( 1, Math.max( 0, progress ) );
 		}
 
-		// ── Sparks (FR-38-35) ──────────────────────────────────────────
-		//
-		// Spawned ONLY while progress is actually CHANGING. That gate is not a
-		// performance nicety, it is what keeps the effect scroll-linked: motion
-		// that continues while the user sits still is AUTONOMOUS, and autonomous
-		// motion running past five seconds owes a WCAG SC 2.2.2 pause control.
-		// No scroll, no sparks, no pause control owed.
-		//
-		// Deliberately not a particle library — tsparticles is 20-100KB against
-		// a 50KB page budget, and canvas-confetti is built for one-shot bursts,
-		// not a continuous trail. Each spark is a 3px element animated on
-		// transform + opacity (compositor-only) that removes itself.
-		const progressEl = root.querySelector( '.sgs-timeline__progress' );
-		let lastSparkAt = 0;
-
-		function maybeSpark( delta ) {
-			if ( ! progressEl || delta < 0.004 ) {
-				return;
-			}
-			// Rate-limit independently of scroll frequency so a fast flick does
-			// not dump dozens of nodes in one frame.
-			const now = performance.now();
-			if ( now - lastSparkAt < 60 ) {
-				return;
-			}
-			lastSparkAt = now;
-
-			const spark = document.createElement( 'span' );
-			spark.className = 'sgs-timeline__spark';
-			// The head sits at the progress position on the travel axis; place
-			// the spark there and let CSS scatter it outward.
-			const pct = `${ lastProgress * 100 }%`;
-			if ( horizontal ) {
-				spark.style.left = pct;
-				spark.style.top = '50%';
-			} else {
-				spark.style.left = '50%';
-				spark.style.top = pct;
-			}
-			spark.style.setProperty(
-				'--sgs-spark-dx',
-				`${ ( Math.random() - 0.5 ) * 22 }px`
-			);
-			spark.style.setProperty(
-				'--sgs-spark-dy',
-				`${ ( Math.random() - 0.5 ) * 22 }px`
-			);
-			spark.addEventListener( 'animationend', () => spark.remove(), {
-				once: true,
-			} );
-			progressEl.appendChild( spark );
-		}
-
 		function writeProgress() {
-			const next = computeProgress();
-			const delta = Math.abs( next - lastProgress );
-			lastProgress = next;
-			root.style.setProperty( '--sgs-timeline-fill-progress', String( next ) );
-			maybeSpark( delta );
+			root.style.setProperty(
+				'--sgs-timeline-fill-progress',
+				String( computeProgress() )
+			);
 		}
 
 		// 3. Share the ONE page-wide rAF loop rather than running our own.
@@ -230,13 +171,100 @@ import {
 			window.removeEventListener( 'scroll', throttledWrite );
 			window.removeEventListener( 'resize', throttledWrite );
 			throttledWrite.cancel();
-			// Sparks self-remove on `animationend`, but a teardown mid-flight
-			// would otherwise strand however many are alive at that instant.
-			if ( progressEl ) {
-				progressEl
-					.querySelectorAll( '.sgs-timeline__spark' )
-					.forEach( ( el ) => el.remove() );
+		};
+	}
+
+	/**
+	 * Sparks — an INDEPENDENT layer, deliberately not part of the rAF driver.
+	 *
+	 * ⛔ This is where the first build was wrong, and the shape of the mistake
+	 * is worth keeping: the spawner lived INSIDE initProgressDriver(), which
+	 * returns early on any browser with native `animation-timeline` support.
+	 * So sparks existed ONLY on the JS path — i.e. only on Firefox — the exact
+	 * inverse of what was wanted, and invisible to everyone who looked. A
+	 * decorative layer must never live inside the fallback driver: it has to
+	 * observe the progress VALUE, whoever wrote it.
+	 *
+	 * On the native path nothing tells JS the value moved, so this polls the
+	 * computed property — one read per animation frame, only while scrolling.
+	 *
+	 * @param {HTMLElement} root - The .sgs-timeline root.
+	 * @return {Function|undefined} cleanup, or undefined if none attached.
+	 */
+	function initSparks( root ) {
+		// Sparks are pure decoration with no informational content, so unlike
+		// the glow and head they switch OFF entirely under reduced motion.
+		if ( isReducedMotionNow() ) {
+			return;
+		}
+		const host = root.querySelector( '.sgs-timeline__progress' );
+		if ( ! host ) {
+			return;
+		}
+		const horizontal = root.classList.contains( 'sgs-timeline--horizontal' );
+		let last = null;
+		let lastSparkAt = 0;
+
+		function tick() {
+			const raw = getComputedStyle( root )
+				.getPropertyValue( '--sgs-timeline-fill-progress' )
+				.trim();
+			const now = parseFloat( raw );
+			if ( ! Number.isFinite( now ) ) {
+				return;
 			}
+			if ( last === null ) {
+				last = now;
+				return;
+			}
+			const delta = Math.abs( now - last );
+			last = now;
+
+			// The gate that keeps this scroll-linked rather than autonomous:
+			// no movement, no sparks. Autonomous motion running past five
+			// seconds would owe a WCAG SC 2.2.2 pause control; this owes none.
+			if ( delta < 0.002 ) {
+				return;
+			}
+			const t = performance.now();
+			if ( t - lastSparkAt < 55 ) {
+				return;
+			}
+			lastSparkAt = t;
+
+			const spark = document.createElement( 'span' );
+			spark.className = 'sgs-timeline__spark';
+			const pct = `${ Math.min( 1, Math.max( 0, now ) ) * 100 }%`;
+			if ( horizontal ) {
+				spark.style.left = pct;
+				spark.style.top = '50%';
+			} else {
+				spark.style.left = '50%';
+				spark.style.top = pct;
+			}
+			spark.style.setProperty(
+				'--sgs-spark-dx',
+				`${ ( Math.random() - 0.5 ) * 26 }px`
+			);
+			spark.style.setProperty(
+				'--sgs-spark-dy',
+				`${ ( Math.random() - 0.5 ) * 26 }px`
+			);
+			spark.addEventListener( 'animationend', () => spark.remove(), {
+				once: true,
+			} );
+			host.appendChild( spark );
+		}
+
+		const throttledTick = rafThrottle( tick );
+		window.addEventListener( 'scroll', throttledTick, { passive: true } );
+
+		return function cleanup() {
+			window.removeEventListener( 'scroll', throttledTick );
+			throttledTick.cancel();
+			host.querySelectorAll( '.sgs-timeline__spark' ).forEach( ( el ) =>
+				el.remove()
+			);
 		};
 	}
 
@@ -254,6 +282,11 @@ import {
 			);
 			roots.forEach( ( root ) => {
 				const cleanup = initProgressDriver( root );
+			// Independent of the driver above — runs on the native CSS path too.
+			const sparkCleanup = initSparks( root );
+			if ( sparkCleanup ) {
+				cleanups.push( sparkCleanup );
+			}
 				if ( cleanup ) {
 					cleanups.push( cleanup );
 				}

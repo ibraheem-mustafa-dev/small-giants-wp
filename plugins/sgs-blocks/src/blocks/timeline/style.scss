@@ -77,8 +77,14 @@
 	// Mozilla #1514384, where an animated drop-shadow is CLIPPED mid-animation
 	// on off-main-thread animations; Safari drop-shadow flicker, mdn/browser-
 	// compat-data #17726). Only the MASK moves, which is cheap.
-	filter: blur(5px);
-	opacity: 0.75;
+	// Width, blur and opacity are the three knobs that decide whether the trail
+	// READS. Measured live 2026-08-29: a 14px box at blur(5px)/0.75 rendered
+	// correctly and was still effectively invisible against a cream background
+	// next to the head's own box-shadow halo — "only a glow around the dot" was
+	// the owner's verdict, and he was right. Widened and strengthened; exposed
+	// as custom properties so a client build can tune them without a rebuild.
+	filter: blur(var(--sgs-timeline-glow-blur, 9px));
+	opacity: var(--sgs-timeline-glow-opacity, 1);
 }
 
 // The head — a bright point at the current progress position. Its halo is a
@@ -120,7 +126,7 @@
 
 	.sgs-timeline__progress-glow {
 		// Widen the BOX rather than the blur radius — see the note above.
-		inset: 0 -6px;
+		inset: 0 calc(-1 * var(--sgs-timeline-glow-spread, 14px));
 		background: linear-gradient(
 			to right,
 			transparent,
@@ -157,7 +163,7 @@
 	height: var(--sgs-connector-width);
 
 	.sgs-timeline__progress-glow {
-		inset: -6px 0;
+		inset: calc(-1 * var(--sgs-timeline-glow-spread, 14px)) 0;
 		background: linear-gradient(
 			to bottom,
 			transparent,
@@ -750,7 +756,7 @@
 			);
 
 			.sgs-timeline__progress-glow {
-				inset: 0 -6px;
+				inset: 0 calc(-1 * var(--sgs-timeline-glow-spread, 14px));
 				background: linear-gradient(
 					to right,
 					transparent,
