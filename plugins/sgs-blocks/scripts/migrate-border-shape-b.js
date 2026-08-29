@@ -2322,10 +2322,14 @@ function fix( apply, only ) {
 // Follow-up: a radius-only migration for these 11. They sit OUTSIDE this
 // codemod's NATIVE_FULL census bucket (they are already past it), so --fix does
 // not reach them and they need their own pass.
-const RADIUS_DEBT_BASELINE = new Set( [
-	'accordion', 'button', 'container', 'heading', 'icon-list', 'option-picker',
-	'process-steps', 'product-card', 'quote', 'text', 'timeline',
-] );
+//
+// 2026-08-30: all 11 migrated (radius joined the other three legs as a
+// block-private corner-object attr, base + tablet + mobile, painted via
+// wp_style_engine_get_styles()/sgs_corner_object_shorthand() same as every
+// other private radius tier in the tree). The set is empty, not deleted --
+// a correctly-empty baseline is the proof the debt is paid, and a future
+// regression re-adds a name here rather than silently reappearing.
+const RADIUS_DEBT_BASELINE = new Set( [] );
 
 function check() {
 	const problems = [];

@@ -18,7 +18,6 @@ import {
 import {
 	IconPicker,
 	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
 	SgsColourPanel,
 	SgsBorderControl,
 } from '../../components';
@@ -878,20 +877,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						onColourGradientChange={ ( val ) =>
 									setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
-					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ {
-							base: style?.border?.radius ?? {},
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
 							tablet: borderRadiusTablet ?? {},
 							mobile: borderRadiusMobile ?? {},
 						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
 						} }
 					/>
 				</PanelBody>

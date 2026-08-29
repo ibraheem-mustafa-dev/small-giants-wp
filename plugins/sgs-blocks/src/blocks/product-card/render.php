@@ -384,8 +384,8 @@ if ( 'none' !== $sgs_pc_border_style ) {
 // stable core style engine. ---
 $sgs_pc_style_engine_args = array();
 $sgs_pc_radius_args       = array();
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
+if ( isset( $attributes['borderRadius'] ) ) {
+	$sgs_pc_radius_raw = $attributes['borderRadius'];
 	if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
 		$sgs_pc_radius_args['radius'] = sgs_css_length_value( $sgs_pc_radius_raw );
 	} elseif ( is_array( $sgs_pc_radius_raw ) ) {
@@ -411,6 +411,29 @@ if ( ! empty( $sgs_pc_style_engine_args ) ) {
 	if ( ! empty( $sgs_pc_scoped['css'] ) ) {
 		$sgs_card_typo_css .= $sgs_pc_scoped['css'];
 	}
+}
+
+// Border-radius tablet/mobile tiers — block-private object attrs (2026-08-30
+// radius target-shape correction; base handled above).
+$sgs_pc_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$sgs_pc_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$sgs_pc_radius_tab_val    = sgs_corner_object_shorthand( $sgs_pc_radius_tablet_obj );
+$sgs_pc_radius_mob_val    = sgs_corner_object_shorthand( $sgs_pc_radius_mobile_obj );
+
+$sgs_pc_radius_tablet_decls = array();
+if ( null !== $sgs_pc_radius_tab_val ) {
+	$sgs_pc_radius_tablet_decls[] = "border-radius:{$sgs_pc_radius_tab_val}";
+}
+if ( $sgs_pc_radius_tablet_decls ) {
+	$sgs_card_typo_css .= '@media(max-width:1023px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_radius_tablet_decls ) . ';}}';
+}
+
+$sgs_pc_radius_mobile_decls = array();
+if ( null !== $sgs_pc_radius_mob_val ) {
+	$sgs_pc_radius_mobile_decls[] = "border-radius:{$sgs_pc_radius_mob_val}";
+}
+if ( $sgs_pc_radius_mobile_decls ) {
+	$sgs_card_typo_css .= '@media(max-width:767px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_radius_mobile_decls ) . ';}}';
 }
 // Skip-serialised color/border supports also stop WP auto-adding the standard
 // has-*-color / has-*-background-color / has-*-border-color classes onto the

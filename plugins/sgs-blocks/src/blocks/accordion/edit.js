@@ -237,6 +237,15 @@ export default function Edit({ attributes, setAttributes }) {
               setAttributes( { borderColourGradient: val ?? "" } )
             }
             colourLinked={ true }
+            radiusValues={ {
+              base: attributes.borderRadius ?? {},
+              tablet: attributes.borderRadiusTablet ?? {},
+              mobile: attributes.borderRadiusMobile ?? {},
+            } }
+            onRadiusChange={ ( tier, next ) => {
+              const radiusKey = tier === "base" ? "borderRadius" : tier === "tablet" ? "borderRadiusTablet" : "borderRadiusMobile";
+              setAttributes( { [ radiusKey ]: next } );
+            } }
           />
         </PanelBody>
         <PanelBody title={__("Accordion Settings", "sgs-blocks")}>

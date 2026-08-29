@@ -41,6 +41,10 @@
 				],
 				"borderWidth": [
 					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"variantAttr": "variantStyle",
@@ -69,7 +73,7 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "cardMaxWidth"
 					},
 					"states": {
@@ -207,10 +211,6 @@
 		"spacing": {
 			"margin": true,
 			"padding": false,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -452,6 +452,19 @@
 			"type": "object",
 			"default": {},
 			"description": "Card root border width { top, right, bottom, left }. R2c (B-3/B-8): block-private, replaces the native __experimentalBorder.width path."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Card root border radius { topLeft, topRight, bottomLeft, bottomRight }. Block-private (2026-08-30 radius target-shape correction), replaces the native __experimentalBorder.radius path."
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"borderStyle": {
 			"type": "string",

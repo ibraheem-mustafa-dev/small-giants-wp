@@ -39,10 +39,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"iconPicker": true,
@@ -54,6 +50,10 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				]
 			},
 			"elements": {
@@ -74,7 +74,7 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth"
 					},
 					"_note": "Mirrors sgs/container's wrapper/grid split — this block.json declares only fontSize+lineHeight (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) and no width/height/box-shadow/aspect-ratio attrs, so the remaining text+layout BOX members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses."
@@ -179,6 +179,18 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the accordion's border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"headerColour": {
 			"type": "string"

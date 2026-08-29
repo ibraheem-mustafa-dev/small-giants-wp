@@ -28,14 +28,14 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"borderWidth": [
 					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadiusTablet",
+					"borderRadiusMobile"
 				],
 				"padding": [
 					"paddingTablet",
@@ -74,7 +74,7 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
 						"css:width": "customWidth",
 						"css:max-width": "maxWidth",
@@ -278,6 +278,18 @@
 			"default": ""
 		},
 		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
 			"type": "object",
 			"default": {}
 		},

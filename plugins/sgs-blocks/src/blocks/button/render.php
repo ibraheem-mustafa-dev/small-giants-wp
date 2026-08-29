@@ -168,8 +168,8 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 // object with topLeft/topRight/bottomLeft/bottomRight keys). Tiers are the
 // borderRadiusTablet/borderRadiusMobile OBJECT attrs (contract §2).
 $base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
+if ( isset( $attributes['borderRadius'] ) ) {
+	$radius_raw = $attributes['borderRadius'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
 		$base_border_radius = $radius_raw;
 	} elseif ( is_array( $radius_raw ) ) {

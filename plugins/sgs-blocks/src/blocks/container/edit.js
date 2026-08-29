@@ -12,7 +12,7 @@ import {
   BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ResponsiveBorderRadiusControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken, SgsBorderControl } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, resolveColourToken, SgsBorderControl } from "../../components";
 import { resolveShadowPreview, resolveResponsiveTier, backgroundPaintPreview, backgroundPreview, boxShorthand, resolveBoxTierPreview } from "../../utils";
 import {
   LayoutPanel,
@@ -711,16 +711,15 @@ export default function Edit({ attributes, setAttributes, name }) {
           			onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ),
           		},
           	] }
-          />
-          <ResponsiveBorderRadiusControl
-            label={ __( "Border radius", "sgs-blocks" ) }
-            values={ { base: attributes.style?.border?.radius ?? {} } }
-            showResponsive={ false }
-            onChange={ ( _tier, next ) =>
-              setAttributes( {
-                style: { ...attributes.style, border: { ...attributes.style?.border, radius: next } },
-              } )
-            }
+          	radiusValues={ {
+          		base: attributes.borderRadius ?? {},
+          		tablet: attributes.borderRadiusTablet ?? {},
+          		mobile: attributes.borderRadiusMobile ?? {},
+          	} }
+          	onRadiusChange={ ( tier, next ) => {
+          		const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+          		setAttributes( { [ radiusKey ]: next } );
+          	} }
           />
         </PanelBody>
 

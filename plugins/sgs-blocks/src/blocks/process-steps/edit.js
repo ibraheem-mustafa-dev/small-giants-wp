@@ -28,7 +28,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, fillRow, SgsBorderControl } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, fillRow, SgsBorderControl } from '../../components';
 import { colourVar } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -489,12 +489,15 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
 						] }
-					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ { base: style?.border?.radius ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
 					/>
 				</PanelBody>
 

@@ -1379,16 +1379,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { borderColourGradient: val ?? '' } )
 						}
 						colourLinked={ true }
-					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ { base: attributes.style?.border?.radius ?? {} } }
-						showResponsive={ false }
-						onChange={ ( _tier, next ) =>
-							setAttributes( {
-								style: { ...attributes.style, border: { ...attributes.style?.border, radius: next } },
-							} )
-						}
+						radiusValues={ {
+							base: attributes.borderRadius ?? {},
+							tablet: attributes.borderRadiusTablet ?? {},
+							mobile: attributes.borderRadiusMobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
+							setAttributes( { [ radiusKey ]: next } );
+						} }
 					/>
 				</PanelBody>
 

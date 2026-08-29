@@ -170,8 +170,8 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 // object with topLeft/topRight/bottomLeft/bottomRight keys). Skip-serialised
 // → emit scoped via the style engine in step 6.
 $base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
+if ( isset( $attributes['borderRadius'] ) ) {
+	$radius_raw = $attributes['borderRadius'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
 		$base_border_radius = $radius_raw;
 	} elseif ( is_array( $radius_raw ) ) {
@@ -188,6 +188,8 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 		}
 	}
 }
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
 // WP `color`/`typography` support values (skip-serialised → NOT auto-inlined).
 $style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
@@ -438,6 +440,8 @@ if ( ! $inherit_style ) {
 	$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
 	$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
 	$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+	$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+	$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 	$tablet_box_decls = array();
 	if ( null !== $padding_tab_val ) {
@@ -445,6 +449,9 @@ if ( ! $inherit_style ) {
 	}
 	if ( null !== $margin_tab_val ) {
 		$tablet_box_decls[] = "margin:{$margin_tab_val}";
+	}
+	if ( null !== $radius_tab_val ) {
+		$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
 	}
 	if ( $tablet_box_decls ) {
 		$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
@@ -456,6 +463,9 @@ if ( ! $inherit_style ) {
 	}
 	if ( null !== $margin_mob_val ) {
 		$mobile_box_decls[] = "margin:{$margin_mob_val}";
+	}
+	if ( null !== $radius_mob_val ) {
+		$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
 	}
 	if ( $mobile_box_decls ) {
 		$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';

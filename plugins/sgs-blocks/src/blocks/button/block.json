@@ -25,8 +25,9 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
+		"spacing": {
+			"margin": true,
+			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -73,7 +74,7 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
 						"css:font-family": "fontFamily"
 					},
@@ -304,6 +305,10 @@
 			"default": "solid"
 		},
 		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadius": {
 			"type": "object",
 			"default": {}
 		},

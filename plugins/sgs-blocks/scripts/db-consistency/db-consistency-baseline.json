@@ -1,3 +1,14 @@
 [
+  "amb:sgs/pricing-table:border-radius:wrapper_css:None:None:None",
+  "cssprop:ambiguous:sgs/pricing-table:border-radius::::",
+  "cssprop:rogue:sgs/pricing-table:borderColour",
+  "cssprop:rogue:sgs/pricing-table:borderColourGradient",
+  "cssprop:rogue:sgs/pricing-table:borderRadius",
+  "cssprop:rogue:sgs/pricing-table:borderRadiusMobile",
+  "cssprop:rogue:sgs/pricing-table:borderRadiusTablet",
+  "cssprop:rogue:sgs/pricing-table:borderStyle",
+  "cssprop:rogue:sgs/pricing-table:borderWidth",
+  "cssprop:undeclared-subelement:sgs/pricing-table:borderRadiusMobile",
+  "cssprop:undeclared-subelement:sgs/pricing-table:borderRadiusTablet",
   "vc:sgs/nav-drawer:anchored-card-stack|centred-statement|editorial-ghost-list|solid-brand-light|split-zone-serif|two-column-editorial"
 ]
