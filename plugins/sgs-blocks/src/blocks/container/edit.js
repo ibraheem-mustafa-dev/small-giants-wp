@@ -244,6 +244,23 @@ export default function Edit({ attributes, setAttributes, name }) {
   );
   if ( marginPreview ) style.margin = marginPreview;
 
+  // Border preview — previously entirely absent from the canvas (only wired
+  // into SgsBorderControl's InspectorControls binding, never applied to the
+  // wrapper style), same gap as sgs/hero. borderWidth is a box object
+  // (base-only, no tiers, matching the SgsBorderControl pair standard).
+  if ( borderStyle && borderStyle !== "none" ) {
+    const borderWidthPreview = boxShorthand( borderWidth );
+    if ( borderWidthPreview ) style.borderWidth = borderWidthPreview;
+    style.borderStyle = borderStyle;
+    if ( borderColour ) style.borderColor = resolveColourToken( borderColour, colourPalette );
+    // A gradient border renders frontend as a masked ::before ring, which cannot
+    // be reproduced in a plain inline style — approximate it with the gradient as
+    // a border-image so the canvas at least shows that a gradient is applied.
+    if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+      style.borderImage = `${ borderColourGradient } 1`;
+    }
+  }
+
   if (layout === "grid") {
     style.display = "grid";
     // SB-2: use the gridTemplateColumns string attr when set so the editor preview

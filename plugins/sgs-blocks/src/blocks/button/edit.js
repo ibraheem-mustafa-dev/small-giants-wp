@@ -274,6 +274,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
 	if ( colourBackground ) previewStyle.backgroundColor = resolveColourToken( colourBackground, palette );
 	if ( borderColour ) previewStyle.borderColor = resolveColourToken( borderColour, palette );
+	// A gradient border renders frontend as a masked ::before ring, which cannot
+	// be reproduced in a plain inline style — approximate it with the gradient as
+	// a border-image so the canvas at least shows that a gradient is applied.
+	if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+		previewStyle.borderImage = `${ borderColourGradient } 1`;
+	}
 	if ( borderStyle ) previewStyle.borderStyle = borderStyle;
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;

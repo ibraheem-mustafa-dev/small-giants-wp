@@ -172,7 +172,7 @@ function boxShorthand( box, keys ) {
 
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, style, inheritStyle } = attributes;
+	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, style, inheritStyle } = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
 	// styling (background/border/text-align) and inherits from the parent —
@@ -193,6 +193,12 @@ function buildWrapperStyle( attributes ) {
 			}
 			if ( borderColour ) {
 				wrapperStyle.borderColor = colourVar( borderColour ) || undefined;
+			}
+			// A gradient border renders frontend as a masked ::before ring, which cannot
+			// be reproduced in a plain inline style — approximate it with the gradient as
+			// a border-image so the canvas at least shows that a gradient is applied.
+			if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+				wrapperStyle.borderImage = `${ borderColourGradient } 1`;
 			}
 		}
 	}

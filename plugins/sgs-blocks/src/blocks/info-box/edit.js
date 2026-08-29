@@ -86,7 +86,7 @@ function boxShorthand( box ) {
  * @returns {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes ) {
-	const { style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour } = attributes;
+	const { style, width, maxWidth, backgroundColour, backgroundColourGradient, textColour, borderColourGradient } = attributes;
 	const preview = {};
 
 	// Background/text colour moved OFF native style.color.* to block-private
@@ -118,6 +118,13 @@ function buildPreviewStyle( attributes ) {
 			if ( border.width ) preview.borderWidth = border.width;
 			preview.borderStyle = border.style;
 			if ( border.color ) preview.borderColor = border.color;
+			// A gradient border renders frontend as a masked ::before ring, which cannot
+			// be reproduced in a plain inline style — approximate it with the gradient as
+			// a border-image so the canvas at least shows that a gradient is applied.
+			// borderColourGradient is a block-private attr (not part of native style.border).
+			if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+				preview.borderImage = `${ borderColourGradient } 1`;
+			}
 		}
 		const radius = border.radius;
 		if ( typeof radius === 'string' && radius ) {

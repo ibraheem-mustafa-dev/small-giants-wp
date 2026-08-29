@@ -134,6 +134,7 @@ function buildEditorStyle( attributes ) {
 		borderWidth,
 		borderStyle,
 		borderColour,
+		borderColourGradient,
 	} = attributes;
 
 	const previewStyle = {};
@@ -217,6 +218,12 @@ function buildEditorStyle( attributes ) {
 			previewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
 				? borderColour
 				: colourVar( borderColour );
+		}
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			previewStyle.borderImage = `${ borderColourGradient } 1`;
 		}
 	}
 

@@ -158,6 +158,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		if ( borderColour ) {
 			wrapperPreviewStyle.borderColor = colourVar( borderColour ) || undefined;
 		}
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperPreviewStyle.borderImage = `${ borderColourGradient } 1`;
+		}
 	}
 	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {

@@ -205,6 +205,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-mm-panel-border': borderColour
 			? colourVar( borderColour ) || borderColour
 			: undefined,
+		// A gradient border renders frontend as a masked ::before ring
+		// (sgs_border_gradient_css() in render.php), which cannot be reproduced in
+		// a plain inline style — approximate it with the gradient as a border-image,
+		// same as every other border-migrated block's canvas preview. style.css's
+		// `.sgs-mega-panel` rule already sets `border:1px solid var(--sgs-mm-panel-border)`,
+		// so this paints into that existing 1px border area rather than needing its
+		// own width/style — this block exposes no border-width/style control.
+		borderImage:
+			borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient )
+				? `${ borderColourGradient } 1`
+				: undefined,
 		// NEW resting-state group-tile border override (2026-08-28, Bean-ruled) —
 		// only set when the operator has picked a resting colour; unset means
 		// "inherit the cards tile's existing --sgs-mm-panel-border-derived

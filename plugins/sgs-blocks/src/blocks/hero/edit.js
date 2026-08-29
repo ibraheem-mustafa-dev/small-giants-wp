@@ -249,6 +249,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		// separate, pre-existing gap — see edit.js's absence of any "Hover" panel);
 		// this row is deliberately added independent of that gap.
 		borderColourGradient,
+		borderColour,
+		borderWidth,
+		borderStyle,
 		// D702 — root background/text colour, resting + hover pairs. Mirrors
 		// sgs/testimonial-slider's `slider` element (backgroundColour/textColour
 		// + Hover siblings) — TWO states per row (normal + hover),
@@ -355,6 +358,29 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
 		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 	};
+
+	// Root border preview — previously entirely absent from the canvas (only
+	// wired into SgsBorderControl's InspectorControls binding, never applied
+	// to wrapperStyle, unlike splitMedia's own border a few lines below which
+	// DOES preview). Same box-object family, base only, no tiers. Mirrors
+	// splitMedia's raw colour pass-through (no token resolution) rather than
+	// introducing a different mechanism into this file.
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderStyle && 'none' !== borderStyle ) {
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
+		}
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
 
 	// Content-band (Layer 2 __inner) preview — mirrors
 	// class-sgs-container-wrapper.php's `.$uid>.sgs-container__inner` band.
