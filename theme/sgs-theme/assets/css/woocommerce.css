@@ -546,7 +546,17 @@ h2.wc-block-mini-cart__title {
 #sgs-shop-filters,
 .sgs-shop-filters {
 	position: sticky;
-	top: var(--wp--preset--spacing--40, 1.5rem);
+	/* When the header block has "Sticky" turned on, it pins itself to
+	   top:0 and publishes its own live height as --sgs-header-height
+	   (plugins/sgs-blocks/src/header-behaviours/view.js, F1 mechanism —
+	   the same property that already fixes anchor-link scroll-padding).
+	   Without adding it here, this panel's flat 24px offset put its top
+	   edge underneath the pinned header on any page with sticky on —
+	   confirmed live on the shop archive (header carries
+	   data-sgs-header-sticky="1"). The property defaults to 0px when
+	   unpublished (header not sticky, or JS not yet run), so this is a
+	   no-op everywhere the bug did not exist. */
+	top: calc(var(--sgs-header-height, 0px) + var(--wp--preset--spacing--40, 1.5rem));
 
 	/* ── Filter skin (brand-derived, palette-agnostic) ──
 	 * Every value is mixed FROM the client's own primary/surface tokens, so a
