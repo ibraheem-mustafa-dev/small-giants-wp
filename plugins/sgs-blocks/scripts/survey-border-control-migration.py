@@ -79,7 +79,11 @@ BORDER_ATTR_RE = re.compile(r'border', re.IGNORECASE)
 # its SgsBorderControl mount) fails --check even though this migration cannot finish
 # in one pass. Lower this only with a stated reason when a block is genuinely migrated.
 CEILING = {
-    'NATIVE_FULL': 38,
+    # 38 -> 37 on 2026-08-30: sgs/accordion migrated to Shape B (block-private
+    # borderWidth/borderStyle/borderColour + render.php emission) and moved to
+    # PRIVATE_DONE. Lowered because a block was genuinely migrated, which is the
+    # one reason this file permits.
+    'NATIVE_FULL': 37,
     'PRIVATE_NEEDS_SWAP': 8,   # 10 already-private minus product-card + quote (DONE)
     # Measured 2026-08-28, first real run of this classifier: filter-search, label,
     # mega-aside, mega-panel, product-search, social-icons, whatsapp-cta -- each has
@@ -314,11 +318,28 @@ def self_test():
     failures = []
 
     # Fixture 1 (positive): a NATIVE_FULL block classifies correctly.
+    # Was `accordion` until 2026-08-30, when accordion became the Shape-B
+    # reference and moved to PRIVATE_DONE. Swapped to its own child block, which
+    # is still genuinely NATIVE_FULL -- and the pairing documents the deliberate
+    # asymmetry: sgs/accordion declared a `style` ATTRIBUTE that shadowed WP's
+    # reserved style object (so its native border path was dead code, which is
+    # why it was safe to migrate first); sgs/accordion-item never did, so its
+    # native path is live and it is a genuine NATIVE_FULL specimen.
     results = scan()
-    if 'accordion' not in results or results['accordion']['category'] != 'NATIVE_FULL':
-        failures.append('accordion should classify NATIVE_FULL, got %s' % (
-            results.get('accordion', {}).get('category')
+    if 'accordion-item' not in results or results['accordion-item']['category'] != 'NATIVE_FULL':
+        failures.append('accordion-item should classify NATIVE_FULL, got %s' % (
+            results.get('accordion-item', {}).get('category')
         ))
+
+    # Fixture 1b (the migration's own proof): accordion must now be PRIVATE_DONE.
+    # Asserted explicitly so the fixture-1 swap above cannot silently hide a
+    # regression -- if the Shape-B migration were reverted, fixture 1 would go
+    # green again on accordion-item while THIS one caught it.
+    if 'accordion' not in results or results['accordion']['category'] != 'PRIVATE_DONE':
+        failures.append('accordion should classify PRIVATE_DONE after the 2026-08-30 '
+                        'Shape-B migration, got %s' % (
+                            results.get('accordion', {}).get('category')
+                        ))
 
     # Fixture 2 (definition / done): product-card must be PRIVATE_DONE (Task 0 shipped it).
     if 'product-card' not in results or results['product-card']['category'] != 'PRIVATE_DONE':
@@ -326,13 +347,22 @@ def self_test():
             results.get('product-card', {}).get('category')
         ))
 
-    # Fixture 3 (edge / already-migrated shape): container has radius-only native
-    # support with full private colour/width/style -- PRIVATE_NEEDS_SWAP (Shape-A
-    # target; the radius-only native leg is recorded but not a separate category).
-    if 'container' not in results or results['container']['category'] != 'PRIVATE_NEEDS_SWAP':
-        failures.append('container should classify PRIVATE_NEEDS_SWAP (radius-only '
-                         'native + private colour/width/style, no SgsBorderControl '
-                         'mount yet), got %s' % (
+    # Fixture 3 (edge / radius-only native leg): container has radius-only native
+    # support with full private colour/width/style.
+    #
+    # ⚠ This fixture asserted PRIVATE_NEEDS_SWAP until 2026-08-30 and had been RED
+    # since commit e8e7a3bc7 -- container gained its SgsBorderControl mount in the
+    # Shape-A rollout, so it became PRIVATE_DONE and the fixture failed BECAUSE THE
+    # MIGRATION SUCCEEDED. Same defect class as the FIXABLE_FLOOR=6 guard recorded
+    # in D881, in the same script family, caught here rather than by anything the
+    # rollout ran. A fixture that encodes a transient in-progress state expires the
+    # moment the work lands; the durable assertion is the STRUCTURE (radius-only
+    # native + private legs), which is what is checked below and is what actually
+    # distinguishes this shape.
+    if 'container' not in results or results['container']['category'] != 'PRIVATE_DONE':
+        failures.append('container should classify PRIVATE_DONE (radius-only native '
+                         '+ private colour/width/style + SgsBorderControl mounted), '
+                         'got %s' % (
                              results.get('container', {}).get('category')
                          ))
     else:

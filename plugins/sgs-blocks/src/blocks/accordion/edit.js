@@ -3,6 +3,7 @@ import {
   useBlockProps,
   useInnerBlocksProps,
   InspectorControls,
+  useSettings,
 } from "@wordpress/block-editor";
 import {
   PanelBody,
@@ -10,7 +11,13 @@ import {
   ToggleControl,
   RangeControl,
 } from "@wordpress/components";
-import { SgsColourPanel, IconPicker, ResponsiveBoxControl } from "../../components";
+import {
+  SgsColourPanel,
+  IconPicker,
+  ResponsiveBoxControl,
+  SgsBorderControl,
+  resolveColourToken,
+} from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 
 const STYLE_OPTIONS = [
@@ -34,7 +41,11 @@ export default function Edit({ attributes, setAttributes }) {
     allowMultiple,
     defaultOpen,
     iconPosition,
-    style: accordionStyle,
+    accordionStyle,
+    borderWidth,
+    borderStyle,
+    borderColour,
+    borderColourGradient,
     faqSchema,
     headerColour,
     headerBackground,
@@ -54,7 +65,41 @@ export default function Edit({ attributes, setAttributes }) {
   // block.json — this composite already restricts children to its own
   // structural child block (`sgs/accordion-item`) below; a generic preset
   // would only conflict with that fixed relationship.
-  const blockProps = useBlockProps({ className });
+  // Editor-canvas preview for the block-private border legs (Shape B).
+  // Mirrors sgs/button's pattern: colours are stored as theme token SLUGS, which
+  // are invalid CSS, so the preview MUST resolve them against the live palette or
+  // picking a palette colour looks like a no-op. render.php resolves the same
+  // slugs via sgs_colour_value(). Editor-only — the frontend contract (Spec 32,
+  // no inline styling) governs render.php's output, not the canvas.
+  const [ palette ] = useSettings( "color.palette" );
+
+  const borderWidthPreview = ( () => {
+    if ( ! borderWidth || "object" !== typeof borderWidth ) return undefined;
+    const sides = [ "top", "right", "bottom", "left" ];
+    if ( ! sides.some( ( side ) => borderWidth[ side ] ) ) return undefined;
+    return sides.map( ( side ) => borderWidth[ side ] || "0" ).join( " " );
+  } )();
+
+  const previewStyle = {};
+  if ( borderStyle && "none" !== borderStyle ) {
+    // G5 (Bean, 2026-08-26): a style with no width means NO border — never fall
+    // through to the browser's initial `medium`. Same gate as render.php.
+    if ( borderWidthPreview ) {
+      previewStyle.borderStyle = borderStyle;
+      previewStyle.borderWidth = borderWidthPreview;
+    }
+    if ( borderColour ) {
+      previewStyle.borderColor = resolveColourToken( borderColour, palette );
+    }
+    // A gradient border renders frontend as a masked ::before ring, which cannot
+    // be reproduced in a plain inline style — approximate it with the gradient as
+    // a border-image so the canvas at least shows that a gradient is applied.
+    if ( borderColourGradient ) {
+      previewStyle.borderImage = `${ borderColourGradient } 1`;
+    }
+  }
+
+  const blockProps = useBlockProps({ className, style: previewStyle });
   const innerBlocksProps = useInnerBlocksProps(blockProps, {
     allowedBlocks: ["sgs/accordion-item"],
     template: TEMPLATE,
@@ -171,12 +216,35 @@ export default function Edit({ attributes, setAttributes }) {
             } }
           />
         </PanelBody>
+        {/* Border — block-private width/style/colour attrs (Shape B, 2026-08-30).
+            Radius is deliberately NOT mounted here: it stays a WP-native support
+            (`__experimentalBorder.radius`) with its own control in the Styles >
+            Border panel, and accordion had no radius control of its own to move.
+            Pairing radius into this control across all 10 migrated blocks is its
+            own decision — see Task 2. */}
+        <PanelBody title={ __( "Border", "sgs-blocks" ) } initialOpen={ false }>
+          <SgsBorderControl
+            widthValues={ borderWidth ?? {} }
+            onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+            widthPresets={ [ "10", "20", "30" ] }
+            styleValue={ borderStyle }
+            onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+            colourLabel={ __( "Border colour", "sgs-blocks" ) }
+            colourValue={ borderColour }
+            onColourChange={ ( val ) => setAttributes( { borderColour: val ?? "" } ) }
+            colourGradientValue={ borderColourGradient }
+            onColourGradientChange={ ( val ) =>
+              setAttributes( { borderColourGradient: val ?? "" } )
+            }
+            colourLinked={ true }
+          />
+        </PanelBody>
         <PanelBody title={__("Accordion Settings", "sgs-blocks")}>
           <SelectControl
             label={__("Style", "sgs-blocks")}
             value={accordionStyle}
             options={STYLE_OPTIONS}
-            onChange={(val) => setAttributes({ style: val })}
+            onChange={(val) => setAttributes({ accordionStyle: val })}
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />

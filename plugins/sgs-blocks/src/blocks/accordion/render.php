@@ -33,7 +33,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // CSS declarations (border-style). Strips everything except letters + hyphen
 // (contract §D). Mirrors sgs/hero + sgs/quote.
 // CSS-length sanitiser — for border-width / radius string values.
-$style         = $attributes['style'] ?? 'bordered';
+$style         = $attributes['accordionStyle'] ?? 'bordered';
 $icon_position = $attributes['iconPosition'] ?? 'right';
 $allow_multi   = ! empty( $attributes['allowMultiple'] );
 $default_open  = (int) ( $attributes['defaultOpen'] ?? -1 );
@@ -63,21 +63,9 @@ if ( ! empty( $color_args ) ) {
 	$style_engine_args['color'] = $color_args;
 }
 
+// Border WIDTH / STYLE / COLOUR are block-private attrs (Shape B, 2026-08-30) —
+// emitted below, not through the style engine. Only RADIUS remains native.
 $border_args = array();
-if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-	$border_args['color'] = (string) $attributes['style']['border']['color'];
-}
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width. Gated together via the shared helper (helpers-box.php)
-// so this rule is applied identically everywhere, not per block.
-$sgs_border_style_width = sgs_native_border_style_width_args( $attributes['style']['border']['style'] ?? null, $attributes['style']['border']['width'] ?? null );
-if ( isset( $sgs_border_style_width['width'] ) ) {
-	$border_args['width'] = $sgs_border_style_width['width'];
-}
-if ( isset( $sgs_border_style_width['style'] ) ) {
-	$border_args['style'] = $sgs_border_style_width['style'];
-}
 if ( isset( $attributes['style']['border']['radius'] ) ) {
 	$radius_raw = $attributes['style']['border']['radius'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
@@ -106,6 +94,57 @@ if ( ! empty( $style_engine_args ) ) {
 	if ( ! empty( $scoped_styles['css'] ) ) {
 		$responsive_css .= $scoped_styles['css'];
 	}
+}
+
+// ── Block-private border: width / style / colour (Shape B, 2026-08-30). ──
+// These were WP-native supports until 2026-08-30, but this block declares a
+// `style` ATTRIBUTE, which shadowed WP's reserved `style` object and made the
+// native path dead code — every read below the shadow returned false, so the
+// border never painted. The preset attr is now `accordionStyle` and these three
+// legs are block-private attrs on the sgs/product-card model. Radius stays
+// native (handled by the style engine above).
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): "border with no width should mean no border by
+	// default." The style is seeded ONLY alongside a real width — otherwise a
+	// style with no width falls through to the browser's initial `medium`
+	// (~3px). border-colour below is legitimately independent and still emits.
+	$border_box_decls = array();
+	if ( $has_border_width ) {
+		$bwt                = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr                = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb                = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl                = '' !== $border_width_left ? $border_width_left : '0';
+		$border_box_decls[] = 'border-style:' . $border_style;
+		$border_box_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	}
+	if ( $border_box_decls ) {
+		$responsive_css .= $root_sel . '{' . implode( ';', $border_box_decls ) . ';}';
+	}
+
+	// Flat colour + gradient ring via the shared helper. It resolves palette
+	// token slugs internally (D881 defect 3 — a slug fed in raw painted
+	// nothing, because an unresolved slug is invalid CSS the browser drops
+	// while the masked ring sets border-color:transparent).
+	$responsive_css .= sgs_border_states_css(
+		$root_sel,
+		$attributes,
+		array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+			'width'    => '' !== $border_width_top ? $border_width_top : '1px',
+		)
+	);
 }
 
 // Typography (fontSize + lineHeight only, per block.json supports) — applies
