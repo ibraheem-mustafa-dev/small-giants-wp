@@ -26,7 +26,7 @@ function sgs_register_gallery_styles(): void {
 				.wp-block-sgs-gallery.is-style-boxed .sgs-gallery__item {
 					border-radius: var( --wp--custom--border-radius--medium );
 					overflow: hidden;
-					border: 1px solid var( --wp--preset--color--border-subtle );
+					border: 1px solid var( --wp--preset--color--border );
 				}
 			',
 		)

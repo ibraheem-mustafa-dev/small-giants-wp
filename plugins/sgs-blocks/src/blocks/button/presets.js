@@ -54,7 +54,7 @@ export const BUTTON_PRESETS = {
 	outline: {
 		colourBackground: '',
 		colourText: 'text',
-		borderColour: 'border-subtle',
+		borderColour: 'border',
 		colourBackgroundHover: 'surface-alt',
 		colourTextHover: 'text',
 		borderColourHover: 'primary',

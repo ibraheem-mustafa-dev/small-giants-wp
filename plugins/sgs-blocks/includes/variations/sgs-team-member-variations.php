@@ -40,7 +40,7 @@ function sgs_register_team_member_styles(): void {
 			'label'        => __( 'Boxed', 'sgs-blocks' ),
 			'inline_style' => '
 				.wp-block-sgs-team-member.is-style-boxed {
-					border: 1px solid var( --wp--preset--color--border-subtle );
+					border: 1px solid var( --wp--preset--color--border );
 					border-radius: var( --wp--custom--border-radius--medium );
 					background: var( --wp--preset--color--surface );
 					box-shadow: none;

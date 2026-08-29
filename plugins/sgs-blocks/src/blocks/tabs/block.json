@@ -197,7 +197,7 @@
 		},
 		"panelBorderColour": {
 			"type": "string",
-			"default": "border-subtle"
+			"default": "border"
 		},
 		"panelBorderColourGradient": {
 			"type": "string",

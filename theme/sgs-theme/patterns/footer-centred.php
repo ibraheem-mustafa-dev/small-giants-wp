@@ -34,7 +34,7 @@
 
 <!-- /wp:sgs/site-footer-row -->
 
-<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}},"style":{"border":{"top":{"color":"var:preset|color|border-subtle","width":"1px"}}}} -->
+<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}},"style":{"border":{"top":{"color":"var:preset|color|border","width":"1px"}}}} -->
 
 <!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
 

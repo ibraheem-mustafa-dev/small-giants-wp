@@ -101,7 +101,7 @@ const CARD_STYLE_PRESETS = {
 	},
 	boxed: {
 		cardBackground: 'surface',
-		cardBorderColour: 'border-subtle',
+		cardBorderColour: 'border',
 		cardBorderWidth: { top: '1px', right: '1px', bottom: '1px', left: '1px' },
 		cardRadius: '8px',
 		// Zero-size shape (D621/D622 colour split) — explicitly resets any

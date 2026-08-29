@@ -115,7 +115,7 @@
 		},
 		"emptyColour": {
 			"type": "string",
-			"default": "border-subtle"
+			"default": "border"
 		},
 		"label": {
 			"type": "string",

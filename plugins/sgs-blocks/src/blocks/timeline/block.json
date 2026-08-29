@@ -184,7 +184,7 @@
 		},
 		"connectorColour": {
 			"type": "string",
-			"default": "border-subtle"
+			"default": "border"
 		},
 		"connectorProgressFill": {
 			"type": "boolean",

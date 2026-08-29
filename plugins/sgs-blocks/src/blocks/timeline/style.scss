@@ -5,7 +5,7 @@
 // ── CSS custom property defaults ──────────────────────────────────────────────
 
 .sgs-timeline {
-	--sgs-connector-colour: var(--wp--preset--color--border-subtle, #0d5557);
+	--sgs-connector-colour: var(--wp--preset--color--border, #0d5557);
 	--sgs-timeline-fill-colour: var(--wp--preset--color--accent, #f87a1f);
 	--sgs-date-colour: var(--wp--preset--color--accent, #f87a1f);
 	--sgs-node-size: 16px;
@@ -701,9 +701,52 @@
 		box-sizing: border-box;
 	}
 
+	// A milestone the reader has already passed keeps the fill colour, so the
+	// journey reads as built rather than merely drawn. Set by view.js's
+	// milestone observer, which runs on BOTH drivers (native + rAF) — a
+	// reached-state written from inside the rAF driver would have been invisible
+	// on Chrome, Edge and Safari, where the driver returns early.
+	//
+	// Reuses `--sgs-timeline-fill-colour` (the connectorFillColour attribute)
+	// rather than adding a control: the dot and the fill that reached it are one
+	// idea, and a second colour picker for it would be a control the client has
+	// to keep in sync by hand.
+	//
+	// Compound `.sgs-timeline__node.is-reached::before` is (0,2,1) against the
+	// bare `.sgs-timeline__node::before` at (0,1,1), so it wins on specificity
+	// and not on source order.
+	&.is-reached::before {
+		background-color: var(--sgs-timeline-fill-colour);
+	}
+
 	// When a Lucide icon is present, hide the default circle.
 	&:has(.sgs-timeline__node-icon)::before {
 		display: none;
+	}
+
+	// ⛔ …which is exactly why the icon circle needs its OWN reached rule. An
+	// icon milestone hides `::before` entirely, so the rule above paints a
+	// hidden pseudo-element and an icon-bearing timeline would show no reached
+	// state at all — the "fixed one instance, left the class broken" shape.
+	// The paint moves to `.sgs-timeline__node-icon`, whose resting background
+	// is the same `--sgs-connector-colour` the dot uses.
+	&.is-reached .sgs-timeline__node-icon {
+		background-color: var(--sgs-timeline-fill-colour);
+	}
+}
+
+// The reached colour eases in so a dot lighting up reads as an event rather
+// than a repaint. Property-scoped, not `all` — the dot also animates a scale
+// ring under `.is-lit` and a blanket transition would fight it.
+.sgs-timeline__node::before,
+.sgs-timeline__node-icon {
+	transition: background-color 320ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-timeline__node::before,
+	.sgs-timeline__node-icon {
+		transition: none;
 	}
 }
 

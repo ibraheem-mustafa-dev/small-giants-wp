@@ -175,7 +175,12 @@ import {
 	}
 
 	/**
-	 * Sparks — an INDEPENDENT layer, deliberately not part of the rAF driver.
+	 * Milestone observer — an INDEPENDENT layer, deliberately not part of the
+	 * rAF driver. Owns TWO things that both key off the same progress value:
+	 * the persistent `is-reached` STATE on each dot, and the spark burst EVENT
+	 * when the fill crosses one. Named for sparks alone until 2026-08-29, when
+	 * the reached state joined it; the separation from the driver below is what
+	 * makes both work on every browser.
 	 *
 	 * ⛔ This is where the first build was wrong, and the shape of the mistake
 	 * is worth keeping: the spawner lived INSIDE initProgressDriver(), which
@@ -192,16 +197,27 @@ import {
 	 * @return {Function|undefined} cleanup, or undefined if none attached.
 	 */
 	function initSparks( root ) {
-		// Sparks are pure decoration with no informational content, so unlike
-		// the glow and head they switch OFF entirely under reduced motion.
-		if ( isReducedMotionNow() ) {
-			return;
-		}
 		// Presence of the progress element is the feature gate — sparks belong
 		// to the progress connector even though they now attach to the dots.
 		if ( ! root.querySelector( '.sgs-timeline__progress' ) ) {
 			return;
 		}
+		// ⛔ THE REDUCED-MOTION BAIL MOVED, and the move is the point.
+		//
+		// This observer now has TWO consumers, and only one of them is motion:
+		//   * `is-reached` — a persistent STATE saying "the reader has passed
+		//     this milestone". Informational, so it must survive reduced motion.
+		//     Under `reduce` the CSS forces progress to 1 (style.scss:313), so
+		//     every dot correctly reads as reached — the same "show the end
+		//     state" convention the fill itself follows.
+		//   * sparks — pure decoration, still OFF entirely under `reduce`.
+		//
+		// Bailing at the top of the function would have taken the state with
+		// the decoration, which is `degrade-to-more-content-never-less` in
+		// reverse: a reduced-motion reader would see a full line and no marked
+		// milestones. Re-read per tick rather than cached, because the OS
+		// setting can change while the page is open.
+		const sparksAllowed = () => ! isReducedMotionNow();
 		const horizontal = root.classList.contains( 'sgs-timeline--horizontal' );
 
 		/**
@@ -285,15 +301,47 @@ import {
 			}
 		}
 
-		function tick() {
-			const now = parseFloat(
+		/**
+		 * Read whatever the progress value currently is, whichever driver wrote
+		 * it. NaN when the property is absent or unparseable.
+		 *
+		 * @return {number} Progress 0-1, or NaN.
+		 */
+		function readProgress() {
+			return parseFloat(
 				getComputedStyle( root )
 					.getPropertyValue( '--sgs-timeline-fill-progress' )
 					.trim()
 			);
+		}
+
+		/**
+		 * Mark every milestone the fill has passed.
+		 *
+		 * A STATE, not an event: it is recomputed from the current progress on
+		 * every tick rather than latched when a node is crossed. That is what
+		 * makes scrolling back up un-mark the milestones ahead of the reader,
+		 * and it means a page loaded already scrolled part-way down paints the
+		 * correct state on the first frame instead of only after a scroll.
+		 *
+		 * @param {number} now Current progress, 0-1.
+		 */
+		function applyReached( now ) {
+			nodes.forEach( ( node ) => {
+				node.el.classList.toggle( 'is-reached', node.frac <= now );
+			} );
+		}
+
+		function tick() {
+			const now = readProgress();
 			if ( ! Number.isFinite( now ) ) {
 				return;
 			}
+			// State first, and OUTSIDE every early return below. The two
+			// `return`s that follow are both about the spark EVENT (no previous
+			// sample to compare against; travelling backwards) and neither is a
+			// reason to leave the reached state stale.
+			applyReached( now );
 			if ( last === null ) {
 				last = now;
 				return;
@@ -302,7 +350,7 @@ import {
 			last = now;
 			// Only ever forward — scrolling back up re-arms the milestones
 			// rather than firing them again on the way past.
-			if ( now <= from ) {
+			if ( now <= from || ! sparksAllowed() ) {
 				return;
 			}
 			nodes.forEach( ( node ) => {
@@ -315,9 +363,27 @@ import {
 		const throttledTick = rafThrottle( tick );
 		const remeasure = rafThrottle( () => {
 			nodes = measureNodes();
+			// The fractions just moved, so the reached set may have changed even
+			// though the progress value did not. Without this, a resize that
+			// reflows the entries leaves dots marked against their old
+			// positions until the next scroll.
+			const now = readProgress();
+			if ( Number.isFinite( now ) ) {
+				applyReached( now );
+			}
 		} );
 		window.addEventListener( 'scroll', throttledTick, { passive: true } );
 		window.addEventListener( 'resize', remeasure, { passive: true } );
+
+		// Paint the state once at attach. A reader arriving at a deep link, or
+		// restoring a scroll position, must not need to scroll before the dots
+		// tell the truth — and under reduced motion (progress pinned to 1) no
+		// scroll event may ever fire at all, so this is the ONLY thing that
+		// marks the milestones on that path.
+		const initial = readProgress();
+		if ( Number.isFinite( initial ) ) {
+			applyReached( initial );
+		}
 
 		return function cleanup() {
 			window.removeEventListener( 'scroll', throttledTick );
@@ -327,8 +393,10 @@ import {
 			root.querySelectorAll( '.sgs-timeline__spark' ).forEach( ( el ) =>
 				el.remove()
 			);
-			root.querySelectorAll( '.sgs-timeline__node.is-lit' ).forEach( ( el ) =>
-				el.classList.remove( 'is-lit' )
+			root.querySelectorAll(
+				'.sgs-timeline__node.is-lit, .sgs-timeline__node.is-reached'
+			).forEach( ( el ) =>
+				el.classList.remove( 'is-lit', 'is-reached' )
 			);
 		};
 	}
