@@ -20,14 +20,17 @@
  * @var \WP_Block $block     Block instance (passed to SGS_Container_Wrapper for uid derivation).
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
- * field_open() (shared helper,
- * off-limits to edit — used by every other form-field-* block) never calls
- * get_block_wrapper_attributes(), so these supports were never auto-inlined onto
- * its div in the first place; they were dead controls. This migration wires them:
- * the values are extracted from $attributes['style'] here and emitted into a
- * block-private scoped `<style>` (mirrors sgs/container), scoped to a uid CLASS
- * appended via field_open()'s existing `$extra_class` string parameter (no edit
- * to the shared helper file required).
+ * field_open() (shared helper, used by every other form-field-* block) now
+ * DOES call get_block_wrapper_attributes() (2026-08-30 border-roundtrip fix,
+ * commits 81036c832/ca1f14789), giving the outer div WordPress's own identity
+ * class. That call still does not auto-inline this block's own border/spacing
+ * supports as CSS — WP's block-supports serialiser only emits an inline
+ * `style=` attr for supports this block does NOT declare via `supports.color`/
+ * `supports.spacing`/`supports.border` in block.json, and per Spec 32 no SGS
+ * block declares those. So these values are still wired the same way as
+ * before this fix: extracted from $attributes['style'] here and emitted into
+ * a block-private scoped `<style>` (mirrors sgs/container), scoped to a uid
+ * CLASS appended via field_open()'s existing `$extra_class` string parameter.
  *
  * @package SGS\Blocks
  */
