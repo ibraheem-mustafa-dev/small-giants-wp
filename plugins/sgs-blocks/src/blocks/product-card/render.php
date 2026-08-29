@@ -326,6 +326,7 @@ $sgs_pc_has_border_width    = ( '' !== $sgs_pc_border_width_top || '' !== $sgs_p
 $sgs_pc_border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $sgs_pc_allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $sgs_pc_border_style          = in_array( $sgs_pc_border_style_raw, $sgs_pc_allowed_border_styles, true ) ? $sgs_pc_border_style_raw : 'none';
+$sgs_pc_border_colour_raw     = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 
 if ( 'none' !== $sgs_pc_border_style ) {
 	// G5 (Bean, 2026-08-26): "border with no width should mean no border by
@@ -354,6 +355,28 @@ if ( 'none' !== $sgs_pc_border_style ) {
 			'width'    => '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '1px',
 		)
 	);
+} elseif ( $sgs_pc_has_border_width || '' !== $sgs_pc_border_colour_raw ) {
+	// G5 negative-control fix (2026-08-29, check-border-roundtrip.js): the card
+	// ROOT has an always-on 1px definitional border in style.css (`.product-card`,
+	// ~:43 — a WCAG §1.4.11 boundary, present by design for every card the
+	// operator has never touched border controls on; block.json's own default is
+	// borderStyle:"none" + borderWidth:{} + borderColour:"", so "untouched" and
+	// "explicitly none" are the SAME attribute state and cannot be told apart from
+	// borderStyle alone).
+	//
+	// borderWidth/borderColour being non-default is the signal that the operator
+	// DID engage these controls (an untouched card carries {} and ""), so
+	// borderStyle:"none" in that combination is a deliberate "remove the border"
+	// request, not the passive default. Without this branch, that request was
+	// silently ignored: render.php emitted NOTHING (per G5 — a style must only be
+	// emitted alongside a real width), leaving the base 1px rule as the only
+	// same-specificity (0,1,0 vs the scoped 0,2,0 rule below) declaration in
+	// play... except with THIS branch there IS a scoped (0,2,0) rule again, which
+	// reliably beats the base rule's (0,1,0) regardless of source order.
+	//
+	// An operator who has never touched borderWidth/borderColour at all keeps the
+	// default definitional border untouched — this branch does not fire for them.
+	$sgs_card_typo_css .= $sgs_pc_root_sel . '{border-style:none;border-width:0;}';
 }
 
 // --- Native border-radius (unchanged mechanism) — still resolved from the
